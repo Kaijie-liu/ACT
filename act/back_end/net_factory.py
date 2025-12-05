@@ -286,11 +286,13 @@ class NetFactory:
 
         elif kind in ["RELU", "SIGMOID", "TANH"]:
             if layers and layer_index > 0:
-                prev_out_vars = layers[layer_index - 1].out_vars
-                return prev_out_vars, prev_out_vars.copy(), var_counter
+                in_vars = layers[layer_index - 1].out_vars
+                # Allocate new variable IDs for activation output
+                out_vars = list(range(var_counter, var_counter + len(in_vars)))
+                var_counter += len(in_vars)
+                return in_vars, out_vars, var_counter
             else:
                 raise ValueError(f"Activation layer '{kind}' cannot be the first layer in network")
-
 
         elif kind.startswith("CONV"):
             if layers and layer_index > 0:
