@@ -10,600 +10,18 @@ Copyright (C) 2025 SVF-tools/ACT
 License: AGPLv3+
 """
 
+# NOTE: Keep this file import-light for build_parser(): only stdlib at module scope.
 import argparse
 from pathlib import Path
 from typing import List, Optional
 import sys
 
-from act.util.cli_utils import add_device_args, initialize_from_args
-from act.front_end.spec_creator_base import LabeledInputTensor
-from act.front_end.vnnlib_loader.create_specs import VNNLibSpecCreator
-from act.front_end.vnnlib_loader import data_model_loader as vnnlib_loader
-from act.front_end.vnnlib_loader import category_mapping as vnnlib_mapping
-from act.front_end.torchvision_loader.create_specs import TorchVisionSpecCreator
-from act.front_end.torchvision_loader import data_model_loader as tv_loader
-from act.front_end.torchvision_loader import data_model_mapping as tv_mapping
-from act.front_end.model_synthesis import synthesize_models_from_specs
-from act.pipeline.fuzzing.actfuzzer import ACTFuzzer, FuzzingConfig, FuzzingReport
 
+def build_parser() -> argparse.ArgumentParser:
+    """Build and return the argument parser (shared by main and tests).
 
-def print_header():
-    """Print simple header."""
-    print(f"\n{'='*80}")
-    print(f"ACT: Abstract Constraint Transformer")
-    print(f"Inference-based whitebox fuzzing for neural network verification")
-    print(f"{'='*80}\n")
-
-
-# ============================================================================
-# Data-Model Pair Management Commands
-# ============================================================================
-
-def cmd_list_available(creator: str):
-    """List available datasets/categories."""
-    print(f"\n{'='*80}")
-    print(f"AVAILABLE DATA-MODEL PAIRS ({creator.upper()})")
-    print(f"{'='*80}\n")
-    
-    if creator == 'vnnlib':
-        categories = vnnlib_mapping.list_categories()
-        print(f"VNNLIB Categories ({len(categories)}):")
-        print('-' * 80)
-        for cat_name in sorted(categories):
-            info = vnnlib_mapping.get_category_info(cat_name)
-            print(f"  {cat_name:30s} ({info['type']}) - {info['description']}")
-            print(f"    └─ Models: {info['models']}, Properties: {info['properties']}")
-    
-    elif creator == 'torchvision':
-        datasets = sorted(tv_mapping.DATASET_MODEL_MAPPING.keys())
-        print(f"TorchVision Datasets ({len(datasets)}):")
-        print('-' * 80)
-        for ds_name in datasets:
-            info = tv_mapping.DATASET_MODEL_MAPPING[ds_name]
-            models = info.get('models', [])
-            print(f"  {ds_name:30s} [{info.get('category', 'N/A')}]")
-            if models:
-                print(f"    └─ Models: {', '.join(models[:5])}{'...' if len(models) > 5 else ''}")
-    
-    print(f"\n{'='*80}\n")
-
-
-def cmd_search(query: str, creator: str):
-    """Search for datasets/categories."""
-    print(f"\n{'='*80}")
-    print(f"SEARCH RESULTS: '{query}' ({creator.upper()})")
-    print(f"{'='*80}\n")
-    
-    if creator == 'vnnlib':
-        matches = vnnlib_mapping.search_categories(query)
-        if matches:
-            print(f"Found {len(matches)} VNNLIB categories:")
-            print('-' * 80)
-            for cat_name in sorted(matches):
-                info = vnnlib_mapping.get_category_info(cat_name)
-                print(f"  {cat_name:30s} ({info['type']}) - {info['description']}")
-        else:
-            print(f"No VNNLIB categories found for '{query}'")
-    
-    elif creator == 'torchvision':
-        matches = tv_mapping.search_datasets(query)
-        if matches:
-            print(f"Found {len(matches)} TorchVision datasets:")
-            print('-' * 80)
-            for ds_name in sorted(matches):
-                info = tv_mapping.DATASET_MODEL_MAPPING[ds_name]
-                print(f"  {ds_name:30s} [{info.get('category', 'N/A')}]")
-        else:
-            print(f"No TorchVision datasets found for '{query}'")
-    
-    print(f"\n{'='*80}\n")
-
-
-def cmd_info(name: str, creator: str):
-    """Show detailed information about dataset/category."""
-    print(f"\n{'='*80}")
-    print(f"INFO: {name} ({creator.upper()})")
-    print(f"{'='*80}\n")
-    
-    if creator == 'vnnlib':
-        try:
-            info = vnnlib_mapping.get_category_info(name)
-            print(f"Category: {name}")
-            print(f"Type: {info['type']}")
-            print(f"Year: {info['year']}")
-            print(f"Description: {info['description']}")
-            print(f"\nModel Information:")
-            print(f"  • Models: {info['models']}")
-            print(f"  • Properties: {info['properties']}")
-            print(f"  • Input Dim: {info['input_dim']}")
-            print(f"  • Output Dim: {info['output_dim']}")
-            
-            # Check if downloaded
-            downloaded = vnnlib_loader.list_downloaded_pairs()
-            matching = [p for p in downloaded if p['category'] == name]
-            if matching:
-                print(f"\n✓ Downloaded: {len(matching)} instances")
-            else:
-                print(f"\n⚠ Not downloaded (use --download {name})")
-        except ValueError as e:
-            print(f"Error: {e}")
-    
-    elif creator == 'torchvision':
-        try:
-            info = tv_mapping.get_dataset_info(name)
-            print(f"Dataset: {name}")
-            print(f"Category: {info.get('category', 'N/A')}")
-            print(f"Input Size: {info.get('input_size', 'N/A')}")
-            print(f"Classes: {info.get('num_classes', 'N/A')}")
-            
-            models = info.get('models', [])
-            if models:
-                print(f"\nRecommended Models ({len(models)}):")
-                for model in models:
-                    print(f"  • {model}")
-            
-            # Check if downloaded
-            downloaded = tv_loader.list_downloaded_pairs()
-            matching = [p for p in downloaded if p['dataset'] == name]
-            if matching:
-                print(f"\n✓ Downloaded: {len(matching)} model pairs")
-            else:
-                print(f"\n⚠ Not downloaded (use --download {name} --creator torchvision)")
-        except ValueError as e:
-            print(f"Error: {e}")
-    
-    print(f"\n{'='*80}\n")
-
-
-def cmd_download(name: str, creator: str):
-    """Download dataset/category."""
-    print(f"\n{'='*80}")
-    print(f"DOWNLOADING: {name} ({creator.upper()})")
-    print(f"{'='*80}\n")
-    
-    if creator == 'vnnlib':
-        try:
-            result = vnnlib_loader.download_vnnlib_category(name)
-            
-            if result['status'] == 'success':
-                print(f"✓ Successfully downloaded: {name}")
-                print(f"  Location: {result['category_path']}")
-                print(f"  Instances: {result['num_instances']}")
-            else:
-                print(f"✗ Download failed: {result['message']}")
-                print(f"\nNote: VNNLIB benchmarks must be downloaded manually from VNN-COMP.")
-                print(f"Expected location: data/vnnlib/{name}/")
-                print(f"\nManual steps:")
-                print(f"  1. Visit: https://github.com/ChristopherBrix/vnncomp_benchmarks")
-                print(f"  2. Download '{name}' benchmark")
-                print(f"  3. Extract to: data/vnnlib/{name}/")
-                print(f"  4. Ensure structure:")
-                print(f"     - onnx/         (ONNX model files)")
-                print(f"     - vnnlib/       (VNNLIB property files)")
-                print(f"     - instances.csv (benchmark instances)")
-        except Exception as e:
-            print(f"✗ Download error: {e}")
-    
-    elif creator == 'torchvision':
-        try:
-            info = tv_mapping.get_dataset_info(name)
-            models = info.get('models', [])
-            
-            if not models:
-                print(f"⚠ No models available for {name}")
-                return
-            
-            print(f"Downloading {name} with {len(models)} models...\n")
-            
-            success_count = 0
-            for model in models:
-                result = tv_loader.download_dataset_model_pair(name, model)
-                if result['status'] == 'success':
-                    print(f"✓ {name} + {model}")
-                    success_count += 1
-                else:
-                    print(f"✗ {name} + {model} - {result['message']}")
-            
-            print(f"\n{'='*80}")
-            print(f"Downloaded {success_count}/{len(models)} model pairs")
-            print(f"{'='*80}")
-        except Exception as e:
-            print(f"✗ Download error: {e}")
-    
-    print()
-
-
-def cmd_list_downloaded(creator: str):
-    """List downloaded data-model pairs."""
-    print(f"\n{'='*80}")
-    print(f"DOWNLOADED DATA-MODEL PAIRS ({creator.upper()})")
-    print(f"{'='*80}\n")
-    
-    if creator == 'vnnlib':
-        downloaded = vnnlib_loader.list_downloaded_pairs()
-        if downloaded:
-            # Group by category
-            categories = {}
-            for item in downloaded:
-                cat = item['category']
-                if cat not in categories:
-                    categories[cat] = []
-                categories[cat].append(item)
-            
-            print(f"VNNLIB Downloads ({len(downloaded)} instances):")
-            print('-' * 80)
-            for cat in sorted(categories.keys()):
-                instances = categories[cat]
-                print(f"  {cat:30s} ({len(instances)} instances)")
-                if len(instances) <= 5:
-                    for inst in instances:
-                        print(f"    └─ {inst['instance_id']}: {inst['onnx_model']} + {inst['vnnlib_spec']}")
-        else:
-            print("No VNNLIB downloads found")
-            print("Use --download <category> to download benchmarks")
-    
-    elif creator == 'torchvision':
-        downloaded = tv_loader.list_downloaded_pairs()
-        if downloaded:
-            # Group by dataset
-            datasets = {}
-            for item in downloaded:
-                ds = item['dataset']
-                if ds not in datasets:
-                    datasets[ds] = []
-                datasets[ds].append(item['model'])
-            
-            print(f"TorchVision Downloads ({len(downloaded)} pairs):")
-            print('-' * 80)
-            for ds in sorted(datasets.keys()):
-                models = datasets[ds]
-                print(f"  {ds:30s} ({len(models)} models)")
-                for model in sorted(models):
-                    print(f"    └─ {model}")
-        else:
-            print("No TorchVision downloads found")
-            print("Use --download <dataset> --creator torchvision to download data-model pairs")
-    
-    print(f"\n{'='*80}\n")
-
-
-# ============================================================================
-# Fuzzing Commands
-# ============================================================================
-
-def cmd_fuzz(args):
-    """Run ACTFuzzer."""
-    print_header()
-    
-    # Determine creator
-    creator = args.creator
-    print(f"📦 Using spec creator: {creator.upper()}")
-    if args.strict_mode:
-        print(f"⚠️  Strict mode enabled: Errors will be raised on constraint violations")
-    print()
-    
-    # Load configuration
-    config = FuzzingConfig(
-        max_iterations=args.iterations,
-        timeout_seconds=args.timeout,
-        device=args.device,
-        save_counterexamples=not args.no_save,
-        output_dir=Path(args.output),
-        report_interval=args.report_interval,
-        mutation_weights={
-            "gradient": 0.4,
-            "activation": 0.3,
-            "boundary": 0.2,
-            "random": 0.1
-        },
-        # Tracing configuration
-        trace_level=args.trace_level,
-        trace_sample_rate=args.trace_sample,
-        trace_storage=args.trace_storage,
-        trace_output=Path(args.trace_output) if args.trace_output else None
-    )
-    
-    # Create spec creator and load data-model pairs
-    print(f"{'='*80}")
-    print(f"STEP 1: Loading Data-Model Pairs")
-    print(f"{'='*80}\n")
-    
-    spec_results = []
-    initial_seeds = []
-    
-    try:
-        if creator == 'vnnlib':
-            spec_creator = VNNLibSpecCreator()
-            
-            if args.category:
-                # Specific category
-                categories = [args.category]
-            else:
-                # Use all downloaded categories
-                downloaded = vnnlib_loader.list_downloaded_pairs()
-                if not downloaded:
-                    print("❌ No VNNLIB categories downloaded!")
-                    print("Use: python -m act.pipeline --download <category>")
-                    return
-                categories = list(set(p['category'] for p in downloaded))
-            
-            print(f"Loading {len(categories)} VNNLIB category(ies):")
-            for cat in categories:
-                print(f"  • {cat}")
-            print()
-            
-            spec_results = spec_creator.create_specs_for_data_model_pairs(
-                categories=categories,
-                max_instances=args.max_instances
-            )
-        
-        elif creator == 'torchvision':
-            spec_creator = TorchVisionSpecCreator()
-            
-            if args.dataset:
-                # Specific dataset
-                datasets = [args.dataset]
-            else:
-                # Use all downloaded datasets
-                downloaded = tv_loader.list_downloaded_pairs()
-                if not downloaded:
-                    print("❌ No TorchVision datasets downloaded!")
-                    print("Use: python -m act.pipeline --download <dataset> --creator torchvision")
-                    return
-                datasets = list(set(p['dataset'] for p in downloaded))
-            
-            print(f"Loading {len(datasets)} TorchVision dataset(s):")
-            for ds in datasets:
-                print(f"  • {ds}")
-            print()
-            
-            # Get models for each dataset
-            if args.model:
-                # Specific model for all datasets
-                model_names = [args.model]
-            else:
-                # Use first available model for each dataset
-                downloaded = tv_loader.list_downloaded_pairs()
-                model_names = []
-                for ds in datasets:
-                    ds_models = [p['model'] for p in downloaded if p['dataset'] == ds]
-                    if ds_models:
-                        model_names.append(ds_models[0])
-            
-            if not model_names:
-                print("❌ No models found for selected datasets!")
-                return
-            
-            spec_results = spec_creator.create_specs_for_data_model_pairs(
-                dataset_names=datasets,
-                model_names=model_names,
-                num_samples=args.num_samples
-            )
-    
-    except Exception as e:
-        print(f"❌ Error loading data-model pairs: {e}")
-        import traceback
-        traceback.print_exc()
-        return
-    
-    if not spec_results:
-        print("❌ No spec results generated!")
-        return
-    
-    print(f"✓ Generated {len(spec_results)} spec result(s)\n")
-    
-    # Synthesize models
-    print(f"{'='*80}")
-    print(f"STEP 2: Model Synthesis")
-    print(f"{'='*80}\n")
-    
-    # Set strict mode for all VerifiableModel instances
-    from act.front_end.verifiable_model import VerifiableModel
-    VerifiableModel.set_strict_mode(args.strict_mode)
-    
-    try:
-        wrapped_models, reports, input_data = synthesize_models_from_specs(spec_results)
-    except Exception as e:
-        print(f"❌ Model synthesis failed: {e}")
-        import traceback
-        traceback.print_exc()
-        return
-    
-    if not wrapped_models:
-        print("❌ No models synthesized!")
-        return
-    
-    print(f"✓ Synthesized {len(wrapped_models)} wrapped model(s)\n")
-    
-    # Extract initial seeds
-    print(f"{'='*80}")
-    print(f"STEP 3: Seed Extraction")
-    print(f"{'='*80}\n")
-    
-    for data_source, model_name, pytorch_model, labeled_tensors, spec_pairs in spec_results:
-        initial_seeds.extend(labeled_tensors)
-    
-    if not initial_seeds:
-        print("❌ No initial seeds extracted!")
-        return
-    
-    print(f"✓ Extracted {len(initial_seeds)} initial seeds\n")
-    
-    # Run fuzzing on first model
-    print(f"{'='*80}")
-    print(f"STEP 4: Fuzzing")
-    print(f"{'='*80}\n")
-    
-    model_id = list(wrapped_models.keys())[0]
-    wrapped_model = wrapped_models[model_id]
-    
-    print(f"Fuzzing model: {model_id}\n")
-    
-    try:
-        fuzzer = ACTFuzzer(
-            wrapped_model=wrapped_model,
-            initial_seeds=initial_seeds,
-            config=config
-        )
-        
-        report = fuzzer.fuzz()
-        
-        # Print final results
-        print(f"\n{'='*80}")
-        print(f"FUZZING COMPLETE")
-        print(f"{'='*80}")
-        print(f"Iterations: {report.total_iterations}")
-        print(f"Time: {report.total_time:.1f}s")
-        print(f"Counterexamples: {len(report.counterexamples)}")
-        print(f"Coverage: {report.neuron_coverage:.2%}")
-        print(f"Seeds explored: {report.seeds_explored}")
-        print(f"{'='*80}\n")
-        
-    except Exception as e:
-        print(f"❌ Fuzzing failed: {e}")
-        import traceback
-        traceback.print_exc()
-        return
-
-
-# ============================================================================
-# Verification Commands
-# ============================================================================
-
-def cmd_list_verifications():
-    """List available verification tests."""
-    print(f"\n{'='*80}")
-    print(f"AVAILABLE VERIFICATION TESTS")
-    print(f"{'='*80}\n")
-    
-    tests = [
-        ("act2torch", "ACT→PyTorch conversion validation (model_factory)"),
-        ("torch2act", "PyTorch→ACT conversion validation (torch2act)"),
-        ("validate_verifier", "Verifier correctness validation with concrete tests"),
-        ("all", "Run all verification tests"),
-    ]
-    
-    for name, description in tests:
-        print(f"  {name:25s} - {description}")
-    
-    print(f"\n{'='*80}\n")
-
-
-def cmd_verify(target: str, args):
-    """Run verification tests from the verification submodule."""
-    print_header()
-    
-    # Import verification test modules
-    from act.pipeline.verification import model_factory, torch2act
-    
-    tests_to_run = []
-    if target == 'all':
-        tests_to_run = ['act2torch', 'torch2act']
-    else:
-        tests_to_run = [target]
-    
-    results = {}
-    
-    for test_name in tests_to_run:
-        print(f"\n{'='*80}")
-        if test_name == 'act2torch':
-            print(f"VERIFICATION TEST: ACT→PyTorch Conversion")
-            print(f"{'='*80}\n")
-            try:
-                model_factory.main()
-                results[test_name] = 'PASSED'
-            except Exception as e:
-                print(f"\n❌ Test failed: {e}")
-                import traceback
-                traceback.print_exc()
-                results[test_name] = 'FAILED'
-        
-        elif test_name == 'torch2act':
-            print(f"VERIFICATION TEST: PyTorch→ACT Conversion")
-            print(f"{'='*80}\n")
-            try:
-                torch2act.main()
-                results[test_name] = 'PASSED'
-            except Exception as e:
-                print(f"\n❌ Test failed: {e}")
-                import traceback
-                traceback.print_exc()
-                results[test_name] = 'FAILED'
-    
-    # Print summary
-    print(f"\n{'='*80}")
-    print(f"VERIFICATION TEST SUMMARY")
-    print(f"{'='*80}")
-    for test_name, result in results.items():
-        status = "✅" if result == "PASSED" else "❌"
-        print(f"  {status} {test_name:25s} {result}")
-    print(f"{'='*80}\n")
-    
-    # Exit with error if any test failed
-    if any(r == 'FAILED' for r in results.values()):
-        sys.exit(1)
-
-
-def cmd_validate_verifier(args):
-    """Run verifier validation with specified mode."""
-    import torch
-    from act.pipeline.verification.validate_verifier import VerificationValidator
-    
-    print_header()
-    
-    # Convert dtype string to torch dtype
-    dtype = torch.float64 if args.dtype == 'float64' else torch.float32
-    
-    # Create validator
-    validator = VerificationValidator(device=args.device, dtype=dtype)
-    
-    # Parse networks if specified
-    networks = args.networks.split(',') if args.networks else None
-    
-    # Run validation based on mode
-    try:
-        if args.mode == 'counterexample':
-            summary = validator.validate_counterexamples(
-                networks=networks,
-                solvers=args.solvers
-            )
-            # Exit 1 if failures or errors, unless --ignore-errors is set
-            exit_code = 0 if args.ignore_errors else (
-                1 if (summary['failed'] > 0 or summary.get('errors', 0) > 0) else 0
-            )
-        elif args.mode == 'bounds':
-            summary = validator.validate_bounds(
-                networks=networks,
-                tf_modes=args.tf_modes,
-                num_samples=args.samples
-            )
-            # Exit 1 if failures or errors, unless --ignore-errors is set
-            exit_code = 0 if args.ignore_errors else (
-                1 if (summary['failed'] > 0 or summary.get('errors', 0) > 0) else 0
-            )
-        else:  # comprehensive
-            combined = validator.validate_comprehensive(
-                networks=networks,
-                solvers=args.solvers,
-                tf_modes=args.tf_modes,
-                num_samples=args.samples
-            )
-            # Exit 1 if any failures or errors, unless --ignore-errors is set
-            exit_code = 0 if args.ignore_errors else (
-                1 if combined['overall_status'] in ('FAILED', 'ERROR') else 0
-            )
-        
-        sys.exit(exit_code)
-    
-    except Exception as e:
-        print(f"\n❌ Validation failed: {e}")
-        import traceback
-        traceback.print_exc()
-        sys.exit(1)
-
-
-def main():
-    """Main CLI entry point."""
+    Must remain lightweight: no torch/torchvision/transformers imports here.
+    """
     parser = argparse.ArgumentParser(
         prog="python -m act.pipeline",
         description="ACT Pipeline: Inference-based whitebox fuzzing for neural networks",
@@ -843,14 +261,637 @@ Examples:
         action="store_true",
         help="Always exit 0 (ignore failures and errors for CI)"
     )
+    validation_group.add_argument(
+        "--confignet-source",
+        type=str,
+        choices=["pool", "runtime"],
+        default="pool",
+        help="ConfigNet source: pool=existing examples, runtime=build in-memory nets (default: pool)"
+    )
     
     # Add standard device/dtype arguments (shared across all ACT CLIs)
-    add_device_args(parser)
+    _add_device_args_light(parser)
+    return parser
+
+
+def print_header():
+    """Print simple header."""
+    print(f"\n{'='*80}")
+    print(f"ACT: Abstract Constraint Transformer")
+    print(f"Inference-based whitebox fuzzing for neural network verification")
+    print(f"{'='*80}\n")
+
+
+# ============================================================================
+# Data-Model Pair Management Commands
+# ============================================================================
+
+def cmd_list_available(creator: str):
+    """List available datasets/categories."""
+    from act.front_end.vnnlib_loader import category_mapping as vnnlib_mapping
+    from act.front_end.torchvision_loader import data_model_mapping as tv_mapping
+
+    print(f"\n{'='*80}")
+    print(f"AVAILABLE DATA-MODEL PAIRS ({creator.upper()})")
+    print(f"{'='*80}\n")
     
+    if creator == 'vnnlib':
+        categories = vnnlib_mapping.list_categories()
+        print(f"VNNLIB Categories ({len(categories)}):")
+        print('-' * 80)
+        for cat_name in sorted(categories):
+            info = vnnlib_mapping.get_category_info(cat_name)
+            print(f"  {cat_name:30s} ({info['type']}) - {info['description']}")
+            print(f"    └─ Models: {info['models']}, Properties: {info['properties']}")
+    
+    elif creator == 'torchvision':
+        datasets = sorted(tv_mapping.DATASET_MODEL_MAPPING.keys())
+        print(f"TorchVision Datasets ({len(datasets)}):")
+        print('-' * 80)
+        for ds_name in datasets:
+            info = tv_mapping.DATASET_MODEL_MAPPING[ds_name]
+            models = info.get('models', [])
+            print(f"  {ds_name:30s} [{info.get('category', 'N/A')}]")
+            if models:
+                print(f"    └─ Models: {', '.join(models[:5])}{'...' if len(models) > 5 else ''}")
+    
+    print(f"\n{'='*80}\n")
+
+
+def cmd_search(query: str, creator: str):
+    """Search for datasets/categories."""
+    from act.front_end.vnnlib_loader import category_mapping as vnnlib_mapping
+    from act.front_end.torchvision_loader import data_model_mapping as tv_mapping
+
+    print(f"\n{'='*80}")
+    print(f"SEARCH RESULTS: '{query}' ({creator.upper()})")
+    print(f"{'='*80}\n")
+    
+    if creator == 'vnnlib':
+        matches = vnnlib_mapping.search_categories(query)
+        if matches:
+            print(f"Found {len(matches)} VNNLIB categories:")
+            print('-' * 80)
+            for cat_name in sorted(matches):
+                info = vnnlib_mapping.get_category_info(cat_name)
+                print(f"  {cat_name:30s} ({info['type']}) - {info['description']}")
+        else:
+            print(f"No VNNLIB categories found for '{query}'")
+    
+    elif creator == 'torchvision':
+        matches = tv_mapping.search_datasets(query)
+        if matches:
+            print(f"Found {len(matches)} TorchVision datasets:")
+            print('-' * 80)
+            for ds_name in sorted(matches):
+                info = tv_mapping.DATASET_MODEL_MAPPING[ds_name]
+                print(f"  {ds_name:30s} [{info.get('category', 'N/A')}]")
+        else:
+            print(f"No TorchVision datasets found for '{query}'")
+    
+    print(f"\n{'='*80}\n")
+
+
+def cmd_info(name: str, creator: str):
+    """Show detailed information about dataset/category."""
+    from act.front_end.vnnlib_loader import category_mapping as vnnlib_mapping
+    from act.front_end.vnnlib_loader import data_model_loader as vnnlib_loader
+    from act.front_end.torchvision_loader import data_model_mapping as tv_mapping
+    from act.front_end.torchvision_loader import data_model_loader as tv_loader
+
+    print(f"\n{'='*80}")
+    print(f"INFO: {name} ({creator.upper()})")
+    print(f"{'='*80}\n")
+    
+    if creator == 'vnnlib':
+        try:
+            info = vnnlib_mapping.get_category_info(name)
+            print(f"Category: {name}")
+            print(f"Type: {info['type']}")
+            print(f"Year: {info['year']}")
+            print(f"Description: {info['description']}")
+            print(f"\nModel Information:")
+            print(f"  • Models: {info['models']}")
+            print(f"  • Properties: {info['properties']}")
+            print(f"  • Input Dim: {info['input_dim']}")
+            print(f"  • Output Dim: {info['output_dim']}")
+            
+            # Check if downloaded
+            downloaded = vnnlib_loader.list_downloaded_pairs()
+            matching = [p for p in downloaded if p['category'] == name]
+            if matching:
+                print(f"\n✓ Downloaded: {len(matching)} instances")
+            else:
+                print(f"\n⚠ Not downloaded (use --download {name})")
+        except ValueError as e:
+            print(f"Error: {e}")
+    
+    elif creator == 'torchvision':
+        try:
+            info = tv_mapping.get_dataset_info(name)
+            print(f"Dataset: {name}")
+            print(f"Category: {info.get('category', 'N/A')}")
+            print(f"Input Size: {info.get('input_size', 'N/A')}")
+            print(f"Classes: {info.get('num_classes', 'N/A')}")
+            
+            models = info.get('models', [])
+            if models:
+                print(f"\nRecommended Models ({len(models)}):")
+                for model in models:
+                    print(f"  • {model}")
+            
+            # Check if downloaded
+            downloaded = tv_loader.list_downloaded_pairs()
+            matching = [p for p in downloaded if p['dataset'] == name]
+            if matching:
+                print(f"\n✓ Downloaded: {len(matching)} model pairs")
+            else:
+                print(f"\n⚠ Not downloaded (use --download {name} --creator torchvision)")
+        except ValueError as e:
+            print(f"Error: {e}")
+    
+    print(f"\n{'='*80}\n")
+
+
+def cmd_download(name: str, creator: str):
+    """Download dataset/category."""
+    from act.front_end.vnnlib_loader import data_model_loader as vnnlib_loader
+    from act.front_end.torchvision_loader import data_model_loader as tv_loader
+    from act.front_end.torchvision_loader import data_model_mapping as tv_mapping
+
+    print(f"\n{'='*80}")
+    print(f"DOWNLOADING: {name} ({creator.upper()})")
+    print(f"{'='*80}\n")
+    
+    if creator == 'vnnlib':
+        try:
+            result = vnnlib_loader.download_vnnlib_category(name)
+            
+            if result['status'] == 'success':
+                print(f"✓ Successfully downloaded: {name}")
+                print(f"  Location: {result['category_path']}")
+                print(f"  Instances: {result['num_instances']}")
+            else:
+                print(f"✗ Download failed: {result['message']}")
+                print(f"\nNote: VNNLIB benchmarks must be downloaded manually from VNN-COMP.")
+                print(f"Expected location: data/vnnlib/{name}/")
+                print(f"\nManual steps:")
+                print(f"  1. Visit: https://github.com/ChristopherBrix/vnncomp_benchmarks")
+                print(f"  2. Download '{name}' benchmark")
+                print(f"  3. Extract to: data/vnnlib/{name}/")
+                print(f"  4. Ensure structure:")
+                print(f"     - onnx/         (ONNX model files)")
+                print(f"     - vnnlib/       (VNNLIB property files)")
+                print(f"     - instances.csv (benchmark instances)")
+        except Exception as e:
+            print(f"✗ Download error: {e}")
+    
+    elif creator == 'torchvision':
+        try:
+            info = tv_mapping.get_dataset_info(name)
+            models = info.get('models', [])
+            
+            if not models:
+                print(f"⚠ No models available for {name}")
+                return
+            
+            print(f"Downloading {name} with {len(models)} models...\n")
+            
+            success_count = 0
+            for model in models:
+                result = tv_loader.download_dataset_model_pair(name, model)
+                if result['status'] == 'success':
+                    print(f"✓ {name} + {model}")
+                    success_count += 1
+                else:
+                    print(f"✗ {name} + {model} - {result['message']}")
+            
+            print(f"\n{'='*80}")
+            print(f"Downloaded {success_count}/{len(models)} model pairs")
+            print(f"{'='*80}")
+        except Exception as e:
+            print(f"✗ Download error: {e}")
+    
+    print()
+
+
+def cmd_list_downloaded(creator: str):
+    """List downloaded data-model pairs."""
+    from act.front_end.vnnlib_loader import data_model_loader as vnnlib_loader
+    from act.front_end.torchvision_loader import data_model_loader as tv_loader
+
+    print(f"\n{'='*80}")
+    print(f"DOWNLOADED DATA-MODEL PAIRS ({creator.upper()})")
+    print(f"{'='*80}\n")
+    
+    if creator == 'vnnlib':
+        downloaded = vnnlib_loader.list_downloaded_pairs()
+        if downloaded:
+            # Group by category
+            categories = {}
+            for item in downloaded:
+                cat = item['category']
+                if cat not in categories:
+                    categories[cat] = []
+                categories[cat].append(item)
+            
+            print(f"VNNLIB Downloads ({len(downloaded)} instances):")
+            print('-' * 80)
+            for cat in sorted(categories.keys()):
+                instances = categories[cat]
+                print(f"  {cat:30s} ({len(instances)} instances)")
+                if len(instances) <= 5:
+                    for inst in instances:
+                        print(f"    └─ {inst['instance_id']}: {inst['onnx_model']} + {inst['vnnlib_spec']}")
+        else:
+            print("No VNNLIB downloads found")
+            print("Use --download <category> to download benchmarks")
+    
+    elif creator == 'torchvision':
+        downloaded = tv_loader.list_downloaded_pairs()
+        if downloaded:
+            # Group by dataset
+            datasets = {}
+            for item in downloaded:
+                ds = item['dataset']
+                if ds not in datasets:
+                    datasets[ds] = []
+                datasets[ds].append(item['model'])
+            
+            print(f"TorchVision Downloads ({len(downloaded)} pairs):")
+            print('-' * 80)
+            for ds in sorted(datasets.keys()):
+                models = datasets[ds]
+                print(f"  {ds:30s} ({len(models)} models)")
+                for model in sorted(models):
+                    print(f"    └─ {model}")
+        else:
+            print("No TorchVision downloads found")
+            print("Use --download <dataset> --creator torchvision to download data-model pairs")
+    
+    print(f"\n{'='*80}\n")
+
+
+# ============================================================================
+# Fuzzing Commands
+# ============================================================================
+
+def cmd_fuzz(args):
+    """Run ACTFuzzer."""
+    from act.front_end.vnnlib_loader.create_specs import VNNLibSpecCreator
+    from act.front_end.vnnlib_loader import data_model_loader as vnnlib_loader
+    from act.front_end.vnnlib_loader import category_mapping as vnnlib_mapping
+    from act.front_end.torchvision_loader.create_specs import TorchVisionSpecCreator
+    from act.front_end.torchvision_loader import data_model_loader as tv_loader
+    from act.front_end.torchvision_loader import data_model_mapping as tv_mapping
+    from act.front_end.model_synthesis import synthesize_models_from_specs
+    from act.pipeline.fuzzing.actfuzzer import ACTFuzzer, FuzzingConfig, FuzzingReport
+
+    print_header()
+    
+    # Determine creator
+    creator = args.creator
+    print(f"📦 Using spec creator: {creator.upper()}")
+    if args.strict_mode:
+        print(f"⚠️  Strict mode enabled: Errors will be raised on constraint violations")
+    print()
+    
+    # Load configuration
+    config = FuzzingConfig(
+        max_iterations=args.iterations,
+        timeout_seconds=args.timeout,
+        device=args.device,
+        save_counterexamples=not args.no_save,
+        output_dir=Path(args.output),
+        report_interval=args.report_interval,
+        mutation_weights={
+            "gradient": 0.4,
+            "activation": 0.3,
+            "boundary": 0.2,
+            "random": 0.1
+        },
+        # Tracing configuration
+        trace_level=args.trace_level,
+        trace_sample_rate=args.trace_sample,
+        trace_storage=args.trace_storage,
+        trace_output=Path(args.trace_output) if args.trace_output else None
+    )
+    
+    # Create spec creator and load data-model pairs
+    print(f"{'='*80}")
+    print(f"STEP 1: Loading Data-Model Pairs")
+    print(f"{'='*80}\n")
+    
+    spec_results = []
+    initial_seeds = []
+    
+    try:
+        if creator == 'vnnlib':
+            spec_creator = VNNLibSpecCreator()
+            
+            if args.category:
+                # Specific category
+                categories = [args.category]
+            else:
+                # Use all downloaded categories
+                downloaded = vnnlib_loader.list_downloaded_pairs()
+                if not downloaded:
+                    print("❌ No VNNLIB categories downloaded!")
+                    print("Use: python -m act.pipeline --download <category>")
+                    return
+                categories = list(set(p['category'] for p in downloaded))
+            
+            print(f"Loading {len(categories)} VNNLIB category(ies):")
+            for cat in categories:
+                print(f"  • {cat}")
+            print()
+            
+            spec_results = spec_creator.create_specs_for_data_model_pairs(
+                categories=categories,
+                max_instances=args.max_instances
+            )
+        
+        elif creator == 'torchvision':
+            spec_creator = TorchVisionSpecCreator()
+            
+            if args.dataset:
+                # Specific dataset
+                datasets = [args.dataset]
+            else:
+                # Use all downloaded datasets
+                downloaded = tv_loader.list_downloaded_pairs()
+                if not downloaded:
+                    print("❌ No TorchVision datasets downloaded!")
+                    print("Use: python -m act.pipeline --download <dataset> --creator torchvision")
+                    return
+                datasets = list(set(p['dataset'] for p in downloaded))
+            
+            print(f"Loading {len(datasets)} TorchVision dataset(s):")
+            for ds in datasets:
+                print(f"  • {ds}")
+            print()
+            
+            # Get models for each dataset
+            if args.model:
+                # Specific model for all datasets
+                model_names = [args.model]
+            else:
+                # Use first available model for each dataset
+                downloaded = tv_loader.list_downloaded_pairs()
+                model_names = []
+                for ds in datasets:
+                    ds_models = [p['model'] for p in downloaded if p['dataset'] == ds]
+                    if ds_models:
+                        model_names.append(ds_models[0])
+            
+            if not model_names:
+                print("❌ No models found for selected datasets!")
+                return
+            
+            spec_results = spec_creator.create_specs_for_data_model_pairs(
+                dataset_names=datasets,
+                model_names=model_names,
+                num_samples=args.num_samples
+            )
+    
+    except Exception as e:
+        print(f"❌ Error loading data-model pairs: {e}")
+        import traceback
+        traceback.print_exc()
+        return
+    
+    if not spec_results:
+        print("❌ No spec results generated!")
+        return
+    
+    print(f"✓ Generated {len(spec_results)} spec result(s)\n")
+    
+    # Synthesize models
+    print(f"{'='*80}")
+    print(f"STEP 2: Model Synthesis")
+    print(f"{'='*80}\n")
+    
+    # Set strict mode for all VerifiableModel instances
+    from act.front_end.verifiable_model import VerifiableModel
+    VerifiableModel.set_strict_mode(args.strict_mode)
+    
+    try:
+        wrapped_models, reports, input_data = synthesize_models_from_specs(spec_results)
+    except Exception as e:
+        print(f"❌ Model synthesis failed: {e}")
+        import traceback
+        traceback.print_exc()
+        return
+    
+    if not wrapped_models:
+        print("❌ No models synthesized!")
+        return
+    
+    print(f"✓ Synthesized {len(wrapped_models)} wrapped model(s)\n")
+    
+    # Extract initial seeds
+    print(f"{'='*80}")
+    print(f"STEP 3: Seed Extraction")
+    print(f"{'='*80}\n")
+    
+    for data_source, model_name, pytorch_model, labeled_tensors, spec_pairs in spec_results:
+        initial_seeds.extend(labeled_tensors)
+    
+    if not initial_seeds:
+        print("❌ No initial seeds extracted!")
+        return
+    
+    print(f"✓ Extracted {len(initial_seeds)} initial seeds\n")
+    
+    # Run fuzzing on first model
+    print(f"{'='*80}")
+    print(f"STEP 4: Fuzzing")
+    print(f"{'='*80}\n")
+    
+    model_id = list(wrapped_models.keys())[0]
+    wrapped_model = wrapped_models[model_id]
+    
+    print(f"Fuzzing model: {model_id}\n")
+    
+    try:
+        fuzzer = ACTFuzzer(
+            wrapped_model=wrapped_model,
+            initial_seeds=initial_seeds,
+            config=config
+        )
+        
+        report = fuzzer.fuzz()
+        
+        # Print final results
+        print(f"\n{'='*80}")
+        print(f"FUZZING COMPLETE")
+        print(f"{'='*80}")
+        print(f"Iterations: {report.total_iterations}")
+        print(f"Time: {report.total_time:.1f}s")
+        print(f"Counterexamples: {len(report.counterexamples)}")
+        print(f"Coverage: {report.neuron_coverage:.2%}")
+        print(f"Seeds explored: {report.seeds_explored}")
+        print(f"{'='*80}\n")
+        
+    except Exception as e:
+        print(f"❌ Fuzzing failed: {e}")
+        import traceback
+        traceback.print_exc()
+        return
+
+
+# ============================================================================
+# Verification Commands
+# ============================================================================
+
+def cmd_list_verifications():
+    """List available verification tests."""
+    print(f"\n{'='*80}")
+    print(f"AVAILABLE VERIFICATION TESTS")
+    print(f"{'='*80}\n")
+    
+    tests = [
+        ("act2torch", "ACT→PyTorch conversion validation (model_factory)"),
+        ("torch2act", "PyTorch→ACT conversion validation (torch2act)"),
+        ("validate_verifier", "Verifier correctness validation with concrete tests"),
+        ("all", "Run all verification tests"),
+    ]
+    
+    for name, description in tests:
+        print(f"  {name:25s} - {description}")
+    
+    print(f"\n{'='*80}\n")
+
+
+def cmd_verify(target: str, args):
+    """Run verification tests from the verification submodule."""
+    from act.pipeline.verification import model_factory, torch2act
+
+    print_header()
+    
+    # Import verification test modules
+    tests_to_run = []
+    if target == 'all':
+        tests_to_run = ['act2torch', 'torch2act']
+    else:
+        tests_to_run = [target]
+    
+    results = {}
+    
+    for test_name in tests_to_run:
+        print(f"\n{'='*80}")
+        if test_name == 'act2torch':
+            print(f"VERIFICATION TEST: ACT→PyTorch Conversion")
+            print(f"{'='*80}\n")
+            try:
+                model_factory.main()
+                results[test_name] = 'PASSED'
+            except Exception as e:
+                print(f"\n❌ Test failed: {e}")
+                import traceback
+                traceback.print_exc()
+                results[test_name] = 'FAILED'
+        
+        elif test_name == 'torch2act':
+            print(f"VERIFICATION TEST: PyTorch→ACT Conversion")
+            print(f"{'='*80}\n")
+            try:
+                torch2act.main()
+                results[test_name] = 'PASSED'
+            except Exception as e:
+                print(f"\n❌ Test failed: {e}")
+                import traceback
+                traceback.print_exc()
+                results[test_name] = 'FAILED'
+    
+    # Print summary
+    print(f"\n{'='*80}")
+    print(f"VERIFICATION TEST SUMMARY")
+    print(f"{'='*80}")
+    for test_name, result in results.items():
+        status = "✅" if result == "PASSED" else "❌"
+        print(f"  {status} {test_name:25s} {result}")
+    print(f"{'='*80}\n")
+    
+    # Exit with error if any test failed
+    if any(r == 'FAILED' for r in results.values()):
+        sys.exit(1)
+
+
+def cmd_validate_verifier(args):
+    """Run verifier validation with specified mode."""
+    import torch
+    from act.pipeline.verification.validate_verifier import VerificationValidator
+    
+    print_header()
+    
+    # Convert dtype string to torch dtype
+    dtype = torch.float64 if args.dtype == 'float64' else torch.float32
+
+    # Create validator
+    validator = VerificationValidator(device=args.device, dtype=dtype)
+
+    # Optional runtime ConfigNet smoke path (no solver)
+    if getattr(args, "confignet_source", "pool") == "runtime":
+        validator.runtime_smoke()
+        sys.exit(0)
+    
+    # Parse networks if specified
+    networks = args.networks.split(',') if args.networks else None
+    
+    # Run validation based on mode
+    try:
+        if args.mode == 'counterexample':
+            summary = validator.validate_counterexamples(
+                networks=networks,
+                solvers=args.solvers
+            )
+            # Exit 1 if failures or errors, unless --ignore-errors is set
+            exit_code = 0 if args.ignore_errors else (
+                1 if (summary['failed'] > 0 or summary.get('errors', 0) > 0) else 0
+            )
+        elif args.mode == 'bounds':
+            summary = validator.validate_bounds(
+                networks=networks,
+                tf_modes=args.tf_modes,
+                num_samples=args.samples
+            )
+            # Exit 1 if failures or errors, unless --ignore-errors is set
+            exit_code = 0 if args.ignore_errors else (
+                1 if (summary['failed'] > 0 or summary.get('errors', 0) > 0) else 0
+            )
+        else:  # comprehensive
+            combined = validator.validate_comprehensive(
+                networks=networks,
+                solvers=args.solvers,
+                tf_modes=args.tf_modes,
+                num_samples=args.samples
+            )
+            # Exit 1 if any failures or errors, unless --ignore-errors is set
+            exit_code = 0 if args.ignore_errors else (
+                1 if combined['overall_status'] in ('FAILED', 'ERROR') else 0
+            )
+        
+        sys.exit(exit_code)
+    
+    except Exception as e:
+        print(f"\n❌ Validation failed: {e}")
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)
+
+
+def main():
+    """Main CLI entry point."""
+    parser = build_parser()
     args = parser.parse_args()
     
     # Initialize device manager from CLI arguments
-    initialize_from_args(args)
+    try:
+        from act.util.cli_utils import initialize_from_args
+        initialize_from_args(args)
+    except Exception:
+        pass
     
     # Handle --dataset as alias for --category (for VNNLIB)
     # This provides a more intuitive interface: python -m act.pipeline --fuzz --dataset cifar100_2024
@@ -889,3 +930,46 @@ Examples:
 
 if __name__ == "__main__":
     main()
+
+
+# Lightweight device/dtype args to keep build_parser import-light
+def _add_device_args_light(parser: argparse.ArgumentParser) -> None:
+    """
+    Add device/dtype args without importing torch/torchvision.
+    Mirrors previous CLI flags.
+    """
+    parser.add_argument(
+        "--device",
+        type=str,
+        default='cpu',
+        choices=['cpu', 'cuda', 'gpu'],
+        help="Device to use for computation (default: cuda if available, else cpu)"
+    )
+    parser.add_argument(
+        "--dtype",
+        type=str,
+        default='float64',
+        choices=['float32', 'float64'],
+        help="Default dtype for tensors (default: float64)"
+    )
+
+
+# Lightweight device/dtype args (kept at bottom to avoid clutter above)
+def _add_device_args_light(parser: argparse.ArgumentParser) -> None:
+    """
+    Add device/dtype args without importing torch; mirrors act.util.cli_utils.
+    """
+    parser.add_argument(
+        "--device",
+        type=str,
+        default='cpu',
+        choices=['cpu', 'cuda', 'gpu'],
+        help="Device to use for computation (default: cuda if available, else cpu)"
+    )
+    parser.add_argument(
+        "--dtype",
+        type=str,
+        default='float64',
+        choices=['float32', 'float64'],
+        help="Default dtype for tensors (default: float64)"
+    )

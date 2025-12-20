@@ -1,39 +1,34 @@
 """
-ACT Pipeline Verification Module
+ACT Pipeline Verification Module (import-light).
 
-This module contains verification utilities for the ACT framework:
-- torch2act.py: Automatic PyTorch→ACT Net conversion
-- act2torch.py: ACT Net→PyTorch conversion utilities
-- validate_verifier.py: Unified verifier validation (counterexample and bounds checking)
-- model_factory.py: ACT Net factory for test networks
-- utils.py: Shared utilities and performance profiling
-- llm_probe.py: LLM-based verification probing and analysis
+Exports are lazily imported to avoid pulling heavy dependencies (torch/torchvision)
+when only the package is imported for argument parsing.
 """
 
-from .torch2act import *
-from .act2torch import *
-from .validate_verifier import VerificationValidator
-from .model_factory import *
-from .utils import *
-from .llm_probe import *
+import importlib
+from typing import Any
 
 __all__ = [
-    # torch2act exports
-    'torch2act',
-    
-    # act2torch exports
-    'act2torch',
-    
-    # validate_verifier exports
-    'VerificationValidator',
-    'validate_verifier',
-    
-    # model_factory exports
-    'model_factory',
-    
-    # utils exports
-    'utils',
-    
-    # llm_probe exports
-    'llm_probe',
+    "torch2act",
+    "act2torch",
+    "VerificationValidator",
+    "model_factory",
+    "utils",
+    "llm_probe",
 ]
+
+_lazy = {
+    "torch2act": "act.pipeline.verification.torch2act",
+    "act2torch": "act.pipeline.verification.act2torch",
+    "VerificationValidator": "act.pipeline.verification.validate_verifier",
+    "model_factory": "act.pipeline.verification.model_factory",
+    "utils": "act.pipeline.verification.utils",
+    "llm_probe": "act.pipeline.verification.llm_probe",
+}
+
+
+def __getattr__(name: str) -> Any:
+    if name in _lazy:
+        module = importlib.import_module(_lazy[name])
+        return getattr(module, name) if hasattr(module, name) else module
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 #===- act/pipeline/model_factory.py - PyTorch Model Factory ------------====#
 # ACT: Abstract Constraint Transformer
 # Copyright (C) 2025– ACT Team
@@ -57,15 +58,13 @@
 
 import yaml
 import json
-import torch
-import torch.nn as nn
 from pathlib import Path
 from typing import Dict, Any, List, Optional, Tuple
 import logging
+import copy
 
 from act.back_end.core import Net, Layer
 from act.back_end.serialization.serialization import NetSerializer
-from act.pipeline.verification.act2torch import ACTToTorch
 from act.util.device_manager import get_default_dtype, get_default_device
 
 logger = logging.getLogger(__name__)
@@ -121,12 +120,14 @@ class ModelFactory:
         
         logger.info(f"Pre-loaded {len(self.nets)} ACT Nets from {self.nets_dir}")
     
-    def get_act_net(self, name: str) -> Net:
+    def get_act_net(self, name: str, spec_overrides: Optional[Dict[str, Any]] = None) -> Net:
         """
         Get pre-loaded ACT Net by name.
         
         Args:
             name: Network name from examples_config.yaml
+            spec_overrides: Optional overrides for INPUT_SPEC/ASSERT metadata,
+                e.g., {"eps": 0.01, "y_true": 3, "assert_kind": "TOP1_ROBUST"}
             
         Returns:
             Pre-loaded ACT Net
@@ -138,9 +139,39 @@ class ModelFactory:
             available = ", ".join(self.nets.keys())
             raise KeyError(f"ACT Net '{name}' not available. Available: {available}")
         
-        return self.nets[name]
+        if spec_overrides is None:
+            return self.nets[name]
+
+        # Defensive copy so cached net stays unchanged
+        net = copy.deepcopy(self.nets[name])
+
+        eps = spec_overrides.get("eps")
+        y_true = spec_overrides.get("y_true")
+        assert_kind = spec_overrides.get("assert_kind")
+
+        input_spec_found = False
+        assert_found = False
+
+        for layer in net.layers:
+            if layer.kind == "INPUT_SPEC" and eps is not None and not input_spec_found:
+                layer.meta["eps"] = eps
+                input_spec_found = True
+            if layer.kind == "ASSERT" and not assert_found:
+                if assert_kind is not None:
+                    layer.meta["kind"] = assert_kind
+                if y_true is not None:
+                    layer.meta["y_true"] = y_true
+                assert_found = True
+
+        if eps is not None and not input_spec_found:
+            raise ValueError(f"Spec override requested eps but net '{name}' has no INPUT_SPEC layer.")
+        if (assert_kind is not None or y_true is not None) and not assert_found:
+            raise ValueError(f"Spec override requested ASSERT fields but net '{name}' has no ASSERT layer.")
+
+        net.by_id = {L.id: L for L in net.layers}
+        return net
     
-    def create_model(self, name: str, load_weights: bool = True) -> nn.Module:
+    def create_model(self, name: str, load_weights: bool = True):
         """
         Create PyTorch model from configuration.
         
@@ -155,6 +186,10 @@ class ModelFactory:
             KeyError: If network name not found in config
             ValueError: If network architecture is invalid
         """
+        import torch
+        import torch.nn as nn
+        from act.pipeline.verification.act2torch import ACTToTorch
+
         if name not in self.config['networks']:
             available = ", ".join(self.config['networks'].keys())
             raise KeyError(f"Network '{name}' not found. Available: {available}")
@@ -179,7 +214,7 @@ class ModelFactory:
         
         return model
     
-    def generate_test_input(self, name: str, test_case: str = "center") -> torch.Tensor:
+    def generate_test_input(self, name: str, test_case: str = "center"):
         """
         Generate strategic test input considering both INPUT metadata and INPUT_SPEC constraints.
         
@@ -195,6 +230,8 @@ class ModelFactory:
         - boundary: Input near boundary of constraints (expected UNCERTAIN/FAIL)
         - random: Random input in constraint region (expected varied results)
         """
+        import torch
+
         if name not in self.config['networks']:
             raise KeyError(f"Network '{name}' not found")
         
