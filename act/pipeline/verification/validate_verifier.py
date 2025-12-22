@@ -147,7 +147,7 @@ from pathlib import Path
 from typing import Dict, Any, Optional, Tuple, List
 
 from act.pipeline.verification.model_factory import ModelFactory
-from act.pipeline.verification.torch2act import TorchToACT
+# from act.pipeline.verification.torch2act import TorchToACT
 from act.back_end.verifier import verify_once, gather_input_spec_layers, seed_from_input_specs, get_input_ids, get_assert_layer, find_entry_layer_id
 from act.back_end.analyze import analyze
 from act.back_end.solver.solver_gurobi import GurobiSolver
@@ -187,6 +187,57 @@ class VerificationValidator:
                 f.write(f"Device: {device}, Dtype: {dtype}\n")
                 f.write(f"{'='*80}\n\n")
             logger.info(f"Debug logging to: {debug_file}")
+
+    def runtime_smoke(self) -> None:
+        """
+        Build runtime MLP and CNN samples and run a single forward pass to ensure
+        the runtime ConfigNet path is healthy. No solver or verification invoked.
+        """
+        import torch  # lazy import
+        from act.pipeline.verification.config_net_runtime import RuntimeConfigNet
+
+        cfg = RuntimeConfigNet()
+        for arch, seed in (("mlp", 0), ("cnn", 1)):
+            sample = cfg.sample(seed=seed, arch=arch)
+            if sample.act_net is None or sample.torch_model is None:
+                raise ValueError(f"Runtime sample for arch={arch} is incomplete.")
+            if not sample.input_specs or sample.assert_layer is None:
+                raise ValueError(f"Runtime sample for arch={arch} missing specs/assert.")
+
+            # Align model to validator device/dtype
+            sample.torch_model = sample.torch_model.to(device=self.device, dtype=self.dtype)
+            sample.torch_model.eval()
+
+            # Try factory helper first; runtime names may be unknown so guard exceptions.
+            input_tensor = None
+            try:
+                input_tensor = self.factory.generate_test_input(sample.name)
+            except Exception:
+                pass
+
+            if input_tensor is None:
+                input_layer = next((L for L in getattr(sample.act_net, "layers", []) if getattr(L, "kind", None) == "INPUT"), None)
+                if input_layer is None:
+                    raise ValueError(f"No INPUT layer found for runtime arch={arch}")
+                shape = input_layer.meta.get("shape")
+                if not shape:
+                    raise ValueError(f"INPUT layer missing shape for runtime arch={arch}")
+                center_val = 0.5
+                if sample.input_specs:
+                    meta = sample.input_specs[0].meta or {}
+                    center_val = meta.get("center_val", center_val)
+                input_tensor = torch.full(shape, center_val, device=self.device, dtype=self.dtype)
+
+            # Align input to model parameters if available
+            first_param = next(sample.torch_model.parameters(), None)
+            if first_param is not None:
+                input_tensor = input_tensor.to(device=first_param.device, dtype=first_param.dtype)
+            else:
+                input_tensor = input_tensor.to(device=self.device, dtype=self.dtype)
+
+            with torch.no_grad():
+                _ = sample.torch_model(input_tensor)
+            logger.info("Runtime smoke passed for arch=%s name=%s", arch, sample.name)
             
     def find_concrete_counterexample(
         self,

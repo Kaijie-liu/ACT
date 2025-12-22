@@ -932,28 +932,6 @@ if __name__ == "__main__":
     main()
 
 
-# Lightweight device/dtype args to keep build_parser import-light
-def _add_device_args_light(parser: argparse.ArgumentParser) -> None:
-    """
-    Add device/dtype args without importing torch/torchvision.
-    Mirrors previous CLI flags.
-    """
-    parser.add_argument(
-        "--device",
-        type=str,
-        default='cpu',
-        choices=['cpu', 'cuda', 'gpu'],
-        help="Device to use for computation (default: cuda if available, else cpu)"
-    )
-    parser.add_argument(
-        "--dtype",
-        type=str,
-        default='float64',
-        choices=['float32', 'float64'],
-        help="Default dtype for tensors (default: float64)"
-    )
-
-
 # Lightweight device/dtype args (kept at bottom to avoid clutter above)
 def _add_device_args_light(parser: argparse.ArgumentParser) -> None:
     """

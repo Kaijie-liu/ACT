@@ -138,36 +138,65 @@ class ModelFactory:
         if name not in self.nets:
             available = ", ".join(self.nets.keys())
             raise KeyError(f"ACT Net '{name}' not available. Available: {available}")
-        
-        if spec_overrides is None:
-            return self.nets[name]
 
-        # Defensive copy so cached net stays unchanged
+        # Always work on a copy to avoid cache pollution
         net = copy.deepcopy(self.nets[name])
 
-        eps = spec_overrides.get("eps")
-        y_true = spec_overrides.get("y_true")
-        assert_kind = spec_overrides.get("assert_kind")
+        if spec_overrides is None:
+            return self._cast_net_dtype(net)
 
-        input_spec_found = False
-        assert_found = False
+        # Normalize overrides: support hierarchical {"INPUT_SPEC": {...}, "ASSERT": {...}}
+        # and backward-compatible flat {"eps":..., "y_true":..., "assert_kind":...}
+        input_spec_over = {}
+        assert_over = {}
+        if "INPUT_SPEC" in spec_overrides or "ASSERT" in spec_overrides:
+            input_spec_over = spec_overrides.get("INPUT_SPEC", {}) or {}
+            assert_over = spec_overrides.get("ASSERT", {}) or {}
+        else:
+            if "eps" in spec_overrides:
+                input_spec_over["eps"] = spec_overrides["eps"]
+            if "norm" in spec_overrides:
+                input_spec_over["norm"] = spec_overrides["norm"]
+            if "assert_kind" in spec_overrides:
+                assert_over["kind"] = spec_overrides["assert_kind"]
+            if "y_true" in spec_overrides:
+                assert_over["y_true"] = spec_overrides["y_true"]
+            if "targeted" in spec_overrides:
+                assert_over["targeted"] = spec_overrides["targeted"]
 
+        input_specs = [L for L in net.layers if L.kind == "INPUT_SPEC"]
+        assert_layers = [L for L in net.layers if L.kind == "ASSERT"]
+
+        if input_spec_over:
+            if len(input_specs) != 1:
+                raise ValueError(f"Expected exactly one INPUT_SPEC in net '{name}' for overrides, found {len(input_specs)}.")
+            input_specs[0].meta.update(input_spec_over)
+
+        if assert_over:
+            if len(assert_layers) != 1:
+                raise ValueError(f"Expected exactly one ASSERT in net '{name}' for overrides, found {len(assert_layers)}.")
+            assert_layers[0].meta.update(assert_over)
+
+        net.by_id = {L.id: L for L in net.layers}
+        return self._cast_net_dtype(net)
+
+    def _cast_net_dtype(self, net: Net) -> Net:
+        """
+        Cast torch.Tensor params in a Net to device_manager's default dtype/device.
+        """
+        try:
+            import torch
+        except Exception:
+            return net
+
+        target_dtype = get_default_dtype()
         for layer in net.layers:
-            if layer.kind == "INPUT_SPEC" and eps is not None and not input_spec_found:
-                layer.meta["eps"] = eps
-                input_spec_found = True
-            if layer.kind == "ASSERT" and not assert_found:
-                if assert_kind is not None:
-                    layer.meta["kind"] = assert_kind
-                if y_true is not None:
-                    layer.meta["y_true"] = y_true
-                assert_found = True
-
-        if eps is not None and not input_spec_found:
-            raise ValueError(f"Spec override requested eps but net '{name}' has no INPUT_SPEC layer.")
-        if (assert_kind is not None or y_true is not None) and not assert_found:
-            raise ValueError(f"Spec override requested ASSERT fields but net '{name}' has no ASSERT layer.")
-
+            # Update meta dtype for INPUT if present
+            if layer.kind == "INPUT":
+                layer.meta["dtype"] = str(target_dtype).replace("torch.", "torch.")
+            for key, val in list(layer.params.items()):
+                if isinstance(val, torch.Tensor):
+                    layer.params[key] = val.to(dtype=target_dtype)
         net.by_id = {L.id: L for L in net.layers}
         return net
     

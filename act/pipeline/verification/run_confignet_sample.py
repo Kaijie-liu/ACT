@@ -11,8 +11,13 @@ from __future__ import annotations
 
 import argparse
 
+import logging
+from pathlib import Path
+
 from act.pipeline.verification.confignet import sample_configs, set_global_seeds
 from act.pipeline.verification.confignet.jsonl import write_jsonl_records, make_record
+
+logger = logging.getLogger(__name__)
 
 
 def parse_args():
@@ -21,12 +26,25 @@ def parse_args():
     p.add_argument("--n", type=int, default=10)
     p.add_argument("--out", type=str, default="logs/confignet_samples.jsonl")
     p.add_argument("--build", action="store_true", help="Build ACT net to record effective spec (CPU-only).")
+    p.add_argument("--deterministic-jsonl", action="store_true", help="Omit timestamp to make JSONL byte-stable.")
     return p.parse_args()
 
 
 def main():
     args = parse_args()
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
     set_global_seeds(args.seed)
+    logger.info("ConfigNet sampling start: seed=%d n=%d deterministic_jsonl=%s build=%s out=%s",
+                args.seed, args.n, args.deterministic_jsonl, args.build, args.out)
+    git_info = None
+    try:
+        from act.pipeline.verification.confignet.jsonl import current_git_sha
+        git_info = current_git_sha()
+    except Exception:
+        pass
+    if git_info:
+        logger.info("Git sha: %s", git_info)
+
     configs = sample_configs(seed=args.seed, n=args.n)
     records = []
     for idx, (mcfg, scfg) in enumerate(configs):
@@ -49,10 +67,11 @@ def main():
                     "spec": scfg.to_dict(),
                     "effective_spec": effective_spec,
                 },
+                include_timestamp=not args.deterministic_jsonl,
             )
         )
-    write_jsonl_records(args.out, records)
-    print(f"Wrote {len(records)} records to {args.out}")
+    write_jsonl_records(args.out, records, sort_keys=args.deterministic_jsonl)
+    logger.info("Wrote %d records to %s", len(records), Path(args.out).resolve())
 
 
 if __name__ == "__main__":

@@ -13,11 +13,6 @@ import random
 
 import numpy as np
 
-try:
-    import torch
-except Exception:  # pragma: no cover - torch is expected to be present in repo env
-    torch = None  # type: ignore
-
 
 def set_global_seed(seed: int, deterministic: bool = True) -> None:
     """
@@ -27,10 +22,13 @@ def set_global_seed(seed: int, deterministic: bool = True) -> None:
         seed: Integer seed value.
         deterministic: If True, set torch deterministic flags when available.
     """
+    # Core seeding logic kept here to avoid duplicated implementations.
     random.seed(seed)
     np.random.seed(seed)
 
-    if torch is not None:
+    try:
+        import torch
+
         torch.manual_seed(seed)
         if torch.cuda.is_available():
             torch.cuda.manual_seed(seed)
@@ -39,10 +37,12 @@ def set_global_seed(seed: int, deterministic: bool = True) -> None:
             try:
                 torch.use_deterministic_algorithms(True)
             except Exception:
-                # Fallback for older torch versions
                 if hasattr(torch.backends, "cudnn"):
                     torch.backends.cudnn.deterministic = True  # type: ignore
                     torch.backends.cudnn.benchmark = False  # type: ignore
+    except Exception:
+        # Torch may be unavailable or broken; ignore silently to stay import-light.
+        return
 
 
 def init_logging(level: int = logging.INFO, name: str = "act.confignet") -> logging.Logger:
