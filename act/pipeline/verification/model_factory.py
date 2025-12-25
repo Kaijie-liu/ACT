@@ -191,11 +191,10 @@ class ModelFactory:
 
         target_dtype = get_default_dtype()
         for layer in net.layers:
-            # Update meta dtype for INPUT if present
             if layer.kind == "INPUT":
-                layer.meta["dtype"] = str(target_dtype).replace("torch.", "torch.")
+                layer.meta["dtype"] = str(target_dtype)
             for key, val in list(layer.params.items()):
-                if isinstance(val, torch.Tensor):
+                if isinstance(val, torch.Tensor) and torch.is_floating_point(val):
                     layer.params[key] = val.to(dtype=target_dtype)
         net.by_id = {L.id: L for L in net.layers}
         return net

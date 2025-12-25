@@ -2,11 +2,10 @@ from __future__ import annotations
 
 import random
 import dataclasses
-from typing import Dict, List, Sequence, Tuple
+from typing import Dict, List, Sequence, Tuple, Optional
 
 from act.pipeline.verification.confignet.configs import ModelConfig, SpecConfig
 from act.pipeline.verification.confignet.seeds import set_global_seeds
-from act.pipeline.verification.model_factory import ModelFactory
 from act.pipeline.verification.confignet.utils import extract_effective_spec
 
 EPS_CHOICES = (0.01, 0.02, 0.03)
@@ -24,7 +23,7 @@ def _classify_arch(name: str, spec: Dict[str, any]) -> str:
     return "mlp"
 
 
-def _build_pool(factory: ModelFactory) -> Tuple[Dict[str, ModelConfig], Dict[str, ModelConfig]]:
+def _build_pool(factory) -> Tuple[Dict[str, ModelConfig], Dict[str, ModelConfig]]:
     mlp_pool: Dict[str, ModelConfig] = {}
     cnn_pool: Dict[str, ModelConfig] = {}
     for name, spec in factory.config.get("networks", {}).items():
@@ -45,7 +44,7 @@ def _build_pool(factory: ModelFactory) -> Tuple[Dict[str, ModelConfig], Dict[str
     return mlp_pool, cnn_pool
 
 
-def _default_true_label(factory: ModelFactory, name: str) -> Optional[int]:
+def _default_true_label(factory, name: str) -> Optional[int]:
     act_net = factory.get_act_net(name)
     eff = extract_effective_spec(act_net)
     return int(eff["y_true"]) if eff["y_true"] is not None else None
@@ -82,6 +81,8 @@ def sample_configs(
     """
     set_global_seeds(seed)
     rng = random.Random(seed)
+    from act.pipeline.verification.model_factory import ModelFactory
+
     factory = ModelFactory()
     mlp_pool, cnn_pool = _build_pool(factory)
     pools = {"mlp": mlp_pool, "cnn": cnn_pool}

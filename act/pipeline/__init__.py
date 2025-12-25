@@ -45,10 +45,14 @@ def __getattr__(name: str) -> Any:
         try:
             importlib.import_module("act.pipeline.verification.utils")
             return True
-        except ImportError:
+        except Exception:
             return False
     if name in _lazy:
         module = importlib.import_module(_lazy[name])
         if hasattr(module, name):
-            return getattr(module, name)
+            obj = getattr(module, name)
+        else:
+            obj = module
+        globals()[name] = obj
+        return obj
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

@@ -16,6 +16,25 @@ from pathlib import Path
 from typing import List, Optional
 import sys
 
+# Lightweight device/dtype args (kept near top to avoid NameError in __main__)
+def _add_device_args_light(parser: argparse.ArgumentParser) -> None:
+    """
+    Add device/dtype args without importing torch; mirrors act.util.cli_utils.
+    """
+    parser.add_argument(
+        "--device",
+        type=str,
+        default='cpu',
+        choices=['cpu', 'cuda', 'gpu'],
+        help="Device to use for computation (default: cpu)"
+    )
+    parser.add_argument(
+        "--dtype",
+        type=str,
+        default='float64',
+        choices=['float32', 'float64'],
+        help="Default dtype for tensors (default: float64)"
+    )
 
 def build_parser() -> argparse.ArgumentParser:
     """Build and return the argument parser (shared by main and tests).
@@ -890,8 +909,10 @@ def main():
     try:
         from act.util.cli_utils import initialize_from_args
         initialize_from_args(args)
-    except Exception:
-        pass
+    except ImportError:
+        print("[WARN] act.util.cli_utils.initialize_from_args not available; device/dtype may be default.", file=sys.stderr)
+    except Exception as e:
+        print(f"[WARN] initialize_from_args failed: {e}", file=sys.stderr)
     
     # Handle --dataset as alias for --category (for VNNLIB)
     # This provides a more intuitive interface: python -m act.pipeline --fuzz --dataset cifar100_2024
@@ -930,24 +951,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-# Lightweight device/dtype args (kept at bottom to avoid clutter above)
-def _add_device_args_light(parser: argparse.ArgumentParser) -> None:
-    """
-    Add device/dtype args without importing torch; mirrors act.util.cli_utils.
-    """
-    parser.add_argument(
-        "--device",
-        type=str,
-        default='cpu',
-        choices=['cpu', 'cuda', 'gpu'],
-        help="Device to use for computation (default: cuda if available, else cpu)"
-    )
-    parser.add_argument(
-        "--dtype",
-        type=str,
-        default='float64',
-        choices=['float32', 'float64'],
-        help="Default dtype for tensors (default: float64)"
-    )

@@ -1,3 +1,7 @@
+import pytest
+
+pytest.importorskip("torch")
+
 from act.pipeline.verification.confignet import sample_configs
 
 

@@ -30,5 +30,7 @@ _lazy = {
 def __getattr__(name: str) -> Any:
     if name in _lazy:
         module = importlib.import_module(_lazy[name])
-        return getattr(module, name) if hasattr(module, name) else module
+        obj = getattr(module, name) if hasattr(module, name) else module
+        globals()[name] = obj
+        return obj
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

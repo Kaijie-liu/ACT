@@ -2,10 +2,6 @@ import json
 import tempfile
 from pathlib import Path
 
-import pytest
-
-torch = pytest.importorskip("torch")
-
 from act.pipeline.verification.run_confignet_sample import main as run_main
 
 
@@ -47,5 +43,3 @@ def test_different_seed_changes_output():
         _run_cli(f1, seed=0)
         _run_cli(f2, seed=1)
         assert f1.read_bytes() != f2.read_bytes()
-import pytest
-torch = pytest.importorskip("torch")
