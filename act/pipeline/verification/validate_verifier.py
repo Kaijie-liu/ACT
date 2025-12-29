@@ -141,12 +141,16 @@
 
 import os
 import copy
-import torch
 import logging
 from dataclasses import asdict
 from pathlib import Path
 from typing import Dict, Any, Optional, Tuple, List
 
+# torch is imported at module scope because VerificationValidator.__init__ sets
+# a default dtype of torch.float64; moving this import would require changing
+# that default strategy. If import-light becomes a priority, delay dtype
+# resolution instead of changing this default.
+import torch
 from act.pipeline.verification.model_factory import ModelFactory
 # from act.pipeline.verification.torch2act import TorchToACT
 from act.back_end.verifier import verify_once, gather_input_spec_layers, seed_from_input_specs, get_input_ids, get_assert_layer, find_entry_layer_id
@@ -344,6 +348,9 @@ class VerificationValidator:
             cfg = RuntimeConfigNet()
             case_names = networks or ["mlp", "cnn"]
             cases = [cfg.sample(seed=seed + idx, arch=name) for idx, name in enumerate(case_names)]
+            for case in cases:
+                if not str(getattr(case, "name", "")).startswith("runtime_"):
+                    raise ValueError("Runtime ConfigNet case name must start with 'runtime_'.")
         else:
             cfg = ConfigNet()
             names = networks or cfg._available  # pylint: disable=protected-access
@@ -557,51 +564,79 @@ class VerificationValidator:
         self,
         networks: Optional[List[str]] = None,
         tf_modes: List[str] = ['interval'],
-        num_samples: int = 10
+        num_samples: int = 10,
+        confignet_source: str = "pool",
+        seed: int = 0,
+        plan: Optional["InputSamplingPlan"] = None,
     ) -> Dict[str, Any]:
         """
-        Level 2: Validate abstract bounds overapproximate concrete values.
+        Level 2: Validate abstract bounds overapproximate concrete values (interval only).
         
         Args:
-            networks: List of network names (None = all networks)
-            tf_modes: Transfer function modes to test ('interval', 'hybridz')
-            num_samples: Number of concrete inputs to sample per network
-            
-        Returns:
-            Summary dictionary with validation results
+            networks: Optional list of network names/arches depending on source.
+            tf_modes: List of transfer function modes (only 'interval' supported).
+            num_samples: Number of concrete samples (mapped to InputSamplingPlan).
+            confignet_source: 'pool' (ConfigNet) or 'runtime' (RuntimeConfigNet).
+            seed: Base seed for sampling.
+            plan: Optional InputSamplingPlan; if None, derived from num_samples.
         """
-        if networks is None:
-            networks = self.factory.list_networks()
-        
-        logger.info(f"\n{'='*80}")
-        logger.info(f"LEVEL 2: BOUNDS/NUMERICAL VALIDATION")
-        logger.info(f"{'='*80}")
-        logger.info(f"Testing {len(networks)} networks with {len(tf_modes)} TF modes")
-        logger.info(f"Samples per network: {num_samples}")
-        logger.info(f"Device: {self.device}, Dtype: {self.dtype}")
-        logger.info(f"{'='*80}\n")
-        
-        for network in networks:
-            for tf_mode in tf_modes:
-                try:
-                    self._validate_bounds_single(network, tf_mode, num_samples)
-                except Exception as e:
-                    logger.error(f"Bounds validation failed for {network}/{tf_mode}: {e}")
-                    import traceback
-                    traceback.print_exc()
-                    # Add error result if not already added
-                    error_result = {
-                        'network': network,
-                        'tf_mode': tf_mode,
-                        'validation_type': 'bounds',
-                        'status': 'ERROR',
-                        'error': f"Outer exception: {str(e)}",
-                        'samples_processed': 0
-                    }
-                    self.validation_results.append(error_result)
-        
-        return self._compute_summary(validation_type='bounds')
+        from act.pipeline.verification.config_net import ConfigNet
+        from act.pipeline.verification.config_net_runtime import RuntimeConfigNet
+        from act.pipeline.verification.validation import InputSamplingPlan, run_level2_bounds_check
+
+        if plan is None:
+            k_random = max(num_samples - 2, 0)
+            plan = InputSamplingPlan(k_center=1, k_random=k_random, k_boundary=1)
+
+        if confignet_source == "runtime":
+            cfg = RuntimeConfigNet()
+            case_names = networks or ["mlp", "cnn"]
+            cases = [cfg.sample(seed=seed + idx, arch=name) for idx, name in enumerate(case_names)]
+            for case in cases:
+                if not str(getattr(case, "name", "")).startswith("runtime_"):
+                    raise ValueError("Runtime ConfigNet case name must start with 'runtime_'.")
+        else:
+            cfg = ConfigNet()
+            names = networks or cfg._available  # pylint: disable=protected-access
+            cases = [cfg.sample(seed=seed + idx, name=name) for idx, name in enumerate(names)]
+
+        results = []
+        for idx, case in enumerate(cases):
+            case_seed = seed + idx
+            res = run_level2_bounds_check(
+                case,
+                seed=case_seed,
+                plan=plan,
+                device=self.device,
+                dtype=self.dtype,
+                tf_modes=tf_modes,
+            )
+            results.append(res)
+
+        counts = {
+            "PASS": sum(1 for r in results if r["overall_status"] == "PASS"),
+            "VIOLATION_FOUND": sum(1 for r in results if r["overall_status"] == "VIOLATION_FOUND"),
+            "ERROR": sum(1 for r in results if r["overall_status"] == "ERROR"),
+        }
+        overall_status = "PASS"
+        if counts["ERROR"] > 0:
+            overall_status = "ERROR"
+        elif counts["VIOLATION_FOUND"] > 0:
+            overall_status = "VIOLATION_FOUND"
+
+        summary = {
+            "validation_type": "bounds",
+            "total": len(results),
+            "passed": counts["PASS"],
+            "failed": counts["VIOLATION_FOUND"],
+            "errors": counts["ERROR"],
+            "counts": counts,
+            "overall_status": overall_status,
+            "results": results,
+        }
+        return summary
     
+    # DEPRECATED: use validate_bounds() / run_level2_bounds_check
     def _validate_bounds_single(
         self,
         name: str,
@@ -683,7 +718,7 @@ class VerificationValidator:
                 input_bounds = Bounds(lb=input_tensor.flatten(), ub=input_tensor.flatten())
             # Use an empty constraint set for inputs so downstream analysis
             # never iterates over a None cons field.
-            entry_fact = Fact(bounds=input_bounds, cons=None)
+            entry_fact = Fact(bounds=input_bounds, cons=ConSet())
             
             # Step 6: Run abstract analysis
             try:
@@ -703,8 +738,13 @@ class VerificationValidator:
                     
                     # Ensure shapes match (ACT may have different neuron counts)
                     if concrete_vals_flat.shape != lb.shape:
-                        logger.warning(f"  ⚠️ Shape mismatch at layer {layer_id}: "
-                                     f"concrete={concrete_vals_flat.shape}, abstract={lb.shape}. Skipping.")
+                        logger.warning(
+                            "  ⚠️ Shape mismatch at layer %s: concrete=%s, lb=%s, ub=%s. Skipping.",
+                            layer_id,
+                            concrete_vals_flat.shape,
+                            lb.shape,
+                            ub.shape,
+                        )
                         continue
                     
                     # Check if concrete values are within bounds
@@ -728,7 +768,21 @@ class VerificationValidator:
                                    f"{num_violations}/{concrete_vals_flat.numel()} neurons")
             
             except Exception as e:
-                logger.error(f"  ⚠️ Abstract analysis failed for sample {sample_idx}: {e}")
+                try:
+                    vmin = float(input_tensor.min().item())
+                    vmax = float(input_tensor.max().item())
+                except Exception:
+                    vmin = vmax = None
+                logger.error(
+                    "  ⚠️ Abstract analysis failed for sample %s (net=%s, tf=%s, shape=%s, min=%s, max=%s): %s",
+                    sample_idx,
+                    name,
+                    tf_mode,
+                    tuple(input_tensor.shape),
+                    vmin,
+                    vmax,
+                    e,
+                )
                 error_result = {
                     'network': name,
                     'tf_mode': tf_mode,
@@ -837,7 +891,9 @@ class VerificationValidator:
         networks: Optional[List[str]] = None,
         solvers: List[str] = ['gurobi', 'torchlp'],
         tf_modes: List[str] = ['interval'],
-        num_samples: int = 10
+        num_samples: int = 10,
+        confignet_source: str = "pool",
+        seed: int = 0,
     ) -> Dict[str, Any]:
         """
         Run both Level 1 and Level 2 validations.
@@ -859,10 +915,21 @@ class VerificationValidator:
         logger.info(f"{'='*80}\n")
         
         # Run Level 1
-        summary_l1 = self.validate_counterexamples(networks=networks, solvers=solvers)
+        summary_l1 = self.validate_counterexamples(
+            networks=networks,
+            solvers=solvers,
+            confignet_source=confignet_source,
+            seed=seed,
+        )
         
         # Run Level 2
-        summary_l3 = self.validate_bounds(networks=networks, tf_modes=tf_modes, num_samples=num_samples)
+        summary_l3 = self.validate_bounds(
+            networks=networks,
+            tf_modes=tf_modes,
+            num_samples=num_samples,
+            confignet_source=confignet_source,
+            seed=seed,
+        )
         
         # Combine summaries - FAILED if any failures OR errors
         has_failures = (summary_l1.get('failed', 0) > 0 or summary_l3.get('failed', 0) > 0)
@@ -1005,6 +1072,43 @@ class VerificationValidator:
         print("="*80)
 
 
+def _print_level2_bounds_summary(summary: Dict[str, Any]) -> None:
+    """
+    Print concise per-case summary for Level 2 bounds validation (CLI helper).
+    Keeps JSON structures unchanged; intended only for CLI printing.
+    """
+    results = summary.get("results", []) or []
+
+    def _fmt_mode(mode: Dict[str, Any]) -> str:
+        meta = mode.get("metadata", {}) or {}
+        tf = meta.get("tf_mode", "<unknown>")
+        status = mode.get("status", "<unknown>")
+        violations = mode.get("violations", []) or []
+        v_total = sum(int(v.get("num_violations", 0)) for v in violations)
+        part = f"{tf}:{status}(v={v_total})"
+        if status == "ERROR":
+            err_type = meta.get("error_type")
+            if err_type:
+                part += f"(type={err_type})"
+        if status == "VIOLATION_FOUND" and violations:
+            top = sorted(
+                ((v.get("layer_id"), int(v.get("num_violations", 0))) for v in violations),
+                key=lambda x: x[1],
+                reverse=True,
+            )
+            top = [t for t in top if t[0] is not None][:3]
+            if top:
+                part += " top_layers=" + ",".join(f"{lid}:{cnt}" for lid, cnt in top)
+        return part
+
+    for case in results:
+        case_name = case.get("case_name", "<unknown>")
+        overall = case.get("overall_status", "<unknown>")
+        modes = case.get("per_mode", []) or []
+        mode_parts = [_fmt_mode(m) for m in modes]
+        print(f"[L2][bounds] case={case_name} overall={overall} | " + " ".join(mode_parts))
+
+
 def main():
     """Run verification validation test suite."""
     import argparse
@@ -1024,6 +1128,10 @@ def main():
                        help='Number of samples for Level 2')
     parser.add_argument('--ignore-errors', action='store_true',
                        help='Always exit 0 (ignore failures and errors for CI)')
+    parser.add_argument('--seed', type=int, default=0,
+                       help='Base seed for sampling')
+    parser.add_argument('--confignet-source', type=str, choices=['pool', 'runtime'],
+                       default='pool', help='ConfigNet source for validation cases')
     
     args = parser.parse_args()
     
@@ -1037,7 +1145,9 @@ def main():
     if args.mode == 'counterexample':
         summary = validator.validate_counterexamples(
             networks=args.networks,
-            solvers=args.solvers
+            solvers=args.solvers,
+            confignet_source=args.confignet_source,
+            seed=args.seed,
         )
         # Exit 1 if any failures OR errors detected
         exit_code = 1 if (summary['failed'] > 0 or summary['errors'] > 0) else 0
@@ -1045,7 +1155,9 @@ def main():
         summary = validator.validate_bounds(
             networks=args.networks,
             tf_modes=args.tf_modes,
-            num_samples=args.samples
+            num_samples=args.samples,
+            confignet_source=args.confignet_source,
+            seed=args.seed,
         )
         # Exit 1 if any failures OR errors detected
         exit_code = 1 if (summary['failed'] > 0 or summary['errors'] > 0) else 0
@@ -1054,7 +1166,9 @@ def main():
             networks=args.networks,
             solvers=args.solvers,
             tf_modes=args.tf_modes,
-            num_samples=args.samples
+            num_samples=args.samples,
+            confignet_source=args.confignet_source,
+            seed=args.seed,
         )
         # Exit 1 for both FAILED (verification bugs) and ERROR (backend bugs)
         exit_code = 1 if combined['overall_status'] in ['FAILED', 'ERROR'] else 0

@@ -254,8 +254,9 @@ Examples:
     )
     validation_group.add_argument(
         "--networks",
+        nargs="+",
         type=str,
-        help="Comma-separated list of networks to validate (default: all)"
+        help="List of networks to validate (comma-separated tokens also accepted; default: all)"
     )
     validation_group.add_argument(
         "--solvers",
@@ -286,6 +287,17 @@ Examples:
         choices=["pool", "runtime"],
         default="pool",
         help="ConfigNet source: pool=existing examples, runtime=build in-memory nets (default: pool)"
+    )
+    validation_group.add_argument(
+        "--runtime-smoke",
+        action="store_true",
+        help="Run runtime ConfigNet smoke test only, then exit 0 (no validation)."
+    )
+    validation_group.add_argument(
+        "--seed",
+        type=int,
+        default=0,
+        help="Base seed for sampling"
     )
     
     # Add standard device/dtype arguments (shared across all ACT CLIs)
@@ -844,7 +856,10 @@ def cmd_validate_verifier(args):
     except ImportError as e:
         print(f"\n❌ Error: {e}")
         sys.exit(1)
-    from act.pipeline.verification.validate_verifier import VerificationValidator
+    from act.pipeline.verification.validate_verifier import (
+        VerificationValidator,
+        _print_level2_bounds_summary,
+    )
     
     print_header()
     
@@ -854,13 +869,18 @@ def cmd_validate_verifier(args):
     # Create validator
     validator = VerificationValidator(device=args.device, dtype=dtype)
 
-    # Optional runtime ConfigNet smoke path (no solver)
-    if getattr(args, "confignet_source", "pool") == "runtime":
+    # Optional runtime ConfigNet smoke-only path
+    if getattr(args, "runtime_smoke", False):
         validator.runtime_smoke()
         sys.exit(0)
     
     # Parse networks if specified
-    networks = args.networks.split(',') if args.networks else None
+    networks = None
+    if args.networks:
+        tokens = []
+        for tok in args.networks:
+            tokens.extend([t for t in tok.split(',') if t])
+        networks = tokens if tokens else None
     
     # Run validation based on mode
     try:
@@ -877,8 +897,11 @@ def cmd_validate_verifier(args):
             summary = validator.validate_bounds(
                 networks=networks,
                 tf_modes=args.tf_modes,
-                num_samples=args.samples
+                num_samples=args.samples,
+                confignet_source=getattr(args, "confignet_source", "pool"),
+                seed=getattr(args, "seed", 0),
             )
+            _print_level2_bounds_summary(summary)
             # Exit 1 if failures or errors, unless --ignore-errors is set
             exit_code = 0 if args.ignore_errors else (
                 1 if (summary['failed'] > 0 or summary.get('errors', 0) > 0) else 0
@@ -888,8 +911,11 @@ def cmd_validate_verifier(args):
                 networks=networks,
                 solvers=args.solvers,
                 tf_modes=args.tf_modes,
-                num_samples=args.samples
+                num_samples=args.samples,
+                confignet_source=getattr(args, "confignet_source", "pool"),
+                seed=getattr(args, "seed", 0),
             )
+            _print_level2_bounds_summary(combined.get('level3_bounds', {}))
             # Exit 1 if any failures or errors, unless --ignore-errors is set
             exit_code = 0 if args.ignore_errors else (
                 1 if combined['overall_status'] in ('FAILED', 'ERROR') else 0

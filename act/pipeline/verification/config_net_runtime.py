@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# act/pipeline/verification/config_net_runtime.py
 """
 Runtime ConfigNet: build ACT Nets in memory (no JSON) and convert to torch.
 
@@ -217,6 +218,8 @@ class RuntimeConfigNet:
 
         if name is None:
             name = f"runtime_{arch}_{seed}"
+        elif not name.startswith("runtime_"):
+            name = f"runtime_{name}"
 
         if arch == "mlp":
             spec = _make_mlp_spec(
