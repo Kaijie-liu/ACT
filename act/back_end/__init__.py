@@ -29,36 +29,48 @@ Example usage:
     >>> result = verify_once(net, entry_id, input_ids, output_ids, I, O, seed_bounds, solver)
 """
 
-# Core data structures
-from .core import Bounds, Con, ConSet, Fact, Layer, Net
+BACK_END_IMPORT_ERROR = None
 
-# Device management (moved to front_end)
-# from .device_manager import initialize_device_dtype, ensure_initialized, summary, temp_device_dtype, wrap_model_fn
+try:
+    # Core data structures
+    from .core import Bounds, Con, ConSet, Fact, Layer, Net
 
-# Utilities
-from .utils import box_join, changed_or_maskdiff, update_cache, affine_bounds
-from .utils import pwl_meta, bound_var_interval, scale_interval
+    # Device management (moved to front_end)
+    # from .device_manager import initialize_device_dtype, ensure_initialized, summary, temp_device_dtype, wrap_model_fn
 
-# Transfer function interface
-from .transfer_functions import (
-    TransferFunction, 
-    set_transfer_function, get_transfer_function, set_transfer_function_mode,
-    dispatch_tf
-)
+    # Utilities
+    from .utils import box_join, changed_or_maskdiff, update_cache, affine_bounds
+    from .utils import pwl_meta, bound_var_interval, scale_interval
 
-# Transfer function implementations
-from .interval_tf import IntervalTF
-from .hybridz_tf import HybridzTF
+    # Transfer function interface
+    from .transfer_functions import (
+        TransferFunction, 
+        set_transfer_function, get_transfer_function, set_transfer_function_mode,
+        dispatch_tf
+    )
 
-# Analysis algorithms
-from .analyze import analyze, initialize_tf_mode
+    # Transfer function implementations
+    from .interval_tf import IntervalTF
+    from .hybridz_tf import HybridzTF
 
-# Analysis algorithms
-from .analyze import dispatch_tf, analyze
+    # Analysis algorithms
+    from .analyze import analyze, initialize_tf_mode
 
-# Solver interfaces
-from .solver.solver_base import Solver, SolverCaps, SolveStatus
-from .solver.solver_gurobi import GurobiSolver
+    # Analysis algorithms
+    from .analyze import dispatch_tf, analyze
+
+    # Solver interfaces
+    from .solver.solver_base import Solver, SolverCaps, SolveStatus
+    from .solver.solver_gurobi import GurobiSolver
+except Exception as exc:  # pylint: disable=broad-except
+    BACK_END_IMPORT_ERROR = exc
+    Bounds = Con = ConSet = Fact = Layer = Net = None
+    box_join = changed_or_maskdiff = update_cache = affine_bounds = None
+    pwl_meta = bound_var_interval = scale_interval = None
+    TransferFunction = IntervalTF = HybridzTF = None
+    set_transfer_function = get_transfer_function = set_transfer_function_mode = dispatch_tf = None
+    analyze = initialize_tf_mode = None
+    Solver = SolverCaps = SolveStatus = GurobiSolver = None
 
 # Note: TorchLPSolver and some verification functions are available 
 # via direct import to avoid circular dependencies:

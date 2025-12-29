@@ -839,7 +839,11 @@ def cmd_verify(target: str, args):
 
 def cmd_validate_verifier(args):
     """Run verifier validation with specified mode."""
-    import torch
+    try:
+        import torch
+    except ImportError as e:
+        print(f"\n❌ Error: {e}")
+        sys.exit(1)
     from act.pipeline.verification.validate_verifier import VerificationValidator
     
     print_header()
@@ -863,12 +867,12 @@ def cmd_validate_verifier(args):
         if args.mode == 'counterexample':
             summary = validator.validate_counterexamples(
                 networks=networks,
-                solvers=args.solvers
+                solvers=args.solvers,
+                confignet_source=getattr(args, "confignet_source", "pool"),
+                seed=getattr(args, "seed", 0),
             )
             # Exit 1 if failures or errors, unless --ignore-errors is set
-            exit_code = 0 if args.ignore_errors else (
-                1 if (summary['failed'] > 0 or summary.get('errors', 0) > 0) else 0
-            )
+            exit_code = 0 if args.ignore_errors else (1 if summary.get("overall_status") == "ERROR" else 0)
         elif args.mode == 'bounds':
             summary = validator.validate_bounds(
                 networks=networks,

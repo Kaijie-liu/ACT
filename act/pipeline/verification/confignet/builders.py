@@ -31,12 +31,32 @@ def build_act_net(model_cfg: ModelConfig, spec_cfg: SpecConfig, name: str) -> An
     return factory.get_act_net(model_cfg.template_name, spec_overrides=overrides)
 
 
-def build_torch_model(model_cfg: ModelConfig, spec_cfg: SpecConfig, name: str):
+def build_torch_model(act_net: Any, device: Any = None, dtype: Any = None):
     """
-    Build torch model from overridden ACT net via ACTToTorch.
+    Build torch model from an ACT net via ACTToTorch, optionally moving to device/dtype.
     """
-    set_global_seeds(model_cfg.seed)
     from act.pipeline.verification.act2torch import ACTToTorch
 
-    act_net = build_act_net(model_cfg, spec_cfg, name)
-    return ACTToTorch(act_net).run()
+    model = ACTToTorch(act_net).run()
+
+    if device is None and dtype is None:
+        return model
+
+    try:
+        import torch
+    except Exception:
+        return model
+
+    # Align model parameters to requested device/dtype when provided
+    target_device = device
+    target_dtype = dtype
+    if target_device is None:
+        first_param = next(model.parameters(), None)
+        if first_param is not None:
+            target_device = first_param.device
+    if target_dtype is None:
+        first_param = next(model.parameters(), None)
+        if first_param is not None:
+            target_dtype = first_param.dtype
+
+    return model.to(device=target_device, dtype=target_dtype)

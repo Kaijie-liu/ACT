@@ -2,6 +2,10 @@ import json
 import tempfile
 from pathlib import Path
 
+import pytest
+
+pytest.importorskip("torch")
+
 from act.pipeline.verification.run_confignet_sample import main as run_main
 
 

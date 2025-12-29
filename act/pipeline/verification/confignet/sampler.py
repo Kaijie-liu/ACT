@@ -23,25 +23,30 @@ def _classify_arch(name: str, spec: Dict[str, any]) -> str:
     return "mlp"
 
 
-def _build_pool(factory) -> Tuple[Dict[str, ModelConfig], Dict[str, ModelConfig]]:
-    mlp_pool: Dict[str, ModelConfig] = {}
-    cnn_pool: Dict[str, ModelConfig] = {}
+def _list_templates_by_arch(factory) -> Dict[str, List[str]]:
+    """Return available template names grouped by inferred architecture."""
+    grouped: Dict[str, List[str]] = {"mlp": [], "cnn": []}
     for name, spec in factory.config.get("networks", {}).items():
         arch = _classify_arch(name, spec)
-        mcfg = ModelConfig(
-            arch=arch,
-            template_name=name,
-            input_shape=spec.get("input_shape", []),
-            num_classes=spec.get("num_classes", spec.get("output_dim", 0)) or 0,
-            activation="relu",
-            dataset=spec.get("dataset", "runtime"),
-            seed=0,
-        )
-        if arch == "cnn":
-            cnn_pool[name] = mcfg
-        else:
-            mlp_pool[name] = mcfg
-    return mlp_pool, cnn_pool
+        grouped.setdefault(arch, []).append(name)
+    for arch in grouped:
+        grouped[arch] = sorted(grouped[arch])
+    return grouped
+
+
+def _infer_model_meta(factory, template_name: str) -> ModelConfig:
+    """Create a ModelConfig from a template, inferring metadata from the spec."""
+    spec = factory.config.get("networks", {}).get(template_name, {}) or {}
+    arch = _classify_arch(template_name, spec)
+    return ModelConfig(
+        arch=arch,
+        template_name=template_name,
+        input_shape=spec.get("input_shape", []),
+        num_classes=spec.get("num_classes", spec.get("output_dim", 0)) or 0,
+        activation="relu",
+        dataset=spec.get("dataset", "runtime"),
+        seed=0,
+    )
 
 
 def _default_true_label(factory, name: str) -> Optional[int]:
@@ -84,18 +89,20 @@ def sample_configs(
     from act.pipeline.verification.model_factory import ModelFactory
 
     factory = ModelFactory()
-    mlp_pool, cnn_pool = _build_pool(factory)
-    pools = {"mlp": mlp_pool, "cnn": cnn_pool}
+    templates_by_arch = _list_templates_by_arch(factory)
 
     results: List[tuple[ModelConfig, SpecConfig]] = []
     for i in range(n):
         case_seed = seed + i
-        arch = rng.choice(list(arch_choices))
-        pool = pools.get(arch, {})
+        arch_pool_choices = [a for a in arch_choices if templates_by_arch.get(a)]
+        if not arch_pool_choices:
+            raise ValueError(f"No templates available for requested arch choices: {arch_choices}")
+        arch = rng.choice(list(arch_pool_choices))
+        pool = templates_by_arch.get(arch, [])
         if not pool:
             raise ValueError(f"No templates available for arch '{arch}'")
-        chosen_name = rng.choice(sorted(pool.keys()))
-        mcfg = dataclasses.replace(pool[chosen_name], seed=case_seed)
+        chosen_name = rng.choice(pool)
+        mcfg = dataclasses.replace(_infer_model_meta(factory, chosen_name), seed=case_seed)
         rng_case = random.Random(case_seed)
         scfg = _sample_spec(rng_case, factory, chosen_name)
         results.append((mcfg, scfg))

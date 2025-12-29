@@ -143,6 +143,7 @@ import os
 import copy
 import torch
 import logging
+from dataclasses import asdict
 from pathlib import Path
 from typing import Dict, Any, Optional, Tuple, List
 
@@ -177,6 +178,11 @@ class VerificationValidator:
         self.factory = ModelFactory()
         self.device = device
         self.dtype = dtype
+        try:
+            from act.pipeline.verification.validation import InputSamplingPlan
+            self.plan = InputSamplingPlan()
+        except Exception:
+            self.plan = None
         self.validation_results = []
         
         # Initialize debug file (GUARDED)
@@ -195,6 +201,7 @@ class VerificationValidator:
         """
         import torch  # lazy import
         from act.pipeline.verification.config_net_runtime import RuntimeConfigNet
+        from act.pipeline.verification.validation import InputSamplingPlan, sample_concrete_inputs
 
         cfg = RuntimeConfigNet()
         for arch, seed in (("mlp", 0), ("cnn", 1)):
@@ -208,33 +215,16 @@ class VerificationValidator:
             sample.torch_model = sample.torch_model.to(device=self.device, dtype=self.dtype)
             sample.torch_model.eval()
 
-            # Try factory helper first; runtime names may be unknown so guard exceptions.
-            input_tensor = None
-            try:
-                input_tensor = self.factory.generate_test_input(sample.name)
-            except Exception:
-                pass
-
-            if input_tensor is None:
-                input_layer = next((L for L in getattr(sample.act_net, "layers", []) if getattr(L, "kind", None) == "INPUT"), None)
-                if input_layer is None:
-                    raise ValueError(f"No INPUT layer found for runtime arch={arch}")
-                shape = input_layer.meta.get("shape")
-                if not shape:
-                    raise ValueError(f"INPUT layer missing shape for runtime arch={arch}")
-                center_val = 0.5
-                if sample.input_specs:
-                    meta = sample.input_specs[0].meta or {}
-                    center_val = meta.get("center_val", center_val)
-                input_tensor = torch.full(shape, center_val, device=self.device, dtype=self.dtype)
-
-            # Align input to model parameters if available
-            first_param = next(sample.torch_model.parameters(), None)
-            if first_param is not None:
-                input_tensor = input_tensor.to(device=first_param.device, dtype=first_param.dtype)
-            else:
-                input_tensor = input_tensor.to(device=self.device, dtype=self.dtype)
-
+            plan = InputSamplingPlan(k_center=1, k_random=0, k_boundary=0)
+            inputs = sample_concrete_inputs(
+                sample.act_net,
+                seed=seed,
+                plan=plan,
+                device=self.device,
+                dtype=self.dtype,
+                require_satisfy=True,
+            )
+            input_tensor = inputs[0]
             with torch.no_grad():
                 _ = sample.torch_model(input_tensor)
             logger.info("Runtime smoke passed for arch=%s name=%s", arch, sample.name)
@@ -333,50 +323,69 @@ class VerificationValidator:
                 model.train()
     
     def validate_counterexamples(
-        self, 
+        self,
         networks: Optional[List[str]] = None,
-        solvers: List[str] = ['gurobi', 'torchlp']
+        solvers: Optional[List[str]] = None,  # accepted for CLI compatibility
+        confignet_source: str = "pool",
+        seed: int = 0,
+        plan: Optional["InputSamplingPlan"] = None,
     ) -> Dict[str, Any]:
         """
         Level 1: Validate verifier soundness using concrete counterexamples.
-        
-        Args:
-            networks: List of network names (None = all networks)
-            solvers: List of solver names to test
-            
-        Returns:
-            Summary dictionary with validation results
+        Uses lightweight runner over ConfigNet/RuntimeConfigNet cases.
         """
-        if networks is None:
-            networks = self.factory.list_networks()
-        
-        logger.info(f"\n{'='*80}")
-        logger.info(f"LEVEL 1: COUNTEREXAMPLE/SOUNDNESS VALIDATION")
-        logger.info(f"{'='*80}")
-        logger.info(f"Testing {len(networks)} networks with {len(solvers)} solvers")
-        logger.info(f"Device: {self.device}, Dtype: {self.dtype}")
-        logger.info(f"{'='*80}\n")
-        
-        for network in networks:
-            for solver in solvers:
-                try:
-                    self._validate_counterexample_single(network, solver)
-                except Exception as e:
-                    logger.error(f"Validation failed for {network}/{solver}: {e}")
-                    import traceback
-                    traceback.print_exc()
-                    # Add error result if not already added
-                    error_result = {
-                        'network': network,
-                        'solver': solver,
-                        'validation_type': 'counterexample',
-                        'status': 'ERROR',
-                        'error': f"Outer exception: {str(e)}",
-                        'concrete_counterexample': False
-                    }
-                    self.validation_results.append(error_result)
-        
-        return self._compute_summary(validation_type='counterexample')
+        from act.pipeline.verification.config_net import ConfigNet
+        from act.pipeline.verification.config_net_runtime import RuntimeConfigNet
+        from act.pipeline.verification.validation import InputSamplingPlan, run_level1_counterexample_check
+
+        plan = plan or self.plan
+
+        if confignet_source == "runtime":
+            cfg = RuntimeConfigNet()
+            case_names = networks or ["mlp", "cnn"]
+            cases = [cfg.sample(seed=seed + idx, arch=name) for idx, name in enumerate(case_names)]
+        else:
+            cfg = ConfigNet()
+            names = networks or cfg._available  # pylint: disable=protected-access
+            cases = [cfg.sample(seed=seed + idx, name=name) for idx, name in enumerate(names)]
+
+        supported_kinds = {"TOP1_ROBUST", "MARGIN_ROBUST"}
+        filtered_cases = []
+        for case in cases:
+            kind = getattr(getattr(case, "assert_layer", None), "meta", {}) or {}
+            if kind.get("kind") in supported_kinds:
+                filtered_cases.append(case)
+        cases = filtered_cases
+
+        results = []
+        for idx, case in enumerate(cases):
+            case_seed = seed + idx
+            res = run_level1_counterexample_check(case, seed=case_seed, plan=plan, device=self.device, dtype=self.dtype)
+            results.append(res)
+
+        counts = {
+            "CERTIFIED": sum(1 for r in results if r.status == "CERTIFIED"),
+            "COUNTEREXAMPLE_FOUND": sum(1 for r in results if r.status == "COUNTEREXAMPLE_FOUND"),
+            "ERROR": sum(1 for r in results if r.status == "ERROR"),
+        }
+        overall_status = "CERTIFIED"
+        if counts["ERROR"] > 0:
+            overall_status = "ERROR"
+        elif counts["COUNTEREXAMPLE_FOUND"] > 0:
+            overall_status = "COUNTEREXAMPLE_FOUND"
+
+        summary = {
+            "validation_type": "counterexample",
+            "total": len(results),
+            "passed": counts["CERTIFIED"],
+            "failed": counts["COUNTEREXAMPLE_FOUND"],
+            "errors": counts["ERROR"],
+            "counts": counts,
+            "overall_status": overall_status,
+            "results": [asdict(r) for r in results],
+        }
+        self.validation_results = summary["results"]
+        return summary
     
     def _validate_counterexample_single(
         self, 

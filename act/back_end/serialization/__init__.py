@@ -12,17 +12,25 @@
 #
 #===---------------------------------------------------------------------====#
 
-# Core serialization functionality
-from .serialization import (
-    TensorEncoder,
-    LayerSerializer, 
-    NetSerializer,
-    save_net_to_file,
-    load_net_from_file,
-    save_net_to_string,
-    load_net_from_string,
-    validate_json_schema
-)
+from act.back_end import BACK_END_IMPORT_ERROR  # type: ignore
+
+TensorEncoder = LayerSerializer = NetSerializer = None
+save_net_to_file = load_net_from_file = save_net_to_string = load_net_from_string = validate_json_schema = None
+
+if BACK_END_IMPORT_ERROR is None:
+    try:
+        from .serialization import (
+            TensorEncoder,
+            LayerSerializer, 
+            NetSerializer,
+            save_net_to_file,
+            load_net_from_file,
+            save_net_to_string,
+            load_net_from_string,
+            validate_json_schema
+        )
+    except Exception:  # pragma: no cover
+        BACK_END_IMPORT_ERROR = True
 
 __all__ = [
     # Core serialization
