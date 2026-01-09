@@ -10,7 +10,7 @@ License: AGPLv3+
 
 from __future__ import annotations
 from dataclasses import dataclass, field
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Tuple, Any
 import time
 import json
 import torch
@@ -58,6 +58,10 @@ class FuzzingConfig:
         - "adaptive_perdim": Per-dimension perturb_size from (ub-lb) * perturb_scale (best for non-uniform ranges)
         - "fixed": Legacy hardcoded values (0.01 for gradient/activation, 0.005 for boundary/random)
         
+        coverage_strategy determines the coverage strategy to use:
+        - "BestInputCov": Per-input coverage (best per-input coverage over time)
+        - "GlobalCov": Global union coverage (monotonic union over all inputs)
+        
         perturb_scale interpretation:
         - Fraction of feasible range each mutation perturbation covers
         - steps_to_traverse = 1 / perturb_scale
@@ -68,10 +72,13 @@ class FuzzingConfig:
     seed_selection_strategy: str = "energy"
     mutation_weights: Dict[str, float] = field(default_factory=lambda: {
         "gradient": 0.4,
+        "pgd": 0.0,
         "activation": 0.3,
         "boundary": 0.2,
         "random": 0.1
     })
+    coverage_strategy: str = "BestInputCov"  # "BestInputCov"/"GlobalCov"
+    activation_threshold: float = 0.1  # Neuron activation threshold
     perturb_mode: str = "adaptive_scalar"  # Perturbation size computation mode
     perturb_scale: float = 0.1  # Fraction of range per perturbation (10% → ~10 steps)
     device: str = "cuda" if torch.cuda.is_available() else "cpu"
@@ -98,6 +105,8 @@ class FuzzingReport:
         neuron_coverage: Final neuron coverage (0.0 to 1.0)
         total_mutations: Total mutations applied
         seeds_explored: Number of unique seeds explored
+        num_of_never_activated_neurons: Number of neurons that were never activated across all iterations
+        never_activated_neurons: Sample of never-activated neuron ids (layer_name, neuron_idx)
     """
     total_iterations: int
     total_time: float
@@ -105,6 +114,8 @@ class FuzzingReport:
     neuron_coverage: float
     total_mutations: int
     seeds_explored: int
+    num_of_never_activated_neurons: int = 0
+    never_activated_neurons: List[Dict[str, Any]] = field(default_factory=list)
     
     def save(self, output_dir: Path):
         """Save report and counterexamples to disk."""
@@ -117,7 +128,10 @@ class FuzzingReport:
             "counterexamples_found": len(self.counterexamples),
             "neuron_coverage": self.neuron_coverage,
             "mutations": self.total_mutations,
-            "seeds_explored": self.seeds_explored
+            "seeds_explored": self.seeds_explored,
+            "num_of_never_activated_neurons": self.num_of_never_activated_neurons,
+            # JSON-friendly: list of [layer_name, neuron_idx]
+            "never_activated_neurons": [[ln, int(i)] for (ln, i) in self.never_activated_neurons]
         }
         
         with open(output_dir / "summary.json", "w") as f:
@@ -186,7 +200,7 @@ class ACTFuzzer:
             perturb_mode=self.config.perturb_mode,
             perturb_scale=self.config.perturb_scale
         )
-        self.coverage_tracker = CoverageTracker(self.model)
+        self.coverage_tracker = CoverageTracker(model=self.model,threshold=self.config.activation_threshold, strategy=self.config.coverage_strategy)
         self.property_checker = PropertyChecker(self.output_spec)
         self.seed_corpus = SeedCorpus(
             initial_seeds=initial_seeds,
@@ -219,6 +233,7 @@ class ACTFuzzer:
         self.counterexamples: List[Counterexample] = []
         self.iterations = 0
         self.start_time = 0.0
+        self.never_activated_neurons: List[Dict[str, Any]] = []
     
     def _get_trace_ext(self) -> str:
         """Get file extension for trace storage."""
@@ -296,7 +311,9 @@ class ACTFuzzer:
         )
         
         # 6. Update coverage
-        activations = self.mutation_engine.get_last_activations()
+        activations = self.mutation_engine.get_activation_map()
+
+        
         coverage_delta = self.coverage_tracker.update(candidate, activations)
         coverage = self.coverage_tracker.get_coverage()
         
@@ -381,6 +398,19 @@ class ACTFuzzer:
     def _generate_report(self) -> FuzzingReport:
         """Generate final report."""
         total_time = time.time() - self.start_time
+
+        # Neurons that were never activated across all iterations (per coverage tracker definition)
+        never_activated_neurons: List[Tuple[str, int]] = []
+        never_activated_count = 0
+        try:
+            uncovered = self.coverage_tracker.get_uncovered_neurons()
+            never_activated_count = len(uncovered)
+            # Deterministic small sample for logs/report
+            never_activated_neurons = sorted(list(uncovered))[:20]
+        except Exception:
+            # Fallback if tracker doesn't support uncovered queries
+            never_activated_count = 0
+            never_activated_neurons = []
         
         report = FuzzingReport(
             total_iterations=self.iterations,
@@ -388,7 +418,9 @@ class ACTFuzzer:
             counterexamples=self.counterexamples,
             neuron_coverage=self.coverage_tracker.get_coverage(),
             total_mutations=self.mutation_engine.total_mutations,
-            seeds_explored=len(self.seed_corpus)
+            seeds_explored=len(self.seed_corpus),
+            num_of_never_activated_neurons=never_activated_count,
+            never_activated_neurons=never_activated_neurons,
         )
         
         # Print summary
@@ -398,6 +430,10 @@ class ACTFuzzer:
         print(f"   Counterexamples: {len(report.counterexamples)}")
         print(f"   Coverage: {report.neuron_coverage:.2%}")
         print(f"   Seeds explored: {report.seeds_explored}")
+        print(f"   Never-activated neurons: {report.num_of_never_activated_neurons}")
+        if report.never_activated_neurons:
+            sample_str = ", ".join([f"{ln}[{i}]" for (ln, i) in report.never_activated_neurons[:10]])
+            print(f"   Never-activated sample: {sample_str}")
         print(f"{'='*80}\n")
         
         if self.config.save_counterexamples and report.counterexamples:
