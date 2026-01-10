@@ -109,12 +109,75 @@ def canonicalize_record_v2(
     ignore_keys: Optional[Set[str]] = None,
 ) -> Dict[str, Any]:
     """
+    Return a canonicalized v2 record with non-deterministic fields removed.
+    """
+    ignore = ignore_keys or {"timing", "created_at_utc", "timestamp"}
+    stripped = _strip_keys(record, ignore)
+    solver = stripped.get("solver")
+    if isinstance(solver, dict):
+        solver.pop("time_sec", None)
+        solver.pop("details", None)
+    return stripped
+
+
+def summarize_jsonl_v2(path: str) -> Dict[str, Any]:
+    """
+    Summarize v2 JSONL records with aggregated counts and bounds stats.
+    """
+    records = read_jsonl(path)
+    counts = {"PASS": 0, "FAILED": 0, "ERROR": 0}
+    by_reason: Dict[str, int] = {}
+    checks_total = 0
+    violations_total = 0
+    worst_gap_max = 0.0
+
+    for rec in records:
+        final = rec.get("final", {})
+        verdict = final.get("final_verdict")
+        if verdict in counts:
+            counts[verdict] += 1
+        reason = final.get("reason")
+        if isinstance(reason, str):
+            by_reason[reason] = by_reason.get(reason, 0) + 1
+
+        l2 = rec.get("l2", {})
+        checks_total += int(l2.get("checks_total", 0) or 0)
+        violations_total += int(l2.get("violations_total", 0) or 0)
+        gap = l2.get("worst_gap")
+        if gap is None:
+            gap_val = 0.0
+        else:
+            gap_val = float(gap)
+        worst_gap_max = max(worst_gap_max, gap_val)
+
+    return {
+        "records": len(records),
+        "pass": counts["PASS"],
+        "failed": counts["FAILED"],
+        "error": counts["ERROR"],
+        "by_reason": by_reason,
+        "checks_total": int(checks_total),
+        "violations_total": int(violations_total),
+        "worst_gap_max": float(worst_gap_max),
+    }
+
+
+def canonicalize_record_v2(
+    record: Dict[str, Any],
+    *,
+    ignore_keys: Optional[Set[str]] = None,
+) -> Dict[str, Any]:
+    """
     Return a canonicalized copy of a v2 record, dropping non-deterministic keys.
     """
     ignore = ignore_keys or {"timing", "created_at_utc", "timestamp"}
     stripped = _strip_keys(record, ignore)
     if not isinstance(stripped, dict):
         raise TypeError("canonicalize_record_v2 expects a dict record")
+    solver = stripped.get("solver")
+    if isinstance(solver, dict):
+        solver.pop("time_sec", None)
+        solver.pop("details", None)
     return stripped
 
 

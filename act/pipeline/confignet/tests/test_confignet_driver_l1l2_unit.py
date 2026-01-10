@@ -70,27 +70,33 @@ def test_finalize_verdict_priority() -> None:
     l2_ok = {"status": "PASSED"}
     l2_fail = {"status": "FAILED"}
     l2_err = {"status": "ERROR"}
+    solver_ok = {"status": "PASSED", "verdict": "UNKNOWN"}
+    solver_err = {"status": "ERROR", "verdict": "ERROR"}
 
-    out = _finalize_verdict(l1_ok, l2_ok, ["x"])
+    out = _finalize_verdict(l1_ok, l2_ok, solver_ok, ["x"])
     assert out["final_verdict"] == "ERROR"
     assert out["exit_code"] == 2
 
-    out = _finalize_verdict(l1_fail, l2_ok, [])
+    out = _finalize_verdict(l1_fail, l2_ok, solver_ok, [])
     assert out["final_verdict"] == "FAILED"
     assert out["exit_code"] == 1
     assert out["reason"] == "l1_failed"
 
-    out = _finalize_verdict(l1_ok, l2_fail, [])
+    out = _finalize_verdict(l1_ok, l2_fail, solver_ok, [])
     assert out["final_verdict"] == "FAILED"
     assert out["exit_code"] == 1
     assert out["reason"] == "l2_failed"
 
-    out = _finalize_verdict(l1_ok, l2_ok, [])
+    out = _finalize_verdict(l1_ok, l2_ok, solver_ok, [])
     assert out["final_verdict"] == "PASS"
     assert out["exit_code"] == 0
     assert out["reason"] == "ok"
 
-    out = _finalize_verdict(l1_ok, l2_err, [])
+    out = _finalize_verdict(l1_ok, l2_err, solver_ok, [])
+    assert out["final_verdict"] == "ERROR"
+    assert out["exit_code"] == 2
+
+    out = _finalize_verdict(l1_ok, l2_ok, solver_err, [])
     assert out["final_verdict"] == "ERROR"
     assert out["exit_code"] == 2
 
@@ -370,7 +376,8 @@ def test_run_l2_maps_validation_status_to_schema(monkeypatch) -> None:
         "policy_applied": True,
         "final_verdict_after_policy": "PASS",
     }
-    final = _finalize_verdict(l1, l2, [])
+    solver = {"status": "PASSED", "verdict": "UNKNOWN"}
+    final = _finalize_verdict(l1, l2, solver, [])
     run_meta = {
         "seed_root": 0,
         "instances": 1,

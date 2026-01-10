@@ -29,6 +29,7 @@ def build_record_v2(
     l1: Dict[str, Any],
     l2: Dict[str, Any],
     final: Dict[str, Any],
+    solver: Optional[Dict[str, Any]] = None,
     timing: Optional[Dict[str, Any]] = None,
     errors: Optional[List[str]] = None,
     warnings: Optional[List[str]] = None,
@@ -45,6 +46,17 @@ def build_record_v2(
         "instance": dict(instance),
         "l1": dict(l1),
         "l2": dict(l2),
+        "solver": dict(solver)
+        if solver is not None
+        else {
+            "status": "NOT_RUN",
+            "solver_name": "NOT_RUN",
+            "verdict": "NOT_RUN",
+            "time_sec": None,
+            "errors": [],
+            "warnings": [],
+            "details": {},
+        },
         "final": dict(final),
     }
     if timing is not None:
@@ -148,5 +160,17 @@ def validate_record_v2(record: Dict[str, Any]) -> None:
         ("reason", str),
     ):
         _require_type(_require_key(final, key), typ, f"final.{key}")
-    assert final["final_verdict"] in ("PASS", "FAILED", "ERROR"), "invalid final.final_verdict"
 
+    solver = _require_key(record, "solver")
+    _require_type(solver, dict, "solver")
+    for key, typ in (
+        ("status", str),
+        ("solver_name", str),
+        ("verdict", str),
+        ("time_sec", (int, float, type(None))),
+        ("errors", list),
+        ("warnings", list),
+        ("details", dict),
+    ):
+        _require_type(_require_key(solver, key), typ, f"solver.{key}")
+    assert final["final_verdict"] in ("PASS", "FAILED", "ERROR"), "invalid final.final_verdict"

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-#===- tests/test_confignet_l1l2_smoke_real.py - L1L2 Smoke ----------====#
+#===- tests/test_confignet_l1l2_smoke_real.py - L1L2 Smoke -----------====#
 # ACT: Abstract Constraint Transformer
 # Copyright (C) 2025– ACT Team
 #
@@ -29,11 +29,16 @@ def test_confignet_l1l2_smoke_real(tmp_path) -> None:
         topk=3,
         device="cpu",
         dtype="float64",
-        jsonl=str(tmp_path / "out.jsonl"),
+        jsonl=str(tmp_path / "smoke.jsonl"),
+        run_solver=False,
+        solver="torchlp",
+        solver_timeout=None,
+        solver_on_failure=False,
+        no_strict_input=False,
     )
     summary = run_confignet_l1l2(args)
     records = read_jsonl(args.jsonl)
+    assert summary["records"] == 1
     assert len(records) == 1
     validate_record_v2(records[0])
     assert records[0]["schema_version"] == "confignet_l1l2_v2"
-    assert summary["records"] == 1

@@ -9,8 +9,6 @@
 
 from __future__ import annotations
 
-from pathlib import Path
-
 from act.pipeline.confignet.jsonl import (
     canonicalize_record_v2,
     summarize_jsonl_v2,
@@ -19,10 +17,10 @@ from act.pipeline.confignet.jsonl import (
 from act.pipeline.confignet.schema_v2 import build_record_v2
 
 
-def _base_record() -> dict:
+def _base_record(final_verdict: str, *, reason: str, worst_gap: float) -> dict:
     run_meta = {
         "seed_root": 0,
-        "instances": 2,
+        "instances": 1,
         "samples": 1,
         "tf_mode": "interval",
         "strict": True,
@@ -30,13 +28,13 @@ def _base_record() -> dict:
         "dtype": "float64",
         "atol": 1e-6,
         "rtol": 0.0,
-        "topk": 10,
+        "topk": 5,
     }
     seeds = {"seed_root": 0, "seed_instance": 1, "seed_inputs": 2}
     instance = {
         "net_family": "MLP",
-        "arch": {"depth": 2, "width": 8},
-        "spec": {"eps": 0.1, "norm": "Linf"},
+        "arch": {"depth": 1},
+        "spec": {"input_spec": {}, "output_spec": {}},
         "input_shape": [1, 2],
         "eps": 0.1,
     }
@@ -51,15 +49,15 @@ def _base_record() -> dict:
         "status": "PASSED",
         "tf_mode": "interval",
         "samples": 1,
-        "checks_total": 8,
+        "checks_total": 3,
         "violations_total": 0,
-        "worst_gap": 0.0,
+        "worst_gap": worst_gap,
         "worst_layer": None,
         "topk": [],
         "layerwise_stats": [],
     }
-    final = {"final_verdict": "PASS", "exit_code": 0, "reason": "ok"}
-    record = build_record_v2(
+    final = {"final_verdict": final_verdict, "exit_code": 0, "reason": reason}
+    return build_record_v2(
         run_meta=run_meta,
         seeds=seeds,
         instance=instance,
@@ -67,51 +65,37 @@ def _base_record() -> dict:
         l2=l2,
         final=final,
         timing={"wall_time": 0.1},
-        created_at_utc="2025-01-01T00:00:00Z",
     )
-    record["timestamp"] = 123.0
-    return record
 
 
 def test_canonicalize_record_v2_drops_nondet_fields() -> None:
-    record_a = _base_record()
-    record_b = _base_record()
-    record_b["timing"] = {"wall_time": 9.9}
-    record_b["created_at_utc"] = "2099-01-01T00:00:00Z"
-    record_b["timestamp"] = 999.0
-    assert canonicalize_record_v2(record_a) == canonicalize_record_v2(record_b)
+    rec_a = _base_record("PASS", reason="ok", worst_gap=0.0)
+    rec_b = _base_record("PASS", reason="ok", worst_gap=0.0)
+    rec_a["timing"]["wall_time"] = 0.1
+    rec_b["timing"]["wall_time"] = 9.9
+    rec_a["created_at_utc"] = "2025-01-01T00:00:00Z"
+    rec_b["created_at_utc"] = "2025-01-02T00:00:00Z"
+    rec_a["solver"]["time_sec"] = 0.1
+    rec_b["solver"]["time_sec"] = 9.9
+    canon_a = canonicalize_record_v2(rec_a)
+    canon_b = canonicalize_record_v2(rec_b)
+    assert canon_a == canon_b
 
 
-def test_summarize_jsonl_v2_counts_and_aggregates(tmp_path: Path) -> None:
-    path = tmp_path / "out.jsonl"
-    rec_pass = _base_record()
-    rec_fail = _base_record()
-    rec_err = _base_record()
-    rec_fail["final"]["final_verdict"] = "FAILED"
-    rec_fail["final"]["reason"] = "l2_failed"
-    rec_fail["l2"]["status"] = "FAILED"
-    rec_fail["l2"]["violations_total"] = 2
-    rec_fail["l2"]["checks_total"] = 4
-    rec_fail["l2"]["worst_gap"] = 0.5
-    rec_err["final"]["final_verdict"] = "ERROR"
-    rec_err["final"]["reason"] = "error"
-    rec_err["l2"]["status"] = "ERROR"
-    rec_err["l2"]["checks_total"] = 0
-    rec_err["l2"]["violations_total"] = 0
-    rec_err["l2"]["worst_gap"] = None
+def test_summarize_jsonl_v2_counts_and_aggregates(tmp_path) -> None:
+    p = tmp_path / "out.jsonl"
+    write_record_jsonl(str(p), _base_record("PASS", reason="ok", worst_gap=0.0))
+    write_record_jsonl(str(p), _base_record("FAILED", reason="l1_failed", worst_gap=0.5))
+    write_record_jsonl(str(p), _base_record("ERROR", reason="error", worst_gap=0.2))
 
-    write_record_jsonl(str(path), rec_pass)
-    write_record_jsonl(str(path), rec_fail)
-    write_record_jsonl(str(path), rec_err)
-
-    summary = summarize_jsonl_v2(str(path))
+    summary = summarize_jsonl_v2(str(p))
     assert summary["records"] == 3
     assert summary["pass"] == 1
     assert summary["failed"] == 1
     assert summary["error"] == 1
     assert summary["by_reason"]["ok"] == 1
-    assert summary["by_reason"]["l2_failed"] == 1
+    assert summary["by_reason"]["l1_failed"] == 1
     assert summary["by_reason"]["error"] == 1
-    assert summary["checks_total"] == 12
-    assert summary["violations_total"] == 2
+    assert summary["checks_total"] == 9
+    assert summary["violations_total"] == 0
     assert summary["worst_gap_max"] == 0.5

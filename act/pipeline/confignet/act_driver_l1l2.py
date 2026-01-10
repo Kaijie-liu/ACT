@@ -21,6 +21,9 @@ from typing import Any, Dict, List, Optional
 
 import torch
 
+from act.back_end.verifier import verify_once
+from act.back_end.solver.solver_gurobi import GurobiSolver
+from act.back_end.solver.solver_torch import TorchLPSolver
 from act.pipeline.confignet.factory_adapter import ConfignetFactoryAdapter
 from act.pipeline.confignet.jsonl import write_record_jsonl
 from act.pipeline.confignet.policy import apply_policy
@@ -219,11 +222,95 @@ def _run_l2(
         }
 
 
-def _finalize_verdict(l1: Dict[str, Any], l2: Dict[str, Any], errors: List[str]) -> Dict[str, Any]:
-    if errors or l1.get("status") == "ERROR" or l2.get("status") == "ERROR":
+def _run_solver(
+    inst: InstanceSpec,
+    case: Dict[str, Any],
+    *,
+    solver_name: str,
+    timeout_s: Optional[float],
+    run_solver: bool,
+    skip_reason: Optional[str] = None,
+) -> Dict[str, Any]:
+    if not run_solver:
+        return {
+            "status": "NOT_RUN",
+            "solver_name": str(solver_name),
+            "verdict": "NOT_RUN",
+            "time_sec": None,
+            "errors": [],
+            "warnings": [],
+            "details": {"reason": skip_reason} if skip_reason else {},
+        }
+
+    act_model = case.get("act_model")
+    if act_model is None:
+        return {
+            "status": "ERROR",
+            "solver_name": str(solver_name),
+            "verdict": "ERROR",
+            "time_sec": None,
+            "errors": ["act_model unavailable"],
+            "warnings": [],
+            "details": {},
+        }
+
+    solver_key = str(solver_name).lower()
+    if solver_key in ("torchlp", "torch_lp"):
+        solver = TorchLPSolver()
+    elif solver_key in ("gurobi", "gurobi_lp", "gurobi_milp"):
+        solver = GurobiSolver()
+    else:
+        return {
+            "status": "ERROR",
+            "solver_name": str(solver_name),
+            "verdict": "ERROR",
+            "time_sec": None,
+            "errors": [f"unknown solver: {solver_name}"],
+            "warnings": [],
+            "details": {},
+        }
+
+    start = time.perf_counter()
+    try:
+        res = verify_once(act_model, solver=solver, timelimit=timeout_s)
+        return {
+            "status": "PASSED",
+            "solver_name": str(solver_name),
+            "verdict": str(res.status),
+            "time_sec": float(time.perf_counter() - start),
+            "errors": [],
+            "warnings": [],
+            "details": dict(res.stats) if getattr(res, "stats", None) is not None else {},
+        }
+    except Exception as e:
+        return {
+            "status": "ERROR",
+            "solver_name": str(solver_name),
+            "verdict": "ERROR",
+            "time_sec": float(time.perf_counter() - start),
+            "errors": [str(e)],
+            "warnings": [],
+            "details": {},
+        }
+
+
+def _finalize_verdict(
+    l1: Dict[str, Any],
+    l2: Dict[str, Any],
+    solver: Dict[str, Any],
+    errors: List[str],
+) -> Dict[str, Any]:
+    if (
+        errors
+        or l1.get("status") == "ERROR"
+        or l2.get("status") == "ERROR"
+        or solver.get("status") == "ERROR"
+    ):
         return {"final_verdict": "ERROR", "exit_code": 2, "reason": "error"}
     if l1.get("final_verdict_after_policy") != "PASS":
         return {"final_verdict": "FAILED", "exit_code": 1, "reason": "l1_failed"}
+    if solver.get("verdict") == "FALSIFIED":
+        return {"final_verdict": "FAILED", "exit_code": 1, "reason": "solver_falsified"}
     if l2.get("status") == "FAILED":
         return {"final_verdict": "FAILED", "exit_code": 1, "reason": "l2_failed"}
     return {"final_verdict": "PASS", "exit_code": 0, "reason": "ok"}
@@ -255,6 +342,10 @@ def run_confignet_l1l2(args) -> Dict[str, Any]:
 
     adapter = ConfignetFactoryAdapter(device=device, dtype=dtype)
     validator = VerificationValidator(device=device, dtype=dtype)
+    run_solver = bool(getattr(args, "run_solver", False))
+    solver_name = str(getattr(args, "solver", "torchlp"))
+    solver_on_failure = bool(getattr(args, "solver_on_failure", False))
+    solver_timeout = getattr(args, "solver_timeout", None)
     errors: List[str] = []
     warnings: List[str] = []
     passed = failed = errored = 0
@@ -271,6 +362,7 @@ def run_confignet_l1l2(args) -> Dict[str, Any]:
         case: Dict[str, Any] = {}
         l1: Dict[str, Any] = {}
         l2: Dict[str, Any] = {}
+        solver: Dict[str, Any] = {}
         instance_meta = _instance_meta_from_spec(inst_seeded)
 
         try:
@@ -308,6 +400,16 @@ def run_confignet_l1l2(args) -> Dict[str, Any]:
                 act_build_error=case.get("act_build_error"),
                 strict_input=strict_input,
             )
+            l1_failed = l1.get("status") == "FAILED"
+            run_solver_this = run_solver and (solver_on_failure or not l1_failed)
+            solver = _run_solver(
+                inst_seeded,
+                case,
+                solver_name=solver_name,
+                timeout_s=solver_timeout,
+                run_solver=run_solver_this,
+                skip_reason="skipped_l1_failed" if (run_solver and l1_failed and not solver_on_failure) else None,
+            )
         except Exception as e:
             instance_errors.append(f"{type(e).__name__}: {e}")
             l1 = {
@@ -330,12 +432,22 @@ def run_confignet_l1l2(args) -> Dict[str, Any]:
                 "errors": list(instance_errors),
                 "warnings": [],
             }
+            solver = _run_solver(
+                inst_seeded,
+                case,
+                solver_name=solver_name,
+                timeout_s=solver_timeout,
+                run_solver=run_solver,
+                skip_reason="skipped_exception",
+            )
 
         if l1.get("status") == "ERROR":
             instance_errors.append("l1_error")
         instance_errors.extend(list(l2.get("errors", [])))
+        if solver.get("status") == "ERROR":
+            instance_errors.extend(list(solver.get("errors", [])))
 
-        final = _finalize_verdict(l1, l2, instance_errors)
+        final = _finalize_verdict(l1, l2, solver, instance_errors)
         status = final["final_verdict"]
         if status == "PASS":
             passed += 1
@@ -353,6 +465,7 @@ def run_confignet_l1l2(args) -> Dict[str, Any]:
             instance=instance_meta,
             l1=l1,
             l2=l2,
+            solver=solver,
             final=final,
             timing={"wall_time": time.perf_counter() - inst_start},
             errors=instance_errors,

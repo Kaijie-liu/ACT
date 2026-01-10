@@ -129,6 +129,15 @@ def main(argv: Optional[List[str]] = None) -> int:
     p_l1l2.add_argument("--rtol", type=float, default=0.0)
     p_l1l2.add_argument("--topk", type=int, default=10)
     p_l1l2.add_argument("--no-strict", action="store_false", dest="strict", default=True)
+    p_l1l2.add_argument("--run-solver", action="store_true")
+    p_l1l2.add_argument(
+        "--solver",
+        type=str,
+        default="torchlp",
+        choices=["torchlp", "gurobi_lp", "gurobi_milp"],
+    )
+    p_l1l2.add_argument("--solver-timeout", type=float, default=None)
+    p_l1l2.add_argument("--solver-on-failure", action="store_true")
 
     args = p.parse_args(argv)
 
@@ -223,6 +232,10 @@ def main(argv: Optional[List[str]] = None) -> int:
             dtype=str(args.dtype),
             jsonl=args.out_jsonl or "confignet_l1l2.jsonl",
             no_strict_input=bool(args.no_strict_input),
+            run_solver=bool(args.run_solver),
+            solver=str(args.solver),
+            solver_timeout=args.solver_timeout,
+            solver_on_failure=bool(args.solver_on_failure),
         )
         run_confignet_l1l2(driver_args)
         return 0
