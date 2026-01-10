@@ -141,6 +141,7 @@
 
 import os
 import copy
+import time
 import torch
 import logging
 from pathlib import Path
@@ -148,6 +149,10 @@ from typing import Dict, Any, Optional, Tuple, List
 
 from act.pipeline.verification.model_factory import ModelFactory
 from act.pipeline.verification.torch2act import TorchToACT
+from act.pipeline.verification.activations import collect_concrete_activations
+from act.pipeline.verification.bounds_core import compute_abstract_bounds
+from act.pipeline.verification.layer_alignment import align_activations_to_act_layers
+from act.pipeline.verification.bounds_compare import compare_bounds_per_neuron
 from act.back_end.verifier import verify_once, gather_input_spec_layers, seed_from_input_specs, get_input_ids, get_assert_layer, find_entry_layer_id
 from act.back_end.analyze import analyze
 from act.back_end.solver.solver_gurobi import GurobiSolver
@@ -706,6 +711,767 @@ class VerificationValidator:
         
         self.validation_results.append(result)
         return result
+
+    def validate_bounds_per_neuron(
+        self,
+        networks: Optional[List[str]] = None,
+        tf_modes: List[str] = ['interval'],
+        num_samples: int = 1,
+        *,
+        atol: float = 1e-6,
+        rtol: float = 0.0,
+        topk: int = 10,
+        strict: bool = True,
+    ) -> Dict[str, Any]:
+        """
+        Level 2 (strict): Per-neuron bounds validation with alignment.
+        """
+        if networks is None:
+            networks = self.factory.list_networks()
+
+        logger.info(f"\n{'='*80}")
+        logger.info(f"LEVEL 2: BOUNDS PER-NEURON VALIDATION (STRICT)")
+        logger.info(f"{'='*80}")
+        logger.info(f"Testing {len(networks)} networks with {len(tf_modes)} TF modes")
+        logger.info(f"Samples per network: {num_samples}")
+        logger.info(f"Device: {self.device}, Dtype: {self.dtype}")
+        logger.info(f"{'='*80}\n")
+
+        for network in networks:
+            for tf_mode in tf_modes:
+                try:
+                    self._validate_bounds_per_neuron_single(
+                        network,
+                        tf_mode,
+                        num_samples,
+                        atol=atol,
+                        rtol=rtol,
+                        topk=topk,
+                        strict=strict,
+                    )
+                except Exception as e:
+                    logger.error(f"Bounds-per-neuron validation failed for {network}/{tf_mode}: {e}")
+                    import traceback
+                    traceback.print_exc()
+                    error_result = {
+                        'network': network,
+                        'tf_mode': tf_mode,
+                        'validation_type': 'bounds_per_neuron',
+                        'status': 'ERROR',
+                        'error': f"Outer exception: {str(e)}",
+                        'samples_processed': 0,
+                        'strict': bool(strict),
+                    }
+                    self.validation_results.append(error_result)
+
+        return self._compute_summary(validation_type='bounds_per_neuron')
+
+    def _validate_bounds_per_neuron_single(
+        self,
+        name: str,
+        tf_mode: str,
+        num_samples: int,
+        *,
+        atol: float,
+        rtol: float,
+        topk: int,
+        strict: bool,
+    ) -> Dict[str, Any]:
+        """
+        Validate per-neuron bounds for a single network (strict alignment).
+        """
+        logger.info(f"\n{'='*80}")
+        logger.info(f"Validating bounds per-neuron: {name} (tf_mode: {tf_mode})")
+        logger.info(f"{'='*80}")
+        network_start = time.perf_counter()
+
+        from act.back_end.core import Bounds, Fact
+
+        act_net = self.factory.get_act_net(name)
+        model = self.factory.create_model(name, load_weights=True)
+        model = model.to(device=self.device, dtype=self.dtype)
+
+        was_training = bool(getattr(model, "training", False))
+        model.eval()
+
+        def _get_input_bounds_from_act(act_net_inner):
+            for layer in act_net_inner.layers:
+                if layer.kind != "INPUT_SPEC":
+                    continue
+
+                params = layer.params or {}
+                meta = layer.meta or {}
+
+                if "lb" in params and "ub" in params:
+                    return Bounds(
+                        lb=params["lb"].flatten().to(device=self.device, dtype=self.dtype),
+                        ub=params["ub"].flatten().to(device=self.device, dtype=self.dtype),
+                    )
+
+                if "center" in params and "eps" in meta:
+                    center = params["center"].flatten().to(device=self.device, dtype=self.dtype)
+                    eps = meta["eps"]
+                    if not torch.is_tensor(eps):
+                        eps = torch.tensor(eps, device=self.device, dtype=self.dtype)
+                    else:
+                        eps = eps.to(device=self.device, dtype=self.dtype)
+                    return Bounds(lb=center - eps, ub=center + eps)
+            return None
+
+        spec_bounds = _get_input_bounds_from_act(act_net)
+        total_checks = 0
+        total_violations = 0
+        alignment_meta: Optional[Dict[str, Any]] = None
+        errors: List[str] = []
+        warnings: List[str] = []
+
+        stats_by_layer: Dict[int, Dict[str, Any]] = {}
+        candidate_violations: List[Dict[str, Any]] = []
+        samples_processed = 0
+        samples_failed = 0
+        samples_error = 0
+        worst_gap = 0.0
+        worst_layer: Optional[Dict[str, Any]] = None
+        missing_bounds_all: List[int] = []
+
+        try:
+            for sample_idx in range(num_samples):
+                sample_start = time.perf_counter()
+                samples_processed = sample_idx + 1
+                input_tensor = self.factory.generate_test_input(name, 'random')
+                input_tensor = input_tensor.to(device=self.device, dtype=self.dtype)
+
+                if spec_bounds is not None:
+                    input_bounds = spec_bounds
+                else:
+                    input_bounds = Bounds(
+                        lb=input_tensor.flatten(),
+                        ub=input_tensor.flatten(),
+                    )
+                entry_fact = Fact(bounds=input_bounds, cons=None)
+
+                bounds_by_layer, bounds_errors = compute_abstract_bounds(
+                    act_net,
+                    entry_fact,
+                    tf_mode=tf_mode,
+                )
+                sample_errors: List[str] = []
+                sample_warnings: List[str] = []
+                missing_bounds: List[int] = []
+                align_events = 0
+                align_mapped = 0
+                align_drop_batch = 0
+                align_err = 0
+                align_warn = 0
+                if bounds_errors:
+                    sample_errors.extend([f"sample {sample_idx}: {e}" for e in bounds_errors])
+                    if strict:
+                        errors.extend(sample_errors)
+                        samples_error += 1
+                        sample_status = "ERROR"
+                        sample_checks = 0
+                        sample_viol = 0
+                        sample_max_gap = 0.0
+                        sample_time = time.perf_counter() - sample_start
+                        logger.info(
+                            "\n  ❌ [L2][bounds_per_neuron] net=%s tf=%s sample=%d/%d "
+                            "status=%s checks=%d viol=%d max_gap=%.2e "
+                            "align={events=%d mapped=%d drop_batch=%d err=%d warn=%d} time=%.2fs",
+                            name,
+                            tf_mode,
+                            samples_processed,
+                            num_samples,
+                            sample_status,
+                            sample_checks,
+                            sample_viol,
+                            sample_max_gap,
+                            align_events,
+                            align_mapped,
+                            align_drop_batch,
+                            align_err,
+                            align_warn,
+                            sample_time,
+                        )
+                        logger.error("❌ [L2][bounds_per_neuron] net=%s tf=%s ERROR details:", name, tf_mode)
+                        for e in sample_errors[:3]:
+                            logger.error("  - %s", e)
+                        break
+                    errors.extend(sample_errors)
+
+                events, event_errors, event_warnings = collect_concrete_activations(
+                    model,
+                    input_tensor,
+                )
+                if event_errors:
+                    sample_errors.extend([f"sample {sample_idx}: {e}" for e in event_errors])
+                    if strict:
+                        errors.extend(sample_errors)
+                        samples_error += 1
+                        sample_status = "ERROR"
+                        sample_checks = 0
+                        sample_viol = 0
+                        sample_max_gap = 0.0
+                        sample_time = time.perf_counter() - sample_start
+                        logger.info(
+                            "\n  ❌ [L2][bounds_per_neuron] net=%s tf=%s sample=%d/%d "
+                            "status=%s checks=%d viol=%d max_gap=%.2e "
+                            "align={events=%d mapped=%d drop_batch=%d err=%d warn=%d} time=%.2fs",
+                            name,
+                            tf_mode,
+                            samples_processed,
+                            num_samples,
+                            sample_status,
+                            sample_checks,
+                            sample_viol,
+                            sample_max_gap,
+                            len(events),
+                            0,
+                            0,
+                            len(sample_errors),
+                            len(event_warnings),
+                            sample_time,
+                        )
+                        logger.error("❌ [L2][bounds_per_neuron] net=%s tf=%s ERROR details:", name, tf_mode)
+                        for e in sample_errors[:3]:
+                            logger.error("  - %s", e)
+                        break
+                    errors.extend(sample_errors)
+                if event_warnings:
+                    sample_warnings.extend([f"sample {sample_idx}: {w}" for w in event_warnings])
+                    warnings.extend(sample_warnings)
+
+                alignment = align_activations_to_act_layers(
+                    act_net,
+                    events,
+                    mode="hookable_order_strict",
+                )
+                if alignment_meta is None:
+                    alignment_meta = alignment.meta
+                if alignment.meta:
+                    align_events = int(alignment.meta.get("hookable_events", len(events)))
+                    align_mapped = int(alignment.meta.get("hookable_layers", len(alignment.mapping)))
+                    align_drop_batch = int(alignment.meta.get("drop_batch", 0))
+                    align_err = int(alignment.meta.get("err", len(alignment.errors)))
+                    align_warn = int(
+                        alignment.meta.get(
+                            "warn",
+                            len(event_warnings) + len(alignment.warnings),
+                        )
+                    )
+                else:
+                    align_events = len(events)
+                    align_mapped = len(alignment.mapping)
+                    align_drop_batch = 0
+                    align_err = len(alignment.errors)
+                    align_warn = len(event_warnings) + len(alignment.warnings)
+                if alignment.errors:
+                    sample_errors.extend([f"sample {sample_idx}: {e}" for e in alignment.errors])
+                    if strict:
+                        errors.extend(sample_errors)
+                        samples_error += 1
+                        sample_status = "ERROR"
+                        sample_checks = 0
+                        sample_viol = 0
+                        sample_max_gap = 0.0
+                        sample_time = time.perf_counter() - sample_start
+                        logger.info(
+                            "\n  ❌ [L2][bounds_per_neuron] net=%s tf=%s sample=%d/%d "
+                            "status=%s checks=%d viol=%d max_gap=%.2e "
+                            "align={events=%d mapped=%d drop_batch=%d err=%d warn=%d} time=%.2fs",
+                            name,
+                            tf_mode,
+                            samples_processed,
+                            num_samples,
+                            sample_status,
+                            sample_checks,
+                            sample_viol,
+                            sample_max_gap,
+                            align_events,
+                            align_mapped,
+                            align_drop_batch,
+                            align_err,
+                            align_warn,
+                            sample_time,
+                        )
+                        logger.error("❌ [L2][bounds_per_neuron] net=%s tf=%s ERROR details:", name, tf_mode)
+                        for e in sample_errors[:3]:
+                            logger.error("  - %s", e)
+                        logger.error(
+                            "  alignment: events=%d mapped=%d drop_batch=%d err=%d warn=%d",
+                            align_events,
+                            align_mapped,
+                            align_drop_batch,
+                            align_err,
+                            align_warn,
+                        )
+                        break
+                    errors.extend(sample_errors)
+
+                concrete_by_layer = {lid: ev.tensor for lid, ev in alignment.mapping.items()}
+                missing_bounds = [lid for lid in concrete_by_layer.keys() if lid not in bounds_by_layer]
+                if missing_bounds:
+                    missing_bounds_all.extend(missing_bounds)
+                    sample_errors.append(
+                        f"sample {sample_idx}: missing bounds for layer_ids={sorted(missing_bounds)}"
+                    )
+                    if strict:
+                        errors.extend(sample_errors)
+                        samples_error += 1
+                        sample_status = "ERROR"
+                        sample_checks = 0
+                        sample_viol = 0
+                        sample_max_gap = 0.0
+                        sample_time = time.perf_counter() - sample_start
+                        logger.info(
+                            "\n  ❌ [L2][bounds_per_neuron] net=%s tf=%s sample=%d/%d "
+                            "status=%s checks=%d viol=%d max_gap=%.2e "
+                            "align={events=%d mapped=%d drop_batch=%d err=%d warn=%d} time=%.2fs",
+                            name,
+                            tf_mode,
+                            samples_processed,
+                            num_samples,
+                            sample_status,
+                            sample_checks,
+                            sample_viol,
+                            sample_max_gap,
+                            align_events,
+                            align_mapped,
+                            align_drop_batch,
+                            align_err,
+                            align_warn,
+                            sample_time,
+                        )
+                        logger.error("❌ [L2][bounds_per_neuron] net=%s tf=%s ERROR details:", name, tf_mode)
+                        for e in sample_errors[:3]:
+                            logger.error("  - %s", e)
+                        logger.error("  missing_bounds_layer_ids=%s", sorted(missing_bounds))
+                        logger.error(
+                            "  alignment: events=%d mapped=%d drop_batch=%d err=%d warn=%d",
+                            align_events,
+                            align_mapped,
+                            align_drop_batch,
+                            align_err,
+                            align_warn,
+                        )
+                        break
+                    errors.extend(sample_errors)
+
+                bounds_for_compare = {lid: bounds_by_layer[lid] for lid in concrete_by_layer.keys()}
+                compare = compare_bounds_per_neuron(
+                    bounds_by_layer=bounds_for_compare,
+                    concrete_by_layer=concrete_by_layer,
+                    atol=atol,
+                    rtol=rtol,
+                    topk=topk,
+                    nan_policy="error" if strict else "warn",
+                )
+                if compare.get("status") == "ERROR":
+                    sample_errors.extend([f"sample {sample_idx}: {e}" for e in compare.get("errors", [])])
+                    if strict:
+                        errors.extend(sample_errors)
+                        samples_error += 1
+                        sample_status = "ERROR"
+                        sample_checks = 0
+                        sample_viol = 0
+                        sample_max_gap = 0.0
+                        sample_time = time.perf_counter() - sample_start
+                        logger.info(
+                            "\n  ❌ [L2][bounds_per_neuron] net=%s tf=%s sample=%d/%d "
+                            "status=%s checks=%d viol=%d max_gap=%.2e "
+                            "align={events=%d mapped=%d drop_batch=%d err=%d warn=%d} time=%.2fs",
+                            name,
+                            tf_mode,
+                            samples_processed,
+                            num_samples,
+                            sample_status,
+                            sample_checks,
+                            sample_viol,
+                            sample_max_gap,
+                            align_events,
+                            align_mapped,
+                            align_drop_batch,
+                            align_err,
+                            align_warn,
+                            sample_time,
+                        )
+                        logger.error("❌ [L2][bounds_per_neuron] net=%s tf=%s ERROR details:", name, tf_mode)
+                        for e in sample_errors[:3]:
+                            logger.error("  - %s", e)
+                        break
+                    errors.extend(sample_errors)
+                    samples_error += 1
+                    sample_status = "ERROR"
+                    sample_checks = 0
+                    sample_viol = 0
+                    sample_max_gap = 0.0
+                    sample_time = time.perf_counter() - sample_start
+                    logger.info(
+                        "\n  ❌ [L2][bounds_per_neuron] net=%s tf=%s sample=%d/%d "
+                        "status=%s checks=%d viol=%d max_gap=%.2e "
+                        "align={events=%d mapped=%d drop_batch=%d err=%d warn=%d} time=%.2fs",
+                        name,
+                        tf_mode,
+                        samples_processed,
+                        num_samples,
+                        sample_status,
+                        sample_checks,
+                        sample_viol,
+                        sample_max_gap,
+                        align_events,
+                        align_mapped,
+                        align_drop_batch,
+                        align_err,
+                        align_warn,
+                        sample_time,
+                    )
+                    logger.error("❌ [L2][bounds_per_neuron] net=%s tf=%s ERROR details:", name, tf_mode)
+                    for e in sample_errors[:3]:
+                        logger.error("  - %s", e)
+                    continue
+
+                total_violations += int(compare.get("violations_total", 0))
+                candidate_violations.extend(compare.get("violations_topk", []))
+
+                sample_stats = compare.get("layerwise_stats", [])
+                sample_total = sum(int(s.get("num_neurons", 0)) for s in sample_stats)
+                total_checks += int(sample_total)
+                sample_max_gap = 0.0
+                for s in sample_stats:
+                    sample_max_gap = max(sample_max_gap, float(s.get("max_gap", 0.0)))
+                worst_gap = max(worst_gap, sample_max_gap)
+                for s in sample_stats:
+                    lid = int(s["layer_id"])
+                    entry = stats_by_layer.get(lid)
+                    if entry is None:
+                        entry = {
+                            "layer_id": lid,
+                            "kind": s.get("kind"),
+                            "shape": s.get("shape"),
+                            "num_neurons": int(s.get("num_neurons", 0)),
+                            "num_violations": 0,
+                            "max_gap": 0.0,
+                            "mean_gap": 0.0,
+                            "lb_min": float("inf"),
+                            "lb_max": float("-inf"),
+                            "ub_min": float("inf"),
+                            "ub_max": float("-inf"),
+                            "concrete_min": float("inf"),
+                            "concrete_max": float("-inf"),
+                            "_sum_gap": 0.0,
+                            "_sum_violations": 0,
+                        }
+                        stats_by_layer[lid] = entry
+
+                    entry["num_violations"] += int(s.get("num_violations", 0))
+                    entry["max_gap"] = max(entry["max_gap"], float(s.get("max_gap", 0.0)))
+                    entry["_sum_gap"] += float(s.get("mean_gap", 0.0)) * int(s.get("num_violations", 0))
+                    entry["_sum_violations"] += int(s.get("num_violations", 0))
+                    entry["lb_min"] = min(entry["lb_min"], float(s.get("lb_min", 0.0)))
+                    entry["lb_max"] = max(entry["lb_max"], float(s.get("lb_max", 0.0)))
+                    entry["ub_min"] = min(entry["ub_min"], float(s.get("ub_min", 0.0)))
+                    entry["ub_max"] = max(entry["ub_max"], float(s.get("ub_max", 0.0)))
+                    entry["concrete_min"] = min(entry["concrete_min"], float(s.get("concrete_min", 0.0)))
+                    entry["concrete_max"] = max(entry["concrete_max"], float(s.get("concrete_max", 0.0)))
+
+                if sample_errors:
+                    sample_status = "ERROR"
+                    samples_error += 1
+                elif int(compare.get("violations_total", 0)) > 0:
+                    samples_failed += 1
+                    sample_status = "FAILED"
+                    if sample_stats:
+                        worst_layer_sample = max(
+                            [x for x in sample_stats if int(x.get("num_violations", 0)) > 0],
+                            key=lambda x: float(x.get("max_gap", 0.0)),
+                            default=None,
+                        )
+                        if worst_layer_sample is not None:
+                            worst_layer = worst_layer_sample
+                else:
+                    sample_status = "PASS"
+
+                sample_time = time.perf_counter() - sample_start
+                logger.info(
+                    "\n  %s [L2][bounds_per_neuron] net=%s tf=%s sample=%d/%d "
+                    "status=%s checks=%d viol=%d max_gap=%.2e "
+                    "align={events=%d mapped=%d drop_batch=%d err=%d warn=%d} time=%.2fs",
+                    "🚨" if sample_status == "FAILED" else ("❌" if sample_status == "ERROR" else "✅"),
+                    name,
+                    tf_mode,
+                    samples_processed,
+                    num_samples,
+                    sample_status,
+                    sample_total,
+                    int(compare.get("violations_total", 0)),
+                    float(sample_max_gap),
+                    align_events,
+                    align_mapped,
+                    align_drop_batch,
+                    align_err,
+                    align_warn,
+                    sample_time,
+                )
+
+                if sample_status == "ERROR":
+                    logger.error("❌ [L2][bounds_per_neuron] net=%s tf=%s ERROR details:", name, tf_mode)
+                    for e in sample_errors[:3]:
+                        logger.error("  - %s", e)
+                    if missing_bounds:
+                        logger.error("  missing_bounds_layer_ids=%s", sorted(missing_bounds))
+                    logger.error(
+                        "  alignment: events=%d mapped=%d drop_batch=%d err=%d warn=%d",
+                        align_events,
+                        align_mapped,
+                        align_drop_batch,
+                        align_err,
+                        align_warn,
+                    )
+
+                if sample_status == "FAILED":
+                    if worst_layer is not None:
+                        logger.error(
+                            "🚨 [L2][bounds_per_neuron] worst_layer: "
+                            "layer_id=%s kind=%s shape=%s viol=%s/%s max_gap=%.2e",
+                            worst_layer.get("layer_id"),
+                            worst_layer.get("kind"),
+                            worst_layer.get("shape"),
+                            worst_layer.get("num_violations"),
+                            worst_layer.get("num_neurons"),
+                            float(worst_layer.get("max_gap", 0.0)),
+                        )
+                    topk_violations = compare.get("violations_topk", [])[: int(topk)]
+                    for v in topk_violations:
+                        val = float(v.get("concrete", 0.0))
+                        lb = float(v.get("lb", 0.0))
+                        ub = float(v.get("ub", 0.0))
+                        if val < lb:
+                            direction = "below_lb"
+                        elif val > ub:
+                            direction = "above_ub"
+                        else:
+                            direction = "in_bounds"
+                        logger.error(
+                            "  topk: layer_id=%s idx=%s gap=%.2e val=%.6g lb=%.6g ub=%.6g %s",
+                            v.get("layer_id"),
+                            v.get("neuron_index"),
+                            float(v.get("gap", 0.0)),
+                            val,
+                            lb,
+                            ub,
+                            direction,
+                        )
+                    for s in sample_stats:
+                        if int(s.get("num_violations", 0)) == 0:
+                            continue
+                        logger.error(
+                            "  layer: id=%s kind=%s shape=%s viol=%s lb=[%.6g, %.6g] "
+                            "ub=[%.6g, %.6g] concrete=[%.6g, %.6g]",
+                            s.get("layer_id"),
+                            s.get("kind"),
+                            s.get("shape"),
+                            s.get("num_violations"),
+                            float(s.get("lb_min", 0.0)),
+                            float(s.get("lb_max", 0.0)),
+                            float(s.get("ub_min", 0.0)),
+                            float(s.get("ub_max", 0.0)),
+                            float(s.get("concrete_min", 0.0)),
+                            float(s.get("concrete_max", 0.0)),
+                        )
+
+        finally:
+            if was_training:
+                model.train()
+
+        if errors and strict:
+            if PerformanceOptions.debug_tf:
+                logger.warning(
+                    "bounds_per_neuron strict errors (first 3): %s",
+                    errors[:3],
+                )
+            logger.info(
+                "\n  ❌ [L2][bounds_per_neuron] net=%s tf=%s RESULT=ERROR samples=%d checks=%d "
+                "viol=%d worst_gap=%.2e time=%.2fs",
+                name,
+                tf_mode,
+                samples_processed,
+                int(total_checks),
+                int(total_violations),
+                float(worst_gap),
+                time.perf_counter() - network_start,
+            )
+            for e in errors[:3]:
+                logger.error("  - %s", e)
+            if missing_bounds_all:
+                logger.error("  missing_bounds_layer_ids=%s", sorted(set(missing_bounds_all)))
+            if alignment_meta:
+                align_events = int(alignment_meta.get("hookable_events", 0))
+                align_mapped = int(alignment_meta.get("hookable_layers", 0))
+                align_drop_batch = int(alignment_meta.get("drop_batch", 0))
+                align_err = int(alignment_meta.get("err", 0))
+                align_warn = int(alignment_meta.get("warn", 0))
+                logger.error(
+                    "  alignment: events=%d mapped=%d drop_batch=%d err=%d warn=%d",
+                    align_events,
+                    align_mapped,
+                    align_drop_batch,
+                    align_err,
+                    align_warn,
+                )
+            result = {
+                'network': name,
+                'tf_mode': tf_mode,
+                'validation_type': 'bounds_per_neuron',
+                'status': 'ERROR',
+                'validation_status': 'ERROR',
+                'errors': errors,
+                'warnings': warnings,
+                'alignment': alignment_meta or {},
+                'total_checks': int(total_checks),
+                'violations_total': 0,
+                'violations_topk': [],
+                'layerwise_stats': [],
+                'samples_processed': int(samples_processed),
+                'strict': bool(strict),
+            }
+            self.validation_results.append(result)
+            return result
+
+        layerwise_stats = []
+        for lid, s in stats_by_layer.items():
+            total_v = int(s.pop("_sum_violations", 0))
+            sum_gap = float(s.pop("_sum_gap", 0.0))
+            if total_v > 0:
+                mean_gap = sum_gap / total_v
+            else:
+                mean_gap = 0.0
+            s["mean_gap"] = float(mean_gap)
+            s["layer_status"] = "FAIL" if s["num_violations"] > 0 else "PASS"
+            if s["lb_min"] == float("inf"):
+                s["lb_min"] = 0.0
+                s["lb_max"] = 0.0
+                s["ub_min"] = 0.0
+                s["ub_max"] = 0.0
+                s["concrete_min"] = 0.0
+                s["concrete_max"] = 0.0
+            layerwise_stats.append(s)
+
+        candidate_violations.sort(key=lambda x: x.get("gap", 0.0), reverse=True)
+        topk_violations = candidate_violations[: int(topk)]
+
+        if total_violations > 0:
+            validation_status = 'FAILED'
+        else:
+            validation_status = 'PASSED'
+
+        if samples_error > 0:
+            result_label = "ERROR"
+            result_emoji = "❌"
+        elif total_violations > 0:
+            result_label = "FAILED"
+            result_emoji = "🚨"
+        else:
+            result_label = "PASS"
+            result_emoji = "✅"
+        logger.info(
+            "\n  %s [L2][bounds_per_neuron] net=%s tf=%s RESULT=%s samples=%d checks=%d "
+            "viol=%d worst_gap=%.2e time=%.2fs",
+            result_emoji,
+            name,
+            tf_mode,
+            result_label,
+            samples_processed,
+            int(total_checks),
+            int(total_violations),
+            float(worst_gap),
+            time.perf_counter() - network_start,
+        )
+        if result_label == "ERROR":
+            validation_status = "ERROR"
+            for e in errors[:3]:
+                logger.error("  - %s", e)
+            if missing_bounds_all:
+                logger.error("  missing_bounds_layer_ids=%s", sorted(set(missing_bounds_all)))
+            if alignment_meta:
+                align_events = int(alignment_meta.get("hookable_events", 0))
+                align_mapped = int(alignment_meta.get("hookable_layers", 0))
+                align_drop_batch = int(alignment_meta.get("drop_batch", 0))
+                align_err = int(alignment_meta.get("err", 0))
+                align_warn = int(alignment_meta.get("warn", 0))
+                logger.error(
+                    "  alignment: events=%d mapped=%d drop_batch=%d err=%d warn=%d",
+                    align_events,
+                    align_mapped,
+                    align_drop_batch,
+                    align_err,
+                    align_warn,
+                )
+        if validation_status == "FAILED":
+            if worst_layer is not None:
+                logger.error(
+                    "🚨 [L2][bounds_per_neuron] worst_layer: "
+                    "layer_id=%s kind=%s shape=%s viol=%s/%s max_gap=%.2e",
+                    worst_layer.get("layer_id"),
+                    worst_layer.get("kind"),
+                    worst_layer.get("shape"),
+                    worst_layer.get("num_violations"),
+                    worst_layer.get("num_neurons"),
+                    float(worst_layer.get("max_gap", 0.0)),
+                )
+            for v in topk_violations[: int(topk)]:
+                val = float(v.get("concrete", 0.0))
+                lb = float(v.get("lb", 0.0))
+                ub = float(v.get("ub", 0.0))
+                if val < lb:
+                    direction = "below_lb"
+                elif val > ub:
+                    direction = "above_ub"
+                else:
+                    direction = "in_bounds"
+                logger.error(
+                    "  topk: layer_id=%s idx=%s gap=%.2e val=%.6g lb=%.6g ub=%.6g %s",
+                    v.get("layer_id"),
+                    v.get("neuron_index"),
+                    float(v.get("gap", 0.0)),
+                    val,
+                    lb,
+                    ub,
+                    direction,
+                )
+            for s in layerwise_stats:
+                if int(s.get("num_violations", 0)) == 0:
+                    continue
+                logger.error(
+                    "  layer: id=%s kind=%s shape=%s viol=%s lb=[%.6g, %.6g] "
+                    "ub=[%.6g, %.6g] concrete=[%.6g, %.6g]",
+                    s.get("layer_id"),
+                    s.get("kind"),
+                    s.get("shape"),
+                    s.get("num_violations"),
+                    float(s.get("lb_min", 0.0)),
+                    float(s.get("lb_max", 0.0)),
+                    float(s.get("ub_min", 0.0)),
+                    float(s.get("ub_max", 0.0)),
+                    float(s.get("concrete_min", 0.0)),
+                    float(s.get("concrete_max", 0.0)),
+                )
+
+        result = {
+            'network': name,
+            'tf_mode': tf_mode,
+            'validation_type': 'bounds_per_neuron',
+            'validation_status': validation_status,
+            'status': "ERROR" if result_label == "ERROR" else None,
+            'total_checks': int(total_checks),
+            'violations_total': int(total_violations),
+            'violations_topk': topk_violations,
+            'layerwise_stats': layerwise_stats,
+            'alignment': alignment_meta or {},
+            'errors': errors,
+            'warnings': warnings,
+            'strict': bool(strict),
+        }
+        self.validation_results.append(result)
+        return result
     
     def _get_concrete_activations(
         self,
@@ -802,11 +1568,11 @@ class VerificationValidator:
         summary_l1 = self.validate_counterexamples(networks=networks, solvers=solvers)
         
         # Run Level 2
-        summary_l3 = self.validate_bounds(networks=networks, tf_modes=tf_modes, num_samples=num_samples)
+        summary_l2 = self.validate_bounds(networks=networks, tf_modes=tf_modes, num_samples=num_samples)
         
         # Combine summaries - FAILED if any failures OR errors
-        has_failures = (summary_l1.get('failed', 0) > 0 or summary_l3.get('failed', 0) > 0)
-        has_errors = (summary_l1.get('errors', 0) > 0 or summary_l3.get('errors', 0) > 0)
+        has_failures = (summary_l1.get('failed', 0) > 0 or summary_l2.get('failed', 0) > 0)
+        has_errors = (summary_l1.get('errors', 0) > 0 or summary_l2.get('errors', 0) > 0)
         
         if has_failures:
             overall_status = 'FAILED'  # Critical: verifier is unsound
@@ -817,7 +1583,7 @@ class VerificationValidator:
         
         combined = {
             'level1_counterexample': summary_l1,
-            'level3_bounds': summary_l3,
+            'level2_bounds': summary_l2,
             'overall_status': overall_status
         }
         
@@ -870,6 +1636,9 @@ class VerificationValidator:
         elif validation_type == 'bounds':
             summary['total_checks'] = sum(r.get('total_checks', 0) for r in results)
             summary['total_violations'] = sum(len(r.get('violations', [])) for r in results)
+        elif validation_type == 'bounds_per_neuron':
+            summary['total_checks'] = sum(r.get('total_checks', 0) for r in results)
+            summary['total_violations'] = sum(r.get('violations_total', 0) for r in results)
         
         self._print_summary(summary)
         return summary
@@ -894,7 +1663,7 @@ class VerificationValidator:
         
         if validation_type == 'counterexample':
             print(f"Concrete counterexamples found: {summary.get('counterexamples_found', 0)}")
-        elif validation_type == 'bounds':
+        elif validation_type in ('bounds', 'bounds_per_neuron'):
             print(f"Total bound checks: {summary.get('total_checks', 0)}")
             print(f"Total violations: {summary.get('total_violations', 0)}")
         
@@ -936,10 +1705,10 @@ class VerificationValidator:
         print("="*80)
         
         l1 = combined['level1_counterexample']
-        l3 = combined['level3_bounds']
+        l2 = combined['level2_bounds']
         
         print(f"\nLevel 1 (Counterexample): {l1['passed']}/{l1['total']} passed, {l1['failed']} failed, {l1['errors']} errors")
-        print(f"Level 2 (Bounds):         {l3['passed']}/{l3['total']} passed, {l3['failed']} failed, {l3['errors']} errors")
+        print(f"Level 2 (Bounds):         {l2['passed']}/{l2['total']} passed, {l2['failed']} failed, {l2['errors']} errors")
         print()
         print(f"Overall Status: {combined['overall_status']}")
         print("="*80)
@@ -950,7 +1719,7 @@ def main():
     import argparse
     
     parser = argparse.ArgumentParser(description='ACT Verification Validator')
-    parser.add_argument('--mode', choices=['counterexample', 'bounds', 'comprehensive'],
+    parser.add_argument('--mode', choices=['counterexample', 'bounds', 'bounds_per_neuron', 'comprehensive'],
                        default='comprehensive', help='Validation mode')
     parser.add_argument('--device', default='cpu', help='Device (cpu or cuda)')
     parser.add_argument('--dtype', default='float64', choices=['float32', 'float64'],
@@ -962,6 +1731,14 @@ def main():
                        help='Transfer function modes for Level 2')
     parser.add_argument('--samples', type=int, default=10,
                        help='Number of samples for Level 2')
+    parser.add_argument('--atol', type=float, default=1e-6,
+                       help='Absolute tolerance for bounds_per_neuron')
+    parser.add_argument('--rtol', type=float, default=0.0,
+                       help='Relative tolerance for bounds_per_neuron')
+    parser.add_argument('--topk', type=int, default=10,
+                       help='Top-k violations for bounds_per_neuron')
+    parser.add_argument('--no-strict', action='store_false', dest='strict', default=True,
+                       help='Disable strict bounds_per_neuron checks')
     parser.add_argument('--ignore-errors', action='store_true',
                        help='Always exit 0 (ignore failures and errors for CI)')
     
@@ -988,6 +1765,17 @@ def main():
             num_samples=args.samples
         )
         # Exit 1 if any failures OR errors detected
+        exit_code = 1 if (summary['failed'] > 0 or summary['errors'] > 0) else 0
+    elif args.mode == 'bounds_per_neuron':
+        summary = validator.validate_bounds_per_neuron(
+            networks=args.networks,
+            tf_modes=args.tf_modes,
+            num_samples=args.samples,
+            atol=args.atol,
+            rtol=args.rtol,
+            topk=args.topk,
+            strict=args.strict,
+        )
         exit_code = 1 if (summary['failed'] > 0 or summary['errors'] > 0) else 0
     else:  # comprehensive
         combined = validator.validate_comprehensive(

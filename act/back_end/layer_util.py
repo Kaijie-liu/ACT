@@ -74,7 +74,7 @@ def validate_layer(layer: "Layer") -> None:
     """Strict validation against REGISTRY with friendly messages."""
     kind = layer.kind
     if kind not in REGISTRY:
-        raise ValueError(f"Kind '{kind}' not in REGISTRY. Add it to REGISTRY in act_layers.py.")
+        raise ValueError(f"Kind '{kind}' not in REGISTRY. Add it to REGISTRY in layer_schema.py.")
 
     spec = REGISTRY[kind]
 

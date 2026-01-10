@@ -114,7 +114,7 @@ class GurobiSolver(Solver):
     def status(self) -> str:
         if self.m.Status in (GRB.OPTIMAL, GRB.SUBOPTIMAL):
             return SolveStatus.SAT
-        if self.m.Status in (GRB.INFEASIBLE, GRB.INF_OR_UNBD):
+        if self.m.Status == GRB.INFEASIBLE:
             return SolveStatus.UNSAT
         if self.m.SolCount > 0:
             return SolveStatus.SAT

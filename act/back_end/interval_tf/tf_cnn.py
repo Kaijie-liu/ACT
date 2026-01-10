@@ -51,7 +51,7 @@ def tf_conv2d(L: Layer, Bin: Bounds) -> Fact:
     
     # Apply affine transformation
     if bias is not None:
-        b_equiv = bias.repeat(out_h * out_w)  # Broadcast bias across spatial dimensions
+        b_equiv = bias.repeat_interleave(out_h * out_w)  # Broadcast bias across spatial dimensions
     else:
         b_equiv = torch.zeros(output_flat_size, dtype=weight.dtype, device=weight.device)
     

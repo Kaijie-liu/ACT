@@ -159,6 +159,17 @@ class ConSet:
     
     def add_box(self, layer_id: int, var_ids: List[int], B: Bounds):
         self.replace(Con("INEQ", tuple(var_ids), {"tag": f"box:{layer_id}", "lb": B.lb.clone(), "ub": B.ub.clone()}))
+        
+    def add_op(self, tag: str, var_ids: List[int], **meta):
+        """
+        Generic operator constraint container.
+        - tag: e.g. "dense:12", "relu:5"
+        - var_ids: ordered exactly as exporter expects
+        - meta: payload used by cons_exportor.py
+        """
+        m = {"tag": tag}
+        m.update(meta)
+        self.replace(Con("INEQ", tuple(var_ids), m))
     
     def __iter__(self):
         """Iterate over constraints (Con objects). Makes ConSet iterable."""

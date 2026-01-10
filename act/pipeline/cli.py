@@ -582,6 +582,20 @@ def cmd_validate_verifier(args):
             exit_code = 0 if args.ignore_errors else (
                 1 if (summary['failed'] > 0 or summary.get('errors', 0) > 0) else 0
             )
+        elif args.mode == 'bounds_per_neuron':
+            summary = validator.validate_bounds_per_neuron(
+                networks=networks,
+                tf_modes=args.tf_modes,
+                num_samples=args.samples,
+                atol=args.atol,
+                rtol=args.rtol,
+                topk=args.topk,
+                strict=args.strict,
+            )
+            # Exit 1 if failures or errors, unless --ignore-errors is set
+            exit_code = 0 if args.ignore_errors else (
+                1 if (summary['failed'] > 0 or summary.get('errors', 0) > 0) else 0
+            )
         else:  # comprehensive
             combined = validator.validate_comprehensive(
                 networks=networks,
@@ -603,8 +617,14 @@ def cmd_validate_verifier(args):
         sys.exit(1)
 
 
-def main():
+def main(argv: Optional[List[str]] = None) -> int:
     """Main CLI entry point."""
+    if argv is None:
+        argv = sys.argv[1:]
+    if argv and argv[0] == "confignet":
+        from act.pipeline.confignet.cli import main as confignet_main
+
+        return int(confignet_main(argv[1:]))
     parser = argparse.ArgumentParser(
         prog="python -m act.pipeline",
         description="ACT Pipeline: Inference-based whitebox fuzzing for neural networks",
@@ -641,6 +661,7 @@ Examples:
   python -m act.pipeline --validate-verifier --device cpu --dtype float64
   python -m act.pipeline --validate-verifier --mode counterexample
   python -m act.pipeline --validate-verifier --mode bounds --samples 20
+  python -m act.pipeline --validate-verifier --mode bounds_per_neuron --samples 1
         """
     )
     
@@ -812,7 +833,7 @@ Examples:
     validation_group.add_argument(
         "--mode",
         type=str,
-        choices=['counterexample', 'bounds', 'comprehensive'],
+        choices=['counterexample', 'bounds', 'bounds_per_neuron', 'comprehensive'],
         default='comprehensive',
         help="Validation mode (default: comprehensive)"
     )
@@ -840,6 +861,31 @@ Examples:
         help="Number of samples for Level 3 validation (default: 10)"
     )
     validation_group.add_argument(
+        "--atol",
+        type=float,
+        default=1e-6,
+        help="Absolute tolerance for bounds_per_neuron (default: 1e-6)"
+    )
+    validation_group.add_argument(
+        "--rtol",
+        type=float,
+        default=0.0,
+        help="Relative tolerance for bounds_per_neuron (default: 0.0)"
+    )
+    validation_group.add_argument(
+        "--topk",
+        type=int,
+        default=10,
+        help="Top-K violations for bounds_per_neuron (default: 10)"
+    )
+    validation_group.add_argument(
+        "--no-strict",
+        action="store_false",
+        dest="strict",
+        default=True,
+        help="Disable strict bounds_per_neuron checks (default: strict)"
+    )
+    validation_group.add_argument(
         "--ignore-errors",
         action="store_true",
         help="Always exit 0 (ignore failures and errors for CI)"
@@ -848,7 +894,7 @@ Examples:
     # Add standard device/dtype arguments (shared across all ACT CLIs)
     add_device_args(parser)
     
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
     
     # Initialize device manager from CLI arguments
     initialize_from_args(args)
@@ -880,13 +926,15 @@ Examples:
             cmd_list_verifications()
     except KeyboardInterrupt:
         print("\n\n⚠️  Interrupted by user")
-        sys.exit(1)
+        return 1
     except Exception as e:
         print(f"\n❌ Error: {e}")
         import traceback
         traceback.print_exc()
-        sys.exit(1)
+        return 1
+
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
