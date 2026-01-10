@@ -168,7 +168,7 @@ class VerificationValidator:
     """Unified verification validation framework with counterexample and bounds validation."""
     
     def __init__(
-        self, 
+        self,
         device: str = 'cpu',
         dtype: torch.dtype = torch.float64
     ):

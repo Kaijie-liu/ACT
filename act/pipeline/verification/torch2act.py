@@ -178,32 +178,8 @@ class TorchToACT:
         self.next_var += n
         return ids
 
-    # def _add(self, kind: str, params: Dict[str, torch.Tensor], meta: Dict[str, Any],
-    #          in_vars: List[int], out_vars: List[int]) -> int:
-    #     layer = create_layer(
-    #         id=len(self.layers),
-    #         kind=kind,
-    #         params=params,
-    #         meta=meta,
-    #         in_vars=in_vars,
-    #         out_vars=out_vars,
-    #     )
-    #     self.layers.append(layer)
-    #     return layer.id
     def _add(self, kind: str, params: Dict[str, torch.Tensor], meta: Dict[str, Any],
-            in_vars: List[int], out_vars: List[int]) -> int:
-
-        meta = dict(meta) if meta is not None else {}
-
-        # ---- debug metadata (do not overwrite existing keys) ----
-        if PerformanceOptions.debug_tf:
-            meta.setdefault("torch_path", "__unknown__")
-            meta.setdefault("torch_type", "__unknown__")
-            meta.setdefault("flat_in_dim", len(in_vars))
-            meta.setdefault("flat_out_dim", len(out_vars))
-            meta.setdefault("logical_shape", self.shape)
-            meta.setdefault("converter", "torch2act")
-        meta = _filter_layer_meta(kind, meta)
+             in_vars: List[int], out_vars: List[int]) -> int:
         layer = create_layer(
             id=len(self.layers),
             kind=kind,
@@ -285,54 +261,26 @@ class TorchToACT:
             bias = mod.bias.detach() if mod.bias is not None else None
             
             # Infer input shape for conv
-            # if len(self.shape) == 2:  # (1, features) - need to reshape to spatial
-            #     n_features = self.shape[1]
-            #     if n_features == 3072:  # CIFAR-10
-            #         input_shape = (1, 3, 32, 32)
-            #     elif n_features == 784:  # MNIST
-            #         input_shape = (1, 1, 28, 28)
-            #     else:
-            #         channels = mod.in_channels
-            #         spatial_size = int((n_features / channels) ** 0.5)
-            #         input_shape = (1, channels, spatial_size, spatial_size)
-            # else:
-            #     input_shape = self.shape
-            if len(self.shape) != 4:
-                raise ValueError(f"Conv2d expects 4D logical shape (1,C,H,W), got {self.shape}. Missing Flatten/Reshape?")
-            input_shape = self.shape
-
+            if len(self.shape) == 2:  # (1, features) - need to reshape to spatial
+                n_features = self.shape[1]
+                if n_features == 3072:  # CIFAR-10
+                    input_shape = (1, 3, 32, 32)
+                elif n_features == 784:  # MNIST
+                    input_shape = (1, 1, 28, 28)
+                else:
+                    channels = mod.in_channels
+                    spatial_size = int((n_features / channels) ** 0.5)
+                    input_shape = (1, channels, spatial_size, spatial_size)
+            else:
+                input_shape = self.shape
+            
             # Calculate output shape
             batch, in_c, in_h, in_w = input_shape
-
-            kH, kW = _to_2tuple(mod.kernel_size)
-            sH, sW = _to_2tuple(mod.stride)
-            dH, dW = _to_2tuple(mod.dilation)
-            
-            pad = mod.padding
-            out_c = int(mod.out_channels)
-            
-            # PyTorch supports padding as (pH,pW) or string: "same"/"valid"
-            if isinstance(pad, str):
-                raise ValueError(
-                    "Conv2d padding string not supported in torch2act yet (avoid silent-wrong)."
-                )
-            else:
-                pH, pW = _to_2tuple(pad)
-                out_h = (in_h + 2 * pH - dH * (kH - 1) - 1) // sH + 1
-                out_w = (in_w + 2 * pW - dW * (kW - 1) - 1) // sW + 1
-            
-            if int(out_h) <= 0 or int(out_w) <= 0:
-                raise ValueError(f"Conv2d produced non-positive output shape: out_h={out_h}, out_w={out_w}, input={input_shape}, padding={pad}")
-
-            output_shape = (1, out_c, int(out_h), int(out_w))
-            out_features = out_c * int(out_h) * int(out_w)
-            
-            # batch, in_c, in_h, in_w = input_shape
-            # out_c = mod.out_channels
-            # out_h = (in_h + 2 * mod.padding[0] - mod.dilation[0] * (mod.kernel_size[0] - 1) - 1) // mod.stride[0] + 1
-            # out_w = (in_w + 2 * mod.padding[1] - mod.dilation[1] * (mod.kernel_size[1] - 1) - 1) // mod.stride[1] + 1
-            # output_shape = (1, out_c, out_h, out_w)
-            # out_features = out_c * out_h * out_w
+            out_c = mod.out_channels
+            out_h = (in_h + 2 * mod.padding[0] - mod.dilation[0] * (mod.kernel_size[0] - 1) - 1) // mod.stride[0] + 1
+            out_w = (in_w + 2 * mod.padding[1] - mod.dilation[1] * (mod.kernel_size[1] - 1) - 1) // mod.stride[1] + 1
+            output_shape = (1, out_c, out_h, out_w)
+            out_features = out_c * out_h * out_w
             
             params = {"weight": weight}
             if bias is not None:
@@ -347,115 +295,87 @@ class TorchToACT:
                 "dilation": mod.dilation,
                 "groups": mod.groups,
                 "in_channels": in_c,
-                "out_channels": out_c,
-                "torch_path": path,
-                "torch_type": "Conv2d"
+                "out_channels": out_c
             }
             
             out_vars = self._alloc_ids(out_features)
             self._add(LayerKind.CONV2D.value, params=params, meta=meta,
                       in_vars=self.prev_out, out_vars=out_vars)
-            self.shape = output_shape
+            self.shape = (1, out_features)
             self.prev_out = out_vars
             
         elif isinstance(mod, nn.MaxPool2d):
             # MaxPool2d: Apply pooling operation
-            # if len(self.shape) == 2:
-            #     # Need to infer spatial shape
-            #     n_features = self.shape[1]
-            #     # Assume square spatial dimensions
-            #     spatial_size = int(n_features ** 0.5)
-            #     channels = 1
-            #     input_shape = (1, channels, spatial_size, spatial_size)
-            # else:
-            #     input_shape = self.shape
-            if len(self.shape) != 4:
-                raise ValueError(f"MaxPool2d expects 4D logical shape (1,C,H,W), got {self.shape}.")
-            input_shape = self.shape
+            if len(self.shape) == 2:
+                # Need to infer spatial shape
+                n_features = self.shape[1]
+                # Assume square spatial dimensions
+                spatial_size = int(n_features ** 0.5)
+                channels = 1
+                input_shape = (1, channels, spatial_size, spatial_size)
+            else:
+                input_shape = self.shape
             
             batch, in_c, in_h, in_w = input_shape
-            kH, kW = _to_2tuple(mod.kernel_size)
-            stride = mod.stride if mod.stride is not None else mod.kernel_size
-            sH, sW = _to_2tuple(stride)
-            pH, pW = _to_2tuple(mod.padding)
-            dH, dW = _to_2tuple(getattr(mod, "dilation", 1))
+            kernel_size = mod.kernel_size if isinstance(mod.kernel_size, tuple) else (mod.kernel_size, mod.kernel_size)
+            stride = mod.stride if mod.stride is not None else kernel_size
+            stride = stride if isinstance(stride, tuple) else (stride, stride)
+            padding = mod.padding if isinstance(mod.padding, tuple) else (mod.padding, mod.padding)
             
-            if getattr(mod, "ceil_mode", False):
-                raise ValueError("MaxPool2d ceil_mode=True not supported in torch2act yet (avoid silent-wrong).")
-
-            out_h = (in_h + 2 * pH - dH * (kH - 1) - 1) // sH + 1
-            out_w = (in_w + 2 * pW - dW * (kW - 1) - 1) // sW + 1
-            output_shape = (1, in_c, int(out_h), int(out_w))
-            out_features = in_c * int(out_h) * int(out_w)
-
-            
-            # batch, in_c, in_h, in_w = input_shape
-            # kernel_size = mod.kernel_size if isinstance(mod.kernel_size, tuple) else (mod.kernel_size, mod.kernel_size)
-            # stride = mod.stride if mod.stride is not None else kernel_size
-            # stride = stride if isinstance(stride, tuple) else (stride, stride)
-            # padding = mod.padding if isinstance(mod.padding, tuple) else (mod.padding, mod.padding)
-            
-            # out_h = (in_h + 2 * padding[0] - kernel_size[0]) // stride[0] + 1
-            # out_w = (in_w + 2 * padding[1] - kernel_size[1]) // stride[1] + 1
-            # output_shape = (1, in_c, out_h, out_w)
-            # out_features = in_c * out_h * out_w
+            out_h = (in_h + 2 * padding[0] - kernel_size[0]) // stride[0] + 1
+            out_w = (in_w + 2 * padding[1] - kernel_size[1]) // stride[1] + 1
+            output_shape = (1, in_c, out_h, out_w)
+            out_features = in_c * out_h * out_w
             
             # Use schema-compliant metadata fields
-            kernel_size = (kH, kW)
-            stride = (sH, sW)
-            padding = (pH, pW)
-            
             meta = {
-                "input_shape": input_shape,
-                "output_shape": output_shape,
                 "kernel_size": kernel_size,
                 "stride": stride,
                 "padding": padding,
-                "output_size": (int(out_h), int(out_w)),  # Schema expects this field
-                "torch_path": path,
-                "torch_type": "MaxPool2d"
+                "output_size": (out_h, out_w)  # Schema expects this field
             }
             
             out_vars = self._alloc_ids(out_features)
             self._add(LayerKind.MAXPOOL2D.value, params={}, meta=meta,
                       in_vars=self.prev_out, out_vars=out_vars)
-            self.shape = output_shape
+            self.shape = (1, out_features)
             self.prev_out = out_vars
         
         elif isinstance(mod, nn.AvgPool2d):
-            if getattr(mod, "ceil_mode", False):
-                raise ValueError("AvgPool2d ceil_mode=True not supported in torch2act yet (avoid silent-wrong).")
-
-            if len(self.shape) != 4:
-                raise ValueError(f"AvgPool2d expects 4D logical shape (1,C,H,W), got {self.shape}.")
-            input_shape = self.shape
-            _, in_c, in_h, in_w = input_shape
-
-            kH, kW = _to_2tuple(mod.kernel_size)
-            stride = mod.stride if mod.stride is not None else mod.kernel_size
-            sH, sW = _to_2tuple(stride)
-            pH, pW = _to_2tuple(mod.padding)
-
-            out_h = (in_h + 2 * pH - kH) // sH + 1
-            out_w = (in_w + 2 * pW - kW) // sW + 1
-            output_shape = (1, in_c, int(out_h), int(out_w))
-            out_features = in_c * int(out_h) * int(out_w)
-
+            # AvgPool2d: Apply average pooling operation
+            if len(self.shape) == 2:
+                # Need to infer spatial shape
+                n_features = self.shape[1]
+                # Assume square spatial dimensions
+                spatial_size = int(n_features ** 0.5)
+                channels = 1
+                input_shape = (1, channels, spatial_size, spatial_size)
+            else:
+                input_shape = self.shape
+            
+            batch, in_c, in_h, in_w = input_shape
+            kernel_size = mod.kernel_size if isinstance(mod.kernel_size, tuple) else (mod.kernel_size, mod.kernel_size)
+            stride = mod.stride if mod.stride is not None else kernel_size
+            stride = stride if isinstance(stride, tuple) else (stride, stride)
+            padding = mod.padding if isinstance(mod.padding, tuple) else (mod.padding, mod.padding)
+            
+            out_h = (in_h + 2 * padding[0] - kernel_size[0]) // stride[0] + 1
+            out_w = (in_w + 2 * padding[1] - kernel_size[1]) // stride[1] + 1
+            output_shape = (1, in_c, out_h, out_w)
+            out_features = in_c * out_h * out_w
+            
+            # Use schema-compliant metadata fields
             meta = {
-                "input_shape": input_shape,
-                "output_shape": output_shape,
-                "kernel_size": (kH, kW),
-                "stride": (sH, sW),
-                "padding": (pH, pW),
-                "output_size": (int(out_h), int(out_w)),
-                "torch_path": path,
-                "torch_type": "AvgPool2d"
+                "kernel_size": kernel_size,
+                "stride": stride,
+                "padding": padding,
+                "output_size": (out_h, out_w)  # Schema expects this field
             }
-
+            
             out_vars = self._alloc_ids(out_features)
             self._add(LayerKind.AVGPOOL2D.value, params={}, meta=meta,
                       in_vars=self.prev_out, out_vars=out_vars)
-            self.shape = output_shape
+            self.shape = (1, out_features)
             self.prev_out = out_vars
             
         elif isinstance(mod, nn.Dropout):
@@ -466,127 +386,74 @@ class TorchToACT:
             # StochasticDepth (DropPath) is identity during inference/verification
             # During training it randomly drops residual branches, but in eval mode: output = input
             pass
-        
+            
         elif isinstance(mod, nn.BatchNorm2d):
-            if len(self.shape) not in (2, 4):
-                raise ValueError(f"BatchNorm2d expects 2D or 4D logical shape, got {self.shape}")
-
+            # BatchNorm2d during inference: y = gamma * (x - running_mean) / sqrt(running_var + eps) + beta
+            # This is equivalent to: y = scale * x + bias
+            # where scale = gamma / sqrt(running_var + eps) and bias = beta - scale * running_mean
+            
+            # Extract BatchNorm parameters (all should be present in eval mode)
             gamma = mod.weight.detach() if mod.weight is not None else torch.ones(mod.num_features, dtype=mod.running_mean.dtype, device=mod.running_mean.device)
-            beta  = mod.bias.detach()   if mod.bias is not None else torch.zeros(mod.num_features, dtype=mod.running_mean.dtype, device=mod.running_mean.device)
+            beta = mod.bias.detach() if mod.bias is not None else torch.zeros(mod.num_features, dtype=mod.running_mean.dtype, device=mod.running_mean.device)
             running_mean = mod.running_mean.detach()
-            running_var  = mod.running_var.detach()
+            running_var = mod.running_var.detach()
             eps = mod.eps
-
+            
+            # Compute affine transformation parameters
             scale = gamma / torch.sqrt(running_var + eps)
-            bias  = beta - scale * running_mean
-
-            # --- helper: add bn_mul then bn_add ---
-            def _emit_bn_affine(scale_expanded: torch.Tensor, bias_expanded: torch.Tensor, logical_shape: Tuple[int, ...]):
-                # MUL
+            bias = beta - scale * running_mean
+            
+            # BatchNorm is applied channel-wise, so we need to expand scale/bias to match input shape
+            # For spatial data: (1, C, H, W) → scale/bias are (C,) → expand to (1, C, H, W)
+            if len(self.shape) == 2:
+                # Flattened input: (1, C*H*W) - need to track channel dimension
+                # This is tricky, so we'll represent as element-wise multiplication + addition
+                # Assuming the input was flattened from (1, C, H, W)
+                n_features = self.shape[1]
+                n_channels = mod.num_features
+                spatial_size = n_features // n_channels
+                
+                # Expand scale and bias to match flattened shape
+                scale_expanded = scale.repeat_interleave(spatial_size)
+                bias_expanded = bias.repeat_interleave(spatial_size)
+                
+                # Create element-wise multiplication and addition layers
                 out_vars = self._same_size_forward()
                 self._add(LayerKind.MUL.value, params={"scale": scale_expanded},
-                        meta={"torch_path": path, "torch_type": "BatchNorm2d",
-                                "torch_subop": "bn_mul", "torch_subop_idx": 0,
-                                "logical_shape": logical_shape, "flat_out_dim": len(out_vars)},
-                        in_vars=self.prev_out, out_vars=out_vars)
+                         meta={"input_shape": self.shape, "output_shape": self.shape},
+                         in_vars=self.prev_out, out_vars=out_vars)
                 self.prev_out = out_vars
-
-                # ADD
+                
                 out_vars = self._same_size_forward()
                 self._add(LayerKind.ADD.value, params={"bias": bias_expanded},
-                        meta={"torch_path": path, "torch_type": "BatchNorm2d",
-                                "torch_subop": "bn_add", "torch_subop_idx": 1,
-                                "logical_shape": logical_shape, "flat_out_dim": len(out_vars)},
-                        in_vars=self.prev_out, out_vars=out_vars)
+                         meta={"input_shape": self.shape, "output_shape": self.shape},
+                         in_vars=self.prev_out, out_vars=out_vars)
                 self.prev_out = out_vars
-
-            if len(self.shape) == 4:
-                _, C, H, W = self.shape
-                if mod.num_features != C:
-                    raise ValueError(f"BatchNorm2d num_features={mod.num_features} != C={C} for shape {self.shape}")
-
-                scale_expanded = scale.view(1, C, 1, 1).expand(1, C, H, W).flatten()
-                bias_expanded  = bias.view(1, C, 1, 1).expand(1, C, H, W).flatten()
-                _emit_bn_affine(scale_expanded, bias_expanded, logical_shape=self.shape)
-
             else:
-                _, F = self.shape
-                C = mod.num_features
-                if F % C != 0:
-                    raise ValueError(f"BatchNorm2d on flat shape requires F%C==0, got F={F}, C={C}")
-                spatial_size = F // C
-                scale_expanded = scale.repeat_interleave(spatial_size)
-                bias_expanded  = bias.repeat_interleave(spatial_size)
-                _emit_bn_affine(scale_expanded, bias_expanded, logical_shape=self.shape)
-
-            
-        # elif isinstance(mod, nn.BatchNorm2d):
-        #     # BatchNorm2d during inference: y = gamma * (x - running_mean) / sqrt(running_var + eps) + beta
-        #     # This is equivalent to: y = scale * x + bias
-        #     # where scale = gamma / sqrt(running_var + eps) and bias = beta - scale * running_mean
-            
-        #     # Extract BatchNorm parameters (all should be present in eval mode)
-        #     gamma = mod.weight.detach() if mod.weight is not None else torch.ones(mod.num_features, dtype=mod.running_mean.dtype, device=mod.running_mean.device)
-        #     beta = mod.bias.detach() if mod.bias is not None else torch.zeros(mod.num_features, dtype=mod.running_mean.dtype, device=mod.running_mean.device)
-        #     running_mean = mod.running_mean.detach()
-        #     running_var = mod.running_var.detach()
-        #     eps = mod.eps
-            
-        #     # Compute affine transformation parameters
-        #     scale = gamma / torch.sqrt(running_var + eps)
-        #     bias = beta - scale * running_mean
-            
-        #     # BatchNorm is applied channel-wise, so we need to expand scale/bias to match input shape
-        #     # For spatial data: (1, C, H, W) → scale/bias are (C,) → expand to (1, C, H, W)
-        #     if len(self.shape) == 2:
-        #         # Flattened input: (1, C*H*W) - need to track channel dimension
-        #         # This is tricky, so we'll represent as element-wise multiplication + addition
-        #         # Assuming the input was flattened from (1, C, H, W)
-        #         n_features = self.shape[1]
-        #         n_channels = mod.num_features
-        #         spatial_size = n_features // n_channels
+                # Spatial input: (1, C, H, W)
+                batch, channels, height, width = self.shape
                 
-        #         # Expand scale and bias to match flattened shape
-        #         scale_expanded = scale.repeat_interleave(spatial_size)
-        #         bias_expanded = bias.repeat_interleave(spatial_size)
+                # Expand scale and bias to spatial dimensions
+                scale_expanded = scale.view(1, -1, 1, 1).expand(1, channels, height, width).flatten()
+                bias_expanded = bias.view(1, -1, 1, 1).expand(1, channels, height, width).flatten()
                 
-        #         # Create element-wise multiplication and addition layers
-        #         out_vars = self._same_size_forward()
-        #         self._add(LayerKind.MUL.value, params={"scale": scale_expanded},
-        #                  meta={"input_shape": self.shape, "output_shape": self.shape},
-        #                  in_vars=self.prev_out, out_vars=out_vars)
-        #         self.prev_out = out_vars
+                # Flatten shape for computation
+                flat_size = channels * height * width
                 
-        #         out_vars = self._same_size_forward()
-        #         self._add(LayerKind.ADD.value, params={"bias": bias_expanded},
-        #                  meta={"input_shape": self.shape, "output_shape": self.shape},
-        #                  in_vars=self.prev_out, out_vars=out_vars)
-        #         self.prev_out = out_vars
-        #     else:
-        #         # Spatial input: (1, C, H, W)
-        #         batch, channels, height, width = self.shape
+                # Create element-wise multiplication and addition layers
+                out_vars = self._same_size_forward()
+                self._add(LayerKind.MUL.value, params={"scale": scale_expanded},
+                         meta={"input_shape": (1, flat_size), "output_shape": (1, flat_size),
+                               "original_shape": self.shape},
+                         in_vars=self.prev_out, out_vars=out_vars)
+                self.prev_out = out_vars
                 
-        #         # Expand scale and bias to spatial dimensions
-        #         scale_expanded = scale.view(1, -1, 1, 1).expand(1, channels, height, width).flatten()
-        #         bias_expanded = bias.view(1, -1, 1, 1).expand(1, channels, height, width).flatten()
-                
-        #         # Flatten shape for computation
-        #         flat_size = channels * height * width
-                
-        #         # Create element-wise multiplication and addition layers
-        #         out_vars = self._same_size_forward()
-        #         self._add(LayerKind.MUL.value, params={"scale": scale_expanded},
-        #                  meta={"input_shape": (1, flat_size), "output_shape": (1, flat_size),
-        #                        "original_shape": self.shape},
-        #                  in_vars=self.prev_out, out_vars=out_vars)
-        #         self.prev_out = out_vars
-                
-        #         out_vars = self._same_size_forward()
-        #         self._add(LayerKind.ADD.value, params={"bias": bias_expanded},
-        #                  meta={"input_shape": (1, flat_size), "output_shape": (1, flat_size),
-        #                        "original_shape": self.shape},
-        #                  in_vars=self.prev_out, out_vars=out_vars)
-        #         self.prev_out = out_vars
+                out_vars = self._same_size_forward()
+                self._add(LayerKind.ADD.value, params={"bias": bias_expanded},
+                         meta={"input_shape": (1, flat_size), "output_shape": (1, flat_size),
+                               "original_shape": self.shape},
+                         in_vars=self.prev_out, out_vars=out_vars)
+                self.prev_out = out_vars
         
         elif isinstance(mod, nn.AdaptiveAvgPool2d):
             # AdaptiveAvgPool2d: Adaptive average pooling to output_size
@@ -595,31 +462,23 @@ class TorchToACT:
                 output_size = (output_size, output_size)
             
             # Infer input shape
-            if len(self.shape) != 4:
-                raise ValueError(f"AdaptiveAvgPool2d expects 4D logical shape (1,C,H,W), got {self.shape}.")
-            input_shape = self.shape
-
-            # if len(self.shape) == 2:
-            #     n_features = self.shape[1]
-            #     # Try to infer from common sizes
-            #     if n_features == 3072:  # CIFAR-10
-            #         input_shape = (1, 3, 32, 32)
-            #     elif n_features == 784:  # MNIST
-            #         input_shape = (1, 1, 28, 28)
-            #     else:
-            #         # Try to infer square spatial dimensions
-            #         spatial_size = int(n_features ** 0.5)
-            #         channels = 1
-            #         input_shape = (1, channels, spatial_size, spatial_size)
-            # else:
-            #     input_shape = self.shape
+            if len(self.shape) == 2:
+                n_features = self.shape[1]
+                # Try to infer from common sizes
+                if n_features == 3072:  # CIFAR-10
+                    input_shape = (1, 3, 32, 32)
+                elif n_features == 784:  # MNIST
+                    input_shape = (1, 1, 28, 28)
+                else:
+                    # Try to infer square spatial dimensions
+                    spatial_size = int(n_features ** 0.5)
+                    channels = 1
+                    input_shape = (1, channels, spatial_size, spatial_size)
+            else:
+                input_shape = self.shape
             
             batch, in_c, in_h, in_w = input_shape
             out_h, out_w = output_size
-            
-            if in_h % out_h != 0 or in_w % out_w != 0:
-                raise ValueError(f"AdaptiveAvgPool2d unsupported non-divisible: in=({in_h},{in_w}), out=({out_h},{out_w})")
-
             output_shape = (1, in_c, out_h, out_w)
             out_features = in_c * out_h * out_w
             
@@ -630,20 +489,16 @@ class TorchToACT:
             stride_w = kernel_w
             
             meta = {
-                "input_shape": input_shape,
-                "output_shape": output_shape,
                 "kernel_size": (kernel_h, kernel_w),
                 "stride": (stride_h, stride_w),
                 "padding": (0, 0),
-                "output_size": output_size,
-                "torch_path": path,
-                "torch_type": "AdaptiveAvgPool2d"
+                "output_size": output_size
             }
             
             out_vars = self._alloc_ids(out_features)
             self._add(LayerKind.AVGPOOL2D.value, params={}, meta=meta,
                       in_vars=self.prev_out, out_vars=out_vars)
-            self.shape = output_shape
+            self.shape = (1, out_features)
             self.prev_out = out_vars
         
         elif isinstance(mod, nn.SiLU):
@@ -694,37 +549,24 @@ class TorchToACT:
         if tname == self._InputLayerTypeName:
             return
         
+        # ACT wrapper layers with to_act_layers() protocol
         if hasattr(mod, 'to_act_layers'):
             new_layers, out_vars = mod.to_act_layers(len(self.layers), self.prev_out)
-            
-            for L in new_layers:
-                L.meta = dict(getattr(L, "meta", {}) or {})
-                if PerformanceOptions.debug_tf:
-                    L.meta.setdefault("torch_path", path)
-                    L.meta.setdefault("torch_type", type(mod).__name__)
-                    L.meta.setdefault("converter", "torch2act")
-                    # best-effort dims (some wrappers may not have in/out vars in meta)
-                    L.meta.setdefault("flat_in_dim", len(self.prev_out))
-                    L.meta.setdefault("flat_out_dim", len(out_vars))
-                L.meta = _filter_layer_meta(L.kind, L.meta)
-                
-            # ACT wrapper layers with to_act_layers() protocol
             self.layers.extend(new_layers)
             self.prev_out = out_vars
             return
         
         # Primitive modules - convert directly
         if self._is_primitive_module(mod):
-            self._convert_primitive_module(mod, path=path)
+            self._convert_primitive_module(mod)
             return
         
         # Container modules - recurse into children
         if isinstance(mod, nn.Module):
             children = list(mod.children())
             if children:  # Has children - recurse
-                for name, child in mod.named_children():
-                    child_path = f"{path}.{name}"
-                    self._process_module(child, path=child_path)
+                for child in children:
+                    self._process_module(child)
                 return
         
         # Unsupported module type
@@ -733,7 +575,7 @@ class TorchToACT:
             f"  If this is a custom module, ensure it has primitive children (Linear, Conv2d, etc.)\n"
             f"  or implement the to_act_layers() protocol."
         )
-
+        
     # --- main conversion ---
 
     def run(self) -> Net:
