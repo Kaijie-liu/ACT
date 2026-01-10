@@ -19,7 +19,7 @@ git clone --recursive https://github.com/SVF-tools/ACT.git
 cd ACT
 ```
 
-## 2. Apply and download the [Gurobi license](https://www.gurobi.com/academia/academic-program-and-licenses/) (for MILP optimization)
+## 2. Apply and download the [Gurobi license](https://www.gurobi.com/academia/academic-program-and-licenses/) (Optional for MILP optimization)
 ```
 cp /path/to/your/gurobi.lic ./modules/gurobi/gurobi.lic  # put gurobi.lic file in ./modules/gurobi/ directory
 ```
