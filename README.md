@@ -19,7 +19,7 @@ git clone --recursive https://github.com/SVF-tools/ACT.git
 cd ACT
 ```
 
-## 2. Place Gurobi license (for MILP optimization)
+## 2. Apply and download the [Gurobi license](https://www.gurobi.com/academia/academic-program-and-licenses/) (for MILP optimization)
 ```
 cp /path/to/your/gurobi.lic ./modules/gurobi/gurobi.lic  # put gurobi.lic file in ./modules/gurobi/ directory
 ```
@@ -30,7 +30,7 @@ python -m act.pipeline --help
 ```
 
 ### License
-ACT is licensed under GNU Affero General Public License v3.0 (AGPL-3.0).
+ACT is licensed under the GNU Affero General Public License v3.0 (AGPL-3.0).
 
 
 ### Acknowledgements
