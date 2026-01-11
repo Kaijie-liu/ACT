@@ -66,7 +66,7 @@ class MLPConfig:
     MLP architecture configuration.
 
     Notes:
-      - input_shape is the *model input tensor shape* including batch dimension.
+      - input_shape is the model input tensor shape including batch dimension.
         e.g. (1, 784) or (1, 1, 28, 28) if you want to include a Flatten layer.
       - If input_shape has >2 dims, builders will insert nn.Flatten(start_dim=1).
     """
@@ -359,7 +359,7 @@ class ConfigNetConfig:
     cnn_padding_choices: Tuple[int, ...] = (1,)
     cnn_use_maxpool_p: float = 0.3
     cnn_fc_hidden_choices: Tuple[int, ...] = (32, 64, 128)
-    cnn_activation_choices: Tuple[str, ...] = ("relu", "tanh")
+    cnn_activation_choices: Tuple[str, ...] = ("relu", "tanh", "sigmoid")
 
     # Input spec sampling
     input_kind_choices: Tuple[InKind, ...] = (InKind.BOX, InKind.LINF_BALL)
@@ -368,7 +368,7 @@ class ConfigNetConfig:
     eps_choices: Tuple[float, ...] = (0.03, 0.05, 0.1)
 
     # Output spec sampling
-    output_kind_choices: Tuple[OutKind, ...] = (OutKind.TOP1_ROBUST, OutKind.MARGIN_ROBUST)
+    output_kind_choices: Tuple[OutKind, ...] = (OutKind.TOP1_ROBUST, OutKind.MARGIN_ROBUST, OutKind.LINEAR_LE, OutKind.RANGE)
     p_top1: float = 0.5
     margin_choices: Tuple[float, ...] = (0.0, 0.1, 1.0)
     output_linear_le_c_range: Tuple[float, float] = (-1.0, 1.0)

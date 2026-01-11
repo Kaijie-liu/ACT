@@ -28,7 +28,7 @@ from act.pipeline.confignet.factory_adapter import ConfignetFactoryAdapter
 from act.pipeline.confignet.jsonl import write_record_jsonl
 from act.pipeline.confignet.policy import apply_policy
 from act.pipeline.confignet.schema import ConfigNetConfig, InstanceSpec
-from act.pipeline.confignet.schema_v2 import build_record_v2, validate_record_v2
+from act.pipeline.confignet.jsonl_schema import build_record_v2, validate_record_v2
 from act.pipeline.confignet.seeds import derive_seed
 from act.pipeline.confignet.sampler import sample_instances
 from act.pipeline.confignet.verdicts import Verdict
@@ -59,9 +59,9 @@ def _instance_meta_from_spec(inst: InstanceSpec) -> Dict[str, Any]:
     }
 
 
-def _derive_seeds(seed_root: int, instance_index: int, instance_id: Optional[str] = None) -> Dict[str, int]:
-    seed_instance = derive_seed(int(seed_root), int(instance_index), instance_id)
-    seed_inputs = derive_seed(int(seed_instance), 0, "inputs|l1l2")
+def _derive_seeds(seed_root: int, inst_seed: int) -> Dict[str, int]:
+    seed_instance = int(inst_seed)
+    seed_inputs = derive_seed(seed_instance, 0, "inputs|l1l2")
     return {
         "seed_root": int(seed_root),
         "seed_instance": int(seed_instance),
@@ -344,7 +344,7 @@ def run_confignet_l1l2(args) -> Dict[str, Any]:
     validator = VerificationValidator(device=device, dtype=dtype)
     run_solver = bool(getattr(args, "run_solver", False))
     solver_name = str(getattr(args, "solver", "torchlp"))
-    solver_on_failure = bool(getattr(args, "solver_on_failure", False))
+    solver_on_failure = bool(getattr(args, "solver_on_failure", True))
     solver_timeout = getattr(args, "solver_timeout", None)
     errors: List[str] = []
     warnings: List[str] = []
@@ -355,19 +355,18 @@ def run_confignet_l1l2(args) -> Dict[str, Any]:
     start = time.perf_counter()
     for idx, inst in enumerate(instances):
         inst_start = time.perf_counter()
-        seeds = _derive_seeds(int(args.seed), idx, inst.instance_id)
-        inst_seeded = replace(inst, seed=int(seeds["seed_instance"]))
+        seeds = _derive_seeds(int(args.seed), int(inst.seed))
         strict_input = not bool(getattr(args, "no_strict_input", False))
         instance_errors: List[str] = []
         case: Dict[str, Any] = {}
         l1: Dict[str, Any] = {}
         l2: Dict[str, Any] = {}
         solver: Dict[str, Any] = {}
-        instance_meta = _instance_meta_from_spec(inst_seeded)
+        instance_meta = _instance_meta_from_spec(inst)
 
         try:
             case = adapter.build_case(
-                inst_seeded,
+                inst,
                 seed_inputs=seeds["seed_inputs"],
                 num_samples=int(args.samples),
                 strict_input=strict_input,
@@ -375,7 +374,7 @@ def run_confignet_l1l2(args) -> Dict[str, Any]:
             instance_meta = case.get("instance_meta", instance_meta)
 
             l1 = _run_l1(
-                inst_seeded,
+                inst,
                 case["torch_model"],
                 num_samples=int(args.samples),
                 device=device,
@@ -383,7 +382,7 @@ def run_confignet_l1l2(args) -> Dict[str, Any]:
                 strict_input=strict_input,
             )
             l2 = _run_l2(
-                inst_seeded,
+                inst,
                 case["generated"],
                 case.get("act_model"),
                 device=device,
@@ -403,7 +402,7 @@ def run_confignet_l1l2(args) -> Dict[str, Any]:
             l1_failed = l1.get("status") == "FAILED"
             run_solver_this = run_solver and (solver_on_failure or not l1_failed)
             solver = _run_solver(
-                inst_seeded,
+                inst,
                 case,
                 solver_name=solver_name,
                 timeout_s=solver_timeout,
@@ -433,7 +432,7 @@ def run_confignet_l1l2(args) -> Dict[str, Any]:
                 "warnings": [],
             }
             solver = _run_solver(
-                inst_seeded,
+                inst,
                 case,
                 solver_name=solver_name,
                 timeout_s=solver_timeout,

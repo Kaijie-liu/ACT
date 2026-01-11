@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-#===- act/pipeline/confignet/schema_v2.py - JSONL Schema v2 -----------====#
+#===- act/pipeline/confignet/jsonl_schema.py - JSONL Schema v2 --------====#
 # ACT: Abstract Constraint Transformer
 # Copyright (C) 2025– ACT Team
 #

@@ -25,6 +25,7 @@ import torch
 
 from act.pipeline.confignet import (
     ConfigNetConfig,
+    ModelFamily,
     build_generated_instance,
     sample_instances,
 )
@@ -43,6 +44,23 @@ def _parse_dtype(dtype_str: str) -> torch.dtype:
     if dtype_str == "float32":
         return torch.float32
     raise ValueError(f"Unsupported dtype: {dtype_str}")
+
+
+def _parse_families(families: Optional[List[str]]) -> Optional[Tuple[ModelFamily, ...]]:
+    if not families:
+        return None
+    mapping = {
+        "mlp": ModelFamily.MLP,
+        "cnn2d": ModelFamily.CNN2D,
+        "template": ModelFamily.TEMPLATE,
+    }
+    out = []
+    for name in families:
+        key = str(name).lower()
+        if key not in mapping:
+            raise ValueError(f"Unsupported family: {name}")
+        out.append(mapping[key])
+    return tuple(out)
 
 
 def _write_json(path: Optional[str], payload: Any) -> None:
@@ -138,6 +156,33 @@ def main(argv: Optional[List[str]] = None) -> int:
     )
     p_l1l2.add_argument("--solver-timeout", type=float, default=None)
     p_l1l2.add_argument("--solver-on-failure", action="store_true")
+
+    p_vv = sub.add_parser("validate_verifier", help="run validate_verifier on confignet instances")
+    p_vv.add_argument("--num", type=int, default=5)
+    p_vv.add_argument("--seed", type=int, default=0)
+    p_vv.add_argument("--device", type=str, default="cpu")
+    p_vv.add_argument("--dtype", type=str, default="float64", choices=["float32", "float64"])
+    p_vv.add_argument(
+        "--mode",
+        type=str,
+        default="comprehensive",
+        choices=["counterexample", "bounds", "bounds_per_neuron", "comprehensive"],
+    )
+    p_vv.add_argument("--solvers", nargs="+", default=["torchlp", "gurobi"])
+    p_vv.add_argument("--tf-modes", nargs="+", default=["interval"])
+    p_vv.add_argument("--n-inputs", type=int, default=5)
+    p_vv.add_argument("--atol", type=float, default=1e-6)
+    p_vv.add_argument("--rtol", type=float, default=0.0)
+    p_vv.add_argument("--topk", type=int, default=10)
+    p_vv.add_argument("--no-strict", action="store_false", dest="strict", default=True)
+    p_vv.add_argument("--deterministic-algos", action="store_true")
+    p_vv.add_argument(
+        "--families",
+        nargs="+",
+        choices=["mlp", "cnn2d", "template"],
+        default=None,
+        help="restrict confignet families for validation",
+    )
 
     args = p.parse_args(argv)
 
@@ -239,6 +284,67 @@ def main(argv: Optional[List[str]] = None) -> int:
         )
         run_confignet_l1l2(driver_args)
         return 0
+
+    if args.cmd == "validate_verifier":
+        from act.pipeline.verification.validate_verifier import VerificationValidator
+
+        families = _parse_families(getattr(args, "families", None))
+        if families is None:
+            cfg = ConfigNetConfig(num_instances=args.num, base_seed=args.seed)
+        else:
+            cfg = ConfigNetConfig(
+                num_instances=args.num,
+                base_seed=args.seed,
+                families=families,
+            )
+        dtype = _parse_dtype(args.dtype)
+        instances = sample_instances(cfg)
+        generated = [
+            build_generated_instance(
+                inst,
+                device=args.device,
+                dtype=dtype,
+                deterministic_algos=bool(args.deterministic_algos),
+            )
+            for inst in instances
+        ]
+        adapter = ConfignetFactoryAdapter(device=args.device, dtype=dtype)
+        adapter.configure_for_validation(instances, generated)
+        validator = VerificationValidator(device=args.device, dtype=dtype)
+        validator.factory = adapter
+
+        if args.mode == "counterexample":
+            summary = validator.validate_counterexamples(
+                networks=adapter.list_networks(),
+                solvers=list(args.solvers),
+            )
+            return 1 if (summary.get("failed", 0) > 0 or summary.get("errors", 0) > 0) else 0
+        if args.mode == "bounds":
+            summary = validator.validate_bounds(
+                networks=adapter.list_networks(),
+                tf_modes=list(args.tf_modes),
+                num_samples=int(args.n_inputs),
+            )
+            return 1 if (summary.get("failed", 0) > 0 or summary.get("errors", 0) > 0) else 0
+        if args.mode == "bounds_per_neuron":
+            summary = validator.validate_bounds_per_neuron(
+                networks=adapter.list_networks(),
+                tf_modes=list(args.tf_modes),
+                num_samples=int(args.n_inputs),
+                atol=float(args.atol),
+                rtol=float(args.rtol),
+                topk=int(args.topk),
+                strict=bool(args.strict),
+            )
+            return 1 if (summary.get("failed", 0) > 0 or summary.get("errors", 0) > 0) else 0
+
+        combined = validator.validate_comprehensive(
+            networks=adapter.list_networks(),
+            solvers=list(args.solvers),
+            tf_modes=list(args.tf_modes),
+            num_samples=int(args.n_inputs),
+        )
+        return 1 if combined.get("overall_status") in ("FAILED", "ERROR") else 0
 
     return 1
 

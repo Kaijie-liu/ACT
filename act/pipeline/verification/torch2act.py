@@ -180,6 +180,7 @@ class TorchToACT:
 
     def _add(self, kind: str, params: Dict[str, torch.Tensor], meta: Dict[str, Any],
              in_vars: List[int], out_vars: List[int]) -> int:
+        meta = _filter_layer_meta(kind, meta)
         layer = create_layer(
             id=len(self.layers),
             kind=kind,
@@ -256,6 +257,8 @@ class TorchToACT:
             self.prev_out = out_vars
             
         elif isinstance(mod, nn.Conv2d):
+            if isinstance(mod.padding, str):
+                raise ValueError("padding string not supported")
             # Use detach() only - no clone needed since we don't modify weights
             weight = mod.weight.detach()
             bias = mod.bias.detach() if mod.bias is not None else None
@@ -301,7 +304,7 @@ class TorchToACT:
             out_vars = self._alloc_ids(out_features)
             self._add(LayerKind.CONV2D.value, params=params, meta=meta,
                       in_vars=self.prev_out, out_vars=out_vars)
-            self.shape = (1, out_features)
+            self.shape = output_shape
             self.prev_out = out_vars
             
         elif isinstance(mod, nn.MaxPool2d):
@@ -329,6 +332,8 @@ class TorchToACT:
             
             # Use schema-compliant metadata fields
             meta = {
+                "input_shape": input_shape,
+                "output_shape": output_shape,
                 "kernel_size": kernel_size,
                 "stride": stride,
                 "padding": padding,
@@ -338,7 +343,7 @@ class TorchToACT:
             out_vars = self._alloc_ids(out_features)
             self._add(LayerKind.MAXPOOL2D.value, params={}, meta=meta,
                       in_vars=self.prev_out, out_vars=out_vars)
-            self.shape = (1, out_features)
+            self.shape = output_shape
             self.prev_out = out_vars
         
         elif isinstance(mod, nn.AvgPool2d):
@@ -366,6 +371,8 @@ class TorchToACT:
             
             # Use schema-compliant metadata fields
             meta = {
+                "input_shape": input_shape,
+                "output_shape": output_shape,
                 "kernel_size": kernel_size,
                 "stride": stride,
                 "padding": padding,
@@ -375,7 +382,7 @@ class TorchToACT:
             out_vars = self._alloc_ids(out_features)
             self._add(LayerKind.AVGPOOL2D.value, params={}, meta=meta,
                       in_vars=self.prev_out, out_vars=out_vars)
-            self.shape = (1, out_features)
+            self.shape = output_shape
             self.prev_out = out_vars
             
         elif isinstance(mod, nn.Dropout):
@@ -489,6 +496,8 @@ class TorchToACT:
             stride_w = kernel_w
             
             meta = {
+                "input_shape": input_shape,
+                "output_shape": output_shape,
                 "kernel_size": (kernel_h, kernel_w),
                 "stride": (stride_h, stride_w),
                 "padding": (0, 0),
@@ -498,7 +507,7 @@ class TorchToACT:
             out_vars = self._alloc_ids(out_features)
             self._add(LayerKind.AVGPOOL2D.value, params={}, meta=meta,
                       in_vars=self.prev_out, out_vars=out_vars)
-            self.shape = (1, out_features)
+            self.shape = output_shape
             self.prev_out = out_vars
         
         elif isinstance(mod, nn.SiLU):
@@ -558,15 +567,16 @@ class TorchToACT:
         
         # Primitive modules - convert directly
         if self._is_primitive_module(mod):
-            self._convert_primitive_module(mod)
+            self._convert_primitive_module(mod, path)
             return
         
         # Container modules - recurse into children
         if isinstance(mod, nn.Module):
             children = list(mod.children())
             if children:  # Has children - recurse
-                for child in children:
-                    self._process_module(child)
+                for child_idx, child in enumerate(children):
+                    child_path = f"{path}.{child_idx}"
+                    self._process_module(child, path=child_path)
                 return
         
         # Unsupported module type
