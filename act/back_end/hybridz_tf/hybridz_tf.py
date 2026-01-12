@@ -43,7 +43,7 @@ class HybridzTF(TransferFunction):
         "RELU": lambda L, bounds, tf: hybridz_tf_relu(L, bounds),
         "LRELU": lambda L, bounds, tf: hybridz_tf_lrelu(L, bounds),
         "TANH": lambda L, bounds, tf: hybridz_tf_tanh(L, bounds),
-        "SIGMOID": lambda L, bounds, tf: hybridz_tf_sigmoid(L, bounds),  # 建议顺手也加了
+        "SIGMOID": lambda L, bounds, tf: hybridz_tf_sigmoid(L, bounds), 
 
         "ABS": lambda L, bounds, tf: hybridz_tf_abs(L, bounds),
         
