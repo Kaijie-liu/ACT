@@ -621,10 +621,6 @@ def main(argv: Optional[List[str]] = None) -> int:
     """Main CLI entry point."""
     if argv is None:
         argv = sys.argv[1:]
-    if argv and argv[0] == "confignet":
-        from act.pipeline.confignet.cli import main as confignet_main
-
-        return int(confignet_main(argv[1:]))
     parser = argparse.ArgumentParser(
         prog="python -m act.pipeline",
         description="ACT Pipeline: Inference-based whitebox fuzzing for neural networks",
