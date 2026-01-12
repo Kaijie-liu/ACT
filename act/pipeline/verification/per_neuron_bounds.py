@@ -15,17 +15,9 @@ from typing import Any, Dict, List, Tuple
 import torch
 
 from act.back_end.analyze import analyze
+from act.back_end.core import Bounds, Layer
 from act.back_end.verifier import find_entry_layer_id
 from act.back_end.transfer_functions import set_transfer_function_mode
-
-
-@dataclass(frozen=True)
-class LayerBounds:
-    layer_id: int
-    kind: str
-    lb: torch.Tensor
-    ub: torch.Tensor
-    shape: Tuple[int, ...]
 
 
 def compute_abstract_bounds(
@@ -33,12 +25,12 @@ def compute_abstract_bounds(
     entry_fact,
     *,
     tf_mode: str = "interval",
-) -> Tuple[Dict[int, LayerBounds], List[str]]:
+) -> Tuple[Dict[int, Bounds], List[str]]:
     """
     Compute abstract bounds for all layers in the ACT net.
     """
     errors: List[str] = []
-    bounds_by_layer: Dict[int, LayerBounds] = {}
+    bounds_by_layer: Dict[int, Bounds] = {}
 
     set_transfer_function_mode(tf_mode)
     entry_id = find_entry_layer_id(act_net)
@@ -60,13 +52,7 @@ def compute_abstract_bounds(
         if not torch.isfinite(lb).all() or not torch.isfinite(ub).all():
             errors.append(f"Non-finite bounds at layer_id={lid}")
             continue
-        bounds_by_layer[lid] = LayerBounds(
-            layer_id=lid,
-            kind=layer.kind,
-            lb=lb,
-            ub=ub,
-            shape=tuple(lb.shape),
-        )
+        bounds_by_layer[lid] = Bounds(lb=lb, ub=ub)
 
     return bounds_by_layer, errors
 
@@ -290,8 +276,9 @@ def _is_finite(t: torch.Tensor) -> bool:
 
 def compare_bounds_per_neuron(
     *,
-    bounds_by_layer: Dict[int, LayerBounds],
+    bounds_by_layer: Dict[int, Bounds],
     concrete_by_layer: Dict[int, torch.Tensor],
+    layer_by_id: Dict[int, Layer],
     atol: float = 1e-6,
     rtol: float = 0.0,
     topk: int = 10,
@@ -325,6 +312,8 @@ def compare_bounds_per_neuron(
 
     for layer_id, bounds in bounds_by_layer.items():
         concrete = concrete_by_layer[layer_id]
+        layer = layer_by_id.get(layer_id)
+        kind = layer.kind if layer is not None else "UNKNOWN"
         lb = bounds.lb
         ub = bounds.ub
 
@@ -364,8 +353,8 @@ def compare_bounds_per_neuron(
         layerwise_stats.append(
             {
                 "layer_id": int(layer_id),
-                "kind": bounds.kind,
-                "shape": list(bounds.shape),
+                "kind": kind,
+                "shape": list(lb.shape),
                 "num_neurons": int(concrete_flat.numel()),
                 "num_violations": int(num_violations),
                 "max_gap": float(max_gap),
@@ -391,7 +380,7 @@ def compare_bounds_per_neuron(
                     candidates.append(
                         {
                             "layer_id": int(layer_id),
-                            "kind": bounds.kind,
+                            "kind": kind,
                             "neuron_index": i,
                             "gap": float(v),
                             "concrete": float(concrete_flat[i].item()),
@@ -514,6 +503,7 @@ def run_per_neuron_bounds_check(
     compare = compare_bounds_per_neuron(
         bounds_by_layer=bounds_for_compare,
         concrete_by_layer=concrete_by_layer,
+        layer_by_id=getattr(act_net, "by_id", {}),
         atol=config.atol,
         rtol=config.rtol,
         topk=config.topk,
