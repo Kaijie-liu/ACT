@@ -63,16 +63,12 @@ from torchvision.ops import StochasticDepth
 from act.util.model_inference import model_inference
 from act.front_end.model_synthesis import model_synthesis
 from act.back_end.core import Net, Layer
-from act.back_end.layer_schema import LayerKind, REGISTRY
+from act.back_end.layer_schema import LayerKind
 from act.back_end.layer_util import create_layer
 from act.back_end.solver.solver_torch import TorchLPSolver
 from act.back_end.solver.solver_gurobi import GurobiSolver
 from act.front_end.specs import InKind, OutKind
 from act.util.options import PerformanceOptions
-
-import logging
-
-logger = logging.getLogger(__name__)
 
 # -----------------------------------------------------------------------------
 # Public helper for solver interpretation (optional)
@@ -93,6 +89,7 @@ def _prod(shape_tail: Tuple[int, ...]) -> int:
     for s in shape_tail:
         p *= int(s)
     return int(p)
+
 
 class TorchToACT:
     """
@@ -185,29 +182,19 @@ class TorchToACT:
             StochasticDepth
         ))
 
-    def _convert_primitive_module(self, mod: nn.Module, path: str) -> None:
+    def _convert_primitive_module(self, mod: nn.Module) -> None:
         """Convert a primitive PyTorch module to ACT layer(s)."""
         
         if isinstance(mod, nn.Flatten):
-            n = _prod(self.shape[1:])
-            if len(self.prev_out) != n:
-                raise ValueError(f"Flatten mismatch: len(prev_out)={len(self.prev_out)} vs prod(shape)={n}, shape={self.shape}")
-
             out_vars = self._same_size_forward()
-            flattened_shape = (1, n)
+            flattened_shape = (1, _prod(self.shape[1:]))
             self._add(LayerKind.FLATTEN.value, params={}, 
-                      meta={"input_shape": self.shape, "output_shape": flattened_shape, "torch_path": path, "torch_type": "Flatten"},
+                      meta={"input_shape": self.shape, "output_shape": flattened_shape},
                       in_vars=self.prev_out, out_vars=out_vars)
             self.shape = flattened_shape
             self.prev_out = out_vars
             
         elif isinstance(mod, nn.Linear):
-            if len(self.shape) != 2:
-                raise ValueError(f"Linear expects 2D shape (1,F). Got {self.shape}. Missing Flatten?")
-            if int(mod.in_features) != int(self.shape[1]):
-                raise ValueError(f"Linear in_features mismatch: mod.in_features={mod.in_features} vs shape={self.shape}")
-
-
             outF = int(mod.out_features)
             # Use detach() only - no clone needed since we don't modify weights
             W = mod.weight.detach()
@@ -215,7 +202,7 @@ class TorchToACT:
             
             out_vars = self._alloc_ids(outF)
             self._add(LayerKind.DENSE.value, params={"W": W, "b": bvec},
-                      meta={"input_shape": self.shape, "output_shape": (1, outF), "torch_path": path, "torch_type": "Linear"},
+                      meta={"input_shape": self.shape, "output_shape": (1, outF)},
                       in_vars=self.prev_out, out_vars=out_vars)
             self.shape = (1, outF)
             self.prev_out = out_vars
@@ -223,13 +210,11 @@ class TorchToACT:
         elif isinstance(mod, nn.ReLU):
             out_vars = self._same_size_forward()
             self._add(LayerKind.RELU.value, params={}, 
-                      meta={"input_shape": self.shape, "output_shape": self.shape, "torch_path": path, "torch_type": "ReLU"},
+                      meta={"input_shape": self.shape, "output_shape": self.shape},
                       in_vars=self.prev_out, out_vars=out_vars)
             self.prev_out = out_vars
             
         elif isinstance(mod, nn.Conv2d):
-            if isinstance(mod.padding, str):
-                raise ValueError("padding string not supported")
             # Use detach() only - no clone needed since we don't modify weights
             weight = mod.weight.detach()
             bias = mod.bias.detach() if mod.bias is not None else None
@@ -275,7 +260,7 @@ class TorchToACT:
             out_vars = self._alloc_ids(out_features)
             self._add(LayerKind.CONV2D.value, params=params, meta=meta,
                       in_vars=self.prev_out, out_vars=out_vars)
-            self.shape = output_shape
+            self.shape = (1, out_features)
             self.prev_out = out_vars
             
         elif isinstance(mod, nn.MaxPool2d):
@@ -303,8 +288,6 @@ class TorchToACT:
             
             # Use schema-compliant metadata fields
             meta = {
-                "input_shape": input_shape,
-                "output_shape": output_shape,
                 "kernel_size": kernel_size,
                 "stride": stride,
                 "padding": padding,
@@ -314,46 +297,7 @@ class TorchToACT:
             out_vars = self._alloc_ids(out_features)
             self._add(LayerKind.MAXPOOL2D.value, params={}, meta=meta,
                       in_vars=self.prev_out, out_vars=out_vars)
-            self.shape = output_shape
-            self.prev_out = out_vars
-        
-        elif isinstance(mod, nn.AvgPool2d):
-            # AvgPool2d: Apply average pooling operation
-            if len(self.shape) == 2:
-                # Need to infer spatial shape
-                n_features = self.shape[1]
-                # Assume square spatial dimensions
-                spatial_size = int(n_features ** 0.5)
-                channels = 1
-                input_shape = (1, channels, spatial_size, spatial_size)
-            else:
-                input_shape = self.shape
-            
-            batch, in_c, in_h, in_w = input_shape
-            kernel_size = mod.kernel_size if isinstance(mod.kernel_size, tuple) else (mod.kernel_size, mod.kernel_size)
-            stride = mod.stride if mod.stride is not None else kernel_size
-            stride = stride if isinstance(stride, tuple) else (stride, stride)
-            padding = mod.padding if isinstance(mod.padding, tuple) else (mod.padding, mod.padding)
-            
-            out_h = (in_h + 2 * padding[0] - kernel_size[0]) // stride[0] + 1
-            out_w = (in_w + 2 * padding[1] - kernel_size[1]) // stride[1] + 1
-            output_shape = (1, in_c, out_h, out_w)
-            out_features = in_c * out_h * out_w
-            
-            # Use schema-compliant metadata fields
-            meta = {
-                "input_shape": input_shape,
-                "output_shape": output_shape,
-                "kernel_size": kernel_size,
-                "stride": stride,
-                "padding": padding,
-                "output_size": (out_h, out_w)  # Schema expects this field
-            }
-            
-            out_vars = self._alloc_ids(out_features)
-            self._add(LayerKind.AVGPOOL2D.value, params={}, meta=meta,
-                      in_vars=self.prev_out, out_vars=out_vars)
-            self.shape = output_shape
+            self.shape = (1, out_features)
             self.prev_out = out_vars
             
         elif isinstance(mod, nn.Dropout):
@@ -467,8 +411,6 @@ class TorchToACT:
             stride_w = kernel_w
             
             meta = {
-                "input_shape": input_shape,
-                "output_shape": output_shape,
                 "kernel_size": (kernel_h, kernel_w),
                 "stride": (stride_h, stride_w),
                 "padding": (0, 0),
@@ -478,42 +420,42 @@ class TorchToACT:
             out_vars = self._alloc_ids(out_features)
             self._add(LayerKind.AVGPOOL2D.value, params={}, meta=meta,
                       in_vars=self.prev_out, out_vars=out_vars)
-            self.shape = output_shape
+            self.shape = (1, out_features)
             self.prev_out = out_vars
         
         elif isinstance(mod, nn.SiLU):
             # SiLU (Swish) activation: x * sigmoid(x)
             out_vars = self._same_size_forward()
             self._add(LayerKind.SILU.value, params={}, 
-                      meta={"input_shape": self.shape, "output_shape": self.shape, "torch_path": path, "torch_type": "SiLU"},
+                      meta={"input_shape": self.shape, "output_shape": self.shape},
                       in_vars=self.prev_out, out_vars=out_vars)
             self.prev_out = out_vars
         
         elif isinstance(mod, nn.Sigmoid):
             out_vars = self._same_size_forward()
             self._add(LayerKind.SIGMOID.value, params={}, 
-                      meta={"input_shape": self.shape, "output_shape": self.shape, "torch_path": path, "torch_type": "Sigmoid"},
+                      meta={},
                       in_vars=self.prev_out, out_vars=out_vars)
             self.prev_out = out_vars
         
         elif isinstance(mod, nn.Tanh):
             out_vars = self._same_size_forward()
             self._add(LayerKind.TANH.value, params={}, 
-                      meta={"input_shape": self.shape, "output_shape": self.shape, "torch_path": path, "torch_type": "Tanh"},
+                      meta={},
                       in_vars=self.prev_out, out_vars=out_vars)
             self.prev_out = out_vars
         
         elif isinstance(mod, nn.LeakyReLU):
             out_vars = self._same_size_forward()
             self._add(LayerKind.LRELU.value, params={}, 
-                      meta={"negative_slope": mod.negative_slope, "torch_path": path, "torch_type": "LeakyReLU"},
+                      meta={"negative_slope": mod.negative_slope},
                       in_vars=self.prev_out, out_vars=out_vars)
             self.prev_out = out_vars
             
         else:
             raise NotImplementedError(f"Primitive conversion not implemented: {type(mod).__name__}")
 
-    def _process_module(self, mod: nn.Module, path: str) -> None:
+    def _process_module(self, mod: nn.Module) -> None:
         """
         Recursively process a module, expanding containers into primitives.
         
@@ -538,16 +480,15 @@ class TorchToACT:
         
         # Primitive modules - convert directly
         if self._is_primitive_module(mod):
-            self._convert_primitive_module(mod, path)
+            self._convert_primitive_module(mod)
             return
         
         # Container modules - recurse into children
         if isinstance(mod, nn.Module):
             children = list(mod.children())
             if children:  # Has children - recurse
-                for child_idx, child in enumerate(children):
-                    child_path = f"{path}.{child_idx}"
-                    self._process_module(child, path=child_path)
+                for child in children:
+                    self._process_module(child)
                 return
         
         # Unsupported module type
@@ -556,7 +497,7 @@ class TorchToACT:
             f"  If this is a custom module, ensure it has primitive children (Linear, Conv2d, etc.)\n"
             f"  or implement the to_act_layers() protocol."
         )
-        
+
     # --- main conversion ---
 
     def run(self) -> Net:
@@ -572,8 +513,8 @@ class TorchToACT:
         self._emit_input()
 
         # Walk modules and recursively process them
-        for i, mod in enumerate(self.m):
-            self._process_module(mod, path=str(i))
+        for mod in self.m:
+            self._process_module(mod)
 
         # Build linear graph structure (sequential layers)
         preds = {i: ([] if i == 0 else [i - 1]) for i in range(len(self.layers))}
@@ -587,6 +528,7 @@ class TorchToACT:
         # Final sanity check
         net.assert_last_is_validation()
         return net
+
 
 def main():
     """Main entry point for PyTorch→ACT conversion and verification testing."""
