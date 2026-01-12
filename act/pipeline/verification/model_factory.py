@@ -120,7 +120,7 @@ class ModelFactory:
                 continue
         
         logger.info(f"Pre-loaded {len(self.nets)} ACT Nets from {self.nets_dir}")
-        
+    
     def get_act_net(self, name: str) -> Net:
         """
         Get pre-loaded ACT Net by name.
