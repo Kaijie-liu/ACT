@@ -38,7 +38,7 @@ def hybridz_tf_conv2d(L: Layer, Bin: Bounds) -> Fact:
         if input_shape is None:
             raise ValueError("CONV2D got flat bounds but meta.input_shape is missing")
 
-        # input_shape 可能是 (N,C,H,W) 或 (C,H,W)
+        # input_shape may be (N,C,H,W) or (C,H,W)
         if len(input_shape) == 4:
             _, C, H, W = input_shape
         elif len(input_shape) == 3:
@@ -47,12 +47,6 @@ def hybridz_tf_conv2d(L: Layer, Bin: Bounds) -> Fact:
             raise ValueError(f"Unexpected input_shape={input_shape}")
         Bin_reshaped_lb = Bin.lb.view(1, C, H, W)
         Bin_reshaped_ub = Bin.ub.view(1, C, H, W)
-        # channels = L.meta.get("in_channels")
-        # height = L.meta.get("in_height") 
-        # width = L.meta.get("in_width")
-        # in_shape = (channels, height, width)
-        # Bin_reshaped_lb = Bin.lb.view(1, *in_shape)
-        # Bin_reshaped_ub = Bin.ub.view(1, *in_shape)
     elif Bin.lb.dim() == 3:
         Bin_reshaped_lb = Bin.lb.unsqueeze(0)
         Bin_reshaped_ub = Bin.ub.unsqueeze(0)
@@ -90,19 +84,9 @@ def hybridz_tf_conv2d(L: Layer, Bin: Bounds) -> Fact:
     
     # Generate convolution constraints
     cons = ConSet()
-    # cons.add_conv2d(L.id, L.in_vars, L.out_vars, weight, bias, stride, padding, dilation, groups)
-    cons.add_op(
-        f"conv2d:{L.id}",
-        list(L.out_vars + L.in_vars),
-        weight=weight,
-        bias=bias if bias is not None else torch.zeros(weight.shape[0], device=weight.device, dtype=weight.dtype),
-        stride=stride,
-        padding=padding,
-        dilation=dilation,
-        groups=groups,
-        input_shape=L.meta.get("input_shape"),
-        output_shape=L.meta.get("output_shape"),
-    )
+    cons.add_op( f"conv2d:{L.id}", list(L.out_vars + L.in_vars), weight=weight, 
+                bias=bias if bias is not None else torch.zeros(weight.shape[0], device=weight.device, dtype=weight.dtype),
+                stride=stride, padding=padding, dilation=dilation, groups=groups, input_shape=L.meta.get("input_shape"), output_shape=L.meta.get("output_shape"),)
     
     return Fact(bounds=Bout, cons=cons)
 
@@ -130,23 +114,16 @@ def hybridz_tf_maxpool2d(L: Layer, Bin: Bounds) -> Fact:
     
     # For max pooling, lower bound is more complex - use max of lower bounds in each region
     # This is conservative but sound
-    lb = lb_pool.reshape(-1)
-    ub = ub_pool.reshape(-1)
-    assert lb.numel() == len(L.out_vars)
+    lb = lb_pool.squeeze(0).flatten() if len(L.out_vars) != lb_pool.numel() else lb_pool.squeeze(0)
+    ub = ub_pool.squeeze(0).flatten() if len(L.out_vars) != ub_pool.numel() else ub_pool.squeeze(0)
 
     Bout = Bounds(lb=lb, ub=ub)
     
     cons = ConSet()
     # Max pooling generates max constraints
-    cons.add_op(
-        f"maxpool2d:{L.id}",
-        list(L.out_vars + L.in_vars),
-        kernel_size=kernel_size,
-        stride=stride,
-        padding=padding,
-        input_shape=in_shape,
-        output_shape=L.meta.get("output_shape"),
-    )
+    cons.add_op( f"maxpool2d:{L.id}", list(L.out_vars + L.in_vars), kernel_size=kernel_size, 
+        stride=stride, padding=padding, input_shape=in_shape, output_shape=L.meta.get("output_shape"),)
+    
     return Fact(bounds=Bout, cons=cons)
 
 
@@ -170,22 +147,15 @@ def hybridz_tf_avgpool2d(L: Layer, Bin: Bounds) -> Fact:
     lb_pool = F.avg_pool2d(Bin_lb, kernel_size, stride=stride, padding=padding)
     ub_pool = F.avg_pool2d(Bin_ub, kernel_size, stride=stride, padding=padding)
     
-    lb = lb_pool.reshape(-1)
-    ub = ub_pool.reshape(-1)
-    assert lb.numel() == len(L.out_vars)
+    lb = lb_pool.squeeze(0).flatten() if len(L.out_vars) != lb_pool.numel() else lb_pool.squeeze(0)
+    ub = ub_pool.squeeze(0).flatten() if len(L.out_vars) != ub_pool.numel() else ub_pool.squeeze(0)
     
     Bout = Bounds(lb=lb, ub=ub)
     
     cons = ConSet()
     cons.add_op(
-        f"avgpool2d:{L.id}",
-        list(L.out_vars + L.in_vars),
-        kernel_size=kernel_size,
-        stride=stride,
-        padding=padding,
-        input_shape=in_shape,
-        output_shape=L.meta.get("output_shape"),
-    )
+        f"avgpool2d:{L.id}", list(L.out_vars + L.in_vars), kernel_size=kernel_size, stride=stride,
+        padding=padding, input_shape=in_shape, output_shape=L.meta.get("output_shape"),)
     
     return Fact(bounds=Bout, cons=cons)
 
@@ -203,10 +173,7 @@ def hybridz_tf_flatten(L: Layer, Bin: Bounds) -> Fact:
     Bout = Bounds(lb=lb, ub=ub)
     
     cons = ConSet()
-    cons.add_op(f"flatten:{L.id}", list(L.out_vars + L.in_vars), 
-                start_dim=start_dim, end_dim=end_dim, 
-                input_shape=L.meta.get("input_shape"),
-                output_shape=L.meta.get("output_shape"))
+    cons.add_op(f"flatten:{L.id}", list(L.out_vars + L.in_vars), start_dim=start_dim, end_dim=end_dim, input_shape=L.meta.get("input_shape"), output_shape=L.meta.get("output_shape"))
     
     return Fact(bounds=Bout, cons=cons)
 
@@ -226,9 +193,6 @@ def hybridz_tf_reshape(L: Layer, Bin: Bounds) -> Fact:
     Bout = Bounds(lb=lb, ub=ub)
     
     cons = ConSet()
-    cons.add_op(f"reshape:{L.id}", list(L.out_vars + L.in_vars), 
-                target_shape=target_shape,
-                input_shape=L.meta.get("input_shape"),
-                output_shape=L.meta.get("output_shape"))
+    cons.add_op(f"reshape:{L.id}", list(L.out_vars + L.in_vars), target_shape=target_shape, input_shape=L.meta.get("input_shape"), output_shape=L.meta.get("output_shape"))
     
     return Fact(bounds=Bout, cons=cons)

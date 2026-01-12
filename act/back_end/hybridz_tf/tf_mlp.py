@@ -118,9 +118,7 @@ def hybridz_tf_relu(L: Layer, Bin: Bounds) -> Fact:
         s = torch.empty(0, dtype=Bin.lb.dtype, device=Bin.lb.device)
         t = torch.empty(0, dtype=Bin.lb.dtype, device=Bin.lb.device)
         
-    cons.add_op(f"relu:{L.id}", list(L.out_vars + L.in_vars),
-         idx_on=idx_on, idx_off=idx_off, idx_amb=idx_amb,
-         slope=slope, shift=shift)
+    cons.add_op(f"relu:{L.id}", list(L.out_vars + L.in_vars), idx_on=idx_on, idx_off=idx_off, idx_amb=idx_amb, slope=slope, shift=shift)
     
     return Fact(bounds=Bout, cons=cons)
 
@@ -152,14 +150,10 @@ def hybridz_tf_lrelu(L: Layer, Bin: Bounds) -> Fact:
         shift[idx_amb] = y_at_lb - slope[idx_amb] * Bin.lb[idx_amb]
     
     cons = ConSet()
-    cons.add_op(f"lrelu:{L.id}", list(L.out_vars + L.in_vars), alpha=alpha,
-         idx_on=idx_on, idx_off=idx_off, idx_amb=idx_amb,
+    cons.add_op(f"lrelu:{L.id}", list(L.out_vars + L.in_vars), alpha=alpha, idx_on=idx_on, idx_off=idx_off, idx_amb=idx_amb,
          slope=slope[idx_amb], shift=shift[idx_amb])
     
     return Fact(bounds=Bout, cons=cons)
-
-import torch
-from act.back_end.core import Bounds, Fact, Layer, ConSet
 
 @torch.no_grad()
 def hybridz_tf_tanh(L: Layer, Bin: Bounds) -> Fact:
@@ -197,16 +191,14 @@ def hybridz_tf_abs(L: Layer, Bin: Bounds) -> Fact:
     idx_amb = torch.where((Bin.lb < 0) & (Bin.ub > 0))[0]  # Crosses zero
     
     # Output bounds
-    l, u = Bin.lb, Bin.ub
-    cross = (l < 0) & (u > 0)
-    lb = torch.where(cross, torch.zeros_like(l), torch.minimum(torch.abs(l), torch.abs(u)))
-    ub = torch.maximum(torch.abs(l), torch.abs(u))
-    assert lb.shape == ub.shape == l.shape
+    lb = torch.where(idx_amb[:, None] == torch.arange(len(Bin.lb))[None, :], 
+                     torch.zeros_like(Bin.lb), 
+                     torch.where(Bin.lb >= 0, Bin.lb, -Bin.ub))
+    ub = torch.maximum(torch.abs(Bin.lb), torch.abs(Bin.ub))
     Bout = Bounds(lb=lb, ub=ub)
     
     cons = ConSet()
-    cons.add_op(f"abs:{L.id}", list(L.out_vars + L.in_vars),
-            idx_pos=idx_pos, idx_neg=idx_neg, idx_amb=idx_amb)
+    cons.add_op(f"abs:{L.id}", list(L.out_vars + L.in_vars), idx_pos=idx_pos, idx_neg=idx_neg, idx_amb=idx_amb)
     
     return Fact(bounds=Bout, cons=cons)
 
@@ -247,10 +239,6 @@ def hybridz_tf_mul(L: Layer, Bin1: Bounds, Bin2: Bounds) -> Fact:
     
     # McCormick constraints
     cons = ConSet()
-    cons.add_op(
-        f"mcc:{L.id}",
-        list(L.out_vars + L.in_vars),
-        lx=lx, ux=ux, ly=ly, uy=uy,
-    )
+    cons.add_op(f"mcc:{L.id}", list(L.out_vars + L.in_vars), lx=lx, ux=ux, ly=ly, uy=uy)
     
     return Fact(bounds=Bout, cons=cons)
