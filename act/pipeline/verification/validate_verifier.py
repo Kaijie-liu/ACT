@@ -164,7 +164,7 @@ class VerificationValidator:
     """Unified verification validation framework with counterexample and bounds validation."""
     
     def __init__(
-        self,
+        self, 
         device: str = 'cpu',
         dtype: torch.dtype = torch.float64
     ):
@@ -576,8 +576,6 @@ class VerificationValidator:
         # Step 3: Sample concrete inputs
         violations = []
         total_checks = 0
-        total_violations = 0
-        worst_gap = 0.0
         per_neuron_config = PerNeuronCheckConfig()
         
         def _get_input_bounds_from_act(act_net_inner):
@@ -637,8 +635,6 @@ class VerificationValidator:
                     raise RuntimeError("; ".join(check.get("errors", [])[:3]))
 
                 total_checks += int(check.get("total_checks", 0))
-                total_violations += int(check.get("violations_total", 0))
-                worst_gap = max(worst_gap, float(check.get("worst_gap", 0.0)))
                 if int(check.get("violations_total", 0)) > 0:
                     violated_layers = [
                         s for s in check.get("layerwise_stats", [])
@@ -672,13 +668,6 @@ class VerificationValidator:
                 return error_result
         
         # Step 6: Summarize results
-        check_label = "✅" if total_violations == 0 else "🚨"
-        check_line = (
-            f"  {check_label} PER-NEURON BOUNDS CHECK: "
-            f"samples={num_samples} checks={total_checks} "
-            f"violations={int(total_violations)} worst_gap={float(worst_gap):.2e}"
-        )
-
         if len(violations) > 0:
             result = {
                 'network': name,
@@ -688,18 +677,14 @@ class VerificationValidator:
                 'explanation': f"🚨 UNSOUND BOUNDS: {len(violations)} violations found across {num_samples} samples",
                 'total_checks': total_checks,
                 'violations': violations,
-                'per_neuron_summary': {
-                    'total_violations': int(total_violations),
-                    'worst_gap': float(worst_gap),
-                },
                 'per_neuron_config': {
                     'atol': per_neuron_config.atol,
                     'rtol': per_neuron_config.rtol,
                     'topk': per_neuron_config.topk,
                 },
             }
-            logger.error(f"\n{check_line}")
             logger.error(f"\n  {result['explanation']}")
+            
         else:
             result = {
                 'network': name,
@@ -709,17 +694,12 @@ class VerificationValidator:
                 'explanation': f"✅ SOUND BOUNDS: All {total_checks} checks passed across {num_samples} samples",
                 'total_checks': total_checks,
                 'violations': [],
-                'per_neuron_summary': {
-                    'total_violations': int(total_violations),
-                    'worst_gap': float(worst_gap),
-                },
                 'per_neuron_config': {
                     'atol': per_neuron_config.atol,
                     'rtol': per_neuron_config.rtol,
                     'topk': per_neuron_config.topk,
                 },
             }
-            logger.info(f"\n{check_line}")
             logger.info(f"\n  {result['explanation']}")
         
         self.validation_results.append(result)
