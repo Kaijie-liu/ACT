@@ -603,10 +603,8 @@ def cmd_validate_verifier(args):
         sys.exit(1)
 
 
-def main(argv: Optional[List[str]] = None) -> int:
+def main():
     """Main CLI entry point."""
-    if argv is None:
-        argv = sys.argv[1:]
     parser = argparse.ArgumentParser(
         prog="python -m act.pipeline",
         description="ACT Pipeline: Inference-based whitebox fuzzing for neural networks",
@@ -850,7 +848,7 @@ Examples:
     # Add standard device/dtype arguments (shared across all ACT CLIs)
     add_device_args(parser)
     
-    args = parser.parse_args(argv)
+    args = parser.parse_args()
     
     # Initialize device manager from CLI arguments
     initialize_from_args(args)
@@ -882,15 +880,13 @@ Examples:
             cmd_list_verifications()
     except KeyboardInterrupt:
         print("\n\n⚠️  Interrupted by user")
-        return 1
+        sys.exit(1)
     except Exception as e:
         print(f"\n❌ Error: {e}")
         import traceback
         traceback.print_exc()
-        return 1
-
-    return 0
+        sys.exit(1)
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    main()

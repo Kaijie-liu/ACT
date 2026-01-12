@@ -15,12 +15,7 @@ from .act2torch import *
 from .validate_verifier import VerificationValidator
 from .model_factory import *
 from .utils import *
-
-try:
-    from .llm_probe import *  # type: ignore
-    LLM_PROBE_AVAILABLE = True
-except Exception:
-    LLM_PROBE_AVAILABLE = False
+from .llm_probe import *
 
 __all__ = [
     # torch2act exports
@@ -41,5 +36,4 @@ __all__ = [
     
     # llm_probe exports
     'llm_probe',
-    'LLM_PROBE_AVAILABLE',
 ]

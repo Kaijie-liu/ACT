@@ -120,8 +120,8 @@ class ModelFactory:
                 continue
         
         logger.info(f"Pre-loaded {len(self.nets)} ACT Nets from {self.nets_dir}")
-    
-    def get_act_net(self, name: str, spec_overrides: Optional[Dict[str, Any]] = None) -> Net:
+        
+    def get_act_net(self, name: str) -> Net:
         """
         Get pre-loaded ACT Net by name.
         
@@ -137,31 +137,8 @@ class ModelFactory:
         if name not in self.nets:
             available = ", ".join(self.nets.keys())
             raise KeyError(f"ACT Net '{name}' not available. Available: {available}")
-
-        act_net = self.nets[name]
-        if not spec_overrides:
-            return act_net
-
-        import copy
-        net_copy = copy.deepcopy(act_net)
-
-        for layer in net_copy.layers:
-            if layer.kind == "INPUT_SPEC":
-                if "eps" in spec_overrides and spec_overrides["eps"] is not None:
-                    layer.meta["eps"] = spec_overrides["eps"]
-                if "norm" in spec_overrides and spec_overrides["norm"] is not None:
-                    layer.meta["norm"] = spec_overrides["norm"]
-            if layer.kind == "ASSERT":
-                if "assert_kind" in spec_overrides and spec_overrides["assert_kind"] is not None:
-                    layer.meta["kind"] = spec_overrides["assert_kind"]
-                if "y_true" in spec_overrides and spec_overrides["y_true"] is not None:
-                    layer.meta["y_true"] = spec_overrides["y_true"]
-                if "targeted" in spec_overrides and spec_overrides["targeted"] is not None:
-                    layer.meta["targeted"] = spec_overrides["targeted"]
-                if "target_label" in spec_overrides and spec_overrides["target_label"] is not None:
-                    layer.meta["target_label"] = spec_overrides["target_label"]
-
-        return net_copy
+        
+        return self.nets[name]
     
     def create_model(self, name: str, load_weights: bool = True) -> nn.Module:
         """
