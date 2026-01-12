@@ -683,7 +683,6 @@ class VerificationValidator:
                 },
             }
             logger.error(f"\n  {result['explanation']}")
-            
         else:
             result = {
                 'network': name,
@@ -703,7 +702,6 @@ class VerificationValidator:
         
         self.validation_results.append(result)
         return result
-
     
     def validate_comprehensive(
         self,
