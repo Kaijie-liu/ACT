@@ -17,7 +17,11 @@ import torch
 
 from act.back_end.analyze import analyze
 from act.back_end.verifier import find_entry_layer_id
-from act.back_end.transfer_functions import set_transfer_function_mode
+from act.back_end.transfer_functions import (
+    get_transfer_function,
+    set_transfer_function,
+    set_transfer_function_mode,
+)
 
 _TF_MODE_LOCK = threading.Lock()
 
@@ -44,9 +48,18 @@ def compute_abstract_bounds(
     bounds_by_layer: Dict[int, LayerBounds] = {}
 
     with _TF_MODE_LOCK:
-        set_transfer_function_mode(tf_mode)
-        entry_id = find_entry_layer_id(act_net)
-        _before, after, _globalC = analyze(act_net, entry_id, entry_fact)
+        prev_tf = None
+        try:
+            prev_tf = get_transfer_function()
+        except Exception:
+            prev_tf = None
+        try:
+            set_transfer_function_mode(tf_mode)
+            entry_id = find_entry_layer_id(act_net)
+            _before, after, _globalC = analyze(act_net, entry_id, entry_fact)
+        finally:
+            if prev_tf is not None:
+                set_transfer_function(prev_tf)
 
     for layer in getattr(act_net, "layers", []):
         lid = layer.id
