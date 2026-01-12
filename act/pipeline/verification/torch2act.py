@@ -94,34 +94,6 @@ def _prod(shape_tail: Tuple[int, ...]) -> int:
         p *= int(s)
     return int(p)
 
-def _to_2tuple(x) -> Tuple[int, int]:
-    """Helper to convert int or tuple to 2-tuple."""
-    return x if isinstance(x, tuple) else (int(x), int(x))
-
-
-def _filter_layer_meta(kind: str, meta: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Filter layer meta to schema-allowed keys, dropping unknown entries.
-    """
-    if kind not in REGISTRY:
-        raise KeyError(f"Unknown layer kind '{kind}' not in layer_schema REGISTRY")
-    spec = REGISTRY[kind]
-    allowed = set(spec.get("meta_optional", [])) | set(spec.get("meta_required", []))
-    if not allowed:
-        filtered = {}
-    else:
-        filtered = {k: v for k, v in meta.items() if k in allowed}
-
-    missing = [k for k in spec.get("meta_required", []) if k not in filtered]
-    if missing:
-        raise ValueError(f"{kind} meta missing required keys: {missing}")
-
-    dropped = sorted(set(meta.keys()) - set(filtered.keys()))
-    if dropped and PerformanceOptions.debug_tf:
-        logger.debug("torch2act meta filter dropped for %s: %s", kind, dropped)
-
-    return filtered
-
 class TorchToACT:
     """
     Convert a *wrapped* nn.Sequential to ACT Net/Layers.
@@ -180,7 +152,6 @@ class TorchToACT:
 
     def _add(self, kind: str, params: Dict[str, torch.Tensor], meta: Dict[str, Any],
              in_vars: List[int], out_vars: List[int]) -> int:
-        meta = _filter_layer_meta(kind, meta)
         layer = create_layer(
             id=len(self.layers),
             kind=kind,
