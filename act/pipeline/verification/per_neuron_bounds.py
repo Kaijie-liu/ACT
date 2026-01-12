@@ -11,12 +11,15 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Any, Dict, List, Tuple
+import threading
 
 import torch
 
 from act.back_end.analyze import analyze
 from act.back_end.verifier import find_entry_layer_id
 from act.back_end.transfer_functions import set_transfer_function_mode
+
+_TF_MODE_LOCK = threading.Lock()
 
 
 @dataclass(frozen=True)
@@ -40,9 +43,10 @@ def compute_abstract_bounds(
     errors: List[str] = []
     bounds_by_layer: Dict[int, LayerBounds] = {}
 
-    set_transfer_function_mode(tf_mode)
-    entry_id = find_entry_layer_id(act_net)
-    _before, after, _globalC = analyze(act_net, entry_id, entry_fact)
+    with _TF_MODE_LOCK:
+        set_transfer_function_mode(tf_mode)
+        entry_id = find_entry_layer_id(act_net)
+        _before, after, _globalC = analyze(act_net, entry_id, entry_fact)
 
     for layer in getattr(act_net, "layers", []):
         lid = layer.id
@@ -101,7 +105,9 @@ def collect_concrete_activations(
         if strict_single_call_per_module and call_counts[module_id] > 1:
             errors.append(f"Module called multiple times: {module.__class__.__name__}")
         if not torch.is_tensor(output):
-            warnings.append(f"Non-tensor output from {module.__class__.__name__}")
+            errors.append(
+                f"Non-tensor output from {module.__class__.__name__}: type={type(output).__name__}"
+            )
             return
         tensor = output.detach()
         shape = tuple(int(x) for x in tensor.shape)
@@ -380,25 +386,22 @@ def compare_bounds_per_neuron(
             }
         )
 
-        if topk > 0:
-            k = min(int(topk), int(concrete_flat.numel()))
-            if k > 0:
-                vals, idxs = torch.topk(gap, k=k)
-                for v, i in zip(vals.tolist(), idxs.tolist()):
-                    if v <= 0:
-                        continue
-                    i = int(i)
-                    candidates.append(
-                        {
-                            "layer_id": int(layer_id),
-                            "kind": bounds.kind,
-                            "neuron_index": i,
-                            "gap": float(v),
-                            "concrete": float(concrete_flat[i].item()),
-                            "lb": float(lb_flat[i].item()),
-                            "ub": float(ub_flat[i].item()),
-                        }
-                    )
+        if topk > 0 and num_violations > 0:
+            viol_idxs = torch.nonzero(violations_mask, as_tuple=False).reshape(-1)
+            for i in viol_idxs.tolist():
+                i = int(i)
+                v = float(gap[i].item())
+                candidates.append(
+                    {
+                        "layer_id": int(layer_id),
+                        "kind": bounds.kind,
+                        "neuron_index": i,
+                        "gap": float(v),
+                        "concrete": float(concrete_flat[i].item()),
+                        "lb": float(lb_flat[i].item()),
+                        "ub": float(ub_flat[i].item()),
+                    }
+                )
 
     if errors:
         return {
