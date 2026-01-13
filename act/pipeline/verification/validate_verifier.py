@@ -151,6 +151,7 @@ from act.pipeline.verification.torch2act import TorchToACT
 from act.pipeline.verification.per_neuron_bounds import PerNeuronCheckConfig, run_per_neuron_bounds_check
 from act.back_end.verifier import verify_once, gather_input_spec_layers, seed_from_input_specs, get_input_ids, get_assert_layer, find_entry_layer_id
 from act.back_end.solver.solver_gurobi import GurobiSolver
+from act.back_end.solver.solver_gurobi import is_gurobi_available
 from act.back_end.solver.solver_torch import TorchLPSolver
 from act.util.options import PerformanceOptions
 from act.front_end.specs import OutKind
@@ -298,6 +299,13 @@ class VerificationValidator:
         """
         if networks is None:
             networks = self.factory.list_networks()
+
+        solvers = list(solvers)
+        if "gurobi" in solvers and not is_gurobi_available():
+            logger.warning("Skipping gurobi solver: gurobipy is not available.")
+            solvers = [s for s in solvers if s != "gurobi"]
+            if not solvers:
+                logger.warning("No available solvers for counterexample validation.")
         
         logger.info(f"\n{'='*80}")
         logger.info(f"LEVEL 1: COUNTEREXAMPLE/SOUNDNESS VALIDATION")

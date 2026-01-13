@@ -14,6 +14,10 @@ except ImportError:
     print("Warning: Gurobi not available. Some operations will use alternative solvers.")
     GUROBI_AVAILABLE = False
 
+
+def is_gurobi_available() -> bool:
+    return bool(GUROBI_AVAILABLE)
+
 def setup_gurobi_license():
     """Setup Gurobi license path based on current folder layout."""
     if 'GRB_LICENSE_FILE' not in os.environ:
