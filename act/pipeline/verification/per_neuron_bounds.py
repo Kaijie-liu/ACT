@@ -20,6 +20,29 @@ from act.back_end.verifier import find_entry_layer_id
 from act.back_end.transfer_functions import set_transfer_function_mode
 
 
+_ACT_KIND_TO_MODULE = {
+    "DENSE": "Linear",
+    "CONV1D": "Conv1d",
+    "CONV2D": "Conv2d",
+    "CONV3D": "Conv3d",
+    "RELU": "ReLU",
+    "SIGMOID": "Sigmoid",
+    "TANH": "Tanh",
+    "SILU": "SiLU",
+    "LRELU": "LeakyReLU",
+    "FLATTEN": "Flatten",
+    "MAXPOOL1D": "MaxPool1d",
+    "MAXPOOL2D": "MaxPool2d",
+    "MAXPOOL3D": "MaxPool3d",
+    "AVGPOOL1D": "AvgPool1d",
+    "AVGPOOL2D": "AvgPool2d",
+    "AVGPOOL3D": "AvgPool3d",
+    "ADAPTIVEAVGPOOL1D": "AdaptiveAvgPool1d",
+    "ADAPTIVEAVGPOOL2D": "AdaptiveAvgPool2d",
+    "ADAPTIVEAVGPOOL3D": "AdaptiveAvgPool3d",
+}
+
+
 def compute_abstract_bounds(
     act_net,
     entry_fact,
@@ -57,28 +80,20 @@ def compute_abstract_bounds(
     return bounds_by_layer, errors
 
 
-@dataclass(frozen=True)
-class ActivationEvent:
-    name: str
-    module_type: str
-    call_index: int
-    shape: Tuple[int, ...]
-    tensor: torch.Tensor
-
-
 def collect_concrete_activations(
+    act_net,
     model: torch.nn.Module,
     input_tensor: torch.Tensor,
     *,
     strict_single_call_per_module: bool = False,
-) -> Tuple[List[ActivationEvent], List[str], List[str]]:
+) -> Tuple[Dict[int, torch.Tensor], List[str], List[str], Dict[str, Any]]:
     """
-    Collect concrete activations with forward hooks.
+    Collect concrete activations and align them to ACT layer IDs.
     """
     errors: List[str] = []
     warnings: List[str] = []
-    events: List[ActivationEvent] = []
     call_counts: Dict[int, int] = {}
+    hookable_events: List[Tuple[str, torch.Tensor]] = []
     hooks = []
 
     def _hook(module, inputs, output):
@@ -90,21 +105,15 @@ def collect_concrete_activations(
             warnings.append(f"Non-tensor output from {module.__class__.__name__}")
             return
         tensor = output.detach()
-        shape = tuple(int(x) for x in tensor.shape)
-        events.append(
-            ActivationEvent(
-                name=module.__class__.__name__,
-                module_type=module.__class__.__name__,
-                call_index=call_counts[module_id] - 1,
-                shape=shape,
-                tensor=tensor,
-            )
-        )
+        hookable_events.append((module.__class__.__name__, tensor))
+
+    hookable_kinds = set(_ACT_KIND_TO_MODULE.values())
 
     for module in model.modules():
         if module is model:
             continue
-        hooks.append(module.register_forward_hook(_hook))
+        if module.__class__.__name__ in hookable_kinds:
+            hooks.append(module.register_forward_hook(_hook))
 
     try:
         with torch.no_grad():
@@ -113,85 +122,6 @@ def collect_concrete_activations(
         for h in hooks:
             h.remove()
 
-    return events, errors, warnings
-
-
-@dataclass(frozen=True)
-class AlignmentResult:
-    ok: bool
-    mapping: Dict[int, ActivationEvent]
-    errors: List[str]
-    warnings: List[str]
-    meta: Dict[str, Any]
-
-
-_ACT_KIND_TO_MODULE = {
-    "DENSE": "Linear",
-    "CONV1D": "Conv1d",
-    "CONV2D": "Conv2d",
-    "CONV3D": "Conv3d",
-    "RELU": "ReLU",
-    "SIGMOID": "Sigmoid",
-    "TANH": "Tanh",
-    "SILU": "SiLU",
-    "LRELU": "LeakyReLU",
-    "FLATTEN": "Flatten",
-    "MAXPOOL1D": "MaxPool1d",
-    "MAXPOOL2D": "MaxPool2d",
-    "MAXPOOL3D": "MaxPool3d",
-    "AVGPOOL1D": "AvgPool1d",
-    "AVGPOOL2D": "AvgPool2d",
-    "AVGPOOL3D": "AvgPool3d",
-    "ADAPTIVEAVGPOOL1D": "AdaptiveAvgPool1d",
-    "ADAPTIVEAVGPOOL2D": "AdaptiveAvgPool2d",
-    "ADAPTIVEAVGPOOL3D": "AdaptiveAvgPool3d",
-}
-
-
-def align_activations_to_act_layers(
-    act_net,
-    events: List[ActivationEvent],
-    *,
-    mode: str = "hookable_order_strict",
-    hookable_kinds: Tuple[str, ...] = (
-        "Linear",
-        "Conv1d",
-        "Conv2d",
-        "Conv3d",
-        "ReLU",
-        "Sigmoid",
-        "Tanh",
-        "SiLU",
-        "LeakyReLU",
-        "Flatten",
-        "MaxPool1d",
-        "MaxPool2d",
-        "MaxPool3d",
-        "AvgPool1d",
-        "AvgPool2d",
-        "AvgPool3d",
-        "AdaptiveAvgPool1d",
-        "AdaptiveAvgPool2d",
-        "AdaptiveAvgPool3d",
-    ),
-) -> AlignmentResult:
-    """
-    Align activation events to ACT layer IDs.
-    """
-    errors: List[str] = []
-    warnings: List[str] = []
-    mapping: Dict[int, ActivationEvent] = {}
-
-    if mode != "hookable_order_strict":
-        return AlignmentResult(
-            ok=False,
-            mapping={},
-            errors=[f"Unsupported alignment mode: {mode}"],
-            warnings=[],
-            meta={},
-        )
-
-    hookable_events = [e for e in events if e.module_type in hookable_kinds]
     hookable_layers = [
         L for L in getattr(act_net, "layers", [])
         if _ACT_KIND_TO_MODULE.get(L.kind) in hookable_kinds
@@ -228,14 +158,20 @@ def align_activations_to_act_layers(
             return raw_shape, False, "drop_would_not_match_expected"
         return candidate, True, "dropped_batch1"
 
+    mapping: Dict[int, torch.Tensor] = {}
+
     for idx, layer in enumerate(hookable_layers):
         if idx >= len(hookable_events):
             break
-        ev = hookable_events[idx]
+        module_type, tensor = hookable_events[idx]
         expected = _ACT_KIND_TO_MODULE.get(layer.kind)
-        if expected != ev.module_type:
+        if expected is None:
             errors.append(
-                f"Kind/type mismatch at position {idx}: act_kind={layer.kind} event_type={ev.module_type}"
+                f"Unsupported ACT kind at position {idx}: act_kind={layer.kind}"
+            )
+        elif expected != module_type:
+            errors.append(
+                f"Kind/type mismatch at position {idx}: act_kind={layer.kind} event_type={module_type}"
             )
         expected_shape = None
         meta = getattr(layer, "meta", {}) or {}
@@ -244,7 +180,7 @@ def align_activations_to_act_layers(
         elif "shape" in meta:
             expected_shape = tuple(int(x) for x in meta["shape"])
         if expected_shape is not None:
-            raw_shape = tuple(ev.shape)
+            raw_shape = tuple(int(x) for x in tensor.shape)
             no_batch_shape, dropped, drop_reason = _drop_batch_if_and_only_if_batch1(
                 raw_shape,
                 expected_shape,
@@ -259,15 +195,15 @@ def align_activations_to_act_layers(
                     f"dropped_batch={dropped} drop_reason={drop_reason} "
                     f"event_numel={ev_numel} expected_numel={exp_numel}"
                 )
-        mapping[layer.id] = ev
+        mapping[layer.id] = tensor
 
-    ok = len(errors) == 0
     meta = {
-        "mode": mode,
+        "mode": "hookable_order_strict",
         "hookable_events": len(hookable_events),
         "hookable_layers": len(hookable_layers),
     }
-    return AlignmentResult(ok=ok, mapping=mapping, errors=errors, warnings=warnings, meta=meta)
+
+    return mapping, errors, warnings, meta
 
 
 def _is_finite(t: torch.Tensor) -> bool:
@@ -412,7 +348,17 @@ def compare_bounds_per_neuron(
         "warnings": warnings,
     }
 
+"""
+A standard absolute-plus-relative tolerance used in numerical computing to 
+avoid flagging floating-point roundoff as “unsoundness”; 
 
+A neuron as violating only if:
+    it falls outside [lb, ub] by more than atol + rtol*|a|.
+
+topk: 
+    When violations occur, topk returns the K most severe violation cases, 
+    making it easier to quickly pinpoint the bug.
+"""
 @dataclass(frozen=True)
 class PerNeuronCheckConfig:
     atol: float = 1e-6
@@ -444,7 +390,8 @@ def run_per_neuron_bounds_check(
     if bounds_errors:
         errors.extend(bounds_errors)
 
-    events, event_errors, event_warnings = collect_concrete_activations(
+    concrete_by_layer, event_errors, event_warnings, alignment_meta = collect_concrete_activations(
+        act_net,
         model,
         input_tensor,
     )
@@ -461,30 +408,11 @@ def run_per_neuron_bounds_check(
             "violations_total": 0,
             "violations_topk": [],
             "layerwise_stats": [],
-            "alignment": {},
+            "alignment": alignment_meta,
             "total_checks": 0,
             "worst_gap": 0.0,
         }
 
-    alignment = align_activations_to_act_layers(
-        act_net,
-        events,
-        mode="hookable_order_strict",
-    )
-    if alignment.errors:
-        return {
-            "status": "ERROR",
-            "errors": alignment.errors,
-            "warnings": warnings + alignment.warnings,
-            "violations_total": 0,
-            "violations_topk": [],
-            "layerwise_stats": [],
-            "alignment": alignment.meta,
-            "total_checks": 0,
-            "worst_gap": 0.0,
-        }
-
-    concrete_by_layer = {lid: ev.tensor for lid, ev in alignment.mapping.items()}
     missing_bounds = [lid for lid in concrete_by_layer.keys() if lid not in bounds_by_layer]
     if missing_bounds:
         return {
@@ -494,7 +422,7 @@ def run_per_neuron_bounds_check(
             "violations_total": 0,
             "violations_topk": [],
             "layerwise_stats": [],
-            "alignment": alignment.meta,
+            "alignment": alignment_meta,
             "total_checks": 0,
             "worst_gap": 0.0,
         }
@@ -518,7 +446,7 @@ def run_per_neuron_bounds_check(
             "violations_total": 0,
             "violations_topk": [],
             "layerwise_stats": [],
-            "alignment": alignment.meta,
+            "alignment": alignment_meta,
             "total_checks": 0,
             "worst_gap": 0.0,
         }
@@ -529,7 +457,7 @@ def run_per_neuron_bounds_check(
     for s in layerwise_stats:
         worst_gap = max(worst_gap, float(s.get("max_gap", 0.0)))
 
-    compare["alignment"] = alignment.meta
+    compare["alignment"] = alignment_meta
     compare["warnings"] = warnings + compare.get("warnings", [])
     compare["total_checks"] = int(total_checks)
     compare["worst_gap"] = float(worst_gap)

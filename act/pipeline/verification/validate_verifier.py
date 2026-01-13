@@ -497,7 +497,8 @@ class VerificationValidator:
         self,
         networks: Optional[List[str]] = None,
         tf_modes: List[str] = ['interval'],
-        num_samples: int = 10
+        num_samples: int = 10,
+        per_neuron_config: Optional[PerNeuronCheckConfig] = None,
     ) -> Dict[str, Any]:
         """
         Level 2: Validate abstract bounds overapproximate concrete values.
@@ -524,7 +525,12 @@ class VerificationValidator:
         for network in networks:
             for tf_mode in tf_modes:
                 try:
-                    self._validate_bounds_single(network, tf_mode, num_samples)
+                    self._validate_bounds_single(
+                        network,
+                        tf_mode,
+                        num_samples,
+                        per_neuron_config=per_neuron_config,
+                    )
                 except Exception as e:
                     logger.error(f"Bounds validation failed for {network}/{tf_mode}: {e}")
                     import traceback
@@ -546,7 +552,8 @@ class VerificationValidator:
         self,
         name: str,
         tf_mode: str,
-        num_samples: int
+        num_samples: int,
+        per_neuron_config: Optional[PerNeuronCheckConfig] = None,
     ) -> Dict[str, Any]:
         """
         Validate bounds for a single network (Level 2).
@@ -575,7 +582,7 @@ class VerificationValidator:
         # Step 3: Sample concrete inputs
         violations = []
         total_checks = 0
-        per_neuron_config = PerNeuronCheckConfig()
+        per_neuron_config = per_neuron_config or PerNeuronCheckConfig()
         
         def _get_input_bounds_from_act(act_net_inner):
             from act.back_end.core import Bounds
@@ -708,7 +715,8 @@ class VerificationValidator:
         networks: Optional[List[str]] = None,
         solvers: List[str] = ['gurobi', 'torchlp'],
         tf_modes: List[str] = ['interval'],
-        num_samples: int = 10
+        num_samples: int = 10,
+        per_neuron_config: Optional[PerNeuronCheckConfig] = None,
     ) -> Dict[str, Any]:
         """
         Run both Level 1 and Level 2 validations.
@@ -733,7 +741,12 @@ class VerificationValidator:
         summary_l1 = self.validate_counterexamples(networks=networks, solvers=solvers)
         
         # Run Level 2
-        summary_l2 = self.validate_bounds(networks=networks, tf_modes=tf_modes, num_samples=num_samples)
+        summary_l2 = self.validate_bounds(
+            networks=networks,
+            tf_modes=tf_modes,
+            num_samples=num_samples,
+            per_neuron_config=per_neuron_config,
+        )
         
         # Combine summaries - FAILED if any failures OR errors
         has_failures = (summary_l1.get('failed', 0) > 0 or summary_l2.get('failed', 0) > 0)

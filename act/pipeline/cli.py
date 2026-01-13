@@ -549,6 +549,7 @@ def cmd_validate_verifier(args):
     """Run verifier validation with specified mode."""
     import torch
     from act.pipeline.verification.validate_verifier import VerificationValidator
+    from act.pipeline.verification.per_neuron_bounds import PerNeuronCheckConfig
     
     print_header()
     
@@ -563,6 +564,11 @@ def cmd_validate_verifier(args):
     
     # Run validation based on mode
     try:
+        per_neuron_config = PerNeuronCheckConfig(
+            atol=args.per_neuron_atol,
+            rtol=args.per_neuron_rtol,
+            topk=args.per_neuron_topk,
+        )
         if args.mode == 'counterexample':
             summary = validator.validate_counterexamples(
                 networks=networks,
@@ -576,7 +582,8 @@ def cmd_validate_verifier(args):
             summary = validator.validate_bounds(
                 networks=networks,
                 tf_modes=args.tf_modes,
-                num_samples=args.samples
+                num_samples=args.samples,
+                per_neuron_config=per_neuron_config,
             )
             # Exit 1 if failures or errors, unless --ignore-errors is set
             exit_code = 0 if args.ignore_errors else (
@@ -587,7 +594,8 @@ def cmd_validate_verifier(args):
                 networks=networks,
                 solvers=args.solvers,
                 tf_modes=args.tf_modes,
-                num_samples=args.samples
+                num_samples=args.samples,
+                per_neuron_config=per_neuron_config,
             )
             # Exit 1 if any failures or errors, unless --ignore-errors is set
             exit_code = 0 if args.ignore_errors else (
@@ -838,6 +846,24 @@ Examples:
         type=int,
         default=10,
         help="Number of samples for Level 3 validation (default: 10)"
+    )
+    validation_group.add_argument(
+        "--per-neuron-atol",
+        type=float,
+        default=1e-6,
+        help="Absolute tolerance for per-neuron bounds check (default: 1e-6)"
+    )
+    validation_group.add_argument(
+        "--per-neuron-rtol",
+        type=float,
+        default=0.0,
+        help="Relative tolerance for per-neuron bounds check (default: 0.0)"
+    )
+    validation_group.add_argument(
+        "--per-neuron-topk",
+        type=int,
+        default=10,
+        help="Top-K worst per-neuron violations to report (default: 10)"
     )
     validation_group.add_argument(
         "--ignore-errors",
