@@ -181,10 +181,10 @@ REGISTRY: Dict[str, Dict[str, List[str]]] = {
 
     # Pooling
     LayerKind.MAXPOOL1D.value:   {"params_required": [], "params_optional": [], "meta_required": ["kernel_size"], "meta_optional": ["stride","padding","dilation","ceil_mode","count_include_pad","output_size"]},
-    LayerKind.MAXPOOL2D.value:   {"params_required": [], "params_optional": [], "meta_required": ["kernel_size"], "meta_optional": ["stride","padding","dilation","ceil_mode","count_include_pad","output_size"]},
+    LayerKind.MAXPOOL2D.value:   {"params_required": [], "params_optional": [], "meta_required": ["kernel_size"], "meta_optional": ["stride","padding","dilation","ceil_mode","count_include_pad","output_size","input_shape","output_shape"]},
     LayerKind.MAXPOOL3D.value:   {"params_required": [], "params_optional": [], "meta_required": ["kernel_size"], "meta_optional": ["stride","padding","dilation","ceil_mode","count_include_pad","output_size"]},
     LayerKind.AVGPOOL1D.value:   {"params_required": [], "params_optional": [], "meta_required": ["kernel_size"], "meta_optional": ["stride","padding","dilation","ceil_mode","count_include_pad","output_size"]},
-    LayerKind.AVGPOOL2D.value:   {"params_required": [], "params_optional": [], "meta_required": ["kernel_size"], "meta_optional": ["stride","padding","dilation","ceil_mode","count_include_pad","output_size"]},
+    LayerKind.AVGPOOL2D.value:   {"params_required": [], "params_optional": [], "meta_required": ["kernel_size"], "meta_optional": ["stride","padding","dilation","ceil_mode","count_include_pad","output_size","input_shape","output_shape"]},
     LayerKind.AVGPOOL3D.value:   {"params_required": [], "params_optional": [], "meta_required": ["kernel_size"], "meta_optional": ["stride","padding","dilation","ceil_mode","count_include_pad","output_size"]},
     LayerKind.ADAPTIVEAVGPOOL2D.value: {"params_required": [], "params_optional": [], "meta_required": [], "meta_optional": ["output_size"]},
 
@@ -232,4 +232,37 @@ REGISTRY: Dict[str, Dict[str, List[str]]] = {
     LayerKind.SOFTMAX.value:     {"params_required": [], "params_optional": [], "meta_required": ["axis"], "meta_optional": []},
     LayerKind.MHA.value:         {"params_required": [], "params_optional": ["in_proj_weight","in_proj_bias","q_proj.weight","q_proj.bias","k_proj.weight","k_proj.bias","v_proj.weight","v_proj.bias","out_proj.weight","out_proj.bias","bias_k","bias_v","rel_pos_bias"], "meta_required": ["num_heads"], "meta_optional": ["head_dim","scale","dropout","add_zero_attn","batch_first","causal","mask_kind","mask_format","axis","qkv_layout","posenc_kind","rope_theta"]},
     LayerKind.POSENC.value:      {"params_required": [], "params_optional": ["weight","slopes"], "meta_required": [], "meta_optional": ["kind","seq_len","embedding_dim","theta"]},
+}
+
+# Supported exporter op tags (base name before ":").
+SUPPORTED_EXPORT_OPS = {
+    "box",
+    "dense",
+    "bias",
+    "scale",
+    "bn",
+    "add",
+    "relu",
+    "lrelu",
+    "tanh",
+    "sigmoid",
+    "abs",
+    "mcc",
+    "conv2d",
+    "maxpool2d",
+    "avgpool2d",
+    "flatten",
+    "reshape",
+    "top1",
+    "range",
+    "max",
+    "min",
+    "softmax",
+    "in",
+    "posenc",
+    "layernorm",
+    "gelu",
+    "att_scores",
+    "att_mix",
+    "mask",
 }

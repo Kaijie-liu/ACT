@@ -145,7 +145,6 @@ class TorchLPSolver(Solver):
             both_inf = (~torch.isfinite(self._lb)) & (~torch.isfinite(self._ub))
             mid = torch.where(both_inf, torch.zeros_like(mid), mid)
             self._x = torch.nn.Parameter(mid.clone().to(device=self._device, dtype=self._dtype), requires_grad=True)
-            # self._x = torch.nn.Parameter(mid.to(device=self._device, dtype=self._dtype), requires_grad=True)
         else:
             self._x = torch.nn.Parameter(self._x.detach().to(device=self._device, dtype=self._dtype), requires_grad=True)
 

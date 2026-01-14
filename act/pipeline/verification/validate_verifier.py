@@ -148,9 +148,10 @@ from typing import Dict, Any, Optional, Tuple, List
 
 from act.pipeline.verification.model_factory import ModelFactory
 from act.pipeline.verification.torch2act import TorchToACT
+from act.pipeline.verification.per_neuron_bounds import PerNeuronCheckConfig, run_per_neuron_bounds_check
 from act.back_end.verifier import verify_once, gather_input_spec_layers, seed_from_input_specs, get_input_ids, get_assert_layer, find_entry_layer_id
-from act.back_end.analyze import analyze
 from act.back_end.solver.solver_gurobi import GurobiSolver
+from act.back_end.solver.solver_gurobi import is_gurobi_available
 from act.back_end.solver.solver_torch import TorchLPSolver
 from act.util.options import PerformanceOptions
 from act.front_end.specs import OutKind
@@ -298,6 +299,13 @@ class VerificationValidator:
         """
         if networks is None:
             networks = self.factory.list_networks()
+
+        solvers = list(solvers)
+        if "gurobi" in solvers and not is_gurobi_available():
+            logger.warning("Skipping gurobi solver: gurobipy is not available.")
+            solvers = [s for s in solvers if s != "gurobi"]
+            if not solvers:
+                logger.warning("No available solvers for counterexample validation.")
         
         logger.info(f"\n{'='*80}")
         logger.info(f"LEVEL 1: COUNTEREXAMPLE/SOUNDNESS VALIDATION")
@@ -497,7 +505,8 @@ class VerificationValidator:
         self,
         networks: Optional[List[str]] = None,
         tf_modes: List[str] = ['interval'],
-        num_samples: int = 10
+        num_samples: int = 10,
+        per_neuron_config: Optional[PerNeuronCheckConfig] = None,
     ) -> Dict[str, Any]:
         """
         Level 2: Validate abstract bounds overapproximate concrete values.
@@ -524,7 +533,12 @@ class VerificationValidator:
         for network in networks:
             for tf_mode in tf_modes:
                 try:
-                    self._validate_bounds_single(network, tf_mode, num_samples)
+                    self._validate_bounds_single(
+                        network,
+                        tf_mode,
+                        num_samples,
+                        per_neuron_config=per_neuron_config,
+                    )
                 except Exception as e:
                     logger.error(f"Bounds validation failed for {network}/{tf_mode}: {e}")
                     import traceback
@@ -546,7 +560,8 @@ class VerificationValidator:
         self,
         name: str,
         tf_mode: str,
-        num_samples: int
+        num_samples: int,
+        per_neuron_config: Optional[PerNeuronCheckConfig] = None,
     ) -> Dict[str, Any]:
         """
         Validate bounds for a single network (Level 2).
@@ -575,6 +590,7 @@ class VerificationValidator:
         # Step 3: Sample concrete inputs
         violations = []
         total_checks = 0
+        per_neuron_config = per_neuron_config or PerNeuronCheckConfig()
         
         def _get_input_bounds_from_act(act_net_inner):
             from act.back_end.core import Bounds
@@ -609,64 +625,49 @@ class VerificationValidator:
             # Generate random input within spec
             input_tensor = self.factory.generate_test_input(name, 'random')
             input_tensor = input_tensor.to(device=self.device, dtype=self.dtype)
-            
-            # Step 4: Get concrete activations via forward hooks
-            concrete_activations = self._get_concrete_activations(model, input_tensor, act_net)
-            
-            # Step 5: Prepare entry fact from input tensor
-            from act.back_end.core import Fact, Bounds, ConSet
-            # entry_id = 0  # INPUT layer is typically layer 0
+
+            # Step 4: Prepare entry fact from input tensor
+            from act.back_end.core import Fact, Bounds
             entry_id = find_entry_layer_id(act_net)
             if spec_bounds is not None:
                 input_bounds = spec_bounds
             else:
                 input_bounds = Bounds(lb=input_tensor.flatten(), ub=input_tensor.flatten())
-            # Use an empty constraint set for inputs so downstream analysis
-            # never iterates over a None cons field.
             entry_fact = Fact(bounds=input_bounds, cons=None)
-            
-            # Step 6: Run abstract analysis
+
+            # Step 5: Run abstract analysis + strict per-neuron validation
             try:
-                before, after, globalC = analyze(act_net, entry_id, entry_fact)
-                
-                # Step 7: Check bounds containment
-                for layer_id, concrete_vals in concrete_activations.items():
-                    if layer_id not in after:
-                        continue
-                    
-                    abstract_bounds = after[layer_id].bounds
-                    lb = abstract_bounds.lb
-                    ub = abstract_bounds.ub
-                    
-                    # Flatten concrete values to match ACT's 1D representation
-                    concrete_vals_flat = concrete_vals.flatten()
-                    
-                    # Ensure shapes match (ACT may have different neuron counts)
-                    if concrete_vals_flat.shape != lb.shape:
-                        logger.warning(f"  ⚠️ Shape mismatch at layer {layer_id}: "
-                                     f"concrete={concrete_vals_flat.shape}, abstract={lb.shape}. Skipping.")
-                        continue
-                    
-                    # Check if concrete values are within bounds
-                    violations_mask = (concrete_vals_flat < lb) | (concrete_vals_flat > ub)
-                    num_violations = violations_mask.sum().item()
-                    total_checks += concrete_vals_flat.numel()
-                    
-                    if num_violations > 0:
-                        violation_info = {
-                            'sample_idx': sample_idx,
-                            'layer_id': layer_id,
-                            'num_violations': num_violations,
-                            'total_neurons': concrete_vals_flat.numel(),
-                            'concrete_min': concrete_vals_flat.min().item(),
-                            'concrete_max': concrete_vals_flat.max().item(),
-                            'abstract_lb': lb.min().item(),
-                            'abstract_ub': ub.max().item()
-                        }
-                        violations.append(violation_info)
-                        logger.error(f"  ❌ Bounds violation at layer {layer_id}: "
-                                   f"{num_violations}/{concrete_vals_flat.numel()} neurons")
-            
+                check = run_per_neuron_bounds_check(
+                    act_net=act_net,
+                    model=model,
+                    input_tensor=input_tensor,
+                    entry_fact=entry_fact,
+                    tf_mode=tf_mode,
+                    config=per_neuron_config,
+                )
+                if check.get("status") == "ERROR":
+                    raise RuntimeError("; ".join(check.get("errors", [])[:3]))
+
+                total_checks += int(check.get("total_checks", 0))
+                if int(check.get("violations_total", 0)) > 0:
+                    violated_layers = [
+                        s for s in check.get("layerwise_stats", [])
+                        if int(s.get("num_violations", 0)) > 0
+                    ]
+                    violation_info = {
+                        'sample_idx': sample_idx,
+                        'violations_total': int(check.get("violations_total", 0)),
+                        'worst_gap': float(check.get("worst_gap", 0.0)),
+                        'violations_topk': check.get("violations_topk", []),
+                        'violated_layers': violated_layers,
+                    }
+                    violations.append(violation_info)
+                    logger.error(
+                        "  ❌ Bounds violation at sample %d: %d violating neurons",
+                        sample_idx,
+                        int(check.get("violations_total", 0)),
+                    )
+
             except Exception as e:
                 logger.error(f"  ⚠️ Abstract analysis failed for sample {sample_idx}: {e}")
                 error_result = {
@@ -689,7 +690,12 @@ class VerificationValidator:
                 'validation_status': 'FAILED',
                 'explanation': f"🚨 UNSOUND BOUNDS: {len(violations)} violations found across {num_samples} samples",
                 'total_checks': total_checks,
-                'violations': violations
+                'violations': violations,
+                'per_neuron_config': {
+                    'atol': per_neuron_config.atol,
+                    'rtol': per_neuron_config.rtol,
+                    'topk': per_neuron_config.topk,
+                },
             }
             logger.error(f"\n  {result['explanation']}")
         else:
@@ -700,84 +706,25 @@ class VerificationValidator:
                 'validation_status': 'PASSED',
                 'explanation': f"✅ SOUND BOUNDS: All {total_checks} checks passed across {num_samples} samples",
                 'total_checks': total_checks,
-                'violations': []
+                'violations': [],
+                'per_neuron_config': {
+                    'atol': per_neuron_config.atol,
+                    'rtol': per_neuron_config.rtol,
+                    'topk': per_neuron_config.topk,
+                },
             }
             logger.info(f"\n  {result['explanation']}")
         
         self.validation_results.append(result)
         return result
     
-    def _get_concrete_activations(
-        self,
-        model: torch.nn.Module,
-        input_tensor: torch.Tensor,
-        act_net=None
-    ) -> Dict[int, torch.Tensor]:
-        """
-        Get concrete activation values by running forward pass with hooks.
-        
-        Args:
-            model: PyTorch model
-            input_tensor: Input tensor
-            act_net: Optional ACT Net to align hooks to ACT layer ids
-            
-        Returns:
-            Dictionary mapping layer_id to activation tensor
-        """
-        activations = {}
-        hooks = []
-        collected = []
-        
-        def make_hook(layer_id):
-            def hook(module, input, output):
-                collected.append(output.detach().clone())
-            return hook
-        
-        hook_kinds = {
-            "DENSE": torch.nn.Linear,
-            "CONV2D": torch.nn.Conv2d,
-            "RELU": torch.nn.ReLU,
-            "FLATTEN": torch.nn.Flatten,
-        }
-        
-        # Register hooks on relevant torch modules; map to ACT ids after forward
-        layer_id = 0
-        for module in model.modules():
-            if isinstance(module, (torch.nn.Linear, torch.nn.Conv2d, torch.nn.ReLU, torch.nn.Flatten)):
-                hook = module.register_forward_hook(make_hook(layer_id))
-                hooks.append(hook)
-                layer_id += 1
-        
-        # Run forward pass
-        with torch.no_grad():
-            model(input_tensor)
-        
-        # Align collected activations with ACT layer ids so shapes match
-        if act_net is not None:
-            act_ids = [layer.id for layer in act_net.layers if layer.kind in hook_kinds]
-            if len(act_ids) != len(collected):
-                logger.warning(
-                    "  ⚠️ Hook count mismatch: torch collected %d, ACT hookable layers=%d; aligning by position.",
-                    len(collected), len(act_ids),
-                )
-            for idx, act_id in enumerate(act_ids[:len(collected)]):
-                activations[act_id] = collected[idx]
-        else:
-            for idx, tensor in enumerate(collected):
-                activations[idx] = tensor
-        
-        # Remove hooks
-        for hook in hooks:
-            hook.remove()
-        
-        return activations
-    
     def validate_comprehensive(
         self,
         networks: Optional[List[str]] = None,
         solvers: List[str] = ['gurobi', 'torchlp'],
         tf_modes: List[str] = ['interval'],
-        num_samples: int = 10
+        num_samples: int = 10,
+        per_neuron_config: Optional[PerNeuronCheckConfig] = None,
     ) -> Dict[str, Any]:
         """
         Run both Level 1 and Level 2 validations.
@@ -802,11 +749,16 @@ class VerificationValidator:
         summary_l1 = self.validate_counterexamples(networks=networks, solvers=solvers)
         
         # Run Level 2
-        summary_l3 = self.validate_bounds(networks=networks, tf_modes=tf_modes, num_samples=num_samples)
+        summary_l2 = self.validate_bounds(
+            networks=networks,
+            tf_modes=tf_modes,
+            num_samples=num_samples,
+            per_neuron_config=per_neuron_config,
+        )
         
         # Combine summaries - FAILED if any failures OR errors
-        has_failures = (summary_l1.get('failed', 0) > 0 or summary_l3.get('failed', 0) > 0)
-        has_errors = (summary_l1.get('errors', 0) > 0 or summary_l3.get('errors', 0) > 0)
+        has_failures = (summary_l1.get('failed', 0) > 0 or summary_l2.get('failed', 0) > 0)
+        has_errors = (summary_l1.get('errors', 0) > 0 or summary_l2.get('errors', 0) > 0)
         
         if has_failures:
             overall_status = 'FAILED'  # Critical: verifier is unsound
@@ -817,7 +769,7 @@ class VerificationValidator:
         
         combined = {
             'level1_counterexample': summary_l1,
-            'level3_bounds': summary_l3,
+            'level2_bounds': summary_l2,
             'overall_status': overall_status
         }
         
@@ -936,10 +888,10 @@ class VerificationValidator:
         print("="*80)
         
         l1 = combined['level1_counterexample']
-        l3 = combined['level3_bounds']
+        l2 = combined['level2_bounds']
         
         print(f"\nLevel 1 (Counterexample): {l1['passed']}/{l1['total']} passed, {l1['failed']} failed, {l1['errors']} errors")
-        print(f"Level 2 (Bounds):         {l3['passed']}/{l3['total']} passed, {l3['failed']} failed, {l3['errors']} errors")
+        print(f"Level 2 (Bounds):         {l2['passed']}/{l2['total']} passed, {l2['failed']} failed, {l2['errors']} errors")
         print()
         print(f"Overall Status: {combined['overall_status']}")
         print("="*80)

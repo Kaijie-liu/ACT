@@ -16,6 +16,7 @@
 import torch
 from dataclasses import dataclass, field
 from typing import Dict, List, Tuple, Optional, Any
+import importlib
 
 # Import validation functions
 from act.back_end.layer_util import validate_layer, validate_graph, validate_wrapper_graph
@@ -159,7 +160,40 @@ class ConSet:
     
     def add_box(self, layer_id: int, var_ids: List[int], B: Bounds):
         self.replace(Con("INEQ", tuple(var_ids), {"tag": f"box:{layer_id}", "lb": B.lb.clone(), "ub": B.ub.clone()}))
+        
+    def add_op(self, tag: str, var_ids: List[int], **meta):
+        """
+        Generic operator constraint container.
+        - tag: e.g. "dense:12", "relu:5"
+        - var_ids: ordered exactly as exporter expects
+        - meta: payload used by cons_exportor.py
+        """
+        op = tag.split(":", 1)[0]
+        if op and not self._is_op_supported_by_exporter(op):
+            raise ValueError(
+                f"Unknown op tag '{op}' (tag='{tag}'). "
+                "Update act/back_end/layer_schema.py SUPPORTED_EXPORT_OPS "
+                "and exporter handling if intentional."
+            )
+        m = {"tag": tag}
+        m.update(meta)
+        self.replace(Con("INEQ", tuple(var_ids), m))
     
+    @staticmethod
+    def _is_op_supported_by_exporter(op: str) -> bool:
+        """
+        Best-effort early validation against exporter registry.
+        Falls back to allow if exporter cannot be imported.
+        """
+        try:
+            mod = importlib.import_module("act.back_end.layer_util")
+            fn = getattr(mod, "is_supported_op", None)
+            if fn is None:
+                return True
+            return bool(fn(op))
+        except Exception:
+            return True
+
     def __iter__(self):
         """Iterate over constraints (Con objects). Makes ConSet iterable."""
         return iter(self.S.values())

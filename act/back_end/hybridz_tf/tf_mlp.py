@@ -22,8 +22,8 @@ from act.back_end.core import Bounds, Fact, Layer, ConSet
 def hybridz_tf_dense(L: Layer, Bin: Bounds) -> Fact:
     """HybridZ transfer function for dense/linear layers with zonotope precision."""
     # Extract parameters
-    W = L.params["weight"]  # (out_features, in_features)
-    b = L.params.get("bias", None)
+    W = L.params["W"]  # (out_features, in_features)
+    b = L.params.get("b", None)
     
     # Apply linear transformation with HybridZ operations
     # For now, use interval arithmetic as base implementation
@@ -49,7 +49,8 @@ def hybridz_tf_dense(L: Layer, Bin: Bounds) -> Fact:
     
     # Generate constraint for dense layer
     cons = ConSet()
-    cons.add_dense(L.id, L.in_vars, L.out_vars, W, b)
+    # cons.add_dense(L.id, L.in_vars, L.out_vars, W, b)
+    cons.add_op(f"dense:{L.id}", list(L.out_vars + L.in_vars), W=W, b=b)
     
     return Fact(bounds=Bout, cons=cons)
 
@@ -57,7 +58,7 @@ def hybridz_tf_dense(L: Layer, Bin: Bounds) -> Fact:
 @torch.no_grad()
 def hybridz_tf_bias(L: Layer, Bin: Bounds) -> Fact:
     """HybridZ transfer function for bias addition."""
-    c = L.params["bias"]
+    c = L.params["c"]
     
     # Simple translation
     lb = Bin.lb + c
@@ -65,7 +66,7 @@ def hybridz_tf_bias(L: Layer, Bin: Bounds) -> Fact:
     Bout = Bounds(lb=lb, ub=ub)
     
     cons = ConSet()
-    cons.add_bias(L.id, L.in_vars, L.out_vars, c)
+    cons.add_op(f"bias:{L.id}", list(L.out_vars + L.in_vars), c=c)
     
     return Fact(bounds=Bout, cons=cons)
 
@@ -73,7 +74,7 @@ def hybridz_tf_bias(L: Layer, Bin: Bounds) -> Fact:
 @torch.no_grad()
 def hybridz_tf_scale(L: Layer, Bin: Bounds) -> Fact:
     """HybridZ transfer function for element-wise scaling."""
-    a = L.params["scale"]
+    a = L.params["a"]
     
     # Handle positive/negative scaling
     a_pos = torch.clamp(a, min=0)
@@ -84,7 +85,7 @@ def hybridz_tf_scale(L: Layer, Bin: Bounds) -> Fact:
     Bout = Bounds(lb=lb, ub=ub)
     
     cons = ConSet()
-    cons.add_scale(L.id, L.in_vars, L.out_vars, a)
+    cons.add_op(f"scale:{L.id}", list(L.out_vars + L.in_vars), a=a)
     
     return Fact(bounds=Bout, cons=cons)
 
@@ -111,11 +112,13 @@ def hybridz_tf_relu(L: Layer, Bin: Bounds) -> Fact:
     
     if len(idx_amb) > 0:
         # HybridZ: More precise slope computation
-        denom = Bin.ub[idx_amb] - Bin.lb[idx_amb]
-        slope[idx_amb] = torch.where(denom > 1e-8, Bin.ub[idx_amb] / denom, torch.ones_like(denom))
-        shift[idx_amb] = torch.zeros_like(idx_amb, dtype=slope.dtype)
-    
-    cons.add_relu(L.id, L.in_vars, L.out_vars, idx_on, idx_off, idx_amb, slope, shift)
+        slope = Bin.lb[idx_amb] / torch.clamp(Bin.ub[idx_amb] - Bin.lb[idx_amb], min=1e-12)
+        shift = -slope * Bin.lb[idx_amb]
+    else:
+        s = torch.empty(0, dtype=Bin.lb.dtype, device=Bin.lb.device)
+        t = torch.empty(0, dtype=Bin.lb.dtype, device=Bin.lb.device)
+        
+    cons.add_op(f"relu:{L.id}", list(L.out_vars + L.in_vars), idx_on=idx_on, idx_off=idx_off, idx_amb=idx_amb, slope=slope, shift=shift)
     
     return Fact(bounds=Bout, cons=cons)
 
@@ -123,8 +126,8 @@ def hybridz_tf_relu(L: Layer, Bin: Bounds) -> Fact:
 @torch.no_grad()
 def hybridz_tf_lrelu(L: Layer, Bin: Bounds) -> Fact:
     """HybridZ transfer function for LeakyReLU."""
-    alpha = float(L.params.get("alpha", 0.01))
-    
+    alpha = float(L.meta.get("negative_slope", 0.01))
+
     # Determine phases
     idx_on = torch.where(Bin.lb >= 0)[0]
     idx_off = torch.where(Bin.ub <= 0)[0]
@@ -147,10 +150,37 @@ def hybridz_tf_lrelu(L: Layer, Bin: Bounds) -> Fact:
         shift[idx_amb] = y_at_lb - slope[idx_amb] * Bin.lb[idx_amb]
     
     cons = ConSet()
-    cons.add_lrelu(L.id, L.in_vars, L.out_vars, alpha, idx_on, idx_off, idx_amb, slope, shift)
+    cons.add_op(f"lrelu:{L.id}", list(L.out_vars + L.in_vars), alpha=alpha, idx_on=idx_on, idx_off=idx_off, idx_amb=idx_amb,
+         slope=slope[idx_amb], shift=shift[idx_amb])
     
     return Fact(bounds=Bout, cons=cons)
 
+@torch.no_grad()
+def hybridz_tf_tanh(L: Layer, Bin: Bounds) -> Fact:
+    lb = torch.tanh(Bin.lb)
+    ub = torch.tanh(Bin.ub)
+
+    lb2 = torch.minimum(lb, ub)
+    ub2 = torch.maximum(lb, ub)
+
+    Bout = Bounds(lb=lb2, ub=ub2)
+    cons = ConSet()
+    cons.add_op(f"tanh:{L.id}", list(L.out_vars + L.in_vars))
+
+    return Fact(bounds=Bout, cons=cons)
+
+@torch.no_grad()
+def hybridz_tf_sigmoid(L: Layer, Bin: Bounds) -> Fact:
+    lb = torch.sigmoid(Bin.lb)
+    ub = torch.sigmoid(Bin.ub)
+    lb2 = torch.minimum(lb, ub)
+    ub2 = torch.maximum(lb, ub)
+
+    Bout = Bounds(lb=lb2, ub=ub2)
+
+    cons = ConSet()
+    cons.add_op(f"sigmoid:{L.id}", list(L.out_vars + L.in_vars))
+    return Fact(bounds=Bout, cons=cons)
 
 @torch.no_grad()
 def hybridz_tf_abs(L: Layer, Bin: Bounds) -> Fact:
@@ -168,7 +198,7 @@ def hybridz_tf_abs(L: Layer, Bin: Bounds) -> Fact:
     Bout = Bounds(lb=lb, ub=ub)
     
     cons = ConSet()
-    cons.add_abs(L.id, L.in_vars, L.out_vars, idx_pos, idx_neg, idx_amb)
+    cons.add_op(f"abs:{L.id}", list(L.out_vars + L.in_vars), idx_pos=idx_pos, idx_neg=idx_neg, idx_amb=idx_amb)
     
     return Fact(bounds=Bout, cons=cons)
 
@@ -182,7 +212,7 @@ def hybridz_tf_add(L: Layer, Bin1: Bounds, Bin2: Bounds) -> Fact:
     Bout = Bounds(lb=lb, ub=ub)
     
     cons = ConSet()
-    cons.add_add(L.id, L.in_vars, L.out_vars)
+    cons.add_op(f"add:{L.id}", list(L.out_vars + L.in_vars),)
     
     return Fact(bounds=Bout, cons=cons)
 
@@ -209,6 +239,6 @@ def hybridz_tf_mul(L: Layer, Bin1: Bounds, Bin2: Bounds) -> Fact:
     
     # McCormick constraints
     cons = ConSet()
-    cons.add_mcc(L.id, L.in_vars, L.out_vars, lx, ux, ly, uy)
+    cons.add_op(f"mcc:{L.id}", list(L.out_vars + L.in_vars), lx=lx, ux=ux, ly=ly, uy=uy)
     
     return Fact(bounds=Bout, cons=cons)

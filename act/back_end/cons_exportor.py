@@ -17,6 +17,7 @@ import torch
 from typing import Optional, Tuple
 from act.back_end.core import ConSet
 from act.back_end.solver.solver_base import Solver
+from act.back_end.layer_util import validate_conset_ops
 from act.util.device_manager import get_default_device, get_default_dtype
 
 TANH_EPS = 1e-9
@@ -117,6 +118,7 @@ def to_numpy(x) -> np.ndarray:
 
 def export_to_solver(globalC: ConSet, solver: Solver,
                      objective: Optional[Tuple[np.ndarray, float]]=None, sense="min") -> int:
+    validate_conset_ops(globalC)
     # Use device manager to get optimal device hint
     default_device = get_default_device()
     dev_hint = str(default_device)  # Use global device manager default
