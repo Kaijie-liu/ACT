@@ -27,7 +27,38 @@ from act.front_end.model_synthesis import synthesize_models_from_specs
 from act.pipeline.fuzzing.actfuzzer import ACTFuzzer, FuzzingConfig, FuzzingReport
 from act.pipeline.verification.per_neuron_bounds import PerNeuronCheckConfig
 
-
+# -----------------------------------------------------------------------------
+# Per-neuron bounds validation settings (Level 2)
+# 
+# Compares each concrete activation a against its abstract interval [lb, ub]
+# with a tolerance band:
+#   tol = atol + rtol * |a|
+#   violation if a < lb - tol or a > ub + tol
+#
+# Parameters:
+#   - atol: absolute tolerance (constant slack for numeric noise)
+#   - rtol: relative tolerance (scale-dependent slack proportional to |a|)
+#   - topk: report at most top-K largest gaps (ranked by gap to bounds)
+#
+# Formats:
+#   - preset: {default|strict|loose}
+#   - triplet: "ATOL,RTOL,TOPK" (e.g., "1e-6,0.0,10")
+#
+# Presets:
+#   - default: balanced for day-to-day validation.
+#              Moderate atol/rtol to tolerate typical FP/back-end differences,
+#              with a medium topk for actionable debugging output.
+#
+#   - strict:  tighter numeric guardrails.
+#              Smaller atol/rtol to surface subtle bound unsoundness or drift
+#              (may increase false positives from benign numeric noise); larger
+#              topk to expose more failing neurons when investigating.
+#
+#   - loose:   coarse triage / CI-friendly mode.
+#              Larger atol/rtol to suppress tiny numerical mismatches, and
+#              smaller topk to keep logs short; may hide small-but-real issues,
+#              so use mainly for quick smoke checks.
+# -----------------------------------------------------------------------------
 class PerNeuronConfigAction(argparse.Action):
     """
     Parse --per-neuron-config into a PerNeuronCheckConfig object.
