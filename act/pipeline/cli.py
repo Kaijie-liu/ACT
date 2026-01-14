@@ -564,11 +564,30 @@ def cmd_validate_verifier(args):
     
     # Run validation based on mode
     try:
-        per_neuron_config = PerNeuronCheckConfig(
-            atol=args.per_neuron_atol,
-            rtol=args.per_neuron_rtol,
-            topk=args.per_neuron_topk,
-        )
+        per_neuron_presets = {
+            "default": {"atol": 1e-6, "rtol": 0.0, "topk": 10},
+            "strict": {"atol": 1e-8, "rtol": 0.0, "topk": 20},
+            "loose": {"atol": 1e-4, "rtol": 1e-5, "topk": 5},
+            "custom": None,
+        }
+        if args.per_neuron_config == "custom":
+            if not args.per_neuron_values:
+                raise ValueError(
+                    "Custom per-neuron config requires --per-neuron-values 'ATOL,RTOL,TOPK'."
+                )
+            parts = [p.strip() for p in args.per_neuron_values.split(",")]
+            if len(parts) != 3:
+                raise ValueError(
+                    "Invalid --per-neuron-values. Expected 'ATOL,RTOL,TOPK'."
+                )
+            per_neuron_config = PerNeuronCheckConfig(
+                atol=float(parts[0]),
+                rtol=float(parts[1]),
+                topk=int(parts[2]),
+            )
+        else:
+            preset = per_neuron_presets[args.per_neuron_config]
+            per_neuron_config = PerNeuronCheckConfig(**preset)
         if args.mode == 'counterexample':
             summary = validator.validate_counterexamples(
                 networks=networks,
@@ -848,22 +867,16 @@ Examples:
         help="Number of samples for Level 3 validation (default: 10)"
     )
     validation_group.add_argument(
-        "--per-neuron-atol",
-        type=float,
-        default=1e-6,
-        help="Absolute tolerance for per-neuron bounds check (default: 1e-6)"
+        "--per-neuron-config",
+        type=str,
+        choices=["default", "strict", "loose", "custom"],
+        default="default",
+        help="Per-neuron bounds preset: default/strict/loose/custom (default: default)"
     )
     validation_group.add_argument(
-        "--per-neuron-rtol",
-        type=float,
-        default=0.0,
-        help="Relative tolerance for per-neuron bounds check (default: 0.0)"
-    )
-    validation_group.add_argument(
-        "--per-neuron-topk",
-        type=int,
-        default=10,
-        help="Top-K worst per-neuron violations to report (default: 10)"
+        "--per-neuron-values",
+        type=str,
+        help="Custom per-neuron config values: ATOL,RTOL,TOPK (used with --per-neuron-config custom)"
     )
     validation_group.add_argument(
         "--ignore-errors",

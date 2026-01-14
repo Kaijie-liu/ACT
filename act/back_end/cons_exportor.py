@@ -23,6 +23,55 @@ TANH_EPS = 1e-9
 TANH_IDENTITY_WINDOW = 0.25  # treat tanh(x) ≈ x within this window
 TANH_IDENTITY_TOL = 1e-6    # symmetric tolerance when approximating identity
 
+SUPPORTED_OPS = {
+    "box",
+    "dense",
+    "bias",
+    "scale",
+    "bn",
+    "add",
+    "relu",
+    "lrelu",
+    "tanh",
+    "sigmoid",
+    "abs",
+    "mcc",
+    "conv2d",
+    "maxpool2d",
+    "avgpool2d",
+    "flatten",
+    "reshape",
+    "top1",
+    "range",
+    "max",
+    "min",
+    "softmax",
+    "in",
+    "posenc",
+    "layernorm",
+    "gelu",
+    "att_scores",
+    "att_mix",
+    "mask",
+}
+
+
+def is_supported_op(op: str) -> bool:
+    return op in SUPPORTED_OPS
+
+
+def _validate_conset_ops(conset: ConSet) -> None:
+    for con in conset:
+        tag = str(con.meta.get("tag", ""))
+        if not tag:
+            continue
+        op = tag.split(":", 1)[0]
+        if op and op not in SUPPORTED_OPS:
+            raise ValueError(
+                f"cons_exportor: unsupported op '{op}' (tag='{tag}'). "
+                "Add it to SUPPORTED_OPS and exporter handling if intentional."
+            )
+
 def _tanh_value(x: float) -> float:
     return float(np.tanh(x))
 
@@ -117,6 +166,7 @@ def to_numpy(x) -> np.ndarray:
 
 def export_to_solver(globalC: ConSet, solver: Solver,
                      objective: Optional[Tuple[np.ndarray, float]]=None, sense="min") -> int:
+    _validate_conset_ops(globalC)
     # Use device manager to get optimal device hint
     default_device = get_default_device()
     dev_hint = str(default_device)  # Use global device manager default
