@@ -568,26 +568,21 @@ def cmd_validate_verifier(args):
             "default": {"atol": 1e-6, "rtol": 0.0, "topk": 10},
             "strict": {"atol": 1e-8, "rtol": 0.0, "topk": 20},
             "loose": {"atol": 1e-4, "rtol": 1e-5, "topk": 5},
-            "custom": None,
         }
-        if args.per_neuron_config == "custom":
-            if not args.per_neuron_values:
-                raise ValueError(
-                    "Custom per-neuron config requires --per-neuron-values 'ATOL,RTOL,TOPK'."
-                )
-            parts = [p.strip() for p in args.per_neuron_values.split(",")]
+        raw_config = args.per_neuron_config
+        if raw_config in per_neuron_presets:
+            per_neuron_config = PerNeuronCheckConfig(**per_neuron_presets[raw_config])
+        else:
+            parts = [p.strip() for p in raw_config.split(",")]
             if len(parts) != 3:
                 raise ValueError(
-                    "Invalid --per-neuron-values. Expected 'ATOL,RTOL,TOPK'."
+                    "Invalid --per-neuron-config. Use a preset name(default | strict | loose) or 'ATOL,RTOL,TOPK'."
                 )
             per_neuron_config = PerNeuronCheckConfig(
                 atol=float(parts[0]),
                 rtol=float(parts[1]),
                 topk=int(parts[2]),
             )
-        else:
-            preset = per_neuron_presets[args.per_neuron_config]
-            per_neuron_config = PerNeuronCheckConfig(**preset)
         if args.mode == 'counterexample':
             summary = validator.validate_counterexamples(
                 networks=networks,
@@ -668,6 +663,8 @@ Examples:
   python -m act.pipeline --validate-verifier --device cpu --dtype float64
   python -m act.pipeline --validate-verifier --mode counterexample
   python -m act.pipeline --validate-verifier --mode bounds --samples 20
+  python -m act.pipeline --validate-verifier --mode bounds --per-neuron-config default
+  python -m act.pipeline --validate-verifier --mode bounds --per-neuron-config 1e-6,0.0,15
         """
     )
     
@@ -869,14 +866,8 @@ Examples:
     validation_group.add_argument(
         "--per-neuron-config",
         type=str,
-        choices=["default", "strict", "loose", "custom"],
         default="default",
-        help="Per-neuron bounds preset: default/strict/loose/custom (default: default)"
-    )
-    validation_group.add_argument(
-        "--per-neuron-values",
-        type=str,
-        help="Custom per-neuron config values: ATOL,RTOL,TOPK (used with --per-neuron-config custom)"
+        help="Per-neuron bounds preset or custom values (default/strict/loose or ATOL,RTOL,TOPK)"
     )
     validation_group.add_argument(
         "--ignore-errors",

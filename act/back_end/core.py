@@ -172,7 +172,7 @@ class ConSet:
         if op and not self._is_op_supported_by_exporter(op):
             raise ValueError(
                 f"Unknown op tag '{op}' (tag='{tag}'). "
-                "Update act/back_end/cons_exportor.py SUPPORTED_OPS "
+                "Update act/back_end/layer_schema.py SUPPORTED_EXPORT_OPS "
                 "and exporter handling if intentional."
             )
         m = {"tag": tag}
@@ -186,7 +186,7 @@ class ConSet:
         Falls back to allow if exporter cannot be imported.
         """
         try:
-            mod = importlib.import_module("act.back_end.cons_exportor")
+            mod = importlib.import_module("act.back_end.layer_util")
             fn = getattr(mod, "is_supported_op", None)
             if fn is None:
                 return True

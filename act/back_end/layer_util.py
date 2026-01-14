@@ -19,7 +19,7 @@ import difflib
 # Import validation components
 try:
     # Try relative import first (when used as module)
-    from .layer_schema import REGISTRY, LayerKind
+    from .layer_schema import REGISTRY, LayerKind, SUPPORTED_EXPORT_OPS
     from act.front_end.specs import InKind, OutKind
 except ImportError:
     # Fallback to absolute import (when run standalone)
@@ -29,7 +29,7 @@ except ImportError:
     from act.util.path_config import get_project_root
     project_root = get_project_root()
     sys.path.insert(0, project_root)
-    from act.back_end.layer_schema import REGISTRY, LayerKind
+    from act.back_end.layer_schema import REGISTRY, LayerKind, SUPPORTED_EXPORT_OPS
     from act.front_end.specs import InKind, OutKind
 
 # Import Layer from core to avoid circular import issues
@@ -208,6 +208,24 @@ def validate_wrapper_graph(layers: List["Layer"]) -> None:
         if k in (LayerKind.INPUT.value, LayerKind.INPUT_SPEC.value):
             raise ValueError(
                 f"Unexpected {k} after the first INPUT_SPEC at index {i}."
+            )
+
+
+def is_supported_op(op: str) -> bool:
+    return op in SUPPORTED_EXPORT_OPS
+
+
+def validate_conset_ops(conset) -> None:
+    for con in conset:
+        tag = str(con.meta.get("tag", ""))
+        if not tag:
+            continue
+        op = tag.split(":", 1)[0]
+        if op and op not in SUPPORTED_EXPORT_OPS:
+            raise ValueError(
+                f"Unsupported op tag '{op}' (tag='{tag}'). "
+                "Add it to SUPPORTED_EXPORT_OPS in layer_schema.py "
+                "and exporter handling if intentional."
             )
 
 def create_layer(id: int, kind: str, params: Dict[str, Any], meta: Dict[str, Any],
