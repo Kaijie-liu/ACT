@@ -12,7 +12,7 @@ License: AGPLv3+
 
 import argparse
 from pathlib import Path
-from typing import List, Optional
+from typing import Dict, List, Optional
 import sys
 
 from act.util.cli_utils import add_device_args, initialize_from_args
@@ -25,6 +25,50 @@ from act.front_end.torchvision_loader import data_model_loader as tv_loader
 from act.front_end.torchvision_loader import data_model_mapping as tv_mapping
 from act.front_end.model_synthesis import synthesize_models_from_specs
 from act.pipeline.fuzzing.actfuzzer import ACTFuzzer, FuzzingConfig, FuzzingReport
+from act.pipeline.verification.per_neuron_bounds import PerNeuronCheckConfig
+
+
+class PerNeuronConfigAction(argparse.Action):
+    """
+    Parse --per-neuron-config into a PerNeuronCheckConfig object.
+
+    Accepted formats:
+      - preset name: default|strict|loose
+      - triplet: ATOL,RTOL,TOPK (e.g., 1e-6,0.0,10)
+    """
+
+    PRESETS: Dict[str, PerNeuronCheckConfig] = {
+        "default": PerNeuronCheckConfig(atol=1e-6, rtol=0.0, topk=10),
+        "strict": PerNeuronCheckConfig(atol=1e-8, rtol=0.0, topk=20),
+        "loose": PerNeuronCheckConfig(atol=1e-4, rtol=1e-5, topk=5),
+    }
+    DEFAULT_NAME = "default"
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        raw = str(values).strip()
+        if raw in self.PRESETS:
+            setattr(namespace, self.dest, self.PRESETS[raw])
+            return
+        parts = [p.strip() for p in raw.split(",")]
+        if len(parts) != 3:
+            raise argparse.ArgumentError(
+                self,
+                "Invalid --per-neuron-config. Use preset {default|strict|loose} "
+                "or triplet 'ATOL,RTOL,TOPK' (e.g., 1e-6,0.0,10)."
+            )
+        try:
+            cfg = PerNeuronCheckConfig(
+                atol=float(parts[0]),
+                rtol=float(parts[1]),
+                topk=int(parts[2]),
+            )
+        except ValueError as exc:
+            raise argparse.ArgumentError(
+                self,
+                "Invalid --per-neuron-config values. Expected 'ATOL,RTOL,TOPK' "
+                "(e.g., 1e-6,0.0,10)."
+            ) from exc
+        setattr(namespace, self.dest, cfg)
 
 
 def print_header():
@@ -549,7 +593,6 @@ def cmd_validate_verifier(args):
     """Run verifier validation with specified mode."""
     import torch
     from act.pipeline.verification.validate_verifier import VerificationValidator
-    from act.pipeline.verification.per_neuron_bounds import PerNeuronCheckConfig
     
     print_header()
     
@@ -564,25 +607,7 @@ def cmd_validate_verifier(args):
     
     # Run validation based on mode
     try:
-        per_neuron_presets = {
-            "default": {"atol": 1e-6, "rtol": 0.0, "topk": 10},
-            "strict": {"atol": 1e-8, "rtol": 0.0, "topk": 20},
-            "loose": {"atol": 1e-4, "rtol": 1e-5, "topk": 5},
-        }
-        raw_config = args.per_neuron_config
-        if raw_config in per_neuron_presets:
-            per_neuron_config = PerNeuronCheckConfig(**per_neuron_presets[raw_config])
-        else:
-            parts = [p.strip() for p in raw_config.split(",")]
-            if len(parts) != 3:
-                raise ValueError(
-                    "Invalid --per-neuron-config. Use a preset name(default | strict | loose) or 'ATOL,RTOL,TOPK'."
-                )
-            per_neuron_config = PerNeuronCheckConfig(
-                atol=float(parts[0]),
-                rtol=float(parts[1]),
-                topk=int(parts[2]),
-            )
+        per_neuron_config = args.per_neuron_config
         if args.mode == 'counterexample':
             summary = validator.validate_counterexamples(
                 networks=networks,
@@ -663,7 +688,7 @@ Examples:
   python -m act.pipeline --validate-verifier --device cpu --dtype float64
   python -m act.pipeline --validate-verifier --mode counterexample
   python -m act.pipeline --validate-verifier --mode bounds --samples 20
-  python -m act.pipeline --validate-verifier --mode bounds --per-neuron-config default
+  python -m act.pipeline --validate-verifier --mode bounds --per-neuron-config strict
   python -m act.pipeline --validate-verifier --mode bounds --per-neuron-config 1e-6,0.0,15
         """
     )
@@ -865,9 +890,10 @@ Examples:
     )
     validation_group.add_argument(
         "--per-neuron-config",
-        type=str,
-        default="default",
-        help="Per-neuron bounds preset or custom values (default/strict/loose or ATOL,RTOL,TOPK)"
+        action=PerNeuronConfigAction,
+        default=PerNeuronConfigAction.PRESETS[PerNeuronConfigAction.DEFAULT_NAME],
+        metavar="PRESET|ATOL,RTOL,TOPK",
+        help="Per-neuron bounds preset (default|strict|loose) or triplet 'ATOL,RTOL,TOPK'."
     )
     validation_group.add_argument(
         "--ignore-errors",
