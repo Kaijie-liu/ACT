@@ -63,12 +63,15 @@ License: AGPLv3+
 
 from __future__ import annotations
 from abc import ABC, abstractmethod
-from typing import Dict, Optional, Union
+from typing import Dict, Optional, Union, TYPE_CHECKING
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 import numpy as np
 
 from act.front_end.specs import InputSpec, InKind
+from act.front_end.spec_creator_base import LabeledInputTensor
+from act.util.device_manager import get_default_device
 
 
 class MutationStrategy(ABC):
@@ -78,7 +81,8 @@ class MutationStrategy(ABC):
     def mutate(self, 
                input_tensor: torch.Tensor,
                model: nn.Module,
-               activations: Optional[Dict[str, torch.Tensor]] = None
+               activations: Optional[Dict[str, torch.Tensor]] = None,
+               label: Optional[int] = None
               ) -> torch.Tensor:
         """
         Apply mutation to input tensor.
@@ -87,6 +91,7 @@ class MutationStrategy(ABC):
             input_tensor: Seed input
             model: Model for gradient computation
             activations: Activations from previous inference (optional)
+            label: Ground truth label for targeted attacks (optional)
         
         Returns:
             Mutated input tensor
@@ -111,8 +116,15 @@ class FGSMMutation(MutationStrategy):
         """
         self.perturb_size = perturb_size
 
-    def mutate(self, input_tensor, model, activations=None):
-        """Apply FGSM gradient-based perturbation (single-step)."""
+    def mutate(self, input_tensor, model, activations=None, label=None):
+        """Apply FGSM gradient-based perturbation (single-step).
+        
+        Args:
+            input_tensor: Seed input tensor
+            model: Model for gradient computation
+            activations: Activations from previous inference (unused)
+            label: Ground truth label (unused by FGSM, kept for interface consistency)
+        """
         # Enable gradients
         x = input_tensor.clone().detach().requires_grad_(True)
 
@@ -146,6 +158,10 @@ class PGDMutation(MutationStrategy):
     - Optional random start within the feasible box
     - Iterative sign-gradient ascent with projection back to the feasible box
 
+    Loss Function:
+    - If label is provided: Cross-entropy loss (adversarial attack, more effective for counterexamples)
+    - If label is None: Output variance (unsupervised exploration)
+
     Note: Global InputSpec constraints are enforced by MutationEngine projection after mutation.
     """
 
@@ -170,8 +186,18 @@ class PGDMutation(MutationStrategy):
         self.step_size = step_size
         self.random_start = random_start
 
-    def mutate(self, input_tensor, model, activations=None):
-        """Apply PGD mutation with notebook-style projection and step size heuristic."""
+    def mutate(self, input_tensor, model, activations=None, label=None):
+        """Apply PGD mutation.
+        
+        Args:
+            input_tensor: Seed input tensor
+            model: Model for gradient computation
+            activations: Activations from previous inference (unused by PGD)
+            label: Ground truth label for cross-entropy loss (if None, uses variance loss)
+        
+        Returns:
+            Adversarially perturbed input tensor
+        """
         x0 = input_tensor.detach()
 
         perturb_size = self.perturb_size.to(input_tensor.device) if isinstance(self.perturb_size, torch.Tensor) else self.perturb_size
@@ -205,8 +231,19 @@ class PGDMutation(MutationStrategy):
             if isinstance(output, dict):
                 output = output['output']
 
-            # Loss: maximize output variance (unsupervised, label-free)
-            loss = output.var()
+            # Loss selection based on label availability
+            if label is not None:
+                # Cross-entropy loss: maximize CE to flip prediction (adversarial attack)
+                # Output should have batch dimension from model forward pass
+                assert output.dim() >= 2, (
+                    f"Model output should have batch dimension, got shape {output.shape}. "
+                    f"Ensure model outputs include batch dimension."
+                )
+                target = torch.full((output.shape[0],), label, dtype=torch.long, device=get_default_device())
+                loss = F.cross_entropy(output, target)
+            else:
+                # If no label is provided, maximize output variance
+                loss = output.var()
 
             grad = torch.autograd.grad(loss, x_adv, retain_graph=False, create_graph=False)[0].detach()
 
@@ -237,8 +274,15 @@ class ActivationMutation(MutationStrategy):
         """
         self.perturb_size = perturb_size
     
-    def mutate(self, input_tensor, model, activations=None):
-        """Apply activation-guided perturbation."""
+    def mutate(self, input_tensor, model, activations=None, label=None):
+        """Apply activation-guided perturbation.
+        
+        Args:
+            input_tensor: Seed input tensor
+            model: Model (unused)
+            activations: Activations from previous inference (unused currently)
+            label: Ground truth label (unused, kept for interface consistency)
+        """
         # Random direction (future: weight by inactive neurons)
         direction = torch.randn_like(input_tensor)
         
@@ -267,8 +311,15 @@ class BoundaryMutation(MutationStrategy):
         """
         self.perturb_size = perturb_size
     
-    def mutate(self, input_tensor, model, activations=None):
-        """Push toward boundaries (will be projected by engine)."""
+    def mutate(self, input_tensor, model, activations=None, label=None):
+        """Push toward boundaries (will be projected by engine).
+        
+        Args:
+            input_tensor: Seed input tensor
+            model: Model (unused)
+            activations: Activations (unused)
+            label: Ground truth label (unused, kept for interface consistency)
+        """
         # Random direction
         direction = torch.sign(torch.randn_like(input_tensor))
         
@@ -292,8 +343,15 @@ class RandomMutation(MutationStrategy):
         """
         self.perturb_size = perturb_size
     
-    def mutate(self, input_tensor, model, activations=None):
-        """Apply random Gaussian noise."""
+    def mutate(self, input_tensor, model, activations=None, label=None):
+        """Apply random Gaussian noise.
+        
+        Args:
+            input_tensor: Seed input tensor
+            model: Model (unused)
+            activations: Activations (unused)
+            label: Ground truth label (unused, kept for interface consistency)
+        """
         # Handle both scalar and tensor perturb_size
         perturb_size = self.perturb_size.to(input_tensor.device) if isinstance(self.perturb_size, torch.Tensor) else self.perturb_size
         noise = torch.randn_like(input_tensor) * perturb_size
@@ -485,16 +543,21 @@ class MutationEngine:
             if isinstance(module, (nn.ReLU, nn.Linear, nn.Conv2d)):
                 module.register_forward_hook(make_hook(name))
                 
-    def mutate(self, input_tensor: torch.Tensor) -> torch.Tensor:
+    def mutate(self, labeled_tensor: 'LabeledInputTensor') -> torch.Tensor:
         """
         Apply random mutation strategy and project to InputSpec.
         
         Args:
-            input_tensor: Seed input
+            labeled_tensor: LabeledInputTensor containing input tensor and ground truth label.
+                           Label is used for targeted attacks (e.g., PGD with cross-entropy loss).
         
         Returns:
             Mutated input satisfying InputSpec constraints
         """
+        # Extract tensor and label from labeled_tensor
+        input_tensor = labeled_tensor.tensor
+        label = labeled_tensor.label
+        
         # Select strategy
         strategy_names = list(self.weights.keys())
         strategy_probs = list(self.weights.values())
@@ -504,12 +567,13 @@ class MutationEngine:
         # NEW: Store strategy for tracing
         self.last_strategy = strategy_name
         
-        # Apply mutation
+        # Apply mutation (pass label for strategies that support it, e.g., PGD)
         input_device = input_tensor.to(self.device)
         mutated = strategy.mutate(
             input_device,
             self.model,
-            self.activation_map
+            self.activation_map,
+            label=label
         )
         
         # Project to InputSpec constraints
