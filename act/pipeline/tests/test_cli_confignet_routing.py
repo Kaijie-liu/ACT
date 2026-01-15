@@ -17,28 +17,26 @@ def test_pipeline_cli_routes_to_confignet(monkeypatch) -> None:
         called["argv"] = list(argv or [])
         return 0
 
-    monkeypatch.setattr("act.pipeline.confignet.main", _fake_confignet_main)
+    monkeypatch.setattr("act.back_end.confignet.main", _fake_confignet_main)
 
     from act.pipeline.cli import main as pipeline_main
 
     code = pipeline_main(
         [
             "confignet",
-            "l1l2",
+            "generate",
             "--num",
             "1",
             "--seed",
             "0",
-            "--n-inputs",
-            "1",
-            "--tf-modes",
-            "interval",
-            "--out_jsonl",
-            "/tmp/x.jsonl",
+            "--device",
+            "cpu",
+            "--dtype",
+            "float64",
         ]
     )
     assert code == 0
-    assert called["argv"][0] == "l1l2"
+    assert called["argv"][0] == "generate"
 
 
 def test_pipeline_cli_non_confignet_routes_to_pipeline(monkeypatch) -> None:

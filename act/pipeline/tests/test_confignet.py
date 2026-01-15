@@ -9,16 +9,12 @@
 
 from __future__ import annotations
 
-from dataclasses import replace
 from pathlib import Path
-from typing import Dict, List, Tuple
-
-import pytest
 import torch
 import yaml
 
 from act.front_end.specs import InKind, OutKind
-from act.pipeline.confignet import (
+from act.back_end.confignet import (
     ConfigNetConfig,
     InstanceSpec,
     MLPConfig,
@@ -27,20 +23,11 @@ from act.pipeline.confignet import (
     OutputSpecConfig,
     build_generated_instance,
     build_wrapped_model,
-    canonical_hash,
-    canonical_hash_obj,
-    compute_run_id,
     derive_seed,
     materialize_to_examples_config,
-    make_record,
     sample_instances,
-    tensor_digest,
 )
-from act.pipeline.confignet_io import (
-    DEFAULT_EXAMPLES_CONFIG,
-    build_record_v2,
-    validate_record_v2,
-)
+from act.back_end.confignet_io import DEFAULT_EXAMPLES_CONFIG
 from act.pipeline.verification.model_factory import ModelFactory
 
 
@@ -67,49 +54,6 @@ def _make_instance(instance_id: str, seed: int) -> InstanceSpec:
         ),
         meta={},
     )
-
-
-def _base_record_payload() -> Tuple[Dict[str, object], Dict[str, int], Dict[str, object], Dict[str, object], Dict[str, object], Dict[str, object]]:
-    run_meta = {
-        "seed_root": 0,
-        "instances": 2,
-        "samples": 1,
-        "tf_mode": "interval",
-        "strict": True,
-        "device": "cpu",
-        "dtype": "float64",
-        "atol": 1e-6,
-        "rtol": 0.0,
-        "topk": 10,
-    }
-    seeds = {"seed_root": 0, "seed_instance": 1, "seed_inputs": 2}
-    instance = {
-        "net_family": "MLP",
-        "arch": {"depth": 2, "width": 8},
-        "spec": {"eps": 0.1, "norm": "Linf"},
-        "input_shape": [1, 2],
-        "eps": 0.1,
-    }
-    l1 = {
-        "status": "PASSED",
-        "counterexample_found": False,
-        "verifier_status": "NOT_RUN",
-        "policy_applied": True,
-        "final_verdict_after_policy": "PASS",
-    }
-    l2 = {
-        "status": "PASSED",
-        "tf_mode": "interval",
-        "samples": 1,
-        "checks_total": 8,
-        "violations_total": 0,
-        "worst_gap": 0.0,
-        "worst_layer": None,
-        "topk": [],
-        "layerwise_stats": [],
-    }
-    final = {"final_verdict": "PASS", "exit_code": 0, "reason": "ok"}
-    return run_meta, seeds, instance, l1, l2, final
 
 
 class TestSamplerSeeds:
@@ -244,97 +188,4 @@ class TestMaterializeExamplesConfig:
         assert model is not None
 
 
-class TestJsonl:
-    def test_tensor_digest_stable_sha(self) -> None:
-        t = torch.arange(8, dtype=torch.float32).reshape(2, 4)
-        d1 = tensor_digest(t)
-        d2 = tensor_digest(t)
-        assert d1["sha256"] == d2["sha256"]
-
-    def test_tensor_digest_inline_values_size(self) -> None:
-        small = torch.arange(4, dtype=torch.float32)
-        small_digest = tensor_digest(small, max_inline_numel=8)
-        assert "values" in small_digest
-
-        large = torch.arange(100, dtype=torch.float32)
-        large_digest = tensor_digest(large, max_inline_numel=8)
-        assert "values" not in large_digest
-
-    def test_confignet_stable_hash_same_payload(self) -> None:
-        cfg = ConfigNetConfig(num_instances=1, base_seed=123)
-        a = sample_instances(cfg)[0]
-        b = sample_instances(cfg)[0]
-
-        ha = canonical_hash(a.to_dict())
-        hb = canonical_hash(b.to_dict())
-        assert ha == hb
-
-    def test_confignet_hash_changes_on_field_change(self) -> None:
-        cfg = ConfigNetConfig(num_instances=1, base_seed=123)
-        inst = sample_instances(cfg)[0]
-
-        altered = replace(inst, output_spec=replace(inst.output_spec, y_true=(inst.output_spec.y_true or 0) + 1))
-
-        h1 = canonical_hash(inst.to_dict())
-        h2 = canonical_hash(altered.to_dict())
-        assert h1 != h2
-
-    def test_make_record_includes_git_sha(self) -> None:
-        payload = {"k": "v"}
-        rec = make_record(payload, include_timestamp=False)
-        assert "git_sha" in rec
-
-    def test_validate_record_v2_happy_path(self) -> None:
-        run_meta, seeds, instance, l1, l2, final = _base_record_payload()
-        record = build_record_v2(
-            run_meta=run_meta,
-            seeds=seeds,
-            instance=instance,
-            l1=l1,
-            l2=l2,
-            final=final,
-            timing={"wall_time": 0.1},
-        )
-        validate_record_v2(record)
-
-    def test_validate_record_v2_missing_field_fails(self) -> None:
-        run_meta, seeds, instance, l1, l2, final = _base_record_payload()
-        record = build_record_v2(
-            run_meta=run_meta,
-            seeds=seeds,
-            instance=instance,
-            l1=l1,
-            l2=l2,
-            final=final,
-        )
-        del record["l2"]["violations_total"]
-        with pytest.raises(AssertionError):
-            validate_record_v2(record)
-
-    def test_run_id_deterministic(self) -> None:
-        run_meta, *_rest = _base_record_payload()
-        r1 = compute_run_id(run_meta)
-        r2 = compute_run_id(run_meta)
-        assert r1 == r2
-
-    def test_canonical_hash_ignores_timing(self) -> None:
-        run_meta, seeds, instance, l1, l2, final = _base_record_payload()
-        record_a = build_record_v2(
-            run_meta=run_meta,
-            seeds=seeds,
-            instance=instance,
-            l1=l1,
-            l2=l2,
-            final=final,
-            timing={"wall_time": 0.1},
-        )
-        record_b = build_record_v2(
-            run_meta=run_meta,
-            seeds=seeds,
-            instance=instance,
-            l1=l1,
-            l2=l2,
-            final=final,
-            timing={"wall_time": 9.9},
-        )
-        assert canonical_hash_obj(record_a) == canonical_hash_obj(record_b)
+ 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-#===- act/pipeline/confignet.py - ConfigNet Driver + CLI --------------====#
+#===- act/back_end/confignet.py - ConfigNet Driver + CLI --------------====#
 # ACT: Abstract Constraint Transformer
 # Copyright (C) 2025– ACT Team
 #
@@ -37,7 +37,7 @@ from act.front_end.verifiable_model import (
 )
 from act.pipeline.verification.torch2act import TorchToACT
 
-from act.pipeline.confignet_spec import (
+from act.back_end.confignet_spec import (
     ConfigNetConfig,
     InstanceSpec,
     ModelFamily,
@@ -52,16 +52,10 @@ from act.pipeline.confignet_spec import (
     seeded,
     sample_instances,
 )
-from act.pipeline.confignet_io import (
+from act.back_end.confignet_io import (
     act_net_to_examples_entry,
     append_nets_json,
-    canonical_hash,
-    canonical_hash_obj,
-    compute_run_id,
-    make_record,
-    read_jsonl,
     write_confignet_entries_to_examples_config,
-    tensor_digest,
     DEFAULT_EXAMPLES_CONFIG,
     DEFAULT_NETS_DIR,
     CONFIGNET_PREFIX,
@@ -674,12 +668,6 @@ __all__ = [
     "build_wrapped_model",
     "build_generated_instance",
     "materialize_to_examples_config",
-    "canonical_hash",
-    "canonical_hash_obj",
-    "compute_run_id",
-    "make_record",
-    "read_jsonl",
-    "tensor_digest",
     "main",
 ]
 

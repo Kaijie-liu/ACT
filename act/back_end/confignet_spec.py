@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-#===- act/pipeline/confignet_spec.py - ConfigNet Spec + Sampling -------====#
+#===- act/back_end/confignet_spec.py - ConfigNet Spec + Sampling -------====#
 # ACT: Abstract Constraint Transformer
 # Copyright (C) 2025– ACT Team
 #
@@ -8,7 +8,7 @@
 #===---------------------------------------------------------------------===#
 #
 # Purpose:
-#   ConfigNet dataclasses, reproducible seeding, sampling, and input sampling.
+#   ConfigNet dataclasses, reproducible seeding, and sampling.
 #
 #===---------------------------------------------------------------------===#
 
@@ -26,8 +26,6 @@ from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 import torch
 
 from act.front_end.specs import InKind, OutKind
-
-from act.pipeline.confignet_io import canonical_hash, tensor_digest
 
 try:
     import numpy as np
@@ -134,6 +132,10 @@ class ModelFamily(str, Enum):
     TEMPLATE = "template"
 
 
+def _tensor_to_list(t: torch.Tensor) -> Any:
+    return t.detach().cpu().tolist()
+
+
 def _json_safe(obj: Any, *, strict: bool = False) -> Any:
     """Convert objects to JSON-safe values for auditing."""
     if obj is None or isinstance(obj, (str, int, float, bool)):
@@ -141,7 +143,7 @@ def _json_safe(obj: Any, *, strict: bool = False) -> Any:
     if isinstance(obj, Enum):
         return obj.value
     if torch.is_tensor(obj):
-        return tensor_digest(obj)
+        return _tensor_to_list(obj)
     if isinstance(obj, (list, tuple)):
         return [_json_safe(x, strict=strict) for x in obj]
     if isinstance(obj, dict):
@@ -300,15 +302,15 @@ class InputSpecConfig:
         return {
             "kind": _enum_value(self.kind),
             "value_range": list(self.value_range),
-            "lb": tensor_digest(self.lb) if self.lb is not None else None,
-            "ub": tensor_digest(self.ub) if self.ub is not None else None,
+            "lb": _tensor_to_list(self.lb) if self.lb is not None else None,
+            "ub": _tensor_to_list(self.ub) if self.ub is not None else None,
             "lb_val": self.lb_val,
             "ub_val": self.ub_val,
-            "center": tensor_digest(self.center) if self.center is not None else None,
+            "center": _tensor_to_list(self.center) if self.center is not None else None,
             "center_val": self.center_val,
             "eps": self.eps,
-            "A": tensor_digest(self.A) if self.A is not None else None,
-            "b": tensor_digest(self.b) if self.b is not None else None,
+            "A": _tensor_to_list(self.A) if self.A is not None else None,
+            "b": _tensor_to_list(self.b) if self.b is not None else None,
             "derive_poly_from_box": bool(self.derive_poly_from_box),
             "meta": _json_safe(self.meta),
         }
@@ -336,10 +338,10 @@ class OutputSpecConfig:
             "kind": _enum_value(self.kind),
             "y_true": self.y_true,
             "margin": float(self.margin),
-            "c": tensor_digest(self.c) if self.c is not None else None,
+            "c": _tensor_to_list(self.c) if self.c is not None else None,
             "d": self.d,
-            "lb": tensor_digest(self.lb) if self.lb is not None else None,
-            "ub": tensor_digest(self.ub) if self.ub is not None else None,
+            "lb": _tensor_to_list(self.lb) if self.lb is not None else None,
+            "ub": _tensor_to_list(self.ub) if self.ub is not None else None,
             "meta": _json_safe(self.meta),
         }
 
@@ -371,9 +373,6 @@ class InstanceSpec:
             "output_spec": _json_safe(self.output_spec),
             "meta": _json_safe(self.meta),
         }
-
-    def stable_hash(self) -> str:
-        return canonical_hash(self.to_dict())
 
 
 @dataclass
@@ -929,4 +928,3 @@ def _prod(shape: Tuple[int, ...]) -> int:
     for s in shape:
         p *= int(s)
     return p
-
