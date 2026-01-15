@@ -244,7 +244,15 @@ class TorchToACT:
             
             out_vars = self._alloc_ids(outF)
             self._add(LayerKind.DENSE.value, params={"W": W, "b": bvec},
-                      meta={"input_shape": self.shape, "output_shape": (1, outF), "torch_path": path, "torch_type": "Linear"},
+                      meta={
+                          "input_shape": self.shape,
+                          "output_shape": (1, outF),
+                          "in_features": int(mod.in_features),
+                          "out_features": int(mod.out_features),
+                          "bias_enabled": bool(mod.bias is not None),
+                          "torch_path": path,
+                          "torch_type": "Linear",
+                      },
                       in_vars=self.prev_out, out_vars=out_vars)
             self.shape = (1, outF)
             self.prev_out = out_vars
