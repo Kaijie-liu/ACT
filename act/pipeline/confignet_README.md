@@ -7,10 +7,10 @@ Purpose
 Immutable semantics (must hold)
 1) Level 1 policy
 - If a concrete counterexample is found, CERTIFIED is forbidden.
-- Enforced via policy gating (see `act/pipeline/confignet/policy.py`).
-- Note: This is ConfigNet's concrete-sampling L1 check, not the verifier's
-  internal validation in `act/pipeline/verification/validate_verifier.py`
-  (which tests backend correctness/solver behavior). Do not conflate them.
+- Enforced via policy gating (see `act/pipeline/confignet.py`).
+- Note: Confignet L1 now delegates to `validate_verifier`'s counterexample
+  validation (solver soundness check). Do not conflate it with L2 bounds
+  validation logic.
 
 2) Level 2 strict behavior
 - Any alignment failure, missing bounds, or NaN/Inf in bounds is an ERROR.
@@ -28,29 +28,29 @@ Driver rules
 
 CLI entrypoints
 There are two equivalent ways to run ConfigNet:
-- Module CLI: `python -m act.pipeline.confignet.cli ...`
+- Module CLI: `python -m act.pipeline.confignet ...`
 - Pipeline CLI wrapper: `python -m act.pipeline.cli confignet ...`
 
-Supported commands (from `act/pipeline/confignet/cli.py`)
+Supported commands (from `act/pipeline/confignet.py`)
 1) sample
 - Samples instance specs only.
 - Example:
-  `python -m act.pipeline.confignet.cli sample --num 3 --seed 0 --out_json out.json`
+  `python -m act.pipeline.confignet sample --num 3 --seed 0 --out_json out.json`
 
 2) level1
 - Runs concrete input sampling + Level 1 checks (JSONL v1).
 - Example:
-  `python -m act.pipeline.confignet.cli level1 --num 2 --seed 0 --n-inputs 50 --device cpu --dtype float64 --out_jsonl l1.jsonl`
+  `python -m act.pipeline.confignet level1 --num 2 --seed 0 --n-inputs 50 --device cpu --dtype float64 --out_jsonl l1.jsonl`
 
 3) level2
 - Runs Level 2 bounds checks directly (no L1), writes simple JSONL payloads.
 - Example:
-  `python -m act.pipeline.confignet.cli level2 --num 2 --seed 0 --n-inputs 5 --tf-modes interval --device cpu --dtype float64 --out_jsonl l2.jsonl`
+  `python -m act.pipeline.confignet level2 --num 2 --seed 0 --n-inputs 5 --tf-modes interval --device cpu --dtype float64 --out_jsonl l2.jsonl`
 
 4) l1l2
 - Unified driver: sampling -> L1 -> L2 -> policy -> JSONL v2.
 - Example:
-  `python -m act.pipeline.confignet.cli l1l2 --num 2 --seed 0 --n-inputs 50 --tf-modes interval --device cpu --dtype float64 --out_jsonl l1l2.jsonl`
+  `python -m act.pipeline.confignet l1l2 --num 2 --seed 0 --n-inputs 50 --tf-modes interval --device cpu --dtype float64 --out_jsonl l1l2.jsonl`
 
 5) validate_verifier
 - Build confignet instances and run `validate_verifier` on them.
@@ -62,10 +62,15 @@ Supported commands (from `act/pipeline/confignet/cli.py`)
   - `bounds_per_neuron`: calls `validate_bounds_per_neuron`
   - `comprehensive`: calls both L1+L2 in validator
 - Examples:
-  `python -m act.pipeline.confignet.cli validate_verifier --mode counterexample --num 2 --seed 0 --device cpu --dtype float64`
-  `python -m act.pipeline.confignet.cli validate_verifier --mode bounds --num 2 --seed 0 --tf-modes interval --n-inputs 5`
-  `python -m act.pipeline.confignet.cli validate_verifier --mode bounds_per_neuron --num 2 --seed 0 --tf-modes interval --n-inputs 5 --atol 1e-6 --rtol 0.0 --topk 10`
-  `python -m act.pipeline.confignet.cli validate_verifier --mode counterexample --families mlp --num 2 --seed 0`
+  `python -m act.pipeline.confignet validate_verifier --mode counterexample --num 2 --seed 0 --device cpu --dtype float64`
+  `python -m act.pipeline.confignet validate_verifier --mode bounds --num 2 --seed 0 --tf-modes interval --n-inputs 5`
+  `python -m act.pipeline.confignet validate_verifier --mode bounds_per_neuron --num 2 --seed 0 --tf-modes interval --n-inputs 5 --atol 1e-6 --rtol 0.0 --topk 10`
+  `python -m act.pipeline.confignet validate_verifier --mode counterexample --families mlp --num 2 --seed 0`
+
+6) smoke
+- Quick sanity check for sampling + builder + forward pass.
+- Example:
+  `python -m act.pipeline.confignet smoke --num 3 --seed 0 --device cpu --dtype float64`
 
 Common flags
 - `--num`: number of instances
@@ -81,12 +86,12 @@ Common flags
 - `--solver`: torchlp / gurobi_lp / gurobi_milp
 
 JSONL outputs
-- v1 (Level1-only driver): see `act/pipeline/confignet/driver_levels.py`
-- v2 (Unified L1L2 driver): see `act/pipeline/confignet/jsonl_schema.py`
+- v1 (Level1-only driver): see `act/pipeline/confignet.py`
+- v2 (Unified L1L2 driver): see `act/pipeline/confignet_io.py`
 
 Tests
 Confignet tests are consolidated into one file:
-- `pytest -q act/pipeline/confignet/tests/test_confignet.py`
+- `pytest -q act/pipeline/tests/test_confignet.py`
 
 Verification tests are consolidated into one file:
 - `pytest -q act/pipeline/verification/tests/test_verification.py`

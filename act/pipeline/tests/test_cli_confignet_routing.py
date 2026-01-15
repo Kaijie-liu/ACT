@@ -17,7 +17,7 @@ def test_pipeline_cli_routes_to_confignet(monkeypatch) -> None:
         called["argv"] = list(argv or [])
         return 0
 
-    monkeypatch.setattr("act.pipeline.confignet.cli.main", _fake_confignet_main)
+    monkeypatch.setattr("act.pipeline.confignet.main", _fake_confignet_main)
 
     from act.pipeline.cli import main as pipeline_main
 

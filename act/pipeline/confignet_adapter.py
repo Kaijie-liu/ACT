@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-#===- act/pipeline/confignet/builders.py - ConfigNet Builders -----------====#
+#===- act/pipeline/confignet_adapter.py - ConfigNet Builders/Adapter ---====#
 # ACT: Abstract Constraint Transformer
 # Copyright (C) 2025– ACT Team
 #
@@ -8,19 +8,15 @@
 #===---------------------------------------------------------------------===#
 #
 # Purpose:
-#   Build wrapped PyTorch models from InstanceSpec:
-#     build_wrapped_model(instance_spec, device, dtype) -> nn.Module
-#
-# Notes:
-#   - Depends on act.front_end.verifiable_model wrapper layers.
-#   - Does NOT directly import ACT back_end. (Wrapper may validate schema internally.)
+#   - Build wrapped PyTorch models from ConfigNet InstanceSpec
+#   - Adapter utilities to expose Confignet instances via validator factory
 #
 #===---------------------------------------------------------------------===#
 
 from __future__ import annotations
 
 import logging
-from typing import Any, Dict, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import torch
 import torch.nn as nn
@@ -33,8 +29,9 @@ from act.front_end.verifiable_model import (
     OutputSpecLayer,
     VerifiableModel,
 )
+from act.pipeline.verification.torch2act import TorchToACT
 
-from .schema import (
+from act.pipeline.confignet_spec import (
     ModelFamily,
     MLPConfig,
     CNN2DConfig,
@@ -43,8 +40,10 @@ from .schema import (
     OutputSpecConfig,
     InstanceSpec,
     GeneratedInstance,
+    derive_seed,
+    seeded,
+    sample_feasible_inputs,
 )
-from .seeds import seeded, derive_seed
 
 logger = logging.getLogger(__name__)
 
@@ -52,6 +51,7 @@ logger = logging.getLogger(__name__)
 # --------------------------
 # Helpers
 # --------------------------
+
 
 def _prod(shape: Tuple[int, ...]) -> int:
     p = 1
@@ -92,8 +92,6 @@ def _make_labeled_input(
 ) -> LabeledInputTensor:
     """
     Create a reproducible labeled input tensor for InputLayer.
-
-    This tensor is a *single sample* (batch=1), consistent with the wrapper assumption.
     """
     lo, hi = float(value_range[0]), float(value_range[1])
     x = torch.empty(*shape, device=device, dtype=dtype).uniform_(lo, hi)
@@ -108,8 +106,6 @@ def _build_input_spec_tensor_fields(
 ) -> Dict[str, Any]:
     """
     Build tensor fields for InputSpec based on InputSpecConfig.
-
-    Returns a dict containing keys among: lb, ub, center, A, b, eps.
     """
     kind = cfg.kind
     shape = _ensure_batch1(input_shape)
@@ -126,7 +122,6 @@ def _build_input_spec_tensor_fields(
             lb = torch.full(shape, lb_val, device=device, dtype=dtype)
             ub = torch.full(shape, ub_val, device=device, dtype=dtype)
 
-        # InputSpecLayer expects lb/ub as 1D and reshapes to x.shape internally
         fields["lb"] = lb.reshape(-1)
         fields["ub"] = ub.reshape(-1)
         return fields
@@ -144,18 +139,16 @@ def _build_input_spec_tensor_fields(
         return fields
 
     if kind == InKind.LIN_POLY:
-        # If user provided A/b, trust them
         if cfg.A is not None and cfg.b is not None:
             fields["A"] = cfg.A.to(device=device, dtype=dtype)
             fields["b"] = cfg.b.to(device=device, dtype=dtype)
             return fields
 
-        # Derive a simple polytope from box bounds if requested
         if cfg.derive_poly_from_box:
             lb_val = float(cfg.lb_val if cfg.lb_val is not None else cfg.value_range[0])
             ub_val = float(cfg.ub_val if cfg.ub_val is not None else cfg.value_range[1])
 
-            n = _prod(shape[1:])  # exclude batch
+            n = _prod(shape[1:])
             I = torch.eye(n, device=device, dtype=dtype)
             A = torch.cat([I, -I], dim=0)
             b = torch.cat(
@@ -169,7 +162,6 @@ def _build_input_spec_tensor_fields(
             fields["b"] = b
             return fields
 
-        # Fallback: empty constraints
         n = _prod(shape[1:])
         fields["A"] = torch.zeros((0, n), device=device, dtype=dtype)
         fields["b"] = torch.zeros((0,), device=device, dtype=dtype)
@@ -200,7 +192,6 @@ def _build_output_spec_tensor_fields(
         return fields
 
     if kind == OutKind.LINEAR_LE:
-        # c^T y <= d
         if cfg.c is None:
             c = torch.ones((num_classes,), device=device, dtype=dtype)
         else:
@@ -221,20 +212,11 @@ def _build_output_spec_tensor_fields(
         fields["ub"] = ub
         return fields
 
-    # Fallback: TOP1
     fields["y_true"] = int(cfg.y_true if cfg.y_true is not None else 0)
     return fields
 
 
 def _as_block_param(v: Union[int, Tuple[int, ...]], i: int, n_blocks: int, name: str) -> int:
-    """
-    Resolve per-block parameter.
-      - if v is int: use it for all blocks
-      - if v is tuple:
-          * len==1: broadcast
-          * len==n_blocks: index by i
-          * otherwise: error
-    """
     if isinstance(v, int):
         return int(v)
 
@@ -250,12 +232,12 @@ def _as_block_param(v: Union[int, Tuple[int, ...]], i: int, n_blocks: int, name:
 # Body builders
 # --------------------------
 
+
 def _build_mlp_body(cfg: MLPConfig) -> nn.Module:
     layers: list[nn.Module] = []
 
     input_shape = _ensure_batch1(cfg.input_shape)
 
-    # If input is image-like, include Flatten(1)
     if len(input_shape) > 2:
         layers.append(nn.Flatten(start_dim=1))
         in_features = _prod(input_shape[1:])
@@ -275,10 +257,8 @@ def _build_mlp_body(cfg: MLPConfig) -> nn.Module:
 
 
 def _extract_body_layers(model: nn.Module) -> nn.Sequential:
-    """
-    Strip InputSpec/OutputSpec layers from a VerifiableModel/sequential body.
-    """
     from act.front_end.verifiable_model import InputSpecLayer, OutputSpecLayer
+
     if isinstance(model, nn.Sequential):
         layers = list(model)
     else:
@@ -321,7 +301,6 @@ def _infer_conv2d_output_hw(
     padding: int,
     dilation: int = 1,
 ) -> Tuple[int, int]:
-    # PyTorch conv2d output: floor((H + 2p - d*(k-1) - 1)/s + 1)
     def out_dim(x: int) -> int:
         return int((x + 2 * padding - dilation * (kernel - 1) - 1) // stride + 1)
 
@@ -336,7 +315,6 @@ def _infer_maxpool2d_output_hw(
     padding: int = 0,
     dilation: int = 1,
 ) -> Tuple[int, int]:
-    # same formula
     def out_dim(x: int) -> int:
         return int((x + 2 * padding - dilation * (kernel - 1) - 1) // stride + 1)
 
@@ -404,6 +382,7 @@ def _build_cnn2d_body(cfg: CNN2DConfig) -> nn.Module:
 # Public API
 # --------------------------
 
+
 def build_wrapped_model(
     instance_spec: InstanceSpec,
     device: str = "cpu",
@@ -412,16 +391,12 @@ def build_wrapped_model(
 ) -> nn.Module:
     """
     Build wrapped PyTorch model with InputLayer/InputSpecLayer/OutputSpecLayer.
-
-    Returns:
-        VerifiableModel that outputs dict with constraint status.
     """
     dev = torch.device(device)
     seed_model = derive_seed(int(instance_spec.seed), 0, "model")
     seed_input = derive_seed(int(instance_spec.seed), 0, "inputs")
     seed_spec = derive_seed(int(instance_spec.seed), 0, "spec")
 
-    # Determine input shape + num_classes / build body
     with seeded(int(seed_model), deterministic=deterministic_algos):
         if instance_spec.family == ModelFamily.MLP:
             assert isinstance(instance_spec.model_cfg, MLPConfig)
@@ -458,7 +433,6 @@ def build_wrapped_model(
         else:
             raise ValueError(f"Unsupported model family: {instance_spec.family}")
 
-    # Prepare labeled input (for InputLayer)
     with seeded(int(seed_input), deterministic=deterministic_algos):
         label = int(instance_spec.output_spec.y_true if instance_spec.output_spec.y_true is not None else 0)
         labeled_input = _make_labeled_input(
@@ -469,7 +443,6 @@ def build_wrapped_model(
             value_range=instance_spec.input_spec.value_range,
         )
 
-    # Build InputSpec / OutputSpec objects with tensors
     with seeded(int(seed_spec), deterministic=deterministic_algos):
         in_fields = _build_input_spec_tensor_fields(
             instance_spec.input_spec,
@@ -502,11 +475,10 @@ def build_wrapped_model(
             ub=out_fields.get("ub", None),
         )
 
-    # Wrapper layers
     in_layer = InputLayer(
         labeled_input=labeled_input,
         shape=input_shape,
-        dtype=dtype,  # REQUIRED in your InputLayer
+        dtype=dtype,
         desc="confignet_input",
         value_range=instance_spec.input_spec.value_range,
         dataset_name=instance_spec.meta.get("dataset_name", None),
@@ -542,9 +514,6 @@ def build_generated_instance(
     dtype: torch.dtype = torch.float64,
     deterministic_algos: bool = False,
 ) -> GeneratedInstance:
-    """
-    Convenience: build both wrapped model and bundle as GeneratedInstance.
-    """
     model = build_wrapped_model(
         instance_spec,
         device=device,
@@ -552,3 +521,136 @@ def build_generated_instance(
         deterministic_algos=deterministic_algos,
     )
     return GeneratedInstance(instance_spec=instance_spec, wrapped_model=model)
+
+
+class ConfignetFactoryAdapter:
+    """
+    Adapter that builds per-instance cases and can emulate ModelFactory APIs.
+    """
+
+    def __init__(self, *, device: str, dtype: torch.dtype):
+        self._device = device
+        self._dtype = dtype
+        self._instances: Dict[str, InstanceSpec] = {}
+        self._generated: Dict[str, Any] = {}
+        self._act_nets: Dict[str, Any] = {}
+        self._call_counts: Dict[str, int] = {}
+        self._seed_inputs_by_name: Dict[str, int] = {}
+        self._strict_input = True
+
+    def build_case(
+        self,
+        instance_cfg: InstanceSpec,
+        *,
+        seed_inputs: int,
+        num_samples: int = 1,
+        deterministic_algos: bool = False,
+        strict_input: bool = True,
+    ) -> Dict[str, Any]:
+        if not isinstance(instance_cfg, InstanceSpec):
+            raise TypeError(f"instance_cfg must be InstanceSpec, got {type(instance_cfg)}")
+
+        generated = build_generated_instance(
+            instance_cfg,
+            device=self._device,
+            dtype=self._dtype,
+            deterministic_algos=deterministic_algos,
+        )
+        act_net = None
+        act_build_error = None
+        try:
+            act_net = TorchToACT(generated.wrapped_model).run()
+        except Exception as e:
+            act_build_error = str(e)
+
+        xs = sample_feasible_inputs(
+            instance_cfg,
+            num_samples=int(num_samples),
+            seed=int(seed_inputs),
+            device=self._device,
+            dtype=self._dtype,
+            strict_input=bool(strict_input),
+        )
+
+        instance_meta = {
+            "net_family": str(getattr(instance_cfg.family, "value", instance_cfg.family)),
+            "arch": instance_cfg.model_cfg.to_dict(),
+            "spec": {
+                "input_spec": instance_cfg.input_spec.to_dict(),
+                "output_spec": instance_cfg.output_spec.to_dict(),
+            },
+            "input_shape": list(instance_cfg.model_cfg.input_shape),
+            "eps": float(instance_cfg.input_spec.eps or 0.0),
+        }
+
+        return {
+            "generated": generated,
+            "torch_model": generated.wrapped_model,
+            "act_model": act_net,
+            "act_build_error": act_build_error,
+            "inputs": xs,
+            "spec": {
+                "input_spec": instance_cfg.input_spec.to_dict(),
+                "output_spec": instance_cfg.output_spec.to_dict(),
+            },
+            "instance_meta": instance_meta,
+        }
+
+    def configure_for_validation(
+        self,
+        instances: List[InstanceSpec],
+        generated: List[Any],
+        *,
+        seed_inputs_by_name: Optional[Dict[str, int]] = None,
+        act_nets_by_name: Optional[Dict[str, Any]] = None,
+        strict_input: bool = True,
+    ) -> None:
+        self._instances = {inst.instance_id: inst for inst in instances}
+        self._generated = {gi.instance_spec.instance_id: gi for gi in generated}
+        self._act_nets = {}
+        self._call_counts = {}
+        self._seed_inputs_by_name = seed_inputs_by_name or {}
+        self._strict_input = bool(strict_input)
+
+        if act_nets_by_name:
+            self._act_nets = dict(act_nets_by_name)
+            for name in self._generated.keys():
+                self._call_counts[name] = 0
+            return
+
+        for name, gen in self._generated.items():
+            converter = TorchToACT(gen.wrapped_model)
+            self._act_nets[name] = converter.run()
+            self._call_counts[name] = 0
+
+    def list_networks(self) -> List[str]:
+        return list(self._instances.keys())
+
+    def get_act_net(self, name: str):
+        return self._act_nets[name]
+
+    def create_model(self, name: str, load_weights: bool = True):
+        return self._generated[name].wrapped_model
+
+    def generate_test_input(self, name: str, test_case: str = "random") -> torch.Tensor:
+        inst = self._instances[name]
+        count = self._call_counts[name]
+        self._call_counts[name] = count + 1
+        base_seed = self._seed_inputs_by_name.get(name, int(inst.seed))
+        seed = derive_seed(int(base_seed), count, "inputs|level2")
+        xs = sample_feasible_inputs(
+            inst,
+            num_samples=1,
+            seed=seed,
+            device=self._device,
+            dtype=self._dtype,
+            strict_input=bool(self._strict_input),
+        )
+        return xs[0]
+
+
+__all__ = [
+    "build_wrapped_model",
+    "build_generated_instance",
+    "ConfignetFactoryAdapter",
+]

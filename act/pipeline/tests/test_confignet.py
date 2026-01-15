@@ -21,38 +21,36 @@ import torch
 
 from act.front_end.specs import InKind, OutKind
 from act.pipeline.cli import main as pipeline_main
-from act.pipeline.confignet import ConfigNetConfig, ModelFamily
-from act.pipeline.confignet.act_driver_l1l2 import (
-    _derive_seeds,
-    _finalize_verdict,
-    _run_l2,
-    run_confignet_l1l2,
-)
-from act.pipeline.confignet.builders import build_wrapped_model
-from act.pipeline.confignet.cli import main as confignet_main
-from act.pipeline.confignet.driver_levels import run_driver_levels, SCHEMA_VERSION_V1
-from act.pipeline.confignet.factory_adapter import ConfignetFactoryAdapter
-from act.pipeline.confignet.input_sampling import sample_feasible_inputs
-from act.pipeline.confignet.jsonl import (
-    canonical_hash,
-    canonical_hash_obj,
-    compute_run_id,
-    make_record,
-    read_jsonl,
-    tensor_digest,
-)
-from act.pipeline.confignet.jsonl_schema import build_record_v2, validate_record_v2
-from act.pipeline.confignet.level1_check import run_level1_check
-from act.pipeline.confignet.policy import apply_policy
-from act.pipeline.confignet.sampler import sample_instances
-from act.pipeline.confignet.schema import (
+from act.pipeline.confignet import (
+    SCHEMA_VERSION_V1,
+    ConfignetFactoryAdapter,
+    ConfigNetConfig,
     InputSpecConfig,
     InstanceSpec,
     MLPConfig,
+    ModelFamily,
     OutputSpecConfig,
+    Verdict,
+    _derive_seeds,
+    _finalize_verdict,
+    _run_l2,
+    apply_policy,
+    build_record_v2,
+    build_wrapped_model,
+    canonical_hash,
+    canonical_hash_obj,
+    compute_run_id,
+    derive_seed,
+    make_record,
+    read_jsonl,
+    run_confignet_l1l2,
+    run_driver_levels,
+    sample_feasible_inputs,
+    sample_instances,
+    tensor_digest,
+    validate_record_v2,
+    main as confignet_main,
 )
-from act.pipeline.confignet.seeds import derive_seed
-from act.pipeline.confignet.verdicts import Verdict
 from act.pipeline.verification.validate_verifier import VerificationValidator
 
 
@@ -391,46 +389,6 @@ class TestSamplingSpecs:
             assert torch.all(A.matmul(x_flat) <= b + 1e-8)
 
 
-class TestLevel1:
-    def test_level1_finds_counterexample_top1(self) -> None:
-        inst = InstanceSpec(
-            instance_id="unit_mlp_top1",
-            seed=12345,
-            family=ModelFamily.MLP,
-            model_cfg=MLPConfig(
-                input_shape=(1, 16),
-                hidden_sizes=(32, 32),
-                activation="relu",
-                dropout_p=0.0,
-                num_classes=10,
-            ),
-            input_spec=InputSpecConfig(
-                kind=InKind.BOX,
-                value_range=(0.0, 1.0),
-                lb_val=0.0,
-                ub_val=1.0,
-            ),
-            output_spec=OutputSpecConfig(
-                kind=OutKind.TOP1_ROBUST,
-                y_true=0,
-                margin=0.0,
-            ),
-            meta={},
-        )
-
-        results = run_level1_check(
-            [inst],
-            num_samples=50,
-            device="cpu",
-            dtype=torch.float64,
-            stop_on_first_cex=True,
-        )
-        r = results[0]
-        assert r.found_cex is True
-        assert r.first_cex is not None
-        assert isinstance(r.first_cex.output_explanation, str)
-
-
 class TestPolicy:
     def test_policy_falsified_when_level1_has_cex(self) -> None:
         final_v, gating = apply_policy(
@@ -442,7 +400,7 @@ class TestPolicy:
         assert gating.prohibited_certified_due_to_cex is True
 
     def test_driver_gating_enforces_falsified_on_cex(self, monkeypatch) -> None:
-        import act.pipeline.confignet.driver_levels as driver_levels
+        import act.pipeline.confignet as driver_levels
 
         def _fake_level1_suite(*_args, **_kwargs):
             return [
@@ -504,10 +462,10 @@ class TestDriverL1Policy:
                 "warnings": [],
             }
 
-        monkeypatch.setattr("act.pipeline.confignet.act_driver_l1l2.sample_instances", _fake_sample_instances)
-        monkeypatch.setattr("act.pipeline.confignet.factory_adapter.ConfignetFactoryAdapter.build_case", _fake_build_case)
-        monkeypatch.setattr("act.pipeline.confignet.act_driver_l1l2._run_l1", _fake_run_l1)
-        monkeypatch.setattr("act.pipeline.confignet.act_driver_l1l2._run_l2", _fake_run_l2)
+        monkeypatch.setattr("act.pipeline.confignet.sample_instances", _fake_sample_instances)
+        monkeypatch.setattr("act.pipeline.confignet.ConfignetFactoryAdapter.build_case", _fake_build_case)
+        monkeypatch.setattr("act.pipeline.confignet._run_l1", _fake_run_l1)
+        monkeypatch.setattr("act.pipeline.confignet._run_l2", _fake_run_l2)
 
         args = _make_args(tmp_path)
         summary = run_confignet_l1l2(args)
@@ -547,10 +505,10 @@ class TestDriverL1Policy:
                 "warnings": [],
             }
 
-        monkeypatch.setattr("act.pipeline.confignet.act_driver_l1l2.sample_instances", _fake_sample_instances)
-        monkeypatch.setattr("act.pipeline.confignet.factory_adapter.ConfignetFactoryAdapter.build_case", _fake_build_case)
-        monkeypatch.setattr("act.pipeline.confignet.act_driver_l1l2._run_l1", _fake_run_l1)
-        monkeypatch.setattr("act.pipeline.confignet.act_driver_l1l2._run_l2", _fake_run_l2)
+        monkeypatch.setattr("act.pipeline.confignet.sample_instances", _fake_sample_instances)
+        monkeypatch.setattr("act.pipeline.confignet.ConfignetFactoryAdapter.build_case", _fake_build_case)
+        monkeypatch.setattr("act.pipeline.confignet._run_l1", _fake_run_l1)
+        monkeypatch.setattr("act.pipeline.confignet._run_l2", _fake_run_l2)
 
         args = _make_args(tmp_path)
         summary = run_confignet_l1l2(args)
@@ -650,10 +608,10 @@ class TestDriverL1L2Unit:
                 "warnings": [],
             }
 
-        monkeypatch.setattr("act.pipeline.confignet.act_driver_l1l2.sample_instances", _fake_sample_instances)
-        monkeypatch.setattr("act.pipeline.confignet.factory_adapter.ConfignetFactoryAdapter.build_case", _fake_build_case_local)
-        monkeypatch.setattr("act.pipeline.confignet.act_driver_l1l2._run_l1", _fake_run_l1)
-        monkeypatch.setattr("act.pipeline.confignet.act_driver_l1l2._run_l2", _fake_run_l2)
+        monkeypatch.setattr("act.pipeline.confignet.sample_instances", _fake_sample_instances)
+        monkeypatch.setattr("act.pipeline.confignet.ConfignetFactoryAdapter.build_case", _fake_build_case_local)
+        monkeypatch.setattr("act.pipeline.confignet._run_l1", _fake_run_l1)
+        monkeypatch.setattr("act.pipeline.confignet._run_l2", _fake_run_l2)
 
         args = _make_args(tmp_path, instances=2)
         summary = run_confignet_l1l2(args)
@@ -749,10 +707,10 @@ class TestDriverL1L2Unit:
                 "warnings": [],
             }
 
-        monkeypatch.setattr("act.pipeline.confignet.act_driver_l1l2.sample_instances", _fake_sample_instances)
-        monkeypatch.setattr("act.pipeline.confignet.factory_adapter.ConfignetFactoryAdapter.build_case", _fake_build_case_local)
-        monkeypatch.setattr("act.pipeline.confignet.act_driver_l1l2._run_l1", _fake_run_l1)
-        monkeypatch.setattr("act.pipeline.confignet.act_driver_l1l2._run_l2", _fake_run_l2)
+        monkeypatch.setattr("act.pipeline.confignet.sample_instances", _fake_sample_instances)
+        monkeypatch.setattr("act.pipeline.confignet.ConfignetFactoryAdapter.build_case", _fake_build_case_local)
+        monkeypatch.setattr("act.pipeline.confignet._run_l1", _fake_run_l1)
+        monkeypatch.setattr("act.pipeline.confignet._run_l2", _fake_run_l2)
 
         args = _make_args(tmp_path, instances=3)
         summary = run_confignet_l1l2(args)
@@ -809,7 +767,7 @@ class TestDriverL1L2Unit:
             return {}
 
         monkeypatch.setattr(
-            "act.pipeline.confignet.factory_adapter.ConfignetFactoryAdapter.configure_for_validation",
+            "act.pipeline.confignet.ConfignetFactoryAdapter.configure_for_validation",
             _fake_configure_for_validation,
         )
         monkeypatch.setattr(validator, "validate_bounds_per_neuron", _fake_validate_bounds_per_neuron)
@@ -888,7 +846,7 @@ class TestDriverL1L2Unit:
             return [torch.zeros(1, 2)]
 
         monkeypatch.setattr(
-            "act.pipeline.confignet.factory_adapter.sample_feasible_inputs",
+            "act.pipeline.confignet_adapter.sample_feasible_inputs",
             _fake_sample_feasible_inputs,
         )
 
@@ -929,9 +887,9 @@ class TestDriverL1L2Unit:
                 "final_verdict_after_policy": "PASS",
             }
 
-        monkeypatch.setattr("act.pipeline.confignet.act_driver_l1l2.sample_instances", _fake_sample_instances)
-        monkeypatch.setattr("act.pipeline.confignet.factory_adapter.ConfignetFactoryAdapter.build_case", _fake_build_case_error)
-        monkeypatch.setattr("act.pipeline.confignet.act_driver_l1l2._run_l1", _fake_run_l1)
+        monkeypatch.setattr("act.pipeline.confignet.sample_instances", _fake_sample_instances)
+        monkeypatch.setattr("act.pipeline.confignet.ConfignetFactoryAdapter.build_case", _fake_build_case_error)
+        monkeypatch.setattr("act.pipeline.confignet._run_l1", _fake_run_l1)
 
         args = _make_args(tmp_path)
         summary = run_confignet_l1l2(args)
@@ -961,7 +919,7 @@ class TestDriverL1L2Unit:
             return [torch.zeros(1, 2)]
 
         monkeypatch.setattr(
-            "act.pipeline.confignet.factory_adapter.sample_feasible_inputs",
+            "act.pipeline.confignet_adapter.sample_feasible_inputs",
             _fake_sample_feasible_inputs,
         )
 
@@ -1099,7 +1057,49 @@ class TestJsonl:
         rec = make_record(payload, include_timestamp=False)
         assert "git_sha" in rec
 
-    def test_jsonl_schema_v1_fields_present(self) -> None:
+    def test_jsonl_schema_v1_fields_present(self, monkeypatch) -> None:
+        def _fake_configure_for_validation(
+            self,
+            instances,
+            generated,
+            *,
+            seed_inputs_by_name=None,
+            act_nets_by_name=None,
+            strict_input=True,
+        ):
+            self._instances = {inst.instance_id: inst for inst in instances}
+            self._generated = {gi.instance_spec.instance_id: gi for gi in generated}
+            self._act_nets = {inst.instance_id: object() for inst in instances}
+            self._call_counts = {inst.instance_id: 0 for inst in instances}
+            self._seed_inputs_by_name = seed_inputs_by_name or {}
+            self._strict_input = bool(strict_input)
+
+        def _fake_validate_counterexamples(self, networks=None, solvers=None):
+            nets = networks or []
+            sols = solvers or ["torchlp"]
+            for net in nets:
+                for solver in sols:
+                    self.validation_results.append(
+                        {
+                            "network": net,
+                            "solver": solver,
+                            "validation_type": "counterexample",
+                            "concrete_counterexample": False,
+                            "verifier_result": "UNKNOWN",
+                            "validation_status": "INCONCLUSIVE",
+                        }
+                    )
+            return {"total": len(nets) * len(sols), "passed": 0, "failed": 0, "errors": 0}
+
+        monkeypatch.setattr(
+            "act.pipeline.confignet.ConfignetFactoryAdapter.configure_for_validation",
+            _fake_configure_for_validation,
+        )
+        monkeypatch.setattr(
+            "act.pipeline.verification.validate_verifier.VerificationValidator.validate_counterexamples",
+            _fake_validate_counterexamples,
+        )
+
         cfg = ConfigNetConfig(num_instances=2, base_seed=0)
         records = run_driver_levels(
             cfg,
@@ -1223,12 +1223,12 @@ class TestDiagnostics:
                 "warnings": [],
             }
 
-        monkeypatch.setattr("act.pipeline.confignet.act_driver_l1l2.sample_instances", _fake_sample_instances)
-        monkeypatch.setattr("act.pipeline.confignet.factory_adapter.ConfignetFactoryAdapter.build_case", _fake_build_case)
-        monkeypatch.setattr("act.pipeline.confignet.act_driver_l1l2._run_l1", _fake_run_l1)
-        monkeypatch.setattr("act.pipeline.confignet.act_driver_l1l2._run_l2", _fake_run_l2)
+        monkeypatch.setattr("act.pipeline.confignet.sample_instances", _fake_sample_instances)
+        monkeypatch.setattr("act.pipeline.confignet.ConfignetFactoryAdapter.build_case", _fake_build_case)
+        monkeypatch.setattr("act.pipeline.confignet._run_l1", _fake_run_l1)
+        monkeypatch.setattr("act.pipeline.confignet._run_l2", _fake_run_l2)
 
-        caplog.set_level(logging.INFO, logger="act.pipeline.confignet.act_driver_l1l2")
+        caplog.set_level(logging.INFO, logger="act.pipeline.confignet")
         run_confignet_l1l2(_make_args(tmp_path))
         text = caplog.text
         assert "🚨 [CN][l1l2]" in text
@@ -1247,10 +1247,10 @@ class TestDiagnostics:
         def _fake_build_case_error(self, inst, *, seed_inputs, num_samples=1, deterministic_algos=False, strict_input=True):
             raise RuntimeError("boom-0")
 
-        monkeypatch.setattr("act.pipeline.confignet.act_driver_l1l2.sample_instances", _fake_sample_instances)
-        monkeypatch.setattr("act.pipeline.confignet.factory_adapter.ConfignetFactoryAdapter.build_case", _fake_build_case_error)
+        monkeypatch.setattr("act.pipeline.confignet.sample_instances", _fake_sample_instances)
+        monkeypatch.setattr("act.pipeline.confignet.ConfignetFactoryAdapter.build_case", _fake_build_case_error)
 
-        caplog.set_level(logging.INFO, logger="act.pipeline.confignet.act_driver_l1l2")
+        caplog.set_level(logging.INFO, logger="act.pipeline.confignet")
         run_confignet_l1l2(_make_args(tmp_path))
         text = caplog.text
         assert "❌ [CN][l1l2]" in text
@@ -1266,8 +1266,8 @@ class TestDiagnostics:
         def _fake_build_case_error(self, inst, *, seed_inputs, num_samples=1, deterministic_algos=False, strict_input=True):
             raise RuntimeError("boom-1")
 
-        monkeypatch.setattr("act.pipeline.confignet.act_driver_l1l2.sample_instances", _fake_sample_instances)
-        monkeypatch.setattr("act.pipeline.confignet.factory_adapter.ConfignetFactoryAdapter.build_case", _fake_build_case_error)
+        monkeypatch.setattr("act.pipeline.confignet.sample_instances", _fake_sample_instances)
+        monkeypatch.setattr("act.pipeline.confignet.ConfignetFactoryAdapter.build_case", _fake_build_case_error)
 
         args = _make_args(tmp_path)
         run_confignet_l1l2(args)
@@ -1334,11 +1334,11 @@ class TestSolverIntegration:
                 "details": {},
             }
 
-        monkeypatch.setattr("act.pipeline.confignet.act_driver_l1l2.sample_instances", _fake_sample_instances)
-        monkeypatch.setattr("act.pipeline.confignet.factory_adapter.ConfignetFactoryAdapter.build_case", _fake_build_case)
-        monkeypatch.setattr("act.pipeline.confignet.act_driver_l1l2._run_l1", _fake_run_l1)
-        monkeypatch.setattr("act.pipeline.confignet.act_driver_l1l2._run_l2", _fake_run_l2)
-        monkeypatch.setattr("act.pipeline.confignet.act_driver_l1l2._run_solver", _fake_run_solver)
+        monkeypatch.setattr("act.pipeline.confignet.sample_instances", _fake_sample_instances)
+        monkeypatch.setattr("act.pipeline.confignet.ConfignetFactoryAdapter.build_case", _fake_build_case)
+        monkeypatch.setattr("act.pipeline.confignet._run_l1", _fake_run_l1)
+        monkeypatch.setattr("act.pipeline.confignet._run_l2", _fake_run_l2)
+        monkeypatch.setattr("act.pipeline.confignet._run_solver", _fake_run_solver)
 
         summary = run_confignet_l1l2(_make_args(tmp_path, run_solver=True, solver_on_failure=True))
         records = read_jsonl(_make_args(tmp_path, run_solver=True, solver_on_failure=True).jsonl)
@@ -1414,10 +1414,10 @@ class TestE2E:
                 "warnings": [],
             }
 
-        monkeypatch.setattr("act.pipeline.confignet.act_driver_l1l2.sample_instances", _fake_sample_instances)
-        monkeypatch.setattr("act.pipeline.confignet.factory_adapter.ConfignetFactoryAdapter.build_case", _fake_build_case)
-        monkeypatch.setattr("act.pipeline.confignet.act_driver_l1l2._run_l1", _fake_run_l1)
-        monkeypatch.setattr("act.pipeline.confignet.act_driver_l1l2._run_l2", _fake_run_l2)
+        monkeypatch.setattr("act.pipeline.confignet.sample_instances", _fake_sample_instances)
+        monkeypatch.setattr("act.pipeline.confignet.ConfignetFactoryAdapter.build_case", _fake_build_case)
+        monkeypatch.setattr("act.pipeline.confignet._run_l1", _fake_run_l1)
+        monkeypatch.setattr("act.pipeline.confignet._run_l2", _fake_run_l2)
 
         args = _make_args(tmp_path, instances=2, jsonl=str(tmp_path / "out.jsonl"))
         summary = run_confignet_l1l2(args)
@@ -1479,10 +1479,10 @@ class TestE2E:
                 "warnings": [],
             }
 
-        monkeypatch.setattr("act.pipeline.confignet.act_driver_l1l2.sample_instances", _fake_sample_instances)
-        monkeypatch.setattr("act.pipeline.confignet.factory_adapter.ConfignetFactoryAdapter.build_case", _fake_build_case)
-        monkeypatch.setattr("act.pipeline.confignet.act_driver_l1l2._run_l1", _fake_run_l1)
-        monkeypatch.setattr("act.pipeline.confignet.act_driver_l1l2._run_l2", _fake_run_l2)
+        monkeypatch.setattr("act.pipeline.confignet.sample_instances", _fake_sample_instances)
+        monkeypatch.setattr("act.pipeline.confignet.ConfignetFactoryAdapter.build_case", _fake_build_case)
+        monkeypatch.setattr("act.pipeline.confignet._run_l1", _fake_run_l1)
+        monkeypatch.setattr("act.pipeline.confignet._run_l2", _fake_run_l2)
 
         args_a = _make_args(tmp_path, instances=2, jsonl=str(tmp_path / "a.jsonl"))
         args_b = _make_args(tmp_path, instances=2, jsonl=str(tmp_path / "b.jsonl"))
@@ -1526,10 +1526,10 @@ class TestE2E:
                 "warnings": [],
             }
 
-        monkeypatch.setattr("act.pipeline.confignet.act_driver_l1l2.sample_instances", _fake_sample_instances)
-        monkeypatch.setattr("act.pipeline.confignet.factory_adapter.ConfignetFactoryAdapter.build_case", _fake_build_case)
-        monkeypatch.setattr("act.pipeline.confignet.act_driver_l1l2._run_l1", _fake_run_l1)
-        monkeypatch.setattr("act.pipeline.confignet.act_driver_l1l2._run_l2", _fake_run_l2)
+        monkeypatch.setattr("act.pipeline.confignet.sample_instances", _fake_sample_instances)
+        monkeypatch.setattr("act.pipeline.confignet.ConfignetFactoryAdapter.build_case", _fake_build_case)
+        monkeypatch.setattr("act.pipeline.confignet._run_l1", _fake_run_l1)
+        monkeypatch.setattr("act.pipeline.confignet._run_l2", _fake_run_l2)
 
         top_path = tmp_path / "top.jsonl"
         sub_path = tmp_path / "sub.jsonl"

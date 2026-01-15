@@ -622,7 +622,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     if argv is None:
         argv = sys.argv[1:]
     if argv and argv[0] == "confignet":
-        from act.pipeline.confignet.cli import main as confignet_main
+        from act.pipeline.confignet import main as confignet_main
 
         return int(confignet_main(argv[1:]))
     parser = argparse.ArgumentParser(
