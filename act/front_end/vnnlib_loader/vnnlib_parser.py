@@ -14,12 +14,15 @@
 
 from __future__ import annotations
 from pathlib import Path
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, List, Tuple, Optional, TYPE_CHECKING
 import logging
 import torch
 import re
 
 from act.front_end.specs import InputSpec, OutputSpec, InKind, OutKind
+
+if TYPE_CHECKING:
+    from act.front_end.spec_creator_base import LabeledInputTensor
 from act.util.device_manager import get_default_dtype
 
 logger = logging.getLogger(__name__)
@@ -117,14 +120,16 @@ def parse_vnnlib_to_tensors(
 
 def parse_vnnlib_to_specs(
     vnnlib_path: Path,
-    input_shape: Optional[Tuple[int, ...]] = None
+    labeled_tensor: Optional['LabeledInputTensor'] = None
 ) -> Tuple[InputSpec, OutputSpec]:
     """
     Parse VNNLIB file to create InputSpec and OutputSpec objects.
     
     Args:
         vnnlib_path: Path to .vnnlib file
-        input_shape: Expected input shape (optional)
+        labeled_tensor: LabeledInputTensor containing input tensor and ground truth label.
+                       If provided, tensor.shape is used for reshaping bounds and
+                       label is used to promote RANGE to TOP1_ROBUST for classification.
         
     Returns:
         Tuple of (InputSpec, OutputSpec)
@@ -154,6 +159,10 @@ def parse_vnnlib_to_specs(
         lb_tensor = torch.tensor(lb_values, dtype=get_default_dtype())
         ub_tensor = torch.tensor(ub_values, dtype=get_default_dtype())
         
+        # Extract input_shape and true_label from labeled_tensor if provided (safe parsing)
+        input_shape = labeled_tensor.tensor.shape if labeled_tensor is not None else None
+        true_label = labeled_tensor.label if labeled_tensor is not None else None
+        
         if input_shape is not None:
             # Reshape bounds to match input shape (which now includes batch dimension)
             lb_tensor = lb_tensor.view(*input_shape)
@@ -178,12 +187,20 @@ def parse_vnnlib_to_specs(
                 meta={'all_constraints': output_constraints}
             )
         else:
-            # Fallback: RANGE with no specific bounds
-            output_spec = OutputSpec(
-                kind=OutKind.RANGE,
-                lb=torch.tensor([float('-inf')] * num_outputs, dtype=get_default_dtype()),
-                ub=torch.tensor([float('inf')] * num_outputs, dtype=get_default_dtype())
-            )
+            # Fallback: If true_label is provided, promote to TOP1_ROBUST
+            # for classification robustness properties. Otherwise, use RANGE.
+            if true_label is not None:
+                output_spec = OutputSpec(
+                    kind=OutKind.TOP1_ROBUST,
+                    y_true=int(true_label),
+                    meta={'promoted_from': OutKind.RANGE}
+                )
+            else:
+                output_spec = OutputSpec(
+                    kind=OutKind.RANGE,
+                    lb=torch.tensor([float('-inf')] * num_outputs, dtype=get_default_dtype()),
+                    ub=torch.tensor([float('inf')] * num_outputs, dtype=get_default_dtype())
+                )
         
         logger.info(f"Created specs from VNNLIB: {input_spec.kind}, {output_spec.kind}")
         

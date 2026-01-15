@@ -71,8 +71,8 @@ class FuzzingConfig:
     timeout_seconds: float = 3600.0
     seed_selection_strategy: str = "energy"
     mutation_weights: Dict[str, float] = field(default_factory=lambda: {
-        "gradient": 0.4,
-        "pgd": 0.0,
+        "gradient": 0.2,
+        "pgd": 0.2,
         "activation": 0.3,
         "boundary": 0.2,
         "random": 0.1
@@ -288,8 +288,8 @@ class ACTFuzzer:
         # 2. Get seed tensor (already has batch dimension)
         seed_tensor = seed.tensor  # Already (1, C, H, W)
         
-        # 3. Mutate with feedback
-        candidate = self.mutation_engine.mutate(seed_tensor)
+        # 3. Mutate with feedback (pass labeled_tensor)
+        candidate = self.mutation_engine.mutate(seed)
         mutation_strategy = self.mutation_engine.last_strategy
         
         # 4. Run inference

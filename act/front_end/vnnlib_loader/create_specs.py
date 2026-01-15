@@ -64,7 +64,7 @@ class VNNLibSpecCreator(BaseSpecCreator):
             config_dict: Direct config dict (overrides config_name if provided)
         """
         super().__init__(config_name, config_dict)
-    
+        
     def create_specs_for_data_model_pairs(
         self,
         categories: Optional[List[str]] = None,
@@ -211,10 +211,11 @@ class VNNLibSpecCreator(BaseSpecCreator):
         
         # Parse VNNLIB to create specs
         # Pass input_shape to ensure specs match tensor shape (not flattened)
+        # Pass true_label to promote RANGE to TOP1_ROBUST for classification
         try:
             input_spec, output_spec = parse_vnnlib_to_specs(
                 vnnlib_path,
-                input_shape=labeled_tensor.tensor.shape
+                labeled_tensor=labeled_tensor
             )
             logger.info(
                 f"Parsed VNNLIB specs: {input_spec.kind}, {output_spec.kind}"
