@@ -16,7 +16,7 @@
 import torch
 from typing import List
 from act.back_end.core import Bounds, Con, ConSet, Fact, Layer
-from act.back_end.utils import affine_bounds, pwl_meta, bound_var_interval, scale_interval
+from act.back_end.utils import affine_bounds, pwl_meta
 
 # -------- MLP Basics --------
 def tf_dense(L: Layer, Bin: Bounds) -> Fact:
@@ -31,7 +31,8 @@ def tf_dense(L: Layer, Bin: Bounds) -> Fact:
     C.add_box(L.id, L.out_vars, B); return Fact(B,C)
 
 def tf_bias(L: Layer, Bin: Bounds) -> Fact:
-    c=L.params["c"]; B=Bounds(Bin.lb+c, Bin.ub+c)
+    c=L.params["c"]
+    B=Bounds(Bin.lb+c, Bin.ub+c)
     C=ConSet(); C.replace(Con("EQ", tuple(L.out_vars + L.in_vars), {"tag": f"bias:{L.id}", "c": c}))
     C.add_box(L.id, L.out_vars, B); return Fact(B,C)
 
