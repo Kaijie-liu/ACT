@@ -53,11 +53,12 @@
 #===---------------------------------------------------------------------===#
 #
 from __future__ import annotations
-
+import warnings
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Tuple
 import torch
 import torch.nn as nn
+from torch.nn.modules.batchnorm import _BatchNorm
 from torchvision.ops import StochasticDepth
 
 from act.util.model_inference import model_inference
@@ -178,7 +179,8 @@ class TorchToACT:
         return isinstance(mod, (
             nn.Linear, nn.ReLU, nn.Conv2d, nn.Flatten,
             nn.MaxPool2d, nn.AvgPool2d, nn.AdaptiveAvgPool2d, nn.Dropout,
-            nn.BatchNorm2d, nn.Tanh, nn.Sigmoid, nn.LeakyReLU, nn.SiLU,
+            _BatchNorm,  # Handles nn.BatchNorm{1d,2d,3d} and onnx2pytorch's BatchNormUnsafe
+            nn.Tanh, nn.Sigmoid, nn.LeakyReLU, nn.SiLU,
             StochasticDepth
         ))
 
@@ -309,14 +311,16 @@ class TorchToACT:
             # During training it randomly drops residual branches, but in eval mode: output = input
             pass
             
-        elif isinstance(mod, nn.BatchNorm2d):
-            # BatchNorm2d during inference: y = gamma * (x - running_mean) / sqrt(running_var + eps) + beta
-            # This is equivalent to: y = scale * x + bias
-            # where scale = gamma / sqrt(running_var + eps) and bias = beta - scale * running_mean
+        elif isinstance(mod, _BatchNorm):
+            # BatchNorm during inference: y = scale * x + bias
+            # where scale = gamma / sqrt(running_var + eps)
+            #       bias = beta - scale * running_mean
             
             # Extract BatchNorm parameters (all should be present in eval mode)
-            gamma = mod.weight.detach() if mod.weight is not None else torch.ones(mod.num_features, dtype=mod.running_mean.dtype, device=mod.running_mean.device)
-            beta = mod.bias.detach() if mod.bias is not None else torch.zeros(mod.num_features, dtype=mod.running_mean.dtype, device=mod.running_mean.device)
+            gamma = mod.weight.detach() if mod.weight is not None else torch.ones(
+                mod.num_features, dtype=mod.running_mean.dtype, device=mod.running_mean.device)
+            beta = mod.bias.detach() if mod.bias is not None else torch.zeros(
+                mod.num_features, dtype=mod.running_mean.dtype, device=mod.running_mean.device)
             running_mean = mod.running_mean.detach()
             running_var = mod.running_var.detach()
             eps = mod.eps
@@ -325,57 +329,48 @@ class TorchToACT:
             scale = gamma / torch.sqrt(running_var + eps)
             bias = beta - scale * running_mean
             
-            # BatchNorm is applied channel-wise, so we need to expand scale/bias to match input shape
-            # For spatial data: (1, C, H, W) → scale/bias are (C,) → expand to (1, C, H, W)
-            if len(self.shape) == 2:
-                # Flattened input: (1, C*H*W) - need to track channel dimension
-                # This is tricky, so we'll represent as element-wise multiplication + addition
-                # Assuming the input was flattened from (1, C, H, W)
-                n_features = self.shape[1]
-                n_channels = mod.num_features
-                spatial_size = n_features // n_channels
-                
-                # Expand scale and bias to match flattened shape
-                scale_expanded = scale.repeat_interleave(spatial_size)
-                bias_expanded = bias.repeat_interleave(spatial_size)
-                
-                # Create element-wise multiplication and addition layers
-                out_vars = self._same_size_forward()
-                self._add(LayerKind.MUL.value, params={"scale": scale_expanded},
-                         meta={"input_shape": self.shape, "output_shape": self.shape},
-                         in_vars=self.prev_out, out_vars=out_vars)
-                self.prev_out = out_vars
-                
-                out_vars = self._same_size_forward()
-                self._add(LayerKind.ADD.value, params={"bias": bias_expanded},
-                         meta={"input_shape": self.shape, "output_shape": self.shape},
-                         in_vars=self.prev_out, out_vars=out_vars)
-                self.prev_out = out_vars
-            else:
-                # Spatial input: (1, C, H, W)
-                batch, channels, height, width = self.shape
-                
-                # Expand scale and bias to spatial dimensions
-                scale_expanded = scale.view(1, -1, 1, 1).expand(1, channels, height, width).flatten()
-                bias_expanded = bias.view(1, -1, 1, 1).expand(1, channels, height, width).flatten()
-                
-                # Flatten shape for computation
-                flat_size = channels * height * width
-                
-                # Create element-wise multiplication and addition layers
-                out_vars = self._same_size_forward()
-                self._add(LayerKind.MUL.value, params={"scale": scale_expanded},
-                         meta={"input_shape": (1, flat_size), "output_shape": (1, flat_size),
-                               "original_shape": self.shape},
-                         in_vars=self.prev_out, out_vars=out_vars)
-                self.prev_out = out_vars
-                
-                out_vars = self._same_size_forward()
-                self._add(LayerKind.ADD.value, params={"bias": bias_expanded},
-                         meta={"input_shape": (1, flat_size), "output_shape": (1, flat_size),
-                               "original_shape": self.shape},
-                         in_vars=self.prev_out, out_vars=out_vars)
-                self.prev_out = out_vars
+            # Use ACTUAL input size from prev_out 
+            actual_input_size = len(self.prev_out)
+            n_channels = mod.num_features
+            
+            # Verify divisibility (BatchNorm is channel-wise)
+            if actual_input_size % n_channels != 0:
+                raise ValueError(
+                    f"BatchNorm: input size {actual_input_size} is not divisible by "
+                    f"num_features {n_channels}. Model structure may be incorrect."
+                )
+            
+            spatial_size = actual_input_size // n_channels
+            
+            # Expand scale and bias to match flattened input
+            scale_expanded = scale.repeat_interleave(spatial_size)
+            bias_expanded = bias.repeat_interleave(spatial_size)
+            
+            # Final size verification
+            assert scale_expanded.numel() == actual_input_size, (
+                f"BatchNorm scale expansion failed: "
+                f"scale_expanded.numel()={scale_expanded.numel()} != "
+                f"actual_input_size={actual_input_size}"
+            )
+            assert bias_expanded.numel() == actual_input_size, (
+                f"BatchNorm bias expansion failed: "
+                f"bias_expanded.numel()={bias_expanded.numel()} != "
+                f"actual_input_size={actual_input_size}"
+            )
+            
+            # Create SCALE layer (from BatchNorm)
+            out_vars = self._same_size_forward()
+            self._add("SCALE", params={"a": scale_expanded},
+                     meta={},  # No meta required for SCALE
+                     in_vars=self.prev_out, out_vars=out_vars)
+            self.prev_out = out_vars
+            
+            # Create BIAS layer (from BatchNorm)
+            out_vars = self._same_size_forward()
+            self._add("BIAS", params={"c": bias_expanded},
+                     meta={},  # No meta required for BIAS
+                     in_vars=self.prev_out, out_vars=out_vars)
+            self.prev_out = out_vars
         
         elif isinstance(mod, nn.AdaptiveAvgPool2d):
             # AdaptiveAvgPool2d: Adaptive average pooling to output_size
@@ -481,6 +476,23 @@ class TorchToACT:
         # Primitive modules - convert directly
         if self._is_primitive_module(mod):
             self._convert_primitive_module(mod)
+            return
+        
+        # Handle onnx2pytorch operations by type name
+        if tname == "Add":
+            # onnx2pytorch Add: in sequential context, adds a stored constant to input
+            pass  # No-op: constants typically folded in ONNX simplification
+            return
+        
+        if tname == "Flatten":
+            # onnx2pytorch Flatten: same as nn.Flatten
+            out_vars = self._same_size_forward()
+            flattened_shape = (1, _prod(self.shape[1:]))
+            self._add(LayerKind.FLATTEN.value, params={}, 
+                      meta={"input_shape": self.shape, "output_shape": flattened_shape},
+                      in_vars=self.prev_out, out_vars=out_vars)
+            self.shape = flattened_shape
+            self.prev_out = out_vars
             return
         
         # Container modules - recurse into children

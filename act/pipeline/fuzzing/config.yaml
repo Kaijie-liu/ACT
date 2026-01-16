@@ -10,8 +10,8 @@ fuzzing:
 
   # Mutation strategy weights (must sum to 1.0)
   mutation_weights:
-    gradient: 0.4      # FGSM-style gradient-guided
-    pgd: 0.0           # PGD-style gradient-guided (iterative; opt-in)
+    gradient: 0      # FGSM-style gradient-guided
+    pgd: 0.4           # PGD-style gradient-guided (iterative; opt-in)
     activation: 0.3    # Activation-guided (DeepXplore)
     boundary: 0.2      # Boundary exploration
     random: 0.1        # Random baseline
@@ -56,4 +56,4 @@ fuzzing:
   # Output
   save_counterexamples: true
   output_dir: "fuzzing_results"
-  report_interval: 100  # Print progress every N iterations
+  report_interval: 500  # Print progress every N iterations

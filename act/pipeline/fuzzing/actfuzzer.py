@@ -43,6 +43,7 @@ class FuzzingConfig:
         save_counterexamples: Whether to save counterexamples incrementally
         output_dir: Output directory for results
         report_interval: Print progress every N iterations
+        verbose: Logging verbosity (0=silent, 1=report violations in progress only, 2=print each violation immediately)
         trace_level: Execution tracing level (0=disabled, 1=default, 2=full, 3=debug)
         trace_sample_rate: Capture every Nth iteration (1=all iterations)
         trace_storage: Storage backend ("hdf5" or "json")
@@ -85,6 +86,7 @@ class FuzzingConfig:
     save_counterexamples: bool = True
     output_dir: Path = field(default_factory=lambda: Path(get_pipeline_log_dir()) / "fuzzing_results")
     report_interval: int = 100
+    verbose: int = 1  # 0=silent, 1=report in progress only, 2=print each violation immediately
     
     # Tracing configuration
     trace_level: int = 0  # 0=disabled, 1=default, 2=full, 3=debug
@@ -234,6 +236,7 @@ class ACTFuzzer:
         self.iterations = 0
         self.start_time = 0.0
         self.never_activated_neurons: List[Dict[str, Any]] = []
+        self.last_report_ce_count = 0  # Track counterexamples count at last report
     
     def _get_trace_ext(self) -> str:
         """Get file extension for trace storage."""
@@ -357,7 +360,10 @@ class ACTFuzzer:
         # 9. Handle results
         if violation:
             self.counterexamples.append(violation)
-            print(f"🚨 Counterexample #{len(self.counterexamples)}: {violation.summary()}")
+            # Only print individual counterexamples in debug mode (verbose >= 2)
+            # Regular reporting happens every report_interval in _print_progress
+            if self.config.verbose >= 2:
+                print(f"🚨 Counterexample #{len(self.counterexamples)}: {violation.summary()}")
             
             if self.config.save_counterexamples:
                 self.config.output_dir.mkdir(parents=True, exist_ok=True)
@@ -384,15 +390,20 @@ class ACTFuzzer:
         return max(energy, 0.1)  # Minimum energy
     
     def _print_progress(self, iteration: int):
-        """Print fuzzing progress."""
+        """Print fuzzing progress with incremental counterexample count."""
         elapsed = time.time() - self.start_time
         iter_per_sec = iteration / elapsed if elapsed > 0 else 0
         coverage = self.coverage_tracker.get_coverage()
         
+        # Calculate new counterexamples since last report
+        ce_total = len(self.counterexamples)
+        ce_new = ce_total - self.last_report_ce_count
+        self.last_report_ce_count = ce_total
+        
         print(f"📊 Iteration {iteration:6d} | "
               f"Coverage: {coverage:6.2%} | "
               f"Seeds: {len(self.seed_corpus):4d} | "
-              f"Violations: {len(self.counterexamples):3d} | "
+              f"Violations: {ce_total:3d} (+{ce_new}) | "
               f"Speed: {iter_per_sec:5.1f} it/s")
     
     def _generate_report(self) -> FuzzingReport:
