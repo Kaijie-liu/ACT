@@ -239,10 +239,60 @@ REGISTRY: Dict[str, Dict[str, List[str]]] = {
     LayerKind.INDEX_SELECT.value:{"params_required": [], "params_optional": [], "meta_required": ["indices","dim"], "meta_optional": ["input_shape","output_shape"]},
 
     # Sequences / attention
-    LayerKind.EMBEDDING.value:   {"params_required": ["weight"], "params_optional": [], "meta_required": ["num_embeddings","embedding_dim"], "meta_optional": ["padding_idx","max_norm","norm_type","scale_grad_by_freq","sparse"]},
-    LayerKind.RNN.value:         {"params_required": [], "params_optional": ["weight_ih_l0","weight_hh_l0","bias_ih_l0","bias_hh_l0"], "meta_required": ["input_size","hidden_size","num_layers","bidirectional"], "meta_optional": ["dropout","batch_first","nonlinearity","proj_size","gate_order","packed_sequence"]},
-    LayerKind.GRU.value:         {"params_required": [], "params_optional": ["weight_ih_l0","weight_hh_l0","bias_ih_l0","bias_hh_l0"], "meta_required": ["input_size","hidden_size","num_layers","bidirectional"], "meta_optional": ["dropout","batch_first","nonlinearity","proj_size","gate_order","packed_sequence"]},
-    LayerKind.LSTM.value:        {"params_required": [], "params_optional": ["weight_ih_l0","weight_hh_l0","bias_ih_l0","bias_hh_l0"], "meta_required": ["input_size","hidden_size","num_layers","bidirectional"], "meta_optional": ["dropout","batch_first","nonlinearity","proj_size","gate_order","packed_sequence"]},
+    LayerKind.EMBEDDING.value:   {"params_required": ["weight"], "params_optional": [], "meta_required": ["num_embeddings","embedding_dim","input_shape","output_shape"], "meta_optional": ["padding_idx","max_norm","norm_type","scale_grad_by_freq","sparse"]},
+    # RNN/GRU/LSTM: Pattern-based validation for unlimited num_layers
+    # Weight parameters match: weight_{ih|hh}_l{digit}[_reverse] and bias_{ih|hh}_l{digit}[_reverse]
+    # LSTM also supports weight_hr_l{digit}[_reverse] for projection
+    LayerKind.RNN.value:         {
+        "params_required": [],
+        "params_optional": [],
+        "params_patterns": [
+            r"^weight_ih_l\d+$",
+            r"^weight_hh_l\d+$",
+            r"^bias_ih_l\d+$",
+            r"^bias_hh_l\d+$",
+            r"^weight_ih_l\d+_reverse$",
+            r"^weight_hh_l\d+_reverse$",
+            r"^bias_ih_l\d+_reverse$",
+            r"^bias_hh_l\d+_reverse$",
+        ],
+        "meta_required": ["input_size","hidden_size","num_layers","bidirectional","batch_first","input_shape","output_shape"],
+        "meta_optional": ["dropout","nonlinearity","proj_size","gate_order","packed_sequence"]
+    },
+    LayerKind.GRU.value:         {
+        "params_required": [],
+        "params_optional": [],
+        "params_patterns": [
+            r"^weight_ih_l\d+$",
+            r"^weight_hh_l\d+$",
+            r"^bias_ih_l\d+$",
+            r"^bias_hh_l\d+$",
+            r"^weight_ih_l\d+_reverse$",
+            r"^weight_hh_l\d+_reverse$",
+            r"^bias_ih_l\d+_reverse$",
+            r"^bias_hh_l\d+_reverse$",
+        ],
+        "meta_required": ["input_size","hidden_size","num_layers","bidirectional","batch_first","input_shape","output_shape"],
+        "meta_optional": ["dropout","nonlinearity","proj_size","gate_order","packed_sequence"]
+    },
+    LayerKind.LSTM.value:        {
+        "params_required": [],
+        "params_optional": [],
+        "params_patterns": [
+            r"^weight_ih_l\d+$",
+            r"^weight_hh_l\d+$",
+            r"^bias_ih_l\d+$",
+            r"^bias_hh_l\d+$",
+            r"^weight_hr_l\d+$",           # LSTM projection
+            r"^weight_ih_l\d+_reverse$",
+            r"^weight_hh_l\d+_reverse$",
+            r"^bias_ih_l\d+_reverse$",
+            r"^bias_hh_l\d+_reverse$",
+            r"^weight_hr_l\d+_reverse$",   # LSTM projection (bidirectional)
+        ],
+        "meta_required": ["input_size","hidden_size","num_layers","bidirectional","batch_first","input_shape","output_shape"],
+        "meta_optional": ["dropout","nonlinearity","proj_size","gate_order","packed_sequence"]
+    },
     LayerKind.SOFTMAX.value:     {"params_required": [], "params_optional": [], "meta_required": ["axis"], "meta_optional": []},
     LayerKind.MHA.value:         {"params_required": [], "params_optional": ["in_proj_weight","in_proj_bias","q_proj.weight","q_proj.bias","k_proj.weight","k_proj.bias","v_proj.weight","v_proj.bias","out_proj.weight","out_proj.bias","bias_k","bias_v","rel_pos_bias"], "meta_required": ["num_heads"], "meta_optional": ["head_dim","scale","dropout","add_zero_attn","batch_first","causal","mask_kind","mask_format","axis","qkv_layout","posenc_kind","rope_theta"]},
     LayerKind.POSENC.value:      {"params_required": [], "params_optional": ["weight","slopes"], "meta_required": [], "meta_optional": ["kind","seq_len","embedding_dim","theta"]},

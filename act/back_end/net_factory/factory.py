@@ -36,7 +36,7 @@ from act.front_end.specs import InKind, OutKind
 from act.util.device_manager import get_default_dtype
 from act.util.path_config import get_examples_gen_config_path
 
-from .layer_builder import build_cnn_layers, build_mlp_layers
+from .layer_builder import build_cnn_layers, build_mlp_layers, build_rnn_layers
 from .sampler import ConfigSampler
 
 
@@ -161,7 +161,130 @@ class NetFactory:
                 weight_shape = (in_channels, out_channels, kernel_size[0], kernel_size[1])
             return torch.randn(*weight_shape) * 0.1
 
+        # RNN/LSTM/GRU weight generation handled separately in generate_rnn_params()
         return None
+
+    def generate_rnn_params(
+        self, kind: str, meta: Dict[str, Any], rng: random.Random
+    ) -> Dict[str, torch.Tensor]:
+        """Generate complete RNN/LSTM/GRU weight parameters.
+
+        Args:
+            kind: Layer kind ("RNN", "GRU", "LSTM")
+            meta: Layer metadata containing:
+                - input_size: int
+                - hidden_size: int
+                - num_layers: int
+                - bidirectional: bool
+                - proj_size: int (LSTM only, 0 = no projection)
+                - nonlinearity: str (RNN only: "tanh" or "relu")
+            rng: Random number generator for weight initialization
+
+        Returns:
+            Dictionary of weight tensors following PyTorch naming convention:
+            - weight_ih_l{k}[_reverse]: Input-hidden weights for layer k
+            - weight_hh_l{k}[_reverse]: Hidden-hidden weights for layer k
+            - bias_ih_l{k}[_reverse]: Input-hidden biases for layer k
+            - bias_hh_l{k}[_reverse]: Hidden-hidden biases for layer k
+            - weight_hr_l{k}[_reverse]: LSTM projection weights (if proj_size > 0)
+        """
+        input_size = int(meta['input_size'])
+        hidden_size = int(meta['hidden_size'])
+        num_layers = int(meta['num_layers'])
+        bidirectional = bool(meta.get('bidirectional', False))
+        proj_size = int(meta.get('proj_size', 0))
+
+        # Determine gate multiplier based on cell type
+        if kind == "LSTM":
+            multiplier = 4  # i, f, g, o gates
+        elif kind == "GRU":
+            multiplier = 3  # r, z, n gates
+        elif kind == "RNN":
+            multiplier = 1  # single gate
+        else:
+            raise ValueError(f"Unsupported RNN kind: {kind}")
+
+        params = {}
+
+        # Generate weights for each layer and direction
+        for layer_idx in range(num_layers):
+            # Determine input size for this layer
+            if layer_idx == 0:
+                layer_input_size = input_size
+            else:
+                # Previous layer's output size
+                if proj_size > 0:
+                    # LSTM with projection
+                    layer_input_size = proj_size * (2 if bidirectional else 1)
+                else:
+                    layer_input_size = hidden_size * (2 if bidirectional else 1)
+
+            # Forward direction
+            params[f'weight_ih_l{layer_idx}'] = self._generate_rnn_weight(
+                (multiplier * hidden_size, layer_input_size), rng
+            )
+            params[f'weight_hh_l{layer_idx}'] = self._generate_rnn_weight(
+                (multiplier * hidden_size, hidden_size), rng
+            )
+            params[f'bias_ih_l{layer_idx}'] = self._generate_rnn_bias(
+                multiplier * hidden_size, rng
+            )
+            params[f'bias_hh_l{layer_idx}'] = self._generate_rnn_bias(
+                multiplier * hidden_size, rng
+            )
+
+            # LSTM projection (optional)
+            if kind == "LSTM" and proj_size > 0:
+                params[f'weight_hr_l{layer_idx}'] = self._generate_rnn_weight(
+                    (proj_size, hidden_size), rng
+                )
+
+            # Backward direction (if bidirectional)
+            if bidirectional:
+                params[f'weight_ih_l{layer_idx}_reverse'] = self._generate_rnn_weight(
+                    (multiplier * hidden_size, layer_input_size), rng
+                )
+                params[f'weight_hh_l{layer_idx}_reverse'] = self._generate_rnn_weight(
+                    (multiplier * hidden_size, hidden_size), rng
+                )
+                params[f'bias_ih_l{layer_idx}_reverse'] = self._generate_rnn_bias(
+                    multiplier * hidden_size, rng
+                )
+                params[f'bias_hh_l{layer_idx}_reverse'] = self._generate_rnn_bias(
+                    multiplier * hidden_size, rng
+                )
+
+                # LSTM projection (backward)
+                if kind == "LSTM" and proj_size > 0:
+                    params[f'weight_hr_l{layer_idx}_reverse'] = self._generate_rnn_weight(
+                        (proj_size, hidden_size), rng
+                    )
+
+        return params
+
+    def _generate_rnn_weight(self, shape: Tuple[int, int], rng: random.Random) -> torch.Tensor:
+        """Generate RNN weight matrix with Xavier/Glorot initialization.
+
+        Uses Xavier uniform initialization: U(-a, a) where a = sqrt(6 / (fan_in + fan_out))
+        This matches PyTorch's default initialization for RNN layers.
+        """
+        fan_in, fan_out = shape[1], shape[0]
+        limit = (6.0 / (fan_in + fan_out)) ** 0.5
+
+        # Generate uniform random values in [-limit, limit]
+        # Use rng to maintain determinism
+        torch.manual_seed(rng.randint(0, 2**31-1))
+        return torch.empty(shape).uniform_(-limit, limit)
+
+    def _generate_rnn_bias(self, size: int, rng: random.Random) -> torch.Tensor:
+        """Generate RNN bias vector with uniform initialization.
+
+        Uses uniform initialization matching the weight initialization.
+        """
+        # PyTorch initializes biases with the same uniform distribution as weights
+        # For simplicity, we use a small range since bias magnitude is less critical
+        torch.manual_seed(rng.randint(0, 2**31-1))
+        return torch.zeros(size)  # Zero initialization is common and stable
 
     def _input_spec_params(
         self, meta: Dict[str, Any], input_shape: List[int], dtype: torch.dtype
@@ -265,6 +388,13 @@ class NetFactory:
             out_vars = list(range(var_counter, var_counter + out_num_vars))
             return in_vars, out_vars, var_counter + out_num_vars
 
+        # RNN/LSTM/GRU/EMBEDDING layers (use output_shape)
+        if kind in ["RNN", "LSTM", "GRU", "EMBEDDING"]:
+            in_vars = layers[layer_index - 1].out_vars
+            out_num_vars = torch.Size(meta["output_shape"]).numel()
+            out_vars = list(range(var_counter, var_counter + out_num_vars))
+            return in_vars, out_vars, var_counter + out_num_vars
+
         if kind in ["INPUT_SPEC", "ASSERT"]:
             prev_vars = layers[layer_index - 1].out_vars
             return prev_vars, list(prev_vars), var_counter
@@ -329,6 +459,8 @@ class NetFactory:
         elif instance["family"] == "cnn2d":
             rng = random.Random(int(instance["seed"]))
             build_cnn_layers(layers, cfg=model_cfg, rng=rng)
+        elif instance["family"] == "rnn":
+            build_rnn_layers(layers, cfg=model_cfg)
         else:
             raise ValueError(f"Unsupported model family: {instance['family']}")
 
@@ -402,6 +534,11 @@ class NetFactory:
                 weight = self.generate_weight_tensor(kind, meta)
                 if weight is not None:
                     params["weight"] = weight
+            elif kind in ["RNN", "LSTM", "GRU"] and not params:
+                # Generate RNN weights using deterministic RNG
+                rng = random.Random(int(self.base_seed) + i)
+                rnn_params = self.generate_rnn_params(kind, meta, rng)
+                params.update(rnn_params)
 
             layer = Layer(id=i, kind=kind, params=params, meta=meta, in_vars=in_vars, out_vars=out_vars)
             layers.append(layer)

@@ -82,10 +82,10 @@ class IntervalTF(TransferFunction):
         LayerKind.FLATTEN.value: lambda L, bounds, tf: tf_flatten(L, bounds),
         
         # RNN operations
-        "LSTM": lambda L, bounds, tf: tf_lstm(L, bounds),
-        "GRU": lambda L, bounds, tf: tf_gru(L, bounds),
-        "RNN": lambda L, bounds, tf: tf_rnn(L, bounds),
-        "EMBEDDING": lambda L, bounds, tf: tf_embedding(L, bounds),
+        LayerKind.LSTM.value: lambda L, bounds, tf: tf_lstm(L, bounds),
+        LayerKind.GRU.value: lambda L, bounds, tf: tf_gru(L, bounds),
+        LayerKind.RNN.value: lambda L, bounds, tf: tf_rnn(L, bounds),
+        LayerKind.EMBEDDING.value: lambda L, bounds, tf: tf_embedding(L, bounds),
         
         # Activation functions
         LayerKind.SIGMOID.value: lambda L, bounds, tf: tf_sigmoid(L, bounds),

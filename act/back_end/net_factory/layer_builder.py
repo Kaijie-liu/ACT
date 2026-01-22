@@ -370,3 +370,131 @@ def build_cnn_layers(
     layers.append({"kind": "FLATTEN", "params": {}, "meta": {"start_dim": 1}})
     feat = int(ch * H * W)
     append_dense(layers, in_features=int(feat), out_features=int(cfg["num_classes"]), use_bias=True)
+
+
+def build_rnn_layers(
+    layers: List[Dict[str, Any]],
+    *,
+    cfg: Dict[str, Any]
+) -> None:
+    """Build RNN/LSTM/GRU layer sequence based on config.
+
+    Args:
+        layers: List to append layer specs to
+        cfg: RNN family configuration containing:
+            - input_shape: [B, seq_len, input_size]
+            - cell_kind: "LSTM", "GRU", or "RNN"
+            - hidden_size: int
+            - num_layers: int
+            - bidirectional: bool
+            - proj_size: int (LSTM only, 0 = no projection)
+            - nonlinearity: str (RNN only: "tanh" or "relu")
+            - return_sequence: bool (false = use last timestep)
+            - head_mode: "last" or "mean"
+            - num_classes: int
+
+    Layer graph structure:
+        INPUT → RNN/LSTM/GRU → (SLICE if head_mode=last) → FLATTEN → DENSE
+    """
+    shape = _ensure_batch1(tuple(cfg["input_shape"]))
+    if len(shape) != 3:
+        raise ValueError(f"RNN expects input_shape=(1,seq_len,input_size), got {shape}")
+
+    B, seq_len, input_size = shape
+    B = int(B)
+    seq_len = int(seq_len)
+    input_size = int(input_size)
+
+    # Extract RNN parameters
+    cell_kind = str(cfg["cell_kind"])
+    hidden_size = int(cfg["hidden_size"])
+    num_layers = int(cfg["num_layers"])
+    bidirectional = bool(cfg["bidirectional"])
+    proj_size = int(cfg.get("proj_size", 0))
+    nonlinearity = str(cfg.get("nonlinearity", "tanh"))
+    return_sequence = bool(cfg.get("return_sequence", False))
+    head_mode = str(cfg.get("head_mode", "last"))
+    num_classes = int(cfg["num_classes"])
+
+    # Validate cell_kind
+    if cell_kind not in ["LSTM", "GRU", "RNN"]:
+        raise ValueError(f"Unsupported cell_kind '{cell_kind}', must be LSTM, GRU, or RNN")
+
+    # Compute RNN output shape
+    num_directions = 2 if bidirectional else 1
+
+    # Output feature dimension
+    if cell_kind == "LSTM" and proj_size > 0:
+        output_features = proj_size * num_directions
+    else:
+        output_features = hidden_size * num_directions
+
+    # RNN output shape: (B, seq_len, output_features)
+    rnn_output_shape = [B, seq_len, output_features]
+
+    # Build RNN layer
+    rnn_meta = {
+        "input_size": input_size,
+        "hidden_size": hidden_size,
+        "num_layers": num_layers,
+        "bidirectional": bidirectional,
+        "batch_first": True,  # Always use batch_first=True for generator
+        "input_shape": list(shape),
+        "output_shape": rnn_output_shape,
+    }
+
+    # Add optional metadata
+    if cell_kind == "LSTM" and proj_size > 0:
+        rnn_meta["proj_size"] = proj_size
+    if cell_kind == "RNN":
+        rnn_meta["nonlinearity"] = nonlinearity
+
+    layers.append({
+        "kind": cell_kind,
+        "params": {},  # Will be filled by factory.generate_rnn_params()
+        "meta": rnn_meta
+    })
+
+    # Sequence reduction strategy
+    if return_sequence:
+        # Use full sequence (advanced, not commonly used in classification)
+        # Would need additional layers to handle variable-length sequences
+        raise NotImplementedError("return_sequence=True not yet supported")
+    else:
+        # Reduce sequence to single vector
+        if head_mode == "last":
+            # Take last timestep: slice [:, -1, :]
+            # SLICE layer: extract last timestep
+            layers.append({
+                "kind": "SLICE",
+                "params": {},
+                "meta": {
+                    "starts": [0, seq_len - 1, 0],
+                    "ends": [B, seq_len, output_features],
+                    "axes": [0, 1, 2],
+                    "steps": [1, 1, 1],
+                    "input_shape": rnn_output_shape,
+                    "output_shape": [B, 1, output_features]  # Single timestep
+                }
+            })
+            # Flatten to remove seq_len dimension
+            layers.append({
+                "kind": "FLATTEN",
+                "params": {},
+                "meta": {
+                    "start_dim": 1,
+                    "input_shape": [B, 1, output_features],
+                    "output_shape": [B, output_features]
+                }
+            })
+            in_features = output_features
+
+        elif head_mode == "mean":
+            # Mean pooling over sequence dimension (not yet implemented)
+            # Would need MEAN layer or expand to element-wise ops
+            raise NotImplementedError("head_mode='mean' not yet supported, use 'last'")
+        else:
+            raise ValueError(f"Unsupported head_mode '{head_mode}', must be 'last' or 'mean'")
+
+    # Classification head (DENSE layer)
+    append_dense(layers, in_features=in_features, out_features=num_classes, use_bias=True)

@@ -175,20 +175,61 @@ def hybridz_tf_avgpool2d(L: Layer, Bin: Bounds) -> Fact:
 
 
 @torch.no_grad()
+def hybridz_tf_slice(L: Layer, Bin: Bounds) -> Fact:
+    """HybridZ transfer function for tensor slicing."""
+    # Slicing extracts a subset of tensor elements - bounds are preserved for extracted elements
+    starts = L.meta.get("starts")
+    ends = L.meta.get("ends")
+    axes = L.meta.get("axes")
+    steps = L.meta.get("steps", [1] * len(axes) if axes else None)
+    input_shape = tuple(L.meta.get("input_shape", Bin.lb.shape))
+
+    # Reshape input to expected shape if flattened
+    if Bin.lb.numel() == torch.prod(torch.tensor(input_shape)).item():
+        lb_reshaped = Bin.lb.view(input_shape)
+        ub_reshaped = Bin.ub.view(input_shape)
+    else:
+        lb_reshaped = Bin.lb
+        ub_reshaped = Bin.ub
+
+    # Build slice objects for each axis
+    slices = [slice(None)] * len(input_shape)
+    for axis, start, end, step in zip(axes, starts, ends, steps):
+        slices[axis] = slice(start, end, step)
+
+    # Apply slicing
+    lb_sliced = lb_reshaped[tuple(slices)]
+    ub_sliced = ub_reshaped[tuple(slices)]
+
+    # Flatten output
+    lb = lb_sliced.flatten()
+    ub = ub_sliced.flatten()
+    Bout = Bounds(lb=lb, ub=ub)
+
+    # Slicing is a pure reshaping operation - no constraints need to be exported
+    # The bounds directly capture the relationship
+    cons = ConSet()
+    # Add box constraints (identity mapping for sliced elements)
+    cons.add_box(L.id, L.out_vars, Bout)
+
+    return Fact(bounds=Bout, cons=cons)
+
+
+@torch.no_grad()
 def hybridz_tf_flatten(L: Layer, Bin: Bounds) -> Fact:
     """HybridZ transfer function for tensor flattening."""
     # Flattening is just reshaping - bounds remain the same
     start_dim = L.meta.get("start_dim", 1)
     end_dim = L.meta.get("end_dim", -1)
-    
+
     # Simple reshape - no change in bounds
     lb = Bin.lb.flatten()
     ub = Bin.ub.flatten()
     Bout = Bounds(lb=lb, ub=ub)
-    
+
     cons = ConSet()
     cons.add_op(f"flatten:{L.id}", list(L.out_vars + L.in_vars), start_dim=start_dim, end_dim=end_dim, input_shape=L.meta.get("input_shape"), output_shape=L.meta.get("output_shape"))
-    
+
     return Fact(bounds=Bout, cons=cons)
 
 

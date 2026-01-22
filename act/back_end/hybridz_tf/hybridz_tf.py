@@ -59,6 +59,7 @@ class HybridzTF(TransferFunction):
         "CONV2D": lambda L, bounds, tf: hybridz_tf_conv2d(L, bounds),
         "MAXPOOL2D": lambda L, bounds, tf: hybridz_tf_maxpool2d(L, bounds),
         "AVGPOOL2D": lambda L, bounds, tf: hybridz_tf_avgpool2d(L, bounds),
+        "SLICE": lambda L, bounds, tf: hybridz_tf_slice(L, bounds),
         "FLATTEN": lambda L, bounds, tf: hybridz_tf_flatten(L, bounds),
         "RESHAPE": lambda L, bounds, tf: hybridz_tf_reshape(L, bounds),
         

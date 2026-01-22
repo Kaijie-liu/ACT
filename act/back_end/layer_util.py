@@ -15,6 +15,7 @@
 from __future__ import annotations
 from typing import Dict, Any, List
 import difflib
+import re
 
 # Import validation components
 try:
@@ -133,7 +134,19 @@ def validate_layer(layer: "Layer") -> None:
     allowed_p = spec['params_required'] + spec['params_optional']
     allowed_m = spec['meta_required'] + spec['meta_optional']
 
-    unk_p = _unknown(allowed_p, layer.params)
+    # Pattern-based validation for params (if schema defines params_patterns)
+    if 'params_patterns' in spec:
+        params_patterns = spec['params_patterns']
+        unk_p = []
+        for param_name in layer.params.keys():
+            # Check if param matches any required/optional list OR any pattern
+            if param_name not in allowed_p:
+                # Check against patterns
+                if not any(re.match(pattern, param_name) for pattern in params_patterns):
+                    unk_p.append(param_name)
+    else:
+        unk_p = _unknown(allowed_p, layer.params)
+
     unk_m = _unknown(allowed_m, layer.meta)
 
     errs: List[str] = []
@@ -142,7 +155,16 @@ def validate_layer(layer: "Layer") -> None:
     if miss_m:
         errs.append(f"Missing required META: {miss_m}. Add them or relax schema in REGISTRY['{kind}']['meta_required'].")
     if unk_p:
-        errs.append(_format_unknown(kind, "params_optional/params_required", unk_p, allowed_p))
+        # If schema uses patterns, provide pattern-specific error message
+        if 'params_patterns' in spec:
+            patterns_str = ", ".join(f"'{p}'" for p in spec['params_patterns'])
+            errs.append(
+                f"Unknown params do not match any allowed pattern: {unk_p}. "
+                f"Valid patterns: {patterns_str}. "
+                f"Add to REGISTRY['{kind}']['params_patterns'] in layer_schema.py if intentional."
+            )
+        else:
+            errs.append(_format_unknown(kind, "params_optional/params_required", unk_p, allowed_p))
     if unk_m:
         errs.append(_format_unknown(kind, "meta_optional/meta_required", unk_m, allowed_m))
 

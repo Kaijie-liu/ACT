@@ -68,6 +68,22 @@ from act.util.device_manager import get_default_dtype, get_default_device
 logger = logging.getLogger(__name__)
 
 
+class RNNOutputWrapper(nn.Module):
+    """
+    Wrapper for PyTorch RNN/LSTM/GRU modules to extract only the output tensor.
+
+    PyTorch RNN modules return (output, hidden_state) tuples, but ACT networks
+    expect only the output tensor when followed by SLICE/FLATTEN layers.
+    """
+    def __init__(self, rnn_module):
+        super().__init__()
+        self.rnn = rnn_module
+
+    def forward(self, x):
+        output, _ = self.rnn(x)  # Discard hidden state
+        return output
+
+
 class ACTToTorch:
     """
     Convert ACT Net to PyTorch nn.Module.
@@ -423,6 +439,36 @@ class ACTToTorch:
             return nn.Mish()
         
         # Tensor operations
+        elif kind == "SLICE":
+            # Extract slice parameters from metadata
+            starts = meta.get("starts")
+            ends = meta.get("ends")
+            axes = meta.get("axes")
+            steps = meta.get("steps", [1] * len(axes) if axes else None)
+
+            if starts is None or ends is None or axes is None:
+                logger.warning(f"SLICE layer missing required metadata, skipping")
+                return None
+
+            # Create a lambda that performs the slicing
+            def slice_fn(x):
+                # Build slice objects for each axis
+                slices = [slice(None)] * x.dim()  # Start with full slices
+                for axis, start, end, step in zip(axes, starts, ends, steps):
+                    slices[axis] = slice(start, end, step)
+                return x[tuple(slices)]
+
+            # Wrap in nn.Module
+            class SliceModule(nn.Module):
+                def __init__(self, slice_fn):
+                    super().__init__()
+                    self.slice_fn = slice_fn
+
+                def forward(self, x):
+                    return self.slice_fn(x)
+
+            return SliceModule(slice_fn)
+
         elif kind == "FLATTEN":
             start_dim = meta.get("start_dim", 1)
             end_dim = meta.get("end_dim", -1)
@@ -468,14 +514,15 @@ class ACTToTorch:
             num_layers = meta.get("num_layers", 1)
             bidirectional = meta.get("bidirectional", False)
             batch_first = meta.get("batch_first", False)
-            
+
             if input_size is None:
                 raise ValueError("RNN requires 'input_size' in meta")
             if hidden_size is None:
                 raise ValueError("RNN requires 'hidden_size' in meta")
-            
-            return nn.RNN(input_size, hidden_size, num_layers, 
-                         batch_first=batch_first, bidirectional=bidirectional)
+
+            rnn_module = nn.RNN(input_size, hidden_size, num_layers,
+                               batch_first=batch_first, bidirectional=bidirectional)
+            return RNNOutputWrapper(rnn_module)
         
         elif kind == "LSTM":
             input_size = meta.get("input_size")
@@ -483,14 +530,17 @@ class ACTToTorch:
             num_layers = meta.get("num_layers", 1)
             bidirectional = meta.get("bidirectional", False)
             batch_first = meta.get("batch_first", False)
-            
+            proj_size = meta.get("proj_size", 0)
+
             if input_size is None:
                 raise ValueError("LSTM requires 'input_size' in meta")
             if hidden_size is None:
                 raise ValueError("LSTM requires 'hidden_size' in meta")
-            
-            return nn.LSTM(input_size, hidden_size, num_layers,
-                          batch_first=batch_first, bidirectional=bidirectional)
+
+            lstm_module = nn.LSTM(input_size, hidden_size, num_layers,
+                                 batch_first=batch_first, bidirectional=bidirectional,
+                                 proj_size=proj_size if proj_size > 0 else 0)
+            return RNNOutputWrapper(lstm_module)
         
         elif kind == "GRU":
             input_size = meta.get("input_size")
@@ -498,14 +548,15 @@ class ACTToTorch:
             num_layers = meta.get("num_layers", 1)
             bidirectional = meta.get("bidirectional", False)
             batch_first = meta.get("batch_first", False)
-            
+
             if input_size is None:
                 raise ValueError("GRU requires 'input_size' in meta")
             if hidden_size is None:
                 raise ValueError("GRU requires 'hidden_size' in meta")
-            
-            return nn.GRU(input_size, hidden_size, num_layers,
-                         batch_first=batch_first, bidirectional=bidirectional)
+
+            gru_module = nn.GRU(input_size, hidden_size, num_layers,
+                               batch_first=batch_first, bidirectional=bidirectional)
+            return RNNOutputWrapper(gru_module)
         
         elif kind == "SOFTMAX":
             axis = meta.get("axis", -1)
