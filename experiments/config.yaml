@@ -1,0 +1,219 @@
+#===- experiments/config.yaml - Experiment Configuration -----------------====#
+# ACT: Abstract Constraint Transformer
+# Copyright (C) 2025 ACT Team
+#
+# Licensed under the GNU Affero General Public License v3.0 or later (AGPLv3+).
+#===---------------------------------------------------------------------====#
+
+# ============================================================================
+# Device Configuration (CPU/GPU)
+# ============================================================================
+device:
+  # Device selection: "auto", "cpu", "cuda", "cuda:0", "cuda:1", etc.
+  # "auto" = Use CUDA if available, otherwise CPU
+  default: "auto"
+
+  # Force CPU for reproducibility (CUDA results may vary across hardware)
+  # Set to true for paper submission to ensure exact reproducibility
+  force_cpu_for_reproducibility: false
+
+# ============================================================================
+# Reproducibility Configuration (CRITICAL FOR PAPER SUBMISSION)
+# ============================================================================
+reproducibility:
+  master_seed: 42                    # Global master seed - changing this changes all results
+  record_seeds: true                 # Record all derived seeds
+  deterministic_mode: true           # PyTorch deterministic mode
+  verify_on_load: true               # Verify hashes on load
+
+# ============================================================================
+# General Experiment Configuration
+# ============================================================================
+experiment:
+  num_trials: 30                     # Independent runs (statistical significance)
+  output_base_dir: "results"
+  save_networks: true                # Save generated network files
+  save_intermediate: true            # Save intermediate results
+
+# ============================================================================
+# Level 1 (SCC - Semantic Cross-Check) Configuration
+# ============================================================================
+level1:
+  sampling_budget: 20                # Samples per strategy
+  strategies:
+    - "uniform"
+    - "boundary"
+    - "center"
+  # Sample seed derivation: sample_seed = hash(network_seed, "scc", sample_idx)
+
+# ============================================================================
+# Level 2 (BCA - Bound Containment Audit) Configuration
+# ============================================================================
+level2:
+  tolerance: 1e-5                    # Numerical tolerance (τ)
+  max_violations_per_layer: 10       # Max violations recorded per layer
+
+# ============================================================================
+# Network Generation Configuration
+# ============================================================================
+network_generation:
+  gen_config_path: "configs/config_gen_act_net.yaml"
+  tf_targets:
+    - "interval"
+    - "hybridz"
+    - "dual"
+  registry_mode: "intersection"      # Layers supported by ALL targets
+
+# ============================================================================
+# Mutation Configuration
+# ============================================================================
+mutations:
+  # Soundness violations (expected to be detected)
+  soundness:
+    - type: "M1_TIGHTEN"
+      factor: 0.1
+    - type: "M3_SWAP"
+    - type: "M4_ZERO_LB"
+    - type: "M5_SCALE_UB"
+      factor: 0.5
+    - type: "M6_NOISE"
+      factor: 0.1
+
+  # Negative control (should NOT be detected)
+  control:
+    - type: "M2_LOOSEN"
+      factor: 0.1
+
+# ============================================================================
+# RQ1: Two-Level Detection Capability
+# ============================================================================
+rq1:
+  description: "Two-level detection capability evaluation"
+  seed_offset: 1000                  # RQ1 seed = master_seed + 1000
+  num_networks: 100
+  mutations:
+    - "M1_TIGHTEN"
+    - "M3_SWAP"
+    - "M4_ZERO_LB"
+    - "M5_SCALE_UB"
+    - "M6_NOISE"
+  control:
+    - "M2_LOOSEN"
+  domains:
+    - "interval"
+    - "hybridz"
+    - "dual"
+  mutation_factor: 0.1
+
+# ============================================================================
+# RQ2: Level 1 (SCC) Effectiveness Boundary
+# ============================================================================
+rq2:
+  description: "Level 1 (SCC) effectiveness boundary analysis"
+  seed_offset: 2000
+  spec_types:
+    - "BOX"
+    - "LINF_BALL"
+  dimensions:
+    - 4
+    - 16
+    - 64
+    - 256
+  networks_per_config: 30
+  sampling_budgets:
+    - 10
+    - 20
+    - 50
+
+# ============================================================================
+# RQ3: Level 2 (BCA) Localization Accuracy
+# ============================================================================
+rq3:
+  description: "Level 2 (BCA) localization accuracy evaluation"
+  seed_offset: 3000
+  architectures:
+    - "sequential_mlp"
+    - "sequential_cnn"
+  networks_per_arch: 30
+  mutation: "M1_TIGHTEN"
+  mutation_factor: 0.1
+  topk:
+    - 1
+    - 3
+    - 5
+
+# ============================================================================
+# RQ4: TF-Aware Generation Coverage
+# ============================================================================
+rq4:
+  description: "TF-aware generation coverage analysis"
+  seed_offset: 4000
+  configs:
+    basic_50:
+      mode: "basic"
+      n: 50
+      seed_offset: 0
+    basic_100:
+      mode: "basic"
+      n: 100
+      seed_offset: 100
+    full_coverage:
+      mode: "full"
+      target_coverage: 0.95
+      max_attempts: 200
+      seed_offset: 200
+
+# ============================================================================
+# RQ5: Cross-Domain Comparison
+# ============================================================================
+rq5:
+  description: "Cross-domain behavior comparison"
+  seed_offset: 5000
+  num_networks: 100
+  domains:
+    - "interval"
+    - "hybridz"
+    - "dual"
+  mutations:
+    - "M1_TIGHTEN"
+    - "M3_SWAP"
+
+# ============================================================================
+# RQ6: Validation Overhead
+# ============================================================================
+rq6:
+  description: "Validation runtime overhead measurement"
+  seed_offset: 6000
+  num_networks: 30
+  sampling_budgets:
+    - 5
+    - 10
+    - 20
+    - 50
+  model_sizes:
+    small:
+      input_dim: 16
+      hidden: [32, 32]
+      output_dim: 4
+    medium:
+      input_dim: 64
+      hidden: [128, 128, 64]
+      output_dim: 10
+    large:
+      input_dim: 256
+      hidden: [512, 256, 128]
+      output_dim: 10
+  warmup_runs: 3                     # Warmup runs before timing
+  timing_runs: 10                    # Runs for timing statistics
+
+# ============================================================================
+# Seed Derivation Rules (Reference)
+# ============================================================================
+# | Component        | Derivation Formula                           |
+# |------------------|----------------------------------------------|
+# | RQ Experiment    | rq_seed = master_seed + rq.seed_offset       |
+# | Network          | net_seed = hash(rq_seed, net_idx, id)        |
+# | Weight Init      | weight_seed = hash(net_seed, "weights")      |
+# | SCC Sampling     | sample_seed = hash(net_seed, "scc", idx)     |
+# | Mutation         | mut_seed = hash(net_seed, "mutation", layer) |
+# ============================================================================
