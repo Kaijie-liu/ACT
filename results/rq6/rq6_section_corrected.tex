@@ -1,0 +1,43 @@
+\subsection{RQ6: Overhead}
+
+We measure the overhead of our unsoundness detection framework across
+\emph{CBR sampling budgets} (5, 10, 20, 50)---i.e., the number of concrete
+inputs sampled by CBR per network---and model sizes (Small, Medium, Large).
+For each configuration, we report the mean validation time (in milliseconds)
+for CBR, BBL, and their combination (complementary unsoundness check),
+measured over 10 timing runs per configuration. BBL overhead is measured
+at each budget but does not depend on the sampling budget, as it performs
+a single forward pass with hook-based activation capture.
+
+Table~\ref{tab:rq6-overhead} reports results across all tested configurations.
+CBR time scales approximately linearly with sampling budget: for the Small
+model, overhead increases from 0.50\,ms (budget=5) to 2.81\,ms (budget=50),
+a 5.6$\times$ increase for a 10$\times$ budget increase. Medium and Large
+models exhibit near-perfect linear scaling, with 9.8$\times$ and 10.0$\times$
+increases respectively. BBL time is independent of sampling budget and grows
+modestly with model size (0.09\,ms for Small, 0.13\,ms for Medium/Large),
+remaining constant across all budgets for each model size.
+
+At the default configuration (budget=20), combined overhead ranges from
+1.28\,ms (Medium) to 1.57\,ms (Large). The cost breakdown shows that CBR
+accounts for 91--94\% of total overhead at this budget, with BBL contributing
+a small constant cost. At higher budgets (e.g., budget=50), CBR dominates
+even more strongly (96--97\% of total cost), while at lower budgets
+(e.g., budget=5), BBL becomes relatively more significant (15--31\% of cost).
+
+\input{Main/Tables/tab:rq6-overhead}
+
+Finally, overhead does not monotonically track parameter count. Medium
+(34K params) exhibits lower CBR time than Small (2K params) at all budgets
+except budget=50 (e.g., at budget=20: 1.16\,ms vs.\ 1.34\,ms). This suggests
+that concrete execution cost is driven more by architectural factors---such
+as input dimension (Small: 16, Medium: 64, Large: 256) and network depth---than
+raw parameter count. BBL overhead, in contrast, depends primarily on the number
+of audited layer boundaries and the cost of hook-based activation capture,
+which plateaus between Medium and Large models (both 0.13\,ms).
+
+\finding{Our unsoundness detection framework exhibits predictable and low
+overhead: CBR cost scales linearly with sampling budget (0.29--3.59\,ms across
+all configurations), while BBL adds a small constant cost (0.09--0.13\,ms)
+independent of budget. At the default budget=20, total overhead is 1.28--1.57\,ms
+across all model sizes.}

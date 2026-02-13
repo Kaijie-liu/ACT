@@ -1,0 +1,8 @@
+\subsection{RQ6: Overhead}
+
+We measure the validation overhead across CBR sampling budgets (5, 10, 20, 50), i.e., the number of concrete inputs sampled by CBR per network, and model sizes (Small/Medium/Large). We report mean validation time (ms) for CBR, BBL, and complementary unsoundness checks; BBL is executed once per network to audit intermediate layer bounds via hook-based activation capture.
+
+Table~\ref{tab:rq6-overhead} shows that CBR scales near-linearly with the sampling budget: increasing the budget from 5 to 50 (10$\times$) increases CBR time by 5.6--10.0$\times$ (Small:0.50$\rightarrow$2.81\,ms; Medium: 0.29$\rightarrow$2.84\,ms; Large:0.36$\rightarrow$3.59\,ms). BBL is budget-independent and constant per model size (Small: 0.09\,ms; Medium/Large: 0.13\,ms). Consequently, complementary unsoundness checks remain low in absolute time: 1.28--1.57\,ms at budget=20 and 3.72\,ms at the largest setting (Large, budget=50), with CBR dominating the combined cost at higher budgets (96--97\% at budget=50).
+
+\input{Main/Tables/tab:rq6-overhead}
+Overhead does not monotonically follow parameter count. For example, at budget=20, Medium is faster than Small for CBR (1.16 vs.\ 1.34\,ms), suggesting that CBR cost is dominated by architecture-dependent execution (e.g., input shape and operator mix) rather than parameters alone; BBL mainly depends on the number of audited layer boundaries.

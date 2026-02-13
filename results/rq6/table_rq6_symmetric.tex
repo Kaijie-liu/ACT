@@ -1,0 +1,30 @@
+\begin{table*}[t]
+\centering
+\caption{RQ6: Validation overhead across sampling budgets and model sizes. All times in milliseconds (mean of 10 runs per configuration).}
+\label{tab:rq6-overhead-full}
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{l@{\hspace{6pt}}r@{\hspace{10pt}}rrrr@{\hspace{10pt}}rrrr}
+\toprule
+& & \multicolumn{4}{c}{\textbf{CBR (varies with budget)}} & \multicolumn{4}{c}{\textbf{BBL (constant)}} \\
+\cmidrule(lr){3-6} \cmidrule(lr){7-10}
+\textbf{Model Size} & \textbf{Params} & \textbf{5} & \textbf{10} & \textbf{20} & \textbf{50} & \textbf{5} & \textbf{10} & \textbf{20} & \textbf{50} \\
+\midrule
+Small   & $\sim$2K   & 0.50 & 0.85 & 1.34 & 2.81 & 0.09 & 0.09 & 0.09 & 0.09 \\
+Medium  & $\sim$34K  & 0.29 & 0.58 & 1.16 & 2.84 & 0.13 & 0.13 & 0.13 & 0.13 \\
+Large   & $\sim$297K & 0.36 & 0.73 & 1.44 & 3.59 & 0.13 & 0.13 & 0.13 & 0.13 \\
+\midrule
+\multicolumn{10}{l}{\textit{Combined overhead (CBR + BBL):}} \\
+Small   & $\sim$2K   & 0.59 & 0.93 & 1.42 & 2.90 & \multicolumn{4}{c}{(see individual components above)} \\
+Medium  & $\sim$34K  & 0.42 & 0.70 & 1.28 & 2.97 & \multicolumn{4}{c}{(see individual components above)} \\
+Large   & $\sim$297K & 0.49 & 0.86 & 1.57 & 3.72 & \multicolumn{4}{c}{(see individual components above)} \\
+\bottomrule
+\end{tabular}
+\vspace{2mm}
+\begin{tabular}{@{}l@{}}
+\footnotesize
+\textit{Key findings:} (1) CBR overhead scales linearly with budget (5→50: $\sim$5-10× increase). \\
+\footnotesize
+(2) BBL overhead is independent of budget (constant 0.09-0.13 ms across all configurations).
+\end{tabular}
+\end{table*}
