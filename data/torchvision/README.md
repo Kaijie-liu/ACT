@@ -1,6 +1,6 @@
 # TorchVision Datasets and Recommended Models
 
-This directory contains downloaded TorchVision datasets and their compatible models for the ACT verification framework.
+This directory contains downloaded TorchVision datasets and their compatible models for the verification framework.
 
 ## Dataset-Model Mapping Table
 
@@ -134,100 +134,100 @@ This directory contains downloaded TorchVision datasets and their compatible mod
 
 The TorchVision module provides a comprehensive CLI accessible via:
 ```bash
-python -m act.front_end.torchvision_loader [OPTIONS]
+python -m cuc.front_end.torchvision_loader [OPTIONS]
 ```
 
 #### Exploration Commands
 
 List all available datasets:
 ```bash
-python -m act.front_end.torchvision_loader --list
+python -m cuc.front_end.torchvision_loader --list
 ```
 
 Show datasets by category:
 ```bash
-python -m act.front_end.torchvision_loader --category classification
+python -m cuc.front_end.torchvision_loader --category classification
 # Categories: classification, detection, segmentation, video, optical_flow
 ```
 
 Show detailed information for a specific dataset:
 ```bash
-python -m act.front_end.torchvision_loader --dataset MNIST
+python -m cuc.front_end.torchvision_loader --dataset MNIST
 ```
 
 Search for datasets by name:
 ```bash
-python -m act.front_end.torchvision_loader --search cifar
+python -m cuc.front_end.torchvision_loader --search cifar
 ```
 
 Show all recommended models for a dataset:
 ```bash
-python -m act.front_end.torchvision_loader --models-for MNIST
+python -m cuc.front_end.torchvision_loader --models-for MNIST
 ```
 
 Show all datasets compatible with a model:
 ```bash
-python -m act.front_end.torchvision_loader --datasets-for resnet18
+python -m cuc.front_end.torchvision_loader --datasets-for resnet18
 ```
 
 #### Download & Load Commands
 
 Download a dataset-model pair:
 ```bash
-python -m act.front_end.torchvision_loader --download DATASET MODEL [--split train|test|both]
-# Example: python -m act.front_end.torchvision_loader --download MNIST resnet18 --split test
+python -m cuc.front_end.torchvision_loader --download DATASET MODEL [--split train|test|both]
+# Example: python -m cuc.front_end.torchvision_loader --download MNIST resnet18 --split test
 ```
 
 List all downloaded dataset-model pairs:
 ```bash
-python -m act.front_end.torchvision_loader --list-downloads
+python -m cuc.front_end.torchvision_loader --list-downloads
 ```
 
 Load a downloaded pair into memory:
 ```bash
-python -m act.front_end.torchvision_loader --load-torchvision DATASET MODEL [--batch-size N]
-# Example: python -m act.front_end.torchvision_loader --load-torchvision MNIST resnet18 --batch-size 32
+python -m cuc.front_end.torchvision_loader --load-torchvision DATASET MODEL [--batch-size N]
+# Example: python -m cuc.front_end.torchvision_loader --load-torchvision MNIST resnet18 --batch-size 32
 ```
 
 #### Validation Commands
 
 Validate dataset-model compatibility:
 ```bash
-python -m act.front_end.torchvision_loader --validate DATASET MODEL
-# Example: python -m act.front_end.torchvision_loader --validate MNIST resnet18
+python -m cuc.front_end.torchvision_loader --validate DATASET MODEL
+# Example: python -m cuc.front_end.torchvision_loader --validate MNIST resnet18
 ```
 
 Show preprocessing requirements for a dataset:
 ```bash
-python -m act.front_end.torchvision_loader --show-preprocessing MNIST
+python -m cuc.front_end.torchvision_loader --show-preprocessing MNIST
 ```
 
 Show aggregated preprocessing summary across all datasets:
 ```bash
-python -m act.front_end.torchvision_loader --preprocessing-summary
+python -m cuc.front_end.torchvision_loader --preprocessing-summary
 ```
 
 Test inference for a specific dataset-model pair:
 ```bash
-python -m act.front_end.torchvision_loader --inference DATASET MODEL [--inference-split train|test]
-# Example: python -m act.front_end.torchvision_loader --inference CIFAR10 resnet18 --inference-split test
+python -m cuc.front_end.torchvision_loader --inference DATASET MODEL [--inference-split train|test]
+# Example: python -m cuc.front_end.torchvision_loader --inference CIFAR10 resnet18 --inference-split test
 ```
 
 #### Comprehensive Testing
 
 Run alignment tests for all dataset-model pairs:
 ```bash
-python -m act.front_end.torchvision_loader --all
+python -m cuc.front_end.torchvision_loader --all
 ```
 
 Run comprehensive tests with inference validation:
 ```bash
-python -m act.front_end.torchvision_loader --all-with-inference
+python -m cuc.front_end.torchvision_loader --all-with-inference
 ```
 
 Print complete mapping summary:
 ```bash
-python -m act.front_end.torchvision_loader --summary
+python -m cuc.front_end.torchvision_loader --summary
 ```
 
 ## Directory Structure
@@ -248,4 +248,4 @@ Each downloaded dataset-model pair follows this structure:
 - **Auto-Download**: Use `load_dataset_model_pair()` with `auto_download=True` to automatically download missing datasets
 - **Path Configuration**: Download location is managed via `act.util.path_config.get_torchvision_data_root()`
 
-For detailed documentation, see: `act/front_end/torchvision/README.md`
+For detailed documentation, see: `cuc/front_end/torchvision/README.md`

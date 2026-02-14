@@ -1,11 +1,4 @@
 #!/usr/bin/env python3
-#===- experiments/rq4_coverage.py - RQ4: TF-Aware Coverage Analysis -------====#
-# ACT: Abstract Constraint Transformer
-# Copyright (C) 2025 ACT Team
-#
-# Licensed under the GNU Affero General Public License v3.0 or later (AGPLv3+).
-#===---------------------------------------------------------------------====#
-
 """
 RQ4: TF-Aware Generation Coverage Analysis
 
@@ -41,8 +34,7 @@ import torch
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from act.back_end.validation import set_all_seeds, derive_seed
-
+from cuc.back_end.validation import set_all_seeds, derive_seed
 
 # ============================================================================
 # Configuration
@@ -63,7 +55,6 @@ TRACKABLE_OPERATORS = [
 
 STRATEGIES = ["Basic-50", "Basic-100", "Full-100"]
 
-
 @dataclass
 class CoverageResult:
     """Result of a coverage experiment."""
@@ -75,7 +66,6 @@ class CoverageResult:
     coverage_rate: float
     bug_yield: int
     networks_with_bugs: int
-
 
 # ============================================================================
 # Mock Coverage Simulation
@@ -140,7 +130,6 @@ def run_mock_coverage(
         bug_yield=bug_yield,
         networks_with_bugs=bug_yield,
     )
-
 
 # ============================================================================
 # Main Experiment
@@ -246,7 +235,6 @@ def run_rq4_experiment(
 
     return table_data
 
-
 def generate_latex_table_rq4(data: Dict[str, Any]) -> str:
     """Generate LaTeX table for RQ4 results."""
     lines = [
@@ -289,7 +277,6 @@ def generate_latex_table_rq4(data: Dict[str, Any]) -> str:
 
     return "\n".join(lines)
 
-
 def main():
     parser = argparse.ArgumentParser(
         description="RQ4: TF-Aware Generation Coverage Analysis"
@@ -306,7 +293,6 @@ def main():
         mode=args.mode,
         verbose=args.verbose,
     )
-
 
 if __name__ == "__main__":
     main()

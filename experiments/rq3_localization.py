@@ -1,15 +1,8 @@
 #!/usr/bin/env python3
-#===- experiments/rq3_localization.py - RQ3: BCA Localization Accuracy ----====#
-# ACT: Abstract Constraint Transformer
-# Copyright (C) 2025 ACT Team
-#
-# Licensed under the GNU Affero General Public License v3.0 or later (AGPLv3+).
-#===---------------------------------------------------------------------====#
-
 """
-RQ3: Bound Containment Audit (BCA/Level 2) Localization Accuracy
+RQ3: Bounds-based Localization (BBL) Localization Accuracy
 
-Evaluates BCA's ability to correctly localize injected faults by architecture:
+Evaluates BBL's ability to correctly localize injected faults by architecture:
 - Sequential MLP
 - Sequential CNN
 - Residual (ADD)
@@ -42,8 +35,7 @@ import torch
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from act.back_end.validation import set_all_seeds, derive_seed
-
+from cuc.back_end.validation import set_all_seeds, derive_seed
 
 # ============================================================================
 # Configuration
@@ -51,7 +43,6 @@ from act.back_end.validation import set_all_seeds, derive_seed
 
 ARCHITECTURES = ["sequential_mlp", "sequential_cnn", "residual"]
 TOPK_VALUES = [1, 5]
-
 
 @dataclass
 class LocalizationResult:
@@ -68,9 +59,8 @@ class LocalizationResult:
     top_violation_layer_ids: List[int]
     time_ms: float
 
-
 # ============================================================================
-# Mock BCA Localization
+# Mock BBL Localization
 # ============================================================================
 
 def run_mock_localization(
@@ -79,7 +69,7 @@ def run_mock_localization(
     target_layer_id: int = 3,
 ) -> LocalizationResult:
     """
-    Simulate BCA localization result for testing.
+    Simulate BBL localization result for testing.
 
     Key behaviors:
     - Sequential models: High localization accuracy
@@ -170,7 +160,6 @@ def run_mock_localization(
         time_ms=abs(torch.randn(1).item()) * 15 + 10,
     )
 
-
 # ============================================================================
 # Main Experiment
 # ============================================================================
@@ -183,12 +172,12 @@ def run_rq3_experiment(
     verbose: bool = False,
 ) -> Dict[str, Any]:
     """
-    Run RQ3: BCA Localization Accuracy Evaluation.
+    Run RQ3: BBL Localization Accuracy Evaluation.
     """
     set_all_seeds(master_seed)
     experiment_seed = derive_seed(master_seed, "rq3", 3000)
 
-    print(f"RQ3: BCA Localization Accuracy Evaluation")
+    print(f"RQ3: BBL Localization Accuracy Evaluation")
     print(f"=" * 70)
     print(f"Master seed: {master_seed}")
     print(f"Experiment seed: {experiment_seed}")
@@ -279,7 +268,7 @@ def run_rq3_experiment(
     # =========================================================================
 
     print(f"\n{'=' * 70}")
-    print("Table: BCA Localization Accuracy by Architecture")
+    print("Table: BBL Localization Accuracy by Architecture")
     print(f"{'=' * 70}")
     print(f"{'Architecture':<20} {'Top-1 Hit':>12} {'Top-5 Hit':>12} {'Error Rate':>12}")
     print("-" * 60)
@@ -316,7 +305,6 @@ def run_rq3_experiment(
     print(f"{'=' * 70}")
 
     return table_data
-
 
 def generate_latex_table_rq3(data: Dict[str, Any]) -> str:
     """Generate LaTeX table for RQ3 results."""
@@ -359,10 +347,9 @@ def generate_latex_table_rq3(data: Dict[str, Any]) -> str:
 
     return "\n".join(lines)
 
-
 def main():
     parser = argparse.ArgumentParser(
-        description="RQ3: BCA Localization Accuracy Evaluation"
+        description="RQ3: BBL Localization Accuracy Evaluation"
     )
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--num-networks", type=int, default=30)
@@ -378,7 +365,6 @@ def main():
         mode=args.mode,
         verbose=args.verbose,
     )
-
 
 if __name__ == "__main__":
     main()

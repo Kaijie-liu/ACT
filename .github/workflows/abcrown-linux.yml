@@ -24,7 +24,7 @@ jobs:
       PIP_DISABLE_PIP_VERSION_CHECK: "1"
       PYTHONUNBUFFERED: "1"
       TF_ENABLE_ONEDNN_OPTS: "0"
-      ACT_CI_MODE: "true"
+      CUC_CI_MODE: "true"
       PYTHONPATH: ${{ github.workspace }}
 
     steps:
@@ -66,12 +66,12 @@ jobs:
           sudo apt-get clean
           sudo rm -rf /var/lib/apt/lists/*
 
-      # 4) Create ACT environment for abCrown
-      - name: Set up ACT environments (abCrown)
+      # 4) Create environment for abCrown
+      - name: Set up environments (abCrown)
         shell: bash -l {0}
         run: |
           cd modules/setup/
-          ACT_CI_MODE=true source setup.sh abcrown
+          CUC_CI_MODE=true source setup.sh abcrown
           conda info
           conda list
           conda clean --all --yes
@@ -90,14 +90,14 @@ jobs:
         shell: bash -l {0}
         run: |
           source "$(conda info --base)/etc/profile.d/conda.sh"
-          conda activate act-abcrown
+          conda activate cuc-abcrown
           find "$GITHUB_WORKSPACE" -maxdepth 2 -name "__pycache__" -type d -exec rm -rf {} +
           cd "$GITHUB_WORKSPACE"
-          python -m act.wrapper_exts.ext_runner \
+          python -m cuc.wrapper_exts.ext_runner \
             --verifier abcrown \
             --device cpu \
             --method alpha_beta \
-            --model_path act/wrapper_exts/models/vnnmodels/MNIST/small_relu_mnist_cnn_model_1.onnx \
+            --model_path cuc/wrapper_exts/models/vnnmodels/MNIST/small_relu_mnist_cnn_model_1.onnx \
             --dataset mnist --spec_type local_lp \
             --start 0 --end 1 --epsilon 0.1 --norm inf \
             --mean 0.1307 --std 0.3081

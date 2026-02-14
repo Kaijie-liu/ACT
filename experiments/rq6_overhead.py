@@ -1,15 +1,8 @@
 #!/usr/bin/env python3
-#===- experiments/rq6_overhead.py - RQ6: Validation Overhead --------------====#
-# ACT: Abstract Constraint Transformer
-# Copyright (C) 2025 ACT Team
-#
-# Licensed under the GNU Affero General Public License v3.0 or later (AGPLv3+).
-#===---------------------------------------------------------------------====#
-
 """
 RQ6: Validation Runtime Overhead Measurement
 
-Measures the runtime overhead of Level 1 (SCC) and Level 2 (BCA)
+Measures the runtime overhead of CBR and BBL
 validation under different configurations.
 
 Reproducible Run:
@@ -33,19 +26,17 @@ import yaml
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from act.back_end.validation import (
+from cuc.back_end.validation import (
     set_all_seeds,
     derive_seed,
     ExperimentMetadata,
 )
-from act.back_end.core import Bounds
-
+from cuc.back_end.core import Bounds
 
 def load_config(config_path: str) -> Dict[str, Any]:
     """Load experiment configuration."""
     with open(config_path, "r") as f:
         return yaml.safe_load(f)
-
 
 def create_mock_model(input_dim: int, hidden_sizes: List[int], output_dim: int) -> torch.nn.Module:
     """Create a mock PyTorch model."""
@@ -59,7 +50,6 @@ def create_mock_model(input_dim: int, hidden_sizes: List[int], output_dim: int) 
 
     layers.append(torch.nn.Linear(prev_size, output_dim))
     return torch.nn.Sequential(*layers)
-
 
 def create_layer_bounds(num_layers: int, layer_size: int, seed: int) -> Dict[int, Bounds]:
     """Create layer bounds for testing."""
@@ -76,7 +66,6 @@ def create_layer_bounds(num_layers: int, layer_size: int, seed: int) -> Dict[int
 
     return layer_bounds
 
-
 def simulate_scc_overhead(
     input_dim: int,
     sampling_budget: int,
@@ -84,7 +73,7 @@ def simulate_scc_overhead(
     seed: int = 42
 ) -> Dict[str, float]:
     """
-    Simulate Level 1 (SCC) overhead.
+    Simulate CBR overhead.
 
     Main cost factors:
     - Sample generation
@@ -135,7 +124,6 @@ def simulate_scc_overhead(
 
     return times
 
-
 def simulate_bca_overhead(
     model: torch.nn.Module,
     layer_bounds: Dict[int, Bounds],
@@ -143,7 +131,7 @@ def simulate_bca_overhead(
     seed: int = 42
 ) -> Dict[str, float]:
     """
-    Simulate Level 2 (BCA) overhead.
+    Simulate BBL overhead.
 
     Main cost factors:
     - Hook registration
@@ -207,7 +195,6 @@ def simulate_bca_overhead(
     times["total"] = time.perf_counter() - start_total
 
     return times
-
 
 def run_rq6_experiment(
     master_seed: int,
@@ -299,12 +286,12 @@ def run_rq6_experiment(
         bounds_seed = derive_seed(experiment_seed, size_name, "bounds")
         layer_bounds = create_layer_bounds(num_layers, hidden[0], bounds_seed)
 
-        # Test Level 1 (SCC) overhead
+        # Test CBR overhead
         for budget in sampling_budgets:
             config_key = f"{size_name}/budget{budget}"
 
             if verbose:
-                print(f"  SCC: {config_key}")
+                print(f"  CBR: {config_key}")
 
             # Warmup
             for _ in range(warmup_runs):
@@ -322,9 +309,9 @@ def run_rq6_experiment(
                     **times,
                 })
 
-        # Test Level 2 (BCA) overhead
+        # Test BBL overhead
         if verbose:
-            print(f"  BCA: {size_name}")
+            print(f"  BBL: {size_name}")
 
         # Warmup
         for _ in range(warmup_runs):
@@ -346,8 +333,8 @@ def run_rq6_experiment(
     print("Summary Statistics")
     print(f"{'=' * 60}")
 
-    # SCC overhead summary
-    print(f"\nLevel 1 (SCC) Overhead:")
+    # CBR overhead summary
+    print(f"\nCBR Overhead:")
     print(f"{'Config':<25} {'Total (ms)':<15} {'Sample Gen':<15} {'Forward':<15}")
     print("-" * 70)
 
@@ -366,8 +353,8 @@ def run_rq6_experiment(
             "avg_forward_ms": avg_forward,
         }
 
-    # BCA overhead summary
-    print(f"\nLevel 2 (BCA) Overhead:")
+    # BBL overhead summary
+    print(f"\nBBL Overhead:")
     print(f"{'Size':<15} {'Total (ms)':<15} {'Hook Reg':<15} {'Forward':<15} {'Check':<15}")
     print("-" * 75)
 
@@ -389,7 +376,7 @@ def run_rq6_experiment(
         }
 
     # Combined overhead analysis
-    print(f"\nCombined Overhead (Level 1 + Level 2):")
+    print(f"\nCombined Overhead (CBR + BBL):")
     for size_name in model_sizes.keys():
         bca_total = results["summary"][f"bca_{size_name}"]["avg_total_ms"]
 
@@ -398,7 +385,7 @@ def run_rq6_experiment(
             if scc_key in results["summary"]:
                 scc_total = results["summary"][scc_key]["avg_total_ms"]
                 combined = scc_total + bca_total
-                print(f"  {size_name}/budget{budget}: {combined:.2f} ms (SCC: {scc_total:.2f}, BCA: {bca_total:.2f})")
+                print(f"  {size_name}/budget{budget}: {combined:.2f} ms (CBR: {scc_total:.2f}, BBL: {bca_total:.2f})")
 
     # ===== 7. Save results =====
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -417,7 +404,6 @@ def run_rq6_experiment(
     print(f"{'=' * 60}")
 
     return results
-
 
 def main():
     parser = argparse.ArgumentParser(
@@ -449,7 +435,6 @@ def main():
         output_dir=output_dir,
         verbose=args.verbose,
     )
-
 
 if __name__ == "__main__":
     main()

@@ -49,7 +49,7 @@ onnx/ACASXU_run2a_1_2_batch_2000.onnx,vnnlib/prop_1.vnnlib,60
 - **Total Categories**: 26
 - **Competition Years**: 2022-2025
 - **Total Instances**: Varies by category (tens to thousands)
-- **Model Formats**: ONNX (converted to PyTorch by ACT)
+- **Model Formats**: ONNX (converted to PyTorch by the framework)
 - **Property Formats**: VNNLIB (SMT-LIB-based)
 
 ### Categories by Domain
@@ -108,38 +108,38 @@ onnx/ACASXU_run2a_1_2_batch_2000.onnx,vnnlib/prop_1.vnnlib,60
 
 ```bash
 # Auto-detect and download VNNLIB category
-python -m act.front_end.cli --download acasxu_2023
+python -m cuc.front_end.cli --download acasxu_2023
 
 # List all categories (TorchVision + VNNLIB)
-python -m act.front_end.cli --list
+python -m cuc.front_end.cli --list
 
 # Show category details
-python -m act.front_end.cli --info cifar100_2024
+python -m cuc.front_end.cli --info cifar100_2024
 
 # Search categories
-python -m act.front_end.cli --search yolo
+python -m cuc.front_end.cli --search yolo
 ```
 
 ### Using VNNLIB-Specific CLI
 
 ```bash
 # Download specific category
-python -m act.front_end.vnnlib_loader.cli --download acasxu_2023
+python -m cuc.front_end.vnnlib_loader.cli --download acasxu_2023
 
 # Download with instance limit
-python -m act.front_end.vnnlib_loader.cli --download cifar100_2024 --max 10
+python -m cuc.front_end.vnnlib_loader.cli --download cifar100_2024 --max 10
 
 # List all VNNLIB categories
-python -m act.front_end.vnnlib_loader.cli --list
+python -m cuc.front_end.vnnlib_loader.cli --list
 
 # List downloads
-python -m act.front_end.vnnlib_loader.cli --list-downloads
+python -m cuc.front_end.vnnlib_loader.cli --list-downloads
 ```
 
 ### Programmatic Download
 
 ```python
-from act.front_end.vnnlib_loader.data_model_loader import download_vnnlib_category
+from cuc.front_end.vnnlib_loader.data_model_loader import download_vnnlib_category
 
 # Download category
 result = download_vnnlib_category(
@@ -192,7 +192,7 @@ Output properties are expressed as disjunctions of linear constraints:
 ))
 ```
 
-ACT converts these to:
+the framework converts these to:
 - **InputSpec**: BOX kind with lb/ub tensors
 - **OutputSpec**: LINEAR_LE kind (A·y ≤ b)
 
@@ -217,12 +217,12 @@ All benchmarks are sourced from VNN-COMP:
 - **License**: Varies by category (typically MIT/Apache 2.0)
 - **Citation**: Please cite VNN-COMP papers when using these benchmarks
 
-## Integration with ACT
+## Integration with the framework
 
 ### Loading Downloaded Data
 
 ```python
-from act.front_end.vnnlib_loader.data_model_loader import load_vnnlib_pair
+from cuc.front_end.vnnlib_loader.data_model_loader import load_vnnlib_pair
 
 # Load a specific instance
 result = load_vnnlib_pair(
@@ -238,7 +238,7 @@ output_spec = result['output_spec']  # LINEAR_LE constraints
 ### Creating Specifications
 
 ```python
-from act.front_end.vnnlib_loader.create_specs import VNNLibSpecCreator
+from cuc.front_end.vnnlib_loader.create_specs import VNNLibSpecCreator
 
 # Create specs from downloaded data
 creator = VNNLibSpecCreator()
@@ -286,7 +286,7 @@ VNN-COMP releases new benchmarks yearly. To update:
 
 ## See Also
 
-- **VNNLIB Creator**: `act/front_end/vnnlib/README.md`
+- **VNNLIB Creator**: `cuc/front_end/vnnlib/README.md`
 - **TorchVision Data**: `data/torchvision/README.md`
-- **Unified CLI**: `act/front_end/README.md`
+- **Unified CLI**: `cuc/front_end/README.md`
 - **VNN-COMP Website**: https://www.vnncomp.com/

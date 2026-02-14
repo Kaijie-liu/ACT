@@ -1,11 +1,4 @@
 #!/usr/bin/env python3
-#===- experiments/run_all.py - Run All Experiments ------------------------====#
-# ACT: Abstract Constraint Transformer
-# Copyright (C) 2025 ACT Team
-#
-# Licensed under the GNU Affero General Public License v3.0 or later (AGPLv3+).
-#===---------------------------------------------------------------------====#
-
 """
 Run All RQ Experiments
 
@@ -43,7 +36,6 @@ import yaml
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-
 # Experiment configuration
 EXPERIMENTS = {
     "rq1": {
@@ -53,12 +45,12 @@ EXPERIMENTS = {
     },
     "rq2": {
         "script": "experiments/rq2_scc_effectiveness.py",
-        "description": "Level 1 (SCC) Effectiveness Boundary",
+        "description": "CBR Effectiveness Boundary",
         "output_dir": "results/rq2",
     },
     "rq3": {
         "script": "experiments/rq3_localization.py",
-        "description": "Level 2 (BCA) Localization Accuracy",
+        "description": "BBL Localization Accuracy",
         "output_dir": "results/rq3",
     },
     "rq4": {
@@ -78,12 +70,10 @@ EXPERIMENTS = {
     },
 }
 
-
 def load_config(config_path: str) -> Dict[str, Any]:
     """Load experiment configuration."""
     with open(config_path, "r") as f:
         return yaml.safe_load(f)
-
 
 def run_experiment(
     name: str,
@@ -165,7 +155,6 @@ def run_experiment(
             "output_dir": output_dir,
         }
 
-
 def generate_summary(
     results: List[Dict[str, Any]],
     seed: int,
@@ -203,7 +192,6 @@ def generate_summary(
 
     return summary
 
-
 def run_all_experiments(
     seed: int,
     config_path: str,
@@ -227,7 +215,7 @@ def run_all_experiments(
         Summary of all experiment results
     """
     print(f"{'#' * 60}")
-    print(f"# ACT Validation Experiment Suite")
+    print(f"# Validation Experiment Suite")
     print(f"{'#' * 60}")
     print(f"Master seed: {seed}")
     print(f"Config: {config_path}")
@@ -316,7 +304,6 @@ def run_all_experiments(
 
     return summary
 
-
 def main():
     parser = argparse.ArgumentParser(
         description="Run all RQ experiments"
@@ -363,7 +350,6 @@ def main():
     if summary["failed"] > 0:
         sys.exit(1)
     sys.exit(0)
-
 
 if __name__ == "__main__":
     main()

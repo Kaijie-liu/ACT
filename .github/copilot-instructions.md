@@ -1,18 +1,18 @@
-# Copilot Instructions for Abstract Constraint Transformer (ACT)
+# Copilot Instructions for the framework
 
 ## Project Overview
-ACT is a unified neural network verification framework with a modern three-tier architecture: **Front-End** (data/model/spec processing), **Back-End** (verification core), and **Pipeline** (testing/integration). The framework supports PyTorch-native verification with automatic Torch→ACT conversion and spec-free verification.
+the framework is a unified neural network verification framework with a modern three-tier architecture: **Front-End** (data/model/spec processing), **Back-End** (verification core), and **Pipeline** (testing/integration). The framework supports PyTorch-native verification with automatic Torch→conversion and spec-free verification.
 
 ## Architecture Essentials
 
 ### Three-Tier Architecture
-1. **Front-End** (`act/front_end/`) - User-facing components for data processing
-2. **Back-End** (`act/back_end/`) - Core verification engine with Torch-native analysis
-3. **Pipeline** (`act/pipeline/`) - Testing framework and Torch→ACT integration
+1. **Front-End** (`cuc/front_end/`) - User-facing components for data processing
+2. **Back-End** (`cuc/back_end/`) - Core verification engine with Torch-native analysis
+3. **Pipeline** (`cuc/pipeline/`) - Testing framework and Torch→the framework integration
 
 ### Core Components
 
-#### Front-End (`act/front_end/`)
+#### Front-End (`cuc/front_end/`)
 - **Loaders** (`loaders/`) - `DatasetLoader`, `ModelLoader`, `SpecLoader` for MNIST/CIFAR/VNNLIB
 - **Specifications** (`specs.py`) - `InputSpec`/`OutputSpec` with `InKind`/`OutKind` enums
 - **Wrapper Layers** (`verifiable_model.py`) - PyTorch modules for verification: `InputLayer`, `InputSpecLayer`, `OutputSpecLayer`
@@ -20,7 +20,7 @@ ACT is a unified neural network verification framework with a modern three-tier 
 - **Device Management** (`util/device_manager.py`) - GPU-first CUDA device handling
 - **Preprocessors** - Image (`preprocessor_image.py`) and text (`preprocessor_text.py`) processing
 
-#### Back-End (`act/back_end/`)
+#### Back-End (`cuc/back_end/`)
 - **Core Engine** (`core.py`) - `Net`, `Layer`, `Bounds`, `Con`, `ConSet` data structures
 - **Verification** (`verifier.py`) - Spec-free verification: `verify_once()`, `verify_bab()`
 - **Layer Schema** (`layer_schema.py`) - Layer type definitions and validation rules
@@ -28,8 +28,8 @@ ACT is a unified neural network verification framework with a modern three-tier 
 - **Transfer Functions** (`transfer_funs/`) - MLP, CNN, RNN, Transformer analysis
 - **Branch-and-Bound** (`bab.py`) - BaB refinement with counterexample validation
 
-#### Pipeline (`act/pipeline/`)
-- **Torch2ACT Converter** (`torch2act.py`) - Automatic PyTorch→ACT Net conversion
+#### Pipeline (`cuc/pipeline/`)
+- **Torch2CUC Converter** (`torch2cuc.py`) - Automatic PyTorch→Net conversion
 - **Testing Framework** - Mock generation, correctness validation, regression testing
 - **Integration Bridge** (`integration.py`) - Front-end integration for real verification
 - **Configuration** (`config.py`) - YAML-based test scenario management
@@ -37,7 +37,7 @@ ACT is a unified neural network verification framework with a modern three-tier 
 ### Key Data Structures
 - **Verification Results**: `VerifyStatus.{CERTIFIED, FALSIFIED, UNKNOWN, TIMEOUT, VERIFIER_ERROR, MODEL_INFER_FAILURE}`
 - **Specifications**: `InKind.{BOX, L_INF, LIN_POLY}`, `OutKind.{SAFETY, ASSERT}`
-- **Core ACT Types**: `Layer` (id, kind, params, meta, vars), `Net` (layers, graph)
+- **Core Types**: `Layer` (id, kind, params, meta, vars), `Net` (layers, graph)
 - **Bounds**: Box constraints with `lb`/`ub` tensors for variable ranges
 
 ## Development Workflows
@@ -45,21 +45,21 @@ ACT is a unified neural network verification framework with a modern three-tier 
 ### Environment Setup
 ```bash
 cd setup/
-source setup.sh main  # Creates conda env 'act-main'
-conda activate act-main
+source setup.sh main  # Creates conda env 'cuc-main'
+conda activate cuc-main
 ```
 
 ### Running Verification
 ```bash
-python act/wrapper_exts/ext_runner.py \
-  --model_path act/wrapper_exts/models/vnnmodels/MNIST/small_relu_mnist_cnn_model_1.onnx \
+python cuc/wrapper_exts/ext_runner.py \
+  --model_path cuc/wrapper_exts/models/vnnmodels/MNIST/small_relu_mnist_cnn_model_1.onnx \
   --dataset mnist --spec_type local_lp \
   --start 0 --end 1 --epsilon 0.03 --norm inf \
   --mean 0.1307 --std 0.3081
 ```
 
 ### Testing
-- **Pipeline tests**: `python act/pipeline/run_tests.py` for comprehensive validation
+- **Pipeline tests**: `python cuc/pipeline/run_tests.py` for comprehensive validation
 - **Integration tests**: Built into the pipeline framework for end-to-end validation
 
 ## Configuration System
@@ -81,18 +81,18 @@ spec_type = "local_lp"
 ## Critical Conventions
 
 ### Path Handling
-- **ALWAYS use `act/util/path_config.py`**: For any file path operations, use the centralized path utilities:
+- **ALWAYS use `cuc/util/path_config.py`**: For any file path operations, use the centralized path utilities:
   - `get_project_root()` - Project root directory
   - `get_pipeline_log_dir()` - Pipeline log directory
   - `get_data_dir()` - Data directory
   - `get_model_dir()` - Model directory
   - Never hardcode paths - always use path_config.py functions
 - **Project root**: Always use project root as working directory
-- **Model paths**: Relative to project root (`act/wrapper_exts/models/vnnmodels/...`)
-- **Import structure**: Hierarchical imports following `act/front_end`, `act/back_end`, `act/pipeline`
+- **Model paths**: Relative to project root (`cuc/wrapper_exts/models/vnnmodels/...`)
+- **Import structure**: Hierarchical imports following `cuc/front_end`, `cuc/back_end`, `cuc/pipeline`
 
 ### Device and Dtype Management
-- **ALWAYS use `act/util/device_manager.py`**: For device and dtype operations:
+- **ALWAYS use `cuc/util/device_manager.py`**: For device and dtype operations:
   - `DeviceManager.get_device()` - Get CUDA device if available, else CPU
   - `DeviceManager.get_dtype()` - Get default dtype (float32)
   - `DeviceManager.to_device(tensor)` - Move tensor to managed device

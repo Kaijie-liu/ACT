@@ -1,11 +1,4 @@
 #!/usr/bin/env python3
-#===- experiments/rq5_cross_domain.py - RQ5: Cross-Domain Comparison ------====#
-# ACT: Abstract Constraint Transformer
-# Copyright (C) 2025 ACT Team
-#
-# Licensed under the GNU Affero General Public License v3.0 or later (AGPLv3+).
-#===---------------------------------------------------------------------====#
-
 """
 RQ5: Cross-Domain Behavior Comparison
 
@@ -15,7 +8,7 @@ Compares the behavior of different abstract domains:
 - dual:     Dual bounds (slowest, most precise)
 
 Output Table Format (tab:rq5-domains):
-    Domain → BCA Fail Rate | Bound Width | Time (ms)
+    Domain → BBL Fail Rate | Bound Width | Time (ms)
     + Disagreement rate
 
 Reproducible Run:
@@ -43,15 +36,13 @@ import torch
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from act.back_end.validation import set_all_seeds, derive_seed
-
+from cuc.back_end.validation import set_all_seeds, derive_seed
 
 # ============================================================================
 # Configuration
 # ============================================================================
 
 DOMAINS = ["interval", "hybridz", "dual"]
-
 
 @dataclass
 class DomainResult:
@@ -62,7 +53,6 @@ class DomainResult:
     bca_failed: bool
     bound_width: float
     time_ms: float
-
 
 # ============================================================================
 # Mock Domain Comparison
@@ -104,7 +94,6 @@ def run_mock_domain_check(
         bound_width=bound_width,
         time_ms=time_ms,
     )
-
 
 # ============================================================================
 # Main Experiment
@@ -217,7 +206,7 @@ def run_rq5_experiment(
     print(f"\n{'=' * 70}")
     print("Table: Cross-Domain Comparison")
     print(f"{'=' * 70}")
-    print(f"{'Domain':<12} {'BCA Fail Rate':>15} {'Bound Width':>12} {'Time (ms)':>12}")
+    print(f"{'Domain':<12} {'BBL Fail Rate':>15} {'Bound Width':>12} {'Time (ms)':>12}")
     print("-" * 55)
 
     for domain in DOMAINS:
@@ -251,7 +240,6 @@ def run_rq5_experiment(
 
     return table_data
 
-
 def generate_latex_table_rq5(data: Dict[str, Any]) -> str:
     """Generate LaTeX table for RQ5 results."""
     lines = [
@@ -262,7 +250,7 @@ def generate_latex_table_rq5(data: Dict[str, Any]) -> str:
         r"\small",
         r"\begin{tabular}{lccc}",
         r"\toprule",
-        r"\textbf{Domain} & \textbf{BCA Fail Rate} & \textbf{Bound Width} & \textbf{Time (ms)} \\",
+        r"\textbf{Domain} & \textbf{BBL Fail Rate} & \textbf{Bound Width} & \textbf{Time (ms)} \\",
         r"\midrule",
     ]
 
@@ -292,7 +280,6 @@ def generate_latex_table_rq5(data: Dict[str, Any]) -> str:
 
     return "\n".join(lines)
 
-
 def main():
     parser = argparse.ArgumentParser(
         description="RQ5: Cross-Domain Behavior Comparison"
@@ -311,7 +298,6 @@ def main():
         mode=args.mode,
         verbose=args.verbose,
     )
-
 
 if __name__ == "__main__":
     main()

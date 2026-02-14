@@ -1,22 +1,15 @@
 #!/usr/bin/env python3
-#===- experiments/rq6_scalability.py - RQ6: Overhead Analysis -------------====#
-# ACT: Abstract Constraint Transformer
-# Copyright (C) 2025 ACT Team
-#
-# Licensed under the GNU Affero General Public License v3.0 or later (AGPLv3+).
-#===---------------------------------------------------------------------====#
-
 """
 RQ6: Validation Overhead Analysis
 
-Measures the runtime overhead of SCC and BCA validation by model size:
+Measures the runtime overhead of CBR and BBL validation by model size:
 - Small:   ~4K parameters
 - Medium:  ~65K parameters
 - Large:   ~260K parameters
 - XLarge:  ~1M parameters
 
 Output Table Format (tab:rq6-overhead):
-    Size → Params | SCC (ms) | BCA (ms) | Overhead
+    Size → Params | CBR (ms) | BBL (ms) | Overhead
 
 Reproducible Run:
     python experiments/rq6_scalability.py --seed 42 --mode mock
@@ -43,8 +36,7 @@ import torch
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from act.back_end.validation import set_all_seeds, derive_seed
-
+from cuc.back_end.validation import set_all_seeds, derive_seed
 
 # ============================================================================
 # Configuration
@@ -59,7 +51,6 @@ MODEL_SIZES = {
 
 SIZE_ORDER = ["Small", "Medium", "Large", "XLarge"]
 
-
 @dataclass
 class OverheadResult:
     """Result of overhead measurement for one network."""
@@ -71,7 +62,6 @@ class OverheadResult:
     bca_time_ms: float
     verification_time_ms: float
     overhead_ratio: float
-
 
 # ============================================================================
 # Mock Overhead Measurement
@@ -86,8 +76,8 @@ def run_mock_overhead(
     Simulate overhead measurement for testing.
 
     Key behaviors:
-    - SCC time scales with budget and dimension
-    - BCA time scales with number of neurons
+    - CBR time scales with budget and dimension
+    - BBL time scales with number of neurons
     - Verification time scales with model complexity
     """
     detection_seed = derive_seed(net_seed, size_class)
@@ -99,11 +89,11 @@ def run_mock_overhead(
     n_params = config["params"] + int(torch.randn(1).item() * config["params"] * 0.1)
     n_params = max(100, n_params)
 
-    # SCC time: scales with sampling budget
+    # CBR time: scales with sampling budget
     scc_base = 0.5 + scc_budget * 0.15
     scc_time_ms = scc_base * (1 + abs(torch.randn(1).item()) * 0.2)
 
-    # BCA time: scales with number of neurons
+    # BBL time: scales with number of neurons
     n_neurons = config["layers"] * config["width"]
     bca_base = 0.01 + n_neurons * 0.0001
     bca_time_ms = bca_base * (1 + abs(torch.randn(1).item()) * 0.3)
@@ -126,7 +116,6 @@ def run_mock_overhead(
         verification_time_ms=verification_time_ms,
         overhead_ratio=overhead_ratio,
     )
-
 
 # ============================================================================
 # Main Experiment
@@ -152,7 +141,7 @@ def run_rq6_experiment(
     print(f"Experiment seed: {experiment_seed}")
     print(f"Mode: {mode}")
     print(f"Networks per size: {num_networks}")
-    print(f"SCC budget: {scc_budget}")
+    print(f"CBR budget: {scc_budget}")
     print(f"Size classes: {SIZE_ORDER}")
     print()
 
@@ -228,7 +217,7 @@ def run_rq6_experiment(
     print(f"\n{'=' * 70}")
     print("Table: Validation Overhead by Model Size")
     print(f"{'=' * 70}")
-    print(f"{'Size':<10} {'Params':>12} {'SCC (ms)':>12} {'BCA (ms)':>12} {'Overhead':>10}")
+    print(f"{'Size':<10} {'Params':>12} {'CBR (ms)':>12} {'BBL (ms)':>12} {'Overhead':>10}")
     print("-" * 60)
 
     for size_class in SIZE_ORDER:
@@ -260,18 +249,17 @@ def run_rq6_experiment(
 
     return table_data
 
-
 def generate_latex_table_rq6(data: Dict[str, Any]) -> str:
     """Generate LaTeX table for RQ6 results."""
     lines = [
         r"\begin{table}[t]",
         r"\centering",
-        r"\caption{RQ6: ACT overhead by model size}",
+        r"\caption{RQ6: overhead by model size}",
         r"\label{tab:rq6-overhead}",
         r"\small",
         r"\begin{tabular}{lcccc}",
         r"\toprule",
-        r"\textbf{Size} & \textbf{Params} & \textbf{SCC (ms)} & \textbf{BCA (ms)} & \textbf{Overhead} \\",
+        r"\textbf{Size} & \textbf{Params} & \textbf{CBR (ms)} & \textbf{BBL (ms)} & \textbf{Overhead} \\",
         r"\midrule",
     ]
 
@@ -298,7 +286,6 @@ def generate_latex_table_rq6(data: Dict[str, Any]) -> str:
 
     return "\n".join(lines)
 
-
 def main():
     parser = argparse.ArgumentParser(
         description="RQ6: Validation Overhead Analysis"
@@ -319,7 +306,6 @@ def main():
         mode=args.mode,
         verbose=args.verbose,
     )
-
 
 if __name__ == "__main__":
     main()

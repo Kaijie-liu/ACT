@@ -1,11 +1,4 @@
 #!/usr/bin/env python3
-#===- experiments/verify_reproducibility.py - Reproducibility Verification ====#
-# ACT: Abstract Constraint Transformer
-# Copyright (C) 2025 ACT Team
-#
-# Licensed under the GNU Affero General Public License v3.0 or later (AGPLv3+).
-#===---------------------------------------------------------------------====#
-
 """
 Reproducibility Verification Script
 
@@ -37,16 +30,13 @@ from typing import Any, Dict, List, Optional, Tuple
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-
 # Tolerance for floating point comparisons
 FLOAT_TOLERANCE = 1e-10
-
 
 def hash_json(data: Any) -> str:
     """Compute hash of JSON-serializable data."""
     serialized = json.dumps(data, sort_keys=True, default=str)
     return hashlib.sha256(serialized.encode()).hexdigest()[:16]
-
 
 def compare_values(expected: Any, actual: Any, path: str = "") -> List[str]:
     """
@@ -97,7 +87,6 @@ def compare_values(expected: Any, actual: Any, path: str = "") -> List[str]:
             mismatches.append(f"{path}: {expected} != {actual}")
 
     return mismatches
-
 
 def verify_experiment_results(
     expected_dir: Path,
@@ -207,7 +196,6 @@ def verify_experiment_results(
 
     return len(mismatches) == 0, mismatches
 
-
 def verify_all_experiments(
     expected_base: Path,
     actual_base: Path,
@@ -276,7 +264,6 @@ def verify_all_experiments(
 
     return report
 
-
 def generate_baseline(
     seed: int,
     output_dir: Path,
@@ -307,7 +294,6 @@ def generate_baseline(
 
     result = subprocess.run(cmd, cwd=str(PROJECT_ROOT))
     return result.returncode == 0
-
 
 def main():
     parser = argparse.ArgumentParser(
@@ -425,7 +411,6 @@ def main():
     print(f"\nReport saved to: {report_path}")
 
     sys.exit(0 if report["overall_success"] else 1)
-
 
 if __name__ == "__main__":
     main()

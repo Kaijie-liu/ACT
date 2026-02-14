@@ -1,19 +1,12 @@
 #!/usr/bin/env python3
-#===- experiments/rq1_detection.py - RQ1: Two-Level Detection -------------====#
-# ACT: Abstract Constraint Transformer
-# Copyright (C) 2025 ACT Team
-#
-# Licensed under the GNU Affero General Public License v3.0 or later (AGPLv3+).
-#===---------------------------------------------------------------------====#
-
 """
 RQ1: Two-Level Detection Capability Evaluation
 
-Evaluates the detection capability of Level 1 (SCC) and Level 2 (BCA)
+Evaluates the detection capability of CBR and BBL
 against injected soundness violations (mutations M1-M6).
 
 Output Table Format (tab:rq1-detection):
-    Domain × Mutation → SCC Only | BCA Only | Combined | Localized
+    Domain × Mutation → CBR Only | BBL Only | Combined | Localized
 
 Reproducible Run:
     python experiments/rq1_detection.py --seed 42 --mode mock
@@ -42,14 +35,13 @@ import yaml
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from act.back_end.validation import (
+from cuc.back_end.validation import (
     set_all_seeds,
     derive_seed,
     MutationType,
     MutationConfig,
     TFMutator,
 )
-
 
 # ============================================================================
 # Configuration
@@ -78,7 +70,6 @@ MUTATION_LABELS = {
     "M6_NOISE": "M6 (Missing)",
 }
 
-
 @dataclass
 class DetectionResult:
     """Result of a single detection experiment."""
@@ -86,14 +77,13 @@ class DetectionResult:
     network_seed: int
     domain: str
     mutation: str
-    scc_detected: bool  # Level 1: Semantic Cross-Check
-    bca_detected: bool  # Level 2: Bound Containment Audit
-    localized: bool     # BCA found the injected layer in top-k
+    scc_detected: bool  # CBR: Counterexample-based Refutation
+    bca_detected: bool  # BBL: Bounds-based Localization
+    localized: bool     # BBL found the injected layer in top-k
     target_layer_id: Optional[int] = None
     top_violation_layer_id: Optional[int] = None
     scc_time_ms: float = 0.0
     bca_time_ms: float = 0.0
-
 
 # ============================================================================
 # Mock Validation (for testing without full verifier)
@@ -109,11 +99,11 @@ def run_mock_validation(
     Simulate validation result for testing.
 
     Detection probabilities are calibrated based on mutation characteristics:
-    - M1 (Tighten): High BCA detection, moderate SCC
+    - M1 (Tighten): High BBL detection, moderate CBR
     - M2 (Loosen): No detection (control)
-    - M3 (Swap): Very high BCA detection, high SCC
-    - M4 (Zero LB): High BCA detection, low SCC
-    - M5 (Scale UB): High BCA detection, low SCC
+    - M3 (Swap): Very high BBL detection, high CBR
+    - M4 (Zero LB): High BBL detection, low CBR
+    - M5 (Scale UB): High BBL detection, low CBR
     - M6 (Noise): Moderate both
     """
     detection_seed = derive_seed(net_seed, domain, mutation.value)
@@ -159,9 +149,8 @@ def run_mock_validation(
         bca_time_ms=bca_time_ms,
     )
 
-
 # ============================================================================
-# Real Validation (using actual ACT infrastructure)
+# Real Validation (using actual the infrastructure)
 # ============================================================================
 
 def run_real_validation(
@@ -172,19 +161,19 @@ def run_real_validation(
     num_samples: int = 20,
 ) -> DetectionResult:
     """
-    Run actual validation using ACT infrastructure.
+    Run actual validation using the infrastructure.
 
     Uses:
-    - VerificationValidator.validate_counterexamples() for SCC
-    - run_per_neuron_bounds_check() for BCA
+    - VerificationValidator.validate_counterexamples() for CBR
+    - run_per_neuron_bounds_check() for BBL
     """
     try:
-        from act.pipeline.verification.validate_verifier import VerificationValidator
-        from act.pipeline.verification.per_neuron_bounds import (
+        from cuc.pipeline.verification.validate_verifier import VerificationValidator
+        from cuc.pipeline.verification.per_neuron_bounds import (
             PerNeuronCheckConfig,
             run_per_neuron_bounds_check,
         )
-        from act.pipeline.verification.model_factory import ModelFactory
+        from cuc.pipeline.verification.model_factory import ModelFactory
     except ImportError as e:
         print(f"Warning: Cannot import validation modules ({e}), falling back to mock")
         return run_mock_validation(domain, mutation, net_seed, target_layer_id)
@@ -207,7 +196,7 @@ def run_real_validation(
         validator = VerificationValidator(device="cpu", dtype=torch.float64)
         config = PerNeuronCheckConfig(atol=1e-6, rtol=0.0, topk=10)
 
-        # Run SCC (Level 1)
+        # Run CBR (CBR)
         scc_start = time.perf_counter()
         scc_result = validator.validate_counterexamples(
             networks=[network_name],
@@ -220,7 +209,7 @@ def run_real_validation(
             r = scc_result['results'][0]
             scc_detected = r.get('validation_status') == 'FAILED'
 
-        # Run BCA (Level 2)
+        # Run BBL (BBL)
         bca_start = time.perf_counter()
         bca_result = validator.validate_bounds(
             networks=[network_name],
@@ -259,7 +248,6 @@ def run_real_validation(
     except Exception as e:
         print(f"  Warning: Validation failed ({e}), using mock")
         return run_mock_validation(domain, mutation, net_seed, target_layer_id)
-
 
 # ============================================================================
 # Main Experiment
@@ -382,7 +370,7 @@ def run_rq1_experiment(
             bca_rate = sum(1 for r in results if r.bca_detected) / n
             combined_rate = sum(1 for r in results if r.scc_detected or r.bca_detected) / n
 
-            # Localized: among BCA detections, how many localized correctly
+            # Localized: among BBL detections, how many localized correctly
             bca_detected = [r for r in results if r.bca_detected]
             if bca_detected:
                 localized_rate = sum(1 for r in bca_detected if r.localized) / len(bca_detected)
@@ -422,7 +410,7 @@ def run_rq1_experiment(
     print(f"\n{'=' * 70}")
     print("Detection Rates by Domain and Mutation")
     print(f"{'=' * 70}")
-    print(f"{'Domain':<12} {'Mutation':<15} {'SCC':>8} {'BCA':>8} {'Combined':>10} {'Localized':>10}")
+    print(f"{'Domain':<12} {'Mutation':<15} {'CBR':>8} {'BBL':>8} {'Combined':>10} {'Localized':>10}")
     print("-" * 70)
 
     for domain in DOMAINS:
@@ -466,7 +454,6 @@ def run_rq1_experiment(
 
     return table_data
 
-
 def generate_latex_table(data: Dict[str, Any]) -> str:
     """Generate LaTeX table matching paper format."""
     lines = [
@@ -478,7 +465,7 @@ def generate_latex_table(data: Dict[str, Any]) -> str:
         r"\setlength{\tabcolsep}{4pt}",
         r"\begin{tabular}{llcccc}",
         r"\toprule",
-        r"\textbf{Domain} & \textbf{Mutation} & \textbf{SCC Only} & \textbf{BCA Only} & \textbf{Combined} & \textbf{Localized} \\",
+        r"\textbf{Domain} & \textbf{Mutation} & \textbf{CBR Only} & \textbf{BBL Only} & \textbf{Combined} & \textbf{Localized} \\",
         r"\midrule",
     ]
 
@@ -534,7 +521,6 @@ def generate_latex_table(data: Dict[str, Any]) -> str:
 
     return "\n".join(lines)
 
-
 def main():
     parser = argparse.ArgumentParser(
         description="RQ1: Two-Level Detection Capability Evaluation"
@@ -568,7 +554,6 @@ def main():
         mode=args.mode,
         verbose=args.verbose,
     )
-
 
 if __name__ == "__main__":
     main()

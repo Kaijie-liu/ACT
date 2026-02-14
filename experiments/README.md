@@ -10,14 +10,14 @@
 ├─────────────────────────────────────────────────────────────────────┤
 │  1. NetFactory 生成网络                                              │
 │     ↓                                                                │
-│  2. ACT 验证器运行抽象解释 (interval/hybridz/dual)                    │
+│  2. the framework 验证器运行抽象解释 (interval/hybridz/dual)                    │
 │     ↓                                                                │
 │  3. 收集各层边界 (layer_bounds)                                       │
 │     ↓                                                                │
 │  4. TFMutator 注入变异 (M1-M6)                                       │
 │     ↓                                                                │
-│  5. Level 1 (SCC): 采样检查输出一致性                                 │
-│     Level 2 (BCA): 检查边界包含不变量                                 │
+│  5. CBR: 采样检查输出一致性                                 │
+│     BBL: 检查边界包含不变量                                 │
 │     ↓                                                                │
 │  6. 收集检测率、定位准确率、时间开销                                   │
 │     ↓                                                                │
@@ -40,7 +40,7 @@ python experiments/run_all.py --seed 42
 ### 方式 2: Real 模式 (获取真实数据)
 
 ```bash
-# 使用真实 ACT 验证器收集数据
+# 使用真实 the framework 验证器收集数据
 python experiments/rq1_detection.py --seed 42 --mode real
 
 # 单独运行各 RQ 实验
@@ -57,8 +57,8 @@ python experiments/rq6_overhead.py --seed 42
 
 | 数据项 | 来源 |
 |--------|------|
-| SCC Only | `scc_result.status == SCCStatus.FAIL` |
-| BCA Only | `bca_result.status == BCAStatus.FAIL` |
+| CBR Only | `scc_result.status == SCCStatus.FAIL` |
+| BBL Only | `bca_result.status == BCAStatus.FAIL` |
 | Combined | `soundness_violated` (SCC或BCA任一检测到) |
 | Localized | `violation_localized` (BCA检测到且有违规记录) |
 
@@ -69,13 +69,13 @@ python experiments/rq1_detection.py --seed 42 --mode real -v
 
 **输出:** `results/rq1/results.json`, `results/rq1/table_rq1.tex`
 
-### RQ2: SCC 有效性数据 (Table 2)
+### RQ2: CBR 有效性数据 (Table 2)
 
 | 数据项 | 来源 |
 |--------|------|
 | Discovery Rate | 找到反例的采样比例 |
 | Inconclusive | `scc_result.status == SCCStatus.INCONCLUSIVE` |
-| Avg Time | SCC 运行时间 (ms) |
+| Avg Time | CBR 运行时间 (ms) |
 
 **注意:** LIN_POLY 规范无法直接采样，因此 Discovery Rate = 0%
 
@@ -98,7 +98,7 @@ python experiments/rq1_detection.py --seed 42 --mode real -v
 
 | 数据项 | 来源 |
 |--------|------|
-| BCA Fail Rate | BCA 检测失败率 |
+| BBL Fail Rate | BBL 检测失败率 |
 | Bound Width | `avg(ub - lb)` 平均边界宽度 |
 | Disagreement | 不同域结果不一致的比例 |
 
@@ -107,8 +107,8 @@ python experiments/rq1_detection.py --seed 42 --mode real -v
 | 数据项 | 来源 |
 |--------|------|
 | Params | 模型参数数量 |
-| SCC (ms) | SCC 运行时间 |
-| BCA (ms) | BCA 运行时间 |
+| CBR (ms) | CBR 运行时间 |
+| BBL (ms) | BBL 运行时间 |
 | Overhead | `(scc + bca) / analysis_time` |
 
 ## 输出文件结构
@@ -128,11 +128,11 @@ results/
 ## 核心代码路径
 
 - **数据收集器:** `experiments/data_collector.py`
-- **Level 1 (SCC):** `act/back_end/validation/scc.py`
-- **Level 2 (BCA):** `act/back_end/validation/bca.py`
-- **变异操作:** `act/back_end/validation/mutations.py`
-- **抽象分析:** `act/back_end/analyze.py`
-- **传递函数:** `act/back_end/interval_tf/`, `hybridz_tf/`, `dual_tf/`
+- **CBR:** `cuc/back_end/validation/scc.py`
+- **BBL:** `cuc/back_end/validation/bca.py`
+- **变异操作:** `cuc/back_end/validation/mutations.py`
+- **抽象分析:** `cuc/back_end/analyze.py`
+- **传递函数:** `cuc/back_end/interval_tf/`, `hybridz_tf/`, `dual_tf/`
 
 ## 可复现性验证
 
@@ -163,7 +163,7 @@ python experiments/verify_reproducibility.py --seed 42 --verify
 ## 常见问题
 
 ### Q: 为什么 mock 模式和 real 模式结果不同？
-A: Mock 模式使用模拟的检测概率，Real 模式使用实际的 ACT 验证器。论文应使用 Real 模式的数据。
+A: Mock 模式使用模拟的检测概率，Real 模式使用实际的 the framework 验证器。论文应使用 Real 模式的数据。
 
 ### Q: 实验需要多长时间？
 A: 取决于网络数量和大小。100 个小网络大约需要 10-30 分钟。

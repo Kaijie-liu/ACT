@@ -1,16 +1,26 @@
 \begin{table}[t]
 \centering
-\caption{RQ6: ACT overhead by model size}
+\caption{RQ6: Validation overhead by model size}
+\vspace{-4mm}
 \label{tab:rq6-overhead}
 \small
-\begin{tabular}{lcccc}
+
+\small
+\setlength{\tabcolsep}{1.8pt}
+\begin{tabular}{@{}l r rrrr rrrr rrrr@{}}
 \toprule
-\textbf{Size} & \textbf{Params} & \textbf{SCC (ms)} & \textbf{BCA (ms)} & \textbf{Overhead} \\
+\textbf{Size} & \textbf{Params} &
+\multicolumn{4}{c}{\textbf{CBR}} &
+\multicolumn{4}{c}{\textbf{BBL}} &
+\multicolumn{4}{c}{\textbf{Complementary}} \\
+\cmidrule(lr){3-6}\cmidrule(lr){7-10}\cmidrule(lr){11-14}
+& & \textbf{5} & \textbf{10} & \textbf{20} & \textbf{50}
+  & \textbf{5} & \textbf{10} & \textbf{20} & \textbf{50}
+  & \textbf{5} & \textbf{10} & \textbf{20} & \textbf{50} \\
 \midrule
-Small & $\sim$4K & 4.0 & 0.02 & 65\% \\
-Medium & $\sim$64K & 4.0 & 0.09 & 58\% \\
-Large & $\sim$260K & 3.9 & 0.24 & 45\% \\
-XLarge & $\sim$999K & 4.0 & 0.66 & 25\% \\
+Small   & $\sim$2K   & 0.50 & 0.85 & 1.34 & 2.81 & 0.09 & 0.09 & 0.09 & 0.09 & 0.59 & 0.93 & 1.42 & 2.90 \\
+Medium  & $\sim$34K  & 0.29 & 0.58 & 1.16 & 2.84 & 0.13 & 0.13 & 0.13 & 0.13 & 0.42 & 0.70 & 1.28 & 2.97 \\
+Large   & $\sim$297K & 0.36 & 0.73 & 1.44 & 3.59 & 0.13 & 0.13 & 0.13 & 0.13 & 0.49 & 0.86 & 1.57 & 3.72 \\
 \bottomrule
 \end{tabular}
 \end{table}

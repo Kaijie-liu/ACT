@@ -1,19 +1,12 @@
 #!/usr/bin/env python3
-#===- experiments/data_collector.py - Real Data Collection Module ---------====#
-# ACT: Abstract Constraint Transformer
-# Copyright (C) 2025 ACT Team
-#
-# Licensed under the GNU Affero General Public License v3.0 or later (AGPLv3+).
-#===---------------------------------------------------------------------====#
-
 """
 Real Data Collection Module
 
-Integrates with ACT's existing validation infrastructure to collect
+Integrates with the framework's existing validation infrastructure to collect
 experimental data. Reuses:
-- VerificationValidator from act.pipeline.verification.validate_verifier
-- run_per_neuron_bounds_check from act.pipeline.verification.per_neuron_bounds
-- ModelFactory from act.pipeline.verification.model_factory
+- VerificationValidator from cuc.pipeline.verification.validate_verifier
+- run_per_neuron_bounds_check from cuc.pipeline.verification.per_neuron_bounds
+- ModelFactory from cuc.pipeline.verification.model_factory
 """
 
 from __future__ import annotations
@@ -31,25 +24,24 @@ PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 # Reuse existing validation infrastructure
-from act.pipeline.verification.validate_verifier import VerificationValidator
-from act.pipeline.verification.per_neuron_bounds import (
+from cuc.pipeline.verification.validate_verifier import VerificationValidator
+from cuc.pipeline.verification.per_neuron_bounds import (
     PerNeuronCheckConfig,
     run_per_neuron_bounds_check,
     compute_abstract_bounds,
 )
-from act.pipeline.verification.model_factory import ModelFactory
-from act.back_end.core import Net, Bounds, Fact
-from act.back_end.verifier import find_entry_layer_id
-from act.back_end.transfer_functions import set_transfer_function_mode
+from cuc.pipeline.verification.model_factory import ModelFactory
+from cuc.back_end.core import Net, Bounds, Fact
+from cuc.back_end.verifier import find_entry_layer_id
+from cuc.back_end.transfer_functions import set_transfer_function_mode
 
 # Device and seed management
-from act.back_end.validation import (
+from cuc.back_end.validation import (
     set_all_seeds,
     derive_seed,
     initialize_device,
     get_default_device,
 )
-
 
 @dataclass
 class ValidationData:
@@ -61,12 +53,12 @@ class ValidationData:
     # Domain info
     tf_mode: str
 
-    # Level 1 (Counterexample) results
+    # CBR results
     level1_status: str  # PASSED, FAILED, ACCEPTABLE, INCONCLUSIVE, ERROR
     level1_counterexample_found: bool
     level1_time_ms: float
 
-    # Level 2 (Bounds) results
+    # BBL results
     level2_status: str  # PASS, FAIL, ERROR
     level2_violations_count: int
     level2_layers_checked: int
@@ -79,7 +71,6 @@ class ValidationData:
     soundness_violated: bool
     violation_localized: bool
     total_time_ms: float
-
 
 def collect_validation_data_for_network(
     network_name: str,
@@ -96,7 +87,7 @@ def collect_validation_data_for_network(
     Args:
         network_name: Name of the network in ModelFactory
         tf_mode: Transfer function mode ("interval", "hybridz", "dual")
-        num_samples: Number of samples for Level 2 validation
+        num_samples: Number of samples for BBL validation
         device: Compute device
         dtype: Data type
         seed: Random seed
@@ -114,7 +105,7 @@ def collect_validation_data_for_network(
     # Create validator (reuses existing infrastructure)
     validator = VerificationValidator(device=device, dtype=dtype)
 
-    # Level 1: Counterexample validation
+    # CBR: Counterexample validation
     level1_start = time.perf_counter()
     try:
         level1_summary = validator.validate_counterexamples(
@@ -134,7 +125,7 @@ def collect_validation_data_for_network(
         level1_ce_found = False
     level1_time_ms = (time.perf_counter() - level1_start) * 1000
 
-    # Level 2: Bounds validation
+    # BBL: Bounds validation
     level2_start = time.perf_counter()
     try:
         level2_summary = validator.validate_bounds(
@@ -204,7 +195,6 @@ def collect_validation_data_for_network(
         total_time_ms=total_time_ms,
     )
 
-
 def collect_rq1_data(
     networks: Optional[List[str]] = None,
     tf_modes: List[str] = ["interval"],
@@ -222,7 +212,7 @@ def collect_rq1_data(
         networks: List of network names (None = all from ModelFactory)
         tf_modes: Transfer function modes to test
         master_seed: Random seed for reproducibility
-        num_samples: Samples for Level 2 validation
+        num_samples: Samples for BBL validation
         verbose: Print progress
         device: Compute device
 
@@ -313,14 +303,13 @@ def collect_rq1_data(
 
     return results
 
-
 def format_rq1_table(results: Dict[str, Any]) -> str:
     """Format RQ1 results as LaTeX table."""
     lines = []
     lines.append("% RQ1 Detection Rates")
     lines.append("\\begin{tabular}{lcccc}")
     lines.append("\\toprule")
-    lines.append("\\textbf{TF Mode / Network} & \\textbf{Level 1} & \\textbf{Level 2} & \\textbf{Combined} & \\textbf{Localized} \\\\")
+    lines.append("\\textbf{TF Mode / Network} & \\textbf{CBR} & \\textbf{BBL} & \\textbf{Combined} & \\textbf{Localized} \\\\")
     lines.append("\\midrule")
 
     summary = results.get("summary", {})
@@ -335,7 +324,6 @@ def format_rq1_table(results: Dict[str, Any]) -> str:
     lines.append("\\end{tabular}")
 
     return "\n".join(lines)
-
 
 if __name__ == "__main__":
     # Example: collect real data for RQ1
@@ -356,8 +344,8 @@ if __name__ == "__main__":
     print("\nSummary:")
     for key, summary in rq1_data["summary"].items():
         print(f"  {key}:")
-        print(f"    Level 1: {summary['level1_detection_rate']*100:.1f}%")
-        print(f"    Level 2: {summary['level2_detection_rate']*100:.1f}%")
+        print(f"    CBR: {summary['level1_detection_rate']*100:.1f}%")
+        print(f"    BBL: {summary['level2_detection_rate']*100:.1f}%")
         print(f"    Combined: {summary['combined_detection_rate']*100:.1f}%")
 
     print("\nLaTeX Table:")

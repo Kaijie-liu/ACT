@@ -1,6 +1,6 @@
 # Modules Directory
 
-This directory contains external verifier submodules integrated into the Abstract Constraint Transformer (ACT) framework. These are established neural network verification tools that ACT provides unified interfaces for.
+This directory contains external verifier submodules integrated into the the framework framework. These are established neural network verification tools that the framework provides unified interfaces for.
 
 ## Submodules Overview
 
@@ -12,10 +12,10 @@ This directory contains external verifier submodules integrated into the Abstrac
 - **Integration**: Git submodule
 - **Purpose**: State-of-the-art complete verification with advanced branch-and-bound algorithms
 
-#### ACT Integration Notes:
-- Parameters mapped to ACT unified interface
-- Configuration managed through ACT's parameter system
-- Compatible with ACT's specification refinement framework
+#### the framework Integration Notes:
+- Parameters mapped to the framework unified interface
+- Configuration managed through the framework's parameter system
+- Compatible with the framework's specification refinement framework
 
 ### ERAN (`eran/`)
 **ETH Robustness Analyzer for Neural Networks**
@@ -25,14 +25,13 @@ This directory contains external verifier submodules integrated into the Abstrac
 - **Integration**: Git submodule
 - **Purpose**: Abstract interpretation-based verification with multiple domains
 
-
 #### Abstract Domains Supported:
 - **DeepPoly**: Polyhedra-based abstract interpretation
 - **DeepZono**: Zonotope-based abstract interpretation
 - **RefinePoly**: Refinement-based DeepPoly with MILP
 - **RefineZono**: Refinement-based DeepZono with optimization
 
-#### ACT Integration Notes:
+#### the framework Integration Notes:
 - Environment isolation due to Python 3.8/TensorFlow 2.9.3 requirements
 - Parameter translation for ERAN's command-line interface
 
@@ -41,7 +40,7 @@ This directory contains external verifier submodules integrated into the Abstrac
 ### Initialisation
 Submodules are automatically initialised during setup:
 ```bash
-git clone --recursive https://github.com/doctormeeee/Abstract-Constraint-Transformer.git
+git clone --recursive <ANONYMOUS_REPO_URL>
 ```
 
 ### Manual Submodule Updates
@@ -59,20 +58,19 @@ git submodule status
 ## Integration Architecture
 
 ### Parameter Mapping
-ACT translates its unified parameters to each tool's native format:
+the framework translates its unified parameters to each tool's native format:
 - Common parameters (model, dataset, epsilon) mapped directly
 - Tool-specific parameters preserved when using respective backends
 - Default values provided for missing parameters
 
 ### Environment Isolation
-- **ERAN**: Isolated Python 3.8 environment (`act-eran`)
-- **αβ-CROWN**: Shared Python 3.9 environment (`act-abcrown`)
-- **ACT**: Main Python 3.9 environment (`act-main`)
-
+- **ERAN**: Isolated Python 3.8 environment (`cuc-eran`)
+- **αβ-CROWN**: Shared Python 3.9 environment (`cuc-abcrown`)
+- **the framework**: Main Python 3.9 environment (`cuc-main`)
 
 ## Compatibility Matrix
 
-| Feature | ERAN | αβ-CROWN | ACT Native |
+| Feature | ERAN | αβ-CROWN | the framework Native |
 |---------|------|----------|------------|
 | MNIST | ✓ | ✓ | ✓ |
 | CIFAR-10 | ✓ | ✓ | ✓ |
@@ -91,7 +89,7 @@ git submodule update --init --recursive
 ### ERAN Environment Issues
 ```bash
 # Rebuild ERAN environment
-conda env remove -n act-eran
+conda env remove -n cuc-eran
 cd setup/
 source eran_env_setup.sh
 ```
@@ -114,4 +112,4 @@ Report issues directly to: https://github.com/eth-sri/eran
 Report issues directly to: https://github.com/Verified-Intelligence/alpha-beta-CROWN
 
 ### Integration Issues
-Report ACT-specific integration issues to the main ACT repository.
+Report framework-specific integration issues to the main repository.

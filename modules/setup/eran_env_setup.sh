@@ -2,9 +2,9 @@
 set -e
 
 # Configuration flags
-ACT_CI_MODE=${ACT_CI_MODE:-false}
+CUC_CI_MODE=${CUC_CI_MODE:-false}
 
-if [ "$ACT_CI_MODE" = "true" ]; then
+if [ "$CUC_CI_MODE" = "true" ]; then
     echo "[ERAN-CI] Setting up ERAN environment with conda dependencies for CI..."
 else
     echo "[ERAN] Setting up ERAN environment with conda dependencies..."
@@ -12,15 +12,15 @@ fi
 
 source "$(conda info --base)/etc/profile.d/conda.sh"
 
-if ! conda env list | grep -q "^act-eran "; then
-    echo "[ERAN] Creating conda env 'act-eran'..."
-    conda create -y -n act-eran python=3.8
+if ! conda env list | grep -q "^cuc-eran "; then
+    echo "[ERAN] Creating conda env 'cuc-eran'..."
+    conda create -y -n cuc-eran python=3.8
 else
-    echo "[ERAN] Conda env 'act-eran' already exists."
+    echo "[ERAN] Conda env 'cuc-eran' already exists."
 fi
 
 echo "[ERAN] Activating ERAN environment..."
-conda activate act-eran
+conda activate cuc-eran
 
 echo "[ERAN] Installing conda dependencies..."
 conda install -y -c conda-forge \
@@ -86,7 +86,7 @@ if [ ! -d "cddlib-0.94m" ]; then
     rm -f cddlib-0.94m.tar.gz
     rm -rf cddlib-0.94m
 
-    if [ "$ACT_CI_MODE" = "true" ]; then
+    if [ "$CUC_CI_MODE" = "true" ]; then
         ln -sf $CONDA_PREFIX/include/cddlib/* $CONDA_PREFIX/include/
     fi
     echo "[ERAN] cddlib installation completed"
@@ -106,7 +106,7 @@ if [ ! -f "elina_installed" ]; then
     export CPPFLAGS="-I$CDD_PREFIX/include -I$CDD_PREFIX/include/cddlib $CPPFLAGS"
     export LDFLAGS="-L$CDD_PREFIX/lib $LDFLAGS"
 
-    if [ "$ACT_CI_MODE" = "true" ]; then
+    if [ "$CUC_CI_MODE" = "true" ]; then
         echo "[ERAN] Setting relaxed compiler flags for ELINA compilation..."
         export CFLAGS="-Wno-incompatible-pointer-types -Wno-error=incompatible-pointer-types $CFLAGS"
         export CXXFLAGS="-Wno-incompatible-pointer-types -Wno-error=incompatible-pointer-types $CXXFLAGS"

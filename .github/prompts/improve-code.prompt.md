@@ -13,6 +13,5 @@ Tasks:
 6. List all the issues and rank them by severity.
 7. Ask me about whether to fix each of these issues one by one from the top of the list and if my answer is yes, then proceed and fix each in the codebase, otherwise, skip to the next issue.
 
-
 ```python
 ${selection}

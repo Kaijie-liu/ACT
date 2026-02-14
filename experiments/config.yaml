@@ -1,10 +1,3 @@
-#===- experiments/config.yaml - Experiment Configuration -----------------====#
-# ACT: Abstract Constraint Transformer
-# Copyright (C) 2025 ACT Team
-#
-# Licensed under the GNU Affero General Public License v3.0 or later (AGPLv3+).
-#===---------------------------------------------------------------------====#
-
 # ============================================================================
 # Device Configuration (CPU/GPU)
 # ============================================================================
@@ -36,7 +29,7 @@ experiment:
   save_intermediate: true            # Save intermediate results
 
 # ============================================================================
-# Level 1 (SCC - Semantic Cross-Check) Configuration
+# CBR (Counterexample-based Refutation) Configuration
 # ============================================================================
 level1:
   sampling_budget: 20                # Samples per strategy
@@ -47,7 +40,7 @@ level1:
   # Sample seed derivation: sample_seed = hash(network_seed, "scc", sample_idx)
 
 # ============================================================================
-# Level 2 (BCA - Bound Containment Audit) Configuration
+# BBL (Bounds-based Localization) Configuration
 # ============================================================================
 level2:
   tolerance: 1e-5                    # Numerical tolerance (τ)
@@ -57,7 +50,7 @@ level2:
 # Network Generation Configuration
 # ============================================================================
 network_generation:
-  gen_config_path: "configs/config_gen_act_net.yaml"
+  gen_config_path: "configs/config_gen_cuc_net.yaml"
   tf_targets:
     - "interval"
     - "hybridz"
@@ -106,10 +99,10 @@ rq1:
   mutation_factor: 0.1
 
 # ============================================================================
-# RQ2: Level 1 (SCC) Effectiveness Boundary
+# RQ2: CBR Effectiveness Boundary
 # ============================================================================
 rq2:
-  description: "Level 1 (SCC) effectiveness boundary analysis"
+  description: "CBR effectiveness boundary analysis"
   seed_offset: 2000
   spec_types:
     - "BOX"
@@ -126,10 +119,10 @@ rq2:
     - 50
 
 # ============================================================================
-# RQ3: Level 2 (BCA) Localization Accuracy
+# RQ3: BBL Localization Accuracy
 # ============================================================================
 rq3:
-  description: "Level 2 (BCA) localization accuracy evaluation"
+  description: "BBL localization accuracy evaluation"
   seed_offset: 3000
   architectures:
     - "sequential_mlp"
@@ -214,6 +207,6 @@ rq6:
 # | RQ Experiment    | rq_seed = master_seed + rq.seed_offset       |
 # | Network          | net_seed = hash(rq_seed, net_idx, id)        |
 # | Weight Init      | weight_seed = hash(net_seed, "weights")      |
-# | SCC Sampling     | sample_seed = hash(net_seed, "scc", idx)     |
+# | CBR Sampling     | sample_seed = hash(net_seed, "scc", idx)     |
 # | Mutation         | mut_seed = hash(net_seed, "mutation", layer) |
 # ============================================================================

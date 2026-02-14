@@ -1,15 +1,15 @@
 # Jupyter Notebooks
 
-This directory contains Jupyter notebooks for demonstrating and visualizing ACT's capabilities.
+This directory contains Jupyter notebooks for demonstrating and visualizing the framework's capabilities.
 
 ## Available Notebooks
 
 ### `torchvision_visualization.ipynb`
 
-**Purpose**: Demonstrates ACT's TorchVision loader with custom perturbation visualization.
+**Purpose**: Demonstrates the framework's TorchVision loader with custom perturbation visualization.
 
 **Contents**:
-1. **TorchVision MNIST Visualization**: Load MNIST dataset with ACT's TorchVision loader, create input specifications, and visualize perturbed images with model predictions
+1. **TorchVision MNIST Visualization**: Load MNIST dataset with the framework's TorchVision loader, create input specifications, and visualize perturbed images with model predictions
 2. **Creating Custom Verification Bounds**: Tutorial on creating L∞ perturbation bounds for images
 
 **Key Features**:
@@ -30,7 +30,7 @@ code ipynb/torchvision_visualization.ipynb
 
 ### `vnnlib_visualization.ipynb`
 
-**Purpose**: Demonstrates ACT's VNNLib loader with ACAS Xu network visualization.
+**Purpose**: Demonstrates the framework's VNNLib loader with ACAS Xu network visualization.
 
 **Contents**:
 1. **VNNLib ACAS Xu Visualization**: Load ACAS Xu networks from VNNLib benchmarks, visualize input bounds, and test network behavior on sample points
@@ -54,7 +54,7 @@ code ipynb/vnnlib_visualization.ipynb
 
 ### `vnnlib_fuzzer.ipynb` ⭐ NEW
 
-**Purpose**: End-to-end demonstration of ACTFuzzer on CIFAR-100 VNNLib benchmarks with integrated trace analysis.
+**Purpose**: End-to-end demonstration of fuzzer on CIFAR-100 VNNLib benchmarks with integrated trace analysis.
 
 **Contents**:
 1. **VNNLib Benchmark Loading**: Load CIFAR-100 VNNLib instances with model and specification parsing
@@ -95,7 +95,7 @@ code ipynb/vnnlib_fuzzer.ipynb
 ## Running Notebooks
 
 ### Prerequisites
-Ensure you have the `act-py312` (or your ACT environment) conda environment activated with:
+Ensure you have the `cuc-py312` (or your the framework environment) conda environment activated with:
 - `ipykernel`
 - `matplotlib`
 - `numpy`
@@ -104,36 +104,36 @@ Ensure you have the `act-py312` (or your ACT environment) conda environment acti
 
 ### Environment Setup
 ```bash
-# Activate ACT environment
-conda activate act-py312
+# Activate the framework environment
+conda activate cuc-py312
 
 # Install Jupyter if needed
 conda install jupyter ipykernel matplotlib -y
 
 # Register kernel
-python -m ipykernel install --user --name act-py312 --display-name "Python (ACT)"
+python -m ipykernel install --user --name cuc-py312 --display-name "Python (the framework)"
 ```
 
 ## Adding New Notebooks
 
-When creating new notebooks for ACT:
+When creating new notebooks for the framework:
 
 1. **Place in this directory**: Keep all notebooks organized in `ipynb/` at the project root
 2. **Document purpose**: Add a section to this README describing the notebook
-3. **Use relative imports**: Import ACT modules with proper path handling:
+3. **Use relative imports**: Import modules with proper path handling:
    ```python
    import sys
    import os
-   act_root = os.path.dirname(os.path.dirname(os.path.abspath('__file__')))
-   if act_root not in sys.path:
-       sys.path.insert(0, act_root)
+   cuc_root = os.path.dirname(os.path.dirname(os.path.abspath('__file__')))
+   if cuc_root not in sys.path:
+       sys.path.insert(0, cuc_root)
    ```
 4. **Test with clean kernel**: Restart kernel and run all cells to ensure reproducibility
 
 ## Notebook Categories
 
 Future notebooks might include:
-- **Tutorials**: Step-by-step guides for using ACT features
+- **Tutorials**: Step-by-step guides for using the framework features
 - **Benchmarks**: Performance analysis and comparison visualizations
 - **Examples**: Real-world verification case studies
 - **Debugging**: Diagnostic tools for troubleshooting verification issues

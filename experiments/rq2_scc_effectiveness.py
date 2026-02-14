@@ -1,15 +1,8 @@
 #!/usr/bin/env python3
-#===- experiments/rq2_scc_effectiveness.py - RQ2: SCC Effectiveness --------====#
-# ACT: Abstract Constraint Transformer
-# Copyright (C) 2025 ACT Team
-#
-# Licensed under the GNU Affero General Public License v3.0 or later (AGPLv3+).
-#===---------------------------------------------------------------------====#
-
 """
-RQ2: Semantic Cross-Check (SCC/Level 1) Effectiveness
+RQ2: Counterexample-based Refutation (CBR) Effectiveness
 
-Evaluates when SCC can find concrete counterexamples based on:
+Evaluates when CBR can find concrete counterexamples based on:
 1. Specification type: BOX, LINF_BALL, LIN_POLY
 2. Input dimensionality: 4, 16, 64, 256
 
@@ -44,8 +37,7 @@ import torch
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from act.back_end.validation import set_all_seeds, derive_seed
-
+from cuc.back_end.validation import set_all_seeds, derive_seed
 
 # ============================================================================
 # Configuration
@@ -55,10 +47,9 @@ SPEC_TYPES = ["BOX", "LINF_BALL", "LIN_POLY"]
 DIMENSIONS = [4, 16, 64, 256]
 DEFAULT_SAMPLING_BUDGET = 20
 
-
 @dataclass
 class SCCResult:
-    """Result of a single SCC experiment."""
+    """Result of a single CBR experiment."""
     network_idx: int
     network_seed: int
     spec_type: str
@@ -68,9 +59,8 @@ class SCCResult:
     num_samples: int
     time_ms: float
 
-
 # ============================================================================
-# Mock SCC Validation
+# Mock CBR Validation
 # ============================================================================
 
 def run_mock_scc(
@@ -80,7 +70,7 @@ def run_mock_scc(
     sampling_budget: int = DEFAULT_SAMPLING_BUDGET,
 ) -> SCCResult:
     """
-    Simulate SCC result for testing.
+    Simulate CBR result for testing.
 
     Key behaviors:
     - LIN_POLY: Always inconclusive (no seedable box)
@@ -140,9 +130,8 @@ def run_mock_scc(
         time_ms=time_ms,
     )
 
-
 # ============================================================================
-# Real SCC Validation
+# Real CBR Validation
 # ============================================================================
 
 def run_real_scc(
@@ -152,11 +141,11 @@ def run_real_scc(
     sampling_budget: int = DEFAULT_SAMPLING_BUDGET,
 ) -> SCCResult:
     """
-    Run actual SCC using ACT infrastructure.
+    Run actual CBR using the infrastructure.
     """
     try:
-        from act.pipeline.verification.validate_verifier import VerificationValidator
-        from act.pipeline.verification.model_factory import ModelFactory
+        from cuc.pipeline.verification.validate_verifier import VerificationValidator
+        from cuc.pipeline.verification.model_factory import ModelFactory
     except ImportError as e:
         print(f"Warning: Cannot import validation modules ({e}), falling back to mock")
         return run_mock_scc(spec_type, dimension, net_seed, sampling_budget)
@@ -217,9 +206,8 @@ def run_real_scc(
         )
 
     except Exception as e:
-        print(f"  Warning: SCC failed ({e}), using mock")
+        print(f"  Warning: CBR failed ({e}), using mock")
         return run_mock_scc(spec_type, dimension, net_seed, sampling_budget)
-
 
 # ============================================================================
 # Main Experiment
@@ -234,12 +222,12 @@ def run_rq2_experiment(
     verbose: bool = False,
 ) -> Dict[str, Any]:
     """
-    Run RQ2: SCC Effectiveness Evaluation.
+    Run RQ2: CBR Effectiveness Evaluation.
 
     Args:
         master_seed: Global master seed
         num_networks: Networks per spec_type × dimension combination
-        sampling_budget: Number of samples for SCC
+        sampling_budget: Number of samples for CBR
         output_dir: Output directory
         mode: "mock" or "real"
         verbose: Print progress
@@ -250,7 +238,7 @@ def run_rq2_experiment(
     set_all_seeds(master_seed)
     experiment_seed = derive_seed(master_seed, "rq2", 2000)
 
-    print(f"RQ2: SCC Effectiveness Evaluation")
+    print(f"RQ2: CBR Effectiveness Evaluation")
     print(f"=" * 70)
     print(f"Master seed: {master_seed}")
     print(f"Experiment seed: {experiment_seed}")
@@ -394,7 +382,7 @@ def run_rq2_experiment(
     # =========================================================================
 
     print(f"\n{'=' * 70}")
-    print("Table: SCC Discovery Rate by Specification Type")
+    print("Table: CBR Discovery Rate by Specification Type")
     print(f"{'=' * 70}")
     print(f"{'Spec Type':<15} {'Discovery Rate':>15} {'Inconclusive':>15} {'Avg Time (ms)':>15}")
     print("-" * 70)
@@ -411,7 +399,7 @@ def run_rq2_experiment(
         print(f"{spec_type:<15} {disc_str:>15} {inc_str:>15} {time_str:>15}")
 
     print(f"\n{'=' * 70}")
-    print("Figure: SCC Discovery Rate by Input Dimension (seedable specs)")
+    print("Figure: CBR Discovery Rate by Input Dimension (seedable specs)")
     print(f"{'=' * 70}")
     print(f"{'Dimension':>10} {'Discovery Rate':>15} {'Networks':>10}")
     print("-" * 40)
@@ -457,7 +445,6 @@ def run_rq2_experiment(
 
     return table_data
 
-
 def generate_latex_table_rq2(data: Dict[str, Any]) -> str:
     """Generate LaTeX table for RQ2 spec type results."""
     lines = [
@@ -484,7 +471,8 @@ def generate_latex_table_rq2(data: Dict[str, Any]) -> str:
             time_val = "--"
 
         # Format spec type name
-        spec_label = f"\\textsc{{{spec_type.replace('_', '\\_')}}}"
+        escaped_spec = spec_type.replace('_', '\\_')
+        spec_label = f"\\textsc{{{escaped_spec}}}"
         lines.append(f"{spec_label} & {disc} & {inc} & {time_val} \\\\")
 
     lines.extend([
@@ -494,7 +482,6 @@ def generate_latex_table_rq2(data: Dict[str, Any]) -> str:
     ])
 
     return "\n".join(lines)
-
 
 def generate_figure_csv(data: Dict[str, Any], output_dir: Path):
     """Generate CSV data for the dimension figure."""
@@ -507,7 +494,6 @@ def generate_figure_csv(data: Dict[str, Any], output_dir: Path):
 
     with open(output_dir / "fig_rq2_dim.csv", "w") as f:
         f.write("\n".join(csv_lines))
-
 
 def generate_figure_pdf(data: Dict[str, Any], output_dir: Path):
     """Generate PDF figure for dimension analysis."""
@@ -532,7 +518,7 @@ def generate_figure_pdf(data: Dict[str, Any], output_dir: Path):
 
     ax.set_xlabel('Input Dimension', fontsize=12)
     ax.set_ylabel('Discovery Rate (%)', fontsize=12)
-    ax.set_title('SCC Discovery Rate vs Input Dimension', fontsize=14)
+    ax.set_title('CBR Discovery Rate vs Input Dimension', fontsize=14)
 
     ax.set_xscale('log', base=2)
     ax.set_xticks(dims)
@@ -545,10 +531,9 @@ def generate_figure_pdf(data: Dict[str, Any], output_dir: Path):
     plt.savefig(output_dir / "fig_rq2_dim.pdf", dpi=300, bbox_inches='tight')
     plt.close()
 
-
 def main():
     parser = argparse.ArgumentParser(
-        description="RQ2: SCC Effectiveness Evaluation"
+        description="RQ2: CBR Effectiveness Evaluation"
     )
     parser.add_argument(
         "--seed", type=int, default=42,
@@ -560,7 +545,7 @@ def main():
     )
     parser.add_argument(
         "--sampling-budget", type=int, default=20,
-        help="SCC sampling budget (default: 20)"
+        help="CBR sampling budget (default: 20)"
     )
     parser.add_argument(
         "--output-dir", type=str, default="results/rq2",
@@ -584,7 +569,6 @@ def main():
         mode=args.mode,
         verbose=args.verbose,
     )
-
 
 if __name__ == "__main__":
     main()

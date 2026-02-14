@@ -1,20 +1,13 @@
-#===- experiments/__init__.py - Experiment Module Init --------------------====#
-# ACT: Abstract Constraint Transformer
-# Copyright (C) 2025 ACT Team
-#
-# Licensed under the GNU Affero General Public License v3.0 or later (AGPLv3+).
-#===---------------------------------------------------------------------====#
-
 """
 Experiment Scripts for Two-Level Validation Framework
 
 This module contains reproducible experiment scripts for evaluating
-the two-level validation framework (Level 1: SCC, Level 2: BCA).
+the two-level validation framework (CBR, BBL).
 
 Research Questions:
 - RQ1: Two-level detection capability evaluation
-- RQ2: Level 1 (SCC) effectiveness boundary analysis
-- RQ3: Level 2 (BCA) localization accuracy
+- RQ2: CBR effectiveness boundary analysis
+- RQ3: BBL localization accuracy
 - RQ4: TF-aware generation coverage analysis
 - RQ5: Cross-domain behavior comparison
 - RQ6: Validation runtime overhead measurement

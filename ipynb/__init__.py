@@ -1,8 +1,8 @@
 """
-ACT Jupyter Notebooks (Project Root)
+Jupyter Notebooks (Project Root)
 
 This directory contains interactive Jupyter notebooks for demonstrating
-and visualizing ACT's verification capabilities.
+and visualizing the framework's verification capabilities.
 
 Available Notebooks:
 - torchvision_visualization.ipynb: TorchVision dataset visualization with custom perturbations

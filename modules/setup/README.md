@@ -1,12 +1,12 @@
 # Setup Directory
 
-This directory contains all environment setup scripts and dependency requirements for the Abstract Constraint Transformer (ACT) framework.
+This directory contains all environment setup scripts and dependency requirements for the the framework framework.
 
 ## Files Overview
 
 ### Main Setup Script
 - **`setup.sh`**: Automated setup script that creates all required conda environments
-  - Creates `act-main`, `act-abcrown`, and `act-eran` environments
+  - Creates `cuc-main`, `cuc-abcrown`, and `cuc-eran` environments
   - Installs all Python dependencies from requirement files
   - Invokes ERAN-specific setup (GMP, MPFR, ELINA, DeepG)
   - Configures Gurobi optimizer
@@ -20,19 +20,19 @@ This directory contains all environment setup scripts and dependency requirement
   - Configures DeepG optimization components
 
 ### Python Requirements
-- **`main_requirements.txt`**: Dependencies for ACT main environment (`act-main`)
+- **`main_requirements.txt`**: Dependencies for the framework main environment (`cuc-main`)
   - PyTorch 2.x with CUDA support
   - ONNX tools and runtime
   - Gurobi Python interface
   - NumPy, TensorFlow, and other scientific computing libraries
 
-- **`abcrown_requirements.txt`**: Dependencies for αβ-CROWN environment (`act-abcrown`)
+- **`abcrown_requirements.txt`**: Dependencies for αβ-CROWN environment (`cuc-abcrown`)
   - PyTorch 2.x compatible with αβ-CROWN
   - ONNX simplification tools
   - Gurobi optimizer
   - Sorted containers for efficient data structures
 
-- **`eran_requirements.txt`**n: Dependencies for ERAN environment (`act-eran`)
+- **`eran_requirements.txt`**n: Dependencies for ERAN environment (`cuc-eran`)
   - Python 3.8 compatible packages
   - TensorFlow 2.9.3 for ERAN compatibility
   - ONNX 1.8.0 (specific version required by ERAN)
@@ -75,19 +75,19 @@ sudo apt-get install libgmp-dev libmpfr-dev
 
 ## Environment Specifications
 
-### act-main (Python 3.9)
-Primary ACT framework with:
+### cuc-main (Python 3.9)
+Primary the framework with:
 - Hybrid Zonotope verification
 - Specification refinement BaB
 - Full ONNX/PyTorch/TensorFlow model support
 
-### act-abcrown (Python 3.9)
+### cuc-abcrown (Python 3.9)
 αβ-CROWN integration with:
 - Complete neural network verification
 - Advanced branch-and-bound algorithms
 - Linear relaxation techniques
 
-### act-eran (Python 3.8)
+### cuc-eran (Python 3.8)
 ERAN integration with:
 - Abstract interpretation methods
 - DeepPoly and DeepZono domains
