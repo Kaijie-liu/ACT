@@ -83,23 +83,19 @@ def _hz_conv2d(hz, weight, bias, stride, padding, dilation, groups, input_shape)
 
 
 @torch.no_grad()
-def hybridz_tf_conv2d(L: Layer, Bin: Bounds, tf=None) -> Fact:
-    """HybridZ transfer function for 2D convolution with enhanced precision."""
-    # Extract convolution parameters
-    weight = L.params["weight"]  # (out_channels, in_channels, kernel_h, kernel_w)
+def hybridz_tf_conv2d(L: Layer, Bin: Bounds, hz_in=None):
+    """2D convolution. Returns (Fact, hz_out)."""
+    weight = L.params["weight"]
     bias = L.params.get("bias", None)
     stride = L.params.get("stride", 1)
     padding = L.params.get("padding", 0)
     dilation = L.params.get("dilation", 1)
     groups = L.params.get("groups", 1)
-    
-    # Input shape: (batch, in_channels, height, width) - for bounds propagation batch=1
-    input_shape = L.params.get("input_shape", None)  # (channels, height, width)
+    input_shape = L.params.get("input_shape", None)
 
-    hz_in = tf._hz_cache.get(L.id) if tf else None
+    hz_out = None
     if hz_in is not None:
         hz_out = _hz_conv2d(hz_in, weight, bias, stride, padding, dilation, groups, input_shape)
-        tf._hz_cache[L.id] = hz_out
         Bout = _hz_compute_bounds(hz_out)
     else:
         if Bin.lb.dim() == 1:
@@ -115,18 +111,13 @@ def hybridz_tf_conv2d(L: Layer, Bin: Bounds, tf=None) -> Fact:
             Bin_reshaped_lb = Bin.lb
             Bin_reshaped_ub = Bin.ub
 
-        # Apply convolution to bounds
-        # For HybridZ: more precise bound computation considering kernel structure
         weight_pos = torch.clamp(weight, min=0)
         weight_neg = torch.clamp(weight, max=0)
 
-        # Lower bound: positive weights * lower bounds + negative weights * upper bounds
         lb_conv = F.conv2d(Bin_reshaped_lb, weight_pos, bias=None, stride=stride,
                            padding=padding, dilation=dilation, groups=groups)
         lb_conv += F.conv2d(Bin_reshaped_ub, weight_neg, bias=None, stride=stride,
                             padding=padding, dilation=dilation, groups=groups)
-
-        # Upper bound: positive weights * upper bounds + negative weights * lower bounds
         ub_conv = F.conv2d(Bin_reshaped_ub, weight_pos, bias=None, stride=stride,
                            padding=padding, dilation=dilation, groups=groups)
         ub_conv += F.conv2d(Bin_reshaped_lb, weight_neg, bias=None, stride=stride,
@@ -136,36 +127,29 @@ def hybridz_tf_conv2d(L: Layer, Bin: Bounds, tf=None) -> Fact:
             lb_conv += bias.view(1, -1, 1, 1)
             ub_conv += bias.view(1, -1, 1, 1)
 
-        # Flatten output if needed
         lb = lb_conv.reshape(-1)
         ub = ub_conv.reshape(-1)
         assert lb.numel() == len(L.out_vars)
-
         Bout = Bounds(lb=lb, ub=ub)
-    
-    # Generate convolution constraints
+
     cons = ConSet()
-    cons.add_op( f"conv2d:{L.id}", list(L.out_vars + L.in_vars), weight=weight,
+    cons.add_op(f"conv2d:{L.id}", list(L.out_vars + L.in_vars), weight=weight,
                 bias=bias if bias is not None else torch.zeros(weight.shape[0], device=weight.device, dtype=weight.dtype),
-                stride=stride, padding=padding, dilation=dilation, groups=groups, input_shape=L.params.get("input_shape"), output_shape=L.params.get("output_shape"),)
-    
-    return Fact(bounds=Bout, cons=cons)
+                stride=stride, padding=padding, dilation=dilation, groups=groups,
+                input_shape=L.params.get("input_shape"), output_shape=L.params.get("output_shape"))
+    return Fact(bounds=Bout, cons=cons), hz_out
 
 
 @torch.no_grad()
-def hybridz_tf_maxpool2d(L: Layer, Bin: Bounds, tf=None) -> Fact:
-    """HybridZ transfer function for 2D max pooling."""
+def hybridz_tf_maxpool2d(L: Layer, Bin: Bounds, hz_in=None):
+    """2D max pooling. Returns (Fact, hz_out)."""
     kernel_size = L.params.get("kernel_size", 2)
     stride = L.params.get("stride", kernel_size)
     padding = L.params.get("padding", 0)
-    
-    # Reshape input if flattened
-    in_shape = L.params.get("input_shape")  # (channels, height, width)
-    
-    hz_in = tf._hz_cache.get(L.id) if tf else None
+    in_shape = L.params.get("input_shape")
+
+    hz_out = None
     if hz_in is not None:
-        # Greedy max-pool: select the element with highest lower bound per
-        # pool window, preserving its HZ generators (correlations).
         hz_bounds = _hz_compute_bounds(hz_in)
         dtype, device = hz_in.c.dtype, hz_in.c.device
         Bin_lb, Bin_ub = _reshape_bounds_4d(hz_bounds.lb, hz_bounds.ub, in_shape)
@@ -173,125 +157,96 @@ def hybridz_tf_maxpool2d(L: Layer, Bin: Bounds, tf=None) -> Fact:
         lb_pool = F.max_pool2d(Bin_lb, kernel_size, stride=stride, padding=padding)
         ub_pool = F.max_pool2d(Bin_ub, kernel_size, stride=stride, padding=padding)
 
-        # Use return_indices to find which input neuron wins each window
         _, indices = F.max_pool2d(Bin_lb, kernel_size, stride=stride,
                                   padding=padding, return_indices=True)
         win_idx = indices.flatten()
 
-        # Build output HZ by selecting winning rows from input HZ
         hz_out = _get_HZono()(c=hz_in.c[win_idx], Gc=hz_in.Gc[win_idx],
                               Gb=hz_in.Gb[win_idx],
                               Ac=hz_in.Ac.clone(), Ab=hz_in.Ab.clone(),
                               b=hz_in.b.clone())
 
-        # Compute bounds from selected-row HZ (tighter due to correlations)
         hz_out_bounds = _hz_compute_bounds(hz_out)
-        # Intersect with interval maxpool bounds for soundness
         lb = torch.maximum(hz_out_bounds.lb, lb_pool.flatten())
-        ub = torch.minimum(hz_out_bounds.ub, ub_pool.flatten())
-        # Ensure soundness: ub must still be at least interval ub
-        ub = torch.maximum(ub, ub_pool.flatten())
+        ub = torch.maximum(torch.minimum(hz_out_bounds.ub, ub_pool.flatten()), ub_pool.flatten())
         lb = torch.minimum(lb, lb_pool.flatten())
-
         Bout = Bounds(lb=lb, ub=ub)
-        tf._hz_cache[L.id] = hz_out
     else:
         Bin_lb, Bin_ub = _reshape_bounds_4d(Bin.lb, Bin.ub, in_shape)
-
         lb_pool = F.max_pool2d(Bin_lb, kernel_size, stride=stride, padding=padding)
         ub_pool = F.max_pool2d(Bin_ub, kernel_size, stride=stride, padding=padding)
-
         lb = lb_pool.squeeze(0).flatten() if len(L.out_vars) != lb_pool.numel() else lb_pool.squeeze(0)
         ub = ub_pool.squeeze(0).flatten() if len(L.out_vars) != ub_pool.numel() else ub_pool.squeeze(0)
-
         Bout = Bounds(lb=lb, ub=ub)
-    
+
     cons = ConSet()
-    # Max pooling generates max constraints
-    cons.add_op( f"maxpool2d:{L.id}", list(L.out_vars + L.in_vars), kernel_size=kernel_size,
-        stride=stride, padding=padding, input_shape=in_shape, output_shape=L.params.get("output_shape"),)
-    
-    return Fact(bounds=Bout, cons=cons)
+    cons.add_op(f"maxpool2d:{L.id}", list(L.out_vars + L.in_vars), kernel_size=kernel_size,
+                stride=stride, padding=padding, input_shape=in_shape,
+                output_shape=L.params.get("output_shape"))
+    return Fact(bounds=Bout, cons=cons), hz_out
 
 
 @torch.no_grad()
-def hybridz_tf_avgpool2d(L: Layer, Bin: Bounds, tf=None) -> Fact:
-    """HybridZ transfer function for 2D average pooling."""
+def hybridz_tf_avgpool2d(L: Layer, Bin: Bounds, hz_in=None):
+    """2D average pooling. Returns (Fact, hz_out)."""
     kernel_size = L.params.get("kernel_size", 2)
     stride = L.params.get("stride", kernel_size)
     padding = L.params.get("padding", 0)
-    
-    # Reshape input if needed
     in_shape = L.params.get("input_shape")
-    
-    hz_in = tf._hz_cache.get(L.id) if tf else None
+
+    hz_out = None
     if hz_in is not None:
-        # Conservative: compute bounds from HZ, apply avgpool, create fresh HZ
         hz_bounds = _hz_compute_bounds(hz_in)
         dtype, device = hz_in.c.dtype, hz_in.c.device
         Bin_lb, Bin_ub = _reshape_bounds_4d(hz_bounds.lb, hz_bounds.ub, in_shape)
     else:
         Bin_lb, Bin_ub = _reshape_bounds_4d(Bin.lb, Bin.ub, in_shape)
-    
+
     lb_pool = F.avg_pool2d(Bin_lb, kernel_size, stride=stride, padding=padding)
     ub_pool = F.avg_pool2d(Bin_ub, kernel_size, stride=stride, padding=padding)
-    
     lb = lb_pool.squeeze(0).flatten() if len(L.out_vars) != lb_pool.numel() else lb_pool.squeeze(0)
     ub = ub_pool.squeeze(0).flatten() if len(L.out_vars) != ub_pool.numel() else ub_pool.squeeze(0)
     Bout = Bounds(lb=lb, ub=ub)
-    
+
     if hz_in is not None:
-        tf._hz_cache[L.id] = _hz_from_bounds_fresh(Bout, dtype, device)
-    
+        hz_out = _hz_from_bounds_fresh(Bout, dtype, device)
+
     cons = ConSet()
-    cons.add_op(
-        f"avgpool2d:{L.id}", list(L.out_vars + L.in_vars), kernel_size=kernel_size, stride=stride,
-        padding=padding, input_shape=in_shape, output_shape=L.params.get("output_shape"),)
-    
-    return Fact(bounds=Bout, cons=cons)
+    cons.add_op(f"avgpool2d:{L.id}", list(L.out_vars + L.in_vars), kernel_size=kernel_size,
+                stride=stride, padding=padding, input_shape=in_shape,
+                output_shape=L.params.get("output_shape"))
+    return Fact(bounds=Bout, cons=cons), hz_out
 
 
 @torch.no_grad()
-def hybridz_tf_flatten(L: Layer, Bin: Bounds, tf=None) -> Fact:
-    """HybridZ transfer function for tensor flattening."""
-    # Flattening is just reshaping - bounds remain the same
+def hybridz_tf_flatten(L: Layer, Bin: Bounds, hz_in=None):
+    """Tensor flattening (HZ pass-through). Returns (Fact, hz_out)."""
     start_dim = L.params.get("start_dim", 1)
     end_dim = L.params.get("end_dim", -1)
-    
-    # HZ is already flat (stored as column vectors), just pass through
-    if tf and L.id in tf._hz_cache:
-        pass  # HZ already set by apply()
-    
-    # Simple reshape - no change in bounds
+
     lb = Bin.lb.flatten()
     ub = Bin.ub.flatten()
     Bout = Bounds(lb=lb, ub=ub)
-    
+
     cons = ConSet()
-    cons.add_op(f"flatten:{L.id}", list(L.out_vars + L.in_vars), start_dim=start_dim, end_dim=end_dim, input_shape=L.params.get("input_shape"), output_shape=L.params.get("output_shape"))
-    
-    return Fact(bounds=Bout, cons=cons)
+    cons.add_op(f"flatten:{L.id}", list(L.out_vars + L.in_vars),
+                start_dim=start_dim, end_dim=end_dim,
+                input_shape=L.params.get("input_shape"),
+                output_shape=L.params.get("output_shape"))
+    return Fact(bounds=Bout, cons=cons), hz_in  # HZ passes through unchanged
 
 
 @torch.no_grad()
-def hybridz_tf_reshape(L: Layer, Bin: Bounds, tf=None) -> Fact:
-    """HybridZ transfer function for general tensor reshaping."""
+def hybridz_tf_reshape(L: Layer, Bin: Bounds, hz_in=None):
+    """Tensor reshaping (HZ pass-through). Returns (Fact, hz_out)."""
     target_shape = L.params.get("target_shape")
-    
-    # HZ is already flat (stored as column vectors), just pass through
-    if tf and L.id in tf._hz_cache:
-        pass  # HZ already set by apply()
-    
-    # Reshape bounds preserving values
-    lb = Bin.lb.reshape(target_shape) if target_shape else Bin.lb
-    ub = Bin.ub.reshape(target_shape) if target_shape else Bin.ub
-    
-    # Flatten for output variables
-    lb = lb.flatten()
-    ub = ub.flatten()
+
+    lb = Bin.lb.reshape(target_shape).flatten() if target_shape else Bin.lb.flatten()
+    ub = Bin.ub.reshape(target_shape).flatten() if target_shape else Bin.ub.flatten()
     Bout = Bounds(lb=lb, ub=ub)
-    
+
     cons = ConSet()
-    cons.add_op(f"reshape:{L.id}", list(L.out_vars + L.in_vars), target_shape=target_shape, input_shape=L.params.get("input_shape"), output_shape=L.params.get("output_shape"))
-    
-    return Fact(bounds=Bout, cons=cons)
+    cons.add_op(f"reshape:{L.id}", list(L.out_vars + L.in_vars),
+                target_shape=target_shape, input_shape=L.params.get("input_shape"),
+                output_shape=L.params.get("output_shape"))
+    return Fact(bounds=Bout, cons=cons), hz_in  # HZ passes through unchanged
