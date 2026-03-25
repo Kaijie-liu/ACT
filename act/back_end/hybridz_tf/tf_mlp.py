@@ -55,36 +55,15 @@ except ImportError:
 def _hz_multiply(hz: HZono, R: torch.Tensor) -> HZono:
     """Linear map: c'=R@c, Gc'=R@Gc, Gb'=R@Gb, constraints unchanged."""
     R = R.to(dtype=hz.c.dtype, device=hz.c.device)
-    return _get_HZono()(
-        c=R @ hz.c,
-        Gc=R @ hz.Gc,
-        Gb=R @ hz.Gb,
-        Ac=hz.Ac.clone(),
-        Ab=hz.Ab.clone(),
-        b=hz.b.clone(),
-    )
-
+    return _get_HZono()( c=R @ hz.c, Gc=R @ hz.Gc, Gb=R @ hz.Gb, Ac=hz.Ac.clone(), Ab=hz.Ab.clone(), b=hz.b.clone(), )
 
 def _hz_add_const(hz: HZono, v: torch.Tensor) -> HZono:
     """Translate center: c'=c+v, generators and constraints unchanged."""
     v = v.to(dtype=hz.c.dtype, device=hz.c.device)
     if v.ndim == 1:
         v = v.view(-1, 1)
-    return _get_HZono()(
-        c=hz.c + v,
-        Gc=hz.Gc.clone(),
-        Gb=hz.Gb.clone(),
-        Ac=hz.Ac.clone(),
-        Ab=hz.Ab.clone(),
-        b=hz.b.clone(),
-    )
+    return _get_HZono()( c=hz.c + v, Gc=hz.Gc.clone(), Gb=hz.Gb.clone(), Ac=hz.Ac.clone(), Ab=hz.Ab.clone(), b=hz.b.clone(), )
 
-
-def _hz_scale_elem(hz: HZono, s: torch.Tensor) -> HZono:
-    """Element-wise scale: equivalent to _hz_multiply(hz, diag(s))."""
-    s = s.to(dtype=hz.c.dtype, device=hz.c.device).flatten()
-    S = torch.diag(s)
-    return _hz_multiply(hz, S)
 
 
 # ---- Bounds computation ----------------------------------------------------
@@ -125,7 +104,8 @@ def _hz_compute_bounds(hz: HZono) -> Bounds:
             return _hz_compute_bounds_scipy(hz)
         except Exception:
             pass
-    # Final fallback: unconstrained over-approximation
+        
+    # unconstrained over-approximation
     return _hz_bounds_unconstrained(hz)
 
 
@@ -227,7 +207,7 @@ def _hz_compute_bounds_scipy(hz: HZono) -> Bounds:
 # ---- Nonlinear activations --------------------------------------------------
 
 def _hz_apply_relu(hz: HZono) -> HZono:
-    """Graph-exact ReLU preserving input generators (hz1/hz2 paper method).
+    """Graph-exact ReLU preserving input generators.
 
     For each neuron i with bounds [lb_i, ub_i]:
       - active  (lb >= 0): y_i = x_i  (identity, no new generators)
@@ -448,87 +428,303 @@ def _hz_apply_leaky_relu(hz: HZono, alpha_arg: float) -> HZono:
                         Ac=out_Ac, Ab=out_Ab, b=out_b)
 
 
-def _hz_apply_monotone(hz: HZono, func, dfunc) -> HZono:
-    """DeepZ-style abstraction for monotone activations (sigmoid, tanh).
+def _hz_apply_piecewise(hz: HZono, func, dfunc, K: int = 2) -> HZono:
+    """Piecewise linear approximation for monotone activations (tangent parallelogram).
 
-    Preserves input generators by computing a linear approximation:
-      y ≈ lambda * x + mu,  with added error generator for the gap.
-    lambda = min slope on [lb, ub] (for soundness with monotone concave/convex).
+    Encodes y = func(x) using K linear pieces per neuron, introducing
+    K continuous generators (g1, g2 each) and K binary generators (z)
+    per wide neuron, linked by box, linking, and exactly-one constraints.
+
+    Each piece [a, b] is enclosed by a parallelogram whose sides run along
+    the tangent lines at the endpoints, giving a tighter enclosure than the
+    old secant + error-rectangle method.
+
+    Args:
+        hz:    Input hybrid zonotope.
+        func:  Monotone activation (e.g. torch.tanh, torch.sigmoid).
+        dfunc: Derivative of func.
+        K:     Number of linear pieces per neuron (default 2).
+
+    Returns:
+        Output hybrid zonotope with piecewise linear encoding.
     """
     dtype, device = hz.c.dtype, hz.c.device
     n = hz.c.shape[0]
-    ng = hz.Gc.shape[1]
-    nc = hz.Ac.shape[0]
+    ng = hz.Gc.shape[1]   # existing continuous generators
+    nb = hz.Gb.shape[1]   # existing binary generators
+    nc = hz.Ac.shape[0]   # existing constraint rows
 
     bounds = _hz_compute_bounds(hz)
     lb = bounds.lb.flatten()
     ub = bounds.ub.flatten()
 
-    f_lb = func(lb)
-    f_ub = func(ub)
-
-    # Optimal linear slope: minimum derivative on [lb, ub] for convex-concave
-    lam = torch.zeros(n, dtype=dtype, device=device)
-    mu_lb = torch.zeros(n, dtype=dtype, device=device)
-    mu_ub = torch.zeros(n, dtype=dtype, device=device)
-
     wide = (ub - lb) > 1e-12
-    # Slope of secant line
-    lam[wide] = (f_ub[wide] - f_lb[wide]) / (ub[wide] - lb[wide])
-    lam[~wide] = dfunc(lb[~wide])
+    narrow = ~wide
+    wide_idx = torch.where(wide)[0]
+    m = int(wide_idx.sum() if wide_idx.ndim == 0 else wide_idx.shape[0])  # number of wide neurons
 
-    # Compute range of (f(x) - lam*x) to find optimal shift
-    resid_lb = f_lb - lam * lb
-    resid_ub = f_ub - lam * ub
-    mu_lb = torch.minimum(resid_lb, resid_ub)
-    mu_ub = torch.maximum(resid_lb, resid_ub)
+    # -- Handle narrow neurons: just apply func to center, zero generators ----
+    new_c = hz.c.clone()
+    new_c[narrow] = func(hz.c[narrow])
 
-    # Also check at inflection points (x=0 for tanh/sigmoid)
-    zero_in_range = (lb < 0) & (ub > 0)
-    if zero_in_range.any():
-        f_zero = func(torch.zeros(1, dtype=dtype, device=device))
-        resid_zero = f_zero - lam[zero_in_range] * 0.0
-        mu_lb[zero_in_range] = torch.minimum(mu_lb[zero_in_range], resid_zero)
-        mu_ub[zero_in_range] = torch.maximum(mu_ub[zero_in_range], resid_zero)
+    new_Gc_base = hz.Gc.clone()
+    new_Gc_base[narrow] = 0.0
 
-    # Output: y = lam*x + (mu_lb+mu_ub)/2 ± (mu_ub-mu_lb)/2
-    mu_mid = (mu_lb + mu_ub) / 2.0
-    mu_rad = (mu_ub - mu_lb) / 2.0
+    new_Gb_base = hz.Gb.clone()
+    new_Gb_base[narrow] = 0.0
 
-    # Scale existing generators by lambda
-    new_c = lam.view(-1, 1) * hz.c + mu_mid.view(-1, 1)
-    new_Gc_base = lam.view(-1, 1) * hz.Gc
-    new_Gb = lam.view(-1, 1) * hz.Gb
+    if m == 0:
+        # No wide neurons — return directly
+        return _get_HZono()(c=new_c, Gc=new_Gc_base, Gb=new_Gb_base,
+                            Ac=hz.Ac.clone(), Ab=hz.Ab.clone(), b=hz.b.clone())
 
-    # Add 1 error generator per neuron
-    Gc_err = torch.diag(mu_rad)
+    # -- Precompute per-piece quantities for all wide neurons ------------------
+    lb_w = lb[wide_idx]  # (m,)
+    ub_w = ub[wide_idx]  # (m,)
 
-    out_Gc = torch.cat([new_Gc_base, Gc_err], dim=1)
+    # Lists indexed by piece k; each entry is (m,) tensor
+    centers_x_k = []   # center x of piece k
+    centers_y_k = []   # center y of piece k
+    g1_x_k = []        # generator 1 x-component
+    g1_y_k = []        # generator 1 y-component
+    g2_x_k = []        # generator 2 x-component
+    g2_y_k = []        # generator 2 y-component
 
-    # Extend constraints for new Gc columns
-    old_Ac_ext = torch.cat([hz.Ac, torch.zeros((nc, n), dtype=dtype, device=device)], dim=1)
+    for k in range(K):
+        # Breakpoints: a = lb_w + k*(ub_w-lb_w)/K, b = lb_w + (k+1)*(ub_w-lb_w)/K
+        a = lb_w + k * (ub_w - lb_w) / K        # (m,)
+        b = lb_w + (k + 1) * (ub_w - lb_w) / K  # (m,)
 
-    return _get_HZono()(c=new_c, Gc=out_Gc, Gb=new_Gb,
-                        Ac=old_Ac_ext, Ab=hz.Ab.clone(), b=hz.b.clone())
+        fa = func(a)
+        fb = func(b)
+        la = dfunc(a)   # derivative at a
+        lb_slope = dfunc(b)   # derivative at b
+
+        cx = (a + b) / 2.0   # (m,)
+        cy = (fa + fb) / 2.0  # (m,)
+
+        # Check if derivatives are nearly equal (nearly linear piece)
+        nearly_linear = (la - lb_slope).abs() < 1e-10  # (m,) bool
+
+        # --- Tangent-based parallelogram (non-linear case) ---
+        # p1 = (fb - fa + lb_slope*a - la*b) / (lb_slope - la)
+        # p2 = a + b - p1
+        denom = lb_slope - la  # (m,)
+        # Safe division: use 1.0 where nearly_linear to avoid NaN
+        safe_denom = torch.where(nearly_linear, torch.ones_like(denom), denom)
+        p1 = (fb - fa + lb_slope * a - la * b) / safe_denom  # (m,)
+        p2 = a + b - p1  # (m,)
+
+        g1x_tang = (p1 - a) / 2.0          # along tangent at b
+        g1y_tang = lb_slope * (p1 - a) / 2.0
+        g2x_tang = (p2 - a) / 2.0          # along tangent at a
+        g2y_tang = la * (p2 - a) / 2.0
+
+        # --- Secant + sampled error fallback (nearly linear case) ---
+        hw = (b - a) / 2.0   # (m,)
+        slope = (fb - fa) / (b - a + 1e-30)  # (m,)
+        # Sample 50 points to find max residual
+        t = torch.linspace(0.0, 1.0, 50, dtype=dtype, device=device).unsqueeze(1)
+        pts = a.unsqueeze(0) + t * (b - a).unsqueeze(0)  # (50, m)
+        f_pts = func(pts)                                  # (50, m)
+        resid = f_pts - (slope.unsqueeze(0) * pts + (fa - slope * a).unsqueeze(0))  # (50, m)
+        max_err = resid.abs().max(dim=0).values  # (m,)
+
+        g1x_lin = hw
+        g1y_lin = slope * hw
+        g2x_lin = torch.zeros_like(hw)
+        g2y_lin = max_err
+
+        # --- Select based on nearly_linear mask ---
+        g1x = torch.where(nearly_linear, g1x_lin, g1x_tang)
+        g1y = torch.where(nearly_linear, g1y_lin, g1y_tang)
+        g2x = torch.where(nearly_linear, g2x_lin, g2x_tang)
+        g2y = torch.where(nearly_linear, g2y_lin, g2y_tang)
+
+        # --- Soundness check: sample 50 points and verify containment ---
+        x_check = pts  # reuse the 50 sample points (50, m)
+        y_check = f_pts  # (50, m)
+        dx = x_check - cx.unsqueeze(0)  # (50, m)
+        dy = y_check - cy.unsqueeze(0)  # (50, m)
+
+        # Solve 2x2 system: [g1x g2x; g1y g2y] * [xi1; xi2] = [dx; dy]
+        # xi1 = (dy*g2x - dx*g2y) / (g1y*g2x - g1x*g2y)
+        # xi2 = (dy*g1x - dx*g1y) / (g2y*g1x - g2x*g1y)
+        det = g1y * g2x - g1x * g2y  # (m,)
+        safe_det = torch.where(det.abs() < 1e-30, torch.ones_like(det), det)
+
+        xi1 = (dy * g2x.unsqueeze(0) - dx * g2y.unsqueeze(0)) / safe_det.unsqueeze(0)  # (50, m)
+        xi2 = (dy * g1x.unsqueeze(0) - dx * g1y.unsqueeze(0)) / (-safe_det.unsqueeze(0))  # (50, m)
+
+        max_xi = torch.max(xi1.abs().max(dim=0).values, xi2.abs().max(dim=0).values)  # (m,)
+        # Where max_xi > 1, scale generators to accommodate (plus 1% buffer)
+        needs_scale = max_xi > 1.0
+        scale_factor = torch.where(needs_scale, max_xi * 1.01, torch.ones_like(max_xi))
+        # Only scale where det is non-degenerate
+        scale_factor = torch.where(det.abs() < 1e-30, torch.ones_like(scale_factor), scale_factor)
+
+        g1x = g1x * scale_factor
+        g1y = g1y * scale_factor
+        g2x = g2x * scale_factor
+        g2y = g2y * scale_factor
+
+        centers_x_k.append(cx)
+        centers_y_k.append(cy)
+        g1_x_k.append(g1x)
+        g1_y_k.append(g1y)
+        g2_x_k.append(g2x)
+        g2_y_k.append(g2y)
+
+    # -- Output center for wide neurons: sum_k cy_k / 2 ----------------------
+    cy_sum = torch.zeros(m, dtype=dtype, device=device)
+    for k in range(K):
+        cy_sum = cy_sum + centers_y_k[k]
+    new_c[wide_idx] = (cy_sum / 2.0).unsqueeze(1)
+
+    # -- Zero out input generator rows for wide neurons -----------------------
+    new_Gc_base[wide_idx] = 0.0
+    new_Gb_base[wide_idx] = 0.0
+
+    # -- New continuous generators: 2*K*m columns (K g1 + K g2 per wide neuron)
+    # Layout: [g1_{0,0}..g1_{m-1,0}, g1_{0,1}..g1_{m-1,1}, ...,
+    #          g2_{0,0}..g2_{m-1,0}, ...]
+    # i.e., g1 columns first (K*m), then g2 columns (K*m)
+    Gc_new = torch.zeros((n, 2 * K * m), dtype=dtype, device=device)
+    for k in range(K):
+        g1_cols = torch.arange(k * m, (k + 1) * m, device=device)    # m cols for g1 piece k
+        g2_cols = torch.arange(K * m + k * m, K * m + (k + 1) * m, device=device)  # m cols for g2 piece k
+        # g1 contributes g1_y to output row, g2 contributes g2_y to output row
+        for j in range(m):
+            idx_i = wide_idx[j]
+            Gc_new[idx_i, g1_cols[j]] = g1_y_k[k][j]
+            Gc_new[idx_i, g2_cols[j]] = g2_y_k[k][j]
+
+    # -- New binary generators: K*m columns (z_{i,k}) -------------------------
+    Gb_new = torch.zeros((n, K * m), dtype=dtype, device=device)
+    for k in range(K):
+        z_cols = torch.arange(k * m, (k + 1) * m, device=device)
+        for j in range(m):
+            idx_i = wide_idx[j]
+            Gb_new[idx_i, z_cols[j]] = centers_y_k[k][j] / 2.0
+
+    # -- Assemble output generators -------------------------------------------
+    out_Gc = torch.cat([new_Gc_base, Gc_new], dim=1)   # (n, ng + 2*K*m)
+    out_Gb = torch.cat([new_Gb_base, Gb_new], dim=1)    # (n, nb + K*m)
+
+    ng_new = ng + 2 * K * m
+    nb_new = nb + K * m
+
+    # ---- New constraints: (4K + 4) rows per wide neuron = (4K+4)*m total ----
+    # 1. Box constraints: 4K rows per wide neuron (4*K*m total)
+    n_box = 4 * K * m
+    box_Ac = torch.zeros((n_box, ng_new), dtype=dtype, device=device)
+    box_Ab = torch.zeros((n_box, nb_new), dtype=dtype, device=device)
+    box_b  = torch.full((n_box, 1), 0.5, dtype=dtype, device=device)
+
+    for k in range(K):
+        for j in range(m):
+            g1_col = ng + k * m + j               # column of g1_{j,k} in out_Gc
+            g2_col = ng + K * m + k * m + j        # column of g2_{j,k} in out_Gc
+            z_col   = nb + k * m + j                # column of z_{j,k} in out_Gb
+            r = 4 * (k * m + j)
+
+            # g1_{j,k} - 0.5 * z_{j,k} <= 0.5
+            box_Ac[r, g1_col] = 1.0
+            box_Ab[r, z_col]   = -0.5
+            # -g1_{j,k} - 0.5 * z_{j,k} <= 0.5
+            box_Ac[r + 1, g1_col] = -1.0
+            box_Ab[r + 1, z_col]   = -0.5
+            # g2_{j,k} - 0.5 * z_{j,k} <= 0.5
+            box_Ac[r + 2, g2_col] = 1.0
+            box_Ab[r + 2, z_col]   = -0.5
+            # -g2_{j,k} - 0.5 * z_{j,k} <= 0.5
+            box_Ac[r + 3, g2_col] = -1.0
+            box_Ab[r + 3, z_col]   = -0.5
+
+    # 2. Linking constraints: 2 rows per wide neuron (2*m total)
+    # x_i = sum_k (cx_k/2 + cx_k/2 * z_{i,k} + g1_x_k * g1_{i,k} + g2_x_k * g2_{i,k})
+    # Row+: Gc[i]*xi_c + Gb[i]*xi_b - sum_k (g1_x_k*g1 + g2_x_k*g2) - sum_k (cx_k/2)*z <= sum_k cx_k/2 - c_i
+    # Row-: negated
+    n_link = 2 * m
+    link_Ac = torch.zeros((n_link, ng_new), dtype=dtype, device=device)
+    link_Ab = torch.zeros((n_link, nb_new), dtype=dtype, device=device)
+    link_b  = torch.zeros((n_link, 1), dtype=dtype, device=device)
+
+    for j in range(m):
+        idx_i = int(wide_idx[j].item())
+        rhs_val = 0.0
+        for k in range(K):
+            g1_col = ng + k * m + j
+            g2_col = ng + K * m + k * m + j
+            z_col   = nb + k * m + j
+            rhs_val += centers_x_k[k][j].item() / 2.0
+
+            # Row+: -g1_x_k * g1_{i,k}
+            link_Ac[2 * j, g1_col] = -g1_x_k[k][j]
+            # Row+: -g2_x_k * g2_{i,k}
+            link_Ac[2 * j, g2_col] = -g2_x_k[k][j]
+            # Row+: -(cx_k/2) * z_{i,k}
+            link_Ab[2 * j, z_col] = -centers_x_k[k][j] / 2.0
+
+            # Row-: +g1_x_k * g1_{i,k}
+            link_Ac[2 * j + 1, g1_col] = g1_x_k[k][j]
+            # Row-: +g2_x_k * g2_{i,k}
+            link_Ac[2 * j + 1, g2_col] = g2_x_k[k][j]
+            # Row-: +(cx_k/2) * z_{i,k}
+            link_Ab[2 * j + 1, z_col] = centers_x_k[k][j] / 2.0
+
+        # Row+: +Gc[i]*xi_c, +Gb[i]*xi_b
+        link_Ac[2 * j, :ng] = hz.Gc[idx_i]
+        link_Ab[2 * j, :nb] = hz.Gb[idx_i]
+        link_b[2 * j, 0] = rhs_val - hz.c[idx_i, 0].item()
+
+        # Row-: -Gc[i]*xi_c, -Gb[i]*xi_b
+        link_Ac[2 * j + 1, :ng] = -hz.Gc[idx_i]
+        link_Ab[2 * j + 1, :nb] = -hz.Gb[idx_i]
+        link_b[2 * j + 1, 0] = -(rhs_val - hz.c[idx_i, 0].item())
+
+    # 3. Exactly-one-active constraints: 2 rows per wide neuron (2*m total)
+    # sum_k z_{i,k} = 2 - K
+    # Row+: sum_k z_{i,k} <= 2 - K
+    # Row-: -sum_k z_{i,k} <= K - 2
+    n_one = 2 * m
+    one_Ac = torch.zeros((n_one, ng_new), dtype=dtype, device=device)
+    one_Ab = torch.zeros((n_one, nb_new), dtype=dtype, device=device)
+    one_b  = torch.zeros((n_one, 1), dtype=dtype, device=device)
+
+    for j in range(m):
+        for k in range(K):
+            z_col = nb + k * m + j
+            one_Ab[2 * j, z_col] = 1.0
+            one_Ab[2 * j + 1, z_col] = -1.0
+        one_b[2 * j, 0] = 2.0 - K
+        one_b[2 * j + 1, 0] = K - 2.0
+
+    # -- Extend existing constraints to new column dimensions -----------------
+    old_Ac_ext = torch.cat([hz.Ac,
+                            torch.zeros((nc, 2 * K * m), dtype=dtype, device=device)], dim=1)
+    old_Ab_ext = torch.cat([hz.Ab,
+                            torch.zeros((nc, K * m), dtype=dtype, device=device)], dim=1)
+
+    # -- Concatenate all constraint rows --------------------------------------
+    out_Ac = torch.cat([old_Ac_ext, box_Ac, link_Ac, one_Ac], dim=0)
+    out_Ab = torch.cat([old_Ab_ext, box_Ab, link_Ab, one_Ab], dim=0)
+    out_b  = torch.cat([hz.b, box_b, link_b, one_b], dim=0)
+
+    return _get_HZono()(c=new_c, Gc=out_Gc, Gb=out_Gb,
+                        Ac=out_Ac, Ab=out_Ab, b=out_b)
 
 
-def _hz_apply_sigmoid(hz: HZono) -> HZono:
-    """DeepZ-style sigmoid preserving input generators."""
-    def _sig(x):
-        return torch.sigmoid(x)
-    def _dsig(x):
-        s = torch.sigmoid(x)
-        return s * (1 - s)
-    return _hz_apply_monotone(hz, _sig, _dsig)
+def _hz_apply_sigmoid(hz: HZono, K: int = 2) -> HZono:
+    """Piecewise linear sigmoid via tangent parallelogram encoding."""
+    return _hz_apply_piecewise(hz, torch.sigmoid,
+                               lambda x: torch.sigmoid(x) * (1 - torch.sigmoid(x)), K)
 
 
-def _hz_apply_tanh(hz: HZono) -> HZono:
-    """DeepZ-style tanh preserving input generators."""
-    def _tanh(x):
-        return torch.tanh(x)
-    def _dtanh(x):
-        return 1 - torch.tanh(x) ** 2
-    return _hz_apply_monotone(hz, _tanh, _dtanh)
+def _hz_apply_tanh(hz: HZono, K: int = 2) -> HZono:
+    """Piecewise linear tanh via tangent parallelogram encoding."""
+    return _hz_apply_piecewise(hz, torch.tanh,
+                               lambda x: 1 - torch.tanh(x) ** 2, K)
 
 
 # ---- Utilities --------------------------------------------------------------
@@ -756,7 +952,7 @@ def hybridz_tf_scale(L: Layer, Bin: Bounds, tf=None):
     hz_in = tf._hz_cache.get(L.id) if tf else None
     hz_out = None
     if hz_in is not None:
-        hz_out = _hz_scale_elem(hz_in, a)
+        hz_out = _hz_multiply(hz_in, torch.diag(a.to(dtype=hz_in.c.dtype, device=hz_in.c.device).flatten()))
         Bout = _hz_compute_bounds(hz_out)
     else:
         a_pos = torch.clamp(a, min=0)
@@ -843,11 +1039,12 @@ def hybridz_tf_lrelu(L: Layer, Bin: Bounds, tf=None):
 
 @torch.no_grad()
 def hybridz_tf_tanh(L: Layer, Bin: Bounds, tf=None):
-    """Tanh. Returns Fact."""
+    """Tanh with piecewise linear HZ encoding. Returns Fact."""
+    K = tf._tanh_K if tf and hasattr(tf, '_tanh_K') else 2
     hz_in = tf._hz_cache.get(L.id) if tf else None
     hz_out = None
     if hz_in is not None:
-        hz_out = _hz_apply_tanh(hz_in)
+        hz_out = _hz_apply_tanh(hz_in, K=K)
         Bout = _hz_compute_bounds(hz_out)
     else:
         lb = torch.tanh(Bin.lb)
@@ -863,11 +1060,12 @@ def hybridz_tf_tanh(L: Layer, Bin: Bounds, tf=None):
 
 @torch.no_grad()
 def hybridz_tf_sigmoid(L: Layer, Bin: Bounds, tf=None):
-    """Sigmoid. Returns Fact."""
+    """Sigmoid with piecewise linear HZ encoding. Returns Fact."""
+    K = tf._sigmoid_K if tf and hasattr(tf, '_sigmoid_K') else 2
     hz_in = tf._hz_cache.get(L.id) if tf else None
     hz_out = None
     if hz_in is not None:
-        hz_out = _hz_apply_sigmoid(hz_in)
+        hz_out = _hz_apply_sigmoid(hz_in, K=K)
         Bout = _hz_compute_bounds(hz_out)
     else:
         lb = torch.sigmoid(Bin.lb)

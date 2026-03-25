@@ -136,7 +136,7 @@ def hybridz_tf_conv2d(L: Layer, Bin: Bounds, tf=None):
     if tf and hz_out is not None:
         tf._hz_cache[L.id] = hz_out
     cons = ConSet()
-    cons.add_op(f"conv2d:{L.id}", list(L.out_vars + L.in_vars), weight=weight,
+    cons.add_op( f"conv2d:{L.id}", list(L.out_vars + L.in_vars), weight=weight,
                 bias=bias if bias is not None else torch.zeros(weight.shape[0], device=weight.device, dtype=weight.dtype),
                 stride=stride, padding=padding, dilation=dilation, groups=groups,
                 input_shape=L.params.get("input_shape"), output_shape=L.params.get("output_shape"))
@@ -186,7 +186,7 @@ def hybridz_tf_maxpool2d(L: Layer, Bin: Bounds, tf=None):
     if tf and hz_out is not None:
         tf._hz_cache[L.id] = hz_out
     cons = ConSet()
-    cons.add_op(f"maxpool2d:{L.id}", list(L.out_vars + L.in_vars), kernel_size=kernel_size,
+    cons.add_op( f"maxpool2d:{L.id}", list(L.out_vars + L.in_vars), kernel_size=kernel_size,
                 stride=stride, padding=padding, input_shape=in_shape,
                 output_shape=L.params.get("output_shape"))
     return Fact(bounds=Bout, cons=cons)

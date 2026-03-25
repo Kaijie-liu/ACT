@@ -26,7 +26,7 @@ def hybridz_tf_layernorm(L: Layer, Bin: Bounds, tf=None):
     eps = float(L.params.get("eps", 1e-5))
     weight = L.params.get("weight")
     bias = L.params.get("bias")
-
+    
     input_range = Bin.ub - Bin.lb
     if torch.all(input_range < eps):
         lb_norm = torch.zeros_like(Bin.lb)
@@ -35,7 +35,7 @@ def hybridz_tf_layernorm(L: Layer, Bin: Bounds, tf=None):
         scale_factor = 3.0
         lb_norm = torch.full_like(Bin.lb, -scale_factor)
         ub_norm = torch.full_like(Bin.ub, scale_factor)
-
+    
     if weight is not None:
         weight_pos = torch.clamp(weight, min=0)
         weight_neg = torch.clamp(weight, max=0)
@@ -44,15 +44,15 @@ def hybridz_tf_layernorm(L: Layer, Bin: Bounds, tf=None):
     else:
         lb_out = lb_norm
         ub_out = ub_norm
-
+    
     if bias is not None:
         lb_out += bias
         ub_out += bias
-
+    
     Bout = Bounds(lb=lb_out, ub=ub_out)
     if tf is not None:
         tf._hz_cache[L.id] = _hz_from_bounds_fresh(Bout, Bout.lb.dtype, Bout.lb.device)
-
+    
     cons = ConSet()
     cons.add_op(f"layernorm:{L.id}", list(L.out_vars + L.in_vars),
                 normalized_shape=normalized_shape, eps=eps)
@@ -63,10 +63,10 @@ def hybridz_tf_layernorm(L: Layer, Bin: Bounds, tf=None):
 def hybridz_tf_gelu(L: Layer, Bin: Bounds, tf=None):
     """GELU activation (piecewise linear approximation)."""
     breakpoints = torch.tensor([-3.0, -1.0, 0.0, 1.0, 3.0], device=Bin.lb.device, dtype=Bin.lb.dtype)
-
+    
     lb = torch.zeros_like(Bin.lb)
     ub = torch.zeros_like(Bin.ub)
-
+    
     for i in range(len(Bin.lb)):
         x_min, x_max = Bin.lb[i].item(), Bin.ub[i].item()
         y_candidates = [gelu_approx(x_min), gelu_approx(x_max)]
@@ -78,11 +78,11 @@ def hybridz_tf_gelu(L: Layer, Bin: Bounds, tf=None):
         y_candidates = torch.tensor(y_candidates, device=Bin.lb.device, dtype=Bin.lb.dtype)
         lb[i] = torch.min(y_candidates)
         ub[i] = torch.max(y_candidates)
-
+    
     Bout = Bounds(lb=lb, ub=ub)
     if tf is not None:
         tf._hz_cache[L.id] = _hz_from_bounds_fresh(Bout, Bout.lb.dtype, Bout.lb.device)
-
+    
     cons = ConSet()
     cons.add_op(f"gelu:{L.id}", list(L.out_vars + L.in_vars))
     return Fact(bounds=Bout, cons=cons)
@@ -101,10 +101,10 @@ def hybridz_tf_softmax(L: Layer, Bin: Bounds, tf=None):
     n = len(Bin.lb)
     lb = torch.zeros_like(Bin.lb)
     ub = torch.ones_like(Bin.ub)
-
+    
     max_input = torch.max(Bin.ub)
     min_input = torch.min(Bin.lb)
-
+    
     for i in range(n):
         if Bin.lb[i] > max_input - 1e-6:
             others_max = torch.max(torch.cat([Bin.ub[:i], Bin.ub[i+1:]]))
@@ -114,11 +114,11 @@ def hybridz_tf_softmax(L: Layer, Bin: Bounds, tf=None):
             others_min = torch.min(torch.cat([Bin.lb[:i], Bin.lb[i+1:]]))
             if Bin.ub[i] < others_min - 1.0:
                 ub[i] = 0.3
-
+    
     Bout = Bounds(lb=lb, ub=ub)
     if tf is not None:
         tf._hz_cache[L.id] = _hz_from_bounds_fresh(Bout, Bout.lb.dtype, Bout.lb.device)
-
+    
     cons = ConSet()
     rowsize = len(L.out_vars)
     cons.add_op(f"softmax:{L.id}", list(L.out_vars), rowsize=rowsize)
@@ -130,14 +130,14 @@ def hybridz_tf_posenc(L: Layer, Bin: Bounds, tf=None):
     """Positional encoding."""
     max_len = L.params.get("max_len", 1000)
     d_model = L.params.get("d_model", Bin.lb.shape[-1])
-
+    
     pe_range = 1.0
     lb = Bin.lb - pe_range
     ub = Bin.ub + pe_range
     Bout = Bounds(lb=lb, ub=ub)
     if tf is not None:
         tf._hz_cache[L.id] = _hz_from_bounds_fresh(Bout, Bout.lb.dtype, Bout.lb.device)
-
+    
     cons = ConSet()
     cons.add_op(f"posenc:{L.id}", list(L.out_vars + L.in_vars),
                 max_len=max_len, d_model=d_model)
@@ -149,10 +149,10 @@ def hybridz_tf_attention_scores(L: Layer, Q_bounds: Bounds, K_bounds: Bounds, tf
     """Attention score computation: Q @ K^T / sqrt(d_k)."""
     d_k = L.params.get("d_k", Q_bounds.lb.shape[-1])
     scale = 1.0 / math.sqrt(d_k)
-
+    
     q_lb, q_ub = Q_bounds.lb, Q_bounds.ub
     k_lb, k_ub = K_bounds.lb, K_bounds.ub
-
+    
     products = []
     for i in range(len(q_lb)):
         for j in range(len(k_lb)):
@@ -163,14 +163,14 @@ def hybridz_tf_attention_scores(L: Layer, Q_bounds: Bounds, K_bounds: Bounds, tf
                 q_ub[i] * k_ub[j]
             ])
             products.append((torch.min(corners), torch.max(corners)))
-
+    
     lb = torch.tensor([p[0] for p in products]) * scale
     ub = torch.tensor([p[1] for p in products]) * scale
-
+    
     Bout = Bounds(lb=lb, ub=ub)
     if tf is not None:
         tf._hz_cache[L.id] = _hz_from_bounds_fresh(Bout, Bout.lb.dtype, Bout.lb.device)
-
+    
     cons = ConSet()
     cons.add_op(f"att_scores:{L.id}", list(L.out_vars + L.in_vars), d_k=d_k)
     return Fact(bounds=Bout, cons=cons)
