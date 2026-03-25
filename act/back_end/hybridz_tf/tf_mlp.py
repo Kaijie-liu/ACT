@@ -685,15 +685,16 @@ def _hz_reduce(hz: HZono, max_order: float = 10.0) -> HZono:
 
 
 # ============================================================================
-# Transfer functions — pure: (L, Bounds, hz_in) -> (Fact, hz_out)
+# Transfer functions — (L, Bounds, tf=None) -> Fact
 # ============================================================================
 
 @torch.no_grad()
-def hybridz_tf_dense(L: Layer, Bin: Bounds, hz_in=None):
-    """Dense layer. Returns (Fact, hz_out)."""
+def hybridz_tf_dense(L: Layer, Bin: Bounds, tf=None):
+    """Dense layer. Returns Fact."""
     W = L.params["weight"]
     b = L.params.get("bias", None)
 
+    hz_in = tf._hz_cache.get(L.id) if tf else None
     hz_out = None
     if hz_in is not None:
         hz_out = _hz_multiply(hz_in, W)
@@ -715,16 +716,19 @@ def hybridz_tf_dense(L: Layer, Bin: Bounds, hz_in=None):
             ub = ub + b
         Bout = Bounds(lb=lb, ub=ub)
 
+    if tf and hz_out is not None:
+        tf._hz_cache[L.id] = hz_out
     cons = ConSet()
     cons.add_op(f"dense:{L.id}", list(L.out_vars + L.in_vars), W=W, b=b)
-    return Fact(bounds=Bout, cons=cons), hz_out
+    return Fact(bounds=Bout, cons=cons)
 
 
 @torch.no_grad()
-def hybridz_tf_bias(L: Layer, Bin: Bounds, hz_in=None):
-    """Bias addition. Returns (Fact, hz_out)."""
+def hybridz_tf_bias(L: Layer, Bin: Bounds, tf=None):
+    """Bias addition. Returns Fact."""
     c = L.params["c"]
 
+    hz_in = tf._hz_cache.get(L.id) if tf else None
     hz_out = None
     if hz_in is not None:
         c_col = c.to(dtype=hz_in.c.dtype, device=hz_in.c.device)
@@ -737,16 +741,19 @@ def hybridz_tf_bias(L: Layer, Bin: Bounds, hz_in=None):
         ub = Bin.ub + c
         Bout = Bounds(lb=lb, ub=ub)
 
+    if tf and hz_out is not None:
+        tf._hz_cache[L.id] = hz_out
     cons = ConSet()
     cons.add_op(f"bias:{L.id}", list(L.out_vars + L.in_vars), c=c)
-    return Fact(bounds=Bout, cons=cons), hz_out
+    return Fact(bounds=Bout, cons=cons)
 
 
 @torch.no_grad()
-def hybridz_tf_scale(L: Layer, Bin: Bounds, hz_in=None):
-    """Element-wise scaling. Returns (Fact, hz_out)."""
+def hybridz_tf_scale(L: Layer, Bin: Bounds, tf=None):
+    """Element-wise scaling. Returns Fact."""
     a = L.params["a"]
 
+    hz_in = tf._hz_cache.get(L.id) if tf else None
     hz_out = None
     if hz_in is not None:
         hz_out = _hz_scale_elem(hz_in, a)
@@ -758,14 +765,17 @@ def hybridz_tf_scale(L: Layer, Bin: Bounds, hz_in=None):
         ub = a_pos * Bin.ub + a_neg * Bin.lb
         Bout = Bounds(lb=lb, ub=ub)
 
+    if tf and hz_out is not None:
+        tf._hz_cache[L.id] = hz_out
     cons = ConSet()
     cons.add_op(f"scale:{L.id}", list(L.out_vars + L.in_vars), a=a)
-    return Fact(bounds=Bout, cons=cons), hz_out
+    return Fact(bounds=Bout, cons=cons)
 
 
 @torch.no_grad()
-def hybridz_tf_relu(L: Layer, Bin: Bounds, hz_in=None):
-    """ReLU with graph-exact HZ encoding. Returns (Fact, hz_out)."""
+def hybridz_tf_relu(L: Layer, Bin: Bounds, tf=None):
+    """ReLU with graph-exact HZ encoding. Returns Fact."""
+    hz_in = tf._hz_cache.get(L.id) if tf else None
     hz_out = None
     if hz_in is not None:
         hz_out = _hz_apply_relu(hz_in)
@@ -776,6 +786,8 @@ def hybridz_tf_relu(L: Layer, Bin: Bounds, hz_in=None):
         ub = torch.clamp(Bin.ub, min=0)
         Bout = Bounds(lb=lb, ub=ub)
 
+    if tf and hz_out is not None:
+        tf._hz_cache[L.id] = hz_out
     # Constraint generation (always from interval Bin)
     cons = ConSet()
     slope = torch.zeros_like(Bin.lb)
@@ -789,14 +801,15 @@ def hybridz_tf_relu(L: Layer, Bin: Bounds, hz_in=None):
     cons.add_op(f"relu:{L.id}", list(L.out_vars + L.in_vars),
                 idx_on=idx_on, idx_off=idx_off, idx_amb=idx_amb,
                 slope=slope, shift=shift)
-    return Fact(bounds=Bout, cons=cons), hz_out
+    return Fact(bounds=Bout, cons=cons)
 
 
 @torch.no_grad()
-def hybridz_tf_lrelu(L: Layer, Bin: Bounds, hz_in=None):
-    """LeakyReLU. Returns (Fact, hz_out)."""
+def hybridz_tf_lrelu(L: Layer, Bin: Bounds, tf=None):
+    """LeakyReLU. Returns Fact."""
     alpha = float(L.params.get("negative_slope", 0.01))
 
+    hz_in = tf._hz_cache.get(L.id) if tf else None
     hz_out = None
     if hz_in is not None:
         hz_out = _hz_apply_leaky_relu(hz_in, alpha)
@@ -807,6 +820,8 @@ def hybridz_tf_lrelu(L: Layer, Bin: Bounds, hz_in=None):
         ub = torch.where(Bin.ub <= 0, alpha * Bin.ub, Bin.ub)
         Bout = Bounds(lb=lb, ub=ub)
 
+    if tf and hz_out is not None:
+        tf._hz_cache[L.id] = hz_out
     # Constraint generation
     idx_on = torch.where(Bin.lb >= 0)[0]
     idx_off = torch.where(Bin.ub <= 0)[0]
@@ -823,12 +838,13 @@ def hybridz_tf_lrelu(L: Layer, Bin: Bounds, hz_in=None):
     cons.add_op(f"lrelu:{L.id}", list(L.out_vars + L.in_vars), alpha=alpha,
                 idx_on=idx_on, idx_off=idx_off, idx_amb=idx_amb,
                 slope=slope[idx_amb], shift=shift[idx_amb])
-    return Fact(bounds=Bout, cons=cons), hz_out
+    return Fact(bounds=Bout, cons=cons)
 
 
 @torch.no_grad()
-def hybridz_tf_tanh(L: Layer, Bin: Bounds, hz_in=None):
-    """Tanh. Returns (Fact, hz_out)."""
+def hybridz_tf_tanh(L: Layer, Bin: Bounds, tf=None):
+    """Tanh. Returns Fact."""
+    hz_in = tf._hz_cache.get(L.id) if tf else None
     hz_out = None
     if hz_in is not None:
         hz_out = _hz_apply_tanh(hz_in)
@@ -838,14 +854,17 @@ def hybridz_tf_tanh(L: Layer, Bin: Bounds, hz_in=None):
         ub = torch.tanh(Bin.ub)
         Bout = Bounds(lb=torch.minimum(lb, ub), ub=torch.maximum(lb, ub))
 
+    if tf and hz_out is not None:
+        tf._hz_cache[L.id] = hz_out
     cons = ConSet()
     cons.add_op(f"tanh:{L.id}", list(L.out_vars + L.in_vars))
-    return Fact(bounds=Bout, cons=cons), hz_out
+    return Fact(bounds=Bout, cons=cons)
 
 
 @torch.no_grad()
-def hybridz_tf_sigmoid(L: Layer, Bin: Bounds, hz_in=None):
-    """Sigmoid. Returns (Fact, hz_out)."""
+def hybridz_tf_sigmoid(L: Layer, Bin: Bounds, tf=None):
+    """Sigmoid. Returns Fact."""
+    hz_in = tf._hz_cache.get(L.id) if tf else None
     hz_out = None
     if hz_in is not None:
         hz_out = _hz_apply_sigmoid(hz_in)
@@ -855,14 +874,17 @@ def hybridz_tf_sigmoid(L: Layer, Bin: Bounds, hz_in=None):
         ub = torch.sigmoid(Bin.ub)
         Bout = Bounds(lb=torch.minimum(lb, ub), ub=torch.maximum(lb, ub))
 
+    if tf and hz_out is not None:
+        tf._hz_cache[L.id] = hz_out
     cons = ConSet()
     cons.add_op(f"sigmoid:{L.id}", list(L.out_vars + L.in_vars))
-    return Fact(bounds=Bout, cons=cons), hz_out
+    return Fact(bounds=Bout, cons=cons)
 
 
 @torch.no_grad()
-def hybridz_tf_abs(L: Layer, Bin: Bounds, hz_in=None):
-    """Absolute value. Returns (Fact, hz_out)."""
+def hybridz_tf_abs(L: Layer, Bin: Bounds, tf=None):
+    """Absolute value. Returns Fact."""
+    hz_in = tf._hz_cache.get(L.id) if tf else None
     hz_out = None
     if hz_in is not None:
         bounds = _hz_compute_bounds(hz_in)
@@ -882,6 +904,8 @@ def hybridz_tf_abs(L: Layer, Bin: Bounds, hz_in=None):
         ub = torch.maximum(torch.abs(Bin.lb), torch.abs(Bin.ub))
         Bout = Bounds(lb=lb, ub=ub)
 
+    if tf and hz_out is not None:
+        tf._hz_cache[L.id] = hz_out
     # ConSet indices always from interval Bin
     idx_pos = torch.where(Bin.lb >= 0)[0]
     idx_neg = torch.where(Bin.ub <= 0)[0]
@@ -889,12 +913,15 @@ def hybridz_tf_abs(L: Layer, Bin: Bounds, hz_in=None):
     cons = ConSet()
     cons.add_op(f"abs:{L.id}", list(L.out_vars + L.in_vars),
                 idx_pos=idx_pos, idx_neg=idx_neg, idx_amb=idx_amb)
-    return Fact(bounds=Bout, cons=cons), hz_out
+    return Fact(bounds=Bout, cons=cons)
 
 
 @torch.no_grad()
-def hybridz_tf_add(L: Layer, Bin1: Bounds, Bin2: Bounds, hz_in1=None, hz_in2=None):
-    """Element-wise addition. Returns (Fact, hz_out)."""
+def hybridz_tf_add(L: Layer, Bin1: Bounds, Bin2: Bounds, tf=None):
+    """Element-wise addition. Returns Fact."""
+    hz_in1 = tf._hz_cache.get(L.id) if tf else None
+    preds = tf._net.preds.get(L.id, []) if tf else []
+    hz_in2 = tf._hz_cache.get(preds[1]) if tf and len(preds) > 1 and preds[1] in tf._hz_cache else None
     hz_out = None
     if hz_in1 is not None and hz_in2 is not None:
         hz_out = _hz_minkowski_sum(hz_in1, hz_in2)
@@ -904,14 +931,19 @@ def hybridz_tf_add(L: Layer, Bin1: Bounds, Bin2: Bounds, hz_in1=None, hz_in2=Non
         ub = Bin1.ub + Bin2.ub
         Bout = Bounds(lb=lb, ub=ub)
 
+    if tf and hz_out is not None:
+        tf._hz_cache[L.id] = hz_out
     cons = ConSet()
     cons.add_op(f"add:{L.id}", list(L.out_vars + L.in_vars))
-    return Fact(bounds=Bout, cons=cons), hz_out
+    return Fact(bounds=Bout, cons=cons)
 
 
 @torch.no_grad()
-def hybridz_tf_mul(L: Layer, Bin1: Bounds, Bin2: Bounds, hz_in1=None, hz_in2=None):
-    """Element-wise multiplication (McCormick). Returns (Fact, hz_out)."""
+def hybridz_tf_mul(L: Layer, Bin1: Bounds, Bin2: Bounds, tf=None):
+    """Element-wise multiplication (McCormick). Returns Fact."""
+    hz_in1 = tf._hz_cache.get(L.id) if tf else None
+    preds = tf._net.preds.get(L.id, []) if tf else []
+    hz_in2 = tf._hz_cache.get(preds[1]) if tf and len(preds) > 1 and preds[1] in tf._hz_cache else None
     hz_out = None
     if hz_in1 is not None:
         bounds1 = _hz_compute_bounds(hz_in1)
@@ -930,7 +962,9 @@ def hybridz_tf_mul(L: Layer, Bin1: Bounds, Bin2: Bounds, hz_in1=None, hz_in2=Non
     if hz_in1 is not None:
         hz_out = _hz_from_bounds_fresh(Bout, hz_in1.c.dtype, hz_in1.c.device)
 
+    if tf and hz_out is not None:
+        tf._hz_cache[L.id] = hz_out
     cons = ConSet()
     cons.add_op(f"mcc:{L.id}", list(L.out_vars + L.in_vars),
                 lx=Bin1.lb, ux=Bin1.ub, ly=Bin2.lb, uy=Bin2.ub)
-    return Fact(bounds=Bout, cons=cons), hz_out
+    return Fact(bounds=Bout, cons=cons)

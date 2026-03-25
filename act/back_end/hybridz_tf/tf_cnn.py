@@ -18,7 +18,7 @@ from __future__ import annotations
 
 import torch
 import torch.nn.functional as F
-from typing import List, Tuple, TYPE_CHECKING
+from typing import List, TYPE_CHECKING
 from act.back_end.core import Bounds, Fact, Layer, ConSet
 
 if TYPE_CHECKING:
@@ -83,8 +83,8 @@ def _hz_conv2d(hz, weight, bias, stride, padding, dilation, groups, input_shape)
 
 
 @torch.no_grad()
-def hybridz_tf_conv2d(L: Layer, Bin: Bounds, hz_in=None):
-    """2D convolution. Returns (Fact, hz_out)."""
+def hybridz_tf_conv2d(L: Layer, Bin: Bounds, tf=None):
+    """2D convolution. Returns Fact."""
     weight = L.params["weight"]
     bias = L.params.get("bias", None)
     stride = L.params.get("stride", 1)
@@ -93,6 +93,7 @@ def hybridz_tf_conv2d(L: Layer, Bin: Bounds, hz_in=None):
     groups = L.params.get("groups", 1)
     input_shape = L.params.get("input_shape", None)
 
+    hz_in = tf._hz_cache.get(L.id) if tf else None
     hz_out = None
     if hz_in is not None:
         hz_out = _hz_conv2d(hz_in, weight, bias, stride, padding, dilation, groups, input_shape)
@@ -132,22 +133,25 @@ def hybridz_tf_conv2d(L: Layer, Bin: Bounds, hz_in=None):
         assert lb.numel() == len(L.out_vars)
         Bout = Bounds(lb=lb, ub=ub)
 
+    if tf and hz_out is not None:
+        tf._hz_cache[L.id] = hz_out
     cons = ConSet()
     cons.add_op(f"conv2d:{L.id}", list(L.out_vars + L.in_vars), weight=weight,
                 bias=bias if bias is not None else torch.zeros(weight.shape[0], device=weight.device, dtype=weight.dtype),
                 stride=stride, padding=padding, dilation=dilation, groups=groups,
                 input_shape=L.params.get("input_shape"), output_shape=L.params.get("output_shape"))
-    return Fact(bounds=Bout, cons=cons), hz_out
+    return Fact(bounds=Bout, cons=cons)
 
 
 @torch.no_grad()
-def hybridz_tf_maxpool2d(L: Layer, Bin: Bounds, hz_in=None):
-    """2D max pooling. Returns (Fact, hz_out)."""
+def hybridz_tf_maxpool2d(L: Layer, Bin: Bounds, tf=None):
+    """2D max pooling. Returns Fact."""
     kernel_size = L.params.get("kernel_size", 2)
     stride = L.params.get("stride", kernel_size)
     padding = L.params.get("padding", 0)
     in_shape = L.params.get("input_shape")
 
+    hz_in = tf._hz_cache.get(L.id) if tf else None
     hz_out = None
     if hz_in is not None:
         hz_bounds = _hz_compute_bounds(hz_in)
@@ -179,21 +183,24 @@ def hybridz_tf_maxpool2d(L: Layer, Bin: Bounds, hz_in=None):
         ub = ub_pool.squeeze(0).flatten() if len(L.out_vars) != ub_pool.numel() else ub_pool.squeeze(0)
         Bout = Bounds(lb=lb, ub=ub)
 
+    if tf and hz_out is not None:
+        tf._hz_cache[L.id] = hz_out
     cons = ConSet()
     cons.add_op(f"maxpool2d:{L.id}", list(L.out_vars + L.in_vars), kernel_size=kernel_size,
                 stride=stride, padding=padding, input_shape=in_shape,
                 output_shape=L.params.get("output_shape"))
-    return Fact(bounds=Bout, cons=cons), hz_out
+    return Fact(bounds=Bout, cons=cons)
 
 
 @torch.no_grad()
-def hybridz_tf_avgpool2d(L: Layer, Bin: Bounds, hz_in=None):
-    """2D average pooling. Returns (Fact, hz_out)."""
+def hybridz_tf_avgpool2d(L: Layer, Bin: Bounds, tf=None):
+    """2D average pooling. Returns Fact."""
     kernel_size = L.params.get("kernel_size", 2)
     stride = L.params.get("stride", kernel_size)
     padding = L.params.get("padding", 0)
     in_shape = L.params.get("input_shape")
 
+    hz_in = tf._hz_cache.get(L.id) if tf else None
     hz_out = None
     if hz_in is not None:
         hz_bounds = _hz_compute_bounds(hz_in)
@@ -211,42 +218,52 @@ def hybridz_tf_avgpool2d(L: Layer, Bin: Bounds, hz_in=None):
     if hz_in is not None:
         hz_out = _hz_from_bounds_fresh(Bout, dtype, device)
 
+    if tf and hz_out is not None:
+        tf._hz_cache[L.id] = hz_out
     cons = ConSet()
     cons.add_op(f"avgpool2d:{L.id}", list(L.out_vars + L.in_vars), kernel_size=kernel_size,
                 stride=stride, padding=padding, input_shape=in_shape,
                 output_shape=L.params.get("output_shape"))
-    return Fact(bounds=Bout, cons=cons), hz_out
+    return Fact(bounds=Bout, cons=cons)
 
 
 @torch.no_grad()
-def hybridz_tf_flatten(L: Layer, Bin: Bounds, hz_in=None):
-    """Tensor flattening (HZ pass-through). Returns (Fact, hz_out)."""
+def hybridz_tf_flatten(L: Layer, Bin: Bounds, tf=None):
+    """Tensor flattening (HZ pass-through). Returns Fact."""
     start_dim = L.params.get("start_dim", 1)
     end_dim = L.params.get("end_dim", -1)
+
+    hz_in = tf._hz_cache.get(L.id) if tf else None
 
     lb = Bin.lb.flatten()
     ub = Bin.ub.flatten()
     Bout = Bounds(lb=lb, ub=ub)
 
+    if tf and hz_in is not None:
+        tf._hz_cache[L.id] = hz_in  # HZ passes through unchanged
     cons = ConSet()
     cons.add_op(f"flatten:{L.id}", list(L.out_vars + L.in_vars),
                 start_dim=start_dim, end_dim=end_dim,
                 input_shape=L.params.get("input_shape"),
                 output_shape=L.params.get("output_shape"))
-    return Fact(bounds=Bout, cons=cons), hz_in  # HZ passes through unchanged
+    return Fact(bounds=Bout, cons=cons)
 
 
 @torch.no_grad()
-def hybridz_tf_reshape(L: Layer, Bin: Bounds, hz_in=None):
-    """Tensor reshaping (HZ pass-through). Returns (Fact, hz_out)."""
+def hybridz_tf_reshape(L: Layer, Bin: Bounds, tf=None):
+    """Tensor reshaping (HZ pass-through). Returns Fact."""
     target_shape = L.params.get("target_shape")
+
+    hz_in = tf._hz_cache.get(L.id) if tf else None
 
     lb = Bin.lb.reshape(target_shape).flatten() if target_shape else Bin.lb.flatten()
     ub = Bin.ub.reshape(target_shape).flatten() if target_shape else Bin.ub.flatten()
     Bout = Bounds(lb=lb, ub=ub)
 
+    if tf and hz_in is not None:
+        tf._hz_cache[L.id] = hz_in  # HZ passes through unchanged
     cons = ConSet()
     cons.add_op(f"reshape:{L.id}", list(L.out_vars + L.in_vars),
                 target_shape=target_shape, input_shape=L.params.get("input_shape"),
                 output_shape=L.params.get("output_shape"))
-    return Fact(bounds=Bout, cons=cons), hz_in  # HZ passes through unchanged
+    return Fact(bounds=Bout, cons=cons)

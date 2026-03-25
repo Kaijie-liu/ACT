@@ -20,8 +20,8 @@ from act.back_end.hybridz_tf.tf_mlp import _hz_from_bounds_fresh
 
 
 @torch.no_grad()
-def hybridz_tf_layernorm(L: Layer, Bin: Bounds, hz_in=None):
-    """Layer normalization (conservative). Returns (Fact, hz_out)."""
+def hybridz_tf_layernorm(L: Layer, Bin: Bounds, tf=None):
+    """Layer normalization (conservative)."""
     normalized_shape = L.params.get("normalized_shape")
     eps = float(L.params.get("eps", 1e-5))
     weight = L.params.get("weight")
@@ -50,17 +50,18 @@ def hybridz_tf_layernorm(L: Layer, Bin: Bounds, hz_in=None):
         ub_out += bias
 
     Bout = Bounds(lb=lb_out, ub=ub_out)
-    hz_out = _hz_from_bounds_fresh(Bout, Bout.lb.dtype, Bout.lb.device) if hz_in is not None else None
+    if tf is not None:
+        tf._hz_cache[L.id] = _hz_from_bounds_fresh(Bout, Bout.lb.dtype, Bout.lb.device)
 
     cons = ConSet()
     cons.add_op(f"layernorm:{L.id}", list(L.out_vars + L.in_vars),
                 normalized_shape=normalized_shape, eps=eps)
-    return Fact(bounds=Bout, cons=cons), hz_out
+    return Fact(bounds=Bout, cons=cons)
 
 
 @torch.no_grad()
-def hybridz_tf_gelu(L: Layer, Bin: Bounds, hz_in=None):
-    """GELU activation (piecewise linear approximation). Returns (Fact, hz_out)."""
+def hybridz_tf_gelu(L: Layer, Bin: Bounds, tf=None):
+    """GELU activation (piecewise linear approximation)."""
     breakpoints = torch.tensor([-3.0, -1.0, 0.0, 1.0, 3.0], device=Bin.lb.device, dtype=Bin.lb.dtype)
 
     lb = torch.zeros_like(Bin.lb)
@@ -79,11 +80,12 @@ def hybridz_tf_gelu(L: Layer, Bin: Bounds, hz_in=None):
         ub[i] = torch.max(y_candidates)
 
     Bout = Bounds(lb=lb, ub=ub)
-    hz_out = _hz_from_bounds_fresh(Bout, Bout.lb.dtype, Bout.lb.device) if hz_in is not None else None
+    if tf is not None:
+        tf._hz_cache[L.id] = _hz_from_bounds_fresh(Bout, Bout.lb.dtype, Bout.lb.device)
 
     cons = ConSet()
     cons.add_op(f"gelu:{L.id}", list(L.out_vars + L.in_vars))
-    return Fact(bounds=Bout, cons=cons), hz_out
+    return Fact(bounds=Bout, cons=cons)
 
 
 def gelu_approx(x: float) -> float:
@@ -94,8 +96,8 @@ def gelu_approx(x: float) -> float:
 
 
 @torch.no_grad()
-def hybridz_tf_softmax(L: Layer, Bin: Bounds, hz_in=None):
-    """Softmax with simplex constraints. Returns (Fact, hz_out)."""
+def hybridz_tf_softmax(L: Layer, Bin: Bounds, tf=None):
+    """Softmax with simplex constraints."""
     n = len(Bin.lb)
     lb = torch.zeros_like(Bin.lb)
     ub = torch.ones_like(Bin.ub)
@@ -114,17 +116,18 @@ def hybridz_tf_softmax(L: Layer, Bin: Bounds, hz_in=None):
                 ub[i] = 0.3
 
     Bout = Bounds(lb=lb, ub=ub)
-    hz_out = _hz_from_bounds_fresh(Bout, Bout.lb.dtype, Bout.lb.device) if hz_in is not None else None
+    if tf is not None:
+        tf._hz_cache[L.id] = _hz_from_bounds_fresh(Bout, Bout.lb.dtype, Bout.lb.device)
 
     cons = ConSet()
     rowsize = len(L.out_vars)
     cons.add_op(f"softmax:{L.id}", list(L.out_vars), rowsize=rowsize)
-    return Fact(bounds=Bout, cons=cons), hz_out
+    return Fact(bounds=Bout, cons=cons)
 
 
 @torch.no_grad()
-def hybridz_tf_posenc(L: Layer, Bin: Bounds, hz_in=None):
-    """Positional encoding. Returns (Fact, hz_out)."""
+def hybridz_tf_posenc(L: Layer, Bin: Bounds, tf=None):
+    """Positional encoding."""
     max_len = L.params.get("max_len", 1000)
     d_model = L.params.get("d_model", Bin.lb.shape[-1])
 
@@ -132,17 +135,18 @@ def hybridz_tf_posenc(L: Layer, Bin: Bounds, hz_in=None):
     lb = Bin.lb - pe_range
     ub = Bin.ub + pe_range
     Bout = Bounds(lb=lb, ub=ub)
-    hz_out = _hz_from_bounds_fresh(Bout, Bout.lb.dtype, Bout.lb.device) if hz_in is not None else None
+    if tf is not None:
+        tf._hz_cache[L.id] = _hz_from_bounds_fresh(Bout, Bout.lb.dtype, Bout.lb.device)
 
     cons = ConSet()
     cons.add_op(f"posenc:{L.id}", list(L.out_vars + L.in_vars),
                 max_len=max_len, d_model=d_model)
-    return Fact(bounds=Bout, cons=cons), hz_out
+    return Fact(bounds=Bout, cons=cons)
 
 
 @torch.no_grad()
-def hybridz_tf_attention_scores(L: Layer, Q_bounds: Bounds, K_bounds: Bounds, hz_in=None):
-    """Attention score computation: Q @ K^T / sqrt(d_k). Returns (Fact, hz_out)."""
+def hybridz_tf_attention_scores(L: Layer, Q_bounds: Bounds, K_bounds: Bounds, tf=None):
+    """Attention score computation: Q @ K^T / sqrt(d_k)."""
     d_k = L.params.get("d_k", Q_bounds.lb.shape[-1])
     scale = 1.0 / math.sqrt(d_k)
 
@@ -164,8 +168,9 @@ def hybridz_tf_attention_scores(L: Layer, Q_bounds: Bounds, K_bounds: Bounds, hz
     ub = torch.tensor([p[1] for p in products]) * scale
 
     Bout = Bounds(lb=lb, ub=ub)
-    hz_out = _hz_from_bounds_fresh(Bout, Bout.lb.dtype, Bout.lb.device) if hz_in is not None else None
+    if tf is not None:
+        tf._hz_cache[L.id] = _hz_from_bounds_fresh(Bout, Bout.lb.dtype, Bout.lb.device)
 
     cons = ConSet()
     cons.add_op(f"att_scores:{L.id}", list(L.out_vars + L.in_vars), d_k=d_k)
-    return Fact(bounds=Bout, cons=cons), hz_out
+    return Fact(bounds=Bout, cons=cons)
