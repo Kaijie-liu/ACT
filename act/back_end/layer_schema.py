@@ -485,4 +485,8 @@ SUPPORTED_EXPORT_OPS = {
     "att_scores",
     "att_mix",
     "mask",
+    "lstm",
+    "gru",
+    "rnn",
+    "embedding",
 }

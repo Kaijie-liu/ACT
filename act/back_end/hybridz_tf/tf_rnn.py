@@ -18,7 +18,7 @@ from act.back_end.core import Bounds, Fact, Layer, ConSet
 
 
 @torch.no_grad()
-def hybridz_tf_lstm(L: Layer, Bin: Bounds) -> Fact:
+def hybridz_tf_lstm(L: Layer, Bin: Bounds, tf=None) -> Fact:
     """HybridZ transfer function for LSTM cells."""
     # LSTM is complex with internal gates - conservative approximation
     # For now, use interval-based bounds with HybridZ constraint generation
@@ -48,14 +48,18 @@ def hybridz_tf_lstm(L: Layer, Bin: Bounds) -> Fact:
     
     Bout = Bounds(lb=lb, ub=ub)
     
+    if tf is not None:
+        from act.back_end.hybridz_tf.tf_mlp import _hz_from_bounds_fresh
+        tf._hz_cache[L.id] = _hz_from_bounds_fresh(Bout, Bout.lb.dtype, Bout.lb.device)
+    
     cons = ConSet()
-    cons.add_lstm(L.id, L.in_vars, L.out_vars, input_size, hidden_size)
+    cons.add_op(f"lstm:{L.id}", list(L.out_vars + L.in_vars), input_size=input_size, hidden_size=hidden_size)
     
     return Fact(bounds=Bout, cons=cons)
 
 
 @torch.no_grad()
-def hybridz_tf_gru(L: Layer, Bin: Bounds) -> Fact:
+def hybridz_tf_gru(L: Layer, Bin: Bounds, tf=None) -> Fact:
     """HybridZ transfer function for GRU cells."""
     # GRU is simpler than LSTM but still complex
     
@@ -75,14 +79,18 @@ def hybridz_tf_gru(L: Layer, Bin: Bounds) -> Fact:
     
     Bout = Bounds(lb=lb, ub=ub)
     
+    if tf is not None:
+        from act.back_end.hybridz_tf.tf_mlp import _hz_from_bounds_fresh
+        tf._hz_cache[L.id] = _hz_from_bounds_fresh(Bout, Bout.lb.dtype, Bout.lb.device)
+    
     cons = ConSet()
-    cons.add_gru(L.id, L.in_vars, L.out_vars, input_size, hidden_size)
+    cons.add_op(f"gru:{L.id}", list(L.out_vars + L.in_vars), input_size=input_size, hidden_size=hidden_size)
     
     return Fact(bounds=Bout, cons=cons)
 
 
 @torch.no_grad()
-def hybridz_tf_rnn(L: Layer, Bin: Bounds) -> Fact:
+def hybridz_tf_rnn(L: Layer, Bin: Bounds, tf=None) -> Fact:
     """HybridZ transfer function for basic RNN cells."""
     # Basic RNN: h_t = tanh(W_ih @ x_t + b_ih + W_hh @ h_{t-1} + b_hh)
     
@@ -104,15 +112,19 @@ def hybridz_tf_rnn(L: Layer, Bin: Bounds) -> Fact:
         raise ValueError(f"Unsupported RNN nonlinearity: {nonlinearity}")
     
     Bout = Bounds(lb=lb, ub=ub)
+       
+    if tf is not None:
+        from act.back_end.hybridz_tf.tf_mlp import _hz_from_bounds_fresh
+        tf._hz_cache[L.id] = _hz_from_bounds_fresh(Bout, Bout.lb.dtype, Bout.lb.device)
     
     cons = ConSet()
-    cons.add_rnn(L.id, L.in_vars, L.out_vars, input_size, hidden_size, nonlinearity)
+    cons.add_op(f"rnn:{L.id}", list(L.out_vars + L.in_vars), input_size=input_size, hidden_size=hidden_size, nonlinearity=nonlinearity)
     
     return Fact(bounds=Bout, cons=cons)
 
 
 @torch.no_grad()
-def hybridz_tf_embedding(L: Layer, Bin: Bounds) -> Fact:
+def hybridz_tf_embedding(L: Layer, Bin: Bounds, tf=None) -> Fact:
     """HybridZ transfer function for embedding lookup."""
     # Embedding lookup: discrete input indices -> continuous embeddings
     
@@ -131,7 +143,11 @@ def hybridz_tf_embedding(L: Layer, Bin: Bounds) -> Fact:
     
     Bout = Bounds(lb=lb, ub=ub)
     
+    if tf is not None:
+        from act.back_end.hybridz_tf.tf_mlp import _hz_from_bounds_fresh
+        tf._hz_cache[L.id] = _hz_from_bounds_fresh(Bout, Bout.lb.dtype, Bout.lb.device)
+    
     cons = ConSet()
-    cons.add_embedding(L.id, L.in_vars, L.out_vars, num_embeddings, embedding_dim, weight)
+    cons.add_op(f"embedding:{L.id}", list(L.out_vars + L.in_vars), num_embeddings=num_embeddings, embedding_dim=embedding_dim, weight=weight)
     
     return Fact(bounds=Bout, cons=cons)
