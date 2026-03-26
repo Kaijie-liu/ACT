@@ -135,7 +135,7 @@ def _hz_compute_bounds_gurobi(hz: HZono) -> Bounds:
             lhs = lhs + Ac_np @ xi_c
         if xi_b is not None:
             lhs = lhs + Ab_np @ xi_b
-        model.addConstr(lhs <= b_np)
+        model.addConstr(lhs == b_np)
 
     LB = np.empty((n,), dtype=np.float64)
     UB = np.empty((n,), dtype=np.float64)
@@ -178,8 +178,8 @@ def _hz_compute_bounds_scipy(hz: HZono) -> Bounds:
     Ab_np = hz.Ab.detach().cpu().numpy().astype('float64')
     b_np = hz.b.detach().cpu().numpy().astype('float64').reshape(-1)
 
-    A_ub = np.concatenate([Ac_np, Ab_np], axis=1) if (Ac_np.size or Ab_np.size) else None
-    b_ub = b_np if (A_ub is not None) else None
+    A_eq = np.concatenate([Ac_np, Ab_np], axis=1) if (Ac_np.size or Ab_np.size) else None
+    b_eq = b_np if (A_eq is not None) else None
     var_bounds = [(-1.0, 1.0)] * (p + q)
 
     LB = np.empty((n,), dtype=np.float64)
@@ -188,12 +188,12 @@ def _hz_compute_bounds_scipy(hz: HZono) -> Bounds:
     for i in range(n):
         obj = np.concatenate([Gc_np[i], Gb_np[i]], axis=0)
 
-        res_min = linprog(c=obj, A_ub=A_ub, b_ub=b_ub, bounds=var_bounds, method="highs")
+        res_min = linprog(c=obj, A_eq=A_eq, b_eq=b_eq, bounds=var_bounds, method="highs")
         if not res_min.success:
             raise RuntimeError(f"[linprog] MIN infeasible at dim {i}: {res_min.message}")
         LB[i] = c_np[i] + res_min.fun
 
-        res_max = linprog(c=-obj, A_ub=A_ub, b_ub=b_ub, bounds=var_bounds, method="highs")
+        res_max = linprog(c=-obj, A_eq=A_eq, b_eq=b_eq, bounds=var_bounds, method="highs")
         if not res_max.success:
             raise RuntimeError(f"[linprog] MAX infeasible at dim {i}: {res_max.message}")
         UB[i] = c_np[i] - res_max.fun
@@ -207,19 +207,18 @@ def _hz_compute_bounds_scipy(hz: HZono) -> Bounds:
 # ---- Nonlinear activations --------------------------------------------------
 
 def _hz_apply_relu(hz: HZono) -> HZono:
-    """Graph-exact ReLU preserving input generators.
+    """Exact ReLU via equality constraints + linking equality.
 
-    For each neuron i with bounds [lb_i, ub_i]:
-      - active  (lb >= 0): y_i = x_i  (identity, no new generators)
-      - inactive (ub <= 0): y_i = 0   (zero row, no new generators)
-      - unstable (lb < 0 < ub): encode ReLU graph with 2 new continuous
-        generators (u_i, v_i) and 1 new binary generator (z_i), plus
-        6 constraint rows (4 graph + 2 linking).
+    Per unstable neuron i with bounds [α, β] (α < 0 < β):
+      ng += 4 (ξ1, ξ2, ξ3, ξ4)
+      nb += 1 (z)
+      nc += 3 equalities:
+        (1) ξ1 + ξ3 + z = 1
+        (2) ξ2 + ξ4 - z = 1
+        (3) α/2·ξ1 - β/2·ξ2 + α/2·z - Gc[i]·ξ_old - Gb[i]·ξ_b_old = c_i - β/2
 
-    The output HZ has:
-      Gc: (n, ng_in + 2k),  Gb: (n, nb_in + k),
-      Ac: (nc_in + 6k, ng_in + 2k),  Ab: (nc_in + 6k, nb_in + k)
-    where k = number of unstable neurons.
+    When z=1 (inactive): ξ2=1 forced → y=0, x∈[α,0]
+    When z=-1 (active): ξ1=1 forced, linking gives y=x, x∈[0,β]
     """
     dtype, device = hz.c.dtype, hz.c.device
     n = hz.c.shape[0]
@@ -236,129 +235,95 @@ def _hz_apply_relu(hz: HZono) -> HZono:
     unstable = ~active & ~inactive
     k = int(unstable.sum().item())
 
-    # Output center: active keeps c, inactive zeroed
-    new_c = hz.c.clone()
-    new_c[inactive] = 0.0
+    # ---- Stable neurons: identity (active) or zero (inactive) ----
+    out_Gc = torch.zeros((n, ng + 4 * k), dtype=dtype, device=device)
+    out_Gb = torch.zeros((n, nb + k), dtype=dtype, device=device)
+    out_c = torch.zeros((n, 1), dtype=dtype, device=device)
 
-    # Output Gc rows: active keeps row, inactive zeroed
-    new_Gc_base = hz.Gc.clone()
-    new_Gc_base[inactive] = 0.0
-
-    # Output Gb rows: active keeps row, inactive zeroed
-    new_Gb_base = hz.Gb.clone()
-    new_Gb_base[inactive] = 0.0
+    # Active: y = x (copy original generators)
+    if active.any():
+        out_c[active] = hz.c[active]
+        out_Gc[active, :ng] = hz.Gc[active]
+        out_Gb[active, :nb] = hz.Gb[active]
+    # Inactive: y = 0 (already zeros)
 
     if k == 0:
-        return _get_HZono()(c=new_c, Gc=new_Gc_base, Gb=new_Gb_base,
+        return _get_HZono()(c=out_c, Gc=out_Gc[:, :ng], Gb=out_Gb[:, :nb],
                             Ac=hz.Ac.clone(), Ab=hz.Ab.clone(), b=hz.b.clone())
 
-    # Unstable neurons: graph-exact encoding
-    # a_i = max(|lb_i|, ub_i) for each unstable neuron
+    # ---- Unstable neurons ----
     unstable_idx = torch.where(unstable)[0]
-    a = torch.maximum(torch.abs(lb[unstable_idx]), ub[unstable_idx])
+    alpha = lb[unstable_idx]  # (k,) negative
+    beta  = ub[unstable_idx]  # (k,) positive
+    t = torch.arange(k, device=device)
 
-    # New center for unstable: y_i = a_i/4
-    new_c[unstable_idx] = (a / 4.0).unsqueeze(1)
+    # Column indices for new generators
+    col_xi1 = ng + t
+    col_xi2 = ng + k + t
+    col_xi3 = ng + 2 * k + t
+    col_xi4 = ng + 3 * k + t
+    col_z   = nb + t
 
-    # Zero out input generator rows for unstable (will be linked via constraints)
-    new_Gc_base[unstable_idx] = 0.0
-    new_Gb_base[unstable_idx] = 0.0
+    # Output: y_i = β/2 + (-β/2)·ξ2
+    out_c[unstable_idx, 0] = beta / 2.0
+    out_Gc[unstable_idx, col_xi2] = -beta / 2.0
 
-    # New continuous generators: 2k columns for (u, v) per unstable neuron
-    # y_i = a_i/4 + (a_i/2)*v_j  (j-th unstable neuron)
-    Gc_uv = torch.zeros((n, 2 * k), dtype=dtype, device=device)
-    for j, idx in enumerate(unstable_idx):
-        Gc_uv[idx, k + j] = a[j] / 2.0  # v_j column contributes to output
-
-    # New binary generators: k columns for z per unstable neuron
-    # y_i += (a_i/4)*z_j
-    Gb_z = torch.zeros((n, k), dtype=dtype, device=device)
-    for j, idx in enumerate(unstable_idx):
-        Gb_z[idx, j] = a[j] / 4.0
-
-    # Assemble output generators: [Gc_base | Gc_uv], [Gb_base | Gb_z]
-    out_Gc = torch.cat([new_Gc_base, Gc_uv], dim=1)
-    out_Gb = torch.cat([new_Gb_base, Gb_z], dim=1)
-
-    # ---- New constraints (6k rows) ----
-    ng_new = ng + 2 * k
+    # ---- 3 equality constraints per unstable neuron (3k total) ----
+    ng_new = ng + 4 * k
     nb_new = nb + k
 
-    # Graph constraints (4k rows): |u_j| ≤ (1-z_j)/2,  |v_j| ≤ (z_j+1)/2
-    #   u_j + 0.5*z_j ≤ 0.5
-    #  -u_j + 0.5*z_j ≤ 0.5
-    #   v_j - 0.5*z_j ≤ 0.5
-    #  -v_j - 0.5*z_j ≤ 0.5
-    graph_Ac = torch.zeros((4 * k, ng_new), dtype=dtype, device=device)
-    graph_Ab = torch.zeros((4 * k, nb_new), dtype=dtype, device=device)
-    graph_b  = torch.full((4 * k, 1), 0.5, dtype=dtype, device=device)
+    eq_Ac = torch.zeros((3 * k, ng_new), dtype=dtype, device=device)
+    eq_Ab = torch.zeros((3 * k, nb_new), dtype=dtype, device=device)
+    eq_b  = torch.zeros((3 * k, 1), dtype=dtype, device=device)
 
+    r1 = 3 * t       # graph eq 1
+    r2 = 3 * t + 1   # graph eq 2
+    r3 = 3 * t + 2   # linking eq
+
+    # Eq 1: ξ1 + ξ3 + z = 1
+    eq_Ac[r1, col_xi1] = 1.0
+    eq_Ac[r1, col_xi3] = 1.0
+    eq_Ab[r1, col_z]   = 1.0
+    eq_b[r1, 0]        = 1.0
+
+    # Eq 2: ξ2 + ξ4 - z = 1
+    eq_Ac[r2, col_xi2] = 1.0
+    eq_Ac[r2, col_xi4] = 1.0
+    eq_Ab[r2, col_z]   = -1.0
+    eq_b[r2, 0]        = 1.0
+
+    # Eq 3: α/2·ξ1 - β/2·ξ2 + α/2·z - Gc[i]·ξ_old - Gb[i]·ξ_b_old = c_i - β/2
     for j in range(k):
-        u_col = ng + j        # u_j in new Gc columns
-        v_col = ng + k + j    # v_j in new Gc columns
-        z_col = nb + j        # z_j in new Gb columns
-        r = 4 * j
+        idx_i = int(unstable_idx[j].item())
+        eq_Ac[3 * j + 2, col_xi1[j]] = alpha[j] / 2.0
+        eq_Ac[3 * j + 2, col_xi2[j]] = -beta[j] / 2.0
+        eq_Ac[3 * j + 2, :ng] -= hz.Gc[idx_i]  # -Gc[i]·ξ_old (use -= since row was zeros)
+        eq_Ab[3 * j + 2, :nb] -= hz.Gb[idx_i]   # -Gb[i]·ξ_b_old
+        eq_Ab[3 * j + 2, col_z[j]] = alpha[j] / 2.0
+        eq_b[3 * j + 2, 0] = hz.c[idx_i, 0] - beta[j] / 2.0
 
-        # u_j + 0.5*z_j ≤ 0.5
-        graph_Ac[r, u_col] = 1.0
-        graph_Ab[r, z_col] = 0.5
-        # -u_j + 0.5*z_j ≤ 0.5
-        graph_Ac[r + 1, u_col] = -1.0
-        graph_Ab[r + 1, z_col] = 0.5
-        # v_j - 0.5*z_j ≤ 0.5
-        graph_Ac[r + 2, v_col] = 1.0
-        graph_Ab[r + 2, z_col] = -0.5
-        # -v_j - 0.5*z_j ≤ 0.5
-        graph_Ac[r + 3, v_col] = -1.0
-        graph_Ab[r + 3, z_col] = -0.5
-
-    # Linking constraints (2k rows): encode x_i = (a_i/2)*(u_j + v_j) + (a_i/2)*z_j
-    #   Gc[i]*ξ_c + Gb[i]*ξ_b - (a_i/2)*(u_j+v_j) - (a_i/2)*z_j ≤ -c_i
-    #  -Gc[i]*ξ_c - Gb[i]*ξ_b + (a_i/2)*(u_j+v_j) + (a_i/2)*z_j ≤  c_i
-    link_Ac = torch.zeros((2 * k, ng_new), dtype=dtype, device=device)
-    link_Ab = torch.zeros((2 * k, nb_new), dtype=dtype, device=device)
-    link_b  = torch.zeros((2 * k, 1), dtype=dtype, device=device)
-
-    for j, idx in enumerate(unstable_idx):
-        idx_i = int(idx.item())
-        u_col = ng + j
-        v_col = ng + k + j
-        z_col = nb + j
-
-        # Row 2j: Gc[i]*ξ_c + Gb[i]*ξ_b - (a_i/2)*(u+v) - (a_i/2)*z ≤ -c_i
-        link_Ac[2 * j, :ng] = hz.Gc[idx_i]
-        link_Ac[2 * j, u_col] = -a[j] / 2.0
-        link_Ac[2 * j, v_col] = -a[j] / 2.0
-        link_Ab[2 * j, :nb] = hz.Gb[idx_i]
-        link_Ab[2 * j, z_col] = -a[j] / 2.0
-        link_b[2 * j, 0] = -hz.c[idx_i, 0]
-
-        # Row 2j+1: -Gc[i]*ξ_c - Gb[i]*ξ_b + (a_i/2)*(u+v) + (a_i/2)*z ≤ c_i
-        link_Ac[2 * j + 1, :ng] = -hz.Gc[idx_i]
-        link_Ac[2 * j + 1, u_col] = a[j] / 2.0
-        link_Ac[2 * j + 1, v_col] = a[j] / 2.0
-        link_Ab[2 * j + 1, :nb] = -hz.Gb[idx_i]
-        link_Ab[2 * j + 1, z_col] = a[j] / 2.0
-        link_b[2 * j + 1, 0] = hz.c[idx_i, 0]
-
-    # Extend existing constraints to new column dimensions
-    old_Ac_ext = torch.cat([hz.Ac, torch.zeros((nc, 2 * k), dtype=dtype, device=device)], dim=1)
+    # ---- Extend old constraints to new column dimensions ----
+    old_Ac_ext = torch.cat([hz.Ac, torch.zeros((nc, 4 * k), dtype=dtype, device=device)], dim=1)
     old_Ab_ext = torch.cat([hz.Ab, torch.zeros((nc, k), dtype=dtype, device=device)], dim=1)
 
-    out_Ac = torch.cat([old_Ac_ext, graph_Ac, link_Ac], dim=0)
-    out_Ab = torch.cat([old_Ab_ext, graph_Ab, link_Ab], dim=0)
-    out_b  = torch.cat([hz.b, graph_b, link_b], dim=0)
+    out_Ac = torch.cat([old_Ac_ext, eq_Ac], dim=0)
+    out_Ab = torch.cat([old_Ab_ext, eq_Ab], dim=0)
+    out_b  = torch.cat([hz.b, eq_b], dim=0)
 
-    return _get_HZono()(c=new_c, Gc=out_Gc, Gb=out_Gb,
+    return _get_HZono()(c=out_c, Gc=out_Gc, Gb=out_Gb,
                         Ac=out_Ac, Ab=out_Ab, b=out_b)
 
 
 def _hz_apply_leaky_relu(hz: HZono, alpha_arg: float) -> HZono:
-    """Graph-exact LeakyReLU preserving input generators.
+    """LeakyReLU via triangle relaxation (sound over-approximation).
 
     Same structure as ReLU but with y = alpha*x for x < 0.
     Active/inactive cases handled directly; unstable neurons use
-    graph encoding with slope alpha on the negative branch.
+    triangle relaxation with no new constraint rows.
+
+    TODO: Convert to exact equality-constraint encoding (matching
+    _hz_apply_relu's applyReLU_eq_native_exact approach) for tighter
+    bounds on unstable neurons.
     """
     dtype, device = hz.c.dtype, hz.c.device
     n = hz.c.shape[0]
@@ -585,19 +550,22 @@ def _hz_apply_piecewise(hz: HZono, func, dfunc, K: int = 2) -> HZono:
     new_Gc_base[wide_idx] = 0.0
     new_Gb_base[wide_idx] = 0.0
 
-    # -- New continuous generators: 2*K*m columns (K g1 + K g2 per wide neuron)
-    # Layout: [g1_{0,0}..g1_{m-1,0}, g1_{0,1}..g1_{m-1,1}, ...,
-    #          g2_{0,0}..g2_{m-1,0}, ...]
-    # i.e., g1 columns first (K*m), then g2 columns (K*m)
-    Gc_new = torch.zeros((n, 2 * K * m), dtype=dtype, device=device)
+    # -- New continuous generators: 6*K*m columns per wide neuron ---------------
+    # Layout per piece k: g1 (m cols), g2 (m cols) = 2K*m "real" columns
+    #   then slack: s1+ (m), s1- (m), s2+ (m), s2- (m) = 4K*m "slack" columns
+    # Real columns: ng + [0, 2K*m), Slack columns: ng + 2K*m + [0, 4K*m)
+    n_real = 2 * K * m
+    n_slack = 4 * K * m
+    Gc_new = torch.zeros((n, n_real + n_slack), dtype=dtype, device=device)
+
     for k in range(K):
-        g1_cols = torch.arange(k * m, (k + 1) * m, device=device)    # m cols for g1 piece k
-        g2_cols = torch.arange(K * m + k * m, K * m + (k + 1) * m, device=device)  # m cols for g2 piece k
-        # g1 contributes g1_y to output row, g2 contributes g2_y to output row
+        g1_cols = torch.arange(k * m, (k + 1) * m, device=device)
+        g2_cols = torch.arange(K * m + k * m, K * m + (k + 1) * m, device=device)
         for j in range(m):
             idx_i = wide_idx[j]
             Gc_new[idx_i, g1_cols[j]] = g1_y_k[k][j]
             Gc_new[idx_i, g2_cols[j]] = g2_y_k[k][j]
+    # Slack generators: zero in output rows (already zeros)
 
     # -- New binary generators: K*m columns (z_{i,k}) -------------------------
     Gb_new = torch.zeros((n, K * m), dtype=dtype, device=device)
@@ -605,111 +573,115 @@ def _hz_apply_piecewise(hz: HZono, func, dfunc, K: int = 2) -> HZono:
         z_cols = torch.arange(k * m, (k + 1) * m, device=device)
         for j in range(m):
             idx_i = wide_idx[j]
-            Gb_new[idx_i, z_cols[j]] = centers_y_k[k][j] / 2.0
+            Gb_new[idx_i, z_cols[j]] = -centers_y_k[k][j] / 2.0
 
     # -- Assemble output generators -------------------------------------------
-    out_Gc = torch.cat([new_Gc_base, Gc_new], dim=1)   # (n, ng + 2*K*m)
+    out_Gc = torch.cat([new_Gc_base, Gc_new], dim=1)   # (n, ng + 6K*m)
     out_Gb = torch.cat([new_Gb_base, Gb_new], dim=1)    # (n, nb + K*m)
 
-    ng_new = ng + 2 * K * m
-    nb_new = nb + K * m
+    ng_total = ng + n_real + n_slack   # ng + 6K*m
+    nb_total = nb + K * m
 
-    # ---- New constraints: (4K + 4) rows per wide neuron = (4K+4)*m total ----
-    # 1. Box constraints: 4K rows per wide neuron (4*K*m total)
+    # ---- New equality constraints: (4K + 2) rows per wide neuron -------------
+    #
+    # 1. Box equalities (4K rows/neuron): per real generator, 2 slack + equality
+    #    g_{k,j} + s+ - 0.5*z_k = 0.5     (active when z_k=1: g free; z_k=-1: g=0)
+    #   -g_{k,j} + s- - 0.5*z_k = 0.5
+    #
+    # 2. Linking equality (1 row/neuron): x_i from original gens = piecewise x
+    #
+    # 3. Exactly-one equality (1 row/neuron): sum_k z_k = 2-K
+    #
     n_box = 4 * K * m
-    box_Ac = torch.zeros((n_box, ng_new), dtype=dtype, device=device)
-    box_Ab = torch.zeros((n_box, nb_new), dtype=dtype, device=device)
-    box_b  = torch.full((n_box, 1), 0.5, dtype=dtype, device=device)
+    n_link = m
+    n_one = m
+    n_eq_total = n_box + n_link + n_one
 
+    eq_Ac = torch.zeros((n_eq_total, ng_total), dtype=dtype, device=device)
+    eq_Ab = torch.zeros((n_eq_total, nb_total), dtype=dtype, device=device)
+    eq_b  = torch.zeros((n_eq_total, 1), dtype=dtype, device=device)
+
+    # 1. Box equalities: 4K*m rows
     for k in range(K):
         for j in range(m):
-            g1_col = ng + k * m + j               # column of g1_{j,k} in out_Gc
-            g2_col = ng + K * m + k * m + j        # column of g2_{j,k} in out_Gc
-            z_col   = nb + k * m + j                # column of z_{j,k} in out_Gb
+            g1_col = ng + k * m + j
+            g2_col = ng + K * m + k * m + j
+            z_col  = nb + k * m + j
+            # Slack columns for piece k, neuron j:
+            # s1+ at ng + n_real + (k*m+j)*4 + 0
+            # s1- at ng + n_real + (k*m+j)*4 + 1
+            # s2+ at ng + n_real + (k*m+j)*4 + 2
+            # s2- at ng + n_real + (k*m+j)*4 + 3
+            s_base = ng + n_real + (k * m + j) * 4
             r = 4 * (k * m + j)
 
-            # g1_{j,k} - 0.5 * z_{j,k} <= 0.5
-            box_Ac[r, g1_col] = 1.0
-            box_Ab[r, z_col]   = -0.5
-            # -g1_{j,k} - 0.5 * z_{j,k} <= 0.5
-            box_Ac[r + 1, g1_col] = -1.0
-            box_Ab[r + 1, z_col]   = -0.5
-            # g2_{j,k} - 0.5 * z_{j,k} <= 0.5
-            box_Ac[r + 2, g2_col] = 1.0
-            box_Ab[r + 2, z_col]   = -0.5
-            # -g2_{j,k} - 0.5 * z_{j,k} <= 0.5
-            box_Ac[r + 3, g2_col] = -1.0
-            box_Ab[r + 3, z_col]   = -0.5
+            # g1 + s1+ - 0.5*z = 0.5
+            eq_Ac[r, g1_col] = 1.0
+            eq_Ac[r, s_base] = 1.0
+            eq_Ab[r, z_col] = -0.5
+            eq_b[r, 0] = 0.5
 
-    # 2. Linking constraints: 2 rows per wide neuron (2*m total)
-    # x_i = sum_k (cx_k/2 + cx_k/2 * z_{i,k} + g1_x_k * g1_{i,k} + g2_x_k * g2_{i,k})
-    # Row+: Gc[i]*xi_c + Gb[i]*xi_b - sum_k (g1_x_k*g1 + g2_x_k*g2) - sum_k (cx_k/2)*z <= sum_k cx_k/2 - c_i
-    # Row-: negated
-    n_link = 2 * m
-    link_Ac = torch.zeros((n_link, ng_new), dtype=dtype, device=device)
-    link_Ab = torch.zeros((n_link, nb_new), dtype=dtype, device=device)
-    link_b  = torch.zeros((n_link, 1), dtype=dtype, device=device)
+            # -g1 + s1- - 0.5*z = 0.5
+            eq_Ac[r + 1, g1_col] = -1.0
+            eq_Ac[r + 1, s_base + 1] = 1.0
+            eq_Ab[r + 1, z_col] = -0.5
+            eq_b[r + 1, 0] = 0.5
 
+            # g2 + s2+ - 0.5*z = 0.5
+            eq_Ac[r + 2, g2_col] = 1.0
+            eq_Ac[r + 2, s_base + 2] = 1.0
+            eq_Ab[r + 2, z_col] = -0.5
+            eq_b[r + 2, 0] = 0.5
+
+            # -g2 + s2- - 0.5*z = 0.5
+            eq_Ac[r + 3, g2_col] = -1.0
+            eq_Ac[r + 3, s_base + 3] = 1.0
+            eq_Ab[r + 3, z_col] = -0.5
+            eq_b[r + 3, 0] = 0.5
+
+    # 2. Linking equality: 1 row per neuron (m rows)
+    # With Ab=-0.5 in box equalities, z_k=-1 means piece k active.
+    # x_i = Σ_k [(1-z_k)/2 * (cx_k + g1x*g1 + g2x*g2)]
+    #      = Σ_k cx_k/2 - Σ_k cx_k/2*z_k + Σ_k(g1x*g1 + g2x*g2)
+    # So: Gc[i]*ξ + Gb[i]*ζ - Σ_k(g1x*g1+g2x*g2) + Σ_k(cx_k/2)*z_k = Σ_k cx_k/2 - c_i
     for j in range(m):
         idx_i = int(wide_idx[j].item())
+        r = n_box + j
         rhs_val = 0.0
+
         for k in range(K):
             g1_col = ng + k * m + j
             g2_col = ng + K * m + k * m + j
-            z_col   = nb + k * m + j
+            z_col  = nb + k * m + j
             rhs_val += centers_x_k[k][j].item() / 2.0
 
-            # Row+: -g1_x_k * g1_{i,k}
-            link_Ac[2 * j, g1_col] = -g1_x_k[k][j]
-            # Row+: -g2_x_k * g2_{i,k}
-            link_Ac[2 * j, g2_col] = -g2_x_k[k][j]
-            # Row+: -(cx_k/2) * z_{i,k}
-            link_Ab[2 * j, z_col] = -centers_x_k[k][j] / 2.0
+            eq_Ac[r, g1_col] = -g1_x_k[k][j]
+            eq_Ac[r, g2_col] = -g2_x_k[k][j]
+            eq_Ab[r, z_col] = centers_x_k[k][j] / 2.0  # positive (z=-1 active)
 
-            # Row-: +g1_x_k * g1_{i,k}
-            link_Ac[2 * j + 1, g1_col] = g1_x_k[k][j]
-            # Row-: +g2_x_k * g2_{i,k}
-            link_Ac[2 * j + 1, g2_col] = g2_x_k[k][j]
-            # Row-: +(cx_k/2) * z_{i,k}
-            link_Ab[2 * j + 1, z_col] = centers_x_k[k][j] / 2.0
+        eq_Ac[r, :ng] = hz.Gc[idx_i]
+        eq_Ab[r, :nb] = hz.Gb[idx_i]
+        eq_b[r, 0] = rhs_val - hz.c[idx_i, 0].item()
 
-        # Row+: +Gc[i]*xi_c, +Gb[i]*xi_b
-        link_Ac[2 * j, :ng] = hz.Gc[idx_i]
-        link_Ab[2 * j, :nb] = hz.Gb[idx_i]
-        link_b[2 * j, 0] = rhs_val - hz.c[idx_i, 0].item()
-
-        # Row-: -Gc[i]*xi_c, -Gb[i]*xi_b
-        link_Ac[2 * j + 1, :ng] = -hz.Gc[idx_i]
-        link_Ab[2 * j + 1, :nb] = -hz.Gb[idx_i]
-        link_b[2 * j + 1, 0] = -(rhs_val - hz.c[idx_i, 0].item())
-
-    # 3. Exactly-one-active constraints: 2 rows per wide neuron (2*m total)
-    # sum_k z_{i,k} = 2 - K
-    # Row+: sum_k z_{i,k} <= 2 - K
-    # Row-: -sum_k z_{i,k} <= K - 2
-    n_one = 2 * m
-    one_Ac = torch.zeros((n_one, ng_new), dtype=dtype, device=device)
-    one_Ab = torch.zeros((n_one, nb_new), dtype=dtype, device=device)
-    one_b  = torch.zeros((n_one, 1), dtype=dtype, device=device)
-
+    # 3. Exactly-one equality: 1 row per neuron (m rows)
+    # Σ_k z_k = 2 - K
     for j in range(m):
+        r = n_box + n_link + j
         for k in range(K):
             z_col = nb + k * m + j
-            one_Ab[2 * j, z_col] = 1.0
-            one_Ab[2 * j + 1, z_col] = -1.0
-        one_b[2 * j, 0] = 2.0 - K
-        one_b[2 * j + 1, 0] = K - 2.0
+            eq_Ab[r, z_col] = 1.0
+        eq_b[r, 0] = float(K - 2)
 
     # -- Extend existing constraints to new column dimensions -----------------
     old_Ac_ext = torch.cat([hz.Ac,
-                            torch.zeros((nc, 2 * K * m), dtype=dtype, device=device)], dim=1)
+                            torch.zeros((nc, n_real + n_slack), dtype=dtype, device=device)], dim=1)
     old_Ab_ext = torch.cat([hz.Ab,
                             torch.zeros((nc, K * m), dtype=dtype, device=device)], dim=1)
 
     # -- Concatenate all constraint rows --------------------------------------
-    out_Ac = torch.cat([old_Ac_ext, box_Ac, link_Ac, one_Ac], dim=0)
-    out_Ab = torch.cat([old_Ab_ext, box_Ab, link_Ab, one_Ab], dim=0)
-    out_b  = torch.cat([hz.b, box_b, link_b, one_b], dim=0)
+    out_Ac = torch.cat([old_Ac_ext, eq_Ac], dim=0)
+    out_Ab = torch.cat([old_Ab_ext, eq_Ab], dim=0)
+    out_b  = torch.cat([hz.b, eq_b], dim=0)
 
     return _get_HZono()(c=new_c, Gc=out_Gc, Gb=out_Gb,
                         Ac=out_Ac, Ab=out_Ab, b=out_b)
