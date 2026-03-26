@@ -25,9 +25,11 @@ def hybridz_tf_lstm(L: Layer, Bin: Bounds, tf=None):
     seq_len = L.params.get("seq_len", 1)
     batch_size = L.params.get("batch_size", 1)
     
+    # Output bounds (hidden states)
     lb = torch.full((hidden_size,), -1.0, device=Bin.lb.device, dtype=Bin.lb.dtype)
     ub = torch.full((hidden_size,), 1.0, device=Bin.lb.device, dtype=Bin.lb.dtype)
     
+    # If we have tighter input bounds, we might get tighter output bounds
     input_range = torch.max(Bin.ub) - torch.min(Bin.lb)
     if input_range < 2.0:
         scale_factor = min(1.0, input_range / 2.0)
@@ -46,13 +48,17 @@ def hybridz_tf_lstm(L: Layer, Bin: Bounds, tf=None):
 
 @torch.no_grad()
 def hybridz_tf_gru(L: Layer, Bin: Bounds, tf=None):
-    """GRU cell (conservative)."""
+    """HybridZ transfer function for GRU cells."""
+    # GRU is simpler than LSTM but still complex
+    
     input_size = L.params.get("input_size")
     hidden_size = L.params.get("hidden_size")
     
+    # GRU output (hidden state) bounded by tanh activation
     lb = torch.full((hidden_size,), -1.0, device=Bin.lb.device, dtype=Bin.lb.dtype)
     ub = torch.full((hidden_size,), 1.0, device=Bin.lb.device, dtype=Bin.lb.dtype)
     
+    # Tighter bounds based on input
     input_range = torch.max(Bin.ub) - torch.min(Bin.lb)
     if input_range < 2.0:
         scale_factor = min(1.0, input_range / 2.0)
@@ -74,13 +80,16 @@ def hybridz_tf_rnn(L: Layer, Bin: Bounds, tf=None):
     """Basic RNN cell (conservative)."""
     input_size = L.params.get("input_size")
     hidden_size = L.params.get("hidden_size")
-    nonlinearity = L.params.get("nonlinearity", "tanh")
+    nonlinearity = L.params.get("nonlinearity", "tanh")  # tanh or relu
     
     if nonlinearity == "tanh":
+        # Tanh activation bounds output to [-1, 1]
         lb = torch.full((hidden_size,), -1.0, device=Bin.lb.device, dtype=Bin.lb.dtype)
         ub = torch.full((hidden_size,), 1.0, device=Bin.lb.device, dtype=Bin.lb.dtype)
     elif nonlinearity == "relu":
+        # ReLU activation bounds output to [0, +inf), but use conservative upper bound
         lb = torch.zeros((hidden_size,), device=Bin.lb.device, dtype=Bin.lb.dtype)
+        # Conservative upper bound based on input range
         input_max = torch.max(torch.abs(Bin.ub), torch.abs(Bin.lb))
         ub = torch.full((hidden_size,), float(input_max * 2), device=Bin.lb.device, dtype=Bin.lb.dtype)
     else:
@@ -98,15 +107,19 @@ def hybridz_tf_rnn(L: Layer, Bin: Bounds, tf=None):
 
 @torch.no_grad()
 def hybridz_tf_embedding(L: Layer, Bin: Bounds, tf=None):
-    """Embedding lookup (conservative)."""
+    """HybridZ transfer function for embedding lookup."""
+    # Embedding lookup: discrete input indices -> continuous embeddings
+    
     num_embeddings = L.params.get("num_embeddings")
     embedding_dim = L.params.get("embedding_dim")
-    weight = L.params.get("weight")
+    weight = L.params.get("weight")  # (num_embeddings, embedding_dim)
     
     if weight is not None:
-        lb = torch.min(weight, dim=0)[0]
-        ub = torch.max(weight, dim=0)[0]
+        # Bounds based on embedding table values
+        lb = torch.min(weight, dim=0)[0]  # Minimum over vocabulary
+        ub = torch.max(weight, dim=0)[0]  # Maximum over vocabulary
     else:
+        # Conservative bounds if no weight provided
         lb = torch.full((embedding_dim,), -1.0, device=Bin.lb.device, dtype=Bin.lb.dtype)
         ub = torch.full((embedding_dim,), 1.0, device=Bin.lb.device, dtype=Bin.lb.dtype)
     

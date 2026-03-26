@@ -98,7 +98,7 @@ class HybridzTF(TransferFunction):
     @property
     def name(self) -> str:
         return "HybridzTF"
-    
+        
     def supports_layer(self, layer_kind: str) -> bool:
         """Check if HybridZ supports this layer kind."""
         return layer_kind.upper() in self._LAYER_REGISTRY
