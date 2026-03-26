@@ -302,7 +302,7 @@ def _hz_apply_relu(hz: HZono) -> HZono:
         eq_Ab[3 * j + 2, col_z[j]] = alpha[j] / 2.0
         eq_b[3 * j + 2, 0] = hz.c[idx_i, 0] - beta[j] / 2.0
 
-    # ---- Extend old constraints to new column dimensions ----
+    # Extend old constraints to new column dimensions
     old_Ac_ext = torch.cat([hz.Ac, torch.zeros((nc, 4 * k), dtype=dtype, device=device)], dim=1)
     old_Ab_ext = torch.cat([hz.Ab, torch.zeros((nc, k), dtype=dtype, device=device)], dim=1)
 
@@ -315,21 +315,25 @@ def _hz_apply_relu(hz: HZono) -> HZono:
 
 
 def _hz_apply_leaky_relu(hz: HZono, alpha_arg: float) -> HZono:
-    """LeakyReLU via triangle relaxation (sound over-approximation).
+    """Exact LeakyReLU via equality constraints + box equalities with slack.
 
-    Same structure as ReLU but with y = alpha*x for x < 0.
-    Active/inactive cases handled directly; unstable neurons use
-    triangle relaxation with no new constraint rows.
+    Per unstable neuron i with bounds [l, u] (l < 0 < u):
+      ng += 6 (g1, g2 real + s1+, s1-, s2+, s2- slack)
+      nb += 1 (z)
+      nc += 5 equalities:
+        (1-2) g1 + s1+ + 0.5z = 0.5,  -g1 + s1- + 0.5z = 0.5  (g1 active when z=+1)
+        (3-4) g2 + s2+ - 0.5z = 0.5,  -g2 + s2- - 0.5z = 0.5  (g2 active when z=-1)
+        (5)   linking equality
 
-    TODO: Convert to exact equality-constraint encoding (matching
-    _hz_apply_relu's applyReLU_eq_native_exact approach) for tighter
-    bounds on unstable neurons.
+    When z=-1 (active):  g1=0, g2 free → y = u/2·(1-g2) = x   ∈ [0, u]
+    When z=+1 (inactive): g2=0, g1 free → y = αl/2·(1+g1) = αx ∈ [αl, 0]
     """
     dtype, device = hz.c.dtype, hz.c.device
     n = hz.c.shape[0]
     ng = hz.Gc.shape[1]
     nb = hz.Gb.shape[1]
     nc = hz.Ac.shape[0]
+    a = alpha_arg  # negative slope
 
     bounds = _hz_compute_bounds(hz)
     lb = bounds.lb.flatten()
@@ -340,56 +344,113 @@ def _hz_apply_leaky_relu(hz: HZono, alpha_arg: float) -> HZono:
     unstable = ~active & ~inactive
     k = int(unstable.sum().item())
 
-    # Active: y = x (identity). Inactive: y = alpha*x (scale).
-    new_c = hz.c.clone()
-    new_Gc_base = hz.Gc.clone()
-    new_Gb_base = hz.Gb.clone()
-    for idx in torch.where(inactive)[0]:
-        i = int(idx.item())
-        new_c[i] *= alpha_arg
-        new_Gc_base[i] *= alpha_arg
-        new_Gb_base[i] *= alpha_arg
+    # ---- Stable neurons ----
+    out_Gc = torch.zeros((n, ng + 6 * k), dtype=dtype, device=device)
+    out_Gb = torch.zeros((n, nb + k), dtype=dtype, device=device)
+    out_c  = torch.zeros((n, 1), dtype=dtype, device=device)
+
+    # Active: y = x
+    if active.any():
+        out_c[active] = hz.c[active]
+        out_Gc[active, :ng] = hz.Gc[active]
+        out_Gb[active, :nb] = hz.Gb[active]
+
+    # Inactive: y = alpha*x
+    if inactive.any():
+        out_c[inactive] = a * hz.c[inactive]
+        out_Gc[inactive, :ng] = a * hz.Gc[inactive]
+        out_Gb[inactive, :nb] = a * hz.Gb[inactive]
 
     if k == 0:
-        return _get_HZono()(c=new_c, Gc=new_Gc_base, Gb=new_Gb_base,
+        return _get_HZono()(c=out_c, Gc=out_Gc[:, :ng], Gb=out_Gb[:, :nb],
                             Ac=hz.Ac.clone(), Ab=hz.Ab.clone(), b=hz.b.clone())
 
-    # Unstable: triangle relaxation (sound over-approximation)
-    # Upper bound line through (lb, alpha*lb) and (ub, ub): slope_u, shift_u
-    # Lower bound: lambda*x where lambda = min(1, alpha) for lower facet
+    # ---- Unstable neurons ----
     unstable_idx = torch.where(unstable)[0]
-    lb_u = lb[unstable_idx]
-    ub_u = ub[unstable_idx]
-    slope_u = (ub_u - alpha_arg * lb_u) / (ub_u - lb_u + 1e-30)
-    shift_u = (1.0 - alpha_arg) * lb_u * ub_u / (ub_u - lb_u + 1e-30)
+    l = lb[unstable_idx]  # (k,) negative
+    u = ub[unstable_idx]  # (k,) positive
+    t = torch.arange(k, device=device)
 
-    # Output for unstable: midpoint of [alpha*x, slope_u*x + shift_u]
-    # Use interval approach: compute the center and radius of the output range
-    mid_slope = (slope_u + alpha_arg) / 2.0
-    half_slope = (slope_u - alpha_arg) / 2.0
+    # Column indices
+    col_g1 = ng + t                 # real generator g1
+    col_g2 = ng + k + t             # real generator g2
+    col_s1p = ng + 2 * k + t        # slack s1+
+    col_s1m = ng + 3 * k + t        # slack s1-
+    col_s2p = ng + 4 * k + t        # slack s2+
+    col_s2m = ng + 5 * k + t        # slack s2-
+    col_z  = nb + t                  # binary z
 
-    new_c_unstable = mid_slope * hz.c[unstable_idx, 0] + shift_u / 2.0
-    new_c[unstable_idx] = new_c_unstable.unsqueeze(1)
+    # Output center and generators
+    # c_y = (u + a*l) / 4
+    out_c[unstable_idx, 0] = (u + a * l) / 4.0
 
-    # Scale input generators by mid_slope
-    new_Gc_base[unstable_idx] = mid_slope.unsqueeze(1) * hz.Gc[unstable_idx]
-    new_Gb_base[unstable_idx] = mid_slope.unsqueeze(1) * hz.Gb[unstable_idx]
+    # g1 y-contribution: a*l/2 (inactive branch)
+    out_Gc[unstable_idx, col_g1] = a * l / 2.0
+    # g2 y-contribution: -u/2 (active branch)
+    out_Gc[unstable_idx, col_g2] = -u / 2.0
+    # slack: zero output (already zeros)
 
-    # Add 1 new continuous generator per unstable for the approximation gap
-    Gc_gap = torch.zeros((n, k), dtype=dtype, device=device)
-    for j, idx in enumerate(unstable_idx):
-        Gc_gap[idx, j] = half_slope[j] * (ub_u[j] - lb_u[j]) / 2.0 + shift_u[j] / 2.0
+    # Binary y-contribution: (a*l - u) / 4
+    out_Gb[unstable_idx, col_z] = (a * l - u) / 4.0
 
-    out_Gc = torch.cat([new_Gc_base, Gc_gap], dim=1)
-    out_Gb = new_Gb_base
+    # ---- 5 equality constraints per unstable neuron ----
+    ng_total = ng + 6 * k
+    nb_total = nb + k
 
-    # Extend constraints for new columns
-    old_Ac_ext = torch.cat([hz.Ac, torch.zeros((nc, k), dtype=dtype, device=device)], dim=1)
-    out_Ac = old_Ac_ext
-    out_Ab = hz.Ab.clone()
-    out_b  = hz.b.clone()
+    eq_Ac = torch.zeros((5 * k, ng_total), dtype=dtype, device=device)
+    eq_Ab = torch.zeros((5 * k, nb_total), dtype=dtype, device=device)
+    eq_b  = torch.zeros((5 * k, 1), dtype=dtype, device=device)
 
-    return _get_HZono()(c=new_c, Gc=out_Gc, Gb=out_Gb,
+    r0 = 5 * t       # box eq for g1 (+)
+    r1 = 5 * t + 1   # box eq for g1 (-)
+    r2 = 5 * t + 2   # box eq for g2 (+)
+    r3 = 5 * t + 3   # box eq for g2 (-)
+    r4 = 5 * t + 4   # linking eq
+
+    # Box eq 0: g1 + s1+ + 0.5*z = 0.5  (g1 active when z=+1)
+    eq_Ac[r0, col_g1] = 1.0
+    eq_Ac[r0, col_s1p] = 1.0
+    eq_Ab[r0, col_z] = 0.5
+    eq_b[r0, 0] = 0.5
+
+    # Box eq 1: -g1 + s1- + 0.5*z = 0.5
+    eq_Ac[r1, col_g1] = -1.0
+    eq_Ac[r1, col_s1m] = 1.0
+    eq_Ab[r1, col_z] = 0.5
+    eq_b[r1, 0] = 0.5
+
+    # Box eq 2: g2 + s2+ - 0.5*z = 0.5  (g2 active when z=-1)
+    eq_Ac[r2, col_g2] = 1.0
+    eq_Ac[r2, col_s2p] = 1.0
+    eq_Ab[r2, col_z] = -0.5
+    eq_b[r2, 0] = 0.5
+
+    # Box eq 3: -g2 + s2- - 0.5*z = 0.5
+    eq_Ac[r3, col_g2] = -1.0
+    eq_Ac[r3, col_s2m] = 1.0
+    eq_Ab[r3, col_z] = -0.5
+    eq_b[r3, 0] = 0.5
+
+    # Linking eq 4:
+    # Gc[i]*ξ_old + Gb[i]*ζ_old - (l/2)*g1 + (u/2)*g2 - ((l-u)/4)*z = (u+l)/4 - c_i
+    for j in range(k):
+        idx_i = int(unstable_idx[j].item())
+        eq_Ac[5 * j + 4, :ng] = hz.Gc[idx_i]
+        eq_Ac[5 * j + 4, col_g1[j]] = -l[j] / 2.0
+        eq_Ac[5 * j + 4, col_g2[j]] = u[j] / 2.0
+        eq_Ab[5 * j + 4, :nb] = hz.Gb[idx_i]
+        eq_Ab[5 * j + 4, col_z[j]] = -(l[j] - u[j]) / 4.0  # = (u-l)/4
+        eq_b[5 * j + 4, 0] = (u[j] + l[j]) / 4.0 - hz.c[idx_i, 0]
+
+    # ---- Extend old constraints ----
+    old_Ac_ext = torch.cat([hz.Ac, torch.zeros((nc, 6 * k), dtype=dtype, device=device)], dim=1)
+    old_Ab_ext = torch.cat([hz.Ab, torch.zeros((nc, k), dtype=dtype, device=device)], dim=1)
+
+    out_Ac = torch.cat([old_Ac_ext, eq_Ac], dim=0)
+    out_Ab = torch.cat([old_Ab_ext, eq_Ab], dim=0)
+    out_b  = torch.cat([hz.b, eq_b], dim=0)
+
+    return _get_HZono()(c=out_c, Gc=out_Gc, Gb=out_Gb,
                         Ac=out_Ac, Ab=out_Ab, b=out_b)
 
 
@@ -749,7 +810,7 @@ def _hz_from_bounds_fresh(bounds: Bounds, dtype, device) -> HZono:
     return _get_HZono()(c=c, Gc=Gc, Gb=Gb, Ac=Ac, Ab=Ab, b=b)
 
 
-# ---- Complexity reduction (PhD thesis Chapter 6) ---------------------------
+# ---- Complexity reductio ---------------------------
 
 def _hz_reduce(hz: HZono, max_order: float = 10.0) -> HZono:
     """Reduce HZ complexity by relaxing binary generators and removing
