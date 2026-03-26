@@ -69,7 +69,7 @@ class HybridzTF(TransferFunction):
         "SIGMOID": lambda L, bounds, tf: hybridz_tf_sigmoid(L, bounds), 
         "ABS": lambda L, bounds, tf: hybridz_tf_abs(L, bounds),
         
-        # Multi-input operations 
+        # Multi-input operations  
         "ADD": lambda L, bounds, tf: hybridz_tf_add(L, 
             tf._net.get_predecessor_bounds(L.id, tf._after, tf._before, 0), 
             tf._net.get_predecessor_bounds(L.id, tf._after, tf._before, 1)),

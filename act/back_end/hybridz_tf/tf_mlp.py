@@ -1092,6 +1092,7 @@ def hybridz_tf_abs(L: Layer, Bin: Bounds) -> Fact:
 @torch.no_grad()
 def hybridz_tf_add(L: Layer, Bin1: Bounds, Bin2: Bounds) -> Fact:
     """HybridZ transfer function for element-wise addition."""
+    # Simple interval addition
     lb = Bin1.lb + Bin2.lb
     ub = Bin1.ub + Bin2.ub
     Bout = Bounds(lb=lb, ub=ub)
