@@ -919,8 +919,9 @@ def _hz_reduce(hz: HZono, max_order: float = 10.0) -> HZono:
 
 @torch.no_grad()
 def hybridz_tf_dense(L: Layer, Bin: Bounds, tf=None):
-    """Dense layer. Returns Fact."""
-    W = L.params["weight"]
+    """HybridZ transfer function for dense/linear layers with zonotope precision."""
+    # Extract parameters (names aligned with PyTorch)
+    W = L.params["weight"]  # (out_features, in_features)
     b = L.params.get("bias", None)
 
     hz_in = tf._hz_cache.get(L.id) if tf else None
@@ -948,13 +949,15 @@ def hybridz_tf_dense(L: Layer, Bin: Bounds, tf=None):
     if tf and hz_out is not None:
         tf._hz_cache[L.id] = hz_out
     cons = ConSet()
+    # cons.add_dense(L.id, L.in_vars, L.out_vars, W, b)
     cons.add_op(f"dense:{L.id}", list(L.out_vars + L.in_vars), W=W, b=b)
+    
     return Fact(bounds=Bout, cons=cons)
 
 
 @torch.no_grad()
 def hybridz_tf_bias(L: Layer, Bin: Bounds, tf=None):
-    """Bias addition. Returns Fact."""
+    """HybridZ transfer function for bias addition."""
     c = L.params["c"]
 
     hz_in = tf._hz_cache.get(L.id) if tf else None
@@ -974,6 +977,7 @@ def hybridz_tf_bias(L: Layer, Bin: Bounds, tf=None):
         tf._hz_cache[L.id] = hz_out
     cons = ConSet()
     cons.add_op(f"bias:{L.id}", list(L.out_vars + L.in_vars), c=c)
+    
     return Fact(bounds=Bout, cons=cons)
 
 
@@ -998,6 +1002,7 @@ def hybridz_tf_scale(L: Layer, Bin: Bounds, tf=None):
         tf._hz_cache[L.id] = hz_out
     cons = ConSet()
     cons.add_op(f"scale:{L.id}", list(L.out_vars + L.in_vars), a=a)
+    
     return Fact(bounds=Bout, cons=cons)
 
 
@@ -1019,23 +1024,26 @@ def hybridz_tf_relu(L: Layer, Bin: Bounds, tf=None):
         tf._hz_cache[L.id] = hz_out
     # Constraint generation (always from interval Bin)
     cons = ConSet()
+    
+    # For ambiguous neurons, use HybridZ slope computation
     slope = torch.zeros_like(Bin.lb)
     shift = torch.zeros_like(Bin.lb)
+    
     idx_amb = torch.where((Bin.lb < 0) & (Bin.ub > 0))[0]
     idx_on = torch.where(Bin.lb >= 0)[0]
     idx_off = torch.where(Bin.ub <= 0)[0]
     if len(idx_amb) > 0:
+        # HybridZ: More precise slope computation
         slope = Bin.lb[idx_amb] / torch.clamp(Bin.ub[idx_amb] - Bin.lb[idx_amb], min=1e-12)
         shift = -slope * Bin.lb[idx_amb]
-    cons.add_op(f"relu:{L.id}", list(L.out_vars + L.in_vars),
-                idx_on=idx_on, idx_off=idx_off, idx_amb=idx_amb,
-                slope=slope, shift=shift)
+    cons.add_op(f"relu:{L.id}", list(L.out_vars + L.in_vars), idx_on=idx_on, idx_off=idx_off, idx_amb=idx_amb, slope=slope, shift=shift)
+    
     return Fact(bounds=Bout, cons=cons)
 
 
 @torch.no_grad()
 def hybridz_tf_lrelu(L: Layer, Bin: Bounds, tf=None):
-    """LeakyReLU. Returns Fact."""
+    """HybridZ transfer function for LeakyReLU."""
     alpha = float(L.params.get("negative_slope", 0.01))
 
     hz_in = tf._hz_cache.get(L.id) if tf else None
@@ -1055,18 +1063,21 @@ def hybridz_tf_lrelu(L: Layer, Bin: Bounds, tf=None):
     idx_on = torch.where(Bin.lb >= 0)[0]
     idx_off = torch.where(Bin.ub <= 0)[0]
     idx_amb = torch.where((Bin.lb < 0) & (Bin.ub > 0))[0]
+    
+    # HybridZ slope computation for ambiguous region
     slope = torch.zeros_like(Bin.lb)
     shift = torch.zeros_like(Bin.lb)
+    
     if len(idx_amb) > 0:
         y_at_ub = Bin.ub[idx_amb]
         y_at_lb = alpha * Bin.lb[idx_amb]
         denom = Bin.ub[idx_amb] - Bin.lb[idx_amb]
         slope[idx_amb] = torch.where(denom > 1e-8, (y_at_ub - y_at_lb) / denom, torch.ones_like(denom))
         shift[idx_amb] = y_at_lb - slope[idx_amb] * Bin.lb[idx_amb]
+    
     cons = ConSet()
-    cons.add_op(f"lrelu:{L.id}", list(L.out_vars + L.in_vars), alpha=alpha,
-                idx_on=idx_on, idx_off=idx_off, idx_amb=idx_amb,
-                slope=slope[idx_amb], shift=shift[idx_amb])
+    cons.add_op(f"lrelu:{L.id}", list(L.out_vars + L.in_vars), alpha=alpha, idx_on=idx_on, idx_off=idx_off, idx_amb=idx_amb, slope=slope[idx_amb], shift=shift[idx_amb])
+    
     return Fact(bounds=Bout, cons=cons)
 
 
@@ -1088,6 +1099,7 @@ def hybridz_tf_tanh(L: Layer, Bin: Bounds, tf=None):
         tf._hz_cache[L.id] = hz_out
     cons = ConSet()
     cons.add_op(f"tanh:{L.id}", list(L.out_vars + L.in_vars))
+    
     return Fact(bounds=Bout, cons=cons)
 
 
@@ -1114,7 +1126,7 @@ def hybridz_tf_sigmoid(L: Layer, Bin: Bounds, tf=None):
 
 @torch.no_grad()
 def hybridz_tf_abs(L: Layer, Bin: Bounds, tf=None):
-    """Absolute value. Returns Fact."""
+    """HybridZ transfer function for absolute value."""
     hz_in = tf._hz_cache.get(L.id) if tf else None
     hz_out = None
     if hz_in is not None:
@@ -1142,14 +1154,14 @@ def hybridz_tf_abs(L: Layer, Bin: Bounds, tf=None):
     idx_neg = torch.where(Bin.ub <= 0)[0]
     idx_amb = torch.where((Bin.lb < 0) & (Bin.ub > 0))[0]
     cons = ConSet()
-    cons.add_op(f"abs:{L.id}", list(L.out_vars + L.in_vars),
-                idx_pos=idx_pos, idx_neg=idx_neg, idx_amb=idx_amb)
+    cons.add_op(f"abs:{L.id}", list(L.out_vars + L.in_vars), idx_pos=idx_pos, idx_neg=idx_neg, idx_amb=idx_amb)
+    
     return Fact(bounds=Bout, cons=cons)
 
 
 @torch.no_grad()
 def hybridz_tf_add(L: Layer, Bin1: Bounds, Bin2: Bounds, tf=None):
-    """Element-wise addition. Returns Fact."""
+    """HybridZ transfer function for element-wise addition."""
     hz_in1 = tf._hz_cache.get(L.id) if tf else None
     preds = tf._net.preds.get(L.id, []) if tf else []
     hz_in2 = tf._hz_cache.get(preds[1]) if tf and len(preds) > 1 and preds[1] in tf._hz_cache else None
@@ -1166,12 +1178,13 @@ def hybridz_tf_add(L: Layer, Bin1: Bounds, Bin2: Bounds, tf=None):
         tf._hz_cache[L.id] = hz_out
     cons = ConSet()
     cons.add_op(f"add:{L.id}", list(L.out_vars + L.in_vars))
+    
     return Fact(bounds=Bout, cons=cons)
 
 
 @torch.no_grad()
 def hybridz_tf_mul(L: Layer, Bin1: Bounds, Bin2: Bounds, tf=None):
-    """Element-wise multiplication (McCormick). Returns Fact."""
+    """HybridZ transfer function for element-wise multiplication with McCormick relaxation."""
     hz_in1 = tf._hz_cache.get(L.id) if tf else None
     preds = tf._net.preds.get(L.id, []) if tf else []
     hz_in2 = tf._hz_cache.get(preds[1]) if tf and len(preds) > 1 and preds[1] in tf._hz_cache else None
