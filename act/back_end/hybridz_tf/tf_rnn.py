@@ -17,13 +17,13 @@ from act.back_end.core import Bounds, Fact, Layer, ConSet
 
 
 @torch.no_grad()
-def hybridz_tf_lstm(L: Layer, Bin: Bounds):
+def hybridz_tf_lstm(L: Layer, Bin: Bounds) -> Fact:
     """HybridZ transfer function for LSTM cells."""
     # LSTM is complex with internal gates - conservative approximation
     # For now, use interval-based bounds with HybridZ constraint generation
     
     input_size = L.params.get("input_size")
-    hidden_size = L.params.get("hidden_size")
+    hidden_size = L.params.get("hidden_size") 
     
     # Conservative bounds for LSTM output
     # Hidden state typically bounded by tanh activation [-1, 1]
@@ -49,11 +49,12 @@ def hybridz_tf_lstm(L: Layer, Bin: Bounds):
     
     cons = ConSet()
     cons.add_op(f"lstm:{L.id}", list(L.out_vars + L.in_vars), input_size=input_size, hidden_size=hidden_size)
+    
     return Fact(bounds=Bout, cons=cons)
 
 
 @torch.no_grad()
-def hybridz_tf_gru(L: Layer, Bin: Bounds):
+def hybridz_tf_gru(L: Layer, Bin: Bounds) -> Fact:
     """HybridZ transfer function for GRU cells."""
     # GRU is simpler than LSTM but still complex
     
@@ -75,11 +76,12 @@ def hybridz_tf_gru(L: Layer, Bin: Bounds):
     
     cons = ConSet()
     cons.add_op(f"gru:{L.id}", list(L.out_vars + L.in_vars), input_size=input_size, hidden_size=hidden_size)
+    
     return Fact(bounds=Bout, cons=cons)
 
 
 @torch.no_grad()
-def hybridz_tf_rnn(L: Layer, Bin: Bounds):
+def hybridz_tf_rnn(L: Layer, Bin: Bounds) -> Fact:
     """HybridZ transfer function for basic RNN cells."""
     # Basic RNN: h_t = tanh(W_ih @ x_t + b_ih + W_hh @ h_{t-1} + b_hh)
     
@@ -104,11 +106,12 @@ def hybridz_tf_rnn(L: Layer, Bin: Bounds):
     
     cons = ConSet()
     cons.add_op(f"rnn:{L.id}", list(L.out_vars + L.in_vars), input_size=input_size, hidden_size=hidden_size, nonlinearity=nonlinearity)
+    
     return Fact(bounds=Bout, cons=cons)
 
 
 @torch.no_grad()
-def hybridz_tf_embedding(L: Layer, Bin: Bounds):
+def hybridz_tf_embedding(L: Layer, Bin: Bounds) -> Fact:
     """HybridZ transfer function for embedding lookup."""
     # Embedding lookup: discrete input indices -> continuous embeddings
     
@@ -129,4 +132,5 @@ def hybridz_tf_embedding(L: Layer, Bin: Bounds):
     
     cons = ConSet()
     cons.add_op(f"embedding:{L.id}", list(L.out_vars + L.in_vars), num_embeddings=num_embeddings, embedding_dim=embedding_dim, weight=weight)
+    
     return Fact(bounds=Bout, cons=cons)

@@ -918,34 +918,48 @@ def _hz_reduce(hz: HZono, max_order: float = 10.0) -> HZono:
 # ============================================================================
 
 @torch.no_grad()
-def hybridz_tf_dense(L: Layer, Bin: Bounds):
+def hybridz_tf_dense(L: Layer, Bin: Bounds) -> Fact:
     """HybridZ transfer function for dense/linear layers with zonotope precision."""
     # Extract parameters (names aligned with PyTorch)
     W = L.params["weight"]  # (out_features, in_features)
     b = L.params.get("bias", None)
     
+    # Apply linear transformation with HybridZ operations
+    # For now, use interval arithmetic as base implementation
+    # TODO: Integrate actual HybridZ zonotope operations
+    
+    # Compute bounds: y = W @ x + b
     if W.shape[1] != Bin.lb.shape[0]:
         raise ValueError(f"Dense layer input mismatch: W expects {W.shape[1]}, got {Bin.lb.shape[0]}")
+    
+    # Interval multiplication: [a,b] * [c,d] with mixed signs
     W_pos = torch.clamp(W, min=0)
     W_neg = torch.clamp(W, max=0)
+    
+    # Compute output bounds
     lb = W_pos @ Bin.lb + W_neg @ Bin.ub
     ub = W_pos @ Bin.ub + W_neg @ Bin.lb
+    
     if b is not None:
         lb = lb + b
         ub = ub + b
+    
     Bout = Bounds(lb=lb, ub=ub)
     
+    # Generate constraint for dense layer
     cons = ConSet()
+    # cons.add_dense(L.id, L.in_vars, L.out_vars, W, b)
     cons.add_op(f"dense:{L.id}", list(L.out_vars + L.in_vars), W=W, b=b)
     
     return Fact(bounds=Bout, cons=cons)
 
 
 @torch.no_grad()
-def hybridz_tf_bias(L: Layer, Bin: Bounds):
+def hybridz_tf_bias(L: Layer, Bin: Bounds) -> Fact:
     """HybridZ transfer function for bias addition."""
     c = L.params["c"]
     
+    # Simple translation
     lb = Bin.lb + c
     ub = Bin.ub + c
     Bout = Bounds(lb=lb, ub=ub)
@@ -957,12 +971,14 @@ def hybridz_tf_bias(L: Layer, Bin: Bounds):
 
 
 @torch.no_grad()
-def hybridz_tf_scale(L: Layer, Bin: Bounds):
-    """Element-wise scaling. Returns Fact."""
+def hybridz_tf_scale(L: Layer, Bin: Bounds) -> Fact:
+    """HybridZ transfer function for element-wise scaling."""
     a = L.params["a"]
     
+    # Handle positive/negative scaling
     a_pos = torch.clamp(a, min=0)
     a_neg = torch.clamp(a, max=0)
+    
     lb = a_pos * Bin.lb + a_neg * Bin.ub
     ub = a_pos * Bin.ub + a_neg * Bin.lb
     Bout = Bounds(lb=lb, ub=ub)
@@ -974,8 +990,8 @@ def hybridz_tf_scale(L: Layer, Bin: Bounds):
 
 
 @torch.no_grad()
-def hybridz_tf_relu(L: Layer, Bin: Bounds):
-    """ReLU with graph-exact HZ encoding. Returns Fact."""
+def hybridz_tf_relu(L: Layer, Bin: Bounds) -> Fact:
+    """HybridZ transfer function for ReLU activation with precise constraint handling."""
     lb = torch.clamp(Bin.lb, min=0)
     ub = torch.clamp(Bin.ub, min=0)
     Bout = Bounds(lb=lb, ub=ub)
@@ -1000,10 +1016,11 @@ def hybridz_tf_relu(L: Layer, Bin: Bounds):
 
 
 @torch.no_grad()
-def hybridz_tf_lrelu(L: Layer, Bin: Bounds):
+def hybridz_tf_lrelu(L: Layer, Bin: Bounds) -> Fact:
     """HybridZ transfer function for LeakyReLU."""
     alpha = float(L.params.get("negative_slope", 0.01))
     
+    # Output bounds
     lb = torch.where(Bin.lb >= 0, Bin.lb, alpha * Bin.lb)
     ub = torch.where(Bin.ub <= 0, alpha * Bin.ub, Bin.ub)
     Bout = Bounds(lb=lb, ub=ub)
@@ -1031,7 +1048,7 @@ def hybridz_tf_lrelu(L: Layer, Bin: Bounds):
 
 
 @torch.no_grad()
-def hybridz_tf_tanh(L: Layer, Bin: Bounds):
+def hybridz_tf_tanh(L: Layer, Bin: Bounds) -> Fact:
     """Tanh with piecewise linear HZ encoding. Returns Fact."""
     lb = torch.tanh(Bin.lb)
     ub = torch.tanh(Bin.ub)
@@ -1039,12 +1056,11 @@ def hybridz_tf_tanh(L: Layer, Bin: Bounds):
     
     cons = ConSet()
     cons.add_op(f"tanh:{L.id}", list(L.out_vars + L.in_vars))
-    
+
     return Fact(bounds=Bout, cons=cons)
 
-
 @torch.no_grad()
-def hybridz_tf_sigmoid(L: Layer, Bin: Bounds):
+def hybridz_tf_sigmoid(L: Layer, Bin: Bounds) -> Fact:
     """Sigmoid with piecewise linear HZ encoding. Returns Fact."""
     lb = torch.sigmoid(Bin.lb)
     ub = torch.sigmoid(Bin.ub)
@@ -1056,7 +1072,7 @@ def hybridz_tf_sigmoid(L: Layer, Bin: Bounds):
 
 
 @torch.no_grad()
-def hybridz_tf_abs(L: Layer, Bin: Bounds):
+def hybridz_tf_abs(L: Layer, Bin: Bounds) -> Fact:
     """HybridZ transfer function for absolute value."""
     idx_pos = torch.where(Bin.lb >= 0)[0]
     idx_neg = torch.where(Bin.ub <= 0)[0]
@@ -1074,29 +1090,39 @@ def hybridz_tf_abs(L: Layer, Bin: Bounds):
 
 
 @torch.no_grad()
-def hybridz_tf_add(L: Layer, Bin1: Bounds, Bin2: Bounds):
+def hybridz_tf_add(L: Layer, Bin1: Bounds, Bin2: Bounds) -> Fact:
     """HybridZ transfer function for element-wise addition."""
     lb = Bin1.lb + Bin2.lb
     ub = Bin1.ub + Bin2.ub
     Bout = Bounds(lb=lb, ub=ub)
     
     cons = ConSet()
-    cons.add_op(f"add:{L.id}", list(L.out_vars + L.in_vars))
+    cons.add_op(f"add:{L.id}", list(L.out_vars + L.in_vars),)
     
     return Fact(bounds=Bout, cons=cons)
 
 
-@torch.no_grad()
-def hybridz_tf_mul(L: Layer, Bin1: Bounds, Bin2: Bounds):
+@torch.no_grad()  
+def hybridz_tf_mul(L: Layer, Bin1: Bounds, Bin2: Bounds) -> Fact:
     """HybridZ transfer function for element-wise multiplication with McCormick relaxation."""
+    # McCormick envelope for bilinear terms
+    # z = x * y, with x ∈ [lx, ux], y ∈ [ly, uy]
     lx, ux = Bin1.lb, Bin1.ub
     ly, uy = Bin2.lb, Bin2.ub
     
-    corners = torch.stack([lx * ly, lx * uy, ux * ly, ux * uy])
+    # Four corner points
+    corners = torch.stack([
+        lx * ly,  # lower-left
+        lx * uy,  # lower-right  
+        ux * ly,  # upper-left
+        ux * uy   # upper-right
+    ])
+    
     lb = torch.min(corners, dim=0)[0]
     ub = torch.max(corners, dim=0)[0]
     Bout = Bounds(lb=lb, ub=ub)
     
+    # McCormick constraints
     cons = ConSet()
     cons.add_op(f"mcc:{L.id}", list(L.out_vars + L.in_vars),
                 lx=Bin1.lb, ux=Bin1.ub, ly=Bin2.lb, uy=Bin2.ub)

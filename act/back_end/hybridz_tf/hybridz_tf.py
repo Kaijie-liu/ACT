@@ -66,12 +66,12 @@ class HybridzTF(TransferFunction):
         "RELU": lambda L, bounds, tf: hybridz_tf_relu(L, bounds),
         "LRELU": lambda L, bounds, tf: hybridz_tf_lrelu(L, bounds),
         "TANH": lambda L, bounds, tf: hybridz_tf_tanh(L, bounds),
-        "SIGMOID": lambda L, bounds, tf: hybridz_tf_sigmoid(L, bounds),
+        "SIGMOID": lambda L, bounds, tf: hybridz_tf_sigmoid(L, bounds), 
         "ABS": lambda L, bounds, tf: hybridz_tf_abs(L, bounds),
         
-        # Multi-input operations
-        "ADD": lambda L, bounds, tf: hybridz_tf_add(L,
-            tf._net.get_predecessor_bounds(L.id, tf._after, tf._before, 0),
+        # Multi-input operations 
+        "ADD": lambda L, bounds, tf: hybridz_tf_add(L, 
+            tf._net.get_predecessor_bounds(L.id, tf._after, tf._before, 0), 
             tf._net.get_predecessor_bounds(L.id, tf._after, tf._before, 1)),
         "MUL": lambda L, bounds, tf: hybridz_tf_mul(L,
             tf._net.get_predecessor_bounds(L.id, tf._after, tf._before, 0),
@@ -100,7 +100,7 @@ class HybridzTF(TransferFunction):
     @property
     def name(self) -> str:
         return "HybridzTF"
-    
+        
     def supports_layer(self, layer_kind: str) -> bool:
         """Check if HybridZ supports this layer kind."""
         return layer_kind.upper() in self._LAYER_REGISTRY
