@@ -144,7 +144,7 @@ def hybridz_tf_softmax(L: Layer, Bin: Bounds, tf=None):
             others_max = torch.max(torch.cat([Bin.ub[:i], Bin.ub[i+1:]]))
             if Bin.lb[i] > others_max + 1.0:  # Significantly larger
                 lb[i] = 0.7  # Conservative lower bound for dominant element
-                
+        
         if Bin.ub[i] < min_input + 1e-6:  # This element is approximately the minimum
             # This element will have low probability
             others_min = torch.min(torch.cat([Bin.lb[:i], Bin.lb[i+1:]]))
