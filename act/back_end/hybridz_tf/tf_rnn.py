@@ -19,9 +19,18 @@ from act.back_end.hybridz_tf.tf_mlp import _hz_from_bounds_fresh
 
 @torch.no_grad()
 def hybridz_tf_lstm(L: Layer, Bin: Bounds, tf=None):
-    """LSTM cell (conservative)."""
+    """HybridZ transfer function for LSTM cells."""
+    # LSTM is complex with internal gates - conservative approximation
+    # For now, use interval-based bounds with HybridZ constraint generation
+    
     input_size = L.params.get("input_size")
     hidden_size = L.params.get("hidden_size")
+    
+    # Conservative bounds for LSTM output
+    # Hidden state typically bounded by tanh activation [-1, 1]
+    # Cell state can have wider range
+
+    # Split input into sequence and initial hidden/cell states if needed
     seq_len = L.params.get("seq_len", 1)
     batch_size = L.params.get("batch_size", 1)
     
@@ -31,7 +40,8 @@ def hybridz_tf_lstm(L: Layer, Bin: Bounds, tf=None):
     
     # If we have tighter input bounds, we might get tighter output bounds
     input_range = torch.max(Bin.ub) - torch.min(Bin.lb)
-    if input_range < 2.0:
+    if input_range < 2.0:  # Input is somewhat bounded
+        # Scale output bounds proportionally
         scale_factor = min(1.0, input_range / 2.0)
         lb *= scale_factor
         ub *= scale_factor
@@ -41,8 +51,7 @@ def hybridz_tf_lstm(L: Layer, Bin: Bounds, tf=None):
         tf._hz_cache[L.id] = _hz_from_bounds_fresh(Bout, Bout.lb.dtype, Bout.lb.device)
     
     cons = ConSet()
-    cons.add_op(f"lstm:{L.id}", list(L.out_vars + L.in_vars),
-                input_size=input_size, hidden_size=hidden_size)
+    cons.add_op(f"lstm:{L.id}", list(L.out_vars + L.in_vars), input_size=input_size, hidden_size=hidden_size)
     return Fact(bounds=Bout, cons=cons)
 
 
@@ -70,14 +79,15 @@ def hybridz_tf_gru(L: Layer, Bin: Bounds, tf=None):
         tf._hz_cache[L.id] = _hz_from_bounds_fresh(Bout, Bout.lb.dtype, Bout.lb.device)
     
     cons = ConSet()
-    cons.add_op(f"gru:{L.id}", list(L.out_vars + L.in_vars),
-                input_size=input_size, hidden_size=hidden_size)
+    cons.add_op(f"gru:{L.id}", list(L.out_vars + L.in_vars), input_size=input_size, hidden_size=hidden_size)
     return Fact(bounds=Bout, cons=cons)
 
 
 @torch.no_grad()
 def hybridz_tf_rnn(L: Layer, Bin: Bounds, tf=None):
-    """Basic RNN cell (conservative)."""
+    """HybridZ transfer function for basic RNN cells."""
+    # Basic RNN: h_t = tanh(W_ih @ x_t + b_ih + W_hh @ h_{t-1} + b_hh)
+    
     input_size = L.params.get("input_size")
     hidden_size = L.params.get("hidden_size")
     nonlinearity = L.params.get("nonlinearity", "tanh")  # tanh or relu
@@ -100,8 +110,7 @@ def hybridz_tf_rnn(L: Layer, Bin: Bounds, tf=None):
         tf._hz_cache[L.id] = _hz_from_bounds_fresh(Bout, Bout.lb.dtype, Bout.lb.device)
     
     cons = ConSet()
-    cons.add_op(f"rnn:{L.id}", list(L.out_vars + L.in_vars),
-                input_size=input_size, hidden_size=hidden_size, nonlinearity=nonlinearity)
+    cons.add_op(f"rnn:{L.id}", list(L.out_vars + L.in_vars), input_size=input_size, hidden_size=hidden_size, nonlinearity=nonlinearity)
     return Fact(bounds=Bout, cons=cons)
 
 
@@ -128,6 +137,5 @@ def hybridz_tf_embedding(L: Layer, Bin: Bounds, tf=None):
         tf._hz_cache[L.id] = _hz_from_bounds_fresh(Bout, Bout.lb.dtype, Bout.lb.device)
     
     cons = ConSet()
-    cons.add_op(f"embedding:{L.id}", list(L.out_vars + L.in_vars),
-                num_embeddings=num_embeddings, embedding_dim=embedding_dim, weight=weight)
+    cons.add_op(f"embedding:{L.id}", list(L.out_vars + L.in_vars), num_embeddings=num_embeddings, embedding_dim=embedding_dim, weight=weight)
     return Fact(bounds=Bout, cons=cons)

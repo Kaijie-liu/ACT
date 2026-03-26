@@ -28,6 +28,14 @@ def hybridz_tf_layernorm(L: Layer, Bin: Bounds, tf=None):
     weight = L.params.get("weight")
     bias = L.params.get("bias")
     
+    # For HybridZ: more precise handling of normalization
+    # LayerNorm: y = (x - μ) / σ * γ + β
+    # where μ = mean(x), σ = sqrt(var(x) + eps)
+
+    # Conservative bound computation for normalized values
+    # Assume normalized values are approximately in [-3, 3] range for most cases
+    # This is a conservative approximation for interval analysis
+    
     input_range = Bin.ub - Bin.lb
     # If input range is small, normalization has less effect
     if torch.all(input_range < eps):
@@ -68,15 +76,19 @@ def hybridz_tf_gelu(L: Layer, Bin: Bounds, tf=None):
     """HybridZ transfer function for GELU activation with piecewise linear approximation."""
     # GELU(x) = x * Φ(x) where Φ is CDF of standard normal
     # Approximate with piecewise linear function for different ranges
-
+    
     # Define breakpoints for piecewise linear approximation
     breakpoints = torch.tensor([-3.0, -1.0, 0.0, 1.0, 3.0], device=Bin.lb.device, dtype=Bin.lb.dtype)
     
+    # Compute piecewise linear bounds
     lb = torch.zeros_like(Bin.lb)
     ub = torch.zeros_like(Bin.ub)
     
     for i in range(len(Bin.lb)):
         x_min, x_max = Bin.lb[i].item(), Bin.ub[i].item()
+        
+        # Find which segments the interval [x_min, x_max] intersects
+        # Check GELU values at breakpoints within interval
         y_candidates = [gelu_approx(x_min), gelu_approx(x_max)]
         for bp in breakpoints:
             if x_min <= bp <= x_max:
@@ -113,10 +125,11 @@ def hybridz_tf_softmax(L: Layer, Bin: Bounds, tf=None):
     """HybridZ transfer function for softmax with simplex constraints."""
     # Softmax output: exp(x_i) / sum(exp(x_j))
     # Properties: sum = 1, all values ≥ 0
-
+    
     # Conservative bounds for softmax
     # Lower bound: 0 (always non-negative)
     # Upper bound: 1 (probability values)
+    
     n = len(Bin.lb)
     lb = torch.zeros_like(Bin.lb)
     ub = torch.ones_like(Bin.ub)
@@ -126,12 +139,13 @@ def hybridz_tf_softmax(L: Layer, Bin: Bounds, tf=None):
     
     # If one input is much larger than others, it will dominate
     for i in range(n):
-        if Bin.lb[i] > max_input - 1e-6: # This element is approximately the maximum
+        if Bin.lb[i] > max_input - 1e-6:# This element is approximately the maximum
             # This element will have high probability
             others_max = torch.max(torch.cat([Bin.ub[:i], Bin.ub[i+1:]]))
             if Bin.lb[i] > others_max + 1.0:
                 lb[i] = 0.7
-        if Bin.ub[i] < min_input + 1e-6:
+        if Bin.ub[i] < min_input + 1e-6:  # This element is approximately the minimum
+            # This element will have low probability
             others_min = torch.min(torch.cat([Bin.lb[:i], Bin.lb[i+1:]]))
             if Bin.ub[i] < others_min - 1.0:  # Significantly smaller
                 ub[i] = 0.3  # Conservative upper bound for dominated element
@@ -180,14 +194,14 @@ def hybridz_tf_attention_scores(L: Layer, Q_bounds: Bounds, K_bounds: Bounds, tf
     
     # Attention scores: QK^T / sqrt(d_k)
     # Use bilinear multiplication bounds
-
+    
     # For each pair (q_i, k_j), compute bounds for q_i * k_j
     q_lb, q_ub = Q_bounds.lb, Q_bounds.ub
     k_lb, k_ub = K_bounds.lb, K_bounds.ub
     
     # Simplified: assume we're computing one attention head
     # Full implementation would handle batch dimensions and multiple heads
-
+    
     # McCormick bounds for dot product
     products = []
     for i in range(len(q_lb)):
