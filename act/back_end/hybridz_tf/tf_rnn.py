@@ -29,7 +29,7 @@ def hybridz_tf_lstm(L: Layer, Bin: Bounds, tf=None):
     # Conservative bounds for LSTM output
     # Hidden state typically bounded by tanh activation [-1, 1]
     # Cell state can have wider range
-
+    
     # Split input into sequence and initial hidden/cell states if needed
     seq_len = L.params.get("seq_len", 1)
     batch_size = L.params.get("batch_size", 1)
