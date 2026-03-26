@@ -65,7 +65,7 @@ def _hz_conv2d(hz, weight, bias, stride, padding, dilation, groups, input_shape)
     dtype, device = hz.c.dtype, hz.c.device
     C, H, W = _parse_input_shape(input_shape)
     weight = weight.to(dtype=dtype, device=device)
-
+    
     # Apply conv2d to center
     c_img = hz.c.view(C, H, W).unsqueeze(0)
     out_c = F.conv2d(c_img, weight,
@@ -73,17 +73,17 @@ def _hz_conv2d(hz, weight, bias, stride, padding, dilation, groups, input_shape)
                      stride=stride, padding=padding, dilation=dilation, groups=groups)
     new_c = out_c.reshape(-1, 1)
     n_out = new_c.shape[0]
-
+    
     new_Gc = _conv2d_generators(hz.Gc, weight, C, H, W, stride, padding, dilation, groups, n_out, dtype, device)
     new_Gb = _conv2d_generators(hz.Gb, weight, C, H, W, stride, padding, dilation, groups, n_out, dtype, device)
-
+    
     # Constraints unchanged (conv2d is linear)
     return _get_HZono()(c=new_c, Gc=new_Gc, Gb=new_Gb,
                         Ac=hz.Ac.clone(), Ab=hz.Ab.clone(), b=hz.b.clone())
 
 
 @torch.no_grad()
-def hybridz_tf_conv2d(L: Layer, Bin: Bounds, tf=None):
+def hybridz_tf_conv2d(L: Layer, Bin: Bounds):
     """2D convolution. Returns Fact."""
     weight = L.params["weight"]
     bias = L.params.get("bias", None)
@@ -92,49 +92,41 @@ def hybridz_tf_conv2d(L: Layer, Bin: Bounds, tf=None):
     dilation = L.params.get("dilation", 1)
     groups = L.params.get("groups", 1)
     input_shape = L.params.get("input_shape", None)
-
-    hz_in = tf._hz_cache.get(L.id) if tf else None
-    hz_out = None
-    if hz_in is not None:
-        hz_out = _hz_conv2d(hz_in, weight, bias, stride, padding, dilation, groups, input_shape)
-        Bout = _hz_compute_bounds(hz_out)
+    
+    if Bin.lb.dim() == 1:
+        if input_shape is None:
+            raise ValueError("CONV2D got flat bounds but params.input_shape is missing")
+        C, H, W = _parse_input_shape(input_shape)
+        Bin_reshaped_lb = Bin.lb.view(1, C, H, W)
+        Bin_reshaped_ub = Bin.ub.view(1, C, H, W)
+    elif Bin.lb.dim() == 3:
+        Bin_reshaped_lb = Bin.lb.unsqueeze(0)
+        Bin_reshaped_ub = Bin.ub.unsqueeze(0)
     else:
-        if Bin.lb.dim() == 1:
-            if input_shape is None:
-                raise ValueError("CONV2D got flat bounds but params.input_shape is missing")
-            C, H, W = _parse_input_shape(input_shape)
-            Bin_reshaped_lb = Bin.lb.view(1, C, H, W)
-            Bin_reshaped_ub = Bin.ub.view(1, C, H, W)
-        elif Bin.lb.dim() == 3:
-            Bin_reshaped_lb = Bin.lb.unsqueeze(0)
-            Bin_reshaped_ub = Bin.ub.unsqueeze(0)
-        else:
-            Bin_reshaped_lb = Bin.lb
-            Bin_reshaped_ub = Bin.ub
-
-        weight_pos = torch.clamp(weight, min=0)
-        weight_neg = torch.clamp(weight, max=0)
-
-        lb_conv = F.conv2d(Bin_reshaped_lb, weight_pos, bias=None, stride=stride,
-                           padding=padding, dilation=dilation, groups=groups)
-        lb_conv += F.conv2d(Bin_reshaped_ub, weight_neg, bias=None, stride=stride,
-                            padding=padding, dilation=dilation, groups=groups)
-        ub_conv = F.conv2d(Bin_reshaped_ub, weight_pos, bias=None, stride=stride,
-                           padding=padding, dilation=dilation, groups=groups)
-        ub_conv += F.conv2d(Bin_reshaped_lb, weight_neg, bias=None, stride=stride,
-                            padding=padding, dilation=dilation, groups=groups)
-
-        if bias is not None:
-            lb_conv += bias.view(1, -1, 1, 1)
-            ub_conv += bias.view(1, -1, 1, 1)
-
-        lb = lb_conv.reshape(-1)
-        ub = ub_conv.reshape(-1)
-        assert lb.numel() == len(L.out_vars)
-        Bout = Bounds(lb=lb, ub=ub)
-
-    if tf and hz_out is not None:
-        tf._hz_cache[L.id] = hz_out
+        Bin_reshaped_lb = Bin.lb
+        Bin_reshaped_ub = Bin.ub
+    
+    weight_pos = torch.clamp(weight, min=0)
+    weight_neg = torch.clamp(weight, max=0)
+    
+    lb_conv = F.conv2d(Bin_reshaped_lb, weight_pos, bias=None, stride=stride,
+                       padding=padding, dilation=dilation, groups=groups)
+    lb_conv += F.conv2d(Bin_reshaped_ub, weight_neg, bias=None, stride=stride,
+                        padding=padding, dilation=dilation, groups=groups)
+    ub_conv = F.conv2d(Bin_reshaped_ub, weight_pos, bias=None, stride=stride,
+                       padding=padding, dilation=dilation, groups=groups)
+    ub_conv += F.conv2d(Bin_reshaped_lb, weight_neg, bias=None, stride=stride,
+                        padding=padding, dilation=dilation, groups=groups)
+    
+    if bias is not None:
+        lb_conv += bias.view(1, -1, 1, 1)
+        ub_conv += bias.view(1, -1, 1, 1)
+    
+    lb = lb_conv.reshape(-1)
+    ub = ub_conv.reshape(-1)
+    assert lb.numel() == len(L.out_vars)
+    Bout = Bounds(lb=lb, ub=ub)
+    
     cons = ConSet()
     cons.add_op( f"conv2d:{L.id}", list(L.out_vars + L.in_vars), weight=weight,
                 bias=bias if bias is not None else torch.zeros(weight.shape[0], device=weight.device, dtype=weight.dtype),
@@ -144,47 +136,20 @@ def hybridz_tf_conv2d(L: Layer, Bin: Bounds, tf=None):
 
 
 @torch.no_grad()
-def hybridz_tf_maxpool2d(L: Layer, Bin: Bounds, tf=None):
+def hybridz_tf_maxpool2d(L: Layer, Bin: Bounds):
     """2D max pooling. Returns Fact."""
     kernel_size = L.params.get("kernel_size", 2)
     stride = L.params.get("stride", kernel_size)
     padding = L.params.get("padding", 0)
     in_shape = L.params.get("input_shape")
-
-    hz_in = tf._hz_cache.get(L.id) if tf else None
-    hz_out = None
-    if hz_in is not None:
-        hz_bounds = _hz_compute_bounds(hz_in)
-        dtype, device = hz_in.c.dtype, hz_in.c.device
-        Bin_lb, Bin_ub = _reshape_bounds_4d(hz_bounds.lb, hz_bounds.ub, in_shape)
-
-        lb_pool = F.max_pool2d(Bin_lb, kernel_size, stride=stride, padding=padding)
-        ub_pool = F.max_pool2d(Bin_ub, kernel_size, stride=stride, padding=padding)
-
-        _, indices = F.max_pool2d(Bin_lb, kernel_size, stride=stride,
-                                  padding=padding, return_indices=True)
-        win_idx = indices.flatten()
-
-        hz_out = _get_HZono()(c=hz_in.c[win_idx], Gc=hz_in.Gc[win_idx],
-                              Gb=hz_in.Gb[win_idx],
-                              Ac=hz_in.Ac.clone(), Ab=hz_in.Ab.clone(),
-                              b=hz_in.b.clone())
-
-        hz_out_bounds = _hz_compute_bounds(hz_out)
-        lb = torch.maximum(hz_out_bounds.lb, lb_pool.flatten())
-        ub = torch.maximum(torch.minimum(hz_out_bounds.ub, ub_pool.flatten()), ub_pool.flatten())
-        lb = torch.minimum(lb, lb_pool.flatten())
-        Bout = Bounds(lb=lb, ub=ub)
-    else:
-        Bin_lb, Bin_ub = _reshape_bounds_4d(Bin.lb, Bin.ub, in_shape)
-        lb_pool = F.max_pool2d(Bin_lb, kernel_size, stride=stride, padding=padding)
-        ub_pool = F.max_pool2d(Bin_ub, kernel_size, stride=stride, padding=padding)
-        lb = lb_pool.squeeze(0).flatten() if len(L.out_vars) != lb_pool.numel() else lb_pool.squeeze(0)
-        ub = ub_pool.squeeze(0).flatten() if len(L.out_vars) != ub_pool.numel() else ub_pool.squeeze(0)
-        Bout = Bounds(lb=lb, ub=ub)
-
-    if tf and hz_out is not None:
-        tf._hz_cache[L.id] = hz_out
+    
+    Bin_lb, Bin_ub = _reshape_bounds_4d(Bin.lb, Bin.ub, in_shape)
+    lb_pool = F.max_pool2d(Bin_lb, kernel_size, stride=stride, padding=padding)
+    ub_pool = F.max_pool2d(Bin_ub, kernel_size, stride=stride, padding=padding)
+    lb = lb_pool.squeeze(0).flatten() if len(L.out_vars) != lb_pool.numel() else lb_pool.squeeze(0)
+    ub = ub_pool.squeeze(0).flatten() if len(L.out_vars) != ub_pool.numel() else ub_pool.squeeze(0)
+    Bout = Bounds(lb=lb, ub=ub)
+    
     cons = ConSet()
     cons.add_op( f"maxpool2d:{L.id}", list(L.out_vars + L.in_vars), kernel_size=kernel_size,
                 stride=stride, padding=padding, input_shape=in_shape,
@@ -193,33 +158,21 @@ def hybridz_tf_maxpool2d(L: Layer, Bin: Bounds, tf=None):
 
 
 @torch.no_grad()
-def hybridz_tf_avgpool2d(L: Layer, Bin: Bounds, tf=None):
+def hybridz_tf_avgpool2d(L: Layer, Bin: Bounds):
     """2D average pooling. Returns Fact."""
     kernel_size = L.params.get("kernel_size", 2)
     stride = L.params.get("stride", kernel_size)
     padding = L.params.get("padding", 0)
     in_shape = L.params.get("input_shape")
-
-    hz_in = tf._hz_cache.get(L.id) if tf else None
-    hz_out = None
-    if hz_in is not None:
-        hz_bounds = _hz_compute_bounds(hz_in)
-        dtype, device = hz_in.c.dtype, hz_in.c.device
-        Bin_lb, Bin_ub = _reshape_bounds_4d(hz_bounds.lb, hz_bounds.ub, in_shape)
-    else:
-        Bin_lb, Bin_ub = _reshape_bounds_4d(Bin.lb, Bin.ub, in_shape)
-
+    
+    Bin_lb, Bin_ub = _reshape_bounds_4d(Bin.lb, Bin.ub, in_shape)
+    
     lb_pool = F.avg_pool2d(Bin_lb, kernel_size, stride=stride, padding=padding)
     ub_pool = F.avg_pool2d(Bin_ub, kernel_size, stride=stride, padding=padding)
     lb = lb_pool.squeeze(0).flatten() if len(L.out_vars) != lb_pool.numel() else lb_pool.squeeze(0)
     ub = ub_pool.squeeze(0).flatten() if len(L.out_vars) != ub_pool.numel() else ub_pool.squeeze(0)
     Bout = Bounds(lb=lb, ub=ub)
-
-    if hz_in is not None:
-        hz_out = _hz_from_bounds_fresh(Bout, dtype, device)
-
-    if tf and hz_out is not None:
-        tf._hz_cache[L.id] = hz_out
+    
     cons = ConSet()
     cons.add_op(f"avgpool2d:{L.id}", list(L.out_vars + L.in_vars), kernel_size=kernel_size,
                 stride=stride, padding=padding, input_shape=in_shape,
@@ -228,19 +181,15 @@ def hybridz_tf_avgpool2d(L: Layer, Bin: Bounds, tf=None):
 
 
 @torch.no_grad()
-def hybridz_tf_flatten(L: Layer, Bin: Bounds, tf=None):
+def hybridz_tf_flatten(L: Layer, Bin: Bounds):
     """Tensor flattening (HZ pass-through). Returns Fact."""
     start_dim = L.params.get("start_dim", 1)
     end_dim = L.params.get("end_dim", -1)
-
-    hz_in = tf._hz_cache.get(L.id) if tf else None
-
+    
     lb = Bin.lb.flatten()
     ub = Bin.ub.flatten()
     Bout = Bounds(lb=lb, ub=ub)
-
-    if tf and hz_in is not None:
-        tf._hz_cache[L.id] = hz_in  # HZ passes through unchanged
+    
     cons = ConSet()
     cons.add_op(f"flatten:{L.id}", list(L.out_vars + L.in_vars),
                 start_dim=start_dim, end_dim=end_dim,
@@ -250,18 +199,14 @@ def hybridz_tf_flatten(L: Layer, Bin: Bounds, tf=None):
 
 
 @torch.no_grad()
-def hybridz_tf_reshape(L: Layer, Bin: Bounds, tf=None):
+def hybridz_tf_reshape(L: Layer, Bin: Bounds):
     """Tensor reshaping (HZ pass-through). Returns Fact."""
     target_shape = L.params.get("target_shape")
-
-    hz_in = tf._hz_cache.get(L.id) if tf else None
-
+    
     lb = Bin.lb.reshape(target_shape).flatten() if target_shape else Bin.lb.flatten()
     ub = Bin.ub.reshape(target_shape).flatten() if target_shape else Bin.ub.flatten()
     Bout = Bounds(lb=lb, ub=ub)
-
-    if tf and hz_in is not None:
-        tf._hz_cache[L.id] = hz_in  # HZ passes through unchanged
+    
     cons = ConSet()
     cons.add_op(f"reshape:{L.id}", list(L.out_vars + L.in_vars),
                 target_shape=target_shape, input_shape=L.params.get("input_shape"),

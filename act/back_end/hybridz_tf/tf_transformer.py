@@ -16,11 +16,10 @@
 import torch
 import math
 from act.back_end.core import Bounds, Fact, Layer, ConSet
-from act.back_end.hybridz_tf.tf_mlp import _hz_from_bounds_fresh
 
 
 @torch.no_grad()
-def hybridz_tf_layernorm(L: Layer, Bin: Bounds, tf=None):
+def hybridz_tf_layernorm(L: Layer, Bin: Bounds):
     """HybridZ transfer function for layer normalization with enhanced precision."""
     # Layer norm parameters
     normalized_shape = L.params.get("normalized_shape")
@@ -31,7 +30,7 @@ def hybridz_tf_layernorm(L: Layer, Bin: Bounds, tf=None):
     # For HybridZ: more precise handling of normalization
     # LayerNorm: y = (x - μ) / σ * γ + β
     # where μ = mean(x), σ = sqrt(var(x) + eps)
-
+    
     # Conservative bound computation for normalized values
     # Assume normalized values are approximately in [-3, 3] range for most cases
     # This is a conservative approximation for interval analysis
@@ -63,8 +62,6 @@ def hybridz_tf_layernorm(L: Layer, Bin: Bounds, tf=None):
         ub_out += bias
     
     Bout = Bounds(lb=lb_out, ub=ub_out)
-    if tf is not None:
-        tf._hz_cache[L.id] = _hz_from_bounds_fresh(Bout, Bout.lb.dtype, Bout.lb.device)
     
     cons = ConSet()
     cons.add_op(f"layernorm:{L.id}", list(L.out_vars + L.in_vars), normalized_shape=normalized_shape, eps=eps)
@@ -72,7 +69,7 @@ def hybridz_tf_layernorm(L: Layer, Bin: Bounds, tf=None):
 
 
 @torch.no_grad()
-def hybridz_tf_gelu(L: Layer, Bin: Bounds, tf=None):
+def hybridz_tf_gelu(L: Layer, Bin: Bounds):
     """HybridZ transfer function for GELU activation with piecewise linear approximation."""
     # GELU(x) = x * Φ(x) where Φ is CDF of standard normal
     # Approximate with piecewise linear function for different ranges
@@ -103,8 +100,6 @@ def hybridz_tf_gelu(L: Layer, Bin: Bounds, tf=None):
         ub[i] = torch.max(y_candidates)
     
     Bout = Bounds(lb=lb, ub=ub)
-    if tf is not None:
-        tf._hz_cache[L.id] = _hz_from_bounds_fresh(Bout, Bout.lb.dtype, Bout.lb.device)
     
     cons = ConSet()
     cons.add_op(f"gelu:{L.id}", list(L.out_vars + L.in_vars))
@@ -121,7 +116,7 @@ def gelu_approx(x: float) -> float:
 
 
 @torch.no_grad()
-def hybridz_tf_softmax(L: Layer, Bin: Bounds, tf=None):
+def hybridz_tf_softmax(L: Layer, Bin: Bounds):
     """HybridZ transfer function for softmax with simplex constraints."""
     # Softmax output: exp(x_i) / sum(exp(x_j))
     # Properties: sum = 1, all values ≥ 0
@@ -152,8 +147,6 @@ def hybridz_tf_softmax(L: Layer, Bin: Bounds, tf=None):
                 ub[i] = 0.3  # Conservative upper bound for dominated element
     
     Bout = Bounds(lb=lb, ub=ub)
-    if tf is not None:
-        tf._hz_cache[L.id] = _hz_from_bounds_fresh(Bout, Bout.lb.dtype, Bout.lb.device)
     
     # Softmax generates simplex constraints (sum = 1, all ≥ 0)
     cons = ConSet()
@@ -163,7 +156,7 @@ def hybridz_tf_softmax(L: Layer, Bin: Bounds, tf=None):
 
 
 @torch.no_grad()
-def hybridz_tf_posenc(L: Layer, Bin: Bounds, tf=None):
+def hybridz_tf_posenc(L: Layer, Bin: Bounds):
     """HybridZ transfer function for positional encoding."""
     # Positional encoding adds fixed positional embeddings
     # PE(pos, 2i) = sin(pos / 10000^(2i/d_model))
@@ -179,8 +172,6 @@ def hybridz_tf_posenc(L: Layer, Bin: Bounds, tf=None):
     lb = Bin.lb - pe_range
     ub = Bin.ub + pe_range
     Bout = Bounds(lb=lb, ub=ub)
-    if tf is not None:
-        tf._hz_cache[L.id] = _hz_from_bounds_fresh(Bout, Bout.lb.dtype, Bout.lb.device)
     
     cons = ConSet()
     cons.add_op(f"posenc:{L.id}", list(L.out_vars + L.in_vars), max_len=max_len, d_model=d_model)
@@ -188,7 +179,7 @@ def hybridz_tf_posenc(L: Layer, Bin: Bounds, tf=None):
 
 
 @torch.no_grad()
-def hybridz_tf_attention_scores(L: Layer, Q_bounds: Bounds, K_bounds: Bounds, tf=None):
+def hybridz_tf_attention_scores(L: Layer, Q_bounds: Bounds, K_bounds: Bounds):
     """HybridZ transfer function for attention score computation: Q @ K^T / sqrt(d_k)."""
     d_k = L.params.get("d_k", Q_bounds.lb.shape[-1])
     scale = 1.0 / math.sqrt(d_k)
@@ -222,8 +213,6 @@ def hybridz_tf_attention_scores(L: Layer, Q_bounds: Bounds, K_bounds: Bounds, tf
     ub = torch.tensor([p[1] for p in products]) * scale
     
     Bout = Bounds(lb=lb, ub=ub)
-    if tf is not None:
-        tf._hz_cache[L.id] = _hz_from_bounds_fresh(Bout, Bout.lb.dtype, Bout.lb.device)
     
     cons = ConSet()
     cons.add_op(f"att_scores:{L.id}", list(L.out_vars + L.in_vars), d_k=d_k)
