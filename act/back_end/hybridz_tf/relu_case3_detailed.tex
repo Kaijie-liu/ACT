@@ -1,0 +1,414 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{array}
+
+\newtheorem{proposition}{Proposition}
+
+\begin{document}
+
+% =============================================================================
+% Case 3 Detailed Explanation — Unstable ReLU Encoding
+% Corresponds to: _hz_apply_relu() in tf_mlp.py, lines 209--314
+% =============================================================================
+
+\subsection{Case 3: Unstable Neurons --- Detailed Step-by-Step}
+\label{sec:relu_case3_detailed}
+
+\subsubsection{Goal}
+
+For an unstable neuron $h$ with bounds $\alpha = \underline{z}_h < 0 < \overline{z}_h = \beta$, we want to \emph{exactly} encode:
+\begin{equation}
+y_h = \mathrm{ReLU}(x_h) = \begin{cases} x_h & \text{if } x_h \geq 0, \\ 0 & \text{if } x_h < 0. \end{cases}
+\end{equation}
+
+The difficulty: ReLU is piecewise linear with two branches switching at $x = 0$. The hybrid zonotope must use a binary generator to select the branch exactly, without introducing any over-approximation.
+
+% -----------------------------------------------------------------------
+\subsubsection{Step 1: Introduce New Variables}
+\label{sec:step1_vars}
+
+% Code: lines 239--265, out_Gc, out_Gb, out_c, col_xi1..col_z
+
+We introduce five new generators per unstable neuron:
+
+\begin{center}
+\begin{tabular}{@{}llll@{}}
+\toprule
+Variable & Type & Range & Purpose \\
+\midrule
+$\xi_1$ & continuous & $[-1, 1]$ & Parameterizes $x_h$ on the inactive branch ($x \leq 0$) \\
+$\xi_2$ & continuous & $[-1, 1]$ & Parameterizes $y_h$ on the active branch ($x \geq 0$) \\
+$\xi_3$ & continuous & $[-1, 1]$ & Slack variable for $\xi_1$ (absorbs residual in equality) \\
+$\xi_4$ & continuous & $[-1, 1]$ & Slack variable for $\xi_2$ (absorbs residual in equality) \\
+$z$     & binary     & $\{-1, +1\}$ & Branch selector: $+1 \to$ inactive, $-1 \to$ active \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{Why four continuous generators, not two?}
+Variables $\xi_3$ and $\xi_4$ are \emph{slack} variables. They do not appear in the output formula (their rows in $G^c_{\mathrm{out}}$ are zero for neuron $h$). Their sole purpose is to absorb the residual in the equality constraints, enabling us to use \textbf{pure equalities} instead of inequalities. Without slack variables, encoding ``$\xi_2$ is forced to 1 when $z = +1$'' would require the \emph{inequality} $|\xi_2| \leq (1 - z)/2$, violating the paper's Definition~3.1 which mandates $A^c \xi^c + A^b \xi^b = b$.
+
+In the constraint matrices, $\xi_1, \xi_2, \xi_3, \xi_4$ occupy four new columns in $G^c_{\mathrm{out}}$ (columns $n_g, n_g{+}1, n_g{+}2, n_g{+}3$ for the $j$-th unstable neuron), and $z$ occupies one new column in $G^b_{\mathrm{out}}$ (column $n_b{+}j$).
+
+% -----------------------------------------------------------------------
+\subsubsection{Step 2: Output Encoding}
+\label{sec:step2_output}
+
+% Code: line 268, out_c[unstable] = beta/2
+% Code: line 269, out_Gc[unstable, col_xi2] = -beta/2
+
+The output center and generators for neuron $h$ are set as:
+\begin{equation}
+\label{eq:case3_output}
+\boxed{y_h = \frac{\beta}{2} + \left(-\frac{\beta}{2}\right) \cdot \xi_2 = \frac{\beta}{2}(1 - \xi_2).}
+\end{equation}
+
+In terms of the HZ data structure:
+\begin{itemize}
+    \item $c_{\mathrm{out}}[h] = \beta / 2$,
+    \item $G^c_{\mathrm{out}}[h, \mathrm{col}_{\xi_2}] = -\beta / 2$,
+    \item all other new generator entries for row $h$ are zero.
+\end{itemize}
+
+\paragraph{Why this form?}
+\begin{itemize}
+    \item When $\xi_2 = +1$: $y_h = \tfrac{\beta}{2}(1-1) = 0$ \quad (desired output when inactive).
+    \item When $\xi_2 = -1$: $y_h = \tfrac{\beta}{2}(1+1) = \beta$ \quad (maximum output when active).
+    \item For $\xi_2 \in [-1,1]$: $y_h \in [0, \beta]$ continuously.
+\end{itemize}
+
+The key question is: \emph{how do we force $\xi_2 = 1$ when the neuron is inactive, and let $\xi_2$ be free when active?} The answer lies in the graph equalities (Step~3).
+
+% -----------------------------------------------------------------------
+\subsubsection{Step 3: Graph Equalities}
+\label{sec:step3_graph}
+
+% Code: lines 283--293 (eq_Ac, eq_Ab, eq_b for eq1, eq2)
+
+Two equality constraints encode the binary switching structure:
+\begin{align}
+\xi_1 + \xi_3 + z &= 1, \label{eq:case3_graph1} \\
+\xi_2 + \xi_4 - z &= 1. \label{eq:case3_graph2}
+\end{align}
+
+These are stored as rows in the constraint matrices. Specifically, for the $j$-th unstable neuron (row indices $3j$ and $3j{+}1$ in $A^c_{\mathrm{eq}}$):
+
+\begin{equation}
+\label{eq:graph_eq_matrix}
+\underbrace{
+\begin{pmatrix}
+\cdots & 1_{(\xi_1)} & 0 & 1_{(\xi_3)} & 0 & \cdots \\
+\cdots & 0 & 1_{(\xi_2)} & 0 & 1_{(\xi_4)} & \cdots
+\end{pmatrix}
+}_{A^c_{\mathrm{eq}}[\text{rows } 3j,\, 3j{+}1]}
+\boldsymbol{\xi}^c
++
+\underbrace{
+\begin{pmatrix}
+\cdots & 1_{(z)} & \cdots \\
+\cdots & -1_{(z)} & \cdots
+\end{pmatrix}
+}_{A^b_{\mathrm{eq}}[\text{rows } 3j,\, 3j{+}1]}
+\boldsymbol{\xi}^b
+=
+\underbrace{
+\begin{pmatrix}
+1 \\ 1
+\end{pmatrix}
+}_{b_{\mathrm{eq}}[\text{rows } 3j,\, 3j{+}1]}.
+\end{equation}
+
+\paragraph{Case analysis: $z = +1$ (inactive branch, $x_h \leq 0$).}
+
+From \eqref{eq:case3_graph1}:
+\[
+\xi_1 + \xi_3 + 1 = 1 \implies \xi_1 + \xi_3 = 0 \implies \xi_3 = -\xi_1.
+\]
+Since $\xi_1 \in [-1,1]$ and $\xi_3 = -\xi_1 \in [-1,1]$, this is always feasible. \textbf{$\xi_1$ is free.}
+
+From \eqref{eq:case3_graph2}:
+\[
+\xi_2 + \xi_4 - 1 = 1 \implies \xi_2 + \xi_4 = 2.
+\]
+Since $\xi_2, \xi_4 \in [-1,1]$, the maximum of $\xi_2 + \xi_4$ is $1 + 1 = 2$. This is achievable \emph{only} when $\xi_2 = 1$ and $\xi_4 = 1$. \textbf{$\xi_2 = 1$ is forced.}
+
+Therefore: $y_h = \tfrac{\beta}{2}(1 - 1) = 0$. \checkmark
+
+\paragraph{Case analysis: $z = -1$ (active branch, $x_h \geq 0$).}
+
+From \eqref{eq:case3_graph1}:
+\[
+\xi_1 + \xi_3 - 1 = 1 \implies \xi_1 + \xi_3 = 2 \implies \xi_1 = \xi_3 = 1.
+\]
+\textbf{$\xi_1 = 1$ is forced.}
+
+From \eqref{eq:case3_graph2}:
+\[
+\xi_2 + \xi_4 + 1 = 1 \implies \xi_2 + \xi_4 = 0 \implies \xi_4 = -\xi_2.
+\]
+\textbf{$\xi_2$ is free} $\in [-1, 1]$, giving $y_h = \tfrac{\beta}{2}(1 - \xi_2) \in [0, \beta]$.
+
+\paragraph{Summary of the switching mechanism.}
+
+\begin{center}
+\begin{tabular}{@{}ccccc@{}}
+\toprule
+$z$ & $\xi_1$ & $\xi_2$ & $y_h$ & Branch \\
+\midrule
+$+1$ & free $\in [-1,1]$ & \textbf{forced} $= 1$ & $0$ & inactive ($x \leq 0$) \\
+$-1$ & \textbf{forced} $= 1$ & free $\in [-1,1]$ & $\frac{\beta}{2}(1-\xi_2) \in [0,\beta]$ & active ($x \geq 0$) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The graph equalities implement a ``binary switch'': the value of $z$ determines which variable is locked and which is free. The slack variables $\xi_3, \xi_4$ absorb the residual, enabling this mechanism through pure equalities.
+
+% -----------------------------------------------------------------------
+\subsubsection{Step 4: Linking Equality}
+\label{sec:step4_linking}
+
+% Code: lines 296--303
+
+At this point, $y_h$ on the active branch takes values in $[0, \beta]$, but we have not yet enforced $y_h = x_h$ (as opposed to an arbitrary positive value). The \textbf{linking equality} provides this crucial connection.
+
+The original input for neuron $h$ is expressed through the input HZ generators:
+\begin{equation}
+x_h = c_h + G^c[h,:]\,\boldsymbol{\xi}^c_{\mathrm{old}} + G^b[h,:]\,\boldsymbol{\xi}^b_{\mathrm{old}}.
+\end{equation}
+
+The linking equality (row $3j{+}2$ in $A^c_{\mathrm{eq}}$) is:
+\begin{equation}
+\label{eq:case3_linking}
+\boxed{
+\frac{\alpha}{2}\,\xi_1 - \frac{\beta}{2}\,\xi_2 + \frac{\alpha}{2}\,z - G^c[h,:]\,\boldsymbol{\xi}^c_{\mathrm{old}} - G^b[h,:]\,\boldsymbol{\xi}^b_{\mathrm{old}} = c_h - \frac{\beta}{2}.
+}
+\end{equation}
+
+In terms of the constraint matrices (for the $j$-th unstable neuron, row $3j{+}2$):
+\begin{equation}
+\label{eq:linking_matrix}
+A^c_{\mathrm{eq}}[3j{+}2, :] = \bigl[\underbrace{-G^c[h,:]}_{\text{old columns}} \;\big|\; \underbrace{\tfrac{\alpha}{2}}_{(\xi_1)} \;\; \underbrace{-\tfrac{\beta}{2}}_{(\xi_2)} \;\; \underbrace{0}_{(\xi_3)} \;\; \underbrace{0}_{(\xi_4)}\bigr],
+\end{equation}
+\begin{equation}
+A^b_{\mathrm{eq}}[3j{+}2, :] = \bigl[\underbrace{-G^b[h,:]}_{\text{old columns}} \;\big|\; \underbrace{\tfrac{\alpha}{2}}_{(z)}\bigr], \qquad
+b_{\mathrm{eq}}[3j{+}2] = c_h - \frac{\beta}{2}.
+\end{equation}
+
+\paragraph{Rearranging to express $x_h$:}
+
+From \eqref{eq:case3_linking}:
+\begin{equation}
+x_h = c_h + G^c[h,:]\,\boldsymbol{\xi}^c_{\mathrm{old}} + G^b[h,:]\,\boldsymbol{\xi}^b_{\mathrm{old}} = \frac{\alpha}{2}\,\xi_1 + \frac{\beta}{2}(1 - \xi_2) + \frac{\alpha}{2}\,z.
+\end{equation}
+
+\paragraph{Verification on the active branch ($z = -1$, $\xi_1 = 1$):}
+\begin{align}
+x_h &= \frac{\alpha}{2} \cdot 1 + \frac{\beta}{2}(1 - \xi_2) + \frac{\alpha}{2} \cdot (-1) = \frac{\beta}{2}(1 - \xi_2). \\
+y_h &= \frac{\beta}{2}(1 - \xi_2) \quad (\text{from Step 2}).
+\end{align}
+Therefore $y_h = x_h$. \checkmark \quad \textbf{Exact!}
+
+Range: $\xi_2 \in [-1,1] \implies x_h \in [0, \beta]$. \checkmark
+
+\paragraph{Verification on the inactive branch ($z = +1$, $\xi_2 = 1$):}
+\begin{align}
+x_h &= \frac{\alpha}{2}\,\xi_1 + \frac{\beta}{2}(1 - 1) + \frac{\alpha}{2} \cdot 1 = \frac{\alpha}{2}(\xi_1 + 1). \\
+y_h &= 0 \quad (\text{from Step 2, since } \xi_2 = 1).
+\end{align}
+Range: $\xi_1 \in [-1,1] \implies x_h \in [0, \alpha]$. Since $\alpha < 0$, this means $x_h \in [\alpha, 0]$. \checkmark
+
+$y_h = 0 = \mathrm{ReLU}(x_h)$ for $x_h \leq 0$. \checkmark
+
+% -----------------------------------------------------------------------
+\subsubsection{Step 5: Full Corner Verification}
+\label{sec:step5_corners}
+
+We verify all four corner points of the $(\xi_1, \xi_2, z)$ domain:
+
+\begin{center}
+\begin{tabular}{@{}cccccccc@{}}
+\toprule
+$z$ & $\xi_1$ & $\xi_2$ & $x_h$ & $y_h$ & $\mathrm{ReLU}(x_h)$ & Match? \\
+\midrule
+$+1$ & $-1$ & $1$ (forced) & $\frac{\alpha}{2}(-1+1) = 0$ & $0$ & $0$ & \checkmark \\[2pt]
+$+1$ & $+1$ & $1$ (forced) & $\frac{\alpha}{2}(1+1) = \alpha$ & $0$ & $0$ & \checkmark \\[2pt]
+$-1$ & $1$ (forced) & $-1$ & $\frac{\beta}{2}(1+1) = \beta$ & $\beta$ & $\beta$ & \checkmark \\[2pt]
+$-1$ & $1$ (forced) & $+1$ & $\frac{\beta}{2}(1-1) = 0$ & $0$ & $0$ & \checkmark \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+All corner points match exactly. Intermediate values are covered by the continuous parameterization of $\xi_1$ (on the inactive branch) and $\xi_2$ (on the active branch).
+
+% -----------------------------------------------------------------------
+\subsubsection{Step 6: Assembly into the HZ Constraint Matrices}
+\label{sec:step6_assembly}
+
+% Code: lines 305--314
+
+The three equalities from Steps 3--4 must be assembled into the output HZ's constraint matrices $A^c_{\mathrm{out}}, A^b_{\mathrm{out}}, b_{\mathrm{out}}$. Let $k$ denote the number of unstable neurons, $n_g$ the number of existing continuous generators, $n_b$ the number of existing binary generators, and $n_c$ the number of existing constraint rows.
+
+\paragraph{Output generator dimensions.}
+
+The output HZ has expanded generator matrices:
+\begin{equation}
+G^c_{\mathrm{out}} \in \mathbb{R}^{n \times (n_g + 4k)}, \qquad
+G^b_{\mathrm{out}} \in \mathbb{R}^{n \times (n_b + k)}.
+\end{equation}
+
+The $4k$ new continuous columns are organized as $k$ blocks of $(\xi_1, \xi_2, \xi_3, \xi_4)$, and the $k$ new binary columns are one $z$ per unstable neuron.
+
+\paragraph{Constraint matrix assembly.}
+
+The existing constraints must be extended horizontally (zero-padded for the new generator columns), and the $3k$ new equality rows are appended vertically:
+
+\begin{equation}
+\label{eq:case3_Ac_assembly}
+A^c_{\mathrm{out}} =
+\begin{bmatrix}
+A^c_{\mathrm{old}} & \mathbf{0}_{n_c \times 4k} \\[4pt]
+\hline
+A^c_{\mathrm{eq}}
+\end{bmatrix}
+\in \mathbb{R}^{(n_c + 3k) \times (n_g + 4k)},
+\end{equation}
+
+\begin{equation}
+\label{eq:case3_Ab_assembly}
+A^b_{\mathrm{out}} =
+\begin{bmatrix}
+A^b_{\mathrm{old}} & \mathbf{0}_{n_c \times k} \\[4pt]
+\hline
+A^b_{\mathrm{eq}}
+\end{bmatrix}
+\in \mathbb{R}^{(n_c + 3k) \times (n_b + k)},
+\end{equation}
+
+\begin{equation}
+\label{eq:case3_b_assembly}
+b_{\mathrm{out}} =
+\begin{bmatrix}
+b_{\mathrm{old}} \\[4pt]
+\hline
+b_{\mathrm{eq}}
+\end{bmatrix}
+\in \mathbb{R}^{n_c + 3k}.
+\end{equation}
+
+\paragraph{Why zero-pad the old constraints?}
+The existing constraint rows reference only the original generators (columns $0, \ldots, n_g{-}1$ for $A^c$ and $0, \ldots, n_b{-}1$ for $A^b$). The new generators $(\xi_1, \xi_2, \xi_3, \xi_4, z)$ do not participate in any old constraint, so the corresponding entries are zero.
+
+\paragraph{Structure of $A^c_{\mathrm{eq}}$ (new equality rows).}
+
+For each unstable neuron $j \in \{0, \ldots, k{-}1\}$ with neuron index $h_j$, bounds $[\alpha_j, \beta_j]$, and new generator columns $\xi_1^{(j)}, \xi_2^{(j)}, \xi_3^{(j)}, \xi_4^{(j)}$:
+
+\begin{equation}
+\label{eq:Ac_eq_detail}
+A^c_{\mathrm{eq}} =
+\begin{pmatrix}
+\text{--- row } 3j \text{ (graph eq 1) ---} \\
+\text{--- row } 3j{+}1 \text{ (graph eq 2) ---} \\
+\text{--- row } 3j{+}2 \text{ (linking eq) ---}
+\end{pmatrix}
+\end{equation}
+
+Explicitly, for the $j$-th unstable neuron:
+
+\medskip
+\noindent\textbf{Row $3j$ (graph equality 1: $\xi_1 + \xi_3 + z = 1$):}
+\[
+A^c_{\mathrm{eq}}[3j, :] = [\;\underbrace{0, \ldots, 0}_{n_g} \;|\; \underbrace{0, \ldots, 0, \overbrace{1}^{\xi_1^{(j)}}, 0, \ldots, 0}_{k} \;|\; \underbrace{0, \ldots, 0}_{k} \;|\; \underbrace{0, \ldots, 0, \overbrace{1}^{\xi_3^{(j)}}, 0, \ldots, 0}_{k} \;|\; \underbrace{0, \ldots, 0}_{k}\;]
+\]
+\[
+A^b_{\mathrm{eq}}[3j, :] = [\;\underbrace{0, \ldots, 0}_{n_b} \;|\; \underbrace{0, \ldots, 0, \overbrace{1}^{z^{(j)}}, 0, \ldots, 0}_{k}\;], \qquad
+b_{\mathrm{eq}}[3j] = 1.
+\]
+
+\medskip
+\noindent\textbf{Row $3j{+}1$ (graph equality 2: $\xi_2 + \xi_4 - z = 1$):}
+\[
+A^c_{\mathrm{eq}}[3j{+}1, :] = [\;\underbrace{0, \ldots, 0}_{n_g} \;|\; \underbrace{0}_{k} \;|\; \underbrace{0, \ldots, 0, \overbrace{1}^{\xi_2^{(j)}}, 0, \ldots, 0}_{k} \;|\; \underbrace{0}_{k} \;|\; \underbrace{0, \ldots, 0, \overbrace{1}^{\xi_4^{(j)}}, 0, \ldots, 0}_{k}\;]
+\]
+\[
+A^b_{\mathrm{eq}}[3j{+}1, :] = [\;\underbrace{0, \ldots, 0}_{n_b} \;|\; \underbrace{0, \ldots, 0, \overbrace{-1}^{z^{(j)}}, 0, \ldots, 0}_{k}\;], \qquad
+b_{\mathrm{eq}}[3j{+}1] = 1.
+\]
+
+\medskip
+\noindent\textbf{Row $3j{+}2$ (linking equality):}
+\[
+A^c_{\mathrm{eq}}[3j{+}2, :] = [\;\underbrace{-G^c[h_j, :]}_{\text{old columns}} \;|\; \underbrace{\tfrac{\alpha_j}{2}}_{\xi_1^{(j)}} \;\; \underbrace{-\tfrac{\beta_j}{2}}_{\xi_2^{(j)}} \;\; \underbrace{0}_{\xi_3^{(j)}} \;\; \underbrace{0}_{\xi_4^{(j)}} \;|\; \text{other neurons' cols} = 0\;]
+\]
+\[
+A^b_{\mathrm{eq}}[3j{+}2, :] = [\;\underbrace{-G^b[h_j, :]}_{\text{old columns}} \;|\; \underbrace{\tfrac{\alpha_j}{2}}_{z^{(j)}} \;\; \text{other neurons' cols} = 0\;]
+\]
+\[
+b_{\mathrm{eq}}[3j{+}2] = c_{h_j} - \frac{\beta_j}{2}.
+\]
+
+\paragraph{Code correspondence.}
+\begin{verbatim}
+# lines 305--311
+old_Ac_ext = cat([hz.Ac, zeros((nc, 4*k))], dim=1)  # (nc, ng+4k)
+old_Ab_ext = cat([hz.Ab, zeros((nc,   k))], dim=1)  # (nc, nb+k)
+
+out_Ac = cat([old_Ac_ext, eq_Ac], dim=0)  # (nc+3k, ng+4k)
+out_Ab = cat([old_Ab_ext, eq_Ab], dim=0)  # (nc+3k, nb+k)
+out_b  = cat([hz.b,       eq_b], dim=0)  # (nc+3k, 1)
+\end{verbatim}
+
+\paragraph{Complete output HZ.}
+
+Collecting all components, the output hybrid zonotope is:
+\begin{equation}
+\label{eq:case3_output_hz}
+Z_h^{\mathrm{out}} = \langle\, G^c_{\mathrm{out}},\;\; G^b_{\mathrm{out}},\;\; c_{\mathrm{out}},\;\; A^c_{\mathrm{out}},\;\; A^b_{\mathrm{out}},\;\; b_{\mathrm{out}} \,\rangle
+\end{equation}
+where:
+\begin{align}
+G^c_{\mathrm{out}} &\in \mathbb{R}^{n \times (n_g + 4k)}, &
+G^b_{\mathrm{out}} &\in \mathbb{R}^{n \times (n_b + k)}, &
+c_{\mathrm{out}} &\in \mathbb{R}^{n \times 1}, \\
+A^c_{\mathrm{out}} &\in \mathbb{R}^{(n_c + 3k) \times (n_g + 4k)}, &
+A^b_{\mathrm{out}} &\in \mathbb{R}^{(n_c + 3k) \times (n_b + k)}, &
+b_{\mathrm{out}} &\in \mathbb{R}^{(n_c + 3k) \times 1}.
+\end{align}
+
+% -----------------------------------------------------------------------
+\subsubsection{Step 7: Why Exact, Not Over-Approximation}
+\label{sec:step7_exact}
+
+Classical approaches (DeepPoly, CROWN, triangle relaxation) approximate ReLU by a convex region:
+\[
+0 \leq y_h \leq \frac{\beta}{\beta - \alpha}(x_h - \alpha),
+\]
+which allows points where $y_h \neq \mathrm{ReLU}(x_h)$ --- this is an over-approximation.
+
+Our encoding is \textbf{graph-exact}: the linking equality \eqref{eq:case3_linking} \emph{forces} $y_h = x_h$ on the active branch and $y_h = 0$ on the inactive branch. There is no feasible point in the HZ that does not lie on the ReLU graph.
+
+\begin{itemize}
+    \item \textbf{For MILP solvers (Gurobi)}: $z \in \{-1, +1\}$ is enforced exactly, so the bounds computed from this HZ are \emph{exact}.
+    \item \textbf{For LP solvers (SciPy)}: $z$ is relaxed to $[-1, +1]$, producing an over-approximation of the bounds. However, the HZ \emph{representation itself} remains exact --- only the bounds \emph{computation} introduces relaxation.
+\end{itemize}
+
+% -----------------------------------------------------------------------
+\subsubsection{Complexity Summary}
+\label{sec:complexity}
+
+\begin{center}
+\begin{tabular}{@{}lc@{}}
+\toprule
+Component & Per unstable neuron \\
+\midrule
+New continuous generators ($\xi_1, \xi_2, \xi_3, \xi_4$) & $+4$ columns in $G^c$ \\
+New binary generators ($z$) & $+1$ column in $G^b$ \\
+New equality constraints (graph + linking) & $+3$ rows in $(A^c, A^b, b)$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+For a layer with $k$ unstable neurons out of $n$ total: the output HZ has $n_g + 4k$ continuous generators, $n_b + k$ binary generators, and $n_c + 3k$ constraint rows.
+
+\end{document}
