@@ -17,30 +17,18 @@
 """
 
 import torch
-from dataclasses import dataclass
 from typing import Dict, List, Optional
 from act.back_end.core import Bounds, Fact, Layer, Net, ConSet
 from act.back_end.transfer_functions import TransferFunction
-from act.back_end.hybridz_tf.tf_mlp import *
-from act.back_end.hybridz_tf.tf_mlp import (
-    _hz_multiply, _hz_add_const, _hz_compute_bounds, _hz_from_bounds_fresh,
-    _hz_apply_relu, _hz_apply_leaky_relu, _hz_apply_tanh, _hz_apply_sigmoid,
-    _hz_reduce, _hz_minkowski_sum,
+from act.back_end.solver.hz_bounds import (
+    HZono, hz_multiply, hz_add_const, hz_minkowski_sum, hz_from_bounds, hz_reduce,
+    hz_compute_bounds, hz_apply_relu, hz_apply_leaky_relu, hz_apply_tanh, hz_apply_sigmoid,
+    hz_conv2d,
 )
+from act.back_end.hybridz_tf.tf_mlp import *
 from act.back_end.hybridz_tf.tf_cnn import *
 from act.back_end.hybridz_tf.tf_rnn import *
 from act.back_end.hybridz_tf.tf_transformer import *
-
-
-@dataclass
-class HZono:
-    """Hybrid Zonotope data container."""
-    c:  torch.Tensor   # (n, 1)   center vector
-    Gc: torch.Tensor   # (n, ng)  continuous generator matrix
-    Gb: torch.Tensor   # (n, nb)  binary generator matrix
-    Ac: torch.Tensor   # (nc, ng) continuous constraint matrix
-    Ab: torch.Tensor   # (nc, nb) binary constraint matrix
-    b:  torch.Tensor   # (nc, 1)  constraint RHS vector
 
 
 class HybridzTF(TransferFunction):
@@ -129,39 +117,38 @@ class HybridzTF(TransferFunction):
         dtype, device = hz_in.c.dtype, hz_in.c.device
         
         if k == "DENSE":
-            hz = _hz_multiply(hz_in, L.params["weight"])
+            hz = hz_multiply(hz_in, L.params["weight"])
             b = L.params.get("bias")
             if b is not None:
                 b_col = b.to(dtype=dtype, device=device)
-                hz = _hz_add_const(hz, b_col.view(-1, 1) if b_col.ndim == 1 else b_col)
+                hz = hz_add_const(hz, b_col.view(-1, 1) if b_col.ndim == 1 else b_col)
             return hz
         if k == "BIAS":
             c = L.params["c"].to(dtype=dtype, device=device)
-            return _hz_add_const(hz_in, c.view(-1, 1) if c.ndim == 1 else c)
+            return hz_add_const(hz_in, c.view(-1, 1) if c.ndim == 1 else c)
         if k == "SCALE":
             a = L.params["a"].to(dtype=dtype, device=device).flatten()
-            return _hz_multiply(hz_in, torch.diag(a))
+            return hz_multiply(hz_in, torch.diag(a))
         if k == "RELU":
-            return _hz_reduce(_hz_apply_relu(hz_in))
+            return hz_reduce(hz_apply_relu(hz_in))
         if k == "LRELU":
-            return _hz_reduce(_hz_apply_leaky_relu(hz_in, float(L.params.get("negative_slope", 0.01))))
+            return hz_reduce(hz_apply_leaky_relu(hz_in, float(L.params.get("negative_slope", 0.01))))
         if k == "TANH":
-            return _hz_apply_tanh(hz_in, K=self._tanh_K)
+            return hz_apply_tanh(hz_in, K=self._tanh_K)
         if k == "SIGMOID":
-            return _hz_apply_sigmoid(hz_in, K=self._sigmoid_K)
+            return hz_apply_sigmoid(hz_in, K=self._sigmoid_K)
         if k == "ABS":
-            bds = _hz_compute_bounds(hz_in)
+            bds = hz_compute_bounds(hz_in)
             lb_out = torch.where(bds.lb >= 0, bds.lb, torch.where(bds.ub <= 0, -bds.ub, torch.zeros_like(bds.lb)))
-            return _hz_from_bounds_fresh(Bounds(lb=lb_out, ub=torch.maximum(bds.lb.abs(), bds.ub.abs())), dtype, device)
+            return hz_from_bounds(Bounds(lb=lb_out, ub=torch.maximum(bds.lb.abs(), bds.ub.abs())), dtype, device)
         if k == "CONV2D":
-            from act.back_end.hybridz_tf.tf_cnn import _hz_conv2d
-            return _hz_conv2d(hz_in, L.params["weight"], L.params.get("bias"),
+            return hz_conv2d(hz_in, L.params["weight"], L.params.get("bias"),
                               L.params.get("stride", 1), L.params.get("padding", 0),
                               L.params.get("dilation", 1), L.params.get("groups", 1),
                               L.params.get("input_shape"))
         if k == "MAXPOOL2D":
             import torch.nn.functional as F
-            bds = _hz_compute_bounds(hz_in)
+            bds = hz_compute_bounds(hz_in)
             shape = L.params.get("input_shape")
             if shape is not None:
                 C, H, W = shape[-3:]
@@ -178,14 +165,14 @@ class HybridzTF(TransferFunction):
         if k == "ADD":
             preds = self._net.preds.get(L.id, [])
             hz2 = self._hz_cache.get(preds[1]) if len(preds) > 1 else None
-            return _hz_minkowski_sum(hz_in, hz2) if hz2 is not None else None
+            return hz_minkowski_sum(hz_in, hz2) if hz2 is not None else None
         if k == "MUL":
             preds = self._net.preds.get(L.id, [])
             hz2 = self._hz_cache.get(preds[1]) if len(preds) > 1 else None
             if hz2 is not None:
-                b1, b2 = _hz_compute_bounds(hz_in), _hz_compute_bounds(hz2)
+                b1, b2 = hz_compute_bounds(hz_in), hz_compute_bounds(hz2)
                 corners = torch.stack([b1.lb*b2.lb, b1.lb*b2.ub, b1.ub*b2.lb, b1.ub*b2.ub])
-                return _hz_from_bounds_fresh(Bounds(lb=corners.min(0)[0], ub=corners.max(0)[0]), dtype, device)
+                return hz_from_bounds(Bounds(lb=corners.min(0)[0], ub=corners.max(0)[0]), dtype, device)
             return None
         
         return None  # No HZ transform for this layer type
@@ -227,7 +214,7 @@ class HybridzTF(TransferFunction):
             hz_out = self._hz_transform(L, hz_in)
             if hz_out is not None:
                 self._hz_cache[L.id] = hz_out
-                hz_bounds = _hz_compute_bounds(hz_out)
+                hz_bounds = hz_compute_bounds(hz_out)
         
         # Call transfer function (original signature, no tf)
         transfer_fn = self._LAYER_REGISTRY[k]
@@ -235,7 +222,7 @@ class HybridzTF(TransferFunction):
         
         # Create fresh HZ for layers without HZ transform
         if hz_in is not None and hz_bounds is None:
-            self._hz_cache[L.id] = _hz_from_bounds_fresh(
+            self._hz_cache[L.id] = hz_from_bounds(
                 fact.bounds, fact.bounds.lb.dtype, fact.bounds.lb.device)
         
         # Return HZ bounds if tighter
