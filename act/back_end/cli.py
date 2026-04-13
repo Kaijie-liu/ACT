@@ -32,7 +32,8 @@ def run_verification(args):
     from act.back_end.verifier import verify_once
     from act.back_end.bab import verify_bab
     from act.back_end.solver.solver_gurobi import GurobiSolver
-    from act.back_end.solver.solver_torch import TorchLPSolver
+    from act.back_end.solver.solver_hz import HZSolver
+    from act.back_end.solver.solver_box import BoxSolver
     from act.util.stats import VerifyStatus
     
     # Load network
@@ -45,16 +46,19 @@ def run_verification(args):
         print(f"Using solver: Gurobi")
         solver = GurobiSolver()
     elif args.solver == 'torch':
-        print(f"Using solver: TorchLP")
-        solver = TorchLPSolver()
+        print(f"Using solver: HZSolver")
+        solver = HZSolver()
+    elif args.solver == 'box':
+        print(f"Using solver: BoxSolver")
+        solver = BoxSolver()
     else:  # auto
         try:
             from act.back_end.solver.solver_gurobi import GurobiSolver
             print(f"Using solver: Gurobi (auto-detected)")
             solver = GurobiSolver()
         except:
-            print(f"Using solver: TorchLP (Gurobi not available)")
-            solver = TorchLPSolver()
+            print(f"Using solver: HZSolver (Gurobi not available)")
+            solver = HZSolver()
     
     # Run verification
     if args.bab:
@@ -393,9 +397,9 @@ Examples:
     verify_group.add_argument(
         "--solver", "-s",
         type=str,
-        choices=['auto', 'gurobi', 'torch'],
+        choices=['auto', 'gurobi', 'torch', 'box'],
         default='auto',
-        help="Solver backend (default: auto - try Gurobi first, fallback to Torch)"
+        help="Solver backend: gurobi (most precise), torch/hz (middle), box (fastest baseline)"
     )
     verify_group.add_argument(
         "--bab",

@@ -153,7 +153,8 @@ from act.back_end.verifier import verify_once, gather_input_spec_layers, seed_fr
 from act.util.stats import VerifyStatus
 from act.back_end.solver.solver_gurobi import GurobiSolver
 from act.back_end.solver.solver_gurobi import is_gurobi_available
-from act.back_end.solver.solver_torch import TorchLPSolver
+from act.back_end.solver.solver_hz import HZSolver
+from act.back_end.solver.solver_box import BoxSolver
 from act.util.options import PerformanceOptions
 from act.front_end.specs import OutKind
 
@@ -286,7 +287,7 @@ class VerificationValidator:
     def validate_counterexamples(
         self, 
         networks: Optional[List[str]] = None,
-        solvers: List[str] = ['gurobi', 'torchlp']
+        solvers: List[str] = ['gurobi', 'torchlp', 'box']
     ) -> Dict[str, Any]:
         """
         Level 1: Validate verifier soundness using concrete counterexamples.
@@ -370,7 +371,9 @@ class VerificationValidator:
             if solver == 'gurobi':
                 solver_instance = GurobiSolver()
             elif solver == 'torchlp':
-                solver_instance = TorchLPSolver()
+                solver_instance = HZSolver()
+            elif solver == 'box':
+                solver_instance = BoxSolver()
             else:
                 raise ValueError(f"Unknown solver: {solver}")
             
@@ -721,7 +724,7 @@ class VerificationValidator:
     def validate_comprehensive(
         self,
         networks: Optional[List[str]] = None,
-        solvers: List[str] = ['gurobi', 'torchlp'],
+        solvers: List[str] = ['gurobi', 'torchlp', 'box'],
         tf_modes: List[str] = ['interval'],
         num_samples: int = 10,
         per_neuron_config: Optional[PerNeuronCheckConfig] = None,
@@ -908,7 +911,7 @@ def main():
     parser.add_argument('--dtype', default='float64', choices=['float32', 'float64'],
                        help='Data type')
     parser.add_argument('--networks', nargs='+', help='Specific networks to test')
-    parser.add_argument('--solvers', nargs='+', default=['gurobi', 'torchlp'],
+    parser.add_argument('--solvers', nargs='+', default=['gurobi', 'torchlp', 'box'],
                        help='Solvers for Level 1')
     parser.add_argument('--tf-modes', nargs='+', default=['interval'],
                        help='Transfer function modes for Level 2')

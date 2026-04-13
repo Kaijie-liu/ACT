@@ -59,14 +59,11 @@ from .analyze import dispatch_tf, analyze
 # Solver interfaces
 from .solver.solver_base import Solver, SolverCaps, SolveStatus
 from .solver.solver_gurobi import GurobiSolver
+from .solver.solver_hz import HZSolver
+from .solver.solver_box import BoxSolver
 
 # Verification types (canonical location: act/util/stats.py)
 from act.util.stats import VerifyStatus, VerifyResult
-
-# Note: TorchLPSolver and some verification functions are available 
-# via direct import to avoid circular dependencies:
-# from act.back_end.verifier import verify_once
-# from act.back_end.solver.solver_torch import TorchLPSolver
 
 __all__ = [
     # Core
@@ -85,7 +82,7 @@ __all__ = [
     # Export
     'export_to_solver', 'to_numpy',
     # Solvers
-    'Solver', 'SolverCaps', 'SolveStatus', 'GurobiSolver', 'TorchLPSolver',
+    'Solver', 'SolverCaps', 'SolveStatus', 'GurobiSolver', 'HZSolver', 'BoxSolver',
     # Specs
     'InputSpec', 'OutputSpec', 'InKind', 'OutKind', 'VerifyStatus', 'VerifyResult',
     'seed_from_input_spec', 'add_input_spec', 'verify_once',

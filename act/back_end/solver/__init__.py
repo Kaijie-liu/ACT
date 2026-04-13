@@ -13,12 +13,14 @@
 #===---------------------------------------------------------------------===#
 
 from .solver_base import Solver, SolverCaps, SolveStatus
-from .solver_torch import TorchLPSolver
 from .solver_gurobi import GurobiSolver
-from .hz_bounds import hz_compute_bounds
+from .solver_hz import HZSolver
+from .solver_box import BoxSolver
+
+# Backward compatibility alias
+TorchLPSolver = HZSolver
 
 __all__ = [
     'Solver', 'SolverCaps', 'SolveStatus',
-    'TorchLPSolver', 'GurobiSolver',
-    'hz_compute_bounds',
+    'GurobiSolver', 'HZSolver', 'BoxSolver', 'TorchLPSolver',
 ]

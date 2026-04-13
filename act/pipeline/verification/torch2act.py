@@ -60,7 +60,7 @@ from act.pipeline.verification.utils import _prod, _normalize_tuple
 # Imports needed for main() test harness
 from act.util.model_inference import model_inference
 from act.front_end.model_synthesis import model_synthesis
-from act.back_end.solver.solver_torch import TorchLPSolver
+from act.back_end.solver.solver_hz import HZSolver
 from act.back_end.solver.solver_gurobi import GurobiSolver
 from act.util.options import PerformanceOptions
 
@@ -1050,17 +1050,17 @@ def main():
         print(f"  Gurobi initialization failed: {e}")
     
     try:
-        torch_solver = TorchLPSolver()
+        torch_solver = HZSolver()
         torch_solver.begin("act_verification")
-        print(f"  TorchLP solver available (device: {torch_solver._device})")
+        print(f"  HZSolver available (device: {torch_solver._device})")
     except Exception as e:
-        print(f"  TorchLP initialization failed: {e}")
+        print(f"  HZSolver initialization failed: {e}")
     
     solvers_to_test = []
     if gurobi_solver:
         solvers_to_test.append(("Gurobi", gurobi_solver))
     if torch_solver:
-        solvers_to_test.append(("TorchLP", torch_solver))
+        solvers_to_test.append(("HZSolver", torch_solver))
     
     if not solvers_to_test:
         print("  No solvers available!")
