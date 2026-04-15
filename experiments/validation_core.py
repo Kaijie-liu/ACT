@@ -71,59 +71,67 @@ UCU_NETFACTORY_NUM_INSTANCES = 100
 
 
 def _write_override_gen_config(dest_path: "Path") -> "Path":
-    """Write a NetFactory config that restores the operator mix UCU had.
+    """Copy UCU_Aiware's NetFactory YAML so ACT generates networks
+    with the exact sampling rules the paper used.
 
-    ACT's bundled ``config_gen_act_net.yaml`` disables several toggles
-    with comments like "act2torch issues" and "cons_exportor doesn't
-    support". We tested each toggle empirically (see investigation in
-    commit history): the BBL/CBR path, which is what these experiments
-    use, works fine for all of them. The disabled comments apply only
-    to the MILP constraint-export path (``cons_exportor``), which the
-    experiments do not invoke.
+    Rationale: matching UCU's generation config as closely as possible
+    is the most faithful basis for cross-project comparison. Remaining
+    differences in generated networks then attribute cleanly to ACT's
+    NetFactory implementation evolution (not configuration drift).
 
-    Re-enabled here:
-      - ``variant.residual`` for both mlp and cnn2d  -> ADD op coverage
-      - ``use_unsqueeze_squeeze`` (mlp)              -> SQUEEZE, UNSQUEEZE
-      - ``use_transpose`` (cnn2d)                    -> TRANSPOSE
-      - ``use_bias_layer``, ``use_scale_layer``      -> BIAS, SCALE
-
-    Left alone:
-      - ``use_batchnorm`` -> BN is not registered in ACT's layer_schema
-        REGISTRY, so generation would fail.
-      - RESHAPE -> no toggle exposes it from the generator.
+    Notes:
+      - UCU's config activates residual variants (0.3 weight) and keeps
+        all ``use_*`` toggles at 0.04-0.08 natively; we just use it as-is.
+      - UCU's activation list includes ``square`` and ``pow`` which ACT
+        supports (registered in layer_schema). No translation needed.
+      - BN is still not generated because UCU's ``use_batchnorm: 0.25``
+        for cnn2d triggers a ``LayerKind.BN`` which ACT hasn't registered.
+        We strip ``use_batchnorm`` only to keep generation from failing.
     """
     import copy
     from pathlib import Path as _Path
     import yaml as _yaml
 
-    default_path = (
-        _Path(__file__).resolve().parent.parent
-        / "act" / "back_end" / "examples" / "config_gen_act_net.yaml"
+    ucu_path = _Path(
+        "/Users/z5524562/Desktop/Ai2ware/UCU_Aiware/"
+        "cuc/back_end/examples/config_gen_cuc_net.yaml"
     )
-    with open(default_path, "r") as f:
-        cfg = _yaml.safe_load(f) or {}
-    cfg = copy.deepcopy(cfg)
+    if not ucu_path.exists():
+        # Fallback: ACT's own YAML with residual re-enabled.
+        default_path = (
+            _Path(__file__).resolve().parent.parent
+            / "act" / "back_end" / "examples" / "config_gen_act_net.yaml"
+        )
+        with open(default_path, "r") as f:
+            cfg = _yaml.safe_load(f) or {}
+        cfg = copy.deepcopy(cfg)
+        mlp = cfg.setdefault("families", {}).setdefault("mlp", {})
+        cnn = cfg.setdefault("families", {}).setdefault("cnn2d", {})
+        if "weighted" in mlp.get("variant", {}):
+            mlp["variant"]["weighted"] = {
+                "plain": 0.4, "block": 0.3, "residual": 0.3,
+            }
+        if "weighted" in cnn.get("variant", {}):
+            cnn["variant"]["weighted"] = {
+                "plain": 0.4, "residual": 0.3, "stage": 0.3,
+            }
+    else:
+        with open(ucu_path, "r") as f:
+            cfg = _yaml.safe_load(f) or {}
+        cfg = copy.deepcopy(cfg)
+        # Strip BN toggle: ACT's layer_schema REGISTRY doesn't register
+        # LayerKind.BN, so generation with BN would fail.
+        cnn = cfg.get("families", {}).get("cnn2d", {})
+        cnn.pop("use_batchnorm", None)
 
-    mlp = cfg.setdefault("families", {}).setdefault("mlp", {})
-    cnn = cfg.setdefault("families", {}).setdefault("cnn2d", {})
-
-    # Re-enable residual variants (matches UCU_Aiware's original weights).
-    if "weighted" in mlp.get("variant", {}):
-        mlp["variant"]["weighted"] = {
-            "plain": 0.33, "block": 0.33, "residual": 0.34,
-        }
-    if "weighted" in cnn.get("variant", {}):
-        cnn["variant"]["weighted"] = {
-            "plain": 0.33, "residual": 0.34, "stage": 0.33,
-        }
-
-    # Re-enable layer toggles that expose extra operators. BBL/CBR
-    # handles them fine; only MILP export (cons_exportor) doesn't.
-    mlp["use_unsqueeze_squeeze"] = {"probability": 0.3}
-    mlp["use_bias_layer"] = {"probability": 0.3}
-    mlp["use_scale_layer"] = {"probability": 0.3}
-    cnn["use_transpose"] = {"probability": 0.3}
-    cnn["use_scale_layer"] = {"probability": 0.3}
+    # Strip any hard-coded output_dir / manifest_path from the source
+    # YAML; the caller passes ``output_dir`` to NetFactory as a kwarg
+    # and NetFactory derives the manifest path underneath it. Leaving
+    # the YAML values in place (they are relative paths like
+    # ``cuc/back_end/...``) would pollute the ACT working tree.
+    common = cfg.setdefault("common", {})
+    common.pop("output_dir", None)
+    common.pop("manifest_path", None)
 
     dest_path.parent.mkdir(parents=True, exist_ok=True)
     with open(dest_path, "w") as f:
