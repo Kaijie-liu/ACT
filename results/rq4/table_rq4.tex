@@ -1,0 +1,16 @@
+\begin{table}[t]
+\centering
+\caption{RQ4: Operator coverage and bug yield across generation strategies. Full-100 may exceed its random-sampling budget due to minimal-template completion.}
+\label{tab:rq4-coverage}
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Strategy} & \textbf{Random Budget} & \textbf{Generated} & \textbf{Op Coverage} & \textbf{Bug Yield} \\
+\midrule
+Basic-50 & 50 & 50 & 87\% & 50 \\
+Basic-100 & 100 & 100 & 87\% & 100 \\
+Full-100 & 100 & 1000 & \textbf{87\%} & \textbf{1000} \\
+\bottomrule
+\end{tabular}
+\end{table}
