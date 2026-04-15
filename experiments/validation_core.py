@@ -224,6 +224,7 @@ class FullDetectionResult:
     # Localization
     localized_top1: bool
     localized_top5: bool
+    localized_any: bool    # target present anywhere in the violating-layer list
     # Bounds info
     bound_width_avg: float
     # Error
@@ -234,15 +235,99 @@ class FullDetectionResult:
 # Core Functions
 # ============================================================================
 
+class DAGVerifiableModel(nn.Module):
+    """DAG-aware forward wrapper for ACT Nets.
+
+    ACT's ``act2torch`` silently drops layers marked ``requires_graph_restoration``
+    (notably ADD for residual skip connections), producing an nn.Sequential
+    whose forward pass disagrees with the analyzer on anything downstream
+    of a skipped merge. We re-execute the ACT Net in native layer order,
+    respecting ``preds`` so that multi-input operators (ADD) are actually
+    performed, and per-hookable-layer forward events still fire in
+    ACT-layer order for :func:`collect_concrete_activations`.
+    """
+
+    def __init__(self, act_net: "Net"):
+        super().__init__()
+        from act.pipeline.verification.act2torch import ACTToTorch
+        self._act_net = act_net
+
+        converter = ACTToTorch(act_net)
+        modules: Dict[str, nn.Module] = {}
+        self._layer_order: List[int] = []
+        for L in act_net.layers:
+            self._layer_order.append(L.id)
+            if L.kind in ("INPUT", "INPUT_SPEC", "ASSERT", "ADD"):
+                continue
+            built = converter._build_from_schema(L)
+            if built is not None:
+                modules[str(L.id)] = built
+        # nn.ModuleDict preserves insertion order, which matches ACT layer
+        # order -- important so model.modules() yields hookable modules in
+        # the same order as the ACT hookable layers.
+        self._layers = nn.ModuleDict(modules)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        preds = self._act_net.preds
+        acts: Dict[int, torch.Tensor] = {}
+        last_id = self._layer_order[-1] if self._layer_order else None
+
+        for L in self._act_net.layers:
+            lid = L.id
+            lp = preds.get(lid, []) or []
+            if L.kind == "INPUT":
+                acts[lid] = x
+                continue
+            if L.kind in ("INPUT_SPEC", "ASSERT"):
+                acts[lid] = acts[lp[0]] if lp else x
+                continue
+            if L.kind == "ADD":
+                if not lp:
+                    raise ValueError(f"ADD layer id={lid} has no predecessors")
+                out = acts[lp[0]]
+                for p in lp[1:]:
+                    out = out + acts[p]
+                acts[lid] = out
+                continue
+            key = str(lid)
+            if key not in self._layers:
+                # Unsupported (e.g. RESHAPE/TRANSPOSE not in _ACT_TO_TORCH):
+                # treat as identity so downstream layers still get input.
+                acts[lid] = acts[lp[0]] if lp else x
+                continue
+            module = self._layers[key]
+            inp = acts[lp[0]] if lp else x
+            acts[lid] = module(inp)
+
+        return acts[last_id] if last_id is not None else x
+
+
+def _act_net_is_dag(act_net) -> bool:
+    """True if any ACT layer has more than one predecessor (e.g. ADD)."""
+    for L in act_net.layers:
+        if len(act_net.preds.get(L.id, []) or []) > 1:
+            return True
+    return False
+
+
 def load_network_pair(
     factory: ModelFactory,
     network_name: str,
     device: str = "cpu",
     dtype: torch.dtype = torch.float64,
 ) -> Tuple[Any, nn.Module]:
-    """Load ACT Net and corresponding PyTorch model."""
+    """Load ACT Net and corresponding PyTorch model.
+
+    For DAG-structured nets (e.g. residual with ADD merges), build a
+    DAG-aware torch wrapper locally so the concrete forward matches the
+    analyzer's semantics. Pure-sequential nets still use ``act2torch``
+    via ``ModelFactory.create_model`` so we don't diverge needlessly.
+    """
     act_net = factory.get_act_net(network_name)
-    model = factory.create_model(network_name, load_weights=True)
+    if _act_net_is_dag(act_net):
+        model = DAGVerifiableModel(act_net)
+    else:
+        model = factory.create_model(network_name, load_weights=True)
     model = model.to(device=device, dtype=dtype)
     model.eval()
     return act_net, model
@@ -512,14 +597,23 @@ def run_full_detection(
         bca_violations = bbl_result.get("violations_total", 0)
         bca_worst_gap = bbl_result.get("worst_gap", 0.0)
 
-        # Top violation layers (unique, sorted by gap)
-        top_violation_layers = []
-        seen = set()
-        for v in bbl_result.get("violations_topk", []):
-            lid = v.get("layer_id")
-            if lid is not None and lid not in seen:
-                top_violation_layers.append(lid)
-                seen.add(lid)
+        # Violating layers: every layer whose concrete activations exceed
+        # its (possibly mutated) bounds, listed in forward propagation order
+        # (ascending layer_id). Verification means *exposing all bugs*, so
+        # we neither rank nor truncate this list -- whoever reads it should
+        # see every buggy layer the analysis can find.
+        stats = bbl_result.get("layerwise_stats", []) or []
+        violating_layers = sorted(
+            {
+                int(s["layer_id"])
+                for s in stats
+                if s.get("layer_id") is not None
+                and (s.get("num_violations") or 0) > 0
+            }
+        )
+        # Legacy alias kept so existing result.json / downstream scripts
+        # continue to read the same field.
+        top_violation_layers = violating_layers
 
         # Step 6: CBR
         spec_layers = gather_input_spec_layers(act_net)
@@ -554,6 +648,7 @@ def run_full_detection(
         # Step 7: Localization
         localized_top1 = target_layer_id in top_violation_layers[:1]
         localized_top5 = target_layer_id in top_violation_layers[:5]
+        localized_any = target_layer_id in top_violation_layers
 
         # Bound width (clean bounds, reflects domain precision)
         widths = []
@@ -579,6 +674,7 @@ def run_full_detection(
             scc_time_ms=scc_time_ms,
             localized_top1=localized_top1,
             localized_top5=localized_top5,
+            localized_any=localized_any,
             bound_width_avg=bound_width_avg,
         )
 
@@ -604,6 +700,7 @@ def _error_result(name, seed, domain, mutation_type, error_msg):
         scc_time_ms=0.0,
         localized_top1=False,
         localized_top5=False,
+        localized_any=False,
         bound_width_avg=0.0,
         error=error_msg,
     )

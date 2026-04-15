@@ -42,7 +42,6 @@ from act.back_end.validation import set_all_seeds, derive_seed
 # ============================================================================
 
 ARCHITECTURES = ["sequential_mlp", "sequential_cnn", "residual"]
-TOPK_VALUES = [1, 5]
 
 @dataclass
 class LocalizationResult:
@@ -54,6 +53,7 @@ class LocalizationResult:
     detected: bool
     top1_hit: bool
     top5_hit: bool
+    localized_any: bool   # target appears anywhere in violating-layer list
     error: bool      # Alignment or other error
     num_violations: int
     top_violation_layer_ids: List[int]
@@ -97,7 +97,7 @@ def run_localization(
         return LocalizationResult(
             network_idx=0, network_seed=net_seed, architecture=architecture,
             target_layer_id=target_layer_id, detected=False,
-            top1_hit=False, top5_hit=False, error=True,
+            top1_hit=False, top5_hit=False, localized_any=False, error=True,
             num_violations=0, top_violation_layer_ids=[], time_ms=0.0,
         )
 
@@ -119,7 +119,7 @@ def run_localization(
         return LocalizationResult(
             network_idx=net_idx, network_seed=net_seed, architecture=architecture,
             target_layer_id=result.target_layer_id, detected=False,
-            top1_hit=False, top5_hit=False, error=True,
+            top1_hit=False, top5_hit=False, localized_any=False, error=True,
             num_violations=0, top_violation_layer_ids=[],
             time_ms=result.bca_time_ms,
         )
@@ -132,6 +132,7 @@ def run_localization(
         detected=result.bca_detected,
         top1_hit=result.localized_top1,
         top5_hit=result.localized_top5,
+        localized_any=result.localized_any,
         error=False,
         num_violations=result.bca_violations_total,
         top_violation_layer_ids=result.bca_top_violation_layers[:10],
@@ -225,16 +226,19 @@ def run_rq3_experiment(
         detected_results = [r for r in results if r.detected and not r.error]
         n_d = len(detected_results)
 
-        top1_rate = sum(1 for r in detected_results if r.top1_hit) / n_d if n_d > 0 else 0.0
-        top5_rate = sum(1 for r in detected_results if r.top5_hit) / n_d if n_d > 0 else 0.0
+        localized_rate = sum(1 for r in detected_results if r.localized_any) / n_d if n_d > 0 else 0.0
+        avg_violating = (
+            sum(len(r.top_violation_layer_ids) for r in detected_results) / n_d
+            if n_d > 0 else 0.0
+        )
         error_rate = n_error / n
 
         table_data["table_rq3"][arch] = {
             "n": n,
             "n_detected": n_detected,
             "n_error": n_error,
-            "top1_hit_rate": top1_rate,
-            "top5_hit_rate": top5_rate,
+            "localized_rate": localized_rate,
+            "avg_violating_layers": avg_violating,
             "error_rate": error_rate,
         }
 
@@ -245,19 +249,20 @@ def run_rq3_experiment(
     print(f"\n{'=' * 70}")
     print("Table: BBL Localization Accuracy by Architecture")
     print(f"{'=' * 70}")
-    print(f"{'Architecture':<20} {'Top-1 Hit':>12} {'Top-5 Hit':>12} {'Error Rate':>12}")
-    print("-" * 60)
+    print(f"{'Architecture':<20} {'n_det':>8} {'Localized':>12} {'AvgViol#':>12} {'Error Rate':>12}")
+    print("-" * 70)
 
     for arch in ARCHITECTURES:
         stats = table_data["table_rq3"].get(arch, {})
         if not stats:
             continue
 
-        top1_str = f"{stats['top1_hit_rate']*100:.1f}%"
-        top5_str = f"{stats['top5_hit_rate']*100:.1f}%"
+        n_det_str = str(stats['n_detected'])
+        loc_str = f"{stats['localized_rate']*100:.1f}%"
+        avg_str = f"{stats['avg_violating_layers']:.2f}"
         error_str = f"{stats['error_rate']*100:.1f}%"
 
-        print(f"{arch:<20} {top1_str:>12} {top5_str:>12} {error_str:>12}")
+        print(f"{arch:<20} {n_det_str:>8} {loc_str:>12} {avg_str:>12} {error_str:>12}")
 
     # =========================================================================
     # Save results
@@ -295,9 +300,9 @@ def generate_latex_table_rq3(data: Dict[str, Any]) -> str:
         r"\caption{RQ3: L2 localization accuracy by architecture}",
         r"\label{tab:rq3-loc}",
         r"\small",
-        r"\begin{tabular}{lccc}",
+        r"\begin{tabular}{lcccc}",
         r"\toprule",
-        r"\textbf{Architecture} & \textbf{Top-1 Hit} & \textbf{Top-5 Hit} & \textbf{Error Rate} \\",
+        r"\textbf{Architecture} & \textbf{Detected} & \textbf{Localized} & \textbf{Avg.\ violating layers} & \textbf{Error Rate} \\",
         r"\midrule",
     ]
 
@@ -306,13 +311,14 @@ def generate_latex_table_rq3(data: Dict[str, Any]) -> str:
         label = arch_labels.get(arch, arch)
 
         if stats:
-            top1 = f"{stats['top1_hit_rate']*100:.0f}\\%"
-            top5 = f"{stats['top5_hit_rate']*100:.0f}\\%"
+            n_det = str(stats["n_detected"])
+            loc = f"{stats['localized_rate']*100:.0f}\\%"
+            avg = f"{stats['avg_violating_layers']:.2f}"
             error = f"{stats['error_rate']*100:.0f}\\%"
         else:
-            top1 = top5 = error = "--\\%"
+            n_det = loc = avg = error = "--"
 
-        lines.append(f"{label} & {top1} & {top5} & {error} \\\\")
+        lines.append(f"{label} & {n_det} & {loc} & {avg} & {error} \\\\")
 
     lines.extend([
         r"\bottomrule",

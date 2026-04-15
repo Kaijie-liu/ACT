@@ -3,13 +3,13 @@
 \caption{RQ3: L2 localization accuracy by architecture}
 \label{tab:rq3-loc}
 \small
-\begin{tabular}{lccc}
+\begin{tabular}{lcccc}
 \toprule
-\textbf{Architecture} & \textbf{Top-1 Hit} & \textbf{Top-5 Hit} & \textbf{Error Rate} \\
+\textbf{Architecture} & \textbf{Detected} & \textbf{Localized} & \textbf{Avg.\ violating layers} & \textbf{Error Rate} \\
 \midrule
-Sequential MLP & 86\% & 86\% & 0\% \\
-Sequential CNN & 100\% & 100\% & 0\% \\
-Residual (ADD) & 92\% & 92\% & 0\% \\
+Sequential MLP & 11 & 100\% & 1.00 & 0\% \\
+Sequential CNN & 12 & 100\% & 1.00 & 0\% \\
+Residual (ADD) & 12 & 100\% & 1.00 & 0\% \\
 \bottomrule
 \end{tabular}
 \end{table}
