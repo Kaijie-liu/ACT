@@ -135,23 +135,30 @@ def compute_forward_bounds(net: Net, input_lb: torch.Tensor, input_ub: torch.Ten
             
         elif kind == "ADD":
             # ADD layer: z = x + y (+ bias if present)
-            # Get bounds from predecessor layers via x_src and y_src
-            x_src = layer.params.get("x_src")
-            y_src = layer.params.get("y_src")
-            
-            if x_src is not None and y_src is not None and x_src in bounds_dict and y_src in bounds_dict:
+            # Predecessor layer IDs come from the ACT Net graph (``net.preds``).
+            # The prior implementation read ``x_src`` / ``y_src`` from
+            # ``layer.params``, but ``NetFactory.create_network`` writes the
+            # operands into ``params["x_vars"]`` / ``params["y_vars"]``
+            # (variable IDs) and the predecessor *layer* IDs into
+            # ``net.preds[layer.id]``. The missing keys sent execution down
+            # the "keep current lb, ub" fallback, which yielded
+            # ``bounds_dict[ADD] == bounds_dict[main_pred]`` (ignoring the
+            # skip path) and produced *unsound* bounds on residual nets.
+            pred_ids = list(net.preds.get(lid, []) or [])
+            if len(pred_ids) >= 2 and pred_ids[0] in bounds_dict and pred_ids[1] in bounds_dict:
+                x_src, y_src = pred_ids[0], pred_ids[1]
                 lb_x, ub_x = bounds_dict[x_src].lb.flatten(), bounds_dict[x_src].ub.flatten()
                 lb_y, ub_y = bounds_dict[y_src].lb.flatten(), bounds_dict[y_src].ub.flatten()
-                
+
                 # Handle shape mismatch (broadcasting)
                 if lb_x.numel() != lb_y.numel():
                     min_size = min(lb_x.numel(), lb_y.numel())
                     lb_x, ub_x = lb_x[:min_size], ub_x[:min_size]
                     lb_y, ub_y = lb_y[:min_size], ub_y[:min_size]
-                
+
                 lb = lb_x + lb_y
                 ub = ub_x + ub_y
-                
+
                 # Add bias if present
                 if "bias" in layer.params and layer.params["bias"] is not None:
                     b = layer.params["bias"].flatten()
@@ -159,8 +166,9 @@ def compute_forward_bounds(net: Net, input_lb: torch.Tensor, input_ub: torch.Ten
                         b = b[:lb.numel()] if b.numel() > lb.numel() else b.repeat((lb.numel() + b.numel() - 1) // b.numel())[:lb.numel()]
                     lb = lb + b
                     ub = ub + b
-            # else: keep current lb, ub as fallback
-            
+            # else: no valid predecessors -- fall back to current lb/ub
+            # (this should not happen for well-formed residual nets).
+
             bounds_dict[lid] = Bounds(lb.clone(), ub.clone())
             A, bias, x0, eps = _reset_state(lb, ub, device, dtype)
             
