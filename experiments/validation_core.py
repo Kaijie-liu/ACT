@@ -92,37 +92,23 @@ def _write_override_gen_config(dest_path: "Path") -> "Path":
     from pathlib import Path as _Path
     import yaml as _yaml
 
-    ucu_path = _Path(
-        "/Users/z5524562/Desktop/Ai2ware/UCU_Aiware/"
-        "cuc/back_end/examples/config_gen_cuc_net.yaml"
-    )
+    # UCU's generation config, shipped with this repo for reproducibility.
+    ucu_path = _Path(__file__).resolve().parent / "config_gen_ucu.yaml"
     if not ucu_path.exists():
         # Fallback: ACT's own YAML with residual re-enabled.
-        default_path = (
+        ucu_path = (
             _Path(__file__).resolve().parent.parent
             / "act" / "back_end" / "examples" / "config_gen_act_net.yaml"
         )
-        with open(default_path, "r") as f:
-            cfg = _yaml.safe_load(f) or {}
-        cfg = copy.deepcopy(cfg)
-        mlp = cfg.setdefault("families", {}).setdefault("mlp", {})
-        cnn = cfg.setdefault("families", {}).setdefault("cnn2d", {})
-        if "weighted" in mlp.get("variant", {}):
-            mlp["variant"]["weighted"] = {
-                "plain": 0.4, "block": 0.3, "residual": 0.3,
-            }
-        if "weighted" in cnn.get("variant", {}):
-            cnn["variant"]["weighted"] = {
-                "plain": 0.4, "residual": 0.3, "stage": 0.3,
-            }
-    else:
-        with open(ucu_path, "r") as f:
-            cfg = _yaml.safe_load(f) or {}
-        cfg = copy.deepcopy(cfg)
-        # Strip BN toggle: ACT's layer_schema REGISTRY doesn't register
-        # LayerKind.BN, so generation with BN would fail.
-        cnn = cfg.get("families", {}).get("cnn2d", {})
-        cnn.pop("use_batchnorm", None)
+
+    with open(ucu_path, "r") as f:
+        cfg = _yaml.safe_load(f) or {}
+    cfg = copy.deepcopy(cfg)
+
+    # Strip BN toggle: ACT's layer_schema REGISTRY doesn't register
+    # LayerKind.BN, so generation with BN would fail.
+    cnn = cfg.get("families", {}).get("cnn2d", {})
+    cnn.pop("use_batchnorm", None)
 
     # Strip any hard-coded output_dir / manifest_path from the source
     # YAML; the caller passes ``output_dir`` to NetFactory as a kwarg
@@ -290,6 +276,19 @@ def get_clean_bounds(
     return bounds_by_layer, entry_fact
 
 
+#: Maximum position in ``candidate_ids`` that ``select_target_layer`` will
+#: consider. UCU_Aiware's RQ1 measurements had ``target_layer_id`` capped
+#: at 6 across all 450 runs, which is explained by overflow in their older
+#: interval analyzer producing Inf bounds at deeper layers, which then got
+#: filtered out by ``get_clean_bounds``. ACT's analyzer is numerically
+#: stable at depth and returns finite bounds for every layer, so the
+#: candidate list spans the full network. To make RQ1 comparable with UCU,
+#: we cap the candidate window to the first ``TARGET_CANDIDATE_WINDOW``
+#: entries -- matching UCU's *effective* behaviour without re-introducing
+#: an overflow bug.
+TARGET_CANDIDATE_WINDOW = 5
+
+
 def select_target_layer(
     act_net,
     bounds_by_layer: Dict[int, Bounds],
@@ -309,7 +308,10 @@ def select_target_layer(
     ]
     if not candidate_ids:
         raise ValueError("No hookable layers with finite bounds found")
-    return candidate_ids[target_index % len(candidate_ids)]
+    # Cap to the shallow-layer window for comparability with UCU (see
+    # TARGET_CANDIDATE_WINDOW docstring above).
+    window = candidate_ids[: TARGET_CANDIDATE_WINDOW]
+    return window[target_index % len(window)]
 
 
 def run_bbl_detection(
