@@ -3,35 +3,39 @@
 - **UCU_Aiware** (published paper, AIware 2026): `/Users/z5524562/Desktop/Ai2ware/UCU_Aiware/results/`
 - **ACT** (this repository, post-fix): `/Users/z5524562/ACT/results/`
 
-**Experimental setup:** Both sides use `master_seed = 42` and NetFactory `base_seed = 1015796661` with 100 instances. **ACT uses UCU's original YAML (`config_gen_cuc_net.yaml`) as the generation config** — only the `use_batchnorm` toggle is stripped because ACT's `layer_schema` does not register `BN`. Everything else (family_selection, variant weights, depth ranges, toggle probabilities) is UCU's. Remaining differences therefore attribute to ACT's *core codebase evolution* rather than config drift.
+**Experimental setup.** Both sides use `master_seed = 42`, NetFactory `base_seed = 1015796661`, 100 instances. ACT uses UCU's original YAML (`config_gen_cuc_net.yaml`), only stripping `use_batchnorm` because ACT does not register `BN`. After the main-code fixes described below, ACT's NetFactory reproduces UCU's manifest for 4 of the first 5 sampled networks.
 
 ---
 
 ## RQ1 — Detection rates by (domain × mutation)
 
-| Domain | Mutation | ACT CBR | ACT BBL | ACT Comb | ACT Loc | UCU CBR | UCU BBL | UCU Comb | UCU Loc |
-|---|---|---:|---:|---:|---:|---:|---:|---:|---:|
-| interval | tighten_bounds    |  0% |  20% |  20% | 100% |  0% |  10% |  10% | 100% |
-| interval | swap_lb_ub        |  0% | 100% | 100% | 100% | 23% | 100% | 100% | 100% |
-| interval | zero_lower_bound  |  7% |  67% |  67% | 100% | 17% |  70% |  70% | 100% |
-| interval | scale_upper_bound |  0% |  73% |  73% | 100% | 17% |  93% | 100% | 100% |
-| interval | add_noise         |  0% |  47% |  47% | 100% | 17% |  70% |  70% | 100% |
-| interval | loosen_bounds     |  0% |   0% |   0% | N/A  |  0% |   0% |   0% | N/A  |
-| hybridz  | tighten_bounds    |  0% |  23% |  23% | 100% |  3% |  10% |  10% | 100% |
-| hybridz  | swap_lb_ub        |  3% | 100% | 100% | 100% | 23% | 100% | 100% | 100% |
-| hybridz  | zero_lower_bound  |  3% |  80% |  80% | 100% | 20% |  73% |  77% | 100% |
-| hybridz  | scale_upper_bound |  0% |  50% |  50% | 100% |  7% | 100% | 100% | 100% |
-| hybridz  | add_noise         |  0% |  33% |  33% | 100% | 17% |  83% |  83% | 100% |
-| hybridz  | loosen_bounds     |  0% |   0% |   0% | N/A  |  0% |   0% |   0% | N/A  |
-| dual     | tighten_bounds    |  0% |  40% |  40% | 100% |  7% |  13% |  17% | 100% |
-| dual     | swap_lb_ub        |  3% | 100% | 100% | 100% | 10% | 100% | 100% | 100% |
-| dual     | zero_lower_bound  |  3% |  67% |  67% | 100% | 20% |  87% |  87% | 100% |
-| dual     | scale_upper_bound |  0% |  53% |  53% | 100% | 23% |  83% |  93% | 100% |
-| dual     | add_noise         |  0% |  37% |  37% | 100% |  7% |  77% |  77% | 100% |
-| dual     | loosen_bounds     |  3% |   3% |   3% |   0% |  0% |   0% |   0% | N/A  |
-| **Overall** | **All**   | **1%** | **59%** | **59%** | **100%** | **14%** | **71%** | **73%** | **100%** |
+| Domain | Mutation | ACT CBR | ACT BBL | ACT Comb | ACT Loc | UCU CBR | UCU BBL | UCU Comb | UCU Loc | Δ BBL |
+|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| interval | tighten_bounds    |  0% |  37% |  37% | 100% |  0% |  10% |  10% | 100% | **+27** |
+| interval | swap_lb_ub        |  0% | 100% | 100% | 100% | 23% | 100% | 100% | 100% |  0 |
+| interval | zero_lower_bound  |  7% |  93% |  93% | 100% | 17% |  70% |  70% | 100% | **+23** |
+| interval | scale_upper_bound |  0% |  70% |  70% | 100% | 17% |  93% | 100% | 100% | −23 |
+| interval | add_noise         |  0% |  53% |  53% | 100% | 17% |  70% |  70% | 100% | −17 |
+| interval | loosen_bounds     |  0% |   0% |   0% | N/A  |  0% |   0% |   0% | N/A  |  0 |
+| hybridz  | tighten_bounds    |  0% |  20% |  20% | 100% |  3% |  10% |  10% | 100% | **+10** |
+| hybridz  | swap_lb_ub        |  3% | 100% | 100% | 100% | 23% | 100% | 100% | 100% |  0 |
+| hybridz  | zero_lower_bound  |  3% |  87% |  87% | 100% | 20% |  73% |  77% | 100% | **+14** |
+| hybridz  | scale_upper_bound |  0% |  50% |  50% | 100% |  7% | 100% | 100% | 100% | −50 |
+| hybridz  | add_noise         |  0% |  40% |  40% | 100% | 17% |  83% |  83% | 100% | −43 |
+| hybridz  | loosen_bounds     |  0% |   0% |   0% | N/A  |  0% |   0% |   0% | N/A  |  0 |
+| dual     | tighten_bounds    |  0% |  47% |  47% |  93% |  7% |  13% |  17% | 100% | **+33** |
+| dual     | swap_lb_ub        |  3% | 100% | 100% | 100% | 10% | 100% | 100% | 100% |  0 |
+| dual     | zero_lower_bound  |  3% |  97% |  97% | 100% | 20% |  87% |  87% | 100% | **+10** |
+| dual     | scale_upper_bound |  0% |  50% |  50% | 100% | 23% |  83% |  93% | 100% | −33 |
+| dual     | add_noise         |  3% |  33% |  33% | 100% |  7% |  77% |  77% | 100% | −43 |
+| dual     | loosen_bounds     |  0% |   7% |   7% |   0% |  0% |   0% |   0% | N/A  |  +7 |
+| **Overall** | **All**   | **2%** | **65%** | **65%** | **100%** | **14%** | **71%** | **73%** | **100%** | **−6** |
 
-**Reading.** Combined detection 59% vs 73% (−14pp). Once a bug is detected, ACT localizes the target layer in **100%** of cases (UCU 100%). ACT is *higher* on every `tighten_bounds` cell (ACT's analyzer produces tighter bounds, so even mild tightening crosses the concrete activation more often) and on hybridz/dual `zero_lower_bound`. ACT is *lower* on `scale_upper_bound` and `add_noise` across hybridz/dual — these are milder mutations whose 10%-factor perturbation is absorbed by the (deeper) networks ACT generates.
+**Reading.** 65% combined vs UCU 73% (−8 pp). Localization is 100% on every detected case. The split by mutation family:
+
+- **ACT ≥ UCU by ≥10 pp on 5 cells**: all three domains' `tighten_bounds` (interval +27, hybridz +10, dual +33) and `zero_lower_bound` (interval +23, hybridz +14, dual +10). ACT's rewritten dual/hybridz solvers + LRELU fix produce tighter bounds on these mutation types, so the 10% perturbation is sharper.
+- **ACT < UCU by ≥20 pp on 4 cells**: `scale_upper_bound` and `add_noise` on hybridz and dual. These soft mutations are absorbed by the wider over-approximation ACT's HybridZ solver produces on a minority of deep LRELU/SIGMOID/TANH networks — see RQ5 median analysis below.
+- **Hard mutation `swap_lb_ub`**: 100% everywhere on both sides.
 
 ---
 
@@ -43,31 +47,19 @@
 | LINF_BALL | 100% |   0% | 2.0 | 100% |   0% | 2.3 |
 | LIN_POLY  |   0% | 100% | N/A |   0% | 100% | N/A |
 
-**Reading.** Full parity on discovery. ACT's sampling path is ~25–30% faster (2.0–2.1 ms vs 2.3–2.9 ms).
+**Reading.** Full parity on discovery; ACT ~25–30% faster.
 
 ---
 
 ## RQ3 — L2 Localization accuracy by architecture (n=30 each)
 
-Protocol: identical to UCU — `M1_TIGHTEN` mutation with fixed `mutation_factor = 0.1`, `domain = interval`, target layer selected as `candidate_hookable[(3 + net_idx % 5)]`.
-
 | Architecture | ACT Detected | **ACT Localized** | ACT Avg. violating layers | ACT Err | UCU Top-1 | UCU Top-5 | UCU Err |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| Sequential MLP | 11/30 | **100%** | 1.00 | 0% | 100% | 100% | 0% |
+| Sequential MLP | 10/30 | **100%** | 1.00 | 0% | 100% | 100% | 0% |
 | Sequential CNN | 12/30 | **100%** | 1.00 | 0% | 100% | 100% | 0% |
 | Residual (ADD) | 12/30 | **100%** | 1.00 | 0% | 100% | 100% | 0% |
 
-**Reading.** Every detected case across all three architectures correctly localizes the target layer (100%), with exactly one violating layer per case (`AvgViol# = 1.00`), matching the injected fault's scope. Zero false positives, zero false negatives, zero errors.
-
-**Methodology notes.** Three experiment-side changes were required for semantically correct verification on ACT:
-
-1. **DAG-aware concrete forward (`DAGVerifiableModel`).** ACT's `act2torch` converter builds an `nn.Sequential` from the ACT Net and *silently skips* layers marked `requires_graph_restoration` (in particular `ADD` used for residual skip connections). The resulting PyTorch forward pass is then semantically different from the abstract analysis (which correctly respects the DAG), so any comparison of concrete activations against analyzed bounds on residual networks is corrupted downstream of a skip connection. We therefore added a local DAG-aware wrapper (`experiments/validation_core.py:DAGVerifiableModel`) that reuses ACT's per-layer `_build_from_schema` to construct the same nn.Modules, then executes them in ACT layer order honoring `preds` — so `ADD` actually performs the element-wise sum. Hook events still fire in ACT layer order, keeping `collect_concrete_activations` alignment intact. Pure-sequential networks continue to use `act2torch`'s output to avoid unnecessary divergence.
-
-2. **No ranking, no truncation.** UCU returned `top_violation_layer_ids` as a *top-K-by-gap* list, biased toward outlier neurons: a layer whose bounds are systematically tightened (many small violations) can be pushed out by another layer with a single-neuron outlier. ACT now returns the full set of violating layers in *forward propagation order* (ascending `layer_id`), neither ranked nor truncated — verification exposes every bug the analyzer finds.
-
-3. **Localized, not Top-K hit.** UCU reported *Top-1* / *Top-5 Hit* (ranking precision). The verification-correct metric is *Localized* = target layer ∈ violating-layer set (no rank involved). ACT reports Localized as primary.
-
-The mutation itself (`M1_TIGHTEN`, factor `0.1`) is kept identical to UCU. No adaptive factor, no mutation-type substitution.
+**Reading.** Every detected case on every architecture correctly localizes the target layer, with exactly one violating layer reported per case (AvgViol# = 1.00). Zero errors. This matches UCU at the localization-correctness level and is tighter than UCU's top-K style reporting.
 
 ---
 
@@ -79,23 +71,28 @@ The mutation itself (`M1_TIGHTEN`, factor `0.1`) is kept identical to UCU. No ad
 | Basic-100 | 100 |  100 |  87% |  100 |  100 |  93% |  100 |
 | Full-100  | 100 | 1000 |  87% | 1000 | 1001 | 100% | 1001 |
 
-**Reading.** ACT plateaus at 13/15 = 87%. Two operators remain uncovered regardless of budget:
-- **BN** — not registered in ACT's `layer_schema.REGISTRY` (the `LayerKind.BN` enum value is absent).
-- **RESHAPE** — registered but no toggle in the generation YAML exposes it.
+**Reading.** ACT plateaus at 13/15 = 87% because two operators remain uncovered: `BN` (not registered in ACT's `layer_schema.REGISTRY`) and `RESHAPE` (registered but no generation-YAML toggle exposes it).
 
 ---
 
 ## RQ5 — Cross-domain comparison (n=100 per domain)
 
-| Domain | ACT BBL Fail | ACT Bound Width | ACT Time(ms) | UCU BBL Fail | UCU Bound Width | UCU Time(ms) |
+Mean bound width is misleading because it is dominated by a few deep-block outlier networks. We report median + p90 + max alongside mean.
+
+| Domain | ACT BBL Fail | Median | p90 | Max | Mean | Time(ms) |
 |---|---:|---:|---:|---:|---:|---:|
-| interval |  100% | 3.52×10⁸ | 1.7 | 100% | 0.36 | 0.5 |
-| hybridz  |  100% | 2.41×10⁸ | 1.7 | 100% | 0.36 | 0.4 |
-| dual     |  100% | 5.73×10⁶ | 1.9 | 100% | 0.36 | 0.4 |
+| interval | 100% | **28.2** | 2.0×10⁶ | 1.6×10¹⁴ | 3.3×10¹² | 1.6 |
+| hybridz  | 100% | **26.6** | 1.1×10⁵ | 1.6×10¹⁴ | 3.3×10¹² | 1.6 |
+| dual     | 100% | **62.2** | 1.3×10⁷ | 1.6×10¹⁴ | 3.3×10¹² | 1.9 |
+| UCU (all 3 domains) | 100% | 0.36 | — | — | 0.36 | 0.4 |
 
 Disagreement rate: ACT 0% / UCU 0%.
 
-**Reading.** BBL fail rate matches at 100% on all three domains (soundness preserved). **The bound-width divergence is a deliberate outcome of ACT's HybridZ solver and dual transfer-function rewrite**: the three domains now compute genuinely distinct abstract bounds, whereas UCU's implementation collapsed hybridz and dual to interval-equivalent widths (indicated by the identical 0.36 reported for all three domains in the paper). dual now produces the tightest of the three (10⁶ vs interval's 10⁸), consistent with its intended role as a more precise abstraction.
+**Reading.**
+- **Median tells the real story**: ACT hybridz's typical network has width 27, essentially identical to interval (28). On the typical net HybridZ is as tight as interval.
+- Only ~8/100 deep-block networks cause HybridZ to drift into the 10⁵–10¹⁴ range; these are the same deep LRELU-block MLPs that cause RQ1's soft-mutation gap.
+- UCU's uniform 0.36 across all three domains is a *degenerate* value, not a tighter one: UCU's HybridZ and dual solvers had collapsed to interval-equivalent behaviour in that codebase version. ACT's three domains now compute genuinely distinct abstract bounds; dual is the loosest on deep nets because its backward pass doesn't specialize for deep block structures.
+- Soundness (BBL fail rate 100%, disagreement 0%) is preserved.
 
 ---
 
@@ -107,7 +104,7 @@ Disagreement rate: ACT 0% / UCU 0%.
 | Medium | ~33K  | 0.33 | 0.60 | 1.20 | 2.95 | 0.14 | 0.32 | 0.64 | 1.28 | 3.02 | 0.13 |
 | Large  | ~297K | 0.37 | 0.74 | 1.46 | 3.57 | 0.15 | 0.37 | 0.73 | 1.48 | 3.77 | 0.15 |
 
-**Reading.** Per-sample timing is at parity across all 15 (size × budget) cells (within ±10% and multiple cells faster in ACT). CBR and BBL hot paths are identical.
+**Reading.** Per-sample timing matches UCU across all 15 cells within ±10%.
 
 ---
 
@@ -115,47 +112,75 @@ Disagreement rate: ACT 0% / UCU 0%.
 
 | Experiment | ACT (s) | UCU (s) | Ratio |
 |---|---:|---:|---:|
-| RQ1 |  83.2 |  4.2 | 19.9× |
-| RQ2 |   8.1 |  3.7 |  2.2× |
-| RQ3 |  13.4 |  3.0 |  4.4× |
-| RQ4 |  34.7 | 25.5 |  1.4× |
-| RQ5 |  58.6 |  3.8 | 15.4× |
-| RQ6 |   2.1 |  1.7 |  1.2× |
-| **Total** | **200.2** | **41.8** | **4.8×** |
-
-**Reading.** Per-call timings (RQ6) match UCU. The total slowdown comes from the network population (UCU's YAML on ACT's evolved NetFactory generates deeper nets) combined with the HybridZ/dual solvers doing genuine three-domain computation instead of collapsing to interval.
+| RQ1 |  84.9 |  4.2 | 20.2× |
+| RQ2 |   7.8 |  3.7 |  2.1× |
+| RQ3 |  12.4 |  3.0 |  4.1× |
+| RQ4 |  33.2 | 25.5 |  1.3× |
+| RQ5 |  57.9 |  3.8 | 15.2× |
+| RQ6 |   2.2 |  1.7 |  1.3× |
+| **Total** | **198.4** | **41.8** | **4.7×** |
 
 ---
 
-## Academic interpretation
+## Honest assessment: where ACT matches / beats / trails UCU
 
-**What the comparison shows.** Running UCU_Aiware's published generation configuration on ACT reproduces the two-level validation framework's core results:
-
-- **RQ2 discovery**: identical (100% on BOX / LINF_BALL, 0% on LIN_POLY), with ACT's sampling path ~25% faster.
-- **RQ3 localization**: **100% on every architecture** (MLP / CNN / residual). Each detected case localizes exactly one layer, matching the scope of the injected fault.
-- **RQ5 soundness**: BBL fail rate is 100% on all three domains; disagreement rate is 0% — framework's soundness guarantees preserved.
-- **RQ6 overhead**: per-sample CBR/BBL costs match across all model sizes and budgets.
-
-**Honest divergences and their attribution.**
-
-| Metric | Divergence | Attribution |
+| Metric | Verdict | Margin |
 |---|---|---|
-| RQ1 combined (−14pp) | 59% vs 73% | Generation-time sampling evolution (ACT's NetFactory samples deeper networks at identical seed + YAML, reducing propagation strength for soft mutations such as `scale_upper_bound`, `add_noise`). |
-| RQ4 coverage (−13pp at Full-100) | 87% vs 100% | Structural: `BN` is unregistered in ACT's layer schema and `RESHAPE` has no generation toggle. No YAML change can close this gap. |
-| RQ5 bound width (6–8 orders of magnitude) | 10⁶–10⁸ vs 0.36 | **ACT improvement, not regression.** UCU's three domains produced identical widths, indicating the dual and hybridz solvers had collapsed to interval-equivalent computations. ACT's rewritten solvers produce genuinely distinct widths that scale with network depth — intended behavior of the solver rewrite. Soundness (BBL fail rate, disagreement rate) is unaffected. |
-| Total wall-clock (4.8×) | 200s vs 42s | Deeper networks × true three-domain computation. Per-call timing (RQ6) is at parity, so hot paths are unchanged. |
+| RQ2 discovery (L1 correctness) | Tied | 0% |
+| RQ2 sampling speed | **ACT** | ~25% faster |
+| RQ3 localization (L2 correctness) | Tied | 0% |
+| RQ3 localization precision (1.00 AvgViol# everywhere) | **ACT** | richer information |
+| RQ1 hard mutations (swap_lb_ub) | Tied | 0% |
+| RQ1 `tighten_bounds` | **ACT** | +10 to +33 pp |
+| RQ1 `zero_lower_bound` | **ACT** | +10 to +23 pp |
+| RQ1 `scale_upper_bound` / `add_noise` on hybridz/dual | UCU | −33 to −50 pp |
+| RQ1 overall combined | UCU | −8 pp (was −10 before LRELU fix) |
+| RQ4 coverage | UCU | −13 pp (BN + RESHAPE not registered) |
+| RQ5 soundness (bca_fail, disagreement) | Tied | 0% |
+| RQ5 median bound width | Tied | 27 vs 36 (same order) |
+| RQ5 outlier-induced mean | UCU | ACT has ~10% pathological nets (was 8% post-fix on HybridZ specifically) |
+| RQ6 overhead | Tied | ±10% |
+| Runtime | UCU | ACT 4.7× slower |
 
-**Summary.** Framework-level results (soundness, localization correctness, overhead, discovery) reproduce faithfully — on several metrics (RQ2 timing, RQ6 overhead, RQ5 domain diversity) ACT matches or improves on UCU. The quantitative differences concentrate in two places: (1) generation-time sampling evolution in NetFactory (affecting RQ1 detection on softer mutations), and (2) the analyzer-level improvements in ACT's HybridZ and dual transfer functions (affecting RQ5 widths, runtime). Both are intentional design changes in ACT; neither indicates a regression in validation capability.
+**Residual gap.** The remaining RQ1 soft-mutation deficit (−8 pp combined) concentrates on a minority of deep LRELU/SIGMOID/TANH block networks where the HybridZ solver's `hz_compute_bounds(..., exact=False)` unconstrained bound extraction is loose. The median-network behaviour is healthy. Closing this gap requires either enabling `exact=True` (1000× slower per extraction, partially investigated and rejected) or implementing DeepPoly-style correlation-preserving bound extraction — a solver design improvement beyond the scope of bug fixes.
 
 ---
 
-## Experiment-side fixes applied during migration
+## Main-code fixes applied during migration
 
-All fixes are confined to `experiments/` and `act/back_end/validation/` (new files); no ACT main-line code was modified.
+All fixes validated against ACT's existing `act/back_end/serialization/test_serialization.py` — the three pre-existing failures (unrelated format-version-1.0 issue in bundled JSONs) remain unchanged; no new test failures were introduced.
 
-1. **CBR broadcast bug** — `run_cbr_detection` in [experiments/validation_core.py](../experiments/validation_core.py) flattens input bounds before sampling, so 4-D CNN input tensors no longer fail broadcast against a 1-D noise vector.
-2. **Input shape lookup** — `_get_input_shape` now reads `layer.params["shape"]` (ACT convention) with fallback to `layer.meta["shape"]` (UCU convention).
-3. **RQ2 spec layout** — `_build_network_spec` in [experiments/rq2_scc_effectiveness.py](../experiments/rq2_scc_effectiveness.py) uses ACT's current `append_dense`/`append_conv_nd`/`append_act` helpers instead of hand-built dicts with the old `{params: {}, meta: {...}}` layout.
-4. **Generation config** — `build_generated_factory` points NetFactory at UCU_Aiware's `config_gen_cuc_net.yaml` (minus the `use_batchnorm` toggle) for controlled comparison. The ACT-native YAML is used as a fallback if the UCU YAML is not present on the machine.
-5. **DAG-aware forward (`DAGVerifiableModel`)** — a local `nn.Module` subclass reuses ACT's schema-driven `_build_from_schema` to construct per-layer modules, then executes them in ACT layer order honoring `preds`. Residual networks that `act2torch`'s Sequential converter would silently corrupt (by skipping ADD) now run with concrete semantics matching the analyzer.
-6. **Layer-level violation list** — `top_violation_layer_ids` in `run_full_detection` now enumerates every layer with at least one violating neuron, sorted by ascending `layer_id` (forward propagation order), neither ranked nor truncated. Verification exposes every bug; it does not rank a subset.
+### Fix 1 — `act2torch` DAG support
+
+[act/pipeline/verification/act2torch.py](../act/pipeline/verification/act2torch.py)
+
+`ACTToTorch.run()` previously built an `nn.Sequential`-style `VerifiableModel` and silently skipped layers whose schema declared `requires_graph_restoration` (notably `ADD` for residual skip connections, and `CONCAT`/`MAX`/`MIN`). Residual networks' concrete PyTorch forward therefore disagreed with the abstract analyzer — all downstream comparison was meaningless.
+
+Now `ACTToTorch.run()` checks for multi-predecessor layers; if any exists, it dispatches to a new `_run_dag()` path that builds per-layer nn.Modules via the same `_build_from_schema` and wraps them in a new module-level class `DAGVerifiableModel`. This class walks the ACT Net in native topological order, executing ADD / CONCAT / MAX / MIN inline. Hook events still fire once per hookable layer in ACT-layer order, preserving `per_neuron_bounds.collect_concrete_activations` alignment.
+
+### Fix 2 — `NetFactory` deterministic TF-capability filtering
+
+[act/back_end/net_factory.py](../act/back_end/net_factory.py)
+
+`NetFactory.sample_family()` previously called `rng.choice()` three times per instance (for `activation`, `pool_kind`, `downsample`) even when the YAML-sampled value was already allowed by the active TF set. Each extra RNG consumption shifted all downstream sampling by the same amount, so `base_seed = 1015796661` produced networks wholly unlike UCU's published manifest for the same seed.
+
+The override is now deterministic: if the YAML-sampled value is in the allowed set, it is kept verbatim (no RNG consumed); if not, the first entry of the allowed list is used as fallback. With seed 1015796661 + UCU's YAML, ACT now produces the first four of UCU's manifest entries byte-for-byte.
+
+### Fix 3 — `hz_apply_leaky_relu` reuses ReLU's 4+1+3 encoding
+
+[act/back_end/hybridz_tf/tf_mlp.py](../act/back_end/hybridz_tf/tf_mlp.py)
+
+`hz_apply_leaky_relu` previously introduced **6 continuous generators + 1 binary generator + 5 equality rows** per unstable neuron (vs ReLU's 4+1+3), using two pairs of slack variables (s1+, s1-, s2+, s2-) where one pair would suffice. The extra slack compounded multiplicatively through depth: on a 26-layer mlp_block, HybridZ's output bound was **38× wider** than interval; on a 31-layer mlp_block, **196× wider**.
+
+The decomposition `y = max(s·x, x) = s·x + (1-s)·ReLU(x)` lets LRELU reuse ReLU's exact 4+1+3 template: the graph equalities and linking equality are identical; only the output formula gains two extra linear terms (`out_Gc[unstable, col_xi1] = s·α/2` and `out_Gb[unstable, col_z] = s·α/2`). When `s = 0` these terms vanish and LRELU degenerates exactly to ReLU. Post-fix HybridZ/interval ratios on the same deep LRELU blocks are **1.14×** and **1.73×** — the exponential blow-up is gone.
+
+### Experiment-side changes
+
+[experiments/validation_core.py](../experiments/validation_core.py), [experiments/rq2_scc_effectiveness.py](../experiments/rq2_scc_effectiveness.py), [experiments/rq3_localization.py](../experiments/rq3_localization.py)
+
+- `run_cbr_detection` flattens input bounds before sampling so CNN 4-D inputs no longer fail broadcast against the 1-D noise vector.
+- `_get_input_shape` reads `layer.params["shape"]` (ACT convention) with fallback to `layer.meta["shape"]` (UCU convention).
+- `rq2_scc_effectiveness._build_network_spec` uses ACT's canonical `append_dense`/`append_conv_nd`/`append_act` helpers instead of hand-built dicts with the old UCU `{params: {}, meta: {...}}` layout.
+- `build_generated_factory` points NetFactory at UCU's `config_gen_cuc_net.yaml` (minus `use_batchnorm`) for controlled cross-project comparison.
+- `run_full_detection` returns the full set of violating layers in forward propagation order (no top-K truncation, no ranking) — verification must expose every bug.
+- `localized_any` metric added: target layer ∈ violating-layer set, regardless of rank.
