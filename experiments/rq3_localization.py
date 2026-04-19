@@ -212,18 +212,19 @@ def run_rq3_experiment(
 
     # Table: by architecture
     for arch in ARCHITECTURES:
-        results = results_by_arch[arch]
+        all_results = results_by_arch[arch]
+        # Restrict to networks the converter accepts; topology-unsupported
+        # cases are already marked with ``r.error`` and are carried in
+        # raw_results for reference but aren't mixed into the aggregate rate.
+        results = [r for r in all_results if not r.error]
         n = len(results)
 
         if n == 0:
             continue
 
         n_detected = sum(1 for r in results if r.detected)
-        n_error = sum(1 for r in results if r.error)
-        n_valid = n - n_error
 
-        # Among detected (non-error) results
-        detected_results = [r for r in results if r.detected and not r.error]
+        detected_results = [r for r in results if r.detected]
         n_d = len(detected_results)
 
         localized_rate = sum(1 for r in detected_results if r.localized_any) / n_d if n_d > 0 else 0.0
@@ -231,12 +232,14 @@ def run_rq3_experiment(
             sum(len(r.top_violation_layer_ids) for r in detected_results) / n_d
             if n_d > 0 else 0.0
         )
-        error_rate = n_error / n
+        # Error rate recorded relative to the full attempted set so it
+        # remains visible in the table but does not pollute detection rates.
+        error_rate = (len(all_results) - n) / len(all_results)
 
         table_data["table_rq3"][arch] = {
             "n": n,
             "n_detected": n_detected,
-            "n_error": n_error,
+            "n_error": len(all_results) - n,
             "localized_rate": localized_rate,
             "avg_violating_layers": avg_violating,
             "error_rate": error_rate,

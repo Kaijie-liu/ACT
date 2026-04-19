@@ -249,7 +249,14 @@ def run_rq1_experiment(
 
         for mutation in all_mutations:
             key = (domain, mutation.value)
-            results = results_by_domain_mutation[key]
+            all_results = results_by_domain_mutation[key]
+            # Compute rates over the subset of networks the converter could
+            # actually produce a PyTorch model for. Cases that hit an
+            # unsupported-topology exception are carried in raw_results as
+            # ``target_layer_id == -1`` and are skipped for aggregation so
+            # that rates reflect per-network detection behaviour, not the
+            # converter's structural coverage.
+            results = [r for r in all_results if r.target_layer_id != -1]
             n = len(results)
 
             if n == 0:

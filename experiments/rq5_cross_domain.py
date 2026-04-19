@@ -174,10 +174,17 @@ def run_rq5_experiment(
     for domain, results in results_by_domain.items():
         table_data["raw_results"][domain] = [asdict(r) for r in results]
 
-    # Domain statistics
+    # Domain statistics -- restricted to networks the converter accepted.
+    # Topology-unsupported cases carry ``time_ms == 0`` (no run happened);
+    # we keep them in raw_results for transparency but exclude from aggregate
+    # rates so the numbers reflect per-network analyzer behaviour.
     for domain in DOMAINS:
-        results = results_by_domain[domain]
+        all_results = results_by_domain[domain]
+        results = [r for r in all_results if r.time_ms > 0]
         n = len(results)
+
+        if n == 0:
+            continue
 
         fail_rate = sum(1 for r in results if r.bca_failed) / n
         avg_width = sum(r.bound_width for r in results) / n

@@ -345,6 +345,7 @@ def hz_apply_leaky_relu(hz: HZono, alpha_arg: float) -> HZono:
     nb = hz.Gb.shape[1]
     nc = hz.Ac.shape[0]
     s = alpha_arg
+    assert 0.0 <= s <= 1.0, f"hz_apply_leaky_relu: slope must be in [0, 1], got {s}"
 
     bounds = hz_compute_bounds(hz)
     lb = bounds.lb.flatten()

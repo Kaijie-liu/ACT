@@ -71,115 +71,6 @@ _ACT_TO_TORCH = {
 }
 
 
-class DAGVerifiableModel(nn.Module):
-    """DAG-aware verifiable model.
-
-    Executes an ACT Net in native topological order honouring ``preds``,
-    so residual merges (``ADD``), concatenations (``CONCAT``), and other
-    multi-input operators actually run instead of being silently dropped
-    the way an ``nn.Sequential`` conversion would do.
-
-    Per-hookable-layer forward events still fire once in ACT-layer order,
-    keeping :func:`per_neuron_bounds.collect_concrete_activations`'s
-    position-based alignment intact.
-    """
-
-    def __init__(
-        self,
-        act_net: Net,
-        per_layer_modules: Dict[int, nn.Module],
-        input_spec_layer: Optional[nn.Module] = None,
-        output_spec_layer: Optional[nn.Module] = None,
-    ):
-        super().__init__()
-        self._act_net = act_net
-        # ModuleDict keyed by str(layer_id) — preserves insertion order
-        # (Python 3.7+ dict ordering), which matches ACT layer order, so
-        # ``model.modules()`` traversal matches hook expectations.
-        self._layers = nn.ModuleDict({str(k): v for k, v in per_layer_modules.items()})
-        if input_spec_layer is not None:
-            self._input_spec = input_spec_layer
-        else:
-            self._input_spec = None
-        if output_spec_layer is not None:
-            self._output_spec = output_spec_layer
-        else:
-            self._output_spec = None
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        preds = getattr(self._act_net, "preds", {}) or {}
-        acts: Dict[int, torch.Tensor] = {}
-
-        # Apply input spec first (if any) so the input tensor is validated
-        # the same way the Sequential path does.
-        if self._input_spec is not None:
-            x = self._input_spec(x)
-            if isinstance(x, tuple):
-                x = x[0]
-
-        last_id = self._act_net.layers[-1].id if self._act_net.layers else None
-        for L in self._act_net.layers:
-            lid = L.id
-            lp = preds.get(lid, []) or []
-
-            if L.kind == "INPUT":
-                acts[lid] = x
-                continue
-            if L.kind == "INPUT_SPEC":
-                # Spec already applied at the top; treat as passthrough.
-                acts[lid] = acts[lp[0]] if lp else x
-                continue
-            if L.kind == "ASSERT":
-                acts[lid] = acts[lp[0]] if lp else x
-                continue
-
-            if L.kind == "ADD":
-                if not lp:
-                    raise ValueError(f"ADD layer id={lid} has no predecessors")
-                out = acts[lp[0]]
-                for p in lp[1:]:
-                    out = out + acts[p]
-                acts[lid] = out
-                continue
-
-            if L.kind == "CONCAT":
-                dim = int((L.params or {}).get("dim", 1))
-                acts[lid] = torch.cat([acts[p] for p in lp], dim=dim)
-                continue
-
-            if L.kind == "MAX":
-                acts[lid] = acts[lp[0]]
-                for p in lp[1:]:
-                    acts[lid] = torch.maximum(acts[lid], acts[p])
-                continue
-
-            if L.kind == "MIN":
-                acts[lid] = acts[lp[0]]
-                for p in lp[1:]:
-                    acts[lid] = torch.minimum(acts[lid], acts[p])
-                continue
-
-            key = str(lid)
-            if key not in self._layers:
-                # Layer had no torch counterpart (e.g. RESHAPE/TRANSPOSE
-                # that lacks an entry in _ACT_TO_TORCH); treat as identity.
-                acts[lid] = acts[lp[0]] if lp else x
-                continue
-            module = self._layers[key]
-            inp = acts[lp[0]] if lp else x
-            out = module(inp)
-            if isinstance(out, tuple):
-                out = out[0]
-            acts[lid] = out
-
-        final = acts[last_id] if last_id is not None else x
-        if self._output_spec is not None:
-            final = self._output_spec(final)
-            if isinstance(final, tuple):
-                final = final[0]
-        return final
-
-
 class ACTToTorch:
     """
     Convert ACT Net to PyTorch nn.Module using dynamic restoration.
@@ -208,26 +99,16 @@ class ACTToTorch:
         Convert ACT Net to PyTorch nn.Module.
 
         Iterates through ACT layers, creates corresponding PyTorch layers,
-        transfers weights, and assembles into a VerifiableModel model.
-
-        Pure-sequential nets produce a Sequential-style ``VerifiableModel``.
-        Nets whose layer graph has any layer with more than one predecessor
-        (e.g. residual skip connections via ``ADD``) produce a DAG-aware
-        ``DAGVerifiableModel`` that executes in native topological order and
-        actually performs multi-input operations, so concrete forward
-        semantics match the abstract analyzer.
+        transfers weights, and assembles into VerifiableModel model.
 
         Returns:
-            VerifiableModel or DAGVerifiableModel with embedded constraint
-            checking.
+            VerifiableModel model with embedded constraint checking
 
         Raises:
+            NotImplementedError: If the net has multi-predecessor layers.
             ValueError: If no valid PyTorch layers can be created
         """
-        # DAG networks need native graph execution; dispatch early and reuse
-        # this same converter's per-layer builder for consistency.
-        if self._act_net_has_dag_structure():
-            return self._run_dag()
+        self._assert_chain_structure()
 
         torch_layers = []
         has_input_spec = False
@@ -350,105 +231,6 @@ class ACTToTorch:
 
         return model
 
-    def _act_net_has_dag_structure(self) -> bool:
-        """True if any layer has more than one predecessor (e.g. ADD merge)."""
-        preds = getattr(self.act_net, "preds", {}) or {}
-        for lid, parents in preds.items():
-            if parents and len(parents) > 1:
-                return True
-        return False
-
-    def _run_dag(self) -> nn.Module:
-        """Build a DAG-aware VerifiableModel.
-
-        Reuses :meth:`_build_from_schema` to construct per-layer nn.Modules,
-        then wraps them in :class:`DAGVerifiableModel` which walks the ACT
-        Net in native layer order honouring ``preds`` so multi-input
-        operators (ADD / CONCAT / MAX / MIN) actually execute.
-        """
-        from act.front_end.verifiable_model import (
-            InputSpecLayer, OutputSpecLayer,
-        )
-        from act.front_end.specs import InputSpec, OutputSpec, InKind, OutKind
-
-        target_dtype = get_default_dtype()
-        target_device = get_default_device()
-
-        per_layer: Dict[int, nn.Module] = {}
-        input_spec_layer: Optional[InputSpecLayer] = None
-        output_spec_layer: Optional[OutputSpecLayer] = None
-        has_input_spec = False
-        has_output_spec = False
-
-        for act_layer in self.act_net.layers:
-            kind = act_layer.kind
-            params = act_layer.params
-
-            if kind == LayerKind.INPUT.value:
-                continue
-
-            if kind == LayerKind.INPUT_SPEC.value:
-                kind_str = params["kind"]
-                spec_kind = getattr(InKind, kind_str)
-                spec_dict = {"kind": spec_kind}
-                if "eps" in params:
-                    spec_dict["eps"] = params["eps"]
-                for pkey in ("lb", "ub", "center", "A", "b"):
-                    if pkey in params:
-                        t = params[pkey]
-                        spec_dict[pkey] = t.to(
-                            dtype=target_dtype, device=target_device
-                        )
-                input_spec_layer = InputSpecLayer(InputSpec(**spec_dict))
-                has_input_spec = True
-                continue
-
-            if kind == LayerKind.ASSERT.value:
-                kind_str = params["kind"]
-                spec_kind = getattr(OutKind, kind_str)
-                spec_dict = {"kind": spec_kind}
-                for pkey in ("y_true", "margin", "d"):
-                    if pkey in params:
-                        spec_dict[pkey] = params[pkey]
-                for pkey in ("c", "lb", "ub"):
-                    if pkey in params:
-                        t = params[pkey]
-                        spec_dict[pkey] = t.to(
-                            dtype=target_dtype, device=target_device
-                        )
-                output_spec_layer = OutputSpecLayer(OutputSpec(**spec_dict))
-                has_output_spec = True
-                continue
-
-            # Multi-input graph ops (ADD / CONCAT / MAX / MIN) have no
-            # trainable parameters and are handled inline in the DAG
-            # forward; they don't need a submodule.
-            if kind in (
-                LayerKind.ADD.value,
-                LayerKind.CONCAT.value,
-                LayerKind.MAX.value,
-                LayerKind.MIN.value,
-            ):
-                continue
-
-            built = self._build_from_schema(act_layer)
-            if built is not None:
-                per_layer[act_layer.id] = built
-
-        model = DAGVerifiableModel(
-            act_net=self.act_net,
-            per_layer_modules=per_layer,
-            input_spec_layer=input_spec_layer,
-            output_spec_layer=output_spec_layer,
-        )
-        model.eval()
-
-        logger.info(
-            f"Created DAGVerifiableModel with {len(per_layer)} computation "
-            f"layers (INPUT_SPEC={has_input_spec}, OUTPUT_SPEC={has_output_spec})"
-        )
-        return model
-
     def _find_paired_bias(self, scale_idx: int) -> Optional[Layer]:
         """Find BIAS layer paired with SCALE at given index."""
         layers = self.act_net.layers
@@ -509,16 +291,11 @@ class ACTToTorch:
 
         cls = _ACT_TO_TORCH.get(kind)
         if cls is None:
-            # DAG operators (ADD / CONCAT / MAX / MIN) have no trainable
-            # parameters and are executed inline by DAGVerifiableModel.
-            # For Sequential conversion, we return None; the caller emits a
-            # warning only if it's actually running the Sequential path.
             if "requires_graph_restoration" in spec.get("params_optional", []):
-                if not self._act_net_has_dag_structure():
-                    logger.warning(
-                        f"Skipping {kind} layer (id={act_layer.id}): "
-                        f"requires DAG structure, not supported in Sequential model"
-                    )
+                logger.warning(
+                    f"Skipping {kind} layer (id={act_layer.id}): "
+                    f"requires DAG structure, not supported in Sequential model"
+                )
             return None
 
         # Build positional args from params_required (excluding tensors)
@@ -574,3 +351,21 @@ class ACTToTorch:
                 m.load_state_dict(state_dict, strict=False)
 
         return m
+
+    def _assert_chain_structure(self) -> None:
+        """Fail-loud on DAG nets; silent drop would break soundness."""
+        preds = getattr(self.act_net, "preds", {}) or {}
+        dag_layers = [
+            (lid, self.act_net.by_id[lid].kind)
+            for lid, parents in preds.items()
+            if parents and len(parents) > 1
+        ]
+        if dag_layers:
+            preview = dag_layers[:5]
+            suffix = "..." if len(dag_layers) > 5 else ""
+            raise NotImplementedError(
+                f"ACTToTorch currently supports chain networks only. "
+                f"Found {len(dag_layers)} multi-predecessor layer(s): "
+                f"{preview}{suffix}. DAG support is deferred — this is "
+                f"intentional fail-loud to prevent silent unsoundness."
+            )
