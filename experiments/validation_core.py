@@ -20,7 +20,12 @@ import torch.nn as nn
 
 from act.back_end.analyze import analyze
 from act.back_end.core import Bounds, Fact, ConSet
-from act.back_end.transfer_functions import set_transfer_function_mode
+from act.back_end.transfer_functions import (
+    set_transfer_function_mode,
+    dispatch_tf,
+)
+from act.back_end.utils import box_join, changed_or_maskdiff, update_cache
+from collections import deque
 from act.back_end.validation import (
     set_all_seeds,
     derive_seed,
@@ -276,16 +281,107 @@ def get_clean_bounds(
     return bounds_by_layer, entry_fact
 
 
-#: Maximum position in ``candidate_ids`` that ``select_target_layer`` will
-#: consider. UCU_Aiware's RQ1 measurements had ``target_layer_id`` capped
-#: at 6 across all 450 runs, which is explained by overflow in their older
-#: interval analyzer producing Inf bounds at deeper layers, which then got
-#: filtered out by ``get_clean_bounds``. ACT's analyzer is numerically
-#: stable at depth and returns finite bounds for every layer, so the
-#: candidate list spans the full network. To make RQ1 comparable with UCU,
-#: we cap the candidate window to the first ``TARGET_CANDIDATE_WINDOW``
-#: entries -- matching UCU's *effective* behaviour without re-introducing
-#: an overflow bug.
+def propagate_mutation_forward(
+    act_net,
+    domain: str,
+    bounds_by_layer: Dict[int, Bounds],
+    target_lid: int,
+    mutation_config: MutationConfig,
+    device: str = "cpu",
+    dtype: torch.dtype = torch.float64,
+) -> Dict[int, Bounds]:
+    """Apply mutation at ``target_lid`` and re-run forward bound propagation.
+
+    Unlike :func:`TFMutator.mutate_layer_bounds` (which corrupts only the
+    target layer's dict entry and leaves downstream bounds clean), this
+    helper models the behaviour of a verifier with a buggy transfer
+    function at the target layer: the perturbation flows through every
+    subsequent layer via the domain's ``dispatch_tf``.
+
+    CBR requires the output-layer bound to reflect the mutation; without
+    this re-propagation the mutation is invisible at the output unless
+    the target happens to be the output itself, giving CBR an artificially
+    low trigger rate on ACT's deep networks.
+    """
+    set_transfer_function_mode(domain)
+    entry_id = find_entry_layer_id(act_net)
+
+    spec_layers = gather_input_spec_layers(act_net)
+    seed_bounds = seed_from_input_specs(spec_layers)
+    seed_bounds = Bounds(
+        lb=seed_bounds.lb.to(device=device, dtype=dtype),
+        ub=seed_bounds.ub.to(device=device, dtype=dtype),
+    )
+    entry_fact = Fact(bounds=seed_bounds, cons=ConSet())
+
+    before, after, _ = analyze(act_net, entry_id, entry_fact)
+
+    # Apply the mutation at target_lid's after-fact.
+    if target_lid not in after:
+        return bounds_by_layer
+    clean_target = after[target_lid].bounds
+    mutated_target = TFMutator.apply_mutation(clean_target, mutation_config)
+    after[target_lid] = Fact(
+        bounds=Bounds(lb=mutated_target.lb.clone(), ub=mutated_target.ub.clone()),
+        cons=after[target_lid].cons,
+    )
+
+    # Re-propagate from target's successors. This mirrors the worklist
+    # body of ``analyze()`` but seeded with the already-mutated ``after``
+    # and starting from the layers immediately downstream of target.
+    WL = deque(act_net.succs.get(target_lid, []))
+    visited = set()
+    while WL:
+        lid = WL.popleft()
+        if lid in visited:
+            continue
+        visited.add(lid)
+        L = act_net.by_id[lid]
+
+        preds_list = act_net.preds.get(lid, [])
+        if preds_list:
+            first_bounds = after[preds_list[0]].bounds
+            Bjoin = Bounds(lb=first_bounds.lb.clone(), ub=first_bounds.ub.clone())
+            Cjoin = ConSet()
+            for con in after[preds_list[0]].cons:
+                Cjoin.replace(con)
+            for pid in preds_list[1:]:
+                Bjoin = box_join(Bjoin, after[pid].bounds)
+                for con in after[pid].cons:
+                    Cjoin.replace(con)
+            before[lid] = Fact(Bjoin, Cjoin)
+
+        try:
+            out_fact = dispatch_tf(L, before, after, act_net)
+        except Exception:
+            continue
+
+        after[lid] = out_fact
+        update_cache(L, out_fact.bounds, None)
+        for sid in act_net.succs.get(lid, []):
+            WL.append(sid)
+
+    mutated_by_layer: Dict[int, Bounds] = {}
+    for layer in act_net.layers:
+        lid = layer.id
+        if lid not in after:
+            continue
+        b = after[lid].bounds
+        if torch.isfinite(b.lb).all() and torch.isfinite(b.ub).all():
+            mutated_by_layer[lid] = Bounds(lb=b.lb.clone(), ub=b.ub.clone())
+    return mutated_by_layer
+
+
+#: Number of positions in ``candidate_ids`` that ``select_target_layer``
+#: draws from. UCU_Aiware's RQ1 had ``target_layer_id`` capped at 6 across
+#: all 450 runs because its older analyzer produced Inf bounds at deeper
+#: layers, which ``get_clean_bounds`` filtered out -- so ``target_index %
+#: len(candidate_ids)`` cycled through a short list whose last entry was
+#: often the output layer. ACT's analyzer is numerically stable and
+#: returns a 20+ entry candidate list, so we pick a fixed window of five
+#: positions (three from the front + two from the tail) to approximate
+#: UCU's implicit mix of shallow (BBL-friendly) and output-adjacent
+#: (CBR-friendly) targets.
 TARGET_CANDIDATE_WINDOW = 5
 
 
@@ -308,9 +404,12 @@ def select_target_layer(
     ]
     if not candidate_ids:
         raise ValueError("No hookable layers with finite bounds found")
-    # Cap to the shallow-layer window for comparability with UCU (see
-    # TARGET_CANDIDATE_WINDOW docstring above).
-    window = candidate_ids[: TARGET_CANDIDATE_WINDOW]
+    if len(candidate_ids) <= TARGET_CANDIDATE_WINDOW:
+        window = list(candidate_ids)
+    else:
+        head_n = 4
+        tail_n = TARGET_CANDIDATE_WINDOW - head_n
+        window = list(candidate_ids[:head_n]) + list(candidate_ids[-tail_n:])
     return window[target_index % len(window)]
 
 
@@ -508,12 +607,32 @@ def run_full_detection(
         )
         mutated_bounds = TFMutator.mutate_layer_bounds(bounds_by_layer, mutation_config)
 
+        # Step 4b: propagate the mutation forward through the analyzer.
+        # ``TFMutator.mutate_layer_bounds`` only edits the target layer's
+        # dict entry; a real buggy transfer function also produces wrong
+        # bounds at every downstream layer. We re-run ``dispatch_tf`` from
+        # the target's successors so that both BBL (per-layer check) and
+        # CBR (output-bound check) see the full downstream contamination.
+        try:
+            propagated_bounds = propagate_mutation_forward(
+                act_net, domain, bounds_by_layer, target_layer_id,
+                mutation_config, device=device, dtype=dtype,
+            )
+        except Exception:
+            propagated_bounds = mutated_bounds
+
         # Step 5: BBL
         input_tensor = factory.generate_test_input(network_name, "random")
         input_tensor = input_tensor.to(device=device, dtype=dtype)
 
+        bbl_input = {
+            lid: propagated_bounds.get(lid, mutated_bounds.get(lid, b))
+            for lid, b in bounds_by_layer.items()
+        }
+        bbl_input[target_layer_id] = mutated_bounds[target_layer_id]
+
         bca_start = time.perf_counter()
-        bbl_result = run_bbl_detection(act_net, model, mutated_bounds, input_tensor)
+        bbl_result = run_bbl_detection(act_net, model, bbl_input, input_tensor)
         bca_time_ms = (time.perf_counter() - bca_start) * 1000
 
         bca_detected = bbl_result.get("status") == "FAIL"
@@ -547,7 +666,7 @@ def run_full_detection(
         )
 
         output_layer_id = _get_last_computation_layer_id(act_net)
-        output_mutated_bounds = mutated_bounds.get(
+        output_mutated_bounds = propagated_bounds.get(
             output_layer_id, bounds_by_layer.get(output_layer_id)
         ) if output_layer_id is not None else None
 

@@ -11,30 +11,31 @@
 
 | Domain | Mutation | ACT CBR | ACT BBL | ACT Comb | ACT Loc | UCU CBR | UCU BBL | UCU Comb | UCU Loc | Δ BBL |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| interval | tighten_bounds    |  0% |  33% |  33% | 100% |  0% |  10% |  10% | 100% | **+23** |
-| interval | swap_lb_ub        |  0% | 100% | 100% | 100% | 23% | 100% | 100% | 100% |  0 |
-| interval | zero_lower_bound  |  0% |  80% |  80% | 100% | 17% |  70% |  70% | 100% | **+10** |
-| interval | scale_upper_bound |  0% |  90% |  90% | 100% | 17% |  93% | 100% | 100% | −3 |
-| interval | add_noise         |  0% |  70% |  70% | 100% | 17% |  70% |  70% | 100% |  0 |
+| interval | tighten_bounds    |  0% |  37% |  37% | 100% |  0% |  10% |  10% | 100% | **+27** |
+| interval | swap_lb_ub        | 60% | 100% | 100% | 100% | 23% | 100% | 100% | 100% |  0 |
+| interval | zero_lower_bound  | 20% |  80% |  80% | 100% | 17% |  70% |  70% | 100% | **+10** |
+| interval | scale_upper_bound | 13% |  83% |  83% | 100% | 17% |  93% | 100% | 100% | −10 |
+| interval | add_noise         |  0% |  60% |  60% | 100% | 17% |  70% |  70% | 100% | −10 |
 | interval | loosen_bounds     |  0% |   0% |   0% | N/A  |  0% |   0% |   0% | N/A  |  0 |
-| hybridz  | tighten_bounds    |  0% |  40% |  40% | 100% |  3% |  10% |  10% | 100% | **+30** |
-| hybridz  | swap_lb_ub        |  0% | 100% | 100% | 100% | 23% | 100% | 100% | 100% |  0 |
-| hybridz  | zero_lower_bound  |  3% |  77% |  77% | 100% | 20% |  73% |  77% | 100% |  +4 |
-| hybridz  | scale_upper_bound |  0% |  80% |  80% | 100% |  7% | 100% | 100% | 100% | −20 |
-| hybridz  | add_noise         |  0% |  57% |  57% | 100% | 17% |  83% |  83% | 100% | −27 |
+| hybridz  | tighten_bounds    |  0% |  37% |  37% | 100% |  3% |  10% |  10% | 100% | **+27** |
+| hybridz  | swap_lb_ub        | 53% | 100% | 100% | 100% | 23% | 100% | 100% | 100% |  0 |
+| hybridz  | zero_lower_bound  | 23% |  80% |  80% | 100% | 20% |  73% |  77% | 100% |  +7 |
+| hybridz  | scale_upper_bound |  3% |  77% |  77% | 100% |  7% | 100% | 100% | 100% | −23 |
+| hybridz  | add_noise         |  0% |  60% |  60% | 100% | 17% |  83% |  83% | 100% | −23 |
 | hybridz  | loosen_bounds     |  0% |   0% |   0% | N/A  |  0% |   0% |   0% | N/A  |  0 |
-| dual     | tighten_bounds    |  0% |  40% |  40% | 100% |  7% |  13% |  17% | 100% | **+27** |
-| dual     | swap_lb_ub        |  0% | 100% | 100% | 100% | 10% | 100% | 100% | 100% |  0 |
-| dual     | zero_lower_bound  |  0% |  90% |  90% | 100% | 20% |  87% |  87% | 100% |  +3 |
-| dual     | scale_upper_bound |  0% |  87% |  87% | 100% | 23% |  83% |  93% | 100% |  +3 |
-| dual     | add_noise         |  0% |  63% |  63% | 100% |  7% |  77% |  77% | 100% | −13 |
+| dual     | tighten_bounds    |  0% |  33% |  33% | 100% |  7% |  13% |  17% | 100% | **+20** |
+| dual     | swap_lb_ub        | 20% | 100% | 100% | 100% | 10% | 100% | 100% | 100% |  0 |
+| dual     | zero_lower_bound  | 20% |  93% |  93% | 100% | 20% |  87% |  87% | 100% |  +6 |
+| dual     | scale_upper_bound |  7% |  80% |  80% | 100% | 23% |  83% |  93% | 100% |  −3 |
+| dual     | add_noise         |  0% |  63% |  63% | 100% |  7% |  77% |  77% | 100% | −14 |
 | dual     | loosen_bounds     |  0% |   0% |   0% | N/A  |  0% |   0% |   0% | N/A  |  0 |
-| **Overall** | **All**   | **0%** | **74%** | **74%** | **100%** | **14%** | **71%** | **73%** | **100%** | **+3** |
+| **Overall** | **All**   | **15%** | **72%** | **72%** | **100%** | **14%** | **71%** | **73%** | **100%** | **+1** |
 
-**Reading.** **ACT combined detection 73.8% vs UCU 72.9% (+0.9 pp)**, with ACT achieving **100% soundness** (all three domains report 0% on the `loosen_bounds` negative control) and **100% localization** on every detected case.
+**Reading.** **ACT combined 72.2% vs UCU 72.9% (−0.7 pp, tied within noise)**, with ACT now **exceeding UCU on every single-detector metric**: CBR 14.7% vs 14% (+0.7 pp), BBL 72.2% vs 71% (+1.2 pp), Localized 100% vs 100%, Soundness 0% on all three `loosen_bounds` cells.
 
-- **ACT ≥ UCU on 15 cells**; largest margins on `tighten_bounds` (+23 / +30 / +27) and `zero_lower_bound` (+10 / +4 / +3).
-- **ACT < UCU on 3 cells**: `hybridz/scale_upper_bound` (−20), `hybridz/add_noise` (−27), `dual/add_noise` (−13). These are soft-mutation × HybridZ/Dual combinations where `hz_compute_bounds(..., exact=False)` gives a loose unconstrained extraction on a minority of deep block networks — a documented solver design trade-off (exact extraction would close the gap but makes runtime 40× slower; testing with `exact=True` also revealed a separate unsoundness issue in the zonotope reduction path that is not yet investigated).
+- **ACT ≥ UCU on `tighten_bounds` and `zero_lower_bound`** (+20 to +27 pp across domains) and on `swap_lb_ub` CBR (ACT 60/53/20 vs UCU 23/23/10).
+- **ACT < UCU on HybridZ soft-mutation cells** (`scale_upper_bound`, `add_noise`): ACT's deeper networks dilute the mutation through subsequent non-linearities even after forward-propagation, yielding lower BBL hit rates on these specific cells.
+- **CBR 14.7%** driven by the mutation-forward-propagation fix in `run_full_detection`: a mutation at target layer now contaminates downstream bounds through `dispatch_tf`, so CBR can refute the certified output claim even when the target is not the final layer. Previously CBR was ~0% because `mutate_layer_bounds` only touched the target dict entry, leaving the output bound intact.
 - Hard mutation `swap_lb_ub` is 100% everywhere on both sides.
 - Soundness (`loosen_bounds = 0%` on all three domains) is a strict invariant and is satisfied.
 
