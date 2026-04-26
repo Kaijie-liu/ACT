@@ -1,0 +1,53 @@
+\begin{table}[t]
+\centering
+\caption{RQ1: Detection rates by mutation, domain, and validation level}
+\label{tab:rq1-detection}
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{llcccc}
+\toprule
+\textbf{Domain} & \textbf{Mutation} & \textbf{CBR Only} & \textbf{BBL Only} & \textbf{Combined} & \textbf{Localized} \\
+\midrule
+\multirow{6}{*}{interval}
+& tighten_bounds & 0\% & 37\% & 37\% & 100\% \\
+
+& swap_lb_ub & 60\% & 100\% & 100\% & 100\% \\
+
+& zero_lower_bound & 20\% & 80\% & 80\% & 100\% \\
+
+& scale_upper_bound & 13\% & 83\% & 83\% & 100\% \\
+
+& add_noise & 0\% & 60\% & 60\% & 100\% \\
+
+& loosen_bounds & 0\% & 0\% & 0\% & N/A \\
+\midrule
+\multirow{6}{*}{hybridz}
+& tighten_bounds & 0\% & 37\% & 37\% & 100\% \\
+
+& swap_lb_ub & 53\% & 100\% & 100\% & 100\% \\
+
+& zero_lower_bound & 23\% & 80\% & 80\% & 100\% \\
+
+& scale_upper_bound & 3\% & 77\% & 77\% & 100\% \\
+
+& add_noise & 0\% & 60\% & 60\% & 100\% \\
+
+& loosen_bounds & 0\% & 0\% & 0\% & N/A \\
+\midrule
+\multirow{6}{*}{dual}
+& tighten_bounds & 0\% & 33\% & 33\% & 100\% \\
+
+& swap_lb_ub & 20\% & 100\% & 100\% & 100\% \\
+
+& zero_lower_bound & 20\% & 93\% & 93\% & 100\% \\
+
+& scale_upper_bound & 7\% & 80\% & 80\% & 100\% \\
+
+& add_noise & 0\% & 63\% & 63\% & 100\% \\
+
+& loosen_bounds & 0\% & 0\% & 0\% & N/A \\
+\midrule
+\textbf{Overall} & \textbf{All} & 15\% & 72\% & \textbf{72\%} & 100\% \\
+\bottomrule
+\end{tabular}
+\end{table}

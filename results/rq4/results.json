@@ -1,0 +1,165 @@
+{
+  "metadata": {
+    "master_seed": 42,
+    "experiment_seed": 2778198657,
+    "strategies": [
+      "Basic-50",
+      "Basic-100",
+      "Full-100"
+    ],
+    "trackable_operators": [
+      "DENSE",
+      "CONV1D",
+      "CONV2D",
+      "CONV3D",
+      "CONVTRANSPOSE2D",
+      "RELU",
+      "LRELU",
+      "SIGMOID",
+      "TANH",
+      "RELU6",
+      "HARDTANH",
+      "HARDSIGMOID",
+      "HARDSWISH",
+      "SILU",
+      "SOFTPLUS",
+      "MISH",
+      "SOFTSIGN",
+      "ABS",
+      "CLIP",
+      "MAXPOOL1D",
+      "MAXPOOL2D",
+      "MAXPOOL3D",
+      "AVGPOOL1D",
+      "AVGPOOL2D",
+      "ADD",
+      "SUB",
+      "MUL",
+      "DIV",
+      "POW",
+      "MAX",
+      "MIN",
+      "MATMUL",
+      "CONCAT",
+      "RESHAPE",
+      "TRANSPOSE",
+      "SQUEEZE",
+      "UNSQUEEZE",
+      "TILE",
+      "EXPAND",
+      "SLICE",
+      "GATHER",
+      "INDEX_SELECT",
+      "FLATTEN",
+      "PAD",
+      "UPSAMPLE",
+      "BN",
+      "BIAS",
+      "SCALE"
+    ],
+    "n_operators": 48
+  },
+  "raw_results": {
+    "Basic-50": {
+      "strategy": "Basic-50",
+      "random_budget": 50,
+      "networks_generated": 50,
+      "covered_operators": [
+        "ADD",
+        "BIAS",
+        "CONV2D",
+        "DENSE",
+        "FLATTEN",
+        "LRELU",
+        "RELU",
+        "SIGMOID",
+        "TANH",
+        "TRANSPOSE"
+      ],
+      "uncovered_operators": [
+        "BN",
+        "RESHAPE",
+        "SCALE",
+        "SQUEEZE",
+        "UNSQUEEZE"
+      ],
+      "coverage_rate": 0.6666666666666666,
+      "bug_yield": 50,
+      "networks_with_bugs": 50
+    },
+    "Basic-100": {
+      "strategy": "Basic-100",
+      "random_budget": 100,
+      "networks_generated": 100,
+      "covered_operators": [
+        "ADD",
+        "BIAS",
+        "CONV2D",
+        "DENSE",
+        "FLATTEN",
+        "LRELU",
+        "RELU",
+        "SCALE",
+        "SIGMOID",
+        "SQUEEZE",
+        "TANH",
+        "TRANSPOSE",
+        "UNSQUEEZE"
+      ],
+      "uncovered_operators": [
+        "BN",
+        "RESHAPE"
+      ],
+      "coverage_rate": 0.8666666666666667,
+      "bug_yield": 100,
+      "networks_with_bugs": 100
+    },
+    "Full-100": {
+      "strategy": "Full-100",
+      "random_budget": 100,
+      "networks_generated": 1000,
+      "covered_operators": [
+        "ADD",
+        "BIAS",
+        "CONV2D",
+        "DENSE",
+        "FLATTEN",
+        "LRELU",
+        "RELU",
+        "SCALE",
+        "SIGMOID",
+        "SQUEEZE",
+        "TANH",
+        "TRANSPOSE",
+        "UNSQUEEZE"
+      ],
+      "uncovered_operators": [
+        "BN",
+        "RESHAPE"
+      ],
+      "coverage_rate": 0.8666666666666667,
+      "bug_yield": 1000,
+      "networks_with_bugs": 1000
+    }
+  },
+  "table_rq4": {
+    "Basic-50": {
+      "random_budget": 50,
+      "generated": 50,
+      "coverage": 0.6666666666666666,
+      "bug_yield": 50
+    },
+    "Basic-100": {
+      "random_budget": 100,
+      "generated": 100,
+      "coverage": 0.8666666666666667,
+      "bug_yield": 100
+    },
+    "Full-100": {
+      "random_budget": 100,
+      "generated": 1000,
+      "coverage": 0.8666666666666667,
+      "bug_yield": 1000
+    }
+  }
+}

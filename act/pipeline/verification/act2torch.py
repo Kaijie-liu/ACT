@@ -204,9 +204,26 @@ class ActGraphModule(nn.Module):
             return inputs[0] * getattr(self, f"_scale_a_{layer.id}")
         if kind == LayerKind.BIAS.value:
             return inputs[0] + getattr(self, f"_bias_c_{layer.id}")
+        if kind == LayerKind.TRANSPOSE.value:
+            perm = layer.params.get("perm")
+            if perm is None:
+                return inputs[0]
+            return inputs[0].permute(*perm).contiguous()
+        if kind == LayerKind.UNSQUEEZE.value:
+            dims = layer.params.get("dims") or []
+            out = inputs[0]
+            for d in sorted(dims):
+                out = out.unsqueeze(d)
+            return out
+        if kind == LayerKind.SQUEEZE.value:
+            dims = layer.params.get("dims") or []
+            out = inputs[0]
+            for d in sorted(dims, reverse=True):
+                out = out.squeeze(d)
+            return out
         raise NotImplementedError(
             f"ActGraphModule: functional layer kind '{kind}' (id={layer.id}) not supported. "
-            f"torch2act only emits ADD, CONCAT, MUL, SCALE, BIAS functionally."
+            f"torch2act only emits ADD, CONCAT, MUL, SCALE, BIAS, TRANSPOSE, UNSQUEEZE, SQUEEZE functionally."
         )
 
 
