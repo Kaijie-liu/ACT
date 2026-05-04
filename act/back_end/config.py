@@ -16,7 +16,7 @@ import yaml
 
 _DEFAULT_YAML = Path(__file__).parent / "config.yaml"
 
-_VALID_SOLVERS = {"auto", "gurobi", "torch"}
+_VALID_SOLVERS = {"auto", "gurobi", "torch", "hyzor"}
 _VALID_DEVICES = {"cpu", "cuda", "gpu"}
 _VALID_DTYPES = {"float32", "float64"}
 _VALID_REGISTRY_MODES = {"intersection", "union"}

@@ -260,38 +260,60 @@ def setup_and_solve(
     """
     from act.back_end.analyze import analyze
     from act.back_end.cons_exportor import export_to_solver
-    
+
     # Extract network structure
     entry_id = find_entry_layer_id(net)
     input_ids = get_input_ids(net)
     output_ids = get_output_ids(net)
     spec_layers = gather_input_spec_layers(net)
     assert_layer = get_assert_layer(net)
-    
+
     # Create entry_fact with ALL input constraints
     entry_fact = Fact(bounds=input_bounds, cons=ConSet())
     add_all_input_specs(entry_fact.cons, input_ids, spec_layers)
-    
+
     # Analyze with full input specification (propagates constraints)
     before, after, globalC = analyze(net, entry_id, entry_fact)
-    
-    # Validate constraints (validation runs if enabled, logging only if debug_tf also enabled)
+
+    # Validate constraints (logging only if debug_tf also enabled)
     validate_constraints(globalC, after, net)
-    
-    # Export all constraints to solver (including LIN_POLY)
+
+    # ─── HyZor branch: cons-walker dispatches to HyZor ops via import ───
+    try:
+        from act.back_end.solver.solver_hyzor import HyZorSolver
+        is_hyzor = isinstance(solver, HyZorSolver)
+    except Exception:
+        is_hyzor = False
+
+    if is_hyzor:
+        st = solver.consume_cons(
+            globalC, before, after,
+            net=net,
+            input_ids=input_ids,
+            output_ids=output_ids,
+            assert_layer=assert_layer,
+        )
+        ce_input = None
+        if st == SolveStatus.SAT and solver.has_solution():
+            ce_input = solver.get_values(input_ids)
+        stats = {"status": st, "ncons": len(globalC), "solver": "hyzor"}
+        stats.update(solver.stats() if hasattr(solver, "stats") else {})
+        return st, ce_input, stats
+
+    # ─── Standard path (Gurobi / TorchLP) -- unchanged ───
     export_to_solver(globalC, solver, objective=None, sense="min")
     add_negated_assert_to_solver(solver, output_ids, assert_layer)
-    
+
     # Solve (feasibility check only)
     solver.set_objective_linear([], [], 0.0, sense="min")
     solver.optimize(timelimit)
-    
+
     # Extract result
     st = solver.status()
     ce_input = None
     if st == SolveStatus.SAT and solver.has_solution():
         ce_input = solver.get_values(input_ids)
-    
+
     stats = {"status": st, "ncons": len(globalC)}
     return st, ce_input, stats
 

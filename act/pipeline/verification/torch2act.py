@@ -199,15 +199,167 @@ class _LayerGraphBuilder:
     # -------------------------------------------------------------------------
     
     def _extract_graph(self) -> None:
-        """Extract computation graph using torch.fx symbolic tracing."""
+        """Extract computation graph using torch.fx symbolic tracing.
+
+        Workarounds for onnx2torch incompatibilities with torch.fx:
+          (a) Sanitize numpy scalars in module attrs (OnnxSliceV9 et al.)
+          (b) Monkey-patch onnx2torch._get_slices so OnnxSlice (newer) returns
+              slices with native Python ints, not numpy.int64.
+          (c) Use a custom Tracer that treats onnx2torch leaf modules as
+              opaque (avoids fx tracing into their forward, which often has
+              control-flow on numpy values).
+        """
+        self._sanitize_numpy_in_modules(self.model)
+        self._patch_onnx2torch_slice()
         try:
-            # Use fx.symbolic_trace to obtain a graph representation of the model from torch
-            traced = fx.symbolic_trace(self.model)
+            traced = self._symbolic_trace_with_leaf_modules(self.model)
             self.fx_graph = traced.graph
             self.modules = dict(traced.named_modules())
             self._build_fx_graph_edges()
         except Exception as e:
             raise RuntimeError(f"Failed to trace model with torch.fx: {e}")
+
+    @staticmethod
+    def _symbolic_trace_with_leaf_modules(model):
+        """fx.symbolic_trace but treat onnx2torch's complex/control-flow
+        modules as leaves (don't trace into their forward).
+
+        This is needed for onnx2torch modules whose forward uses:
+          - control flow on numpy values (OnnxLoop, OnnxScan, OnnxIf)
+          - dynamic shape ops (OnnxResize, OnnxReshape with dynamic shape)
+        Treating them as leaves lets fx record them as a single call_module
+        node; the downstream ACT pipeline then handles them via _convert_module
+        or falls back to box approximation.
+        """
+        import torch.fx as _fx
+
+        # onnx2torch module class name prefixes that should be leaves
+        _ONNX2TORCH_LEAF_PREFIXES = (
+            "OnnxLoop", "OnnxScan", "OnnxIf",
+            "OnnxNonZero", "OnnxRange", "OnnxResize",
+            "OnnxReduceSum", "OnnxReduceMean",  # often have keepdim control flow
+            "OnnxGather", "OnnxScatter", "OnnxScatterND",
+            "OnnxOneHot", "OnnxExpand",
+            "OnnxTopK", "OnnxArgMax", "OnnxArgMin",
+            "OnnxConstantOfShape",
+        )
+
+        class _LeafAwareTracer(_fx.Tracer):
+            def is_leaf_module(self, m, module_qualified_name):
+                cn = type(m).__name__
+                if cn.startswith(_ONNX2TORCH_LEAF_PREFIXES):
+                    return True
+                return super().is_leaf_module(m, module_qualified_name)
+
+        tracer = _LeafAwareTracer()
+        graph = tracer.trace(model)
+        traced = _fx.GraphModule(model, graph)
+        return traced
+
+    @staticmethod
+    def _patch_onnx2torch_slice() -> None:
+        """Monkey-patch onnx2torch._get_slices to emit Python-int slices.
+
+        Idempotent — uses a flag to apply once per process.
+        """
+        import sys as _sys
+        if getattr(TorchToACT, "_o2t_slice_patched", False):
+            return
+        try:
+            import onnx2torch.node_converters.slice as _slice_mod
+        except ImportError:
+            return
+        try:
+            import numpy as _np
+        except ImportError:
+            return
+
+        _orig_get_slices = _slice_mod._get_slices
+
+        def _patched_get_slices(starts, ends, axes, steps):
+            flip_dims, pos_slices, neg_slices = _orig_get_slices(starts, ends, axes, steps)
+            def _norm_slice(s):
+                if not isinstance(s, slice): return s
+                def _to_int(x):
+                    if x is None: return None
+                    if isinstance(x, _np.integer): return int(x)
+                    return x
+                return slice(_to_int(s.start), _to_int(s.stop), _to_int(s.step))
+            flip_dims = [int(d) if isinstance(d, _np.integer) else d for d in flip_dims]
+            pos_slices = [_norm_slice(s) for s in pos_slices]
+            neg_slices = [_norm_slice(s) if not (s is Ellipsis) else s for s in neg_slices]
+            return flip_dims, pos_slices, neg_slices
+
+        _slice_mod._get_slices = _patched_get_slices
+        TorchToACT._o2t_slice_patched = True
+
+    @staticmethod
+    def _sanitize_numpy_in_modules(model) -> None:
+        """Cast numpy.int64/float64/ndarray (and slice/list-containing-them)
+        attrs to native Python or torch types, recursively. Required for
+        torch.fx symbolic_trace compat with onnx2torch-generated graphs
+        (OnnxSlice, OnnxGather, etc.).
+
+        Note: onnx2torch's OnnxSliceV9 stores `_flip_dims`, `_pos_axes_slices`,
+        `_neg_axes_slices` as instance attrs containing lists of slice objects
+        whose start/stop/step are numpy.int64. We sanitize those too.
+        """
+        try:
+            import numpy as _np
+        except ImportError:
+            return
+        import torch as _t
+
+        def _conv(v):
+            if isinstance(v, _np.integer):
+                return int(v)
+            if isinstance(v, _np.floating):
+                return float(v)
+            if isinstance(v, _np.bool_):
+                return bool(v)
+            if isinstance(v, _np.ndarray):
+                try:
+                    return _t.from_numpy(v.copy())
+                except Exception:
+                    return v.tolist()
+            if isinstance(v, slice):
+                # slice(start, stop, step) — sanitize each component
+                def _norm(x):
+                    if x is None:
+                        return None
+                    if isinstance(x, _np.integer):
+                        return int(x)
+                    return x
+                return slice(_norm(v.start), _norm(v.stop), _norm(v.step))
+            if isinstance(v, tuple):
+                return tuple(_conv(x) for x in v)
+            if isinstance(v, list):
+                return [_conv(x) for x in v]
+            if isinstance(v, dict):
+                return {k: _conv(x) for k, x in v.items()}
+            return v
+
+        for module in model.modules():
+            # Walk all instance attrs (including underscore-prefixed ones used
+            # by onnx2torch's OnnxSlice for storage).
+            for attr_name in list(vars(module).keys()):
+                # Skip nn.Module's internal containers
+                if attr_name in ("_parameters", "_buffers", "_modules",
+                                  "_forward_hooks", "_forward_pre_hooks",
+                                  "_backward_hooks", "_state_dict_hooks",
+                                  "_load_state_dict_pre_hooks",
+                                  "_non_persistent_buffers_set"):
+                    continue
+                try:
+                    val = getattr(module, attr_name)
+                except Exception:
+                    continue
+                new_val = _conv(val)
+                if new_val is not val:
+                    try:
+                        setattr(module, attr_name, new_val)
+                    except (AttributeError, TypeError):
+                        pass
     
     def _build_fx_graph_edges(self) -> None:
         """Build graph edge dictionary from torch.fx graph."""
@@ -256,21 +408,24 @@ class _LayerGraphBuilder:
         
         handlers = {
             'add': self._process_add_operation,
+            'sub': self._process_sub_operation,
             'cat': self._process_concat_operation,
             'concat': self._process_concat_operation,
             'flatten': self._process_flatten_function,
+            'reshape': self._process_reshape_function,
+            'view': self._process_reshape_function,
             'mul': self._process_mul_operation,
             'mean': self._process_mean_operation,
             'getitem': self._process_getitem_operation,
             'stochastic_depth': self._process_passthrough_function,
             'dropout': self._process_passthrough_function,
         }
-        
+
         for key, handler in handlers.items():
             if key in target_name:
                 handler(node)
                 return
-        
+
         raise NotImplementedError(
             f"Unsupported function in graph: {node.target}\n"
             f"  Add support in _handle_call_function() or use a simpler model."
@@ -411,6 +566,7 @@ class _LayerGraphBuilder:
             nn.Linear: self._convert_linear,
             nn.ReLU: lambda m: self._convert_activation(m, LayerKind.RELU),
             nn.Conv2d: self._convert_conv2d,
+            nn.ConvTranspose2d: self._convert_convtranspose2d,
             nn.MaxPool2d: self._convert_pool2d,
             nn.AvgPool2d: self._convert_pool2d,
             nn.AdaptiveAvgPool2d: self._convert_adaptive_avgpool2d,
@@ -529,6 +685,52 @@ class _LayerGraphBuilder:
         self.shape = output_shape
         self.prev_out = out_vars
     
+    def _convert_convtranspose2d(self, mod: nn.ConvTranspose2d) -> None:
+        """Convert nn.ConvTranspose2d (transposed/'fractionally-strided' conv).
+
+        Output shape:
+          out_h = (in_h - 1) * stride - 2*padding + dilation*(kernel-1) + output_padding + 1
+        """
+        weight = mod.weight.detach()  # shape (in_channels, out_channels/groups, kH, kW)
+        has_bias = mod.bias is not None
+        bias = mod.bias.detach() if has_bias else None
+
+        if len(self.shape) == 2:
+            n_features = self.shape[1]
+            channels = mod.in_channels
+            spatial = int((n_features / channels) ** 0.5)
+            input_shape = (1, channels, spatial, spatial)
+        else:
+            input_shape = self.shape
+
+        batch, in_c, in_h, in_w = input_shape
+        out_c = mod.out_channels
+        op_h, op_w = (mod.output_padding if isinstance(mod.output_padding, tuple)
+                      else (mod.output_padding, mod.output_padding))
+        out_h = (in_h - 1) * mod.stride[0] - 2 * mod.padding[0] + mod.dilation[0] * (mod.kernel_size[0] - 1) + op_h + 1
+        out_w = (in_w - 1) * mod.stride[1] - 2 * mod.padding[1] + mod.dilation[1] * (mod.kernel_size[1] - 1) + op_w + 1
+        output_shape = (1, out_c, out_h, out_w)
+
+        params = {
+            "weight": weight,
+            "input_shape": input_shape, "output_shape": output_shape,
+            "kernel_size": mod.kernel_size, "stride": mod.stride,
+            "padding": mod.padding, "dilation": mod.dilation,
+            "output_padding": (op_h, op_w),
+            "groups": mod.groups, "transposed": True,
+            "in_channels": in_c, "out_channels": out_c,
+        }
+        if bias is not None:
+            params["bias"] = bias
+
+        out_vars = self._alloc_ids(out_c * out_h * out_w)
+        self._add_layer(
+            LayerKind.CONVTRANSPOSE2D.value, params,
+            self.prev_out, out_vars,
+        )
+        self.shape = output_shape
+        self.prev_out = out_vars
+
     def _convert_pool2d(self, mod: Union[nn.MaxPool2d, nn.AvgPool2d]) -> None:
         """Convert MaxPool2d or AvgPool2d."""
         if len(self.shape) != 4:
@@ -723,6 +925,40 @@ class _LayerGraphBuilder:
         self.shape = x_shape
         self._register_node(node.name, layer_id)
     
+    def _process_sub_operation(self, node: fx.Node) -> None:
+        """Process SUB operation (z = x - y).
+
+        Same shape semantics as ADD; element-wise subtraction.
+        """
+        inputs = [a for a in node.args if isinstance(a, fx.Node)]
+        if len(inputs) < 2:
+            return
+        x_name, y_name = inputs[0].name, inputs[1].name
+        if x_name not in self.node_outputs or y_name not in self.node_outputs:
+            return
+        x_vars = self.node_outputs[x_name]
+        y_vars = self.node_outputs[y_name]
+        x_shape = self.node_shapes[x_name]
+        out_vars = self._alloc_ids(len(x_vars))
+        params = {"x_vars": x_vars, "y_vars": y_vars,
+                  "input_shape": x_shape, "output_shape": x_shape}
+        layer_id = self._add_layer(
+            LayerKind.SUB.value, params,
+            x_vars + y_vars, out_vars,
+        )
+        self.prev_out = out_vars
+        self.shape = x_shape
+        self._register_node(node.name, layer_id)
+
+    def _process_reshape_function(self, node: fx.Node) -> None:
+        """Process torch.reshape() / torch.Tensor.view() at function level.
+
+        Treated as a flatten if total element count is preserved (most common
+        in vnncomp models — reshapes to (batch, features) before a linear).
+        """
+        if self._get_predecessor_state(node):
+            self._create_flatten_layer(node.name)
+
     def _process_concat_operation(self, node: fx.Node) -> None:
         """Process CONCAT operation."""
         if node.args and isinstance(node.args[0], (list, tuple)):

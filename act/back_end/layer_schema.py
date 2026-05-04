@@ -312,6 +312,12 @@ REGISTRY: Dict[str, Dict[str, Any]] = {
             "input_shape",
             "output_shape",
             "data_format",
+            # Module-level metadata (mirrors CONV2D for ConvTranspose2d)
+            "in_channels",
+            "out_channels",
+            "kernel_size",
+            "weight_pos",
+            "weight_neg",
         ],
     },
     # =====================
