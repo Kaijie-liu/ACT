@@ -75,7 +75,7 @@ setup_abcrown() {
     # Step 5: Create and activate abcrown environment (act-abcrown)
     if ! conda env list | grep -q "^act-abcrown "; then
         echo "[ACT] Creating conda env: act-abcrown..."
-        conda create -y -n act-abcrown python=3.9
+        conda create -y -n act-abcrown python=3.9 pip
     else
         echo "[ACT] Conda env 'act-abcrown' already exists."
     fi
@@ -85,7 +85,8 @@ setup_abcrown() {
 
     # Step 6: Install ABCROWN dependencies
     echo "[ACT] Installing ABCROWN requirements..."
-    pip install -r abcrown_requirements.txt
+    python -m pip install --upgrade pip setuptools wheel
+    python -m pip install -r abcrown_requirements.txt
 
     # Step 8: Create empty config file for abcrown CLI parameter mode
     echo "[ACT] Creating empty_config.yaml for CLI-only abcrown runs..."
