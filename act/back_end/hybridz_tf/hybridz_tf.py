@@ -99,6 +99,7 @@ class HybridzTF(TransferFunction):
         LayerKind.FLATTEN.value: lambda L, b, tf: interval_cnn.tf_flatten(L, b),
         # Shape ops: interval-only
         LayerKind.RESHAPE.value: lambda L, b, tf: interval_mlp.tf_reshape(L, b),
+        LayerKind.SLICE.value: lambda L, b, tf: interval_mlp.tf_slice(L, b),
         LayerKind.TRANSPOSE.value: lambda L, b, tf: interval_mlp.tf_transpose(L, b),
         LayerKind.SQUEEZE.value: lambda L, b, tf: interval_mlp.tf_squeeze(L, b),
         LayerKind.UNSQUEEZE.value: lambda L, b, tf: interval_mlp.tf_unsqueeze(L, b),

@@ -420,6 +420,11 @@ class VerificationValidator:
                 solver_instance = GurobiSolver()
             elif solver == "torchlp":
                 solver_instance = TorchLPSolver()
+            elif solver == "hyzor":
+                from act.back_end.solver.solver_hyzor import HyZorSolver
+                solver_instance = HyZorSolver(
+                    device=str(self.device), dtype=self.dtype, strict_replay=True,
+                )
             else:
                 raise ValueError(f"Unknown solver: {solver}")
 

@@ -402,12 +402,26 @@ def _probe_model_shape(pytorch_model, total_count: int, onnx_shape):
             onnx_numel *= max(int(d), 1)
         if onnx_numel == total_count:
             candidates.append(tuple(onnx_shape))
-        elif onnx_numel > 0 and total_count % onnx_numel == 0 and len(onnx_shape) > 1:
-            k = total_count // onnx_numel
-            candidates.append((k,) + tuple(onnx_shape[1:]))
-    s = int(math.isqrt(total_count))
-    if s * s == total_count:
-        candidates.append((1, 1, s, s))
+        # Replace batch dim with new_batch = total / prod(spatial dims) so
+        # numel matches and the spatial layout (which the conv expects) is
+        # preserved. This is the right interpretation for VNNLIB specs that
+        # carry N stacked instances of the canonical input shape.
+        if len(onnx_shape) > 1:
+            spatial_numel = 1
+            for d in onnx_shape[1:]:
+                spatial_numel *= max(int(d), 1)
+            if spatial_numel > 0 and total_count % spatial_numel == 0:
+                new_batch = total_count // spatial_numel
+                cand = (new_batch,) + tuple(onnx_shape[1:])
+                if cand not in candidates:
+                    candidates.append(cand)
+                # Also try batch=1 with the spatial dims expanded to absorb the
+                # extra elements (less likely correct, but harmless to try).
+        s = int(math.isqrt(total_count))
+        if s * s == total_count:
+            cand = (1, 1, s, s)
+            if cand not in candidates:
+                candidates.append(cand)
     candidates.append((1, total_count))
 
     for shape in candidates:

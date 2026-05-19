@@ -107,6 +107,7 @@ class IntervalTF(TransferFunction):
         
         # Tensor operations
         "RESHAPE": lambda L, bounds, tf: tf_reshape(L, bounds),
+        "SLICE": lambda L, bounds, tf: tf_slice(L, bounds),
         "TRANSPOSE": lambda L, bounds, tf: tf_transpose(L, bounds),
         "SQUEEZE": lambda L, bounds, tf: tf_squeeze(L, bounds),
         "UNSQUEEZE": lambda L, bounds, tf: tf_unsqueeze(L, bounds),

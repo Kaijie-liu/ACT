@@ -31,6 +31,10 @@ def _make_solver(solver_name: str):
         return GurobiSolver()
     if solver_name == "torch":
         return TorchLPSolver()
+    if solver_name == "hyzor":
+        from act.back_end.solver.solver_hyzor import HyZorSolver
+
+        return HyZorSolver()
     # "auto": try Gurobi, fall back to TorchLP
     try:
         from act.back_end.solver.solver_gurobi import GurobiSolver
@@ -415,7 +419,7 @@ Examples:
         "--solver",
         "-s",
         type=str,
-        choices=["auto", "gurobi", "torch"],
+        choices=["auto", "gurobi", "torch", "hyzor"],
         default=None,
         help="Solver backend (default: from config.yaml / $ACT_SOLVER / 'auto')",
     )

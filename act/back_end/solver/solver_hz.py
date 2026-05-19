@@ -163,6 +163,18 @@ def _hz_compute_bounds_gurobi(hz: HZono) -> Bounds:
 
 
 def _hz_compute_bounds_scipy(hz: HZono) -> Bounds:
+    """Per-dimension MILP-tight bounds using scipy.optimize.milp.
+
+    HZ semantics: y = c + Gc ξ_c + Gb ξ_b with ξ_c ∈ [-1,1]^p, ξ_b ∈ {-1,+1}^q,
+    Ac ξ_c + Ab ξ_b = b. We must enforce ξ_b integrality; relaxing it to
+    continuous [-1,1] gives narrower-than-MILP bounds and is therefore
+    UNSOUND for verification (the LP-relaxed feasible polytope is the convex
+    hull of {-1,+1}^q which the true HZ does not visit interiorly).
+
+    Implementation: scipy.optimize.milp with integrality on the last q vars,
+    and bounds [-1, 1] interpreted as the integer set {-1, +1} for those vars.
+    """
+    from scipy.optimize import milp, LinearConstraint, Bounds as SciBounds
     n = int(hz.c.shape[0])
     p = int(hz.Gc.shape[1])
     q = int(hz.Gb.shape[1])
@@ -173,30 +185,35 @@ def _hz_compute_bounds_scipy(hz: HZono) -> Bounds:
     Ab_np = hz.Ab.detach().cpu().numpy().astype("float64")
     b_np = hz.b.detach().cpu().numpy().astype("float64").reshape(-1)
 
-    A_eq = (
-        np.concatenate([Ac_np, Ab_np], axis=1) if (Ac_np.size or Ab_np.size) else None
-    )
-    b_eq = b_np if (A_eq is not None) else None
-    var_bounds = [(-1.0, 1.0)] * (p + q)
+    # Variables: [ξ_c (p continuous in [-1,1]); ξ_b (q integer with lb=-1, ub=+1)]
+    # integrality flag: 0 for continuous, 1 for integer
+    integrality = np.concatenate([np.zeros(p, dtype=int), np.ones(q, dtype=int)])
+    var_lb = np.concatenate([-np.ones(p), -np.ones(q)])
+    var_ub = np.concatenate([np.ones(p),   np.ones(q)])
+    var_bounds = SciBounds(lb=var_lb, ub=var_ub)
+    nc = int(b_np.size)
+    if nc > 0:
+        A_eq = np.concatenate([Ac_np, Ab_np], axis=1)
+        constraints = [LinearConstraint(A=A_eq, lb=b_np, ub=b_np)]
+    else:
+        constraints = []
 
     LB = np.empty((n,), dtype=np.float64)
     UB = np.empty((n,), dtype=np.float64)
     for i in range(n):
         obj = np.concatenate([Gc_np[i], Gb_np[i]], axis=0)
-        res_min = linprog(
-            c=obj, A_eq=A_eq, b_eq=b_eq, bounds=var_bounds, method="highs"
-        )
+        res_min = milp(c=obj, constraints=constraints, integrality=integrality,
+                        bounds=var_bounds)
         if not res_min.success:
             raise RuntimeError(
-                f"[linprog] MIN infeasible at dim {i}: {res_min.message}"
+                f"[milp] MIN infeasible at dim {i}: {res_min.message}"
             )
         LB[i] = c_np[i] + res_min.fun
-        res_max = linprog(
-            c=-obj, A_eq=A_eq, b_eq=b_eq, bounds=var_bounds, method="highs"
-        )
+        res_max = milp(c=-obj, constraints=constraints, integrality=integrality,
+                        bounds=var_bounds)
         if not res_max.success:
             raise RuntimeError(
-                f"[linprog] MAX infeasible at dim {i}: {res_max.message}"
+                f"[milp] MAX infeasible at dim {i}: {res_max.message}"
             )
         UB[i] = c_np[i] - res_max.fun
 
