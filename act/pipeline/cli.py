@@ -11,11 +11,14 @@ License: AGPLv3+
 """
 
 import argparse
+import logging
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import List, Optional
 import sys
 
 from act.util.cli_utils import add_device_args, initialize_from_args
+
+logger = logging.getLogger(__name__)
 from act.front_end.spec_creator_base import LabeledInputTensor
 from act.front_end.vnnlib_loader.create_specs import VNNLibSpecCreator
 from act.front_end.vnnlib_loader import data_model_loader as vnnlib_loader
@@ -31,76 +34,9 @@ from act.pipeline.verification.per_neuron_bounds import PerNeuronCheckConfig
 # -----------------------------------------------------------------------------
 # Per-neuron bounds validation settings (Level 2)
 #
-# Compares each concrete activation a against its abstract interval [lb, ub]
-# with a tolerance band:
-#   tol = atol + rtol * |a|
-#   violation if a < lb - tol or a > ub + tol
-#
-# Parameters:
-#   - atol: absolute tolerance (constant slack for numeric noise)
-#   - rtol: relative tolerance (scale-dependent slack proportional to |a|)
-#   - topk: report at most top-K largest gaps (ranked by gap to bounds)
-#
-# Formats:
-#   - preset: {default|strict|loose}
-#   - triplet: "ATOL,RTOL,TOPK" (e.g., "1e-6,0.0,10")
-#
-# Presets:
-#   - default: balanced for day-to-day validation.
-#              Moderate atol/rtol to tolerate typical FP/back-end differences,
-#              with a medium topk for actionable debugging output.
-#
-#   - strict:  tighter numeric guardrails.
-#              Smaller atol/rtol to surface subtle bound unsoundness or drift
-#              (may increase false positives from benign numeric noise); larger
-#              topk to expose more failing neurons when investigating.
-#
-#   - loose:   coarse triage / CI-friendly mode.
-#              Larger atol/rtol to suppress tiny numerical mismatches, and
-#              smaller topk to keep logs short; may hide small-but-real issues,
-#              so use mainly for quick smoke checks.
+# Zero-tolerance check: any concrete activation outside [lb, ub] is reported as
+# unsoundness. 
 # -----------------------------------------------------------------------------
-class PerNeuronConfigAction(argparse.Action):
-    """
-    Parse --per-neuron-config into a PerNeuronCheckConfig object.
-
-    Accepted formats:
-      - preset name: default|strict|loose
-      - triplet: ATOL,RTOL,TOPK (e.g., 1e-6,0.0,10)
-    """
-
-    PRESETS: Dict[str, PerNeuronCheckConfig] = {
-        "default": PerNeuronCheckConfig(atol=1e-6, rtol=0.0, topk=10),
-        "strict": PerNeuronCheckConfig(atol=1e-8, rtol=0.0, topk=20),
-        "loose": PerNeuronCheckConfig(atol=1e-4, rtol=1e-5, topk=5),
-    }
-    DEFAULT_NAME = "default"
-
-    def __call__(self, parser, namespace, values, option_string=None):
-        raw = str(values).strip()
-        if raw in self.PRESETS:
-            setattr(namespace, self.dest, self.PRESETS[raw])
-            return
-        parts = [p.strip() for p in raw.split(",")]
-        if len(parts) != 3:
-            raise argparse.ArgumentError(
-                self,
-                "Invalid --per-neuron-config. Use preset {default|strict|loose} "
-                "or triplet 'ATOL,RTOL,TOPK' (e.g., 1e-6,0.0,10).",
-            )
-        try:
-            cfg = PerNeuronCheckConfig(
-                atol=float(parts[0]),
-                rtol=float(parts[1]),
-                topk=int(parts[2]),
-            )
-        except ValueError as exc:
-            raise argparse.ArgumentError(
-                self,
-                "Invalid --per-neuron-config values. Expected 'ATOL,RTOL,TOPK' "
-                "(e.g., 1e-6,0.0,10).",
-            ) from exc
-        setattr(namespace, self.dest, cfg)
 
 
 def print_header():
@@ -508,14 +444,9 @@ def cmd_fuzz(args):
     print(f"STEP 3: Seed Extraction")
     print(f"{'=' * 80}\n")
 
-    for (
-        data_source,
-        model_name,
-        pytorch_model,
-        labeled_tensors,
-        spec_pairs,
-    ) in spec_results:
-        initial_seeds.extend(labeled_tensors)
+    # Single model only; mixing seeds across spec_results breaks SeedCorpus(torch.cat).
+    _, _, _, labeled_tensors, _ = spec_results[0]
+    initial_seeds.extend(labeled_tensors)
 
     if not initial_seeds:
         print("❌ No initial seeds extracted!")
@@ -640,6 +571,32 @@ def cmd_verify(target: str, args):
         sys.exit(1)
 
 
+def _resolve_batch_sizes(cli_value):
+    """CLI flag > YAML ``validate.batch_sizes`` > built-in default ``[None]``.
+
+    The ``[None]`` fallback means "validate each network at its native
+    batch size from JSON only" (no batchification).
+    """
+    if cli_value:
+        return cli_value
+    try:
+        import yaml
+        from act.util.path_config import get_project_root
+        cfg_path = (
+            Path(get_project_root())
+            / "act/back_end/examples/config_gen_act_net.yaml"
+        )
+        if cfg_path.exists():
+            cfg = yaml.safe_load(cfg_path.read_text()) or {}
+            yaml_val = (cfg.get("validate") or {}).get("batch_sizes")
+            if yaml_val:
+                return yaml_val
+    except Exception as e:
+        # Intentional: optional YAML override; missing/malformed files fall through to default [None].
+        logger.debug("suppressed: %s", e)
+    return [None]
+
+
 def cmd_validate_verifier(args):
     """Run verifier validation with specified mode.
 
@@ -649,7 +606,7 @@ def cmd_validate_verifier(args):
         solvers: list of solvers to use (default: gurobi torchlp)
         tf_modes: list of transfer function modes to use (default: interval)
         samples: number of samples to use (default: 10)
-        per_neuron_config: per-neuron configuration (default: default)
+        per_neuron_topk: number of worst per-neuron violations to report
     """
     import torch
     from act.pipeline.verification.validate_verifier import VerificationValidator
@@ -665,14 +622,15 @@ def cmd_validate_verifier(args):
     # Parse networks if specified
     networks = args.networks.split(",") if args.networks else None
 
-    # Run validation based on mode
     try:
-        per_neuron_config = args.per_neuron_config
+        per_neuron_config = PerNeuronCheckConfig(topk=int(args.per_neuron_topk))
+        batch_sizes = _resolve_batch_sizes(getattr(args, "batch_sizes", None))
         if args.mode == "counterexample":
             summary = validator.validate_counterexamples(
-                networks=networks, solvers=args.solvers
+                networks=networks,
+                solvers=args.solvers,
+                batch_sizes=batch_sizes,
             )
-            # Exit 1 if failures or errors, unless --ignore-errors is set
             exit_code = (
                 0
                 if args.ignore_errors
@@ -686,8 +644,8 @@ def cmd_validate_verifier(args):
                 tf_modes=args.tf_modes,
                 num_samples=args.samples,
                 per_neuron_config=per_neuron_config,
+                batch_sizes=batch_sizes,
             )
-            # Exit 1 if failures or errors, unless --ignore-errors is set
             exit_code = (
                 0
                 if args.ignore_errors
@@ -695,15 +653,15 @@ def cmd_validate_verifier(args):
                     1 if (summary["failed"] > 0 or summary.get("errors", 0) > 0) else 0
                 )
             )
-        else:  # comprehensive
+        else:
             combined = validator.validate_comprehensive(
                 networks=networks,
                 solvers=args.solvers,
                 tf_modes=args.tf_modes,
                 num_samples=args.samples,
                 per_neuron_config=per_neuron_config,
+                batch_sizes=batch_sizes,
             )
-            # Exit 1 if any failures or errors, unless --ignore-errors is set
             exit_code = (
                 0
                 if args.ignore_errors
@@ -758,8 +716,7 @@ Examples:
   python -m act.pipeline --validate-verifier --device cpu --dtype float64
   python -m act.pipeline --validate-verifier --mode counterexample
   python -m act.pipeline --validate-verifier --mode bounds --input-samples 20
-  python -m act.pipeline --validate-verifier --mode bounds --per-neuron-config strict
-  python -m act.pipeline --validate-verifier --mode bounds --per-neuron-config 1e-6,0.0,15
+  python -m act.pipeline --validate-verifier --mode bounds --per-neuron-topk 20
         """,
     )
 
@@ -942,11 +899,26 @@ Examples:
         help="Number of input samples for Level 2 bounds validation (default: 10)",
     )
     validation_group.add_argument(
-        "--per-neuron-config",
-        action=PerNeuronConfigAction,
-        default=PerNeuronConfigAction.PRESETS[PerNeuronConfigAction.DEFAULT_NAME],
-        metavar="PRESET|ATOL,RTOL,TOPK",
-        help="Per-neuron bounds preset (default|strict|loose) or triplet 'ATOL,RTOL,TOPK'.",
+        "--per-neuron-topk",
+        type=int,
+        default=10,
+        metavar="K",
+        help="Number of worst per-neuron violations to report (default: 10). "
+        "The bounds check itself is zero-tolerance — any deviation outside "
+        "[lb, ub] is flagged as unsound.",
+    )
+    validation_group.add_argument(
+        "--batch-sizes",
+        type=lambda s: [
+            (None if (b.strip() == "" or b.strip().lower() == "none") else int(b))
+            for b in s.split(",")
+        ],
+        default=None,
+        metavar="B1,B2,...",
+        help="Batch sizes to validate at, e.g. '1,4'. Use 'none' for the "
+        "network's native batch (from JSON). When omitted, falls back to "
+        "the ``validate.batch_sizes`` list in config_gen_act_net.yaml, "
+        "then to ``[None]`` (native only).",
     )
     validation_group.add_argument(
         "--ignore-errors",

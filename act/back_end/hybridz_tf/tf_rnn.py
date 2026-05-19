@@ -25,12 +25,11 @@ def tf_lstm(L: Layer, Bin: Bounds, tf) -> Fact:
     cfg = _read_rnn_config(L, op_name="tf_lstm")
     seq_lb, seq_ub = _seq_view(Bin, cfg)
     B, T, H = cfg["batch"], cfg["seq_len"], cfg["hidden_size"]
-    dtype, device = Bin.lb.dtype, Bin.lb.device
 
-    h_lb = torch.zeros(B, H, dtype=dtype, device=device)
-    h_ub = torch.zeros(B, H, dtype=dtype, device=device)
-    c_lb = torch.zeros(B, H, dtype=dtype, device=device)
-    c_ub = torch.zeros(B, H, dtype=dtype, device=device)
+    h_lb = Bin.lb.new_zeros(B, H)
+    h_ub = Bin.lb.new_zeros(B, H)
+    c_lb = Bin.lb.new_zeros(B, H)
+    c_ub = Bin.lb.new_zeros(B, H)
 
     out_lb_steps, out_ub_steps = [], []
     for t in range(T):
@@ -50,10 +49,9 @@ def tf_gru(L: Layer, Bin: Bounds, tf) -> Fact:
     cfg = _read_rnn_config(L, op_name="tf_gru")
     seq_lb, seq_ub = _seq_view(Bin, cfg)
     B, T, H = cfg["batch"], cfg["seq_len"], cfg["hidden_size"]
-    dtype, device = Bin.lb.dtype, Bin.lb.device
 
-    h_lb = torch.zeros(B, H, dtype=dtype, device=device)
-    h_ub = torch.zeros(B, H, dtype=dtype, device=device)
+    h_lb = Bin.lb.new_zeros(B, H)
+    h_ub = Bin.lb.new_zeros(B, H)
 
     out_lb_steps, out_ub_steps = [], []
     for t in range(T):
@@ -77,10 +75,9 @@ def tf_rnn(L: Layer, Bin: Bounds, tf) -> Fact:
 
     seq_lb, seq_ub = _seq_view(Bin, cfg)
     B, T, H = cfg["batch"], cfg["seq_len"], cfg["hidden_size"]
-    dtype, device = Bin.lb.dtype, Bin.lb.device
 
-    h_lb = torch.zeros(B, H, dtype=dtype, device=device)
-    h_ub = torch.zeros(B, H, dtype=dtype, device=device)
+    h_lb = Bin.lb.new_zeros(B, H)
+    h_ub = Bin.lb.new_zeros(B, H)
 
     out_lb_steps, out_ub_steps = [], []
     W = cfg["weights"]
@@ -276,9 +273,24 @@ def _read_rnn_config(L: Layer, *, op_name: str) -> dict:
 
 
 def _seq_view(Bin: Bounds, cfg: dict):
-    """Reshape Bin from flat (numel,) to (B, T, F) regardless of layout."""
-    seq_lb = Bin.lb.reshape(cfg["input_shape"])
-    seq_ub = Bin.ub.reshape(cfg["input_shape"])
+    """Reshape Bin from flat (numel,) or [B,T,F] to (B, T, F) regardless of layout.
+
+    ``cfg["input_shape"]`` records the JSON's native batch dim (typically B=1);
+    the actual bounds may have been batchified to B>1. We infer the runtime
+    B from numel and update ``cfg["batch"]`` in place so downstream code
+    (cell state init, output stacking) sees the correct batch size.
+    """
+    shape = tuple(int(d) for d in cfg["input_shape"])
+    t_dim = shape[1] if cfg["batch_first"] else shape[0]
+    f_dim = shape[2]
+    per_batch_numel = t_dim * f_dim
+    B_runtime = Bin.lb.numel() // per_batch_numel
+    cfg["batch"] = B_runtime
+    target = (
+        (B_runtime, t_dim, f_dim) if cfg["batch_first"] else (t_dim, B_runtime, f_dim)
+    )
+    seq_lb = Bin.lb.reshape(target)
+    seq_ub = Bin.ub.reshape(target)
     if not cfg["batch_first"]:
         seq_lb = seq_lb.permute(1, 0, 2).contiguous()
         seq_ub = seq_ub.permute(1, 0, 2).contiguous()
@@ -286,22 +298,31 @@ def _seq_view(Bin: Bounds, cfg: dict):
 
 
 def _stack_and_flatten(lb_steps, ub_steps, cfg):
-    """Stack per-step (B, H) bounds into the layer's declared output_shape,
-    then flatten to a 1D Bounds vector aligned with out_vars.
+    """Stack per-step ``(B, H)`` bounds into the layer's declared
+    ``output_shape``. The leading axes are preserved (``(B, T, H)`` for
+    batch-first; ``(T, B, H)`` otherwise) so downstream layers — FLATTEN,
+    DENSE, etc. — see the same rank-3 sequence tensor that interval-mode
+    RNN produces.
     """
     out_lb = torch.stack(lb_steps, dim=1)  # (B, T, H)
     out_ub = torch.stack(ub_steps, dim=1)
     if not cfg["batch_first"]:
         out_lb = out_lb.permute(1, 0, 2).contiguous()
         out_ub = out_ub.permute(1, 0, 2).contiguous()
-    return out_lb.reshape(-1), out_ub.reshape(-1)
+    return out_lb, out_ub
 
 
 def _make_fact(L: Layer, cfg: dict, out_lb, out_ub, op_name: str) -> Fact:
-    if out_lb.numel() != len(L.out_vars):
+    # out_vars indexes one symbolic copy per layer; under validate_verifier
+    # batchification the concrete bound tensor carries ``B`` independent
+    # instances stacked on the leading axis, so the produced numel must be
+    # an integer multiple of ``len(out_vars)`` (equal when B=1).
+    per_instance = len(L.out_vars)
+    actual = out_lb.numel()
+    if per_instance > 0 and actual % per_instance != 0:
         raise RuntimeError(
-            f"hybridz tf_{op_name}: produced {out_lb.numel()} outputs, expected "
-            f"len(out_vars)={len(L.out_vars)} (output_shape={cfg['output_shape']})."
+            f"hybridz tf_{op_name}: produced {actual} outputs, not a multiple "
+            f"of len(out_vars)={per_instance} (output_shape={cfg['output_shape']})."
         )
     B_out = Bounds(out_lb, out_ub)
     meta = {

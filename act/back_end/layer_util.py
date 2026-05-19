@@ -15,6 +15,9 @@
 from __future__ import annotations
 from typing import Dict, Any, List
 import difflib
+import logging
+
+logger = logging.getLogger(__name__)
 
 # Import validation components
 try:
@@ -95,8 +98,9 @@ def validate_layer(layer: "Layer") -> None:
                     raise TypeError(
                         f"{kind}.params['labeled_input'].tensor must be torch.Tensor, got {type(val.tensor)}."
                     )
-            except ImportError:
-                pass
+            except ImportError as e:
+                # Intentional: torch is optional here; skip tensor-type check when torch is unavailable.
+                logger.debug("suppressed: %s", e)
             # Validate label component (accepts int, list[int], or torch.Tensor)
             if val.label is not None:
                 try:
@@ -187,12 +191,24 @@ def validate_wrapper_graph(layers: List["Layer"]) -> None:
                 f"Preprocessing should be handled by data loader (e.g., torchvision.transforms)."
             )
 
-    # No INPUT/INPUT_SPEC after first spec (except final ASSERT at end)
+    # All INPUT_SPEC layers must form a contiguous prefix block right after
+    # INPUT. Once a non-INPUT_SPEC, non-wrapper layer appears, no more
+    # INPUT_SPECs or INPUTs are allowed.
+    seen_model_layer = False
     for i, k in enumerate(kinds[first_spec_idx+1:-1], start=first_spec_idx+1):
-        if k in (LayerKind.INPUT.value, LayerKind.INPUT_SPEC.value):
+        if k == LayerKind.INPUT.value:
             raise ValueError(
                 f"Unexpected {k} after the first INPUT_SPEC at index {i}."
             )
+        if k == LayerKind.INPUT_SPEC.value:
+            if seen_model_layer:
+                raise ValueError(
+                    f"INPUT_SPEC at index {i} appears after model layers; "
+                    "all INPUT_SPEC layers must form a contiguous block "
+                    "immediately after INPUT."
+                )
+        else:
+            seen_model_layer = True
 
 
 def is_supported_op(op: str) -> bool:

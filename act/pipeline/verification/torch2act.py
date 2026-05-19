@@ -45,12 +45,20 @@
 #===---------------------------------------------------------------------===#
 
 from __future__ import annotations
+import logging
 from typing import Any, ClassVar, Dict, List, Optional, Set, Tuple, Union
 import torch
 import torch.nn as nn
 import torch.fx as fx
 from torch.nn.modules.batchnorm import _BatchNorm
-from torchvision.ops import StochasticDepth
+
+logger = logging.getLogger(__name__)
+try:
+    from torchvision.ops import StochasticDepth
+    _HAS_STOCHASTIC_DEPTH = True
+except (ImportError, RuntimeError):
+    StochasticDepth = None  # type: ignore[assignment,misc]
+    _HAS_STOCHASTIC_DEPTH = False
 
 from act.back_end.core import Net, Layer
 from act.back_end.layer_schema import LayerKind
@@ -254,7 +262,9 @@ class _LayerGraphBuilder:
                     continue
                 try:
                     val = resolver(target)
-                except (AttributeError, KeyError, RuntimeError):
+                except (AttributeError, KeyError, RuntimeError) as e:
+                    # Intentional: resolver may not own this target; try the next resolver.
+                    logger.debug("suppressed: %s", e)
                     continue
                 if isinstance(val, torch.Tensor):
                     return val.detach().clone()
@@ -591,7 +601,9 @@ class _LayerGraphBuilder:
         }
         
         # No-op modules (identity during inference)
-        if isinstance(mod, (nn.Dropout, StochasticDepth)):
+        if isinstance(mod, nn.Dropout) or (
+            _HAS_STOCHASTIC_DEPTH and isinstance(mod, StochasticDepth)
+        ):
             return
         
         for mod_type, converter in converters.items():
@@ -1158,25 +1170,27 @@ class TorchToACT:
     
     def run(self) -> Net:
         """Convert wrapped PyTorch model to ACT Net."""
-        # Emit INPUT layer
         new_layers, out_vars = self.input_layer.to_act_layers(len(self.layers), [])
         self.layers.extend(new_layers)
         self.prev_out = out_vars
-        
-        # Process InputSpecLayers
+        # Capture batch dim from InputLayer for downstream spec encoding.
+        B = self.input_layer.shape[0]
+
         for mod in self.m.children():
             if type(mod).__name__ == "InputSpecLayer" and hasattr(mod, 'to_act_layers'):
-                new_layers, out_vars = mod.to_act_layers(len(self.layers), self.prev_out)
+                new_layers, out_vars = mod.to_act_layers(
+                    len(self.layers), self.prev_out, B
+                )
                 self.layers.extend(new_layers)
                 self.prev_out = out_vars
-        
-        # Build inner model using build_act()
+
         self._build_inner_model()
-        
-        # Process OutputSpecLayers
+
         for mod in self.m.children():
             if type(mod).__name__ == "OutputSpecLayer" and hasattr(mod, 'to_act_layers'):
-                new_layers, out_vars = mod.to_act_layers(len(self.layers), self.prev_out)
+                new_layers, out_vars = mod.to_act_layers(
+                    len(self.layers), self.prev_out, B
+                )
                 self.layers.extend(new_layers)
                 self.prev_out = out_vars
         
@@ -1301,7 +1315,7 @@ def main():
     wrapped_models = model_synthesis()
     print(f"  Generated {len(wrapped_models)} wrapped models")
     
-    # Step 2: Test all models with inference (input data now stored in models)
+    # Step 2: Test all models with inference (each wrapped model carries its own input data).
     print("\n Step 2: Testing model inference...")
     successful_models = model_inference(wrapped_models)
     print(f"  {len(successful_models)} models passed inference tests")
@@ -1332,14 +1346,12 @@ def main():
     
     try:
         gurobi_solver = GurobiSolver()
-        gurobi_solver.begin("act_verification")
         print("  Gurobi solver available")
     except Exception as e:
         print(f"  Gurobi initialization failed: {e}")
-    
+
     try:
         torch_solver = TorchLPSolver()
-        torch_solver.begin("act_verification")
         print(f"  TorchLP solver available (device: {torch_solver._device})")
     except Exception as e:
         print(f"  TorchLP initialization failed: {e}")

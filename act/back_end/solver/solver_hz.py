@@ -1,11 +1,17 @@
 from __future__ import annotations
 
+import logging
+
 import torch
-import torch.nn.functional as F
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 from act.back_end.core import Bounds
 from act.back_end.solver.solver_base import Solver, SolverCaps
+
+if TYPE_CHECKING:
+    from act.back_end.solver.solver_base import BatchLPProblem, BatchLPSolution
+
+logger = logging.getLogger(__name__)
 
 try:
     from act.back_end.solver.solver_gurobi import GurobiSolver, is_gurobi_available
@@ -155,7 +161,7 @@ def _hz_bounds_unconstrained(hz: HZono) -> Bounds:
         else torch.zeros((n, 1), dtype=dtype, device=device)
     )
     rad = absGc + absGb
-    return Bounds(lb=(hz.c - rad).flatten(), ub=(hz.c + rad).flatten())
+    return Bounds(lb=(hz.c - rad).reshape(1, -1), ub=(hz.c + rad).reshape(1, -1))
 
 
 def _hz_compute_bounds_gurobi(hz: HZono) -> Bounds:
@@ -219,8 +225,8 @@ def _hz_compute_bounds_scipy(hz: HZono) -> Bounds:
 
     dtype, device = hz.c.dtype, hz.c.device
     return Bounds(
-        lb=torch.from_numpy(LB).to(device=device, dtype=dtype).flatten(),
-        ub=torch.from_numpy(UB).to(device=device, dtype=dtype).flatten(),
+        lb=torch.from_numpy(LB).to(device=device, dtype=dtype).reshape(1, -1),
+        ub=torch.from_numpy(UB).to(device=device, dtype=dtype).reshape(1, -1),
     )
 
 
@@ -246,13 +252,15 @@ def hz_compute_bounds(hz: HZono, *, exact: bool = False) -> Bounds:
     if _HAS_GUROBI:
         try:
             return _hz_compute_bounds_gurobi(hz)
-        except Exception:
-            pass
+        except Exception as e:
+            # Intentional: Gurobi failures (license/timeout/numerical) fall back to scipy/unconstrained.
+            logger.debug("suppressed: %s", e)
     if _HAS_SCIPY:
         try:
             return _hz_compute_bounds_scipy(hz)
-        except Exception:
-            pass
+        except Exception as e:
+            # Intentional: scipy linprog failures fall back to the unconstrained bounds estimate.
+            logger.debug("suppressed: %s", e)
     return _hz_bounds_unconstrained(hz)
 
 
@@ -278,22 +286,17 @@ class HZSolver(Solver):
         self._last_bounds = hz_compute_bounds(hz, exact=exact)
         return self._last_bounds
 
-    def begin(self, name="verify", device=None):
-        pass
+    def solve_batch(
+        self,
+        problem: "BatchLPProblem",
+        timelimit: Optional[float] = None,
+    ) -> "BatchLPSolution":
+        """HZSolver does not accept BatchLPProblem inputs.
 
-    def status(self):
-        return "UNKNOWN"
-
-    def has_solution(self):
-        return False
-
-    @property
-    def n(self):
-        return 0
-
-    def _csp_unsupported(self, *a, **kw):
-        raise NotImplementedError("HZSolver operates on HZono, not CSP")
-
-    add_vars = set_bounds = add_binary_vars = _csp_unsupported
-    add_lin_eq = add_lin_ge = add_lin_le = _csp_unsupported
-    set_objective_linear = optimize = get_values = _csp_unsupported
+        HZSolver operates on HZono (hybrid zonotope) domains via
+        compute_bounds(), not on LP/CSP batch problems.  Callers that
+        need batch LP solving should use TorchLPSolver or GurobiSolver.
+        """
+        raise NotImplementedError(
+            "HZSolver does not solve CSPs; use compute_bounds() for HZ domain analysis."
+        )

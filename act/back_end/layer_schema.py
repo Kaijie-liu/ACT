@@ -173,7 +173,6 @@ class LayerKind(str, enum.Enum):
     POSENC = "POSENC"
     SLICE = "SLICE"
     GATHER = "GATHER"
-    INDEX_SELECT = "INDEX_SELECT"
     PAD = "PAD"
 
 
@@ -232,14 +231,14 @@ REGISTRY: Dict[str, Dict[str, Any]] = {
         ],
     },
     LayerKind.ASSERT.value: {
-        "params_required": ["kind"],
+        "params_required": ["kind", "C", "thresholds", "M"],
         "params_optional": [
-            "c",  # Tensor: coefficient vector for LINEAR_LE (c^T y <= d)
-            "lb",  # Tensor: lower bounds for RANGE
-            "ub",  # Tensor: upper bounds for RANGE
-            "d",  # Scalar: threshold for LINEAR_LE (c^T y <= d)
-            "y_true",  # Scalar int: true class index for TOP1_ROBUST / MARGIN_ROBUST
-            "margin",  # Scalar float: margin threshold for MARGIN_ROBUST
+            "c",
+            "lb",
+            "ub",
+            "d",
+            "y_true",
+            "margin",
         ],
     },
     # =====================
@@ -311,9 +310,18 @@ REGISTRY: Dict[str, Dict[str, Any]] = {
         ],
     },
     LayerKind.CONVTRANSPOSE2D.value: {
-        "params_required": ["weight", "stride", "padding", "dilation", "groups"],
+        # Required = positional args for nn.ConvTranspose2d(in_channels,
+        # out_channels, kernel_size, ...). stride / padding / dilation /
+        # groups go through optional → kwargs in _build_from_schema; making
+        # them required here would collide with the kwargs whitelist and
+        # raise 'got multiple values for argument'.
+        "params_required": ["weight", "in_channels", "out_channels", "kernel_size"],
         "params_optional": [
             "bias",
+            "stride",
+            "padding",
+            "dilation",
+            "groups",
             "transposed",
             "output_padding",
             "padding_mode",
@@ -358,6 +366,8 @@ REGISTRY: Dict[str, Dict[str, Any]] = {
             "ceil_mode",
             "count_include_pad",
             "output_size",
+            "input_shape",
+            "output_shape",
         ],
     },
     LayerKind.AVGPOOL1D.value: {
@@ -369,6 +379,8 @@ REGISTRY: Dict[str, Dict[str, Any]] = {
             "ceil_mode",
             "count_include_pad",
             "output_size",
+            "input_shape",
+            "output_shape",
         ],
     },
     LayerKind.AVGPOOL2D.value: {
@@ -579,6 +591,10 @@ REGISTRY: Dict[str, Dict[str, Any]] = {
             "batchnorm_state",
         ],
     },
+    LayerKind.BN.value: {
+        "params_required": ["A", "c"],
+        "params_optional": ["input_shape", "output_shape"],
+    },
     LayerKind.CONSTANT.value: {
         "params_required": ["value"],
         "params_optional": ["input_shape", "output_shape"],
@@ -640,7 +656,7 @@ REGISTRY: Dict[str, Dict[str, Any]] = {
     },
     LayerKind.TILE.value: {
         "params_required": [],
-        "params_optional": ["repeats"],
+        "params_optional": ["repeats", "input_shape", "output_shape"],
     },
     LayerKind.EXPAND.value: {
         "params_required": [],
@@ -756,6 +772,9 @@ REGISTRY: Dict[str, Dict[str, Any]] = {
             "seq_len",
             "embedding_dim",
             "theta",
+            "pos_vec",
+            "input_shape",
+            "output_shape",
         ],
     },
     LayerKind.SLICE.value: {
@@ -766,49 +785,109 @@ REGISTRY: Dict[str, Dict[str, Any]] = {
         "params_required": ["indices", "axis"],
         "params_optional": ["input_shape", "output_shape"],
     },
-    LayerKind.INDEX_SELECT.value: {
-        "params_required": ["indices", "dim"],
-        "params_optional": ["input_shape", "output_shape"],
-    },
     LayerKind.PAD.value: {
         "params_required": ["pad"],
         "params_optional": ["mode", "value", "input_shape", "output_shape"],
+    },
+    LayerKind.LAYERNORM.value: {
+        "params_required": ["gamma", "beta"],
+        "params_optional": ["eps", "input_shape", "output_shape"],
+    },
+    LayerKind.MASK_ADD.value: {
+        "params_required": ["M"],
+        "params_optional": ["input_shape", "output_shape"],
+    },
+    LayerKind.SQUARE.value: {
+        "params_required": [],
+        "params_optional": ["input_shape", "output_shape"],
+    },
+    LayerKind.POWER.value: {
+        "params_required": ["p"],
+        "params_optional": ["input_shape", "output_shape"],
     },
 }
 
 # Supported exporter op tags (base name before ":").
 SUPPORTED_EXPORT_OPS = {
-    "box",
-    "dense",
-    "bias",
-    "scale",
-    "bn",
-    "add",
-    "relu",
-    "lrelu",
-    "tanh",
-    "sigmoid",
     "abs",
-    "mcc",
-    "conv2d",
-    "maxpool2d",
-    "avgpool2d",
-    "flatten",
-    "reshape",
-    "top1",
-    "range",
-    "max",
-    "min",
-    "softmax",
-    "in",
-    "posenc",
-    "layernorm",
-    "gelu",
-    "att_scores",
+    "adaptiveavgpool2d",
+    "add",
+    "arg_extremum",
     "att_mix",
-    "mask",
-    "lstm",
+    "att_scores",
+    "avgpool1d",
+    "avgpool2d",
+    "avgpool3d",
+    "bias",
+    "bn",
+    "box",
+    "clip",
+    "compare",
+    "concat",
+    "constant",
+    "conv1d",
+    "conv2d",
+    "conv3d",
+    "convtranspose2d",
+    "dense",
+    "div",
+    "embedding",
+    "embedding_tf",
+    "expand",
+    "flatten",
+    "gather",
+    "gelu",
     "gru",
+    "hardsigmoid",
+    "hardswish",
+    "hardtanh",
+    "in",
+    "layernorm",
+    "lrelu",
+    "lstm",
+    "mask",
+    "mask_add",
+    "matmul",
+    "max",
+    "maxpool1d",
+    "maxpool2d",
+    "maxpool3d",
+    "mcc",
+    "mean",
+    "mha",
+    "mha_join",
+    "mha_split",
+    "min",
+    "mish",
+    "mul",
+    "pad",
+    "posenc",
+    "pow",
+    "power",
+    "prelu",
+    "range",
+    "reduce_sum",
+    "relu",
+    "relu6",
+    "reshape",
     "rnn",
+    "scale",
+    "scatter_nd",
+    "sigmoid",
+    "sign",
+    "silu",
+    "slice",
+    "softmax",
+    "softplus",
+    "softsign",
+    "square",
+    "squeeze",
+    "stack",
+    "sub",
+    "tanh",
+    "top1",
+    "transpose",
+    "unsqueeze",
     "upsample",
+    "where",
 }
