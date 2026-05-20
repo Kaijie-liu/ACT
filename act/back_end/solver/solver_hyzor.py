@@ -7,6 +7,48 @@ Walks ACT cons IR (verified correct in Step 0) and dispatches to:
 
 NO HyZor algorithm code is duplicated. HyZor upgrades on its own ->
 ACT updates automatically.
+
+================================================================
+MIGRATION STATUS (2026-05-19)
+================================================================
+HyZor algorithms now have a parallel home under
+``act/back_end/hybridz_tf/algorithms/`` (and
+``act/back_end/hybridz_tf/representations.py``). Future HZ solvers
+should compose those modules instead of importing the HyZor repo.
+
+  ✓ P1 -- Plumbing: cli/config/hybridz_tf SLICE/vnnlib_loader/
+       torch2act/utils/validate_verifier — landed in this merge.
+
+  ✓ P2 -- HZ algorithms in ACT (parallel implementations,
+       feature-light but verified by self-tests):
+       * ``algorithms/sgm.py``         -- shares_generator + hz_sgm_add
+       * ``algorithms/eq_elim.py``     -- project_eq_elim
+       * ``algorithms/binary_probe.py`` -- RIIM + LP singleton probing
+       * ``algorithms/lp_verify.py``   -- check_unsafe_for_act + witness
+       * ``algorithms/cascade.py``     -- ReLU encoding scheduler
+       * ``representations.py``        -- BoxHZ / LazyChainHZ / SparseGcZ
+       * ``solver_hz.HZono``           -- extended with eq_mask + ineq
+
+  ✓ P5 -- ``solver_simple_hz.py`` (50-line template) demonstrates
+       that the ACT algorithms compose into a working HZ solver
+       without any HyZor-repo dependency.
+
+  ◌ P4 -- This file (solver_hyzor.py) still imports HyZor's
+       full implementations (binary_probe_v8 + project_eq_elim +
+       hz_apply_relu_v8 cascade) via ``import HyZor``. Reason: the
+       ACT-side ports are deliberately simplified (no pairwise RIIM
+       v2, no GPU PEE QR, no LinearPrefilter, no profiling). Until
+       feature parity lands, this solver continues to use HyZor's
+       feature-rich versions so the verified cifar100 154/200 and
+       tinyimagenet 175/175 results remain reproducible bit-for-bit.
+
+       The MIGRATION-READY state is: every algorithm has both a
+       full implementation in HyZor and a simpler port in ACT; we
+       choose feature-richness today and migrate progressively.
+
+  ◌ P6 -- ``verify_once_legacy_batch1`` shim below remains required
+       until the HyZor solver is replaced by an analyze() +
+       hybridz_tf-native dispatch flow.
 """
 from __future__ import annotations
 import os
@@ -211,6 +253,34 @@ class HyZorSolver(Solver):
     def capabilities(self) -> SolverCaps:
         return SolverCaps(supports_gpu=True, supports_csp=True, supports_hz=True)
 
+    # ─── LEGACY_SHIM_TO_REMOVE_AT_P3 ───────────────────────────────────
+    # HyZor's verification path walks the ACT cons IR via consume_cons()
+    # (a custom analyze-walking pipeline) rather than consuming a
+    # BatchLPProblem. Until eq_lagr_v8 / project_eq_elim / Phase-1-3
+    # representations land in act/back_end/hybridz_tf/ and the cascade
+    # controller moves to hybridz_tf/algorithms/, the new
+    # setup_and_solve_batch + verify_once entry points cannot drive
+    # HyZor end-to-end. solve_batch therefore mirrors HZSolver's design
+    # (raise with redirect message); callers must use
+    # ``verify_once_legacy_batch1`` (defined below) for HyZor-mode
+    # verification of a single (model, vnnlib) instance.
+    def solve_batch(self, problem, timelimit: Optional[float] = None):  # noqa: D401
+        """HyZorSolver does not accept BatchLPProblem inputs.
+
+        HyZor walks the ACT cons IR directly via ``consume_cons``; it
+        does not consume a pre-built LP. Callers verifying a single
+        instance through HyZor should use
+        ``verify_once_legacy_batch1(net, solver=..., timelimit=...)``
+        from this module. Batch-native HyZor integration via
+        ``hybridz_tf`` is a follow-up (see comment block above).
+        """
+        raise NotImplementedError(
+            "HyZorSolver does not consume BatchLPProblem; use "
+            "act.back_end.solver.solver_hyzor.verify_once_legacy_batch1"
+            "(net, solver=..., timelimit=...) for single-instance HyZor "
+            "verification until hybridz_tf integration lands."
+        )
+
     def begin(self, name: str = "verify", device: Optional[str] = None):
         self._reset_state()
         if device is not None:
@@ -254,21 +324,42 @@ class HyZorSolver(Solver):
         *, net: Net, input_ids: List[int], output_ids: List[int],
         assert_layer: Layer,
     ) -> str:
-        # Lazy imports
-        try:
-            from HyZor import (
+        # Phase 5.2 (2026-05-20): hyzor_compat re-exports ACT-native
+        # versions where parity-tested at the ALGORITHM level (61 tests,
+        # 0.0e+00 element-wise error). However v108 A/B regression
+        # revealed ACT-default is more memory-hungry than HyZor on
+        # cifar/tiny: HyZor's hz_dense/hz_conv2d auto-dispatch to
+        # Phase 1-3 representations (BoxHZ / LazyChainHZ / SparseGcZ)
+        # when memory tight, ACT lacks that routing. 37/37 OOMs on
+        # tinyimagenet under vLLM contention. Default ROLLED BACK to
+        # LEGACY until Phase 1-3 routing is ported (Phase 6 follow-up).
+        # ``HYZOR_USE_ACT=1`` opts in to the ACT-default path for tests
+        # / small models where memory pressure is absent.
+        _use_act = os.environ.get("HYZOR_USE_ACT", "0") == "1"
+        if not _use_act:
+            try:
+                from HyZor import (
+                    hz_from_bounds, hz_dense, hz_conv2d, hz_add_const, hz_scale,
+                    hz_bn, hz_minkowski_sum, hz_sgm_add, shares_generator,
+                    hz_concat, hz_intersect_polytope,
+                    hz_apply_relu_v8, hz_apply_leaky_relu_v8,
+                    check_unsafe_for_act, lp_witness_to_input,
+                    strict_replay_for_act,
+                )
+            except ImportError as e:
+                raise RuntimeError(
+                    f"HyZorSolver: cannot import HyZor from {_HYZOR_ROOT}. "
+                    f"Set $HYZOR_ROOT or `pip install -e {_HYZOR_ROOT}`. "
+                    f"Underlying: {e}"
+                )
+        else:
+            from act.back_end.hybridz_tf.hyzor_compat import (
                 hz_from_bounds, hz_dense, hz_conv2d, hz_add_const, hz_scale,
                 hz_bn, hz_minkowski_sum, hz_sgm_add, shares_generator,
                 hz_concat, hz_intersect_polytope,
                 hz_apply_relu_v8, hz_apply_leaky_relu_v8,
                 check_unsafe_for_act, lp_witness_to_input,
                 strict_replay_for_act,
-            )
-        except ImportError as e:
-            raise RuntimeError(
-                f"HyZorSolver: cannot import HyZor from {_HYZOR_ROOT}. "
-                f"Set $HYZOR_ROOT or `pip install -e {_HYZOR_ROOT}`. "
-                f"Underlying: {e}"
             )
 
         # ACT operators (sigmoid/tanh K-piece -- ACT innovation)
@@ -353,12 +444,20 @@ class HyZorSolver(Solver):
         _vnn_p = self.cfg.get("vnnlib_path")
         if _gtlp_mode != "off" and _onnx_p and _vnn_p and conv_count == 0:
             try:
-                import sys as _sys_gtlp
-                _hz_root = os.environ.get("HYZOR_ROOT", _HYZOR_ROOT)
-                if _hz_root not in _sys_gtlp.path:
-                    _sys_gtlp.path.insert(0, _hz_root)
-                from GlobalTriangleLP import is_small_dense as _is_sd
-                from WitnessExtract import verify_with_falsification as _we_verify
+                # Phase 6.4: GlobalTriangleLP / WitnessExtract are byte-
+                # identical copies relocated under
+                # ``act.back_end.hybridz_tf.algorithms``. Phase 5.2 rollback:
+                # default LEGACY for safety; HYZOR_USE_ACT=1 opts in.
+                if os.environ.get("HYZOR_USE_ACT", "0") == "1":
+                    from act.back_end.hybridz_tf.algorithms.global_triangle_lp import is_small_dense as _is_sd
+                    from act.back_end.hybridz_tf.algorithms.witness_extract import verify_with_falsification as _we_verify
+                else:
+                    import sys as _sys_gtlp
+                    _hz_root = os.environ.get("HYZOR_ROOT", _HYZOR_ROOT)
+                    if _hz_root not in _sys_gtlp.path:
+                        _sys_gtlp.path.insert(0, _hz_root)
+                    from GlobalTriangleLP import is_small_dense as _is_sd
+                    from WitnessExtract import verify_with_falsification as _we_verify
                 _dispatch = (_gtlp_mode == "on") or (
                     _gtlp_mode == "auto" and _is_sd(_onnx_p)
                 )
@@ -435,7 +534,12 @@ class HyZorSolver(Solver):
                 # back to interval only on unstable blocks.
                 if op_con is None and L.kind == "MAXPOOL2D" and hz_in is not None:
                     try:
-                        from HyZor import hz_maxpool2d
+                        # Phase 5.2 rollback: default LEGACY for memory
+                        # safety; HYZOR_USE_ACT=1 opts in.
+                        if os.environ.get("HYZOR_USE_ACT", "0") == "1":
+                            from act.back_end.hybridz_tf.hyzor_compat import hz_maxpool2d
+                        else:
+                            from HyZor import hz_maxpool2d
                         params = L.params
                         in_shape = params.get("input_shape")
                         if in_shape is None:
@@ -479,7 +583,14 @@ class HyZorSolver(Solver):
                 # Sound fallback on any per-layer failure
                 self._stats[f"error@{L.id}"] = f"{type(e).__name__}: {e}"
                 hz_out = self._box_fallback(L, after, hz_from_bounds)
-                print(f"  [hyzor L{L.id}] FALLBACK ({type(e).__name__})", flush=True)
+                import os as _osdbg, traceback as _tb
+                if _osdbg.environ.get("HYZOR_DEBUG_FALLBACK", "0") == "1":
+                    print(f"  [hyzor L{L.id}] FALLBACK ({type(e).__name__}): {e}",
+                          flush=True)
+                    _tb.print_exc()
+                else:
+                    print(f"  [hyzor L{L.id}] FALLBACK ({type(e).__name__})",
+                          flush=True)
 
             var_to_hz[tuple(L.out_vars)] = hz_out
             op_kind = (op_con.meta["tag"].split(":")[0]
@@ -911,3 +1022,196 @@ class HyZorSolver(Solver):
 
     def stats(self) -> dict:
         return dict(self._stats)
+
+
+def _slice_facts_lane(facts: Dict[int, Fact], lane: int) -> Dict[int, Fact]:
+    """Return a new facts dict where each Fact's batched bounds are
+    sliced to the requested batch lane. Cons (if any) are passed through
+    unchanged — legacy consume_cons only reads bounds from facts."""
+    out: Dict[int, Fact] = {}
+    for lid, f in facts.items():
+        lb, ub = f.bounds.lb, f.bounds.ub
+        if lb.dim() >= 2:
+            lb = lb[lane]
+            ub = ub[lane]
+        out[lid] = Fact(bounds=Bounds(lb=lb, ub=ub), cons=f.cons)
+    return out
+
+
+def _slice_assert_layer_lane(assert_layer: Layer, lane: int) -> Layer:
+    """Build a de-batched copy of ASSERT layer for single-instance consumers.
+
+    PR #66's ASSERT params carry leading B axis on per-kind fields
+    (``y_true: [B]``, ``c: [B, ...]``, ``d: [B, ...]``, ``margin: [B]``,
+    ``lb/ub: [B, n_out]``, ``thresholds: [B, M]``, ``C: [B*M, n_out]``).
+    HyZor's ``check_unsafe_for_act`` / ``_cert_U_unc_verified`` predate
+    this and expect the unbatched per-kind layout. This helper slices
+    lane ``lane`` so those readers see the same shapes they always did.
+    """
+    new_params: Dict[str, Any] = {}
+    B_hint: Optional[int] = None
+    for k, v in assert_layer.params.items():
+        if k in ("kind", "M"):
+            new_params[k] = v
+            continue
+        if hasattr(v, "dim") and hasattr(v, "shape"):
+            if v.dim() >= 1 and v.shape[0] > 0:
+                # Heuristic: leading dim is B for per-kind fields. For the
+                # pre-encoded C of shape [B*M, n_out] we keep as-is — readers
+                # of "C" key are PR-#66 callers, not the legacy path.
+                if k == "C":
+                    new_params[k] = v
+                else:
+                    new_params[k] = v[lane]
+                    if B_hint is None:
+                        B_hint = int(v.shape[0])
+            else:
+                new_params[k] = v
+        else:
+            new_params[k] = v
+    # Construct a shallow Layer-like wrapper. ASSERT consumers only read
+    # `.params`; building a fresh Layer keeps the Layer dataclass invariants
+    # of the host module untouched.
+    from dataclasses import replace as _dc_replace
+    try:
+        return _dc_replace(assert_layer, params=new_params)
+    except Exception:
+        # Fallback if Layer isn't a dataclass on this main: use a thin proxy
+        class _LayerProxy:  # noqa: D401
+            pass
+        proxy = _LayerProxy()
+        for attr in ("id", "kind", "in_vars", "out_vars"):
+            if hasattr(assert_layer, attr):
+                setattr(proxy, attr, getattr(assert_layer, attr))
+        proxy.params = new_params
+        return proxy  # type: ignore[return-value]
+
+
+def _slice_globalC_lane(globalC: ConSet, lane: int) -> ConSet:
+    """Slice batched ``box:`` meta-stored lb/ub to a single batch lane.
+    Non-box cons are passed through unchanged."""
+    out = ConSet()
+    for sig, con in list(globalC.S.items()):
+        meta = dict(con.meta) if con.meta else {}
+        lb_meta = meta.get("lb")
+        ub_meta = meta.get("ub")
+        sliced = False
+        if lb_meta is not None and hasattr(lb_meta, "dim") and lb_meta.dim() >= 2:
+            meta["lb"] = lb_meta[lane].reshape(-1)
+            sliced = True
+        if ub_meta is not None and hasattr(ub_meta, "dim") and ub_meta.dim() >= 2:
+            meta["ub"] = ub_meta[lane].reshape(-1)
+            sliced = True
+        if sliced:
+            out.replace(Con(kind=con.kind, var_ids=con.var_ids, meta=meta))
+        else:
+            out.S[sig] = con
+    return out
+
+
+# ─── LEGACY_SHIM_TO_REMOVE_AT_P3 ───────────────────────────────────────
+# Single-instance verifier entry that mirrors the pre-PR-#66
+# ``verify_once(net, solver=..., timelimit=...)`` semantics on top of
+# HyZor's ``consume_cons`` cons-IR walker. Driver scripts that pre-date
+# the batch-native verifier (v100/v101/v102 and similar) call this
+# helper instead of ``act.back_end.verifier.verify_once`` (which no
+# longer accepts a ``solver=`` argument).
+#
+# Inputs:
+#   - ``net``: ACT Net whose first layer is INPUT, last is ASSERT.
+#     INPUT_SPEC may be batched [B, *shape]; this helper takes lane
+#     ``batch_lane`` only (default 0; raises if B>1 and lane unset).
+#   - ``solver``: HyZorSolver instance.
+#   - ``timelimit``: optional wall-clock budget (seconds).
+#
+# Returns: ``(status: str, ce_input: Optional[np.ndarray], stats: dict)``
+# matching the pre-PR-#66 return type.
+#
+# REMOVAL PLAN: once HyZor's HZ propagation lives in hybridz_tf and the
+# cascade controller in hybridz_tf/algorithms, the new
+# ``setup_and_solve_batch`` will dispatch to HyZor natively and this
+# helper can be deleted.
+def verify_once_legacy_batch1(
+    net,
+    *,
+    solver: "HyZorSolver",
+    timelimit: Optional[float] = None,
+    batch_lane: int = 0,
+) -> Tuple[str, Optional[np.ndarray], Dict[str, Any]]:
+    """Pre-PR-#66 verify_once API on top of HyZorSolver.consume_cons.
+
+    See module-level comment ``LEGACY_SHIM_TO_REMOVE_AT_P3``.
+    """
+    from act.back_end.analyze import analyze
+    from act.back_end.transfer_functions import set_transfer_function_mode
+    from act.back_end.verifier import (
+        find_entry_layer_id, get_input_ids, get_output_ids,
+        gather_input_spec_layers, get_assert_layer,
+        seed_from_input_specs, add_all_input_specs, validate_constraints,
+    )
+
+    # consume_cons reads `.bounds` from before/after for _box_fallback
+    # paths, so we need TIGHT bounds. An earlier attempt forced
+    # interval-only TF for speed; it caused a regression on
+    # cifar100_resnet_large (20 V down from baseline 52) because
+    # looser box fallbacks turned verified instances into "unknown".
+    # Default mode honored (hybridz). Set HYZOR_TF_MODE=interval to
+    # force the fast-but-lossy path when speed matters more than recall.
+    _tf_mode = os.environ.get("HYZOR_TF_MODE", "").strip().lower()
+    if _tf_mode in ("interval", "hybridz"):
+        set_transfer_function_mode(_tf_mode)
+
+    entry_id = find_entry_layer_id(net)
+    input_ids = get_input_ids(net)
+    output_ids = get_output_ids(net)
+    spec_layers = gather_input_spec_layers(net)
+    assert_layer = get_assert_layer(net)
+
+    # Run analyze with the batched seed (new TFs require [B, *shape]).
+    seed_bounds = seed_from_input_specs(spec_layers)
+    if seed_bounds.lb.dim() < 2:
+        # Legacy 1-D seed: synthesize a B=1 batch so new TFs accept it.
+        seed_bounds = Bounds(
+            lb=seed_bounds.lb.unsqueeze(0), ub=seed_bounds.ub.unsqueeze(0)
+        )
+    B = int(seed_bounds.lb.shape[0])
+    if batch_lane >= B:
+        raise IndexError(
+            f"verify_once_legacy_batch1: batch_lane={batch_lane} out of "
+            f"range [0, {B})"
+        )
+
+    entry_fact = Fact(bounds=seed_bounds, cons=ConSet())
+    add_all_input_specs(entry_fact.cons, input_ids, spec_layers)
+    before, after, globalC = analyze(net, entry_id, entry_fact)
+    validate_constraints(globalC, after, net)
+
+    # HyZor's consume_cons predates batch-native analyze and expects
+    # single-lane (1-D) bounds in before/after Facts. Slice lane
+    # ``batch_lane`` so consume_cons sees the same input shape it always
+    # has. globalC may also carry per-batch box rows; rewrite them to
+    # the single-lane view.
+    before_b1, after_b1 = _slice_facts_lane(before, batch_lane), _slice_facts_lane(after, batch_lane)
+    globalC_b1 = _slice_globalC_lane(globalC, batch_lane)
+    assert_layer_b1 = _slice_assert_layer_lane(assert_layer, batch_lane)
+
+    if timelimit is not None and hasattr(solver, "cfg"):
+        solver.cfg["timeout_s"] = float(timelimit)
+
+    st = solver.consume_cons(
+        globalC_b1, before_b1, after_b1,
+        net=net, input_ids=input_ids, output_ids=output_ids,
+        assert_layer=assert_layer_b1,
+    )
+    ce_input = None
+    if st == SolveStatus.SAT and solver.has_solution():
+        ce_input = solver.get_values(input_ids)
+
+    stats: Dict[str, Any] = {
+        "status": st, "ncons": len(globalC), "solver": "hyzor",
+    }
+    try:
+        stats.update(solver.stats() if hasattr(solver, "stats") else {})
+    except Exception:
+        pass
+    return st, ce_input, stats

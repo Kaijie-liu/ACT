@@ -136,4 +136,10 @@ def hz_conv2d(
         Ac=hz.Ac.clone(),
         Ab=hz.Ab.clone(),
         b=hz.b.clone(),
+        # Preserve eq_mask. Constraint rows pass through conv unchanged
+        # (conv only touches coords, not factor-space rows), so eq_mask
+        # must match the input. Dropping it (i.e., letting it default to
+        # all-True) would silently promote inequalities to equalities
+        # downstream.
+        eq_mask=None if hz.eq_mask is None else hz.eq_mask.clone(),
     )

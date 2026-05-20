@@ -36,8 +36,39 @@ except ImportError:
 
 @dataclass
 class HZono:
-    """Z = {c + Gc @ xi_c + Gb @ xi_b | Ac @ xi_c + Ab @ xi_b = b,
-    xi_c in [-1,1]^ng, xi_b in {-1,1}^nb}"""
+    """Hybrid zonotope with mixed equality / inequality constraints.
+
+    Set definition::
+
+        Z = { c + Gc @ xi_c + Gb @ xi_b
+              | (Ac @ xi_c + Ab @ xi_b) [op] b,
+                xi_c in [-1, 1]^ng,  xi_b in {-1, +1}^nb }
+
+    where ``[op]`` is row-wise: equality ``=`` for rows where
+    ``eq_mask[i] == True`` and inequality ``<=`` for rows where
+    ``eq_mask[i] == False``.
+
+    Shapes::
+
+        c   : (n, 1)
+        Gc  : (n, ng)         continuous generators
+        Gb  : (n, nb)         binary generators
+        Ac  : (nc, ng)
+        Ab  : (nc, nb)
+        b   : (nc, 1)
+        eq_mask : (nc,)  torch.bool  --  None ⇒ all rows are equalities
+                                          (backward-compat with pre-eq_mask
+                                          HZono usage in tf_mlp/cnn/rnn)
+
+    The mixed-constraint form is required by algorithms that introduce
+    inequality rows during forward propagation, in particular
+    ``project_eq_elim`` (after QR elimination of equality rows, the
+    implicit box constraint ``xi_dep in [-1, 1]`` on eliminated
+    variables becomes an inequality on the surviving variables) and
+    binary-probing residuals. Algorithms that don't need this slot can
+    leave ``eq_mask=None`` and the system behaves exactly as the
+    pre-extension all-equality HZono.
+    """
 
     c: torch.Tensor  # (n, 1)
     Gc: torch.Tensor  # (n, ng)
@@ -45,6 +76,70 @@ class HZono:
     Ac: torch.Tensor  # (nc, ng)
     Ab: torch.Tensor  # (nc, nb)
     b: torch.Tensor  # (nc, 1)
+    eq_mask: Optional[torch.Tensor] = None  # (nc,) bool, None = all True
+
+    # ─── Convenience shape accessors (parity with HyZor's HybridZonotope) ──
+    # HyZor exposes ``.dim, .ng, .nb, .nc`` as cached ints; the cons-walker
+    # in ``solver_hyzor`` reads them for per-layer logging and dispatch
+    # heuristics. Provide them as zero-cost @property's so the same code
+    # works on either HZono or HybridZonotope.
+    @property
+    def dim(self) -> int:
+        return int(self.c.shape[0])
+
+    @property
+    def ng(self) -> int:
+        return int(self.Gc.shape[1])
+
+    @property
+    def nb(self) -> int:
+        return int(self.Gb.shape[1])
+
+    @property
+    def nc(self) -> int:
+        return int(self.b.shape[0])
+
+
+# ----------------------------------------------------------------------------
+# eq_mask helpers
+# ----------------------------------------------------------------------------
+
+
+def _eq_mask_of(hz: HZono) -> torch.Tensor:
+    """Return hz.eq_mask if set, else a length-nc all-True mask."""
+    nc = hz.b.shape[0]
+    if hz.eq_mask is not None:
+        if int(hz.eq_mask.numel()) != int(nc):
+            raise ValueError(
+                f"HZono.eq_mask length {int(hz.eq_mask.numel())} != "
+                f"nc {int(nc)}"
+            )
+        return hz.eq_mask
+    return torch.ones(nc, dtype=torch.bool, device=hz.b.device)
+
+
+def _split_eq_le(hz: HZono):
+    """Return ``(Ac_eq, Ab_eq, b_eq, Ac_le, Ab_le, b_le)`` slices of hz
+    according to its eq_mask. b's leading dim is flattened to (n,)."""
+    em = _eq_mask_of(hz)
+    le = ~em
+    b_flat = hz.b.reshape(-1)
+    return (
+        hz.Ac[em], hz.Ab[em], b_flat[em],
+        hz.Ac[le], hz.Ab[le], b_flat[le],
+    )
+
+
+def _concat_eq_masks(em1, em2, nc1: int, nc2: int, device) -> torch.Tensor:
+    """Concat eq_masks from two HZonos, materialising defaults (all True)
+    on either side when the input mask is None."""
+    if em1 is None:
+        em1 = torch.ones(nc1, dtype=torch.bool, device=device)
+    if em2 is None:
+        em2 = torch.ones(nc2, dtype=torch.bool, device=device)
+    return torch.cat(
+        [em1.to(device=device), em2.to(device=device)], dim=0
+    )
 
 
 # ============================================================================
@@ -53,6 +148,8 @@ class HZono:
 
 
 def hz_multiply(hz: HZono, R: torch.Tensor) -> HZono:
+    """Linear map ``y = R x``. Constraint rows untouched, so eq_mask passes
+    through unchanged."""
     R = R.to(dtype=hz.c.dtype, device=hz.c.device)
     return HZono(
         c=R @ hz.c,
@@ -61,10 +158,12 @@ def hz_multiply(hz: HZono, R: torch.Tensor) -> HZono:
         Ac=hz.Ac.clone(),
         Ab=hz.Ab.clone(),
         b=hz.b.clone(),
+        eq_mask=None if hz.eq_mask is None else hz.eq_mask.clone(),
     )
 
 
 def hz_add_const(hz: HZono, v: torch.Tensor) -> HZono:
+    """Translate by constant ``v``. Constraint rows untouched."""
     v = v.to(dtype=hz.c.dtype, device=hz.c.device)
     if v.ndim == 1:
         v = v.view(-1, 1)
@@ -75,10 +174,13 @@ def hz_add_const(hz: HZono, v: torch.Tensor) -> HZono:
         Ac=hz.Ac.clone(),
         Ab=hz.Ab.clone(),
         b=hz.b.clone(),
+        eq_mask=None if hz.eq_mask is None else hz.eq_mask.clone(),
     )
 
 
 def hz_minkowski_sum(hz1: HZono, hz2: HZono) -> HZono:
+    """Block-diagonal stacking of the two constraint systems. Each branch
+    keeps its own row semantics; eq_mask is concatenated row-wise."""
     dtype, device = hz1.c.dtype, hz1.c.device
 
     new_c = hz1.c + hz2.c.to(dtype=dtype, device=device)
@@ -114,10 +216,26 @@ def hz_minkowski_sum(hz1: HZono, hz2: HZono) -> HZono:
     new_Ab = torch.cat([Ab_top, Ab_bot], dim=0)
 
     new_b = torch.cat([hz1.b, hz2.b.to(dtype=dtype, device=device)], dim=0)
-    return HZono(c=new_c, Gc=new_Gc, Gb=new_Gb, Ac=new_Ac, Ab=new_Ab, b=new_b)
+
+    # Preserve eq_mask through stacking. If both inputs left it as None we
+    # leave it None to keep the legacy all-True default; otherwise we
+    # materialise both masks first so the result has a well-defined per-row
+    # eq/le label.
+    new_eq_mask = None
+    if hz1.eq_mask is not None or hz2.eq_mask is not None:
+        new_eq_mask = _concat_eq_masks(
+            hz1.eq_mask, hz2.eq_mask, nc1, nc2, device
+        )
+
+    return HZono(
+        c=new_c, Gc=new_Gc, Gb=new_Gb,
+        Ac=new_Ac, Ab=new_Ab, b=new_b,
+        eq_mask=new_eq_mask,
+    )
 
 
 def hz_from_bounds(bounds: Bounds, dtype, device) -> HZono:
+    """Box-from-bounds factory. No constraints, eq_mask trivially None."""
     lb = bounds.lb.flatten().to(dtype=dtype, device=device)
     ub = bounds.ub.flatten().to(dtype=dtype, device=device)
     n = lb.shape[0]
@@ -130,6 +248,7 @@ def hz_from_bounds(bounds: Bounds, dtype, device) -> HZono:
         Ac=torch.zeros((0, n), dtype=dtype, device=device),
         Ab=torch.zeros((0, 0), dtype=dtype, device=device),
         b=torch.zeros((0, 1), dtype=dtype, device=device),
+        eq_mask=None,
     )
 
 
@@ -197,12 +316,34 @@ def _hz_compute_bounds_scipy(hz: HZono) -> Bounds:
     var_lb = np.concatenate([-np.ones(p), -np.ones(q)])
     var_ub = np.concatenate([np.ones(p),   np.ones(q)])
     var_bounds = SciBounds(lb=var_lb, ub=var_ub)
+    # Split eq vs le rows when eq_mask is set. Legacy callers leave
+    # eq_mask=None, in which case all rows are equalities (treated as
+    # bidirectional LP rhs).
     nc = int(b_np.size)
+    constraints = []
     if nc > 0:
-        A_eq = np.concatenate([Ac_np, Ab_np], axis=1)
-        constraints = [LinearConstraint(A=A_eq, lb=b_np, ub=b_np)]
-    else:
-        constraints = []
+        if hz.eq_mask is None:
+            A_full = np.concatenate([Ac_np, Ab_np], axis=1)
+            constraints.append(LinearConstraint(A=A_full, lb=b_np, ub=b_np))
+        else:
+            em_np = hz.eq_mask.detach().cpu().numpy().astype(bool)
+            le_np = ~em_np
+            if em_np.any():
+                A_eq = np.concatenate(
+                    [Ac_np[em_np], Ab_np[em_np]], axis=1
+                )
+                b_eq = b_np[em_np]
+                constraints.append(
+                    LinearConstraint(A=A_eq, lb=b_eq, ub=b_eq)
+                )
+            if le_np.any():
+                A_le = np.concatenate(
+                    [Ac_np[le_np], Ab_np[le_np]], axis=1
+                )
+                b_le = b_np[le_np]
+                constraints.append(
+                    LinearConstraint(A=A_le, lb=-np.inf, ub=b_le)
+                )
 
     LB = np.empty((n,), dtype=np.float64)
     UB = np.empty((n,), dtype=np.float64)

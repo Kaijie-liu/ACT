@@ -246,7 +246,13 @@ def tf_add(L, bounds, tf):
         preds = tf._net.preds.get(L.id, [])
         hz2 = tf._hz_cache.get(preds[1]) if len(preds) > 1 else None
         if hz2 is not None:
-            tf._hz_cache[L.id] = hz_minkowski_sum(hz_in, hz2)
+            # SGM-aware add: when the two HZs share their continuous-generator
+            # block (ResNet skip-connection pattern with no Gc-transforming
+            # ops on either branch), reuse the shared block instead of
+            # block-diag concatenating. Falls back to Minkowski sum when not
+            # shared. See act.back_end.hybridz_tf.algorithms.sgm.
+            from act.back_end.hybridz_tf.algorithms.sgm import hz_sgm_add
+            tf._hz_cache[L.id] = hz_sgm_add(hz_in, hz2)
         else:
             hz_in = None
     fact = interval.tf_add(

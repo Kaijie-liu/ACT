@@ -1,0 +1,626 @@
+"""Per-encoding ReLU methods for HZono.
+
+This module contains alternative ReLU encodings beyond the tight
+``hz_apply_relu`` (eq_lagr_v8 in HyZor parlance) that lives in
+``tf_mlp.py``. The eq_lagr_v8 encoding is the most precise but
+allocates 4 continuous + 1 binary generator + 3 equality rows per
+unstable neuron — too expensive for early layers of deep CNNs.
+
+This module provides:
+
+  - ``hz_apply_relu_triangle``: DeepZ-style chord relaxation
+    (Singh et al., 2018). ZERO equality rows, ZERO binary slots,
+    one new continuous generator per unstable neuron. Memory-friendly.
+
+  - ``pick_relu_method_for_layer``: a memaware dispatcher that picks
+    between ``eq_native`` (=hz_apply_relu) and ``triangle`` based on
+    estimated peak GPU bytes and free memory.
+
+Both methods are faithful ports of their HyZor counterparts
+(``HybridZonotope.applyReLU_triangle`` HZ:5857 and the dispatch
+logic in ``HybridZVerifier._apply_relu_v8_memaware`` HZV:160+).
+
+Sigmoid / Tanh / Leaky ReLU all use their own encodings already in
+tf_mlp.py and are not affected by this module.
+"""
+from __future__ import annotations
+import os
+from typing import Optional, Tuple
+
+import torch
+
+from act.back_end.solver.solver_hz import HZono, hz_compute_bounds
+
+
+# ---------------------------------------------------------------------------
+# Method 1: DeepZ-style triangle (cheap, lossy)
+# ---------------------------------------------------------------------------
+
+
+def hz_apply_relu_triangle(hz: HZono, external_bounds: Optional[Tuple[torch.Tensor, torch.Tensor]] = None) -> HZono:
+    """Sound DeepZ-style ReLU relaxation.
+
+    For unstable neuron i with bounds ``[l, u]`` (``l < 0 < u``)::
+
+        λ_i = u / (u - l)            in (0, 1)
+        μ_i = -l u / (2 (u - l))     > 0
+        y_i = λ_i x_i + μ_i (1 + ε_new_i)   with ε_new_i ∈ [-1, 1]
+
+    Adds **one new continuous generator** per unstable neuron, NO new
+    equality rows, NO new binary slot. Bit-identical port of
+    ``HybridZonotope.applyReLU_triangle`` (HZ:5857-5946).
+
+    For ``external_bounds`` arg: if provided, used for active/inactive
+    classification (HyZor's `external_bounds` semantic). Otherwise the
+    unconstrained box bounds are used.
+    """
+    dtype, device = hz.c.dtype, hz.c.device
+    n = int(hz.c.shape[0])
+    ng0 = int(hz.Gc.shape[1])
+    nb0 = int(hz.Gb.shape[1])
+    nc0 = int(hz.b.shape[0])
+
+    if external_bounds is not None:
+        lb = external_bounds[0].to(device=device, dtype=dtype).view(-1)
+        ub = external_bounds[1].to(device=device, dtype=dtype).view(-1)
+    else:
+        # Unconstrained box bounds = c ± |Gc|·1 ± |Gb|·1.
+        radius = hz.Gc.abs().sum(dim=1) + hz.Gb.abs().sum(dim=1)
+        c_flat = hz.c.flatten()
+        lb = c_flat - radius
+        ub = c_flat + radius
+
+    is_active = (lb >= 0)
+    is_inactive = (ub <= 0)
+    is_unstable = ~(is_active | is_inactive)
+
+    unstable_idx = torch.nonzero(is_unstable, as_tuple=False).view(-1)
+    k = int(unstable_idx.numel())
+    em_old = hz.eq_mask if (hz.eq_mask is not None and int(hz.eq_mask.numel()) == nc0) \
+        else torch.ones(nc0, dtype=torch.bool, device=device)
+
+    if k == 0:
+        # All stable: just zero out inactive rows.
+        new_c = hz.c.clone()
+        new_Gc = hz.Gc.clone()
+        new_Gb = hz.Gb.clone()
+        if is_inactive.any():
+            new_c[is_inactive] = 0.0
+            if ng0 > 0:
+                new_Gc[is_inactive] = 0.0
+            if nb0 > 0:
+                new_Gb[is_inactive] = 0.0
+        return HZono(c=new_c, Gc=new_Gc, Gb=new_Gb,
+                     Ac=hz.Ac.clone(), Ab=hz.Ab.clone(),
+                     b=hz.b.clone(), eq_mask=em_old.clone())
+
+    l_uns = lb[unstable_idx]
+    u_uns = ub[unstable_idx]
+    lam = u_uns / (u_uns - l_uns)
+    mu = -l_uns * u_uns / (2.0 * (u_uns - l_uns))
+
+    ng = ng0 + k
+
+    c_out = torch.zeros((n, 1), device=device, dtype=dtype)
+    if is_active.any():
+        c_out[is_active] = hz.c[is_active]
+    c_out[unstable_idx, 0] = lam * hz.c[unstable_idx, 0] + mu
+
+    Gc_out = torch.zeros((n, ng), device=device, dtype=dtype)
+    if ng0 > 0:
+        if is_active.any():
+            Gc_out[is_active, :ng0] = hz.Gc[is_active]
+        Gc_out[unstable_idx, :ng0] = lam.unsqueeze(1) * hz.Gc[unstable_idx]
+    j_idx = torch.arange(k, device=device)
+    Gc_out[unstable_idx, ng0 + j_idx] = mu
+
+    Gb_out = torch.zeros((n, nb0), device=device, dtype=dtype)
+    if nb0 > 0:
+        if is_active.any():
+            Gb_out[is_active, :nb0] = hz.Gb[is_active]
+        Gb_out[unstable_idx, :nb0] = lam.unsqueeze(1) * hz.Gb[unstable_idx]
+
+    # Constraint rows: extend Ac with k zero columns (new cont gens
+    # don't appear in old constraints); Ab and b unchanged.
+    if nc0 > 0:
+        Ac_out = torch.cat([
+            hz.Ac, torch.zeros((nc0, k), device=device, dtype=dtype)
+        ], dim=1)
+    else:
+        Ac_out = torch.zeros((0, ng), device=device, dtype=dtype)
+    Ab_out = hz.Ab
+    b_out = hz.b
+
+    return HZono(c=c_out, Gc=Gc_out, Gb=Gb_out,
+                 Ac=Ac_out, Ab=Ab_out, b=b_out,
+                 eq_mask=em_old.clone())
+
+
+# ---------------------------------------------------------------------------
+# Method 2: compact (v-z coupling, no linking)
+# ---------------------------------------------------------------------------
+
+
+def hz_apply_relu_compact(hz: HZono) -> HZono:
+    """Sound ReLU overapprox with v-z coupling but NO linking constraints.
+
+    Tighter than triangle (enforces z=-1 ⇒ v=0 ⇒ y=0 exactly), looser
+    than eq_native (no linking equality). Allocates:
+
+      +k continuous gen (v), +k binary (z), +2k sparse inequality rows.
+
+    Compare:
+      eq_native: +4k cont, +k bin, +3k eq rows
+      triangle:  +k cont,  0 bin,  0 rows
+
+    Per unstable neuron i with domain bound a_i = |c_i| + Σ|Gc_i| + Σ|Gb_i|::
+
+        y_i = a_i/4 + (a_i/2) v_i + (a_i/4) z_i,
+              with v_i ∈ [-1,+1] and |v_i| ≤ (z_i + 1)/2
+
+    The |v| ≤ (z+1)/2 constraint encodes "z=-1 forces v=0" (so y=0).
+
+    Faithful port of ``HybridZonotope.applyReLU_compact`` (HZ:6114-6235).
+    """
+    dtype, device = hz.c.dtype, hz.c.device
+    n = int(hz.c.shape[0])
+    ng0 = int(hz.Gc.shape[1])
+    nb0 = int(hz.Gb.shape[1])
+    nc0 = int(hz.b.shape[0])
+
+    radius = hz.Gc.abs().sum(dim=1) + hz.Gb.abs().sum(dim=1)
+    c_flat = hz.c.flatten()
+    lb_unc = c_flat - radius
+    ub_unc = c_flat + radius
+
+    is_active = (lb_unc >= 0)
+    is_inactive = (ub_unc <= 0)
+    is_unstable = ~(is_active | is_inactive)
+    unstable_idx = torch.nonzero(is_unstable, as_tuple=False).view(-1)
+    k = int(unstable_idx.numel())
+
+    em_old = hz.eq_mask if (hz.eq_mask is not None and int(hz.eq_mask.numel()) == nc0) \
+        else torch.ones(nc0, dtype=torch.bool, device=device)
+
+    if k == 0:
+        new_c = hz.c.clone()
+        new_Gc = hz.Gc.clone()
+        new_Gb = hz.Gb.clone()
+        if is_inactive.any():
+            new_c[is_inactive] = 0.0
+            if ng0 > 0:
+                new_Gc[is_inactive] = 0.0
+            if nb0 > 0:
+                new_Gb[is_inactive] = 0.0
+        return HZono(c=new_c, Gc=new_Gc, Gb=new_Gb,
+                     Ac=hz.Ac.clone(), Ab=hz.Ab.clone(),
+                     b=hz.b.clone(), eq_mask=em_old.clone())
+
+    a_uns = hz.c[unstable_idx, 0].abs()
+    if ng0 > 0:
+        a_uns = a_uns + hz.Gc[unstable_idx].abs().sum(dim=1)
+    if nb0 > 0:
+        a_uns = a_uns + hz.Gb[unstable_idx].abs().sum(dim=1)
+    a_uns = torch.clamp(a_uns, min=1e-12)
+
+    ng = ng0 + k
+    nb = nb0 + k
+    j_idx = torch.arange(k, device=device)
+    v_cols = ng0 + j_idx
+    z_cols = nb0 + j_idx
+
+    c_out = torch.zeros((n, 1), device=device, dtype=dtype)
+    if is_active.any():
+        c_out[is_active] = hz.c[is_active]
+    c_out[unstable_idx] = (a_uns / 4.0).unsqueeze(1)
+
+    Gc_out = torch.zeros((n, ng), device=device, dtype=dtype)
+    if ng0 > 0 and is_active.any():
+        Gc_out[is_active, :ng0] = hz.Gc[is_active]
+    Gc_out[unstable_idx, v_cols] = a_uns / 2.0
+
+    Gb_out = torch.zeros((n, nb), device=device, dtype=dtype)
+    if nb0 > 0 and is_active.any():
+        Gb_out[is_active, :nb0] = hz.Gb[is_active]
+    Gb_out[unstable_idx, z_cols] = a_uns / 4.0
+
+    # Extend old constraints with zero cols for new v / z.
+    if nc0 > 0:
+        Ac0 = torch.zeros((nc0, ng), device=device, dtype=dtype)
+        Ab0 = torch.zeros((nc0, nb), device=device, dtype=dtype)
+        if ng0 > 0:
+            Ac0[:, :ng0] = hz.Ac
+        if nb0 > 0:
+            Ab0[:, :nb0] = hz.Ab
+        b0 = hz.b.clone()
+    else:
+        Ac0 = torch.zeros((0, ng), device=device, dtype=dtype)
+        Ab0 = torch.zeros((0, nb), device=device, dtype=dtype)
+        b0 = torch.zeros((0, 1), device=device, dtype=dtype)
+
+    # 2k v-z graph rows (|v| <= (z+1)/2):
+    #   v - 0.5 z <= 0.5
+    #  -v - 0.5 z <= 0.5
+    Ac_graph = torch.zeros((2 * k, ng), device=device, dtype=dtype)
+    Ab_graph = torch.zeros((2 * k, nb), device=device, dtype=dtype)
+    b_graph = torch.full((2 * k, 1), 0.5, device=device, dtype=dtype)
+    r0 = 2 * j_idx
+    r1 = 2 * j_idx + 1
+    Ac_graph[r0, v_cols] = 1.0
+    Ab_graph[r0, z_cols] = -0.5
+    Ac_graph[r1, v_cols] = -1.0
+    Ab_graph[r1, z_cols] = -0.5
+
+    Ac_out = torch.cat([Ac0, Ac_graph], dim=0)
+    Ab_out = torch.cat([Ab0, Ab_graph], dim=0)
+    b_out = torch.cat([b0, b_graph], dim=0)
+    em_new = torch.cat(
+        [em_old, torch.zeros(2 * k, dtype=torch.bool, device=device)],
+        dim=0,
+    )
+
+    return HZono(c=c_out, Gc=Gc_out, Gb=Gb_out,
+                 Ac=Ac_out, Ab=Ab_out, b=b_out,
+                 eq_mask=em_new)
+
+
+# ---------------------------------------------------------------------------
+# Method 3: Big-M (η, z + 3 inequalities per unstable)
+# ---------------------------------------------------------------------------
+
+
+def hz_apply_relu_bigM_fast(
+    hz: HZono,
+    external_bounds: Optional[Tuple[torch.Tensor, torch.Tensor]] = None,
+) -> HZono:
+    """Big-M ReLU encoding for HZono.
+
+    Per unstable neuron i with bounds [l, u] (l<0<u), introduce fresh
+    eta_i ∈ [-1,+1] and z_i ∈ {-1,+1}, parameterize y in [0, u]::
+
+        y_i = u/2 + (u/2) eta_i
+
+    with three Big-M-style inequalities::
+
+        x_i - y_i <= 0                      (active branch enforces y=x)
+        y_i - (u/2) z_i <= u/2              (z=-1 forces y=0)
+        y_i - x_i - (l/2) z_i <= -l/2       (z=+1 forces y=x)
+
+    Adds +k cont gens, +k binary, +3k ineq rows. NO equality rows.
+
+    Stable rows pass through (active=identity, inactive=zero). Faithful
+    port of ``HybridZonotope.applyReLU_bigM_fast`` (HZ:5377-5540).
+
+    Builds augmented (2n) coords [x;y] then slices the y rows -- mirrors
+    HyZor's projection step without materialising the 2n×n selector.
+    """
+    dtype, device = hz.c.dtype, hz.c.device
+    n = int(hz.c.shape[0])
+    ng0 = int(hz.Gc.shape[1])
+    nb0 = int(hz.Gb.shape[1])
+    nc0 = int(hz.b.shape[0])
+
+    if external_bounds is not None:
+        lb = external_bounds[0].to(device=device, dtype=dtype).view(-1)
+        ub = external_bounds[1].to(device=device, dtype=dtype).view(-1)
+    else:
+        radius = hz.Gc.abs().sum(dim=1) + hz.Gb.abs().sum(dim=1)
+        c_flat = hz.c.flatten()
+        lb = c_flat - radius
+        ub = c_flat + radius
+
+    pos_mask = (lb >= 0)
+    neg_mask = (ub <= 0)
+    mix_mask = ~(pos_mask | neg_mask)
+    mix_idx = torch.nonzero(mix_mask, as_tuple=False).view(-1)
+    k = int(mix_idx.numel())
+
+    em_old = hz.eq_mask if (hz.eq_mask is not None and int(hz.eq_mask.numel()) == nc0) \
+        else torch.ones(nc0, dtype=torch.bool, device=device)
+
+    if k == 0:
+        if not torch.any(neg_mask):
+            return HZono(c=hz.c.clone(), Gc=hz.Gc.clone(), Gb=hz.Gb.clone(),
+                         Ac=hz.Ac.clone(), Ab=hz.Ab.clone(),
+                         b=hz.b.clone(), eq_mask=em_old.clone())
+        keep = pos_mask.to(dtype=dtype).unsqueeze(1)
+        return HZono(
+            c=hz.c * keep,
+            Gc=hz.Gc * keep if hz.Gc.numel() else hz.Gc,
+            Gb=hz.Gb * keep if hz.Gb.numel() else hz.Gb,
+            Ac=hz.Ac.clone(), Ab=hz.Ab.clone(),
+            b=hz.b.clone(), eq_mask=em_old.clone(),
+        )
+
+    # Augmented [x; y] coords (2n rows). Old factors get k zero columns
+    # for the new eta variables; new binary z columns stay zero on coords.
+    Gc_aug = torch.zeros((2 * n, ng0 + k), device=device, dtype=dtype)
+    Gb_aug = torch.zeros((2 * n, nb0 + k), device=device, dtype=dtype)
+    c_aug = torch.zeros((2 * n, 1), device=device, dtype=dtype)
+
+    # x-part (top n) = old HZ.
+    c_aug[:n, :] = hz.c
+    if ng0 > 0:
+        Gc_aug[:n, :ng0] = hz.Gc
+    if nb0 > 0:
+        Gb_aug[:n, :nb0] = hz.Gb
+
+    # y-part (bottom n) starts as old HZ then patches per neuron class.
+    c_aug[n:, :] = hz.c
+    if ng0 > 0:
+        Gc_aug[n:, :ng0] = hz.Gc
+    if nb0 > 0:
+        Gb_aug[n:, :nb0] = hz.Gb
+
+    # Inactive: y = 0.
+    neg_idx = torch.nonzero(neg_mask, as_tuple=False).view(-1)
+    if int(neg_idx.numel()) > 0:
+        c_aug[n + neg_idx, :] = 0.0
+        if ng0 > 0:
+            Gc_aug[n + neg_idx, :ng0] = 0.0
+        if nb0 > 0:
+            Gb_aug[n + neg_idx, :nb0] = 0.0
+
+    # Mix: y_i = u/2 + (u/2) eta_t. Clear old factor contribution, set eta col.
+    u_mix = ub[mix_idx].clamp(min=0)
+    l_mix = lb[mix_idx]
+    c_mix = hz.c[mix_idx, 0]
+    t_idx = torch.arange(k, device=device)
+
+    c_aug[n + mix_idx, 0] = u_mix / 2.0
+    if ng0 > 0:
+        Gc_aug[n + mix_idx, :ng0] = 0.0
+    if nb0 > 0:
+        Gb_aug[n + mix_idx, :nb0] = 0.0
+    Gc_aug[n + mix_idx, ng0 + t_idx] = u_mix / 2.0
+
+    # Extend old constraints with zero cols for eta and z.
+    if nc0 > 0:
+        Ac0 = torch.cat([hz.Ac, torch.zeros((nc0, k), device=device, dtype=dtype)], dim=1)
+        Ab0 = torch.cat([hz.Ab, torch.zeros((nc0, k), device=device, dtype=dtype)], dim=1)
+        b0 = hz.b
+    else:
+        Ac0 = torch.zeros((0, ng0 + k), device=device, dtype=dtype)
+        Ab0 = torch.zeros((0, nb0 + k), device=device, dtype=dtype)
+        b0 = torch.zeros((0, 1), device=device, dtype=dtype)
+
+    # 3k Big-M rows over [xi_c; eta] and [xi_b; z]:
+    #   row1: x - y <= 0 (active enforces y=x)
+    #   row2: y - (u/2) z <= u/2 (z=-1 forces y=0)
+    #   row3: y - x - (l/2) z <= -l/2 (z=+1 forces y=x)
+    row1 = 3 * t_idx
+    row2 = 3 * t_idx + 1
+    row3 = 3 * t_idx + 2
+    col_eta = ng0 + t_idx
+    col_z = nb0 + t_idx
+
+    Ac_relu = torch.zeros((3 * k, ng0 + k), device=device, dtype=dtype)
+    Ab_relu = torch.zeros((3 * k, nb0 + k), device=device, dtype=dtype)
+    b_relu = torch.zeros(3 * k, device=device, dtype=dtype)
+
+    if ng0 > 0:
+        ng_cols = torch.arange(ng0, device=device)
+        Ac_relu[row1[:, None], ng_cols[None, :]] = hz.Gc[mix_idx, :]
+        Ac_relu[row3[:, None], ng_cols[None, :]] = -hz.Gc[mix_idx, :]
+    Ac_relu[row1, col_eta] = -u_mix / 2.0
+    Ac_relu[row2, col_eta] = u_mix / 2.0
+    Ac_relu[row3, col_eta] = u_mix / 2.0
+
+    if nb0 > 0:
+        nb_cols = torch.arange(nb0, device=device)
+        Ab_relu[row1[:, None], nb_cols[None, :]] = hz.Gb[mix_idx, :]
+        Ab_relu[row3[:, None], nb_cols[None, :]] = -hz.Gb[mix_idx, :]
+    Ab_relu[row2, col_z] = -u_mix / 2.0
+    Ab_relu[row3, col_z] = -l_mix / 2.0
+
+    b_relu[row1] = u_mix / 2.0 - c_mix
+    # b_relu[row2] = 0
+    b_relu[row3] = -l_mix / 2.0 + c_mix - u_mix / 2.0
+    b_relu = b_relu.view(-1, 1)
+
+    newAc = torch.cat([Ac0, Ac_relu], dim=0)
+    newAb = torch.cat([Ab0, Ab_relu], dim=0)
+    newb = torch.cat([b0, b_relu], dim=0)
+    em_new = torch.cat(
+        [em_old, torch.zeros(3 * k, dtype=torch.bool, device=device)],
+        dim=0,
+    )
+
+    # Project to y (take bottom n rows of augmented Gc/Gb/c).
+    return HZono(
+        c=c_aug[n:, :],
+        Gc=Gc_aug[n:, :],
+        Gb=Gb_aug[n:, :],
+        Ac=newAc, Ab=newAb, b=newb,
+        eq_mask=em_new,
+    )
+
+
+# ---------------------------------------------------------------------------
+# Method dispatcher (memaware)
+# ---------------------------------------------------------------------------
+
+
+def _estimate_eq_native_peak_bytes(hz: HZono) -> int:
+    """Conservative estimate of peak bytes for ``hz_apply_relu`` (eq_native).
+
+    Per unstable neuron adds 4 cont + 1 binary gen + 3 eq rows. We
+    can't know k a priori without computing bounds, so use a rough
+    proxy: assume HALF the neurons could be unstable.
+    """
+    n = int(hz.c.shape[0])
+    ng = int(hz.Gc.shape[1])
+    nb = int(hz.Gb.shape[1])
+    nc = int(hz.b.shape[0])
+    elem = 8  # float64
+    k_est = n // 2
+    ng_new = ng + 4 * k_est
+    nb_new = nb + k_est
+    nc_new = nc + 3 * k_est
+    # Final HZ matrix sizes.
+    bytes_Gc = n * ng_new * elem
+    bytes_Gb = n * nb_new * elem
+    bytes_Ac = nc_new * ng_new * elem
+    bytes_Ab = nc_new * nb_new * elem
+    return bytes_Gc + bytes_Gb + bytes_Ac + bytes_Ab
+
+
+def _get_free_gpu_bytes(device: torch.device) -> Optional[int]:
+    """Query free GPU memory. Returns None on CPU device or query failure."""
+    if device.type != "cuda" or not torch.cuda.is_available():
+        return None
+    try:
+        free_b, _ = torch.cuda.mem_get_info(device)
+        return int(free_b)
+    except Exception:
+        return None
+
+
+def pick_relu_method_for_layer(
+    hz: HZono,
+    *,
+    cascade_late: bool = True,
+    env_budget_gb: Optional[float] = None,
+    env_reserve_gb: float = 1.0,
+) -> str:
+    """Return the encoding name to use for this layer's ReLU.
+
+    Decision tree (mirrors HyZor ``_apply_relu_v8_memaware``):
+
+      - If cascade says "use early method" (not in last-k tail): return
+        ``"triangle"`` regardless of memory.
+      - If on CUDA and free memory minus reserve is below
+        ``_estimate_eq_native_peak_bytes(hz)``: return ``"triangle"``
+        (downgrade to memory-friendly).
+      - Otherwise: return ``"eq_native"`` (the tight encoding).
+
+    Args:
+        hz: input HZono (needed to estimate peak bytes).
+        cascade_late: True if the cascade controller placed this ReLU
+            in the "late" (precision-critical) bucket. False forces
+            triangle regardless of memory.
+        env_budget_gb: optional fixed cap on per-call memory budget.
+            If set, the actual budget is ``min(free - reserve, cap)``.
+            Mirrors ``HYZOR_V8_MEM_BUDGET_GB``.
+        env_reserve_gb: headroom to keep free for allocator / kernels.
+    """
+    if not cascade_late:
+        return "triangle"
+
+    device = hz.c.device
+    free_b = _get_free_gpu_bytes(device)
+    if free_b is None:
+        # CPU or unable to query: assume eq_native is OK.
+        return "eq_native"
+
+    reserve_b = int(env_reserve_gb * (1024.0 ** 3))
+    budget_b = max(256 * 1024 * 1024, free_b - reserve_b)
+    if env_budget_gb is not None:
+        cap_b = int(max(0.25, env_budget_gb) * (1024.0 ** 3))
+        budget_b = min(budget_b, cap_b)
+    budget_b = int(max(128 * 1024 * 1024, budget_b))
+
+    est_b = _estimate_eq_native_peak_bytes(hz)
+    if est_b > budget_b:
+        return "triangle"
+    return "eq_native"
+
+
+def apply_relu_cascade(
+    hz: HZono,
+    *,
+    cascade_late: bool = True,
+    external_bounds: Optional[Tuple[torch.Tensor, torch.Tensor]] = None,
+) -> HZono:
+    """Pick and apply a ReLU encoding for this layer.
+
+    Honours ``HYZOR_V8_MEM_BUDGET_GB`` and ``HYZOR_V8_MEM_RESERVE_GB``
+    env vars (read each call to support per-instance overrides).
+    """
+    env_budget_gb = None
+    env_reserve_gb = 1.0
+    eb = os.environ.get("HYZOR_V8_MEM_BUDGET_GB", "").strip()
+    if eb:
+        try:
+            env_budget_gb = float(eb)
+        except ValueError:
+            pass
+    er = os.environ.get("HYZOR_V8_MEM_RESERVE_GB", "").strip()
+    if er:
+        try:
+            env_reserve_gb = max(0.5, float(er))
+        except ValueError:
+            pass
+
+    method = pick_relu_method_for_layer(
+        hz,
+        cascade_late=cascade_late,
+        env_budget_gb=env_budget_gb,
+        env_reserve_gb=env_reserve_gb,
+    )
+
+    if method == "triangle":
+        return hz_apply_relu_triangle(hz, external_bounds=external_bounds)
+    if method == "compact":
+        return hz_apply_relu_compact(hz)
+    if method == "bigM":
+        return hz_apply_relu_bigM_fast(hz, external_bounds=external_bounds)
+
+    # eq_native: use the existing port in tf_mlp.
+    from act.back_end.hybridz_tf.tf_mlp import hz_apply_relu
+    return hz_apply_relu(hz)
+
+
+# ---------------------------------------------------------------------------
+# Self-tests
+# ---------------------------------------------------------------------------
+
+
+def _smoke_triangle_all_stable():
+    """All-stable neurons: triangle ≡ identity (active) or zero (inactive)."""
+    n = 3
+    c = torch.tensor([[2.0], [-3.0], [0.5]], dtype=torch.float64)
+    Gc = torch.tensor([[0.5, 0.0], [0.0, 0.5], [0.3, 0.0]], dtype=torch.float64)
+    Gb = torch.zeros((n, 0), dtype=torch.float64)
+    Ac = torch.zeros((0, 2), dtype=torch.float64)
+    Ab = torch.zeros((0, 0), dtype=torch.float64)
+    b = torch.zeros((0, 1), dtype=torch.float64)
+    # Neuron 0: pre=[1.5,2.5]→active; neuron 1: [-3.5,-2.5]→inactive;
+    # neuron 2: [0.2,0.8]→active.
+    hz = HZono(c=c, Gc=Gc, Gb=Gb, Ac=Ac, Ab=Ab, b=b, eq_mask=None)
+    out = hz_apply_relu_triangle(hz)
+    # Active: identity. Inactive: zero.
+    assert torch.allclose(out.c[0], c[0]), f"active row 0: {out.c[0]} vs {c[0]}"
+    assert torch.allclose(out.c[1], torch.tensor([0.0], dtype=torch.float64)), \
+        f"inactive row 1: {out.c[1]}"
+    assert out.Gc.shape[1] == 2, "no unstable → no new gens"
+
+
+def _smoke_triangle_unstable():
+    """One unstable neuron: triangle adds 1 cont gen, no eq rows."""
+    n = 1
+    c = torch.tensor([[0.5]], dtype=torch.float64)
+    Gc = torch.tensor([[1.0]], dtype=torch.float64)
+    Gb = torch.zeros((n, 0), dtype=torch.float64)
+    Ac = torch.zeros((0, 1), dtype=torch.float64)
+    Ab = torch.zeros((0, 0), dtype=torch.float64)
+    b = torch.zeros((0, 1), dtype=torch.float64)
+    # pre = [-0.5, +1.5], unstable. λ = 1.5/2.0 = 0.75, μ = 0.5*1.5/4 = 0.1875
+    hz = HZono(c=c, Gc=Gc, Gb=Gb, Ac=Ac, Ab=Ab, b=b, eq_mask=None)
+    out = hz_apply_relu_triangle(hz)
+    assert out.Gc.shape == (1, 2), f"Gc shape: {out.Gc.shape}"
+    # c_out = λ * c + μ = 0.75*0.5 + 0.1875 = 0.5625
+    assert torch.allclose(out.c, torch.tensor([[0.5625]], dtype=torch.float64), atol=1e-9)
+    # Gc_out[0, 0] = λ * 1.0 = 0.75
+    assert torch.allclose(out.Gc[0, 0], torch.tensor(0.75, dtype=torch.float64), atol=1e-9)
+    # Gc_out[0, 1] = μ = 0.1875
+    assert torch.allclose(out.Gc[0, 1], torch.tensor(0.1875, dtype=torch.float64), atol=1e-9)
+
+
+if __name__ == "__main__":
+    print("=== relu_methods self-tests ===")
+    _smoke_triangle_all_stable()
+    print("  triangle_all_stable OK")
+    _smoke_triangle_unstable()
+    print("  triangle_unstable OK (λ=0.75, μ=0.1875)")
+    print("PASSED")
