@@ -1447,32 +1447,6 @@ def _convert_OnnxUnsqueezeStaticAxes(self, mod: nn.Module, node: fx.Node) -> Non
     self.shape = output_shape
     self._register_node(node.name, layer_id)
 
-def _convert_OnnxConstant(self, mod: nn.Module, node: fx.Node) -> None:
-    """OnnxConstant: emits a CONSTANT layer holding mod.value.
-
-    onnx2torch wraps ONNX Constant nodes in nn.Module subclass with .value buffer.
-    We materialise as a source-only CONSTANT layer (no in_vars).
-    """
-    val = getattr(mod, "value", None)
-    if val is None:
-        raise ValueError(f"OnnxConstant at {node.name}: module has no .value")
-    if not isinstance(val, torch.Tensor):
-        try: val = torch.as_tensor(val, dtype=self.dtype)
-        except Exception:
-            raise ValueError(f"OnnxConstant at {node.name}: value type {type(val).__name__} not convertible to tensor")
-    flat = val.detach().clone().to(self.dtype).reshape(-1)
-    shape = tuple(int(d) for d in val.shape) or (1,)
-    out_vars = self._alloc_ids(int(flat.numel()) or 1)
-    layer_id = self._add_layer(
-        LayerKind.CONSTANT.value,
-        {"value": flat, "input_shape": shape, "output_shape": shape},
-        [], out_vars,
-    )
-    self.node_outputs[node.name] = out_vars
-    self.node_shapes[node.name] = shape
-    self.node_to_layer_id[node.name] = layer_id
-
-
 ONNX_HANDLERS = {
     'OnnxArgExtremum': _convert_OnnxArgExtremum,
     'OnnxBinaryMathOperation': _convert_OnnxBinaryMathOperation,

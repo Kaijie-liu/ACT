@@ -71,53 +71,30 @@ class GurobiSolver(Solver):
         Ab_np = hz.Ab.detach().cpu().numpy().astype("float64")
         b_np = hz.b.detach().cpu().numpy().astype("float64").reshape(-1)
         nc = Ac_np.shape[0]
-        # eq_mask split (None ⇒ all-eq, legacy semantics)
-        em_attr = getattr(hz, "eq_mask", None)
-        if em_attr is None:
-            em_np = np.ones(nc, dtype=bool)
-        else:
-            em_np = em_attr.detach().cpu().numpy().astype(bool)
-        le_np = ~em_np
-        nc_eq = int(em_np.sum())
-        nc_le = int(le_np.sum())
         LB = np.empty((n,), dtype=np.float64)
         UB = np.empty((n,), dtype=np.float64)
-        # HZ semantics: ξ_b ∈ {-1, +1}. Gurobi's GRB.BINARY is {0, 1}, so we
-        # transform via ξ_b = 2 z_b - 1 with z_b ∈ {0, 1}. The constraint
-        # Ab ξ_b = Ab (2 z_b - 1) = 2 Ab z_b - Ab·1, and similarly for the
-        # objective Gb ξ_b = 2 Gb z_b - Gb·1. We rewrite once per dimension.
-        Ab_row_sum = Ab_np.sum(axis=1) if q > 0 else np.zeros(nc)  # Ab @ 1 (shape nc)
         for i in range(n):
             m = gp.Model(f"hz_dim_{i}")
             m.Params.OutputFlag = 0
             xi_c = m.addMVar(p, lb=-1.0, ub=1.0, name="xi_c")
-            z_b = m.addMVar(q, vtype=GRB.BINARY, name="z_b") if q > 0 else None  # z_b ∈ {0,1}, ξ_b = 2z_b - 1
+            xi_b = m.addMVar(q, vtype=GRB.BINARY, name="xi_b") if q > 0 else None
             if nc > 0:
-                # Each row r is either equality (em_np[r]) or inequality
-                # (le_np[r]). Apply the ξ_b = 2 z_b - 1 transform to both
-                # forms (the rhs shift Ab·1 is independent of sense).
-                rhs_shifted = (b_np + Ab_row_sum) if z_b is not None else b_np
-                for r in range(nc):
-                    is_eq = bool(em_np[r])
-                    if z_b is not None:
-                        expr = Ac_np[r] @ xi_c + 2.0 * Ab_np[r] @ z_b
-                    else:
-                        expr = Ac_np[r] @ xi_c
-                    if is_eq:
-                        m.addConstr(expr == rhs_shifted[r])
-                    else:
-                        m.addConstr(expr <= rhs_shifted[r])
+                if xi_b is not None:
+                    for r in range(nc):
+                        m.addConstr(Ac_np[r] @ xi_c + Ab_np[r] @ xi_b == b_np[r])
+                else:
+                    for r in range(nc):
+                        m.addConstr(Ac_np[r] @ xi_c == b_np[r])
             obj_c = Gc_np[i]
             obj_b = Gb_np[i] if q > 0 else np.zeros(0)
-            obj_b_const = -float(obj_b.sum()) if q > 0 else 0.0  # -Gb·1 (constant from ξ_b = 2 z_b - 1)
-            if z_b is not None:
-                m.setObjective(obj_c @ xi_c + 2.0 * obj_b @ z_b + obj_b_const, GRB.MINIMIZE)
+            if xi_b is not None:
+                m.setObjective(obj_c @ xi_c + obj_b @ xi_b, GRB.MINIMIZE)
             else:
                 m.setObjective(obj_c @ xi_c, GRB.MINIMIZE)
             m.optimize()
             LB[i] = c_np[i] + (m.ObjVal if m.Status == GRB.OPTIMAL else 0.0)
-            if z_b is not None:
-                m.setObjective(obj_c @ xi_c + 2.0 * obj_b @ z_b + obj_b_const, GRB.MAXIMIZE)
+            if xi_b is not None:
+                m.setObjective(obj_c @ xi_c + obj_b @ xi_b, GRB.MAXIMIZE)
             else:
                 m.setObjective(obj_c @ xi_c, GRB.MAXIMIZE)
             m.optimize()

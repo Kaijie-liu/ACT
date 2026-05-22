@@ -28,9 +28,9 @@ from act.back_end.solver.solver_hz import HZono, hz_from_bounds, hz_compute_boun
 import act.back_end.hybridz_tf.tf_mlp as hz_mlp
 import act.back_end.hybridz_tf.tf_cnn as hz_cnn
 import act.back_end.hybridz_tf.tf_rnn as hz_rnn
+import act.back_end.hybridz_tf.tf_transformer as hz_transformer
 import act.back_end.interval_tf.tf_mlp as interval_mlp
 import act.back_end.interval_tf.tf_cnn as interval_cnn
-import act.back_end.interval_tf.tf_transformer as interval_transformer
 
 
 class HybridzTF(TransferFunction):
@@ -112,7 +112,6 @@ class HybridzTF(TransferFunction):
         LayerKind.FLATTEN.value: lambda L, b, tf: interval_cnn.tf_flatten(L, b),
         # Shape ops: interval-only
         LayerKind.RESHAPE.value: lambda L, b, tf: interval_mlp.tf_reshape(L, b),
-        LayerKind.SLICE.value: lambda L, b, tf: interval_mlp.tf_slice(L, b),
         LayerKind.TRANSPOSE.value: lambda L, b, tf: interval_mlp.tf_transpose(L, b),
         LayerKind.SQUEEZE.value: lambda L, b, tf: interval_mlp.tf_squeeze(L, b),
         LayerKind.UNSQUEEZE.value: lambda L, b, tf: interval_mlp.tf_unsqueeze(L, b),
@@ -125,19 +124,16 @@ class HybridzTF(TransferFunction):
         LayerKind.RNN.value: lambda L, b, tf: hz_rnn.tf_rnn(L, b, tf),
         LayerKind.EMBEDDING.value: lambda L, b, tf: hz_rnn.tf_embedding(L, b, tf),
         LayerKind.EMBEDDING_TF.value: lambda L, b, tf: hz_rnn.tf_embedding(L, b, tf),
-        # Transformer — delegate directly to interval_tf (no HZ-specific impl yet).
-        LayerKind.POSENC.value: lambda L, b, tf: interval_transformer.tf_posenc(L, b),
-        LayerKind.LAYERNORM.value: lambda L, b, tf: interval_transformer.tf_layernorm(L, b),
-        LayerKind.GELU.value: lambda L, b, tf: interval_transformer.tf_gelu(L, b),
-        LayerKind.ATT_SCORES.value: lambda L, b, tf: interval_transformer.tf_att_scores(
-            L, tf._before[L.params["q_src"]].bounds, tf._before[L.params["k_src"]].bounds),
-        LayerKind.SOFTMAX.value: lambda L, b, tf: interval_transformer.tf_softmax(L, b),
-        LayerKind.ATT_MIX.value: lambda L, b, tf: interval_transformer.tf_att_mix(
-            L, tf._before[L.params["w_src"]].bounds, tf._before[L.params["v_src"]].bounds),
-        LayerKind.MHA_SPLIT.value: lambda L, b, tf: interval_transformer.tf_mha_split(L, b),
-        LayerKind.MHA_JOIN.value: lambda L, b, tf: interval_transformer.tf_mha_join(
-            L, tf._net.get_all_predecessor_bounds(L.id, tf._after, tf._before)),
-        LayerKind.MASK_ADD.value: lambda L, b, tf: interval_transformer.tf_mask_add(L, b),
+        # Transformer
+        LayerKind.POSENC.value: lambda L, b, tf: hz_transformer.tf_posenc(L, b, tf),
+        LayerKind.LAYERNORM.value: lambda L, b, tf: hz_transformer.tf_layernorm(L, b, tf),
+        LayerKind.GELU.value: lambda L, b, tf: hz_transformer.tf_gelu(L, b, tf),
+        LayerKind.ATT_SCORES.value: lambda L, b, tf: hz_transformer.tf_att_scores(L, b, tf),
+        LayerKind.SOFTMAX.value: lambda L, b, tf: hz_transformer.tf_softmax(L, b, tf),
+        LayerKind.ATT_MIX.value: lambda L, b, tf: hz_transformer.tf_att_mix(L, b, tf),
+        LayerKind.MHA_SPLIT.value: lambda L, b, tf: hz_transformer.tf_mha_split(L, b, tf),
+        LayerKind.MHA_JOIN.value: lambda L, b, tf: hz_transformer.tf_mha_join(L, b, tf),
+        LayerKind.MASK_ADD.value: lambda L, b, tf: hz_transformer.tf_mask_add(L, b, tf),
     }
 
     @property

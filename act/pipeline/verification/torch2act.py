@@ -229,25 +229,10 @@ class _LayerGraphBuilder:
         return True
 
     def _resolve_constant_tensor(self, node_name: str) -> Optional[torch.Tensor]:
-        """Return the tensor value of a get_attr fx node, OnnxConstant-emitted
-        CONSTANT layer, or compile-time stashed value."""
+        """Return the tensor value of a get_attr fx node or compile-time stashed value."""
         cached = self._compile_time_values.get(node_name)
         if cached is not None:
             return cached.detach().clone()
-        # Look up OnnxConstant-emitted CONSTANT layer (added by _convert_OnnxConstant)
-        layer_id = self.node_to_layer_id.get(node_name)
-        if layer_id is not None and 0 <= layer_id < len(self.layers):
-            L = self.layers[layer_id]
-            from act.back_end.layer_schema import LayerKind as _LK
-            if L.kind == _LK.CONSTANT.value:
-                val = L.params.get("value")
-                if isinstance(val, torch.Tensor):
-                    shape = self.node_shapes.get(node_name)
-                    t = val.detach().clone()
-                    if shape is not None:
-                        try: t = t.reshape(shape)
-                        except Exception: pass
-                    return t
         if self.fx_graph is None or self.traced_model is None:
             return None
         for n in self.fx_graph.nodes:
@@ -559,11 +544,7 @@ class _LayerGraphBuilder:
                 # Mapped but no FX predecessors AND not taking input from placeholder
                 # -> connect to previous layer (internal layer within multi-layer conversion)
                 preds[i] = [i - 1]
-            # else: Mapped layer with FX predecessors OR takes network input - keep as-is.
-            # ResNet-style branches reading the network input directly are wired
-            # at the wrapper level (TorchToACT._build_layer_graph) to the
-            # INPUT_SPEC layer; here we leave preds[i]=[] so the wrapper can detect
-            # them.
+            # else: Mapped layer with FX predecessors OR takes network input - keep as-is
         
         # Build succs from preds
         for i in range(n_layers):
@@ -1259,22 +1240,16 @@ class TorchToACT:
                 if i not in succs[i - 1]:
                     succs[i - 1].append(i)
         
-        # Connect wrapper to first model layer + any other model layer that
-        # reads network input directly (ResNet-style branches like cersyve where
-        # multiple early layers feed off the input placeholder, not just the
-        # first one).
+        # Connect wrapper to first model layer
         if self._wrapper_offset > 0 and self._wrapper_offset < n:
+            first_model = self._wrapper_offset
             last_wrapper = self._wrapper_offset - 1
-            assert_id = n - 1  # ASSERT layer always last; never wire it here
-            for lid in range(self._wrapper_offset, n):
-                if lid == assert_id:
-                    continue
-                # A model layer with no preds AND non-empty in_vars must read
-                # from the network input. Connect it to the wrapper.
-                if not preds[lid] and self.layers[lid].in_vars:
-                    preds[lid] = [last_wrapper]
-                    if lid not in succs[last_wrapper]:
-                        succs[last_wrapper].append(lid)
+            if not preds[first_model]:
+                preds[first_model] = [last_wrapper]
+            elif last_wrapper not in preds[first_model]:
+                preds[first_model].insert(0, last_wrapper)
+            if first_model not in succs[last_wrapper]:
+                succs[last_wrapper].append(first_model)
         
         # Connect last model layer to ASSERT
         assert_id = n - 1
