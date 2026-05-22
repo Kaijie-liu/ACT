@@ -22,6 +22,7 @@ from act.back_end.solver.solver_hz import (
     hz_minkowski_sum,
     hz_from_bounds,
     hz_compute_bounds,
+    _eq_mask_of,
 )
 import act.back_end.interval_tf.tf_mlp as interval
 import act.back_end.interval_tf.tf_cnn as interval_cnn
@@ -427,6 +428,10 @@ def hz_apply_relu(hz: HZono) -> HZono:
         out_Gc[active, :ng] = hz.Gc[active]
         out_Gb[active, :nb] = hz.Gb[active]
 
+    # Inherit the caller's row types; any new rows we add for unstable
+    # neurons are equalities (see r1/r2/r3 below).
+    em_in = _eq_mask_of(hz)
+
     if k == 0:
         return HZono(
             c=out_c,
@@ -435,6 +440,7 @@ def hz_apply_relu(hz: HZono) -> HZono:
             Ac=hz.Ac.clone(),
             Ab=hz.Ab.clone(),
             b=hz.b.clone(),
+            eq_mask=em_in.clone(),
         )
 
     alpha = lb[unstable_idx]
@@ -485,6 +491,11 @@ def hz_apply_relu(hz: HZono) -> HZono:
         [hz.Ab, hz.c.new_zeros(nc, k)], dim=1
     )
 
+    # The three new graph/linking rows per unstable neuron are equalities.
+    em_out = torch.cat(
+        [em_in, torch.ones(3 * k, dtype=torch.bool, device=device)]
+    )
+
     return HZono(
         c=out_c,
         Gc=out_Gc,
@@ -492,6 +503,7 @@ def hz_apply_relu(hz: HZono) -> HZono:
         Ac=torch.cat([old_Ac_ext, eq_Ac], dim=0),
         Ab=torch.cat([old_Ab_ext, eq_Ab], dim=0),
         b=torch.cat([hz.b, eq_b], dim=0),
+        eq_mask=em_out,
     )
 
 
@@ -544,6 +556,8 @@ def hz_apply_leaky_relu(hz: HZono, alpha_arg: float) -> HZono:
         out_Gc[inactive, :ng] = s * hz.Gc[inactive]
         out_Gb[inactive, :nb] = s * hz.Gb[inactive]
 
+    em_in = _eq_mask_of(hz)
+
     if k == 0:
         return HZono(
             c=out_c,
@@ -552,6 +566,7 @@ def hz_apply_leaky_relu(hz: HZono, alpha_arg: float) -> HZono:
             Ac=hz.Ac.clone(),
             Ab=hz.Ab.clone(),
             b=hz.b.clone(),
+            eq_mask=em_in.clone(),
         )
 
     alpha = lb[unstable_idx]
@@ -609,6 +624,10 @@ def hz_apply_leaky_relu(hz: HZono, alpha_arg: float) -> HZono:
         [hz.Ab, hz.c.new_zeros(nc, k)], dim=1
     )
 
+    em_out = torch.cat(
+        [em_in, torch.ones(3 * k, dtype=torch.bool, device=device)]
+    )
+
     return HZono(
         c=out_c,
         Gc=out_Gc,
@@ -616,6 +635,7 @@ def hz_apply_leaky_relu(hz: HZono, alpha_arg: float) -> HZono:
         Ac=torch.cat([old_Ac_ext, eq_Ac], dim=0),
         Ab=torch.cat([old_Ab_ext, eq_Ab], dim=0),
         b=torch.cat([hz.b, eq_b], dim=0),
+        eq_mask=em_out,
     )
 
 
