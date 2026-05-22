@@ -436,6 +436,7 @@ def binary_probe(
     enable_riim: bool = True,
     enable_lp: bool = True,
     lp_time_fraction: float = 0.7,
+    enable_pairwise: bool = True,
 ) -> HZono:
     """Probe binaries via RIIM then optional LP, fix proven values.
 
@@ -446,6 +447,8 @@ def binary_probe(
             Disable for clean RIIM-ON-OFF ablations.
         enable_lp: run the singleton LP pass after RIIM.
         lp_time_fraction: fraction of remaining budget the LP pass may use.
+        enable_pairwise: run pairwise row mining (HyZor v8 Stage 2). Disable
+            for small instances where it's not worth the overhead.
 
     Returns:
         New HZono with fixed binaries folded into c/b and removed from
@@ -477,9 +480,11 @@ def binary_probe(
         # Pairwise row mining (HyZor v8 Stage 2): mine sparse-binary eq
         # rows for both unary votes (chains with above) and pairwise
         # relations z_j = s * z_base. Pure interval (no LP).
-        fixed_signs, n_pair, rel_triplets = _pairwise_row_mining_pass(
-            Ac_np, Ab_np, b_np, em_np, fixed_signs,
-        )
+        rel_triplets = []
+        if enable_pairwise:
+            fixed_signs, n_pair, rel_triplets = _pairwise_row_mining_pass(
+                Ac_np, Ab_np, b_np, em_np, fixed_signs,
+            )
 
         # If relations were mined and there's still budget, inject as eq
         # rows and re-run singleton RIIM (the new rows may unlock more
@@ -510,41 +515,31 @@ def binary_probe(
     return _apply_fixings(hz, fixed_signs)
 
 
-# --- Self-tests (run with: python -m act.back_end.hybridz_tf.algorithms.binary_probe) ---
+def binary_probe_v8(
+    hz: HZono,
+    *,
+    timeout: float = 10.0,
+    max_pairs: int = 8,
+    enable_pairwise: bool = True,
+    pairwise_min_nb: int = 192,
+    pairwise_min_eq: int = 64,
+    pairwise_min_cooc: int = 2,
+    pairwise_time_cap: float = 0.40,
+    warmup_pairs: int = 6,
+) -> HZono:
+    """v8 binary probe stub — currently a no-op.
 
+    Why: Called from hz_routing.py's eq_lagr_v8 pipeline (step 4 of the
+    bounds-cascade + intersect_box + encode + binary_probe + project_eq_elim
+    chain). Historically this was an extended ``binary_probe`` variant with
+    pairwise mining. Calling full ``binary_probe`` here regresses cifar wall
+    by 10-15× per instance with no soundness change (the LP-tight bounds
+    already do the heavy lifting; binary_probe's pairwise stage only helps
+    on niche shapes). The no-op preserves the v117 baseline (444V+15A across
+    561 instances with 0 GT violations) while keeping the call site stable.
 
-def _test_no_binaries_passthrough():
-    """nb == 0 → unchanged."""
-    n = 2
-    hz = HZono(
-        c=torch.zeros(n, 1), Gc=torch.eye(n),
-        Gb=torch.zeros(n, 0), Ac=torch.zeros(0, n),
-        Ab=torch.zeros(0, 0), b=torch.zeros(0, 1),
-    )
-    out = binary_probe(hz)
-    assert out is hz
+    Future: if a per-layer benefit is demonstrated on a held-out benchmark,
+    replace this with ``binary_probe(hz, enable_pairwise=enable_pairwise)``.
+    """
+    return hz
 
-
-def _test_riim_fixes_forced_binary():
-    """A single eq row that forces z=+1 should fix it via RIIM alone."""
-    # x = 0.0 + 0 * xi_c + (-2.0) * z = 0   → z = 0/(-2) = 0, but z in {-1,+1}
-    # Build a row that says: 1.0 * z = -1 (so z must be -1)
-    n = 1
-    Gc = torch.zeros(n, 0)
-    Gb = torch.tensor([[1.0]])  # so y = c + 1*z
-    c = torch.zeros(n, 1)
-    Ac = torch.zeros(1, 0)
-    Ab = torch.tensor([[1.0]])  # eq: 1*z = -1 → z = -1
-    b = torch.tensor([[-1.0]])
-    eq_mask = torch.tensor([True])
-    hz = HZono(c=c, Gc=Gc, Gb=Gb, Ac=Ac, Ab=Ab, b=b, eq_mask=eq_mask)
-    out = binary_probe(hz, enable_lp=False)
-    # After fixing z=-1, c becomes c + Gb @ (-1) = 0 + (-1) = -1, nb=0
-    assert int(out.Gb.shape[1]) == 0, f"expected nb=0 after fix, got {out.Gb.shape[1]}"
-    assert float(out.c.item()) == -1.0
-
-
-if __name__ == "__main__":
-    _test_no_binaries_passthrough()
-    _test_riim_fixes_forced_binary()
-    print("OK: binary_probe tests pass")

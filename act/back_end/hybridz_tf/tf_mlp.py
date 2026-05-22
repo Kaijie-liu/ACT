@@ -22,6 +22,8 @@ from act.back_end.solver.solver_hz import (
     hz_minkowski_sum,
     hz_from_bounds,
     hz_compute_bounds,
+    _propagate_base,
+    _eq_mask_of,
 )
 import act.back_end.interval_tf.tf_mlp as interval
 import act.back_end.interval_tf.tf_cnn as interval_cnn
@@ -400,13 +402,20 @@ def tf_concat(L, bounds, tf):
 # --- HZ activation encodings (zonotope domain) ---
 
 
-def hz_apply_relu(hz: HZono) -> HZono:
+def hz_apply_relu(hz: HZono, external_bounds=None) -> HZono:
     """Exact ReLU via equality constraints + linking equality.
 
     Per unstable neuron i with bounds [alpha, beta] (alpha < 0 < beta):
       ng += 4 (xi1, xi2, xi3, xi4)
       nb += 1 (z)
       nc += 3 equalities
+
+    ``external_bounds``: optional ``(lb, ub)`` tuple to use for the
+    active/inactive classification AND in the linking equality. When
+    provided, skips the internal ``hz_compute_bounds`` call. This is
+    HyZor's eq_lagr_v8 path: tighter pre-ReLU bounds (from Lagrangian
+    dual or eq_elim LP) reduce k (unstable count) and produce a
+    smaller output HZ. See HyZor ``applyReLU_eq_native`` (HZ:5021).
     """
     dtype, device = hz.c.dtype, hz.c.device
     n = hz.c.shape[0]
@@ -414,15 +423,28 @@ def hz_apply_relu(hz: HZono) -> HZono:
     nb = hz.Gb.shape[1]
     nc = hz.Ac.shape[0]
 
-    bounds = hz_compute_bounds(hz)
-    lb = bounds.lb.flatten()
-    ub = bounds.ub.flatten()
+    if external_bounds is not None:
+        lb_t, ub_t = external_bounds
+        lb = lb_t.to(device=device, dtype=dtype).flatten()
+        ub = ub_t.to(device=device, dtype=dtype).flatten()
+    else:
+        bounds = hz_compute_bounds(hz)
+        lb = bounds.lb.flatten()
+        ub = bounds.ub.flatten()
 
     active = lb >= 0
     inactive = ub <= 0
     unstable = ~active & ~inactive
     unstable_idx = torch.where(unstable)[0]
     k = len(unstable_idx)
+
+    # Soundness fix: preserve input HZ's eq_mask. Constructing HZono without
+    # eq_mask defaults to None ⇒ all rows treated as equalities (per
+    # _eq_mask_of). When the input already carries inequality rows (e.g.
+    # from hz_intersect_box's 2n box-clipping rows), losing the mask
+    # silently converts those into equalities — over-constrains the LP and
+    # can wrongly declare unsafe sets infeasible (UNSOUND on acasxu prop_2).
+    em_old = _eq_mask_of(hz)
 
     out_Gc = hz.c.new_zeros(n, ng + 4 * k)
     out_Gb = hz.c.new_zeros(n, nb + k)
@@ -434,14 +456,17 @@ def hz_apply_relu(hz: HZono) -> HZono:
         out_Gb[active, :nb] = hz.Gb[active]
 
     if k == 0:
-        return HZono(
+        out = HZono(
             c=out_c,
             Gc=out_Gc[:, :ng],
             Gb=out_Gb[:, :nb],
             Ac=hz.Ac.clone(),
             Ab=hz.Ab.clone(),
             b=hz.b.clone(),
+            eq_mask=em_old.clone(),
         )
+        _propagate_base(hz, out)
+        return out
 
     alpha = lb[unstable_idx]
     beta = ub[unstable_idx]
@@ -491,14 +516,21 @@ def hz_apply_relu(hz: HZono) -> HZono:
         [hz.Ab, hz.c.new_zeros(nc, k)], dim=1
     )
 
-    return HZono(
+    em_new = torch.cat(
+        [em_old, torch.ones(3 * k, dtype=torch.bool, device=device)]
+    )
+
+    out = HZono(
         c=out_c,
         Gc=out_Gc,
         Gb=out_Gb,
         Ac=torch.cat([old_Ac_ext, eq_Ac], dim=0),
         Ab=torch.cat([old_Ab_ext, eq_Ab], dim=0),
         b=torch.cat([hz.b, eq_b], dim=0),
+        eq_mask=em_new,
     )
+    _propagate_base(hz, out)
+    return out
 
 
 def hz_apply_leaky_relu(hz: HZono, alpha_arg: float) -> HZono:
@@ -536,6 +568,8 @@ def hz_apply_leaky_relu(hz: HZono, alpha_arg: float) -> HZono:
     unstable_idx = torch.where(unstable)[0]
     k = len(unstable_idx)
 
+    em_old = _eq_mask_of(hz)  # Soundness: same fix as hz_apply_relu.
+
     out_Gc = hz.c.new_zeros(n, ng + 4 * k)
     out_Gb = hz.c.new_zeros(n, nb + k)
     out_c = hz.c.new_zeros(n, 1)
@@ -551,14 +585,17 @@ def hz_apply_leaky_relu(hz: HZono, alpha_arg: float) -> HZono:
         out_Gb[inactive, :nb] = s * hz.Gb[inactive]
 
     if k == 0:
-        return HZono(
+        out = HZono(
             c=out_c,
             Gc=out_Gc[:, :ng],
             Gb=out_Gb[:, :nb],
             Ac=hz.Ac.clone(),
             Ab=hz.Ab.clone(),
             b=hz.b.clone(),
+            eq_mask=em_old.clone(),
         )
+        _propagate_base(hz, out)
+        return out
 
     alpha = lb[unstable_idx]
     beta = ub[unstable_idx]
@@ -615,14 +652,21 @@ def hz_apply_leaky_relu(hz: HZono, alpha_arg: float) -> HZono:
         [hz.Ab, hz.c.new_zeros(nc, k)], dim=1
     )
 
-    return HZono(
+    em_new = torch.cat(
+        [em_old, torch.ones(3 * k, dtype=torch.bool, device=device)]
+    )
+
+    out = HZono(
         c=out_c,
         Gc=out_Gc,
         Gb=out_Gb,
         Ac=torch.cat([old_Ac_ext, eq_Ac], dim=0),
         Ab=torch.cat([old_Ab_ext, eq_Ab], dim=0),
         b=torch.cat([hz.b, eq_b], dim=0),
+        eq_mask=em_new,
     )
+    _propagate_base(hz, out)
+    return out
 
 
 def hz_apply_piecewise(hz: HZono, func, dfunc, K: int = 2) -> HZono:

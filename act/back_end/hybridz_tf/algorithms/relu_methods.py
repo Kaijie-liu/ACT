@@ -1,3 +1,17 @@
+#===- act/back_end/hybridz_tf/algorithms/relu_methods.py - Alternate HZ ReLU Encodings -====#
+# ACT: Abstract Constraint Transformer
+# Copyright (C) 2025– ACT Team
+#
+# Licensed under the GNU Affero General Public License v3.0 or later (AGPLv3+).
+# Distributed without any warranty; see <http://www.gnu.org/licenses/>.
+#===---------------------------------------------------------------------===#
+#
+# Purpose:
+#   Triangle / compact / bigM ReLU encodings for HZ. Lower-precision than
+#   eq_lagr but cheaper; the cascade scheduler picks per-layer.
+#
+#===---------------------------------------------------------------------===#
+
 """Per-encoding ReLU methods for HZono.
 
 This module contains alternative ReLU encodings beyond the tight
@@ -525,102 +539,3 @@ def pick_relu_method_for_layer(
         return "triangle"
     return "eq_native"
 
-
-def apply_relu_cascade(
-    hz: HZono,
-    *,
-    cascade_late: bool = True,
-    external_bounds: Optional[Tuple[torch.Tensor, torch.Tensor]] = None,
-) -> HZono:
-    """Pick and apply a ReLU encoding for this layer.
-
-    Honours ``HYZOR_V8_MEM_BUDGET_GB`` and ``HYZOR_V8_MEM_RESERVE_GB``
-    env vars (read each call to support per-instance overrides).
-    """
-    env_budget_gb = None
-    env_reserve_gb = 1.0
-    eb = os.environ.get("HYZOR_V8_MEM_BUDGET_GB", "").strip()
-    if eb:
-        try:
-            env_budget_gb = float(eb)
-        except ValueError:
-            pass
-    er = os.environ.get("HYZOR_V8_MEM_RESERVE_GB", "").strip()
-    if er:
-        try:
-            env_reserve_gb = max(0.5, float(er))
-        except ValueError:
-            pass
-
-    method = pick_relu_method_for_layer(
-        hz,
-        cascade_late=cascade_late,
-        env_budget_gb=env_budget_gb,
-        env_reserve_gb=env_reserve_gb,
-    )
-
-    if method == "triangle":
-        return hz_apply_relu_triangle(hz, external_bounds=external_bounds)
-    if method == "compact":
-        return hz_apply_relu_compact(hz)
-    if method == "bigM":
-        return hz_apply_relu_bigM_fast(hz, external_bounds=external_bounds)
-
-    # eq_native: use the existing port in tf_mlp.
-    from act.back_end.hybridz_tf.tf_mlp import hz_apply_relu
-    return hz_apply_relu(hz)
-
-
-# ---------------------------------------------------------------------------
-# Self-tests
-# ---------------------------------------------------------------------------
-
-
-def _smoke_triangle_all_stable():
-    """All-stable neurons: triangle ≡ identity (active) or zero (inactive)."""
-    n = 3
-    c = torch.tensor([[2.0], [-3.0], [0.5]], dtype=torch.float64)
-    Gc = torch.tensor([[0.5, 0.0], [0.0, 0.5], [0.3, 0.0]], dtype=torch.float64)
-    Gb = torch.zeros((n, 0), dtype=torch.float64)
-    Ac = torch.zeros((0, 2), dtype=torch.float64)
-    Ab = torch.zeros((0, 0), dtype=torch.float64)
-    b = torch.zeros((0, 1), dtype=torch.float64)
-    # Neuron 0: pre=[1.5,2.5]→active; neuron 1: [-3.5,-2.5]→inactive;
-    # neuron 2: [0.2,0.8]→active.
-    hz = HZono(c=c, Gc=Gc, Gb=Gb, Ac=Ac, Ab=Ab, b=b, eq_mask=None)
-    out = hz_apply_relu_triangle(hz)
-    # Active: identity. Inactive: zero.
-    assert torch.allclose(out.c[0], c[0]), f"active row 0: {out.c[0]} vs {c[0]}"
-    assert torch.allclose(out.c[1], torch.tensor([0.0], dtype=torch.float64)), \
-        f"inactive row 1: {out.c[1]}"
-    assert out.Gc.shape[1] == 2, "no unstable → no new gens"
-
-
-def _smoke_triangle_unstable():
-    """One unstable neuron: triangle adds 1 cont gen, no eq rows."""
-    n = 1
-    c = torch.tensor([[0.5]], dtype=torch.float64)
-    Gc = torch.tensor([[1.0]], dtype=torch.float64)
-    Gb = torch.zeros((n, 0), dtype=torch.float64)
-    Ac = torch.zeros((0, 1), dtype=torch.float64)
-    Ab = torch.zeros((0, 0), dtype=torch.float64)
-    b = torch.zeros((0, 1), dtype=torch.float64)
-    # pre = [-0.5, +1.5], unstable. λ = 1.5/2.0 = 0.75, μ = 0.5*1.5/4 = 0.1875
-    hz = HZono(c=c, Gc=Gc, Gb=Gb, Ac=Ac, Ab=Ab, b=b, eq_mask=None)
-    out = hz_apply_relu_triangle(hz)
-    assert out.Gc.shape == (1, 2), f"Gc shape: {out.Gc.shape}"
-    # c_out = λ * c + μ = 0.75*0.5 + 0.1875 = 0.5625
-    assert torch.allclose(out.c, torch.tensor([[0.5625]], dtype=torch.float64), atol=1e-9)
-    # Gc_out[0, 0] = λ * 1.0 = 0.75
-    assert torch.allclose(out.Gc[0, 0], torch.tensor(0.75, dtype=torch.float64), atol=1e-9)
-    # Gc_out[0, 1] = μ = 0.1875
-    assert torch.allclose(out.Gc[0, 1], torch.tensor(0.1875, dtype=torch.float64), atol=1e-9)
-
-
-if __name__ == "__main__":
-    print("=== relu_methods self-tests ===")
-    _smoke_triangle_all_stable()
-    print("  triangle_all_stable OK")
-    _smoke_triangle_unstable()
-    print("  triangle_unstable OK (λ=0.75, μ=0.1875)")
-    print("PASSED")

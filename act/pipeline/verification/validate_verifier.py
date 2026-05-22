@@ -651,9 +651,9 @@ class VerificationValidator:
                 solver_instance = GurobiSolver()
             elif solver == "torchlp":
                 solver_instance = TorchLPSolver()
-            elif solver == "hyzor":
-                from act.back_end.solver.solver_hyzor import HyZorSolver
-                solver_instance = HyZorSolver(
+            elif solver == "hyzor" or solver == "hz":
+                from act.back_end.solver.solver_hz import HZVerifier
+                solver_instance = HZVerifier(
                     device=str(self.device), dtype=self.dtype, strict_replay=True,
                 )
             else:

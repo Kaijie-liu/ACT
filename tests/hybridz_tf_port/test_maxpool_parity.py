@@ -17,7 +17,7 @@ sys.path.insert(0, "/data1/Kane/HyZor")
 sys.path.insert(0, "/data1/Kane")
 
 from act.back_end.solver.solver_hz import HZono
-from act.back_end.hybridz_tf.algorithms.maxpool import hz_maxpool2d as act_maxpool
+from act.back_end.hybridz_tf.tf_cnn import hz_maxpool2d as act_maxpool
 
 
 def _hzono(c, Gc, Gb, Ac, Ab, b, eq_mask=None):

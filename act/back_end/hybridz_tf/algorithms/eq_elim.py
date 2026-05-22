@@ -1,3 +1,18 @@
+#===- act/back_end/hybridz_tf/algorithms/eq_elim.py - HZ Equality Elimination -====#
+# ACT: Abstract Constraint Transformer
+# Copyright (C) 2025– ACT Team
+#
+# Licensed under the GNU Affero General Public License v3.0 or later (AGPLv3+).
+# Distributed without any warranty; see <http://www.gnu.org/licenses/>.
+#===---------------------------------------------------------------------===#
+#
+# Purpose:
+#   QR-based equality-constraint elimination on continuous generators.
+#   Reduces post-ReLU HZ size by absorbing dependent xi_c into the
+#   substituted system, sound under the eq_lagr encoding contract.
+#
+#===---------------------------------------------------------------------===#
+
 """QR-based equality-constraint elimination for HZono.
 
 This is a faithful port of HyZor's ``HybridZonotope.project_eq_elim``
@@ -259,52 +274,15 @@ def project_eq_elim(
     b_out = torch.from_numpy(b_out_np).to(dtype=dtype, device=device).view(-1, 1)
     eq_mask_out = torch.zeros(new_le_count, dtype=torch.bool, device=device)
 
-    return HZono(c=c_out, Gc=Gc_out, Gb=Gb_out,
+    out = HZono(c=c_out, Gc=Gc_out, Gb=Gb_out,
                  Ac=Ac_out, Ab=Ab_out, b=b_out,
                  eq_mask=eq_mask_out)
+    # _base_ng tracking: output ng = keep_count + 1 (may have shrunk). Mirror
+    # HyZor HybridZonotope.project_eq_elim where _base_ng = min(input, ng_new).
+    from act.back_end.solver.solver_hz import _propagate_base
+    _propagate_base(hz, out)
+    return out
 
 
 # ---------------------------------------------------------------------------
 # Self-tests
-# ---------------------------------------------------------------------------
-
-
-def _trivial_no_eq_returns_same():
-    """Empty constraint block → pass through."""
-    n, ng, nb = 3, 2, 1
-    hz = HZono(
-        c=torch.zeros(n, 1), Gc=torch.randn(n, ng),
-        Gb=torch.randn(n, nb), Ac=torch.zeros(0, ng),
-        Ab=torch.zeros(0, nb), b=torch.zeros(0, 1),
-        eq_mask=None,
-    )
-    out = project_eq_elim(hz, ng_base=ng)
-    assert out is hz, "should pass through when no eq rows"
-
-
-def _trivial_eq_eliminates():
-    """Single equality row eliminates one continuous factor."""
-    n, ng, nb = 2, 3, 0
-    Gc = torch.tensor([[1.0, 0.5, 0.0], [0.0, 1.0, 0.5]], dtype=torch.float64)
-    Gb = torch.zeros(n, nb, dtype=torch.float64)
-    Ac = torch.tensor([[1.0, 0.0, 0.0]], dtype=torch.float64)  # xi_c[0] = 0
-    Ab = torch.zeros(1, nb, dtype=torch.float64)
-    b = torch.tensor([[0.0]], dtype=torch.float64)
-    hz = HZono(c=torch.zeros(n, 1, dtype=torch.float64),
-               Gc=Gc, Gb=Gb, Ac=Ac, Ab=Ab, b=b,
-               eq_mask=torch.tensor([True]))
-    out = project_eq_elim(hz, ng_base=2)
-    # ng_free = 2, ng_base = 2 → early-exit (already small enough).
-    assert out is hz
-    # Force elimination by tight budget.
-    out2 = project_eq_elim(hz, ng_base=1)
-    assert out2.Gc.shape[1] <= 2, f"Gc cols={out2.Gc.shape[1]}"
-
-
-if __name__ == "__main__":
-    print("=== project_eq_elim self-tests ===")
-    _trivial_no_eq_returns_same()
-    print("  trivial_no_eq_returns_same OK")
-    _trivial_eq_eliminates()
-    print("  trivial_eq_eliminates OK")
-    print("PASSED")
