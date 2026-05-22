@@ -663,6 +663,8 @@ def hz_apply_piecewise(hz: HZono, func, dfunc, K: int = 2) -> HZono:
     new_Gb_base = hz.Gb.clone()
     new_Gb_base[narrow] = 0.0
 
+    em_in = _eq_mask_of(hz)
+
     if m == 0:
         return HZono(
             c=new_c,
@@ -671,6 +673,7 @@ def hz_apply_piecewise(hz: HZono, func, dfunc, K: int = 2) -> HZono:
             Ac=hz.Ac.clone(),
             Ab=hz.Ab.clone(),
             b=hz.b.clone(),
+            eq_mask=em_in.clone(),
         )
 
     lb_w, ub_w = lb[wide_idx], ub[wide_idx]
@@ -807,6 +810,12 @@ def hz_apply_piecewise(hz: HZono, func, dfunc, K: int = 2) -> HZono:
         [hz.Ab, hz.c.new_zeros(nc, K * m)], dim=1
     )
 
+    # Every row added by the piecewise encoding (box envelopes, linking
+    # equality, segment-sum equality) is an equality.
+    em_out = torch.cat(
+        [em_in, torch.ones(n_eq_total, dtype=torch.bool, device=device)]
+    )
+
     return HZono(
         c=new_c,
         Gc=out_Gc,
@@ -814,6 +823,7 @@ def hz_apply_piecewise(hz: HZono, func, dfunc, K: int = 2) -> HZono:
         Ac=torch.cat([old_Ac_ext, eq_Ac], dim=0),
         Ab=torch.cat([old_Ab_ext, eq_Ab], dim=0),
         b=torch.cat([hz.b, eq_b], dim=0),
+        eq_mask=em_out,
     )
 
 
@@ -858,6 +868,8 @@ def hz_reduce(hz: HZono, max_order: float = 3.0) -> HZono:
             if nc > 0
             else hz.c.new_zeros(0, n_relax)
         )
+        # Relaxing binary columns to continuous does not add or drop
+        # constraint rows; eq_mask passes through unchanged.
         hz = HZono(
             c=hz.c,
             Gc=torch.cat([hz.Gc, extra_Gc], dim=1),
@@ -869,6 +881,7 @@ def hz_reduce(hz: HZono, max_order: float = 3.0) -> HZono:
             if nc > 0
             else hz.c.new_zeros(0, max_nb),
             b=hz.b.clone(),
+            eq_mask=None if hz.eq_mask is None else hz.eq_mask.clone(),
         )
         ng = hz.Gc.shape[1]
         nb = hz.Gb.shape[1]
@@ -898,15 +911,28 @@ def hz_reduce(hz: HZono, max_order: float = 3.0) -> HZono:
                 )
                 new_Ab = hz.Ab[krt]
                 new_b = hz.b[krt]
+                # Drop rows whose Ac coefficient on the merged generators
+                # was non-zero; eq_mask follows the same row filter.
+                if hz.eq_mask is not None:
+                    new_em = hz.eq_mask[krt]
+                else:
+                    new_em = None
             else:
                 new_Ac = hz.c.new_zeros(0, new_Gc.shape[1])
                 new_Ab = hz.c.new_zeros(0, nb)
                 new_b = hz.c.new_zeros(0, 1)
+                new_em = (None if hz.eq_mask is None
+                          else hz.eq_mask.new_zeros(0))
         else:
             new_Ac = hz.c.new_zeros(0, new_Gc.shape[1])
             new_Ab = hz.c.new_zeros(0, nb)
             new_b = hz.c.new_zeros(0, 1)
+            new_em = None
 
-        hz = HZono(c=hz.c, Gc=new_Gc, Gb=hz.Gb, Ac=new_Ac, Ab=new_Ab, b=new_b)
+        hz = HZono(
+            c=hz.c, Gc=new_Gc, Gb=hz.Gb,
+            Ac=new_Ac, Ab=new_Ab, b=new_b,
+            eq_mask=new_em,
+        )
 
     return hz
