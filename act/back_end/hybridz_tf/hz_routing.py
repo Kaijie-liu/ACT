@@ -402,8 +402,7 @@ def _hzono_tight_bounds(hz):
     return lb.flatten(), ub.flatten()
 
 
-def hz_apply_relu_v8(hz, *, method: str = "eq_lagr_v8",
-                     girard_cap: int = 6000):
+def hz_apply_relu_v8(hz, *, method: str = "eq_lagr_v8"):
     """HZ ReLU dispatch by representation flavor.
 
     Dispatch:

@@ -1,4 +1,4 @@
-#===- act/back_end/hybridz_tf/algorithms/binary_probe.py - Binary Probe Stub -====#
+#===- act/back_end/hybridz_tf/algorithms/binary_probe.py - Binary Probe Hook ====#
 # ACT: Abstract Constraint Transformer
 # Copyright (C) 2025– ACT Team
 #
@@ -7,15 +7,9 @@
 #===---------------------------------------------------------------------===#
 #
 # Purpose:
-#   Stub for the v8 eq_lagr binary-probe step in hz_routing.hz_apply_relu_v8.
-#   The full RIIM + pairwise + LP singleton implementation was a research
-#   artifact that regressed cifar wall by 10-15× per instance with no
-#   verifiable benefit (LP-tight bounds already do the heavy lifting). The
-#   current no-op preserves the v117/v118 baseline soundness contract
-#   (444V+15A across 561 instances vs arXiv-2512.19007v1 GT, 0 violations).
-#
-#   Re-add the full implementation only if a per-layer benefit is
-#   demonstrated on a held-out benchmark.
+#   Reserved hook for a binary-probe step in the v8 ReLU pipeline.
+#   Currently no-op because no validated benefit has been demonstrated on
+#   the bound-tightened HZ produced by the cascade.
 #
 #===---------------------------------------------------------------------===#
 
@@ -25,15 +19,14 @@ from act.back_end.solver.solver_hz import HZono
 
 
 def binary_probe(hz: HZono, **kwargs) -> HZono:
-    """Stub: returns input unchanged. See module docstring."""
+    """Reserved hook; currently no-op (returns input unchanged)."""
     return hz
 
 
 def binary_probe_v8(hz: HZono, **kwargs) -> HZono:
-    """Stub: returns input unchanged. See module docstring.
+    """Reserved v8 hook; currently no-op (returns input unchanged).
 
-    Accepts (and ignores) v8 dispatch kwargs: timeout, max_pairs,
-    enable_pairwise, pairwise_min_nb, pairwise_min_eq, pairwise_min_cooc,
-    pairwise_time_cap, warmup_pairs.
+    Accepts and ignores v8 dispatch kwargs so the cons-walker's call site
+    can pass parameters without raising.
     """
     return hz

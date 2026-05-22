@@ -804,36 +804,24 @@ class HZVerifier(Solver):
         self._var_count: int = 0
         self._stats: Dict[str, Any] = {}
 
-    # ----- Solver interface stubs (no-op; HyZor uses consume_cons) -----
     def capabilities(self) -> SolverCaps:
-        return SolverCaps(supports_gpu=True, supports_csp=True, supports_hz=True)
+        # supports_csp=False: HZVerifier walks the ACT cons IR via
+        # ``consume_cons`` (HZ-native), it does not accept BatchLPProblem.
+        # Mirrors HZSolver / DualSolver, which are also non-CSP solvers.
+        return SolverCaps(supports_gpu=True, supports_csp=False, supports_hz=True)
 
-    # ─── LEGACY_SHIM_TO_REMOVE_AT_P3 ───────────────────────────────────
-    # HyZor's verification path walks the ACT cons IR via consume_cons()
-    # (a custom analyze-walking pipeline) rather than consuming a
-    # BatchLPProblem. Until eq_lagr_v8 / project_eq_elim / Phase-1-3
-    # representations land in act/back_end/hybridz_tf/ and the cascade
-    # controller moves to hybridz_tf/algorithms/, the new
-    # setup_and_solve_batch + verify_once entry points cannot drive
-    # HyZor end-to-end. solve_batch therefore mirrors HZSolver's design
-    # (raise with redirect message); callers must use
-    # ``verify_once_legacy_batch1`` (defined below) for HyZor-mode
-    # verification of a single (model, vnnlib) instance.
     def solve_batch(self, problem, timelimit: Optional[float] = None):  # noqa: D401
         """HZVerifier does not accept BatchLPProblem inputs.
 
-        HyZor walks the ACT cons IR directly via ``consume_cons``; it
-        does not consume a pre-built LP. Callers verifying a single
-        instance through HyZor should use
-        ``verify_once_legacy_batch1(net, solver=..., timelimit=...)``
-        from this module. Batch-native HyZor integration via
-        ``hybridz_tf`` is a follow-up (see comment block above).
+        Callers verifying a single (model, spec) instance through HZ should
+        use ``verify_once_hz(net, solver=..., timelimit=...)`` from this
+        module, which drives the cons-walker on the analyzed ACT Net.
         """
         raise NotImplementedError(
             "HZVerifier does not consume BatchLPProblem; use "
-            "act.back_end.solver.solver_hz.verify_once_legacy_batch1"
-            "(net, solver=..., timelimit=...) for single-instance HyZor "
-            "verification until hybridz_tf integration lands."
+            "act.back_end.solver.solver_hz.verify_once_hz"
+            "(net, solver=..., timelimit=...) for single-instance HZ "
+            "verification."
         )
 
     def begin(self, name: str = "verify", device: Optional[str] = None):
@@ -879,33 +867,12 @@ class HZVerifier(Solver):
         *, net: Net, input_ids: List[int], output_ids: List[int],
         assert_layer: Layer,
     ) -> str:
-        # ACT-native HZ ops by default. HYZOR_USE_ACT=0 emergency escape
-        # hatch tries to import the legacy HyZor pkg and raises if absent.
-        _use_act = os.environ.get("HYZOR_USE_ACT", "1") == "1"
-        if not _use_act:
-            try:
-                from HyZor import (
-                    hz_from_bounds, hz_dense, hz_conv2d, hz_add_const, hz_scale,
-                    hz_bn, hz_minkowski_sum, hz_sgm_add, shares_generator,
-                    hz_concat, hz_intersect_polytope,
-                    hz_apply_relu_v8, hz_apply_leaky_relu_v8,
-                )
-                # check_unsafe_for_act, lp_witness_to_input, strict_replay_for_act
-                # are ACT-native (defined later in this module).
-            except ImportError as e:
-                raise RuntimeError(
-                    f"HZVerifier: HYZOR_USE_ACT=0 requested LEGACY HyZor "
-                    f"pkg but cannot import (HyZor pkg deleted post-port). "
-                    f"Set HYZOR_USE_ACT=1 (default) to use ACT-native impl. "
-                    f"Underlying: {e}"
-                )
-        else:
-            from act.back_end.hybridz_tf.hz_routing import (
-                hz_from_bounds, hz_dense, hz_conv2d, hz_add_const, hz_scale,
-                hz_bn, hz_minkowski_sum, hz_sgm_add, shares_generator,
-                hz_concat, hz_intersect_polytope,
-                hz_apply_relu_v8, hz_apply_leaky_relu_v8,
-            )
+        from act.back_end.hybridz_tf.hz_routing import (
+            hz_from_bounds, hz_dense, hz_conv2d, hz_add_const, hz_scale,
+            hz_bn, hz_minkowski_sum, hz_sgm_add, shares_generator,
+            hz_concat, hz_intersect_polytope,
+            hz_apply_relu_v8, hz_apply_leaky_relu_v8,
+        )
             # check_unsafe_for_act, lp_witness_to_input, strict_replay_for_act
             # are defined later in this same module (post-consolidation).
 
@@ -967,10 +934,12 @@ class HZVerifier(Solver):
         eq_last = self.cfg["large_cls_eq_layers"]
 
         if large_cls_active:
-            print(f"  [hyzor] large_cls_proof_mode ACTIVE: "
-                  f"conv={conv_count} out_dim={out_dim} relus={total_relu} "
-                  f"(triangle for relu 1..{total_relu - eq_last}, "
-                  f"eq_lagr_v8 for last {eq_last})", flush=True)
+            logger.info(
+                "large_cls_proof_mode ACTIVE: conv=%d out_dim=%d relus=%d "
+                "(triangle for relu 1..%d, eq_lagr_v8 for last %d)",
+                conv_count, out_dim, total_relu,
+                total_relu - eq_last, eq_last,
+            )
             self._stats["large_cls_active"] = True
             self._stats["total_relu"] = total_relu
             self._stats["eq_last"] = eq_last
@@ -1001,8 +970,10 @@ class HZVerifier(Solver):
             tag_for_log = (op_con.meta["tag"] if op_con else f"box-fallback({L.kind})")
             in_dim = hz_in.dim if hz_in is not None else "n/a"
             in_ng = hz_in.ng if hz_in is not None else "n/a"
-            print(f"  [hyzor L{L.id}] {tag_for_log}  "
-                  f"in: dim={in_dim} ng={in_ng}", flush=True)
+            logger.debug(
+                "L%d %s  in: dim=%s ng=%s",
+                L.id, tag_for_log, in_dim, in_ng,
+            )
             try:
                 # MaxPool: ACT cons_exporter doesn't generate constraints
                 # for max-pool (it's not a linear op), so op_con is None
@@ -1014,10 +985,7 @@ class HZVerifier(Solver):
                 # back to interval only on unstable blocks.
                 if op_con is None and L.kind == "MAXPOOL2D" and hz_in is not None:
                     try:
-                        if os.environ.get("HYZOR_USE_ACT", "1") == "1":
-                            from act.back_end.hybridz_tf.hz_routing import hz_maxpool2d
-                        else:
-                            from HyZor import hz_maxpool2d
+                        from act.back_end.hybridz_tf.hz_routing import hz_maxpool2d
                         params = L.params
                         in_shape = params.get("input_shape")
                         if in_shape is None:
@@ -1054,21 +1022,18 @@ class HZVerifier(Solver):
                 # Girard reduction: cap ng to keep memory bounded
                 hz_out = self._maybe_reduce(hz_out)
 
-                print(f"  [hyzor L{L.id}] done  "
-                      f"out: dim={hz_out.dim} ng={hz_out.ng} nb={hz_out.nb} nc={hz_out.nc}",
-                      flush=True)
+                logger.debug(
+                    "L%d done  out: dim=%d ng=%d nb=%d nc=%d",
+                    L.id, hz_out.dim, hz_out.ng, hz_out.nb, hz_out.nc,
+                )
             except Exception as e:
                 # Sound fallback on any per-layer failure
                 self._stats[f"error@{L.id}"] = f"{type(e).__name__}: {e}"
                 hz_out = self._box_fallback(L, after, hz_from_bounds)
-                import os as _osdbg, traceback as _tb
-                if _osdbg.environ.get("HYZOR_DEBUG_FALLBACK", "0") == "1":
-                    print(f"  [hyzor L{L.id}] FALLBACK ({type(e).__name__}): {e}",
-                          flush=True)
-                    _tb.print_exc()
-                else:
-                    print(f"  [hyzor L{L.id}] FALLBACK ({type(e).__name__})",
-                          flush=True)
+                logger.warning(
+                    "L%d FALLBACK (%s): %s", L.id, type(e).__name__, e,
+                    exc_info=logger.isEnabledFor(logging.DEBUG),
+                )
 
             var_to_hz[tuple(L.out_vars)] = hz_out
             op_kind = (op_con.meta["tag"].split(":")[0]
@@ -1222,11 +1187,7 @@ class HZVerifier(Solver):
                 eq_last = self.cfg["large_cls_eq_layers"]
                 if ridx <= self._total_relu - eq_last:
                     method = "triangle"
-            return ops["hz_apply_relu_v8"](
-                hz_in,
-                method=method,
-                girard_cap=self.cfg["girard_cap"],
-            )
+            return ops["hz_apply_relu_v8"](hz_in, method=method)
         if op == "lrelu":
             return ops["hz_apply_leaky_relu_v8"](hz_in, alpha=meta["alpha"])
 
@@ -1238,20 +1199,12 @@ class HZVerifier(Solver):
             cap = int(os.environ.get("HYZOR_SIGMOID_DIM_CAP", "256"))
             if int(hz_in.dim) > cap:
                 return self._box_fallback(L, after, ops["hz_from_bounds"])
-            hzono_in = self._hyzor_to_hzono(hz_in)
-            hzono_out = ops["act_hz_apply_sigmoid"](
-                hzono_in, K=self.cfg["sigmoid_K"]
-            )
-            return self._hzono_to_hyzor(hzono_out)
+            return ops["act_hz_apply_sigmoid"](hz_in, K=self.cfg["sigmoid_K"])
         if op == "tanh":
             cap = int(os.environ.get("HYZOR_TANH_DIM_CAP", "256"))
             if int(hz_in.dim) > cap:
                 return self._box_fallback(L, after, ops["hz_from_bounds"])
-            hzono_in = self._hyzor_to_hzono(hz_in)
-            hzono_out = ops["act_hz_apply_tanh"](
-                hzono_in, K=self.cfg["tanh_K"]
-            )
-            return self._hzono_to_hyzor(hzono_out)
+            return ops["act_hz_apply_tanh"](hz_in, K=self.cfg["tanh_K"])
 
         # ── Shape ops ──
         if op in ("flatten", "reshape", "transpose", "squeeze",
@@ -1301,22 +1254,6 @@ class HZVerifier(Solver):
             return hz.reduce_constraints(ng_budget=cap)
         except Exception:
             return hz
-
-    # ----- HZ conversion helpers (no-ops for ACT HZono; legacy rollback only) -----
-    def _hyzor_to_hzono(self, hyzor_hz):
-        from act.back_end.solver.solver_hz import HZono
-        if isinstance(hyzor_hz, HZono):
-            return hyzor_hz
-        return HZono(
-            c=hyzor_hz.c, Gc=hyzor_hz.Gc, Gb=hyzor_hz.Gb,
-            Ac=hyzor_hz.Ac, Ab=hyzor_hz.Ab, b=hyzor_hz.b,
-            eq_mask=getattr(hyzor_hz, "eq_mask", None),
-        )
-
-    def _hzono_to_hyzor(self, hzono):
-        # Identity: downstream code only reads HZ-shape fields which
-        # HZono exposes the same way as HyZor's HybridZonotope.
-        return hzono
 
     # ----- Result accessors -----
     def status(self) -> str:
@@ -1422,38 +1359,31 @@ def _slice_globalC_lane(globalC: ConSet, lane: int) -> ConSet:
     return out
 
 
-# ─── LEGACY_SHIM_TO_REMOVE_AT_P3 ───────────────────────────────────────
-# Single-instance verifier entry that mirrors the pre-PR-#66
-# ``verify_once(net, solver=..., timelimit=...)`` semantics on top of
-# HyZor's ``consume_cons`` cons-IR walker. Driver scripts that pre-date
-# the batch-native verifier (v100/v101/v102 and similar) call this
-# helper instead of ``act.back_end.verifier.verify_once`` (which no
-# longer accepts a ``solver=`` argument).
-#
-# Inputs:
-#   - ``net``: ACT Net whose first layer is INPUT, last is ASSERT.
-#     INPUT_SPEC may be batched [B, *shape]; this helper takes lane
-#     ``batch_lane`` only (default 0; raises if B>1 and lane unset).
-#   - ``solver``: HZVerifier instance.
-#   - ``timelimit``: optional wall-clock budget (seconds).
-#
-# Returns: ``(status: str, ce_input: Optional[np.ndarray], stats: dict)``
-# matching the pre-PR-#66 return type.
-#
-# REMOVAL PLAN: once HyZor's HZ propagation lives in hybridz_tf and the
-# cascade controller in hybridz_tf/algorithms, the new
-# ``setup_and_solve_batch`` will dispatch to HyZor natively and this
-# helper can be deleted.
-def verify_once_legacy_batch1(
+def verify_once_hz(
     net,
     *,
     solver: "HZVerifier",
     timelimit: Optional[float] = None,
     batch_lane: int = 0,
 ) -> Tuple[str, Optional[np.ndarray], Dict[str, Any]]:
-    """Pre-PR-#66 verify_once API on top of HZVerifier.consume_cons.
+    """Single-instance HZ verification driver.
 
-    See module-level comment ``LEGACY_SHIM_TO_REMOVE_AT_P3``.
+    Analyzes ``net`` end-to-end and drives ``HZVerifier.consume_cons`` on
+    the resulting cons IR. Unlike ``verify_once`` in ``act.back_end.verifier``,
+    this routes through the HZ cons-walker rather than the batched
+    ``solve_batch`` API; HZVerifier walks the cons IR natively.
+
+    Args:
+        net: ACT Net whose first layer is INPUT, last is ASSERT.
+            INPUT_SPEC may be batched ``[B, *shape]``; this driver
+            verifies lane ``batch_lane`` only (default 0; raises if B>1
+            without an explicit lane).
+        solver: ``HZVerifier`` instance.
+        timelimit: optional wall-clock budget (seconds).
+        batch_lane: index into the batched INPUT_SPEC to verify.
+
+    Returns:
+        ``(status, counterexample_input, stats)``
     """
     from act.back_end.analyze import analyze
     from act.back_end.transfer_functions import set_transfer_function_mode
@@ -1490,7 +1420,7 @@ def verify_once_legacy_batch1(
     B = int(seed_bounds.lb.shape[0])
     if batch_lane >= B:
         raise IndexError(
-            f"verify_once_legacy_batch1: batch_lane={batch_lane} out of "
+            f"verify_once_hz: batch_lane={batch_lane} out of "
             f"range [0, {B})"
         )
 

@@ -588,7 +588,7 @@ from act.front_end.verifiable_model import (
     InputLayer, InputSpecLayer, OutputSpecLayer, VerifiableModel
 )
 from act.pipeline.verification.torch2act import TorchToACT
-from act.back_end.solver.solver_hz import HZVerifier, verify_once_legacy_batch1
+from act.back_end.solver.solver_hz import HZVerifier, verify_once_hz
 
 # 1. Load
 pair = load_vnnlib_pair("acasxu_2023", "ACASXU_run2a_1_2_batch_2000.onnx",
@@ -608,7 +608,7 @@ net = TorchToACT(vm).run()
 # 3. Run verifier
 solver = HZVerifier(device='cuda', dtype=torch.float64, timeout_s=60,
                    strict_replay=True, onnx_path=ONNX_PATH, vnnlib_path=VNN_PATH)
-status, _, _ = verify_once_legacy_batch1(net=net, solver=solver, timelimit=60)
+status, _, _ = verify_once_hz(net=net, solver=solver, timelimit=60)
 print(status)  # "UNSAT" (= verified) / "SAT" (= falsified) / "UNKNOWN"
 ```
 

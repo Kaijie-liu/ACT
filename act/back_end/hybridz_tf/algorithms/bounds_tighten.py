@@ -37,11 +37,14 @@ Also exports ``hz_intersect_box(hz, lb, ub)`` which appends 2n
 inequality rows restricting the HZ to a box.
 """
 from __future__ import annotations
+import logging
 from typing import Optional, Tuple
 
 import torch
 
 from act.back_end.solver.solver_hz import HZono, _eq_mask_of
+
+logger = logging.getLogger(__name__)
 
 
 __all__ = [
@@ -402,11 +405,12 @@ def hz_bounds_eq_elim_lp(
     if _prof:
         _elapsed = _time.perf_counter() - _t0
         _mode = "classify" if classify_mode else "full"
-        print(f"  [EQ_ELIM_LP_PROF] mode={_mode} n_idx={len(solve_idx)} "
-              f"lp_calls={_calls} saved={_saved} ng_free={ng_free} "
-              f"nb={nb} constraints={A_all.shape[0]} "
-              f"time={_elapsed:.3f}s",
-              flush=True)
+        logger.debug(
+            "eq_elim_lp prof: mode=%s n_idx=%d lp_calls=%d saved=%d "
+            "ng_free=%d nb=%d constraints=%d time=%.3fs",
+            _mode, len(solve_idx), _calls, _saved, ng_free,
+            nb, A_all.shape[0], _elapsed,
+        )
     return lb_t, ub_t
 
 
