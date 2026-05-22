@@ -189,4 +189,3 @@ def hz_sgm_add(hz_x: HZono, hz_y: HZono) -> HZono:
     object.__setattr__(out, "_base_ng", int(shared_ng))
     object.__setattr__(out, "_base_nb", int(shared_nb))
     return out
-

@@ -538,4 +538,3 @@ def pick_relu_method_for_layer(
     if est_b > budget_b:
         return "triangle"
     return "eq_native"
-

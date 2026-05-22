@@ -758,7 +758,7 @@ class VerificationValidator:
         logger.info(f"\n  🔍 Running formal verifier ({solver})...")
 
         try:
-            if solver not in {"gurobi", "torchlp", "dual", "hyzor", "hz"}:
+            if solver not in {"gurobi", "torchlp", "dual"}:
                 raise ValueError(f"Unknown solver: {solver}")
 
             verify_result_list = verify_once(act_net)

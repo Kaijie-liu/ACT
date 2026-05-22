@@ -58,10 +58,6 @@ def _make_solver(solver_name: str):
         return GurobiSolver()
     if solver_name == "torchlp":
         return TorchLPSolver()
-    if solver_name == "hyzor" or solver_name == "hz":
-        from act.back_end.solver.solver_hz import HZVerifier
-
-        return HZVerifier()
     # "auto": try Gurobi, fall back to TorchLP
     try:
         from act.back_end.solver.solver_gurobi import GurobiSolver

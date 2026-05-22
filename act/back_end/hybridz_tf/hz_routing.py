@@ -403,8 +403,8 @@ def _hzono_tight_bounds(hz):
 
 
 def hz_apply_relu_v8(hz, *, method: str = "eq_lagr_v8",
-                     mace: bool = True, girard_cap: int = 6000):
-    """Faithful port of HyZor's ``hz_apply_relu_v8`` (__init__.py:1374).
+                     girard_cap: int = 6000):
+    """HZ ReLU dispatch by representation flavor.
 
     Dispatch:
       LazyChainHZ → freeze if affordable; else triangle on sparse-Gc; else BoxHZ
