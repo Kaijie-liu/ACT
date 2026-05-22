@@ -36,8 +36,13 @@ except ImportError:
 
 @dataclass
 class HZono:
-    """Z = {c + Gc @ xi_c + Gb @ xi_b | Ac @ xi_c + Ab @ xi_b = b,
-    xi_c in [-1,1]^ng, xi_b in {-1,1}^nb}"""
+    """Z = {c + Gc @ xi_c + Gb @ xi_b | (Ac @ xi_c + Ab @ xi_b)[i] op[i] b[i],
+    xi_c in [-1,1]^ng, xi_b in {-1,1}^nb}
+
+    ``op[i]`` is row-wise ``=`` when ``eq_mask[i]`` is True and ``<=`` when
+    False. ``eq_mask=None`` means every row is an equality (matches the
+    legacy all-equality semantics).
+    """
 
     c: torch.Tensor  # (n, 1)
     Gc: torch.Tensor  # (n, ng)
@@ -45,6 +50,35 @@ class HZono:
     Ac: torch.Tensor  # (nc, ng)
     Ab: torch.Tensor  # (nc, nb)
     b: torch.Tensor  # (nc, 1)
+    eq_mask: Optional[torch.Tensor] = None  # (nc,) bool; None ⇒ all True
+
+
+def _eq_mask_of(hz: HZono) -> torch.Tensor:
+    """Return ``hz.eq_mask`` if set, else an all-True mask of length ``nc``."""
+    nc = hz.b.shape[0]
+    if hz.eq_mask is not None:
+        if int(hz.eq_mask.numel()) != int(nc):
+            raise ValueError(
+                f"HZono.eq_mask length {int(hz.eq_mask.numel())} != nc {int(nc)}"
+            )
+        return hz.eq_mask
+    return torch.ones(nc, dtype=torch.bool, device=hz.b.device)
+
+
+def _concat_eq_masks(
+    em1: Optional[torch.Tensor], em2: Optional[torch.Tensor],
+    nc1: int, nc2: int, device,
+) -> torch.Tensor:
+    """Concatenate two row-wise eq_masks, materialising ``None`` as all-True."""
+    if em1 is None:
+        em1 = torch.ones(nc1, dtype=torch.bool, device=device)
+    if em2 is None:
+        em2 = torch.ones(nc2, dtype=torch.bool, device=device)
+    return torch.cat([em1.to(device=device), em2.to(device=device)], dim=0)
+
+
+def _clone_mask(em: Optional[torch.Tensor]) -> Optional[torch.Tensor]:
+    return None if em is None else em.clone()
 
 
 # ============================================================================
@@ -61,6 +95,7 @@ def hz_multiply(hz: HZono, R: torch.Tensor) -> HZono:
         Ac=hz.Ac.clone(),
         Ab=hz.Ab.clone(),
         b=hz.b.clone(),
+        eq_mask=_clone_mask(hz.eq_mask),
     )
 
 
@@ -75,6 +110,7 @@ def hz_add_const(hz: HZono, v: torch.Tensor) -> HZono:
         Ac=hz.Ac.clone(),
         Ab=hz.Ab.clone(),
         b=hz.b.clone(),
+        eq_mask=_clone_mask(hz.eq_mask),
     )
 
 
@@ -114,7 +150,12 @@ def hz_minkowski_sum(hz1: HZono, hz2: HZono) -> HZono:
     new_Ab = torch.cat([Ab_top, Ab_bot], dim=0)
 
     new_b = torch.cat([hz1.b, hz2.b.to(dtype=dtype, device=device)], dim=0)
-    return HZono(c=new_c, Gc=new_Gc, Gb=new_Gb, Ac=new_Ac, Ab=new_Ab, b=new_b)
+    em_new = _concat_eq_masks(hz1.eq_mask, hz2.eq_mask, nc1, nc2, device)
+    return HZono(
+        c=new_c, Gc=new_Gc, Gb=new_Gb,
+        Ac=new_Ac, Ab=new_Ab, b=new_b,
+        eq_mask=em_new,
+    )
 
 
 def hz_from_bounds(bounds: Bounds, dtype, device) -> HZono:
@@ -123,6 +164,7 @@ def hz_from_bounds(bounds: Bounds, dtype, device) -> HZono:
     n = lb.shape[0]
     c = ((lb + ub) / 2.0).view(-1, 1)
     rad = (ub - lb) / 2.0
+    # No constraint rows on a fresh interval-derived HZ; eq_mask stays None.
     return HZono(
         c=c,
         Gc=torch.diag(rad),
@@ -179,10 +221,22 @@ def _hz_compute_bounds_scipy(hz: HZono) -> Bounds:
     Ab_np = hz.Ab.detach().cpu().numpy().astype("float64")
     b_np = hz.b.detach().cpu().numpy().astype("float64").reshape(-1)
 
-    A_eq = (
-        np.concatenate([Ac_np, Ab_np], axis=1) if (Ac_np.size or Ab_np.size) else None
-    )
-    b_eq = b_np if (A_eq is not None) else None
+    # Split equality vs inequality rows by eq_mask. When eq_mask is None we
+    # treat every row as an equality (matches the original all-equality
+    # semantics so callers that never set eq_mask see no behavioural change).
+    if Ac_np.size or Ab_np.size:
+        A_all = np.concatenate([Ac_np, Ab_np], axis=1)
+        if hz.eq_mask is None:
+            em_np = np.ones(int(b_np.size), dtype=bool)
+        else:
+            em_np = hz.eq_mask.detach().cpu().numpy().astype(bool)
+        A_eq = A_all[em_np] if em_np.any() else None
+        b_eq = b_np[em_np] if em_np.any() else None
+        le_np = ~em_np
+        A_ub = A_all[le_np] if le_np.any() else None
+        b_ub = b_np[le_np] if le_np.any() else None
+    else:
+        A_eq = b_eq = A_ub = b_ub = None
     var_bounds = [(-1.0, 1.0)] * (p + q)
 
     LB = np.empty((n,), dtype=np.float64)
@@ -190,7 +244,8 @@ def _hz_compute_bounds_scipy(hz: HZono) -> Bounds:
     for i in range(n):
         obj = np.concatenate([Gc_np[i], Gb_np[i]], axis=0)
         res_min = linprog(
-            c=obj, A_eq=A_eq, b_eq=b_eq, bounds=var_bounds, method="highs"
+            c=obj, A_eq=A_eq, b_eq=b_eq, A_ub=A_ub, b_ub=b_ub,
+            bounds=var_bounds, method="highs",
         )
         if not res_min.success:
             raise RuntimeError(
@@ -198,7 +253,8 @@ def _hz_compute_bounds_scipy(hz: HZono) -> Bounds:
             )
         LB[i] = c_np[i] + res_min.fun
         res_max = linprog(
-            c=-obj, A_eq=A_eq, b_eq=b_eq, bounds=var_bounds, method="highs"
+            c=-obj, A_eq=A_eq, b_eq=b_eq, A_ub=A_ub, b_ub=b_ub,
+            bounds=var_bounds, method="highs",
         )
         if not res_max.success:
             raise RuntimeError(
