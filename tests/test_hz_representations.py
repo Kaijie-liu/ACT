@@ -14,9 +14,10 @@
 
 from __future__ import annotations
 
+import numpy as np
 import torch
 
-from act.back_end.solver.solver_hz import HZono
+from act.back_end.solver.solver_hz import HZono, lp_witness_to_input
 from act.back_end.hybridz_tf.representations import (
     BoxHZ,
     LazyChainHZ,
@@ -33,6 +34,17 @@ def test_boxhz_basic():
     hz = box.to_hzono()
     assert isinstance(hz, HZono)
     assert hz.Gc.shape == (2, 2)
+
+
+def test_boxhz_witness_replay_candidate_is_in_box_center():
+    box = BoxHZ(torch.tensor([-2.0, 0.0]), torch.tensor([1.0, 4.0]),
+                dtype=torch.float64, device=torch.device("cpu"))
+    # BoxHZ has no final-factor-to-input inverse after downstream reduction.
+    # A center proposal is concrete and replay-safe regardless of LP layout.
+    x = lp_witness_to_input(np.array([1.0]), box)
+    assert np.allclose(x, [-0.5, 2.0])
+    assert np.all(x >= np.array([-2.0, 0.0]))
+    assert np.all(x <= np.array([1.0, 4.0]))
 
 
 def test_lazychain_dense():
@@ -73,6 +85,7 @@ def test_sparse_gc_bounds():
 
 if __name__ == "__main__":
     test_boxhz_basic()
+    test_boxhz_witness_replay_candidate_is_in_box_center()
     test_lazychain_dense()
     test_lazychain_materialize_when_small()
     test_sparse_gc_bounds()

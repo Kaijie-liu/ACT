@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "benchmark": "collins_rul_cnn_2022",
+  "formal_mode": false,
+  "timestamp_utc": "20260525T014354279771Z",
+  "canonical_root": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks",
+  "receipt_dir": null,
+  "wall_min": 0.0029332518577575685,
+  "counts": {
+    "CERTIFIED": 0,
+    "FALSIFIED": 1,
+    "UNKNOWN": 0,
+    "ERROR": 0
+  },
+  "run_status": "PASSED",
+  "per_instance": [
+    {
+      "official_instance_id": 0,
+      "benchmark": "collins_rul_cnn_2022",
+      "onnx_model": "onnx/NN_rul_small_window_20.onnx",
+      "vnnlib_spec": "vnnlib/robustness_2perturbations_delta5_epsilon10_w20.vnnlib",
+      "model_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx",
+      "spec_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_2perturbations_delta5_epsilon10_w20.vnnlib",
+      "internal_status": "SAT",
+      "reportable_status": "FALSIFIED",
+      "cli_normalized": "FALSIFIED",
+      "count_bucket": "FALSIFIED",
+      "queries": [
+        {
+          "query_index": 0,
+          "internal_status": "SAT",
+          "reportable_status": "FALSIFIED",
+          "receipt_path": null
+        }
+      ],
+      "q_statuses": [
+        "SAT"
+      ],
+      "q_reportables": [
+        "FALSIFIED"
+      ],
+      "q_receipts": [
+        null
+      ],
+      "error": null,
+      "wall_s": 0.17595767974853516
+    }
+  ]
+}

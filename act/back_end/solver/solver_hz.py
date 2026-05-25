@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import importlib
 import os
 import sys
 import time
@@ -139,6 +140,7 @@ def _hz_reduce_constraints(
     nc_budget: Optional[int] = None,
     ng_budget: Optional[int] = None,
     nb_budget: Optional[int] = None,
+    constraint_keep_weight: float = 0.0,
     tol: float = 1e-12,
 ) -> HZono:
     """Reduce HZono constraint / generator count. Faithful port of HyZor
@@ -148,14 +150,15 @@ def _hz_reduce_constraints(
     Phases (subset; the full HyZor port has 5 phases):
       P1: remove trivially redundant constraint rows  (exact)
       P2: remove zero generator columns               (exact)
-      P5: continuous generator order reduction (Girard) — caps ng to
-          ng_budget, merging dropped cols into a single box column with
-          eq-row split + widening.
+      P5: continuous generator order reduction (Girard) — when a sound
+          independent-slack representation fits ``ng_budget``, reduce to
+          that budget with eq-row split + widening. Otherwise retain the
+          larger HZ rather than introduce unsound shared slack.
 
-    Phases skipped (parity-deferred): 1.3 (QR rank), 1.5 (parallel rows),
-    2.5 (parallel gens), 3 (nc-budget topk), 4 (nb relaxation). The
-    skipped phases are deduplications — sound to skip, may produce
-    slightly larger but still valid HZ.
+    Additional exact/precision-preserving passes implement equality-only
+    row rank removal, parallel row handling, and parallel generator merging.
+    Phases skipped (parity-deferred): 3 (nc-budget topk), 4 (nb relaxation).
+    The skipped phases are sound to omit and may leave a larger HZ.
     """
     import torch as _t
     has_budget = (
@@ -192,16 +195,21 @@ def _hz_reduce_constraints(
             b = b[keep_mask]
             eq_m = eq_m[keep_mask]
 
-    # ---- Phase 1.3: QR rank-revealing row removal ----
-    # Linearly dependent constraint rows are sound to drop (LP feasibility
-    # over a subset of rank-many independent rows = full system). HyZor:4449.
-    # Size cap: QR on (ng+nb, nc) is O((ng+nb)·nc²); skip when product
-    # exceeds threshold so reduce overhead stays bounded.
-    nc_now = int(Ac.shape[0])
+    # ---- Phase 1.3: QR rank-revealing EQUALITY-row removal ----
+    # A dependent equality can be removed without losing a useful tight
+    # inequality: if its RHS is inconsistent, removing it is a sound
+    # widening of an empty set; otherwise it is redundant. Applying the
+    # same row-rank rule to inequalities is still sound, but needlessly
+    # destroys precision. For example, xi <= 0.8 and xi <= 0.2 have
+    # rank-one LHS rows, yet removing the tighter row enlarges the factor
+    # set. Inequalities are preserved here and may only be deduplicated by
+    # the direction-and-RHS-aware Phase 1.5 below.
+    n_eq_now = int(eq_m.sum().item())
     _PHASE_1_3_CAP = 1024  # max nc for QR phase
-    if 1 < nc_now <= _PHASE_1_3_CAP:
+    if 1 < n_eq_now <= _PHASE_1_3_CAP:
         try:
-            M = _t.cat([Ac, Ab], dim=1).to(dtype=_t.float64)
+            eq_idx = _t.where(eq_m)[0]
+            M = _t.cat([Ac[eq_idx], Ab[eq_idx]], dim=1).to(dtype=_t.float64)
             Q, R = _t.linalg.qr(M.T)  # QR on transpose for row-rank.
             diag = R.diag().abs()
             if diag.numel() > 0:
@@ -209,13 +217,17 @@ def _hz_reduce_constraints(
             else:
                 rank_tol = tol
             rank = int((diag > rank_tol).sum().item())
-            if rank < nc_now:
+            if rank < n_eq_now:
                 import scipy.linalg as _sla
                 _Q, _R, _piv = _sla.qr(
                     M.T.cpu().numpy(), pivoting=True, mode="economic"
                 )
-                keep_idx = sorted(_piv[:rank].tolist())
-                keep_t = _t.tensor(keep_idx, device=device, dtype=_t.long)
+                keep_eq_local = _t.tensor(
+                    sorted(_piv[:rank].tolist()), device=device, dtype=_t.long
+                )
+                keep_mask = ~eq_m
+                keep_mask[eq_idx[keep_eq_local]] = True
+                keep_t = _t.where(keep_mask)[0]
                 Ac = Ac[keep_t]
                 Ab = Ab[keep_t]
                 b = b[keep_t]
@@ -327,26 +339,55 @@ def _hz_reduce_constraints(
                     Ac = _t.empty(0, int(Gc.shape[1]), device=device, dtype=dtype)
 
     # ---- Phase 5: continuous generator order reduction (Girard) ----
+    # Sound: collapses removed Gc cols into n INDEPENDENT diagonal slack
+    # generators (one per output dim), NOT a single shared box column.
+    # The shared-column version introduces artificial cross-output
+    # correlation and strictly shrinks the set in opposing directions
+    # (test: 2D Gc=I, ng_budget=1 → support in (1,-1) goes 2.0 → 0.0).
+    #
+    # Skip guard: diagonal slack adds n_dim cols. If n_dim >= ng_budget
+    # the cap is unachievable soundly, AND at large n the dense diag
+    # is O(n^2) (n=25088 → ~5 GiB). Skip reduction in that regime; the
+    # HZ passes through unchanged. The cap was meant to limit growth
+    # past the budget, not to force shrinkage beyond what's representable.
     ng_now = int(Gc.shape[1])
-    if ng_budget is not None and ng_now > ng_budget and ng_budget >= 1:
+    n_dim = int(Gc.shape[0])
+    if (ng_budget is not None and ng_now > ng_budget and ng_budget >= 1
+            and n_dim < ng_budget):
         nc_now = int(Ac.shape[0])
         scores = Gc.abs().sum(dim=0)
-        keep_k = ng_budget - 1  # reserve 1 slot for box column
-        if keep_k < 0:
-            keep_k = 0
+        if nc_now > 0 and constraint_keep_weight > 0.0:
+            # A column with a small current output coefficient can still be
+            # carrying a strong hull inequality. Dropping it widens the RHS
+            # by |Ac[:, col]| and immediately discards that tightening.
+            # Reweighting only chooses which columns remain exact; Girard's
+            # independent-slack widening below remains unchanged and sound.
+            ac_scores = Ac.abs().sum(dim=0)
+            if bool((ac_scores > tol).any().item()):
+                output_scale = scores.max().clamp(min=tol)
+                ac_scale = ac_scores.max().clamp(min=tol)
+                scores = scores + (
+                    float(constraint_keep_weight) * output_scale
+                    * ac_scores / ac_scale
+                )
+        keep_k = max(ng_budget - n_dim, 0)  # reserve n slots for diagonal slack
         _, topk_idx = _t.topk(scores, min(keep_k, ng_now))
         topk_idx, _ = topk_idx.sort()
         remove_mask = _t.ones(ng_now, dtype=_t.bool, device=device)
         remove_mask[topk_idx] = False
         removed_Gc = Gc[:, remove_mask]
-        box_col = removed_Gc.abs().sum(dim=1, keepdim=True)  # (n, 1)
-        Gc = _t.cat([Gc[:, topk_idx], box_col], dim=1)
+        # Diagonal slack: per-output independent box generators.
+        box_widths = removed_Gc.abs().sum(dim=1)  # (n,)
+        box_diag = _t.diag(box_widths)            # (n, n)
+        Gc = _t.cat([Gc[:, topk_idx], box_diag], dim=1)  # (n, keep_k + n)
 
         if nc_now > 0:
             old_Ac_keep = Ac[:, topk_idx]
             removed_Ac = Ac[:, remove_mask]
             widen = removed_Ac.abs().sum(dim=1, keepdim=True)
-            Ac_box = _t.zeros(nc_now, 1, device=device, dtype=dtype)
+            # The n new diagonal box gens are independent of any prior
+            # factor → zero coefficient in all existing constraint rows.
+            Ac_box = _t.zeros(nc_now, n_dim, device=device, dtype=dtype)
             em_now = (
                 eq_m if int(eq_m.numel()) == nc_now
                 else _t.zeros(nc_now, dtype=_t.bool, device=device)
@@ -363,9 +404,9 @@ def _hz_reduce_constraints(
                 eb = b[em_now]
                 ewiden = widen[em_now]
                 n_eq = int(em_now.sum().item())
-                up_Ac = _t.cat([eAc, _t.zeros(n_eq, 1, device=device, dtype=dtype)], dim=1)
+                up_Ac = _t.cat([eAc, _t.zeros(n_eq, n_dim, device=device, dtype=dtype)], dim=1)
                 up_b = eb + ewiden
-                lo_Ac = _t.cat([-eAc, _t.zeros(n_eq, 1, device=device, dtype=dtype)], dim=1)
+                lo_Ac = _t.cat([-eAc, _t.zeros(n_eq, n_dim, device=device, dtype=dtype)], dim=1)
                 lo_b = -eb + ewiden
                 Ac = _t.cat([Ac_in, up_Ac, lo_Ac], dim=0)
                 Ab = _t.cat([Ab_in, eAb, -eAb], dim=0)
@@ -401,10 +442,12 @@ def _hz_reduce_constraints(
 # Bind reduce_constraints as method on HZono so HZVerifier._maybe_reduce
 # (which calls hz.reduce_constraints(ng_budget=cap)) works on ACT HZono.
 def _hz_reduce_constraints_method(self, *, nc_budget=None, ng_budget=None,
-                                    nb_budget=None, tol=1e-12, verbose=False):
+                                    nb_budget=None, constraint_keep_weight=0.0,
+                                    tol=1e-12, verbose=False):
     return _hz_reduce_constraints(
         self, nc_budget=nc_budget, ng_budget=ng_budget,
-        nb_budget=nb_budget, tol=tol,
+        nb_budget=nb_budget, constraint_keep_weight=constraint_keep_weight,
+        tol=tol,
     )
 
 
@@ -778,11 +821,53 @@ class HZVerifier(Solver):
         large_cls_eq_layers: int = 3,
         large_cls_conv_threshold: int = 4,
         large_cls_out_dim_threshold: int = 100,
+        # Property-facing tail correlation preservation: optionally skip
+        # Girard reduce on layers whose output dim is small. Always sound:
+        # skip = identity, not a widening. Default-off because it did not
+        # improve the default eq_lagr_v8 path in the controlled tiny slice;
+        # it remains useful for chull-tail research runs.
+        tail_preserve_dim: int = 0,
+        # Generator retention policy inside sound Girard widening. A positive
+        # value preserves columns participating strongly in carried hull
+        # inequalities, instead of ranking only by current output magnitude.
+        # This changes precision, never containment.
+        constraint_keep_weight: float = 0.0,
         timeout_s: float = 300.0,
         device: str = "cpu",
         dtype: torch.dtype = torch.float64,
         onnx_path: Optional[str] = None,
+        vnnlib_path: Optional[str] = None,
+        # Sound small-dense forward-LP portfolio. ``base`` selects
+        # GlobalTriangleLP; ``specaware`` selects conditional unsafe-set
+        # refinement; ``witness``/``auto`` also performs ORT-validated
+        # counterexample extraction. The backend is explicitly supplied from
+        # a module root until it is fully vendored into ACT.
+        small_dense_lp: str = "auto",         # "off" | "base" | "specaware" | "witness" | "auto"
+        small_dense_lp_root: Optional[str] = None,
+        small_dense_lp_time_limit_s: float = 5.0,
+        # 0 selects the audited cost-aware policy: 20 passes for a single
+        # hidden ReLU layer with <=128 units, otherwise 3. A positive value
+        # overrides the policy. More passes only tighten the sound LP.
+        small_dense_lp_refinement_passes: int = 0,
+        small_dense_lp_fallback_on_unknown: bool = False,
+        # FAL receipt provenance (advisor 2026-05-24): callers MUST pass
+        # these for receipts to be unique. ``benchmark`` defaults to the
+        # ONNX path stem; ``instance_id`` defaults to -1 (a sentinel that
+        # causes filename collisions if the caller forgets — fail loud).
+        benchmark: Optional[str] = None,
+        instance_id: int = -1,
+        query_index: int = 0,
     ):
+        if small_dense_lp not in ("off", "base", "specaware", "witness", "auto"):
+            raise ValueError(
+                "small_dense_lp must be one of off/base/specaware/witness/auto; "
+                f"got {small_dense_lp!r}"
+            )
+        if int(small_dense_lp_refinement_passes) < 0:
+            raise ValueError(
+                "small_dense_lp_refinement_passes must be >= 0; "
+                f"got {small_dense_lp_refinement_passes!r}"
+            )
         self.cfg = dict(
             relu_method=relu_method, girard_cap=girard_cap,
             sgm_enabled=sgm_enabled,
@@ -792,8 +877,19 @@ class HZVerifier(Solver):
             large_cls_eq_layers=large_cls_eq_layers,
             large_cls_conv_threshold=large_cls_conv_threshold,
             large_cls_out_dim_threshold=large_cls_out_dim_threshold,
+            tail_preserve_dim=tail_preserve_dim,
+            constraint_keep_weight=constraint_keep_weight,
             timeout_s=timeout_s, device=device, dtype=dtype,
             onnx_path=onnx_path,
+            vnnlib_path=vnnlib_path,
+            small_dense_lp=small_dense_lp,
+            small_dense_lp_root=small_dense_lp_root,
+            small_dense_lp_time_limit_s=small_dense_lp_time_limit_s,
+            small_dense_lp_refinement_passes=int(small_dense_lp_refinement_passes),
+            small_dense_lp_fallback_on_unknown=small_dense_lp_fallback_on_unknown,
+            benchmark=benchmark,
+            instance_id=int(instance_id),
+            query_index=int(query_index),
         )
         self._reset_state()
 
@@ -803,6 +899,140 @@ class HZVerifier(Solver):
         self._has_solution: bool = False
         self._var_count: int = 0
         self._stats: Dict[str, Any] = {}
+
+    def _emit_sat_with_receipt(
+        self,
+        *,
+        x_star: np.ndarray,
+        assert_layer,
+        source: str,
+        model_path_fallback: Optional[str] = None,
+    ) -> bool:
+        """Emit a SAT verdict and compute its formal-result reportability.
+
+        CONTRACT (advisor 2026-05-24 Round 4, correcting Round 3):
+
+            Mathematical truth (internal ``_status``): SAT is set
+            unconditionally whenever this method is called — caller has
+            already verified the witness via ``strict_replay_for_act``,
+            so the adversary genuinely exists. Pretending otherwise (the
+            Round 3 over-downgrade to UNKNOWN) would make real
+            counter-examples disappear from solver state, which is
+            DISHONEST.
+
+            Reportability (``_stats["formal_result"]``): orthogonal field
+            that records whether this SAT is admissible into paper-grade
+            FAL counts. CLI consumes formal_result in formal mode.
+
+        formal_result values (formal-mode only; None otherwise):
+            REPORTABLE_FALSIFIED    — receipt written, zero_tol_holds=True
+            ERROR_RECEIPT_MISSING   — no receipt_dir / sentinel iid
+            ERROR_RECEIPT_COLLISION — would overwrite prior receipt
+            ERROR_RECEIPT_WRITE     — IO / hash / ORT failure
+            ERROR_RECEIPT_READBACK  — wrote OK but couldn't re-parse
+            ERROR_INTERNAL_INCONSISTENCY
+                — receipt's recomputed zero_tol disagrees with the
+                  strict_replay_for_act result that gated us here.
+                  The witness x* is the SAME for both checks, so this
+                  is a genuine internal bug (ORT non-determinism /
+                  reshape mismatch / _eval_unsafe_strict vs receipt
+                  evaluator drift). Run should be flagged broken.
+
+        Returns:
+            True (caller can rely on _status == SAT). The bool is kept
+            for API parity with prior callers; reportability is in stats.
+        """
+        import os as _os, json as _json
+        from act.back_end.solver.fal_receipt import (
+            write_receipt, ReceiptCollisionError,
+        )
+        formal = _os.environ.get("ACT_FAL_RECEIPT_FORMAL", "").strip().lower() \
+            in ("1", "true", "yes", "on")
+        rp: Optional[Path] = None
+        receipt_error: Optional[str] = None
+        receipt_error_kind: Optional[str] = None
+        model_path = self.cfg.get("onnx_path") or model_path_fallback or ""
+        spec_path = self.cfg.get("vnnlib_path", "")
+        # R9.3: forward the input-box check result (if available) so
+        # the receipt records audit-grade provenance, not just y.
+        ib_holds = None; ib_reason = None
+        try:
+            net_ref = getattr(self, "_last_net_for_replay", None)
+            if net_ref is not None:
+                cached = getattr(net_ref, "_last_input_box_check", None)
+                if cached is not None:
+                    ib_holds, ib_reason = cached
+        except Exception:
+            pass
+        try:
+            rp = write_receipt(
+                x_star=x_star,
+                model_path=model_path,
+                spec_path=spec_path,
+                assert_layer=assert_layer,
+                benchmark=(self.cfg.get("benchmark")
+                           or (Path(model_path).stem if model_path else "unknown")),
+                instance_id=int(self.cfg.get("instance_id", -1)),
+                query_index=int(self.cfg.get("query_index", 0)),
+                source=source,
+                formal_mode=formal,
+                input_box_holds=ib_holds,
+                input_box_reason=ib_reason,
+            )
+        except ReceiptCollisionError as e:
+            receipt_error = f"ReceiptCollisionError: {e}"
+            msg_lower = str(e).lower()
+            if "collision" in msg_lower:
+                receipt_error_kind = "ERROR_RECEIPT_COLLISION"
+            elif "instance_id" in msg_lower or "sentinel" in msg_lower or "receipt_dir" in msg_lower:
+                receipt_error_kind = "ERROR_RECEIPT_MISSING"
+            else:
+                receipt_error_kind = "ERROR_RECEIPT_WRITE"
+        except Exception as e:
+            receipt_error = f"{type(e).__name__}: {e}"
+            receipt_error_kind = "ERROR_RECEIPT_WRITE"
+
+        # Truth: set SAT internally (strict_replay_for_act already
+        # verified the witness — do not pretend otherwise).
+        self._status = SolveStatus.SAT
+        self._witness = x_star
+        self._has_solution = True
+        if rp is not None:
+            self._stats["fal_receipt_path"] = str(rp)
+        if receipt_error:
+            self._stats["receipt_error"] = receipt_error
+
+        # Compute formal_result (only in formal mode)
+        if not formal:
+            return True
+
+        if rp is None:
+            self._stats["formal_result"] = (
+                receipt_error_kind or "ERROR_RECEIPT_WRITE"
+            )
+            return True
+
+        # Receipt was written; verify its recomputed zero_tol matches
+        # the strict_replay_for_act outcome that brought us here.
+        try:
+            rec = _json.loads(Path(rp).read_text())
+            zero_holds = bool(rec.get("spec_zero_tol_holds"))
+        except Exception as e:
+            self._stats["formal_result"] = "ERROR_RECEIPT_READBACK"
+            self._stats["receipt_error"] = (
+                self._stats.get("receipt_error") or f"readback: {e}"
+            )
+            return True
+
+        if not zero_holds:
+            # strict_replay_for_act returned True but the receipt's
+            # independent ORT recomputation says zero_tol fails. The
+            # same x* gave inconsistent verdicts — investigate.
+            self._stats["formal_result"] = "ERROR_INTERNAL_INCONSISTENCY"
+            return True
+
+        self._stats["formal_result"] = "REPORTABLE_FALSIFIED"
+        return True
 
     def capabilities(self) -> SolverCaps:
         # supports_csp=False: HZVerifier walks the ACT cons IR via
@@ -860,6 +1090,199 @@ class HZVerifier(Solver):
     def add_sos2(self, var_ids, weights=None): pass
     def set_objective_linear(self, vids, coeffs, const=0.0, sense="min"): pass
     def optimize(self, timelimit: Optional[float] = None) -> None: pass
+
+    def _try_small_dense_lp(
+        self, *, conv_count: int,
+        net=None, assert_layer=None,
+    ) -> Optional[str]:
+        """Try the sound forward-LP portfolio before the HZ walk.
+
+        The optional backend is only allowed to prove safety.  Once an
+        eligible network was successfully checked, its ``unknown`` is
+        terminal by default because the HZ cascade is known to be both
+        slower and weaker on this small-dense family.  Callers can opt into
+        fallback if they need the HZ counterexample attempt.
+
+        SOUNDNESS gate (added 2026-05-24 per advisor review):
+            For the witness/auto backend (WitnessExtract), the external
+            module's `_ort_replay` uses a +1e-6 slack (HyZor/WitnessExtract.py:169),
+            i.e. small_tol acceptance. A 'falsified' verdict from that
+            backend can therefore be a boundary witness, not a hard FAL.
+            To prevent paper-grade SAT claims from leaking boundary
+            witnesses, this method now takes ONLY the x* and re-runs
+            ACT's own ``strict_replay_for_act`` (zero-tolerance ORT eval
+            via _eval_unsafe_strict). Witnesses that fail the strict
+            replay downgrade to UNKNOWN with phantom_rejected_small_dense=True.
+
+            Caller MUST pass ``net`` and ``assert_layer`` for this gate.
+            If either is absent the attempt fails closed as UNKNOWN with
+            ``small_dense_lp_strict_replay_unavailable=True``; no external
+            falsification may be promoted without local strict replay.
+        """
+        mode = self.cfg.get("small_dense_lp", "auto")
+        if mode == "off" or conv_count != 0:
+            return None
+        onnx_path = self.cfg.get("onnx_path")
+        vnnlib_path = self.cfg.get("vnnlib_path")
+        if not onnx_path or not vnnlib_path:
+            return None
+
+        module_root = self.cfg.get("small_dense_lp_root")
+        if not module_root:
+            sibling = Path(__file__).resolve().parents[4] / "HyZor"
+            if (
+                (sibling / "GlobalTriangleLP.py").is_file()
+                and (sibling / "SpecAwareLP.py").is_file()
+            ):
+                module_root = str(sibling)
+        if module_root:
+            root = str(Path(module_root))
+            if not Path(root).is_dir():
+                self._stats["small_dense_lp_error"] = f"missing module root: {root}"
+                return None
+            if root not in sys.path:
+                sys.path.insert(0, root)
+            importlib.invalidate_caches()
+
+        try:
+            base = importlib.import_module("GlobalTriangleLP")
+            if not base.is_small_dense(Path(onnx_path)):
+                return None
+            refinement_passes: Optional[int] = None
+            refinement_policy: Optional[str] = None
+            if mode != "base":
+                configured_passes = int(
+                    self.cfg.get("small_dense_lp_refinement_passes", 0)
+                )
+                if configured_passes > 0:
+                    refinement_passes = configured_passes
+                    refinement_policy = "explicit"
+                else:
+                    # Safenlp/sat_relu audit: this shallow case gained 49
+                    # sound CERTs at negligible additional wall time with 20
+                    # passes. Keep deeper ACAS/TLL/nn4sys paths at 3 passes.
+                    refinement_passes = 3
+                    refinement_policy = "default"
+                    try:
+                        _, hidden_layers, _ = base.extract_layers(Path(onnx_path))
+                        total_hidden = sum(int(b.shape[0]) for _, b in hidden_layers)
+                        if len(hidden_layers) == 1 and total_hidden <= 128:
+                            refinement_passes = 20
+                            refinement_policy = "shallow_20"
+                    except Exception:
+                        pass
+            # Mode → backend module:
+            #   "base"      → GlobalTriangleLP (verify only)
+            #   "specaware" → SpecAwareLP (verify only, no falsification)
+            #   "witness" / "auto" → WitnessExtract (SpecAware + ORT-replay-
+            #                 validated counterexample search; SOUND because
+            #                 ORT replay confirms each FAL).
+            # Two-tier reporting note (feedback_two_tier_reporting):
+            #   witness mode may produce 'falsified' on instances whose
+            #   official_zero=unsat but official_small=sat (the boundary
+            #   tolerance regime). These ARE valid falsifications per the
+            #   model's float32 precision, but disagree with strict zero-
+            #   tolerance verification. Per the advisor's framework these
+            #   are P1 watchlist, NOT soundness regressions.
+            if mode == "base":
+                backend = base
+                backend_label = "base"
+                verdict, elapsed = backend.verify(
+                    Path(onnx_path),
+                    Path(vnnlib_path),
+                    time_limit_per_lp=float(self.cfg["small_dense_lp_time_limit_s"]),
+                )
+                witness = None
+                y_ort = None
+            elif mode == "specaware":
+                backend = importlib.import_module("SpecAwareLP")
+                backend_label = "specaware"
+                verdict, elapsed = backend.verify(
+                    Path(onnx_path),
+                    Path(vnnlib_path),
+                    time_limit_per_lp=float(self.cfg["small_dense_lp_time_limit_s"]),
+                    max_refinement_passes=int(refinement_passes),
+                )
+                witness = None
+                y_ort = None
+            else:  # "witness" or "auto"
+                backend = importlib.import_module("WitnessExtract")
+                backend_label = "witness"
+                result = backend.verify_with_falsification(
+                    Path(onnx_path),
+                    Path(vnnlib_path),
+                    time_limit_per_lp=float(self.cfg["small_dense_lp_time_limit_s"]),
+                    max_refinement_passes=int(refinement_passes),
+                    return_witness=True,
+                )
+                verdict, witness, y_ort, elapsed = result
+            self._stats["small_dense_lp_dispatch"] = True
+            self._stats["small_dense_lp_backend"] = backend_label
+            self._stats["small_dense_lp_verdict"] = verdict
+            self._stats["small_dense_lp_elapsed_s"] = elapsed
+            if refinement_passes is not None:
+                self._stats["small_dense_lp_refinement_passes"] = refinement_passes
+                self._stats["small_dense_lp_refinement_policy"] = refinement_policy
+            if verdict == "verified":
+                self._status = SolveStatus.UNSAT
+                return self._status
+            if verdict == "falsified":
+                # SOUNDNESS GATE: the external backend's ORT replay accepts
+                # +1e-6 slack (small_tol). Re-run ACT's strict zero-tol
+                # replay before promoting to SAT. See method docstring.
+                if witness is None:
+                    self._status = SolveStatus.UNKNOWN
+                    self._stats["small_dense_lp_no_witness"] = True
+                    return self._status
+                x_star_np = np.asarray(witness, dtype=np.float64).ravel()
+                if net is None or assert_layer is None:
+                    # Fail-closed per advisor 2026-05-24 Route C: without
+                    # ACT-side context we cannot run the strict zero-tol
+                    # replay, so the witness MUST NOT be promoted to SAT
+                    # on the strength of the external backend's +1e-6
+                    # acceptance. Downgrade to UNKNOWN and flag for audit.
+                    self._stats["small_dense_lp_strict_replay_unavailable"] = True
+                    self._status = SolveStatus.UNKNOWN
+                    return self._status
+                # Ensure net carries onnx_path so strict_replay_for_act can
+                # take the ORT fast path.
+                if self.cfg.get("onnx_path") and not getattr(net, "onnx_path", None):
+                    try: net.onnx_path = self.cfg["onnx_path"]
+                    except Exception: pass
+                try:
+                    ok = strict_replay_for_act(
+                        net=net, x_star=x_star_np, assert_layer=assert_layer
+                    )
+                    # R9.3: stash net so _emit_sat_with_receipt can read
+                    # the input-box check result it just recorded.
+                    self._last_net_for_replay = net
+                except Exception as e:
+                    ok = False
+                    self._stats["small_dense_lp_strict_replay_error"] = (
+                        f"{type(e).__name__}: {e}"
+                    )
+                if ok:
+                    sat_ok = self._emit_sat_with_receipt(
+                        x_star=x_star_np,
+                        assert_layer=assert_layer,
+                        source="small_dense_lp_witness",
+                    )
+                    if sat_ok:
+                        self._stats["small_dense_lp_strict_replay_passed"] = True
+                    return self._status
+                else:
+                    self._status = SolveStatus.UNKNOWN
+                    self._stats["small_dense_lp_phantom_rejected"] = True
+                return self._status
+            if (
+                verdict == "unknown"
+                and not self.cfg["small_dense_lp_fallback_on_unknown"]
+            ):
+                self._status = SolveStatus.UNKNOWN
+                return self._status
+        except Exception as exc:
+            self._stats["small_dense_lp_error"] = f"{type(exc).__name__}: {exc}"
+        return None
 
     # ----- Real entry: cons walker -----
     def consume_cons(
@@ -946,6 +1369,12 @@ class HZVerifier(Solver):
         self._lc_active = large_cls_active
         self._relu_idx_map = relu_idx_map
         self._total_relu = total_relu
+
+        small_dense_status = self._try_small_dense_lp(
+            conv_count=conv_count, net=net, assert_layer=assert_layer,
+        )
+        if small_dense_status is not None:
+            return small_dense_status
 
         op_counts: Dict[str, int] = {}
         for L in net.layers:
@@ -1088,6 +1517,7 @@ class HZVerifier(Solver):
                 ok = strict_replay_for_act(
                     net=net, x_star=x_star, assert_layer=assert_layer
                 )
+                self._last_net_for_replay = net  # R9.3 — see emit fn
             except Exception as e:
                 ok = False
                 self._stats["replay_error"] = f"{type(e).__name__}: {e}"
@@ -1096,9 +1526,13 @@ class HZVerifier(Solver):
                 self._stats["phantom_rejected"] = True
                 return self._status
 
-        self._status = SolveStatus.SAT
-        self._witness = np.asarray(x_star, dtype=np.float64).ravel()
-        self._has_solution = True
+        x_star_arr = np.asarray(x_star, dtype=np.float64).ravel()
+        self._emit_sat_with_receipt(
+            x_star=x_star_arr,
+            assert_layer=assert_layer,
+            source="hz_walker_lp",
+            model_path_fallback=getattr(net, "onnx_path", None),
+        )
         # Final cleanup: release intermediate HZ tensors held in var_to_hz
         try:
             del var_to_hz, out_hz, input_hz
@@ -1180,13 +1614,32 @@ class HZVerifier(Solver):
             if multi_in_hzs is None: multi_in_hzs = [hz_in]
             return ops["hz_concat"](multi_in_hzs)
         if op == "relu":
-            # large_cls_proof_mode: triangle for early relus, eq_lagr_v8 for last N
+            # large_cls_proof_mode: triangle for early relus, eq_lagr_v8 for last N.
+            # If ACT_HZ_LATE_RELU is set, use that method (e.g.
+            # "convex_hull_cont") for late-layer experiments. The raw
+            # per-neuron LP hull matches relaxed eq_lagr_v8; the full routed
+            # pipelines differ because eq_lagr_v8 also runs PEE.
             method = self.cfg["relu_method"]
+            ridx = self._relu_idx_map.get(L.id, 0)
             if getattr(self, "_lc_active", False):
-                ridx = self._relu_idx_map.get(L.id, 0)
                 eq_last = self.cfg["large_cls_eq_layers"]
                 if ridx <= self._total_relu - eq_last:
-                    method = "triangle"
+                    # ACT_HZ_MID_RELU lets experiments substitute the
+                    # default triangle for middle-layer HZono ReLUs
+                    # (e.g. "selective_chull"). Sound regardless of choice
+                    # since all dispatch targets are sound encodings.
+                    mid_method = os.environ.get("ACT_HZ_MID_RELU", "").strip()
+                    method = mid_method if mid_method else "triangle"
+                else:
+                    late_method = os.environ.get("ACT_HZ_LATE_RELU", "").strip()
+                    if late_method:
+                        method = late_method
+            # Expose the current relu_idx so selective_chull dispatches can
+            # look up per-layer masks (set by property-direction driver).
+            from act.back_end.hybridz_tf.algorithms.relu_methods import (
+                set_current_relu_idx,
+            )
+            set_current_relu_idx(ridx)
             return ops["hz_apply_relu_v8"](hz_in, method=method)
         if op == "lrelu":
             return ops["hz_apply_leaky_relu_v8"](hz_in, alpha=meta["alpha"])
@@ -1246,12 +1699,35 @@ class HZVerifier(Solver):
         )
 
     def _maybe_reduce(self, hz):
-        """Apply Girard generator reduction if ng exceeds girard_cap. Sound."""
+        """Apply sound Girard reduction when ``girard_cap`` is achievable.
+
+        For output dimension at least the configured cap, independent
+        diagonal slack cannot fit inside that cap; ``reduce_constraints``
+        keeps the larger representation rather than shrinking unsoundly.
+
+        Property-facing tail preservation: when ``hz.dim`` is below
+        non-zero ``tail_preserve_dim``, skip the reduce so that
+        correlation is preserved through the small classifier tail.
+        This is always sound (skipping a widening operator is identity).
+
+        Controlled result: tail preservation alone did not improve the
+        default eq_lagr_v8 path; paired with convex_hull_cont it materially
+        tightened margins. It is therefore an opt-in research policy rather
+        than a default verification behavior.
+        """
         cap = self.cfg["girard_cap"]
         if int(hz.ng) <= cap:
             return hz
+        tail_dim = int(self.cfg.get("tail_preserve_dim", 0) or 0)
+        if tail_dim > 0 and int(hz.dim) < tail_dim:
+            return hz
         try:
-            return hz.reduce_constraints(ng_budget=cap)
+            return hz.reduce_constraints(
+                ng_budget=cap,
+                constraint_keep_weight=float(
+                    self.cfg.get("constraint_keep_weight", 0.0) or 0.0
+                ),
+            )
         except Exception:
             return hz
 
@@ -1458,6 +1934,92 @@ def verify_once_hz(
     except Exception:
         pass
     return st, ce_input, stats
+
+
+def verify_all_lanes_hz(
+    net,
+    *,
+    solver: "HZVerifier",
+    timelimit: Optional[float] = None,
+) -> List[Tuple[str, Optional[np.ndarray], Dict[str, Any]]]:
+    """Batched-input HZ verification: analyze ONCE, verify each lane.
+
+    Mirrors ``verify_once_hz`` but takes a ``net`` whose INPUT_SPEC carries
+    ``B>=1`` lanes and returns a list of ``(status, ce_input, stats)`` of
+    length ``B``. The forward analyze pass is shared across lanes (batched
+    HZ propagation on GPU); ``consume_cons`` is still per-lane and runs
+    sequentially because the cons-walker / LP feasibility path predates
+    batch-native input. The solver is reset between lanes via ``begin()``
+    so per-lane state doesn't leak.
+
+    Single-lane callers should still use ``verify_once_hz`` — it preserves
+    the single-Verdict return shape that older drivers depend on.
+    """
+    from act.back_end.analyze import analyze
+    from act.back_end.transfer_functions import set_transfer_function_mode
+    from act.back_end.verifier import (
+        find_entry_layer_id, get_input_ids, get_output_ids,
+        gather_input_spec_layers, get_assert_layer,
+        seed_from_input_specs, add_all_input_specs, validate_constraints,
+    )
+
+    _tf_mode = os.environ.get("HYZOR_TF_MODE", "").strip().lower()
+    if _tf_mode in ("interval", "hybridz"):
+        set_transfer_function_mode(_tf_mode)
+
+    entry_id = find_entry_layer_id(net)
+    input_ids = get_input_ids(net)
+    output_ids = get_output_ids(net)
+    spec_layers = gather_input_spec_layers(net)
+    assert_layer = get_assert_layer(net)
+
+    seed_bounds = seed_from_input_specs(spec_layers)
+    if seed_bounds.lb.dim() < 2:
+        seed_bounds = Bounds(
+            lb=seed_bounds.lb.unsqueeze(0), ub=seed_bounds.ub.unsqueeze(0)
+        )
+    B = int(seed_bounds.lb.shape[0])
+
+    entry_fact = Fact(bounds=seed_bounds, cons=ConSet())
+    add_all_input_specs(entry_fact.cons, input_ids, spec_layers)
+    before, after, globalC = analyze(net, entry_id, entry_fact)
+    validate_constraints(globalC, after, net)
+
+    if timelimit is not None and hasattr(solver, "cfg"):
+        solver.cfg["timeout_s"] = float(timelimit)
+
+    results: List[Tuple[str, Optional[np.ndarray], Dict[str, Any]]] = []
+    for lane in range(B):
+        before_b1 = _slice_facts_lane(before, lane)
+        after_b1 = _slice_facts_lane(after, lane)
+        globalC_b1 = _slice_globalC_lane(globalC, lane)
+        assert_layer_b1 = _slice_assert_layer_lane(assert_layer, lane)
+
+        # Reset per-lane solver state. Same HZVerifier object is reused so
+        # cfg (relu_method / timeout / strict_replay etc.) stays consistent
+        # across lanes, but witness/stats from previous lane don't leak.
+        solver.begin()
+
+        st = solver.consume_cons(
+            globalC_b1, before_b1, after_b1,
+            net=net, input_ids=input_ids, output_ids=output_ids,
+            assert_layer=assert_layer_b1,
+        )
+        ce_input = None
+        if st == SolveStatus.SAT and solver.has_solution():
+            ce_input = solver.get_values(input_ids)
+
+        stats: Dict[str, Any] = {
+            "status": st, "ncons": len(globalC), "solver": "hyzor",
+            "batch_lane": lane, "batch_size": B,
+        }
+        try:
+            stats.update(solver.stats() if hasattr(solver, "stats") else {})
+        except Exception:
+            pass
+        results.append((st, ce_input, stats))
+
+    return results
 
 
 # ======================================================================
@@ -1748,7 +2310,7 @@ def check_unsafe_for_act(out_hz: HZono, assert_layer, *,
     return "feasible", None
 
 
-def lp_witness_to_input(xi_star: np.ndarray, input_hz: HZono) -> np.ndarray:
+def lp_witness_to_input(xi_star: np.ndarray, input_hz) -> np.ndarray:
     """Map a factor-space witness xi_star back to input space.
 
     For a network whose first HZ corresponds to the input box, the
@@ -1756,7 +2318,24 @@ def lp_witness_to_input(xi_star: np.ndarray, input_hz: HZono) -> np.ndarray:
     the relevant factor slots. If ``input_hz`` is a BoxHZ-style HZono
     (diagonal Gc, no Gb), the first p_in entries of ``xi_star`` are the
     factor coordinates of the input pixels.
+
+    A real ``BoxHZ`` stores bounds rather than factor columns. Once that
+    representation is materialised or reduced downstream, a final relaxed
+    LP witness has no defined inverse map to the original input factors.
+    Return its center as a concrete in-box replay candidate; strict replay
+    remains the sole authority for reporting SAT.
     """
+    if not hasattr(input_hz, "Gc"):
+        if hasattr(input_hz, "bounds"):
+            lb, ub = input_hz.bounds()
+            lb_np = _to_np_f64(lb).reshape(-1)
+            ub_np = _to_np_f64(ub).reshape(-1)
+            return (lb_np + ub_np) / 2.0
+        raise TypeError(
+            f"Cannot obtain a concrete input candidate from "
+            f"{type(input_hz).__name__}"
+        )
+
     p_in = int(input_hz.Gc.shape[1])
     q_in = int(input_hz.Gb.shape[1])
     xi_c = xi_star[:p_in]
@@ -1778,7 +2357,46 @@ from typing import Any
 
 
 
-__all__ = ["strict_replay_for_act"]
+__all__ = ["strict_replay_for_act", "reportable_verdict_for_cli"]
+
+
+def reportable_verdict_for_cli(solver: "HZVerifier", internal_status: str) -> str:
+    """Translate a solver's internal verdict into a CLI-reportable label.
+
+    Honesty rule (advisor 2026-05-24 Round 4):
+        Internal ``_status == SAT`` is the mathematical truth (a real
+        adversary was found and replay-confirmed). In formal mode that
+        SAT may still NOT be admissible into paper-grade FAL counts if
+        its audit ledger entry is incomplete. This helper surfaces that
+        distinction:
+
+        non-formal mode → normalize {UNSAT→CERTIFIED, SAT→FALSIFIED}
+        formal mode:
+            SAT + formal_result=REPORTABLE_FALSIFIED → FALSIFIED
+            SAT + formal_result=ERROR_*              → that ERROR_*
+            SAT + formal_result missing/None         → ERROR_NO_FORMAL_RESULT
+            UNSAT                                    → CERTIFIED
+            UNKNOWN                                  → UNKNOWN
+            anything else                            → ERROR_UNEXPECTED
+    """
+    import os as _os
+    formal = _os.environ.get("ACT_FAL_RECEIPT_FORMAL", "").strip().lower() \
+        in ("1", "true", "yes", "on")
+    if internal_status == "UNSAT":
+        return "CERTIFIED"
+    if internal_status == "UNKNOWN":
+        return "UNKNOWN"
+    if internal_status != "SAT":
+        return f"ERROR_UNEXPECTED_{internal_status}"
+    # SAT path
+    if not formal:
+        return "FALSIFIED"
+    fr = solver._stats.get("formal_result")
+    if fr == "REPORTABLE_FALSIFIED":
+        return "FALSIFIED"
+    if fr and fr.startswith("ERROR_"):
+        return fr
+    return "ERROR_NO_FORMAL_RESULT"
 
 
 # ----------------------------------------------------------------------
@@ -1872,6 +2490,62 @@ def _ort_replay(onnx_path: str, x_t: torch.Tensor, assert_layer) -> bool:
 # ----------------------------------------------------------------------
 
 
+def _x_star_in_input_box(net, x_arr) -> tuple[bool, str]:
+    """ROUND 9.3 (advisor 2026-05-25 P0): fail-CLOSED input-box gate.
+
+    Returns ``(holds, reason)`` where:
+      - ``holds=True``  iff x_arr is elementwise inside [lb, ub] for at
+        least one InputSpec layer with a usable bounds pair.
+      - ``holds=False`` for ANY of the following (R9.3 fail-closed):
+          * no InputSpec layer with usable bounds was found
+          * LayerKind import failed
+          * lb/ub missing on the (sole) input spec
+          * lb/ub shape doesn't match x_flat
+          * any (lb, ub) pair contains a NaN
+          * x violates any finite bound on the (sole) input spec
+
+    The earlier R9.2 returned True on shape-mismatch or missing spec —
+    that was FAIL-OPEN and admitted "validated" witnesses for which the
+    box was never actually checked. R9.3 closes that hole: a SAT/FAL is
+    only emitted when input-domain validity is positively established.
+
+    ``reason`` is a short tag for the caller to record in the receipt:
+        "ok" | "no_input_spec" | "missing_bounds" | "shape_mismatch"
+      | "nan_bounds" | "out_of_box" | "layerkind_unavailable"
+    """
+    try:
+        from act.back_end.layer_schema import LayerKind
+    except Exception:
+        return False, "layerkind_unavailable"
+    x_flat = _to_np(x_arr).astype(np.float64, copy=False).reshape(-1)
+    found_spec_with_bounds = False
+    for L in net.layers:
+        if L.kind != LayerKind.INPUT_SPEC.value:
+            continue
+        lb = L.params.get("lb")
+        ub = L.params.get("ub")
+        if lb is None or ub is None:
+            return False, "missing_bounds"
+        # Formal replay runs after propagation on the requested device.
+        # CUDA-hosted INPUT_SPEC bounds must be copied to host before the
+        # NumPy domain check; otherwise valid GPU witnesses are rejected.
+        lb_np = _to_np(lb).astype(np.float64, copy=False).reshape(-1)
+        ub_np = _to_np(ub).astype(np.float64, copy=False).reshape(-1)
+        if lb_np.shape != x_flat.shape or ub_np.shape != x_flat.shape:
+            return False, "shape_mismatch"
+        if np.any(np.isnan(lb_np)) or np.any(np.isnan(ub_np)):
+            return False, "nan_bounds"
+        tol = 0.0
+        lo_ok = (x_flat >= lb_np - tol) | ~np.isfinite(lb_np)
+        hi_ok = (x_flat <= ub_np + tol) | ~np.isfinite(ub_np)
+        if not bool(np.all(lo_ok & hi_ok)):
+            return False, "out_of_box"
+        found_spec_with_bounds = True
+    if not found_spec_with_bounds:
+        return False, "no_input_spec"
+    return True, "ok"
+
+
 def strict_replay_for_act(*, net, x_star, assert_layer) -> bool:
     """Strict (zero-tol) witness replay for the ACT verifier.
 
@@ -1881,11 +2555,31 @@ def strict_replay_for_act(*, net, x_star, assert_layer) -> bool:
         assert_layer: ACT ASSERT layer carrying spec params.
 
     Returns:
-        ``True`` iff the model's output at ``x_star`` violates the spec
-        (i.e. is in the unsafe set). Used to confirm SAT witnesses; if
-        False, the LP cert is spurious and the verdict downgrades.
+        ``True`` iff
+          (1) x_star lies elementwise inside every declared InputSpec
+              box on the net (ROUND 9.2 gate), AND
+          (2) the model's output at ``x_star`` violates the spec
+              (i.e. is in the unsafe set).
+        Used to confirm SAT witnesses; if either fails, the LP cert is
+        spurious and the verdict downgrades.
     """
     x_arr = np.asarray(x_star, dtype=np.float64)
+
+    # ROUND 9.3: fail-CLOSED input-box gate. Reject witnesses outside
+    # the box AND any case where the box itself cannot be validated
+    # (no InputSpec, shape mismatch, NaN bounds, missing bounds, etc.).
+    # P1 audit caught 31/49 sat_relu FAL with x outside [0,1]^100 (R9.2
+    # caught those); R9.3 also closes the fail-open path that returned
+    # True on missing-spec / shape-mismatch.
+    holds, reason = _x_star_in_input_box(net, x_arr)
+    # Stash on net so callers (write_receipt) can record this in the
+    # audit ledger. Best-effort: ignore if net is not a SimpleNamespace.
+    try:
+        net._last_input_box_check = (holds, reason)
+    except Exception:
+        pass
+    if not holds:
+        return False
 
     # Path 1: ORT replay (preferred — matches VNN-COMP scorer).
     onnx_path = getattr(net, "onnx_path", None)

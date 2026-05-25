@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "benchmark": "vit_2023",
+  "formal_mode": false,
+  "timestamp_utc": "20260525T053753557870Z",
+  "canonical_root": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks",
+  "receipt_dir": null,
+  "wall_min": 0.0024435043334960936,
+  "counts": {
+    "CERTIFIED": 0,
+    "FALSIFIED": 0,
+    "UNKNOWN": 0,
+    "ERROR": 1
+  },
+  "run_status": "FAILED",
+  "per_instance": [
+    {
+      "official_instance_id": 0,
+      "benchmark": "vit_2023",
+      "onnx_model": "onnx/pgd_2_3_16.onnx",
+      "vnnlib_spec": "vnnlib/pgd_2_3_16_2446.vnnlib",
+      "model_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/vit_2023/onnx/pgd_2_3_16.onnx",
+      "spec_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/vit_2023/vnnlib/pgd_2_3_16_2446.vnnlib.gz",
+      "internal_status": "ERROR",
+      "reportable_status": "ERROR",
+      "cli_normalized": "ERROR_RuntimeError",
+      "count_bucket": "ERROR",
+      "queries": [],
+      "q_statuses": [],
+      "q_reportables": [],
+      "q_receipts": [],
+      "error": "RuntimeError: mat1 and mat2 shapes cannot be multiplied (1x240 and 48x144)",
+      "wall_s": 0.14658761024475098
+    }
+  ]
+}

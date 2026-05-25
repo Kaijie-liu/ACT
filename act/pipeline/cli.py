@@ -526,6 +526,9 @@ def _run_vnnlib_verify(args) -> None:
     ``"interval"``) and ``--solvers`` (default ``"torchlp"``).  Multi-mode
     sweeps are the caller's job — invoke once per (tf-mode, solver) cell.
     Dual ignores ``--tf-modes`` because it's a backward Solver.
+
+    Solver=``hybridz`` routes to ``verify_once_hz`` + ``HZVerifier`` for the
+    HZ-native verdict path; see ``_run_vnnlib_verify_hybridz``.
     """
     from act.front_end.vnnlib_loader.create_specs import VNNLibSpecCreator
     from act.front_end.model_synthesis import synthesize_models_from_specs
@@ -541,6 +544,9 @@ def _run_vnnlib_verify(args) -> None:
 
     tf_mode = (args.tf_modes or ["interval"])[0]
     solver = (args.solvers or ["torchlp"])[0]
+
+    if solver == "hybridz":
+        return _run_vnnlib_verify_hybridz(args)
 
     set_solver_mode(solver)
     if solver != "dual":
@@ -564,6 +570,473 @@ def _run_vnnlib_verify(args) -> None:
         results = verify_once(net)
         statuses = [r.status.name for r in results]
         print(f"  {tag}: {statuses}")
+
+
+_HYZOR_DEFAULT_ENV = {
+    "HYZOR_V8_ATTACK_FIRST": "0",
+    "HYZOR_V8_PGD_PORTFOLIO": "0",
+    "HYZOR_LARGE_CLS_SAT_PREFLIGHT": "0",
+    "HYZOR_DISABLE_TYPEB_BOX_CENTER": "1",
+    "HYZOR_PURE_HZ_MODE": "1",
+    "HYZOR_SAT_SIDECAR": "1",
+    "HYZOR_DISPATCH_GUARD_GB": "13",
+    "HYZOR_RELU_MEM_BUDGET_GB": "13",
+    "HYZOR_CONV_MEM_BUDGET_GB": "13",
+    "HYZOR_V8_MEM_BUDGET_GB": "13",
+    "HYZOR_V8_MEM_RESERVE_GB": "1",
+    "HYZOR_PEE_GPU_QR": "1",
+    "HYZOR_LARGE_CLS_EQ_LAYERS": "1",
+    "HYZOR_TF_MODE": "interval",
+    "HYZOR_USE_ACT": "1",
+}
+
+
+def _normalize_hz_status(status_str: str) -> str:
+    """HZVerifier emits UNSAT/SAT/UNKNOWN; normalize to verdict vocabulary."""
+    return {"UNSAT": "CERTIFIED", "SAT": "FALSIFIED"}.get(status_str, status_str)
+
+
+def aggregate_query_statuses(q_statuses: list) -> str:
+    """Pure function: aggregate per-query HZVerifier statuses to an
+    instance-level status under the disjunctive UNSAFE-set semantic.
+
+    For a VNNLIB spec whose top-level OR blocks Cartesian-product into
+    ``len(q_statuses)`` queries, the whole spec is satisfied IFF some
+    per-query UNSAFE set is satisfied. Therefore:
+
+        ANY q == "SAT"   → "SAT"
+        ALL q == "UNSAT" → "UNSAT"
+        otherwise        → "UNKNOWN"
+
+    Empty input is treated as "UNKNOWN" (no decision possible without
+    at least one query). Statuses outside {SAT, UNSAT, UNKNOWN} are
+    treated as UNKNOWN.
+
+    Pinned by `tests/test_cli_query_aggregation.py` after advisor
+    2026-05-24 Round 3 finding that the inline aggregation logic at
+    `_run_vnnlib_verify_hybridz` lacked a regression test.
+    """
+    if not q_statuses:
+        return "UNKNOWN"
+    if any(s == "SAT" for s in q_statuses):
+        return "SAT"
+    if all(s == "UNSAT" for s in q_statuses):
+        return "UNSAT"
+    return "UNKNOWN"
+
+
+class IncompleteFormalAuditError(RuntimeError):
+    """ROUND 6 (advisor 2026-05-24): raised when a formal-mode CLI run
+    finishes with one or more instances in ``ERROR_RECEIPT_*`` or
+    ``ERROR_INTERNAL_INCONSISTENCY``.
+
+    The internal solver verdicts ARE preserved (math truth) and the
+    counts dict still reflects them — this exception fires AFTER the
+    final summary is printed. Its sole purpose is to propagate a
+    non-zero exit code to upstream schedulers (cron, CI, batch
+    runners) so they treat the run as INCOMPLETE rather than PASSED.
+
+    The message body lists the offending counts so an operator can
+    triage without re-reading the per-instance log.
+    """
+
+
+def compute_run_status(counts: dict, formal_mode: bool) -> str:
+    """Pure function: derive a CLI-level run status from per-bench counts.
+
+    Returns one of:
+        "PASSED"                    — no verifier or formal-audit errors
+        "FAILED"                    — at least one generic verifier/config error
+        "INCOMPLETE_FORMAL_AUDIT"   — formal mode AND at least one of
+                                      ERROR_RECEIPT/INTERNAL_INCONSISTENCY > 0
+
+    Generic per-instance exceptions are converted into the ``ERROR`` bucket
+    inside the hybridz driver; they must fail the run here because otherwise
+    the surrounding ``cmd_verify`` sees a normal return and incorrectly
+    prints ``PASSED``.
+    """
+    if int(counts.get("ERROR", 0) or 0) > 0:
+        return "FAILED"
+    if not formal_mode:
+        return "PASSED"
+    receipt_errors = int(counts.get("ERROR_RECEIPT", 0) or 0)
+    inconsistency = int(counts.get("ERROR_INTERNAL_INCONSISTENCY", 0) or 0)
+    if receipt_errors > 0 or inconsistency > 0:
+        return "INCOMPLETE_FORMAL_AUDIT"
+    return "PASSED"
+
+
+def aggregate_reportable_verdicts(q_reportables: list) -> str:
+    """Pure function: aggregate per-query REPORTABLE verdicts to an
+    instance-level reportable verdict (advisor 2026-05-24 Round 4).
+
+    Per-query inputs come from
+    ``solver_hz.reportable_verdict_for_cli`` and are one of:
+        FALSIFIED, CERTIFIED, UNKNOWN, ERROR_RECEIPT_*,
+        ERROR_INTERNAL_INCONSISTENCY, ERROR_NO_FORMAL_RESULT,
+        ERROR_UNEXPECTED_*.
+
+    Aggregation rule (preserves the disjunctive UNSAFE-set semantic
+    but propagates first witness-bearing ERROR honestly):
+        ANY q == FALSIFIED                  → FALSIFIED
+        else ANY q starts with "ERROR_"     → that ERROR (first one)
+        else ALL q == CERTIFIED             → CERTIFIED
+        else                                 → UNKNOWN
+
+    Why FALSIFIED beats ERROR: a single REPORTABLE_FALSIFIED query
+    suffices to falsify the whole spec (the disjunction is satisfied).
+    The ERROR from a DIFFERENT query doesn't change that. Only when no
+    query reports FALSIFIED does an ERROR propagate.
+    """
+    if not q_reportables:
+        return "UNKNOWN"
+    if any(v == "FALSIFIED" for v in q_reportables):
+        return "FALSIFIED"
+    for v in q_reportables:
+        if isinstance(v, str) and v.startswith("ERROR_"):
+            return v
+    if all(v == "CERTIFIED" for v in q_reportables):
+        return "CERTIFIED"
+    return "UNKNOWN"
+
+
+def select_pairs_by_official_ids(pairs: list, instance_ids: str | None) -> list:
+    """Select stable VNN-COMP instances for formal sentinel/audit runs.
+
+    ``official_instance_id`` is the row index propagated by
+    ``list_downloaded_pairs`` after header detection.  Selection is by that
+    id, not by the filtered loop index, and follows the order requested on
+    the command line so an audit command is reproducible verbatim.
+    """
+    if not instance_ids:
+        return list(pairs)
+    raw_ids = [part.strip() for part in instance_ids.split(",") if part.strip()]
+    if not raw_ids:
+        raise ValueError("--instance-ids must contain at least one integer id")
+    try:
+        wanted = [int(part) for part in raw_ids]
+    except ValueError as exc:
+        raise ValueError("--instance-ids must be comma-separated integers") from exc
+    if len(set(wanted)) != len(wanted) or any(i < 0 for i in wanted):
+        raise ValueError("--instance-ids must be distinct non-negative integers")
+    by_id = {int(p["official_instance_id"]): p for p in pairs}
+    missing = [i for i in wanted if i not in by_id]
+    if missing:
+        raise ValueError(f"official instance ids not found: {missing}")
+    return [by_id[i] for i in wanted]
+
+
+def _run_vnnlib_verify_hybridz(args) -> None:
+    """HZ-native verification path: ``HZVerifier`` + ``verify_once_hz``.
+
+    Stock ``--solvers torchlp|gurobi|dual`` consume ACT's BatchLPProblem;
+    HZVerifier instead walks the cons IR via ``consume_cons`` (HZ-native),
+    so it's wired through its own driver. Per-instance subprocess isolation
+    is unnecessary here because each call to ``verify_once_hz`` operates on
+    a fresh ``HZVerifier`` and the analyzer state is rebuilt per net.
+
+    Reads ``--category``, ``--max-instances``, ``--timeout``, ``--device``,
+    ``--dtype``. Defaults the HYZOR_* environment knobs to the values used
+    by the v120 reference recipe, but only when the caller hasn't set them
+    explicitly (env precedence preserved).
+    """
+    import os
+    import time as _time
+    import traceback as _tb
+    from pathlib import Path as _Path
+
+    import torch as _torch
+
+    from act.front_end.vnnlib_loader.data_model_loader import (
+        list_downloaded_pairs, load_vnnlib_pair,
+    )
+    from act.front_end.vnnlib_loader.vnnlib_parser import parse_vnnlib_queries
+    from act.front_end.verifiable_model import (
+        InputLayer, InputSpecLayer, OutputSpecLayer, VerifiableModel,
+    )
+    from act.pipeline.verification.torch2act import TorchToACT
+    from act.back_end.solver.solver_hz import (
+        HZVerifier, verify_once_hz, reportable_verdict_for_cli,
+    )
+
+    if not args.category:
+        raise ValueError("--verify vnnlib requires --category (e.g. --category acasxu_2023)")
+
+    for k, v in _HYZOR_DEFAULT_ENV.items():
+        os.environ.setdefault(k, v)
+
+    device = getattr(args, "device", None) or "cuda"
+    dtype_str = getattr(args, "dtype", "float64")
+    dtype = _torch.float64 if dtype_str == "float64" else _torch.float32
+    timeout_s = float(getattr(args, "timeout", 300.0) or 300.0)
+    max_instances = getattr(args, "max_instances", None)
+    formal_mode = (
+        os.environ.get("ACT_FAL_RECEIPT_FORMAL", "").strip().lower()
+        in ("1", "true", "yes", "on")
+    )
+    results_dir = (
+        os.environ.get("ACT_FORMAL_RESULTS_DIR")
+        or os.environ.get("ACT_FAL_RECEIPT_DIR")
+    )
+    if formal_mode and not results_dir:
+        raise IncompleteFormalAuditError(
+            "INCOMPLETE_FORMAL_AUDIT: formal mode requires "
+            "ACT_FORMAL_RESULTS_DIR or ACT_FAL_RECEIPT_DIR before execution; "
+            "no unlogged formal run is permitted."
+        )
+
+    # ROUND 4 (advisor 2026-05-24): allow operators to point ACT at the
+    # canonical VNN-COMP benchmark root instead of duplicating data under
+    # ACT/data/vnnlib. Frozen-baseline audits should run against the
+    # SHA-pinned canonical files, not whatever was redundantly downloaded.
+    _vnnlib_root = os.environ.get("ACT_VNNLIB_ROOT")
+    pairs = [p for p in list_downloaded_pairs(root_dir=_vnnlib_root)
+             if p["category"] == args.category]
+    if not pairs:
+        raise RuntimeError(
+            f"No downloaded VNNLIB instances for category={args.category!r}; "
+            f"run `python -m act.pipeline --download {args.category}` first"
+        )
+    pairs = select_pairs_by_official_ids(
+        pairs, getattr(args, "instance_ids", None)
+    )
+    if max_instances is not None:
+        pairs = pairs[:int(max_instances)]
+
+    total = len(pairs)
+    print(f"[vnnlib] category={args.category} max_instances={total} "
+          f"mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; "
+          f"device={device}, timeout={timeout_s}s)")
+
+    counts = {"CERTIFIED": 0, "FALSIFIED": 0, "UNKNOWN": 0, "ERROR": 0}
+    # ROUND 6 (advisor 2026-05-24): structured per-instance log so
+    # downstream audits don't depend on stdout scraping. Each row carries
+    # official_instance_id (audit key), internal/reportable verdict,
+    # query count, receipt path (if any), and wall.
+    per_instance: list[dict] = []
+    t_start = _time.time()
+    for i, p in enumerate(pairs):
+        onnx_p = p["paths"]["onnx"]
+        vnn_p = p["paths"]["vnnlib"]
+        tag = f"{p['category']}/{p['onnx_model']}@{p['vnnlib_spec']}"
+        t0 = _time.time()
+        internal_status = "ERROR"
+        reportable_status = "ERROR"
+        q_statuses: list[str] = []
+        q_reportables: list[str] = []
+        q_receipts: list[Optional[str]] = []
+        instance_error: Optional[str] = None
+        try:
+            pair = load_vnnlib_pair(
+                category=p["category"], onnx_model=p["onnx_model"],
+                vnnlib_spec=p["vnnlib_spec"], auto_download=False,
+                # ROUND 5 (advisor 2026-05-24): pass the SAME canonical
+                # root that drove enumeration, so loader doesn't fall
+                # back to ACT default root and miss benchmarks that
+                # only exist under the canonical mirror.
+                root_dir=_vnnlib_root,
+            )
+            model = pair["model"].to(dtype).eval()
+            in_shape = pair["labeled_tensor"].tensor.shape
+            # CRITICAL: pass labeled_tensor so the parser collapses 199
+            # individual (Y_j >= Y_t) disjuncts into a single TOP1_ROBUST
+            # query with M=199. Without this we'd silently fall back to
+            # the legacy single-disjunct (UNSAFE_LINEAR M=1) shortcut.
+            queries = parse_vnnlib_queries(_Path(vnn_p), labeled_tensor=pair["labeled_tensor"])
+            # SOUNDNESS GATE (2026-05-24 advisor review): the parser emits
+            # the Cartesian product of all top-level OR blocks as
+            # ``queries``. Semantically, the whole VNNLIB spec describes
+            # the UNSAFE set as the *union* over per-query unsafe sets, so:
+            #   * ANY query → FALSIFIED  ⇒ instance FALSIFIED  (one
+            #     witness in any per-query unsafe set is a real adversary)
+            #   * ALL queries → CERTIFIED ⇒ instance CERTIFIED  (every
+            #     branch of the disjunction proved infeasible)
+            #   * otherwise → UNKNOWN
+            # Taking only queries[0] would silently miss per-query unsafe
+            # branches and mis-report CERTIFIED on multi-OR specs.
+            # T2 ablation knob: env ACT_HZ_EQ_LAYERS overrides the default
+            # last-N eq_lagr_v8 layer count for large_cls scheduling. Default 3.
+            _eq_layers = int(os.environ.get("ACT_HZ_EQ_LAYERS", "3"))
+            in_layer = InputLayer(
+                labeled_input=pair["labeled_tensor"],
+                shape=tuple(int(s) for s in in_shape),
+                dtype=dtype,
+            )
+            for q_idx, (in_spec, out_spec) in enumerate(queries):
+                vm = VerifiableModel(
+                    input_layer=in_layer,
+                    input_spec=InputSpecLayer(spec=in_spec),
+                    model=model,
+                    output_spec=OutputSpecLayer(spec=out_spec),
+                )
+                net = TorchToACT(vm).run()
+                solver = HZVerifier(
+                    device=device, dtype=dtype, timeout_s=timeout_s,
+                    strict_replay=True, onnx_path=onnx_p,
+                    vnnlib_path=vnn_p,
+                    # Use official_instance_id (row position in instances.csv
+                    # after correct header detection), NOT the filtered-loop
+                    # index ``i``. The two differ when filter / max-instances
+                    # is applied or when the CSV is headerless. Per advisor
+                    # 2026-05-24 Round 3, receipts MUST carry official ids.
+                    instance_id=int(p.get('official_instance_id', i)),
+                    query_index=q_idx,
+                    benchmark=p['category'],
+                    large_cls_eq_layers=_eq_layers,
+                    small_dense_lp=os.environ.get("ACT_HZ_SMALL_DENSE_LP", "auto"),
+                    small_dense_lp_root=os.environ.get("ACT_HZ_SMALL_DENSE_LP_ROOT"),
+                    small_dense_lp_time_limit_s=float(
+                        os.environ.get("ACT_HZ_SMALL_DENSE_LP_TIME_LIMIT_S", "5.0")
+                    ),
+                    small_dense_lp_refinement_passes=int(
+                        os.environ.get("ACT_HZ_SMALL_DENSE_LP_REFINEMENT_PASSES", "0")
+                    ),
+                    small_dense_lp_fallback_on_unknown=(
+                        os.environ.get("ACT_HZ_SMALL_DENSE_LP_FALLBACK", "0") == "1"
+                    ),
+                )
+                q_status, _, _ = verify_once_hz(net=net, solver=solver, timelimit=timeout_s)
+                q_internal = str(q_status)
+                q_statuses.append(q_internal)
+                q_reportables.append(
+                    reportable_verdict_for_cli(solver, q_internal)
+                )
+                q_receipts.append(solver._stats.get("fal_receipt_path"))
+                # Short-circuit on FALSIFIED — any per-query SAT is sufficient.
+                if q_internal == "SAT":
+                    break
+            # Aggregate per the disjunctive UNSAFE-set semantic — see
+            # ``aggregate_query_statuses`` (internal math) and
+            # ``aggregate_reportable_verdicts`` (formal-mode reportable).
+            # In formal mode the reportable verdict may be ERROR_RECEIPT_*
+            # even when the math says SAT — honest accounting: real
+            # adversary exists but audit ledger is incomplete.
+            internal_status = aggregate_query_statuses(q_statuses)
+            reportable_status = aggregate_reportable_verdicts(q_reportables)
+            # The reportable verdict is what enters the count buckets so
+            # ERROR_RECEIPT_* is visible to operators. The internal status
+            # is preserved via _stats for diagnostic.
+            status_str = reportable_status if (
+                os.environ.get("ACT_FAL_RECEIPT_FORMAL", "").strip().lower()
+                in ("1", "true", "yes", "on")
+            ) else internal_status
+        except Exception as e:
+            status_str = f"ERROR_{type(e).__name__}"
+            instance_error = f"{type(e).__name__}: {e}"
+            if os.environ.get("ACT_VERIFY_VERBOSE") == "1":
+                _tb.print_exc()
+
+        elapsed = _time.time() - t0
+        # ROUND 4 honesty (advisor 2026-05-24): formal-mode reportables
+        # may be REPORTABLE_FALSIFIED, REPORTABLE_CERTIFIED, ERROR_RECEIPT_*,
+        # ERROR_INTERNAL_INCONSISTENCY, or any normal HZ verdict. We
+        # bucket ERROR_RECEIPT_* into a separate "ERROR_RECEIPT" count
+        # so phantom-FAL audit is visible without polluting FAL count.
+        normalized = _normalize_hz_status(status_str)
+        if normalized == "ERROR_INTERNAL_INCONSISTENCY":
+            key = "ERROR_INTERNAL_INCONSISTENCY"
+            counts.setdefault(key, 0)
+        elif normalized.startswith("ERROR_RECEIPT"):
+            key = "ERROR_RECEIPT"
+            counts.setdefault("ERROR_RECEIPT", 0)
+        elif normalized in counts:
+            key = normalized
+        else:
+            key = "ERROR"
+        counts[key] = counts.get(key, 0) + 1
+        per_instance.append({
+            "official_instance_id": int(p.get("official_instance_id", i)),
+            "benchmark": p.get("category", args.category),
+            "onnx_model": p.get("onnx_model", ""),
+            "vnnlib_spec": p.get("vnnlib_spec", ""),
+            "model_path": onnx_p,
+            "spec_path": vnn_p,
+            "internal_status": internal_status,
+            "reportable_status": reportable_status,
+            "cli_normalized": normalized,
+            "count_bucket": key,
+            "queries": [
+                {
+                    "query_index": q_idx,
+                    "internal_status": q_status,
+                    "reportable_status": q_reportables[q_idx],
+                    "receipt_path": q_receipts[q_idx],
+                }
+                for q_idx, q_status in enumerate(q_statuses)
+            ],
+            "q_statuses": q_statuses,
+            "q_reportables": q_reportables,
+            "q_receipts": q_receipts,
+            "error": instance_error,
+            "wall_s": float(elapsed),
+        })
+        print(f"  [{i + 1:3d}/{total}] {tag}: {normalized} ({elapsed:.1f}s)  "
+              f"V={counts['CERTIFIED']} A={counts['FALSIFIED']} "
+              f"U={counts['UNKNOWN']} E={counts['ERROR']}  "
+              f"R={counts.get('ERROR_RECEIPT', 0)}", flush=True)
+
+    wall_min = (_time.time() - t_start) / 60.0
+    print(f"\n[vnnlib/hybridz] FINAL — total={total} wall={wall_min:.1f} min")
+    for k, v in counts.items():
+        if v:
+            print(f"  {k:12s} {v}")
+
+    # ROUND 6 (advisor 2026-05-24): structured per-instance log + formal
+    # exit-code contract. Two outputs:
+    #   (a) Always: write per_instance JSON to ACT_FORMAL_RESULTS_DIR if
+    #       set (or to ACT_FAL_RECEIPT_DIR/per_instance.json as fallback).
+    #   (b) Formal mode: if R>0 or any INTERNAL_INCONSISTENCY, raise
+    #       IncompleteFormalAuditError so cmd_verify maps to FAILED →
+    #       sys.exit(1). The math verdicts are PRESERVED in the log.
+    if results_dir:
+        try:
+            import json as _json
+            import datetime as _datetime
+            results_path = _Path(results_dir)
+            results_path.mkdir(parents=True, exist_ok=True)
+            ts = _datetime.datetime.now(_datetime.timezone.utc).strftime(
+                "%Y%m%dT%H%M%S%fZ"
+            )
+            payload = {
+                "schema_version": 1,
+                "benchmark": args.category,
+                "formal_mode": formal_mode,
+                "timestamp_utc": ts,
+                "canonical_root": _vnnlib_root,
+                "receipt_dir": os.environ.get("ACT_FAL_RECEIPT_DIR"),
+                "wall_min": wall_min,
+                "counts": counts,
+                "run_status": compute_run_status(counts, formal_mode),
+                "per_instance": per_instance,
+            }
+            out_json = results_path / f"per_instance_{args.category}_{ts}.json"
+            if out_json.exists():
+                raise FileExistsError(f"refusing to overwrite {out_json}")
+            tmp_json = out_json.with_suffix(out_json.suffix + ".tmp")
+            tmp_json.write_text(_json.dumps(payload, indent=2, default=str))
+            os.replace(tmp_json, out_json)
+            print(f"  [structured] per-instance log → {out_json}")
+        except Exception as e:
+            print(f"  [structured] WARN: failed to write per-instance log: {e}",
+                  flush=True)
+            if formal_mode:
+                raise
+
+    run_status = compute_run_status(counts, formal_mode)
+    if run_status == "INCOMPLETE_FORMAL_AUDIT":
+        r_n = counts.get("ERROR_RECEIPT", 0)
+        ii_n = counts.get("ERROR_INTERNAL_INCONSISTENCY", 0)
+        raise IncompleteFormalAuditError(
+            f"INCOMPLETE_FORMAL_AUDIT: ERROR_RECEIPT={r_n}, "
+            f"ERROR_INTERNAL_INCONSISTENCY={ii_n}. "
+            "Per-instance log preserved; internal math verdicts intact. "
+            "Re-check receipt directory + instance_id propagation."
+        )
+    if run_status == "FAILED":
+        raise RuntimeError(
+            f"VERIFICATION_RUN_FAILED: ERROR={counts.get('ERROR', 0)}. "
+            "Per-instance log preserved; inspect instance error fields."
+        )
 
 
 def _run_torchvision_verify(args) -> None:
@@ -858,6 +1331,7 @@ Examples:
   python -m act.pipeline --verify vnnlib --category acasxu_2023 --max-instances 3 --tf-modes interval --solvers torchlp
   python -m act.pipeline --verify vnnlib --category acasxu_2023 --max-instances 3 --tf-modes hybridz --solvers torchlp
   python -m act.pipeline --verify vnnlib --category acasxu_2023 --max-instances 3                          --solvers dual
+  python -m act.pipeline --verify vnnlib --category tinyimagenet_2024 --max-instances 3                    --solvers hybridz   # HZ-native verifier (verify_once_hz)
 
   # Run verifier on a TorchVision dataset-model pair end-to-end.
   python -m act.pipeline --verify torchvision --dataset MNIST --model simple_cnn --num-samples 2 --tf-modes interval --solvers torchlp
@@ -939,6 +1413,14 @@ Examples:
         type=int,
         default=10,
         help="Max VNNLIB instances to load (default: 10)",
+    )
+    vnnlib_group.add_argument(
+        "--instance-ids",
+        type=str,
+        help=(
+            "Comma-separated official instance ids for reproducible VNNLIB "
+            "sentinel/audit runs (hybridz path); applied before --max-instances"
+        ),
     )
 
     # TorchVision-specific options

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "benchmark": "yolo_2023",
+  "formal_mode": false,
+  "timestamp_utc": "20260525T054031379589Z",
+  "canonical_root": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks",
+  "receipt_dir": null,
+  "wall_min": 0.005704565842946371,
+  "counts": {
+    "CERTIFIED": 0,
+    "FALSIFIED": 0,
+    "UNKNOWN": 0,
+    "ERROR": 1
+  },
+  "run_status": "FAILED",
+  "per_instance": [
+    {
+      "official_instance_id": 0,
+      "benchmark": "yolo_2023",
+      "onnx_model": "onnx/TinyYOLO.onnx",
+      "vnnlib_spec": "vnnlib/TinyYOLO_prop_000005_eps_1_255.vnnlib",
+      "model_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/yolo_2023/onnx/TinyYOLO.onnx",
+      "spec_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/yolo_2023/vnnlib/TinyYOLO_prop_000005_eps_1_255.vnnlib.gz",
+      "internal_status": "ERROR",
+      "reportable_status": "ERROR",
+      "cli_normalized": "ERROR_RuntimeError",
+      "count_bucket": "ERROR",
+      "queries": [],
+      "q_statuses": [],
+      "q_reportables": [],
+      "q_receipts": [],
+      "error": "RuntimeError: shape '[1, 3, 1, 14421]' is invalid for input of size 43264",
+      "wall_s": 0.34224534034729004
+    }
+  ]
+}

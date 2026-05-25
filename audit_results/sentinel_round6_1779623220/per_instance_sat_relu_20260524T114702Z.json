@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "benchmark": "sat_relu",
+  "formal_mode": true,
+  "timestamp_utc": "20260524T114702Z",
+  "wall_min": 0.0033855199813842773,
+  "counts": {
+    "CERTIFIED": 0,
+    "FALSIFIED": 1,
+    "UNKNOWN": 0,
+    "ERROR": 0
+  },
+  "run_status": "PASSED",
+  "per_instance": [
+    {
+      "official_instance_id": 0,
+      "benchmark": "sat_relu",
+      "onnx_model": "onnx/sat_v30_c38.onnx",
+      "vnnlib_spec": "vnnlib/sat_v30_c38.vnnlib",
+      "internal_status": "SAT",
+      "reportable_status": "FALSIFIED",
+      "cli_normalized": "FALSIFIED",
+      "count_bucket": "FALSIFIED",
+      "q_statuses": [
+        "SAT"
+      ],
+      "q_reportables": [
+        "FALSIFIED"
+      ],
+      "q_receipts": [
+        "/data1/Kane/ACT/audit_results/sentinel_round6_1779623220/sat_relu_0_q0_small_dense_lp_witness_0.json"
+      ],
+      "wall_s": 0.20309805870056152
+    }
+  ]
+}

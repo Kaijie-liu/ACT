@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "benchmark": "sat_relu",
+  "formal_mode": true,
+  "timestamp_utc": "20260524T120301718026Z",
+  "canonical_root": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks",
+  "receipt_dir": "/data1/Kane/ACT/audit_results/r7_validate_1779624174",
+  "wall_min": 0.0008962750434875488,
+  "counts": {
+    "CERTIFIED": 0,
+    "FALSIFIED": 0,
+    "UNKNOWN": 0,
+    "ERROR": 1
+  },
+  "run_status": "FAILED",
+  "per_instance": [
+    {
+      "official_instance_id": 1,
+      "benchmark": "sat_relu",
+      "onnx_model": "onnx/unsat_v30_c38.onnx",
+      "vnnlib_spec": "vnnlib/unsat_v30_c38.vnnlib",
+      "model_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v30_c38.onnx",
+      "spec_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/vnnlib/unsat_v30_c38.vnnlib",
+      "internal_status": "ERROR",
+      "reportable_status": "ERROR",
+      "cli_normalized": "ERROR_ValueError",
+      "count_bucket": "ERROR",
+      "queries": [],
+      "q_statuses": [],
+      "q_reportables": [],
+      "q_receipts": [],
+      "error": "ValueError: invalid literal for int() with base 10: 'not_an_int'",
+      "wall_s": 0.05375862121582031
+    }
+  ]
+}

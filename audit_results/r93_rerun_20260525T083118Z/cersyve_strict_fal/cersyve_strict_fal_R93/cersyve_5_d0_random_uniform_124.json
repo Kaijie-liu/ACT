@@ -1,0 +1,81 @@
+{
+  "artifact_schema_version": 1,
+  "cast_from_dtype": "float64",
+  "cast_to_dtype": "<class 'numpy.float32'>",
+  "hyzor_git_head": "bf28d58ef36aba38e5757877f779b390a68db932",
+  "hyzor_worktree_dirty": true,
+  "in_input_domain": true,
+  "input_domain_check_tol": 0.0,
+  "model_input_dtype": "tensor(float)",
+  "model_input_name": "data_0",
+  "model_input_shape": [
+    1,
+    2
+  ],
+  "model_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cersyve/onnx/pendulum_pretrain_inv.onnx",
+  "model_sha256": "ee7d4c9d847a2634da37be2e2439e7c90bf971f586386f5c745f6adc8f6c1837",
+  "numpy_version": "2.3.5",
+  "onnxruntime_version": "1.22.2",
+  "ort_session_config": {
+    "graph_optimization_level": "ORT_ENABLE_ALL",
+    "inter_op_num_threads": 1,
+    "intra_op_num_threads": 1,
+    "providers": [
+      "CPUExecutionProvider"
+    ]
+  },
+  "ort_session_config_hash": "f7ac37d3ac5056f73d0f424a0b52965d2b6ecb2a491d8eb24d1886bd784cf129",
+  "proof_verdict": "unknown",
+  "run_id": "cersyve_strict_fal_R93",
+  "sidecar_verdict": "sat_zero_tol",
+  "spec_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cersyve/vnnlib/prop_pendulum.vnnlib",
+  "spec_result_small_tol": {
+    "ast_holds": true,
+    "clauses": [
+      {
+        "clause_repr": "Y_0 \u2264 0.0",
+        "diff": -0.0006718896329402924,
+        "gap": 0.0006718896329402924,
+        "holds": true
+      },
+      {
+        "clause_repr": "Y_1 \u2265 0.0",
+        "diff": 0.04333115369081497,
+        "gap": 0.04333115369081497,
+        "holds": true
+      }
+    ],
+    "tol": 1e-06,
+    "tol_name": "small_tol"
+  },
+  "spec_result_zero_tol": {
+    "ast_holds": true,
+    "clauses": [
+      {
+        "clause_repr": "Y_0 \u2264 0.0",
+        "diff": -0.0006718896329402924,
+        "gap": 0.0006718896329402924,
+        "holds": true
+      },
+      {
+        "clause_repr": "Y_1 \u2265 0.0",
+        "diff": 0.04333115369081497,
+        "gap": 0.04333115369081497,
+        "holds": true
+      }
+    ],
+    "tol": 0.0,
+    "tol_name": "zero_tol"
+  },
+  "spec_sha256": "9d5ad329c788628544e203aefe9eaeece6f321599cdd3601965312a9624b7be2",
+  "timestamp_utc": "2026-05-24T22:33:39.689460Z",
+  "witness_id": {
+    "attempt_index": 124,
+    "benchmark": "cersyve",
+    "instance_id": 5,
+    "source": "d0_random_uniform"
+  },
+  "x_star_npy": "cersyve_5_d0_random_uniform_124.x_star.npy",
+  "x_star_sha256": "4813e1b201ec102d9ca16798e57a228d4360090f1e80e67d501c37de9179fd70",
+  "y_ort_npy": "cersyve_5_d0_random_uniform_124.y_ort.npy"
+}

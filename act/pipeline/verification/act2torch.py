@@ -977,12 +977,15 @@ class ACTToTorch:
             LayerKind.CONVTRANSPOSE2D.value,
         ):
             kwargs["bias"] = False
-        # Pass through common kwargs from params
+        # Pass through common kwargs from params. output_padding is required
+        # for ConvTranspose2d to materialise the correct spatial shape on
+        # asymmetric kernels (e.g. cgan_2023 cGAN_*_transposedConvPadding_1).
         for key in (
             "stride",
             "padding",
             "dilation",
             "groups",
+            "output_padding",
             "start_dim",
             "negative_slope",
         ):

@@ -31,11 +31,11 @@ sufficient for the ACT batch-native TF chain to make progress:
     chain ``freeze()``s into either a full HZono, a SparseGcZ, or
     falls back to a BoxHZ snapshot.
 
-  * **SparseGcZ** -- HZ with sparse-COO Gc storage; nb = 0. Useful for
-    a single-conv chain where Gc has well-defined sparsity but dense
-    storage doesn't fit. Supports triangle ReLU (which preserves
-    sparse-Gc structure) but cannot host eq_lagr-style ReLU encodings
-    (those need dense Gc + binary slots).
+  * **SparseGcZ** -- HZ with sparse-COO Gc and optional sparse linear
+    constraint rows; nb = 0. Useful for a single-conv chain where Gc
+    has well-defined sparsity but dense storage doesn't fit. Supports
+    triangle ReLU and sparse selective convex-hull facet cuts; encodings
+    requiring binary slots still promote to dense HZono.
 
 This module is a direct port of the corresponding HyZor classes in
 ``HyZor/__init__.py`` (which return ``HybridZonotope``); here we return
@@ -607,17 +607,42 @@ class SparseGcZ:
 
     Used as an intermediate after a single conv on a BoxHZ root when
     the dense materialisation doesn't fit but the sparse Gc does.
-    Supports triangle ReLU (which preserves sparse-Gc structure) and
-    converts to dense ``HZono`` via ``to_hzono()`` when subsequent
-    transformations need the dense form (e.g. eq_lagr ReLU).
+    Supports triangle ReLU and sparse inequality cuts (which preserve
+    sparse-Gc structure), and converts to dense ``HZono`` via
+    ``to_hzono()`` when subsequent transformations need the dense form
+    (e.g. eq_lagr ReLU).
     """
 
     def __init__(self, *, c: torch.Tensor, Gc_sparse: torch.Tensor,
-                 dtype, device):
+                 dtype, device, Ac_sparse: Optional[torch.Tensor] = None,
+                 b: Optional[torch.Tensor] = None,
+                 eq_mask: Optional[torch.Tensor] = None):
         self.c = c.flatten().to(dtype=dtype, device=device)
         self.Gc_sparse = Gc_sparse.coalesce()
         self.dtype = dtype
         self.device = device
+        ng = int(self.Gc_sparse.shape[1])
+        if Ac_sparse is None:
+            Ac_sparse = torch.sparse_coo_tensor(
+                torch.zeros((2, 0), dtype=torch.long, device=device),
+                torch.zeros(0, dtype=dtype, device=device),
+                (0, ng), dtype=dtype, device=device,
+            )
+        self.Ac_sparse = Ac_sparse.coalesce().to(dtype=dtype, device=device)
+        nc = int(self.Ac_sparse.shape[0])
+        self.b = (
+            torch.zeros((nc, 1), dtype=dtype, device=device)
+            if b is None else b.to(dtype=dtype, device=device).view(-1, 1)
+        )
+        if int(self.b.shape[0]) != nc:
+            raise ValueError("SparseGcZ: Ac_sparse/b row mismatch")
+        self.eq_mask = (
+            torch.zeros(nc, dtype=torch.bool, device=device)
+            if eq_mask is None
+            else eq_mask.to(dtype=torch.bool, device=device).view(-1)
+        )
+        if int(self.eq_mask.numel()) != nc:
+            raise ValueError("SparseGcZ: Ac_sparse/eq_mask row mismatch")
 
     @property
     def dim(self) -> int:
@@ -637,7 +662,13 @@ class SparseGcZ:
 
     @property
     def nc(self) -> int:
-        return 0
+        return int(self.b.shape[0])
+
+    def _constraints_with_ng(self, ng: int) -> torch.Tensor:
+        return torch.sparse_coo_tensor(
+            self.Ac_sparse.indices(), self.Ac_sparse.values(),
+            (self.nc, int(ng)), dtype=self.dtype, device=self.device,
+        ).coalesce()
 
     def bounds(self) -> Tuple[torch.Tensor, torch.Tensor]:
         if self.Gc_sparse._nnz() == 0:
@@ -656,10 +687,10 @@ class SparseGcZ:
             c=self.c.view(-1, 1),
             Gc=Gc_dense,
             Gb=torch.zeros((self.dim, 0), dtype=self.dtype, device=self.device),
-            Ac=torch.zeros((0, Gc_dense.shape[1]),
-                            dtype=self.dtype, device=self.device),
-            Ab=torch.zeros((0, 0), dtype=self.dtype, device=self.device),
-            b=torch.zeros((0, 1), dtype=self.dtype, device=self.device),
+            Ac=self.Ac_sparse.to_dense(),
+            Ab=torch.zeros((self.nc, 0), dtype=self.dtype, device=self.device),
+            b=self.b.clone(),
+            eq_mask=self.eq_mask.clone(),
         )
 
     # Alias for parity with HyZor's HybridZonotope-style API. HyZor's
@@ -703,8 +734,10 @@ class SparseGcZ:
             ind, scaled_val, self.Gc_sparse.shape,
             dtype=self.dtype, device=self.device,
         ).coalesce()
-        return SparseGcZ(c=c_new, Gc_sparse=Gc_new,
-                         dtype=self.dtype, device=self.device)
+        return SparseGcZ(
+            c=c_new, Gc_sparse=Gc_new, dtype=self.dtype, device=self.device,
+            Ac_sparse=self.Ac_sparse, b=self.b, eq_mask=self.eq_mask,
+        )
 
     def apply_dense(self, W, b=None) -> HZono:
         """``y = W x + b``. Sparse Gc → dense Gc' = W @ Gc; return HZono.
@@ -727,12 +760,16 @@ class SparseGcZ:
             c=c_new.view(-1, 1),
             Gc=Gc_dense,
             Gb=torch.zeros((n_out, 0), dtype=self.dtype, device=self.device),
-            Ac=torch.zeros((0, ng), dtype=self.dtype, device=self.device),
-            Ab=torch.zeros((0, 0), dtype=self.dtype, device=self.device),
-            b=torch.zeros((0, 1), dtype=self.dtype, device=self.device),
+            Ac=self.Ac_sparse.to_dense(),
+            Ab=torch.zeros((self.nc, 0), dtype=self.dtype, device=self.device),
+            b=self.b.clone(),
+            eq_mask=self.eq_mask.clone(),
         )
 
-    def apply_relu_triangle(self) -> "SparseGcZ":
+    def apply_relu_triangle(
+        self, *,
+        external_bounds: Optional[Tuple[torch.Tensor, torch.Tensor]] = None,
+    ) -> "SparseGcZ":
         """DeepZ triangle ReLU on sparse Gc.
 
         Per unstable neuron i with bounds ``[lb_i, ub_i]`` (l<0<u)::
@@ -746,7 +783,14 @@ class SparseGcZ:
         """
         n = self.dim
         ng0 = self.ng
-        lb, ub = self.bounds()
+        if external_bounds is None:
+            lb, ub = self.bounds()
+        else:
+            lb, ub = external_bounds
+            lb = lb.to(dtype=self.dtype, device=self.device).view(-1)
+            ub = ub.to(dtype=self.dtype, device=self.device).view(-1)
+            if int(lb.numel()) != self.dim or int(ub.numel()) != self.dim:
+                raise ValueError("SparseGcZ triangle external bounds dimension mismatch")
         is_active = (lb >= 0)
         is_inactive = (ub <= 0)
         is_unstable = ~(is_active | is_inactive)
@@ -796,8 +840,126 @@ class SparseGcZ:
             all_ind, all_val, (n, ng_out),
             dtype=self.dtype, device=self.device,
         )
-        return SparseGcZ(c=c_out, Gc_sparse=Gc_out,
-                         dtype=self.dtype, device=self.device)
+        return SparseGcZ(
+            c=c_out, Gc_sparse=Gc_out, dtype=self.dtype, device=self.device,
+            Ac_sparse=self._constraints_with_ng(ng_out),
+            b=self.b, eq_mask=self.eq_mask,
+        )
+
+    def apply_relu_selective_chull(
+        self, *, chull_mask: Optional[torch.Tensor] = None,
+        top_k: Optional[int] = None,
+        external_bounds: Optional[Tuple[torch.Tensor, torch.Tensor]] = None,
+    ) -> "SparseGcZ":
+        """Triangle ReLU plus sparse convex-hull facets for selected neurons.
+
+        Unlike the dense HZono implementation, this keeps both generator
+        coordinates and the added inequality rows sparse. It therefore
+        allows property-directed cuts in the wide early ReLUs without
+        materialising ``dim x ng`` dense matrices.
+        """
+        if external_bounds is None:
+            lb, ub = self.bounds()
+        else:
+            lb, ub = external_bounds
+            lb = lb.to(dtype=self.dtype, device=self.device).view(-1)
+            ub = ub.to(dtype=self.dtype, device=self.device).view(-1)
+            if int(lb.numel()) != self.dim or int(ub.numel()) != self.dim:
+                raise ValueError("SparseGcZ selective external bounds dimension mismatch")
+        unstable = (lb < 0) & (ub > 0)
+        unstable_idx = torch.nonzero(unstable, as_tuple=False).view(-1)
+        k = int(unstable_idx.numel())
+        out = self.apply_relu_triangle(external_bounds=(lb, ub))
+        if k == 0:
+            return out
+        if chull_mask is not None:
+            mask = chull_mask.to(device=self.device, dtype=torch.bool).view(-1)
+            if int(mask.numel()) != self.dim:
+                raise ValueError("SparseGcZ selective mask dimension mismatch")
+            selected_local = torch.nonzero(
+                mask[unstable_idx], as_tuple=False
+            ).view(-1)
+        elif top_k is not None and int(top_k) > 0:
+            kk = min(int(top_k), k)
+            selected_local = torch.topk(
+                ub[unstable_idx] - lb[unstable_idx], kk
+            ).indices
+        else:
+            return out
+        n_sel = int(selected_local.numel())
+        if n_sel == 0:
+            return out
+
+        selected_rows = unstable_idx[selected_local]
+        l = lb[selected_rows]
+        u = ub[selected_rows]
+        lam = u / (u - l)
+        mu = -l * u / (2.0 * (u - l))
+        sel_c = self.c[selected_rows]
+
+        row_lookup = -torch.ones(
+            self.dim, dtype=torch.long, device=self.device
+        )
+        row_lookup[selected_rows] = torch.arange(
+            n_sel, dtype=torch.long, device=self.device
+        )
+        old_idx = self.Gc_sparse.indices()
+        old_val = self.Gc_sparse.values()
+        local = row_lookup[old_idx[0]]
+        useful = local >= 0
+        local = local[useful]
+        cols = old_idx[1, useful]
+        vals = old_val[useful]
+        cut_rows1 = 2 * local
+        cut_rows2 = cut_rows1 + 1
+        cut_idx_old = torch.cat([
+            torch.stack([cut_rows1, cols]),
+            torch.stack([cut_rows2, cols]),
+        ], dim=1)
+        cut_val_old = torch.cat([
+            (1.0 - lam[local]) * vals,
+            -lam[local] * vals,
+        ])
+        eps_cols = self.ng + selected_local
+        cut_idx_eps = torch.stack([
+            torch.cat([2 * torch.arange(n_sel, device=self.device),
+                       2 * torch.arange(n_sel, device=self.device) + 1]),
+            torch.cat([eps_cols, eps_cols]),
+        ])
+        cut_val_eps = torch.cat([-mu, -mu])
+        cut_idx = torch.cat([cut_idx_old, cut_idx_eps], dim=1)
+        cut_val = torch.cat([cut_val_old, cut_val_eps])
+        cut_Ac = torch.sparse_coo_tensor(
+            cut_idx, cut_val, (2 * n_sel, out.ng),
+            dtype=self.dtype, device=self.device,
+        ).coalesce()
+
+        old_idx_out = out.Ac_sparse.indices()
+        all_idx = torch.cat([
+            old_idx_out,
+            torch.stack([
+                cut_Ac.indices()[0] + out.nc,
+                cut_Ac.indices()[1],
+            ]),
+        ], dim=1)
+        all_val = torch.cat([out.Ac_sparse.values(), cut_Ac.values()])
+        Ac_out = torch.sparse_coo_tensor(
+            all_idx, all_val, (out.nc + 2 * n_sel, out.ng),
+            dtype=self.dtype, device=self.device,
+        ).coalesce()
+        b_cut = torch.empty((2 * n_sel, 1), dtype=self.dtype, device=self.device)
+        b_cut[0::2, 0] = mu - (1.0 - lam) * sel_c
+        b_cut[1::2, 0] = lam * sel_c + mu
+        return SparseGcZ(
+            c=out.c, Gc_sparse=out.Gc_sparse,
+            dtype=self.dtype, device=self.device,
+            Ac_sparse=Ac_out,
+            b=torch.cat([out.b, b_cut], dim=0),
+            eq_mask=torch.cat([
+                out.eq_mask,
+                torch.zeros(2 * n_sel, dtype=torch.bool, device=self.device),
+            ]),
+        )
 
     def apply_conv(self, weight, bias, in_shape, stride, pad,
                    *, chunk=None, sparsify_thresh=None) -> "SparseGcZ":
@@ -852,8 +1014,11 @@ class SparseGcZ:
                         Gc_raw, sparsify_thresh,
                         dtype=self.dtype, device=self.device,
                     )
-                    return SparseGcZ(c=c_new, Gc_sparse=Gc_new,
-                                     dtype=self.dtype, device=self.device)
+                    return SparseGcZ(
+                        c=c_new, Gc_sparse=Gc_new,
+                        dtype=self.dtype, device=self.device,
+                        Ac_sparse=self.Ac_sparse, b=self.b, eq_mask=self.eq_mask,
+                    )
             except (MemoryError, RuntimeError) as e:
                 msg = str(e).lower()
                 if "memory" not in msg and "alloc" not in msg:
@@ -904,8 +1069,10 @@ class SparseGcZ:
             all_ind, all_val, (n_out, ng),
             dtype=self.dtype, device=self.device,
         ).coalesce()
-        return SparseGcZ(c=c_new, Gc_sparse=Gc_new,
-                         dtype=self.dtype, device=self.device)
+        return SparseGcZ(
+            c=c_new, Gc_sparse=Gc_new, dtype=self.dtype, device=self.device,
+            Ac_sparse=self.Ac_sparse, b=self.b, eq_mask=self.eq_mask,
+        )
 
     def reduce_generators(self, target_ng: int) -> "SparseGcZ":
         """Girard-style box overapproximation of low-magnitude generators.
@@ -918,6 +1085,11 @@ class SparseGcZ:
         ng0 = self.ng
         n = self.dim
         if ng0 <= target_ng:
+            return self
+        if self.nc > 0:
+            # Remapping constrained factors through sparse Girard widening
+            # requires widening each retained inequality row. Preserve the
+            # tighter constrained representation until that path is needed.
             return self
 
         ind = self.Gc_sparse.indices()
@@ -959,7 +1131,8 @@ class SparseGcZ:
             all_ind, all_val, (n, ng_new),
             dtype=self.dtype, device=self.device,
         ).coalesce()
-        return SparseGcZ(c=self.c, Gc_sparse=Gc_new,
-                         dtype=self.dtype, device=self.device)
-
-
+        return SparseGcZ(
+            c=self.c, Gc_sparse=Gc_new, dtype=self.dtype, device=self.device,
+            Ac_sparse=self._constraints_with_ng(ng_new),
+            b=self.b, eq_mask=self.eq_mask,
+        )

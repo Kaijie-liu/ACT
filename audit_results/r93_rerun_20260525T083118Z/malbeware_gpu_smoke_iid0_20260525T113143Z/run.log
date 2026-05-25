@@ -1,0 +1,25 @@
+usage: python -m act.pipeline [-h]
+                              (--list | --search QUERY | --info NAME | --download NAME | --list-downloaded | --fuzz | --verify TARGET | --validate-verifier | --list-verifications)
+                              [--creator {vnnlib,torchvision}]
+                              [--category CATEGORY]
+                              [--max-instances MAX_INSTANCES]
+                              [--instance-ids INSTANCE_IDS]
+                              [--dataset DATASET] [--model MODEL]
+                              [--num-samples NUM_SAMPLES]
+                              [--iterations ITERATIONS] [--timeout TIMEOUT]
+                              [--output OUTPUT] [--no-save]
+                              [--report-interval REPORT_INTERVAL]
+                              [--strict-mode] [--trace-level {0,1,2,3}]
+                              [--trace-sample N] [--trace-storage {hdf5,json}]
+                              [--trace-output TRACE_OUTPUT]
+                              [--mode {counterexample,bounds,comprehensive}]
+                              [--networks NETWORKS]
+                              [--solvers SOLVERS [SOLVERS ...]]
+                              [--tf-modes TF_MODES [TF_MODES ...]]
+                              [--input-samples SAMPLES] [--per-neuron-topk K]
+                              [--batch-sizes B1,B2,...] [--ignore-errors]
+                              [--device {cpu,cuda,gpu,mps}]
+                              [--dtype {float32,float64}]
+python -m act.pipeline: error: argument --device: invalid choice: 'cuda:0' (choose from cpu, cuda, gpu, mps)
+[ACT] Auto-detecting project root: .
+[ACT] Gurobi license found: modules/gurobi/gurobi.lic

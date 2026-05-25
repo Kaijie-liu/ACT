@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "benchmark": "collins_rul_cnn_2022",
+  "formal_mode": false,
+  "timestamp_utc": "20260525T014002389045Z",
+  "canonical_root": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks",
+  "receipt_dir": null,
+  "wall_min": 0.0012065529823303222,
+  "counts": {
+    "CERTIFIED": 0,
+    "FALSIFIED": 0,
+    "UNKNOWN": 0,
+    "ERROR": 1
+  },
+  "run_status": "FAILED",
+  "per_instance": [
+    {
+      "official_instance_id": 0,
+      "benchmark": "collins_rul_cnn_2022",
+      "onnx_model": "onnx/NN_rul_small_window_20.onnx",
+      "vnnlib_spec": "vnnlib/robustness_2perturbations_delta5_epsilon10_w20.vnnlib",
+      "model_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx",
+      "spec_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_2perturbations_delta5_epsilon10_w20.vnnlib",
+      "internal_status": "ERROR",
+      "reportable_status": "ERROR",
+      "cli_normalized": "ERROR_RuntimeError",
+      "count_bucket": "ERROR",
+      "queries": [],
+      "q_statuses": [],
+      "q_reportables": [],
+      "q_receipts": [],
+      "error": "RuntimeError: Calculated padded input size per channel: (21 x 8). Kernel size: (6 x 20). Kernel size can't be greater than actual input size",
+      "wall_s": 0.07237076759338379
+    }
+  ]
+}

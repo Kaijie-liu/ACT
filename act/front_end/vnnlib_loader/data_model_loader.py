@@ -99,11 +99,23 @@ def download_vnnlib_category(
         logger.info(f"Category '{category}' already downloaded at {category_dir}")
         
         # Count existing instances
+        # ROUND 7 (advisor 2026-05-24): use the same header detector as
+        # list_downloaded_pairs to avoid double-counting headerless CSVs
+        # as N-1 instances (the pre-fix `sum - 1` was off by 1 against
+        # ACAS-style raw 3-column files).
         num_instances = 0
         if instances_file.exists():
             with open(instances_file, 'r') as f:
-                num_instances = sum(1 for _ in csv.reader(f)) - 1  # Exclude header
-        
+                sample = f.read(2048)
+                f.seek(0)
+                reader = csv.reader(f)
+                first_row = next(reader, None)
+                if first_row is not None:
+                    has_header = _detect_header_row(first_row, sample)
+                    num_instances = sum(1 for _ in reader)
+                    if not has_header:
+                        num_instances += 1
+
         return {
             'status': 'success',
             'message': f"Category '{category}' already exists",
@@ -140,12 +152,25 @@ def download_vnnlib_category(
     
     try:
         # Parse instances.csv to get ONNX and VNNLIB files
+        # ROUND 7: header detection consistent with list_downloaded_pairs
+        # (R5 fix). Pre-fix unconditional `next(reader)` dropped row 0
+        # for headerless CSVs (e.g. ACAS xu), causing the downloader to
+        # skip that first instance silently.
         instances = []
         with open(instances_file, 'r') as f:
+            sample = f.read(2048)
+            f.seek(0)
             reader = csv.reader(f)
-            header = next(reader, None)  # Skip header
-            
-            for row in reader:
+            first_row = next(reader, None)
+            if first_row is None:
+                rows_iter = []
+            else:
+                has_header = _detect_header_row(first_row, sample)
+                rows_iter = (
+                    list(reader) if has_header else [first_row] + list(reader)
+                )
+
+            for row in rows_iter:
                 if len(row) >= 3:
                     onnx_file, vnnlib_file, timeout = row[0], row[1], row[2]
                     instances.append({
@@ -164,8 +189,11 @@ def download_vnnlib_category(
             # Download ONNX model
             onnx_file = instance['onnx']
             if onnx_file not in downloaded_onnx:
-                # Try both .onnx and .onnx.gz (gzipped files)
-                onnx_path = onnx_dir / Path(onnx_file).name
+                # ROUND 7: preserve nested subdirs (R5 parity). Otherwise
+                # downloads go to <onnx_dir>/basename but list_downloaded_pairs
+                # looks for <onnx_dir>/medical/<basename> and finds nothing.
+                onnx_path = _resolve_relative_path(onnx_file, "onnx", category_dir)
+                onnx_path.parent.mkdir(parents=True, exist_ok=True)
                 
                 # Try .onnx.gz first (compressed), then .onnx
                 tried_urls = []
@@ -208,7 +236,9 @@ def download_vnnlib_category(
             # Download VNNLIB spec
             vnnlib_file = instance['vnnlib']
             if vnnlib_file not in downloaded_vnnlib:
-                vnnlib_path = vnnlib_dir / Path(vnnlib_file).name
+                # ROUND 7: preserve nested subdirs (R5 parity).
+                vnnlib_path = _resolve_relative_path(vnnlib_file, "vnnlib", category_dir)
+                vnnlib_path.parent.mkdir(parents=True, exist_ok=True)
                 
                 # Try both .vnnlib and .vnnlib.gz
                 tried_urls = []
@@ -288,6 +318,62 @@ def download_vnnlib_category(
         }
 
 
+def _detect_header_row(first_row: List[str], sample_text: str) -> bool:
+    """ROUND 5 (advisor 2026-05-24): robust header detection that
+    survives both common shapes:
+
+      headered   ``onnx_path,vnnlib_path,timeout`` (string labels)
+      headerless ``onnx/a.onnx,vnnlib/a.vnnlib,100`` (raw data row 0)
+
+    The Round-3 heuristic (substring match on "onnx"/"vnnlib") wrongly
+    classified the header LABEL "onnx" as data, then silently skipped
+    that synthetic row because the file didn't exist, shifting all
+    subsequent ``official_instance_id`` by +1.
+
+    Strategy (heuristic first; csv.Sniffer is unreliable on 1-row
+    CSVs — it defaults to treating them as headers):
+
+      DATA iff:
+        - column 2 parses as a float (timeout), AND
+        - column 0 contains '/' OR ends in '.onnx' / '.onnx.gz'.
+      Anything else is treated as a header.
+
+      ``sample_text`` retained for forward-compat with a future
+      Sniffer-based path; not currently used.
+    """
+    if not first_row or len(first_row) < 3:
+        return True  # malformed first row → treat as header (skip)
+    try:
+        float(first_row[2])
+    except (ValueError, TypeError):
+        return True
+    col0 = first_row[0].strip().lower()
+    if "/" in col0 or col0.endswith(".onnx") or col0.endswith(".onnx.gz"):
+        return False
+    return True
+
+
+def _resolve_relative_path(
+    raw_path: str, expected_subdir: str, category_dir: Path
+) -> Path:
+    """ROUND 5: strip the ``onnx/`` or ``vnnlib/`` leading segment from
+    ``raw_path`` but PRESERVE nested sub-directories.
+
+    The Round-3 / pre-fix code did ``Path(raw_path).name`` which keeps
+    only the basename — breaking nested specs like
+    ``onnx/medical/perturbations_0.onnx`` (gets reduced to
+    ``onnx/perturbations_0.onnx`` which doesn't exist on disk).
+
+    Robust rule: drop leading "./" and one leading ``{expected_subdir}/``
+    segment if present; keep all remaining segments.
+    """
+    cleaned = raw_path.lstrip("./")
+    prefix = expected_subdir.rstrip("/") + "/"
+    if cleaned.startswith(prefix):
+        cleaned = cleaned[len(prefix):]
+    return category_dir / expected_subdir / cleaned
+
+
 def list_downloaded_pairs(root_dir: Optional[str] = None) -> List[Dict[str, any]]:
     """
     List all downloaded VNNLIB benchmark instances.
@@ -330,20 +416,59 @@ def list_downloaded_pairs(root_dir: Optional[str] = None) -> List[Dict[str, any]
         
         try:
             with open(instances_file, 'r') as f:
+                # ROUND 5 (advisor 2026-05-24): deterministic header
+                # detection plus nested-path preservation via
+                # _resolve_relative_path. The Round-3
+                # heuristic mis-classified the header LABELS "onnx"/
+                # "vnnlib" as data, and Path(...).name dropped nested
+                # subdirs (e.g. safenlp_2024/medical/...).
+                sample = f.read(2048)
+                f.seek(0)
                 reader = csv.reader(f)
-                header = next(reader, None)  # Skip header
-                
-                for row in reader:
+                first_row = next(reader, None)
+                if first_row is None:
+                    continue
+                has_header = _detect_header_row(first_row, sample)
+                rows_to_process = (
+                    list(reader) if has_header else [first_row] + list(reader)
+                )
+
+                for row_idx, row in enumerate(rows_to_process):
                     if len(row) >= 3:
                         onnx_file, vnnlib_file, timeout = row[0], row[1], row[2]
-                        
-                        onnx_path = category_dir / "onnx" / Path(onnx_file).name
-                        vnnlib_path = category_dir / "vnnlib" / Path(vnnlib_file).name
-                        
+
+                        onnx_path = _resolve_relative_path(
+                            onnx_file, "onnx", category_dir
+                        )
+                        vnnlib_path = _resolve_relative_path(
+                            vnnlib_file, "vnnlib", category_dir
+                        )
+
+                        # ROUND 9.4: try .gz fallback when uncompressed
+                        # form doesn't exist (cgan_2023, parts of nn4sys
+                        # store *.vnnlib.gz / *.onnx.gz; CSV lists the
+                        # plain name).
+                        if not onnx_path.exists() and onnx_path.with_suffix(
+                            onnx_path.suffix + ".gz"
+                        ).exists():
+                            onnx_path = onnx_path.with_suffix(onnx_path.suffix + ".gz")
+                        if not vnnlib_path.exists() and vnnlib_path.with_suffix(
+                            vnnlib_path.suffix + ".gz"
+                        ).exists():
+                            vnnlib_path = vnnlib_path.with_suffix(
+                                vnnlib_path.suffix + ".gz"
+                            )
+
                         # Only include if files exist
                         if onnx_path.exists() and vnnlib_path.exists():
                             all_instances.append({
                                 'category': category_dir.name,
+                                # official_instance_id: 0-based position
+                                # in the manifest AS WRITTEN ON DISK (after
+                                # header detection). This is the value that
+                                # CLI loops MUST propagate to receipts so
+                                # acasxu prop_6 carries iid=181 not 180.
+                                'official_instance_id': row_idx,
                                 'onnx_model': onnx_file,
                                 'vnnlib_spec': vnnlib_file,
                                 'timeout': float(timeout) if timeout else None,
@@ -352,7 +477,7 @@ def list_downloaded_pairs(root_dir: Optional[str] = None) -> List[Dict[str, any]
                                     'vnnlib': str(vnnlib_path)
                                 }
                             })
-        
+
         except Exception as e:
             logger.warning(f"Failed to read instances from {category_dir.name}: {e}")
     
@@ -461,11 +586,24 @@ def load_vnnlib_pair(
     """
     if root_dir is None:
         root_dir = get_vnnlib_data_root()
-    
+
     category_dir = Path(root_dir) / category
-    onnx_path = category_dir / "onnx" / Path(onnx_model).name
-    vnnlib_path = category_dir / "vnnlib" / Path(vnnlib_spec).name
-    
+    # ROUND 5: nested-path-safe — drop leading "onnx/"/"vnnlib/" but
+    # keep deeper subdirs intact (safenlp_2024/medical/...).
+    onnx_path = _resolve_relative_path(onnx_model, "onnx", category_dir)
+    vnnlib_path = _resolve_relative_path(vnnlib_spec, "vnnlib", category_dir)
+
+    # ROUND 9.4: .gz fallback (cgan_2023 + parts of nn4sys store .gz
+    # while CSV lists the plain name).
+    if not onnx_path.exists() and onnx_path.with_suffix(
+        onnx_path.suffix + ".gz"
+    ).exists():
+        onnx_path = onnx_path.with_suffix(onnx_path.suffix + ".gz")
+    if not vnnlib_path.exists() and vnnlib_path.with_suffix(
+        vnnlib_path.suffix + ".gz"
+    ).exists():
+        vnnlib_path = vnnlib_path.with_suffix(vnnlib_path.suffix + ".gz")
+
     # Auto-download if not found
     if not category_dir.exists() or not onnx_path.exists() or not vnnlib_path.exists():
         if auto_download:

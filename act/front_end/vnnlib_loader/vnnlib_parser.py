@@ -15,6 +15,8 @@
 from __future__ import annotations
 from pathlib import Path
 from typing import Dict, List, Tuple, Optional, Any, TYPE_CHECKING
+import gzip
+import io
 import logging
 import torch
 import re
@@ -30,6 +32,15 @@ logger = logging.getLogger(__name__)
 class VNNLibParseError(Exception):
     """Exception raised when VNNLIB parsing fails."""
     pass
+
+
+def _open_vnnlib_text(vnnlib_path: Path) -> io.TextIOBase:
+    # Opens .vnnlib or .vnnlib.gz transparently. cgan_2023 and parts of
+    # nn4sys ship compressed specs; treat them identically downstream.
+    name = str(vnnlib_path).lower()
+    if name.endswith(".gz"):
+        return io.TextIOWrapper(gzip.open(vnnlib_path, "rb"), encoding="utf-8")
+    return open(vnnlib_path, "r", encoding="utf-8")
 
 
 # -------------------------------------------------------------------------
@@ -64,9 +75,9 @@ def parse_vnnlib_to_tensors(
         raise VNNLibParseError(f"VNNLIB file not found: {vnnlib_path}")
     
     try:
-        with open(vnnlib_path, 'r') as f:
+        with _open_vnnlib_text(vnnlib_path) as f:
             content = f.read()
-        
+
         # Extract variable declarations to determine shapes
         num_inputs = _extract_num_inputs(content)
         num_outputs = _extract_num_outputs(content)
@@ -157,7 +168,7 @@ def parse_vnnlib_queries(
     if not vnnlib_path.exists():
         raise VNNLibParseError(f"VNNLIB file not found: {vnnlib_path}")
     try:
-        with open(vnnlib_path, 'r') as f:
+        with _open_vnnlib_text(vnnlib_path) as f:
             content = f.read()
     except Exception as e:
         raise VNNLibParseError(f"Failed to read {vnnlib_path}: {e}") from e
@@ -269,9 +280,9 @@ def list_vnnlib_variables(vnnlib_path: Path) -> Dict[str, int]:
         Dict with 'num_inputs' and 'num_outputs'
     """
     try:
-        with open(vnnlib_path, 'r') as f:
+        with _open_vnnlib_text(vnnlib_path) as f:
             content = f.read()
-        
+
         return {
             'num_inputs': _extract_num_inputs(content),
             'num_outputs': _extract_num_outputs(content)
@@ -300,7 +311,7 @@ def extract_label_from_vnnlib(vnnlib_path: Path) -> Optional[int]:
         14
     """
     try:
-        with open(vnnlib_path, 'r') as f:
+        with _open_vnnlib_text(vnnlib_path) as f:
             # Read first few lines (label is typically in first comment)
             for _ in range(5):
                 line = f.readline()

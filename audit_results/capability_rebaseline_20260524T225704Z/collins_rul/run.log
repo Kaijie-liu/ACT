@@ -1,0 +1,1263 @@
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [5, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 5, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (5, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_2perturbations_delta5_epsilon10_w20.vnnlib: Input size mismatch: got 400 values but expected 25 from shape (5, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 400 inputs, 1 outputs, type=safety
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Shape probe succeeded: reshaped to (1, 1, 20, 20)
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 400 inputs, 1 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_rul_cnn_2022'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed robustness_2perturbations_delta5_epsilon10_w20.vnnlib: 2 query(ies)
+[ACT] Auto-detecting project root: .
+[ACT] Gurobi license found: modules/gurobi/gurobi.lic
+✅ Device Manager Initialized: device=cpu, dtype=torch.float64
+
+================================================================================
+ACT: Abstract Constraint Transformer
+Inference-based whitebox fuzzing for neural network verification
+================================================================================
+
+
+================================================================================
+VERIFICATION TEST: VNNLIB → VerifiableModel → verify_once
+================================================================================
+
+[vnnlib] category=collins_rul_cnn_2022 max_instances=62 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cpu, timeout=30.0s)
+  [  1/62] collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx@vnnlib/robustness_2perturbations_delta5_epsilon10_w20.vnnlib: ERROR_RuntimeError (0.1s)  V=0 A=0 U=0 E=1  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [5, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 5, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (5, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_2perturbations_delta10_epsilon10_w20.vnnlib: Input size mismatch: got 400 values but expected 25 from shape (5, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 400 inputs, 1 outputs, type=safety
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Shape probe succeeded: reshaped to (1, 1, 20, 20)
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 400 inputs, 1 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_rul_cnn_2022'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed robustness_2perturbations_delta10_epsilon10_w20.vnnlib: 2 query(ies)
+  [  2/62] collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx@vnnlib/robustness_2perturbations_delta10_epsilon10_w20.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=2  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [5, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 5, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (5, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_2perturbations_delta20_epsilon10_w20.vnnlib: Input size mismatch: got 400 values but expected 25 from shape (5, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 400 inputs, 1 outputs, type=safety
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Shape probe succeeded: reshaped to (1, 1, 20, 20)
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 400 inputs, 1 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_rul_cnn_2022'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed robustness_2perturbations_delta20_epsilon10_w20.vnnlib: 2 query(ies)
+  [  3/62] collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx@vnnlib/robustness_2perturbations_delta20_epsilon10_w20.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=3  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [5, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 5, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (5, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_2perturbations_delta40_epsilon10_w20.vnnlib: Input size mismatch: got 400 values but expected 25 from shape (5, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 400 inputs, 1 outputs, type=safety
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Shape probe succeeded: reshaped to (1, 1, 20, 20)
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 400 inputs, 1 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_rul_cnn_2022'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed robustness_2perturbations_delta40_epsilon10_w20.vnnlib: 2 query(ies)
+  [  4/62] collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx@vnnlib/robustness_2perturbations_delta40_epsilon10_w20.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=4  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [5, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 5, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (5, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_4perturbations_delta5_epsilon10_w20.vnnlib: Input size mismatch: got 400 values but expected 25 from shape (5, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 400 inputs, 1 outputs, type=safety
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Shape probe succeeded: reshaped to (1, 1, 20, 20)
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 400 inputs, 1 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_rul_cnn_2022'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed robustness_4perturbations_delta5_epsilon10_w20.vnnlib: 2 query(ies)
+  [  5/62] collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx@vnnlib/robustness_4perturbations_delta5_epsilon10_w20.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=5  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [5, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 5, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (5, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_4perturbations_delta10_epsilon10_w20.vnnlib: Input size mismatch: got 400 values but expected 25 from shape (5, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 400 inputs, 1 outputs, type=safety
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Shape probe succeeded: reshaped to (1, 1, 20, 20)
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 400 inputs, 1 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_rul_cnn_2022'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed robustness_4perturbations_delta10_epsilon10_w20.vnnlib: 2 query(ies)
+  [  6/62] collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx@vnnlib/robustness_4perturbations_delta10_epsilon10_w20.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=6  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [5, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 5, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (5, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_4perturbations_delta20_epsilon10_w20.vnnlib: Input size mismatch: got 400 values but expected 25 from shape (5, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 400 inputs, 1 outputs, type=safety
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Shape probe succeeded: reshaped to (1, 1, 20, 20)
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 400 inputs, 1 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_rul_cnn_2022'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed robustness_4perturbations_delta20_epsilon10_w20.vnnlib: 2 query(ies)
+  [  7/62] collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx@vnnlib/robustness_4perturbations_delta20_epsilon10_w20.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=7  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [5, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 5, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (5, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_4perturbations_delta40_epsilon10_w20.vnnlib: Input size mismatch: got 400 values but expected 25 from shape (5, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 400 inputs, 1 outputs, type=safety
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Shape probe succeeded: reshaped to (1, 1, 20, 20)
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 400 inputs, 1 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_rul_cnn_2022'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed robustness_4perturbations_delta40_epsilon10_w20.vnnlib: 2 query(ies)
+  [  8/62] collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx@vnnlib/robustness_4perturbations_delta40_epsilon10_w20.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=8  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [5, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 5, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (5, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_8perturbations_delta5_epsilon10_w20.vnnlib: Input size mismatch: got 400 values but expected 25 from shape (5, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 400 inputs, 1 outputs, type=safety
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Shape probe succeeded: reshaped to (1, 1, 20, 20)
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 400 inputs, 1 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_rul_cnn_2022'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed robustness_8perturbations_delta5_epsilon10_w20.vnnlib: 2 query(ies)
+  [  9/62] collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx@vnnlib/robustness_8perturbations_delta5_epsilon10_w20.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=9  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [5, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 5, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (5, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_8perturbations_delta10_epsilon10_w20.vnnlib: Input size mismatch: got 400 values but expected 25 from shape (5, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 400 inputs, 1 outputs, type=safety
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Shape probe succeeded: reshaped to (1, 1, 20, 20)
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 400 inputs, 1 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_rul_cnn_2022'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed robustness_8perturbations_delta10_epsilon10_w20.vnnlib: 2 query(ies)
+  [ 10/62] collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx@vnnlib/robustness_8perturbations_delta10_epsilon10_w20.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=10  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [5, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 5, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (5, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_8perturbations_delta20_epsilon10_w20.vnnlib: Input size mismatch: got 400 values but expected 25 from shape (5, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 400 inputs, 1 outputs, type=safety
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Shape probe succeeded: reshaped to (1, 1, 20, 20)
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 400 inputs, 1 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_rul_cnn_2022'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed robustness_8perturbations_delta20_epsilon10_w20.vnnlib: 2 query(ies)
+  [ 11/62] collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx@vnnlib/robustness_8perturbations_delta20_epsilon10_w20.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=11  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [5, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 5, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (5, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_8perturbations_delta40_epsilon10_w20.vnnlib: Input size mismatch: got 400 values but expected 25 from shape (5, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 400 inputs, 1 outputs, type=safety
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Shape probe succeeded: reshaped to (1, 1, 20, 20)
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 400 inputs, 1 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_rul_cnn_2022'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed robustness_8perturbations_delta40_epsilon10_w20.vnnlib: 2 query(ies)
+  [ 12/62] collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx@vnnlib/robustness_8perturbations_delta40_epsilon10_w20.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=12  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [5, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 5, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (5, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_16perturbations_delta5_epsilon10_w20.vnnlib: Input size mismatch: got 400 values but expected 25 from shape (5, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 400 inputs, 1 outputs, type=safety
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Shape probe succeeded: reshaped to (1, 1, 20, 20)
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 400 inputs, 1 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_rul_cnn_2022'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed robustness_16perturbations_delta5_epsilon10_w20.vnnlib: 2 query(ies)
+  [ 13/62] collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx@vnnlib/robustness_16perturbations_delta5_epsilon10_w20.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=13  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [5, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 5, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (5, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_16perturbations_delta10_epsilon10_w20.vnnlib: Input size mismatch: got 400 values but expected 25 from shape (5, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 400 inputs, 1 outputs, type=safety
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Shape probe succeeded: reshaped to (1, 1, 20, 20)
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 400 inputs, 1 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_rul_cnn_2022'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed robustness_16perturbations_delta10_epsilon10_w20.vnnlib: 2 query(ies)
+  [ 14/62] collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx@vnnlib/robustness_16perturbations_delta10_epsilon10_w20.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=14  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [5, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 5, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (5, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_16perturbations_delta20_epsilon10_w20.vnnlib: Input size mismatch: got 400 values but expected 25 from shape (5, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 400 inputs, 1 outputs, type=safety
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Shape probe succeeded: reshaped to (1, 1, 20, 20)
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 400 inputs, 1 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_rul_cnn_2022'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed robustness_16perturbations_delta20_epsilon10_w20.vnnlib: 2 query(ies)
+  [ 15/62] collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx@vnnlib/robustness_16perturbations_delta20_epsilon10_w20.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=15  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [5, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 5, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (5, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_16perturbations_delta40_epsilon10_w20.vnnlib: Input size mismatch: got 400 values but expected 25 from shape (5, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 400 inputs, 1 outputs, type=safety
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Shape probe succeeded: reshaped to (1, 1, 20, 20)
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 400 inputs, 1 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_rul_cnn_2022'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed robustness_16perturbations_delta40_epsilon10_w20.vnnlib: 2 query(ies)
+  [ 16/62] collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx@vnnlib/robustness_16perturbations_delta40_epsilon10_w20.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=16  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [5, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 5, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (5, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/monotonicity_CI_shift5_w20.vnnlib: Input size mismatch: got 400 values but expected 25 from shape (5, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 400 inputs, 1 outputs, type=safety
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Shape probe succeeded: reshaped to (1, 1, 20, 20)
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 400 inputs, 1 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_rul_cnn_2022'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed monotonicity_CI_shift5_w20.vnnlib: 2 query(ies)
+  [ 17/62] collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx@vnnlib/monotonicity_CI_shift5_w20.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=17  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [5, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 5, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (5, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/monotonicity_CI_shift10_w20.vnnlib: Input size mismatch: got 400 values but expected 25 from shape (5, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 400 inputs, 1 outputs, type=safety
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Shape probe succeeded: reshaped to (1, 1, 20, 20)
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 400 inputs, 1 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_rul_cnn_2022'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed monotonicity_CI_shift10_w20.vnnlib: 2 query(ies)
+  [ 18/62] collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx@vnnlib/monotonicity_CI_shift10_w20.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=18  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [5, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 5, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (5, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/monotonicity_CI_shift20_w20.vnnlib: Input size mismatch: got 400 values but expected 25 from shape (5, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 400 inputs, 1 outputs, type=safety
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Shape probe succeeded: reshaped to (1, 1, 20, 20)
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 400 inputs, 1 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_rul_cnn_2022'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed monotonicity_CI_shift20_w20.vnnlib: 2 query(ies)
+  [ 19/62] collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx@vnnlib/monotonicity_CI_shift20_w20.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=19  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [5, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 5, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (5, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/if_then_5levels_w20.vnnlib: Input size mismatch: got 400 values but expected 25 from shape (5, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 400 inputs, 1 outputs, type=safety
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Shape probe succeeded: reshaped to (1, 1, 20, 20)
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 400 inputs, 1 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_rul_cnn_2022'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed if_then_5levels_w20.vnnlib: 2 query(ies)
+  [ 20/62] collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx@vnnlib/if_then_5levels_w20.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=20  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [5, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 5, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (5, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/if_then_7levels_w20.vnnlib: Input size mismatch: got 400 values but expected 25 from shape (5, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 400 inputs, 1 outputs, type=safety
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Shape probe succeeded: reshaped to (1, 1, 20, 20)
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 400 inputs, 1 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_rul_cnn_2022'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed if_then_7levels_w20.vnnlib: 2 query(ies)
+  [ 21/62] collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx@vnnlib/if_then_7levels_w20.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=21  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [5, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 5, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (5, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/if_then_9levels_w20.vnnlib: Input size mismatch: got 400 values but expected 25 from shape (5, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 400 inputs, 1 outputs, type=safety
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Shape probe succeeded: reshaped to (1, 1, 20, 20)
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 400 inputs, 1 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_rul_cnn_2022'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed if_then_9levels_w20.vnnlib: 2 query(ies)
+  [ 22/62] collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx@vnnlib/if_then_9levels_w20.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=22  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [10, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 10, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (10, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_2perturbations_delta5_epsilon10_w20.vnnlib: Input size mismatch: got 400 values but expected 50 from shape (10, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 400 inputs, 1 outputs, type=safety
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Shape probe succeeded: reshaped to (1, 1, 20, 20)
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 400 inputs, 1 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_rul_cnn_2022'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed robustness_2perturbations_delta5_epsilon10_w20.vnnlib: 2 query(ies)
+  [ 23/62] collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx@vnnlib/robustness_2perturbations_delta5_epsilon10_w20.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=23  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [10, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 10, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (10, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_2perturbations_delta10_epsilon10_w20.vnnlib: Input size mismatch: got 400 values but expected 50 from shape (10, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 400 inputs, 1 outputs, type=safety
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Shape probe succeeded: reshaped to (1, 1, 20, 20)
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 400 inputs, 1 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_rul_cnn_2022'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed robustness_2perturbations_delta10_epsilon10_w20.vnnlib: 2 query(ies)
+  [ 24/62] collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx@vnnlib/robustness_2perturbations_delta10_epsilon10_w20.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=24  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [10, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 10, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (10, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_2perturbations_delta20_epsilon10_w20.vnnlib: Input size mismatch: got 400 values but expected 50 from shape (10, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 400 inputs, 1 outputs, type=safety
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Shape probe succeeded: reshaped to (1, 1, 20, 20)
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 400 inputs, 1 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_rul_cnn_2022'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed robustness_2perturbations_delta20_epsilon10_w20.vnnlib: 2 query(ies)
+  [ 25/62] collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx@vnnlib/robustness_2perturbations_delta20_epsilon10_w20.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=25  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [10, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 10, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (10, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_2perturbations_delta40_epsilon10_w20.vnnlib: Input size mismatch: got 400 values but expected 50 from shape (10, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 400 inputs, 1 outputs, type=safety
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Shape probe succeeded: reshaped to (1, 1, 20, 20)
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 400 inputs, 1 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_rul_cnn_2022'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed robustness_2perturbations_delta40_epsilon10_w20.vnnlib: 2 query(ies)
+  [ 26/62] collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx@vnnlib/robustness_2perturbations_delta40_epsilon10_w20.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=26  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [10, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 10, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (10, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_4perturbations_delta5_epsilon10_w20.vnnlib: Input size mismatch: got 400 values but expected 50 from shape (10, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 400 inputs, 1 outputs, type=safety
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Shape probe succeeded: reshaped to (1, 1, 20, 20)
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 400 inputs, 1 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_rul_cnn_2022'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed robustness_4perturbations_delta5_epsilon10_w20.vnnlib: 2 query(ies)
+  [ 27/62] collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx@vnnlib/robustness_4perturbations_delta5_epsilon10_w20.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=27  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [10, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 10, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (10, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_4perturbations_delta10_epsilon10_w20.vnnlib: Input size mismatch: got 400 values but expected 50 from shape (10, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 400 inputs, 1 outputs, type=safety
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Shape probe succeeded: reshaped to (1, 1, 20, 20)
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 400 inputs, 1 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_rul_cnn_2022'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed robustness_4perturbations_delta10_epsilon10_w20.vnnlib: 2 query(ies)
+  [ 28/62] collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx@vnnlib/robustness_4perturbations_delta10_epsilon10_w20.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=28  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [10, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 10, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (10, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_4perturbations_delta20_epsilon10_w20.vnnlib: Input size mismatch: got 400 values but expected 50 from shape (10, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 400 inputs, 1 outputs, type=safety
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Shape probe succeeded: reshaped to (1, 1, 20, 20)
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 400 inputs, 1 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_rul_cnn_2022'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed robustness_4perturbations_delta20_epsilon10_w20.vnnlib: 2 query(ies)
+  [ 29/62] collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx@vnnlib/robustness_4perturbations_delta20_epsilon10_w20.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=29  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [10, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 10, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (10, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_4perturbations_delta40_epsilon10_w20.vnnlib: Input size mismatch: got 400 values but expected 50 from shape (10, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 400 inputs, 1 outputs, type=safety
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Shape probe succeeded: reshaped to (1, 1, 20, 20)
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 400 inputs, 1 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_rul_cnn_2022'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed robustness_4perturbations_delta40_epsilon10_w20.vnnlib: 2 query(ies)
+  [ 30/62] collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx@vnnlib/robustness_4perturbations_delta40_epsilon10_w20.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=30  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [10, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 10, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (10, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_8perturbations_delta5_epsilon10_w20.vnnlib: Input size mismatch: got 400 values but expected 50 from shape (10, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 400 inputs, 1 outputs, type=safety
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Shape probe succeeded: reshaped to (1, 1, 20, 20)
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 400 inputs, 1 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_rul_cnn_2022'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed robustness_8perturbations_delta5_epsilon10_w20.vnnlib: 2 query(ies)
+  [ 31/62] collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx@vnnlib/robustness_8perturbations_delta5_epsilon10_w20.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=31  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [10, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 10, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (10, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_8perturbations_delta10_epsilon10_w20.vnnlib: Input size mismatch: got 400 values but expected 50 from shape (10, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 400 inputs, 1 outputs, type=safety
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Shape probe succeeded: reshaped to (1, 1, 20, 20)
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 400 inputs, 1 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_rul_cnn_2022'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed robustness_8perturbations_delta10_epsilon10_w20.vnnlib: 2 query(ies)
+  [ 32/62] collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx@vnnlib/robustness_8perturbations_delta10_epsilon10_w20.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=32  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [10, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 10, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (10, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_8perturbations_delta20_epsilon10_w20.vnnlib: Input size mismatch: got 400 values but expected 50 from shape (10, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 400 inputs, 1 outputs, type=safety
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Shape probe succeeded: reshaped to (1, 1, 20, 20)
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 400 inputs, 1 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_rul_cnn_2022'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed robustness_8perturbations_delta20_epsilon10_w20.vnnlib: 2 query(ies)
+  [ 33/62] collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx@vnnlib/robustness_8perturbations_delta20_epsilon10_w20.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=33  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [10, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 10, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (10, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_8perturbations_delta40_epsilon10_w20.vnnlib: Input size mismatch: got 400 values but expected 50 from shape (10, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 400 inputs, 1 outputs, type=safety
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Shape probe succeeded: reshaped to (1, 1, 20, 20)
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 400 inputs, 1 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_rul_cnn_2022'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed robustness_8perturbations_delta40_epsilon10_w20.vnnlib: 2 query(ies)
+  [ 34/62] collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx@vnnlib/robustness_8perturbations_delta40_epsilon10_w20.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=34  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [10, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 10, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (10, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_16perturbations_delta5_epsilon10_w20.vnnlib: Input size mismatch: got 400 values but expected 50 from shape (10, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 400 inputs, 1 outputs, type=safety
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Shape probe succeeded: reshaped to (1, 1, 20, 20)
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 400 inputs, 1 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_rul_cnn_2022'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed robustness_16perturbations_delta5_epsilon10_w20.vnnlib: 2 query(ies)
+  [ 35/62] collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx@vnnlib/robustness_16perturbations_delta5_epsilon10_w20.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=35  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [10, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 10, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (10, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_16perturbations_delta10_epsilon10_w20.vnnlib: Input size mismatch: got 400 values but expected 50 from shape (10, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 400 inputs, 1 outputs, type=safety
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Shape probe succeeded: reshaped to (1, 1, 20, 20)
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 400 inputs, 1 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_rul_cnn_2022'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed robustness_16perturbations_delta10_epsilon10_w20.vnnlib: 2 query(ies)
+  [ 36/62] collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx@vnnlib/robustness_16perturbations_delta10_epsilon10_w20.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=36  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [10, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 10, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (10, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_16perturbations_delta20_epsilon10_w20.vnnlib: Input size mismatch: got 400 values but expected 50 from shape (10, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 400 inputs, 1 outputs, type=safety
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Shape probe succeeded: reshaped to (1, 1, 20, 20)
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 400 inputs, 1 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_rul_cnn_2022'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed robustness_16perturbations_delta20_epsilon10_w20.vnnlib: 2 query(ies)
+  [ 37/62] collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx@vnnlib/robustness_16perturbations_delta20_epsilon10_w20.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=37  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [10, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 10, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (10, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_16perturbations_delta40_epsilon10_w20.vnnlib: Input size mismatch: got 400 values but expected 50 from shape (10, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 400 inputs, 1 outputs, type=safety
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Shape probe succeeded: reshaped to (1, 1, 20, 20)
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 400 inputs, 1 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_rul_cnn_2022'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed robustness_16perturbations_delta40_epsilon10_w20.vnnlib: 2 query(ies)
+  [ 38/62] collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx@vnnlib/robustness_16perturbations_delta40_epsilon10_w20.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=38  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [10, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 10, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (10, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/monotonicity_CI_shift5_w20.vnnlib: Input size mismatch: got 400 values but expected 50 from shape (10, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 400 inputs, 1 outputs, type=safety
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Shape probe succeeded: reshaped to (1, 1, 20, 20)
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 400 inputs, 1 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_rul_cnn_2022'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed monotonicity_CI_shift5_w20.vnnlib: 2 query(ies)
+  [ 39/62] collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx@vnnlib/monotonicity_CI_shift5_w20.vnnlib: ERROR_RuntimeError (0.1s)  V=0 A=0 U=0 E=39  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [10, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 10, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (10, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/monotonicity_CI_shift10_w20.vnnlib: Input size mismatch: got 400 values but expected 50 from shape (10, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 400 inputs, 1 outputs, type=safety
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Shape probe succeeded: reshaped to (1, 1, 20, 20)
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 400 inputs, 1 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_rul_cnn_2022'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed monotonicity_CI_shift10_w20.vnnlib: 2 query(ies)
+  [ 40/62] collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx@vnnlib/monotonicity_CI_shift10_w20.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=40  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [10, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 10, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (10, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/monotonicity_CI_shift20_w20.vnnlib: Input size mismatch: got 400 values but expected 50 from shape (10, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 400 inputs, 1 outputs, type=safety
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Shape probe succeeded: reshaped to (1, 1, 20, 20)
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 400 inputs, 1 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_rul_cnn_2022'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed monotonicity_CI_shift20_w20.vnnlib: 2 query(ies)
+  [ 41/62] collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx@vnnlib/monotonicity_CI_shift20_w20.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=41  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [10, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 10, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (10, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/if_then_7levels_w20.vnnlib: Input size mismatch: got 400 values but expected 50 from shape (10, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 400 inputs, 1 outputs, type=safety
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Shape probe succeeded: reshaped to (1, 1, 20, 20)
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 400 inputs, 1 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_rul_cnn_2022'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed if_then_7levels_w20.vnnlib: 2 query(ies)
+  [ 42/62] collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx@vnnlib/if_then_7levels_w20.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=42  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_full_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [10, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 10, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (10, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/if_then_9levels_w20.vnnlib: Input size mismatch: got 400 values but expected 50 from shape (10, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 400 inputs, 1 outputs, type=safety
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Shape probe succeeded: reshaped to (1, 1, 20, 20)
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 400 inputs, 1 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_rul_cnn_2022'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed if_then_9levels_w20.vnnlib: 2 query(ies)
+  [ 43/62] collins_rul_cnn_2022/onnx/NN_rul_full_window_20.onnx@vnnlib/if_then_9levels_w20.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=43  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [10, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 10, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (10, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_2perturbations_delta5_epsilon10_w40.vnnlib: Input size mismatch: got 800 values but expected 50 from shape (10, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 800 inputs, 1 outputs, type=safety
+  [ 44/62] collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx@vnnlib/robustness_2perturbations_delta5_epsilon10_w40.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=44  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [10, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 10, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (10, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_2perturbations_delta10_epsilon10_w40.vnnlib: Input size mismatch: got 800 values but expected 50 from shape (10, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 800 inputs, 1 outputs, type=safety
+  [ 45/62] collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx@vnnlib/robustness_2perturbations_delta10_epsilon10_w40.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=45  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [10, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 10, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (10, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_2perturbations_delta20_epsilon10_w40.vnnlib: Input size mismatch: got 800 values but expected 50 from shape (10, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 800 inputs, 1 outputs, type=safety
+  [ 46/62] collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx@vnnlib/robustness_2perturbations_delta20_epsilon10_w40.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=46  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [10, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 10, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (10, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_2perturbations_delta40_epsilon10_w40.vnnlib: Input size mismatch: got 800 values but expected 50 from shape (10, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 800 inputs, 1 outputs, type=safety
+  [ 47/62] collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx@vnnlib/robustness_2perturbations_delta40_epsilon10_w40.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=47  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [10, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 10, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (10, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_4perturbations_delta5_epsilon10_w40.vnnlib: Input size mismatch: got 800 values but expected 50 from shape (10, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 800 inputs, 1 outputs, type=safety
+  [ 48/62] collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx@vnnlib/robustness_4perturbations_delta5_epsilon10_w40.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=48  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [10, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 10, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (10, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_4perturbations_delta10_epsilon10_w40.vnnlib: Input size mismatch: got 800 values but expected 50 from shape (10, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 800 inputs, 1 outputs, type=safety
+  [ 49/62] collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx@vnnlib/robustness_4perturbations_delta10_epsilon10_w40.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=49  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [10, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 10, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (10, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_4perturbations_delta20_epsilon10_w40.vnnlib: Input size mismatch: got 800 values but expected 50 from shape (10, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 800 inputs, 1 outputs, type=safety
+  [ 50/62] collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx@vnnlib/robustness_4perturbations_delta20_epsilon10_w40.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=50  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [10, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 10, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (10, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_4perturbations_delta40_epsilon10_w40.vnnlib: Input size mismatch: got 800 values but expected 50 from shape (10, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 800 inputs, 1 outputs, type=safety
+  [ 51/62] collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx@vnnlib/robustness_4perturbations_delta40_epsilon10_w40.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=51  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [10, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 10, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (10, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_8perturbations_delta5_epsilon10_w40.vnnlib: Input size mismatch: got 800 values but expected 50 from shape (10, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 800 inputs, 1 outputs, type=safety
+  [ 52/62] collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx@vnnlib/robustness_8perturbations_delta5_epsilon10_w40.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=52  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [10, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 10, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (10, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_8perturbations_delta10_epsilon10_w40.vnnlib: Input size mismatch: got 800 values but expected 50 from shape (10, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 800 inputs, 1 outputs, type=safety
+  [ 53/62] collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx@vnnlib/robustness_8perturbations_delta10_epsilon10_w40.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=53  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [10, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 10, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (10, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_8perturbations_delta20_epsilon10_w40.vnnlib: Input size mismatch: got 800 values but expected 50 from shape (10, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 800 inputs, 1 outputs, type=safety
+  [ 54/62] collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx@vnnlib/robustness_8perturbations_delta20_epsilon10_w40.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=54  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [10, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 10, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (10, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_8perturbations_delta40_epsilon10_w40.vnnlib: Input size mismatch: got 800 values but expected 50 from shape (10, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 800 inputs, 1 outputs, type=safety
+  [ 55/62] collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx@vnnlib/robustness_8perturbations_delta40_epsilon10_w40.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=55  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [10, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 10, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (10, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_16perturbations_delta5_epsilon10_w40.vnnlib: Input size mismatch: got 800 values but expected 50 from shape (10, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 800 inputs, 1 outputs, type=safety
+  [ 56/62] collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx@vnnlib/robustness_16perturbations_delta5_epsilon10_w40.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=56  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [10, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 10, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (10, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_16perturbations_delta10_epsilon10_w40.vnnlib: Input size mismatch: got 800 values but expected 50 from shape (10, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 800 inputs, 1 outputs, type=safety
+  [ 57/62] collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx@vnnlib/robustness_16perturbations_delta10_epsilon10_w40.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=57  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [10, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 10, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (10, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_16perturbations_delta20_epsilon10_w40.vnnlib: Input size mismatch: got 800 values but expected 50 from shape (10, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 800 inputs, 1 outputs, type=safety
+  [ 58/62] collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx@vnnlib/robustness_16perturbations_delta20_epsilon10_w40.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=58  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [10, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 10, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (10, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_16perturbations_delta40_epsilon10_w40.vnnlib: Input size mismatch: got 800 values but expected 50 from shape (10, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 800 inputs, 1 outputs, type=safety
+  [ 59/62] collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx@vnnlib/robustness_16perturbations_delta40_epsilon10_w40.vnnlib: ERROR_RuntimeError (0.1s)  V=0 A=0 U=0 E=59  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [10, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 10, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (10, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/monotonicity_CI_shift5_w40.vnnlib: Input size mismatch: got 800 values but expected 50 from shape (10, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 800 inputs, 1 outputs, type=safety
+  [ 60/62] collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx@vnnlib/monotonicity_CI_shift5_w40.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=60  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [10, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 10, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (10, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/monotonicity_CI_shift10_w40.vnnlib: Input size mismatch: got 800 values but expected 50 from shape (10, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 800 inputs, 1 outputs, type=safety
+  [ 61/62] collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx@vnnlib/monotonicity_CI_shift10_w40.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=61  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_full_window_40.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [10, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 10, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (10, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/monotonicity_CI_shift20_w40.vnnlib: Input size mismatch: got 800 values but expected 50 from shape (10, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 800 inputs, 1 outputs, type=safety
+  [ 62/62] collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx@vnnlib/monotonicity_CI_shift20_w40.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=62  R=0
+Traceback (most recent call last):
+  File "/data1/Kane/ACT/act/pipeline/cli.py", line 1151, in cmd_verify
+    _run_vnnlib_verify(args)
+  File "/data1/Kane/ACT/act/pipeline/cli.py", line 549, in _run_vnnlib_verify
+    return _run_vnnlib_verify_hybridz(args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/ACT/act/pipeline/cli.py", line 1036, in _run_vnnlib_verify_hybridz
+    raise RuntimeError(
+RuntimeError: VERIFICATION_RUN_FAILED: ERROR=62. Per-instance log preserved; inspect instance error fields.
+
+[vnnlib/hybridz] FINAL — total=62 wall=0.0 min
+  ERROR        62
+  [structured] per-instance log → /data1/Kane/ACT/audit_results/capability_rebaseline_20260524T225704Z/collins_rul/per_instance_collins_rul_cnn_2022_20260524T152313263683Z.json
+
+❌ Test failed: VERIFICATION_RUN_FAILED: ERROR=62. Per-instance log preserved; inspect instance error fields.
+
+================================================================================
+VERIFICATION TEST SUMMARY
+================================================================================
+  ❌ vnnlib                    FAILED
+================================================================================
+

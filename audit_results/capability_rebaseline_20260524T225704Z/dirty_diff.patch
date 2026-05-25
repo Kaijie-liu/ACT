@@ -1,0 +1,2777 @@
+diff --git a/act/back_end/hybridz_tf/algorithms/eq_elim.py b/act/back_end/hybridz_tf/algorithms/eq_elim.py
+index 629daad..3f4cd03 100644
+--- a/act/back_end/hybridz_tf/algorithms/eq_elim.py
++++ b/act/back_end/hybridz_tf/algorithms/eq_elim.py
+@@ -69,11 +69,17 @@ def _qr_pivoted_cpu(A: np.ndarray, rank_tol: float = 1e-10):
+     """scipy pivoted QR. Returns (Q, R, piv, rank).
+ 
+     rank counts |R[i, i]| > rank_tol over the leading min(rows, cols).
++
++    Critical: ``overwrite_a=False``. The caller (``project_eq_elim``)
++    reads ``A[:, free_idx]`` AFTER this call to build ``M_Ac_free``;
++    overwriting destroys those columns and silently produces a wrong
++    substitution matrix (the 2-row regression test caught this as an
++    unsound projection that shrank the set by ~25%).
+     """
+     from scipy.linalg import qr as _qr
+     n_eq = A.shape[0]
+     n_cols = A.shape[1]
+-    Q, R, piv = _qr(A, pivoting=True, overwrite_a=True, check_finite=False)
++    Q, R, piv = _qr(A, pivoting=True, overwrite_a=False, check_finite=False)
+     R_diag = np.abs(np.diag(R[: min(n_eq, n_cols), :]))
+     rank = int(np.sum(R_diag > rank_tol))
+     return Q, R, piv, rank
+@@ -92,24 +98,25 @@ def project_eq_elim(
+             (None ⇒ all rows are equalities, legacy semantics).
+         ng_base: target number of continuous generators to keep. If
+             ``ng_free <= ng_base`` after QR, returns input unchanged
+-            (already small enough). If ``ng_free > ng_base``, the
+-            ``ng_free - ng_base`` lowest-L2-norm continuous generators
+-            are merged into a single box column. If ``None``, no
+-            elimination is performed and the input is returned
+-            unchanged (matches HyZor's ``ng_base=None`` early-exit).
++            (already small enough). If ``ng_free > ng_base`` and an
++            independent per-output slack block reduces the column count,
++            low-L2-norm generators are over-approximated by that diagonal
++            slack. Otherwise the exact post-QR columns are retained. If
++            ``None``, no elimination is performed and the input is returned.
+         rank_tol: numerical threshold for non-zero R diagonals.
+ 
+     Returns:
+-        A new HZono with: (a) at most ``ng_base + 1`` continuous
+-        generators (or original ``ng - rank`` if no merge needed);
++        A new HZono with: (a) either ``ng_base + dim`` continuous
++        generators after sound diagonal-slack reduction, or the exact
++        ``ng - rank`` post-QR generators when reducing would expand;
+         (b) original binary generators preserved with constant
+         corrections; (c) ``2*rank`` new inequality rows enforcing
+         ``xi_dep in [-1, +1]``; (d) pre-existing inequality rows
+         substituted in. Output ``eq_mask`` marks all new rows as
+         inequalities.
+ 
+-    Semantics matches HyZor ``HybridZonotope.project_eq_elim``
+-    (HZ.py:5129) exactly.
++    This keeps HyZor's QR elimination structure while using independent
++    diagonal slack for sound order reduction.
+     """
+     nc = int(hz.b.shape[0])
+     ng = int(hz.Gc.shape[1])
+@@ -201,55 +208,96 @@ def project_eq_elim(
+         Ab_le_remap = np.zeros((0, nb))
+         b_le_remap = np.zeros(0)
+ 
+-    # Merge low-L2-norm continuous free generators into a single box
+-    # generator. Binaries are NEVER merged.
++    # Merge low-L2-norm continuous free generators into INDEPENDENT
++    # per-output box generators (diagonal slack). Binaries are NEVER merged.
++    #
++    # Soundness note: collapsing the merged columns into a single shared
++    # box column (n,1) introduces artificial positive correlation across
++    # outputs — picking the box gen large pushes all outputs together —
++    # which strictly shrinks the set in opposing directions. A diagonal
++    # slack (n new gens, one per output, each independent ξ ∈ [-1,+1])
++    # preserves the sound L1 over-approximation per output without any
++    # cross-output correlation.
++    #
++    # Skip-merge guard: diagonal slack adds n_out columns per call. If
++    # n_out >= (ng_free - keep_count) we're expanding the generator count,
++    # not reducing it — and at high n_out the dense diagonal cost is
++    # O(n_out^2) (n=25088 → ~5 GiB just for Gc). Return the post-QR HZ
++    # without merging; the eq elim itself already gave a sound smaller
++    # representation in equality-rank.
++    n_out = int(Gc_red.shape[0])
+     norms = np.linalg.norm(Gc_red, axis=0)  # (ng_free,)
+     keep_count = min(ng_base, ng_free - 1)
+     if keep_count < 1:
+         keep_count = 1
+-    order = np.argsort(-norms)
+-    keep_idx = order[:keep_count]
+-    merge_idx = order[keep_count:]
+-
+-    Gc_keep = Gc_red[:, keep_idx]               # (n, keep_count)
+-    Gc_merge = Gc_red[:, merge_idx]             # (n, ng_free - keep_count)
+-    # Box column = L1 widening of merged columns.
+-    box_col = np.abs(Gc_merge).sum(axis=1, keepdims=True)  # (n, 1)
+-    Gc_new = np.concatenate([Gc_keep, box_col], axis=1)    # (n, keep+1)
+-    ng_new = keep_count + 1
+-
+-    # Remap box ineq rows: split free cols into keep/merge.
+-    A_box_ub_keep = A_box_ub_free[:, keep_idx]
+-    A_box_ub_merge = A_box_ub_free[:, merge_idx]
+-    A_box_lb_keep = A_box_lb_free[:, keep_idx]
+-    A_box_lb_merge = A_box_lb_free[:, merge_idx]
+-
+-    # New box-column has zero coefficient in dep-box rows (the box gen
+-    # is independent of any prior factor).
+-    box_zero_col = np.zeros((rank, 1))
+-    A_box_ub_new_cont = np.concatenate(
+-        [A_box_ub_keep, box_zero_col], axis=1
+-    )  # (rank, ng_new)
+-    A_box_lb_new_cont = np.concatenate(
+-        [A_box_lb_keep, box_zero_col], axis=1
+-    )
+-
+-    # The merged cols contribute |A_box_*_merge| @ 1 widening to b.
+-    b_box_ub_widened = b_box_ub + np.abs(A_box_ub_merge).sum(axis=1)
+-    b_box_lb_widened = b_box_lb + np.abs(A_box_lb_merge).sum(axis=1)
+-
+-    # Remap pre-existing le rows likewise.
+-    if n_le > 0:
+-        Ac_le_keep = Ac_le_remap_free[:, keep_idx]
+-        Ac_le_merge = Ac_le_remap_free[:, merge_idx]
+-        box_zero_le = np.zeros((n_le, 1))
+-        Ac_le_new_cont = np.concatenate(
+-            [Ac_le_keep, box_zero_le], axis=1
+-        )  # (n_le, ng_new)
+-        b_le_widened = b_le_remap + np.abs(Ac_le_merge).sum(axis=1)
++    n_to_merge_target = ng_free - keep_count
++
++    if n_to_merge_target <= n_out:
++        # No-merge fast path: when n_to_merge_target <= n_out, the diagonal
++        # slack would ADD more columns than it removes — not a reduction.
++        # Plus the dense diag is O(n_out^2) which OOMs at n=25088 (~5 GiB).
++        # Skip the merge entirely; PEE's equality elimination already gave
++        # a sound smaller representation.
++        Gc_new = Gc_red                                    # (n, ng_free)
++        ng_new = ng_free
++        A_box_ub_new_cont = A_box_ub_free                  # (rank, ng_free)
++        A_box_lb_new_cont = A_box_lb_free
++        b_box_ub_widened = b_box_ub                        # no widening needed
++        b_box_lb_widened = b_box_lb
++        if n_le > 0:
++            Ac_le_new_cont = Ac_le_remap_free              # (n_le, ng_free)
++            b_le_widened = b_le_remap
++        else:
++            Ac_le_new_cont = np.zeros((0, ng_new))
++            b_le_widened = np.zeros(0)
+     else:
+-        Ac_le_new_cont = np.zeros((0, ng_new))
+-        b_le_widened = np.zeros(0)
++        order = np.argsort(-norms)
++        keep_idx = order[:keep_count]
++        merge_idx = order[keep_count:]
++
++        Gc_keep = Gc_red[:, keep_idx]               # (n, keep_count)
++        Gc_merge = Gc_red[:, merge_idx]             # (n, ng_free - keep_count)
++        # Diagonal slack: one independent box gen per output dim.
++        box_widths = np.abs(Gc_merge).sum(axis=1)   # (n,)
++        box_diag = np.diag(box_widths)              # (n, n)
++        Gc_new = np.concatenate([Gc_keep, box_diag], axis=1)    # (n, keep + n)
++        ng_new = keep_count + n_out
++
++        # Remap box ineq rows: split free cols into keep/merge.
++        A_box_ub_keep = A_box_ub_free[:, keep_idx]
++        A_box_ub_merge = A_box_ub_free[:, merge_idx]
++        A_box_lb_keep = A_box_lb_free[:, keep_idx]
++        A_box_lb_merge = A_box_lb_free[:, merge_idx]
++
++        # New box gens are independent of any prior factor: zero coefficient
++        # in dep-box rows. (rank, n) zeros instead of (rank, 1) shared col.
++        box_zero_col = np.zeros((rank, n_out))
++        A_box_ub_new_cont = np.concatenate(
++            [A_box_ub_keep, box_zero_col], axis=1
++        )  # (rank, ng_new)
++        A_box_lb_new_cont = np.concatenate(
++            [A_box_lb_keep, box_zero_col], axis=1
++        )
++
++        # Merged cols still contribute |A_box_*_merge| @ 1 widening to b
++        # (the box gens enter the y-coords directly; the dep-box rows still
++        # need this slack since they constrain the same xi_dep values).
++        b_box_ub_widened = b_box_ub + np.abs(A_box_ub_merge).sum(axis=1)
++        b_box_lb_widened = b_box_lb + np.abs(A_box_lb_merge).sum(axis=1)
++
++        # Remap pre-existing le rows likewise — n zero cols for the diagonal
++        # slack since pre-existing rows don't reference the new box gens.
++        if n_le > 0:
++            Ac_le_keep = Ac_le_remap_free[:, keep_idx]
++            Ac_le_merge = Ac_le_remap_free[:, merge_idx]
++            box_zero_le = np.zeros((n_le, n_out))
++            Ac_le_new_cont = np.concatenate(
++                [Ac_le_keep, box_zero_le], axis=1
++            )  # (n_le, ng_new)
++            b_le_widened = b_le_remap + np.abs(Ac_le_merge).sum(axis=1)
++        else:
++            Ac_le_new_cont = np.zeros((0, ng_new))
++            b_le_widened = np.zeros(0)
+ 
+     # Assemble all post-elim inequality rows: 2*rank box rows + n_le
+     # pre-existing rows, all sharing the same [xi_free_kept; xi_box; xi_b]
+@@ -277,8 +325,8 @@ def project_eq_elim(
+     out = HZono(c=c_out, Gc=Gc_out, Gb=Gb_out,
+                  Ac=Ac_out, Ab=Ab_out, b=b_out,
+                  eq_mask=eq_mask_out)
+-    # _base_ng tracking: output ng = keep_count + 1 (may have shrunk). Mirror
+-    # HyZor HybridZonotope.project_eq_elim where _base_ng = min(input, ng_new).
++    # Track the surviving shared base block after either exact post-QR
++    # elimination or diagonal-slack widening.
+     from act.back_end.solver.solver_hz import _propagate_base
+     _propagate_base(hz, out)
+     return out
+diff --git a/act/back_end/hybridz_tf/algorithms/relu_methods.py b/act/back_end/hybridz_tf/algorithms/relu_methods.py
+index 0632c9b..d27e4cb 100644
+--- a/act/back_end/hybridz_tf/algorithms/relu_methods.py
++++ b/act/back_end/hybridz_tf/algorithms/relu_methods.py
+@@ -450,6 +450,398 @@ def hz_apply_relu_bigM_fast(
+     )
+ 
+ 
++# ---------------------------------------------------------------------------
++# Method 4: convex_hull_cont — continuous-only convex-hull ReLU
++# ---------------------------------------------------------------------------
++
++
++def hz_apply_relu_convex_hull(
++    hz: HZono,
++    external_bounds: Optional[Tuple[torch.Tensor, torch.Tensor]] = None,
++) -> HZono:
++    """Continuous-only convex-hull ReLU encoding.
++
++    Per unstable neuron i with bounds [l, u] (l<0<u), introduce one
++    fresh continuous factor ``eta_t ∈ [-1,+1]`` and parameterise::
++
++        y_i = u/2 + (u/2) eta_t        (so y_i ∈ [0, u] automatically)
++
++    with TWO inequality rows (the y>=0 / y<=u bounds are absorbed by η)::
++
++        x_i - y_i <= 0                  (lower facet y >= x)
++        y_i - lam x_i <= -lam l_i       (upper chord, lam = u/(u-l))
++
++    Per unstable: +1 continuous gen, +0 binary, +2 inequality rows.
++
++    Algebraically yields the **same convex set in (x, y)** as the
++    LP-relaxation of ``eq_lagr_v8`` (which uses +4 cont + 1 binary +
++    3 equalities per neuron), but with a strictly smaller LP
++    representation.  Equivalence proof: project both polytopes onto
++    (x_i, y_i) and observe both are exactly the triangle
++    ``conv(ReLU)``.
++
++    NOT comparable to ``hz_apply_relu_triangle`` (DeepZ parallelogram,
++    which is **strictly looser** because it forces y to lie on a
++    parallelogram chord rather than the true convex hull).
++
++    Stable rows pass through (active=identity, inactive=zero).
++    """
++    dtype, device = hz.c.dtype, hz.c.device
++    n = int(hz.c.shape[0])
++    ng0 = int(hz.Gc.shape[1])
++    nb0 = int(hz.Gb.shape[1])
++    nc0 = int(hz.b.shape[0])
++
++    if external_bounds is not None:
++        lb = external_bounds[0].to(device=device, dtype=dtype).view(-1)
++        ub = external_bounds[1].to(device=device, dtype=dtype).view(-1)
++    else:
++        radius = hz.Gc.abs().sum(dim=1) + hz.Gb.abs().sum(dim=1)
++        c_flat = hz.c.flatten()
++        lb = c_flat - radius
++        ub = c_flat + radius
++
++    pos_mask = (lb >= 0)
++    neg_mask = (ub <= 0)
++    mix_mask = ~(pos_mask | neg_mask)
++    mix_idx = torch.nonzero(mix_mask, as_tuple=False).view(-1)
++    k = int(mix_idx.numel())
++
++    em_old = hz.eq_mask if (hz.eq_mask is not None and int(hz.eq_mask.numel()) == nc0) \
++        else torch.ones(nc0, dtype=torch.bool, device=device)
++
++    if k == 0:
++        # All stable: zero out inactive rows, identity on active.
++        if not torch.any(neg_mask):
++            return HZono(c=hz.c.clone(), Gc=hz.Gc.clone(), Gb=hz.Gb.clone(),
++                         Ac=hz.Ac.clone(), Ab=hz.Ab.clone(),
++                         b=hz.b.clone(), eq_mask=em_old.clone())
++        keep = pos_mask.to(dtype=dtype).unsqueeze(1)
++        return HZono(
++            c=hz.c * keep,
++            Gc=hz.Gc * keep if hz.Gc.numel() else hz.Gc,
++            Gb=hz.Gb * keep if hz.Gb.numel() else hz.Gb,
++            Ac=hz.Ac.clone(), Ab=hz.Ab.clone(),
++            b=hz.b.clone(), eq_mask=em_old.clone(),
++        )
++
++    u_mix = ub[mix_idx].clamp(min=0)
++    l_mix = lb[mix_idx]
++    c_mix = hz.c[mix_idx, 0]
++    t_idx = torch.arange(k, device=device)
++    lam = u_mix / (u_mix - l_mix)  # in (0, 1)
++
++    # ── Build new HZ coords (y rows only — direct projection) ──
++    # Stable (active): y = x  → carry old c/Gc/Gb.
++    # Stable (inactive): y = 0  → zeros.
++    # Mix: y = u/2 + (u/2) eta_t  → c=u/2, Gc col for eta_t = u/2.
++    ng_new = ng0 + k
++    nb_new = nb0  # NO new binary
++
++    c_out = torch.zeros((n, 1), device=device, dtype=dtype)
++    Gc_out = torch.zeros((n, ng_new), device=device, dtype=dtype)
++    Gb_out = torch.zeros((n, nb_new), device=device, dtype=dtype)
++
++    # Active rows: pass-through.
++    if pos_mask.any():
++        c_out[pos_mask] = hz.c[pos_mask]
++        if ng0 > 0:
++            Gc_out[pos_mask, :ng0] = hz.Gc[pos_mask]
++        if nb0 > 0:
++            Gb_out[pos_mask, :nb0] = hz.Gb[pos_mask]
++
++    # Mix rows: parametrise y = u/2 + (u/2) eta_t (decoupled from old factors).
++    c_out[mix_idx, 0] = u_mix / 2.0
++    Gc_out[mix_idx, ng0 + t_idx] = u_mix / 2.0
++    # (no old-factor contribution on mix y rows — by parametrisation)
++
++    # ── Extend old constraints with zero cols for new eta vars ──
++    if nc0 > 0:
++        Ac0 = torch.cat([hz.Ac, torch.zeros((nc0, k), device=device, dtype=dtype)], dim=1)
++        # Ab0 keeps its original (nc0, nb0) shape — chull adds no new binaries.
++        Ab0 = hz.Ab if nb0 > 0 else torch.zeros((nc0, 0), device=device, dtype=dtype)
++        b0 = hz.b
++    else:
++        Ac0 = torch.zeros((0, ng_new), device=device, dtype=dtype)
++        Ab0 = torch.zeros((0, nb_new), device=device, dtype=dtype)
++        b0 = torch.zeros((0, 1), device=device, dtype=dtype)
++
++    # ── 2k inequality rows: facet y>=x and upper chord ──
++    #
++    # row1 (y >= x), i.e.  x_i - y_i <= 0:
++    #   x_i = c_i + Gc_i · xi_c + Gb_i · xi_b
++    #   y_i = u/2 + (u/2) eta_t
++    #   →  Gc_i · xi_c + Gb_i · xi_b - (u/2) eta_t <= u/2 - c_i
++    #
++    # row2 (upper chord):  y_i - lam x_i <= -lam l_i
++    #   →  -lam Gc_i · xi_c - lam Gb_i · xi_b + (u/2) eta_t <= -lam l_i - u/2 + lam c_i
++    row1 = 2 * t_idx
++    row2 = 2 * t_idx + 1
++    col_eta = ng0 + t_idx
++
++    Ac_relu = torch.zeros((2 * k, ng_new), device=device, dtype=dtype)
++    Ab_relu = torch.zeros((2 * k, nb_new), device=device, dtype=dtype)
++    b_relu = torch.zeros(2 * k, device=device, dtype=dtype)
++
++    if ng0 > 0:
++        ng_cols = torch.arange(ng0, device=device)
++        Ac_relu[row1[:, None], ng_cols[None, :]] = hz.Gc[mix_idx, :]
++        Ac_relu[row2[:, None], ng_cols[None, :]] = -lam.unsqueeze(1) * hz.Gc[mix_idx, :]
++    Ac_relu[row1, col_eta] = -u_mix / 2.0
++    Ac_relu[row2, col_eta] = u_mix / 2.0
++
++    if nb0 > 0:
++        nb_cols = torch.arange(nb0, device=device)
++        Ab_relu[row1[:, None], nb_cols[None, :]] = hz.Gb[mix_idx, :]
++        Ab_relu[row2[:, None], nb_cols[None, :]] = -lam.unsqueeze(1) * hz.Gb[mix_idx, :]
++
++    b_relu[row1] = u_mix / 2.0 - c_mix
++    b_relu[row2] = -lam * l_mix - u_mix / 2.0 + lam * c_mix
++    b_relu = b_relu.view(-1, 1)
++
++    newAc = torch.cat([Ac0, Ac_relu], dim=0)
++    # Always concatenate: even with nb0==0, row count must match Ac/b/eq_mask.
++    newAb = torch.cat([Ab0, Ab_relu], dim=0)
++    newb = torch.cat([b0, b_relu], dim=0)
++    em_new = torch.cat(
++        [em_old, torch.zeros(2 * k, dtype=torch.bool, device=device)],
++        dim=0,
++    )
++
++    return HZono(
++        c=c_out, Gc=Gc_out, Gb=Gb_out,
++        Ac=newAc, Ab=newAb, b=newb,
++        eq_mask=em_new,
++    )
++
++
++# ---------------------------------------------------------------------------
++# External chull mask registry (for property-directed dual-sensitivity masks)
++# ---------------------------------------------------------------------------
++#
++# Set by the driver via ``set_chull_mask_for_relu(ridx, mask)``. Read by
++# the SparseGcZ early path and HZono late path in hz_routing.py when
++# ``ACT_HZ_DUAL_MASK_ACTIVE=1``. Module-level state is a deliberate hack
++# for experimental property-direction integration; production work would
++# thread per-call.
++
++_CHULL_MASK_REGISTRY: dict = {}
++_CURRENT_RIDX: int = 0
++
++
++def set_chull_mask_for_relu(ridx: int, mask: torch.Tensor) -> None:
++    """Register a per-neuron chull mask for the ``ridx``-th ReLU."""
++    _CHULL_MASK_REGISTRY[int(ridx)] = mask
++
++
++def set_current_relu_idx(ridx: int) -> None:
++    """Set by HZVerifier._dispatch before calling hz_apply_relu_v8."""
++    global _CURRENT_RIDX
++    _CURRENT_RIDX = int(ridx)
++
++
++def get_chull_mask_for_current_relu() -> Optional[torch.Tensor]:
++    return _CHULL_MASK_REGISTRY.get(_CURRENT_RIDX)
++
++
++def clear_chull_masks() -> None:
++    _CHULL_MASK_REGISTRY.clear()
++
++
++# ---------------------------------------------------------------------------
++# Method 5: selective_chull — DeepZ triangle for most + chull tightening
++#           on a top-K mask of unstable neurons (sparse cut)
++# ---------------------------------------------------------------------------
++
++
++def hz_apply_relu_selective_chull(
++    hz: HZono,
++    *,
++    external_bounds: Optional[Tuple[torch.Tensor, torch.Tensor]] = None,
++    chull_mask: Optional[torch.Tensor] = None,
++    top_k: Optional[int] = None,
++) -> HZono:
++    """DeepZ triangle ReLU with chull tightening on a selective subset.
++
++    All unstable neurons get DeepZ-style parametrisation
++    ``y_i = lam_i x_i + mu_i (1 + eps_new_i)`` (one new continuous gen
++    per unstable). Then for each MASKED unstable neuron we add two
++    sparse inequality rows that tighten the DeepZ parallelogram into
++    the proper convex hull:
++
++      row1 (y_i >= x_i, the lower facet):
++        x_i - y_i = (1 - lam_i) x_i - mu_i (1 + eps_new_i)  <= 0
++        → (1 - lam_i) Gc_i · xi_c + (1 - lam_i) Gb_i · xi_b
++          - mu_i eps_new_i <= mu_i - (1 - lam_i) c_i
++
++      row2 (y_i >= 0, the inactive facet):
++        -y_i = -lam_i x_i - mu_i (1 + eps_new_i)  <= 0
++        → -lam_i Gc_i · xi_c - lam_i Gb_i · xi_b
++          - mu_i eps_new_i <= lam_i c_i + mu_i
++
++    Cost: ALL unstable get +1 cont gen (the DeepZ slack); MASKED unstable
++    additionally get +2 inequality rows. The Gc structure is unchanged
++    from triangle. Non-masked unstable see no constraint rows — strictly
++    cheaper than full chull, strictly tighter than full triangle.
++
++    Mask selection:
++      - If ``chull_mask`` is given: 1-D bool tensor over n, True ⇒ apply
++        chull tightening to that neuron (if also unstable).
++      - Else if ``top_k`` is given: select top-k unstable neurons by
++        width ``ub - lb`` (forward heuristic; property-direction is a
++        follow-up).
++      - If both None: identity-DeepZ (no chull tightening, equivalent
++        to ``hz_apply_relu_triangle``).
++    """
++    dtype, device = hz.c.dtype, hz.c.device
++    n = int(hz.c.shape[0])
++    ng0 = int(hz.Gc.shape[1])
++    nb0 = int(hz.Gb.shape[1])
++    nc0 = int(hz.b.shape[0])
++
++    if external_bounds is not None:
++        lb = external_bounds[0].to(device=device, dtype=dtype).view(-1)
++        ub = external_bounds[1].to(device=device, dtype=dtype).view(-1)
++    else:
++        radius = hz.Gc.abs().sum(dim=1) + hz.Gb.abs().sum(dim=1)
++        c_flat = hz.c.flatten()
++        lb = c_flat - radius
++        ub = c_flat + radius
++
++    is_active = (lb >= 0)
++    is_inactive = (ub <= 0)
++    is_unstable = ~(is_active | is_inactive)
++    unstable_idx = torch.nonzero(is_unstable, as_tuple=False).view(-1)
++    k = int(unstable_idx.numel())
++
++    em_old = hz.eq_mask if (hz.eq_mask is not None and int(hz.eq_mask.numel()) == nc0) \
++        else torch.ones(nc0, dtype=torch.bool, device=device)
++
++    if k == 0:
++        # No unstable neurons — same as triangle's k==0 branch.
++        new_c = hz.c.clone()
++        new_Gc = hz.Gc.clone()
++        new_Gb = hz.Gb.clone()
++        if is_inactive.any():
++            new_c[is_inactive] = 0.0
++            if ng0 > 0:
++                new_Gc[is_inactive] = 0.0
++            if nb0 > 0:
++                new_Gb[is_inactive] = 0.0
++        return HZono(c=new_c, Gc=new_Gc, Gb=new_Gb,
++                     Ac=hz.Ac.clone(), Ab=hz.Ab.clone(),
++                     b=hz.b.clone(), eq_mask=em_old.clone())
++
++    # ── DeepZ triangle skeleton on ALL unstable (identical to hz_apply_relu_triangle) ──
++    l_uns = lb[unstable_idx]
++    u_uns = ub[unstable_idx]
++    lam = u_uns / (u_uns - l_uns)
++    mu = -l_uns * u_uns / (2.0 * (u_uns - l_uns))
++
++    ng = ng0 + k
++
++    c_out = torch.zeros((n, 1), device=device, dtype=dtype)
++    if is_active.any():
++        c_out[is_active] = hz.c[is_active]
++    c_out[unstable_idx, 0] = lam * hz.c[unstable_idx, 0] + mu
++
++    Gc_out = torch.zeros((n, ng), device=device, dtype=dtype)
++    if ng0 > 0:
++        if is_active.any():
++            Gc_out[is_active, :ng0] = hz.Gc[is_active]
++        Gc_out[unstable_idx, :ng0] = lam.unsqueeze(1) * hz.Gc[unstable_idx]
++    j_idx = torch.arange(k, device=device)
++    Gc_out[unstable_idx, ng0 + j_idx] = mu
++
++    Gb_out = torch.zeros((n, nb0), device=device, dtype=dtype)
++    if nb0 > 0:
++        if is_active.any():
++            Gb_out[is_active] = hz.Gb[is_active]
++        Gb_out[unstable_idx] = lam.unsqueeze(1) * hz.Gb[unstable_idx]
++
++    # ── Old constraints get k zero cols for new eps gens ──
++    if nc0 > 0:
++        Ac0 = torch.cat([hz.Ac, torch.zeros((nc0, k), device=device, dtype=dtype)], dim=1)
++        Ab0 = hz.Ab if nb0 > 0 else torch.zeros((nc0, 0), device=device, dtype=dtype)
++        b0 = hz.b
++    else:
++        Ac0 = torch.zeros((0, ng), device=device, dtype=dtype)
++        Ab0 = torch.zeros((0, nb0), device=device, dtype=dtype)
++        b0 = torch.zeros((0, 1), device=device, dtype=dtype)
++
++    # ── Derive the chull mask within unstable indices ──
++    width_uns = u_uns - l_uns  # > 0 for all unstable
++
++    if chull_mask is not None:
++        # External mask over all n neurons; intersect with unstable.
++        cm = chull_mask.to(device=device, dtype=torch.bool).view(-1)
++        in_unst = cm[unstable_idx]
++        selected_local = torch.nonzero(in_unst, as_tuple=False).view(-1)
++    elif top_k is not None and top_k > 0:
++        kk = min(int(top_k), k)
++        _, selected_local = torch.topk(width_uns, kk)
++    else:
++        selected_local = torch.zeros(0, dtype=torch.long, device=device)
++
++    n_sel = int(selected_local.numel())
++
++    if n_sel == 0:
++        # Pure triangle: no extra constraints needed.
++        return HZono(
++            c=c_out, Gc=Gc_out, Gb=Gb_out,
++            Ac=Ac0, Ab=Ab0, b=b0,
++            eq_mask=em_old.clone(),
++        )
++
++    # ── 2 * n_sel chull-tightening inequality rows ──
++    sel_orig_idx = unstable_idx[selected_local]   # original neuron indices
++    sel_lam = lam[selected_local]
++    sel_mu = mu[selected_local]
++    sel_c = hz.c[sel_orig_idx, 0]
++
++    row1 = 2 * torch.arange(n_sel, device=device)
++    row2 = row1 + 1
++    eps_col = ng0 + selected_local                 # the new eps gen for each selected
++
++    Ac_cut = torch.zeros((2 * n_sel, ng), device=device, dtype=dtype)
++    Ab_cut = torch.zeros((2 * n_sel, nb0), device=device, dtype=dtype)
++    b_cut = torch.zeros(2 * n_sel, device=device, dtype=dtype)
++
++    # row1: (1-lam) Gc_i . xi_c + (1-lam) Gb_i . xi_b - mu eps_i <= mu - (1-lam) c
++    one_minus_lam = (1.0 - sel_lam)
++    if ng0 > 0:
++        Ac_cut[row1[:, None], torch.arange(ng0, device=device)[None, :]] = \
++            one_minus_lam.unsqueeze(1) * hz.Gc[sel_orig_idx, :]
++        Ac_cut[row2[:, None], torch.arange(ng0, device=device)[None, :]] = \
++            -sel_lam.unsqueeze(1) * hz.Gc[sel_orig_idx, :]
++    Ac_cut[row1, eps_col] = -sel_mu
++    Ac_cut[row2, eps_col] = -sel_mu
++
++    if nb0 > 0:
++        Ab_cut[row1[:, None], torch.arange(nb0, device=device)[None, :]] = \
++            one_minus_lam.unsqueeze(1) * hz.Gb[sel_orig_idx, :]
++        Ab_cut[row2[:, None], torch.arange(nb0, device=device)[None, :]] = \
++            -sel_lam.unsqueeze(1) * hz.Gb[sel_orig_idx, :]
++
++    b_cut[row1] = sel_mu - one_minus_lam * sel_c
++    b_cut[row2] = sel_lam * sel_c + sel_mu
++    b_cut = b_cut.view(-1, 1)
++
++    newAc = torch.cat([Ac0, Ac_cut], dim=0)
++    newAb = torch.cat([Ab0, Ab_cut], dim=0)
++    newb = torch.cat([b0, b_cut], dim=0)
++    em_new = torch.cat(
++        [em_old, torch.zeros(2 * n_sel, dtype=torch.bool, device=device)],
++        dim=0,
++    )
++
++    return HZono(
++        c=c_out, Gc=Gc_out, Gb=Gb_out,
++        Ac=newAc, Ab=newAb, b=newb,
++        eq_mask=em_new,
++    )
++
++
+ # ---------------------------------------------------------------------------
+ # Method dispatcher (memaware)
+ # ---------------------------------------------------------------------------
+diff --git a/act/back_end/hybridz_tf/hz_routing.py b/act/back_end/hybridz_tf/hz_routing.py
+index a6c890b..bef84ca 100644
+--- a/act/back_end/hybridz_tf/hz_routing.py
++++ b/act/back_end/hybridz_tf/hz_routing.py
+@@ -95,6 +95,7 @@ from act.back_end.hybridz_tf.tf_cnn import (
+ )
+ from act.back_end.hybridz_tf.algorithms.relu_methods import (
+     hz_apply_relu_triangle, hz_apply_relu_compact, hz_apply_relu_bigM_fast,
++    hz_apply_relu_convex_hull, hz_apply_relu_selective_chull,
+ )
+ 
+ 
+@@ -241,8 +242,11 @@ def hz_add_const(hz, c):
+         return hz.with_add_const(c_t)
+     if isinstance(hz, SparseGcZ):
+         c_t = torch.as_tensor(c, dtype=hz.dtype, device=hz.device).flatten()
+-        return SparseGcZ(c=hz.c + c_t, Gc_sparse=hz.Gc_sparse,
+-                         dtype=hz.dtype, device=hz.device)
++        return SparseGcZ(
++            c=hz.c + c_t, Gc_sparse=hz.Gc_sparse,
++            dtype=hz.dtype, device=hz.device,
++            Ac_sparse=hz.Ac_sparse, b=hz.b, eq_mask=hz.eq_mask,
++        )
+     return _propagate_base_any(hz, _hz_add_const_native(hz, c))
+ 
+ 
+@@ -402,6 +406,21 @@ def _hzono_tight_bounds(hz):
+     return lb.flatten(), ub.flatten()
+ 
+ 
++def _sparse_relu_with_optional_cuts(hz: SparseGcZ):
++    """Apply sparse triangle, optionally preserving selective hull facets."""
++    from act.back_end.hybridz_tf.algorithms.relu_methods import (
++        get_chull_mask_for_current_relu,
++    )
++    mask = get_chull_mask_for_current_relu()
++    k_sel = int(os.environ.get("ACT_HZ_EARLY_SELECTIVE_K", "0") or "0")
++    if mask is not None or k_sel > 0:
++        return hz.apply_relu_selective_chull(
++            chull_mask=mask,
++            top_k=(None if mask is not None else k_sel),
++        )
++    return hz.apply_relu_triangle()
++
++
+ def hz_apply_relu_v8(hz, *, method: str = "eq_lagr_v8"):
+     """HZ ReLU dispatch by representation flavor.
+ 
+@@ -417,14 +436,17 @@ def hz_apply_relu_v8(hz, *, method: str = "eq_lagr_v8"):
+         else:
+             sparse = hz.to_sparse_gc_hz()
+             if sparse is not None:
+-                return sparse.apply_relu_triangle()
++                return _sparse_relu_with_optional_cuts(sparse)
+             box = hz.snapshot_to_box()
+             relu_lb = torch.clamp(box.lb, min=0.0)
+             relu_ub = torch.clamp(box.ub, min=0.0)
+             return _make_or_box(relu_lb, relu_ub,
+                                 dtype=hz.dtype, device=hz.device)
+     if isinstance(hz, SparseGcZ):
+-        return hz.apply_relu_triangle()
++        # Keep early selective facets in sparse factor coordinates. Previous
++        # experiments densified Gc just to add a few rows, consuming tens of
++        # GiB and changing downstream routing before the cuts could pay off.
++        return _sparse_relu_with_optional_cuts(hz)
+     if isinstance(hz, BoxHZ):
+         relu_lb = torch.clamp(hz.lb, min=0.0)
+         relu_ub = torch.clamp(hz.ub, min=0.0)
+@@ -432,15 +454,30 @@ def hz_apply_relu_v8(hz, *, method: str = "eq_lagr_v8"):
+                             dtype=hz.dtype, device=hz.device)
+ 
+     # HZono: method-specific dispatch. Mirrors HyZor's HybridZReLU but
+-    # uses ACT's parity-tested encodings. Memory pre-check is the same.
++    # uses ACT's parity-tested encodings. Memory pre-check is method-
++    # specific so that compact encodings (chull / triangle) are not
++    # rerouted to looser DeepZ when the eq_native budget alone would
++    # have overflowed.
+     n = int(hz.c.shape[0])
+     ng = int(hz.Gc.shape[1])
+     nb = int(hz.Gb.shape[1])
+     nc = int(hz.b.shape[0])
+     k_max = n
+-    new_ng = ng + 4 * k_max
+-    new_nb = nb + k_max
+-    new_nc = nc + 3 * k_max
++    if method in ("convex_hull_cont", "chull_cont", "chull"):
++        # chull: +1 cont, 0 binary, +2 ineq per unstable.
++        new_ng = ng + k_max
++        new_nb = nb
++        new_nc = nc + 2 * k_max
++    elif method == "triangle":
++        # DeepZ parallelogram: +1 cont, 0 binary, 0 rows.
++        new_ng = ng + k_max
++        new_nb = nb
++        new_nc = nc
++    else:
++        # eq_native (default): +4 cont, +1 binary, +3 eq per unstable.
++        new_ng = ng + 4 * k_max
++        new_nb = nb + k_max
++        new_nc = nc + 3 * k_max
+     bytes_per = 8
+     peak = (n * new_ng + n * new_nb + new_nc * (new_ng + new_nb)) * bytes_per * 3
+ 
+@@ -448,6 +485,8 @@ def hz_apply_relu_v8(hz, *, method: str = "eq_lagr_v8"):
+     budget_bytes = int(budget_gb * (1024 ** 3))
+ 
+     if peak > budget_bytes:
++        # Even the requested encoding overflows budget: downgrade to
++        # DeepZ triangle (the cheapest sound encoding we have).
+         try:
+             return hz_apply_relu_triangle(hz)
+         except Exception:
+@@ -548,6 +587,70 @@ def hz_apply_relu_v8(hz, *, method: str = "eq_lagr_v8"):
+             return _propagate_base_any(hz, hz_apply_relu_compact(hz))
+         if method in ("bigM", "bigM_fast", "exact_box"):
+             return _propagate_base_any(hz, hz_apply_relu_bigM_fast(hz))
++        if method in ("selective_chull", "sel_chull"):
++            # Property-directed top-K chull on top of DeepZ triangle.
++            # K from ACT_HZ_SELECTIVE_K (default 32). Mask is width-based
++            # (top-K unstable by ub-lb) OR property-directed dual mask if
++            # the registry has one for the current relu_idx.
++            # Bounds-cascade like eq_lagr_v8.
++            from act.back_end.hybridz_tf.algorithms.relu_methods import (
++                get_chull_mask_for_current_relu,
++            )
++            _dual_mask_late = get_chull_mask_for_current_relu()
++            from act.back_end.hybridz_tf.algorithms.bounds_tighten import (
++                hz_intersect_box,
++            )
++            from act.back_end.hybridz_tf.algorithms.v8_memaware import (
++                get_v8_mem_budget_bytes as _v8_budget,
++                estimate_intersect_box_peak_bytes as _v8_est_ib,
++            )
++            k_sel = int(os.environ.get("ACT_HZ_SELECTIVE_K", "32") or "32")
++            lb_t, ub_t = _hzono_tight_bounds(hz)
++            skip_intersect = False
++            budget_b = _v8_budget(hz)
++            if budget_b is not None and int(hz.b.shape[0]) > 0:
++                elem_now = 8 if hz.c.dtype == torch.float64 else 4
++                est_ib = _v8_est_ib(hz, elem_now)
++                if est_ib > int(0.55 * budget_b):
++                    skip_intersect = True
++            hz_clipped = (hz_intersect_box(hz, lb_t, ub_t)
++                          if (int(hz.b.shape[0]) > 0 and not skip_intersect)
++                          else hz)
++            hz_after = hz_apply_relu_selective_chull(
++                hz_clipped,
++                top_k=(k_sel if _dual_mask_late is None else None),
++                chull_mask=_dual_mask_late,
++                external_bounds=(lb_t, ub_t),
++            )
++            return _propagate_base_any(hz, hz_after)
++        if method in ("convex_hull_cont", "chull_cont", "chull"):
++            # Continuous-only convex-hull ReLU. Goes through the same
++            # bounds-cascade + intersect_box as eq_lagr_v8 so the
++            # stable/unstable classification uses LP-tight bounds (not
++            # loose box bounds). Skips binary_probe (no binaries) and
++            # PEE (chull adds only inequalities, no new equalities).
++            from act.back_end.hybridz_tf.algorithms.bounds_tighten import (
++                hz_intersect_box,
++            )
++            from act.back_end.hybridz_tf.algorithms.v8_memaware import (
++                get_v8_mem_budget_bytes as _v8_budget,
++                estimate_intersect_box_peak_bytes as _v8_est_ib,
++            )
++            lb_t, ub_t = _hzono_tight_bounds(hz)
++            skip_intersect = False
++            budget_b = _v8_budget(hz)
++            if budget_b is not None and int(hz.b.shape[0]) > 0:
++                elem_now = 8 if hz.c.dtype == torch.float64 else 4
++                est_ib = _v8_est_ib(hz, elem_now)
++                if est_ib > int(0.55 * budget_b):
++                    skip_intersect = True
++            hz_clipped = (hz_intersect_box(hz, lb_t, ub_t)
++                          if (int(hz.b.shape[0]) > 0 and not skip_intersect)
++                          else hz)
++            hz_after = hz_apply_relu_convex_hull(
++                hz_clipped, external_bounds=(lb_t, ub_t)
++            )
++            return _propagate_base_any(hz, hz_after)
+         # Unknown method → exact (eq_native).
+         return _propagate_base_any(hz, hz_apply_relu(hz))
+     except (ValueError, AssertionError):
+diff --git a/act/back_end/hybridz_tf/representations.py b/act/back_end/hybridz_tf/representations.py
+index 304620e..b2c8fd2 100644
+--- a/act/back_end/hybridz_tf/representations.py
++++ b/act/back_end/hybridz_tf/representations.py
+@@ -31,11 +31,11 @@ sufficient for the ACT batch-native TF chain to make progress:
+     chain ``freeze()``s into either a full HZono, a SparseGcZ, or
+     falls back to a BoxHZ snapshot.
+ 
+-  * **SparseGcZ** -- HZ with sparse-COO Gc storage; nb = 0. Useful for
+-    a single-conv chain where Gc has well-defined sparsity but dense
+-    storage doesn't fit. Supports triangle ReLU (which preserves
+-    sparse-Gc structure) but cannot host eq_lagr-style ReLU encodings
+-    (those need dense Gc + binary slots).
++  * **SparseGcZ** -- HZ with sparse-COO Gc and optional sparse linear
++    constraint rows; nb = 0. Useful for a single-conv chain where Gc
++    has well-defined sparsity but dense storage doesn't fit. Supports
++    triangle ReLU and sparse selective convex-hull facet cuts; encodings
++    requiring binary slots still promote to dense HZono.
+ 
+ This module is a direct port of the corresponding HyZor classes in
+ ``HyZor/__init__.py`` (which return ``HybridZonotope``); here we return
+@@ -607,17 +607,42 @@ class SparseGcZ:
+ 
+     Used as an intermediate after a single conv on a BoxHZ root when
+     the dense materialisation doesn't fit but the sparse Gc does.
+-    Supports triangle ReLU (which preserves sparse-Gc structure) and
+-    converts to dense ``HZono`` via ``to_hzono()`` when subsequent
+-    transformations need the dense form (e.g. eq_lagr ReLU).
++    Supports triangle ReLU and sparse inequality cuts (which preserve
++    sparse-Gc structure), and converts to dense ``HZono`` via
++    ``to_hzono()`` when subsequent transformations need the dense form
++    (e.g. eq_lagr ReLU).
+     """
+ 
+     def __init__(self, *, c: torch.Tensor, Gc_sparse: torch.Tensor,
+-                 dtype, device):
++                 dtype, device, Ac_sparse: Optional[torch.Tensor] = None,
++                 b: Optional[torch.Tensor] = None,
++                 eq_mask: Optional[torch.Tensor] = None):
+         self.c = c.flatten().to(dtype=dtype, device=device)
+         self.Gc_sparse = Gc_sparse.coalesce()
+         self.dtype = dtype
+         self.device = device
++        ng = int(self.Gc_sparse.shape[1])
++        if Ac_sparse is None:
++            Ac_sparse = torch.sparse_coo_tensor(
++                torch.zeros((2, 0), dtype=torch.long, device=device),
++                torch.zeros(0, dtype=dtype, device=device),
++                (0, ng), dtype=dtype, device=device,
++            )
++        self.Ac_sparse = Ac_sparse.coalesce().to(dtype=dtype, device=device)
++        nc = int(self.Ac_sparse.shape[0])
++        self.b = (
++            torch.zeros((nc, 1), dtype=dtype, device=device)
++            if b is None else b.to(dtype=dtype, device=device).view(-1, 1)
++        )
++        if int(self.b.shape[0]) != nc:
++            raise ValueError("SparseGcZ: Ac_sparse/b row mismatch")
++        self.eq_mask = (
++            torch.zeros(nc, dtype=torch.bool, device=device)
++            if eq_mask is None
++            else eq_mask.to(dtype=torch.bool, device=device).view(-1)
++        )
++        if int(self.eq_mask.numel()) != nc:
++            raise ValueError("SparseGcZ: Ac_sparse/eq_mask row mismatch")
+ 
+     @property
+     def dim(self) -> int:
+@@ -637,7 +662,13 @@ class SparseGcZ:
+ 
+     @property
+     def nc(self) -> int:
+-        return 0
++        return int(self.b.shape[0])
++
++    def _constraints_with_ng(self, ng: int) -> torch.Tensor:
++        return torch.sparse_coo_tensor(
++            self.Ac_sparse.indices(), self.Ac_sparse.values(),
++            (self.nc, int(ng)), dtype=self.dtype, device=self.device,
++        ).coalesce()
+ 
+     def bounds(self) -> Tuple[torch.Tensor, torch.Tensor]:
+         if self.Gc_sparse._nnz() == 0:
+@@ -656,10 +687,10 @@ class SparseGcZ:
+             c=self.c.view(-1, 1),
+             Gc=Gc_dense,
+             Gb=torch.zeros((self.dim, 0), dtype=self.dtype, device=self.device),
+-            Ac=torch.zeros((0, Gc_dense.shape[1]),
+-                            dtype=self.dtype, device=self.device),
+-            Ab=torch.zeros((0, 0), dtype=self.dtype, device=self.device),
+-            b=torch.zeros((0, 1), dtype=self.dtype, device=self.device),
++            Ac=self.Ac_sparse.to_dense(),
++            Ab=torch.zeros((self.nc, 0), dtype=self.dtype, device=self.device),
++            b=self.b.clone(),
++            eq_mask=self.eq_mask.clone(),
+         )
+ 
+     # Alias for parity with HyZor's HybridZonotope-style API. HyZor's
+@@ -703,8 +734,10 @@ class SparseGcZ:
+             ind, scaled_val, self.Gc_sparse.shape,
+             dtype=self.dtype, device=self.device,
+         ).coalesce()
+-        return SparseGcZ(c=c_new, Gc_sparse=Gc_new,
+-                         dtype=self.dtype, device=self.device)
++        return SparseGcZ(
++            c=c_new, Gc_sparse=Gc_new, dtype=self.dtype, device=self.device,
++            Ac_sparse=self.Ac_sparse, b=self.b, eq_mask=self.eq_mask,
++        )
+ 
+     def apply_dense(self, W, b=None) -> HZono:
+         """``y = W x + b``. Sparse Gc → dense Gc' = W @ Gc; return HZono.
+@@ -727,12 +760,16 @@ class SparseGcZ:
+             c=c_new.view(-1, 1),
+             Gc=Gc_dense,
+             Gb=torch.zeros((n_out, 0), dtype=self.dtype, device=self.device),
+-            Ac=torch.zeros((0, ng), dtype=self.dtype, device=self.device),
+-            Ab=torch.zeros((0, 0), dtype=self.dtype, device=self.device),
+-            b=torch.zeros((0, 1), dtype=self.dtype, device=self.device),
++            Ac=self.Ac_sparse.to_dense(),
++            Ab=torch.zeros((self.nc, 0), dtype=self.dtype, device=self.device),
++            b=self.b.clone(),
++            eq_mask=self.eq_mask.clone(),
+         )
+ 
+-    def apply_relu_triangle(self) -> "SparseGcZ":
++    def apply_relu_triangle(
++        self, *,
++        external_bounds: Optional[Tuple[torch.Tensor, torch.Tensor]] = None,
++    ) -> "SparseGcZ":
+         """DeepZ triangle ReLU on sparse Gc.
+ 
+         Per unstable neuron i with bounds ``[lb_i, ub_i]`` (l<0<u)::
+@@ -746,7 +783,14 @@ class SparseGcZ:
+         """
+         n = self.dim
+         ng0 = self.ng
+-        lb, ub = self.bounds()
++        if external_bounds is None:
++            lb, ub = self.bounds()
++        else:
++            lb, ub = external_bounds
++            lb = lb.to(dtype=self.dtype, device=self.device).view(-1)
++            ub = ub.to(dtype=self.dtype, device=self.device).view(-1)
++            if int(lb.numel()) != self.dim or int(ub.numel()) != self.dim:
++                raise ValueError("SparseGcZ triangle external bounds dimension mismatch")
+         is_active = (lb >= 0)
+         is_inactive = (ub <= 0)
+         is_unstable = ~(is_active | is_inactive)
+@@ -796,8 +840,126 @@ class SparseGcZ:
+             all_ind, all_val, (n, ng_out),
+             dtype=self.dtype, device=self.device,
+         )
+-        return SparseGcZ(c=c_out, Gc_sparse=Gc_out,
+-                         dtype=self.dtype, device=self.device)
++        return SparseGcZ(
++            c=c_out, Gc_sparse=Gc_out, dtype=self.dtype, device=self.device,
++            Ac_sparse=self._constraints_with_ng(ng_out),
++            b=self.b, eq_mask=self.eq_mask,
++        )
++
++    def apply_relu_selective_chull(
++        self, *, chull_mask: Optional[torch.Tensor] = None,
++        top_k: Optional[int] = None,
++        external_bounds: Optional[Tuple[torch.Tensor, torch.Tensor]] = None,
++    ) -> "SparseGcZ":
++        """Triangle ReLU plus sparse convex-hull facets for selected neurons.
++
++        Unlike the dense HZono implementation, this keeps both generator
++        coordinates and the added inequality rows sparse. It therefore
++        allows property-directed cuts in the wide early ReLUs without
++        materialising ``dim x ng`` dense matrices.
++        """
++        if external_bounds is None:
++            lb, ub = self.bounds()
++        else:
++            lb, ub = external_bounds
++            lb = lb.to(dtype=self.dtype, device=self.device).view(-1)
++            ub = ub.to(dtype=self.dtype, device=self.device).view(-1)
++            if int(lb.numel()) != self.dim or int(ub.numel()) != self.dim:
++                raise ValueError("SparseGcZ selective external bounds dimension mismatch")
++        unstable = (lb < 0) & (ub > 0)
++        unstable_idx = torch.nonzero(unstable, as_tuple=False).view(-1)
++        k = int(unstable_idx.numel())
++        out = self.apply_relu_triangle(external_bounds=(lb, ub))
++        if k == 0:
++            return out
++        if chull_mask is not None:
++            mask = chull_mask.to(device=self.device, dtype=torch.bool).view(-1)
++            if int(mask.numel()) != self.dim:
++                raise ValueError("SparseGcZ selective mask dimension mismatch")
++            selected_local = torch.nonzero(
++                mask[unstable_idx], as_tuple=False
++            ).view(-1)
++        elif top_k is not None and int(top_k) > 0:
++            kk = min(int(top_k), k)
++            selected_local = torch.topk(
++                ub[unstable_idx] - lb[unstable_idx], kk
++            ).indices
++        else:
++            return out
++        n_sel = int(selected_local.numel())
++        if n_sel == 0:
++            return out
++
++        selected_rows = unstable_idx[selected_local]
++        l = lb[selected_rows]
++        u = ub[selected_rows]
++        lam = u / (u - l)
++        mu = -l * u / (2.0 * (u - l))
++        sel_c = self.c[selected_rows]
++
++        row_lookup = -torch.ones(
++            self.dim, dtype=torch.long, device=self.device
++        )
++        row_lookup[selected_rows] = torch.arange(
++            n_sel, dtype=torch.long, device=self.device
++        )
++        old_idx = self.Gc_sparse.indices()
++        old_val = self.Gc_sparse.values()
++        local = row_lookup[old_idx[0]]
++        useful = local >= 0
++        local = local[useful]
++        cols = old_idx[1, useful]
++        vals = old_val[useful]
++        cut_rows1 = 2 * local
++        cut_rows2 = cut_rows1 + 1
++        cut_idx_old = torch.cat([
++            torch.stack([cut_rows1, cols]),
++            torch.stack([cut_rows2, cols]),
++        ], dim=1)
++        cut_val_old = torch.cat([
++            (1.0 - lam[local]) * vals,
++            -lam[local] * vals,
++        ])
++        eps_cols = self.ng + selected_local
++        cut_idx_eps = torch.stack([
++            torch.cat([2 * torch.arange(n_sel, device=self.device),
++                       2 * torch.arange(n_sel, device=self.device) + 1]),
++            torch.cat([eps_cols, eps_cols]),
++        ])
++        cut_val_eps = torch.cat([-mu, -mu])
++        cut_idx = torch.cat([cut_idx_old, cut_idx_eps], dim=1)
++        cut_val = torch.cat([cut_val_old, cut_val_eps])
++        cut_Ac = torch.sparse_coo_tensor(
++            cut_idx, cut_val, (2 * n_sel, out.ng),
++            dtype=self.dtype, device=self.device,
++        ).coalesce()
++
++        old_idx_out = out.Ac_sparse.indices()
++        all_idx = torch.cat([
++            old_idx_out,
++            torch.stack([
++                cut_Ac.indices()[0] + out.nc,
++                cut_Ac.indices()[1],
++            ]),
++        ], dim=1)
++        all_val = torch.cat([out.Ac_sparse.values(), cut_Ac.values()])
++        Ac_out = torch.sparse_coo_tensor(
++            all_idx, all_val, (out.nc + 2 * n_sel, out.ng),
++            dtype=self.dtype, device=self.device,
++        ).coalesce()
++        b_cut = torch.empty((2 * n_sel, 1), dtype=self.dtype, device=self.device)
++        b_cut[0::2, 0] = mu - (1.0 - lam) * sel_c
++        b_cut[1::2, 0] = lam * sel_c + mu
++        return SparseGcZ(
++            c=out.c, Gc_sparse=out.Gc_sparse,
++            dtype=self.dtype, device=self.device,
++            Ac_sparse=Ac_out,
++            b=torch.cat([out.b, b_cut], dim=0),
++            eq_mask=torch.cat([
++                out.eq_mask,
++                torch.zeros(2 * n_sel, dtype=torch.bool, device=self.device),
++            ]),
++        )
+ 
+     def apply_conv(self, weight, bias, in_shape, stride, pad,
+                    *, chunk=None, sparsify_thresh=None) -> "SparseGcZ":
+@@ -852,8 +1014,11 @@ class SparseGcZ:
+                         Gc_raw, sparsify_thresh,
+                         dtype=self.dtype, device=self.device,
+                     )
+-                    return SparseGcZ(c=c_new, Gc_sparse=Gc_new,
+-                                     dtype=self.dtype, device=self.device)
++                    return SparseGcZ(
++                        c=c_new, Gc_sparse=Gc_new,
++                        dtype=self.dtype, device=self.device,
++                        Ac_sparse=self.Ac_sparse, b=self.b, eq_mask=self.eq_mask,
++                    )
+             except (MemoryError, RuntimeError) as e:
+                 msg = str(e).lower()
+                 if "memory" not in msg and "alloc" not in msg:
+@@ -904,8 +1069,10 @@ class SparseGcZ:
+             all_ind, all_val, (n_out, ng),
+             dtype=self.dtype, device=self.device,
+         ).coalesce()
+-        return SparseGcZ(c=c_new, Gc_sparse=Gc_new,
+-                         dtype=self.dtype, device=self.device)
++        return SparseGcZ(
++            c=c_new, Gc_sparse=Gc_new, dtype=self.dtype, device=self.device,
++            Ac_sparse=self.Ac_sparse, b=self.b, eq_mask=self.eq_mask,
++        )
+ 
+     def reduce_generators(self, target_ng: int) -> "SparseGcZ":
+         """Girard-style box overapproximation of low-magnitude generators.
+@@ -919,6 +1086,11 @@ class SparseGcZ:
+         n = self.dim
+         if ng0 <= target_ng:
+             return self
++        if self.nc > 0:
++            # Remapping constrained factors through sparse Girard widening
++            # requires widening each retained inequality row. Preserve the
++            # tighter constrained representation until that path is needed.
++            return self
+ 
+         ind = self.Gc_sparse.indices()
+         val = self.Gc_sparse.values()
+@@ -959,7 +1131,8 @@ class SparseGcZ:
+             all_ind, all_val, (n, ng_new),
+             dtype=self.dtype, device=self.device,
+         ).coalesce()
+-        return SparseGcZ(c=self.c, Gc_sparse=Gc_new,
+-                         dtype=self.dtype, device=self.device)
+-
+-
++        return SparseGcZ(
++            c=self.c, Gc_sparse=Gc_new, dtype=self.dtype, device=self.device,
++            Ac_sparse=self._constraints_with_ng(ng_new),
++            b=self.b, eq_mask=self.eq_mask,
++        )
+diff --git a/act/back_end/solver/solver_hz.py b/act/back_end/solver/solver_hz.py
+index 561a485..0d4801f 100644
+--- a/act/back_end/solver/solver_hz.py
++++ b/act/back_end/solver/solver_hz.py
+@@ -1,6 +1,7 @@
+ from __future__ import annotations
+ 
+ import logging
++import importlib
+ import os
+ import sys
+ import time
+@@ -139,6 +140,7 @@ def _hz_reduce_constraints(
+     nc_budget: Optional[int] = None,
+     ng_budget: Optional[int] = None,
+     nb_budget: Optional[int] = None,
++    constraint_keep_weight: float = 0.0,
+     tol: float = 1e-12,
+ ) -> HZono:
+     """Reduce HZono constraint / generator count. Faithful port of HyZor
+@@ -148,14 +150,15 @@ def _hz_reduce_constraints(
+     Phases (subset; the full HyZor port has 5 phases):
+       P1: remove trivially redundant constraint rows  (exact)
+       P2: remove zero generator columns               (exact)
+-      P5: continuous generator order reduction (Girard) — caps ng to
+-          ng_budget, merging dropped cols into a single box column with
+-          eq-row split + widening.
+-
+-    Phases skipped (parity-deferred): 1.3 (QR rank), 1.5 (parallel rows),
+-    2.5 (parallel gens), 3 (nc-budget topk), 4 (nb relaxation). The
+-    skipped phases are deduplications — sound to skip, may produce
+-    slightly larger but still valid HZ.
++      P5: continuous generator order reduction (Girard) — when a sound
++          independent-slack representation fits ``ng_budget``, reduce to
++          that budget with eq-row split + widening. Otherwise retain the
++          larger HZ rather than introduce unsound shared slack.
++
++    Additional exact/precision-preserving passes implement equality-only
++    row rank removal, parallel row handling, and parallel generator merging.
++    Phases skipped (parity-deferred): 3 (nc-budget topk), 4 (nb relaxation).
++    The skipped phases are sound to omit and may leave a larger HZ.
+     """
+     import torch as _t
+     has_budget = (
+@@ -192,16 +195,21 @@ def _hz_reduce_constraints(
+             b = b[keep_mask]
+             eq_m = eq_m[keep_mask]
+ 
+-    # ---- Phase 1.3: QR rank-revealing row removal ----
+-    # Linearly dependent constraint rows are sound to drop (LP feasibility
+-    # over a subset of rank-many independent rows = full system). HyZor:4449.
+-    # Size cap: QR on (ng+nb, nc) is O((ng+nb)·nc²); skip when product
+-    # exceeds threshold so reduce overhead stays bounded.
+-    nc_now = int(Ac.shape[0])
++    # ---- Phase 1.3: QR rank-revealing EQUALITY-row removal ----
++    # A dependent equality can be removed without losing a useful tight
++    # inequality: if its RHS is inconsistent, removing it is a sound
++    # widening of an empty set; otherwise it is redundant. Applying the
++    # same row-rank rule to inequalities is still sound, but needlessly
++    # destroys precision. For example, xi <= 0.8 and xi <= 0.2 have
++    # rank-one LHS rows, yet removing the tighter row enlarges the factor
++    # set. Inequalities are preserved here and may only be deduplicated by
++    # the direction-and-RHS-aware Phase 1.5 below.
++    n_eq_now = int(eq_m.sum().item())
+     _PHASE_1_3_CAP = 1024  # max nc for QR phase
+-    if 1 < nc_now <= _PHASE_1_3_CAP:
++    if 1 < n_eq_now <= _PHASE_1_3_CAP:
+         try:
+-            M = _t.cat([Ac, Ab], dim=1).to(dtype=_t.float64)
++            eq_idx = _t.where(eq_m)[0]
++            M = _t.cat([Ac[eq_idx], Ab[eq_idx]], dim=1).to(dtype=_t.float64)
+             Q, R = _t.linalg.qr(M.T)  # QR on transpose for row-rank.
+             diag = R.diag().abs()
+             if diag.numel() > 0:
+@@ -209,13 +217,17 @@ def _hz_reduce_constraints(
+             else:
+                 rank_tol = tol
+             rank = int((diag > rank_tol).sum().item())
+-            if rank < nc_now:
++            if rank < n_eq_now:
+                 import scipy.linalg as _sla
+                 _Q, _R, _piv = _sla.qr(
+                     M.T.cpu().numpy(), pivoting=True, mode="economic"
+                 )
+-                keep_idx = sorted(_piv[:rank].tolist())
+-                keep_t = _t.tensor(keep_idx, device=device, dtype=_t.long)
++                keep_eq_local = _t.tensor(
++                    sorted(_piv[:rank].tolist()), device=device, dtype=_t.long
++                )
++                keep_mask = ~eq_m
++                keep_mask[eq_idx[keep_eq_local]] = True
++                keep_t = _t.where(keep_mask)[0]
+                 Ac = Ac[keep_t]
+                 Ab = Ab[keep_t]
+                 b = b[keep_t]
+@@ -327,26 +339,55 @@ def _hz_reduce_constraints(
+                     Ac = _t.empty(0, int(Gc.shape[1]), device=device, dtype=dtype)
+ 
+     # ---- Phase 5: continuous generator order reduction (Girard) ----
++    # Sound: collapses removed Gc cols into n INDEPENDENT diagonal slack
++    # generators (one per output dim), NOT a single shared box column.
++    # The shared-column version introduces artificial cross-output
++    # correlation and strictly shrinks the set in opposing directions
++    # (test: 2D Gc=I, ng_budget=1 → support in (1,-1) goes 2.0 → 0.0).
++    #
++    # Skip guard: diagonal slack adds n_dim cols. If n_dim >= ng_budget
++    # the cap is unachievable soundly, AND at large n the dense diag
++    # is O(n^2) (n=25088 → ~5 GiB). Skip reduction in that regime; the
++    # HZ passes through unchanged. The cap was meant to limit growth
++    # past the budget, not to force shrinkage beyond what's representable.
+     ng_now = int(Gc.shape[1])
+-    if ng_budget is not None and ng_now > ng_budget and ng_budget >= 1:
++    n_dim = int(Gc.shape[0])
++    if (ng_budget is not None and ng_now > ng_budget and ng_budget >= 1
++            and n_dim < ng_budget):
+         nc_now = int(Ac.shape[0])
+         scores = Gc.abs().sum(dim=0)
+-        keep_k = ng_budget - 1  # reserve 1 slot for box column
+-        if keep_k < 0:
+-            keep_k = 0
++        if nc_now > 0 and constraint_keep_weight > 0.0:
++            # A column with a small current output coefficient can still be
++            # carrying a strong hull inequality. Dropping it widens the RHS
++            # by |Ac[:, col]| and immediately discards that tightening.
++            # Reweighting only chooses which columns remain exact; Girard's
++            # independent-slack widening below remains unchanged and sound.
++            ac_scores = Ac.abs().sum(dim=0)
++            if bool((ac_scores > tol).any().item()):
++                output_scale = scores.max().clamp(min=tol)
++                ac_scale = ac_scores.max().clamp(min=tol)
++                scores = scores + (
++                    float(constraint_keep_weight) * output_scale
++                    * ac_scores / ac_scale
++                )
++        keep_k = max(ng_budget - n_dim, 0)  # reserve n slots for diagonal slack
+         _, topk_idx = _t.topk(scores, min(keep_k, ng_now))
+         topk_idx, _ = topk_idx.sort()
+         remove_mask = _t.ones(ng_now, dtype=_t.bool, device=device)
+         remove_mask[topk_idx] = False
+         removed_Gc = Gc[:, remove_mask]
+-        box_col = removed_Gc.abs().sum(dim=1, keepdim=True)  # (n, 1)
+-        Gc = _t.cat([Gc[:, topk_idx], box_col], dim=1)
++        # Diagonal slack: per-output independent box generators.
++        box_widths = removed_Gc.abs().sum(dim=1)  # (n,)
++        box_diag = _t.diag(box_widths)            # (n, n)
++        Gc = _t.cat([Gc[:, topk_idx], box_diag], dim=1)  # (n, keep_k + n)
+ 
+         if nc_now > 0:
+             old_Ac_keep = Ac[:, topk_idx]
+             removed_Ac = Ac[:, remove_mask]
+             widen = removed_Ac.abs().sum(dim=1, keepdim=True)
+-            Ac_box = _t.zeros(nc_now, 1, device=device, dtype=dtype)
++            # The n new diagonal box gens are independent of any prior
++            # factor → zero coefficient in all existing constraint rows.
++            Ac_box = _t.zeros(nc_now, n_dim, device=device, dtype=dtype)
+             em_now = (
+                 eq_m if int(eq_m.numel()) == nc_now
+                 else _t.zeros(nc_now, dtype=_t.bool, device=device)
+@@ -363,9 +404,9 @@ def _hz_reduce_constraints(
+                 eb = b[em_now]
+                 ewiden = widen[em_now]
+                 n_eq = int(em_now.sum().item())
+-                up_Ac = _t.cat([eAc, _t.zeros(n_eq, 1, device=device, dtype=dtype)], dim=1)
++                up_Ac = _t.cat([eAc, _t.zeros(n_eq, n_dim, device=device, dtype=dtype)], dim=1)
+                 up_b = eb + ewiden
+-                lo_Ac = _t.cat([-eAc, _t.zeros(n_eq, 1, device=device, dtype=dtype)], dim=1)
++                lo_Ac = _t.cat([-eAc, _t.zeros(n_eq, n_dim, device=device, dtype=dtype)], dim=1)
+                 lo_b = -eb + ewiden
+                 Ac = _t.cat([Ac_in, up_Ac, lo_Ac], dim=0)
+                 Ab = _t.cat([Ab_in, eAb, -eAb], dim=0)
+@@ -401,10 +442,12 @@ def _hz_reduce_constraints(
+ # Bind reduce_constraints as method on HZono so HZVerifier._maybe_reduce
+ # (which calls hz.reduce_constraints(ng_budget=cap)) works on ACT HZono.
+ def _hz_reduce_constraints_method(self, *, nc_budget=None, ng_budget=None,
+-                                    nb_budget=None, tol=1e-12, verbose=False):
++                                    nb_budget=None, constraint_keep_weight=0.0,
++                                    tol=1e-12, verbose=False):
+     return _hz_reduce_constraints(
+         self, nc_budget=nc_budget, ng_budget=ng_budget,
+-        nb_budget=nb_budget, tol=tol,
++        nb_budget=nb_budget, constraint_keep_weight=constraint_keep_weight,
++        tol=tol,
+     )
+ 
+ 
+@@ -778,11 +821,53 @@ class HZVerifier(Solver):
+         large_cls_eq_layers: int = 3,
+         large_cls_conv_threshold: int = 4,
+         large_cls_out_dim_threshold: int = 100,
++        # Property-facing tail correlation preservation: optionally skip
++        # Girard reduce on layers whose output dim is small. Always sound:
++        # skip = identity, not a widening. Default-off because it did not
++        # improve the default eq_lagr_v8 path in the controlled tiny slice;
++        # it remains useful for chull-tail research runs.
++        tail_preserve_dim: int = 0,
++        # Generator retention policy inside sound Girard widening. A positive
++        # value preserves columns participating strongly in carried hull
++        # inequalities, instead of ranking only by current output magnitude.
++        # This changes precision, never containment.
++        constraint_keep_weight: float = 0.0,
+         timeout_s: float = 300.0,
+         device: str = "cpu",
+         dtype: torch.dtype = torch.float64,
+         onnx_path: Optional[str] = None,
++        vnnlib_path: Optional[str] = None,
++        # Sound small-dense forward-LP portfolio. ``base`` selects
++        # GlobalTriangleLP; ``specaware`` selects conditional unsafe-set
++        # refinement; ``witness``/``auto`` also performs ORT-validated
++        # counterexample extraction. The backend is explicitly supplied from
++        # a module root until it is fully vendored into ACT.
++        small_dense_lp: str = "auto",         # "off" | "base" | "specaware" | "witness" | "auto"
++        small_dense_lp_root: Optional[str] = None,
++        small_dense_lp_time_limit_s: float = 5.0,
++        # 0 selects the audited cost-aware policy: 20 passes for a single
++        # hidden ReLU layer with <=128 units, otherwise 3. A positive value
++        # overrides the policy. More passes only tighten the sound LP.
++        small_dense_lp_refinement_passes: int = 0,
++        small_dense_lp_fallback_on_unknown: bool = False,
++        # FAL receipt provenance (advisor 2026-05-24): callers MUST pass
++        # these for receipts to be unique. ``benchmark`` defaults to the
++        # ONNX path stem; ``instance_id`` defaults to -1 (a sentinel that
++        # causes filename collisions if the caller forgets — fail loud).
++        benchmark: Optional[str] = None,
++        instance_id: int = -1,
++        query_index: int = 0,
+     ):
++        if small_dense_lp not in ("off", "base", "specaware", "witness", "auto"):
++            raise ValueError(
++                "small_dense_lp must be one of off/base/specaware/witness/auto; "
++                f"got {small_dense_lp!r}"
++            )
++        if int(small_dense_lp_refinement_passes) < 0:
++            raise ValueError(
++                "small_dense_lp_refinement_passes must be >= 0; "
++                f"got {small_dense_lp_refinement_passes!r}"
++            )
+         self.cfg = dict(
+             relu_method=relu_method, girard_cap=girard_cap,
+             sgm_enabled=sgm_enabled,
+@@ -792,8 +877,19 @@ class HZVerifier(Solver):
+             large_cls_eq_layers=large_cls_eq_layers,
+             large_cls_conv_threshold=large_cls_conv_threshold,
+             large_cls_out_dim_threshold=large_cls_out_dim_threshold,
++            tail_preserve_dim=tail_preserve_dim,
++            constraint_keep_weight=constraint_keep_weight,
+             timeout_s=timeout_s, device=device, dtype=dtype,
+             onnx_path=onnx_path,
++            vnnlib_path=vnnlib_path,
++            small_dense_lp=small_dense_lp,
++            small_dense_lp_root=small_dense_lp_root,
++            small_dense_lp_time_limit_s=small_dense_lp_time_limit_s,
++            small_dense_lp_refinement_passes=int(small_dense_lp_refinement_passes),
++            small_dense_lp_fallback_on_unknown=small_dense_lp_fallback_on_unknown,
++            benchmark=benchmark,
++            instance_id=int(instance_id),
++            query_index=int(query_index),
+         )
+         self._reset_state()
+ 
+@@ -804,6 +900,127 @@ class HZVerifier(Solver):
+         self._var_count: int = 0
+         self._stats: Dict[str, Any] = {}
+ 
++    def _emit_sat_with_receipt(
++        self,
++        *,
++        x_star: np.ndarray,
++        assert_layer,
++        source: str,
++        model_path_fallback: Optional[str] = None,
++    ) -> bool:
++        """Emit a SAT verdict and compute its formal-result reportability.
++
++        CONTRACT (advisor 2026-05-24 Round 4, correcting Round 3):
++
++            Mathematical truth (internal ``_status``): SAT is set
++            unconditionally whenever this method is called — caller has
++            already verified the witness via ``strict_replay_for_act``,
++            so the adversary genuinely exists. Pretending otherwise (the
++            Round 3 over-downgrade to UNKNOWN) would make real
++            counter-examples disappear from solver state, which is
++            DISHONEST.
++
++            Reportability (``_stats["formal_result"]``): orthogonal field
++            that records whether this SAT is admissible into paper-grade
++            FAL counts. CLI consumes formal_result in formal mode.
++
++        formal_result values (formal-mode only; None otherwise):
++            REPORTABLE_FALSIFIED    — receipt written, zero_tol_holds=True
++            ERROR_RECEIPT_MISSING   — no receipt_dir / sentinel iid
++            ERROR_RECEIPT_COLLISION — would overwrite prior receipt
++            ERROR_RECEIPT_WRITE     — IO / hash / ORT failure
++            ERROR_RECEIPT_READBACK  — wrote OK but couldn't re-parse
++            ERROR_INTERNAL_INCONSISTENCY
++                — receipt's recomputed zero_tol disagrees with the
++                  strict_replay_for_act result that gated us here.
++                  The witness x* is the SAME for both checks, so this
++                  is a genuine internal bug (ORT non-determinism /
++                  reshape mismatch / _eval_unsafe_strict vs receipt
++                  evaluator drift). Run should be flagged broken.
++
++        Returns:
++            True (caller can rely on _status == SAT). The bool is kept
++            for API parity with prior callers; reportability is in stats.
++        """
++        import os as _os, json as _json
++        from act.back_end.solver.fal_receipt import (
++            write_receipt, ReceiptCollisionError,
++        )
++        formal = _os.environ.get("ACT_FAL_RECEIPT_FORMAL", "").strip().lower() \
++            in ("1", "true", "yes", "on")
++        rp: Optional[Path] = None
++        receipt_error: Optional[str] = None
++        receipt_error_kind: Optional[str] = None
++        model_path = self.cfg.get("onnx_path") or model_path_fallback or ""
++        spec_path = self.cfg.get("vnnlib_path", "")
++        try:
++            rp = write_receipt(
++                x_star=x_star,
++                model_path=model_path,
++                spec_path=spec_path,
++                assert_layer=assert_layer,
++                benchmark=(self.cfg.get("benchmark")
++                           or (Path(model_path).stem if model_path else "unknown")),
++                instance_id=int(self.cfg.get("instance_id", -1)),
++                query_index=int(self.cfg.get("query_index", 0)),
++                source=source,
++                formal_mode=formal,
++            )
++        except ReceiptCollisionError as e:
++            receipt_error = f"ReceiptCollisionError: {e}"
++            msg_lower = str(e).lower()
++            if "collision" in msg_lower:
++                receipt_error_kind = "ERROR_RECEIPT_COLLISION"
++            elif "instance_id" in msg_lower or "sentinel" in msg_lower or "receipt_dir" in msg_lower:
++                receipt_error_kind = "ERROR_RECEIPT_MISSING"
++            else:
++                receipt_error_kind = "ERROR_RECEIPT_WRITE"
++        except Exception as e:
++            receipt_error = f"{type(e).__name__}: {e}"
++            receipt_error_kind = "ERROR_RECEIPT_WRITE"
++
++        # Truth: set SAT internally (strict_replay_for_act already
++        # verified the witness — do not pretend otherwise).
++        self._status = SolveStatus.SAT
++        self._witness = x_star
++        self._has_solution = True
++        if rp is not None:
++            self._stats["fal_receipt_path"] = str(rp)
++        if receipt_error:
++            self._stats["receipt_error"] = receipt_error
++
++        # Compute formal_result (only in formal mode)
++        if not formal:
++            return True
++
++        if rp is None:
++            self._stats["formal_result"] = (
++                receipt_error_kind or "ERROR_RECEIPT_WRITE"
++            )
++            return True
++
++        # Receipt was written; verify its recomputed zero_tol matches
++        # the strict_replay_for_act outcome that brought us here.
++        try:
++            rec = _json.loads(Path(rp).read_text())
++            zero_holds = bool(rec.get("spec_zero_tol_holds"))
++        except Exception as e:
++            self._stats["formal_result"] = "ERROR_RECEIPT_READBACK"
++            self._stats["receipt_error"] = (
++                self._stats.get("receipt_error") or f"readback: {e}"
++            )
++            return True
++
++        if not zero_holds:
++            # strict_replay_for_act returned True but the receipt's
++            # independent ORT recomputation says zero_tol fails. The
++            # same x* gave inconsistent verdicts — investigate.
++            self._stats["formal_result"] = "ERROR_INTERNAL_INCONSISTENCY"
++            return True
++
++        self._stats["formal_result"] = "REPORTABLE_FALSIFIED"
++        return True
++
+     def capabilities(self) -> SolverCaps:
+         # supports_csp=False: HZVerifier walks the ACT cons IR via
+         # ``consume_cons`` (HZ-native), it does not accept BatchLPProblem.
+@@ -861,6 +1078,196 @@ class HZVerifier(Solver):
+     def set_objective_linear(self, vids, coeffs, const=0.0, sense="min"): pass
+     def optimize(self, timelimit: Optional[float] = None) -> None: pass
+ 
++    def _try_small_dense_lp(
++        self, *, conv_count: int,
++        net=None, assert_layer=None,
++    ) -> Optional[str]:
++        """Try the sound forward-LP portfolio before the HZ walk.
++
++        The optional backend is only allowed to prove safety.  Once an
++        eligible network was successfully checked, its ``unknown`` is
++        terminal by default because the HZ cascade is known to be both
++        slower and weaker on this small-dense family.  Callers can opt into
++        fallback if they need the HZ counterexample attempt.
++
++        SOUNDNESS gate (added 2026-05-24 per advisor review):
++            For the witness/auto backend (WitnessExtract), the external
++            module's `_ort_replay` uses a +1e-6 slack (HyZor/WitnessExtract.py:169),
++            i.e. small_tol acceptance. A 'falsified' verdict from that
++            backend can therefore be a boundary witness, not a hard FAL.
++            To prevent paper-grade SAT claims from leaking boundary
++            witnesses, this method now takes ONLY the x* and re-runs
++            ACT's own ``strict_replay_for_act`` (zero-tolerance ORT eval
++            via _eval_unsafe_strict). Witnesses that fail the strict
++            replay downgrade to UNKNOWN with phantom_rejected_small_dense=True.
++
++            Caller MUST pass ``net`` and ``assert_layer`` for this gate.
++            If either is absent the attempt fails closed as UNKNOWN with
++            ``small_dense_lp_strict_replay_unavailable=True``; no external
++            falsification may be promoted without local strict replay.
++        """
++        mode = self.cfg.get("small_dense_lp", "auto")
++        if mode == "off" or conv_count != 0:
++            return None
++        onnx_path = self.cfg.get("onnx_path")
++        vnnlib_path = self.cfg.get("vnnlib_path")
++        if not onnx_path or not vnnlib_path:
++            return None
++
++        module_root = self.cfg.get("small_dense_lp_root")
++        if not module_root:
++            sibling = Path(__file__).resolve().parents[4] / "HyZor"
++            if (
++                (sibling / "GlobalTriangleLP.py").is_file()
++                and (sibling / "SpecAwareLP.py").is_file()
++            ):
++                module_root = str(sibling)
++        if module_root:
++            root = str(Path(module_root))
++            if not Path(root).is_dir():
++                self._stats["small_dense_lp_error"] = f"missing module root: {root}"
++                return None
++            if root not in sys.path:
++                sys.path.insert(0, root)
++            importlib.invalidate_caches()
++
++        try:
++            base = importlib.import_module("GlobalTriangleLP")
++            if not base.is_small_dense(Path(onnx_path)):
++                return None
++            refinement_passes: Optional[int] = None
++            refinement_policy: Optional[str] = None
++            if mode != "base":
++                configured_passes = int(
++                    self.cfg.get("small_dense_lp_refinement_passes", 0)
++                )
++                if configured_passes > 0:
++                    refinement_passes = configured_passes
++                    refinement_policy = "explicit"
++                else:
++                    # Safenlp/sat_relu audit: this shallow case gained 49
++                    # sound CERTs at negligible additional wall time with 20
++                    # passes. Keep deeper ACAS/TLL/nn4sys paths at 3 passes.
++                    refinement_passes = 3
++                    refinement_policy = "default"
++                    try:
++                        _, hidden_layers, _ = base.extract_layers(Path(onnx_path))
++                        total_hidden = sum(int(b.shape[0]) for _, b in hidden_layers)
++                        if len(hidden_layers) == 1 and total_hidden <= 128:
++                            refinement_passes = 20
++                            refinement_policy = "shallow_20"
++                    except Exception:
++                        pass
++            # Mode → backend module:
++            #   "base"      → GlobalTriangleLP (verify only)
++            #   "specaware" → SpecAwareLP (verify only, no falsification)
++            #   "witness" / "auto" → WitnessExtract (SpecAware + ORT-replay-
++            #                 validated counterexample search; SOUND because
++            #                 ORT replay confirms each FAL).
++            # Two-tier reporting note (feedback_two_tier_reporting):
++            #   witness mode may produce 'falsified' on instances whose
++            #   official_zero=unsat but official_small=sat (the boundary
++            #   tolerance regime). These ARE valid falsifications per the
++            #   model's float32 precision, but disagree with strict zero-
++            #   tolerance verification. Per the advisor's framework these
++            #   are P1 watchlist, NOT soundness regressions.
++            if mode == "base":
++                backend = base
++                backend_label = "base"
++                verdict, elapsed = backend.verify(
++                    Path(onnx_path),
++                    Path(vnnlib_path),
++                    time_limit_per_lp=float(self.cfg["small_dense_lp_time_limit_s"]),
++                )
++                witness = None
++                y_ort = None
++            elif mode == "specaware":
++                backend = importlib.import_module("SpecAwareLP")
++                backend_label = "specaware"
++                verdict, elapsed = backend.verify(
++                    Path(onnx_path),
++                    Path(vnnlib_path),
++                    time_limit_per_lp=float(self.cfg["small_dense_lp_time_limit_s"]),
++                    max_refinement_passes=int(refinement_passes),
++                )
++                witness = None
++                y_ort = None
++            else:  # "witness" or "auto"
++                backend = importlib.import_module("WitnessExtract")
++                backend_label = "witness"
++                result = backend.verify_with_falsification(
++                    Path(onnx_path),
++                    Path(vnnlib_path),
++                    time_limit_per_lp=float(self.cfg["small_dense_lp_time_limit_s"]),
++                    max_refinement_passes=int(refinement_passes),
++                    return_witness=True,
++                )
++                verdict, witness, y_ort, elapsed = result
++            self._stats["small_dense_lp_dispatch"] = True
++            self._stats["small_dense_lp_backend"] = backend_label
++            self._stats["small_dense_lp_verdict"] = verdict
++            self._stats["small_dense_lp_elapsed_s"] = elapsed
++            if refinement_passes is not None:
++                self._stats["small_dense_lp_refinement_passes"] = refinement_passes
++                self._stats["small_dense_lp_refinement_policy"] = refinement_policy
++            if verdict == "verified":
++                self._status = SolveStatus.UNSAT
++                return self._status
++            if verdict == "falsified":
++                # SOUNDNESS GATE: the external backend's ORT replay accepts
++                # +1e-6 slack (small_tol). Re-run ACT's strict zero-tol
++                # replay before promoting to SAT. See method docstring.
++                if witness is None:
++                    self._status = SolveStatus.UNKNOWN
++                    self._stats["small_dense_lp_no_witness"] = True
++                    return self._status
++                x_star_np = np.asarray(witness, dtype=np.float64).ravel()
++                if net is None or assert_layer is None:
++                    # Fail-closed per advisor 2026-05-24 Route C: without
++                    # ACT-side context we cannot run the strict zero-tol
++                    # replay, so the witness MUST NOT be promoted to SAT
++                    # on the strength of the external backend's +1e-6
++                    # acceptance. Downgrade to UNKNOWN and flag for audit.
++                    self._stats["small_dense_lp_strict_replay_unavailable"] = True
++                    self._status = SolveStatus.UNKNOWN
++                    return self._status
++                # Ensure net carries onnx_path so strict_replay_for_act can
++                # take the ORT fast path.
++                if self.cfg.get("onnx_path") and not getattr(net, "onnx_path", None):
++                    try: net.onnx_path = self.cfg["onnx_path"]
++                    except Exception: pass
++                try:
++                    ok = strict_replay_for_act(
++                        net=net, x_star=x_star_np, assert_layer=assert_layer
++                    )
++                except Exception as e:
++                    ok = False
++                    self._stats["small_dense_lp_strict_replay_error"] = (
++                        f"{type(e).__name__}: {e}"
++                    )
++                if ok:
++                    sat_ok = self._emit_sat_with_receipt(
++                        x_star=x_star_np,
++                        assert_layer=assert_layer,
++                        source="small_dense_lp_witness",
++                    )
++                    if sat_ok:
++                        self._stats["small_dense_lp_strict_replay_passed"] = True
++                    return self._status
++                else:
++                    self._status = SolveStatus.UNKNOWN
++                    self._stats["small_dense_lp_phantom_rejected"] = True
++                return self._status
++            if (
++                verdict == "unknown"
++                and not self.cfg["small_dense_lp_fallback_on_unknown"]
++            ):
++                self._status = SolveStatus.UNKNOWN
++                return self._status
++        except Exception as exc:
++            self._stats["small_dense_lp_error"] = f"{type(exc).__name__}: {exc}"
++        return None
++
+     # ----- Real entry: cons walker -----
+     def consume_cons(
+         self, globalC: ConSet, before: Dict[int, Fact], after: Dict[int, Fact],
+@@ -947,6 +1354,12 @@ class HZVerifier(Solver):
+         self._relu_idx_map = relu_idx_map
+         self._total_relu = total_relu
+ 
++        small_dense_status = self._try_small_dense_lp(
++            conv_count=conv_count, net=net, assert_layer=assert_layer,
++        )
++        if small_dense_status is not None:
++            return small_dense_status
++
+         op_counts: Dict[str, int] = {}
+         for L in net.layers:
+             if L.kind in ("INPUT", "INPUT_SPEC", "ASSERT"):
+@@ -1096,9 +1509,13 @@ class HZVerifier(Solver):
+                 self._stats["phantom_rejected"] = True
+                 return self._status
+ 
+-        self._status = SolveStatus.SAT
+-        self._witness = np.asarray(x_star, dtype=np.float64).ravel()
+-        self._has_solution = True
++        x_star_arr = np.asarray(x_star, dtype=np.float64).ravel()
++        self._emit_sat_with_receipt(
++            x_star=x_star_arr,
++            assert_layer=assert_layer,
++            source="hz_walker_lp",
++            model_path_fallback=getattr(net, "onnx_path", None),
++        )
+         # Final cleanup: release intermediate HZ tensors held in var_to_hz
+         try:
+             del var_to_hz, out_hz, input_hz
+@@ -1180,13 +1597,32 @@ class HZVerifier(Solver):
+             if multi_in_hzs is None: multi_in_hzs = [hz_in]
+             return ops["hz_concat"](multi_in_hzs)
+         if op == "relu":
+-            # large_cls_proof_mode: triangle for early relus, eq_lagr_v8 for last N
++            # large_cls_proof_mode: triangle for early relus, eq_lagr_v8 for last N.
++            # If ACT_HZ_LATE_RELU is set, use that method (e.g.
++            # "convex_hull_cont") for late-layer experiments. The raw
++            # per-neuron LP hull matches relaxed eq_lagr_v8; the full routed
++            # pipelines differ because eq_lagr_v8 also runs PEE.
+             method = self.cfg["relu_method"]
++            ridx = self._relu_idx_map.get(L.id, 0)
+             if getattr(self, "_lc_active", False):
+-                ridx = self._relu_idx_map.get(L.id, 0)
+                 eq_last = self.cfg["large_cls_eq_layers"]
+                 if ridx <= self._total_relu - eq_last:
+-                    method = "triangle"
++                    # ACT_HZ_MID_RELU lets experiments substitute the
++                    # default triangle for middle-layer HZono ReLUs
++                    # (e.g. "selective_chull"). Sound regardless of choice
++                    # since all dispatch targets are sound encodings.
++                    mid_method = os.environ.get("ACT_HZ_MID_RELU", "").strip()
++                    method = mid_method if mid_method else "triangle"
++                else:
++                    late_method = os.environ.get("ACT_HZ_LATE_RELU", "").strip()
++                    if late_method:
++                        method = late_method
++            # Expose the current relu_idx so selective_chull dispatches can
++            # look up per-layer masks (set by property-direction driver).
++            from act.back_end.hybridz_tf.algorithms.relu_methods import (
++                set_current_relu_idx,
++            )
++            set_current_relu_idx(ridx)
+             return ops["hz_apply_relu_v8"](hz_in, method=method)
+         if op == "lrelu":
+             return ops["hz_apply_leaky_relu_v8"](hz_in, alpha=meta["alpha"])
+@@ -1246,12 +1682,35 @@ class HZVerifier(Solver):
+         )
+ 
+     def _maybe_reduce(self, hz):
+-        """Apply Girard generator reduction if ng exceeds girard_cap. Sound."""
++        """Apply sound Girard reduction when ``girard_cap`` is achievable.
++
++        For output dimension at least the configured cap, independent
++        diagonal slack cannot fit inside that cap; ``reduce_constraints``
++        keeps the larger representation rather than shrinking unsoundly.
++
++        Property-facing tail preservation: when ``hz.dim`` is below
++        non-zero ``tail_preserve_dim``, skip the reduce so that
++        correlation is preserved through the small classifier tail.
++        This is always sound (skipping a widening operator is identity).
++
++        Controlled result: tail preservation alone did not improve the
++        default eq_lagr_v8 path; paired with convex_hull_cont it materially
++        tightened margins. It is therefore an opt-in research policy rather
++        than a default verification behavior.
++        """
+         cap = self.cfg["girard_cap"]
+         if int(hz.ng) <= cap:
+             return hz
++        tail_dim = int(self.cfg.get("tail_preserve_dim", 0) or 0)
++        if tail_dim > 0 and int(hz.dim) < tail_dim:
++            return hz
+         try:
+-            return hz.reduce_constraints(ng_budget=cap)
++            return hz.reduce_constraints(
++                ng_budget=cap,
++                constraint_keep_weight=float(
++                    self.cfg.get("constraint_keep_weight", 0.0) or 0.0
++                ),
++            )
+         except Exception:
+             return hz
+ 
+@@ -1460,6 +1919,92 @@ def verify_once_hz(
+     return st, ce_input, stats
+ 
+ 
++def verify_all_lanes_hz(
++    net,
++    *,
++    solver: "HZVerifier",
++    timelimit: Optional[float] = None,
++) -> List[Tuple[str, Optional[np.ndarray], Dict[str, Any]]]:
++    """Batched-input HZ verification: analyze ONCE, verify each lane.
++
++    Mirrors ``verify_once_hz`` but takes a ``net`` whose INPUT_SPEC carries
++    ``B>=1`` lanes and returns a list of ``(status, ce_input, stats)`` of
++    length ``B``. The forward analyze pass is shared across lanes (batched
++    HZ propagation on GPU); ``consume_cons`` is still per-lane and runs
++    sequentially because the cons-walker / LP feasibility path predates
++    batch-native input. The solver is reset between lanes via ``begin()``
++    so per-lane state doesn't leak.
++
++    Single-lane callers should still use ``verify_once_hz`` — it preserves
++    the single-Verdict return shape that older drivers depend on.
++    """
++    from act.back_end.analyze import analyze
++    from act.back_end.transfer_functions import set_transfer_function_mode
++    from act.back_end.verifier import (
++        find_entry_layer_id, get_input_ids, get_output_ids,
++        gather_input_spec_layers, get_assert_layer,
++        seed_from_input_specs, add_all_input_specs, validate_constraints,
++    )
++
++    _tf_mode = os.environ.get("HYZOR_TF_MODE", "").strip().lower()
++    if _tf_mode in ("interval", "hybridz"):
++        set_transfer_function_mode(_tf_mode)
++
++    entry_id = find_entry_layer_id(net)
++    input_ids = get_input_ids(net)
++    output_ids = get_output_ids(net)
++    spec_layers = gather_input_spec_layers(net)
++    assert_layer = get_assert_layer(net)
++
++    seed_bounds = seed_from_input_specs(spec_layers)
++    if seed_bounds.lb.dim() < 2:
++        seed_bounds = Bounds(
++            lb=seed_bounds.lb.unsqueeze(0), ub=seed_bounds.ub.unsqueeze(0)
++        )
++    B = int(seed_bounds.lb.shape[0])
++
++    entry_fact = Fact(bounds=seed_bounds, cons=ConSet())
++    add_all_input_specs(entry_fact.cons, input_ids, spec_layers)
++    before, after, globalC = analyze(net, entry_id, entry_fact)
++    validate_constraints(globalC, after, net)
++
++    if timelimit is not None and hasattr(solver, "cfg"):
++        solver.cfg["timeout_s"] = float(timelimit)
++
++    results: List[Tuple[str, Optional[np.ndarray], Dict[str, Any]]] = []
++    for lane in range(B):
++        before_b1 = _slice_facts_lane(before, lane)
++        after_b1 = _slice_facts_lane(after, lane)
++        globalC_b1 = _slice_globalC_lane(globalC, lane)
++        assert_layer_b1 = _slice_assert_layer_lane(assert_layer, lane)
++
++        # Reset per-lane solver state. Same HZVerifier object is reused so
++        # cfg (relu_method / timeout / strict_replay etc.) stays consistent
++        # across lanes, but witness/stats from previous lane don't leak.
++        solver.begin()
++
++        st = solver.consume_cons(
++            globalC_b1, before_b1, after_b1,
++            net=net, input_ids=input_ids, output_ids=output_ids,
++            assert_layer=assert_layer_b1,
++        )
++        ce_input = None
++        if st == SolveStatus.SAT and solver.has_solution():
++            ce_input = solver.get_values(input_ids)
++
++        stats: Dict[str, Any] = {
++            "status": st, "ncons": len(globalC), "solver": "hyzor",
++            "batch_lane": lane, "batch_size": B,
++        }
++        try:
++            stats.update(solver.stats() if hasattr(solver, "stats") else {})
++        except Exception:
++            pass
++        results.append((st, ce_input, stats))
++
++    return results
++
++
+ # ======================================================================
+ # Final LP verification (unsafe-set feasibility + witness)
+ # (inlined from former hz_lp_verify.py)
+@@ -1748,7 +2293,7 @@ def check_unsafe_for_act(out_hz: HZono, assert_layer, *,
+     return "feasible", None
+ 
+ 
+-def lp_witness_to_input(xi_star: np.ndarray, input_hz: HZono) -> np.ndarray:
++def lp_witness_to_input(xi_star: np.ndarray, input_hz) -> np.ndarray:
+     """Map a factor-space witness xi_star back to input space.
+ 
+     For a network whose first HZ corresponds to the input box, the
+@@ -1756,7 +2301,24 @@ def lp_witness_to_input(xi_star: np.ndarray, input_hz: HZono) -> np.ndarray:
+     the relevant factor slots. If ``input_hz`` is a BoxHZ-style HZono
+     (diagonal Gc, no Gb), the first p_in entries of ``xi_star`` are the
+     factor coordinates of the input pixels.
++
++    A real ``BoxHZ`` stores bounds rather than factor columns. Once that
++    representation is materialised or reduced downstream, a final relaxed
++    LP witness has no defined inverse map to the original input factors.
++    Return its center as a concrete in-box replay candidate; strict replay
++    remains the sole authority for reporting SAT.
+     """
++    if not hasattr(input_hz, "Gc"):
++        if hasattr(input_hz, "bounds"):
++            lb, ub = input_hz.bounds()
++            lb_np = _to_np_f64(lb).reshape(-1)
++            ub_np = _to_np_f64(ub).reshape(-1)
++            return (lb_np + ub_np) / 2.0
++        raise TypeError(
++            f"Cannot obtain a concrete input candidate from "
++            f"{type(input_hz).__name__}"
++        )
++
+     p_in = int(input_hz.Gc.shape[1])
+     q_in = int(input_hz.Gb.shape[1])
+     xi_c = xi_star[:p_in]
+@@ -1778,7 +2340,46 @@ from typing import Any
+ 
+ 
+ 
+-__all__ = ["strict_replay_for_act"]
++__all__ = ["strict_replay_for_act", "reportable_verdict_for_cli"]
++
++
++def reportable_verdict_for_cli(solver: "HZVerifier", internal_status: str) -> str:
++    """Translate a solver's internal verdict into a CLI-reportable label.
++
++    Honesty rule (advisor 2026-05-24 Round 4):
++        Internal ``_status == SAT`` is the mathematical truth (a real
++        adversary was found and replay-confirmed). In formal mode that
++        SAT may still NOT be admissible into paper-grade FAL counts if
++        its audit ledger entry is incomplete. This helper surfaces that
++        distinction:
++
++        non-formal mode → normalize {UNSAT→CERTIFIED, SAT→FALSIFIED}
++        formal mode:
++            SAT + formal_result=REPORTABLE_FALSIFIED → FALSIFIED
++            SAT + formal_result=ERROR_*              → that ERROR_*
++            SAT + formal_result missing/None         → ERROR_NO_FORMAL_RESULT
++            UNSAT                                    → CERTIFIED
++            UNKNOWN                                  → UNKNOWN
++            anything else                            → ERROR_UNEXPECTED
++    """
++    import os as _os
++    formal = _os.environ.get("ACT_FAL_RECEIPT_FORMAL", "").strip().lower() \
++        in ("1", "true", "yes", "on")
++    if internal_status == "UNSAT":
++        return "CERTIFIED"
++    if internal_status == "UNKNOWN":
++        return "UNKNOWN"
++    if internal_status != "SAT":
++        return f"ERROR_UNEXPECTED_{internal_status}"
++    # SAT path
++    if not formal:
++        return "FALSIFIED"
++    fr = solver._stats.get("formal_result")
++    if fr == "REPORTABLE_FALSIFIED":
++        return "FALSIFIED"
++    if fr and fr.startswith("ERROR_"):
++        return fr
++    return "ERROR_NO_FORMAL_RESULT"
+ 
+ 
+ # ----------------------------------------------------------------------
+diff --git a/act/front_end/vnnlib_loader/data_model_loader.py b/act/front_end/vnnlib_loader/data_model_loader.py
+index aaee90b..e464bf2 100644
+--- a/act/front_end/vnnlib_loader/data_model_loader.py
++++ b/act/front_end/vnnlib_loader/data_model_loader.py
+@@ -99,11 +99,23 @@ def download_vnnlib_category(
+         logger.info(f"Category '{category}' already downloaded at {category_dir}")
+         
+         # Count existing instances
++        # ROUND 7 (advisor 2026-05-24): use the same header detector as
++        # list_downloaded_pairs to avoid double-counting headerless CSVs
++        # as N-1 instances (the pre-fix `sum - 1` was off by 1 against
++        # ACAS-style raw 3-column files).
+         num_instances = 0
+         if instances_file.exists():
+             with open(instances_file, 'r') as f:
+-                num_instances = sum(1 for _ in csv.reader(f)) - 1  # Exclude header
+-        
++                sample = f.read(2048)
++                f.seek(0)
++                reader = csv.reader(f)
++                first_row = next(reader, None)
++                if first_row is not None:
++                    has_header = _detect_header_row(first_row, sample)
++                    num_instances = sum(1 for _ in reader)
++                    if not has_header:
++                        num_instances += 1
++
+         return {
+             'status': 'success',
+             'message': f"Category '{category}' already exists",
+@@ -140,12 +152,25 @@ def download_vnnlib_category(
+     
+     try:
+         # Parse instances.csv to get ONNX and VNNLIB files
++        # ROUND 7: header detection consistent with list_downloaded_pairs
++        # (R5 fix). Pre-fix unconditional `next(reader)` dropped row 0
++        # for headerless CSVs (e.g. ACAS xu), causing the downloader to
++        # skip that first instance silently.
+         instances = []
+         with open(instances_file, 'r') as f:
++            sample = f.read(2048)
++            f.seek(0)
+             reader = csv.reader(f)
+-            header = next(reader, None)  # Skip header
+-            
+-            for row in reader:
++            first_row = next(reader, None)
++            if first_row is None:
++                rows_iter = []
++            else:
++                has_header = _detect_header_row(first_row, sample)
++                rows_iter = (
++                    list(reader) if has_header else [first_row] + list(reader)
++                )
++
++            for row in rows_iter:
+                 if len(row) >= 3:
+                     onnx_file, vnnlib_file, timeout = row[0], row[1], row[2]
+                     instances.append({
+@@ -164,8 +189,11 @@ def download_vnnlib_category(
+             # Download ONNX model
+             onnx_file = instance['onnx']
+             if onnx_file not in downloaded_onnx:
+-                # Try both .onnx and .onnx.gz (gzipped files)
+-                onnx_path = onnx_dir / Path(onnx_file).name
++                # ROUND 7: preserve nested subdirs (R5 parity). Otherwise
++                # downloads go to <onnx_dir>/basename but list_downloaded_pairs
++                # looks for <onnx_dir>/medical/<basename> and finds nothing.
++                onnx_path = _resolve_relative_path(onnx_file, "onnx", category_dir)
++                onnx_path.parent.mkdir(parents=True, exist_ok=True)
+                 
+                 # Try .onnx.gz first (compressed), then .onnx
+                 tried_urls = []
+@@ -208,7 +236,9 @@ def download_vnnlib_category(
+             # Download VNNLIB spec
+             vnnlib_file = instance['vnnlib']
+             if vnnlib_file not in downloaded_vnnlib:
+-                vnnlib_path = vnnlib_dir / Path(vnnlib_file).name
++                # ROUND 7: preserve nested subdirs (R5 parity).
++                vnnlib_path = _resolve_relative_path(vnnlib_file, "vnnlib", category_dir)
++                vnnlib_path.parent.mkdir(parents=True, exist_ok=True)
+                 
+                 # Try both .vnnlib and .vnnlib.gz
+                 tried_urls = []
+@@ -288,6 +318,62 @@ def download_vnnlib_category(
+         }
+ 
+ 
++def _detect_header_row(first_row: List[str], sample_text: str) -> bool:
++    """ROUND 5 (advisor 2026-05-24): robust header detection that
++    survives both common shapes:
++
++      headered   ``onnx_path,vnnlib_path,timeout`` (string labels)
++      headerless ``onnx/a.onnx,vnnlib/a.vnnlib,100`` (raw data row 0)
++
++    The Round-3 heuristic (substring match on "onnx"/"vnnlib") wrongly
++    classified the header LABEL "onnx" as data, then silently skipped
++    that synthetic row because the file didn't exist, shifting all
++    subsequent ``official_instance_id`` by +1.
++
++    Strategy (heuristic first; csv.Sniffer is unreliable on 1-row
++    CSVs — it defaults to treating them as headers):
++
++      DATA iff:
++        - column 2 parses as a float (timeout), AND
++        - column 0 contains '/' OR ends in '.onnx' / '.onnx.gz'.
++      Anything else is treated as a header.
++
++      ``sample_text`` retained for forward-compat with a future
++      Sniffer-based path; not currently used.
++    """
++    if not first_row or len(first_row) < 3:
++        return True  # malformed first row → treat as header (skip)
++    try:
++        float(first_row[2])
++    except (ValueError, TypeError):
++        return True
++    col0 = first_row[0].strip().lower()
++    if "/" in col0 or col0.endswith(".onnx") or col0.endswith(".onnx.gz"):
++        return False
++    return True
++
++
++def _resolve_relative_path(
++    raw_path: str, expected_subdir: str, category_dir: Path
++) -> Path:
++    """ROUND 5: strip the ``onnx/`` or ``vnnlib/`` leading segment from
++    ``raw_path`` but PRESERVE nested sub-directories.
++
++    The Round-3 / pre-fix code did ``Path(raw_path).name`` which keeps
++    only the basename — breaking nested specs like
++    ``onnx/medical/perturbations_0.onnx`` (gets reduced to
++    ``onnx/perturbations_0.onnx`` which doesn't exist on disk).
++
++    Robust rule: drop leading "./" and one leading ``{expected_subdir}/``
++    segment if present; keep all remaining segments.
++    """
++    cleaned = raw_path.lstrip("./")
++    prefix = expected_subdir.rstrip("/") + "/"
++    if cleaned.startswith(prefix):
++        cleaned = cleaned[len(prefix):]
++    return category_dir / expected_subdir / cleaned
++
++
+ def list_downloaded_pairs(root_dir: Optional[str] = None) -> List[Dict[str, any]]:
+     """
+     List all downloaded VNNLIB benchmark instances.
+@@ -330,20 +416,44 @@ def list_downloaded_pairs(root_dir: Optional[str] = None) -> List[Dict[str, any]
+         
+         try:
+             with open(instances_file, 'r') as f:
++                # ROUND 5 (advisor 2026-05-24): deterministic header
++                # detection plus nested-path preservation via
++                # _resolve_relative_path. The Round-3
++                # heuristic mis-classified the header LABELS "onnx"/
++                # "vnnlib" as data, and Path(...).name dropped nested
++                # subdirs (e.g. safenlp_2024/medical/...).
++                sample = f.read(2048)
++                f.seek(0)
+                 reader = csv.reader(f)
+-                header = next(reader, None)  # Skip header
+-                
+-                for row in reader:
++                first_row = next(reader, None)
++                if first_row is None:
++                    continue
++                has_header = _detect_header_row(first_row, sample)
++                rows_to_process = (
++                    list(reader) if has_header else [first_row] + list(reader)
++                )
++
++                for row_idx, row in enumerate(rows_to_process):
+                     if len(row) >= 3:
+                         onnx_file, vnnlib_file, timeout = row[0], row[1], row[2]
+-                        
+-                        onnx_path = category_dir / "onnx" / Path(onnx_file).name
+-                        vnnlib_path = category_dir / "vnnlib" / Path(vnnlib_file).name
+-                        
++
++                        onnx_path = _resolve_relative_path(
++                            onnx_file, "onnx", category_dir
++                        )
++                        vnnlib_path = _resolve_relative_path(
++                            vnnlib_file, "vnnlib", category_dir
++                        )
++
+                         # Only include if files exist
+                         if onnx_path.exists() and vnnlib_path.exists():
+                             all_instances.append({
+                                 'category': category_dir.name,
++                                # official_instance_id: 0-based position
++                                # in the manifest AS WRITTEN ON DISK (after
++                                # header detection). This is the value that
++                                # CLI loops MUST propagate to receipts so
++                                # acasxu prop_6 carries iid=181 not 180.
++                                'official_instance_id': row_idx,
+                                 'onnx_model': onnx_file,
+                                 'vnnlib_spec': vnnlib_file,
+                                 'timeout': float(timeout) if timeout else None,
+@@ -352,7 +462,7 @@ def list_downloaded_pairs(root_dir: Optional[str] = None) -> List[Dict[str, any]
+                                     'vnnlib': str(vnnlib_path)
+                                 }
+                             })
+-        
++
+         except Exception as e:
+             logger.warning(f"Failed to read instances from {category_dir.name}: {e}")
+     
+@@ -461,11 +571,13 @@ def load_vnnlib_pair(
+     """
+     if root_dir is None:
+         root_dir = get_vnnlib_data_root()
+-    
++
+     category_dir = Path(root_dir) / category
+-    onnx_path = category_dir / "onnx" / Path(onnx_model).name
+-    vnnlib_path = category_dir / "vnnlib" / Path(vnnlib_spec).name
+-    
++    # ROUND 5: nested-path-safe — drop leading "onnx/"/"vnnlib/" but
++    # keep deeper subdirs intact (safenlp_2024/medical/...).
++    onnx_path = _resolve_relative_path(onnx_model, "onnx", category_dir)
++    vnnlib_path = _resolve_relative_path(vnnlib_spec, "vnnlib", category_dir)
++
+     # Auto-download if not found
+     if not category_dir.exists() or not onnx_path.exists() or not vnnlib_path.exists():
+         if auto_download:
+diff --git a/act/pipeline/cli.py b/act/pipeline/cli.py
+index ef63081..a02a9f8 100644
+--- a/act/pipeline/cli.py
++++ b/act/pipeline/cli.py
+@@ -526,6 +526,9 @@ def _run_vnnlib_verify(args) -> None:
+     ``"interval"``) and ``--solvers`` (default ``"torchlp"``).  Multi-mode
+     sweeps are the caller's job — invoke once per (tf-mode, solver) cell.
+     Dual ignores ``--tf-modes`` because it's a backward Solver.
++
++    Solver=``hybridz`` routes to ``verify_once_hz`` + ``HZVerifier`` for the
++    HZ-native verdict path; see ``_run_vnnlib_verify_hybridz``.
+     """
+     from act.front_end.vnnlib_loader.create_specs import VNNLibSpecCreator
+     from act.front_end.model_synthesis import synthesize_models_from_specs
+@@ -542,6 +545,9 @@ def _run_vnnlib_verify(args) -> None:
+     tf_mode = (args.tf_modes or ["interval"])[0]
+     solver = (args.solvers or ["torchlp"])[0]
+ 
++    if solver == "hybridz":
++        return _run_vnnlib_verify_hybridz(args)
++
+     set_solver_mode(solver)
+     if solver != "dual":
+         set_transfer_function_mode(tf_mode)
+@@ -566,6 +572,473 @@ def _run_vnnlib_verify(args) -> None:
+         print(f"  {tag}: {statuses}")
+ 
+ 
++_HYZOR_DEFAULT_ENV = {
++    "HYZOR_V8_ATTACK_FIRST": "0",
++    "HYZOR_V8_PGD_PORTFOLIO": "0",
++    "HYZOR_LARGE_CLS_SAT_PREFLIGHT": "0",
++    "HYZOR_DISABLE_TYPEB_BOX_CENTER": "1",
++    "HYZOR_PURE_HZ_MODE": "1",
++    "HYZOR_SAT_SIDECAR": "1",
++    "HYZOR_DISPATCH_GUARD_GB": "13",
++    "HYZOR_RELU_MEM_BUDGET_GB": "13",
++    "HYZOR_CONV_MEM_BUDGET_GB": "13",
++    "HYZOR_V8_MEM_BUDGET_GB": "13",
++    "HYZOR_V8_MEM_RESERVE_GB": "1",
++    "HYZOR_PEE_GPU_QR": "1",
++    "HYZOR_LARGE_CLS_EQ_LAYERS": "1",
++    "HYZOR_TF_MODE": "interval",
++    "HYZOR_USE_ACT": "1",
++}
++
++
++def _normalize_hz_status(status_str: str) -> str:
++    """HZVerifier emits UNSAT/SAT/UNKNOWN; normalize to verdict vocabulary."""
++    return {"UNSAT": "CERTIFIED", "SAT": "FALSIFIED"}.get(status_str, status_str)
++
++
++def aggregate_query_statuses(q_statuses: list) -> str:
++    """Pure function: aggregate per-query HZVerifier statuses to an
++    instance-level status under the disjunctive UNSAFE-set semantic.
++
++    For a VNNLIB spec whose top-level OR blocks Cartesian-product into
++    ``len(q_statuses)`` queries, the whole spec is satisfied IFF some
++    per-query UNSAFE set is satisfied. Therefore:
++
++        ANY q == "SAT"   → "SAT"
++        ALL q == "UNSAT" → "UNSAT"
++        otherwise        → "UNKNOWN"
++
++    Empty input is treated as "UNKNOWN" (no decision possible without
++    at least one query). Statuses outside {SAT, UNSAT, UNKNOWN} are
++    treated as UNKNOWN.
++
++    Pinned by `tests/test_cli_query_aggregation.py` after advisor
++    2026-05-24 Round 3 finding that the inline aggregation logic at
++    `_run_vnnlib_verify_hybridz` lacked a regression test.
++    """
++    if not q_statuses:
++        return "UNKNOWN"
++    if any(s == "SAT" for s in q_statuses):
++        return "SAT"
++    if all(s == "UNSAT" for s in q_statuses):
++        return "UNSAT"
++    return "UNKNOWN"
++
++
++class IncompleteFormalAuditError(RuntimeError):
++    """ROUND 6 (advisor 2026-05-24): raised when a formal-mode CLI run
++    finishes with one or more instances in ``ERROR_RECEIPT_*`` or
++    ``ERROR_INTERNAL_INCONSISTENCY``.
++
++    The internal solver verdicts ARE preserved (math truth) and the
++    counts dict still reflects them — this exception fires AFTER the
++    final summary is printed. Its sole purpose is to propagate a
++    non-zero exit code to upstream schedulers (cron, CI, batch
++    runners) so they treat the run as INCOMPLETE rather than PASSED.
++
++    The message body lists the offending counts so an operator can
++    triage without re-reading the per-instance log.
++    """
++
++
++def compute_run_status(counts: dict, formal_mode: bool) -> str:
++    """Pure function: derive a CLI-level run status from per-bench counts.
++
++    Returns one of:
++        "PASSED"                    — no verifier or formal-audit errors
++        "FAILED"                    — at least one generic verifier/config error
++        "INCOMPLETE_FORMAL_AUDIT"   — formal mode AND at least one of
++                                      ERROR_RECEIPT/INTERNAL_INCONSISTENCY > 0
++
++    Generic per-instance exceptions are converted into the ``ERROR`` bucket
++    inside the hybridz driver; they must fail the run here because otherwise
++    the surrounding ``cmd_verify`` sees a normal return and incorrectly
++    prints ``PASSED``.
++    """
++    if int(counts.get("ERROR", 0) or 0) > 0:
++        return "FAILED"
++    if not formal_mode:
++        return "PASSED"
++    receipt_errors = int(counts.get("ERROR_RECEIPT", 0) or 0)
++    inconsistency = int(counts.get("ERROR_INTERNAL_INCONSISTENCY", 0) or 0)
++    if receipt_errors > 0 or inconsistency > 0:
++        return "INCOMPLETE_FORMAL_AUDIT"
++    return "PASSED"
++
++
++def aggregate_reportable_verdicts(q_reportables: list) -> str:
++    """Pure function: aggregate per-query REPORTABLE verdicts to an
++    instance-level reportable verdict (advisor 2026-05-24 Round 4).
++
++    Per-query inputs come from
++    ``solver_hz.reportable_verdict_for_cli`` and are one of:
++        FALSIFIED, CERTIFIED, UNKNOWN, ERROR_RECEIPT_*,
++        ERROR_INTERNAL_INCONSISTENCY, ERROR_NO_FORMAL_RESULT,
++        ERROR_UNEXPECTED_*.
++
++    Aggregation rule (preserves the disjunctive UNSAFE-set semantic
++    but propagates first witness-bearing ERROR honestly):
++        ANY q == FALSIFIED                  → FALSIFIED
++        else ANY q starts with "ERROR_"     → that ERROR (first one)
++        else ALL q == CERTIFIED             → CERTIFIED
++        else                                 → UNKNOWN
++
++    Why FALSIFIED beats ERROR: a single REPORTABLE_FALSIFIED query
++    suffices to falsify the whole spec (the disjunction is satisfied).
++    The ERROR from a DIFFERENT query doesn't change that. Only when no
++    query reports FALSIFIED does an ERROR propagate.
++    """
++    if not q_reportables:
++        return "UNKNOWN"
++    if any(v == "FALSIFIED" for v in q_reportables):
++        return "FALSIFIED"
++    for v in q_reportables:
++        if isinstance(v, str) and v.startswith("ERROR_"):
++            return v
++    if all(v == "CERTIFIED" for v in q_reportables):
++        return "CERTIFIED"
++    return "UNKNOWN"
++
++
++def select_pairs_by_official_ids(pairs: list, instance_ids: str | None) -> list:
++    """Select stable VNN-COMP instances for formal sentinel/audit runs.
++
++    ``official_instance_id`` is the row index propagated by
++    ``list_downloaded_pairs`` after header detection.  Selection is by that
++    id, not by the filtered loop index, and follows the order requested on
++    the command line so an audit command is reproducible verbatim.
++    """
++    if not instance_ids:
++        return list(pairs)
++    raw_ids = [part.strip() for part in instance_ids.split(",") if part.strip()]
++    if not raw_ids:
++        raise ValueError("--instance-ids must contain at least one integer id")
++    try:
++        wanted = [int(part) for part in raw_ids]
++    except ValueError as exc:
++        raise ValueError("--instance-ids must be comma-separated integers") from exc
++    if len(set(wanted)) != len(wanted) or any(i < 0 for i in wanted):
++        raise ValueError("--instance-ids must be distinct non-negative integers")
++    by_id = {int(p["official_instance_id"]): p for p in pairs}
++    missing = [i for i in wanted if i not in by_id]
++    if missing:
++        raise ValueError(f"official instance ids not found: {missing}")
++    return [by_id[i] for i in wanted]
++
++
++def _run_vnnlib_verify_hybridz(args) -> None:
++    """HZ-native verification path: ``HZVerifier`` + ``verify_once_hz``.
++
++    Stock ``--solvers torchlp|gurobi|dual`` consume ACT's BatchLPProblem;
++    HZVerifier instead walks the cons IR via ``consume_cons`` (HZ-native),
++    so it's wired through its own driver. Per-instance subprocess isolation
++    is unnecessary here because each call to ``verify_once_hz`` operates on
++    a fresh ``HZVerifier`` and the analyzer state is rebuilt per net.
++
++    Reads ``--category``, ``--max-instances``, ``--timeout``, ``--device``,
++    ``--dtype``. Defaults the HYZOR_* environment knobs to the values used
++    by the v120 reference recipe, but only when the caller hasn't set them
++    explicitly (env precedence preserved).
++    """
++    import os
++    import time as _time
++    import traceback as _tb
++    from pathlib import Path as _Path
++
++    import torch as _torch
++
++    from act.front_end.vnnlib_loader.data_model_loader import (
++        list_downloaded_pairs, load_vnnlib_pair,
++    )
++    from act.front_end.vnnlib_loader.vnnlib_parser import parse_vnnlib_queries
++    from act.front_end.verifiable_model import (
++        InputLayer, InputSpecLayer, OutputSpecLayer, VerifiableModel,
++    )
++    from act.pipeline.verification.torch2act import TorchToACT
++    from act.back_end.solver.solver_hz import (
++        HZVerifier, verify_once_hz, reportable_verdict_for_cli,
++    )
++
++    if not args.category:
++        raise ValueError("--verify vnnlib requires --category (e.g. --category acasxu_2023)")
++
++    for k, v in _HYZOR_DEFAULT_ENV.items():
++        os.environ.setdefault(k, v)
++
++    device = getattr(args, "device", None) or "cuda"
++    dtype_str = getattr(args, "dtype", "float64")
++    dtype = _torch.float64 if dtype_str == "float64" else _torch.float32
++    timeout_s = float(getattr(args, "timeout", 300.0) or 300.0)
++    max_instances = getattr(args, "max_instances", None)
++    formal_mode = (
++        os.environ.get("ACT_FAL_RECEIPT_FORMAL", "").strip().lower()
++        in ("1", "true", "yes", "on")
++    )
++    results_dir = (
++        os.environ.get("ACT_FORMAL_RESULTS_DIR")
++        or os.environ.get("ACT_FAL_RECEIPT_DIR")
++    )
++    if formal_mode and not results_dir:
++        raise IncompleteFormalAuditError(
++            "INCOMPLETE_FORMAL_AUDIT: formal mode requires "
++            "ACT_FORMAL_RESULTS_DIR or ACT_FAL_RECEIPT_DIR before execution; "
++            "no unlogged formal run is permitted."
++        )
++
++    # ROUND 4 (advisor 2026-05-24): allow operators to point ACT at the
++    # canonical VNN-COMP benchmark root instead of duplicating data under
++    # ACT/data/vnnlib. Frozen-baseline audits should run against the
++    # SHA-pinned canonical files, not whatever was redundantly downloaded.
++    _vnnlib_root = os.environ.get("ACT_VNNLIB_ROOT")
++    pairs = [p for p in list_downloaded_pairs(root_dir=_vnnlib_root)
++             if p["category"] == args.category]
++    if not pairs:
++        raise RuntimeError(
++            f"No downloaded VNNLIB instances for category={args.category!r}; "
++            f"run `python -m act.pipeline --download {args.category}` first"
++        )
++    pairs = select_pairs_by_official_ids(
++        pairs, getattr(args, "instance_ids", None)
++    )
++    if max_instances is not None:
++        pairs = pairs[:int(max_instances)]
++
++    total = len(pairs)
++    print(f"[vnnlib] category={args.category} max_instances={total} "
++          f"mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; "
++          f"device={device}, timeout={timeout_s}s)")
++
++    counts = {"CERTIFIED": 0, "FALSIFIED": 0, "UNKNOWN": 0, "ERROR": 0}
++    # ROUND 6 (advisor 2026-05-24): structured per-instance log so
++    # downstream audits don't depend on stdout scraping. Each row carries
++    # official_instance_id (audit key), internal/reportable verdict,
++    # query count, receipt path (if any), and wall.
++    per_instance: list[dict] = []
++    t_start = _time.time()
++    for i, p in enumerate(pairs):
++        onnx_p = p["paths"]["onnx"]
++        vnn_p = p["paths"]["vnnlib"]
++        tag = f"{p['category']}/{p['onnx_model']}@{p['vnnlib_spec']}"
++        t0 = _time.time()
++        internal_status = "ERROR"
++        reportable_status = "ERROR"
++        q_statuses: list[str] = []
++        q_reportables: list[str] = []
++        q_receipts: list[Optional[str]] = []
++        instance_error: Optional[str] = None
++        try:
++            pair = load_vnnlib_pair(
++                category=p["category"], onnx_model=p["onnx_model"],
++                vnnlib_spec=p["vnnlib_spec"], auto_download=False,
++                # ROUND 5 (advisor 2026-05-24): pass the SAME canonical
++                # root that drove enumeration, so loader doesn't fall
++                # back to ACT default root and miss benchmarks that
++                # only exist under the canonical mirror.
++                root_dir=_vnnlib_root,
++            )
++            model = pair["model"].to(dtype).eval()
++            in_shape = pair["labeled_tensor"].tensor.shape
++            # CRITICAL: pass labeled_tensor so the parser collapses 199
++            # individual (Y_j >= Y_t) disjuncts into a single TOP1_ROBUST
++            # query with M=199. Without this we'd silently fall back to
++            # the legacy single-disjunct (UNSAFE_LINEAR M=1) shortcut.
++            queries = parse_vnnlib_queries(_Path(vnn_p), labeled_tensor=pair["labeled_tensor"])
++            # SOUNDNESS GATE (2026-05-24 advisor review): the parser emits
++            # the Cartesian product of all top-level OR blocks as
++            # ``queries``. Semantically, the whole VNNLIB spec describes
++            # the UNSAFE set as the *union* over per-query unsafe sets, so:
++            #   * ANY query → FALSIFIED  ⇒ instance FALSIFIED  (one
++            #     witness in any per-query unsafe set is a real adversary)
++            #   * ALL queries → CERTIFIED ⇒ instance CERTIFIED  (every
++            #     branch of the disjunction proved infeasible)
++            #   * otherwise → UNKNOWN
++            # Taking only queries[0] would silently miss per-query unsafe
++            # branches and mis-report CERTIFIED on multi-OR specs.
++            # T2 ablation knob: env ACT_HZ_EQ_LAYERS overrides the default
++            # last-N eq_lagr_v8 layer count for large_cls scheduling. Default 3.
++            _eq_layers = int(os.environ.get("ACT_HZ_EQ_LAYERS", "3"))
++            in_layer = InputLayer(
++                labeled_input=pair["labeled_tensor"],
++                shape=tuple(int(s) for s in in_shape),
++                dtype=dtype,
++            )
++            for q_idx, (in_spec, out_spec) in enumerate(queries):
++                vm = VerifiableModel(
++                    input_layer=in_layer,
++                    input_spec=InputSpecLayer(spec=in_spec),
++                    model=model,
++                    output_spec=OutputSpecLayer(spec=out_spec),
++                )
++                net = TorchToACT(vm).run()
++                solver = HZVerifier(
++                    device=device, dtype=dtype, timeout_s=timeout_s,
++                    strict_replay=True, onnx_path=onnx_p,
++                    vnnlib_path=vnn_p,
++                    # Use official_instance_id (row position in instances.csv
++                    # after correct header detection), NOT the filtered-loop
++                    # index ``i``. The two differ when filter / max-instances
++                    # is applied or when the CSV is headerless. Per advisor
++                    # 2026-05-24 Round 3, receipts MUST carry official ids.
++                    instance_id=int(p.get('official_instance_id', i)),
++                    query_index=q_idx,
++                    benchmark=p['category'],
++                    large_cls_eq_layers=_eq_layers,
++                    small_dense_lp=os.environ.get("ACT_HZ_SMALL_DENSE_LP", "auto"),
++                    small_dense_lp_root=os.environ.get("ACT_HZ_SMALL_DENSE_LP_ROOT"),
++                    small_dense_lp_time_limit_s=float(
++                        os.environ.get("ACT_HZ_SMALL_DENSE_LP_TIME_LIMIT_S", "5.0")
++                    ),
++                    small_dense_lp_refinement_passes=int(
++                        os.environ.get("ACT_HZ_SMALL_DENSE_LP_REFINEMENT_PASSES", "0")
++                    ),
++                    small_dense_lp_fallback_on_unknown=(
++                        os.environ.get("ACT_HZ_SMALL_DENSE_LP_FALLBACK", "0") == "1"
++                    ),
++                )
++                q_status, _, _ = verify_once_hz(net=net, solver=solver, timelimit=timeout_s)
++                q_internal = str(q_status)
++                q_statuses.append(q_internal)
++                q_reportables.append(
++                    reportable_verdict_for_cli(solver, q_internal)
++                )
++                q_receipts.append(solver._stats.get("fal_receipt_path"))
++                # Short-circuit on FALSIFIED — any per-query SAT is sufficient.
++                if q_internal == "SAT":
++                    break
++            # Aggregate per the disjunctive UNSAFE-set semantic — see
++            # ``aggregate_query_statuses`` (internal math) and
++            # ``aggregate_reportable_verdicts`` (formal-mode reportable).
++            # In formal mode the reportable verdict may be ERROR_RECEIPT_*
++            # even when the math says SAT — honest accounting: real
++            # adversary exists but audit ledger is incomplete.
++            internal_status = aggregate_query_statuses(q_statuses)
++            reportable_status = aggregate_reportable_verdicts(q_reportables)
++            # The reportable verdict is what enters the count buckets so
++            # ERROR_RECEIPT_* is visible to operators. The internal status
++            # is preserved via _stats for diagnostic.
++            status_str = reportable_status if (
++                os.environ.get("ACT_FAL_RECEIPT_FORMAL", "").strip().lower()
++                in ("1", "true", "yes", "on")
++            ) else internal_status
++        except Exception as e:
++            status_str = f"ERROR_{type(e).__name__}"
++            instance_error = f"{type(e).__name__}: {e}"
++            if os.environ.get("ACT_VERIFY_VERBOSE") == "1":
++                _tb.print_exc()
++
++        elapsed = _time.time() - t0
++        # ROUND 4 honesty (advisor 2026-05-24): formal-mode reportables
++        # may be REPORTABLE_FALSIFIED, REPORTABLE_CERTIFIED, ERROR_RECEIPT_*,
++        # ERROR_INTERNAL_INCONSISTENCY, or any normal HZ verdict. We
++        # bucket ERROR_RECEIPT_* into a separate "ERROR_RECEIPT" count
++        # so phantom-FAL audit is visible without polluting FAL count.
++        normalized = _normalize_hz_status(status_str)
++        if normalized == "ERROR_INTERNAL_INCONSISTENCY":
++            key = "ERROR_INTERNAL_INCONSISTENCY"
++            counts.setdefault(key, 0)
++        elif normalized.startswith("ERROR_RECEIPT"):
++            key = "ERROR_RECEIPT"
++            counts.setdefault("ERROR_RECEIPT", 0)
++        elif normalized in counts:
++            key = normalized
++        else:
++            key = "ERROR"
++        counts[key] = counts.get(key, 0) + 1
++        per_instance.append({
++            "official_instance_id": int(p.get("official_instance_id", i)),
++            "benchmark": p.get("category", args.category),
++            "onnx_model": p.get("onnx_model", ""),
++            "vnnlib_spec": p.get("vnnlib_spec", ""),
++            "model_path": onnx_p,
++            "spec_path": vnn_p,
++            "internal_status": internal_status,
++            "reportable_status": reportable_status,
++            "cli_normalized": normalized,
++            "count_bucket": key,
++            "queries": [
++                {
++                    "query_index": q_idx,
++                    "internal_status": q_status,
++                    "reportable_status": q_reportables[q_idx],
++                    "receipt_path": q_receipts[q_idx],
++                }
++                for q_idx, q_status in enumerate(q_statuses)
++            ],
++            "q_statuses": q_statuses,
++            "q_reportables": q_reportables,
++            "q_receipts": q_receipts,
++            "error": instance_error,
++            "wall_s": float(elapsed),
++        })
++        print(f"  [{i + 1:3d}/{total}] {tag}: {normalized} ({elapsed:.1f}s)  "
++              f"V={counts['CERTIFIED']} A={counts['FALSIFIED']} "
++              f"U={counts['UNKNOWN']} E={counts['ERROR']}  "
++              f"R={counts.get('ERROR_RECEIPT', 0)}", flush=True)
++
++    wall_min = (_time.time() - t_start) / 60.0
++    print(f"\n[vnnlib/hybridz] FINAL — total={total} wall={wall_min:.1f} min")
++    for k, v in counts.items():
++        if v:
++            print(f"  {k:12s} {v}")
++
++    # ROUND 6 (advisor 2026-05-24): structured per-instance log + formal
++    # exit-code contract. Two outputs:
++    #   (a) Always: write per_instance JSON to ACT_FORMAL_RESULTS_DIR if
++    #       set (or to ACT_FAL_RECEIPT_DIR/per_instance.json as fallback).
++    #   (b) Formal mode: if R>0 or any INTERNAL_INCONSISTENCY, raise
++    #       IncompleteFormalAuditError so cmd_verify maps to FAILED →
++    #       sys.exit(1). The math verdicts are PRESERVED in the log.
++    if results_dir:
++        try:
++            import json as _json
++            import datetime as _datetime
++            results_path = _Path(results_dir)
++            results_path.mkdir(parents=True, exist_ok=True)
++            ts = _datetime.datetime.now(_datetime.timezone.utc).strftime(
++                "%Y%m%dT%H%M%S%fZ"
++            )
++            payload = {
++                "schema_version": 1,
++                "benchmark": args.category,
++                "formal_mode": formal_mode,
++                "timestamp_utc": ts,
++                "canonical_root": _vnnlib_root,
++                "receipt_dir": os.environ.get("ACT_FAL_RECEIPT_DIR"),
++                "wall_min": wall_min,
++                "counts": counts,
++                "run_status": compute_run_status(counts, formal_mode),
++                "per_instance": per_instance,
++            }
++            out_json = results_path / f"per_instance_{args.category}_{ts}.json"
++            if out_json.exists():
++                raise FileExistsError(f"refusing to overwrite {out_json}")
++            tmp_json = out_json.with_suffix(out_json.suffix + ".tmp")
++            tmp_json.write_text(_json.dumps(payload, indent=2, default=str))
++            os.replace(tmp_json, out_json)
++            print(f"  [structured] per-instance log → {out_json}")
++        except Exception as e:
++            print(f"  [structured] WARN: failed to write per-instance log: {e}",
++                  flush=True)
++            if formal_mode:
++                raise
++
++    run_status = compute_run_status(counts, formal_mode)
++    if run_status == "INCOMPLETE_FORMAL_AUDIT":
++        r_n = counts.get("ERROR_RECEIPT", 0)
++        ii_n = counts.get("ERROR_INTERNAL_INCONSISTENCY", 0)
++        raise IncompleteFormalAuditError(
++            f"INCOMPLETE_FORMAL_AUDIT: ERROR_RECEIPT={r_n}, "
++            f"ERROR_INTERNAL_INCONSISTENCY={ii_n}. "
++            "Per-instance log preserved; internal math verdicts intact. "
++            "Re-check receipt directory + instance_id propagation."
++        )
++    if run_status == "FAILED":
++        raise RuntimeError(
++            f"VERIFICATION_RUN_FAILED: ERROR={counts.get('ERROR', 0)}. "
++            "Per-instance log preserved; inspect instance error fields."
++        )
++
++
+ def _run_torchvision_verify(args) -> None:
+     """Drive ``verify_once`` over a TorchVision dataset-model pair end-to-end.
+ 
+@@ -858,6 +1331,7 @@ Examples:
+   python -m act.pipeline --verify vnnlib --category acasxu_2023 --max-instances 3 --tf-modes interval --solvers torchlp
+   python -m act.pipeline --verify vnnlib --category acasxu_2023 --max-instances 3 --tf-modes hybridz --solvers torchlp
+   python -m act.pipeline --verify vnnlib --category acasxu_2023 --max-instances 3                          --solvers dual
++  python -m act.pipeline --verify vnnlib --category tinyimagenet_2024 --max-instances 3                    --solvers hybridz   # HZ-native verifier (verify_once_hz)
+ 
+   # Run verifier on a TorchVision dataset-model pair end-to-end.
+   python -m act.pipeline --verify torchvision --dataset MNIST --model simple_cnn --num-samples 2 --tf-modes interval --solvers torchlp
+@@ -940,6 +1414,14 @@ Examples:
+         default=10,
+         help="Max VNNLIB instances to load (default: 10)",
+     )
++    vnnlib_group.add_argument(
++        "--instance-ids",
++        type=str,
++        help=(
++            "Comma-separated official instance ids for reproducible VNNLIB "
++            "sentinel/audit runs (hybridz path); applied before --max-instances"
++        ),
++    )
+ 
+     # TorchVision-specific options
+     tv_group = parser.add_argument_group("TorchVision Options")
+diff --git a/tests/test_hz_representations.py b/tests/test_hz_representations.py
+index 079ada8..8efe5a7 100644
+--- a/tests/test_hz_representations.py
++++ b/tests/test_hz_representations.py
+@@ -14,9 +14,10 @@
+ 
+ from __future__ import annotations
+ 
++import numpy as np
+ import torch
+ 
+-from act.back_end.solver.solver_hz import HZono
++from act.back_end.solver.solver_hz import HZono, lp_witness_to_input
+ from act.back_end.hybridz_tf.representations import (
+     BoxHZ,
+     LazyChainHZ,
+@@ -35,6 +36,17 @@ def test_boxhz_basic():
+     assert hz.Gc.shape == (2, 2)
+ 
+ 
++def test_boxhz_witness_replay_candidate_is_in_box_center():
++    box = BoxHZ(torch.tensor([-2.0, 0.0]), torch.tensor([1.0, 4.0]),
++                dtype=torch.float64, device=torch.device("cpu"))
++    # BoxHZ has no final-factor-to-input inverse after downstream reduction.
++    # A center proposal is concrete and replay-safe regardless of LP layout.
++    x = lp_witness_to_input(np.array([1.0]), box)
++    assert np.allclose(x, [-0.5, 2.0])
++    assert np.all(x >= np.array([-2.0, 0.0]))
++    assert np.all(x <= np.array([1.0, 4.0]))
++
++
+ def test_lazychain_dense():
+     box = BoxHZ(torch.tensor([-1.0, -1.0]), torch.tensor([1.0, 1.0]),
+                 dtype=torch.float64, device=torch.device("cpu"))
+@@ -73,6 +85,7 @@ def test_sparse_gc_bounds():
+ 
+ if __name__ == "__main__":
+     test_boxhz_basic()
++    test_boxhz_witness_replay_candidate_is_in_box_center()
+     test_lazychain_dense()
+     test_lazychain_materialize_when_small()
+     test_sparse_gc_bounds()

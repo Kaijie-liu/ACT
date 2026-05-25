@@ -684,12 +684,21 @@ def _convert_OnnxReduceSumStaticAxes(self, mod: nn.Module, node: fx.Node) -> Non
     self._register_node(node.name, layer_id)
 
 def _convert_OnnxGather(self, mod: nn.Module, node: fx.Node) -> None:
-    """OnnxGather: numpy.take(x, indices, axis=_axis)."""
+    """OnnxGather: numpy.take(x, indices, axis=_axis).
+
+    Indices may be a direct get_attr initializer OR the output of a
+    Constant op (a call_module producing a constant tensor). Both are
+    valid for ACT — indices must just be statically resolvable. nn4sys
+    pensieve emits the latter, so the bare _resolve_constant_tensor
+    misses it; fall through to _evaluate_constant_subgraph which walks
+    upstream Constant chains."""
     if not self._get_predecessor_state(node):
         raise ValueError(f"OnnxGather: missing predecessor for {node.name}")
     axis = int(getattr(mod, '_axis', 0))
     args = [a for a in node.args if isinstance(a, fx.Node)]
     idx = self._resolve_constant_tensor(args[1].name) if len(args) >= 2 else None
+    if idx is None and len(args) >= 2:
+        idx = self._evaluate_constant_subgraph(args[1].name)
     if idx is None:
         raise ValueError(f"OnnxGather: cannot resolve indices at {node.name}")
     indices = idx.detach().clone().to(torch.int64)
@@ -918,12 +927,19 @@ def _convert_OnnxSlice(self, mod: nn.Module, node: fx.Node) -> None:
     self._register_node(node.name, layer_id)
 
 def _convert_OnnxPow(self, mod: nn.Module, node: fx.Node) -> None:
-    """OnnxPow with constant integer exponent.
+    """OnnxPow with constant non-negative integer exponent.
 
-    Currently supports exponent==2 (squaring) by emitting MUL(var, var).
-    Higher integer exponents would chain MULs; non-integer exponents need
-    a real POW transfer-function and are deferred (future enhancement).
-    """
+    Supported via repeated MUL: x^k = x * x * ... * x (k-1 multiplications).
+    nn4sys pensieve uses x^3 (L2-norm-style chain), so the prior
+    exponent==2-only restriction blocked the whole benchmark family.
+
+    Exponents 1, 2, 3, 4 are common in NN expressivity ops. Higher values
+    still work but produce O(log k) deep chains via square-and-multiply;
+    we keep the naive linear chain for clarity since k is small in practice.
+
+    The constant exponent may come from a get_attr OR a Constant subgraph
+    (pensieve_small_parallel ships it as a Constant op, not initializer).
+    Non-integer or negative exponents remain unsupported."""
     if not self._get_predecessor_state(node):
         raise ValueError(f"OnnxPow: missing predecessor for {node.name}")
     args = [a for a in node.args if isinstance(a, fx.Node)]
@@ -931,47 +947,103 @@ def _convert_OnnxPow(self, mod: nn.Module, node: fx.Node) -> None:
         raise ValueError(f"OnnxPow at {node.name}: expected 2 args")
     exp_t = self._resolve_constant_tensor(args[1].name)
     if exp_t is None:
-        raise NotImplementedError(f"OnnxPow at {node.name}: dynamic exponent (future enhancement)")
-    exp_val = float(exp_t.flatten().tolist()[0])
-    if abs(exp_val - 2.0) > 1e-9:
+        exp_t = self._evaluate_constant_subgraph(args[1].name)
+    if exp_t is None:
         raise NotImplementedError(
-            f"OnnxPow at {node.name}: only exponent==2 supported (got {exp_val}; future enhancement)"
+            f"OnnxPow at {node.name}: dynamic exponent (future enhancement)"
         )
+    exp_val = float(exp_t.flatten().tolist()[0])
+    exp_int = int(round(exp_val))
+    if abs(exp_val - exp_int) > 1e-9 or exp_int < 1:
+        raise NotImplementedError(
+            f"OnnxPow at {node.name}: only positive integer exponents supported "
+            f"(got {exp_val}; future enhancement for non-integer/negative)"
+        )
+
     var_vars = self.node_outputs[args[0].name]
-    out_vars = self._alloc_ids(len(var_vars))
-    layer_id = self._add_layer(
-        LayerKind.MUL.value,
-        {"x_vars": var_vars, "y_vars": var_vars,
-         "input_shape": self.shape, "output_shape": self.shape},
-        var_vars + var_vars, out_vars,
-    )
-    self.prev_out = out_vars
-    self._register_node(node.name, layer_id)
+    # x^1 is identity — wire through without a layer.
+    if exp_int == 1:
+        self.node_outputs[node.name] = var_vars
+        self.node_shapes[node.name] = self.shape
+        self.prev_out = var_vars
+        return
+
+    # x^k for k>=2: chain (k-1) MULs. accumulator starts as x; each step
+    # multiplies by the original x. Each intermediate result gets fresh
+    # variable ids; the final layer's out_vars is the chain output.
+    accumulator = var_vars
+    last_layer_id = -1
+    for _step in range(exp_int - 1):
+        out_vars = self._alloc_ids(len(var_vars))
+        last_layer_id = self._add_layer(
+            LayerKind.MUL.value,
+            {"x_vars": accumulator, "y_vars": var_vars,
+             "input_shape": self.shape, "output_shape": self.shape},
+            accumulator + var_vars, out_vars,
+        )
+        accumulator = out_vars
+    self.prev_out = accumulator
+    self._register_node(node.name, last_layer_id)
 
 def _convert_OnnxSplit13(self, mod: nn.Module, node: fx.Node) -> None:
-    """OnnxSplit13: split input along an axis into chunks of given sizes.
+    """OnnxSplit / OnnxSplit13: split input along an axis into chunks.
 
-    Decomposes into N SLICE layers (one per output chunk). Each downstream
-    ``getitem(split, i)`` fx node is pre-registered to point at the i-th
-    SLICE's outputs; ``_process_getitem_operation`` honours the pre-registered
-    state via its early-return guard.
+    Two paths:
+      (a) sizes-input form (opset 13+, OnnxSplit13): split sizes come from
+          a constant input tensor (args[1]).
+      (b) equal-axis form (older OnnxSplit, or opset 13+ when the optional
+          sizes input is omitted): split into N equal chunks where N is
+          inferred from the number of downstream ``getitem(split, i)`` fx
+          children. nn4sys pensieve_big_parallel uses this form (axis=1,
+          no sizes input).
+
+    Both decompose to N SLICE layers; each downstream ``getitem(split, i)``
+    fx node is pre-registered to point at the i-th SLICE's outputs;
+    ``_process_getitem_operation`` honours the pre-registered state via
+    its early-return guard.
     """
     if not self._get_predecessor_state(node):
-        raise ValueError(f"OnnxSplit13: missing predecessor for {node.name}")
+        raise ValueError(f"OnnxSplit: missing predecessor for {node.name}")
     args = [a for a in node.args if isinstance(a, fx.Node)]
-    if len(args) < 2:
-        raise NotImplementedError(
-            f"OnnxSplit13 at {node.name}: equal-axis split (no sizes input) not supported"
-        )
-    split_t = self._resolve_constant_tensor(args[1].name)
-    if split_t is None:
-        raise ValueError(f"OnnxSplit13 at {node.name}: cannot resolve split sizes")
-    split_sizes = [int(x) for x in split_t.flatten().tolist()]
     axis_attr = getattr(mod, '_axis', None)
     if axis_attr is None:
         axis_attr = getattr(mod, 'axis', 0)
     rank = len(self.shape)
     norm_axis = int(axis_attr) + rank if int(axis_attr) < 0 else int(axis_attr)
+
+    if len(args) >= 2:
+        split_t = self._resolve_constant_tensor(args[1].name)
+        if split_t is None:
+            split_t = self._evaluate_constant_subgraph(args[1].name)
+        if split_t is None:
+            raise ValueError(f"OnnxSplit at {node.name}: cannot resolve split sizes")
+        split_sizes = [int(x) for x in split_t.flatten().tolist()]
+    else:
+        # Equal-axis split: count downstream getitem children to find N.
+        num_splits = 0
+        if self.fx_graph is not None:
+            child_indices = set()
+            for n in self.fx_graph.nodes:
+                if n.op == 'call_function' and 'getitem' in str(n.target).lower() and n.args:
+                    if isinstance(n.args[0], fx.Node) and n.args[0].name == node.name and len(n.args) > 1:
+                        idx_arg = n.args[1]
+                        if isinstance(idx_arg, int):
+                            child_indices.add(idx_arg)
+            if child_indices:
+                num_splits = max(child_indices) + 1
+        if num_splits <= 0:
+            raise ValueError(
+                f"OnnxSplit at {node.name}: equal-axis split needs at least one "
+                f"downstream getitem child to infer split count; found none"
+            )
+        axis_size = int(self.shape[norm_axis])
+        if axis_size % num_splits != 0:
+            raise ValueError(
+                f"OnnxSplit at {node.name}: equal-axis split requires axis dim "
+                f"({axis_size}) divisible by num_splits ({num_splits})"
+            )
+        chunk = axis_size // num_splits
+        split_sizes = [chunk] * num_splits
 
     getitem_children: Dict[int, fx.Node] = {}
     if self.fx_graph is not None:
@@ -1470,6 +1542,7 @@ ONNX_HANDLERS = {
     'OnnxScatterND': _convert_OnnxScatterND,
     'OnnxShape': _convert_OnnxShape,
     'OnnxSlice': _convert_OnnxSlice,
+    'OnnxSplit': _convert_OnnxSplit13,
     'OnnxSplit13': _convert_OnnxSplit13,
     'OnnxSqueezeDynamicAxes': _convert_OnnxSqueezeDynamicAxes,
     'OnnxTranspose': _convert_OnnxTranspose,

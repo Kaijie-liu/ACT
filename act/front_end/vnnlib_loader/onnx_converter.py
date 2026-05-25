@@ -181,15 +181,25 @@ def get_onnx_input_shape(onnx_path: Path) -> Tuple[int, ...]:
     """
     try:
         import onnx
-        
+
         onnx_model = onnx.load(str(onnx_path))
         graph = onnx_model.graph
-        
+
         if not graph.input:
             raise ONNXConversionError("ONNX model has no inputs")
-        
-        # Get first input tensor
-        input_tensor = graph.input[0]
+
+        # Filter out initializers — older exporters list weights/biases in
+        # graph.input alongside the actual model placeholders, so naively
+        # taking graph.input[0] can return e.g. conv_1_W instead of the
+        # imageinput. collins_rul_cnn_2022 NN_rul_full_window_40 hits this.
+        initializer_names = {init.name for init in graph.initializer}
+        model_inputs = [t for t in graph.input if t.name not in initializer_names]
+        if not model_inputs:
+            raise ONNXConversionError(
+                "ONNX model has no non-initializer inputs (all graph.input "
+                "entries are weights/biases)"
+            )
+        input_tensor = model_inputs[0]
         shape = _extract_shape_from_tensor(input_tensor)
         
         # Handle batch dimension - keep original, but normalize dynamic batch

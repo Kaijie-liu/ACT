@@ -1,0 +1,1057 @@
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_10_10.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_10_10.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_10_10.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_10_10.vnnlib: 2 query(ies)
+[ACT] Auto-detecting project root: ../ACT
+[ACT] Gurobi license found: ../ACT/modules/gurobi/gurobi.lic
+✅ Device Manager Initialized: device=cpu, dtype=torch.float64
+
+================================================================================
+ACT: Abstract Constraint Transformer
+Inference-based whitebox fuzzing for neural network verification
+================================================================================
+
+
+================================================================================
+VERIFICATION TEST: VNNLIB → VerifiableModel → verify_once
+================================================================================
+
+[vnnlib] category=linearizenn_2024 max_instances=60 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cpu, timeout=30.0s)
+  [  1/60] linearizenn_2024/onnx/AllInOne_10_10.onnx@vnnlib/prop_10_10.vnnlib: ERROR_RuntimeError (0.1s)  V=0 A=0 U=0 E=1  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_10_10.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_10_10.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_10_10.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_10_10_0.vnnlib: 2 query(ies)
+  [  2/60] linearizenn_2024/onnx/AllInOne_10_10.onnx@vnnlib/prop_10_10_0.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=2  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_10_10.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_10_10.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_10_10.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_10_10_1.vnnlib: 2 query(ies)
+  [  3/60] linearizenn_2024/onnx/AllInOne_10_10.onnx@vnnlib/prop_10_10_1.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=3  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_10_10.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_10_10.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_10_10.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_10_10_2.vnnlib: 2 query(ies)
+  [  4/60] linearizenn_2024/onnx/AllInOne_10_10.onnx@vnnlib/prop_10_10_2.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=4  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_10_10.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_10_10.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_10_10.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_10_10_3.vnnlib: 2 query(ies)
+  [  5/60] linearizenn_2024/onnx/AllInOne_10_10.onnx@vnnlib/prop_10_10_3.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=5  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_10_10.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_10_10.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_10_10.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_10_10_4.vnnlib: 2 query(ies)
+  [  6/60] linearizenn_2024/onnx/AllInOne_10_10.onnx@vnnlib/prop_10_10_4.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=6  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_30_30.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_30_30.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_30_30.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_30_30.vnnlib: 2 query(ies)
+  [  7/60] linearizenn_2024/onnx/AllInOne_30_30.onnx@vnnlib/prop_30_30.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=7  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_30_30.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_30_30.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_30_30.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_30_30_0.vnnlib: 2 query(ies)
+  [  8/60] linearizenn_2024/onnx/AllInOne_30_30.onnx@vnnlib/prop_30_30_0.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=8  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_30_30.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_30_30.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_30_30.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_30_30_1.vnnlib: 2 query(ies)
+  [  9/60] linearizenn_2024/onnx/AllInOne_30_30.onnx@vnnlib/prop_30_30_1.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=9  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_30_30.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_30_30.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_30_30.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_30_30_2.vnnlib: 2 query(ies)
+  [ 10/60] linearizenn_2024/onnx/AllInOne_30_30.onnx@vnnlib/prop_30_30_2.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=10  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_30_30.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_30_30.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_30_30.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_30_30_3.vnnlib: 2 query(ies)
+  [ 11/60] linearizenn_2024/onnx/AllInOne_30_30.onnx@vnnlib/prop_30_30_3.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=11  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_30_30.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_30_30.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_30_30.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_30_30_4.vnnlib: 2 query(ies)
+  [ 12/60] linearizenn_2024/onnx/AllInOne_30_30.onnx@vnnlib/prop_30_30_4.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=12  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_30_80.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_30_80.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_30_80.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_30_80.vnnlib: 2 query(ies)
+  [ 13/60] linearizenn_2024/onnx/AllInOne_30_80.onnx@vnnlib/prop_30_80.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=13  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_30_80.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_30_80.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_30_80.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_30_80_0.vnnlib: 2 query(ies)
+  [ 14/60] linearizenn_2024/onnx/AllInOne_30_80.onnx@vnnlib/prop_30_80_0.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=14  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_30_80.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_30_80.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_30_80.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_30_80_1.vnnlib: 2 query(ies)
+  [ 15/60] linearizenn_2024/onnx/AllInOne_30_80.onnx@vnnlib/prop_30_80_1.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=15  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_30_80.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_30_80.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_30_80.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_30_80_2.vnnlib: 2 query(ies)
+  [ 16/60] linearizenn_2024/onnx/AllInOne_30_80.onnx@vnnlib/prop_30_80_2.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=16  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_30_80.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_30_80.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_30_80.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_30_80_3.vnnlib: 2 query(ies)
+  [ 17/60] linearizenn_2024/onnx/AllInOne_30_80.onnx@vnnlib/prop_30_80_3.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=17  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_30_80.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_30_80.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_30_80.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_30_80_4.vnnlib: 2 query(ies)
+  [ 18/60] linearizenn_2024/onnx/AllInOne_30_80.onnx@vnnlib/prop_30_80_4.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=18  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_50_50.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_50_50.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_50_50.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_50_50.vnnlib: 2 query(ies)
+  [ 19/60] linearizenn_2024/onnx/AllInOne_50_50.onnx@vnnlib/prop_50_50.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=19  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_50_50.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_50_50.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_50_50.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_50_50_0.vnnlib: 2 query(ies)
+  [ 20/60] linearizenn_2024/onnx/AllInOne_50_50.onnx@vnnlib/prop_50_50_0.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=20  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_50_50.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_50_50.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_50_50.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_50_50_1.vnnlib: 2 query(ies)
+  [ 21/60] linearizenn_2024/onnx/AllInOne_50_50.onnx@vnnlib/prop_50_50_1.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=21  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_50_50.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_50_50.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_50_50.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_50_50_2.vnnlib: 2 query(ies)
+  [ 22/60] linearizenn_2024/onnx/AllInOne_50_50.onnx@vnnlib/prop_50_50_2.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=22  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_50_50.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_50_50.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_50_50.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_50_50_3.vnnlib: 2 query(ies)
+  [ 23/60] linearizenn_2024/onnx/AllInOne_50_50.onnx@vnnlib/prop_50_50_3.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=23  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_50_50.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_50_50.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_50_50.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_50_50_4.vnnlib: 2 query(ies)
+  [ 24/60] linearizenn_2024/onnx/AllInOne_50_50.onnx@vnnlib/prop_50_50_4.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=24  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_50_120.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_50_120.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_50_120.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_50_120.vnnlib: 2 query(ies)
+  [ 25/60] linearizenn_2024/onnx/AllInOne_50_120.onnx@vnnlib/prop_50_120.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=25  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_50_120.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_50_120.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_50_120.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_50_120_0.vnnlib: 2 query(ies)
+  [ 26/60] linearizenn_2024/onnx/AllInOne_50_120.onnx@vnnlib/prop_50_120_0.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=26  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_50_120.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_50_120.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_50_120.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_50_120_1.vnnlib: 2 query(ies)
+  [ 27/60] linearizenn_2024/onnx/AllInOne_50_120.onnx@vnnlib/prop_50_120_1.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=27  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_50_120.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_50_120.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_50_120.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_50_120_2.vnnlib: 2 query(ies)
+  [ 28/60] linearizenn_2024/onnx/AllInOne_50_120.onnx@vnnlib/prop_50_120_2.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=28  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_50_120.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_50_120.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_50_120.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_50_120_3.vnnlib: 2 query(ies)
+  [ 29/60] linearizenn_2024/onnx/AllInOne_50_120.onnx@vnnlib/prop_50_120_3.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=29  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_50_120.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_50_120.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_50_120.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_50_120_4.vnnlib: 2 query(ies)
+  [ 30/60] linearizenn_2024/onnx/AllInOne_50_120.onnx@vnnlib/prop_50_120_4.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=30  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_80_30.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_80_30.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_80_30.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_80_30.vnnlib: 2 query(ies)
+  [ 31/60] linearizenn_2024/onnx/AllInOne_80_30.onnx@vnnlib/prop_80_30.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=31  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_80_30.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_80_30.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_80_30.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_80_30_0.vnnlib: 2 query(ies)
+  [ 32/60] linearizenn_2024/onnx/AllInOne_80_30.onnx@vnnlib/prop_80_30_0.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=32  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_80_30.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_80_30.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_80_30.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_80_30_1.vnnlib: 2 query(ies)
+  [ 33/60] linearizenn_2024/onnx/AllInOne_80_30.onnx@vnnlib/prop_80_30_1.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=33  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_80_30.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_80_30.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_80_30.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_80_30_2.vnnlib: 2 query(ies)
+  [ 34/60] linearizenn_2024/onnx/AllInOne_80_30.onnx@vnnlib/prop_80_30_2.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=34  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_80_30.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_80_30.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_80_30.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_80_30_3.vnnlib: 2 query(ies)
+  [ 35/60] linearizenn_2024/onnx/AllInOne_80_30.onnx@vnnlib/prop_80_30_3.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=35  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_80_30.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_80_30.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_80_30.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_80_30_4.vnnlib: 2 query(ies)
+  [ 36/60] linearizenn_2024/onnx/AllInOne_80_30.onnx@vnnlib/prop_80_30_4.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=36  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_80_80.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_80_80.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_80_80.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_80_80.vnnlib: 2 query(ies)
+  [ 37/60] linearizenn_2024/onnx/AllInOne_80_80.onnx@vnnlib/prop_80_80.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=37  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_80_80.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_80_80.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_80_80.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_80_80_0.vnnlib: 2 query(ies)
+  [ 38/60] linearizenn_2024/onnx/AllInOne_80_80.onnx@vnnlib/prop_80_80_0.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=38  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_80_80.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_80_80.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_80_80.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_80_80_1.vnnlib: 2 query(ies)
+  [ 39/60] linearizenn_2024/onnx/AllInOne_80_80.onnx@vnnlib/prop_80_80_1.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=39  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_80_80.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_80_80.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_80_80.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_80_80_2.vnnlib: 2 query(ies)
+  [ 40/60] linearizenn_2024/onnx/AllInOne_80_80.onnx@vnnlib/prop_80_80_2.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=40  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_80_80.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_80_80.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_80_80.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_80_80_3.vnnlib: 2 query(ies)
+  [ 41/60] linearizenn_2024/onnx/AllInOne_80_80.onnx@vnnlib/prop_80_80_3.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=41  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_80_80.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_80_80.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_80_80.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_80_80_4.vnnlib: 2 query(ies)
+  [ 42/60] linearizenn_2024/onnx/AllInOne_80_80.onnx@vnnlib/prop_80_80_4.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=42  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_120_30.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_120_30.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_120_30.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_120_30.vnnlib: 2 query(ies)
+  [ 43/60] linearizenn_2024/onnx/AllInOne_120_30.onnx@vnnlib/prop_120_30.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=43  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_120_30.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_120_30.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_120_30.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_120_30_0.vnnlib: 2 query(ies)
+  [ 44/60] linearizenn_2024/onnx/AllInOne_120_30.onnx@vnnlib/prop_120_30_0.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=44  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_120_30.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_120_30.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_120_30.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_120_30_1.vnnlib: 2 query(ies)
+  [ 45/60] linearizenn_2024/onnx/AllInOne_120_30.onnx@vnnlib/prop_120_30_1.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=45  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_120_30.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_120_30.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_120_30.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_120_30_2.vnnlib: 2 query(ies)
+  [ 46/60] linearizenn_2024/onnx/AllInOne_120_30.onnx@vnnlib/prop_120_30_2.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=46  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_120_30.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_120_30.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_120_30.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_120_30_3.vnnlib: 2 query(ies)
+  [ 47/60] linearizenn_2024/onnx/AllInOne_120_30.onnx@vnnlib/prop_120_30_3.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=47  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_120_30.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_120_30.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_120_30.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_120_30_4.vnnlib: 2 query(ies)
+  [ 48/60] linearizenn_2024/onnx/AllInOne_120_30.onnx@vnnlib/prop_120_30_4.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=48  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_120_50.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_120_50.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_120_50.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_120_50.vnnlib: 2 query(ies)
+  [ 49/60] linearizenn_2024/onnx/AllInOne_120_50.onnx@vnnlib/prop_120_50.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=49  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_120_50.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_120_50.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_120_50.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_120_50_0.vnnlib: 2 query(ies)
+  [ 50/60] linearizenn_2024/onnx/AllInOne_120_50.onnx@vnnlib/prop_120_50_0.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=50  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_120_50.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_120_50.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_120_50.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_120_50_1.vnnlib: 2 query(ies)
+  [ 51/60] linearizenn_2024/onnx/AllInOne_120_50.onnx@vnnlib/prop_120_50_1.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=51  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_120_50.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_120_50.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_120_50.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_120_50_2.vnnlib: 2 query(ies)
+  [ 52/60] linearizenn_2024/onnx/AllInOne_120_50.onnx@vnnlib/prop_120_50_2.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=52  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_120_50.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_120_50.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_120_50.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_120_50_3.vnnlib: 2 query(ies)
+  [ 53/60] linearizenn_2024/onnx/AllInOne_120_50.onnx@vnnlib/prop_120_50_3.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=53  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_120_50.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_120_50.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_120_50.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_120_50_4.vnnlib: 2 query(ies)
+  [ 54/60] linearizenn_2024/onnx/AllInOne_120_50.onnx@vnnlib/prop_120_50_4.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=54  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_120_120.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_120_120.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_120_120.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_120_120.vnnlib: 2 query(ies)
+  [ 55/60] linearizenn_2024/onnx/AllInOne_120_120.onnx@vnnlib/prop_120_120.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=55  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_120_120.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_120_120.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_120_120.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_120_120_0.vnnlib: 2 query(ies)
+  [ 56/60] linearizenn_2024/onnx/AllInOne_120_120.onnx@vnnlib/prop_120_120_0.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=56  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_120_120.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_120_120.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_120_120.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_120_120_1.vnnlib: 2 query(ies)
+  [ 57/60] linearizenn_2024/onnx/AllInOne_120_120.onnx@vnnlib/prop_120_120_1.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=57  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_120_120.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_120_120.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_120_120.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_120_120_2.vnnlib: 2 query(ies)
+  [ 58/60] linearizenn_2024/onnx/AllInOne_120_120.onnx@vnnlib/prop_120_120_2.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=58  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_120_120.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_120_120.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_120_120.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_120_120_3.vnnlib: 2 query(ies)
+  [ 59/60] linearizenn_2024/onnx/AllInOne_120_120.onnx@vnnlib/prop_120_120_3.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=59  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: linearizenn_2024/onnx/AllInOne_120_120.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_120_120.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: AllInOne_120_120.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_120_120_4.vnnlib: 2 query(ies)
+  [ 60/60] linearizenn_2024/onnx/AllInOne_120_120.onnx@vnnlib/prop_120_120_4.vnnlib: ERROR_RuntimeError (0.0s)  V=0 A=0 U=0 E=60  R=0
+Traceback (most recent call last):
+  File "/data1/Kane/ACT/act/pipeline/cli.py", line 1151, in cmd_verify
+    _run_vnnlib_verify(args)
+  File "/data1/Kane/ACT/act/pipeline/cli.py", line 549, in _run_vnnlib_verify
+    return _run_vnnlib_verify_hybridz(args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/ACT/act/pipeline/cli.py", line 1036, in _run_vnnlib_verify_hybridz
+    raise RuntimeError(
+RuntimeError: VERIFICATION_RUN_FAILED: ERROR=60. Per-instance log preserved; inspect instance error fields.
+
+[vnnlib/hybridz] FINAL — total=60 wall=0.0 min
+  ERROR        60
+  [structured] per-instance log → /data1/Kane/ACT/audit_results/capability_rebaseline_20260524T225704Z/linearizenn_witness/per_instance_linearizenn_2024_20260524T132102481513Z.json
+
+❌ Test failed: VERIFICATION_RUN_FAILED: ERROR=60. Per-instance log preserved; inspect instance error fields.
+
+================================================================================
+VERIFICATION TEST SUMMARY
+================================================================================
+  ❌ vnnlib                    FAILED
+================================================================================
+

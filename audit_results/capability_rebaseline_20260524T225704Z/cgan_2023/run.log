@@ -1,0 +1,32 @@
+Traceback (most recent call last):
+  File "/data1/Kane/ACT/act/pipeline/cli.py", line 1151, in cmd_verify
+    _run_vnnlib_verify(args)
+  File "/data1/Kane/ACT/act/pipeline/cli.py", line 549, in _run_vnnlib_verify
+    return _run_vnnlib_verify_hybridz(args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/ACT/act/pipeline/cli.py", line 796, in _run_vnnlib_verify_hybridz
+    raise RuntimeError(
+RuntimeError: No downloaded VNNLIB instances for category='cgan_2023'; run `python -m act.pipeline --download cgan_2023` first
+[ACT] Auto-detecting project root: .
+[ACT] Gurobi license found: modules/gurobi/gurobi.lic
+✅ Device Manager Initialized: device=cpu, dtype=torch.float64
+
+================================================================================
+ACT: Abstract Constraint Transformer
+Inference-based whitebox fuzzing for neural network verification
+================================================================================
+
+
+================================================================================
+VERIFICATION TEST: VNNLIB → VerifiableModel → verify_once
+================================================================================
+
+
+❌ Test failed: No downloaded VNNLIB instances for category='cgan_2023'; run `python -m act.pipeline --download cgan_2023` first
+
+================================================================================
+VERIFICATION TEST SUMMARY
+================================================================================
+  ❌ vnnlib                    FAILED
+================================================================================
+

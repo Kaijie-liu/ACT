@@ -492,6 +492,40 @@ def tf_expand(L: Layer, Bin: Bounds) -> Fact:
 def tf_slice(L: Layer, Bin: Bounds) -> Fact:
     batch_size = Bin.lb.shape[0]
     inp_shape = tuple(L.params["input_shape"])  # e.g. (1, 3, 32, 32)
+    # ROUND 9 (advisor 2026-05-25): ACT's sequential analyzer feeds
+    # ``Bin`` from the topologically-preceding layer's output, but
+    # ONNX Slice can reference the original graph input by name
+    # (e.g. linearizenn AllInOne_10_10 slices ``input`` while the
+    # preceding layer is the controller MatMul of a different dim).
+    # When the actual feed size mismatches input_shape, we degrade
+    # gracefully to ±inf bounds so analyze() completes and
+    # ``_try_small_dense_lp`` can still take the small-dense verdict
+    # without the interval-pass crashing.
+    expected_elems = int(__import__("torch").Size(inp_shape).numel())
+    if Bin.lb.numel() // batch_size != expected_elems:
+        import torch as _torch
+        n_out = len(L.out_vars)
+        sentinel_lb = _torch.full(
+            (batch_size, n_out), float("-inf"),
+            dtype=Bin.lb.dtype, device=Bin.lb.device,
+        )
+        sentinel_ub = _torch.full(
+            (batch_size, n_out), float("inf"),
+            dtype=Bin.ub.dtype, device=Bin.ub.device,
+        )
+        Bout = Bounds(sentinel_lb, sentinel_ub)
+        C = ConSet()
+        C.replace(Con("EQ", tuple(L.out_vars + L.in_vars), {
+            "tag": f"slice:{L.id}",
+            "starts": L.params.get("starts", []),
+            "ends":   L.params.get("ends", []),
+            "axes":   L.params.get("axes", []),
+            "steps":  L.params.get("steps", []),
+            "input_shape": inp_shape,
+            "ROUND9_shape_mismatch_sentinel": True,
+        }))
+        C.add_box(L.id, L.out_vars, Bout)
+        return Fact(Bout, C)
     x_lb = Bin.lb.view(batch_size, *inp_shape)
     x_ub = Bin.ub.view(batch_size, *inp_shape)
 
@@ -537,6 +571,9 @@ def tf_gather(L: Layer, Bin: Bounds) -> Fact:
     batch_size = Bin.lb.shape[0]
     inp_shape = tuple(L.params["input_shape"])
     axis = int(L.params.get("axis", 0))
+    # ONNX Gather allows negative axis (axis-from-end). The torch2act
+    # handler stores the raw axis; normalize here for torch.index_select.
+    norm_axis = axis if axis >= 0 else axis + len(inp_shape)
     x_lb = Bin.lb.view(batch_size, *inp_shape)
     x_ub = Bin.ub.view(batch_size, *inp_shape)
 
@@ -546,8 +583,31 @@ def tf_gather(L: Layer, Bin: Bounds) -> Fact:
     else:
         indices = raw_idx.to(x_lb.device).long()
 
-    out_lb = torch.index_select(x_lb, dim=axis + 1, index=indices)
-    out_ub = torch.index_select(x_ub, dim=axis + 1, index=indices)
+    # ONNX Gather semantics:
+    #   * indices may be 0-d (scalar) → torch.index_select needs 1-d, so
+    #     reshape and squeeze the gathered axis afterwards
+    #   * indices may be NEGATIVE (axis-from-end) → torch.index_select
+    #     rejects, so wrap to non-negative against the gathered axis size
+    # nn4sys pensieve hits both: scalar -1 to take the last element.
+    scalar_index = (indices.dim() == 0)
+    if scalar_index:
+        indices = indices.reshape(1)
+    axis_dim = int(inp_shape[norm_axis])
+    if (indices < 0).any():
+        indices = torch.where(indices < 0, indices + axis_dim, indices)
+    if (indices < 0).any() or (indices >= axis_dim).any():
+        raise ValueError(
+            f"GATHER layer id={L.id}: index out of range after wrap "
+            f"(axis={axis}, axis_dim={axis_dim}, indices={indices.tolist()[:10]})"
+        )
+
+    out_lb = torch.index_select(x_lb, dim=norm_axis + 1, index=indices)
+    out_ub = torch.index_select(x_ub, dim=norm_axis + 1, index=indices)
+
+    if scalar_index:
+        # Drop the size-1 gathered axis so the output rank matches ONNX semantics.
+        out_lb = out_lb.squeeze(norm_axis + 1)
+        out_ub = out_ub.squeeze(norm_axis + 1)
 
     Bout = Bounds(out_lb.reshape(batch_size, -1), out_ub.reshape(batch_size, -1))
 

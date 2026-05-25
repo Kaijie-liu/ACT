@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "benchmark": "cgan_2023",
+  "formal_mode": false,
+  "timestamp_utc": "20260525T000643297115Z",
+  "canonical_root": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks",
+  "receipt_dir": null,
+  "wall_min": 0.001471694310506185,
+  "counts": {
+    "CERTIFIED": 0,
+    "FALSIFIED": 0,
+    "UNKNOWN": 0,
+    "ERROR": 1
+  },
+  "run_status": "FAILED",
+  "per_instance": [
+    {
+      "official_instance_id": 0,
+      "benchmark": "cgan_2023",
+      "onnx_model": "onnx/cGAN_imgSz32_nCh_1.onnx",
+      "vnnlib_spec": "vnnlib/cGAN_imgSz32_nCh_1_prop_0_input_eps_0.010_output_eps_0.015.vnnlib",
+      "model_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cgan_2023/onnx/cGAN_imgSz32_nCh_1.onnx",
+      "spec_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cgan_2023/vnnlib/cGAN_imgSz32_nCh_1_prop_0_input_eps_0.010_output_eps_0.015.vnnlib.gz",
+      "internal_status": "ERROR",
+      "reportable_status": "ERROR",
+      "cli_normalized": "ERROR_ValueError",
+      "count_bucket": "ERROR",
+      "queries": [],
+      "q_statuses": [],
+      "q_reportables": [],
+      "q_receipts": [],
+      "error": "ValueError: Layer(id=4, kind=CONVTRANSPOSE2D) schema violation:\n- Missing required PARAMS: ['in_channels', 'out_channels', 'kernel_size']. Add them or relax schema in REGISTRY['CONVTRANSPOSE2D']['params_required'].",
+      "wall_s": 0.08828020095825195
+    }
+  ]
+}

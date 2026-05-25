@@ -69,11 +69,17 @@ def _qr_pivoted_cpu(A: np.ndarray, rank_tol: float = 1e-10):
     """scipy pivoted QR. Returns (Q, R, piv, rank).
 
     rank counts |R[i, i]| > rank_tol over the leading min(rows, cols).
+
+    Critical: ``overwrite_a=False``. The caller (``project_eq_elim``)
+    reads ``A[:, free_idx]`` AFTER this call to build ``M_Ac_free``;
+    overwriting destroys those columns and silently produces a wrong
+    substitution matrix (the 2-row regression test caught this as an
+    unsound projection that shrank the set by ~25%).
     """
     from scipy.linalg import qr as _qr
     n_eq = A.shape[0]
     n_cols = A.shape[1]
-    Q, R, piv = _qr(A, pivoting=True, overwrite_a=True, check_finite=False)
+    Q, R, piv = _qr(A, pivoting=True, overwrite_a=False, check_finite=False)
     R_diag = np.abs(np.diag(R[: min(n_eq, n_cols), :]))
     rank = int(np.sum(R_diag > rank_tol))
     return Q, R, piv, rank
@@ -92,24 +98,25 @@ def project_eq_elim(
             (None ⇒ all rows are equalities, legacy semantics).
         ng_base: target number of continuous generators to keep. If
             ``ng_free <= ng_base`` after QR, returns input unchanged
-            (already small enough). If ``ng_free > ng_base``, the
-            ``ng_free - ng_base`` lowest-L2-norm continuous generators
-            are merged into a single box column. If ``None``, no
-            elimination is performed and the input is returned
-            unchanged (matches HyZor's ``ng_base=None`` early-exit).
+            (already small enough). If ``ng_free > ng_base`` and an
+            independent per-output slack block reduces the column count,
+            low-L2-norm generators are over-approximated by that diagonal
+            slack. Otherwise the exact post-QR columns are retained. If
+            ``None``, no elimination is performed and the input is returned.
         rank_tol: numerical threshold for non-zero R diagonals.
 
     Returns:
-        A new HZono with: (a) at most ``ng_base + 1`` continuous
-        generators (or original ``ng - rank`` if no merge needed);
+        A new HZono with: (a) either ``ng_base + dim`` continuous
+        generators after sound diagonal-slack reduction, or the exact
+        ``ng - rank`` post-QR generators when reducing would expand;
         (b) original binary generators preserved with constant
         corrections; (c) ``2*rank`` new inequality rows enforcing
         ``xi_dep in [-1, +1]``; (d) pre-existing inequality rows
         substituted in. Output ``eq_mask`` marks all new rows as
         inequalities.
 
-    Semantics matches HyZor ``HybridZonotope.project_eq_elim``
-    (HZ.py:5129) exactly.
+    This keeps HyZor's QR elimination structure while using independent
+    diagonal slack for sound order reduction.
     """
     nc = int(hz.b.shape[0])
     ng = int(hz.Gc.shape[1])
@@ -201,55 +208,96 @@ def project_eq_elim(
         Ab_le_remap = np.zeros((0, nb))
         b_le_remap = np.zeros(0)
 
-    # Merge low-L2-norm continuous free generators into a single box
-    # generator. Binaries are NEVER merged.
+    # Merge low-L2-norm continuous free generators into INDEPENDENT
+    # per-output box generators (diagonal slack). Binaries are NEVER merged.
+    #
+    # Soundness note: collapsing the merged columns into a single shared
+    # box column (n,1) introduces artificial positive correlation across
+    # outputs — picking the box gen large pushes all outputs together —
+    # which strictly shrinks the set in opposing directions. A diagonal
+    # slack (n new gens, one per output, each independent ξ ∈ [-1,+1])
+    # preserves the sound L1 over-approximation per output without any
+    # cross-output correlation.
+    #
+    # Skip-merge guard: diagonal slack adds n_out columns per call. If
+    # n_out >= (ng_free - keep_count) we're expanding the generator count,
+    # not reducing it — and at high n_out the dense diagonal cost is
+    # O(n_out^2) (n=25088 → ~5 GiB just for Gc). Return the post-QR HZ
+    # without merging; the eq elim itself already gave a sound smaller
+    # representation in equality-rank.
+    n_out = int(Gc_red.shape[0])
     norms = np.linalg.norm(Gc_red, axis=0)  # (ng_free,)
     keep_count = min(ng_base, ng_free - 1)
     if keep_count < 1:
         keep_count = 1
-    order = np.argsort(-norms)
-    keep_idx = order[:keep_count]
-    merge_idx = order[keep_count:]
+    n_to_merge_target = ng_free - keep_count
 
-    Gc_keep = Gc_red[:, keep_idx]               # (n, keep_count)
-    Gc_merge = Gc_red[:, merge_idx]             # (n, ng_free - keep_count)
-    # Box column = L1 widening of merged columns.
-    box_col = np.abs(Gc_merge).sum(axis=1, keepdims=True)  # (n, 1)
-    Gc_new = np.concatenate([Gc_keep, box_col], axis=1)    # (n, keep+1)
-    ng_new = keep_count + 1
-
-    # Remap box ineq rows: split free cols into keep/merge.
-    A_box_ub_keep = A_box_ub_free[:, keep_idx]
-    A_box_ub_merge = A_box_ub_free[:, merge_idx]
-    A_box_lb_keep = A_box_lb_free[:, keep_idx]
-    A_box_lb_merge = A_box_lb_free[:, merge_idx]
-
-    # New box-column has zero coefficient in dep-box rows (the box gen
-    # is independent of any prior factor).
-    box_zero_col = np.zeros((rank, 1))
-    A_box_ub_new_cont = np.concatenate(
-        [A_box_ub_keep, box_zero_col], axis=1
-    )  # (rank, ng_new)
-    A_box_lb_new_cont = np.concatenate(
-        [A_box_lb_keep, box_zero_col], axis=1
-    )
-
-    # The merged cols contribute |A_box_*_merge| @ 1 widening to b.
-    b_box_ub_widened = b_box_ub + np.abs(A_box_ub_merge).sum(axis=1)
-    b_box_lb_widened = b_box_lb + np.abs(A_box_lb_merge).sum(axis=1)
-
-    # Remap pre-existing le rows likewise.
-    if n_le > 0:
-        Ac_le_keep = Ac_le_remap_free[:, keep_idx]
-        Ac_le_merge = Ac_le_remap_free[:, merge_idx]
-        box_zero_le = np.zeros((n_le, 1))
-        Ac_le_new_cont = np.concatenate(
-            [Ac_le_keep, box_zero_le], axis=1
-        )  # (n_le, ng_new)
-        b_le_widened = b_le_remap + np.abs(Ac_le_merge).sum(axis=1)
+    if n_to_merge_target <= n_out:
+        # No-merge fast path: when n_to_merge_target <= n_out, the diagonal
+        # slack would ADD more columns than it removes — not a reduction.
+        # Plus the dense diag is O(n_out^2) which OOMs at n=25088 (~5 GiB).
+        # Skip the merge entirely; PEE's equality elimination already gave
+        # a sound smaller representation.
+        Gc_new = Gc_red                                    # (n, ng_free)
+        ng_new = ng_free
+        A_box_ub_new_cont = A_box_ub_free                  # (rank, ng_free)
+        A_box_lb_new_cont = A_box_lb_free
+        b_box_ub_widened = b_box_ub                        # no widening needed
+        b_box_lb_widened = b_box_lb
+        if n_le > 0:
+            Ac_le_new_cont = Ac_le_remap_free              # (n_le, ng_free)
+            b_le_widened = b_le_remap
+        else:
+            Ac_le_new_cont = np.zeros((0, ng_new))
+            b_le_widened = np.zeros(0)
     else:
-        Ac_le_new_cont = np.zeros((0, ng_new))
-        b_le_widened = np.zeros(0)
+        order = np.argsort(-norms)
+        keep_idx = order[:keep_count]
+        merge_idx = order[keep_count:]
+
+        Gc_keep = Gc_red[:, keep_idx]               # (n, keep_count)
+        Gc_merge = Gc_red[:, merge_idx]             # (n, ng_free - keep_count)
+        # Diagonal slack: one independent box gen per output dim.
+        box_widths = np.abs(Gc_merge).sum(axis=1)   # (n,)
+        box_diag = np.diag(box_widths)              # (n, n)
+        Gc_new = np.concatenate([Gc_keep, box_diag], axis=1)    # (n, keep + n)
+        ng_new = keep_count + n_out
+
+        # Remap box ineq rows: split free cols into keep/merge.
+        A_box_ub_keep = A_box_ub_free[:, keep_idx]
+        A_box_ub_merge = A_box_ub_free[:, merge_idx]
+        A_box_lb_keep = A_box_lb_free[:, keep_idx]
+        A_box_lb_merge = A_box_lb_free[:, merge_idx]
+
+        # New box gens are independent of any prior factor: zero coefficient
+        # in dep-box rows. (rank, n) zeros instead of (rank, 1) shared col.
+        box_zero_col = np.zeros((rank, n_out))
+        A_box_ub_new_cont = np.concatenate(
+            [A_box_ub_keep, box_zero_col], axis=1
+        )  # (rank, ng_new)
+        A_box_lb_new_cont = np.concatenate(
+            [A_box_lb_keep, box_zero_col], axis=1
+        )
+
+        # Merged cols still contribute |A_box_*_merge| @ 1 widening to b
+        # (the box gens enter the y-coords directly; the dep-box rows still
+        # need this slack since they constrain the same xi_dep values).
+        b_box_ub_widened = b_box_ub + np.abs(A_box_ub_merge).sum(axis=1)
+        b_box_lb_widened = b_box_lb + np.abs(A_box_lb_merge).sum(axis=1)
+
+        # Remap pre-existing le rows likewise — n zero cols for the diagonal
+        # slack since pre-existing rows don't reference the new box gens.
+        if n_le > 0:
+            Ac_le_keep = Ac_le_remap_free[:, keep_idx]
+            Ac_le_merge = Ac_le_remap_free[:, merge_idx]
+            box_zero_le = np.zeros((n_le, n_out))
+            Ac_le_new_cont = np.concatenate(
+                [Ac_le_keep, box_zero_le], axis=1
+            )  # (n_le, ng_new)
+            b_le_widened = b_le_remap + np.abs(Ac_le_merge).sum(axis=1)
+        else:
+            Ac_le_new_cont = np.zeros((0, ng_new))
+            b_le_widened = np.zeros(0)
 
     # Assemble all post-elim inequality rows: 2*rank box rows + n_le
     # pre-existing rows, all sharing the same [xi_free_kept; xi_box; xi_b]
@@ -277,8 +325,8 @@ def project_eq_elim(
     out = HZono(c=c_out, Gc=Gc_out, Gb=Gb_out,
                  Ac=Ac_out, Ab=Ab_out, b=b_out,
                  eq_mask=eq_mask_out)
-    # _base_ng tracking: output ng = keep_count + 1 (may have shrunk). Mirror
-    # HyZor HybridZonotope.project_eq_elim where _base_ng = min(input, ng_new).
+    # Track the surviving shared base block after either exact post-QR
+    # elimination or diagonal-slack widening.
     from act.back_end.solver.solver_hz import _propagate_base
     _propagate_base(hz, out)
     return out

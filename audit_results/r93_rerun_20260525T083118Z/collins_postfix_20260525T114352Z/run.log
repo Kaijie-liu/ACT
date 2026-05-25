@@ -1,0 +1,59 @@
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: NN_rul_small_window_20.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [5, 1, 5, 1]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 5, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (5, 1, 5, 1)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+WARNING:act.front_end.vnnlib_loader.data_model_loader:Shape-matched parse failed (Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_2perturbations_delta5_epsilon10_w20.vnnlib: Input size mismatch: got 400 values but expected 25 from shape (5, 1, 5, 1)); retrying with shape probe...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 400 inputs, 1 outputs, type=safety
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Shape probe succeeded: reshaped to (1, 1, 20, 20)
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 400 inputs, 1 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_rul_cnn_2022'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed robustness_2perturbations_delta5_epsilon10_w20.vnnlib: 2 query(ies)
+[0;93m2026-05-25 11:43:54.272343531 [W:onnxruntime:, graph.cc:1362 Graph] Initializer conv_1_W appears in graph inputs and will not be treated as constant value/weight. This may prevent some of the graph optimizations, like const folding. Move it out of graph inputs if there is no need to override it, by either re-generating the model with latest exporter/converter or with the tool onnxruntime/tools/python/remove_initializer_from_input.py.[m
+[0;93m2026-05-25 11:43:54.272378122 [W:onnxruntime:, graph.cc:1362 Graph] Initializer conv_1_B appears in graph inputs and will not be treated as constant value/weight. This may prevent some of the graph optimizations, like const folding. Move it out of graph inputs if there is no need to override it, by either re-generating the model with latest exporter/converter or with the tool onnxruntime/tools/python/remove_initializer_from_input.py.[m
+[0;93m2026-05-25 11:43:54.272382744 [W:onnxruntime:, graph.cc:1362 Graph] Initializer conv_2_W appears in graph inputs and will not be treated as constant value/weight. This may prevent some of the graph optimizations, like const folding. Move it out of graph inputs if there is no need to override it, by either re-generating the model with latest exporter/converter or with the tool onnxruntime/tools/python/remove_initializer_from_input.py.[m
+[0;93m2026-05-25 11:43:54.272386238 [W:onnxruntime:, graph.cc:1362 Graph] Initializer conv_2_B appears in graph inputs and will not be treated as constant value/weight. This may prevent some of the graph optimizations, like const folding. Move it out of graph inputs if there is no need to override it, by either re-generating the model with latest exporter/converter or with the tool onnxruntime/tools/python/remove_initializer_from_input.py.[m
+[0;93m2026-05-25 11:43:54.272389010 [W:onnxruntime:, graph.cc:1362 Graph] Initializer conv_3_W appears in graph inputs and will not be treated as constant value/weight. This may prevent some of the graph optimizations, like const folding. Move it out of graph inputs if there is no need to override it, by either re-generating the model with latest exporter/converter or with the tool onnxruntime/tools/python/remove_initializer_from_input.py.[m
+[0;93m2026-05-25 11:43:54.272397046 [W:onnxruntime:, graph.cc:1362 Graph] Initializer conv_3_B appears in graph inputs and will not be treated as constant value/weight. This may prevent some of the graph optimizations, like const folding. Move it out of graph inputs if there is no need to override it, by either re-generating the model with latest exporter/converter or with the tool onnxruntime/tools/python/remove_initializer_from_input.py.[m
+[0;93m2026-05-25 11:43:54.272400033 [W:onnxruntime:, graph.cc:1362 Graph] Initializer conv_4_W appears in graph inputs and will not be treated as constant value/weight. This may prevent some of the graph optimizations, like const folding. Move it out of graph inputs if there is no need to override it, by either re-generating the model with latest exporter/converter or with the tool onnxruntime/tools/python/remove_initializer_from_input.py.[m
+[0;93m2026-05-25 11:43:54.272403825 [W:onnxruntime:, graph.cc:1362 Graph] Initializer conv_4_B appears in graph inputs and will not be treated as constant value/weight. This may prevent some of the graph optimizations, like const folding. Move it out of graph inputs if there is no need to override it, by either re-generating the model with latest exporter/converter or with the tool onnxruntime/tools/python/remove_initializer_from_input.py.[m
+[0;93m2026-05-25 11:43:54.272407076 [W:onnxruntime:, graph.cc:1362 Graph] Initializer fc_1_W appears in graph inputs and will not be treated as constant value/weight. This may prevent some of the graph optimizations, like const folding. Move it out of graph inputs if there is no need to override it, by either re-generating the model with latest exporter/converter or with the tool onnxruntime/tools/python/remove_initializer_from_input.py.[m
+[0;93m2026-05-25 11:43:54.272410420 [W:onnxruntime:, graph.cc:1362 Graph] Initializer fc_1_B appears in graph inputs and will not be treated as constant value/weight. This may prevent some of the graph optimizations, like const folding. Move it out of graph inputs if there is no need to override it, by either re-generating the model with latest exporter/converter or with the tool onnxruntime/tools/python/remove_initializer_from_input.py.[m
+[0;93m2026-05-25 11:43:54.272413794 [W:onnxruntime:, graph.cc:1362 Graph] Initializer fc_2_W appears in graph inputs and will not be treated as constant value/weight. This may prevent some of the graph optimizations, like const folding. Move it out of graph inputs if there is no need to override it, by either re-generating the model with latest exporter/converter or with the tool onnxruntime/tools/python/remove_initializer_from_input.py.[m
+[0;93m2026-05-25 11:43:54.272417142 [W:onnxruntime:, graph.cc:1362 Graph] Initializer fc_2_B appears in graph inputs and will not be treated as constant value/weight. This may prevent some of the graph optimizations, like const folding. Move it out of graph inputs if there is no need to override it, by either re-generating the model with latest exporter/converter or with the tool onnxruntime/tools/python/remove_initializer_from_input.py.[m
+[ACT] Auto-detecting project root: .
+[ACT] Gurobi license found: modules/gurobi/gurobi.lic
+✅ Device Manager Initialized: device=cpu, dtype=torch.float64
+
+================================================================================
+ACT: Abstract Constraint Transformer
+Inference-based whitebox fuzzing for neural network verification
+================================================================================
+
+
+================================================================================
+VERIFICATION TEST: VNNLIB → VerifiableModel → verify_once
+================================================================================
+
+[vnnlib] category=collins_rul_cnn_2022 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cpu, timeout=30.0s)
+  [  1/1] collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx@vnnlib/robustness_2perturbations_delta5_epsilon10_w20.vnnlib: FALSIFIED (0.2s)  V=0 A=1 U=0 E=0  R=0
+
+[vnnlib/hybridz] FINAL — total=1 wall=0.0 min
+  FALSIFIED    1
+  [structured] per-instance log → /data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/collins_postfix_20260525T114352Z/per_instance_collins_rul_cnn_2022_20260525T014354279771Z.json
+
+================================================================================
+VERIFICATION TEST SUMMARY
+================================================================================
+  ✅ vnnlib                    PASSED
+================================================================================
+

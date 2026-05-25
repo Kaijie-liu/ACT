@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "benchmark": "lsnc_relu",
+  "formal_mode": false,
+  "timestamp_utc": "20260525T053702932764Z",
+  "canonical_root": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks",
+  "receipt_dir": null,
+  "wall_min": 0.002570144335428874,
+  "counts": {
+    "CERTIFIED": 0,
+    "FALSIFIED": 0,
+    "UNKNOWN": 0,
+    "ERROR": 1
+  },
+  "run_status": "FAILED",
+  "per_instance": [
+    {
+      "official_instance_id": 0,
+      "benchmark": "lsnc_relu",
+      "onnx_model": "onnx/relu_quadrotor2d_state.onnx",
+      "vnnlib_spec": "vnnlib/quadrotor2d_state_0.vnnlib",
+      "model_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/lsnc_relu/onnx/relu_quadrotor2d_state.onnx",
+      "spec_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/lsnc_relu/vnnlib/quadrotor2d_state_0.vnnlib",
+      "internal_status": "ERROR",
+      "reportable_status": "ERROR",
+      "cli_normalized": "ERROR_RuntimeError",
+      "count_bucket": "ERROR",
+      "queries": [],
+      "q_statuses": [],
+      "q_reportables": [],
+      "q_receipts": [],
+      "error": "RuntimeError: shape '[1, 1, 6]' is invalid for input of size 2",
+      "wall_s": 0.15418553352355957
+    }
+  ]
+}

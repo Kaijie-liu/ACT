@@ -95,6 +95,7 @@ from act.back_end.hybridz_tf.tf_cnn import (
 )
 from act.back_end.hybridz_tf.algorithms.relu_methods import (
     hz_apply_relu_triangle, hz_apply_relu_compact, hz_apply_relu_bigM_fast,
+    hz_apply_relu_convex_hull, hz_apply_relu_selective_chull,
 )
 
 
@@ -241,8 +242,11 @@ def hz_add_const(hz, c):
         return hz.with_add_const(c_t)
     if isinstance(hz, SparseGcZ):
         c_t = torch.as_tensor(c, dtype=hz.dtype, device=hz.device).flatten()
-        return SparseGcZ(c=hz.c + c_t, Gc_sparse=hz.Gc_sparse,
-                         dtype=hz.dtype, device=hz.device)
+        return SparseGcZ(
+            c=hz.c + c_t, Gc_sparse=hz.Gc_sparse,
+            dtype=hz.dtype, device=hz.device,
+            Ac_sparse=hz.Ac_sparse, b=hz.b, eq_mask=hz.eq_mask,
+        )
     return _propagate_base_any(hz, _hz_add_const_native(hz, c))
 
 
@@ -402,6 +406,21 @@ def _hzono_tight_bounds(hz):
     return lb.flatten(), ub.flatten()
 
 
+def _sparse_relu_with_optional_cuts(hz: SparseGcZ):
+    """Apply sparse triangle, optionally preserving selective hull facets."""
+    from act.back_end.hybridz_tf.algorithms.relu_methods import (
+        get_chull_mask_for_current_relu,
+    )
+    mask = get_chull_mask_for_current_relu()
+    k_sel = int(os.environ.get("ACT_HZ_EARLY_SELECTIVE_K", "0") or "0")
+    if mask is not None or k_sel > 0:
+        return hz.apply_relu_selective_chull(
+            chull_mask=mask,
+            top_k=(None if mask is not None else k_sel),
+        )
+    return hz.apply_relu_triangle()
+
+
 def hz_apply_relu_v8(hz, *, method: str = "eq_lagr_v8"):
     """HZ ReLU dispatch by representation flavor.
 
@@ -417,14 +436,17 @@ def hz_apply_relu_v8(hz, *, method: str = "eq_lagr_v8"):
         else:
             sparse = hz.to_sparse_gc_hz()
             if sparse is not None:
-                return sparse.apply_relu_triangle()
+                return _sparse_relu_with_optional_cuts(sparse)
             box = hz.snapshot_to_box()
             relu_lb = torch.clamp(box.lb, min=0.0)
             relu_ub = torch.clamp(box.ub, min=0.0)
             return _make_or_box(relu_lb, relu_ub,
                                 dtype=hz.dtype, device=hz.device)
     if isinstance(hz, SparseGcZ):
-        return hz.apply_relu_triangle()
+        # Keep early selective facets in sparse factor coordinates. Previous
+        # experiments densified Gc just to add a few rows, consuming tens of
+        # GiB and changing downstream routing before the cuts could pay off.
+        return _sparse_relu_with_optional_cuts(hz)
     if isinstance(hz, BoxHZ):
         relu_lb = torch.clamp(hz.lb, min=0.0)
         relu_ub = torch.clamp(hz.ub, min=0.0)
@@ -432,15 +454,30 @@ def hz_apply_relu_v8(hz, *, method: str = "eq_lagr_v8"):
                             dtype=hz.dtype, device=hz.device)
 
     # HZono: method-specific dispatch. Mirrors HyZor's HybridZReLU but
-    # uses ACT's parity-tested encodings. Memory pre-check is the same.
+    # uses ACT's parity-tested encodings. Memory pre-check is method-
+    # specific so that compact encodings (chull / triangle) are not
+    # rerouted to looser DeepZ when the eq_native budget alone would
+    # have overflowed.
     n = int(hz.c.shape[0])
     ng = int(hz.Gc.shape[1])
     nb = int(hz.Gb.shape[1])
     nc = int(hz.b.shape[0])
     k_max = n
-    new_ng = ng + 4 * k_max
-    new_nb = nb + k_max
-    new_nc = nc + 3 * k_max
+    if method in ("convex_hull_cont", "chull_cont", "chull"):
+        # chull: +1 cont, 0 binary, +2 ineq per unstable.
+        new_ng = ng + k_max
+        new_nb = nb
+        new_nc = nc + 2 * k_max
+    elif method == "triangle":
+        # DeepZ parallelogram: +1 cont, 0 binary, 0 rows.
+        new_ng = ng + k_max
+        new_nb = nb
+        new_nc = nc
+    else:
+        # eq_native (default): +4 cont, +1 binary, +3 eq per unstable.
+        new_ng = ng + 4 * k_max
+        new_nb = nb + k_max
+        new_nc = nc + 3 * k_max
     bytes_per = 8
     peak = (n * new_ng + n * new_nb + new_nc * (new_ng + new_nb)) * bytes_per * 3
 
@@ -448,6 +485,8 @@ def hz_apply_relu_v8(hz, *, method: str = "eq_lagr_v8"):
     budget_bytes = int(budget_gb * (1024 ** 3))
 
     if peak > budget_bytes:
+        # Even the requested encoding overflows budget: downgrade to
+        # DeepZ triangle (the cheapest sound encoding we have).
         try:
             return hz_apply_relu_triangle(hz)
         except Exception:
@@ -548,6 +587,70 @@ def hz_apply_relu_v8(hz, *, method: str = "eq_lagr_v8"):
             return _propagate_base_any(hz, hz_apply_relu_compact(hz))
         if method in ("bigM", "bigM_fast", "exact_box"):
             return _propagate_base_any(hz, hz_apply_relu_bigM_fast(hz))
+        if method in ("selective_chull", "sel_chull"):
+            # Property-directed top-K chull on top of DeepZ triangle.
+            # K from ACT_HZ_SELECTIVE_K (default 32). Mask is width-based
+            # (top-K unstable by ub-lb) OR property-directed dual mask if
+            # the registry has one for the current relu_idx.
+            # Bounds-cascade like eq_lagr_v8.
+            from act.back_end.hybridz_tf.algorithms.relu_methods import (
+                get_chull_mask_for_current_relu,
+            )
+            _dual_mask_late = get_chull_mask_for_current_relu()
+            from act.back_end.hybridz_tf.algorithms.bounds_tighten import (
+                hz_intersect_box,
+            )
+            from act.back_end.hybridz_tf.algorithms.v8_memaware import (
+                get_v8_mem_budget_bytes as _v8_budget,
+                estimate_intersect_box_peak_bytes as _v8_est_ib,
+            )
+            k_sel = int(os.environ.get("ACT_HZ_SELECTIVE_K", "32") or "32")
+            lb_t, ub_t = _hzono_tight_bounds(hz)
+            skip_intersect = False
+            budget_b = _v8_budget(hz)
+            if budget_b is not None and int(hz.b.shape[0]) > 0:
+                elem_now = 8 if hz.c.dtype == torch.float64 else 4
+                est_ib = _v8_est_ib(hz, elem_now)
+                if est_ib > int(0.55 * budget_b):
+                    skip_intersect = True
+            hz_clipped = (hz_intersect_box(hz, lb_t, ub_t)
+                          if (int(hz.b.shape[0]) > 0 and not skip_intersect)
+                          else hz)
+            hz_after = hz_apply_relu_selective_chull(
+                hz_clipped,
+                top_k=(k_sel if _dual_mask_late is None else None),
+                chull_mask=_dual_mask_late,
+                external_bounds=(lb_t, ub_t),
+            )
+            return _propagate_base_any(hz, hz_after)
+        if method in ("convex_hull_cont", "chull_cont", "chull"):
+            # Continuous-only convex-hull ReLU. Goes through the same
+            # bounds-cascade + intersect_box as eq_lagr_v8 so the
+            # stable/unstable classification uses LP-tight bounds (not
+            # loose box bounds). Skips binary_probe (no binaries) and
+            # PEE (chull adds only inequalities, no new equalities).
+            from act.back_end.hybridz_tf.algorithms.bounds_tighten import (
+                hz_intersect_box,
+            )
+            from act.back_end.hybridz_tf.algorithms.v8_memaware import (
+                get_v8_mem_budget_bytes as _v8_budget,
+                estimate_intersect_box_peak_bytes as _v8_est_ib,
+            )
+            lb_t, ub_t = _hzono_tight_bounds(hz)
+            skip_intersect = False
+            budget_b = _v8_budget(hz)
+            if budget_b is not None and int(hz.b.shape[0]) > 0:
+                elem_now = 8 if hz.c.dtype == torch.float64 else 4
+                est_ib = _v8_est_ib(hz, elem_now)
+                if est_ib > int(0.55 * budget_b):
+                    skip_intersect = True
+            hz_clipped = (hz_intersect_box(hz, lb_t, ub_t)
+                          if (int(hz.b.shape[0]) > 0 and not skip_intersect)
+                          else hz)
+            hz_after = hz_apply_relu_convex_hull(
+                hz_clipped, external_bounds=(lb_t, ub_t)
+            )
+            return _propagate_base_any(hz, hz_after)
         # Unknown method → exact (eq_native).
         return _propagate_base_any(hz, hz_apply_relu(hz))
     except (ValueError, AssertionError):

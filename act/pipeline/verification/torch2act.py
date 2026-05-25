@@ -565,6 +565,7 @@ class _LayerGraphBuilder:
             nn.Flatten: self._convert_flatten,
             nn.Linear: self._convert_linear,
             nn.ReLU: lambda m: self._convert_activation(m, LayerKind.RELU),
+            nn.Conv1d: self._convert_conv1d,
             nn.Conv2d: self._convert_conv2d,
             nn.ConvTranspose2d: self._convert_conv_transpose2d,
             nn.MaxPool2d: self._convert_pool2d,
@@ -648,6 +649,41 @@ class _LayerGraphBuilder:
         self.shape = (1, out_features)
         self.prev_out = out_vars
     
+    def _convert_conv1d(self, mod: nn.Conv1d) -> None:
+        """Convert nn.Conv1d — mirrors _convert_conv2d but for 1D temporal
+        convs (nn4sys pensieve_*_parallel uses Conv1d on (B, C, L) input)."""
+        weight = mod.weight.detach()
+        bias = mod.bias.detach() if mod.bias is not None else None
+
+        # Infer input shape if previous layer was flat (B, C*L).
+        if len(self.shape) == 2:
+            n_features = self.shape[1]
+            channels = mod.in_channels
+            spatial = n_features // channels
+            input_shape = (1, channels, spatial)
+        else:
+            input_shape = self.shape
+
+        _, in_c, in_l = input_shape
+        out_c = mod.out_channels
+        out_l = (in_l + 2 * mod.padding[0] - mod.dilation[0] * (mod.kernel_size[0] - 1) - 1) // mod.stride[0] + 1
+        output_shape = (1, out_c, out_l)
+
+        params = {
+            "weight": weight,
+            "input_shape": input_shape, "output_shape": output_shape,
+            "kernel_size": mod.kernel_size, "stride": mod.stride,
+            "padding": mod.padding, "dilation": mod.dilation,
+            "groups": mod.groups, "in_channels": in_c, "out_channels": out_c,
+        }
+        if bias is not None:
+            params["bias"] = bias
+
+        out_vars = self._alloc_ids(out_c * out_l)
+        self._add_layer(LayerKind.CONV1D.value, params, self.prev_out, out_vars)
+        self.shape = output_shape
+        self.prev_out = out_vars
+
     def _convert_conv2d(self, mod: nn.Conv2d) -> None:
         """Convert nn.Conv2d."""
         weight = mod.weight.detach()
@@ -705,6 +741,9 @@ class _LayerGraphBuilder:
 
         params = {
             "weight": weight,
+            "in_channels": in_c,
+            "out_channels": out_c,
+            "kernel_size": mod.kernel_size,
             "stride": st, "padding": pad, "dilation": dil, "groups": mod.groups,
             "output_padding": op,
             "input_shape": self.shape, "output_shape": output_shape,
@@ -1046,8 +1085,12 @@ class _LayerGraphBuilder:
 
 # Bind ONNX handlers from utils.py onto the class. They live there only to keep
 # this file manageable; ``self`` inside each handler is a _LayerGraphBuilder.
+# Use the dict key (the onnx2torch class name) for the method suffix so the
+# dispatch in _handle_call_module finds it. Multiple keys may map to the same
+# handler — e.g. OnnxSplit and OnnxSplit13 share _convert_OnnxSplit13 because
+# the underlying decomposition is identical once split_sizes is resolved.
 for _cls_name, _fn in ONNX_HANDLERS.items():
-    setattr(_LayerGraphBuilder, _fn.__name__, _fn)
+    setattr(_LayerGraphBuilder, f'_convert_{_cls_name}', _fn)
 del _cls_name, _fn
 
 

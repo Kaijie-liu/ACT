@@ -46,24 +46,39 @@ def tf_conv2d(L: Layer, Bin: Bounds) -> Fact:
     out_channels, in_channels_per_group, kernel_h, kernel_w = weight.shape
     in_channels = in_channels_per_group * groups
     
-    # Get ACTUAL input size from bounds (not metadata - metadata may be wrong!)
+    # Get ACTUAL input size from bounds; cross-check with metadata when present.
     B_in = Bin.lb.shape[0]
     actual_input_size = Bin.lb[0].numel()
-    
-    # Infer spatial dimensions from actual input size
-    spatial_size = actual_input_size // in_channels
-    in_h = in_w = int(spatial_size ** 0.5)  # Assume square initially
-    
-    # Verify and adjust if needed
-    if in_h * in_w * in_channels != actual_input_size:
-        # Try to find correct rectangular dimensions
-        for h in range(int(spatial_size ** 0.5) + 10, 0, -1):
-            if spatial_size % h == 0:
-                in_h = h
-                in_w = spatial_size // h
-                if in_h * in_w * in_channels == actual_input_size:
-                    break
-    
+
+    # Prefer the converter-stamped input_shape (correct H/W and orientation).
+    # The earlier "infer from numel" path tried perfect-square first and then
+    # the first factor in a descending range, which for non-square chains
+    # like collins_rul_cnn_2022 (H,W=20) silently TRANSPOSES the spatial dims
+    # at the first non-square layer (conv_2 (B,5,16,20) → (B,5,20,16)) and
+    # cascades to fc_1 landing on (21,8) instead of (6,20). Trust metadata
+    # when its per-sample numel matches; only fall back to inference when
+    # the converter genuinely lacks a 4D shape or it is stale.
+    in_h = in_w = None
+    shape_meta = L.params.get("input_shape")
+    if shape_meta is not None and len(shape_meta) == 4:
+        meta_c, meta_h, meta_w = int(shape_meta[1]), int(shape_meta[2]), int(shape_meta[3])
+        if meta_c == in_channels and meta_c * meta_h * meta_w == actual_input_size:
+            in_h, in_w = meta_h, meta_w
+
+    if in_h is None:
+        spatial_size = actual_input_size // in_channels
+        sqrt_s = int(spatial_size ** 0.5)
+        if sqrt_s * sqrt_s == spatial_size:
+            in_h = in_w = sqrt_s
+        else:
+            in_h = in_w = sqrt_s
+            for h in range(sqrt_s + 10, 0, -1):
+                if spatial_size % h == 0:
+                    in_h = h
+                    in_w = spatial_size // h
+                    if in_h * in_w * in_channels == actual_input_size:
+                        break
+
     input_shape = (B_in, in_channels, in_h, in_w)
     
     # Compute output dimensions using standard conv formula
