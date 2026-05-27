@@ -1,0 +1,728 @@
+[0;93m2026-05-26 17:36:51.591679974 [W:onnxruntime:Default, device_discovery.cc:283 GetGpuDevices] Failed to detect devices under "/sys/class/drm/card0": device_discovery.cc:93 ReadFileContents Failed to open file: "/sys/class/drm/card0/device/vendor"[m
+INFO     17:36:52     [tensor_storage.py:70] Hugepage enabled for branch-and-bound domains.
+Configurations:
+
+general:
+  device: cuda
+  seed: 100
+  conv_mode: patches
+  deterministic: false
+  double_fp: false
+  loss_reduction_func: max
+  sparse_alpha: true
+  sparse_interm: true
+  save_adv_example: true
+  verify_onnxruntime_output: false
+  eval_adv_example: false
+  onnx_adv_example: false
+  show_adv_example: false
+  precompile_jit: true
+  reset_seed_after_precompile: false
+  prepare_only: false
+  complete_verifier: bab
+  enable_incomplete_verification: true
+  csv_name: instances.csv
+  results_file: /data1/Kane/ACT/audit_results/abcrown_nopgd_20260525/vggnet16_2022/0011__vgg16-7__spec10_chainlink_fence.result
+  root_path: ../../vnncomp2023_benchmarks/benchmarks/vggnet16
+  deterministic_opt: false
+  graph_optimizer: 'Customized("custom_graph_optimizer", "maxpool_to_relu")'
+  buffer_has_batchdim: false
+  save_output: false
+  output_file: out.pkl
+  return_optimized_model: false
+  store_all_specs_on_cpu: false
+  adhoc_tuning: 'Customized("custom_adhoc_tuning", "customized_vggnet16_tuning")'
+model:
+  name: null
+  path: null
+  onnx_path: /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/vggnet16_2022/onnx/vgg16-7.onnx
+  onnx_path_prefix: ''
+  cache_onnx_conversion: true
+  debug_onnx: false
+  onnx_quirks: null
+  input_shape: null
+  onnx_loader: default_onnx_and_vnnlib_loader
+  onnx_optimization_flags: []
+  onnx_vnnlib_joint_optimization_flags: none
+  check_optimized: false
+  flatten_final_output: false
+  optimize_graph: null
+  with_jacobian: false
+data:
+  start: 0
+  end: 10000
+  select_instance: null
+  num_outputs: 10
+  mean: 0.0
+  std: 1.0
+  pkl_path: null
+  dataset: null
+  data_filter_path: null
+  data_idx_file: null
+specification:
+  type: lp
+  robustness_type: verified-acc
+  norm: .inf
+  epsilon: null
+  epsilon_min: 0.0
+  vnnlib_path: /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/vggnet16_2022/vnnlib/spec10_chainlink_fence.vnnlib
+  vnnlib_path_prefix: ''
+  shrink_eps: null
+  rhs_offset: null
+solver:
+  batch_size: 1
+  auto_enlarge_batch_size: false
+  batched_crown_auto_enlarge_max_vram_ratio: 0.9
+  min_batch_size_ratio: 0.1
+  use_float64_in_last_iteration: false
+  early_stop_patience: 10
+  start_save_best: 0.5
+  bound_prop_method: dynamic-forward+backward
+  init_bound_prop_method: same
+  prune_after_crown: true
+  optimize_disjuncts_separately: false
+  build_batch_size: 1000000
+  skip_with_refined_bound: true
+  forward_before_compute_bounds: false
+  crown:
+    batch_size: 64
+    max_crown_size: 1000000000
+    activation_bound_option: adaptive
+    compare_crown_with_ibp: false
+  alpha-crown:
+    alpha: true
+    lr_alpha: 0.1
+    iteration: 100
+    share_alphas: false
+    lr_decay: 0.98
+    full_conv_alpha: true
+    max_coeff_mul: .inf
+    matmul_share_alphas: false
+    disable_optimization: []
+    max_time: 1.0
+    alpha_dtype: float16
+  invprop:
+    apply_output_constraints_to: []
+    tighten_input_bounds: false
+    best_of_oc_and_no_oc: false
+    directly_optimize: []
+    oc_lr: 0.1
+    share_gammas: false
+  beta-crown:
+    lr_alpha: 0.01
+    lr_beta: 0.05
+    lr_decay: 0.98
+    optimizer: adam
+    iteration: 10
+    beta: true
+    beta_warmup: true
+    enable_opt_interm_bounds: false
+    all_node_split_LP: false
+  forward:
+    refine: false
+    max_dim: 100
+    reset_threshold: 1.0
+  intermediate_refinement:
+    enabled: false
+    batch_size: 10
+    opt_coeffs: false
+    opt_bias: false
+    lr: 0.05
+    layers: [-1]
+    max_domains: 1000
+  mip:
+    unstable_neuron_threshold: 0
+    parallel_solvers: null
+    solver_threads: 1
+    refine_neuron_timeout: 15
+    refine_neuron_time_percentage: 0.8
+    early_stop: true
+    adv_warmup: true
+    mip_solver: gurobi
+    skip_unsafe: false
+    topk_filter: 1.0
+    sliding_window: -1
+    extra_constraint: false
+    refine_neuron_timeout_increasement: 0
+    timeout_neuron_percentage: 0.3
+    remaining_timeout_threshold: 1
+    remove_unstable_neurons: false
+    lp_solver: false
+bab:
+  max_domains: .inf
+  decision_thresh: 0
+  timeout: 1200.0
+  timeout_scale: 1
+  max_iterations: -1
+  override_timeout: null
+  get_upper_bound: false
+  pruning_in_iteration: true
+  pruning_in_iteration_ratio: 0.2
+  sort_targets: false
+  batched_domain_list: true
+  optimized_interm: ''
+  interm_transfer: true
+  recompute_interm: false
+  sort_domain_interval: -1
+  vanilla_crown: false
+  tree_traversal: depth_first
+  hugetensor_allocator: true
+  cut:
+    enabled: false
+    cuts_path: null
+    implication: false
+    bab_cut: false
+    lp_cut: false
+    method: null
+    lr: 0.01
+    lr_decay: 1.0
+    iteration: 100
+    bab_iteration: -1
+    early_stop_patience: -1
+    lr_beta: 0.02
+    number_cuts: 50
+    topk_cuts_in_filter: 1000
+    batch_size_primal: 100
+    max_num: 1000000000
+    patches_cut: false
+    cplex_cuts: false
+    cplex_cuts_wait: 0
+    cplex_cuts_revpickup: true
+    cut_reference_bounds: true
+    fix_intermediate_bounds: false
+    _tmp_cuts: null
+    fixed_cuts: false
+    add_implied_cuts: false
+    add_input_cuts: false
+    biccos:
+      enabled: false
+      constraint_strengthening: true
+      recursively_strengthening: false
+      drop_ratio: 0.5
+      verified_bonus: 0.3
+      max_infer_iter: 20
+      max_domain: 10000.0
+      heuristic: neuron_influence_score
+      save_biccos_cuts: false
+      multi_tree_branching:
+        enabled: false
+        restore_best_tree: false
+        keep_n_best_domains: 1
+        k_splits: 1
+        iterations: 1
+  clip_n_verify:
+    rearrange_constraints: false
+    alpha_crown: false
+    prune: false
+    final_layer: false
+    clip_input_domain:
+      enabled: false
+      clip_type: relaxed
+      heuristic_K: 0.0
+      clip_iterations: 1
+      clip_calculate_volume_metrics: false
+    clip_interm_domain:
+      enabled: false
+      with_input: false
+      clip_in_alpha_crown: false
+      topk_objective: 0
+  branching:
+    method: sb
+    candidates: 3
+    reduceop: min
+    enable_intermediate_bound_opt: false
+    branching_input_and_activation: false
+    branching_input_and_activation_order: [input, relu]
+    branching_input_iterations: 30
+    branching_relu_iterations: 50
+    nonlinear_split:
+      method: bbps
+      disable: false
+      branching_point_method: uniform
+      num_branches: 2
+      filter: false
+      filter_beta: false
+      filter_clamp: false
+      filter_batch_size: 10000
+      filter_iterations: 25
+      relu_only: false
+      loose_tanh_threshold: null
+      branching_point:
+        db_path: branching_points.pt
+        num_iterations: 1000
+        batch_size: 1000000
+        range_l: -5.0
+        range_u: 5.0
+        log_interval: 100
+        step_size_1d: 0.01
+        step_size: 0.2
+    input_split:
+      split_hint: null
+      enable: true
+      reorder_bab: false
+      input_dim_threshold: 20
+      adv_check: 0
+      split_partitions: 2
+      sb_margin_weight: 1.0
+      sb_sum: false
+      sb_primary_spec: null
+      bf_backup_thresh: -1
+      bf_rhs_offset: 0
+      bf_iters: 1000000000.0
+      bf_batch_size: 100000
+      bf_zero_crossing_score: false
+      touch_zero_score: 0
+      ibp_enhancement: false
+      compare_with_old_bounds: true
+      update_rhs_with_attack: false
+      sb_coeff_thresh: 0.001
+      sort_index: null
+      sort_descending: true
+      show_progress: false
+      presplit_domains: null
+      skip_getting_worst_domain: false
+  attack:
+    enabled: false
+    beam_candidates: 8
+    beam_depth: 7
+    max_dive_fix_ratio: 0.8
+    min_local_free_ratio: 0.2
+    mip_start_iteration: 5
+    mip_timeout: 30.0
+    adv_pool_threshold: null
+    refined_mip_attacker: false
+    refined_batch_size: null
+attack:
+  general_attack: true
+  pgd_order: skip
+  pgd_steps: 100
+  pgd_restarts: 30
+  pgd_batch_size: 100000000
+  pgd_early_stop: true
+  pgd_lr_decay: 0.99
+  pgd_alpha: auto
+  pgd_alpha_scale: false
+  pgd_loss_mode: null
+  pgd_restart_when_stuck: false
+  enable_mip_attack: false
+  adv_saver: default_adv_saver
+  adv_verifier: default_adv_verifier
+  early_stop_condition: default_early_stop_condition
+  adv_example_finalizer: default_adv_example_finalizer
+  pgd_loss: default_pgd_loss
+  cex_path: ./test_cex.txt
+  attack_mode: PGD
+  attack_tolerance: 0.0
+  attack_func: attack_with_general_specs
+  gama_lambda: 10.0
+  gama_decay: 0.9
+  input_split:
+    pgd_steps: 100
+    pgd_restarts: 30
+    pgd_alpha: auto
+  input_split_check_adv:
+    enabled: auto
+    pgd_steps: 5
+    pgd_restarts: 5
+    pgd_alpha: auto
+    max_num_domains: 10
+debug:
+  view_model: false
+  lp_test: null
+  rescale_vnnlib_ptb: null
+  test_optimized_bounds: false
+  test_optimized_bounds_after_n_iterations: 0
+  print_verbose_decisions: false
+  sanity_check: null
+  save_minimal_config: null
+  save_minimal_config_omit_keys: []
+
+Experiments at Tue May 26 17:36:52 2026 on dell-pro-max-tower-t2
+Pre-compile jit kernels on a toy network...
+JIT kernels compiled in 1.2459s.
+Internal results will be saved to /data1/Kane/ACT/audit_results/abcrown_nopgd_20260525/vggnet16_2022/0011__vgg16-7__spec10_chainlink_fence.result.
+
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% idx: 0, vnnlib ID: 0 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Using onnx /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/vggnet16_2022/onnx/vgg16-7.onnx
+Using vnnlib /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/vggnet16_2022/vnnlib/spec10_chainlink_fence.vnnlib
+150528 inputs and 1000 outputs in vnnlib
+Loading cached onnx model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/vggnet16_2022/onnx/vgg16-7.onnx.cached
+Cached converted model loaded in 5.6053 seconds
+Finished vnnlib processing in 0.156120 seconds
+Number of perturbed inputs: 20
+torch allclose failed: norm 3.93642476410605e-05
+Model: BoundedModule(
+  (/input-1): BoundInput(name=/input-1, inputs=[], perturbed=True)
+  (/33): BoundParams(name=/33, inputs=[], perturbed=False)
+  (/34): BoundParams(name=/34, inputs=[], perturbed=False)
+  (/35): BoundParams(name=/35, inputs=[], perturbed=False)
+  (/36): BoundParams(name=/36, inputs=[], perturbed=False)
+  (/37): BoundParams(name=/37, inputs=[], perturbed=False)
+  (/38): BoundParams(name=/38, inputs=[], perturbed=False)
+  (/39): BoundParams(name=/39, inputs=[], perturbed=False)
+  (/40): BoundParams(name=/40, inputs=[], perturbed=False)
+  (/41): BoundParams(name=/41, inputs=[], perturbed=False)
+  (/42): BoundParams(name=/42, inputs=[], perturbed=False)
+  (/43): BoundParams(name=/43, inputs=[], perturbed=False)
+  (/44): BoundParams(name=/44, inputs=[], perturbed=False)
+  (/45): BoundParams(name=/45, inputs=[], perturbed=False)
+  (/46): BoundParams(name=/46, inputs=[], perturbed=False)
+  (/47): BoundParams(name=/47, inputs=[], perturbed=False)
+  (/48): BoundParams(name=/48, inputs=[], perturbed=False)
+  (/49): BoundParams(name=/49, inputs=[], perturbed=False)
+  (/50): BoundParams(name=/50, inputs=[], perturbed=False)
+  (/51): BoundParams(name=/51, inputs=[], perturbed=False)
+  (/52): BoundParams(name=/52, inputs=[], perturbed=False)
+  (/53): BoundParams(name=/53, inputs=[], perturbed=False)
+  (/54): BoundParams(name=/54, inputs=[], perturbed=False)
+  (/55): BoundParams(name=/55, inputs=[], perturbed=False)
+  (/56): BoundParams(name=/56, inputs=[], perturbed=False)
+  (/57): BoundParams(name=/57, inputs=[], perturbed=False)
+  (/58): BoundParams(name=/58, inputs=[], perturbed=False)
+  (/59): BoundParams(name=/59, inputs=[], perturbed=False)
+  (/60): BoundParams(name=/60, inputs=[], perturbed=False)
+  (/61): BoundParams(name=/61, inputs=[], perturbed=False)
+  (/62): BoundParams(name=/62, inputs=[], perturbed=False)
+  (/63): BoundParams(name=/63, inputs=[], perturbed=False)
+  (/64): BoundParams(name=/64, inputs=[], perturbed=False)
+  (/input): BoundConv(name=/input, inputs=[/input-1, /33, /34], perturbed=True)
+  (/input-4): BoundRelu(name=/input-4, inputs=[/input], perturbed=True)
+  (/input-8): BoundConv(name=/input-8, inputs=[/input-4, /35, /36], perturbed=True)
+  (/68): BoundRelu(name=/68, inputs=[/input-8], perturbed=True)
+  (/input-16): BoundConv(name=/input-16, inputs=[/input-12/conv_4, /37, /38], perturbed=True)
+  (/input-20): BoundRelu(name=/input-20, inputs=[/input-16], perturbed=True)
+  (/input-24): BoundConv(name=/input-24, inputs=[/input-20, /39, /40], perturbed=True)
+  (/73): BoundRelu(name=/73, inputs=[/input-24], perturbed=True)
+  (/input-32): BoundConv(name=/input-32, inputs=[/input-28/conv_4, /41, /42], perturbed=True)
+  (/input-36): BoundRelu(name=/input-36, inputs=[/input-32], perturbed=True)
+  (/input-40): BoundConv(name=/input-40, inputs=[/input-36, /43, /44], perturbed=True)
+  (/input-44): BoundRelu(name=/input-44, inputs=[/input-40], perturbed=True)
+  (/input-48): BoundConv(name=/input-48, inputs=[/input-44, /45, /46], perturbed=True)
+  (/80): BoundRelu(name=/80, inputs=[/input-48], perturbed=True)
+  (/input-56): BoundConv(name=/input-56, inputs=[/input-52/conv_4, /47, /48], perturbed=True)
+  (/input-60): BoundRelu(name=/input-60, inputs=[/input-56], perturbed=True)
+  (/input-64): BoundConv(name=/input-64, inputs=[/input-60, /49, /50], perturbed=True)
+  (/input-68): BoundRelu(name=/input-68, inputs=[/input-64], perturbed=True)
+  (/input-72): BoundConv(name=/input-72, inputs=[/input-68, /51, /52], perturbed=True)
+  (/87): BoundRelu(name=/87, inputs=[/input-72], perturbed=True)
+  (/input-80): BoundConv(name=/input-80, inputs=[/input-76/conv_4, /53, /54], perturbed=True)
+  (/input-84): BoundRelu(name=/input-84, inputs=[/input-80], perturbed=True)
+  (/input-88): BoundConv(name=/input-88, inputs=[/input-84, /55, /56], perturbed=True)
+  (/input-92): BoundRelu(name=/input-92, inputs=[/input-88], perturbed=True)
+  (/input-96): BoundConv(name=/input-96, inputs=[/input-92, /57, /58], perturbed=True)
+  (/94): BoundRelu(name=/94, inputs=[/input-96], perturbed=True)
+  (/96): BoundFlatten(name=/96, inputs=[/95/conv_4], perturbed=True)
+  (/input-100): BoundLinear(name=/input-100, inputs=[/96, /59, /60], perturbed=True)
+  (/98): BoundRelu(name=/98, inputs=[/input-100], perturbed=True)
+  (/99): BoundFlatten(name=/99, inputs=[/98], perturbed=True)
+  (/input-104): BoundLinear(name=/input-104, inputs=[/99, /61, /62], perturbed=True)
+  (/101): BoundRelu(name=/101, inputs=[/input-104], perturbed=True)
+  (/102): BoundFlatten(name=/102, inputs=[/101], perturbed=True)
+  (/103): BoundLinear(name=/103, inputs=[/102, /63, /64], perturbed=True)
+  (/input-12/conv_1): BoundConv(name=/input-12/conv_1, inputs=[/68, /input-12/conv_1_w], perturbed=True)
+  (/input-12/conv_1_relu): BoundRelu(name=/input-12/conv_1_relu, inputs=[/input-12/conv_1], perturbed=True)
+  (/input-12/conv_1_w): BoundParams(name=/input-12/conv_1_w, inputs=[], perturbed=False)
+  (/input-12/conv_2): BoundConv(name=/input-12/conv_2, inputs=[/input-12/conv_1_relu, /input-12/conv_2_w], perturbed=True)
+  (/input-12/conv_2_relu): BoundRelu(name=/input-12/conv_2_relu, inputs=[/input-12/conv_2], perturbed=True)
+  (/input-12/conv_2_w): BoundParams(name=/input-12/conv_2_w, inputs=[], perturbed=False)
+  (/input-12/conv_4): BoundConv(name=/input-12/conv_4, inputs=[/input-12/conv_2_relu, /input-12/conv_3_w], perturbed=True)
+  (/input-12/conv_3_w): BoundParams(name=/input-12/conv_3_w, inputs=[], perturbed=False)
+  (/input-28/conv_1): BoundConv(name=/input-28/conv_1, inputs=[/73, /input-28/conv_1_w], perturbed=True)
+  (/input-28/conv_1_relu): BoundRelu(name=/input-28/conv_1_relu, inputs=[/input-28/conv_1], perturbed=True)
+  (/input-28/conv_1_w): BoundParams(name=/input-28/conv_1_w, inputs=[], perturbed=False)
+  (/input-28/conv_2): BoundConv(name=/input-28/conv_2, inputs=[/input-28/conv_1_relu, /input-28/conv_2_w], perturbed=True)
+  (/input-28/conv_2_relu): BoundRelu(name=/input-28/conv_2_relu, inputs=[/input-28/conv_2], perturbed=True)
+  (/input-28/conv_2_w): BoundParams(name=/input-28/conv_2_w, inputs=[], perturbed=False)
+  (/input-28/conv_4): BoundConv(name=/input-28/conv_4, inputs=[/input-28/conv_2_relu, /input-28/conv_3_w], perturbed=True)
+  (/input-28/conv_3_w): BoundParams(name=/input-28/conv_3_w, inputs=[], perturbed=False)
+  (/input-52/conv_1): BoundConv(name=/input-52/conv_1, inputs=[/80, /input-52/conv_1_w], perturbed=True)
+  (/input-52/conv_1_relu): BoundRelu(name=/input-52/conv_1_relu, inputs=[/input-52/conv_1], perturbed=True)
+  (/input-52/conv_1_w): BoundParams(name=/input-52/conv_1_w, inputs=[], perturbed=False)
+  (/input-52/conv_2): BoundConv(name=/input-52/conv_2, inputs=[/input-52/conv_1_relu, /input-52/conv_2_w], perturbed=True)
+  (/input-52/conv_2_relu): BoundRelu(name=/input-52/conv_2_relu, inputs=[/input-52/conv_2], perturbed=True)
+  (/input-52/conv_2_w): BoundParams(name=/input-52/conv_2_w, inputs=[], perturbed=False)
+  (/input-52/conv_4): BoundConv(name=/input-52/conv_4, inputs=[/input-52/conv_2_relu, /input-52/conv_3_w], perturbed=True)
+  (/input-52/conv_3_w): BoundParams(name=/input-52/conv_3_w, inputs=[], perturbed=False)
+  (/input-76/conv_1): BoundConv(name=/input-76/conv_1, inputs=[/87, /input-76/conv_1_w], perturbed=True)
+  (/input-76/conv_1_relu): BoundRelu(name=/input-76/conv_1_relu, inputs=[/input-76/conv_1], perturbed=True)
+  (/input-76/conv_1_w): BoundParams(name=/input-76/conv_1_w, inputs=[], perturbed=False)
+  (/input-76/conv_2): BoundConv(name=/input-76/conv_2, inputs=[/input-76/conv_1_relu, /input-76/conv_2_w], perturbed=True)
+  (/input-76/conv_2_relu): BoundRelu(name=/input-76/conv_2_relu, inputs=[/input-76/conv_2], perturbed=True)
+  (/input-76/conv_2_w): BoundParams(name=/input-76/conv_2_w, inputs=[], perturbed=False)
+  (/input-76/conv_4): BoundConv(name=/input-76/conv_4, inputs=[/input-76/conv_2_relu, /input-76/conv_3_w], perturbed=True)
+  (/input-76/conv_3_w): BoundParams(name=/input-76/conv_3_w, inputs=[], perturbed=False)
+  (/95/conv_1): BoundConv(name=/95/conv_1, inputs=[/94, /95/conv_1_w], perturbed=True)
+  (/95/conv_1_relu): BoundRelu(name=/95/conv_1_relu, inputs=[/95/conv_1], perturbed=True)
+  (/95/conv_1_w): BoundParams(name=/95/conv_1_w, inputs=[], perturbed=False)
+  (/95/conv_2): BoundConv(name=/95/conv_2, inputs=[/95/conv_1_relu, /95/conv_2_w], perturbed=True)
+  (/95/conv_2_relu): BoundRelu(name=/95/conv_2_relu, inputs=[/95/conv_2], perturbed=True)
+  (/95/conv_2_w): BoundParams(name=/95/conv_2_w, inputs=[], perturbed=False)
+  (/95/conv_4): BoundConv(name=/95/conv_4, inputs=[/95/conv_2_relu, /95/conv_3_w], perturbed=True)
+  (/95/conv_3_w): BoundParams(name=/95/conv_3_w, inputs=[], perturbed=False)
+)
+Original output in the first batch: tensor([[-1.05951965e+00, -3.23509872e-01,  3.70707488e+00, -2.03068542e+00,
+          2.27400377e-01, -3.54204321e+00, -1.28115880e+00,  4.04765749e+00,
+          4.85697556e+00,  2.86349416e+00,  1.33419847e+00,  1.32271719e+00,
+          4.89986181e+00,  3.92588329e+00,  5.13103247e-01,  4.11015415e+00,
+          1.48219323e+00,  1.96797633e+00,  2.82136154e+00,  2.48194289e+00,
+          1.68567157e+00,  2.67114967e-01,  1.13939035e+00,  2.85267496e+00,
+          2.99417114e+00, -1.93025529e+00, -2.13772893e+00, -8.93941939e-01,
+         -2.09246254e+00, -2.08385801e+00, -3.40265185e-01, -7.61479735e-01,
+         -3.28474855e+00, -9.24544632e-01, -1.36780858e+00, -5.42232335e-01,
+          1.01417792e+00, -5.18493354e-01, -1.17971182e+00,  3.23154187e+00,
+          2.07884431e+00,  7.48206854e-01,  1.21934986e+00,  4.52852428e-01,
+          1.15542984e+00,  2.27973056e+00,  6.57714248e-01, -1.50825739e+00,
+          1.83270478e+00,  4.27188730e+00,  5.15579176e+00,  2.60847211e-01,
+         -9.59231138e-01, -9.43538487e-01, -5.96139431e-01, -2.67853886e-01,
+          9.67014730e-01, -7.85764456e-01,  1.46787798e+00, -1.30361807e+00,
+          2.33791769e-01,  8.42578411e-01,  9.48637903e-01, -5.71123183e-01,
+          8.32701683e-01, -1.88362956e+00, -1.13818955e+00,  1.27917171e+00,
+         -6.03873014e-01,  2.65914440e-01,  2.67085999e-01,  1.59324363e-01,
+         -3.43665689e-01, -6.02761984e-01, -1.64899707e+00,  2.36808300e+00,
+         -1.22962272e+00, -2.80085832e-01, -9.15647149e-01, -4.07058537e-01,
+          3.83333489e-02,  2.24316764e+00,  4.78152418e+00,  2.21753311e+00,
+          8.79006088e-01,  3.87993383e+00,  4.84466219e+00,  4.89443922e+00,
+          3.26164389e+00,  2.27021003e+00,  2.75161409e+00,  1.08213830e+00,
+          1.83458638e+00,  3.17856979e+00,  3.37623715e-01, -2.10928869e+00,
+          3.67883706e+00,  1.68778479e+00,  2.51202703e-01,  4.21108437e+00,
+          4.27915049e+00, -1.03946161e+00, -3.65871042e-01, -1.83804035e+00,
+          3.15770674e+00,  1.52291381e+00,  8.43512893e-01, -2.76632428e+00,
+         -3.91196465e+00, -1.73130107e+00, -6.68604136e+00, -4.12199306e+00,
+          1.49686456e+00, -2.06064415e+00, -1.86879396e+00, -4.47053385e+00,
+         -3.61195660e+00, -3.94565368e+00,  2.72005081e+00, -2.15089023e-01,
+          1.13558149e+00,  3.39663696e+00,  2.41400647e+00,  1.63675976e+00,
+          1.26659846e+00, -2.52929235e+00, -2.98702812e+00,  2.39944243e+00,
+         -1.49904937e-01,  1.31801784e+00,  1.75469267e+00,  7.09722519e-01,
+          1.59808278e+00,  2.00560451e+00,  4.03617764e+00,  1.77641124e-01,
+          1.73733234e+00,  2.61860657e+00,  1.61036170e+00,  6.70691073e-01,
+          9.89517629e-01,  2.17945933e+00,  1.10920036e+00,  2.12107375e-01,
+          7.01532900e-01,  1.84477746e+00, -1.48987785e-01, -2.19933319e+00,
+         -3.01619196e+00, -3.28817081e+00,  8.74174476e-01, -9.03450608e-01,
+         -2.88217235e+00, -7.18277693e-01, -2.03978777e+00, -3.11182410e-01,
+         -5.13075054e-01,  3.34777027e-01, -1.49047625e+00, -1.96362481e-01,
+         -1.38625431e+00, -3.90414596e-01, -5.34343243e-01,  1.15218997e+00,
+          1.62129247e+00, -3.83764803e-01,  6.73211873e-01,  1.43935823e+00,
+         -4.23745155e-01,  4.74636227e-01,  1.19459760e+00,  4.37804490e-01,
+          1.58357322e+00,  2.80376226e-01,  1.29800332e+00, -2.06855488e+00,
+         -8.88875365e-01,  9.35126483e-01,  1.97405648e+00, -4.61988211e-01,
+         -1.58688262e-01,  1.92596507e+00, -1.35902226e-01,  2.22092915e+00,
+          9.33293760e-01,  9.73407686e-01,  5.52269936e-01, -7.18821287e-01,
+          6.87813699e-01,  7.03871369e-01, -1.89181399e+00,  5.86106002e-01,
+         -9.21889842e-02, -9.06264603e-01, -2.04393959e+00, -2.71084249e-01,
+          3.35472748e-02, -3.07118177e-01,  1.16813195e+00, -5.15409470e-01,
+         -2.11283639e-01,  2.43148971e-02,  9.63637054e-01,  6.37244344e-01,
+          3.19096506e-01, -5.23870647e-01,  5.89155436e-01, -1.47763693e+00,
+          4.41857755e-01,  1.62584114e+00,  2.53714979e-01, -1.28988886e+00,
+          1.34881711e+00, -2.04673624e+00, -7.01652691e-02,  5.59791148e-01,
+         -5.94038010e-01, -9.48139131e-01, -1.08063650e+00, -4.42189753e-01,
+         -2.94730067e+00,  8.80886376e-01,  1.44715071e+00,  1.73462737e+00,
+         -2.49539390e-01,  1.17749929e+00, -1.46169090e+00,  1.17720544e+00,
+          1.63917804e+00,  1.12327647e+00,  8.37021470e-01, -6.83372244e-02,
+          2.95314372e-01,  3.81760776e-01,  8.53895843e-01,  3.39705795e-01,
+          4.67165023e-01, -5.75679719e-01, -3.36520076e-01, -6.24014497e-01,
+         -9.64506865e-01, -8.58812153e-01,  1.13165653e+00, -1.45715117e-01,
+         -2.09760809e+00,  9.13946211e-01, -3.42523038e-01, -8.57296109e-01,
+          2.14416933e+00,  5.05168259e-01,  1.64065528e+00,  1.61892164e+00,
+         -1.92278039e+00,  4.90618765e-01,  4.71071824e-02, -1.85767365e+00,
+         -5.97510993e-01,  8.75793219e-01,  7.36375600e-02, -1.30532730e+00,
+         -1.13713813e+00, -3.90218422e-02, -3.56042075e+00, -1.21209443e+00,
+         -2.41201550e-01, -7.10344970e-01, -2.45883256e-01,  1.40629232e+00,
+         -1.14073467e+00,  2.30888677e+00,  2.46309066e+00,  8.80648017e-01,
+          1.75451684e+00,  1.48152053e+00,  1.36125243e+00,  1.38569415e+00,
+          8.32433403e-01,  1.45533979e-01,  4.27656919e-01,  2.11844397e+00,
+          2.58063936e+00, -6.60720944e-01,  3.04038310e+00, -1.20751858e+00,
+         -2.64199734e+00,  8.82528186e-01,  2.37997532e+00,  2.86888838e+00,
+          2.17133856e+00,  3.78124428e+00,  2.24683690e+00, -5.70284486e-01,
+          2.39986467e+00,  1.10754156e+00, -7.60566592e-01, -1.09674960e-01,
+         -8.76297295e-01,  1.07063919e-01,  8.56767833e-01, -2.48644978e-01,
+         -1.27840793e+00,  2.02038005e-01, -1.34977853e+00, -2.76897371e-01,
+         -2.56268644e+00,  8.15802813e-01, -8.70992839e-01,  7.50306845e-01,
+         -4.59817909e-02, -3.79445648e+00, -2.38693312e-01, -6.91065967e-01,
+         -2.82759547e-01,  6.43558383e-01,  1.41775477e+00,  2.41930366e-01,
+         -5.78858972e-01, -2.96663404e+00, -3.04788351e+00, -2.40466118e+00,
+         -3.94710493e+00, -3.62171602e+00, -4.12651634e+00, -2.27875328e+00,
+         -3.36523557e+00, -2.58880210e+00, -3.49638724e+00,  4.61053878e-01,
+         -1.13379896e+00, -1.93358815e+00,  1.55512202e+00,  5.19363880e-01,
+          1.23877311e+00, -2.16162801e+00,  8.19793940e-01,  4.53128546e-01,
+         -1.32880950e+00,  1.84153128e+00,  1.11194029e-01, -1.64687014e+00,
+          1.18179572e+00,  8.19786072e-01,  1.14525890e+00, -3.11239421e-01,
+          1.80807328e+00, -1.02786195e+00, -1.48194849e+00, -1.26081669e+00,
+          5.76027751e-01, -9.85623479e-01, -6.86459422e-01, -3.19986248e+00,
+         -1.53195620e+00, -7.10549891e-01,  1.69112635e+00,  6.96425259e-01,
+          1.98131561e-01,  1.85611868e+00, -1.68228364e+00, -1.65267158e+00,
+          9.87577379e-01, -8.84841800e-01, -3.77833307e-01,  2.55107522e+00,
+         -4.50917423e-01,  8.07588160e-01,  7.15491474e-01,  1.27337575e+00,
+         -6.36283979e-02,  5.57502508e-01,  1.38936710e+00,  8.06696057e-01,
+          2.95156288e+00,  2.37227917e+00,  2.72158551e+00,  1.45881987e+00,
+          1.41425812e+00,  3.02880716e+00,  3.60316396e-01, -8.15885961e-01,
+          1.20210803e+00,  2.29507875e+00,  2.81676006e+00,  3.91752052e+00,
+         -1.99954951e+00, -8.03640962e-01, -1.48553562e+00,  1.14643201e-01,
+         -1.27321029e+00,  1.09949097e-01, -2.37828732e+00,  2.40674615e+00,
+         -4.16460991e+00, -4.10402060e+00,  5.23201823e-01, -4.25214648e-01,
+         -2.18614483e+00,  1.40130326e-01,  5.21192312e-01, -5.60658932e-01,
+         -4.38605404e+00, -1.18761003e+00, -3.32296431e-01, -1.09330189e+00,
+         -4.05571890e+00, -1.73479748e+00, -2.38911104e+00, -4.82970089e-01,
+         -2.46410877e-01, -1.02706444e+00, -2.79432200e-02, -1.34045660e+00,
+          2.09874320e+00, -9.84339356e-01,  2.85913676e-01, -4.04202819e-01,
+         -2.98967409e+00, -6.01975203e-01, -2.85217857e+00, -2.35085785e-01,
+         -3.60928088e-01,  2.93058515e+00, -1.44931638e+00, -4.78198946e-01,
+          4.42369133e-01,  2.01833534e+00, -1.19447887e+00,  3.77722192e+00,
+          5.38248396e+00,  4.64424276e+00,  3.82880831e+00, -2.34772325e+00,
+         -2.44952583e+00,  1.47494823e-01, -1.45779216e+00,  4.14996564e-01,
+         -1.04603815e+00,  1.28152728e+00, -3.06702763e-01, -1.53402162e+00,
+          2.42165899e+00,  1.98378652e-01, -1.65662181e+00, -1.35211492e+00,
+          5.95840849e-02,  1.53219950e+00, -3.99775267e+00,  2.36816740e+00,
+          4.15697384e+00, -1.27540782e-01, -1.81622997e-01, -1.57212067e+00,
+         -1.66195965e+00, -2.37270188e+00, -7.28983164e-01,  1.55877018e+00,
+         -7.15664625e-01, -6.73541605e-01,  5.97065628e-01,  2.17638087e+00,
+          3.35045934e+00, -1.24505281e+00,  6.97319269e-01,  3.53429651e+00,
+         -2.41892084e-01, -3.49239612e+00, -1.28355205e+00,  1.92015922e+00,
+          9.40761507e-01,  1.83024633e+00,  8.76291618e-02,  1.59330487e+00,
+         -9.07052755e-01, -2.62731910e+00,  8.13088000e-01,  1.19723725e+00,
+         -1.01166570e+00, -3.12733650e+00,  7.67587364e-01, -8.76800239e-01,
+         -1.18057978e+00, -6.81568563e-01, -2.58292723e+00,  1.20896065e+00,
+         -1.77424061e+00, -3.55411649e+00, -1.33487046e+00,  7.94426441e-01,
+          6.03222656e+00,  1.06257391e+01,  2.38381124e+00,  5.05527020e+00,
+         -7.33051121e-01, -2.92885113e+00, -3.02129298e-01, -9.45821106e-01,
+         -1.62138271e+00,  7.58973122e-01, -8.56311977e-01,  2.17135459e-01,
+          1.54061690e-01, -3.41274589e-01,  9.56333160e-01, -1.09430385e+00,
+         -8.23148191e-02,  2.35526383e-01,  8.65965366e-01,  5.26511765e+00,
+          3.67646307e-01, -6.03708625e-01, -8.71780634e-01, -3.10213137e+00,
+         -8.81228149e-01, -1.34749603e+00,  8.57417047e-01,  1.61446917e+00,
+          1.52743053e+00,  1.64856231e+00,  1.71623006e-01,  2.62015843e+00,
+         -1.96261370e+00, -1.49883771e+00,  8.21518481e-01,  1.90182281e+00,
+         -2.24610353e+00,  8.27858329e-01, -2.94952273e+00, -3.53797174e+00,
+         -5.36418855e-01, -2.42463040e+00, -8.96829367e-01, -3.90732646e+00,
+         -1.35146034e+00, -1.72159040e+00, -2.50344366e-01, -1.14102924e+00,
+          3.40400553e+00,  1.52591634e+00,  1.25155640e+00,  1.47773981e+00,
+          1.43188643e+00,  1.26086497e+00, -1.28828287e+00,  5.74502170e-01,
+          5.93536794e-01,  1.92218673e+00, -1.79650438e+00, -3.71711254e-02,
+         -4.03354311e+00, -3.27592015e+00, -3.30548620e+00, -4.08198452e+00,
+         -1.07649815e+00, -2.77486652e-01,  2.31610680e+00, -2.23792598e-01,
+          1.98861647e+00,  4.78949815e-01, -1.86349070e+00,  1.33367753e+00,
+          1.90366399e+00,  8.21276128e-01,  1.84677231e+00, -3.13216448e+00,
+         -2.36918378e+00, -3.03776525e-02, -8.32769036e-01, -2.41181910e-01,
+          1.65989947e+00, -2.37309292e-01,  3.70861739e-02,  2.38148546e+00,
+          1.02233303e+00,  2.44161415e+00,  1.23371923e+00, -5.22698164e-01,
+          4.28561717e-01, -9.08497572e-02, -2.64641196e-01, -2.46562576e+00,
+          3.44117713e+00,  2.31011197e-01,  8.59947145e-01,  1.26267743e+00,
+         -4.45351124e+00, -7.31339335e-01, -1.15228021e+00,  1.93555868e+00,
+         -6.12505317e-01,  5.54728568e-01, -3.82403755e+00, -1.14897048e+00,
+         -4.03302526e+00,  8.90888087e-03, -4.97141361e-01, -1.01940596e+00,
+          1.36965549e+00, -2.90555310e+00, -3.83481622e+00,  1.41291475e+00,
+          4.05989647e+00, -3.49743105e-03, -4.38156992e-01,  5.05705357e-01,
+         -4.28700224e-02, -1.18133795e+00,  8.35548520e-01,  2.72548169e-01,
+          1.85104668e+00,  1.45694017e+00, -1.47209644e-01, -1.18830308e-01,
+          4.53752875e-01, -1.13485181e+00, -1.53556585e+00, -1.49408787e-01,
+          5.47196531e+00,  5.29201925e-01,  1.04842484e+00,  8.43147397e-01,
+         -1.51616073e+00,  3.22184253e+00,  1.02822626e+00, -2.96415234e+00,
+         -2.88077086e-01,  2.85166478e+00, -1.79454446e+00, -3.46913409e+00,
+          6.34680808e-01, -1.86904347e+00, -1.10659850e+00, -1.81777930e+00,
+         -4.22682017e-01, -1.48241973e+00,  4.64552343e-01, -2.28109431e+00,
+          4.50012505e-01,  2.54824209e+00,  1.08899653e+00,  1.64285922e+00,
+          3.24643910e-01,  7.33801901e-01, -1.93118787e+00,  1.58553267e+00,
+          4.28442508e-01, -1.92533028e+00,  1.88917017e+00, -1.56818843e+00,
+         -2.91844630e+00,  4.62487102e-01,  1.16988826e+00, -1.55355656e+00,
+          1.59283853e+00,  1.84021854e+00, -5.89744210e-01, -7.40084350e-01,
+          2.01900959e-01, -2.01043218e-01,  1.59432721e+00, -2.26481318e+00,
+          7.07572997e-01, -2.14575768e+00, -1.13177037e+00, -8.08065116e-01,
+         -8.77770960e-01, -2.34340668e-01,  5.51570594e-01, -3.69374108e+00,
+         -2.17506814e+00,  1.03155924e-02,  2.04346895e-01,  8.16423118e-01,
+         -7.31739163e-01, -1.57224536e+00,  2.57594585e+00, -2.21075988e+00,
+          1.45841587e+00,  3.32612848e+00, -1.47869301e+00,  6.62337065e-01,
+         -1.16444862e+00, -1.83885062e+00, -5.44522822e-01,  5.99727184e-02,
+         -7.48989701e-01, -2.70296502e+00, -1.43329382e+00, -3.77735019e+00,
+         -1.40661454e+00, -2.40373087e+00, -1.15117133e+00, -1.41121149e+00,
+         -1.11814606e+00,  1.99683145e-01,  1.55492580e+00,  7.16520262e+00,
+         -7.27090478e-01, -1.01724124e+00,  1.69778228e+00, -1.37224734e+00,
+         -8.16416025e-01, -1.31431317e+00, -1.34120071e+00,  1.61851656e+00,
+          3.02758718e+00, -1.01023889e+00,  1.17053175e+00,  1.82053494e+00,
+         -1.39640927e+00, -3.26061392e+00, -2.39247751e+00, -2.48929426e-01,
+         -2.78215790e+00, -3.75273657e+00, -7.32487023e-01, -1.99845159e+00,
+          4.73006868e+00, -1.35583687e+00,  3.03291893e+00, -1.04247284e+00,
+         -9.92197990e-01, -6.62020802e-01,  1.47293234e+00, -5.54673374e-01,
+          9.67571080e-01,  1.09305418e+00, -3.22613478e+00, -1.29099596e+00,
+          4.87670040e+00, -3.74680877e-01,  8.37325752e-01,  1.04549825e+00,
+         -4.18960381e+00,  2.90775204e+00, -1.71247494e+00,  1.07870293e+00,
+         -2.80594468e+00,  3.07958817e+00,  7.93873549e-01, -5.73717237e-01,
+          2.33758020e+00, -3.27367663e-01, -1.36237490e+00,  8.95327377e+00,
+         -8.19877923e-01, -2.50699520e+00,  1.70413542e+00,  4.58438301e+00,
+         -2.00623617e-01, -2.31061387e+00, -1.26238537e+00,  1.20241547e+00,
+          1.39444745e+00,  7.42620349e-01,  2.26180345e-01, -1.07351705e-01,
+          3.38621676e-01, -2.27310157e+00,  1.51173496e+00, -1.97961462e+00,
+          5.62312663e-01, -1.88397408e+00, -8.77885699e-01, -3.04233789e+00,
+          6.90868795e-01,  6.45724297e-01, -6.64749444e-01, -1.83724988e+00,
+          2.81272006e+00, -7.87270963e-01,  4.06903887e+00,  2.45205745e-01,
+          5.08900225e-01,  3.40605795e-01,  1.16643608e+00, -1.56341672e+00,
+         -2.32480168e-01, -2.88697577e+00,  2.44947290e+00,  2.43430948e+00,
+          1.16878593e+00, -7.85345554e-01,  5.89818001e-01,  1.39775288e+00,
+         -2.22404689e-01, -9.97883558e-01,  7.33001053e-01,  7.20114768e-01,
+          1.81123185e+00, -2.04944044e-01,  2.73638654e+00,  6.39252996e+00,
+          2.94553447e+00, -1.82472336e+00,  6.15858853e-01, -1.12659253e-01,
+          4.25407559e-01,  2.89186180e-01, -3.58504128e+00,  7.40286350e-01,
+         -1.92449939e+00, -3.83199930e+00, -2.78975308e-01,  1.43385363e+00,
+         -2.22429991e+00,  3.89989543e+00,  3.37297171e-01, -1.01487346e-01,
+          1.30621448e-01, -2.61157417e+00, -2.91173935e+00, -1.20602980e-01,
+         -2.02436852e+00, -3.07997726e-02, -8.61345291e-01,  1.75687087e+00,
+         -8.70846570e-01, -2.78993845e+00, -3.24224889e-01, -2.55275995e-01,
+         -8.77157748e-01,  5.91027617e-01, -1.81084502e+00, -1.36122143e+00,
+          2.06568122e+00,  2.73492098e+00, -1.01551807e+00, -2.17449427e+00,
+          2.74123406e+00, -7.84797251e-01,  1.32746649e+00, -1.08679235e+00,
+         -1.92296159e+00,  2.27757320e-01, -1.07698238e+00, -1.78396058e+00,
+          1.84910965e+00,  1.29309130e+00, -1.87784123e+00,  3.04167295e+00,
+          3.66713452e+00,  2.89368486e+00,  2.56421328e-01,  4.44602203e+00,
+          4.13082719e-01, -2.88860083e-01, -8.85492563e-01,  3.03375512e-01,
+         -2.81902957e+00,  4.78986919e-01,  2.39517808e+00,  8.41985345e-01,
+          4.01291180e+00,  2.59556580e+00, -3.33979940e+00,  2.44522616e-01,
+         -9.56440628e-01, -1.22304654e+00,  2.23844719e+00,  4.53041531e-02,
+         -1.39516401e+00, -4.76569146e-01, -6.58969879e-02, -7.88173974e-01,
+          1.12831104e+00, -1.54723918e+00,  1.58871338e-01, -2.07374811e+00,
+         -1.49506295e+00,  2.34722480e-01,  2.47867417e+00,  1.39502548e-02,
+          1.17399669e+00, -2.93845206e-01,  5.45673549e-01, -1.70135021e+00,
+          4.93040055e-01,  1.74604547e+00, -1.67384326e+00,  2.32405972e+00,
+          6.44973516e-01, -1.81810236e+00,  2.01280713e+00,  8.05591583e-01,
+          7.37437367e-01, -3.06536245e+00, -6.36036932e-01, -1.70402360e+00,
+          4.28724110e-01, -1.49255371e+00,  7.98720419e-02, -3.05682331e-01,
+         -2.08831811e+00, -1.42668581e+00, -8.72807205e-01, -2.71162605e+00,
+         -2.26649195e-01,  2.02607229e-01,  1.99656069e+00,  1.64296627e+00,
+          1.44527566e+00, -1.86249092e-01,  4.50950533e-01,  8.64082128e-02,
+          3.90045786e+00,  9.73958433e-01, -2.10109425e+00,  2.75641227e+00,
+         -2.76710367e+00, -4.31400687e-01,  7.25085258e-01,  2.03305531e+00,
+          6.62870502e+00,  3.16544342e+00, -1.85715592e+00,  1.56959617e+00,
+         -3.20289278e+00, -1.53061056e+00, -4.70432490e-01,  1.53678119e-01,
+         -5.44134341e-02, -4.85283524e-01, -1.29263735e+00, -3.20833135e+00,
+         -2.43500638e+00, -3.96056247e+00, -4.53766680e+00, -1.36188686e+00,
+         -1.77804017e+00,  1.18895650e+00, -9.54074562e-01,  1.26624361e-01,
+          4.33711499e-01, -3.27193451e+00, -1.50433445e+00, -3.15260768e+00,
+         -2.26227880e+00, -4.62285709e+00, -2.06287432e+00, -3.36149645e+00,
+         -1.37345564e+00, -6.40287101e-01, -1.18924129e+00, -2.85856396e-01,
+         -4.32743216e+00, -4.44959670e-01, -3.92255569e+00, -2.56847322e-01,
+         -1.30392790e-01, -1.00127065e+00,  2.68770599e+00,  1.34346867e+00,
+         -1.26748836e+00, -1.51004419e-01,  4.81984839e-02, -5.23633242e-01,
+          4.00536284e-02,  1.81378090e+00,  1.20904744e+00, -2.34877086e+00,
+         -2.78253698e+00, -1.09149170e+00, -3.14878297e+00, -2.89042068e+00,
+         -4.40573645e+00, -8.22966814e-01,  8.65472317e-01, -9.82874274e-01,
+         -2.12116748e-01, -1.85268879e+00, -2.74660230e-01, -7.18817711e-01,
+          1.07397664e+00, -2.56027699e+00, -7.90272713e-01,  1.90006495e+00,
+         -1.14429736e+00,  1.51198018e+00,  2.58546400e+00, -1.23173690e+00,
+         -5.80696225e-01,  4.61922646e+00, -2.90618241e-01, -9.12657559e-01,
+         -6.79837108e-01, -2.91162038e+00, -3.48696256e+00,  2.52468538e+00,
+          1.95710742e+00,  4.32924271e+00, -5.57107866e-01, -1.84727561e+00,
+         -9.53603983e-02, -2.69999719e+00, -6.69881344e-01, -1.45577741e+00,
+         -1.64166701e+00, -1.43221211e+00,  6.52892411e-01,  1.79791495e-01]],
+       device='cuda:0')/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/perturbations.py:364: UserWarning: The reduce argument of torch.scatter with Tensor src is deprecated and will be removed in a future PyTorch release. Use torch.scatter_reduce instead for more reduction options. (Triggered internally at /pytorch/aten/src/ATen/native/TensorAdvancedIndexing.cpp:232.)
+  self.x_L_sparse.scatter_(dim=-1, index=index, src=(x_L - lb).view(batch_size, -1), reduce='add')
+
+build batch [1/1]
+Using Linf sparse perturbation. Perturbed dimensions: 20.
+Avg perturbation: 0.00019996576884295791
+initial dynamic-forward+backward bounds (first 10 items): [1.672444462776184]
+Global lower bound: 1.672444462776184
+verified with init bound!
+Result: unsat
+Time: 9.346648216247559
+
+------------------------- COMMAND ------------------------------
+/data1/Kane/miniconda3/envs/abcrown25/bin/python /data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/abcrown.py --config /data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/exp_configs/vnncomp23/vggnet16.yaml --precompile_jit --onnx_path /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/vggnet16_2022/onnx/vgg16-7.onnx --vnnlib_path /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/vggnet16_2022/vnnlib/spec10_chainlink_fence.vnnlib --results_file /data1/Kane/ACT/audit_results/abcrown_nopgd_20260525/vggnet16_2022/0011__vgg16-7__spec10_chainlink_fence.result --timeout 1200.0 --save_adv_example --pgd_order=skip
+----------------------------------------------------------------
+

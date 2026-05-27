@@ -52,10 +52,21 @@ def _normalize_tuple(val: Any, default: Tuple[int, int] = (1, 1)) -> Tuple[int, 
 
 
 def _assert_dag(preds: Dict[int, List[int]], succs: Dict[int, List[int]], n_layers: int) -> None:
-    """Kahn's algorithm cycle check. Raises ValueError listing the cycle nodes."""
+    """Kahn's algorithm cycle check. Raises ValueError listing the cycle nodes.
+
+    ``preds`` may legitimately contain duplicates when a layer has two
+    operands fed by the same source (e.g. ``Mul(x, x)`` for ``Pow(x, 2)``);
+    several TFs index ``preds[L][0]`` and ``preds[L][1]`` so the duplicate
+    is positionally meaningful. The DAG check, however, is about the
+    structure of the graph, not the multiplicity of edges — so we count
+    **unique** predecessors for the in-degree, matching the deduplicated
+    successor list built in ``_build_preds_succs``. Without this, a
+    Mul(x,x) layer would have in_degree=2 against a succs entry of 1 and
+    Kahn would falsely report a cycle.
+    """
     if n_layers == 0:
         return
-    in_degree = {i: len(preds.get(i, [])) for i in range(n_layers)}
+    in_degree = {i: len(set(preds.get(i, []))) for i in range(n_layers)}
     queue = [i for i in range(n_layers) if in_degree[i] == 0]
     visited = 0
     while queue:
@@ -636,17 +647,16 @@ def _convert_OnnxConcat(self, mod: nn.Module, node: fx.Node) -> None:
 def _convert_OnnxReduceStaticAxes(self, mod: nn.Module, node: fx.Node) -> None:
     """OnnxReduceStaticAxes (ReduceMean / ReduceMax / ReduceMin / ReduceSum etc.).
 
-    Currently only ReduceMean is mapped to LayerKind.MEAN. Other reductions
-    (Max / Min / L2-norm) need their own LayerKind mapping (future enhancement).
-    """
+    onnx2torch routes several reductions through this single class and
+    distinguishes by ``math_op_function``. Supported mappings:
+      * mean → LayerKind.MEAN
+      * sum  → LayerKind.REDUCE_SUM (nn4sys pensieve uses this form for L2/Lp
+                                     normalization preludes)
+    Max/Min and L2-norm need their own LayerKind mapping (future enhancement)."""
     if not self._get_predecessor_state(node):
         raise ValueError(f"OnnxReduceStaticAxes: missing predecessor for {node.name}")
     op_func = getattr(mod, 'math_op_function', None)
     op_name = getattr(op_func, '__name__', '').lower() if op_func is not None else ''
-    if 'mean' not in op_name:
-        raise NotImplementedError(
-            f"OnnxReduceStaticAxes at {node.name}: only ReduceMean supported (got '{op_name}'; future enhancement)"
-        )
     # OnnxReduceStaticAxes uses public ``axes`` / ``keepdims`` (different from
     # OnnxReduceSumStaticAxes which uses private ``_axes`` / ``_keepdims``).
     axes_attr = getattr(mod, 'axes', None) or list(range(len(self.shape)))
@@ -654,10 +664,25 @@ def _convert_OnnxReduceStaticAxes(self, mod: nn.Module, node: fx.Node) -> None:
     norm_axes = _normalize_axes(axes_attr, len(self.shape))
     output_shape = _reduce_output_shape(self.shape, norm_axes, keepdims)
     out_vars = self._alloc_ids(_prod(output_shape) or 1)
+
+    # LayerKind schemas differ between MEAN and REDUCE_SUM (dim/keepdim vs
+    # axes/keepdims); route each kind to the right param names.
+    if 'mean' in op_name:
+        params = {"dim": list(norm_axes), "keepdim": int(keepdims),
+                  "input_shape": self.shape, "output_shape": output_shape}
+        layer_kind = LayerKind.MEAN.value
+    elif 'sum' in op_name:
+        params = {"axes": list(norm_axes), "keepdims": int(keepdims),
+                  "input_shape": self.shape, "output_shape": output_shape}
+        layer_kind = LayerKind.REDUCE_SUM.value
+    else:
+        raise NotImplementedError(
+            f"OnnxReduceStaticAxes at {node.name}: only ReduceMean / ReduceSum "
+            f"supported (got '{op_name}'; future enhancement)"
+        )
     layer_id = self._add_layer(
-        LayerKind.MEAN.value,
-        {"dim": list(norm_axes), "keepdim": int(keepdims),
-         "input_shape": self.shape, "output_shape": output_shape},
+        layer_kind,
+        params,
         self.prev_out, out_vars,
     )
     self.prev_out = out_vars
@@ -971,7 +996,21 @@ def _convert_OnnxPow(self, mod: nn.Module, node: fx.Node) -> None:
     # x^k for k>=2: chain (k-1) MULs. accumulator starts as x; each step
     # multiplies by the original x. Each intermediate result gets fresh
     # variable ids; the final layer's out_vars is the chain output.
+    #
+    # Predecessor wiring: each chain step is a helper (no FX node), so
+    # the FX-based pred walk falls back to ``preds[i-1]`` (the previous
+    # layer in id order), which is WRONG when an unrelated layer sits
+    # between us and our source (e.g. a CONSTANT for the exponent). We
+    # therefore register explicit preds for every MUL step. ``tf_mul``
+    # reads positional ``preds[0]`` and ``preds[1]``, so even Mul(x, x)
+    # — both operands from the same source — needs the source id LISTED
+    # TWICE in the preds list; ``_set_explicit_preds`` preserves
+    # duplicates for exactly this case.
+    var_x_lid = self.node_to_layer_id.get(args[0].name)
+    if var_x_lid is None:
+        var_x_lid = -1
     accumulator = var_vars
+    accumulator_producer = var_x_lid
     last_layer_id = -1
     for _step in range(exp_int - 1):
         out_vars = self._alloc_ids(len(var_vars))
@@ -981,7 +1020,11 @@ def _convert_OnnxPow(self, mod: nn.Module, node: fx.Node) -> None:
              "input_shape": self.shape, "output_shape": self.shape},
             accumulator + var_vars, out_vars,
         )
+        if accumulator_producer >= 0 or var_x_lid >= 0:
+            self._set_explicit_preds(last_layer_id,
+                                     [accumulator_producer, var_x_lid])
         accumulator = out_vars
+        accumulator_producer = last_layer_id
     self.prev_out = accumulator
     self._register_node(node.name, last_layer_id)
 
@@ -1011,7 +1054,15 @@ def _convert_OnnxSplit13(self, mod: nn.Module, node: fx.Node) -> None:
     rank = len(self.shape)
     norm_axis = int(axis_attr) + rank if int(axis_attr) < 0 else int(axis_attr)
 
-    if len(args) >= 2:
+    # opset-10 Split carries split sizes as an *attribute* (mod.split=[6,1]),
+    # which onnx2torch exposes on the module. opset-13 Split moved the sizes
+    # to an input tensor (args[1]). Both forms need to honour non-equal splits;
+    # falling through to the equal-axis path on opset 10 produces the
+    # spurious "axis dim (7) divisible by 2" error seen on nn4sys mscn_128d.
+    attr_split = getattr(mod, 'split', None)
+    if attr_split is not None and isinstance(attr_split, (list, tuple)) and len(attr_split) > 0:
+        split_sizes = [int(x) for x in attr_split]
+    elif len(args) >= 2:
         split_t = self._resolve_constant_tensor(args[1].name)
         if split_t is None:
             split_t = self._evaluate_constant_subgraph(args[1].name)
@@ -1153,10 +1204,59 @@ def _convert_OnnxBinaryMathOperation(self, mod: nn.Module, node: fx.Node) -> Non
     if x_var and y_var:
         xv, yv = self.node_outputs[x.name], self.node_outputs[y.name]
         xs, ys = self.node_shapes[x.name], self.node_shapes[y.name]
+        # Original producers BEFORE any broadcast helper is inserted —
+        # consulted when registering the consumer's explicit preds below.
+        x_src_lid = self.node_to_layer_id.get(x.name, -1)
+        y_src_lid = self.node_to_layer_id.get(y.name, -1)
+        if x_src_lid is None:
+            x_src_lid = -1
+        if y_src_lid is None:
+            y_src_lid = -1
+
         if len(xv) != len(yv):
-            raise NotImplementedError(
-                f"Var-var '{op}' size mismatch ({len(xv)} vs {len(yv)}) at {node.name}"
-            )
+            # Broadcast mismatch — common in nn4sys mscn (e.g. Mul_39:
+            # (3,128) × (3,1) → (3,128)) and pensieve L2-norm (scalar × tensor).
+            #
+            # Insert EXPAND helper(s) so both operands match a common
+            # broadcast target shape. We compute the target via standard
+            # numpy/PyTorch broadcasting rules from xs and ys, then expand
+            # each side that isn't already at target.
+            try:
+                broadcast_shape = tuple(
+                    int(d) for d in torch.broadcast_shapes(
+                        torch.Size(xs), torch.Size(ys),
+                    )
+                )
+            except RuntimeError as bc_err:
+                raise NotImplementedError(
+                    f"Var-var '{op}' shape mismatch (xs={xs}, ys={ys}) at "
+                    f"{node.name}: not broadcast-compatible ({bc_err})"
+                )
+            target_n = _prod(broadcast_shape)
+            if len(xv) != target_n:
+                exp_vars = self._alloc_ids(target_n)
+                exp_lid = self._add_layer(
+                    LayerKind.EXPAND.value,
+                    {"shape": list(broadcast_shape),
+                     "input_shape": xs,
+                     "output_shape": broadcast_shape},
+                    xv, exp_vars,
+                )
+                self._set_explicit_preds(exp_lid, [x_src_lid])
+                xv, xs = exp_vars, broadcast_shape
+                x_src_lid = exp_lid
+            if len(yv) != target_n:
+                exp_vars = self._alloc_ids(target_n)
+                exp_lid = self._add_layer(
+                    LayerKind.EXPAND.value,
+                    {"shape": list(broadcast_shape),
+                     "input_shape": ys,
+                     "output_shape": broadcast_shape},
+                    yv, exp_vars,
+                )
+                self._set_explicit_preds(exp_lid, [y_src_lid])
+                yv, ys = exp_vars, broadcast_shape
+                y_src_lid = exp_lid
         kind = {'add': LayerKind.ADD, 'sub': LayerKind.SUB,
                 'mul': LayerKind.MUL, 'div': LayerKind.DIV}[op]
         out_shape = xs if _prod(xs) >= _prod(ys) else ys
@@ -1167,6 +1267,13 @@ def _convert_OnnxBinaryMathOperation(self, mod: nn.Module, node: fx.Node) -> Non
              "input_shape": xs, "output_shape": out_shape},
             xv + yv, out_vars,
         )
+        # If a broadcast helper was inserted above, x_src_lid / y_src_lid
+        # now point at that helper rather than the original FX-tracked
+        # producer. Either way, register the post-broadcast producers as
+        # this layer's preds so the analyze() worklist visits them in the
+        # right order and Bin is computed from helper output, not stale.
+        if x_src_lid >= 0 or y_src_lid >= 0:
+            self._set_explicit_preds(layer_id, [x_src_lid, y_src_lid])
         self.prev_out = out_vars
         self.shape = out_shape
         self._register_node(node.name, layer_id)
@@ -1181,6 +1288,9 @@ def _convert_OnnxBinaryMathOperation(self, mod: nn.Module, node: fx.Node) -> Non
         raise ValueError(f"OnnxBinaryMathOperation: cannot resolve constant at {node.name}")
     self.prev_out = self.node_outputs[var_node.name].copy()
     self.shape = self.node_shapes[var_node.name]
+    current_src_lid = self.node_to_layer_id.get(var_node.name, -1)
+    if current_src_lid is None:
+        current_src_lid = -1
 
     # PyTorch broadcasting may yield an output shape *larger* than either
     # operand (outer-product case, e.g. (1,226,1) op (54,) -> (1,226,54)).
@@ -1197,26 +1307,32 @@ def _convert_OnnxBinaryMathOperation(self, mod: nn.Module, node: fx.Node) -> Non
     if broadcast_shape != self.shape:
         expanded_size = _prod(broadcast_shape) or 1
         expanded_vars = self._alloc_ids(expanded_size)
-        self._add_layer(
+        exp_lid = self._add_layer(
             LayerKind.EXPAND.value,
-            {"shape": broadcast_shape},
+            {"shape": broadcast_shape, "input_shape": self.shape,
+             "output_shape": broadcast_shape},
             self.prev_out, expanded_vars,
         )
+        self._set_explicit_preds(exp_lid, [current_src_lid])
         self.prev_out = expanded_vars
         self.shape = broadcast_shape
+        current_src_lid = exp_lid
 
     size = len(self.prev_out)
     const_b = const.expand(*broadcast_shape).contiguous() if tuple(const.shape) != broadcast_shape else const
     c = _broadcast_const_to_size(const_b, size, self.dtype)
 
     def emit(kind: LayerKind, key: str, t: torch.Tensor, register: bool) -> None:
+        nonlocal current_src_lid
         out = self._same_size_forward()
         lid = self._add_layer(
             kind.value,
             {key: t, "input_shape": self.shape, "output_shape": self.shape},
             self.prev_out, out,
         )
+        self._set_explicit_preds(lid, [current_src_lid])
         self.prev_out = out
+        current_src_lid = lid
         if register:
             self._register_node(node.name, lid)
 
@@ -1234,6 +1350,90 @@ def _convert_OnnxBinaryMathOperation(self, mod: nn.Module, node: fx.Node) -> Non
         if not var_first:
             raise NotImplementedError(f"const/var Div at {node.name} (future enhancement)")
         emit(LayerKind.SCALE, "a", (1.0 / c).to(self.dtype), register=True)
+
+def _convert_OnnxRound(self, mod: nn.Module, node: fx.Node) -> None:
+    """OnnxRound: dispatches Floor / Ceil / Round (single onnx2torch
+    class with ``round_function`` selecting the variant).
+
+    Sound interval transfer:
+      * Floor / Ceil: monotone, ``[op(lb), op(ub)]``.
+      * Round (banker's): ``[floor(lb), ceil(ub)]`` — conservative across
+        the half-integer discontinuity. Any tighter rule would need a
+        per-element correctness proof we are not prepared to underwrite.
+
+    ml4acopf_2024 surfaces this op via floor / round preludes to its
+    trigonometric chain; the same handler covers all three because
+    onnx2torch routes all three through the OnnxRound class."""
+    if not self._get_predecessor_state(node):
+        raise ValueError(f"OnnxRound: missing predecessor for {node.name}")
+    fn = getattr(mod, "round_function", None)
+    fn_name = getattr(fn, "__name__", "") if fn is not None else ""
+    fn_name = fn_name.lower()
+    if "floor" in fn_name:
+        kind = LayerKind.FLOOR.value
+    elif "ceil" in fn_name:
+        kind = LayerKind.CEIL.value
+    elif "round" in fn_name:
+        kind = LayerKind.ROUND.value
+    else:
+        raise NotImplementedError(
+            f"OnnxRound at {node.name}: unrecognised round_function "
+            f"{fn_name!r}; expected one of floor/ceil/round"
+        )
+    out_vars = self._same_size_forward()
+    layer_id = self._add_layer(
+        kind,
+        {"input_shape": self.shape, "output_shape": self.shape},
+        self.prev_out, out_vars,
+    )
+    self.prev_out = out_vars
+    self._register_node(node.name, layer_id)
+
+
+def _convert_OnnxConstantOfShape(self, mod: nn.Module, node: fx.Node) -> None:
+    """OnnxConstantOfShape: y = full(shape, value).
+
+    Produces a tensor of a given shape filled with a scalar value
+    (stored on the module as the ``value`` buffer). Materialized as
+    an ACT ``CONSTANT`` layer when the shape input is statically
+    resolvable (initializer, constant subgraph, or a Shape op on the
+    model input). cctsdb_yolo_2023 hits this pattern in its YOLO
+    decoder where ``constant_of_shape_*`` is fed a static shape.
+
+    The shape input may be: a get_attr initializer, the output of a
+    Constant op, or a Shape op walked back through ``_evaluate_constant_subgraph``.
+    All three are handled uniformly via the existing resolution chain.
+    """
+    args = [a for a in node.args if isinstance(a, fx.Node)]
+    if not args:
+        raise ValueError(
+            f"OnnxConstantOfShape at {node.name}: expected at least 1 arg (shape)"
+        )
+    shape_t = self._resolve_constant_tensor(args[0].name)
+    if shape_t is None:
+        shape_t = self._evaluate_constant_subgraph(args[0].name)
+    if shape_t is None:
+        raise ValueError(
+            f"OnnxConstantOfShape at {node.name}: cannot resolve target shape "
+            f"(dynamic shape from variable activation; not supported in static ACT)"
+        )
+    out_shape = tuple(int(x) for x in shape_t.flatten().tolist())
+    fill = mod.value
+    if not isinstance(fill, torch.Tensor):
+        fill = torch.tensor(fill, dtype=self.dtype)
+    fill_scalar = float(fill.flatten()[0].item())
+    n_out = _prod(out_shape) or 1
+    flat = torch.full((n_out,), fill_scalar, dtype=self.dtype)
+    out_vars = self._alloc_ids(n_out)
+    layer_id = self._add_layer(
+        LayerKind.CONSTANT.value,
+        {"value": flat, "input_shape": out_shape, "output_shape": out_shape},
+        [], out_vars,
+    )
+    self.prev_out = out_vars
+    self.shape = out_shape
+    self._register_node(node.name, layer_id)
+
 
 def _convert_OnnxExpand(self, mod: nn.Module, node: fx.Node) -> None:
     """OnnxExpand: y = x.expand(shape) — broadcast to the given shape.
@@ -1407,10 +1607,11 @@ def _convert_OnnxWhere(self, mod: nn.Module, node: fx.Node) -> None:
     self._register_node(node.name, layer_id)
 
 def _convert_OnnxFunction(self, mod: nn.Module, node: fx.Node) -> None:
-    """OnnxFunction: dispatch by inner-function name (sign / abs / tanh)."""
+    """OnnxFunction: dispatch by inner-function name."""
     func_name = getattr(getattr(mod, 'function', None), '__name__', '').lower()
     kind = {'sign': LayerKind.SIGN, 'abs': LayerKind.ABS,
-            'tanh': LayerKind.TANH}.get(func_name)
+            'tanh': LayerKind.TANH, 'sin': LayerKind.SIN,
+            'cos': LayerKind.COS}.get(func_name)
     if kind is None:
         raise NotImplementedError(f"OnnxFunction({func_name}) at {node.name} (future enhancement)")
     if not self._get_predecessor_state(node):
@@ -1526,6 +1727,8 @@ ONNX_HANDLERS = {
     'OnnxCompare': _convert_OnnxCompare,
     'OnnxConcat': _convert_OnnxConcat,
     'OnnxConstant': _convert_OnnxConstant,
+    'OnnxConstantOfShape': _convert_OnnxConstantOfShape,
+    'OnnxRound': _convert_OnnxRound,
     'OnnxDropoutDynamic': _convert_OnnxDropoutDynamic,
     'OnnxExpand': _convert_OnnxExpand,
     'OnnxFlatten': _convert_OnnxFlatten,

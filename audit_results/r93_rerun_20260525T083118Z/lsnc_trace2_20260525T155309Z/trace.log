@@ -1,0 +1,31 @@
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: lsnc_relu/onnx/relu_quadrotor2d_state.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/lsnc_relu/onnx/relu_quadrotor2d_state.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: relu_quadrotor2d_state.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 6]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 6)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 6 inputs, 8 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 6 inputs, 8 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'lsnc_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed quadrotor2d_state_0.vnnlib: 13 query(ies)
+
+>>> tf_gather called id=15
+  L.params input_shape=(1, 6) axis=1 indices_shape=(2,)
+  Bin.lb.shape=(1, 2) numel=2
+  L.in_vars[:8]=[0, 1, 2, 3, 4, 5] (total 6)
+  L.out_vars=[46, 47]
+Traceback (most recent call last):
+  File "/data1/Kane/ACT/act/pipeline/cli.py", line 1151, in cmd_verify
+    _run_vnnlib_verify(args)
+  File "/data1/Kane/ACT/act/pipeline/cli.py", line 549, in _run_vnnlib_verify
+    return _run_vnnlib_verify_hybridz(args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/ACT/act/pipeline/cli.py", line 1036, in _run_vnnlib_verify_hybridz
+    raise RuntimeError(
+RuntimeError: VERIFICATION_RUN_FAILED: ERROR=1. Per-instance log preserved; inspect instance error fields.

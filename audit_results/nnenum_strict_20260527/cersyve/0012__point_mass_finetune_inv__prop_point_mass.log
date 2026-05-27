@@ -1,0 +1,27 @@
+Traceback (most recent call last):
+  File "/data1/Kane/nnenum/src/nnenum/nnenum.py", line 308, in main
+    network = load_onnx_network_optimized(onnx_filename)
+  File "/data1/Kane/nnenum/src/nnenum/onnx_network.py", line 356, in load_onnx_network_optimized
+    assert network_input is None, f"multiple onnx network inputs {network_input} and {i}"        
+AssertionError: multiple onnx network inputs data_0 and data_0
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/data1/Kane/miniconda3/envs/nnenumenv/lib/python3.8/runpy.py", line 194, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/data1/Kane/miniconda3/envs/nnenumenv/lib/python3.8/runpy.py", line 87, in _run_code
+    exec(code, run_globals)
+  File "/data1/Kane/nnenum/src/nnenum/nnenum.py", line 451, in <module>
+    main()
+  File "/data1/Kane/nnenum/src/nnenum/nnenum.py", line 311, in main
+    network = load_onnx_network(onnx_filename)
+  File "/data1/Kane/nnenum/src/nnenum/onnx_network.py", line 894, in load_onnx_network
+    submodel = stan_select_model_inputs_outputs(model, dtype, prev_input, end_node, io_shapes)
+  File "/data1/Kane/nnenum/src/nnenum/onnx_network.py", line 655, in stan_select_model_inputs_outputs
+    onnx_model = make_model_with_graph(model, graph)
+  File "/data1/Kane/nnenum/src/nnenum/onnx_network.py", line 737, in make_model_with_graph
+    onnx.checker.check_model(onnx_model, full_check=True)
+  File "/data1/Kane/miniconda3/envs/nnenumenv/lib/python3.8/site-packages/onnx/checker.py", line 104, in check_model
+    C.check_model(protobuf_string)
+onnx.onnx_cpp2py_export.checker.ValidationError: Graph must be in single static assignment (SSA) form, however 'dense_1_relu' has been used as output names multiple times.

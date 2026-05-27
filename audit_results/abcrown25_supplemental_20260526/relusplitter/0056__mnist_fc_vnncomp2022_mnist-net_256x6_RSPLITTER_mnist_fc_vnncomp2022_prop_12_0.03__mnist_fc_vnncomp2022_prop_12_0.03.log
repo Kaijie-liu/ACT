@@ -1,0 +1,625 @@
+[0;93m2026-05-26 17:55:46.440895977 [W:onnxruntime:Default, device_discovery.cc:283 GetGpuDevices] Failed to detect devices under "/sys/class/drm/card0": device_discovery.cc:93 ReadFileContents Failed to open file: "/sys/class/drm/card0/device/vendor"[m
+INFO     17:55:47     [tensor_storage.py:70] Hugepage enabled for branch-and-bound domains.
+Configurations:
+
+general:
+  device: cuda
+  seed: 100
+  conv_mode: patches
+  deterministic: false
+  double_fp: false
+  loss_reduction_func: sum
+  sparse_alpha: true
+  sparse_interm: true
+  save_adv_example: true
+  verify_onnxruntime_output: false
+  eval_adv_example: false
+  onnx_adv_example: false
+  show_adv_example: false
+  precompile_jit: true
+  reset_seed_after_precompile: false
+  prepare_only: false
+  complete_verifier: auto
+  enable_incomplete_verification: true
+  csv_name: instances.csv
+  results_file: /data1/Kane/ACT/audit_results/abcrown25_supplemental_20260526/relusplitter/0056__mnist_fc_vnncomp2022_mnist-net_256x6_RSPLITTER_mnist_fc_vnncomp2022_prop_12_0.03__mnist_fc_vnncomp2022_prop_12_0.03.result
+  root_path: ../../vnncomp2025_benchmarks/benchmarks/relusplitter
+  deterministic_opt: false
+  graph_optimizer: 'Customized("custom_graph_optimizer", "default_optimizer")'
+  buffer_has_batchdim: false
+  save_output: false
+  output_file: out.pkl
+  return_optimized_model: false
+  store_all_specs_on_cpu: false
+  adhoc_tuning: null
+model:
+  name: null
+  path: null
+  onnx_path: /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/relusplitter/onnx/mnist_fc_vnncomp2022_mnist-net_256x6_RSPLITTER_mnist_fc_vnncomp2022_prop_12_0.03.onnx
+  onnx_path_prefix: ''
+  cache_onnx_conversion: false
+  debug_onnx: false
+  onnx_quirks: '''Reshape'': ''fix_batch_size'': True'
+  input_shape: null
+  onnx_loader: default_onnx_and_vnnlib_loader
+  onnx_optimization_flags: []
+  onnx_vnnlib_joint_optimization_flags: none
+  check_optimized: false
+  flatten_final_output: false
+  optimize_graph: null
+  with_jacobian: false
+data:
+  start: 0
+  end: 10000
+  select_instance: null
+  num_outputs: 10
+  mean: 0.0
+  std: 1.0
+  pkl_path: null
+  dataset: null
+  data_filter_path: null
+  data_idx_file: null
+specification:
+  type: lp
+  robustness_type: verified-acc
+  norm: .inf
+  epsilon: null
+  epsilon_min: 0.0
+  vnnlib_path: /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/relusplitter/vnnlib/mnist_fc_vnncomp2022_prop_12_0.03.vnnlib
+  vnnlib_path_prefix: ''
+  shrink_eps: null
+  rhs_offset: null
+solver:
+  batch_size: 4
+  auto_enlarge_batch_size: true
+  batched_crown_auto_enlarge_max_vram_ratio: 0.9
+  min_batch_size_ratio: 1
+  use_float64_in_last_iteration: false
+  early_stop_patience: 10
+  start_save_best: -1
+  bound_prop_method: alpha-crown
+  init_bound_prop_method: same
+  prune_after_crown: true
+  optimize_disjuncts_separately: false
+  build_batch_size: 1000000
+  skip_with_refined_bound: true
+  forward_before_compute_bounds: false
+  crown:
+    batch_size: 1000000000
+    max_crown_size: 1000000000
+    activation_bound_option: adaptive
+    compare_crown_with_ibp: false
+  alpha-crown:
+    alpha: true
+    lr_alpha: 0.1
+    iteration: 100
+    share_alphas: false
+    lr_decay: 0.98
+    full_conv_alpha: true
+    max_coeff_mul: .inf
+    matmul_share_alphas: false
+    disable_optimization: []
+    max_time: 1.0
+    alpha_dtype: float16
+  invprop:
+    apply_output_constraints_to: []
+    tighten_input_bounds: false
+    best_of_oc_and_no_oc: false
+    directly_optimize: []
+    oc_lr: 0.1
+    share_gammas: false
+  beta-crown:
+    lr_alpha: 0.01
+    lr_beta: 0.01
+    lr_decay: 0.98
+    optimizer: adam
+    iteration: 50
+    beta: true
+    beta_warmup: true
+    enable_opt_interm_bounds: false
+    all_node_split_LP: false
+  forward:
+    refine: false
+    max_dim: 10000
+    reset_threshold: 1.0
+  intermediate_refinement:
+    enabled: false
+    batch_size: 10
+    opt_coeffs: false
+    opt_bias: false
+    lr: 0.05
+    layers: [-1]
+    max_domains: 1000
+  mip:
+    unstable_neuron_threshold: 0
+    parallel_solvers: null
+    solver_threads: 1
+    refine_neuron_timeout: 15
+    refine_neuron_time_percentage: 0.8
+    early_stop: true
+    adv_warmup: true
+    mip_solver: gurobi
+    skip_unsafe: false
+    topk_filter: 1.0
+    sliding_window: -1
+    extra_constraint: false
+    refine_neuron_timeout_increasement: 0
+    timeout_neuron_percentage: 0.3
+    remaining_timeout_threshold: 1
+    remove_unstable_neurons: false
+    lp_solver: false
+bab:
+  max_domains: .inf
+  decision_thresh: 0
+  timeout: 90.0
+  timeout_scale: 1
+  max_iterations: -1
+  override_timeout: null
+  get_upper_bound: false
+  pruning_in_iteration: true
+  pruning_in_iteration_ratio: 0.2
+  sort_targets: false
+  batched_domain_list: true
+  optimized_interm: ''
+  interm_transfer: true
+  recompute_interm: false
+  sort_domain_interval: -1
+  vanilla_crown: false
+  tree_traversal: depth_first
+  hugetensor_allocator: true
+  cut:
+    enabled: false
+    cuts_path: null
+    implication: false
+    bab_cut: true
+    lp_cut: false
+    method: null
+    lr: 0.01
+    lr_decay: 1.0
+    iteration: 100
+    bab_iteration: -1
+    early_stop_patience: -1
+    lr_beta: 0.01
+    number_cuts: 50
+    topk_cuts_in_filter: 1000
+    batch_size_primal: 100
+    max_num: 1000000000
+    patches_cut: false
+    cplex_cuts: true
+    cplex_cuts_wait: 0
+    cplex_cuts_revpickup: true
+    cut_reference_bounds: true
+    fix_intermediate_bounds: false
+    _tmp_cuts: null
+    fixed_cuts: false
+    add_implied_cuts: false
+    add_input_cuts: false
+    biccos:
+      enabled: false
+      constraint_strengthening: true
+      recursively_strengthening: false
+      drop_ratio: 0.5
+      verified_bonus: 0.3
+      max_infer_iter: 20
+      max_domain: 10000.0
+      heuristic: neuron_influence_score
+      save_biccos_cuts: false
+      multi_tree_branching:
+        enabled: false
+        restore_best_tree: false
+        keep_n_best_domains: 1
+        k_splits: 1
+        iterations: 1
+  clip_n_verify:
+    rearrange_constraints: false
+    alpha_crown: false
+    prune: false
+    final_layer: false
+    clip_input_domain:
+      enabled: true
+      clip_type: relaxed
+      heuristic_K: 0.0
+      clip_iterations: 1
+      clip_calculate_volume_metrics: false
+    clip_interm_domain:
+      enabled: true
+      with_input: false
+      clip_in_alpha_crown: false
+      topk_objective: 20
+  branching:
+    method: kfsb
+    candidates: 10
+    reduceop: max
+    enable_intermediate_bound_opt: false
+    branching_input_and_activation: false
+    branching_input_and_activation_order: [input, relu]
+    branching_input_iterations: 30
+    branching_relu_iterations: 50
+    nonlinear_split:
+      method: bbps
+      disable: false
+      branching_point_method: uniform
+      num_branches: 2
+      filter: false
+      filter_beta: false
+      filter_clamp: false
+      filter_batch_size: 10000
+      filter_iterations: 25
+      relu_only: false
+      loose_tanh_threshold: null
+      branching_point:
+        db_path: branching_points.pt
+        num_iterations: 1000
+        batch_size: 1000000
+        range_l: -5.0
+        range_u: 5.0
+        log_interval: 100
+        step_size_1d: 0.01
+        step_size: 0.2
+    input_split:
+      split_hint: null
+      enable: false
+      reorder_bab: true
+      input_dim_threshold: 20
+      adv_check: 0
+      split_partitions: 2
+      sb_margin_weight: 1.0
+      sb_sum: false
+      sb_primary_spec: null
+      bf_backup_thresh: -1
+      bf_rhs_offset: 0
+      bf_iters: 1000000000.0
+      bf_batch_size: 100000
+      bf_zero_crossing_score: false
+      touch_zero_score: 0
+      ibp_enhancement: false
+      compare_with_old_bounds: true
+      update_rhs_with_attack: false
+      sb_coeff_thresh: 2.0
+      sort_index: null
+      sort_descending: true
+      show_progress: false
+      presplit_domains: null
+      skip_getting_worst_domain: false
+  attack:
+    enabled: false
+    beam_candidates: 8
+    beam_depth: 7
+    max_dive_fix_ratio: 0.8
+    min_local_free_ratio: 0.2
+    mip_start_iteration: 5
+    mip_timeout: 30.0
+    adv_pool_threshold: null
+    refined_mip_attacker: false
+    refined_batch_size: null
+attack:
+  general_attack: true
+  pgd_order: skip
+  pgd_steps: 100
+  pgd_restarts: 30
+  pgd_batch_size: 100000000
+  pgd_early_stop: true
+  pgd_lr_decay: 0.99
+  pgd_alpha: auto
+  pgd_alpha_scale: false
+  pgd_loss_mode: null
+  pgd_restart_when_stuck: false
+  enable_mip_attack: false
+  adv_saver: default_adv_saver
+  adv_verifier: default_adv_verifier
+  early_stop_condition: default_early_stop_condition
+  adv_example_finalizer: default_adv_example_finalizer
+  pgd_loss: default_pgd_loss
+  cex_path: ./test_cex.txt
+  attack_mode: diversed_PGD
+  attack_tolerance: 0.0
+  attack_func: attack_with_general_specs
+  gama_lambda: 10.0
+  gama_decay: 0.9
+  input_split:
+    pgd_steps: 100
+    pgd_restarts: 30
+    pgd_alpha: auto
+  input_split_check_adv:
+    enabled: auto
+    pgd_steps: 5
+    pgd_restarts: 5
+    pgd_alpha: auto
+    max_num_domains: 10
+debug:
+  view_model: false
+  lp_test: null
+  rescale_vnnlib_ptb: null
+  test_optimized_bounds: false
+  test_optimized_bounds_after_n_iterations: 0
+  print_verbose_decisions: false
+  sanity_check: null
+  save_minimal_config: null
+  save_minimal_config_omit_keys: []
+/data1/Kane/miniconda3/envs/abcrown25/lib/python3.11/site-packages/onnx2pytorch/convert/layer.py:29: UserWarning: The given NumPy array is not writable, and PyTorch does not support non-writable tensors. This means writing to this tensor will result in undefined behavior. You may want to copy the array to protect its data or make it writable before converting it to a tensor. This type of warning will be suppressed for the rest of this program. (Triggered internally at /pytorch/torch/csrc/utils/tensor_numpy.cpp:206.)
+  layer.weight.data = torch.from_numpy(numpy_helper.to_array(weight))
+/data1/Kane/miniconda3/envs/abcrown25/lib/python3.11/site-packages/onnx2pytorch/convert/model.py:151: UserWarning: Using experimental implementation that allows 'batch_size > 1'.Batchnorm layers could potentially produce false outputs.
+  warnings.warn(
+/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/optimize_graph.py:192: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+  and abs(float(bs[j] + bs[j+1])) < atol):
+
+Experiments at Tue May 26 17:55:47 2026 on dell-pro-max-tower-t2
+Pre-compile jit kernels on a toy network...
+JIT kernels compiled in 1.2480s.
+Internal results will be saved to /data1/Kane/ACT/audit_results/abcrown25_supplemental_20260526/relusplitter/0056__mnist_fc_vnncomp2022_mnist-net_256x6_RSPLITTER_mnist_fc_vnncomp2022_prop_12_0.03__mnist_fc_vnncomp2022_prop_12_0.03.result.
+
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% idx: 0, vnnlib ID: 0 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Using onnx /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/relusplitter/onnx/mnist_fc_vnncomp2022_mnist-net_256x6_RSPLITTER_mnist_fc_vnncomp2022_prop_12_0.03.onnx
+Using vnnlib /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/relusplitter/vnnlib/mnist_fc_vnncomp2022_prop_12_0.03.vnnlib
+Precompiled vnnlib file found at /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/relusplitter/vnnlib/mnist_fc_vnncomp2022_prop_12_0.03.vnnlib.compiled
+Loading onnx /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/relusplitter/onnx/mnist_fc_vnncomp2022_mnist-net_256x6_RSPLITTER_mnist_fc_vnncomp2022_prop_12_0.03.onnx with quirks {'Reshape': {'fix_batch_size': True}}
+Finished onnx model loading in 0.0192 seconds
+Finished vnnlib processing in 0.086176 seconds
+Disabling Clip-and-Verify because it does not support bab-refine!
+Using temporary cuts path: <TemporaryDirectory '/tmp/abcrown_cuts_nq3y2azi'>
+Model: BoundedModule(
+  (/0): BoundInput(name=/0, inputs=[], perturbed=True)
+  (/17): BoundParams(name=/17, inputs=[], perturbed=False)
+  (/18): BoundParams(name=/18, inputs=[], perturbed=False)
+  (/19): BoundParams(name=/19, inputs=[], perturbed=False)
+  (/20): BoundParams(name=/20, inputs=[], perturbed=False)
+  (/21): BoundParams(name=/21, inputs=[], perturbed=False)
+  (/22): BoundParams(name=/22, inputs=[], perturbed=False)
+  (/23): BoundParams(name=/23, inputs=[], perturbed=False)
+  (/24): BoundParams(name=/24, inputs=[], perturbed=False)
+  (/25): BoundParams(name=/25, inputs=[], perturbed=False)
+  (/26): BoundParams(name=/26, inputs=[], perturbed=False)
+  (/27): BoundParams(name=/27, inputs=[], perturbed=False)
+  (/28): BoundParams(name=/28, inputs=[], perturbed=False)
+  (/29): BoundParams(name=/29, inputs=[], perturbed=False)
+  (/30): BoundParams(name=/30, inputs=[], perturbed=False)
+  (/31): BoundParams(name=/31, inputs=[], perturbed=False)
+  (/32): BoundParams(name=/32, inputs=[], perturbed=False)
+  (/33): BoundFlatten(name=/33, inputs=[/0], perturbed=True)
+  (/input-7): BoundLinear(name=/input-7, inputs=[/input/optimized/relu, /21, /22], perturbed=True)
+  (/39): BoundRelu(name=/39, inputs=[/input-7], perturbed=True)
+  (/input-11): BoundLinear(name=/input-11, inputs=[/39, /23, /24], perturbed=True)
+  (/41): BoundRelu(name=/41, inputs=[/input-11], perturbed=True)
+  (/input-15): BoundLinear(name=/input-15, inputs=[/41, /25, /26], perturbed=True)
+  (/43): BoundRelu(name=/43, inputs=[/input-15], perturbed=True)
+  (/input-19): BoundLinear(name=/input-19, inputs=[/43, /27, /28], perturbed=True)
+  (/45): BoundRelu(name=/45, inputs=[/input-19], perturbed=True)
+  (/input-23): BoundLinear(name=/input-23, inputs=[/45, /29, /30], perturbed=True)
+  (/47): BoundRelu(name=/47, inputs=[/input-23], perturbed=True)
+  (/48): BoundLinear(name=/48, inputs=[/47, /31, /32], perturbed=True)
+  (/input/optimized/weight): BoundParams(name=/input/optimized/weight, inputs=[], perturbed=False)
+  (/input/optimized/bias): BoundParams(name=/input/optimized/bias, inputs=[], perturbed=False)
+  (/input/optimized): BoundLinear(name=/input/optimized, inputs=[/33, /input/optimized/weight, /input/optimized/bias], perturbed=True)
+  (/input/optimized/relu): BoundRelu(name=/input/optimized/relu, inputs=[/input/optimized], perturbed=True)
+)
+Original output in the first batch: tensor([[ 9.51834023e-03,  4.57071513e-03, -1.67772174e-03, -7.29049742e-03,
+          3.27825546e-04,  1.37633383e-02,  1.79680735e-02,  3.83311510e-03,
+          9.96516109e-01, -2.54075974e-03]], device='cuda:0')
+Split layers:
+Nonlinear functions:
+   BoundRelu(name=/39, inputs=[/input-7], perturbed=True)
+   BoundRelu(name=/41, inputs=[/input-11], perturbed=True)
+   BoundRelu(name=/43, inputs=[/input-15], perturbed=True)
+   BoundRelu(name=/45, inputs=[/input-19], perturbed=True)
+   BoundRelu(name=/47, inputs=[/input-23], perturbed=True)
+   BoundRelu(name=/input/optimized/relu, inputs=[/input/optimized], perturbed=True)
+build batch [1/1]
+layer /39 using sparse-features alpha with shape [53]; unstable size 53; total size 256 ([1, 256])
+layer /39 start_node /input-11 using sparse-spec alpha [2, 36, 1, 53] with unstable size 35 total_size 256 output_shape torch.Size([256])
+layer /39 start_node /input-15 using sparse-spec alpha [2, 114, 1, 53] with unstable size 113 total_size 256 output_shape torch.Size([256])
+layer /39 start_node /input-19 using full alpha [2, 256, 1, 53] with unstable size 256 total_size 256 output_shape torch.Size([256])
+layer /39 start_node /input-23 using full alpha [2, 256, 1, 53] with unstable size 256 total_size 256 output_shape torch.Size([256])
+layer /39 start_node /48 using full alpha [2, 9, 1, 53] with unstable size None total_size 9 output_shape 9
+layer /41 using sparse-features alpha with shape [35]; unstable size 35; total size 256 ([1, 256])
+layer /41 start_node /input-15 using sparse-spec alpha [2, 114, 1, 35] with unstable size 113 total_size 256 output_shape torch.Size([256])
+layer /41 start_node /input-19 using full alpha [2, 256, 1, 35] with unstable size 256 total_size 256 output_shape torch.Size([256])
+layer /41 start_node /input-23 using full alpha [2, 256, 1, 35] with unstable size 256 total_size 256 output_shape torch.Size([256])
+layer /41 start_node /48 using full alpha [2, 9, 1, 35] with unstable size None total_size 9 output_shape 9
+layer /43 using sparse-features alpha with shape [113]; unstable size 113; total size 256 ([1, 256])
+layer /43 start_node /input-19 using full alpha [2, 256, 1, 113] with unstable size 256 total_size 256 output_shape torch.Size([256])
+layer /43 start_node /input-23 using full alpha [2, 256, 1, 113] with unstable size 256 total_size 256 output_shape torch.Size([256])
+layer /43 start_node /48 using full alpha [2, 9, 1, 113] with unstable size None total_size 9 output_shape 9
+layer /45 using full alpha with shape torch.Size([256]); unstable size 256; total size 256 ([1, 256])
+layer /45 start_node /input-23 using full alpha [2, 256, 1, 256] with unstable size 256 total_size 256 output_shape torch.Size([256])
+layer /45 start_node /48 using full alpha [2, 9, 1, 256] with unstable size None total_size 9 output_shape 9
+layer /47 using full alpha with shape torch.Size([256]); unstable size 256; total size 256 ([1, 256])
+layer /47 start_node /48 using full alpha [2, 9, 1, 256] with unstable size None total_size 9 output_shape 9
+layer /input/optimized/relu using sparse-features alpha with shape [19]; unstable size 19; total size 256 ([1, 256])
+layer /input/optimized/relu start_node /input-7 using sparse-spec alpha [2, 54, 1, 19] with unstable size 53 total_size 256 output_shape torch.Size([256])
+layer /input/optimized/relu start_node /input-11 using sparse-spec alpha [2, 36, 1, 19] with unstable size 35 total_size 256 output_shape torch.Size([256])
+layer /input/optimized/relu start_node /input-15 using sparse-spec alpha [2, 114, 1, 19] with unstable size 113 total_size 256 output_shape torch.Size([256])
+layer /input/optimized/relu start_node /input-19 using full alpha [2, 256, 1, 19] with unstable size 256 total_size 256 output_shape torch.Size([256])
+layer /input/optimized/relu start_node /input-23 using full alpha [2, 256, 1, 19] with unstable size 256 total_size 256 output_shape torch.Size([256])
+layer /input/optimized/relu start_node /48 using full alpha [2, 9, 1, 19] with unstable size None total_size 9 output_shape 9
+Optimizable variables initialized.
+initial CROWN bounds (first 10 items): [-250.64450073242188, -284.97607421875, -260.6026611328125, -261.2833251953125, -235.77198791503906, -250.10498046875, -293.97509765625, -250.09840393066406, -286.66864013671875]
+prune_after_crown optimization in use
+  original spec size = torch.Size([1, 9])
+  pruned spec size = torch.Size([1, 9])
+Using alpha-CROWN to initialize bounds.
+best_l after optimization: -33.333984375
+alpha/beta optimization time: 2.2015976905822754
+initial alpha-crown bounds (first 10 items): [-3.5284264087677, -3.5838136672973633, -3.9398653507232666, -3.9620003700256348, -3.3023557662963867, -3.4765939712524414, -4.049684524536133, -3.628612756729126, -3.862633466720581]
+Global lower bound: -4.049684524536133
+torch.Size([1, 9])
+0 / 9 OR specs are verified.
+Verified OR indices (first 10 items): []
+Verified OR lbs (first 10 items): []
+Unverified OR indices (first 10 items): [0, 1, 2, 3, 4, 5, 6, 7, 8]
+Unverified OR lbs (first 10 items): [[-3.5284264087677], [-3.5838136672973633], [-3.9398653507232666], [-3.9620003700256348], [-3.3023557662963867], [-3.4765939712524414], [-4.049684524536133], [-3.628612756729126], [-3.862633466720581]]
+Start solving intermediate bounds with MIP...
+layer /39 using sparse-features alpha with shape [53]; unstable size 53; total size 256 ([1, 256])
+layer /39 start_node /input-11 using sparse-spec alpha [2, 36, 1, 53] with unstable size 35 total_size 256 output_shape torch.Size([256])
+layer /39 start_node /input-15 using sparse-spec alpha [2, 114, 1, 53] with unstable size 113 total_size 256 output_shape torch.Size([256])
+layer /39 start_node /input-19 using full alpha [2, 256, 1, 53] with unstable size 256 total_size 256 output_shape torch.Size([256])
+layer /39 start_node /input-23 using full alpha [2, 256, 1, 53] with unstable size 256 total_size 256 output_shape torch.Size([256])
+layer /39 start_node /48 using full alpha [2, 9, 1, 53] with unstable size None total_size 9 output_shape 9
+layer /41 using sparse-features alpha with shape [35]; unstable size 35; total size 256 ([1, 256])
+layer /41 start_node /input-15 using sparse-spec alpha [2, 114, 1, 35] with unstable size 113 total_size 256 output_shape torch.Size([256])
+layer /41 start_node /input-19 using full alpha [2, 256, 1, 35] with unstable size 256 total_size 256 output_shape torch.Size([256])
+layer /41 start_node /input-23 using full alpha [2, 256, 1, 35] with unstable size 256 total_size 256 output_shape torch.Size([256])
+layer /41 start_node /48 using full alpha [2, 9, 1, 35] with unstable size None total_size 9 output_shape 9
+layer /43 using sparse-features alpha with shape [113]; unstable size 113; total size 256 ([1, 256])
+layer /43 start_node /input-19 using full alpha [2, 256, 1, 113] with unstable size 256 total_size 256 output_shape torch.Size([256])
+layer /43 start_node /input-23 using full alpha [2, 256, 1, 113] with unstable size 256 total_size 256 output_shape torch.Size([256])
+layer /43 start_node /48 using full alpha [2, 9, 1, 113] with unstable size None total_size 9 output_shape 9
+layer /45 using full alpha with shape torch.Size([256]); unstable size 256; total size 256 ([1, 256])
+layer /45 start_node /input-23 using full alpha [2, 256, 1, 256] with unstable size 256 total_size 256 output_shape torch.Size([256])
+layer /45 start_node /48 using full alpha [2, 9, 1, 256] with unstable size None total_size 9 output_shape 9
+layer /47 using full alpha with shape torch.Size([256]); unstable size 256; total size 256 ([1, 256])
+layer /47 start_node /48 using full alpha [2, 9, 1, 256] with unstable size None total_size 9 output_shape 9
+layer /input/optimized/relu using sparse-features alpha with shape [19]; unstable size 19; total size 256 ([1, 256])
+layer /input/optimized/relu start_node /input-7 using sparse-spec alpha [2, 54, 1, 19] with unstable size 53 total_size 256 output_shape torch.Size([256])
+layer /input/optimized/relu start_node /input-11 using sparse-spec alpha [2, 36, 1, 19] with unstable size 35 total_size 256 output_shape torch.Size([256])
+layer /input/optimized/relu start_node /input-15 using sparse-spec alpha [2, 114, 1, 19] with unstable size 113 total_size 256 output_shape torch.Size([256])
+layer /input/optimized/relu start_node /input-19 using full alpha [2, 256, 1, 19] with unstable size 256 total_size 256 output_shape torch.Size([256])
+layer /input/optimized/relu start_node /input-23 using full alpha [2, 256, 1, 19] with unstable size 256 total_size 256 output_shape torch.Size([256])
+layer /input/optimized/relu start_node /48 using full alpha [2, 9, 1, 19] with unstable size None total_size 9 output_shape 9
+Optimizable variables initialized.
+Set parameter WLSAccessID
+INFO     17:55:52     [solver_module.py:119] Set parameter WLSAccessID
+Set parameter WLSSecret
+INFO     17:55:52     [solver_module.py:119] Set parameter WLSSecret
+Set parameter LicenseID to value 2542227
+INFO     17:55:52     [solver_module.py:119] Set parameter LicenseID to value 2542227
+Academic license 2542227 - for non-commercial use only - registered to ka___@unsw.edu.au
+INFO     17:55:52     [solver_module.py:119] Academic license 2542227 - for non-commercial use only - registered to ka___@unsw.edu.au
+preset mip_multi_proc as default setting: 20
+mip_multi_proc: 20, mip_threads: 1,total threads used: 20, mip_perneuron_refine_timeout: 15
+[total time budget for MIP: 72.0]
+
+refine the bounds for layer  /input/optimized/relu
+maximum relu layer improved by MIP so far 0
+refine the bounds for layer  /39
+current relu layer: /39, idx: 1
+timeout for this layer is 15
+Removed 0 unstable neurons in MIP based on the coefficient matrix.
+PGD done for relu layer 1
+Solving MIP for lay/input-7_125,[-5.44829797744751,0.2509005665779114]=>[-5.44829797744751,-1e-05] (-1,-1; 15,-1), time: 0.1173s, #vars: 1337, #constrs: 569, improved: True
+Solving MIP for lay/input-7_56,[-5.801733016967773,0.6882030963897705]=>[-5.801733016967773,-1e-05] (-1,-1; 15,-1), time: 0.1242s, #vars: 1337, #constrs: 569, improved: True
+Solving MIP for lay/input-7_242,[-0.4883655309677124,4.1420464515686035]=>[1e-05,4.1420464515686035] (15,-1; -1,-1), time: 0.1267s, #vars: 1337, #constrs: 569, improved: True
+Solving MIP for lay/input-7_62,[-5.590115547180176,1.3676421642303467]=>[-5.590115547180176,-1e-05] (-1,-1; 15,-1), time: 0.1667s, #vars: 1337, #constrs: 569, improved: True
+Solving MIP for lay/input-7_45,[-5.066361904144287,0.32053202390670776]=>[-5.066361904144287,-1e-05] (-1,-1; 15,-1), time: 0.1884s, #vars: 1337, #constrs: 569, improved: True
+Solving MIP for lay/input-7_28,[-5.045724868774414,1.6803427934646606]=>[-4.5010686605634564,0.8043253320844578] (2,-1; 2,-1), time: 0.2063s, #vars: 1337, #constrs: 569, improved: True
+Solving MIP for lay/input-7_158,[-5.679612159729004,0.22877709567546844]=>[-5.679612159729004,-1e-05] (-1,-1; 15,-1), time: 0.1126s, #vars: 1337, #constrs: 569, improved: True
+Solving MIP for lay/input-7_17,[-0.29790472984313965,5.225744247436523]=>[1e-05,5.225744247436523] (15,-1; -1,-1), time: 0.0799s, #vars: 1337, #constrs: 569, improved: True
+Solving MIP for lay/input-7_66,[-3.4749560356140137,3.466555595397949]=>[-2.9767967546451723,2.5671941857357483] (2,-1; 2,-1), time: 0.2587s, #vars: 1337, #constrs: 569, improved: True
+Solving MIP for lay/input-7_163,[-2.792903423309326,0.4324102997779846]=>[-2.792903423309326,-1e-05] (-1,-1; 15,-1), time: 0.1679s, #vars: 1337, #constrs: 569, improved: True
+Solving MIP for lay/input-7_229,[-3.959242343902588,1.725978970527649]=>[-2.697183765361049,1.3920834360039045] (2,-1; 2,-1), time: 0.3313s, #vars: 1337, #constrs: 569, improved: True
+Solving MIP for lay/input-7_124,[-5.312880039215088,0.8159667253494263]=>[-4.140110897015828,0.15779472839477543] (2,-1; 2,-1), time: 0.3469s, #vars: 1337, #constrs: 569, improved: True
+Solving MIP for lay/input-7_142,[-0.8088865280151367,5.141465187072754]=>[1e-05,5.141465187072754] (15,-1; -1,-1), time: 0.0803s, #vars: 1337, #constrs: 569, improved: True
+Solving MIP for lay/input-7_64,[-5.068089485168457,1.1906161308288574]=>[-4.256635333275832,0.22993885034452852] (2,-1; 2,-1), time: 0.3897s, #vars: 1337, #constrs: 569, improved: True
+Solving MIP for lay/input-7_135,[-4.520086288452148,0.6365257501602173]=>[-3.1260442935627664,0.36680955277402355] (2,-1; 2,-1), time: 0.4146s, #vars: 1337, #constrs: 569, improved: True
+Solving MIP for lay/input-7_170,[-2.100571632385254,3.4435153007507324]=>[-1.1799664209773033,2.926899777985132] (2,-1; 2,-1), time: 0.4207s, #vars: 1337, #constrs: 569, improved: True
+Solving MIP for lay/input-7_145,[-5.626883506774902,0.023281335830688477]=>[-5.626883506774902,-1e-05] (-1,-1; 15,-1), time: 0.0894s, #vars: 1337, #constrs: 569, improved: True
+Solving MIP for lay/input-7_21,[-3.2931604385375977,3.210103988647461]=>[-2.230895207219308,2.4830255649390445] (2,-1; 2,-1), time: 0.4465s, #vars: 1337, #constrs: 569, improved: True
+Solving MIP for lay/input-7_241,[-3.894533634185791,1.1907838582992554]=>[-3.05099764466383,0.8295964307434531] (2,-1; 2,-1), time: 0.3383s, #vars: 1337, #constrs: 569, improved: True
+Solving MIP for lay/input-7_55,[-1.6682332754135132,2.7275149822235107]=>[-0.56135440016447,2.2377845940352534] (2,-1; 2,-1), time: 0.4810s, #vars: 1337, #constrs: 569, improved: True
+Solving MIP for lay/input-7_157,[-2.863438844680786,4.1946892738342285]=>[-2.0381328591252172,3.500508102818845] (2,-1; 2,-1), time: 0.4980s, #vars: 1337, #constrs: 569, improved: True
+Solving MIP for lay/input-7_94,[-2.3172593116760254,1.2338762283325195]=>[-1.6226435908533607,0.6729150415043685] (2,-1; 2,-1), time: 0.5069s, #vars: 1337, #constrs: 569, improved: True
+Solving MIP for lay/input-7_209,[-4.481212139129639,1.1662951707839966]=>[-3.4708239874147564,0.2899311752263379] (2,-1; 2,-1), time: 0.5226s, #vars: 1337, #constrs: 569, improved: True
+Solving MIP for lay/input-7_143,[-2.7691502571105957,2.993849754333496]=>[-1.9245320157796457,2.088960474492604] (2,-1; 2,-1), time: 0.5365s, #vars: 1337, #constrs: 569, improved: True
+Solving MIP for lay/input-7_198,[-4.650991916656494,3.1151325702667236]=>[-3.7264515982022677,2.103489230887099] (2,-1; 2,-1), time: 0.2903s, #vars: 1337, #constrs: 569, improved: True
+Solving MIP for lay/input-7_46,[-3.261086940765381,2.3866629600524902]=>[-2.6365878879998808,1.7825790325676378] (2,-1; 2,-1), time: 0.3089s, #vars: 1337, #constrs: 569, improved: True
+Solving MIP for lay/input-7_248,[-5.388559341430664,1.3909006118774414]=>[-4.252533841111257,1.018487271496086] (2,-1; 2,-1), time: 0.5340s, #vars: 1337, #constrs: 569, improved: True
+Solving MIP for lay/input-7_48,[-1.6235241889953613,6.292510986328125]=>[-0.5052246801346447,5.688489539706068] (2,-1; 2,-1), time: 0.2999s, #vars: 1337, #constrs: 569, improved: True
+Solving MIP for lay/input-7_69,[-4.515682220458984,1.311220645904541]=>[-3.6935827423257916,0.2957901172421514] (2,-1; 2,-1), time: 0.3738s, #vars: 1337, #constrs: 569, improved: True
+Solving MIP for lay/input-7_115,[-3.7747833728790283,0.5140998959541321]=>[-3.7747833728790283,-0.021567421641426165] (-1,-1; 2,-1), time: 0.2098s, #vars: 1337, #constrs: 569, improved: True
+Solving MIP for lay/input-7_90,[-0.7027825117111206,4.160760402679443]=>[1e-05,4.160760402679443] (15,-1; -1,-1), time: 0.0951s, #vars: 1337, #constrs: 569, improved: True
+Solving MIP for lay/input-7_122,[-2.8810198307037354,1.2756984233856201]=>[-2.0249306649069028,0.8706555742073634] (2,-1; 2,-1), time: 0.2568s, #vars: 1337, #constrs: 569, improved: True
+Solving MIP for lay/input-7_105,[-3.7717103958129883,2.7606115341186523]=>[-2.834362935255379,1.5851200278892104] (2,-1; 2,-1), time: 0.7212s, #vars: 1337, #constrs: 569, improved: True
+Solving MIP for lay/input-7_226,[-4.101996898651123,0.28664761781692505]=>[-4.101996898651123,-1e-05] (-1,-1; 15,-1), time: 0.1023s, #vars: 1337, #constrs: 569, improved: True
+Solving MIP for lay/input-7_216,[-3.5368733406066895,0.5295521020889282]=>[-3.5368733406066895,-1e-05] (-1,-1; 15,-1), time: 0.1090s, #vars: 1337, #constrs: 569, improved: True
+Solving MIP for lay/input-7_179,[-1.4505798816680908,3.0420048236846924]=>[-0.022954942788684204,2.77853424802015] (2,-1; 2,-1), time: 0.4016s, #vars: 1337, #constrs: 569, improved: True
+Solving MIP for lay/input-7_34,[-0.7140450477600098,4.7273268699646]=>[1e-05,4.7273268699646] (15,-1; -1,-1), time: 0.2082s, #vars: 1337, #constrs: 569, improved: True
+Solving MIP for lay/input-7_20,[-2.3532776832580566,4.093856334686279]=>[-1.388425705686097,3.731853879202588] (2,-1; 2,-1), time: 0.2553s, #vars: 1337, #constrs: 569, improved: True
+Solving MIP for lay/input-7_70,[-1.7541087865829468,3.4184868335723877]=>[-0.9485804296630889,2.6060060823973177] (2,-1; 2,-1), time: 0.4401s, #vars: 1337, #constrs: 569, improved: True
+Solving MIP for lay/input-7_189,[-2.2962589263916016,0.6181846261024475]=>[-2.2962589263916016,-1e-05] (-1,-1; 15,-1), time: 0.4060s, #vars: 1337, #constrs: 569, improved: True
+Solving MIP for lay/input-7_121,[-3.5857884883880615,1.362192988395691]=>[-2.716112279618872,0.9554662519470172] (2,-1; 2,-1), time: 0.3461s, #vars: 1337, #constrs: 569, improved: True
+Solving MIP for lay/input-7_92,[-3.066793203353882,3.2983665466308594]=>[-1.8323011395391766,2.99406411315647] (2,-1; 2,-1), time: 0.3224s, #vars: 1337, #constrs: 569, improved: True
+Solving MIP for lay/input-7_172,[-5.587219715118408,1.3421075344085693]=>[-4.771367520686669,0.35273214649784235] (2,-1; 2,-1), time: 0.3396s, #vars: 1337, #constrs: 569, improved: True
+Solving MIP for lay/input-7_134,[-2.791619062423706,2.579967737197876]=>[-1.410903747483851,2.2762796486504264] (2,-1; 2,-1), time: 0.3754s, #vars: 1337, #constrs: 569, improved: True
+Solving MIP for lay/input-7_42,[-4.439115524291992,1.4678912162780762]=>[-3.5411701278269376,0.5004045245500224] (2,-1; 2,-1), time: 0.6471s, #vars: 1337, #constrs: 569, improved: True
+Solving MIP for lay/input-7_253,[-1.504655122756958,2.9571890830993652]=>[-0.9766471293146374,2.276657589011773] (2,-1; 2,-1), time: 0.2728s, #vars: 1337, #constrs: 569, improved: True
+Solving MIP for lay/input-7_40,[-1.6607627868652344,2.7735323905944824]=>[-0.97013091361773,1.9472259637889642] (2,-1; 2,-1), time: 0.3187s, #vars: 1337, #constrs: 569, improved: True
+Solving MIP for lay/input-7_119,[-2.543429374694824,3.0068554878234863]=>[-1.8139135733857863,2.098279766979453] (2,-1; 2,-1), time: 0.4882s, #vars: 1337, #constrs: 569, improved: True
+Solving MIP for lay/input-7_2,[-2.8593006134033203,2.053377151489258]=>[-1.5838132867243626,1.5958608653159387] (2,-1; 2,-1), time: 0.4883s, #vars: 1337, #constrs: 569, improved: True
+Solving MIP for lay/input-7_148,[-1.9966888427734375,2.025489568710327]=>[-0.9947113848073164,1.7795735805204198] (2,-1; 2,-1), time: 0.4201s, #vars: 1337, #constrs: 569, improved: True
+Solving MIP for lay/input-7_151,[-2.9763412475585938,0.7289005517959595]=>[-2.3959705999966703,0.0957628004837171] (2,-1; 2,-1), time: 0.3565s, #vars: 1337, #constrs: 569, improved: True
+Solving MIP for lay/input-7_191,[-4.3781890869140625,3.0153985023498535]=>[-2.7630612244317803,2.545440435158335] (2,-1; 2,-1), time: 0.4953s, #vars: 1337, #constrs: 569, improved: True
+PGD done for relu layer 2
+MIP improved 52 nodes out of 52 unstable nodes for layer /39, time 1.9259
+MIP got 0 timeout nodes out of 52 nodes for layer /39
+maximum relu layer improved by MIP so far 1
+refine the bounds for layer  /41
+current relu layer: /41, idx: 2
+timeout for this layer is 15
+Removed 0 unstable neurons in MIP based on the coefficient matrix.
+Solving MIP for lay/input-11_73,[-1.2893905639648438,14.482810020446777]=>[1e-05,14.482810020446777] (15,-1; -1,-1), time: 0.1203s, #vars: 1665, #constrs: 933, improved: True
+Solving MIP for lay/input-11_174,[-19.76984977722168,1.0872015953063965]=>[-19.76984977722168,-1e-05] (-1,-1; 15,-1), time: 0.1254s, #vars: 1665, #constrs: 933, improved: True
+Solving MIP for lay/input-11_91,[-1.0776212215423584,11.20090103149414]=>[1e-05,11.20090103149414] (15,-1; -1,-1), time: 0.1305s, #vars: 1665, #constrs: 933, improved: True
+Solving MIP for lay/input-11_170,[-24.29856300354004,1.1033401489257812]=>[-24.29856300354004,-1e-05] (-1,-1; 15,-1), time: 0.2014s, #vars: 1665, #constrs: 933, improved: True
+Solving MIP for lay/input-11_47,[-22.418609619140625,0.6024360656738281]=>[-22.418609619140625,-1e-05] (-1,-1; 15,-1), time: 0.0799s, #vars: 1665, #constrs: 933, improved: True
+Solving MIP for lay/input-11_65,[-6.753605365753174,1.0709822177886963]=>[-6.753605365753174,-1e-05] (-1,-1; 15,-1), time: 0.2102s, #vars: 1665, #constrs: 933, improved: True
+Solving MIP for lay/input-11_52,[-19.780855178833008,2.9037013053894043]=>[-19.780855178833008,-1e-05] (-1,-1; 15,-1), time: 0.2282s, #vars: 1665, #constrs: 933, improved: True
+Solving MIP for lay/input-11_232,[-12.090545654296875,0.41848087310791016]=>[-12.090545654296875,-1e-05] (-1,-1; 15,-1), time: 0.2264s, #vars: 1665, #constrs: 933, improved: True
+Solving MIP for lay/input-11_158,[-0.7451462745666504,11.93266773223877]=>[1e-05,11.93266773223877] (15,-1; -1,-1), time: 0.0779s, #vars: 1665, #constrs: 933, improved: True
+Solving MIP for lay/input-11_195,[-1.0620293617248535,18.7115421295166]=>[1e-05,18.7115421295166] (15,-1; -1,-1), time: 0.0882s, #vars: 1665, #constrs: 933, improved: True
+Solving MIP for lay/input-11_98,[-11.468416213989258,1.9857730865478516]=>[-11.468416213989258,-1e-05] (-1,-1; 15,-1), time: 0.5328s, #vars: 1665, #constrs: 933, improved: True
+Solving MIP for lay/input-11_171,[-3.351911783218384,8.327341079711914]=>[1e-05,8.327341079711914] (15,-1; -1,-1), time: 0.6616s, #vars: 1665, #constrs: 933, improved: True
+Solving MIP for lay/input-11_133,[-10.517173767089844,2.581761598587036]=>[-10.517173767089844,-1e-05] (-1,-1; 15,-1), time: 0.6852s, #vars: 1665, #constrs: 933, improved: True
+Solving MIP for lay/input-11_240,[-3.437622308731079,9.481002807617188]=>[1e-05,9.481002807617188] (15,-1; -1,-1), time: 0.7877s, #vars: 1665, #constrs: 933, improved: True
+Solving MIP for lay/input-11_124,[-10.564031600952148,1.6872830390930176]=>[-10.564031600952148,-1e-05] (-1,-1; 15,-1), time: 0.6406s, #vars: 1665, #constrs: 933, improved: True
+Solving MIP for lay/input-11_31,[-15.466547012329102,2.767840623855591]=>[-15.466547012329102,-1e-05] (-1,-1; 15,-1), time: 0.8636s, #vars: 1665, #constrs: 933, improved: True
+Solving MIP for lay/input-11_207,[-13.891912460327148,2.0355067253112793]=>[-13.891912460327148,-1e-05] (-1,-1; 15,-1), time: 0.8722s, #vars: 1665, #constrs: 933, improved: True
+Solving MIP for lay/input-11_50,[-8.810516357421875,1.5987194776535034]=>[-8.810516357421875,-1e-05] (-1,-1; 15,-1), time: 0.8728s, #vars: 1665, #constrs: 933, improved: True
+Solving MIP for lay/input-11_188,[-8.19686508178711,2.9299118518829346]=>[-5.096323330194206,0.7108504901425201] (2,-1; 2,-1), time: 1.3547s, #vars: 1665, #constrs: 933, improved: True
+Solving MIP for lay/input-11_179,[-12.198919296264648,7.606335639953613]=>[-8.790297589779511,3.7841227532301263] (2,-1; 2,-1), time: 1.5514s, #vars: 1665, #constrs: 933, improved: True
+Solving MIP for lay/input-11_97,[-4.260847091674805,8.06745719909668]=>[-0.6316261569129957,5.455285942426115] (2,-1; 2,-1), time: 1.5912s, #vars: 1665, #constrs: 933, improved: True
+Solving MIP for lay/input-11_126,[-9.860227584838867,6.755377292633057]=>[-4.168623182311474,4.499318484308006] (2,-1; 2,-1), time: 1.6623s, #vars: 1665, #constrs: 933, improved: True
+Solving MIP for lay/input-11_249,[-8.234333992004395,2.4658782482147217]=>[-3.8557654280203,0.8151304302580045] (2,-1; 2,-1), time: 1.8056s, #vars: 1665, #constrs: 933, improved: True
+Solving MIP for lay/input-11_30,[-5.970056533813477,11.123537063598633]=>[1e-05,11.123537063598633] (15,-1; -1,-1), time: 1.9266s, #vars: 1665, #constrs: 933, improved: True
+Solving MIP for lay/input-11_10,[-6.964198112487793,6.399082660675049]=>[-2.4900245906952843,2.903759935472465] (2,-1; 2,-1), time: 2.1916s, #vars: 1665, #constrs: 933, improved: True
+Solving MIP for lay/input-11_155,[-8.758525848388672,8.244016647338867]=>[-2.0052065539014725,6.143058320557697] (2,-1; 2,-1), time: 2.4858s, #vars: 1665, #constrs: 933, improved: True
+PGD done for relu layer 3
+Run alpha-CROWN after refining relu idx 1
+relu layer: 1 has unstable to stable neurons: [(242, 1), (56, -1), (62, -1), (125, -1), (45, -1), (158, -1), (163, -1), (17, 1), (142, 1), (145, -1), (189, -1), (115, -1), (90, 1), (34, 1), (216, -1), (226, -1)]
+Early stop at 69th iter due to 10 iterations no improvement!
+alpha/beta optimization time: 2.1795315742492676
+
+all verified at 0th iter
+best_l after optimization: 7.011775493621826
+beta sum per layer: []
+alpha/beta optimization time: 0.014261245727539062
+alpha-CROWN with intermediate bounds by MIP: tensor([[0.72691381, 0.81068152, 0.77410758, 0.77062988, 0.80971628, 0.76519477,
+         0.77210146, 0.79496050, 0.78746980]], device='cuda:0') tensor([[0.99968541, 1.01051354, 1.01097465, 1.01023996, 1.01078534, 1.00255203,
+         0.99724048, 1.00189662, 1.00819230]], device='cuda:0')
+min of alpha-CROWN bounds 0.7269138097763062>=0, verified!
+MIP finished with 5.165893077850342s
+torch.Size([1, 9])
+refined global lb: tensor([[0.72691381],
+        [0.81068152],
+        [0.77410758],
+        [0.77062988],
+        [0.80971628],
+        [0.76519477],
+        [0.77210146],
+        [0.79496050],
+        [0.78746980]], device='cuda:0') min: tensor(0.72691381, device='cuda:0')
+Verified safe using alpha-CROWN with MIP improved bounds!
+9 / 9 OR specs are verified.
+Verified OR indices (first 10 items): [0, 1, 2, 3, 4, 5, 6, 7, 8]
+Verified OR lbs (first 10 items): [[0.7269138097763062], [0.8106815218925476], [0.7741075754165649], [0.7706298828125], [0.8097162842750549], [0.7651947736740112], [0.7721014618873596], [0.7949604988098145], [0.7874698042869568]]
+Unverified OR indices (first 10 items): []
+Unverified OR lbs (first 10 items): []
+Removing temporary cuts path: /tmp/abcrown_cuts_nq3y2azi
+Result: unsat
+Time: 8.901304483413696
+Warning: environment still referenced so free is deferred (Continue to use WLS)
+INFO     17:55:57     [__init__.py:1489] Warning: environment still referenced so free is deferred (Continue to use WLS)
+
+------------------------- COMMAND ------------------------------
+/data1/Kane/miniconda3/envs/abcrown25/bin/python /data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/abcrown.py --config /data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/exp_configs/vnncomp25/relusplitter.yaml --precompile_jit --onnx_path /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/relusplitter/onnx/mnist_fc_vnncomp2022_mnist-net_256x6_RSPLITTER_mnist_fc_vnncomp2022_prop_12_0.03.onnx --vnnlib_path /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/relusplitter/vnnlib/mnist_fc_vnncomp2022_prop_12_0.03.vnnlib --results_file /data1/Kane/ACT/audit_results/abcrown25_supplemental_20260526/relusplitter/0056__mnist_fc_vnncomp2022_mnist-net_256x6_RSPLITTER_mnist_fc_vnncomp2022_prop_12_0.03__mnist_fc_vnncomp2022_prop_12_0.03.result --timeout 90.0 --save_adv_example --pgd_order=skip
+----------------------------------------------------------------
+

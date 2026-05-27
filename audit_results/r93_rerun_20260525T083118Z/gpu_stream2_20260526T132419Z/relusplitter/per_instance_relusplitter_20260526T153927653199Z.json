@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "benchmark": "relusplitter",
+  "formal_mode": true,
+  "timestamp_utc": "20260526T153927653199Z",
+  "canonical_root": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks",
+  "receipt_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/gpu_stream2_20260526T132419Z/relusplitter",
+  "wall_min": 0.02830949624379476,
+  "counts": {
+    "CERTIFIED": 0,
+    "FALSIFIED": 0,
+    "UNKNOWN": 0,
+    "ERROR": 1
+  },
+  "run_status": "FAILED",
+  "per_instance": [
+    {
+      "official_instance_id": 14,
+      "benchmark": "relusplitter",
+      "onnx_model": "onnx/mnist_fc_vnncomp2022_mnist-net_256x4.onnx",
+      "vnnlib_spec": "vnnlib/mnist_fc_vnncomp2022_prop_7_0.03.vnnlib",
+      "model_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/relusplitter/onnx/mnist_fc_vnncomp2022_mnist-net_256x4.onnx",
+      "spec_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/relusplitter/vnnlib/mnist_fc_vnncomp2022_prop_7_0.03.vnnlib",
+      "internal_status": "ERROR",
+      "reportable_status": "ERROR",
+      "cli_normalized": "ERROR_OutOfMemoryError",
+      "count_bucket": "ERROR",
+      "queries": [],
+      "q_statuses": [],
+      "q_reportables": [],
+      "q_receipts": [],
+      "error": "OutOfMemoryError: CUDA out of memory. Tried to allocate 2.00 MiB. GPU 0 has a total capacity of 94.96 GiB of which 13.12 MiB is free. Process 2687037 has 690.00 MiB memory in use. Process 1547383 has 75.57 GiB memory in use. Process 1547404 has 17.39 GiB memory in use. Including non-PyTorch memory, this process has 702.00 MiB memory in use. Of the allocated memory 44.03 MiB is allocated by PyTorch, and 5.97 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)",
+      "wall_s": 1.6984989643096924,
+      "timeout_s": 60.0,
+      "instance_budget_exhausted": false
+    }
+  ]
+}

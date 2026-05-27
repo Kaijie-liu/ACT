@@ -1,0 +1,28 @@
+[ACT] Auto-detecting project root: ../ACT
+[ACT] Gurobi license found: ../ACT/modules/gurobi/gurobi.lic
+✅ Device Manager Initialized: device=cpu, dtype=torch.float64
+
+================================================================================
+ACT: Abstract Constraint Transformer
+Inference-based whitebox fuzzing for neural network verification
+================================================================================
+
+
+================================================================================
+VERIFICATION TEST: VNNLIB → VerifiableModel → verify_once
+================================================================================
+
+[vnnlib] category=lsnc_relu max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cpu, timeout=25.0s)
+  [  1/1] lsnc_relu/onnx/relu_quadrotor2d_state.onnx@vnnlib/quadrotor2d_state_0.vnnlib: ERROR_RuntimeError (0.1s)  V=0 A=0 U=0 E=1  R=0
+
+[vnnlib/hybridz] FINAL — total=1 wall=0.0 min
+  ERROR        1
+
+❌ Test failed: VERIFICATION_RUN_FAILED: ERROR=1. Per-instance log preserved; inspect instance error fields.
+
+================================================================================
+VERIFICATION TEST SUMMARY
+================================================================================
+  ❌ vnnlib                    FAILED
+================================================================================
+

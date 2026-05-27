@@ -27,6 +27,7 @@ from act.pipeline.cli import (
     select_pairs_by_official_ids,
     compute_run_status,
     IncompleteFormalAuditError,
+    remaining_instance_query_budget,
 )
 
 
@@ -213,6 +214,20 @@ class TestComputeRunStatus(unittest.TestCase):
         except IncompleteFormalAuditError as e:
             self.assertIn("ERROR_RECEIPT=2", str(e))
             self.assertIsInstance(e, RuntimeError)
+
+
+class TestRemainingInstanceQueryBudget(unittest.TestCase):
+    """A multi-query instance must share one fail-closed CLI budget."""
+
+    def test_subtracts_elapsed_time(self):
+        self.assertAlmostEqual(remaining_instance_query_budget(30.0, 7.5), 22.5)
+
+    def test_exhausted_budget_clamps_to_zero(self):
+        self.assertEqual(remaining_instance_query_budget(30.0, 30.0), 0.0)
+        self.assertEqual(remaining_instance_query_budget(30.0, 31.0), 0.0)
+
+    def test_negative_elapsed_does_not_increase_budget(self):
+        self.assertEqual(remaining_instance_query_budget(30.0, -1.0), 30.0)
 
 
 if __name__ == "__main__":

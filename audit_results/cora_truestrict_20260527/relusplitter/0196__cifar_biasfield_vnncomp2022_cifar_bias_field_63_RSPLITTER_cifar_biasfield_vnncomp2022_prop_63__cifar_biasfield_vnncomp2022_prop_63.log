@@ -1,0 +1,26 @@
+=== CORA STRICT: bench=relusplitter idx=196  timeout=180  start=2026-05-27 14:53:42
+=== onnx=onnx/cifar_biasfield_vnncomp2022_cifar_bias_field_63_RSPLITTER_cifar_biasfield_vnncomp2022_prop_63.onnx
+=== vnnlib=vnnlib/cifar_biasfield_vnncomp2022_prop_63.vnnlib
+prepare_instance(relusplitter,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/relusplitter/onnx/cifar_biasfield_vnncomp2022_cifar_bias_field_63_RSPLITTER_cifar_biasfield_vnncomp2022_prop_63.onnx,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/relusplitter/vnnlib/cifar_biasfield_vnncomp2022_prop_63.vnnlib)...
+--- Loading network...[Warning: The number of dimensions {1, 16} declared in the ONNX file do not
+match the 'InputDataFormats' value "CSS" for the 1 input. The software will use
+the derived data format.] 
+
+Unexpected Error! --- Size vector must have at least two elements.
+ --- dlarray/reshape [40]
+ --- neuralNetwork/convertDLToolboxNetwork/convertDLToolboxNetwork/aux_convertLayer [299]
+ --- neuralNetwork/convertDLToolboxNetwork/convertDLToolboxNetwork/aux_convertLayers [139]
+ --- neuralNetwork/convertDLToolboxNetwork [46]
+ --- neuralNetwork/readONNXNetwork [91]
+ --- prepare_instance/aux_readNetworkAndOptions [231]
+ --- prepare_instance/prepare_instance [9]
+ --- cora_strict_sweep_runner/cora_strict_sweep_runner [167]
+
+run_instance(relusplitter,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/relusplitter/onnx/cifar_biasfield_vnncomp2022_cifar_bias_field_63_RSPLITTER_cifar_biasfield_vnncomp2022_prop_63.onnx,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/relusplitter/vnnlib/cifar_biasfield_vnncomp2022_prop_63.vnnlib,/data1/Kane/ACT/audit_results/cora_truestrict_20260527/relusplitter/0196__cifar_biasfield_vnncomp2022_cifar_bias_field_63_RSPLITTER_cifar_biasfield_vnncomp2022_prop_63__cifar_biasfield_vnncomp2022_prop_63.result,180,0)...
+--- Loading MATLAB file...
+Unexpected Error! --- Unable to find file or directory "relusplitter_cifar_biasfield_vnncomp2022_cifar_bias_field_63_RSPLITTER_cifar_biasfield_vnncomp2022_prop_63_cifar_biasfield_vnncomp2022_prop_63.mat".
+ --- run_instance/run_instance [21]
+ --- cora_strict_sweep_runner/cora_strict_sweep_runner [168]
+
+ done
+=== CORA STRICT: verdict=unknown wall=15.934s

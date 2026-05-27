@@ -1,0 +1,50 @@
+diff --git a/act/back_end/interval_tf/tf_cnn.py b/act/back_end/interval_tf/tf_cnn.py
+index 1f841b0..5a42493 100644
+--- a/act/back_end/interval_tf/tf_cnn.py
++++ b/act/back_end/interval_tf/tf_cnn.py
+@@ -644,6 +644,22 @@ def tf_upsample(L: Layer, Bin: Bounds) -> Fact:
+     align_corners = bool(L.params.get("align_corners", False))
+     assert size is not None or scale_factor is not None, "upsample requires size or scale_factor"
+ 
++    # ONNX Resize/Upsample carries scale_factor per ALL input dims (e.g.
++    # (1.0, 1.0, 2.0, 2.0) for 4D NCHW), but PyTorch F.interpolate expects
++    # only the SPATIAL scales (e.g. (2.0, 2.0) for NCHW). Strip the leading
++    # non-spatial dims (which must be 1.0 — anything else is unsupported by
++    # F.interpolate anyway). collins_aerospace yolov5nano hits this.
++    if scale_factor is not None and isinstance(scale_factor, (list, tuple)):
++        spatial_rank = len(in_shape) - 2  # NCHW → 2; NCDHW → 3
++        if len(scale_factor) > spatial_rank:
++            leading = scale_factor[:len(scale_factor) - spatial_rank]
++            if not all(abs(float(x) - 1.0) < 1e-9 for x in leading):
++                raise ValueError(
++                    f"tf_upsample: non-unit scale on N/C dims unsupported: "
++                    f"scale_factor={scale_factor}, in_shape={in_shape}"
++                )
++            scale_factor = tuple(float(x) for x in scale_factor[-spatial_rank:])
++
+     # F.interpolate scale_factor must be float or tuple of float
+     y_lb = F.interpolate(
+         x_lb,
+@@ -720,6 +736,22 @@ def _conv1d_to_linear_matrix(
+     _, in_channels, in_w = input_shape
+     _, out_channels, out_w = output_shape
+ 
++    # ONNX / PyTorch routinely surface Conv1d attrs as length-1 tuples
++    # (``stride=(1,)``, etc.) rather than scalars. Multiplying a tensor by
++    # a Python tuple invokes ``tuple.__rmul__(tensor)`` which calls
++    # ``Tensor.__index__`` and raises "only integer tensors of a single
++    # element can be converted to an index" on multi-element tensors
++    # (e.g. nn4sys pensieve_big_parallel via Conv1d at the L2-norm prelude).
++    # tf_conv2d sidesteps this by indexing ``stride[0]`` / ``stride[1]``;
++    # we do the same for the 1D path.
++    def _s(x):
++        if isinstance(x, (tuple, list)):
++            return int(x[0])
++        return int(x)
++    stride = _s(stride)
++    padding = _s(padding)
++    dilation = _s(dilation)
++
+     input_flat_size = in_channels * in_w
+     output_flat_size = out_channels * out_w
+ 

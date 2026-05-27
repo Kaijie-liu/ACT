@@ -1,0 +1,23 @@
+=== CORA STRICT: bench=cgan_2023 idx=21  timeout=1800  start=2026-05-27 13:08:36
+=== onnx=onnx/cGAN_imgSz32_nCh_3_small_transformer.onnx
+=== vnnlib=vnnlib/cGAN_imgSz32_nCh_3_small_transformer_prop_1_input_eps_0.010_output_eps_0.015.vnnlib
+prepare_instance(cgan_2023,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cgan_2023/onnx/cGAN_imgSz32_nCh_3_small_transformer.onnx,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cgan_2023/vnnlib/cGAN_imgSz32_nCh_3_small_transformer_prop_1_input_eps_0.010_output_eps_0.015.vnnlib)...
+--- Loading network...
+Unexpected Error! --- Index exceeds array bounds.
+ --- CORAerror/aux_readInfo [594]
+ --- CORAerror/CORAerror [63]
+ --- prepare_instance/aux_readNetworkAndOptions [275]
+ --- prepare_instance/prepare_instance [9]
+ --- cora_strict_sweep_runner/cora_strict_sweep_runner [167]
+
+run_instance(cgan_2023,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cgan_2023/onnx/cGAN_imgSz32_nCh_3_small_transformer.onnx,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cgan_2023/vnnlib/cGAN_imgSz32_nCh_3_small_transformer_prop_1_input_eps_0.010_output_eps_0.015.vnnlib,/data1/Kane/ACT/audit_results/cora_truestrict_20260527/cgan_2023/0021__cGAN_imgSz32_nCh_3_small_transformer__cGAN_imgSz32_nCh_3_small_transformer_prop_1_input_eps_0.010_output_eps_0.015.result,1800,0)...
+--- Loading MATLAB file...
+Unexpected Error! --- Unable to find file or directory "cgan_2023_cGAN_imgSz32_nCh_3_small_transformer_cGAN_imgSz32_nCh_3_small_transformer_prop_1_input_eps_0.010_output_eps_0.015.mat".
+ --- run_instance/run_instance [21]
+ --- cora_strict_sweep_runner/cora_strict_sweep_runner [168]
+
+ done
+=== CORA STRICT: verdict=unknown wall=0.650s
+[2026-05-27 13:08:37] [cgan_2023] 21/21 sat=0 unsat=0 timeout=21 err=0 resumed=0
+[2026-05-27 13:08:37] [cgan_2023] DONE -- total=21 new=21 resumed=0 sat=0 unsat=0 timeout=21 err=0
+[2026-05-27 13:08:37] [tllverifybench_2023] instances=32 (start)

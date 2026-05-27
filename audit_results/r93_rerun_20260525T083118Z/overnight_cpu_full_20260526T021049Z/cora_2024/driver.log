@@ -1,0 +1,578 @@
+[ACT] Auto-detecting project root: ../ACT
+[ACT] Gurobi license found: ../ACT/modules/gurobi/gurobi.lic
+{
+  "benchmark": "cora_2024",
+  "instance_id": 10,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 68.1442808159627,
+  "peak_rss_mb": 2406.55078125,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_watchdog_iid10_20260526T021159759188Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: cora_2024/./onnx/mnist-trades.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/onnx/mnist-trades.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mnist-trades.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 784 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 784 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cora_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed mnist-img3.vnnlib: 9 query(ies)\n"
+}
+{
+  "benchmark": "cora_2024",
+  "instance_id": 11,
+  "status": "OK",
+  "cli_normalized": "OK",
+  "wall_s": 10.507972191087902,
+  "peak_rss_mb": 1358.7890625,
+  "returncode": 0,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_20260526T021209693785Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024",
+  "stdout_tail": "ch to 1: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 784 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 784 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cora_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed mnist-img3.vnnlib: 9 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cpu, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=cora_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cpu, timeout=60.0s)\n  [  1/1] cora_2024/./onnx/mnist-set.onnx@vnnlib/mnist-img3.vnnlib: CERTIFIED (7.9s)  V=1 A=0 U=0 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.1 min\n  CERTIFIED    1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_20260526T021209693785Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+}
+{
+  "benchmark": "cora_2024",
+  "instance_id": 12,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 68.14343267702498,
+  "peak_rss_mb": 2060.8203125,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_watchdog_iid12_20260526T021318411590Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: cora_2024/./onnx/mnist-point.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/onnx/mnist-point.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mnist-point.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 784 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 784 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cora_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed mnist-img4.vnnlib: 9 query(ies)\n"
+}
+{
+  "benchmark": "cora_2024",
+  "instance_id": 13,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 68.14365194796119,
+  "peak_rss_mb": 2480.1796875,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_watchdog_iid13_20260526T021426555796Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: cora_2024/./onnx/mnist-trades.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/onnx/mnist-trades.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mnist-trades.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 784 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 784 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cora_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed mnist-img4.vnnlib: 9 query(ies)\n"
+}
+{
+  "benchmark": "cora_2024",
+  "instance_id": 14,
+  "status": "OK",
+  "cli_normalized": "OK",
+  "wall_s": 30.51995272701606,
+  "peak_rss_mb": 1517.640625,
+  "returncode": 0,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_20260526T021456185002Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024",
+  "stdout_tail": "h to 1: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 784 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 784 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cora_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed mnist-img4.vnnlib: 9 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cpu, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=cora_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cpu, timeout=60.0s)\n  [  1/1] cora_2024/./onnx/mnist-set.onnx@vnnlib/mnist-img4.vnnlib: CERTIFIED (27.5s)  V=1 A=0 U=0 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.5 min\n  CERTIFIED    1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_20260526T021456185002Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+}
+{
+  "benchmark": "cora_2024",
+  "instance_id": 15,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 68.14948617795017,
+  "peak_rss_mb": 2162.10546875,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_watchdog_iid15_20260526T021605226333Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: cora_2024/./onnx/mnist-point.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/onnx/mnist-point.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mnist-point.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 784 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 784 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cora_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed mnist-img5.vnnlib: 9 query(ies)\n"
+}
+{
+  "benchmark": "cora_2024",
+  "instance_id": 16,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 68.14873029396404,
+  "peak_rss_mb": 2065.56640625,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_watchdog_iid16_20260526T021713376933Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: cora_2024/./onnx/mnist-trades.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/onnx/mnist-trades.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mnist-trades.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 784 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 784 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cora_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed mnist-img5.vnnlib: 9 query(ies)\n"
+}
+{
+  "benchmark": "cora_2024",
+  "instance_id": 17,
+  "status": "OK",
+  "cli_normalized": "OK",
+  "wall_s": 10.50700062699616,
+  "peak_rss_mb": 1361.80078125,
+  "returncode": 0,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_20260526T021723317765Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024",
+  "stdout_tail": "ch to 1: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 784 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 784 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cora_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed mnist-img5.vnnlib: 9 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cpu, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=cora_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cpu, timeout=60.0s)\n  [  1/1] cora_2024/./onnx/mnist-set.onnx@vnnlib/mnist-img5.vnnlib: CERTIFIED (7.9s)  V=1 A=0 U=0 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.1 min\n  CERTIFIED    1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_20260526T021723317765Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+}
+{
+  "benchmark": "cora_2024",
+  "instance_id": 18,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 68.14967873203568,
+  "peak_rss_mb": 2123.8203125,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_watchdog_iid18_20260526T021832034757Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: cora_2024/./onnx/mnist-point.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/onnx/mnist-point.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mnist-point.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 784 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 784 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cora_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed mnist-img6.vnnlib: 9 query(ies)\n"
+}
+{
+  "benchmark": "cora_2024",
+  "instance_id": 19,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 68.24986287602223,
+  "peak_rss_mb": 2439.40234375,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_watchdog_iid19_20260526T021940285531Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: cora_2024/./onnx/mnist-trades.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/onnx/mnist-trades.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mnist-trades.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 784 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 784 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cora_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed mnist-img6.vnnlib: 9 query(ies)\n"
+}
+{
+  "benchmark": "cora_2024",
+  "instance_id": 20,
+  "status": "OK",
+  "cli_normalized": "OK",
+  "wall_s": 18.511551328003407,
+  "peak_rss_mb": 1397.55078125,
+  "returncode": 0,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_20260526T021958094858Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024",
+  "stdout_tail": "h to 1: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 784 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 784 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cora_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed mnist-img6.vnnlib: 9 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cpu, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=cora_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cpu, timeout=60.0s)\n  [  1/1] cora_2024/./onnx/mnist-set.onnx@vnnlib/mnist-img6.vnnlib: CERTIFIED (15.8s)  V=1 A=0 U=0 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.3 min\n  CERTIFIED    1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_20260526T021958094858Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+}
+{
+  "benchmark": "cora_2024",
+  "instance_id": 21,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 68.24966708291322,
+  "peak_rss_mb": 2228.69921875,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_watchdog_iid21_20260526T022107048090Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: cora_2024/./onnx/mnist-point.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/onnx/mnist-point.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mnist-point.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 784 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 784 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cora_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed mnist-img7.vnnlib: 9 query(ies)\n"
+}
+{
+  "benchmark": "cora_2024",
+  "instance_id": 22,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 68.24915021809284,
+  "peak_rss_mb": 2199.10546875,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_watchdog_iid22_20260526T022215298047Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: cora_2024/./onnx/mnist-trades.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/onnx/mnist-trades.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mnist-trades.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 784 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 784 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cora_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed mnist-img7.vnnlib: 9 query(ies)\n"
+}
+{
+  "benchmark": "cora_2024",
+  "instance_id": 23,
+  "status": "OK",
+  "cli_normalized": "OK",
+  "wall_s": 18.513063295045868,
+  "peak_rss_mb": 1491.0859375,
+  "returncode": 0,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_20260526T022232922867Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024",
+  "stdout_tail": "h to 1: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 784 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 784 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cora_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed mnist-img7.vnnlib: 9 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cpu, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=cora_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cpu, timeout=60.0s)\n  [  1/1] cora_2024/./onnx/mnist-set.onnx@vnnlib/mnist-img7.vnnlib: CERTIFIED (15.6s)  V=1 A=0 U=0 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.3 min\n  CERTIFIED    1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_20260526T022232922867Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+}
+{
+  "benchmark": "cora_2024",
+  "instance_id": 24,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 68.14983785501681,
+  "peak_rss_mb": 2349.95703125,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_watchdog_iid24_20260526T022341962283Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: cora_2024/./onnx/mnist-point.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/onnx/mnist-point.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mnist-point.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 784 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 784 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cora_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed mnist-img8.vnnlib: 9 query(ies)\n"
+}
+{
+  "benchmark": "cora_2024",
+  "instance_id": 25,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 68.24600836704485,
+  "peak_rss_mb": 2091.6796875,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_watchdog_iid25_20260526T022450209007Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: cora_2024/./onnx/mnist-trades.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/onnx/mnist-trades.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mnist-trades.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 784 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 784 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cora_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed mnist-img8.vnnlib: 9 query(ies)\n"
+}
+{
+  "benchmark": "cora_2024",
+  "instance_id": 26,
+  "status": "OK",
+  "cli_normalized": "OK",
+  "wall_s": 20.01315946294926,
+  "peak_rss_mb": 1444.08203125,
+  "returncode": 0,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_20260526T022509200285Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024",
+  "stdout_tail": "h to 1: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 784 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 784 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cora_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed mnist-img8.vnnlib: 9 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cpu, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=cora_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cpu, timeout=60.0s)\n  [  1/1] cora_2024/./onnx/mnist-set.onnx@vnnlib/mnist-img8.vnnlib: CERTIFIED (16.9s)  V=1 A=0 U=0 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.3 min\n  CERTIFIED    1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_20260526T022509200285Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+}
+{
+  "benchmark": "cora_2024",
+  "instance_id": 27,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 68.1451776640024,
+  "peak_rss_mb": 2144.12890625,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_watchdog_iid27_20260526T022618368400Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: cora_2024/./onnx/mnist-point.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/onnx/mnist-point.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mnist-point.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 784 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 784 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cora_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed mnist-img9.vnnlib: 9 query(ies)\n"
+}
+{
+  "benchmark": "cora_2024",
+  "instance_id": 28,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 68.14684117794968,
+  "peak_rss_mb": 2016.72265625,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_watchdog_iid28_20260526T022726516163Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: cora_2024/./onnx/mnist-trades.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/onnx/mnist-trades.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mnist-trades.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 784 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 784 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cora_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed mnist-img9.vnnlib: 9 query(ies)\n"
+}
+{
+  "benchmark": "cora_2024",
+  "instance_id": 29,
+  "status": "OK",
+  "cli_normalized": "OK",
+  "wall_s": 51.53607769403607,
+  "peak_rss_mb": 1661.953125,
+  "returncode": 0,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_20260526T022817023506Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024",
+  "stdout_tail": "h to 1: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 784 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 784 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cora_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed mnist-img9.vnnlib: 9 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cpu, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=cora_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cpu, timeout=60.0s)\n  [  1/1] cora_2024/./onnx/mnist-set.onnx@vnnlib/mnist-img9.vnnlib: CERTIFIED (48.5s)  V=1 A=0 U=0 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.8 min\n  CERTIFIED    1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_20260526T022817023506Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+}
+{
+  "benchmark": "cora_2024",
+  "instance_id": 30,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 68.34733147395309,
+  "peak_rss_mb": 2313.765625,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_watchdog_iid30_20260526T022926400855Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: cora_2024/./onnx/mnist-point.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/onnx/mnist-point.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mnist-point.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 784 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 784 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cora_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed mnist-img10.vnnlib: 9 query(ies)\n"
+}
+{
+  "benchmark": "cora_2024",
+  "instance_id": 31,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 68.24787974497303,
+  "peak_rss_mb": 2085.6484375,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_watchdog_iid31_20260526T023034649395Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: cora_2024/./onnx/mnist-trades.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/onnx/mnist-trades.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mnist-trades.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 784 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 784 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cora_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed mnist-img10.vnnlib: 9 query(ies)\n"
+}
+{
+  "benchmark": "cora_2024",
+  "instance_id": 32,
+  "status": "OK",
+  "cli_normalized": "OK",
+  "wall_s": 15.009764085989445,
+  "peak_rss_mb": 1390.58984375,
+  "returncode": 0,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_20260526T023048893427Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024",
+  "stdout_tail": "to 1: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 784 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 784 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cora_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed mnist-img10.vnnlib: 9 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cpu, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=cora_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cpu, timeout=60.0s)\n  [  1/1] cora_2024/./onnx/mnist-set.onnx@vnnlib/mnist-img10.vnnlib: CERTIFIED (12.2s)  V=1 A=0 U=0 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.2 min\n  CERTIFIED    1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_20260526T023048893427Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+}
+{
+  "benchmark": "cora_2024",
+  "instance_id": 33,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 68.14644924795721,
+  "peak_rss_mb": 2112.5625,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_watchdog_iid33_20260526T023157808027Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: cora_2024/./onnx/mnist-point.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/onnx/mnist-point.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mnist-point.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 784 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 784 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cora_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed mnist-img11.vnnlib: 9 query(ies)\n"
+}
+{
+  "benchmark": "cora_2024",
+  "instance_id": 34,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 68.14684038399719,
+  "peak_rss_mb": 2099.01171875,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_watchdog_iid34_20260526T023305955767Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: cora_2024/./onnx/mnist-trades.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/onnx/mnist-trades.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mnist-trades.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 784 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 784 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cora_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed mnist-img11.vnnlib: 9 query(ies)\n"
+}
+{
+  "benchmark": "cora_2024",
+  "instance_id": 35,
+  "status": "OK",
+  "cli_normalized": "OK",
+  "wall_s": 9.50628415402025,
+  "peak_rss_mb": 1358.046875,
+  "returncode": 0,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_20260526T023314799571Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024",
+  "stdout_tail": " to 1: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 784 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 784 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cora_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed mnist-img11.vnnlib: 9 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cpu, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=cora_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cpu, timeout=60.0s)\n  [  1/1] cora_2024/./onnx/mnist-set.onnx@vnnlib/mnist-img11.vnnlib: CERTIFIED (6.8s)  V=1 A=0 U=0 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.1 min\n  CERTIFIED    1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_20260526T023314799571Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+}
+{
+  "benchmark": "cora_2024",
+  "instance_id": 36,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 68.14603575202636,
+  "peak_rss_mb": 2039.9765625,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_watchdog_iid36_20260526T023423609053Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: cora_2024/./onnx/mnist-point.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/onnx/mnist-point.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mnist-point.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 784 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 784 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cora_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed mnist-img13.vnnlib: 9 query(ies)\n"
+}
+{
+  "benchmark": "cora_2024",
+  "instance_id": 37,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 68.14070997003,
+  "peak_rss_mb": 1883.78125,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_watchdog_iid37_20260526T023531750425Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: cora_2024/./onnx/mnist-trades.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/onnx/mnist-trades.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mnist-trades.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 784 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 784 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cora_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed mnist-img13.vnnlib: 9 query(ies)\n"
+}
+{
+  "benchmark": "cora_2024",
+  "instance_id": 38,
+  "status": "OK",
+  "cli_normalized": "OK",
+  "wall_s": 65.03479491197504,
+  "peak_rss_mb": 1800.89453125,
+  "returncode": 0,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_20260526T023636201585Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024",
+  "stdout_tail": "h to 1: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 784 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 784 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cora_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed mnist-img13.vnnlib: 9 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cpu, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=cora_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cpu, timeout=60.0s)\n  [  1/1] cora_2024/./onnx/mnist-set.onnx@vnnlib/mnist-img13.vnnlib: UNKNOWN (62.1s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=1.0 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_20260526T023636201585Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+}
+{
+  "benchmark": "cora_2024",
+  "instance_id": 39,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 68.14248409704305,
+  "peak_rss_mb": 2110.65625,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_watchdog_iid39_20260526T023744928688Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: cora_2024/./onnx/mnist-point.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/onnx/mnist-point.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mnist-point.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 784 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 784 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cora_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed mnist-img14.vnnlib: 9 query(ies)\n"
+}
+{
+  "benchmark": "cora_2024",
+  "instance_id": 40,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 68.24473979196046,
+  "peak_rss_mb": 2149.8125,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_watchdog_iid40_20260526T023853174016Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: cora_2024/./onnx/mnist-trades.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/onnx/mnist-trades.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mnist-trades.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 784 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 784 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cora_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed mnist-img14.vnnlib: 9 query(ies)\n"
+}
+{
+  "benchmark": "cora_2024",
+  "instance_id": 41,
+  "status": "OK",
+  "cli_normalized": "OK",
+  "wall_s": 52.53363227297086,
+  "peak_rss_mb": 1656.49609375,
+  "returncode": 0,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_20260526T023944973249Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024",
+  "stdout_tail": "to 1: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 784 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 784 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cora_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed mnist-img14.vnnlib: 9 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cpu, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=cora_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cpu, timeout=60.0s)\n  [  1/1] cora_2024/./onnx/mnist-set.onnx@vnnlib/mnist-img14.vnnlib: CERTIFIED (49.8s)  V=1 A=0 U=0 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.8 min\n  CERTIFIED    1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_20260526T023944973249Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+}
+{
+  "benchmark": "cora_2024",
+  "instance_id": 42,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 68.14131471607834,
+  "peak_rss_mb": 2097.96875,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_watchdog_iid42_20260526T024053850256Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: cora_2024/./onnx/mnist-point.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/onnx/mnist-point.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mnist-point.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 784 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 784 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cora_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed mnist-img15.vnnlib: 9 query(ies)\n"
+}
+{
+  "benchmark": "cora_2024",
+  "instance_id": 43,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 68.1472051559249,
+  "peak_rss_mb": 2592.515625,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_watchdog_iid43_20260526T024201999446Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: cora_2024/./onnx/mnist-trades.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/onnx/mnist-trades.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mnist-trades.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 784 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 784 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cora_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed mnist-img15.vnnlib: 9 query(ies)\n"
+}
+{
+  "benchmark": "cora_2024",
+  "instance_id": 44,
+  "status": "OK",
+  "cli_normalized": "OK",
+  "wall_s": 17.011523853987455,
+  "peak_rss_mb": 1393.5859375,
+  "returncode": 0,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_20260526T024218395375Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024",
+  "stdout_tail": "to 1: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 784 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 784 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cora_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed mnist-img15.vnnlib: 9 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cpu, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=cora_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cpu, timeout=60.0s)\n  [  1/1] cora_2024/./onnx/mnist-set.onnx@vnnlib/mnist-img15.vnnlib: CERTIFIED (14.4s)  V=1 A=0 U=0 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.2 min\n  CERTIFIED    1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_20260526T024218395375Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+}
+{
+  "benchmark": "cora_2024",
+  "instance_id": 45,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 68.1398331100354,
+  "peak_rss_mb": 2384.98828125,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_watchdog_iid45_20260526T024327152058Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: cora_2024/./onnx/mnist-point.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/onnx/mnist-point.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mnist-point.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 784 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 784 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cora_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed mnist-img16.vnnlib: 9 query(ies)\n"
+}
+{
+  "benchmark": "cora_2024",
+  "instance_id": 46,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 68.14163746999111,
+  "peak_rss_mb": 2103.84765625,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_watchdog_iid46_20260526T024435294536Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: cora_2024/./onnx/mnist-trades.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/onnx/mnist-trades.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mnist-trades.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 784 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 784 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cora_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed mnist-img16.vnnlib: 9 query(ies)\n"
+}
+{
+  "benchmark": "cora_2024",
+  "instance_id": 47,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 68.14557771803811,
+  "peak_rss_mb": 2320.6484375,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_watchdog_iid47_20260526T024543440919Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: cora_2024/./onnx/mnist-set.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/onnx/mnist-set.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mnist-set.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 784 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 784 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cora_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed mnist-img16.vnnlib: 9 query(ies)\n"
+}
+{
+  "benchmark": "cora_2024",
+  "instance_id": 48,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 68.18806424201466,
+  "peak_rss_mb": 2177.82421875,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_watchdog_iid48_20260526T024651629904Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: cora_2024/./onnx/mnist-point.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/onnx/mnist-point.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mnist-point.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 784 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 784 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cora_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed mnist-img17.vnnlib: 9 query(ies)\n"
+}
+{
+  "benchmark": "cora_2024",
+  "instance_id": 49,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 68.14409283304121,
+  "peak_rss_mb": 2421.0078125,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_watchdog_iid49_20260526T024759774782Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: cora_2024/./onnx/mnist-trades.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/onnx/mnist-trades.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mnist-trades.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 784 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 784 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cora_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed mnist-img17.vnnlib: 9 query(ies)\n"
+}
+{
+  "benchmark": "cora_2024",
+  "instance_id": 50,
+  "status": "OK",
+  "cli_normalized": "OK",
+  "wall_s": 31.520589668070897,
+  "peak_rss_mb": 1529.5546875,
+  "returncode": 0,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_20260526T024830296347Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024",
+  "stdout_tail": "to 1: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 784 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 784 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cora_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed mnist-img17.vnnlib: 9 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cpu, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=cora_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cpu, timeout=60.0s)\n  [  1/1] cora_2024/./onnx/mnist-set.onnx@vnnlib/mnist-img17.vnnlib: CERTIFIED (28.5s)  V=1 A=0 U=0 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.5 min\n  CERTIFIED    1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_20260526T024830296347Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+}
+{
+  "benchmark": "cora_2024",
+  "instance_id": 51,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 68.14526135707274,
+  "peak_rss_mb": 2471.1015625,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_watchdog_iid51_20260526T024939442296Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: cora_2024/./onnx/mnist-point.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/onnx/mnist-point.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mnist-point.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 784 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 784 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cora_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed mnist-img18.vnnlib: 9 query(ies)\n"
+}
+{
+  "benchmark": "cora_2024",
+  "instance_id": 52,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 68.14294988405891,
+  "peak_rss_mb": 2197.359375,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_watchdog_iid52_20260526T025047586340Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: cora_2024/./onnx/mnist-trades.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/onnx/mnist-trades.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mnist-trades.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 784 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 784 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cora_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed mnist-img18.vnnlib: 9 query(ies)\n"
+}
+{
+  "benchmark": "cora_2024",
+  "instance_id": 53,
+  "status": "OK",
+  "cli_normalized": "OK",
+  "wall_s": 12.50872740498744,
+  "peak_rss_mb": 1385.76953125,
+  "returncode": 0,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_20260526T025059405279Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024",
+  "stdout_tail": " to 1: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 784 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 784 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cora_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed mnist-img18.vnnlib: 9 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cpu, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=cora_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cpu, timeout=60.0s)\n  [  1/1] cora_2024/./onnx/mnist-set.onnx@vnnlib/mnist-img18.vnnlib: CERTIFIED (9.8s)  V=1 A=0 U=0 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.2 min\n  CERTIFIED    1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_20260526T025059405279Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+}
+{
+  "benchmark": "cora_2024",
+  "instance_id": 54,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 68.14841628703289,
+  "peak_rss_mb": 2282.109375,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_watchdog_iid54_20260526T025208244911Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: cora_2024/./onnx/mnist-point.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/onnx/mnist-point.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mnist-point.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 784 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 784 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cora_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed mnist-img19.vnnlib: 9 query(ies)\n"
+}
+{
+  "benchmark": "cora_2024",
+  "instance_id": 55,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 68.24222118698526,
+  "peak_rss_mb": 2118.0078125,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_watchdog_iid55_20260526T025316488149Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: cora_2024/./onnx/mnist-trades.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/onnx/mnist-trades.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mnist-trades.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 784 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 784 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cora_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed mnist-img19.vnnlib: 9 query(ies)\n"
+}
+{
+  "benchmark": "cora_2024",
+  "instance_id": 56,
+  "status": "OK",
+  "cli_normalized": "OK",
+  "wall_s": 35.5239189309068,
+  "peak_rss_mb": 1572.80078125,
+  "returncode": 0,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_20260526T025351046840Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024",
+  "stdout_tail": "to 1: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 784 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 784 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cora_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed mnist-img19.vnnlib: 9 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cpu, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=cora_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cpu, timeout=60.0s)\n  [  1/1] cora_2024/./onnx/mnist-set.onnx@vnnlib/mnist-img19.vnnlib: CERTIFIED (32.5s)  V=1 A=0 U=0 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.5 min\n  CERTIFIED    1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_20260526T025351046840Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+}
+{
+  "benchmark": "cora_2024",
+  "instance_id": 57,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 68.14092319295742,
+  "peak_rss_mb": 2113.23046875,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024/per_instance_cora_2024_watchdog_iid57_20260526T025500154224Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_20260526T021049Z/cora_2024",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: cora_2024/./onnx/mnist-point.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/onnx/mnist-point.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mnist-point.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 784 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 784 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cora_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed mnist-img20.vnnlib: 9 query(ies)\n"
+}

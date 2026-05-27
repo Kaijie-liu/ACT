@@ -1,0 +1,41 @@
+=== CORA STRICT: bench=relusplitter idx=94  timeout=180  start=2026-05-27 00:34:19
+=== onnx=onnx/oval21-benchmark_cifar_base_kw_RSPLITTER_oval21-benchmark_cifar_base_kw-img1204-eps0.024967320261437907.onnx
+=== vnnlib=vnnlib/oval21-benchmark_cifar_base_kw-img1204-eps0.024967320261437907.vnnlib
+prepare_instance(relusplitter,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/relusplitter/onnx/oval21-benchmark_cifar_base_kw_RSPLITTER_oval21-benchmark_cifar_base_kw-img1204-eps0.024967320261437907.onnx,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/relusplitter/vnnlib/oval21-benchmark_cifar_base_kw-img1204-eps0.024967320261437907.vnnlib)...
+--- Loading network...[Warning: The number of dimensions {1, 3, 32, 32} declared in the ONNX file do
+not match the 'InputDataFormats' value "CSS" for the 1 input. The software will
+use the derived data format.] 
+ done
+--- GPU available: true
+--- Loading specification... done
+--- Storing MATLAB file... done
+______________________________
+ neuralNetwork/verify options 
+------------------------------
+ - GPU: true                                                                                                                                                                                                                                                                                                  
+ - Poly. Method: bounds                                     
+ - Batchsize: 1024                                                                                                                          
+ - Interval Center: false                 
+ - Num. init. Generators: Inf 
+ - Num. approx. Error (per nonl. Layer): Inf 
+ - approx. Error Heuristic: sensitivity*length 
+ - Falsification Method: center 
+ - Refinement Method: naive     
+ - Num. of Splits: 2                                                                                  
+ - Num. of Dimensions: 1                          
+ - Num. of Neuron-Splits: 0     
+ - Num. of ReLU-Tightening Constraints: 0 
+______________________________
+
+run_instance(relusplitter,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/relusplitter/onnx/oval21-benchmark_cifar_base_kw_RSPLITTER_oval21-benchmark_cifar_base_kw-img1204-eps0.024967320261437907.onnx,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/relusplitter/vnnlib/oval21-benchmark_cifar_base_kw-img1204-eps0.024967320261437907.vnnlib,/data1/Kane/ACT/audit_results/cora_strict_20260526/relusplitter/0094__oval21-benchmark_cifar_base_kw_RSPLITTER_oval21-benchmark_cifar_base_kw-img1204-eps0.024967320261437907__oval21-benchmark_cifar_base_kw-img1204-eps0.024967320261437907.result,180,0)...
+--- Loading MATLAB file... done
+--- Deleting MATLAB file... done
+--- GPU available: true
+--- Running verification...--- OOM error: half batchSize 512...
+--- OOM error: half batchSize 256...
+--- OOM error: half batchSize 128...
+--- OOM error: half batchSize 64...
+ done
+Writing results...
+--- opening results file ... done
+--- writing file ...=== CORA STRICT: verdict=unknown wall=2.879s

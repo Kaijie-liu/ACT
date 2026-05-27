@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "benchmark": "collins_aerospace_benchmark",
+  "formal_mode": true,
+  "timestamp_utc": "20260526T132703857867Z",
+  "canonical_root": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks",
+  "receipt_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/gpu_stream1_20260526T132419Z/collins_aerospace_benchmark",
+  "wall_min": 0.4923173387845357,
+  "counts": {
+    "CERTIFIED": 0,
+    "FALSIFIED": 0,
+    "UNKNOWN": 0,
+    "ERROR": 1
+  },
+  "run_status": "FAILED",
+  "per_instance": [
+    {
+      "official_instance_id": 4,
+      "benchmark": "collins_aerospace_benchmark",
+      "onnx_model": "onnx/yolov5nano_LRelu_640.onnx",
+      "vnnlib_spec": "vnnlib/img_8758_perturbed_bbox_4_delta_0.05.vnnlib",
+      "model_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_aerospace_benchmark/onnx/yolov5nano_LRelu_640.onnx",
+      "spec_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_aerospace_benchmark/vnnlib/img_8758_perturbed_bbox_4_delta_0.05.vnnlib",
+      "internal_status": "ERROR",
+      "reportable_status": "ERROR",
+      "cli_normalized": "ERROR_ValueError",
+      "count_bucket": "ERROR",
+      "queries": [],
+      "q_statuses": [],
+      "q_reportables": [],
+      "q_receipts": [],
+      "error": "ValueError: OnnxResize at model_11_resize: cannot resolve scales or sizes",
+      "wall_s": 29.538976192474365,
+      "timeout_s": 60.0,
+      "instance_budget_exhausted": false
+    }
+  ]
+}

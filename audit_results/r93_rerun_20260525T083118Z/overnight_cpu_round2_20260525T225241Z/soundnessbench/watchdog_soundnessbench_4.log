@@ -1,0 +1,17 @@
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: soundnessbench/onnx/model.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/soundnessbench/onnx/model.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: model.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 128)
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 128)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 128 inputs, 384 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 128 inputs, 384 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'soundnessbench'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed model_4.vnnlib: 1 query(ies)
+INFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=6 out_dim=384 relus=6 (triangle for relu 1..3, eq_lagr_v8 for last 3)

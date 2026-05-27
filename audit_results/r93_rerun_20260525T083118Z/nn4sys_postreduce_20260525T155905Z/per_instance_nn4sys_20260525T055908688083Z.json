@@ -1,0 +1,147 @@
+{
+  "schema_version": 1,
+  "benchmark": "nn4sys",
+  "formal_mode": false,
+  "timestamp_utc": "20260525T055908688083Z",
+  "canonical_root": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks",
+  "receipt_dir": null,
+  "wall_min": 0.02137047052383423,
+  "counts": {
+    "CERTIFIED": 0,
+    "FALSIFIED": 0,
+    "UNKNOWN": 3,
+    "ERROR": 2
+  },
+  "run_status": "FAILED",
+  "per_instance": [
+    {
+      "official_instance_id": 0,
+      "benchmark": "nn4sys",
+      "onnx_model": "onnx/pensieve_small_simple.onnx",
+      "vnnlib_spec": "vnnlib/pensieve_simple_0.vnnlib",
+      "model_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/pensieve_small_simple.onnx",
+      "spec_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/vnnlib/pensieve_simple_0.vnnlib",
+      "internal_status": "UNKNOWN",
+      "reportable_status": "UNKNOWN",
+      "cli_normalized": "UNKNOWN",
+      "count_bucket": "UNKNOWN",
+      "queries": [
+        {
+          "query_index": 0,
+          "internal_status": "UNKNOWN",
+          "reportable_status": "UNKNOWN",
+          "receipt_path": null
+        }
+      ],
+      "q_statuses": [
+        "UNKNOWN"
+      ],
+      "q_reportables": [
+        "UNKNOWN"
+      ],
+      "q_receipts": [
+        null
+      ],
+      "error": null,
+      "wall_s": 0.4645965099334717
+    },
+    {
+      "official_instance_id": 1,
+      "benchmark": "nn4sys",
+      "onnx_model": "onnx/pensieve_big_parallel.onnx",
+      "vnnlib_spec": "vnnlib/pensieve_parallel_1.vnnlib",
+      "model_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/pensieve_big_parallel.onnx",
+      "spec_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/vnnlib/pensieve_parallel_1.vnnlib",
+      "internal_status": "ERROR",
+      "reportable_status": "ERROR",
+      "cli_normalized": "ERROR_ValueError",
+      "count_bucket": "ERROR",
+      "queries": [],
+      "q_statuses": [],
+      "q_reportables": [],
+      "q_receipts": [],
+      "error": "ValueError: Layer(id=60, kind=REDUCE_SUM) schema violation:\n- Unknown params_optional/params_required: 'dim' (no close match), 'keepdim' (did you mean keepdims?). Add to REGISTRY['REDUCE_SUM']['params_optional/params_required'] in layer_schema.py if intentional.",
+      "wall_s": 0.06292557716369629
+    },
+    {
+      "official_instance_id": 2,
+      "benchmark": "nn4sys",
+      "onnx_model": "onnx/pensieve_small_simple.onnx",
+      "vnnlib_spec": "vnnlib/pensieve_simple_2.vnnlib",
+      "model_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/pensieve_small_simple.onnx",
+      "spec_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/vnnlib/pensieve_simple_2.vnnlib",
+      "internal_status": "UNKNOWN",
+      "reportable_status": "UNKNOWN",
+      "cli_normalized": "UNKNOWN",
+      "count_bucket": "UNKNOWN",
+      "queries": [
+        {
+          "query_index": 0,
+          "internal_status": "UNKNOWN",
+          "reportable_status": "UNKNOWN",
+          "receipt_path": null
+        }
+      ],
+      "q_statuses": [
+        "UNKNOWN"
+      ],
+      "q_reportables": [
+        "UNKNOWN"
+      ],
+      "q_receipts": [
+        null
+      ],
+      "error": null,
+      "wall_s": 0.3703646659851074
+    },
+    {
+      "official_instance_id": 3,
+      "benchmark": "nn4sys",
+      "onnx_model": "onnx/pensieve_small_simple.onnx",
+      "vnnlib_spec": "vnnlib/pensieve_simple_3.vnnlib",
+      "model_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/pensieve_small_simple.onnx",
+      "spec_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/vnnlib/pensieve_simple_3.vnnlib",
+      "internal_status": "UNKNOWN",
+      "reportable_status": "UNKNOWN",
+      "cli_normalized": "UNKNOWN",
+      "count_bucket": "UNKNOWN",
+      "queries": [
+        {
+          "query_index": 0,
+          "internal_status": "UNKNOWN",
+          "reportable_status": "UNKNOWN",
+          "receipt_path": null
+        }
+      ],
+      "q_statuses": [
+        "UNKNOWN"
+      ],
+      "q_reportables": [
+        "UNKNOWN"
+      ],
+      "q_receipts": [
+        null
+      ],
+      "error": null,
+      "wall_s": 0.36546874046325684
+    },
+    {
+      "official_instance_id": 4,
+      "benchmark": "nn4sys",
+      "onnx_model": "onnx/pensieve_small_parallel.onnx",
+      "vnnlib_spec": "vnnlib/pensieve_parallel_4.vnnlib",
+      "model_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/pensieve_small_parallel.onnx",
+      "spec_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/vnnlib/pensieve_parallel_4.vnnlib",
+      "internal_status": "ERROR",
+      "reportable_status": "ERROR",
+      "cli_normalized": "ERROR_NotImplementedError",
+      "count_bucket": "ERROR",
+      "queries": [],
+      "q_statuses": [],
+      "q_reportables": [],
+      "q_receipts": [],
+      "error": "NotImplementedError: Var-var 'div' size mismatch (6 vs 1) at div",
+      "wall_s": 0.018645763397216797
+    }
+  ]
+}

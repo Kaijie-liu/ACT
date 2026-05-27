@@ -1,0 +1,52 @@
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: ml4acopf_2024/./onnx/14_ieee_ml4acopf-linear-residual.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/ml4acopf_2024/onnx/14_ieee_ml4acopf-linear-residual.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (raw-first strategy)
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: 14_ieee_ml4acopf-linear-residual.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 22]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 22)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 22 inputs, 186 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 22 inputs, 186 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'ml4acopf_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed 14_ieee_prop3.vnnlib: 20 query(ies)
+[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic
+✅ Device Manager Initialized: device=cuda:0, dtype=torch.float64
+
+================================================================================
+ACT: Abstract Constraint Transformer
+Inference-based whitebox fuzzing for neural network verification
+================================================================================
+
+
+================================================================================
+VERIFICATION TEST: VNNLIB → VerifiableModel → verify_once
+================================================================================
+
+[vnnlib] category=ml4acopf_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=60.0s)
+  [  1/1] ml4acopf_2024/./onnx/14_ieee_ml4acopf-linear-residual.onnx@./vnnlib/14_ieee_prop3.vnnlib: ERROR_ValueError (0.3s)  V=0 A=0 U=0 E=1  R=0
+Traceback (most recent call last):
+  File "/data1/Kane/ACT/act/pipeline/cli.py", line 1195, in cmd_verify
+    _run_vnnlib_verify(args)
+  File "/data1/Kane/ACT/act/pipeline/cli.py", line 549, in _run_vnnlib_verify
+    return _run_vnnlib_verify_hybridz(args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/ACT/act/pipeline/cli.py", line 1080, in _run_vnnlib_verify_hybridz
+    raise RuntimeError(
+RuntimeError: VERIFICATION_RUN_FAILED: ERROR=1. Per-instance log preserved; inspect instance error fields.
+
+[vnnlib/hybridz] FINAL — total=1 wall=0.0 min
+  ERROR        1
+  [structured] per-instance log → /data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/gpu_stream1_20260526T132419Z/ml4acopf_2024/per_instance_ml4acopf_2024_20260526T143640174235Z.json
+
+❌ Test failed: VERIFICATION_RUN_FAILED: ERROR=1. Per-instance log preserved; inspect instance error fields.
+
+================================================================================
+VERIFICATION TEST SUMMARY
+================================================================================
+  ❌ vnnlib                    FAILED
+================================================================================
+

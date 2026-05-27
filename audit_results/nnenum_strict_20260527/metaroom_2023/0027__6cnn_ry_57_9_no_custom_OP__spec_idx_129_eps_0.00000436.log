@@ -1,0 +1,35 @@
+Running in parallel with 8 processes
+Overapprox Round 1/3 has 1 set(s)
+Layer 1/9: LinearOnnxSubnetworkLayer (zono shape: (57344, 633))... 0.406 sec
+Layer 2/9: ReluLayer (zono shape: (57344, 633))... 0.611 sec
+Layer 3/9: LinearOnnxSubnetworkLayer (zono shape: (57344, 1323))... 0.541 sec
+Layer 4/9: ReluLayer (zono shape: (28672, 1323))... 0.623 sec
+Layer 5/9: LinearOnnxSubnetworkLayer (zono shape: (28672, 1927))... 1.117 sec
+Layer 6/9: ReluLayer (zono shape: (28672, 1927))... 1.085 sec
+Layer 7/9: LinearOnnxSubnetworkLayer (zono shape: (28672, 2988))... 8.428 sec
+Layer 8/9: ReluLayer (zono shape: (256, 2988))...
+
+
+Worker 0 had exception
+Worker 0 quitting due to exception in some worker
+Traceback (most recent call last):
+  File "/data1/Kane/nnenum/src/nnenum/enumerate.py", line 486, in worker_func
+    w.main_loop()
+  File "/data1/Kane/nnenum/src/nnenum/worker.py", line 56, in main_loop
+    self.consider_overapprox()
+  File "/data1/Kane/nnenum/src/nnenum/worker.py", line 209, in consider_overapprox
+    res = do_overapprox_rounds(ss, network, spec, prerelu_sims, check_cancel_func, gen_limit,
+  File "/data1/Kane/nnenum/src/nnenum/overapprox.py", line 299, in do_overapprox_rounds
+    run_overapprox_round(network, ss, sets, prerelu_sims, check_cancel_func)
+  File "/data1/Kane/nnenum/src/nnenum/overapprox.py", line 401, in run_overapprox_round
+    s.execute_with_bounds(layer_num, layer_bounds, split_indices, zero_indices)
+  File "/data1/Kane/nnenum/src/nnenum/overapprox.py", line 540, in execute_with_bounds
+    update_zono(self.zono, self.relu_update_func, layer_bounds, split_indices, zero_indices)
+  File "/data1/Kane/nnenum/src/nnenum/overapprox.py", line 602, in update_zono
+    relu_update_func(lb, ub, split_index, gen_mat_t, center, new_generators[:, i])
+  File "/data1/Kane/nnenum/src/nnenum/overapprox.py", line 644, in relu_update_best_area_zono
+    gen_mat_t[output_dim] *= slope_lambda
+FloatingPointError: underflow encountered in multiply
+Exception occured during execution
+corrupted size vs. prev_size
+timeout: the monitored command dumped core

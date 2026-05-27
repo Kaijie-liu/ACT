@@ -1,0 +1,37 @@
+=== CORA STRICT: bench=cora_2024 idx=157  timeout=30  start=2026-05-27 00:52:22
+=== onnx=./onnx/cifar10-point.onnx
+=== vnnlib=vnnlib/cifar10-img328.vnnlib
+prepare_instance(cora_2024,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/onnx/cifar10-point.onnx,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/vnnlib/cifar10-img328.vnnlib)...
+--- Loading network... done
+--- GPU available: true
+--- Loading specification... done
+--- Storing MATLAB file... done
+______________________________
+ neuralNetwork/verify options 
+------------------------------
+ - GPU: true                                                                                                                                                                                                                                                                                                  
+ - Poly. Method: bounds                                     
+ - Batchsize: 1024                                                                                                                          
+ - Interval Center: false                 
+ - Num. init. Generators: Inf 
+ - Num. approx. Error (per nonl. Layer): Inf 
+ - approx. Error Heuristic: sensitivity*length 
+ - Falsification Method: center 
+ - Refinement Method: naive     
+ - Num. of Splits: 2                                                                                  
+ - Num. of Dimensions: 1                          
+ - Num. of Neuron-Splits: 0     
+ - Num. of ReLU-Tightening Constraints: 0 
+______________________________
+
+run_instance(cora_2024,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/onnx/cifar10-point.onnx,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/vnnlib/cifar10-img328.vnnlib,/data1/Kane/ACT/audit_results/cora_strict_20260526/cora_2024/0157__cifar10-point__cifar10-img328.result,30,0)...
+--- Loading MATLAB file... done
+--- Deleting MATLAB file... done
+--- GPU available: true
+--- Running verification...--- OOM error: half batchSize 512...
+--- OOM error: half batchSize 256...
+--- OOM error: half batchSize 128...
+ done
+Writing results...
+--- opening results file ... done
+--- writing file ...=== CORA STRICT: verdict=unknown wall=4.037s

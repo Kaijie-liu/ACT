@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "benchmark": "nn4sys",
+  "formal_mode": true,
+  "timestamp_utc": "20260526T062109106722Z",
+  "canonical_root": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks",
+  "receipt_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_full_stream1_20260526T025908Z/nn4sys",
+  "wall_min": 0.0003626704216003418,
+  "counts": {
+    "CERTIFIED": 0,
+    "FALSIFIED": 0,
+    "UNKNOWN": 0,
+    "ERROR": 1
+  },
+  "run_status": "FAILED",
+  "per_instance": [
+    {
+      "official_instance_id": 172,
+      "benchmark": "nn4sys",
+      "onnx_model": "onnx/mscn_2048d_dual.onnx",
+      "vnnlib_spec": "vnnlib/cardinality_1_240_2048_dual.vnnlib",
+      "model_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/mscn_2048d_dual.onnx.gz",
+      "spec_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/vnnlib/cardinality_1_240_2048_dual.vnnlib",
+      "internal_status": "ERROR",
+      "reportable_status": "ERROR",
+      "cli_normalized": "ERROR_RuntimeError",
+      "count_bucket": "ERROR",
+      "queries": [],
+      "q_statuses": [],
+      "q_reportables": [],
+      "q_receipts": [],
+      "error": "RuntimeError: ONNX conversion failed: Failed to convert /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/mscn_2048d_dual.onnx.gz: Error parsing message with type 'onnx.ModelProto'",
+      "wall_s": 0.02174210548400879,
+      "timeout_s": 60.0,
+      "instance_budget_exhausted": false
+    }
+  ]
+}

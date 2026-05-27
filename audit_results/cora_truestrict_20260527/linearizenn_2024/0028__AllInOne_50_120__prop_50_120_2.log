@@ -1,0 +1,34 @@
+=== CORA STRICT: bench=linearizenn_2024 idx=28  timeout=900  start=2026-05-27 13:43:06
+=== onnx=onnx/AllInOne_50_120.onnx
+=== vnnlib=vnnlib/prop_50_120_2.vnnlib
+prepare_instance(linearizenn_2024,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_50_120.onnx,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/vnnlib/prop_50_120_2.vnnlib)...
+--- Loading network... done
+--- GPU available: true
+--- Loading specification... done
+--- Storing MATLAB file... done
+______________________________
+ neuralNetwork/verify options 
+------------------------------
+ - GPU: true                                                                                                                                                                                                                                                                                                  
+ - Poly. Method: bounds                                     
+ - Batchsize: 1024                                                                                                                          
+ - Interval Center: false                 
+ - Num. init. Generators: Inf 
+ - Num. approx. Error (per nonl. Layer): Inf 
+ - approx. Error Heuristic: sensitivity*length 
+ - Falsification Method: none 
+ - Refinement Method: naive     
+ - Num. of Splits: 2                                                                                  
+ - Num. of Dimensions: 1                          
+ - Num. of Neuron-Splits: 1     
+ - Num. of ReLU-Tightening Constraints: 0 
+______________________________
+
+run_instance(linearizenn_2024,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_50_120.onnx,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/vnnlib/prop_50_120_2.vnnlib,/data1/Kane/ACT/audit_results/cora_truestrict_20260527/linearizenn_2024/0028__AllInOne_50_120__prop_50_120_2.result,900,0)...
+--- Loading MATLAB file... done
+--- Deleting MATLAB file... done
+--- GPU available: true
+--- Running verification... done
+Writing results...
+--- opening results file ... done
+--- writing file ...=== CORA STRICT: verdict=unknown wall=10.021s

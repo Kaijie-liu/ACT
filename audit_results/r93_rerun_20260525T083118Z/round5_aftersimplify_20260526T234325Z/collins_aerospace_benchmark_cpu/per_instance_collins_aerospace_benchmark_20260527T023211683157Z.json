@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "benchmark": "collins_aerospace_benchmark",
+  "formal_mode": true,
+  "timestamp_utc": "20260527T023211683157Z",
+  "canonical_root": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks",
+  "receipt_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/round5_aftersimplify_20260526T234325Z/collins_aerospace_benchmark_cpu",
+  "wall_min": 1.6867429852485656,
+  "counts": {
+    "CERTIFIED": 0,
+    "FALSIFIED": 0,
+    "UNKNOWN": 0,
+    "ERROR": 1
+  },
+  "run_status": "FAILED",
+  "per_instance": [
+    {
+      "official_instance_id": 4,
+      "benchmark": "collins_aerospace_benchmark",
+      "onnx_model": "onnx/yolov5nano_LRelu_640.onnx",
+      "vnnlib_spec": "vnnlib/img_8758_perturbed_bbox_4_delta_0.05.vnnlib",
+      "model_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_aerospace_benchmark/onnx/yolov5nano_LRelu_640.onnx",
+      "spec_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_aerospace_benchmark/vnnlib/img_8758_perturbed_bbox_4_delta_0.05.vnnlib",
+      "internal_status": "ERROR",
+      "reportable_status": "ERROR",
+      "cli_normalized": "ERROR_ValueError",
+      "count_bucket": "ERROR",
+      "queries": [],
+      "q_statuses": [],
+      "q_reportables": [],
+      "q_receipts": [],
+      "error": "ValueError: Input and scale_factor must have the same number of spatial dimensions, but got input with spatial dimensions of [20, 20] and scale_factor of shape (1.0, 1.0, 2.0, 2.0). Please provide input tensor in (N, C, d1, d2, ...,dK) format and scale_factor in (s1, s2, ...,sK) format.",
+      "wall_s": 101.20403981208801,
+      "timeout_s": 120.0,
+      "instance_budget_exhausted": false
+    }
+  ]
+}

@@ -1,0 +1,1540 @@
+[0;93m2026-05-26 10:51:42.147013050 [W:onnxruntime:Default, device_discovery.cc:283 GetGpuDevices] Failed to detect devices under "/sys/class/drm/card0": device_discovery.cc:93 ReadFileContents Failed to open file: "/sys/class/drm/card0/device/vendor"[m
+INFO     10:51:43     [tensor_storage.py:70] Hugepage enabled for branch-and-bound domains.
+Configurations:
+
+general:
+  device: cuda
+  seed: 100
+  conv_mode: patches
+  deterministic: false
+  double_fp: false
+  loss_reduction_func: sum
+  sparse_alpha: true
+  sparse_interm: true
+  save_adv_example: true
+  verify_onnxruntime_output: false
+  eval_adv_example: false
+  onnx_adv_example: false
+  show_adv_example: false
+  precompile_jit: true
+  reset_seed_after_precompile: false
+  prepare_only: false
+  complete_verifier: auto
+  enable_incomplete_verification: true
+  csv_name: instances.csv
+  results_file: /data1/Kane/ACT/audit_results/abcrown25_supplemental_20260526/relusplitter/0193__cifar_biasfield_vnncomp2022_cifar_bias_field_21__cifar_biasfield_vnncomp2022_prop_21.result
+  root_path: ../../vnncomp2025_benchmarks/benchmarks/relusplitter
+  deterministic_opt: false
+  graph_optimizer: 'Customized("custom_graph_optimizer", "default_optimizer")'
+  buffer_has_batchdim: false
+  save_output: false
+  output_file: out.pkl
+  return_optimized_model: false
+  store_all_specs_on_cpu: false
+  adhoc_tuning: null
+model:
+  name: null
+  path: null
+  onnx_path: /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/relusplitter/onnx/cifar_biasfield_vnncomp2022_cifar_bias_field_21.onnx
+  onnx_path_prefix: ''
+  cache_onnx_conversion: false
+  debug_onnx: false
+  onnx_quirks: '''Reshape'': ''fix_batch_size'': True'
+  input_shape: null
+  onnx_loader: default_onnx_and_vnnlib_loader
+  onnx_optimization_flags: []
+  onnx_vnnlib_joint_optimization_flags: none
+  check_optimized: false
+  flatten_final_output: false
+  optimize_graph: null
+  with_jacobian: false
+data:
+  start: 0
+  end: 10000
+  select_instance: null
+  num_outputs: 10
+  mean: 0.0
+  std: 1.0
+  pkl_path: null
+  dataset: null
+  data_filter_path: null
+  data_idx_file: null
+specification:
+  type: lp
+  robustness_type: verified-acc
+  norm: .inf
+  epsilon: null
+  epsilon_min: 0.0
+  vnnlib_path: /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/relusplitter/vnnlib/cifar_biasfield_vnncomp2022_prop_21.vnnlib
+  vnnlib_path_prefix: ''
+  shrink_eps: null
+  rhs_offset: null
+solver:
+  batch_size: 4
+  auto_enlarge_batch_size: true
+  batched_crown_auto_enlarge_max_vram_ratio: 0.9
+  min_batch_size_ratio: 1
+  use_float64_in_last_iteration: false
+  early_stop_patience: 10
+  start_save_best: -1
+  bound_prop_method: alpha-crown
+  init_bound_prop_method: same
+  prune_after_crown: true
+  optimize_disjuncts_separately: false
+  build_batch_size: 1000000
+  skip_with_refined_bound: true
+  forward_before_compute_bounds: false
+  crown:
+    batch_size: 1000000000
+    max_crown_size: 1000000000
+    activation_bound_option: adaptive
+    compare_crown_with_ibp: false
+  alpha-crown:
+    alpha: true
+    lr_alpha: 0.1
+    iteration: 100
+    share_alphas: false
+    lr_decay: 0.98
+    full_conv_alpha: true
+    max_coeff_mul: .inf
+    matmul_share_alphas: false
+    disable_optimization: []
+    max_time: 1.0
+    alpha_dtype: float16
+  invprop:
+    apply_output_constraints_to: []
+    tighten_input_bounds: false
+    best_of_oc_and_no_oc: false
+    directly_optimize: []
+    oc_lr: 0.1
+    share_gammas: false
+  beta-crown:
+    lr_alpha: 0.01
+    lr_beta: 0.01
+    lr_decay: 0.98
+    optimizer: adam
+    iteration: 50
+    beta: true
+    beta_warmup: true
+    enable_opt_interm_bounds: false
+    all_node_split_LP: false
+  forward:
+    refine: false
+    max_dim: 10000
+    reset_threshold: 1.0
+  intermediate_refinement:
+    enabled: false
+    batch_size: 10
+    opt_coeffs: false
+    opt_bias: false
+    lr: 0.05
+    layers: [-1]
+    max_domains: 1000
+  mip:
+    unstable_neuron_threshold: 0
+    parallel_solvers: null
+    solver_threads: 1
+    refine_neuron_timeout: 15
+    refine_neuron_time_percentage: 0.8
+    early_stop: true
+    adv_warmup: true
+    mip_solver: gurobi
+    skip_unsafe: false
+    topk_filter: 1.0
+    sliding_window: -1
+    extra_constraint: false
+    refine_neuron_timeout_increasement: 0
+    timeout_neuron_percentage: 0.3
+    remaining_timeout_threshold: 1
+    remove_unstable_neurons: false
+    lp_solver: false
+bab:
+  max_domains: .inf
+  decision_thresh: 0
+  timeout: 60.0
+  timeout_scale: 1
+  max_iterations: -1
+  override_timeout: null
+  get_upper_bound: false
+  pruning_in_iteration: true
+  pruning_in_iteration_ratio: 0.2
+  sort_targets: false
+  batched_domain_list: true
+  optimized_interm: ''
+  interm_transfer: true
+  recompute_interm: false
+  sort_domain_interval: -1
+  vanilla_crown: false
+  tree_traversal: depth_first
+  hugetensor_allocator: true
+  cut:
+    enabled: false
+    cuts_path: null
+    implication: false
+    bab_cut: true
+    lp_cut: false
+    method: null
+    lr: 0.01
+    lr_decay: 1.0
+    iteration: 100
+    bab_iteration: -1
+    early_stop_patience: -1
+    lr_beta: 0.01
+    number_cuts: 50
+    topk_cuts_in_filter: 1000
+    batch_size_primal: 100
+    max_num: 1000000000
+    patches_cut: false
+    cplex_cuts: true
+    cplex_cuts_wait: 0
+    cplex_cuts_revpickup: true
+    cut_reference_bounds: true
+    fix_intermediate_bounds: false
+    _tmp_cuts: null
+    fixed_cuts: false
+    add_implied_cuts: false
+    add_input_cuts: false
+    biccos:
+      enabled: false
+      constraint_strengthening: true
+      recursively_strengthening: false
+      drop_ratio: 0.5
+      verified_bonus: 0.3
+      max_infer_iter: 20
+      max_domain: 10000.0
+      heuristic: neuron_influence_score
+      save_biccos_cuts: false
+      multi_tree_branching:
+        enabled: false
+        restore_best_tree: false
+        keep_n_best_domains: 1
+        k_splits: 1
+        iterations: 1
+  clip_n_verify:
+    rearrange_constraints: false
+    alpha_crown: false
+    prune: false
+    final_layer: false
+    clip_input_domain:
+      enabled: true
+      clip_type: relaxed
+      heuristic_K: 0.0
+      clip_iterations: 1
+      clip_calculate_volume_metrics: false
+    clip_interm_domain:
+      enabled: true
+      with_input: false
+      clip_in_alpha_crown: false
+      topk_objective: 20
+  branching:
+    method: kfsb
+    candidates: 10
+    reduceop: max
+    enable_intermediate_bound_opt: false
+    branching_input_and_activation: false
+    branching_input_and_activation_order: [input, relu]
+    branching_input_iterations: 30
+    branching_relu_iterations: 50
+    nonlinear_split:
+      method: bbps
+      disable: false
+      branching_point_method: uniform
+      num_branches: 2
+      filter: false
+      filter_beta: false
+      filter_clamp: false
+      filter_batch_size: 10000
+      filter_iterations: 25
+      relu_only: false
+      loose_tanh_threshold: null
+      branching_point:
+        db_path: branching_points.pt
+        num_iterations: 1000
+        batch_size: 1000000
+        range_l: -5.0
+        range_u: 5.0
+        log_interval: 100
+        step_size_1d: 0.01
+        step_size: 0.2
+    input_split:
+      split_hint: null
+      enable: false
+      reorder_bab: true
+      input_dim_threshold: 20
+      adv_check: 0
+      split_partitions: 2
+      sb_margin_weight: 1.0
+      sb_sum: false
+      sb_primary_spec: null
+      bf_backup_thresh: -1
+      bf_rhs_offset: 0
+      bf_iters: 1000000000.0
+      bf_batch_size: 100000
+      bf_zero_crossing_score: false
+      touch_zero_score: 0
+      ibp_enhancement: false
+      compare_with_old_bounds: true
+      update_rhs_with_attack: false
+      sb_coeff_thresh: 2.0
+      sort_index: null
+      sort_descending: true
+      show_progress: false
+      presplit_domains: null
+      skip_getting_worst_domain: false
+  attack:
+    enabled: false
+    beam_candidates: 8
+    beam_depth: 7
+    max_dive_fix_ratio: 0.8
+    min_local_free_ratio: 0.2
+    mip_start_iteration: 5
+    mip_timeout: 30.0
+    adv_pool_threshold: null
+    refined_mip_attacker: false
+    refined_batch_size: null
+attack:
+  general_attack: true
+  pgd_order: skip
+  pgd_steps: 100
+  pgd_restarts: 30
+  pgd_batch_size: 100000000
+  pgd_early_stop: true
+  pgd_lr_decay: 0.99
+  pgd_alpha: auto
+  pgd_alpha_scale: false
+  pgd_loss_mode: null
+  pgd_restart_when_stuck: false
+  enable_mip_attack: false
+  adv_saver: default_adv_saver
+  adv_verifier: default_adv_verifier
+  early_stop_condition: default_early_stop_condition
+  adv_example_finalizer: default_adv_example_finalizer
+  pgd_loss: default_pgd_loss
+  cex_path: ./test_cex.txt
+  attack_mode: diversed_PGD
+  attack_tolerance: 0.0
+  attack_func: attack_with_general_specs
+  gama_lambda: 10.0
+  gama_decay: 0.9
+  input_split:
+    pgd_steps: 100
+    pgd_restarts: 30
+    pgd_alpha: auto
+  input_split_check_adv:
+    enabled: auto
+    pgd_steps: 5
+    pgd_restarts: 5
+    pgd_alpha: auto
+    max_num_domains: 10
+debug:
+  view_model: false
+  lp_test: null
+  rescale_vnnlib_ptb: null
+  test_optimized_bounds: false
+  test_optimized_bounds_after_n_iterations: 0
+  print_verbose_decisions: false
+  sanity_check: null
+  save_minimal_config: null
+  save_minimal_config_omit_keys: []
+/data1/Kane/miniconda3/envs/abcrown25/lib/python3.11/site-packages/onnx2pytorch/convert/layer.py:29: UserWarning: The given NumPy array is not writable, and PyTorch does not support non-writable tensors. This means writing to this tensor will result in undefined behavior. You may want to copy the array to protect its data or make it writable before converting it to a tensor. This type of warning will be suppressed for the rest of this program. (Triggered internally at /pytorch/torch/csrc/utils/tensor_numpy.cpp:206.)
+  layer.weight.data = torch.from_numpy(numpy_helper.to_array(weight))
+/data1/Kane/miniconda3/envs/abcrown25/lib/python3.11/site-packages/onnx2pytorch/convert/model.py:151: UserWarning: Using experimental implementation that allows 'batch_size > 1'.Batchnorm layers could potentially produce false outputs.
+  warnings.warn(
+/data1/Kane/miniconda3/envs/abcrown25/lib/python3.11/site-packages/onnx2pytorch/operations/reshape.py:36: TracerWarning: Converting a tensor to a Python boolean might cause the trace to be incorrect. We can't record the data flow of Python values, so this value will be treated as a constant in the future. This means that the trace might not generalize to other inputs!
+  if shape[0] == 1 and len(shape) in [2, 3, 4, 5] and self.quirks.get("fix_batch_size") is True:
+/data1/Kane/miniconda3/envs/abcrown25/lib/python3.11/site-packages/onnx2pytorch/operations/reshape.py:54: TracerWarning: torch.tensor results are registered as constants in the trace. You can safely ignore this warning if you use this function to create tensors out of constant variables that would be the same every time you call this function. In any other case, this might cause the trace to be incorrect.
+  if (torch.prod(torch.tensor(input.shape)) != torch.prod(shape) and len(input.size()) == len(shape) + 1
+/data1/Kane/miniconda3/envs/abcrown25/lib/python3.11/site-packages/onnx2pytorch/operations/reshape.py:54: TracerWarning: Using len to get tensor shape might cause the trace to be incorrect. Recommended usage would be tensor.shape[0]. Passing a tensor of different shape might lead to errors or silently give incorrect results.
+  if (torch.prod(torch.tensor(input.shape)) != torch.prod(shape) and len(input.size()) == len(shape) + 1
+/data1/Kane/miniconda3/envs/abcrown25/lib/python3.11/site-packages/onnx2pytorch/operations/reshape.py:58: TracerWarning: Iterating over a tensor might cause the trace to be incorrect. Passing a tensor of different shape won't change the number of iterations executed (and might lead to errors or silently give incorrect results).
+  shape = [x if x != 0 else input.size(i) for i, x in enumerate(shape)]
+/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/operators/leaf.py:91: UserWarning: The "has_batchdim" option for BoundBuffers is deprecated. It may be removed from the next release.
+  warnings.warn('The "has_batchdim" option for BoundBuffers is deprecated.'
+
+Experiments at Tue May 26 10:51:43 2026 on dell-pro-max-tower-t2
+Pre-compile jit kernels on a toy network...
+JIT kernels compiled in 1.0055s.
+Internal results will be saved to /data1/Kane/ACT/audit_results/abcrown25_supplemental_20260526/relusplitter/0193__cifar_biasfield_vnncomp2022_cifar_bias_field_21__cifar_biasfield_vnncomp2022_prop_21.result.
+
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% idx: 0, vnnlib ID: 0 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Using onnx /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/relusplitter/onnx/cifar_biasfield_vnncomp2022_cifar_bias_field_21.onnx
+Using vnnlib /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/relusplitter/vnnlib/cifar_biasfield_vnncomp2022_prop_21.vnnlib
+16 inputs and 10 outputs in vnnlib
+Loading onnx /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/relusplitter/onnx/cifar_biasfield_vnncomp2022_cifar_bias_field_21.onnx with quirks {'Reshape': {'fix_batch_size': True}}
+Enabling quirks for Reshape operation: fix the first dimension shape to be -1 to support batchsize != 1.
+input shape torch.Size([1, 3072]), new shape is tensor([-1,  3, 32, 32]).
+Finished onnx model loading in 0.0147 seconds
+Finished vnnlib processing in 0.046048 seconds
+Using temporary cuts path: <TemporaryDirectory '/tmp/abcrown_cuts_tva7srvh'>
+Model: BoundedModule(
+  (/0): BoundInput(name=/0, inputs=[], perturbed=True)
+  (/19): BoundParams(name=/19, inputs=[], perturbed=False)
+  (/20): BoundParams(name=/20, inputs=[], perturbed=False)
+  (/shape): BoundBuffers(name=/shape, inputs=[], perturbed=False)
+  (/22): BoundParams(name=/22, inputs=[], perturbed=False)
+  (/23): BoundParams(name=/23, inputs=[], perturbed=False)
+  (/24): BoundParams(name=/24, inputs=[], perturbed=False)
+  (/25): BoundParams(name=/25, inputs=[], perturbed=False)
+  (/26): BoundParams(name=/26, inputs=[], perturbed=False)
+  (/27): BoundParams(name=/27, inputs=[], perturbed=False)
+  (/28): BoundParams(name=/28, inputs=[], perturbed=False)
+  (/29): BoundParams(name=/29, inputs=[], perturbed=False)
+  (/30): BoundParams(name=/30, inputs=[], perturbed=False)
+  (/31): BoundParams(name=/31, inputs=[], perturbed=False)
+  (/32): BoundParams(name=/32, inputs=[], perturbed=False)
+  (/33): BoundParams(name=/33, inputs=[], perturbed=False)
+  (/34): BoundParams(name=/34, inputs=[], perturbed=False)
+  (/35): BoundParams(name=/35, inputs=[], perturbed=False)
+  (/36): BoundParams(name=/36, inputs=[], perturbed=False)
+  (/37): BoundParams(name=/37, inputs=[], perturbed=False)
+  (/38): BoundLinear(name=/38, inputs=[/0, /19, /20], perturbed=True)
+  (/39): BoundSplit(name=/39, inputs=[/shape], perturbed=False)
+  (/40): BoundSplit(name=/40, inputs=[/shape], perturbed=False)
+  (/41): BoundSplit(name=/41, inputs=[/shape], perturbed=False)
+  (/42): BoundSplit(name=/42, inputs=[/shape], perturbed=False)
+  (/43): BoundConstant(name=/43, value=tensor([0], device='cuda:0'))
+  (/44): BoundSqueeze(name=/44, inputs=[/39, /43], perturbed=False)
+  (/45): BoundConstant(name=/45, value=tensor([0], device='cuda:0'))
+  (/46): BoundSqueeze(name=/46, inputs=[/40, /45], perturbed=False)
+  (/47): BoundConstant(name=/47, value=tensor([0], device='cuda:0'))
+  (/48): BoundSqueeze(name=/48, inputs=[/41, /47], perturbed=False)
+  (/49): BoundConstant(name=/49, value=tensor([0], device='cuda:0'))
+  (/50): BoundSqueeze(name=/50, inputs=[/42, /49], perturbed=False)
+  (/51): BoundConstant(name=/51, value=tensor([0], device='cuda:0'))
+  (/52): BoundUnsqueeze(name=/52, inputs=[/44, /51], perturbed=False)
+  (/53): BoundConstant(name=/53, value=tensor([0], device='cuda:0'))
+  (/54): BoundUnsqueeze(name=/54, inputs=[/46, /53], perturbed=False)
+  (/55): BoundConstant(name=/55, value=tensor([0], device='cuda:0'))
+  (/56): BoundUnsqueeze(name=/56, inputs=[/48, /55], perturbed=False)
+  (/57): BoundConstant(name=/57, value=tensor([0], device='cuda:0'))
+  (/58): BoundUnsqueeze(name=/58, inputs=[/50, /57], perturbed=False)
+  (/59): BoundConcat(name=/59, inputs=[/52, /54, /56, /58], perturbed=False)
+  (/input): BoundReshape(name=/input, inputs=[/38, /59], perturbed=True)
+  (/input-3): BoundConv(name=/input-3, inputs=[/input, /22, /23], perturbed=True)
+  (/input-7): BoundRelu(name=/input-7, inputs=[/input-3], perturbed=True)
+  (/input-11): BoundConv(name=/input-11, inputs=[/input-7, /24, /25], perturbed=True)
+  (/input-15): BoundRelu(name=/input-15, inputs=[/input-11], perturbed=True)
+  (/input-19): BoundConv(name=/input-19, inputs=[/input-15, /26, /27], perturbed=True)
+  (/input-23): BoundRelu(name=/input-23, inputs=[/input-19], perturbed=True)
+  (/input-27): BoundConv(name=/input-27, inputs=[/input-23, /28, /29], perturbed=True)
+  (/input-31): BoundRelu(name=/input-31, inputs=[/input-27], perturbed=True)
+  (/input-35): BoundConv(name=/input-35, inputs=[/input-31, /30, /31], perturbed=True)
+  (/input-39): BoundRelu(name=/input-39, inputs=[/input-35], perturbed=True)
+  (/input-43): BoundConv(name=/input-43, inputs=[/input-39, /32, /33], perturbed=True)
+  (/input-47): BoundRelu(name=/input-47, inputs=[/input-43], perturbed=True)
+  (/input-51): BoundConv(name=/input-51, inputs=[/input-47, /34, /35], perturbed=True)
+  (/input-55): BoundRelu(name=/input-55, inputs=[/input-51], perturbed=True)
+  (/75): BoundConv(name=/75, inputs=[/input-55, /36, /37], perturbed=True)
+  (/76): BoundFlatten(name=/76, inputs=[/75], perturbed=True)
+)
+Original output in the first batch: tensor([[ -4.65719414, -10.95550919,   1.87061703,  -2.91962004,   1.84492612,
+          -2.68329573,   1.74287295,  -5.15087557, -10.28587818,  -6.96256161]],
+       device='cuda:0')
+build batch [1/1]
+initial crown bounds (first 10 items): [-8.64360237121582, -4.950247764587402, -10.31207275390625, -16.487478256225586, -11.942680358886719, -15.462671279907227, -11.495280265808105, -3.8597755432128906, -6.0505290031433105]
+Global lower bound: -16.487478256225586
+Initializing Domain Clipper...
+Processing layer: /input-3, input name: /0
+Layer: /input-3
+    lA with shape: torch.Size([1, 10865, 16])
+    uA with shape: torch.Size([1, 10865, 16])
+    lbias with shape: torch.Size([1, 10865])
+    ubias with shape: torch.Size([1, 10865])
+Processing layer: /input-11, input name: /0
+Layer: /input-11
+    lA with shape: torch.Size([1, 6329, 16])
+    uA with shape: torch.Size([1, 6329, 16])
+    lbias with shape: torch.Size([1, 6329])
+    ubias with shape: torch.Size([1, 6329])
+Processing layer: /input-19, input name: /0
+Layer: /input-19
+    lA with shape: torch.Size([1, 6833, 16])
+    uA with shape: torch.Size([1, 6833, 16])
+    lbias with shape: torch.Size([1, 6833])
+    ubias with shape: torch.Size([1, 6833])
+Processing layer: /input-27, input name: /0
+Layer: /input-27
+    lA with shape: torch.Size([1, 2586, 16])
+    uA with shape: torch.Size([1, 2586, 16])
+    lbias with shape: torch.Size([1, 2586])
+    ubias with shape: torch.Size([1, 2586])
+Processing layer: /input-35, input name: /0
+Layer: /input-35
+    lA with shape: torch.Size([1, 4096, 16])
+    uA with shape: torch.Size([1, 4096, 16])
+    lbias with shape: torch.Size([1, 4096])
+    ubias with shape: torch.Size([1, 4096])
+Processing layer: /input-43, input name: /0
+Layer: /input-43
+    lA with shape: torch.Size([1, 1508, 16])
+    uA with shape: torch.Size([1, 1508, 16])
+    lbias with shape: torch.Size([1, 1508])
+    ubias with shape: torch.Size([1, 1508])
+Processing layer: /input-51, input name: /0
+Layer: /input-51
+    lA with shape: torch.Size([1, 2048, 16])
+    uA with shape: torch.Size([1, 2048, 16])
+    lbias with shape: torch.Size([1, 2048])
+    ubias with shape: torch.Size([1, 2048])
+Processing layer: /76, input name: /0
+Domain Clipper Initialized in 3.5762786865234375e-05 s.
+0 / 9 OR specs are verified.
+Verified OR indices (first 10 items): []
+Verified OR lbs (first 10 items): []
+Unverified OR indices (first 10 items): [0, 1, 2, 3, 4, 5, 6, 7, 8]
+Unverified OR lbs (first 10 items): [[-8.64360237121582], [-4.950247764587402], [-10.31207275390625], [-16.487478256225586], [-11.942680358886719], [-15.462671279907227], [-11.495280265808105], [-3.8597755432128906], [-6.0505290031433105]]
+###### Verifying property Instance 0 ######
+Batch size: 9
+First 10 spec matrices
+C: tensor([[[-1.,  0.,  1.,  0.,  0.,  0.,  0.,  0.,  0.,  0.]],
+
+        [[ 0., -1.,  1.,  0.,  0.,  0.,  0.,  0.,  0.,  0.]],
+
+        [[ 0.,  0.,  1., -1.,  0.,  0.,  0.,  0.,  0.,  0.]],
+
+        [[ 0.,  0.,  1.,  0., -1.,  0.,  0.,  0.,  0.,  0.]],
+
+        [[ 0.,  0.,  1.,  0.,  0., -1.,  0.,  0.,  0.,  0.]],
+
+        [[ 0.,  0.,  1.,  0.,  0.,  0., -1.,  0.,  0.,  0.]],
+
+        [[ 0.,  0.,  1.,  0.,  0.,  0.,  0., -1.,  0.,  0.]],
+
+        [[ 0.,  0.,  1.,  0.,  0.,  0.,  0.,  0., -1.,  0.]],
+
+        [[ 0.,  0.,  1.,  0.,  0.,  0.,  0.,  0.,  0., -1.]]], device='cuda:0')
+RHS: tensor([[0.],
+        [0.],
+        [0.],
+        [0.],
+        [0.],
+        [0.],
+        [0.],
+        [0.],
+        [0.]], device='cuda:0')
+OR spec sizes: tensor([1, 1, 1, 1, 1, 1, 1, 1, 1], device='cuda:0', dtype=torch.int32)
+Remaining timeout: 59.32274580001831
+Model prediction is: tensor([ -4.65719414, -10.95550919,   1.87061703,  -2.91962004,   1.84492612,
+         -2.68329573,   1.74287295,  -5.15087557, -10.28587818,  -6.96256161],
+       device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/18 (0.00%), Of 18 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Iteration 1
+Current pickout batch: 8
+Worst bound: tensor([-5.03975677], device='cuda:0')
+Domain clipping (1 iterations): shrunken 1/7 (14.29%), Of 8 batches, 1 were verified before clipping, 1 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0003    init 0.0001    concretize 0.0001    bounding 0.3879    filtering 0.0002    decision 0.0001    split 0.0004    clip 0.0005    add_domain 0.0002    summary 0.0002    
+Accumulated time: pickout 0.0003    bounding 0.3879    init 0.0014    concretize 0.0014    filtering 0.0002    decision 0.0001    split 0.0004    clip 0.0005    add_domain 0.0002    summary 0.0002    
+Length of domains: 17
+17 domains visited
+Current (lb-rhs): tensor([[-16.48747826]], device='cuda:0')
+current_vram/total_varm: 23.6GB/102.0GB, batch_size increase to 16
+Cumulative time: 0.4431295394897461
+
+Iteration 2
+Current pickout batch: 16
+Worst bound: tensor([-3.97699094], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/12 (0.00%), Of 12 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0001    init 0.0005    concretize 0.0005    bounding 0.7525    filtering 0.0004    decision 0.0001    split 0.0022    clip 0.0014    add_domain 0.0005    summary 0.0009    
+Accumulated time: pickout 0.0005    bounding 1.1404    init 0.0029    concretize 0.0029    filtering 0.0006    decision 0.0002    split 0.0026    clip 0.0020    add_domain 0.0007    summary 0.0011    
+Length of domains: 13
+33 domains visited
+Current (lb-rhs): tensor([[-8.64360237]], device='cuda:0')
+Cumulative time: 1.2024738788604736
+
+Iteration 3
+Current pickout batch: 13
+Worst bound: tensor([-3.40819883], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/24 (0.00%), Of 24 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0003    init 0.0001    concretize 0.0001    bounding 0.6154    filtering 0.0001    decision 0.0001    split 0.0013    clip 0.0007    add_domain 0.0003    summary 0.0036    
+Accumulated time: pickout 0.0008    bounding 1.7558    init 0.0041    concretize 0.0041    filtering 0.0007    decision 0.0003    split 0.0038    clip 0.0027    add_domain 0.0011    summary 0.0046    
+Length of domains: 24
+46 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 1.8255345821380615
+
+Iteration 4
+Current pickout batch: 16
+Worst bound: tensor([-2.35141945], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0002    init 0.0001    concretize 0.0001    bounding 0.7224    filtering 0.0001    decision 0.0001    split 0.0004    clip 0.0006    add_domain 0.0002    summary 0.0001    
+Accumulated time: pickout 0.0010    bounding 2.4782    init 0.0052    concretize 0.0052    filtering 0.0008    decision 0.0004    split 0.0042    clip 0.0032    add_domain 0.0013    summary 0.0048    
+Length of domains: 40
+62 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 2.550083637237549
+
+Iteration 5
+Current pickout batch: 16
+Worst bound: tensor([-2.17327023], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0001    init 0.0001    concretize 0.0001    bounding 0.6589    filtering 0.0003    decision 0.0001    split 0.0034    clip 0.0027    add_domain 0.0006    summary 0.0019    
+Accumulated time: pickout 0.0011    bounding 3.1372    init 0.0064    concretize 0.0063    filtering 0.0011    decision 0.0005    split 0.0076    clip 0.0059    add_domain 0.0019    summary 0.0067    
+Length of domains: 56
+78 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 3.2201297283172607
+
+Iteration 6
+Current pickout batch: 16
+Worst bound: tensor([-2.07963991], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0004    init 0.0001    concretize 0.0001    bounding 0.7043    filtering 0.0002    decision 0.0001    split 0.0021    clip 0.0014    add_domain 0.0004    summary 0.0009    
+Accumulated time: pickout 0.0015    bounding 3.8415    init 0.0075    concretize 0.0075    filtering 0.0012    decision 0.0006    split 0.0097    clip 0.0073    add_domain 0.0023    summary 0.0076    
+Length of domains: 72
+94 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 3.931077718734741
+
+Iteration 7
+Current pickout batch: 16
+Worst bound: tensor([-1.94013500], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0003    init 0.0001    concretize 0.0001    bounding 0.6953    filtering 0.0001    decision 0.0001    split 0.0004    clip 0.0005    add_domain 0.0002    summary 0.0010    
+Accumulated time: pickout 0.0018    bounding 4.5368    init 0.0086    concretize 0.0086    filtering 0.0013    decision 0.0007    split 0.0101    clip 0.0079    add_domain 0.0024    summary 0.0086    
+Length of domains: 88
+110 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 4.629430055618286
+
+Iteration 8
+Current pickout batch: 16
+Worst bound: tensor([-1.69620752], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0003    init 0.0001    concretize 0.0001    bounding 0.6823    filtering 0.0003    decision 0.0001    split 0.0010    clip 0.0039    add_domain 0.0004    summary 0.0001    
+Accumulated time: pickout 0.0020    bounding 5.2192    init 0.0098    concretize 0.0098    filtering 0.0016    decision 0.0008    split 0.0111    clip 0.0118    add_domain 0.0029    summary 0.0088    
+Length of domains: 104
+126 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 5.318532466888428
+
+Iteration 9
+Current pickout batch: 16
+Worst bound: tensor([-1.58986616], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0001    init 0.0001    concretize 0.0001    bounding 0.6974    filtering 0.0001    decision 0.0001    split 0.0056    clip 0.0011    add_domain 0.0003    summary 0.0002    
+Accumulated time: pickout 0.0022    bounding 5.9165    init 0.0110    concretize 0.0110    filtering 0.0017    decision 0.0009    split 0.0167    clip 0.0129    add_domain 0.0031    summary 0.0090    
+Length of domains: 120
+142 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 6.0239644050598145
+
+Iteration 10
+Current pickout batch: 16
+Worst bound: tensor([-1.39394569], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0002    init 0.0001    concretize 0.0001    bounding 0.6465    filtering 0.0002    decision 0.0001    split 0.0019    clip 0.0014    add_domain 0.0003    summary 0.0011    
+Accumulated time: pickout 0.0023    bounding 6.5630    init 0.0121    concretize 0.0121    filtering 0.0019    decision 0.0010    split 0.0186    clip 0.0142    add_domain 0.0035    summary 0.0101    
+Length of domains: 136
+158 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 6.676378965377808
+
+Iteration 11
+Current pickout batch: 16
+Worst bound: tensor([-1.27605581], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0001    init 0.0001    concretize 0.0001    bounding 0.7001    filtering 0.0002    decision 0.0001    split 0.0020    clip 0.0015    add_domain 0.0004    summary 0.0012    
+Accumulated time: pickout 0.0025    bounding 7.2631    init 0.0133    concretize 0.0133    filtering 0.0020    decision 0.0011    split 0.0206    clip 0.0157    add_domain 0.0038    summary 0.0113    
+Length of domains: 152
+174 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 7.383124351501465
+
+Iteration 12
+Current pickout batch: 16
+Worst bound: tensor([-1.22685337], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0003    init 0.0001    concretize 0.0001    bounding 0.7049    filtering 0.0002    decision 0.0001    split 0.0062    clip 0.0028    add_domain 0.0008    summary 0.0018    
+Accumulated time: pickout 0.0028    bounding 7.9680    init 0.0144    concretize 0.0144    filtering 0.0023    decision 0.0012    split 0.0268    clip 0.0185    add_domain 0.0046    summary 0.0131    
+Length of domains: 168
+190 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 8.102193117141724
+
+Iteration 13
+Current pickout batch: 16
+Worst bound: tensor([-1.13095760], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0005    init 0.0001    concretize 0.0001    bounding 0.6802    filtering 0.0001    decision 0.0001    split 0.0043    clip 0.0016    add_domain 0.0004    summary 0.0002    
+Accumulated time: pickout 0.0033    bounding 8.6482    init 0.0155    concretize 0.0155    filtering 0.0023    decision 0.0013    split 0.0311    clip 0.0201    add_domain 0.0050    summary 0.0133    
+Length of domains: 184
+206 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 8.790387630462646
+
+Iteration 14
+Current pickout batch: 16
+Worst bound: tensor([-1.07234573], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0002    init 0.0001    concretize 0.0001    bounding 0.6116    filtering 0.0002    decision 0.0001    split 0.0019    clip 0.0015    add_domain 0.0004    summary 0.0009    
+Accumulated time: pickout 0.0035    bounding 9.2598    init 0.0166    concretize 0.0166    filtering 0.0025    decision 0.0014    split 0.0330    clip 0.0216    add_domain 0.0054    summary 0.0142    
+Length of domains: 200
+222 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 9.408283472061157
+
+Iteration 15
+Current pickout batch: 16
+Worst bound: tensor([-0.98457575], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0002    init 0.0001    concretize 0.0001    bounding 0.6661    filtering 0.0002    decision 0.0001    split 0.0007    clip 0.0038    add_domain 0.0004    summary 0.0009    
+Accumulated time: pickout 0.0036    bounding 9.9259    init 0.0177    concretize 0.0177    filtering 0.0027    decision 0.0015    split 0.0337    clip 0.0254    add_domain 0.0058    summary 0.0151    
+Length of domains: 216
+238 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 10.08189582824707
+
+Iteration 16
+Current pickout batch: 16
+Worst bound: tensor([-0.91768026], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0003    init 0.0001    concretize 0.0001    bounding 0.6691    filtering 0.0001    decision 0.0001    split 0.0014    clip 0.0039    add_domain 0.0004    summary 0.0009    
+Accumulated time: pickout 0.0039    bounding 10.5951    init 0.0189    concretize 0.0189    filtering 0.0028    decision 0.0016    split 0.0351    clip 0.0293    add_domain 0.0062    summary 0.0160    
+Length of domains: 232
+254 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 10.7590970993042
+
+Iteration 17
+Current pickout batch: 16
+Worst bound: tensor([-0.90034771], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0003    init 0.0001    concretize 0.0001    bounding 0.6709    filtering 0.0001    decision 0.0001    split 0.0039    clip 0.0014    add_domain 0.0002    summary 0.0003    
+Accumulated time: pickout 0.0042    bounding 11.2660    init 0.0201    concretize 0.0200    filtering 0.0028    decision 0.0017    split 0.0390    clip 0.0307    add_domain 0.0064    summary 0.0162    
+Length of domains: 248
+270 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 11.439959049224854
+
+Iteration 18
+Current pickout batch: 16
+Worst bound: tensor([-0.84341860], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0002    init 0.0001    concretize 0.0001    bounding 0.6740    filtering 0.0003    decision 0.0001    split 0.0050    clip 0.0014    add_domain 0.0003    summary 0.0002    
+Accumulated time: pickout 0.0044    bounding 11.9400    init 0.0212    concretize 0.0211    filtering 0.0031    decision 0.0018    split 0.0440    clip 0.0321    add_domain 0.0066    summary 0.0164    
+Length of domains: 264
+286 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 12.122108459472656
+
+Iteration 19
+Current pickout batch: 16
+Worst bound: tensor([-0.80727053], device='cuda:0')
+Domain clipping (1 iterations): shrunken 1/31 (3.23%), Of 32 batches, 1 were verified before clipping, 1 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0002    init 0.0001    concretize 0.0001    bounding 0.6091    filtering 0.0003    decision 0.0001    split 0.0027    clip 0.0022    add_domain 0.0016    summary 0.0016    
+Accumulated time: pickout 0.0046    bounding 12.5491    init 0.0223    concretize 0.0222    filtering 0.0034    decision 0.0019    split 0.0467    clip 0.0343    add_domain 0.0083    summary 0.0181    
+Length of domains: 279
+302 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 12.741788387298584
+
+Iteration 20
+Current pickout batch: 16
+Worst bound: tensor([-0.72185564], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0006    init 0.0001    concretize 0.0001    bounding 0.6539    filtering 0.0001    decision 0.0001    split 0.0004    clip 0.0015    add_domain 0.0002    summary 0.0003    
+Accumulated time: pickout 0.0052    bounding 13.2030    init 0.0234    concretize 0.0234    filtering 0.0034    decision 0.0020    split 0.0471    clip 0.0357    add_domain 0.0085    summary 0.0183    
+Length of domains: 295
+318 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 13.401979684829712
+
+Iteration 21
+Current pickout batch: 16
+Worst bound: tensor([-0.68541908], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0006    init 0.0001    concretize 0.0001    bounding 0.6471    filtering 0.0001    decision 0.0001    split 0.0004    clip 0.0005    add_domain 0.0002    summary 0.0001    
+Accumulated time: pickout 0.0057    bounding 13.8501    init 0.0246    concretize 0.0246    filtering 0.0035    decision 0.0021    split 0.0475    clip 0.0362    add_domain 0.0087    summary 0.0185    
+Length of domains: 311
+334 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 14.051543235778809
+
+Iteration 22
+Current pickout batch: 16
+Worst bound: tensor([-0.64480734], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0001    init 0.0001    concretize 0.0001    bounding 0.5995    filtering 0.0001    decision 0.0001    split 0.0033    clip 0.0023    add_domain 0.0004    summary 0.0025    
+Accumulated time: pickout 0.0059    bounding 14.4496    init 0.0257    concretize 0.0257    filtering 0.0036    decision 0.0022    split 0.0508    clip 0.0385    add_domain 0.0091    summary 0.0210    
+Length of domains: 327
+350 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 14.662240266799927
+
+Iteration 23
+Current pickout batch: 16
+Worst bound: tensor([-0.61674023], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0002    init 0.0001    concretize 0.0001    bounding 0.6406    filtering 0.0002    decision 0.0001    split 0.0019    clip 0.0015    add_domain 0.0004    summary 0.0009    
+Accumulated time: pickout 0.0061    bounding 15.0902    init 0.0269    concretize 0.0268    filtering 0.0038    decision 0.0023    split 0.0527    clip 0.0400    add_domain 0.0094    summary 0.0219    
+Length of domains: 343
+366 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 15.309127569198608
+
+Iteration 24
+Current pickout batch: 16
+Worst bound: tensor([-0.59470510], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0003    init 0.0001    concretize 0.0001    bounding 0.6460    filtering 0.0001    decision 0.0002    split 0.0004    clip 0.0013    add_domain 0.0002    summary 0.0003    
+Accumulated time: pickout 0.0063    bounding 15.7362    init 0.0280    concretize 0.0279    filtering 0.0038    decision 0.0025    split 0.0531    clip 0.0413    add_domain 0.0096    summary 0.0222    
+Length of domains: 359
+382 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 15.9615957736969
+
+Iteration 25
+Current pickout batch: 16
+Worst bound: tensor([-0.57094288], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0002    init 0.0001    concretize 0.0001    bounding 0.6523    filtering 0.0001    decision 0.0001    split 0.0004    clip 0.0005    add_domain 0.0002    summary 0.0001    
+Accumulated time: pickout 0.0065    bounding 16.3885    init 0.0291    concretize 0.0291    filtering 0.0039    decision 0.0026    split 0.0535    clip 0.0418    add_domain 0.0098    summary 0.0223    
+Length of domains: 375
+398 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 16.6158549785614
+
+Iteration 26
+Current pickout batch: 16
+Worst bound: tensor([-0.54862213], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0001    init 0.0001    concretize 0.0001    bounding 0.6054    filtering 0.0002    decision 0.0001    split 0.0021    clip 0.0015    add_domain 0.0004    summary 0.0009    
+Accumulated time: pickout 0.0067    bounding 16.9940    init 0.0302    concretize 0.0302    filtering 0.0041    decision 0.0027    split 0.0556    clip 0.0433    add_domain 0.0102    summary 0.0232    
+Length of domains: 391
+414 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 17.227153301239014
+
+Iteration 27
+Current pickout batch: 16
+Worst bound: tensor([-0.53137302], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0003    init 0.0001    concretize 0.0001    bounding 0.6727    filtering 0.0003    decision 0.0001    split 0.0010    clip 0.0039    add_domain 0.0004    summary 0.0009    
+Accumulated time: pickout 0.0069    bounding 17.6666    init 0.0313    concretize 0.0312    filtering 0.0044    decision 0.0028    split 0.0566    clip 0.0471    add_domain 0.0106    summary 0.0241    
+Length of domains: 407
+430 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 17.907809734344482
+
+Iteration 28
+Current pickout batch: 16
+Worst bound: tensor([-0.51789045], device='cuda:0')
+Domain clipping (1 iterations): shrunken 2/32 (6.25%), Of 32 batches, 0 were verified before clipping, 2 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0003    init 0.0001    concretize 0.0001    bounding 0.6228    filtering 0.0003    decision 0.0001    split 0.0009    clip 0.0038    add_domain 0.0004    summary 0.0001    
+Accumulated time: pickout 0.0072    bounding 18.2894    init 0.0324    concretize 0.0324    filtering 0.0047    decision 0.0028    split 0.0575    clip 0.0509    add_domain 0.0110    summary 0.0242    
+Length of domains: 423
+446 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 18.53702139854431
+
+Iteration 29
+Current pickout batch: 16
+Worst bound: tensor([-0.48492002], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/30 (0.00%), Of 30 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0001    init 0.0001    concretize 0.0001    bounding 0.6319    filtering 0.0005    decision 0.0001    split 0.0047    clip 0.0032    add_domain 0.0004    summary 0.0021    
+Accumulated time: pickout 0.0074    bounding 18.9213    init 0.0335    concretize 0.0335    filtering 0.0052    decision 0.0029    split 0.0622    clip 0.0541    add_domain 0.0114    summary 0.0263    
+Length of domains: 437
+462 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 19.18135976791382
+
+Iteration 30
+Current pickout batch: 16
+Worst bound: tensor([-0.46424627], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0002    init 0.0001    concretize 0.0001    bounding 0.5680    filtering 0.0002    decision 0.0001    split 0.0021    clip 0.0015    add_domain 0.0004    summary 0.0009    
+Accumulated time: pickout 0.0076    bounding 19.4893    init 0.0346    concretize 0.0346    filtering 0.0053    decision 0.0030    split 0.0643    clip 0.0556    add_domain 0.0117    summary 0.0272    
+Length of domains: 453
+478 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 19.755860328674316
+
+Iteration 31
+Current pickout batch: 16
+Worst bound: tensor([-0.44061995], device='cuda:0')
+Domain clipping (1 iterations): shrunken 2/32 (6.25%), Of 32 batches, 0 were verified before clipping, 2 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0003    init 0.0001    concretize 0.0001    bounding 0.6164    filtering 0.0001    decision 0.0001    split 0.0004    clip 0.0012    add_domain 0.0004    summary 0.0001    
+Accumulated time: pickout 0.0079    bounding 20.1057    init 0.0357    concretize 0.0357    filtering 0.0054    decision 0.0031    split 0.0647    clip 0.0568    add_domain 0.0121    summary 0.0273    
+Length of domains: 469
+494 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 20.37556266784668
+
+Iteration 32
+Current pickout batch: 16
+Worst bound: tensor([-0.42227268], device='cuda:0')
+Domain clipping (1 iterations): shrunken 1/30 (3.33%), Of 30 batches, 0 were verified before clipping, 1 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0024    init 0.0001    concretize 0.0001    bounding 0.6238    filtering 0.0004    decision 0.0001    split 0.0034    clip 0.0027    add_domain 0.0006    summary 0.0038    
+Accumulated time: pickout 0.0103    bounding 20.7295    init 0.0369    concretize 0.0368    filtering 0.0058    decision 0.0032    split 0.0681    clip 0.0595    add_domain 0.0127    summary 0.0312    
+Length of domains: 483
+510 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 21.01409673690796
+
+Iteration 33
+Current pickout batch: 16
+Worst bound: tensor([-0.41576052], device='cuda:0')
+Domain clipping (1 iterations): shrunken 3/31 (9.68%), Of 32 batches, 1 were verified before clipping, 3 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0003    init 0.0001    concretize 0.0001    bounding 0.5695    filtering 0.0002    decision 0.0001    split 0.0019    clip 0.0015    add_domain 0.0009    summary 0.0009    
+Accumulated time: pickout 0.0106    bounding 21.2989    init 0.0380    concretize 0.0380    filtering 0.0060    decision 0.0033    split 0.0700    clip 0.0610    add_domain 0.0136    summary 0.0321    
+Length of domains: 498
+526 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 21.590598344802856
+
+Iteration 34
+Current pickout batch: 16
+Worst bound: tensor([-0.41080952], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/28 (0.00%), Of 28 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0003    init 0.0001    concretize 0.0001    bounding 0.6284    filtering 0.0005    decision 0.0001    split 0.0055    clip 0.0021    add_domain 0.0003    summary 0.0040    
+Accumulated time: pickout 0.0109    bounding 21.9273    init 0.0391    concretize 0.0391    filtering 0.0066    decision 0.0034    split 0.0755    clip 0.0630    add_domain 0.0139    summary 0.0362    
+Length of domains: 510
+542 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 22.23373246192932
+
+Iteration 35
+Current pickout batch: 16
+Worst bound: tensor([-0.39868498], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0003    init 0.0001    concretize 0.0001    bounding 0.6090    filtering 0.0002    decision 0.0001    split 0.0025    clip 0.0028    add_domain 0.0005    summary 0.0022    
+Accumulated time: pickout 0.0112    bounding 22.5363    init 0.0403    concretize 0.0403    filtering 0.0068    decision 0.0035    split 0.0780    clip 0.0658    add_domain 0.0143    summary 0.0383    
+Length of domains: 526
+558 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 22.853707790374756
+
+Iteration 36
+Current pickout batch: 16
+Worst bound: tensor([-0.38955975], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0003    init 0.0001    concretize 0.0001    bounding 0.5527    filtering 0.0002    decision 0.0001    split 0.0020    clip 0.0015    add_domain 0.0004    summary 0.0009    
+Accumulated time: pickout 0.0115    bounding 23.0890    init 0.0415    concretize 0.0415    filtering 0.0070    decision 0.0036    split 0.0800    clip 0.0673    add_domain 0.0147    summary 0.0392    
+Length of domains: 542
+574 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 23.412941217422485
+
+Iteration 37
+Current pickout batch: 16
+Worst bound: tensor([-0.38081455], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0003    init 0.0001    concretize 0.0001    bounding 0.5996    filtering 0.0001    decision 0.0001    split 0.0014    clip 0.0039    add_domain 0.0004    summary 0.0001    
+Accumulated time: pickout 0.0118    bounding 23.6886    init 0.0426    concretize 0.0426    filtering 0.0070    decision 0.0037    split 0.0814    clip 0.0712    add_domain 0.0151    summary 0.0394    
+Length of domains: 558
+590 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 24.01936650276184
+
+Iteration 38
+Current pickout batch: 16
+Worst bound: tensor([-0.37597179], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0002    init 0.0001    concretize 0.0001    bounding 0.6160    filtering 0.0002    decision 0.0001    split 0.0047    clip 0.0015    add_domain 0.0021    summary 0.0021    
+Accumulated time: pickout 0.0119    bounding 24.3046    init 0.0437    concretize 0.0437    filtering 0.0072    decision 0.0038    split 0.0860    clip 0.0727    add_domain 0.0172    summary 0.0415    
+Length of domains: 574
+606 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 24.647587537765503
+
+Iteration 39
+Current pickout batch: 16
+Worst bound: tensor([-0.36489296], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0007    init 0.0001    concretize 0.0001    bounding 0.5961    filtering 0.0002    decision 0.0001    split 0.0021    clip 0.0016    add_domain 0.0004    summary 0.0009    
+Accumulated time: pickout 0.0127    bounding 24.9007    init 0.0448    concretize 0.0448    filtering 0.0074    decision 0.0039    split 0.0882    clip 0.0743    add_domain 0.0176    summary 0.0424    
+Length of domains: 590
+622 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 25.250898838043213
+
+Iteration 40
+Current pickout batch: 16
+Worst bound: tensor([-0.35575724], device='cuda:0')
+Domain clipping (1 iterations): shrunken 1/32 (3.12%), Of 32 batches, 0 were verified before clipping, 1 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0003    init 0.0001    concretize 0.0001    bounding 0.6365    filtering 0.0001    decision 0.0001    split 0.0004    clip 0.0014    add_domain 0.0003    summary 0.0001    
+Accumulated time: pickout 0.0130    bounding 25.5372    init 0.0459    concretize 0.0459    filtering 0.0075    decision 0.0040    split 0.0886    clip 0.0757    add_domain 0.0179    summary 0.0426    
+Length of domains: 606
+638 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 25.890985012054443
+
+Iteration 41
+Current pickout batch: 16
+Worst bound: tensor([-0.34884501], device='cuda:0')
+Domain clipping (1 iterations): shrunken 3/32 (9.38%), Of 32 batches, 0 were verified before clipping, 3 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0028    init 0.0001    concretize 0.0001    bounding 0.6435    filtering 0.0002    decision 0.0001    split 0.0063    clip 0.0027    add_domain 0.0026    summary 0.0029    
+Accumulated time: pickout 0.0157    bounding 26.1806    init 0.0474    concretize 0.0474    filtering 0.0077    decision 0.0041    split 0.0949    clip 0.0784    add_domain 0.0205    summary 0.0455    
+Length of domains: 622
+654 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 26.55436110496521
+
+Iteration 42
+Current pickout batch: 16
+Worst bound: tensor([-0.34072876], device='cuda:0')
+Domain clipping (1 iterations): shrunken 4/30 (13.33%), Of 30 batches, 0 were verified before clipping, 4 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0003    init 0.0001    concretize 0.0001    bounding 0.6118    filtering 0.0006    decision 0.0001    split 0.0024    clip 0.0023    add_domain 0.0006    summary 0.0016    
+Accumulated time: pickout 0.0160    bounding 26.7924    init 0.0488    concretize 0.0487    filtering 0.0083    decision 0.0043    split 0.0973    clip 0.0807    add_domain 0.0211    summary 0.0470    
+Length of domains: 636
+670 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 27.176305055618286
+
+Iteration 43
+Current pickout batch: 16
+Worst bound: tensor([-0.33290768], device='cuda:0')
+Domain clipping (1 iterations): shrunken 6/32 (18.75%), Of 32 batches, 0 were verified before clipping, 6 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0008    init 0.0001    concretize 0.0001    bounding 0.7076    filtering 0.0002    decision 0.0001    split 0.0004    clip 0.0006    add_domain 0.0006    summary 0.0007    
+Accumulated time: pickout 0.0169    bounding 27.5001    init 0.0500    concretize 0.0499    filtering 0.0085    decision 0.0044    split 0.0977    clip 0.0812    add_domain 0.0217    summary 0.0477    
+Length of domains: 652
+686 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 27.888022899627686
+
+Iteration 44
+Current pickout batch: 16
+Worst bound: tensor([-0.32535219], device='cuda:0')
+Domain clipping (1 iterations): shrunken 4/30 (13.33%), Of 30 batches, 0 were verified before clipping, 4 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0003    init 0.0001    concretize 0.0001    bounding 0.6995    filtering 0.0004    decision 0.0001    split 0.0070    clip 0.0085    add_domain 0.0039    summary 0.0123    
+Accumulated time: pickout 0.0172    bounding 28.1996    init 0.0512    concretize 0.0511    filtering 0.0089    decision 0.0045    split 0.1046    clip 0.0897    add_domain 0.0256    summary 0.0600    
+Length of domains: 666
+702 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 28.62824583053589
+
+Iteration 45
+Current pickout batch: 16
+Worst bound: tensor([-0.31719923], device='cuda:0')
+Domain clipping (1 iterations): shrunken 4/32 (12.50%), Of 32 batches, 0 were verified before clipping, 4 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0017    init 0.0001    concretize 0.0001    bounding 0.6596    filtering 0.0002    decision 0.0001    split 0.0022    clip 0.0016    add_domain 0.0005    summary 0.0020    
+Accumulated time: pickout 0.0189    bounding 28.8592    init 0.0523    concretize 0.0523    filtering 0.0091    decision 0.0046    split 0.1069    clip 0.0913    add_domain 0.0261    summary 0.0620    
+Length of domains: 682
+718 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 29.299060344696045
+
+Iteration 46
+Current pickout batch: 16
+Worst bound: tensor([-0.31509876], device='cuda:0')
+Domain clipping (1 iterations): shrunken 2/30 (6.67%), Of 30 batches, 0 were verified before clipping, 2 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0005    init 0.0001    concretize 0.0001    bounding 0.6863    filtering 0.0001    decision 0.0001    split 0.0043    clip 0.0016    add_domain 0.0002    summary 0.0003    
+Accumulated time: pickout 0.0194    bounding 29.5456    init 0.0535    concretize 0.0534    filtering 0.0092    decision 0.0047    split 0.1112    clip 0.0929    add_domain 0.0263    summary 0.0622    
+Length of domains: 696
+734 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 29.99629783630371
+
+Iteration 47
+Current pickout batch: 16
+Worst bound: tensor([-0.31031609], device='cuda:0')
+Domain clipping (1 iterations): shrunken 2/32 (6.25%), Of 32 batches, 0 were verified before clipping, 2 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0002    init 0.0001    concretize 0.0001    bounding 0.6637    filtering 0.0003    decision 0.0001    split 0.0060    clip 0.0051    add_domain 0.0006    summary 0.0032    
+Accumulated time: pickout 0.0196    bounding 30.2093    init 0.0547    concretize 0.0546    filtering 0.0095    decision 0.0048    split 0.1172    clip 0.0980    add_domain 0.0269    summary 0.0654    
+Length of domains: 712
+750 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 30.679810523986816
+
+Iteration 48
+Current pickout batch: 16
+Worst bound: tensor([-0.29817104], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/30 (0.00%), Of 30 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0003    init 0.0001    concretize 0.0001    bounding 0.6514    filtering 0.0010    decision 0.0001    split 0.0043    clip 0.0020    add_domain 0.0005    summary 0.0016    
+Accumulated time: pickout 0.0199    bounding 30.8607    init 0.0559    concretize 0.0559    filtering 0.0105    decision 0.0049    split 0.1215    clip 0.1000    add_domain 0.0275    summary 0.0670    
+Length of domains: 726
+766 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 31.34489893913269
+
+Iteration 49
+Current pickout batch: 16
+Worst bound: tensor([-0.29592228], device='cuda:0')
+Domain clipping (1 iterations): shrunken 2/32 (6.25%), Of 32 batches, 0 were verified before clipping, 2 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0003    init 0.0001    concretize 0.0001    bounding 0.6788    filtering 0.0008    decision 0.0001    split 0.0083    clip 0.0080    add_domain 0.0005    summary 0.0008    
+Accumulated time: pickout 0.0202    bounding 31.5395    init 0.0570    concretize 0.0570    filtering 0.0113    decision 0.0050    split 0.1298    clip 0.1080    add_domain 0.0280    summary 0.0678    
+Length of domains: 742
+782 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 32.049309492111206
+
+Iteration 50
+Current pickout batch: 16
+Worst bound: tensor([-0.29235363], device='cuda:0')
+Domain clipping (1 iterations): shrunken 1/30 (3.33%), Of 30 batches, 0 were verified before clipping, 1 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0005    init 0.0001    concretize 0.0001    bounding 0.6669    filtering 0.0005    decision 0.0001    split 0.0028    clip 0.0037    add_domain 0.0006    summary 0.0059    
+Accumulated time: pickout 0.0207    bounding 32.2063    init 0.0582    concretize 0.0582    filtering 0.0118    decision 0.0051    split 0.1326    clip 0.1117    add_domain 0.0285    summary 0.0737    
+Length of domains: 756
+798 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 32.73291277885437
+
+Iteration 51
+Current pickout batch: 16
+Worst bound: tensor([-0.28666878], device='cuda:0')
+Domain clipping (1 iterations): shrunken 1/32 (3.12%), Of 32 batches, 0 were verified before clipping, 1 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0057    init 0.0001    concretize 0.0001    bounding 0.6378    filtering 0.0003    decision 0.0001    split 0.0096    clip 0.0021    add_domain 0.0005    summary 0.0014    
+Accumulated time: pickout 0.0264    bounding 32.8442    init 0.0594    concretize 0.0594    filtering 0.0120    decision 0.0052    split 0.1422    clip 0.1138    add_domain 0.0291    summary 0.0751    
+Length of domains: 772
+814 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 33.392439126968384
+
+Iteration 52
+Current pickout batch: 16
+Worst bound: tensor([-0.28291035], device='cuda:0')
+Domain clipping (1 iterations): shrunken 1/32 (3.12%), Of 32 batches, 0 were verified before clipping, 1 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0005    init 0.0001    concretize 0.0001    bounding 0.6808    filtering 0.0001    decision 0.0001    split 0.0024    clip 0.0059    add_domain 0.0006    summary 0.0045    
+Accumulated time: pickout 0.0269    bounding 33.5250    init 0.0606    concretize 0.0606    filtering 0.0121    decision 0.0053    split 0.1446    clip 0.1197    add_domain 0.0297    summary 0.0796    
+Length of domains: 788
+830 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 34.094836473464966
+
+Iteration 53
+Current pickout batch: 16
+Worst bound: tensor([-0.27681732], device='cuda:0')
+Domain clipping (1 iterations): shrunken 1/32 (3.12%), Of 32 batches, 0 were verified before clipping, 1 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0016    init 0.0001    concretize 0.0001    bounding 0.6752    filtering 0.0003    decision 0.0001    split 0.0062    clip 0.0035    add_domain 0.0007    summary 0.0043    
+Accumulated time: pickout 0.0285    bounding 34.2002    init 0.0618    concretize 0.0618    filtering 0.0124    decision 0.0054    split 0.1507    clip 0.1231    add_domain 0.0304    summary 0.0839    
+Length of domains: 804
+846 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 34.79024291038513
+
+Iteration 54
+Current pickout batch: 16
+Worst bound: tensor([-0.27376270], device='cuda:0')
+Domain clipping (1 iterations): shrunken 3/32 (9.38%), Of 32 batches, 0 were verified before clipping, 3 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0003    init 0.0001    concretize 0.0001    bounding 0.5936    filtering 0.0002    decision 0.0001    split 0.0023    clip 0.0011    add_domain 0.0003    summary 0.0002    
+Accumulated time: pickout 0.0288    bounding 34.7938    init 0.0632    concretize 0.0631    filtering 0.0126    decision 0.0055    split 0.1530    clip 0.1242    add_domain 0.0307    summary 0.0841    
+Length of domains: 820
+862 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 35.388978481292725
+
+Iteration 55
+Current pickout batch: 16
+Worst bound: tensor([-0.27089787], device='cuda:0')
+Domain clipping (1 iterations): shrunken 2/30 (6.67%), Of 30 batches, 0 were verified before clipping, 2 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0002    init 0.0001    concretize 0.0001    bounding 0.5920    filtering 0.0001    decision 0.0001    split 0.0006    clip 0.0008    add_domain 0.0002    summary 0.0001    
+Accumulated time: pickout 0.0291    bounding 35.3858    init 0.0646    concretize 0.0645    filtering 0.0127    decision 0.0057    split 0.1536    clip 0.1250    add_domain 0.0309    summary 0.0843    
+Length of domains: 834
+878 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 35.983625411987305
+
+Iteration 56
+Current pickout batch: 16
+Worst bound: tensor([-0.26782608], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/30 (0.00%), Of 30 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0002    init 0.0001    concretize 0.0001    bounding 0.5773    filtering 0.0001    decision 0.0001    split 0.0022    clip 0.0018    add_domain 0.0004    summary 0.0004    
+Accumulated time: pickout 0.0292    bounding 35.9631    init 0.0657    concretize 0.0656    filtering 0.0129    decision 0.0058    split 0.1559    clip 0.1268    add_domain 0.0313    summary 0.0847    
+Length of domains: 848
+894 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 36.567160844802856
+
+Iteration 57
+Current pickout batch: 16
+Worst bound: tensor([-0.26497841], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0001    init 0.0001    concretize 0.0001    bounding 0.5328    filtering 0.0001    decision 0.0001    split 0.0004    clip 0.0005    add_domain 0.0002    summary 0.0001    
+Accumulated time: pickout 0.0294    bounding 36.4959    init 0.0668    concretize 0.0668    filtering 0.0129    decision 0.0059    split 0.1562    clip 0.1273    add_domain 0.0314    summary 0.0848    
+Length of domains: 864
+910 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 37.10194110870361
+
+Iteration 58
+Current pickout batch: 16
+Worst bound: tensor([-0.26215744], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0001    init 0.0001    concretize 0.0001    bounding 0.6431    filtering 0.0002    decision 0.0001    split 0.0021    clip 0.0014    add_domain 0.0004    summary 0.0010    
+Accumulated time: pickout 0.0295    bounding 37.1390    init 0.0680    concretize 0.0680    filtering 0.0131    decision 0.0060    split 0.1583    clip 0.1287    add_domain 0.0318    summary 0.0858    
+Length of domains: 880
+926 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 37.751530170440674
+
+Iteration 59
+Current pickout batch: 16
+Worst bound: tensor([-0.26000881], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0003    init 0.0001    concretize 0.0001    bounding 0.6706    filtering 0.0001    decision 0.0001    split 0.0041    clip 0.0015    add_domain 0.0002    summary 0.0003    
+Accumulated time: pickout 0.0298    bounding 37.8096    init 0.0693    concretize 0.0693    filtering 0.0132    decision 0.0061    split 0.1624    clip 0.1302    add_domain 0.0320    summary 0.0861    
+Length of domains: 896
+942 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 38.43250370025635
+
+Iteration 60
+Current pickout batch: 16
+Worst bound: tensor([-0.25926495], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0002    init 0.0001    concretize 0.0001    bounding 0.6866    filtering 0.0002    decision 0.0001    split 0.0061    clip 0.0028    add_domain 0.0006    summary 0.0003    
+Accumulated time: pickout 0.0300    bounding 38.4961    init 0.0705    concretize 0.0704    filtering 0.0134    decision 0.0062    split 0.1685    clip 0.1330    add_domain 0.0326    summary 0.0864    
+Length of domains: 912
+958 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 39.1308331489563
+
+Iteration 61
+Current pickout batch: 16
+Worst bound: tensor([-0.25740528], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0002    init 0.0001    concretize 0.0001    bounding 0.6308    filtering 0.0003    decision 0.0001    split 0.0027    clip 0.0016    add_domain 0.0004    summary 0.0009    
+Accumulated time: pickout 0.0302    bounding 39.1269    init 0.0717    concretize 0.0716    filtering 0.0137    decision 0.0063    split 0.1712    clip 0.1346    add_domain 0.0330    summary 0.0873    
+Length of domains: 928
+974 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 39.76911163330078
+
+Iteration 62
+Current pickout batch: 16
+Worst bound: tensor([-0.25562000], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0003    init 0.0001    concretize 0.0001    bounding 0.6902    filtering 0.0001    decision 0.0001    split 0.0004    clip 0.0006    add_domain 0.0002    summary 0.0001    
+Accumulated time: pickout 0.0305    bounding 39.8171    init 0.0728    concretize 0.0728    filtering 0.0137    decision 0.0064    split 0.1716    clip 0.1352    add_domain 0.0332    summary 0.0874    
+Length of domains: 944
+990 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 40.462369203567505
+
+Iteration 63
+Current pickout batch: 16
+Worst bound: tensor([-0.25499916], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0002    init 0.0001    concretize 0.0001    bounding 0.6874    filtering 0.0001    decision 0.0001    split 0.0006    clip 0.0005    add_domain 0.0002    summary 0.0001    
+Accumulated time: pickout 0.0306    bounding 40.5045    init 0.0740    concretize 0.0740    filtering 0.0138    decision 0.0065    split 0.1722    clip 0.1357    add_domain 0.0334    summary 0.0875    
+Length of domains: 960
+1006 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 41.15196251869202
+
+Iteration 64
+Current pickout batch: 16
+Worst bound: tensor([-0.25193214], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0001    init 0.0001    concretize 0.0001    bounding 0.6285    filtering 0.0003    decision 0.0001    split 0.0008    clip 0.0009    add_domain 0.0003    summary 0.0007    
+Accumulated time: pickout 0.0308    bounding 41.1331    init 0.0753    concretize 0.0752    filtering 0.0141    decision 0.0066    split 0.1729    clip 0.1367    add_domain 0.0337    summary 0.0882    
+Length of domains: 976
+1022 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 41.78452134132385
+
+Iteration 65
+Current pickout batch: 16
+Worst bound: tensor([-0.24979591], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0004    init 0.0001    concretize 0.0001    bounding 0.6927    filtering 0.0003    decision 0.0001    split 0.0024    clip 0.0015    add_domain 0.0005    summary 0.0009    
+Accumulated time: pickout 0.0311    bounding 41.8258    init 0.0764    concretize 0.0763    filtering 0.0144    decision 0.0067    split 0.1753    clip 0.1382    add_domain 0.0342    summary 0.0892    
+Length of domains: 992
+1038 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 42.48459315299988
+
+Iteration 66
+Current pickout batch: 16
+Worst bound: tensor([-0.24789333], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0003    init 0.0001    concretize 0.0001    bounding 0.6860    filtering 0.0005    decision 0.0001    split 0.0053    clip 0.0022    add_domain 0.0005    summary 0.0009    
+Accumulated time: pickout 0.0314    bounding 42.5118    init 0.0776    concretize 0.0775    filtering 0.0149    decision 0.0068    split 0.1806    clip 0.1404    add_domain 0.0347    summary 0.0901    
+Length of domains: 1008
+1054 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 43.18235635757446
+
+Iteration 67
+Current pickout batch: 16
+Worst bound: tensor([-0.24584293], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0003    init 0.0001    concretize 0.0001    bounding 0.6731    filtering 0.0002    decision 0.0001    split 0.0060    clip 0.0050    add_domain 0.0005    summary 0.0015    
+Accumulated time: pickout 0.0317    bounding 43.1849    init 0.0788    concretize 0.0787    filtering 0.0151    decision 0.0069    split 0.1867    clip 0.1454    add_domain 0.0352    summary 0.0916    
+Length of domains: 1024
+1070 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 43.87295842170715
+
+Iteration 68
+Current pickout batch: 16
+Worst bound: tensor([-0.24422264], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0005    init 0.0001    concretize 0.0001    bounding 0.6797    filtering 0.0003    decision 0.0001    split 0.0053    clip 0.0024    add_domain 0.0034    summary 0.0008    
+Accumulated time: pickout 0.0322    bounding 43.8646    init 0.0800    concretize 0.0799    filtering 0.0153    decision 0.0070    split 0.1920    clip 0.1478    add_domain 0.0385    summary 0.0924    
+Length of domains: 1040
+1086 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 44.56726408004761
+
+Iteration 69
+Current pickout batch: 16
+Worst bound: tensor([-0.24299812], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0002    init 0.0001    concretize 0.0001    bounding 0.6713    filtering 0.0003    decision 0.0001    split 0.0062    clip 0.0025    add_domain 0.0010    summary 0.0003    
+Accumulated time: pickout 0.0324    bounding 44.5359    init 0.0812    concretize 0.0811    filtering 0.0156    decision 0.0072    split 0.1983    clip 0.1503    add_domain 0.0395    summary 0.0927    
+Length of domains: 1056
+1102 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 45.25074648857117
+
+Iteration 70
+Current pickout batch: 16
+Worst bound: tensor([-0.24156761], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0002    init 0.0001    concretize 0.0001    bounding 0.6059    filtering 0.0002    decision 0.0001    split 0.0020    clip 0.0014    add_domain 0.0004    summary 0.0009    
+Accumulated time: pickout 0.0326    bounding 45.1418    init 0.0823    concretize 0.0823    filtering 0.0158    decision 0.0073    split 0.2003    clip 0.1518    add_domain 0.0399    summary 0.0936    
+Length of domains: 1072
+1118 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 45.86315155029297
+
+Iteration 71
+Current pickout batch: 16
+Worst bound: tensor([-0.23966408], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0003    init 0.0001    concretize 0.0001    bounding 0.6710    filtering 0.0002    decision 0.0001    split 0.0041    clip 0.0013    add_domain 0.0002    summary 0.0003    
+Accumulated time: pickout 0.0329    bounding 45.8128    init 0.0835    concretize 0.0834    filtering 0.0160    decision 0.0074    split 0.2044    clip 0.1531    add_domain 0.0401    summary 0.0939    
+Length of domains: 1088
+1134 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 46.54441952705383
+
+Iteration 72
+Current pickout batch: 16
+Worst bound: tensor([-0.23827076], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0002    init 0.0001    concretize 0.0001    bounding 0.6584    filtering 0.0002    decision 0.0001    split 0.0013    clip 0.0007    add_domain 0.0003    summary 0.0002    
+Accumulated time: pickout 0.0331    bounding 46.4712    init 0.0847    concretize 0.0846    filtering 0.0162    decision 0.0075    split 0.2057    clip 0.1538    add_domain 0.0404    summary 0.0941    
+Length of domains: 1104
+1150 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 47.206674098968506
+
+Iteration 73
+Current pickout batch: 16
+Worst bound: tensor([-0.23698330], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0006    init 0.0001    concretize 0.0001    bounding 0.6124    filtering 0.0002    decision 0.0001    split 0.0021    clip 0.0015    add_domain 0.0004    summary 0.0009    
+Accumulated time: pickout 0.0337    bounding 47.0837    init 0.0858    concretize 0.0857    filtering 0.0163    decision 0.0076    split 0.2078    clip 0.1552    add_domain 0.0408    summary 0.0950    
+Length of domains: 1120
+1166 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 47.82600116729736
+
+Iteration 74
+Current pickout batch: 16
+Worst bound: tensor([-0.23567486], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0002    init 0.0001    concretize 0.0001    bounding 0.6612    filtering 0.0002    decision 0.0001    split 0.0009    clip 0.0040    add_domain 0.0004    summary 0.0001    
+Accumulated time: pickout 0.0339    bounding 47.7448    init 0.0869    concretize 0.0869    filtering 0.0165    decision 0.0077    split 0.2086    clip 0.1592    add_domain 0.0412    summary 0.0952    
+Length of domains: 1136
+1182 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 48.49461770057678
+
+Iteration 75
+Current pickout batch: 16
+Worst bound: tensor([-0.23441601], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0002    init 0.0001    concretize 0.0001    bounding 0.6399    filtering 0.0002    decision 0.0001    split 0.0030    clip 0.0028    add_domain 0.0005    summary 0.0019    
+Accumulated time: pickout 0.0341    bounding 48.3847    init 0.0881    concretize 0.0880    filtering 0.0167    decision 0.0078    split 0.2116    clip 0.1620    add_domain 0.0417    summary 0.0971    
+Length of domains: 1152
+1198 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 49.144455909729004
+
+Iteration 76
+Current pickout batch: 16
+Worst bound: tensor([-0.23437977], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0012    init 0.0001    concretize 0.0001    bounding 0.6430    filtering 0.0002    decision 0.0001    split 0.0022    clip 0.0015    add_domain 0.0004    summary 0.0009    
+Accumulated time: pickout 0.0353    bounding 49.0278    init 0.0896    concretize 0.0895    filtering 0.0169    decision 0.0079    split 0.2138    clip 0.1634    add_domain 0.0420    summary 0.0980    
+Length of domains: 1168
+1214 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 49.795127391815186
+
+Iteration 77
+Current pickout batch: 16
+Worst bound: tensor([-0.23366547], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0003    init 0.0001    concretize 0.0001    bounding 0.6749    filtering 0.0001    decision 0.0001    split 0.0008    clip 0.0036    add_domain 0.0005    summary 0.0007    
+Accumulated time: pickout 0.0356    bounding 49.7027    init 0.0907    concretize 0.0907    filtering 0.0169    decision 0.0080    split 0.2146    clip 0.1671    add_domain 0.0426    summary 0.0987    
+Length of domains: 1184
+1230 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 50.47687387466431
+
+Iteration 78
+Current pickout batch: 16
+Worst bound: tensor([-0.23335075], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0003    init 0.0001    concretize 0.0001    bounding 0.6751    filtering 0.0002    decision 0.0001    split 0.0047    clip 0.0017    add_domain 0.0004    summary 0.0003    
+Accumulated time: pickout 0.0359    bounding 50.3778    init 0.0919    concretize 0.0919    filtering 0.0171    decision 0.0081    split 0.2193    clip 0.1688    add_domain 0.0430    summary 0.0990    
+Length of domains: 1200
+1246 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 51.160526275634766
+
+Iteration 79
+Current pickout batch: 16
+Worst bound: tensor([-0.23220634], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0002    init 0.0001    concretize 0.0001    bounding 0.6139    filtering 0.0002    decision 0.0001    split 0.0021    clip 0.0014    add_domain 0.0004    summary 0.0009    
+Accumulated time: pickout 0.0360    bounding 50.9917    init 0.0931    concretize 0.0930    filtering 0.0173    decision 0.0082    split 0.2213    clip 0.1702    add_domain 0.0433    summary 0.0998    
+Length of domains: 1216
+1262 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 51.78086566925049
+
+Iteration 80
+Current pickout batch: 16
+Worst bound: tensor([-0.23104095], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0004    init 0.0001    concretize 0.0001    bounding 0.6652    filtering 0.0002    decision 0.0001    split 0.0007    clip 0.0039    add_domain 0.0004    summary 0.0012    
+Accumulated time: pickout 0.0365    bounding 51.6569    init 0.0947    concretize 0.0946    filtering 0.0175    decision 0.0083    split 0.2221    clip 0.1741    add_domain 0.0437    summary 0.1011    
+Length of domains: 1232
+1278 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 52.45378088951111
+
+Iteration 81
+Current pickout batch: 16
+Worst bound: tensor([-0.23003006], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0003    init 0.0001    concretize 0.0001    bounding 0.6713    filtering 0.0001    decision 0.0001    split 0.0006    clip 0.0007    add_domain 0.0003    summary 0.0002    
+Accumulated time: pickout 0.0368    bounding 52.3282    init 0.0958    concretize 0.0957    filtering 0.0176    decision 0.0084    split 0.2227    clip 0.1748    add_domain 0.0440    summary 0.1013    
+Length of domains: 1248
+1294 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 53.12791991233826
+
+Iteration 82
+Current pickout batch: 16
+Worst bound: tensor([-0.22918129], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0002    init 0.0001    concretize 0.0001    bounding 0.6032    filtering 0.0003    decision 0.0001    split 0.0024    clip 0.0016    add_domain 0.0004    summary 0.0009    
+Accumulated time: pickout 0.0369    bounding 52.9314    init 0.0970    concretize 0.0969    filtering 0.0179    decision 0.0085    split 0.2251    clip 0.1764    add_domain 0.0444    summary 0.1022    
+Length of domains: 1264
+1310 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 53.738266944885254
+
+Iteration 83
+Current pickout batch: 16
+Worst bound: tensor([-0.22843456], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0003    init 0.0001    concretize 0.0001    bounding 0.6503    filtering 0.0001    decision 0.0001    split 0.0017    clip 0.0042    add_domain 0.0004    summary 0.0001    
+Accumulated time: pickout 0.0372    bounding 53.5817    init 0.0981    concretize 0.0980    filtering 0.0179    decision 0.0086    split 0.2268    clip 0.1806    add_domain 0.0448    summary 0.1023    
+Length of domains: 1280
+1326 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 54.39673614501953
+
+Iteration 84
+Current pickout batch: 16
+Worst bound: tensor([-0.22765732], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0002    init 0.0001    concretize 0.0001    bounding 0.6522    filtering 0.0003    decision 0.0001    split 0.0056    clip 0.0016    add_domain 0.0005    summary 0.0019    
+Accumulated time: pickout 0.0374    bounding 54.2339    init 0.0992    concretize 0.0991    filtering 0.0182    decision 0.0087    split 0.2324    clip 0.1822    add_domain 0.0453    summary 0.1042    
+Length of domains: 1296
+1342 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 55.0618371963501
+
+Iteration 85
+Current pickout batch: 16
+Worst bound: tensor([-0.22698212], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0003    init 0.0001    concretize 0.0001    bounding 0.6114    filtering 0.0003    decision 0.0001    split 0.0028    clip 0.0017    add_domain 0.0004    summary 0.0009    
+Accumulated time: pickout 0.0377    bounding 54.8454    init 0.1004    concretize 0.1003    filtering 0.0185    decision 0.0088    split 0.2351    clip 0.1839    add_domain 0.0456    summary 0.1051    
+Length of domains: 1312
+1358 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 55.681068897247314
+
+Iteration 86
+Current pickout batch: 16
+Worst bound: tensor([-0.22638512], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0003    init 0.0001    concretize 0.0001    bounding 0.6459    filtering 0.0002    decision 0.0001    split 0.0021    clip 0.0042    add_domain 0.0004    summary 0.0012    
+Accumulated time: pickout 0.0380    bounding 55.4913    init 0.1015    concretize 0.1014    filtering 0.0187    decision 0.0089    split 0.2372    clip 0.1882    add_domain 0.0460    summary 0.1064    
+Length of domains: 1328
+1374 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 56.33635425567627
+
+Iteration 87
+Current pickout batch: 16
+Worst bound: tensor([-0.22576618], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0003    init 0.0001    concretize 0.0001    bounding 0.6277    filtering 0.0003    decision 0.0001    split 0.0063    clip 0.0039    add_domain 0.0018    summary 0.0012    
+Accumulated time: pickout 0.0383    bounding 56.1190    init 0.1026    concretize 0.1025    filtering 0.0190    decision 0.0090    split 0.2435    clip 0.1920    add_domain 0.0478    summary 0.1075    
+Length of domains: 1344
+1390 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 56.980725049972534
+
+Iteration 88
+Current pickout batch: 16
+Worst bound: tensor([-0.22517967], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0014    init 0.0001    concretize 0.0001    bounding 0.6019    filtering 0.0002    decision 0.0001    split 0.0031    clip 0.0023    add_domain 0.0006    summary 0.0013    
+Accumulated time: pickout 0.0397    bounding 56.7208    init 0.1037    concretize 0.1036    filtering 0.0192    decision 0.0092    split 0.2466    clip 0.1943    add_domain 0.0484    summary 0.1088    
+Length of domains: 1360
+1406 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 57.59306836128235
+
+Iteration 89
+Current pickout batch: 16
+Worst bound: tensor([-0.22458553], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0003    init 0.0001    concretize 0.0001    bounding 0.6399    filtering 0.0001    decision 0.0001    split 0.0031    clip 0.0052    add_domain 0.0006    summary 0.0035    
+Accumulated time: pickout 0.0400    bounding 57.3608    init 0.1049    concretize 0.1048    filtering 0.0193    decision 0.0093    split 0.2497    clip 0.1995    add_domain 0.0490    summary 0.1123    
+Length of domains: 1376
+1422 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 58.24751281738281
+
+Iteration 90
+Current pickout batch: 16
+Worst bound: tensor([-0.22402000], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0003    init 0.0001    concretize 0.0001    bounding 0.5140    filtering 0.0002    decision 0.0001    split 0.0030    clip 0.0028    add_domain 0.0004    summary 0.0024    
+Accumulated time: pickout 0.0403    bounding 57.8748    init 0.1061    concretize 0.1060    filtering 0.0195    decision 0.0094    split 0.2527    clip 0.2023    add_domain 0.0494    summary 0.1147    
+Length of domains: 1392
+1438 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 58.77336025238037
+
+Iteration 91
+Current pickout batch: 16
+Worst bound: tensor([-0.22330761], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0004    init 0.0001    concretize 0.0001    bounding 0.5030    filtering 0.0002    decision 0.0001    split 0.0021    clip 0.0015    add_domain 0.0004    summary 0.0009    
+Accumulated time: pickout 0.0407    bounding 58.3778    init 0.1073    concretize 0.1072    filtering 0.0197    decision 0.0095    split 0.2548    clip 0.2037    add_domain 0.0498    summary 0.1156    
+Length of domains: 1408
+1454 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Cumulative time: 59.283567667007446
+
+Iteration 92
+Current pickout batch: 16
+Worst bound: tensor([-0.22330761], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/32 (0.00%), Of 32 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0003    init 0.0001    concretize 0.0001    bounding 0.5693    filtering 0.0001    decision 0.0001    split 0.0004    clip 0.0007    add_domain 0.0002    summary 0.0001    
+Accumulated time: pickout 0.0410    bounding 58.9471    init 0.1084    concretize 0.1083    filtering 0.0198    decision 0.0096    split 0.2552    clip 0.2044    add_domain 0.0500    summary 0.1158    
+Length of domains: 1424
+1470 domains visited
+Current (lb-rhs): tensor([[-3.40819883]], device='cuda:0')
+Time out!
+Removing temporary cuts path: /tmp/abcrown_cuts_tva7srvh
+Result: timeout
+Time: 60.538989543914795
+
+------------------------- COMMAND ------------------------------
+/data1/Kane/miniconda3/envs/abcrown25/bin/python /data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/abcrown.py --config /data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/exp_configs/vnncomp25/relusplitter.yaml --precompile_jit --onnx_path /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/relusplitter/onnx/cifar_biasfield_vnncomp2022_cifar_bias_field_21.onnx --vnnlib_path /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/relusplitter/vnnlib/cifar_biasfield_vnncomp2022_prop_21.vnnlib --results_file /data1/Kane/ACT/audit_results/abcrown25_supplemental_20260526/relusplitter/0193__cifar_biasfield_vnncomp2022_cifar_bias_field_21__cifar_biasfield_vnncomp2022_prop_21.result --timeout 60.0 --save_adv_example --pgd_order=skip
+----------------------------------------------------------------
+

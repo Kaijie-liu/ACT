@@ -1,0 +1,18 @@
+# Patch applied to /data1/Kane/alpha-beta-CROWN_vnncomp2025/auto_LiRPA/parse_graph.py
+# Around line 218. Wraps the torch.onnx._globals import in try/except since
+# torch 2.7+ removed this internal module.
+--- a/auto_LiRPA/parse_graph.py
++++ b/auto_LiRPA/parse_graph.py
+@@ -213,8 +213,14 @@ def parse_module(...):
+     if version.parse(torch.__version__) >= version.parse("2.1.0"):
+-        # This is needed for BoundConcatGrad to work with torch 2.1.0 and later
+-        from torch.onnx._globals import GLOBALS
+-        GLOBALS.autograd_inlining = False
++        # Needed for BoundConcatGrad with torch 2.1.x — 2.6.x.
++        # torch 2.7+ removed the internal torch.onnx._globals module;
++        # autograd inlining is handled differently there, so we no-op.
++        try:
++            from torch.onnx._globals import GLOBALS
++            GLOBALS.autograd_inlining = False
++        except ImportError:
++            pass

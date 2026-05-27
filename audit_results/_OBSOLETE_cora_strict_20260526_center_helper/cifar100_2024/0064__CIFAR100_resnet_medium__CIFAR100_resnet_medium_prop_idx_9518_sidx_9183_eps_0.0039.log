@@ -1,0 +1,36 @@
+=== CORA STRICT: bench=cifar100_2024 idx=64  timeout=100  start=2026-05-27 03:41:27
+=== onnx=onnx/CIFAR100_resnet_medium.onnx
+=== vnnlib=vnnlib/CIFAR100_resnet_medium_prop_idx_9518_sidx_9183_eps_0.0039.vnnlib
+prepare_instance(cifar100_2024,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/onnx/CIFAR100_resnet_medium.onnx,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/vnnlib/CIFAR100_resnet_medium_prop_idx_9518_sidx_9183_eps_0.0039.vnnlib)...
+--- Loading network... done
+--- GPU available: true
+--- Loading specification... done
+--- Storing MATLAB file... done
+______________________________
+ neuralNetwork/verify options 
+------------------------------
+ - GPU: true                                                                                                                                                                                                                                                                                                  
+ - Poly. Method: bounds                                     
+ - Batchsize: 1024                                                                                                                          
+ - Interval Center: true                          
+ - Num. init. Generators: 500 
+ - Num. approx. Error (per nonl. Layer): 100 
+ - approx. Error Heuristic: sensitivity*length 
+ - Falsification Method: center 
+ - Refinement Method: naive     
+ - Num. of Splits: 2                                                                                  
+ - Num. of Dimensions: 1                          
+ - Num. of Neuron-Splits: 0     
+ - Num. of ReLU-Tightening Constraints: 0 
+______________________________
+
+run_instance(cifar100_2024,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/onnx/CIFAR100_resnet_medium.onnx,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/vnnlib/CIFAR100_resnet_medium_prop_idx_9518_sidx_9183_eps_0.0039.vnnlib,/data1/Kane/ACT/audit_results/cora_strict_20260526/cifar100_2024/0064__CIFAR100_resnet_medium__CIFAR100_resnet_medium_prop_idx_9518_sidx_9183_eps_0.0039.result,100,0)...
+--- Loading MATLAB file... done
+--- Deleting MATLAB file... done
+--- GPU available: true
+--- Running verification...--- OOM error: half batchSize 512...
+--- OOM error: half batchSize 256...
+ done
+Writing results...
+--- opening results file ... done
+--- writing file ...=== CORA STRICT: verdict=unknown wall=5.147s

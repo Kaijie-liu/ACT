@@ -1,0 +1,84 @@
+{
+  "schema_version": 2,
+  "strict_bounded_failure": true,
+  "counts": {
+    "OK": 3,
+    "UNKNOWN_TIMEOUT": 3,
+    "UNKNOWN_RESOURCE_LIMIT": 0,
+    "ERROR": 0
+  },
+  "results": [
+    {
+      "benchmark": "collins_aerospace_benchmark",
+      "instance_id": 0,
+      "status": "UNKNOWN_TIMEOUT",
+      "cli_normalized": "UNKNOWN_TIMEOUT",
+      "wall_s": 38.22367801005021,
+      "peak_rss_mb": 4383.24609375,
+      "returncode": -15,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_round2_20260525T225241Z/collins_aerospace_benchmark/per_instance_collins_aerospace_benchmark_watchdog_iid0_20260526T010417788248Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_round2_20260525T225241Z/collins_aerospace_benchmark",
+      "stdout_tail": "b_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: yolov5nano_LRelu_640.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 3, 640, 640]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 3, 640, 640)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 1228800 inputs, 277200 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 1228800 inputs, 277200 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_aerospace_benchmark'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed img_14421_perturbed_bbox_3_delta_0.001.vnnlib: 19 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cpu, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=collins_aerospace_benchmark max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cpu, timeout=30.0s)\n  [  1/1] collins_aerospace_benchmark/onnx/yolov5nano_LRelu_640.onnx@vnnlib/img_14421_perturbed_bbox_3_delta_0.001.vnnlib: UNKNOWN (35.7s)  V=0 A=0 U=1 E=0  R=0\n"
+    },
+    {
+      "benchmark": "collins_aerospace_benchmark",
+      "instance_id": 1,
+      "status": "UNKNOWN_TIMEOUT",
+      "cli_normalized": "UNKNOWN_TIMEOUT",
+      "wall_s": 38.124065687996335,
+      "peak_rss_mb": 4216.3671875,
+      "returncode": -15,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_round2_20260525T225241Z/collins_aerospace_benchmark/per_instance_collins_aerospace_benchmark_watchdog_iid1_20260526T010455912987Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_round2_20260525T225241Z/collins_aerospace_benchmark",
+      "stdout_tail": "ecification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 1228800 inputs, 277200 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 1228800 inputs, 277200 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_aerospace_benchmark'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed img_6876_perturbed_bbox_0_delta_0.005.vnnlib: 19 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cpu, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=collins_aerospace_benchmark max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cpu, timeout=30.0s)\n  [  1/1] collins_aerospace_benchmark/onnx/yolov5nano_LRelu_640.onnx@vnnlib/img_6876_perturbed_bbox_0_delta_0.005.vnnlib: UNKNOWN (35.0s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.6 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_round2_20260525T225241Z/collins_aerospace_benchmark/per_instance_collins_aerospace_benchmark_20260526T010454912391Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "collins_aerospace_benchmark",
+      "instance_id": 2,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 38.02467050694395,
+      "peak_rss_mb": 4285.12890625,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_round2_20260525T225241Z/collins_aerospace_benchmark/per_instance_collins_aerospace_benchmark_20260526T010532459332Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_round2_20260525T225241Z/collins_aerospace_benchmark",
+      "stdout_tail": "ecification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 1228800 inputs, 277200 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 1228800 inputs, 277200 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_aerospace_benchmark'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed img_14386_perturbed_bbox_7_delta_0.01.vnnlib: 19 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cpu, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=collins_aerospace_benchmark max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cpu, timeout=30.0s)\n  [  1/1] collins_aerospace_benchmark/onnx/yolov5nano_LRelu_640.onnx@vnnlib/img_14386_perturbed_bbox_7_delta_0.01.vnnlib: UNKNOWN (34.5s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.6 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_round2_20260525T225241Z/collins_aerospace_benchmark/per_instance_collins_aerospace_benchmark_20260526T010532459332Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "collins_aerospace_benchmark",
+      "instance_id": 3,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 38.02343733294401,
+      "peak_rss_mb": 4265.3984375,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_round2_20260525T225241Z/collins_aerospace_benchmark/per_instance_collins_aerospace_benchmark_20260526T010610735328Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_round2_20260525T225241Z/collins_aerospace_benchmark",
+      "stdout_tail": "specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 1228800 inputs, 277200 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 1228800 inputs, 277200 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_aerospace_benchmark'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed img_8758_perturbed_bbox_3_delta_0.02.vnnlib: 19 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cpu, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=collins_aerospace_benchmark max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cpu, timeout=30.0s)\n  [  1/1] collins_aerospace_benchmark/onnx/yolov5nano_LRelu_640.onnx@vnnlib/img_8758_perturbed_bbox_3_delta_0.02.vnnlib: UNKNOWN (34.7s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.6 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_round2_20260525T225241Z/collins_aerospace_benchmark/per_instance_collins_aerospace_benchmark_20260526T010610735328Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "collins_aerospace_benchmark",
+      "instance_id": 4,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 38.02340802794788,
+      "peak_rss_mb": 4284.73828125,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_round2_20260525T225241Z/collins_aerospace_benchmark/per_instance_collins_aerospace_benchmark_20260526T010648832071Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_round2_20260525T225241Z/collins_aerospace_benchmark",
+      "stdout_tail": "specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 1228800 inputs, 277200 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 1228800 inputs, 277200 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_aerospace_benchmark'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed img_8758_perturbed_bbox_4_delta_0.05.vnnlib: 19 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cpu, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=collins_aerospace_benchmark max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cpu, timeout=30.0s)\n  [  1/1] collins_aerospace_benchmark/onnx/yolov5nano_LRelu_640.onnx@vnnlib/img_8758_perturbed_bbox_4_delta_0.05.vnnlib: UNKNOWN (34.8s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.6 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_round2_20260525T225241Z/collins_aerospace_benchmark/per_instance_collins_aerospace_benchmark_20260526T010648832071Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "collins_aerospace_benchmark",
+      "instance_id": 5,
+      "status": "UNKNOWN_TIMEOUT",
+      "cli_normalized": "UNKNOWN_TIMEOUT",
+      "wall_s": 38.12505628098734,
+      "peak_rss_mb": 4383.98828125,
+      "returncode": -15,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_round2_20260525T225241Z/collins_aerospace_benchmark/per_instance_collins_aerospace_benchmark_watchdog_iid5_20260526T010728111513Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_round2_20260525T225241Z/collins_aerospace_benchmark",
+      "stdout_tail": "specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 1228800 inputs, 277200 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 1228800 inputs, 277200 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_aerospace_benchmark'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed img_12761_perturbed_bbox_0_delta_0.1.vnnlib: 19 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cpu, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=collins_aerospace_benchmark max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cpu, timeout=30.0s)\n  [  1/1] collins_aerospace_benchmark/onnx/yolov5nano_LRelu_640.onnx@vnnlib/img_12761_perturbed_bbox_0_delta_0.1.vnnlib: UNKNOWN (34.9s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.6 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_round2_20260525T225241Z/collins_aerospace_benchmark/per_instance_collins_aerospace_benchmark_20260526T010727201143Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    }
+  ]
+}

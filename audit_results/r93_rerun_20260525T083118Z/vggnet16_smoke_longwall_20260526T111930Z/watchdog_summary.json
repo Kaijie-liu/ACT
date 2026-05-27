@@ -1,0 +1,72 @@
+{
+  "schema_version": 2,
+  "strict_bounded_failure": true,
+  "counts": {
+    "OK": 0,
+    "UNKNOWN_TIMEOUT": 0,
+    "UNKNOWN_RESOURCE_LIMIT": 5,
+    "ERROR": 0
+  },
+  "results": [
+    {
+      "benchmark": "vggnet16_2022",
+      "instance_id": 0,
+      "status": "UNKNOWN_RESOURCE_LIMIT",
+      "cli_normalized": "UNKNOWN_RESOURCE_LIMIT",
+      "wall_s": 266.1341534969397,
+      "peak_rss_mb": 32921.859375,
+      "returncode": -15,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/vggnet16_smoke_longwall_20260526T111930Z/per_instance_vggnet16_2022_watchdog_iid0_20260526T112359323465Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/vggnet16_smoke_longwall_20260526T111930Z",
+      "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: vggnet16_2022/onnx/vgg16-7.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/vggnet16_2022/onnx/vgg16-7.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (raw-first strategy)\nWARNING:act.front_end.vnnlib_loader.onnx_converter:Raw onnx2torch failed (NotImplementedError: Converter is not implemented (OperationDescription(domain='', operation_type='Flatten', version=1))); retrying with opset upgrade + simplify pipeline\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: vgg16-7.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 3, 224, 224]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 3, 224, 224)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 150528 inputs, 1000 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 150528 inputs, 1000 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'vggnet16_2022'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed spec0_suit.vnnlib: 1 query(ies)\n"
+    },
+    {
+      "benchmark": "vggnet16_2022",
+      "instance_id": 1,
+      "status": "UNKNOWN_RESOURCE_LIMIT",
+      "cli_normalized": "UNKNOWN_RESOURCE_LIMIT",
+      "wall_s": 229.84968067496084,
+      "peak_rss_mb": 32834.28125,
+      "returncode": -15,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/vggnet16_smoke_longwall_20260526T111930Z/per_instance_vggnet16_2022_watchdog_iid1_20260526T112749183908Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/vggnet16_smoke_longwall_20260526T111930Z",
+      "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: vggnet16_2022/onnx/vgg16-7.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/vggnet16_2022/onnx/vgg16-7.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (raw-first strategy)\nWARNING:act.front_end.vnnlib_loader.onnx_converter:Raw onnx2torch failed (NotImplementedError: Converter is not implemented (OperationDescription(domain='', operation_type='Flatten', version=1))); retrying with opset upgrade + simplify pipeline\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: vgg16-7.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 3, 224, 224]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 3, 224, 224)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 150528 inputs, 1000 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 150528 inputs, 1000 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'vggnet16_2022'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed spec1_Scottish_deerhound.vnnlib: 1 query(ies)\n"
+    },
+    {
+      "benchmark": "vggnet16_2022",
+      "instance_id": 2,
+      "status": "UNKNOWN_RESOURCE_LIMIT",
+      "cli_normalized": "UNKNOWN_RESOURCE_LIMIT",
+      "wall_s": 177.09718070807867,
+      "peak_rss_mb": 32906.69140625,
+      "returncode": -15,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/vggnet16_smoke_longwall_20260526T111930Z/per_instance_vggnet16_2022_watchdog_iid2_20260526T113046281738Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/vggnet16_smoke_longwall_20260526T111930Z",
+      "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: vggnet16_2022/onnx/vgg16-7.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/vggnet16_2022/onnx/vgg16-7.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (raw-first strategy)\nWARNING:act.front_end.vnnlib_loader.onnx_converter:Raw onnx2torch failed (NotImplementedError: Converter is not implemented (OperationDescription(domain='', operation_type='Flatten', version=1))); retrying with opset upgrade + simplify pipeline\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: vgg16-7.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 3, 224, 224]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 3, 224, 224)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 150528 inputs, 1000 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 150528 inputs, 1000 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'vggnet16_2022'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed spec2_Airedale.vnnlib: 1 query(ies)\n"
+    },
+    {
+      "benchmark": "vggnet16_2022",
+      "instance_id": 3,
+      "status": "UNKNOWN_RESOURCE_LIMIT",
+      "cli_normalized": "UNKNOWN_RESOURCE_LIMIT",
+      "wall_s": 215.76867578993551,
+      "peak_rss_mb": 32947.80078125,
+      "returncode": -15,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/vggnet16_smoke_longwall_20260526T111930Z/per_instance_vggnet16_2022_watchdog_iid3_20260526T113422050962Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/vggnet16_smoke_longwall_20260526T111930Z",
+      "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: vggnet16_2022/onnx/vgg16-7.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/vggnet16_2022/onnx/vgg16-7.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (raw-first strategy)\nWARNING:act.front_end.vnnlib_loader.onnx_converter:Raw onnx2torch failed (NotImplementedError: Converter is not implemented (OperationDescription(domain='', operation_type='Flatten', version=1))); retrying with opset upgrade + simplify pipeline\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: vgg16-7.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 3, 224, 224]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 3, 224, 224)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 150528 inputs, 1000 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 150528 inputs, 1000 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'vggnet16_2022'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed spec3_canoe.vnnlib: 1 query(ies)\n"
+    },
+    {
+      "benchmark": "vggnet16_2022",
+      "instance_id": 4,
+      "status": "UNKNOWN_RESOURCE_LIMIT",
+      "cli_normalized": "UNKNOWN_RESOURCE_LIMIT",
+      "wall_s": 180.92368570005056,
+      "peak_rss_mb": 32920.46875,
+      "returncode": -15,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/vggnet16_smoke_longwall_20260526T111930Z/per_instance_vggnet16_2022_watchdog_iid4_20260526T113722975223Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/vggnet16_smoke_longwall_20260526T111930Z",
+      "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: vggnet16_2022/onnx/vgg16-7.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/vggnet16_2022/onnx/vgg16-7.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (raw-first strategy)\nWARNING:act.front_end.vnnlib_loader.onnx_converter:Raw onnx2torch failed (NotImplementedError: Converter is not implemented (OperationDescription(domain='', operation_type='Flatten', version=1))); retrying with opset upgrade + simplify pipeline\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: vgg16-7.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 3, 224, 224]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 3, 224, 224)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 150528 inputs, 1000 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 150528 inputs, 1000 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'vggnet16_2022'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed spec4_grille.vnnlib: 1 query(ies)\n"
+    }
+  ]
+}

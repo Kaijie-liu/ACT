@@ -1,0 +1,20 @@
+Traceback (most recent call last):
+  File "/data1/Kane/miniconda3/envs/nnenumenv/lib/python3.8/runpy.py", line 194, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/data1/Kane/miniconda3/envs/nnenumenv/lib/python3.8/runpy.py", line 87, in _run_code
+    exec(code, run_globals)
+  File "/data1/Kane/nnenum/src/nnenum/nnenum.py", line 451, in <module>
+    main()
+  File "/data1/Kane/nnenum/src/nnenum/nnenum.py", line 407, in main
+    res = enumerate_network(init_box, network, spec)
+  File "/data1/Kane/nnenum/src/nnenum/enumerate.py", line 110, in enumerate_network
+    init_ss = make_init_ss(init, network, spec, start) # returns None if timeout
+  File "/data1/Kane/nnenum/src/nnenum/enumerate.py", line 62, in make_init_ss
+    ss.propagate_up_to_split(network, start_time)
+  File "/data1/Kane/nnenum/src/nnenum/lp_star_state.py", line 151, in propagate_up_to_split
+    self.apply_linear_layer(network)
+  File "/data1/Kane/nnenum/src/nnenum/lp_star_state.py", line 173, in apply_linear_layer
+    layer.transform_star(self.star)
+  File "/data1/Kane/nnenum/src/nnenum/onnx_network.py", line 100, in transform_star
+    res = res - self.zero_output
+ValueError: operands could not be broadcast together with shapes (1,128,6,6) (1,2,6,6) 

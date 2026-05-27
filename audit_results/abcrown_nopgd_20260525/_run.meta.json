@@ -1,0 +1,20 @@
+{
+  "tool": "alpha-beta-CROWN (vnncomp2025 fork)",
+  "tool_dir": "/data1/Kane/alpha-beta-CROWN_vnncomp2025",
+  "tool_commit": "61b5ff84801e3e16dfa0bdbed564b985255521aa",
+  "auto_lirpa_patch": "parse_graph.py: try/except around torch.onnx._globals import",
+  "python": "/data1/Kane/miniconda3/envs/abcrown25/bin/python",
+  "python_version": "Python 3.11.15",
+  "torch_version": "2.9.1+cu128",
+  "cuda_available": true,
+  "started_at": "2026-05-26T20:58:58+10:00",
+  "host": "dell-pro-max-tower-t2",
+  "bench_root": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks",
+  "results_root": "/data1/Kane/ACT/audit_results/abcrown_nopgd_20260525",
+  "flags": {
+    "NOPGD": true,
+    "pgd_order_passed_through_vnncomp_main": "skip",
+    "purpose": "supplemental vnncomp25-new benchmarks that GenBaB clone could not handle",
+    "lsnc_relu_skipped": "fork's auto_LiRPA also can't bound aten::ATen sum; the official yaml uses pgd_order=before to bypass via PGD-found witness, incompatible with --NOPGD"
+  }
+}

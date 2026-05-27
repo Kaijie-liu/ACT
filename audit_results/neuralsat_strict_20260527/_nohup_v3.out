@@ -1,0 +1,29 @@
+[2026-05-27 10:51:51] ===[laneB] start — 13 benchmarks
+[2026-05-27 10:51:51] ===[laneA] start — 13 benchmarks
+[2026-05-27 10:51:51] ===dual-lane: A pid=3950281   B pid=3950282
+[2026-05-27 10:51:51] [laneB][cersyve] instances=12
+[2026-05-27 10:51:51] [laneA][test] instances=5
+[2026-05-27 10:51:51] [laneA][test] DONE — total=5 new=0 resumed=5 sat=0 unsat=0 timeout=0 err=0
+[2026-05-27 10:51:51] [laneB][cersyve] DONE — total=12 new=0 resumed=12 sat=0 unsat=0 timeout=0 err=0
+[2026-05-27 10:51:51] [laneA][lsnc_relu] instances=80
+[2026-05-27 10:51:51] [laneB][soundnessbench] instances=50
+[2026-05-27 10:51:51] [laneB][soundnessbench] DONE — total=50 new=0 resumed=50 sat=0 unsat=0 timeout=0 err=0
+[2026-05-27 10:51:51] [laneB][cgan_2023] instances=21
+[2026-05-27 10:51:51] [laneA][lsnc_relu] DONE — total=80 new=0 resumed=80 sat=0 unsat=0 timeout=0 err=0
+[2026-05-27 10:51:51] [laneA][sat_relu] instances=100
+[2026-05-27 10:51:52] [laneA][sat_relu] DONE — total=100 new=0 resumed=100 sat=0 unsat=0 timeout=0 err=0
+[2026-05-27 10:51:52] [laneA][tllverifybench_2023] instances=32
+[2026-05-27 10:51:52] [laneA][tllverifybench_2023] DONE — total=32 new=0 resumed=32 sat=0 unsat=0 timeout=0 err=0
+[2026-05-27 10:51:52] [laneA][traffic_signs_recognition_2023] instances=45
+[2026-05-27 10:52:11] [laneA][traffic_signs_recognition_2023] 10/45 sat=0 unsat=0 timeout=0 err=10 resumed=0
+[2026-05-27 10:52:30] [laneA][traffic_signs_recognition_2023] 20/45 sat=0 unsat=0 timeout=0 err=20 resumed=0
+[2026-05-27 10:52:50] [laneA][traffic_signs_recognition_2023] 30/45 sat=0 unsat=0 timeout=0 err=30 resumed=0
+[2026-05-27 10:53:10] [laneA][traffic_signs_recognition_2023] 40/45 sat=0 unsat=0 timeout=0 err=40 resumed=0
+[2026-05-27 10:53:20] [laneA][traffic_signs_recognition_2023] 45/45 sat=0 unsat=0 timeout=0 err=45 resumed=0
+[2026-05-27 10:53:20] [laneA][traffic_signs_recognition_2023] DONE — total=45 new=45 resumed=0 sat=0 unsat=0 timeout=0 err=45
+[2026-05-27 10:53:53] [laneB][cgan_2023] 10/21 sat=0 unsat=6 timeout=0 err=4 resumed=0
+/data1/Kane/ACT/scripts/run_neuralsat_strict_parallel.sh: line 117: 4004719 Aborted                 timeout --kill-after=10 "${KILL_AT}s" "$PY_BIN" "$NEURALSAT_DIR/src/main.py" --net "$ONNX" --spec "$VNNLIB" --timeout "$USE_TO" --result_file "$RAW" --export_cex --disable_attack > "$LOG" 2>&1
+[2026-05-27 11:01:45] [laneB][cgan_2023] 20/21 sat=0 unsat=10 timeout=0 err=10 resumed=0
+[2026-05-27 11:02:24] [laneB][cgan_2023] 21/21 sat=0 unsat=10 timeout=0 err=11 resumed=0
+[2026-05-27 11:02:24] [laneB][cgan_2023] DONE — total=21 new=21 resumed=0 sat=0 unsat=10 timeout=0 err=11
+[2026-05-27 11:02:24] ===dual-lane: both done

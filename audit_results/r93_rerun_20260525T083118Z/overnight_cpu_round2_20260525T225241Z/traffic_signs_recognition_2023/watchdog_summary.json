@@ -1,0 +1,72 @@
+{
+  "schema_version": 2,
+  "strict_bounded_failure": true,
+  "counts": {
+    "OK": 5,
+    "UNKNOWN_TIMEOUT": 0,
+    "UNKNOWN_RESOURCE_LIMIT": 0,
+    "ERROR": 0
+  },
+  "results": [
+    {
+      "benchmark": "traffic_signs_recognition_2023",
+      "instance_id": 0,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 64.53933803201653,
+      "peak_rss_mb": 1793.0546875,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_round2_20260525T225241Z/traffic_signs_recognition_2023/per_instance_traffic_signs_recognition_2023_20260526T010834092406Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_round2_20260525T225241Z/traffic_signs_recognition_2023",
+      "stdout_tail": "on...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 2700 inputs, 43 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 2700 inputs, 43 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'traffic_signs_recognition_2023'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed model_30_idx_7573_eps_1.00000.vnnlib: 42 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cpu, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=traffic_signs_recognition_2023 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cpu, timeout=60.0s)\n  [  1/1] traffic_signs_recognition_2023/onnx/3_30_30_QConv_16_3_QConv_32_2_Dense_43_ep_30.onnx@vnnlib/model_30_idx_7573_eps_1.00000.vnnlib: UNKNOWN (61.3s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=1.0 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_round2_20260525T225241Z/traffic_signs_recognition_2023/per_instance_traffic_signs_recognition_2023_20260526T010834092406Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "traffic_signs_recognition_2023",
+      "instance_id": 1,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 63.54167313489597,
+      "peak_rss_mb": 1793.375,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_round2_20260525T225241Z/traffic_signs_recognition_2023/per_instance_traffic_signs_recognition_2023_20260526T010938024794Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_round2_20260525T225241Z/traffic_signs_recognition_2023",
+      "stdout_tail": "on...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 2700 inputs, 43 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 2700 inputs, 43 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'traffic_signs_recognition_2023'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed model_30_idx_7573_eps_3.00000.vnnlib: 42 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cpu, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=traffic_signs_recognition_2023 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cpu, timeout=60.0s)\n  [  1/1] traffic_signs_recognition_2023/onnx/3_30_30_QConv_16_3_QConv_32_2_Dense_43_ep_30.onnx@vnnlib/model_30_idx_7573_eps_3.00000.vnnlib: UNKNOWN (60.7s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=1.0 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_round2_20260525T225241Z/traffic_signs_recognition_2023/per_instance_traffic_signs_recognition_2023_20260526T010938024794Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "traffic_signs_recognition_2023",
+      "instance_id": 2,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 63.039517602999695,
+      "peak_rss_mb": 1825.03515625,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_round2_20260525T225241Z/traffic_signs_recognition_2023/per_instance_traffic_signs_recognition_2023_20260526T011040987554Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_round2_20260525T225241Z/traffic_signs_recognition_2023",
+      "stdout_tail": "on...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 2700 inputs, 43 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 2700 inputs, 43 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'traffic_signs_recognition_2023'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed model_30_idx_7573_eps_5.00000.vnnlib: 42 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cpu, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=traffic_signs_recognition_2023 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cpu, timeout=60.0s)\n  [  1/1] traffic_signs_recognition_2023/onnx/3_30_30_QConv_16_3_QConv_32_2_Dense_43_ep_30.onnx@vnnlib/model_30_idx_7573_eps_5.00000.vnnlib: UNKNOWN (60.2s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=1.0 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_round2_20260525T225241Z/traffic_signs_recognition_2023/per_instance_traffic_signs_recognition_2023_20260526T011040987554Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "traffic_signs_recognition_2023",
+      "instance_id": 3,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 63.54197307303548,
+      "peak_rss_mb": 1811.48046875,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_round2_20260525T225241Z/traffic_signs_recognition_2023/per_instance_traffic_signs_recognition_2023_20260526T011144515347Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_round2_20260525T225241Z/traffic_signs_recognition_2023",
+      "stdout_tail": "...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 2700 inputs, 43 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 2700 inputs, 43 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'traffic_signs_recognition_2023'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed model_30_idx_7573_eps_10.00000.vnnlib: 42 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cpu, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=traffic_signs_recognition_2023 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cpu, timeout=60.0s)\n  [  1/1] traffic_signs_recognition_2023/onnx/3_30_30_QConv_16_3_QConv_32_2_Dense_43_ep_30.onnx@vnnlib/model_30_idx_7573_eps_10.00000.vnnlib: UNKNOWN (60.7s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=1.0 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_round2_20260525T225241Z/traffic_signs_recognition_2023/per_instance_traffic_signs_recognition_2023_20260526T011144515347Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "traffic_signs_recognition_2023",
+      "instance_id": 4,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 64.04690842702985,
+      "peak_rss_mb": 1826.66015625,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_round2_20260525T225241Z/traffic_signs_recognition_2023/per_instance_traffic_signs_recognition_2023_20260526T011248745043Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_round2_20260525T225241Z/traffic_signs_recognition_2023",
+      "stdout_tail": "...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 2700 inputs, 43 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 2700 inputs, 43 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'traffic_signs_recognition_2023'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed model_30_idx_7573_eps_15.00000.vnnlib: 42 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cpu, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=traffic_signs_recognition_2023 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cpu, timeout=60.0s)\n  [  1/1] traffic_signs_recognition_2023/onnx/3_30_30_QConv_16_3_QConv_32_2_Dense_43_ep_30.onnx@vnnlib/model_30_idx_7573_eps_15.00000.vnnlib: UNKNOWN (61.4s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=1.0 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_round2_20260525T225241Z/traffic_signs_recognition_2023/per_instance_traffic_signs_recognition_2023_20260526T011248745043Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "benchmark": "nn4sys",
+  "n_samples_per_query": 500,
+  "any_cert_unsound": false,
+  "results": [
+    {
+      "onnx_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/lindex.onnx",
+      "vnnlib_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/vnnlib/lindex_1.vnnlib",
+      "act_verdict": null,
+      "n_samples_per_query": 500,
+      "n_queries": 2,
+      "per_query": [
+        {
+          "q_idx": 0,
+          "n_samples": 500,
+          "unsafe_zero_tol": 0,
+          "unsafe_small_tol": 0
+        },
+        {
+          "q_idx": 1,
+          "n_samples": 500,
+          "unsafe_zero_tol": 0,
+          "unsafe_small_tol": 0
+        }
+      ],
+      "soundness_verdict": "OK",
+      "instance_id": 105,
+      "wall_s": 0.03241653507575393
+    },
+    {
+      "onnx_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/lindex_deep.onnx",
+      "vnnlib_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/vnnlib/lindex_1.vnnlib",
+      "act_verdict": "CERTIFIED",
+      "n_samples_per_query": 500,
+      "n_queries": 2,
+      "per_query": [
+        {
+          "q_idx": 0,
+          "n_samples": 500,
+          "unsafe_zero_tol": 0,
+          "unsafe_small_tol": 0
+        },
+        {
+          "q_idx": 1,
+          "n_samples": 500,
+          "unsafe_zero_tol": 0,
+          "unsafe_small_tol": 0
+        }
+      ],
+      "soundness_verdict": "OK",
+      "instance_id": 106,
+      "wall_s": 0.01998498593457043
+    }
+  ]
+}

@@ -1,0 +1,653 @@
+[0;93m2026-05-26 09:54:50.274295144 [W:onnxruntime:Default, device_discovery.cc:283 GetGpuDevices] Failed to detect devices under "/sys/class/drm/card0": device_discovery.cc:93 ReadFileContents Failed to open file: "/sys/class/drm/card0/device/vendor"[m
+INFO     09:54:51     [tensor_storage.py:70] Hugepage enabled for branch-and-bound domains.
+Configurations:
+
+general:
+  device: cuda
+  seed: 100
+  conv_mode: patches
+  deterministic: false
+  double_fp: false
+  loss_reduction_func: sum
+  sparse_alpha: true
+  sparse_interm: true
+  save_adv_example: true
+  verify_onnxruntime_output: false
+  eval_adv_example: false
+  onnx_adv_example: false
+  show_adv_example: false
+  precompile_jit: true
+  reset_seed_after_precompile: false
+  prepare_only: false
+  complete_verifier: bab
+  enable_incomplete_verification: true
+  csv_name: instances.csv
+  results_file: /data1/Kane/ACT/audit_results/abcrown25_supplemental_20260526/cersyve/0010__point_mass_pretrain_inv__prop_point_mass.result
+  root_path: ../../vnncomp2025_benchmarks/benchmarks/cersyve
+  deterministic_opt: false
+  graph_optimizer: 'Customized("custom_graph_optimizer", "default_optimizer")'
+  buffer_has_batchdim: false
+  save_output: false
+  output_file: out.pkl
+  return_optimized_model: false
+  store_all_specs_on_cpu: false
+  adhoc_tuning: null
+model:
+  name: null
+  path: null
+  onnx_path: /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cersyve/onnx/point_mass_pretrain_inv.onnx
+  onnx_path_prefix: ''
+  cache_onnx_conversion: false
+  debug_onnx: false
+  onnx_quirks: null
+  input_shape: null
+  onnx_loader: default_onnx_and_vnnlib_loader
+  onnx_optimization_flags: []
+  onnx_vnnlib_joint_optimization_flags: none
+  check_optimized: false
+  flatten_final_output: false
+  optimize_graph: null
+  with_jacobian: false
+data:
+  start: 0
+  end: 10000
+  select_instance: null
+  num_outputs: 10
+  mean: 0.0
+  std: 1.0
+  pkl_path: null
+  dataset: null
+  data_filter_path: null
+  data_idx_file: null
+specification:
+  type: lp
+  robustness_type: verified-acc
+  norm: .inf
+  epsilon: null
+  epsilon_min: 0.0
+  vnnlib_path: /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cersyve/vnnlib/prop_point_mass.vnnlib
+  vnnlib_path_prefix: ''
+  shrink_eps: null
+  rhs_offset: null
+solver:
+  batch_size: 500000
+  auto_enlarge_batch_size: false
+  batched_crown_auto_enlarge_max_vram_ratio: 0.9
+  min_batch_size_ratio: 0.1
+  use_float64_in_last_iteration: false
+  early_stop_patience: 10
+  start_save_best: 0.5
+  bound_prop_method: crown
+  init_bound_prop_method: same
+  prune_after_crown: true
+  optimize_disjuncts_separately: false
+  build_batch_size: 1000000
+  skip_with_refined_bound: true
+  forward_before_compute_bounds: false
+  crown:
+    batch_size: 1000000000
+    max_crown_size: 1000000000
+    activation_bound_option: adaptive
+    compare_crown_with_ibp: false
+  alpha-crown:
+    alpha: true
+    lr_alpha: 0.1
+    iteration: 100
+    share_alphas: false
+    lr_decay: 0.98
+    full_conv_alpha: true
+    max_coeff_mul: .inf
+    matmul_share_alphas: false
+    disable_optimization: []
+    max_time: 1.0
+    alpha_dtype: float16
+  invprop:
+    apply_output_constraints_to: []
+    tighten_input_bounds: false
+    best_of_oc_and_no_oc: false
+    directly_optimize: []
+    oc_lr: 0.1
+    share_gammas: false
+  beta-crown:
+    lr_alpha: 0.01
+    lr_beta: 0.05
+    lr_decay: 0.98
+    optimizer: adam
+    iteration: 50
+    beta: true
+    beta_warmup: true
+    enable_opt_interm_bounds: false
+    all_node_split_LP: false
+  forward:
+    refine: false
+    max_dim: 10000
+    reset_threshold: 1.0
+  intermediate_refinement:
+    enabled: false
+    batch_size: 10
+    opt_coeffs: false
+    opt_bias: false
+    lr: 0.05
+    layers: [-1]
+    max_domains: 1000
+  mip:
+    unstable_neuron_threshold: 0
+    parallel_solvers: null
+    solver_threads: 1
+    refine_neuron_timeout: 15
+    refine_neuron_time_percentage: 0.8
+    early_stop: true
+    adv_warmup: true
+    mip_solver: gurobi
+    skip_unsafe: false
+    topk_filter: 1.0
+    sliding_window: -1
+    extra_constraint: false
+    refine_neuron_timeout_increasement: 0
+    timeout_neuron_percentage: 0.3
+    remaining_timeout_threshold: 1
+    remove_unstable_neurons: false
+    lp_solver: false
+bab:
+  max_domains: .inf
+  decision_thresh: 0
+  timeout: 100.0
+  timeout_scale: 1
+  max_iterations: -1
+  override_timeout: null
+  get_upper_bound: false
+  pruning_in_iteration: true
+  pruning_in_iteration_ratio: 0.2
+  sort_targets: false
+  batched_domain_list: true
+  optimized_interm: ''
+  interm_transfer: true
+  recompute_interm: false
+  sort_domain_interval: -1
+  vanilla_crown: false
+  tree_traversal: depth_first
+  hugetensor_allocator: true
+  cut:
+    enabled: false
+    cuts_path: null
+    implication: false
+    bab_cut: false
+    lp_cut: false
+    method: null
+    lr: 0.01
+    lr_decay: 1.0
+    iteration: 100
+    bab_iteration: -1
+    early_stop_patience: -1
+    lr_beta: 0.02
+    number_cuts: 50
+    topk_cuts_in_filter: 1000
+    batch_size_primal: 100
+    max_num: 1000000000
+    patches_cut: false
+    cplex_cuts: false
+    cplex_cuts_wait: 0
+    cplex_cuts_revpickup: true
+    cut_reference_bounds: true
+    fix_intermediate_bounds: false
+    _tmp_cuts: null
+    fixed_cuts: false
+    add_implied_cuts: false
+    add_input_cuts: false
+    biccos:
+      enabled: false
+      constraint_strengthening: true
+      recursively_strengthening: false
+      drop_ratio: 0.5
+      verified_bonus: 0.3
+      max_infer_iter: 20
+      max_domain: 10000.0
+      heuristic: neuron_influence_score
+      save_biccos_cuts: false
+      multi_tree_branching:
+        enabled: false
+        restore_best_tree: false
+        keep_n_best_domains: 1
+        k_splits: 1
+        iterations: 1
+  clip_n_verify:
+    rearrange_constraints: false
+    alpha_crown: false
+    prune: false
+    final_layer: false
+    clip_input_domain:
+      enabled: true
+      clip_type: complete
+      heuristic_K: 0.0
+      clip_iterations: 1
+      clip_calculate_volume_metrics: false
+    clip_interm_domain:
+      enabled: false
+      with_input: false
+      clip_in_alpha_crown: false
+      topk_objective: 0
+  branching:
+    method: sb
+    candidates: 3
+    reduceop: min
+    enable_intermediate_bound_opt: false
+    branching_input_and_activation: false
+    branching_input_and_activation_order: [input, relu]
+    branching_input_iterations: 30
+    branching_relu_iterations: 50
+    nonlinear_split:
+      method: bbps
+      disable: false
+      branching_point_method: uniform
+      num_branches: 2
+      filter: false
+      filter_beta: false
+      filter_clamp: false
+      filter_batch_size: 10000
+      filter_iterations: 25
+      relu_only: false
+      loose_tanh_threshold: null
+      branching_point:
+        db_path: branching_points.pt
+        num_iterations: 1000
+        batch_size: 1000000
+        range_l: -5.0
+        range_u: 5.0
+        log_interval: 100
+        step_size_1d: 0.01
+        step_size: 0.2
+    input_split:
+      split_hint: null
+      enable: true
+      reorder_bab: true
+      input_dim_threshold: 20
+      adv_check: -1
+      split_partitions: 2
+      sb_margin_weight: 1.0
+      sb_sum: true
+      sb_primary_spec: null
+      bf_backup_thresh: -1
+      bf_rhs_offset: 0
+      bf_iters: 1000000000.0
+      bf_batch_size: 100000
+      bf_zero_crossing_score: false
+      touch_zero_score: 0.1
+      ibp_enhancement: true
+      compare_with_old_bounds: true
+      update_rhs_with_attack: false
+      sb_coeff_thresh: 0.01
+      sort_index: null
+      sort_descending: true
+      show_progress: false
+      presplit_domains: null
+      skip_getting_worst_domain: false
+  attack:
+    enabled: false
+    beam_candidates: 8
+    beam_depth: 7
+    max_dive_fix_ratio: 0.8
+    min_local_free_ratio: 0.2
+    mip_start_iteration: 5
+    mip_timeout: 30.0
+    adv_pool_threshold: null
+    refined_mip_attacker: false
+    refined_batch_size: null
+attack:
+  general_attack: true
+  pgd_order: skip
+  pgd_steps: 100
+  pgd_restarts: 10000
+  pgd_batch_size: 100000000
+  pgd_early_stop: true
+  pgd_lr_decay: 0.99
+  pgd_alpha: 0.01
+  pgd_alpha_scale: true
+  pgd_loss_mode: null
+  pgd_restart_when_stuck: false
+  enable_mip_attack: false
+  adv_saver: default_adv_saver
+  adv_verifier: default_adv_verifier
+  early_stop_condition: default_early_stop_condition
+  adv_example_finalizer: default_adv_example_finalizer
+  pgd_loss: default_pgd_loss
+  cex_path: ./test_cex.txt
+  attack_mode: PGD
+  attack_tolerance: 0.0
+  attack_func: attack_with_general_specs
+  gama_lambda: 10.0
+  gama_decay: 0.9
+  input_split:
+    pgd_steps: 100
+    pgd_restarts: 30
+    pgd_alpha: auto
+  input_split_check_adv:
+    enabled: auto
+    pgd_steps: 5
+    pgd_restarts: 5
+    pgd_alpha: auto
+    max_num_domains: 10
+debug:
+  view_model: false
+  lp_test: null
+  rescale_vnnlib_ptb: null
+  test_optimized_bounds: false
+  test_optimized_bounds_after_n_iterations: 0
+  print_verbose_decisions: false
+  sanity_check: null
+  save_minimal_config: null
+  save_minimal_config_omit_keys: []
+/data1/Kane/miniconda3/envs/abcrown25/lib/python3.11/site-packages/onnx2pytorch/convert/model.py:151: UserWarning: Using experimental implementation that allows 'batch_size > 1'.Batchnorm layers could potentially produce false outputs.
+  warnings.warn(
+/data1/Kane/miniconda3/envs/abcrown25/lib/python3.11/site-packages/onnx2pytorch/utils.py:21: TracerWarning: Converting a tensor to a Python boolean might cause the trace to be incorrect. We can't record the data flow of Python values, so this value will be treated as a constant in the future. This means that the trace might not generalize to other inputs!
+  return value.ndim == 0 or value.shape == torch.Size([1])
+/data1/Kane/miniconda3/envs/abcrown25/lib/python3.11/site-packages/onnx2pytorch/operations/add.py:34: TracerWarning: Converting a tensor to a Python boolean might cause the trace to be incorrect. We can't record the data flow of Python values, so this value will be treated as a constant in the future. This means that the trace might not generalize to other inputs!
+  elif all(x == 1 for x in input[0].shape):
+
+Experiments at Tue May 26 09:54:51 2026 on dell-pro-max-tower-t2
+Pre-compile jit kernels on a toy network...
+JIT kernels compiled in 1.2610s.
+Internal results will be saved to /data1/Kane/ACT/audit_results/abcrown25_supplemental_20260526/cersyve/0010__point_mass_pretrain_inv__prop_point_mass.result.
+
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% idx: 0, vnnlib ID: 0 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Using onnx /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cersyve/onnx/point_mass_pretrain_inv.onnx
+Using vnnlib /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cersyve/vnnlib/prop_point_mass.vnnlib
+Precompiled vnnlib file found at /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cersyve/vnnlib/prop_point_mass.vnnlib.compiled
+Loading onnx /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cersyve/onnx/point_mass_pretrain_inv.onnx with quirks {}
+Finished onnx model loading in 0.0067 seconds
+Finished vnnlib processing in 0.084388 seconds
+Model: BoundedModule(
+  (/0): BoundInput(name=/0, inputs=[], perturbed=True)
+  (/45): BoundParams(name=/45, inputs=[], perturbed=False)
+  (/46): BoundParams(name=/46, inputs=[], perturbed=False)
+  (/47): BoundParams(name=/47, inputs=[], perturbed=False)
+  (/48): BoundParams(name=/48, inputs=[], perturbed=False)
+  (/49): BoundParams(name=/49, inputs=[], perturbed=False)
+  (/50): BoundParams(name=/50, inputs=[], perturbed=False)
+  (/51): BoundParams(name=/51, inputs=[], perturbed=False)
+  (/52): BoundParams(name=/52, inputs=[], perturbed=False)
+  (/53): BoundParams(name=/53, inputs=[], perturbed=False)
+  (/54): BoundParams(name=/54, inputs=[], perturbed=False)
+  (/55): BoundParams(name=/55, inputs=[], perturbed=False)
+  (/56): BoundParams(name=/56, inputs=[], perturbed=False)
+  (/57): BoundParams(name=/57, inputs=[], perturbed=False)
+  (/58): BoundParams(name=/58, inputs=[], perturbed=False)
+  (/59): BoundParams(name=/59, inputs=[], perturbed=False)
+  (/60): BoundParams(name=/60, inputs=[], perturbed=False)
+  (/61): BoundParams(name=/61, inputs=[], perturbed=False)
+  (/62): BoundParams(name=/62, inputs=[], perturbed=False)
+  (/63): BoundParams(name=/63, inputs=[], perturbed=False)
+  (/64): BoundParams(name=/64, inputs=[], perturbed=False)
+  (/65): BoundParams(name=/65, inputs=[], perturbed=False)
+  (/66): BoundParams(name=/66, inputs=[], perturbed=False)
+  (/67): BoundParams(name=/67, inputs=[], perturbed=False)
+  (/68): BoundParams(name=/68, inputs=[], perturbed=False)
+  (/69): BoundParams(name=/69, inputs=[], perturbed=False)
+  (/70): BoundParams(name=/70, inputs=[], perturbed=False)
+  (/71): BoundParams(name=/71, inputs=[], perturbed=False)
+  (/72): BoundParams(name=/72, inputs=[], perturbed=False)
+  (/73): BoundParams(name=/73, inputs=[], perturbed=False)
+  (/74): BoundParams(name=/74, inputs=[], perturbed=False)
+  (/75): BoundParams(name=/75, inputs=[], perturbed=False)
+  (/76): BoundParams(name=/76, inputs=[], perturbed=False)
+  (/77): BoundParams(name=/77, inputs=[], perturbed=False)
+  (/78): BoundParams(name=/78, inputs=[], perturbed=False)
+  (/79): BoundParams(name=/79, inputs=[], perturbed=False)
+  (/80): BoundParams(name=/80, inputs=[], perturbed=False)
+  (/81): BoundParams(name=/81, inputs=[], perturbed=False)
+  (/82): BoundParams(name=/82, inputs=[], perturbed=False)
+  (/83): BoundParams(name=/83, inputs=[], perturbed=False)
+  (/84): BoundParams(name=/84, inputs=[], perturbed=False)
+  (/85): BoundParams(name=/85, inputs=[], perturbed=False)
+  (/86): BoundParams(name=/86, inputs=[], perturbed=False)
+  (/87): BoundParams(name=/87, inputs=[], perturbed=False)
+  (/88): BoundParams(name=/88, inputs=[], perturbed=False)
+  (/input): BoundLinear(name=/input, inputs=[/0, /45, /46], perturbed=True)
+  (/90): BoundRelu(name=/90, inputs=[/input], perturbed=True)
+  (/input-3): BoundLinear(name=/input-3, inputs=[/90, /47, /48], perturbed=True)
+  (/92): BoundRelu(name=/92, inputs=[/input-3], perturbed=True)
+  (/93): BoundLinear(name=/93, inputs=[/92, /49, /50], perturbed=True)
+  (/94): BoundLinear(name=/94, inputs=[/93, /51, /52], perturbed=True)
+  (/95): BoundLinear(name=/95, inputs=[/0, /53, /54], perturbed=True)
+  (/96): BoundLinear(name=/96, inputs=[/0, /55, /56], perturbed=True)
+  (/97): BoundLinear(name=/97, inputs=[/96, /57, /58], perturbed=True)
+  (/98): BoundLinear(name=/98, inputs=[/0, /59, /60], perturbed=True)
+  (/99): BoundLinear(name=/99, inputs=[/98, /61, /62], perturbed=True)
+  (/100): BoundLinear(name=/100, inputs=[/99, /63, /64], perturbed=True)
+  (/101): BoundAdd(name=/101, inputs=[/97, /100], perturbed=True)
+  (/input-7): BoundLinear(name=/input-7, inputs=[/101, /65, /66], perturbed=True)
+  (/103): BoundRelu(name=/103, inputs=[/input-7], perturbed=True)
+  (/input-11): BoundLinear(name=/input-11, inputs=[/103, /67, /68], perturbed=True)
+  (/105): BoundRelu(name=/105, inputs=[/input-11], perturbed=True)
+  (/106): BoundLinear(name=/106, inputs=[/105, /69, /70], perturbed=True)
+  (/107): BoundLinear(name=/107, inputs=[/106, /71, /72], perturbed=True)
+  (/108): BoundAdd(name=/108, inputs=[/95, /107], perturbed=True)
+  (/input-15): BoundLinear(name=/input-15, inputs=[/108, /73, /74], perturbed=True)
+  (/110): BoundRelu(name=/110, inputs=[/input-15], perturbed=True)
+  (/111): BoundLinear(name=/111, inputs=[/110, /75, /76], perturbed=True)
+  (/input-19): BoundLinear(name=/input-19, inputs=[/111, /77, /78], perturbed=True)
+  (/113): BoundRelu(name=/113, inputs=[/input-19], perturbed=True)
+  (/114): BoundLinear(name=/114, inputs=[/113, /79, /80], perturbed=True)
+  (/input-23): BoundLinear(name=/input-23, inputs=[/114, /81, /82], perturbed=True)
+  (/116): BoundRelu(name=/116, inputs=[/input-23], perturbed=True)
+  (/input-27): BoundLinear(name=/input-27, inputs=[/116, /83, /84], perturbed=True)
+  (/118): BoundRelu(name=/118, inputs=[/input-27], perturbed=True)
+  (/119): BoundLinear(name=/119, inputs=[/118, /85, /86], perturbed=True)
+  (/120): BoundLinear(name=/120, inputs=[/119, /87, /88], perturbed=True)
+  (/121): BoundAdd(name=/121, inputs=[/94, /120], perturbed=True)
+)
+Original output in the first batch: tensor([[0.35390395, 0.35932776]], device='cuda:0')
+build batch [1/1]
+initial crown bounds (first 10 items): [-5.339623928070068, -2.3294787406921387]
+Global lower bound: -5.339623928070068
+0 / 1 OR specs are verified.
+Verified OR indices (first 10 items): []
+Verified OR lbs (first 10 items): []
+Unverified OR indices (first 10 items): [0]
+Unverified OR lbs (first 10 items): [[-5.339623928070068, -2.3294787406921387]]
+###### Verifying property Instance 0 ######
+Batch size: 1
+First 10 spec matrices
+C: tensor([[[ 1.,  0.],
+         [ 0., -1.]]], device='cuda:0')
+RHS: tensor([[0., -0.]], device='cuda:0')
+OR spec sizes: tensor([2], device='cuda:0', dtype=torch.int32)
+Remaining timeout: 99.38821148872375
+Model prediction is: tensor([0.35390395, 0.35932776], device='cuda:0')
+Domain clipping (1 iterations): shrunken 0/16 (0.00%), Of 16 batches, 0 were verified before clipping, 0 domains were shrunken, and 0 were shrunken and additionally verified.
+Iteration 1
+Current pickout batch: 16
+All the added constraints fully cover the input space. No need to apply constraints .
+All the added constraints fully cover the input space. No need to apply constraints .
+Worst bound: tensor([-1.94111156, -1.06800461], device='cuda:0')
+Domain clipping (1 iterations): shrunken 98/240 (40.83%), Of 256 batches, 16 were verified before clipping, 98 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0002    init 0.0001    concretize 0.0001    bounding 0.1319    filtering 0.0001    decision 0.0003    split 0.0204    clip 0.0172    add_domain 0.0168    summary 0.0004    
+Accumulated time: pickout 0.0002    bounding 0.1319    init 0.0012    concretize 0.0012    filtering 0.0001    decision 0.0003    split 0.0204    clip 0.0172    add_domain 0.0168    summary 0.0004    
+Length of domains: 240
+17 domains visited
+Current (lb-rhs): tensor([[-1.94111156, -1.06800461]], device='cuda:0')
+/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/concretize_func.py:577: UserWarning: torch.searchsorted(): input value tensor is non-contiguous, this will lower the performance due to extra data copy when converting non-contiguous tensor to contiguous, please use contiguous input value tensor if possible. This message will only appear once per program. (Triggered internally at /pytorch/aten/src/ATen/native/BucketizationUtils.h:32.)
+  optimal_beta = _solve_dual_var(constr_a_solve, object_a_solve, constr_d_solve, epsilon_solve) # shape (B_act, H_act)
+Cumulative time: 0.24190807342529297
+
+Iteration 2
+Current pickout batch: 240
+Worst bound: tensor([-0.85371023, -0.66524208], device='cuda:0')
+Domain clipping (1 iterations): shrunken 896/1649 (54.34%), Of 2224 batches, 575 were verified before clipping, 896 domains were shrunken, and 0 were shrunken and additionally verified.
+Time: pickout 0.0014    init 0.0001    concretize 0.0006    bounding 0.5708    filtering 0.0002    decision 0.0001    split 0.0014    clip 0.0007    add_domain 0.0015    summary 0.0010    
+Accumulated time: pickout 0.0016    bounding 0.7027    init 0.0194    concretize 0.1271    filtering 0.0003    decision 0.0004    split 0.0217    clip 0.0179    add_domain 0.0183    summary 0.0014    
+Length of domains: 1649
+257 domains visited
+Current (lb-rhs): tensor([[-0.85371023, -0.66524208]], device='cuda:0')
+Cumulative time: 0.8197250366210938
+
+Iteration 3
+Current pickout batch: 1649
+Worst bound: tensor([-0.30519032, -0.42252249], device='cuda:0')
+Domain clipping (1 iterations): shrunken 10186/12828 (79.40%), Of 18656 batches, 5828 were verified before clipping, 10186 domains were shrunken, and 86 were shrunken and additionally verified.
+Time: pickout 0.0002    init 0.0001    concretize 0.0006    bounding 0.0726    filtering 0.0001    decision 0.0001    split 0.0021    clip 0.0044    add_domain 0.0108    summary 0.0111    
+Accumulated time: pickout 0.0018    bounding 0.7753    init 0.0239    concretize 0.1461    filtering 0.0004    decision 0.0005    split 0.0238    clip 0.0223    add_domain 0.0290    summary 0.0126    
+Length of domains: 12742
+1906 domains visited
+Current (lb-rhs): tensor([[-0.30519032, -0.42252249]], device='cuda:0')
+Cumulative time: 0.9219439029693604
+
+Iteration 4
+Current pickout batch: 12742
+Worst bound: tensor([-0.16283256, -0.20907271], device='cuda:0')
+Domain clipping (1 iterations): shrunken 18724/25446 (73.58%), Of 34540 batches, 9094 were verified before clipping, 18724 domains were shrunken, and 131 were shrunken and additionally verified.
+Time: pickout 0.0005    init 0.0002    concretize 0.0009    bounding 0.1123    filtering 0.0001    decision 0.0001    split 0.0059    clip 0.0092    add_domain 0.0089    summary 0.0085    
+Accumulated time: pickout 0.0023    bounding 0.8876    init 0.0276    concretize 0.1822    filtering 0.0005    decision 0.0007    split 0.0297    clip 0.0315    add_domain 0.0379    summary 0.0210    
+Length of domains: 25315
+14648 domains visited
+Current (lb-rhs): tensor([[-0.16283256, -0.20907271]], device='cuda:0')
+Cumulative time: 1.0684850215911865
+
+Iteration 5
+Current pickout batch: 25315
+Worst bound: tensor([-0.14149857, -0.12445384], device='cuda:0')
+Domain clipping (1 iterations): shrunken 26828/40992 (65.45%), Of 42762 batches, 1770 were verified before clipping, 26828 domains were shrunken, and 36 were shrunken and additionally verified.
+Time: pickout 0.0028    init 0.0025    concretize 0.0079    bounding 0.4751    filtering 0.0052    decision 0.0002    split 0.0339    clip 0.0264    add_domain 0.0203    summary 0.0145    
+Accumulated time: pickout 0.0052    bounding 1.3626    init 0.0561    concretize 0.3284    filtering 0.0057    decision 0.0008    split 0.0636    clip 0.0579    add_domain 0.0582    summary 0.0355    
+Length of domains: 40956
+39963 domains visited
+Current (lb-rhs): tensor([[-0.14149857, -0.12445384]], device='cuda:0')
+Cumulative time: 1.664663314819336
+
+Iteration 6
+Current pickout batch: 40956
+Worst bound: tensor([-0.11420238, -0.09694773], device='cuda:0')
+Domain clipping (1 iterations): shrunken 44994/76290 (58.98%), Of 77368 batches, 1078 were verified before clipping, 44994 domains were shrunken, and 36 were shrunken and additionally verified.
+Time: pickout 0.0048    init 0.0024    concretize 0.0082    bounding 0.5454    filtering 0.0002    decision 0.0001    split 0.0142    clip 0.0218    add_domain 0.0197    summary 0.0139    
+Accumulated time: pickout 0.0100    bounding 1.9080    init 0.0696    concretize 0.4412    filtering 0.0059    decision 0.0010    split 0.0778    clip 0.0797    add_domain 0.0779    summary 0.0495    
+Length of domains: 76254
+80919 domains visited
+Current (lb-rhs): tensor([[-0.11420238, -0.09694773]], device='cuda:0')
+Cumulative time: 2.296865701675415
+
+Iteration 7
+Current pickout batch: 76254
+Worst bound: tensor([-0.10058439, -0.09323901], device='cuda:0')
+Domain clipping (1 iterations): shrunken 78624/146390 (53.71%), Of 147754 batches, 1364 were verified before clipping, 78624 domains were shrunken, and 55 were shrunken and additionally verified.
+Time: pickout 0.0045    init 0.0003    concretize 0.0022    bounding 0.4315    filtering 0.0001    decision 0.0001    split 0.0041    clip 0.0010    add_domain 0.0172    summary 0.0038    
+Accumulated time: pickout 0.0145    bounding 2.3395    init 0.0850    concretize 0.6214    filtering 0.0060    decision 0.0011    split 0.0818    clip 0.0807    add_domain 0.0951    summary 0.0533    
+Length of domains: 146335
+157173 domains visited
+Current (lb-rhs): tensor([[-0.10058439, -0.09323901]], device='cuda:0')
+Cumulative time: 2.760385751724243
+
+Iteration 8
+Current pickout batch: 146335
+Worst bound: tensor([-0.09872425, -0.08701199], device='cuda:0')
+Domain clipping (1 iterations): shrunken 143580/284762 (50.42%), Of 286694 batches, 1932 were verified before clipping, 143580 domains were shrunken, and 55 were shrunken and additionally verified.
+Time: pickout 0.0058    init 0.0026    concretize 0.0133    bounding 0.7286    filtering 0.0051    decision 0.0001    split 0.0207    clip 0.0087    add_domain 0.0291    summary 0.0155    
+Accumulated time: pickout 0.0203    bounding 3.0681    init 0.1012    concretize 1.0213    filtering 0.0111    decision 0.0012    split 0.1025    clip 0.0894    add_domain 0.1242    summary 0.0688    
+Length of domains: 284707
+303508 domains visited
+Current (lb-rhs): tensor([[-0.09872425, -0.08701199]], device='cuda:0')
+Cumulative time: 3.5914127826690674
+
+Iteration 9
+Current pickout batch: 284707
+Worst bound: tensor([-0.07976300, -0.08515471], device='cuda:0')
+Domain clipping (1 iterations): shrunken 265412/557977 (47.57%), Of 560844 batches, 2867 were verified before clipping, 265412 domains were shrunken, and 91 were shrunken and additionally verified.
+Time: pickout 0.0066    init 0.0008    concretize 0.0131    bounding 1.8307    filtering 0.0063    decision 0.0001    split 0.0312    clip 0.0247    add_domain 0.0434    summary 0.0170    
+Accumulated time: pickout 0.0269    bounding 4.8988    init 0.1403    concretize 1.9183    filtering 0.0175    decision 0.0014    split 0.1338    clip 0.1140    add_domain 0.1676    summary 0.0858    
+Length of domains: 557886
+588215 domains visited
+Current (lb-rhs): tensor([[-0.07976300, -0.08515471]], device='cuda:0')
+Cumulative time: 5.568912506103516
+
+Iteration 10
+Current pickout batch: 557886
+Worst bound: tensor([-0.07815492, -0.08441377], device='cuda:0')
+Domain clipping (1 iterations): shrunken 495979/1099579 (45.11%), Of 1103820 batches, 4241 were verified before clipping, 495979 domains were shrunken, and 190 were shrunken and additionally verified.
+Time: pickout 0.0087    init 0.0009    concretize 0.0150    bounding 2.2478    filtering 0.0026    decision 0.0002    split 0.0369    clip 0.0135    add_domain 0.0628    summary 0.0286    
+Accumulated time: pickout 0.0356    bounding 7.1466    init 0.1839    concretize 3.2303    filtering 0.0200    decision 0.0016    split 0.1707    clip 0.1276    add_domain 0.2305    summary 0.1143    
+Length of domains: 1099389
+1146101 domains visited
+Current (lb-rhs): tensor([[-0.07815492, -0.08441377]], device='cuda:0')
+Cumulative time: 7.982743501663208
+
+Iteration 11
+Current pickout batch: 1000000
+Traceback (most recent call last):
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/abcrown.py", line 392, in <module>
+    abcrown.main()
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/abcrown.py", line 354, in main
+    verified_status = self.complete_verifier(
+                      ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/complete_verifier_func.py", line 164, in complete_verifier
+    l, num_domains_visited, ret = self.bab(
+                                  ^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/complete_verifier_func.py", line 79, in bab
+    result = input_bab_parallel(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/input_split/batch_branch_and_bound.py", line 529, in input_bab_parallel
+    global_lb = batch_verification_input_split(
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/input_split/batch_branch_and_bound.py", line 106, in batch_verification_input_split
+    dm_lb, alphas, lA, lbias = get_bounds(
+                               ^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/input_split/batch_branch_and_bound.py", line 238, in get_bounds
+    ret = net.get_lower_bound_naive(
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/input_split/bounding.py", line 135, in get_lower_bound_naive
+    lb, lA, lbias = get_lower_bound_with_ibp_enhancement(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/input_split/bounding.py", line 248, in get_lower_bound_with_ibp_enhancement
+    lb_crown, _, A_dict = self.net.compute_bounds(
+                          ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 1462, in compute_bounds
+    return self._compute_bounds_main(C=C,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 1560, in _compute_bounds_main
+    self.check_prior_bounds(final, C=C)
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 981, in check_prior_bounds
+    self.check_prior_bounds(n)
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 981, in check_prior_bounds
+    self.check_prior_bounds(n)
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 981, in check_prior_bounds
+    self.check_prior_bounds(n)
+  [Previous line repeated 2 more times]
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 999, in check_prior_bounds
+    self.compute_intermediate_bounds(
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 1078, in compute_intermediate_bounds
+    node.lower, node.upper, _ = self.backward_general(
+                                ^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/backward_bound.py", line 280, in backward_general
+    A, lower_b, upper_b = l.bound_backward(
+                          ^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/operators/relu.py", line 343, in bound_backward
+    uA, ubias = _bound_oneside(
+                ^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/operators/relu.py", line 273, in _bound_oneside
+    _A, _bias = multiply_by_A_signs(
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/operators/clampmult.py", line 161, in multiply_by_A_signs
+    return ClampedMultiplication.apply(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/miniconda3/envs/abcrown25/lib/python3.11/site-packages/torch/autograd/function.py", line 581, in apply
+    return super().apply(*args, **kwargs)  # type: ignore[misc]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/operators/clampmult.py", line 136, in forward
+    return ClampedMultiplication.clamp_mutiply_forward(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/miniconda3/envs/abcrown25/lib/python3.11/site-packages/torch/utils/_contextlib.py", line 120, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: The following operation failed in the TorchScript interpreter.
+Traceback of TorchScript (most recent call last):
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/operators/clampmult.py", line 38, in clamp_mutiply_forward
+        """Forward operations; actually the same as the reference implementation."""
+        A_pos = A.clamp(min=0)
+        A_neg = A.clamp(max=0)    
+                ~~~~~~~ <--- HERE
+        if same_slope:
+            # "same-slope" option is enabled; lower and upper bounds use the same A.
+RuntimeError: CUDA out of memory. Tried to allocate 2.27 GiB. GPU 0 has a total capacity of 94.96 GiB of which 249.62 MiB is free. Process 2687037 has 690.00 MiB memory in use. Process 2201548 has 13.59 GiB memory in use. Process 2202508 has 59.94 GiB memory in use. Including non-PyTorch memory, this process has 20.43 GiB memory in use. Of the allocated memory 17.30 GiB is allocated by PyTorch, and 2.49 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+
+
+------------------------- COMMAND ------------------------------
+/data1/Kane/miniconda3/envs/abcrown25/bin/python /data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/abcrown.py --config /data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/exp_configs/vnncomp25/cersyve.yaml --precompile_jit --onnx_path /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cersyve/onnx/point_mass_pretrain_inv.onnx --vnnlib_path /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cersyve/vnnlib/prop_point_mass.vnnlib --results_file /data1/Kane/ACT/audit_results/abcrown25_supplemental_20260526/cersyve/0010__point_mass_pretrain_inv__prop_point_mass.result --timeout 100.0 --save_adv_example --pgd_order=skip
+----------------------------------------------------------------
+

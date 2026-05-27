@@ -1,0 +1,248 @@
+[0;93m2026-05-27 10:59:21.675518263 [W:onnxruntime:Default, device_discovery.cc:283 GetGpuDevices] Failed to detect devices under "/sys/class/drm/card0": device_discovery.cc:93 ReadFileContents Failed to open file: "/sys/class/drm/card0/device/vendor"[m
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2542227
+Academic license 2542227 - for non-commercial use only - registered to ka___@unsw.edu.au
+
+ [!] GlobalSettings:
+	- use_restart                             : True
+	- use_mip_tightening                      : True
+	- use_attack                              : False
+	- attack_interval                         : 10
+	- use_mip_verify                          : True
+	- input_splitting_threshold               : 0.5
+	- hidden_splitting_threshold              : 0.01
+	- safety_num_input_perturbed              : 200
+	- skip_preprocess                         : False
+	- use_save_reasoning_step                 : False
+	- max_iterations                          : 1000000000.0
+	- skip_initial_worst_bound                : -1000000.0
+	- max_domains                             : 1000000000.0
+	- use_decompose                           : False
+	- restart_current_hidden_branches         : 2000
+	- restart_visited_hidden_branches         : 20000
+	- restart_current_input_branches          : 20000
+	- restart_visited_input_branches          : 200000
+	- restart_max_runtime                     : 60.0
+	- restart_max_runtime_percentage          : 0.4
+	- mip_tightening_patience                 : 10
+	- mip_tightening_timeout_per_neuron       : 15.0
+	- mip_tightening_topk                     : 64
+	- use_gpu_tightening                      : False
+	- gpu_tightening_current_hidden_branches  : 1000
+	- gpu_tightening_visited_hidden_branches  : 5000
+	- gpu_tightening_timeout                  : 10.0
+	- gpu_tightening_patience                 : 10
+	- gpu_tightening_topk                     : 500
+	- use_mip_attack                          : False
+	- mip_verify_threshold                    : 2
+	- share_alphas                            : False
+	- backward_batch_size                     : inf
+	- forward_max_dim                         : 10000
+	- forward_dynamic                         : False
+	- use_decompose_incomplete                : False
+	- init_abstraction_method                 : crown-optimized
+	- subverifier_decision_method             : smart
+	- verify_candidate_batch                  : 3
+	- verify_last_timeout                     : 200.0
+	- verify_interm_timeout                   : 20.0
+	- sequential_batch                        : 100
+	- use_sequential_abstract_forward         : False
+	- verify_extra_opts                       : {'sparse_intermediate_bounds': True}
+	- verify_splitting_strategy               : hidden
+	- use_extra_substitution                  : False
+	- verify_max_iteration                    : 4
+	- verify_candidate_num                    : 128
+	- verify_interpolate_factor               : 0.5
+
+Enabling quirks for Reshape operation: fix the first dimension shape to be -1 to support batchsize != 1.
+input shape torch.Size([2, 512]), new shape is tensor([ -1, 128,   2,   2]).
+ConvertModel(
+  (Gemm_onnx::Reshape_72): Linear(in_features=5, out_features=512, bias=True)
+  (Reshape_input): Reshape(shape=[  1 128   2   2])
+  (BatchNormalization_onnx::ConvTranspose_83): BatchNormWrapper(
+    (bnu): BatchNormUnsafe(128, eps=9.999999747378752e-06, momentum=0.8999999761581421, affine=True, track_running_stats=True)
+  )
+  (ConvTranspose_input.3): ConvTranspose2d(128, 128, kernel_size=(4, 4), stride=(2, 2))
+  (BatchNormalization_input.7): BatchNormWrapper(
+    (bnu): BatchNormUnsafe(128, eps=0.800000011920929, momentum=0.8999999761581421, affine=True, track_running_stats=True)
+  )
+  (Relu_onnx::ConvTranspose_86): ReLU()
+  (ConvTranspose_input.11): ConvTranspose2d(128, 64, kernel_size=(4, 4), stride=(2, 2))
+  (BatchNormalization_input.15): BatchNormWrapper(
+    (bnu): BatchNormUnsafe(64, eps=0.800000011920929, momentum=0.8999999761581421, affine=True, track_running_stats=True)
+  )
+  (Relu_onnx::ConvTranspose_89): ReLU()
+  (ConvTranspose_input.19): ConvTranspose2d(64, 32, kernel_size=(4, 4), stride=(2, 2))
+  (BatchNormalization_input.23): BatchNormWrapper(
+    (bnu): BatchNormUnsafe(32, eps=0.800000011920929, momentum=0.8999999761581421, affine=True, track_running_stats=True)
+  )
+  (Relu_onnx::ConvTranspose_92): ReLU()
+  (ConvTranspose_input.27): ConvTranspose2d(32, 16, kernel_size=(4, 4), stride=(2, 2))
+  (BatchNormalization_input.31): BatchNormWrapper(
+    (bnu): BatchNormUnsafe(16, eps=0.800000011920929, momentum=0.8999999761581421, affine=True, track_running_stats=True)
+  )
+  (Relu_onnx::ConvTranspose_95): ReLU()
+  (ConvTranspose_input.35): ConvTranspose2d(16, 3, kernel_size=(3, 3), stride=(1, 1))
+  (Conv_input.39): Conv2d(3, 16, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+  (Relu_onnx::Conv_98): ReLU()
+  (Conv_input.43): Conv2d(16, 32, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+  (Relu_onnx::BatchNormalization_100): ReLU()
+  (BatchNormalization_input.47): BatchNormWrapper(
+    (bnu): BatchNormUnsafe(32, eps=0.800000011920929, momentum=0.8999999761581421, affine=True, track_running_stats=True)
+  )
+  (Conv_input.51): Conv2d(32, 64, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+  (Relu_onnx::BatchNormalization_103): ReLU()
+  (BatchNormalization_input.55): BatchNormWrapper(
+    (bnu): BatchNormUnsafe(64, eps=0.800000011920929, momentum=0.8999999761581421, affine=True, track_running_stats=True)
+  )
+  (Conv_input.59): Conv2d(64, 128, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+  (Relu_onnx::BatchNormalization_106): ReLU()
+  (BatchNormalization_input.63): BatchNormWrapper(
+    (bnu): BatchNormUnsafe(128, eps=0.800000011920929, momentum=0.8999999761581421, affine=True, track_running_stats=True)
+  )
+  (Conv_input.67): Conv2d(128, 128, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+  (Relu_onnx::BatchNormalization_109): ReLU()
+  (BatchNormalization_onnx::Reshape_110): BatchNormWrapper(
+    (bnu): BatchNormUnsafe(128, eps=0.800000011920929, momentum=0.8999999761581421, affine=True, track_running_stats=True)
+  )
+  (Reshape_onnx::Gemm_116): Flatten(start_dim=1, end_dim=-1)
+  (Gemm_Y): Linear(in_features=512, out_features=1, bias=True)
+)
+INFO     10:59:23     [!] Input shape: (1, 5)
+INFO     10:59:23     [!] Output shape: (1, 1)
+INFO     10:59:23     [!] VNNLIB: 5 inputs, 1 outputs
+INFO     10:59:23     [!] eps=0.010000, perturbed=4
+[!] Found unsupported layer: <class 'helper.network.onnx2pytorch.operations.reshape.Reshape'>
+INFO     10:59:23     Params of 1-th run: {'input_split': True, 'abstract_method': 'forward+backward', 'decision_method': 'naive', 'decision_topk': 1}
+INFO     10:59:23     [_setup_restart] _init_abstractor
+DEBUG    10:59:23     [select_params] Try self.input_split=True Settings.backward_batch_size=inf extra_opts={} mode='patches' method='forward+backward'
+DEBUG    10:59:23     [_init_module] Try bound_opts={'conv_mode': 'patches', 'verbosity': 0}
+INFO     10:59:24     [select_params] Success: self.input_split=True Settings.backward_batch_size=inf extra_opts={} mode='patches' method='forward+backward'
+INFO     10:59:24     Try batch size 1000
+INFO     10:59:24     Initial bounds (first 10): tensor([-27.7061])
+INFO     10:59:24     [Input splitting]     Iteration: 1          Remaining: 2          Visited: 2          Bound: -5.245342       Time elapsed (s): 0.77       Iteration elapsed (s): 0.04       GPU Mem (%): 2.83      Batch: 1000      Restart: 1         
+INFO     10:59:24     [Input splitting]     Iteration: 2          Remaining: 4          Visited: 4          Bound: -4.294461       Time elapsed (s): 0.86       Iteration elapsed (s): 0.09       GPU Mem (%): 2.89      Batch: 1000      Restart: 1         
+INFO     10:59:24     [Input splitting]     Iteration: 3          Remaining: 8          Visited: 8          Bound: -3.747615       Time elapsed (s): 0.89       Iteration elapsed (s): 0.03       GPU Mem (%): 2.98      Batch: 1000      Restart: 1         
+INFO     10:59:24     [Input splitting]     Iteration: 4          Remaining: 16         Visited: 16         Bound: -2.470334       Time elapsed (s): 0.91       Iteration elapsed (s): 0.03       GPU Mem (%): 3.19      Batch: 1000      Restart: 1         
+INFO     10:59:24     [Input splitting]     Iteration: 5          Remaining: 32         Visited: 32         Bound: -1.006689       Time elapsed (s): 0.97       Iteration elapsed (s): 0.05       GPU Mem (%): 3.61      Batch: 1000      Restart: 1         
+INFO     10:59:24     [Input splitting]     Iteration: 6          Remaining: 64         Visited: 64         Bound: -0.825128       Time elapsed (s): 1.00       Iteration elapsed (s): 0.03       GPU Mem (%): 4.39      Batch: 1000      Restart: 1         
+INFO     10:59:24     [Input splitting]     Iteration: 7          Remaining: 128        Visited: 128        Bound: -0.737424       Time elapsed (s): 1.03       Iteration elapsed (s): 0.04       GPU Mem (%): 6.00      Batch: 1000      Restart: 1         
+INFO     10:59:24     [Input splitting]     Iteration: 8          Remaining: 256        Visited: 256        Bound: -0.656803       Time elapsed (s): 1.09       Iteration elapsed (s): 0.06       GPU Mem (%): 9.42      Batch: 1000      Restart: 1         
+INFO     10:59:24     [Input splitting]     Iteration: 9          Remaining: 425        Visited: 512        Bound: -0.291474       Time elapsed (s): 1.20       Iteration elapsed (s): 0.11       GPU Mem (%): 16.02     Batch: 1000      Restart: 1         
+INFO     10:59:24     [Input splitting]     Iteration: 10         Remaining: 684        Visited: 937        Bound: -0.374543       Time elapsed (s): 1.38       Iteration elapsed (s): 0.17       GPU Mem (%): 25.91     Batch: 1000      Restart: 1         
+INFO     10:59:24     [Input splitting]     Iteration: 11         Remaining: 1146       Visited: 1621       Bound: -0.257075       Time elapsed (s): 1.65       Iteration elapsed (s): 0.28       GPU Mem (%): 41.59     Batch: 1000      Restart: 1         
+INFO     10:59:25     [Input splitting]     Iteration: 12         Remaining: 1471       Visited: 2621       Bound: -0.191823       Time elapsed (s): 2.08       Iteration elapsed (s): 0.42       GPU Mem (%): 61.62     Batch: 1000      Restart: 1         
+INFO     10:59:25     [Input splitting]     Iteration: 13         Remaining: 1811       Visited: 3621       Bound: -0.159522       Time elapsed (s): 2.48       Iteration elapsed (s): 0.41       GPU Mem (%): 60.75     Batch: 1000      Restart: 1         
+INFO     10:59:26     [Input splitting]     Iteration: 14         Remaining: 1989       Visited: 4621       Bound: -0.159522       Time elapsed (s): 2.89       Iteration elapsed (s): 0.41       GPU Mem (%): 60.75     Batch: 1000      Restart: 1         
+INFO     10:59:26     [Input splitting]     Iteration: 15         Remaining: 2240       Visited: 5621       Bound: -0.159522       Time elapsed (s): 3.30       Iteration elapsed (s): 0.41       GPU Mem (%): 60.68     Batch: 1000      Restart: 1         
+INFO     10:59:27     [Input splitting]     Iteration: 16         Remaining: 2899       Visited: 6621       Bound: -0.159522       Time elapsed (s): 3.70       Iteration elapsed (s): 0.41       GPU Mem (%): 58.87     Batch: 1000      Restart: 1         
+INFO     10:59:27     [Input splitting]     Iteration: 17         Remaining: 3029       Visited: 7621       Bound: -0.159522       Time elapsed (s): 4.11       Iteration elapsed (s): 0.41       GPU Mem (%): 58.85     Batch: 1000      Restart: 1         
+INFO     10:59:27     [Input splitting]     Iteration: 18         Remaining: 3651       Visited: 8621       Bound: -0.159522       Time elapsed (s): 4.51       Iteration elapsed (s): 0.40       GPU Mem (%): 58.85     Batch: 1000      Restart: 1         
+INFO     10:59:28     [Input splitting]     Iteration: 19         Remaining: 3948       Visited: 9621       Bound: -0.159522       Time elapsed (s): 4.92       Iteration elapsed (s): 0.40       GPU Mem (%): 58.85     Batch: 1000      Restart: 1         
+INFO     10:59:28     [Input splitting]     Iteration: 20         Remaining: 3972       Visited: 10621      Bound: -0.159522       Time elapsed (s): 5.32       Iteration elapsed (s): 0.40       GPU Mem (%): 58.85     Batch: 1000      Restart: 1         
+INFO     10:59:29     [Input splitting]     Iteration: 21         Remaining: 4280       Visited: 11621      Bound: -0.159522       Time elapsed (s): 5.73       Iteration elapsed (s): 0.41       GPU Mem (%): 58.78     Batch: 1000      Restart: 1         
+INFO     10:59:29     [Input splitting]     Iteration: 22         Remaining: 5125       Visited: 12621      Bound: -0.159522       Time elapsed (s): 6.14       Iteration elapsed (s): 0.41       GPU Mem (%): 58.78     Batch: 1000      Restart: 1         
+INFO     10:59:29     [Input splitting]     Iteration: 23         Remaining: 5811       Visited: 13621      Bound: -0.159522       Time elapsed (s): 6.55       Iteration elapsed (s): 0.41       GPU Mem (%): 58.78     Batch: 1000      Restart: 1         
+INFO     10:59:30     [Input splitting]     Iteration: 24         Remaining: 5792       Visited: 14621      Bound: -0.159522       Time elapsed (s): 6.96       Iteration elapsed (s): 0.42       GPU Mem (%): 59.35     Batch: 1000      Restart: 1         
+INFO     10:59:30     [Input splitting]     Iteration: 25         Remaining: 6625       Visited: 15621      Bound: -0.159522       Time elapsed (s): 7.41       Iteration elapsed (s): 0.44       GPU Mem (%): 59.47     Batch: 1000      Restart: 1         
+INFO     10:59:31     [Input splitting]     Iteration: 26         Remaining: 7159       Visited: 16621      Bound: -0.159522       Time elapsed (s): 7.87       Iteration elapsed (s): 0.47       GPU Mem (%): 59.47     Batch: 1000      Restart: 1         
+INFO     10:59:31     [Input splitting]     Iteration: 27         Remaining: 7745       Visited: 17621      Bound: -0.159522       Time elapsed (s): 8.35       Iteration elapsed (s): 0.47       GPU Mem (%): 59.47     Batch: 1000      Restart: 1         
+INFO     10:59:32     [Input splitting]     Iteration: 28         Remaining: 8688       Visited: 18621      Bound: -0.159522       Time elapsed (s): 8.83       Iteration elapsed (s): 0.48       GPU Mem (%): 59.47     Batch: 1000      Restart: 1         
+INFO     10:59:32     [Input splitting]     Iteration: 29         Remaining: 9255       Visited: 19621      Bound: -0.159522       Time elapsed (s): 9.29       Iteration elapsed (s): 0.46       GPU Mem (%): 59.47     Batch: 1000      Restart: 1         
+INFO     10:59:33     [Input splitting]     Iteration: 30         Remaining: 10238      Visited: 20621      Bound: -0.159522       Time elapsed (s): 9.77       Iteration elapsed (s): 0.48       GPU Mem (%): 59.47     Batch: 1000      Restart: 1         
+INFO     10:59:33     [Input splitting]     Iteration: 31         Remaining: 11215      Visited: 21621      Bound: -0.159522       Time elapsed (s): 10.25      Iteration elapsed (s): 0.48       GPU Mem (%): 59.47     Batch: 1000      Restart: 1         
+INFO     10:59:34     [Input splitting]     Iteration: 32         Remaining: 11978      Visited: 22621      Bound: -0.159522       Time elapsed (s): 10.68      Iteration elapsed (s): 0.43       GPU Mem (%): 59.47     Batch: 1000      Restart: 1         
+INFO     10:59:34     [Input splitting]     Iteration: 33         Remaining: 12929      Visited: 23621      Bound: -0.159522       Time elapsed (s): 11.14      Iteration elapsed (s): 0.47       GPU Mem (%): 59.47     Batch: 1000      Restart: 1         
+INFO     10:59:34     [Input splitting]     Iteration: 34         Remaining: 13741      Visited: 24621      Bound: -0.159522       Time elapsed (s): 11.62      Iteration elapsed (s): 0.47       GPU Mem (%): 59.47     Batch: 1000      Restart: 1         
+INFO     10:59:35     [Input splitting]     Iteration: 35         Remaining: 14549      Visited: 25621      Bound: -0.159522       Time elapsed (s): 12.09      Iteration elapsed (s): 0.47       GPU Mem (%): 59.47     Batch: 1000      Restart: 1         
+INFO     10:59:35     [Input splitting]     Iteration: 36         Remaining: 15444      Visited: 26621      Bound: -0.159522       Time elapsed (s): 12.56      Iteration elapsed (s): 0.46       GPU Mem (%): 59.47     Batch: 1000      Restart: 1         
+INFO     10:59:36     [Input splitting]     Iteration: 37         Remaining: 16393      Visited: 27621      Bound: -0.159522       Time elapsed (s): 13.03      Iteration elapsed (s): 0.47       GPU Mem (%): 59.47     Batch: 1000      Restart: 1         
+INFO     10:59:36     [Input splitting]     Iteration: 38         Remaining: 17330      Visited: 28621      Bound: -0.159522       Time elapsed (s): 13.50      Iteration elapsed (s): 0.47       GPU Mem (%): 59.47     Batch: 1000      Restart: 1         
+INFO     10:59:37     [Input splitting]     Iteration: 39         Remaining: 18212      Visited: 29621      Bound: -0.159522       Time elapsed (s): 13.93      Iteration elapsed (s): 0.43       GPU Mem (%): 59.47     Batch: 1000      Restart: 1         
+INFO     10:59:37     [Input splitting]     Iteration: 40         Remaining: 19104      Visited: 30621      Bound: -0.159522       Time elapsed (s): 14.40      Iteration elapsed (s): 0.47       GPU Mem (%): 59.47     Batch: 1000      Restart: 1         
+INFO     10:59:38     [Input splitting]     Iteration: 41         Remaining: 20029      Visited: 31621      Bound: -0.159522       Time elapsed (s): 14.87      Iteration elapsed (s): 0.47       GPU Mem (%): 59.47     Batch: 1000      Restart: 1         
+DEBUG    10:59:38     [Restart] Number of remaining domains exceeded 20000 domains
+DEBUG    10:59:38     Restarting
+INFO     10:59:38     Params of 2-th run: {'input_split': True, 'abstract_method': 'backward', 'decision_method': 'smart', 'decision_topk': 1}
+INFO     10:59:38     [_setup_restart] _init_abstractor
+DEBUG    10:59:38     [select_params] Try self.input_split=True Settings.backward_batch_size=inf extra_opts={} mode='patches' method='backward'
+DEBUG    10:59:38     [_init_module] Try bound_opts={'conv_mode': 'patches', 'verbosity': 0}
+INFO     10:59:39     [_check_module] Failed: self.input_split=True Settings.backward_batch_size=inf extra_opts={} mode='patches' method='backward'
+DEBUG    10:59:40     [select_params] Try self.input_split=True Settings.backward_batch_size=inf extra_opts={} mode='matrix' method='backward'
+DEBUG    10:59:40     [_init_module] Try bound_opts={'conv_mode': 'matrix', 'verbosity': 0}
+INFO     10:59:41     [select_params] Success: self.input_split=True Settings.backward_batch_size=inf extra_opts={} mode='matrix' method='backward'
+INFO     10:59:41     Try batch size 1000
+INFO     10:59:41     Initial bounds (first 10): tensor([-0.4378])
+DEBUG    10:59:42     [!] RuntimeError exception
+Traceback (most recent call last):
+  File "/data1/Kane/neuralsat/src/verifier/verifier.py", line 177, in _verify_with_restart
+    status = self._verify_one(
+             ^^^^^^^^^^^^^^^^^
+  File "<@beartype(verifier.verifier.Verifier._verify_one) at 0x783692a7de40>", line 94, in _verify_one
+  File "/data1/Kane/neuralsat/src/verifier/verifier.py", line 302, in _verify_one
+    self._parallel_dpll()
+  File "<@beartype(verifier.verifier.Verifier._parallel_dpll) at 0x783692a7e2a0>", line 33, in _parallel_dpll
+  File "/data1/Kane/neuralsat/src/verifier/verifier.py", line 455, in _parallel_dpll
+    abstraction_ret = self.abstractor.forward(decisions, pruned_ret)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<@beartype(abstractor.abstractor.NetworkAbstractor.forward) at 0x783692a5eac0>", line 73, in forward
+  File "/data1/Kane/neuralsat/src/abstractor/abstractor.py", line 563, in forward
+    return forward_func(domain_params=domain_params, decisions=decisions, simplify=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<@beartype(abstractor.abstractor.NetworkAbstractor._forward_input) at 0x783692a5e700>", line 88, in _forward_input
+  File "/data1/Kane/neuralsat/src/abstractor/abstractor.py", line 476, in _forward_input
+    double_output_lbs, _ = self.net.compute_bounds(
+                           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 1235, in compute_bounds
+    return self._compute_bounds_main(C=C,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 1326, in _compute_bounds_main
+    self.check_prior_bounds(final, C=C)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 835, in check_prior_bounds
+    self.check_prior_bounds(n)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 835, in check_prior_bounds
+    self.check_prior_bounds(n)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 835, in check_prior_bounds
+    self.check_prior_bounds(n)
+  [Previous line repeated 14 more times]
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 848, in check_prior_bounds
+    self.compute_intermediate_bounds(node.inputs[i], prior_checked=True)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 909, in compute_intermediate_bounds
+    node.lower, node.upper = self.backward_general(node, newC, unstable_idx=unstable_idx,)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/backward_bound.py", line 249, in backward_general
+    A, lower_b, upper_b = l.bound_backward(
+                          ^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/operators/relu.py", line 275, in bound_backward
+    uA, ubias = _bound_oneside(
+                ^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/operators/relu.py", line 236, in _bound_oneside
+    _A, _bias = multiply_by_A_signs(last_A, d_pos, d_neg, b_pos, b_neg, reduce_bias=reduce_bias, same_slope=same_slope)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/operators/clampmult.py", line 141, in multiply_by_A_signs
+    return ClampedMultiplication.apply(A, d_pos, d_neg, b_pos, b_neg, False, reduce_bias, same_slope)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/miniconda3/envs/neuralsat/lib/python3.11/site-packages/torch/autograd/function.py", line 581, in apply
+    return super().apply(*args, **kwargs)  # type: ignore[misc]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/operators/clampmult.py", line 120, in forward
+    return ClampedMultiplication.clamp_mutiply_forward(A, d_pos, d_neg, b_pos, b_neg, patches_mode, reduce_bias, same_slope)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/miniconda3/envs/neuralsat/lib/python3.11/site-packages/torch/utils/_contextlib.py", line 120, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: The following operation failed in the TorchScript interpreter.
+Traceback of TorchScript (most recent call last):
+RuntimeError: CUDA driver error: invalid argument
+
+Traceback (most recent call last):
+  File "/data1/Kane/neuralsat/src/main.py", line 97, in <module>
+    status = verifier.verify(objectives, timeout=timeout, force_split=args.force_split)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<@beartype(verifier.verifier.Verifier.verify) at 0x783692a7d760>", line 113, in verify
+  File "/data1/Kane/neuralsat/src/verifier/verifier.py", line 73, in verify
+    self.status = self._verify(
+                  ^^^^^^^^^^^^^
+  File "<@beartype(verifier.verifier.Verifier._verify) at 0x783692a7d8a0>", line 126, in _verify
+beartype.roar.BeartypeCallHintReturnViolation: Method verifier.verifier.Verifier._verify() return "None" violates type hint <class 'str'>, as <class "builtins.NoneType"> "None" not instance of str.

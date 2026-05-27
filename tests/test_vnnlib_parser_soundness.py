@@ -30,14 +30,29 @@ from act.front_end.vnnlib_loader.vnnlib_parser import (
 )
 
 
+def _to_host_np(x, dtype=None) -> np.ndarray:
+    """Defensive host-copy before NumPy conversion. Required because
+    upstream tests may load ONNX models via the device manager and leave
+    torch's default device on cuda:0; ``np.asarray`` on a CUDA tensor
+    raises ``TypeError: can't convert cuda:0 device type tensor to
+    numpy``. This helper is the test-side companion to the production-
+    side host-copy in ``solver_hz._x_star_in_input_box``."""
+    import torch as _torch
+    if isinstance(x, _torch.Tensor):
+        x = x.detach().cpu()
+    if dtype is not None:
+        return np.asarray(x, dtype=dtype)
+    return np.asarray(x)
+
+
 def _spec_holds(out_spec, y: np.ndarray) -> bool:
     """Evaluate an OutputSpec on concrete y under zero-tolerance UNSAFE
     semantics. Returns True iff y is in the unsafe set described by the
     spec (the convention used by ACT's _eval_unsafe_strict)."""
     kind = out_spec.kind
     if kind == "UNSAFE_LINEAR":
-        C = np.asarray(out_spec.c, dtype=np.float64)
-        d = np.asarray(out_spec.d, dtype=np.float64).reshape(-1)
+        C = _to_host_np(out_spec.c, dtype=np.float64)
+        d = _to_host_np(out_spec.d, dtype=np.float64).reshape(-1)
         if C.ndim == 1:
             C = C.reshape(1, -1)
         # Convention: spec is the UNSAFE set; y in unsafe iff all rows hold.
@@ -149,8 +164,8 @@ class TestVnnlibParserRealAcasxuMultiOr(unittest.TestCase):
             f"product must be ≥ 2^{expected} = {1 << expected} queries"
         )
         for in_spec, out_spec in queries[:5]:
-            lb = np.asarray(in_spec.lb).reshape(-1)
-            ub = np.asarray(in_spec.ub).reshape(-1)
+            lb = _to_host_np(in_spec.lb).reshape(-1)
+            ub = _to_host_np(in_spec.ub).reshape(-1)
             self.assertTrue(
                 np.all(lb <= ub),
                 f"per-query input box must be non-empty; got lb={lb} ub={ub}"

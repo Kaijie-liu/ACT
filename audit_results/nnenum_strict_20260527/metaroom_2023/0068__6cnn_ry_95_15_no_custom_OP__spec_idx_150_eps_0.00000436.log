@@ -1,0 +1,23 @@
+Traceback (most recent call last):
+  File "/data1/Kane/miniconda3/envs/nnenumenv/lib/python3.8/runpy.py", line 194, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/data1/Kane/miniconda3/envs/nnenumenv/lib/python3.8/runpy.py", line 87, in _run_code
+    exec(code, run_globals)
+  File "/data1/Kane/nnenum/src/nnenum/nnenum.py", line 451, in <module>
+    main()
+  File "/data1/Kane/nnenum/src/nnenum/nnenum.py", line 407, in main
+    res = enumerate_network(init_box, network, spec)
+  File "/data1/Kane/nnenum/src/nnenum/enumerate.py", line 110, in enumerate_network
+    init_ss = make_init_ss(init, network, spec, start) # returns None if timeout
+  File "/data1/Kane/nnenum/src/nnenum/enumerate.py", line 43, in make_init_ss
+    ss = LpStarState(init_box, spec=spec)
+  File "/data1/Kane/nnenum/src/nnenum/lp_star_state.py", line 55, in __init__
+    self.from_init_box(uncompressed_init_box)
+  File "/data1/Kane/nnenum/src/nnenum/lp_star_state.py", line 125, in from_init_box
+    self.prefilter.init_from_uncompressed_box(uncompressed_init_box, self.star, init_box)
+  File "/data1/Kane/nnenum/src/nnenum/prefilter.py", line 212, in init_from_uncompressed_box
+    self.zono = Zonotope(star.bias, star.a_mat, box_bounds.copy())
+  File "/data1/Kane/nnenum/src/nnenum/zonotope.py", line 62, in __init__
+    assert len(gen_mat_t.shape) == 2, f"expected 2-d gen_mat_t, got {gen_mat_t.shape}"
+AssertionError: expected 2-d gen_mat_t, got (0,)
+timeout: the monitored command dumped core

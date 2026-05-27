@@ -1,0 +1,20 @@
+=== CORA STRICT: bench=cctsdb_yolo_2023 idx=13  timeout=350  start=2026-05-27 14:23:12
+=== onnx=onnx/patch-3.onnx
+=== vnnlib=vnnlib/spec_onnx_patch-3_idx_15377_1.vnnlib
+prepare_instance(cctsdb_yolo_2023,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cctsdb_yolo_2023/onnx/patch-3.onnx,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cctsdb_yolo_2023/vnnlib/spec_onnx_patch-3_idx_15377_1.vnnlib)...
+--- Loading network...
+Unexpected Error! --- Index exceeds array bounds.
+ --- CORAerror/aux_readInfo [594]
+ --- CORAerror/CORAerror [63]
+ --- prepare_instance/aux_readNetworkAndOptions [275]
+ --- prepare_instance/prepare_instance [9]
+ --- cora_strict_sweep_runner/cora_strict_sweep_runner [167]
+
+run_instance(cctsdb_yolo_2023,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cctsdb_yolo_2023/onnx/patch-3.onnx,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cctsdb_yolo_2023/vnnlib/spec_onnx_patch-3_idx_15377_1.vnnlib,/data1/Kane/ACT/audit_results/cora_truestrict_20260527/cctsdb_yolo_2023/0013__patch-3__spec_onnx_patch-3_idx_15377_1.result,350,0)...
+--- Loading MATLAB file...
+Unexpected Error! --- Unable to find file or directory "cctsdb_yolo_2023_patch-3_spec_onnx_patch-3_idx_15377_1.mat".
+ --- run_instance/run_instance [21]
+ --- cora_strict_sweep_runner/cora_strict_sweep_runner [168]
+
+ done
+=== CORA STRICT: verdict=unknown wall=0.757s

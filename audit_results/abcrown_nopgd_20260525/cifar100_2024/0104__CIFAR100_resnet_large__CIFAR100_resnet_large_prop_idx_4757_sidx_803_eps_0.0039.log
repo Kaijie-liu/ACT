@@ -1,0 +1,732 @@
+[0;93m2026-05-26 17:15:31.146309864 [W:onnxruntime:Default, device_discovery.cc:325 DiscoverDevicesForPlatform] GPU device discovery failed: device_discovery.cc:92 ReadFileContents Failed to open file: "/sys/class/drm/card0/device/vendor"[m
+Configurations:
+
+general:
+  device: cuda
+  seed: 100
+  conv_mode: patches
+  deterministic: false
+  double_fp: false
+  loss_reduction_func: sum
+  sparse_alpha: true
+  sparse_interm: true
+  save_adv_example: true
+  verify_onnxruntime_output: false
+  eval_adv_example: false
+  show_adv_example: false
+  precompile_jit: true
+  prepare_only: false
+  complete_verifier: bab
+  enable_incomplete_verification: true
+  csv_name: instances.csv
+  results_file: /data1/Kane/ACT/audit_results/abcrown_nopgd_20260525/cifar100_2024/0104__CIFAR100_resnet_large__CIFAR100_resnet_large_prop_idx_4757_sidx_803_eps_0.0039.result
+  root_path: ../../vnncomp2024_benchmarks/benchmarks/cifar100
+  deterministic_opt: false
+  graph_optimizer: 'Customized("custom_graph_optimizer", "default_optimizer")'
+  buffer_has_batchdim: false
+  save_output: false
+  output_file: out.pkl
+  return_optimized_model: false
+model:
+  name: null
+  path: null
+  onnx_path: /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/onnx/CIFAR100_resnet_large.onnx
+  onnx_path_prefix: ''
+  cache_onnx_conversion: false
+  debug_onnx: false
+  onnx_quirks: null
+  input_shape: null
+  onnx_loader: default_onnx_and_vnnlib_loader
+  onnx_optimization_flags: [merge_bn]
+  onnx_vnnlib_joint_optimization_flags: none
+  check_optimized: false
+  flatten_final_output: false
+  optimize_graph: null
+  with_jacobian: false
+data:
+  start: 0
+  end: 10000
+  select_instance: null
+  num_outputs: 10
+  mean: 0.0
+  std: 1.0
+  pkl_path: null
+  dataset: null
+  data_filter_path: null
+  data_idx_file: null
+specification:
+  type: lp
+  robustness_type: verified-acc
+  norm: .inf
+  epsilon: null
+  epsilon_min: 0.0
+  vnnlib_path: /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/vnnlib/CIFAR100_resnet_large_prop_idx_4757_sidx_803_eps_0.0039.vnnlib
+  vnnlib_path_prefix: ''
+  rhs_offset: null
+solver:
+  batch_size: 256
+  auto_enlarge_batch_size: true
+  min_batch_size_ratio: 0.1
+  use_float64_in_last_iteration: false
+  early_stop_patience: 10
+  start_save_best: 0.5
+  bound_prop_method: alpha-crown
+  init_bound_prop_method: same
+  prune_after_crown: true
+  optimize_disjuncts_separately: false
+  crown:
+    batch_size: 1000000000
+    max_crown_size: 1000000000
+    activation_bound_option: adaptive
+    compare_crown_with_ibp: false
+  alpha-crown:
+    alpha: true
+    lr_alpha: 0.25
+    iteration: 20
+    share_alphas: false
+    lr_decay: 0.98
+    full_conv_alpha: false
+    max_coeff_mul: .inf
+    matmul_share_alphas: false
+    disable_optimization: []
+    max_time: 1.0
+  invprop:
+    apply_output_constraints_to: []
+    tighten_input_bounds: false
+    best_of_oc_and_no_oc: false
+    directly_optimize: []
+    oc_lr: 0.1
+    share_gammas: false
+  beta-crown:
+    lr_alpha: 0.1
+    lr_beta: 0.2
+    lr_decay: 0.98
+    optimizer: adam
+    iteration: 10
+    beta: true
+    beta_warmup: true
+    enable_opt_interm_bounds: false
+    all_node_split_LP: false
+  forward:
+    refine: false
+    max_dim: 10000
+    reset_threshold: 1.0
+  multi_class:
+    label_batch_size: 32
+    skip_with_refined_bound: true
+  mip:
+    unstable_neuron_threshold: 0
+    parallel_solvers: null
+    solver_threads: 1
+    refine_neuron_timeout: 15
+    refine_neuron_time_percentage: 0.8
+    early_stop: true
+    adv_warmup: true
+    mip_solver: gurobi
+    skip_unsafe: false
+    topk_filter: 1.0
+    sliding_window: -1
+    extra_constraint: false
+    refine_neuron_timeout_increasement: 0
+    timeout_neuron_percentage: 0.3
+    remaining_timeout_threshold: 1
+    remove_unstable_neurons: false
+    lp_solver: false
+bab:
+  initial_max_domains: 100
+  backing_up_max_domain: null
+  max_domains: .inf
+  decision_thresh: 0
+  timeout: 100.0
+  timeout_scale: 1
+  max_iterations: -1
+  override_timeout: null
+  get_upper_bound: false
+  pruning_in_iteration: true
+  pruning_in_iteration_ratio: 0.2
+  sort_targets: false
+  batched_domain_list: true
+  optimized_interm: ''
+  interm_transfer: false
+  recompute_interm: false
+  sort_domain_interval: -1
+  vanilla_crown: false
+  tree_traversal: depth_first
+  cut:
+    enabled: false
+    cuts_path: /tmp/abcrown_cuts
+    implication: false
+    bab_cut: false
+    lp_cut: false
+    method: null
+    lr: 0.01
+    lr_decay: 1.0
+    iteration: 100
+    bab_iteration: -1
+    early_stop_patience: -1
+    lr_beta: 0.02
+    number_cuts: 50
+    topk_cuts_in_filter: 1000
+    batch_size_primal: 100
+    max_num: 1000000000
+    patches_cut: false
+    cplex_cuts: false
+    cplex_cuts_wait: 0
+    cplex_cuts_revpickup: true
+    cut_reference_bounds: true
+    fix_intermediate_bounds: false
+    biccos:
+      enabled: false
+      constraint_strengthening: true
+      recursively_strengthening: false
+      drop_ratio: 0.5
+      verified_bonus: 0.3
+      max_infer_iter: 20
+      heuristic: neuron_influence_score
+      save_biccos_cuts: false
+      multi_tree_branching:
+        enabled: false
+        restore_best_tree: false
+        keep_n_best_domains: 1
+        k_splits: 1
+        iterations: 1
+  branching:
+    method: kfsb
+    candidates: 7
+    reduceop: max
+    enable_intermediate_bound_opt: false
+    branching_input_and_activation: false
+    branching_input_and_activation_order: [input, relu]
+    branching_input_iterations: 30
+    branching_relu_iterations: 50
+    nonlinear_split:
+      method: bbps
+      disable: false
+      branching_point_method: uniform
+      num_branches: 2
+      filter: false
+      filter_beta: false
+      filter_clamp: false
+      filter_batch_size: 10000
+      filter_iterations: 25
+      relu_only: false
+      loose_tanh_threshold: null
+      branching_point:
+        db_path: branching_points.pt
+        num_iterations: 1000
+        batch_size: 1000000
+        range_l: -5.0
+        range_u: 5.0
+        log_interval: 100
+        step_size_1d: 0.01
+        step_size: 0.2
+    input_split:
+      enable_clip_domains: false
+      split_hint: null
+      reorder_bab: false
+      enable: false
+      enhanced_bound_prop_method: alpha-crown
+      enhanced_branching_method: naive
+      enhanced_bound_patience: 100000000.0
+      attack_patience: 100000000.0
+      adv_check: 0
+      split_partitions: 2
+      sb_margin_weight: 1.0
+      sb_sum: false
+      sb_primary_spec: null
+      bf_backup_thresh: -1
+      bf_rhs_offset: 0
+      bf_iters: 1000000000.0
+      bf_batch_size: 100000
+      bf_zero_crossing_score: false
+      touch_zero_score: 0
+      ibp_enhancement: false
+      compare_with_old_bounds: false
+      update_rhs_with_attack: false
+      sb_coeff_thresh: 0.001
+      sort_index: null
+      sort_descending: true
+      show_progress: false
+      presplit_domains: null
+      skip_getting_worst_domain: false
+  attack:
+    enabled: false
+    beam_candidates: 8
+    beam_depth: 7
+    max_dive_fix_ratio: 0.8
+    min_local_free_ratio: 0.2
+    mip_start_iteration: 5
+    mip_timeout: 30.0
+    adv_pool_threshold: null
+    refined_mip_attacker: false
+    refined_batch_size: null
+attack:
+  pgd_order: skip
+  pgd_steps: 100
+  pgd_restarts: 10
+  pgd_batch_size: 100000000
+  pgd_early_stop: true
+  pgd_lr_decay: 0.99
+  pgd_alpha: auto
+  pgd_alpha_scale: false
+  pgd_loss_mode: null
+  pgd_restart_when_stuck: false
+  enable_mip_attack: false
+  adv_saver: default_adv_saver
+  adv_verifier: default_adv_verifier
+  early_stop_condition: default_early_stop_condition
+  adv_example_finalizer: default_adv_example_finalizer
+  pgd_loss: default_pgd_loss
+  cex_path: ./test_cex.txt
+  attack_mode: PGD
+  attack_tolerance: 0.0
+  attack_func: attack_with_general_specs
+  gama_lambda: 10.0
+  gama_decay: 0.9
+  check_clean: false
+  input_split:
+    pgd_steps: 100
+    pgd_restarts: 30
+    pgd_alpha: auto
+  input_split_enhanced:
+    pgd_steps: 200
+    pgd_restarts: 500000
+    pgd_alpha: auto
+  input_split_check_adv:
+    enabled: auto
+    pgd_steps: 5
+    pgd_restarts: 5
+    pgd_alpha: auto
+    max_num_domains: 10
+debug:
+  view_model: false
+  lp_test: null
+  rescale_vnnlib_ptb: null
+  test_optimized_bounds: false
+  test_optimized_bounds_after_n_iterations: 0
+  print_verbose_decisions: false
+  sanity_check: null
+  save_minimal_config: null
+  save_minimal_config_omit_keys: []
+
+Experiments at Tue May 26 17:15:32 2026 on dell-pro-max-tower-t2
+Pre-compile jit kernels on a toy network...
+JIT kernels compiled in 1.1203s./data1/Kane/miniconda3/envs/GenBaB/lib/python3.11/site-packages/onnx2pytorch/convert/model.py:151: UserWarning: Using experimental implementation that allows 'batch_size > 1'.Batchnorm layers could potentially produce false outputs.
+  warnings.warn(
+/data1/Kane/miniconda3/envs/GenBaB/lib/python3.11/site-packages/onnx2pytorch/utils.py:21: TracerWarning: Converting a tensor to a Python boolean might cause the trace to be incorrect. We can't record the data flow of Python values, so this value will be treated as a constant in the future. This means that the trace might not generalize to other inputs!
+  return value.ndim == 0 or value.shape == torch.Size([1])
+/data1/Kane/miniconda3/envs/GenBaB/lib/python3.11/site-packages/onnx2pytorch/operations/add.py:34: TracerWarning: Converting a tensor to a Python boolean might cause the trace to be incorrect. We can't record the data flow of Python values, so this value will be treated as a constant in the future. This means that the trace might not generalize to other inputs!
+  elif all(x == 1 for x in input[0].shape):
+
+Internal results will be saved to /data1/Kane/ACT/audit_results/abcrown_nopgd_20260525/cifar100_2024/0104__CIFAR100_resnet_large__CIFAR100_resnet_large_prop_idx_4757_sidx_803_eps_0.0039.result.
+
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% idx: 0, vnnlib ID: 0 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Using onnx /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/onnx/CIFAR100_resnet_large.onnx
+Using vnnlib /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/vnnlib/CIFAR100_resnet_large_prop_idx_4757_sidx_803_eps_0.0039.vnnlib
+3072 inputs and 100 outputs in vnnlib
+Loading onnx /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/onnx/CIFAR100_resnet_large.onnx with quirks {}
+Onnx optimization with flags: ['merge_bn']
+Found existed optimized onnx model at /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/onnx/CIFAR100_resnet_large.onnx.optimized
+Finished onnx model loading in 0.1101 seconds
+Model: BoundedModule(
+  (/input-1): BoundInput(name=/input-1, inputs=[], perturbed=True)
+  (/45): BoundParams(name=/45, inputs=[], perturbed=False)
+  (/46): BoundParams(name=/46, inputs=[], perturbed=False)
+  (/47): BoundParams(name=/47, inputs=[], perturbed=False)
+  (/48): BoundParams(name=/48, inputs=[], perturbed=False)
+  (/49): BoundParams(name=/49, inputs=[], perturbed=False)
+  (/50): BoundParams(name=/50, inputs=[], perturbed=False)
+  (/51): BoundParams(name=/51, inputs=[], perturbed=False)
+  (/52): BoundParams(name=/52, inputs=[], perturbed=False)
+  (/53): BoundParams(name=/53, inputs=[], perturbed=False)
+  (/54): BoundParams(name=/54, inputs=[], perturbed=False)
+  (/55): BoundParams(name=/55, inputs=[], perturbed=False)
+  (/56): BoundParams(name=/56, inputs=[], perturbed=False)
+  (/57): BoundParams(name=/57, inputs=[], perturbed=False)
+  (/58): BoundParams(name=/58, inputs=[], perturbed=False)
+  (/59): BoundParams(name=/59, inputs=[], perturbed=False)
+  (/60): BoundParams(name=/60, inputs=[], perturbed=False)
+  (/61): BoundParams(name=/61, inputs=[], perturbed=False)
+  (/62): BoundParams(name=/62, inputs=[], perturbed=False)
+  (/63): BoundParams(name=/63, inputs=[], perturbed=False)
+  (/64): BoundParams(name=/64, inputs=[], perturbed=False)
+  (/65): BoundParams(name=/65, inputs=[], perturbed=False)
+  (/66): BoundParams(name=/66, inputs=[], perturbed=False)
+  (/67): BoundParams(name=/67, inputs=[], perturbed=False)
+  (/68): BoundParams(name=/68, inputs=[], perturbed=False)
+  (/69): BoundParams(name=/69, inputs=[], perturbed=False)
+  (/70): BoundParams(name=/70, inputs=[], perturbed=False)
+  (/71): BoundParams(name=/71, inputs=[], perturbed=False)
+  (/72): BoundParams(name=/72, inputs=[], perturbed=False)
+  (/73): BoundParams(name=/73, inputs=[], perturbed=False)
+  (/74): BoundParams(name=/74, inputs=[], perturbed=False)
+  (/75): BoundParams(name=/75, inputs=[], perturbed=False)
+  (/76): BoundParams(name=/76, inputs=[], perturbed=False)
+  (/77): BoundParams(name=/77, inputs=[], perturbed=False)
+  (/78): BoundParams(name=/78, inputs=[], perturbed=False)
+  (/79): BoundParams(name=/79, inputs=[], perturbed=False)
+  (/80): BoundParams(name=/80, inputs=[], perturbed=False)
+  (/81): BoundParams(name=/81, inputs=[], perturbed=False)
+  (/82): BoundParams(name=/82, inputs=[], perturbed=False)
+  (/83): BoundParams(name=/83, inputs=[], perturbed=False)
+  (/84): BoundParams(name=/84, inputs=[], perturbed=False)
+  (/85): BoundParams(name=/85, inputs=[], perturbed=False)
+  (/86): BoundParams(name=/86, inputs=[], perturbed=False)
+  (/87): BoundParams(name=/87, inputs=[], perturbed=False)
+  (/88): BoundParams(name=/88, inputs=[], perturbed=False)
+  (/input): BoundConv(name=/input, inputs=[/input-1, /45, /46], perturbed=True)
+  (/input-4): BoundRelu(name=/input-4, inputs=[/input], perturbed=True)
+  (/input-8): BoundConv(name=/input-8, inputs=[/input-4, /47, /48], perturbed=True)
+  (/input-12): BoundRelu(name=/input-12, inputs=[/input-8], perturbed=True)
+  (/93): BoundConv(name=/93, inputs=[/input-12, /49, /50], perturbed=True)
+  (/94): BoundAdd(name=/94, inputs=[/93, /input-4], perturbed=True)
+  (/input-16): BoundConv(name=/input-16, inputs=[/94, /51, /52], perturbed=True)
+  (/input-20): BoundRelu(name=/input-20, inputs=[/input-16], perturbed=True)
+  (/97): BoundConv(name=/97, inputs=[/input-20, /53, /54], perturbed=True)
+  (/98): BoundAdd(name=/98, inputs=[/97, /94], perturbed=True)
+  (/input-24): BoundConv(name=/input-24, inputs=[/98, /55, /56], perturbed=True)
+  (/input-28): BoundRelu(name=/input-28, inputs=[/input-24], perturbed=True)
+  (/101): BoundConv(name=/101, inputs=[/input-28, /57, /58], perturbed=True)
+  (/102): BoundConv(name=/102, inputs=[/98, /59, /60], perturbed=True)
+  (/103): BoundAdd(name=/103, inputs=[/101, /102], perturbed=True)
+  (/input-32): BoundConv(name=/input-32, inputs=[/103, /61, /62], perturbed=True)
+  (/input-36): BoundRelu(name=/input-36, inputs=[/input-32], perturbed=True)
+  (/106): BoundConv(name=/106, inputs=[/input-36, /63, /64], perturbed=True)
+  (/107): BoundAdd(name=/107, inputs=[/106, /103], perturbed=True)
+  (/input-40): BoundConv(name=/input-40, inputs=[/107, /65, /66], perturbed=True)
+  (/input-44): BoundRelu(name=/input-44, inputs=[/input-40], perturbed=True)
+  (/110): BoundConv(name=/110, inputs=[/input-44, /67, /68], perturbed=True)
+  (/111): BoundConv(name=/111, inputs=[/107, /69, /70], perturbed=True)
+  (/112): BoundAdd(name=/112, inputs=[/110, /111], perturbed=True)
+  (/input-48): BoundConv(name=/input-48, inputs=[/112, /71, /72], perturbed=True)
+  (/input-52): BoundRelu(name=/input-52, inputs=[/input-48], perturbed=True)
+  (/115): BoundConv(name=/115, inputs=[/input-52, /73, /74], perturbed=True)
+  (/116): BoundAdd(name=/116, inputs=[/115, /112], perturbed=True)
+  (/input-56): BoundConv(name=/input-56, inputs=[/116, /75, /76], perturbed=True)
+  (/input-60): BoundRelu(name=/input-60, inputs=[/input-56], perturbed=True)
+  (/119): BoundConv(name=/119, inputs=[/input-60, /77, /78], perturbed=True)
+  (/120): BoundConv(name=/120, inputs=[/116, /79, /80], perturbed=True)
+  (/121): BoundAdd(name=/121, inputs=[/119, /120], perturbed=True)
+  (/input-64): BoundConv(name=/input-64, inputs=[/121, /81, /82], perturbed=True)
+  (/input-68): BoundRelu(name=/input-68, inputs=[/input-64], perturbed=True)
+  (/124): BoundConv(name=/124, inputs=[/input-68, /83, /84], perturbed=True)
+  (/125): BoundAdd(name=/125, inputs=[/124, /121], perturbed=True)
+  (/126): BoundFlatten(name=/126, inputs=[/125], perturbed=True)
+  (/input-72): BoundLinear(name=/input-72, inputs=[/126, /85, /86], perturbed=True)
+  (/128): BoundRelu(name=/128, inputs=[/input-72], perturbed=True)
+  (/129): BoundLinear(name=/129, inputs=[/128, /87, /88], perturbed=True)
+)
+Original output: tensor([[ -9.52702808,  -8.64442444,  -5.40625572,  -5.31548643,  -7.31864214,
+          -3.05737114, -11.43387127, -10.08147621,  -6.15934992,  -3.35740900,
+          -3.24390435,  -4.72142696,  -2.43331337,   0.88268608,  -8.97488213,
+          -6.44725084,  -1.08443427,  -4.29745007,  -7.15183544,  -4.47837162,
+          -6.14957762,  -6.32913494,  -2.14086962,  -8.12637234,  -9.99381161,
+          -3.08081198,  -9.83795452,  -7.62420034,  -3.70965767,  -9.24036026,
+          -7.89114666,  -7.86289406,  -3.26261687,  -5.79856873,  -6.19390202,
+          -4.80257273,  -6.37747765,  -2.03728008,  -7.38678074,  -3.39538622,
+          -2.27865696,  -5.87129068,  -5.69311810,  -8.52518654,  -7.45785236,
+          -8.01234627,  -4.87470722,  -7.32003593,  -7.49950695, -10.46490860,
+          -7.45560026,  -3.15260100,  -9.17496300, -11.87129784,  -9.61777306,
+          -4.55428982,  -5.40534019,  -7.58104467,  -2.53686380,  -5.38093042,
+          -8.90083504,  -5.61405945, -10.59821701,  -8.44129658,  -6.75124693,
+          -4.59440851,  -9.08087349,  -8.45964622, -10.21083450,  -4.26569605,
+          -8.16966152,  -7.70020723,  -2.68503690,  -6.28303099,  -9.17438221,
+          -7.51854610,  -5.81537724,  -5.55081844,  -8.04328537,  -8.97427177,
+          -4.88994455,  -0.04978532,  -9.21424580, -10.59688759,  -2.73337841,
+          -5.05683947,  -1.34358668,  -1.01211834,  -4.86168718,  -4.56390429,
+          -2.15263748,  -8.75475693,  -7.56021547,  -6.47537756,  -3.31984377,
+          -4.21540165,  -6.59361362,  -6.86839294,  -5.44422388, -10.80557251]],
+       device='cuda:0')
+Split layers:
+Nonlinear functions:
+   BoundRelu(name=/input-4, inputs=[/input], perturbed=True)
+   BoundRelu(name=/input-12, inputs=[/input-8], perturbed=True)
+   BoundRelu(name=/input-20, inputs=[/input-16], perturbed=True)
+   BoundRelu(name=/input-28, inputs=[/input-24], perturbed=True)
+   BoundRelu(name=/input-36, inputs=[/input-32], perturbed=True)
+   BoundRelu(name=/input-44, inputs=[/input-40], perturbed=True)
+   BoundRelu(name=/input-52, inputs=[/input-48], perturbed=True)
+   BoundRelu(name=/input-60, inputs=[/input-56], perturbed=True)
+   BoundRelu(name=/input-68, inputs=[/input-64], perturbed=True)
+   BoundRelu(name=/128, inputs=[/input-72], perturbed=True)
+layer /input-4 using sparse-features alpha with shape [866]; unstable size 866; total size 65536 ([1, 64, 32, 32])
+layer /input-4 start_node /input-8 using sparse-spec alpha [2, 57, 1, 866] with unstable size 56 total_size 64 output_shape 64
+layer /input-4 start_node /input-24 using sparse-spec alpha [2, 61, 1, 866] with unstable size 60 total_size 128 output_shape 128
+layer /input-4 start_node /input-40 using sparse-spec alpha [2, 72, 1, 866] with unstable size 71 total_size 128 output_shape 128
+layer /input-4 start_node /input-56 using sparse-spec alpha [2, 2, 1, 866] with unstable size 1 total_size 4096 output_shape torch.Size([256, 4, 4])
+layer /input-4 start_node /input-72 using sparse-spec alpha [2, 31, 1, 866] with unstable size 30 total_size 100 output_shape torch.Size([100])
+layer /input-4 start_node /129 using full alpha [2, 99, 1, 866] with unstable size None total_size 99 output_shape 99
+layer /input-12 using sparse-features alpha with shape [1477]; unstable size 1477; total size 65536 ([1, 64, 32, 32])
+layer /input-12 start_node /input-24 using sparse-spec alpha [2, 61, 1, 1477] with unstable size 60 total_size 128 output_shape 128
+layer /input-12 start_node /input-40 using sparse-spec alpha [2, 72, 1, 1477] with unstable size 71 total_size 128 output_shape 128
+layer /input-12 start_node /input-56 using sparse-spec alpha [2, 2, 1, 1477] with unstable size 1 total_size 4096 output_shape torch.Size([256, 4, 4])
+layer /input-12 start_node /input-72 using sparse-spec alpha [2, 31, 1, 1477] with unstable size 30 total_size 100 output_shape torch.Size([100])
+layer /input-12 start_node /129 using full alpha [2, 99, 1, 1477] with unstable size None total_size 99 output_shape 99
+layer /input-20 using sparse-features alpha with shape [0]; unstable size 0; total size 65536 ([1, 64, 32, 32])
+layer /input-20 start_node /input-24 using sparse-spec alpha [2, 61, 1, 0] with unstable size 60 total_size 128 output_shape 128
+layer /input-20 start_node /input-40 using sparse-spec alpha [2, 72, 1, 0] with unstable size 71 total_size 128 output_shape 128
+layer /input-20 start_node /input-56 using sparse-spec alpha [2, 2, 1, 0] with unstable size 1 total_size 4096 output_shape torch.Size([256, 4, 4])
+layer /input-20 start_node /input-72 using sparse-spec alpha [2, 31, 1, 0] with unstable size 30 total_size 100 output_shape torch.Size([100])
+layer /input-20 start_node /129 using full alpha [2, 99, 1, 0] with unstable size None total_size 99 output_shape 99
+layer /input-28 using sparse-features alpha with shape [343]; unstable size 343; total size 32768 ([1, 128, 16, 16])
+layer /input-28 start_node /input-40 using sparse-spec alpha [2, 72, 1, 343] with unstable size 71 total_size 128 output_shape 128
+layer /input-28 start_node /input-56 using sparse-spec alpha [2, 2, 1, 343] with unstable size 1 total_size 4096 output_shape torch.Size([256, 4, 4])
+layer /input-28 start_node /input-72 using sparse-spec alpha [2, 31, 1, 343] with unstable size 30 total_size 100 output_shape torch.Size([100])
+layer /input-28 start_node /129 using full alpha [2, 99, 1, 343] with unstable size None total_size 99 output_shape 99
+layer /input-36 using sparse-features alpha with shape [0]; unstable size 0; total size 32768 ([1, 128, 16, 16])
+layer /input-36 start_node /input-40 using sparse-spec alpha [2, 72, 1, 0] with unstable size 71 total_size 128 output_shape 128
+layer /input-36 start_node /input-56 using sparse-spec alpha [2, 2, 1, 0] with unstable size 1 total_size 4096 output_shape torch.Size([256, 4, 4])
+layer /input-36 start_node /input-72 using sparse-spec alpha [2, 31, 1, 0] with unstable size 30 total_size 100 output_shape torch.Size([100])
+layer /input-36 start_node /129 using full alpha [2, 99, 1, 0] with unstable size None total_size 99 output_shape 99
+layer /input-44 using sparse-features alpha with shape [269]; unstable size 269; total size 8192 ([1, 128, 8, 8])
+layer /input-44 start_node /input-56 using sparse-spec alpha [2, 2, 1, 269] with unstable size 1 total_size 4096 output_shape torch.Size([256, 4, 4])
+layer /input-44 start_node /input-72 using sparse-spec alpha [2, 31, 1, 269] with unstable size 30 total_size 100 output_shape torch.Size([100])
+layer /input-44 start_node /129 using full alpha [2, 99, 1, 269] with unstable size None total_size 99 output_shape 99
+layer /input-52 using sparse-features alpha with shape [0]; unstable size 0; total size 8192 ([1, 128, 8, 8])
+layer /input-52 start_node /input-56 using sparse-spec alpha [2, 2, 1, 0] with unstable size 1 total_size 256 output_shape 256
+layer /input-52 start_node /input-72 using sparse-spec alpha [2, 31, 1, 0] with unstable size 30 total_size 100 output_shape torch.Size([100])
+layer /input-52 start_node /129 using full alpha [2, 99, 1, 0] with unstable size None total_size 99 output_shape 99
+layer /input-60 using sparse-features alpha with shape [1]; unstable size 1; total size 4096 ([1, 256, 4, 4])
+layer /input-60 start_node /input-72 using sparse-spec alpha [2, 31, 1, 1] with unstable size 30 total_size 100 output_shape torch.Size([100])
+layer /input-60 start_node /129 using full alpha [2, 99, 1, 1] with unstable size None total_size 99 output_shape 99
+layer /input-68 using sparse-features alpha with shape [0]; unstable size 0; total size 4096 ([1, 256, 4, 4])
+layer /input-68 start_node /input-72 using sparse-spec alpha [2, 31, 1, 0] with unstable size 30 total_size 100 output_shape torch.Size([100])
+layer /input-68 start_node /129 using full alpha [2, 99, 1, 0] with unstable size None total_size 99 output_shape 99
+layer /128 using sparse-features alpha with shape [30]; unstable size 30; total size 100 ([1, 100])
+layer /128 start_node /129 using full alpha [2, 99, 1, 30] with unstable size None total_size 99 output_shape 99
+Optimizable variables initialized.
+initial CROWN bounds: tensor([[ 7.50099993,  7.12620687,  4.14635086,  3.70523691,  5.69045687,
+          2.26621103,  9.88326645,  8.19008636,  5.11708546,  2.59092665,
+          2.03548002,  3.65427780,  1.90794134,  7.51445246,  4.99807453,
+          0.34829831,  3.45370865,  6.26522732,  3.21625209,  5.15683746,
+          4.85582495,  0.81111002,  6.47464180,  8.06022835,  2.38527060,
+          8.30115604,  6.34124088,  2.14747620,  8.19832706,  6.49713087,
+          6.55154467,  2.26046419,  4.73029661,  4.34713697,  3.64863610,
+          4.18367481,  1.24433184,  6.05497742,  2.63819790,  1.49141121,
+          4.82316828,  4.49455547,  6.65480232,  6.45947838,  6.65760279,
+          3.89634824,  6.12067127,  6.39521599,  9.09577179,  5.68503475,
+          1.60412669,  7.93026972,  9.94725990,  8.03360176,  3.02521276,
+          4.16537380,  5.81687832,  2.34544039,  4.35036278,  7.82553101,
+          3.98052144,  8.65666866,  6.79866934,  4.94461441,  3.16034985,
+          7.46408892,  6.85094070,  8.94445038,  3.19753075,  6.77164459,
+          6.61806011,  1.20741248,  5.11184978,  7.27847290,  5.68861008,
+          4.96424961,  3.70742798,  6.24073887,  7.71428728,  3.53998375,
+         -0.16705161,  8.04402542,  9.23890305,  2.13225698,  4.25565529,
+          0.37019360,  0.21813536,  3.52563739,  3.84159565,  1.50021279,
+          7.28264904,  6.16581774,  5.18651867,  2.01521635,  2.80307674,
+          5.50334358,  5.38002729,  4.27531004,  8.90269089]], device='cuda:0') None
+prune_after_crown optimization in use: original label size = 99 pruned label size = 1
+best_l after optimization: -0.10149085521697998
+alpha/beta optimization time: 4.468940019607544
+initial alpha-crown bounds: tensor([[        inf,         inf,         inf,         inf,         inf,
+                 inf,         inf,         inf,         inf,         inf,
+                 inf,         inf,         inf,         inf,         inf,
+                 inf,         inf,         inf,         inf,         inf,
+                 inf,         inf,         inf,         inf,         inf,
+                 inf,         inf,         inf,         inf,         inf,
+                 inf,         inf,         inf,         inf,         inf,
+                 inf,         inf,         inf,         inf,         inf,
+                 inf,         inf,         inf,         inf,         inf,
+                 inf,         inf,         inf,         inf,         inf,
+                 inf,         inf,         inf,         inf,         inf,
+                 inf,         inf,         inf,         inf,         inf,
+                 inf,         inf,         inf,         inf,         inf,
+                 inf,         inf,         inf,         inf,         inf,
+                 inf,         inf,         inf,         inf,         inf,
+                 inf,         inf,         inf,         inf,         inf,
+         -0.10149086,         inf,         inf,         inf,         inf,
+                 inf,         inf,         inf,         inf,         inf,
+                 inf,         inf,         inf,         inf,         inf,
+                 inf,         inf,         inf,         inf]], device='cuda:0')
+Number of class (without rhs): 1 ; Worst class: (+ rhs) -0.10149085521697998
+Total VNNLIB file length: 99, max property batch size: 100, total number of batches: 1
+lA shape: [torch.Size([99, 1, 64, 32, 32]), torch.Size([99, 1, 64, 32, 32]), torch.Size([99, 1, 64, 32, 32]), torch.Size([99, 1, 128, 16, 16]), torch.Size([99, 1, 128, 16, 16]), torch.Size([99, 1, 128, 8, 8]), torch.Size([99, 1, 128, 8, 8]), torch.Size([99, 1, 256, 4, 4]), torch.Size([99, 1, 256, 4, 4]), torch.Size([99, 1, 100])]
+
+Properties batch 0, size 99
+Remaining timeout: 94.05044794082642
+Verifying property 0 with 99 instances.
+##### Instance 0 first 10 spec matrices: 
+tensor([[[-1.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  1.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.]],
+
+        [[ 0., -1.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  1.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.]],
+
+        [[ 0.,  0., -1.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  1.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.]],
+
+        [[ 0.,  0.,  0., -1.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  1.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.]],
+
+        [[ 0.,  0.,  0.,  0., -1.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  1.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.]],
+
+        [[ 0.,  0.,  0.,  0.,  0., -1.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  1.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.]],
+
+        [[ 0.,  0.,  0.,  0.,  0.,  0., -1.,  0.,  0.,  0.,  0.,  0.,  0.,  1.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.]],
+
+        [[ 0.,  0.,  0.,  0.,  0.,  0.,  0., -1.,  0.,  0.,  0.,  0.,  0.,  1.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.]],
+
+        [[ 0.,  0.,  0.,  0.,  0.,  0.,  0.,  0., -1.,  0.,  0.,  0.,  0.,  1.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.]],
+
+        [[ 0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0., -1.,  0.,  0.,  0.,  1.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.]]], dtype=torch.float64)
+thresholds: tensor([0., 0., 0., 0., 0., 0., 0., 0., 0., 0.], device='cuda:0') ######
+Initial alpha-CROWN verified for spec index tensor([ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17,
+        18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
+        36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53,
+        54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71,
+        72, 73, 74, 75, 76, 77, 78, 79, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90,
+        91, 92, 93, 94, 95, 96, 97, 98], device='cuda:0') with bound tensor([inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf,
+        inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf,
+        inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf,
+        inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf,
+        inf, inf], device='cuda:0').
+Remaining spec index tensor([80], device='cuda:0') with bounds tensor([[-0.10149086]], device='cuda:0') need to verify.
+Model prediction is: tensor([ -9.52702808,  -8.64442444,  -5.40625572,  -5.31548643,  -7.31864214,
+         -3.05737114, -11.43387127, -10.08147621,  -6.15934992,  -3.35740900,
+         -3.24390435,  -4.72142696,  -2.43331337,   0.88268608,  -8.97488213,
+         -6.44725084,  -1.08443427,  -4.29745007,  -7.15183544,  -4.47837162,
+         -6.14957762,  -6.32913494,  -2.14086962,  -8.12637234,  -9.99381161,
+         -3.08081198,  -9.83795452,  -7.62420034,  -3.70965767,  -9.24036026,
+         -7.89114666,  -7.86289406,  -3.26261687,  -5.79856873,  -6.19390202,
+         -4.80257273,  -6.37747765,  -2.03728008,  -7.38678074,  -3.39538622,
+         -2.27865696,  -5.87129068,  -5.69311810,  -8.52518654,  -7.45785236,
+         -8.01234627,  -4.87470722,  -7.32003593,  -7.49950695, -10.46490860,
+         -7.45560026,  -3.15260100,  -9.17496300, -11.87129784,  -9.61777306,
+         -4.55428982,  -5.40534019,  -7.58104467,  -2.53686380,  -5.38093042,
+         -8.90083504,  -5.61405945, -10.59821701,  -8.44129658,  -6.75124693,
+         -4.59440851,  -9.08087349,  -8.45964622, -10.21083450,  -4.26569605,
+         -8.16966152,  -7.70020723,  -2.68503690,  -6.28303099,  -9.17438221,
+         -7.51854610,  -5.81537724,  -5.55081844,  -8.04328537,  -8.97427177,
+         -4.88994455,  -0.04978532,  -9.21424580, -10.59688759,  -2.73337841,
+         -5.05683947,  -1.34358668,  -1.01211834,  -4.86168718,  -4.56390429,
+         -2.15263748,  -8.75475693,  -7.56021547,  -6.47537756,  -3.31984377,
+         -4.21540165,  -6.59361362,  -6.86839294,  -5.44422388, -10.80557251],
+       device='cuda:0')
+build_with_refined_bounds batch [1/1]
+setting alpha for layer /input-4 start_node /129 with alignment adjustment
+setting alpha for layer /input-12 start_node /129 with alignment adjustment
+setting alpha for layer /input-20 start_node /129 with alignment adjustment
+setting alpha for layer /input-28 start_node /129 with alignment adjustment
+setting alpha for layer /input-36 start_node /129 with alignment adjustment
+setting alpha for layer /input-44 start_node /129 with alignment adjustment
+setting alpha for layer /input-52 start_node /129 with alignment adjustment
+setting alpha for layer /input-60 start_node /129 with alignment adjustment
+setting alpha for layer /input-68 start_node /129 with alignment adjustment
+setting alpha for layer /128 start_node /129 with alignment adjustment
+all alpha initialized
+directly get lb and ub from refined bounds
+c shape: torch.Size([1, 1, 100])
+lA shapes: [torch.Size([1, 1, 64, 32, 32]), torch.Size([1, 1, 64, 32, 32]), torch.Size([1, 1, 64, 32, 32]), torch.Size([1, 1, 128, 16, 16]), torch.Size([1, 1, 128, 16, 16]), torch.Size([1, 1, 128, 8, 8]), torch.Size([1, 1, 128, 8, 8]), torch.Size([1, 1, 256, 4, 4]), torch.Size([1, 1, 256, 4, 4]), torch.Size([1, 1, 100])]
+(alpha-)CROWN with fixed intermediate bounds: tensor([[-0.10149086]], device='cuda:0') tensor([[inf]], device='cuda:0')
+Intermediate layers: /input,/input-8,/input-16,/input-24,/input-32,/input-40,/input-48,/input-56,/input-64,/input-72,/129
+Keeping alphas for these layers: ['/129']
+Keeping alphas for these layers: ['/129']
+Node /input-4 input 0: size torch.Size([64, 32, 32]) unstable 866
+Node /input-12 input 0: size torch.Size([64, 32, 32]) unstable 1471
+Node /input-20 input 0: size torch.Size([64, 32, 32]) unstable 0
+Node /input-28 input 0: size torch.Size([128, 16, 16]) unstable 340
+Node /input-36 input 0: size torch.Size([128, 16, 16]) unstable 0
+Node /input-44 input 0: size torch.Size([128, 8, 8]) unstable 264
+Node /input-52 input 0: size torch.Size([128, 8, 8]) unstable 0
+Node /input-60 input 0: size torch.Size([256, 4, 4]) unstable 1
+Node /input-68 input 0: size torch.Size([256, 4, 4]) unstable 0
+Node /128 input 0: size torch.Size([100]) unstable 28
+-----------------
+# of unstable neurons: 2970
+-----------------
+
+BaB round 1
+batch: 1
+splitting decisions: 
+split level 0: [/input-72, 30] 
+split level 1: [/input-72, 49] 
+split level 2: [/input-72, 52] 
+split level 3: [/input-72, 94] 
+
+all verified at 0th iter
+pruning_in_iteration open status: False
+ratio of positive domain = 16 / 16 = 1.0
+pruning-in-iteration extra time: 0.0022764205932617188
+Time: prepare 0.0004    bound 0.0296    transfer 0.0090    finalize 0.0093    func 0.0483    
+Accumulated time: func 0.0483    prepare 0.0009    bound 0.0296    transfer 0.0090    finalize 0.0093    
+Length of domains: 0
+Time: pickout 0.0007    decision 0.1300    set_bounds 0.0013    solve 0.0483    add 0.0001    
+Accumulated time: pickout 0.0007    decision 0.1300    set_bounds 0.0013    solve 0.0483    add 0.0001    
+No domains left, verification finished!
+Current (lb-rhs): 1.0000000116860974e-07
+0 domains visited
+Cumulative time: 1.2755584716796875
+
+Result: unsat
+Time: 7.549067974090576
+
+------------------------- COMMAND ------------------------------
+/data1/Kane/miniconda3/envs/GenBaB/bin/python /data1/Kane/GenBaB/alpha-beta-CROWN/complete_verifier/abcrown.py --config /data1/Kane/GenBaB/alpha-beta-CROWN/complete_verifier/exp_configs/vnncomp24/cifar100.yaml --precompile_jit --onnx_path /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/onnx/CIFAR100_resnet_large.onnx --vnnlib_path /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/vnnlib/CIFAR100_resnet_large_prop_idx_4757_sidx_803_eps_0.0039.vnnlib --results_file /data1/Kane/ACT/audit_results/abcrown_nopgd_20260525/cifar100_2024/0104__CIFAR100_resnet_large__CIFAR100_resnet_large_prop_idx_4757_sidx_803_eps_0.0039.result --timeout 100.0 --save_adv_example --pgd_order=skip
+----------------------------------------------------------------
+

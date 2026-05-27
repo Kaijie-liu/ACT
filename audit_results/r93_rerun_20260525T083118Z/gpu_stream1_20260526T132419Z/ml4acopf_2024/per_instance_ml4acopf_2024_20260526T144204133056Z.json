@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "benchmark": "ml4acopf_2024",
+  "formal_mode": true,
+  "timestamp_utc": "20260526T144204133056Z",
+  "canonical_root": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks",
+  "receipt_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/gpu_stream1_20260526T132419Z/ml4acopf_2024",
+  "wall_min": 0.011298573017120362,
+  "counts": {
+    "CERTIFIED": 0,
+    "FALSIFIED": 0,
+    "UNKNOWN": 0,
+    "ERROR": 1
+  },
+  "run_status": "FAILED",
+  "per_instance": [
+    {
+      "official_instance_id": 68,
+      "benchmark": "ml4acopf_2024",
+      "onnx_model": "./onnx/300_ieee_ml4acopf.onnx",
+      "vnnlib_spec": "./vnnlib/300_ieee_prop4.vnnlib",
+      "model_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/ml4acopf_2024/onnx/300_ieee_ml4acopf.onnx",
+      "spec_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/ml4acopf_2024/vnnlib/300_ieee_prop4.vnnlib",
+      "internal_status": "ERROR",
+      "reportable_status": "ERROR",
+      "cli_normalized": "ERROR_ValueError",
+      "count_bucket": "ERROR",
+      "queries": [],
+      "q_statuses": [],
+      "q_reportables": [],
+      "q_receipts": [],
+      "error": "ValueError: OnnxTranspose: perm rank 2 != input rank 1",
+      "wall_s": 0.6778466701507568,
+      "timeout_s": 60.0,
+      "instance_budget_exhausted": false
+    }
+  ]
+}

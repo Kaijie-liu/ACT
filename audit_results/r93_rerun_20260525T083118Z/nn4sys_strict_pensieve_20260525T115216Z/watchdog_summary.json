@@ -1,0 +1,48 @@
+{
+  "schema_version": 2,
+  "strict_bounded_failure": true,
+  "counts": {
+    "OK": 3,
+    "UNKNOWN_TIMEOUT": 0,
+    "UNKNOWN_RESOURCE_LIMIT": 0,
+    "ERROR": 0
+  },
+  "results": [
+    {
+      "benchmark": "nn4sys",
+      "instance_id": 0,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 3.0018810930196196,
+      "peak_rss_mb": 860.953125,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/nn4sys_strict_pensieve_20260525T115216Z/per_instance_nn4sys_20260525T115220240887Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/nn4sys_strict_pensieve_20260525T115216Z",
+      "stdout_tail": " input shape: [1, 6, 8]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 6, 8)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 48 inputs, 6 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 48 inputs, 6 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed pensieve_simple_0.vnnlib: 1 query(ies)\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cpu, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=nn4sys max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cpu, timeout=60.0s)\n  [  1/1] nn4sys/onnx/pensieve_small_simple.onnx@vnnlib/pensieve_simple_0.vnnlib: UNKNOWN (0.4s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.0 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/nn4sys_strict_pensieve_20260525T115216Z/per_instance_nn4sys_20260525T115220240887Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "nn4sys",
+      "instance_id": 1,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 15.50920391897671,
+      "peak_rss_mb": 1210.77734375,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/nn4sys_strict_pensieve_20260525T115216Z/per_instance_nn4sys_20260525T115235592588Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/nn4sys_strict_pensieve_20260525T115216Z",
+      "stdout_tail": "lts may be incorrect.\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (12, 8)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 96 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 96 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed pensieve_parallel_1.vnnlib: 1 query(ies)\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cpu, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=nn4sys max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cpu, timeout=60.0s)\n  [  1/1] nn4sys/onnx/pensieve_big_parallel.onnx@vnnlib/pensieve_parallel_1.vnnlib: UNKNOWN (12.8s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.2 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/nn4sys_strict_pensieve_20260525T115216Z/per_instance_nn4sys_20260525T115235592588Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "nn4sys",
+      "instance_id": 4,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 3.502741604926996,
+      "peak_rss_mb": 878.19140625,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/nn4sys_strict_pensieve_20260525T115216Z/per_instance_nn4sys_20260525T115239079313Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/nn4sys_strict_pensieve_20260525T115216Z",
+      "stdout_tail": "ts may be incorrect.\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (12, 8)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 96 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 96 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed pensieve_parallel_4.vnnlib: 1 query(ies)\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cpu, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=nn4sys max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cpu, timeout=60.0s)\n  [  1/1] nn4sys/onnx/pensieve_small_parallel.onnx@vnnlib/pensieve_parallel_4.vnnlib: UNKNOWN (0.7s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.0 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/nn4sys_strict_pensieve_20260525T115216Z/per_instance_nn4sys_20260525T115239079313Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    }
+  ]
+}

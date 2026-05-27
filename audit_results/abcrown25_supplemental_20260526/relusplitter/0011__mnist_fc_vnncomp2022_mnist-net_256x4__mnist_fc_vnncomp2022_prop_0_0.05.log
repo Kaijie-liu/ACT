@@ -1,0 +1,894 @@
+[0;93m2026-05-26 17:19:04.236905379 [W:onnxruntime:Default, device_discovery.cc:283 GetGpuDevices] Failed to detect devices under "/sys/class/drm/card0": device_discovery.cc:93 ReadFileContents Failed to open file: "/sys/class/drm/card0/device/vendor"[m
+INFO     17:19:05     [tensor_storage.py:70] Hugepage enabled for branch-and-bound domains.
+Configurations:
+
+general:
+  device: cuda
+  seed: 100
+  conv_mode: patches
+  deterministic: false
+  double_fp: false
+  loss_reduction_func: sum
+  sparse_alpha: true
+  sparse_interm: true
+  save_adv_example: true
+  verify_onnxruntime_output: false
+  eval_adv_example: false
+  onnx_adv_example: false
+  show_adv_example: false
+  precompile_jit: true
+  reset_seed_after_precompile: false
+  prepare_only: false
+  complete_verifier: auto
+  enable_incomplete_verification: true
+  csv_name: instances.csv
+  results_file: /data1/Kane/ACT/audit_results/abcrown25_supplemental_20260526/relusplitter/0011__mnist_fc_vnncomp2022_mnist-net_256x4__mnist_fc_vnncomp2022_prop_0_0.05.result
+  root_path: ../../vnncomp2025_benchmarks/benchmarks/relusplitter
+  deterministic_opt: false
+  graph_optimizer: 'Customized("custom_graph_optimizer", "default_optimizer")'
+  buffer_has_batchdim: false
+  save_output: false
+  output_file: out.pkl
+  return_optimized_model: false
+  store_all_specs_on_cpu: false
+  adhoc_tuning: null
+model:
+  name: null
+  path: null
+  onnx_path: /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/relusplitter/onnx/mnist_fc_vnncomp2022_mnist-net_256x4.onnx
+  onnx_path_prefix: ''
+  cache_onnx_conversion: false
+  debug_onnx: false
+  onnx_quirks: '''Reshape'': ''fix_batch_size'': True'
+  input_shape: null
+  onnx_loader: default_onnx_and_vnnlib_loader
+  onnx_optimization_flags: []
+  onnx_vnnlib_joint_optimization_flags: none
+  check_optimized: false
+  flatten_final_output: false
+  optimize_graph: null
+  with_jacobian: false
+data:
+  start: 0
+  end: 10000
+  select_instance: null
+  num_outputs: 10
+  mean: 0.0
+  std: 1.0
+  pkl_path: null
+  dataset: null
+  data_filter_path: null
+  data_idx_file: null
+specification:
+  type: lp
+  robustness_type: verified-acc
+  norm: .inf
+  epsilon: null
+  epsilon_min: 0.0
+  vnnlib_path: /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/relusplitter/vnnlib/mnist_fc_vnncomp2022_prop_0_0.05.vnnlib
+  vnnlib_path_prefix: ''
+  shrink_eps: null
+  rhs_offset: null
+solver:
+  batch_size: 4
+  auto_enlarge_batch_size: true
+  batched_crown_auto_enlarge_max_vram_ratio: 0.9
+  min_batch_size_ratio: 1
+  use_float64_in_last_iteration: false
+  early_stop_patience: 10
+  start_save_best: -1
+  bound_prop_method: alpha-crown
+  init_bound_prop_method: same
+  prune_after_crown: true
+  optimize_disjuncts_separately: false
+  build_batch_size: 1000000
+  skip_with_refined_bound: true
+  forward_before_compute_bounds: false
+  crown:
+    batch_size: 1000000000
+    max_crown_size: 1000000000
+    activation_bound_option: adaptive
+    compare_crown_with_ibp: false
+  alpha-crown:
+    alpha: true
+    lr_alpha: 0.1
+    iteration: 100
+    share_alphas: false
+    lr_decay: 0.98
+    full_conv_alpha: true
+    max_coeff_mul: .inf
+    matmul_share_alphas: false
+    disable_optimization: []
+    max_time: 1.0
+    alpha_dtype: float16
+  invprop:
+    apply_output_constraints_to: []
+    tighten_input_bounds: false
+    best_of_oc_and_no_oc: false
+    directly_optimize: []
+    oc_lr: 0.1
+    share_gammas: false
+  beta-crown:
+    lr_alpha: 0.01
+    lr_beta: 0.01
+    lr_decay: 0.98
+    optimizer: adam
+    iteration: 50
+    beta: true
+    beta_warmup: true
+    enable_opt_interm_bounds: false
+    all_node_split_LP: false
+  forward:
+    refine: false
+    max_dim: 10000
+    reset_threshold: 1.0
+  intermediate_refinement:
+    enabled: false
+    batch_size: 10
+    opt_coeffs: false
+    opt_bias: false
+    lr: 0.05
+    layers: [-1]
+    max_domains: 1000
+  mip:
+    unstable_neuron_threshold: 0
+    parallel_solvers: null
+    solver_threads: 1
+    refine_neuron_timeout: 15
+    refine_neuron_time_percentage: 0.8
+    early_stop: true
+    adv_warmup: true
+    mip_solver: gurobi
+    skip_unsafe: false
+    topk_filter: 1.0
+    sliding_window: -1
+    extra_constraint: false
+    refine_neuron_timeout_increasement: 0
+    timeout_neuron_percentage: 0.3
+    remaining_timeout_threshold: 1
+    remove_unstable_neurons: false
+    lp_solver: false
+bab:
+  max_domains: .inf
+  decision_thresh: 0
+  timeout: 30.0
+  timeout_scale: 1
+  max_iterations: -1
+  override_timeout: null
+  get_upper_bound: false
+  pruning_in_iteration: true
+  pruning_in_iteration_ratio: 0.2
+  sort_targets: false
+  batched_domain_list: true
+  optimized_interm: ''
+  interm_transfer: true
+  recompute_interm: false
+  sort_domain_interval: -1
+  vanilla_crown: false
+  tree_traversal: depth_first
+  hugetensor_allocator: true
+  cut:
+    enabled: false
+    cuts_path: null
+    implication: false
+    bab_cut: true
+    lp_cut: false
+    method: null
+    lr: 0.01
+    lr_decay: 1.0
+    iteration: 100
+    bab_iteration: -1
+    early_stop_patience: -1
+    lr_beta: 0.01
+    number_cuts: 50
+    topk_cuts_in_filter: 1000
+    batch_size_primal: 100
+    max_num: 1000000000
+    patches_cut: false
+    cplex_cuts: true
+    cplex_cuts_wait: 0
+    cplex_cuts_revpickup: true
+    cut_reference_bounds: true
+    fix_intermediate_bounds: false
+    _tmp_cuts: null
+    fixed_cuts: false
+    add_implied_cuts: false
+    add_input_cuts: false
+    biccos:
+      enabled: false
+      constraint_strengthening: true
+      recursively_strengthening: false
+      drop_ratio: 0.5
+      verified_bonus: 0.3
+      max_infer_iter: 20
+      max_domain: 10000.0
+      heuristic: neuron_influence_score
+      save_biccos_cuts: false
+      multi_tree_branching:
+        enabled: false
+        restore_best_tree: false
+        keep_n_best_domains: 1
+        k_splits: 1
+        iterations: 1
+  clip_n_verify:
+    rearrange_constraints: false
+    alpha_crown: false
+    prune: false
+    final_layer: false
+    clip_input_domain:
+      enabled: true
+      clip_type: relaxed
+      heuristic_K: 0.0
+      clip_iterations: 1
+      clip_calculate_volume_metrics: false
+    clip_interm_domain:
+      enabled: true
+      with_input: false
+      clip_in_alpha_crown: false
+      topk_objective: 20
+  branching:
+    method: kfsb
+    candidates: 10
+    reduceop: max
+    enable_intermediate_bound_opt: false
+    branching_input_and_activation: false
+    branching_input_and_activation_order: [input, relu]
+    branching_input_iterations: 30
+    branching_relu_iterations: 50
+    nonlinear_split:
+      method: bbps
+      disable: false
+      branching_point_method: uniform
+      num_branches: 2
+      filter: false
+      filter_beta: false
+      filter_clamp: false
+      filter_batch_size: 10000
+      filter_iterations: 25
+      relu_only: false
+      loose_tanh_threshold: null
+      branching_point:
+        db_path: branching_points.pt
+        num_iterations: 1000
+        batch_size: 1000000
+        range_l: -5.0
+        range_u: 5.0
+        log_interval: 100
+        step_size_1d: 0.01
+        step_size: 0.2
+    input_split:
+      split_hint: null
+      enable: false
+      reorder_bab: true
+      input_dim_threshold: 20
+      adv_check: 0
+      split_partitions: 2
+      sb_margin_weight: 1.0
+      sb_sum: false
+      sb_primary_spec: null
+      bf_backup_thresh: -1
+      bf_rhs_offset: 0
+      bf_iters: 1000000000.0
+      bf_batch_size: 100000
+      bf_zero_crossing_score: false
+      touch_zero_score: 0
+      ibp_enhancement: false
+      compare_with_old_bounds: true
+      update_rhs_with_attack: false
+      sb_coeff_thresh: 2.0
+      sort_index: null
+      sort_descending: true
+      show_progress: false
+      presplit_domains: null
+      skip_getting_worst_domain: false
+  attack:
+    enabled: false
+    beam_candidates: 8
+    beam_depth: 7
+    max_dive_fix_ratio: 0.8
+    min_local_free_ratio: 0.2
+    mip_start_iteration: 5
+    mip_timeout: 30.0
+    adv_pool_threshold: null
+    refined_mip_attacker: false
+    refined_batch_size: null
+attack:
+  general_attack: true
+  pgd_order: skip
+  pgd_steps: 100
+  pgd_restarts: 30
+  pgd_batch_size: 100000000
+  pgd_early_stop: true
+  pgd_lr_decay: 0.99
+  pgd_alpha: auto
+  pgd_alpha_scale: false
+  pgd_loss_mode: null
+  pgd_restart_when_stuck: false
+  enable_mip_attack: false
+  adv_saver: default_adv_saver
+  adv_verifier: default_adv_verifier
+  early_stop_condition: default_early_stop_condition
+  adv_example_finalizer: default_adv_example_finalizer
+  pgd_loss: default_pgd_loss
+  cex_path: ./test_cex.txt
+  attack_mode: diversed_PGD
+  attack_tolerance: 0.0
+  attack_func: attack_with_general_specs
+  gama_lambda: 10.0
+  gama_decay: 0.9
+  input_split:
+    pgd_steps: 100
+    pgd_restarts: 30
+    pgd_alpha: auto
+  input_split_check_adv:
+    enabled: auto
+    pgd_steps: 5
+    pgd_restarts: 5
+    pgd_alpha: auto
+    max_num_domains: 10
+debug:
+  view_model: false
+  lp_test: null
+  rescale_vnnlib_ptb: null
+  test_optimized_bounds: false
+  test_optimized_bounds_after_n_iterations: 0
+  print_verbose_decisions: false
+  sanity_check: null
+  save_minimal_config: null
+  save_minimal_config_omit_keys: []
+/data1/Kane/miniconda3/envs/abcrown25/lib/python3.11/site-packages/onnx2pytorch/convert/layer.py:29: UserWarning: The given NumPy array is not writable, and PyTorch does not support non-writable tensors. This means writing to this tensor will result in undefined behavior. You may want to copy the array to protect its data or make it writable before converting it to a tensor. This type of warning will be suppressed for the rest of this program. (Triggered internally at /pytorch/torch/csrc/utils/tensor_numpy.cpp:206.)
+  layer.weight.data = torch.from_numpy(numpy_helper.to_array(weight))
+/data1/Kane/miniconda3/envs/abcrown25/lib/python3.11/site-packages/onnx2pytorch/convert/model.py:151: UserWarning: Using experimental implementation that allows 'batch_size > 1'.Batchnorm layers could potentially produce false outputs.
+  warnings.warn(
+
+Experiments at Tue May 26 17:19:05 2026 on dell-pro-max-tower-t2
+Pre-compile jit kernels on a toy network...
+JIT kernels compiled in 1.4702s.
+Internal results will be saved to /data1/Kane/ACT/audit_results/abcrown25_supplemental_20260526/relusplitter/0011__mnist_fc_vnncomp2022_mnist-net_256x4__mnist_fc_vnncomp2022_prop_0_0.05.result.
+
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% idx: 0, vnnlib ID: 0 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Using onnx /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/relusplitter/onnx/mnist_fc_vnncomp2022_mnist-net_256x4.onnx
+Using vnnlib /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/relusplitter/vnnlib/mnist_fc_vnncomp2022_prop_0_0.05.vnnlib
+Precompiled vnnlib file found at /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/relusplitter/vnnlib/mnist_fc_vnncomp2022_prop_0_0.05.vnnlib.compiled
+Loading onnx /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/relusplitter/onnx/mnist_fc_vnncomp2022_mnist-net_256x4.onnx with quirks {'Reshape': {'fix_batch_size': True}}
+Finished onnx model loading in 0.0106 seconds
+Finished vnnlib processing in 0.082288 seconds
+Disabling Clip-and-Verify because it does not support bab-refine!
+Using temporary cuts path: <TemporaryDirectory '/tmp/abcrown_cuts_lsji2m6g'>
+Model: BoundedModule(
+  (/0): BoundInput(name=/0, inputs=[], perturbed=True)
+  (/11): BoundParams(name=/11, inputs=[], perturbed=False)
+  (/12): BoundParams(name=/12, inputs=[], perturbed=False)
+  (/13): BoundParams(name=/13, inputs=[], perturbed=False)
+  (/14): BoundParams(name=/14, inputs=[], perturbed=False)
+  (/15): BoundParams(name=/15, inputs=[], perturbed=False)
+  (/16): BoundParams(name=/16, inputs=[], perturbed=False)
+  (/17): BoundParams(name=/17, inputs=[], perturbed=False)
+  (/18): BoundParams(name=/18, inputs=[], perturbed=False)
+  (/19): BoundParams(name=/19, inputs=[], perturbed=False)
+  (/20): BoundParams(name=/20, inputs=[], perturbed=False)
+  (/21): BoundFlatten(name=/21, inputs=[/0], perturbed=True)
+  (/input): BoundLinear(name=/input, inputs=[/21, /11, /12], perturbed=True)
+  (/23): BoundRelu(name=/23, inputs=[/input], perturbed=True)
+  (/input-3): BoundLinear(name=/input-3, inputs=[/23, /13, /14], perturbed=True)
+  (/25): BoundRelu(name=/25, inputs=[/input-3], perturbed=True)
+  (/input-7): BoundLinear(name=/input-7, inputs=[/25, /15, /16], perturbed=True)
+  (/27): BoundRelu(name=/27, inputs=[/input-7], perturbed=True)
+  (/input-11): BoundLinear(name=/input-11, inputs=[/27, /17, /18], perturbed=True)
+  (/29): BoundRelu(name=/29, inputs=[/input-11], perturbed=True)
+  (/30): BoundLinear(name=/30, inputs=[/29, /19, /20], perturbed=True)
+)
+Original output in the first batch: tensor([[ 5.96702099e-03, -3.60265374e-04,  1.98335946e-02, -4.28399444e-03,
+          5.50948083e-04, -6.01984560e-04,  9.91357088e-01, -1.23855025e-02,
+         -2.89195776e-03, -1.55719370e-03]], device='cuda:0')
+Split layers:
+Nonlinear functions:
+   BoundRelu(name=/23, inputs=[/input], perturbed=True)
+   BoundRelu(name=/25, inputs=[/input-3], perturbed=True)
+   BoundRelu(name=/27, inputs=[/input-7], perturbed=True)
+   BoundRelu(name=/29, inputs=[/input-11], perturbed=True)
+build batch [1/1]
+layer /23 using sparse-features alpha with shape [47]; unstable size 47; total size 256 ([1, 256])
+layer /23 start_node /input-3 using sparse-spec alpha [2, 181, 1, 47] with unstable size 180 total_size 256 output_shape torch.Size([256])
+layer /23 start_node /input-7 using full alpha [2, 256, 1, 47] with unstable size 256 total_size 256 output_shape torch.Size([256])
+layer /23 start_node /input-11 using full alpha [2, 256, 1, 47] with unstable size 256 total_size 256 output_shape torch.Size([256])
+layer /23 start_node /30 using full alpha [2, 9, 1, 47] with unstable size None total_size 9 output_shape 9
+layer /25 using sparse-features alpha with shape [180]; unstable size 180; total size 256 ([1, 256])
+layer /25 start_node /input-7 using full alpha [2, 256, 1, 180] with unstable size 256 total_size 256 output_shape torch.Size([256])
+layer /25 start_node /input-11 using full alpha [2, 256, 1, 180] with unstable size 256 total_size 256 output_shape torch.Size([256])
+layer /25 start_node /30 using full alpha [2, 9, 1, 180] with unstable size None total_size 9 output_shape 9
+layer /27 using full alpha with shape torch.Size([256]); unstable size 256; total size 256 ([1, 256])
+layer /27 start_node /input-11 using full alpha [2, 256, 1, 256] with unstable size 256 total_size 256 output_shape torch.Size([256])
+layer /27 start_node /30 using full alpha [2, 9, 1, 256] with unstable size None total_size 9 output_shape 9
+layer /29 using full alpha with shape torch.Size([256]); unstable size 256; total size 256 ([1, 256])
+layer /29 start_node /30 using full alpha [2, 9, 1, 256] with unstable size None total_size 9 output_shape 9
+Optimizable variables initialized.
+initial CROWN bounds (first 10 items): [-142.58274841308594, -145.08639526367188, -138.01966857910156, -124.73831176757812, -153.4146270751953, -140.31541442871094, -155.4808349609375, -142.21206665039062, -160.27337646484375]
+prune_after_crown optimization in use
+  original spec size = torch.Size([1, 9])
+  pruned spec size = torch.Size([1, 9])
+Using alpha-CROWN to initialize bounds.
+best_l after optimization: -525.9326171875
+alpha/beta optimization time: 7.872694492340088
+initial alpha-crown bounds (first 10 items): [-57.588077545166016, -58.490596771240234, -55.472286224365234, -50.37956619262695, -62.113433837890625, -56.7911262512207, -62.75421905517578, -57.580352783203125, -64.76292419433594]
+Global lower bound: -64.76292419433594
+torch.Size([1, 9])
+0 / 9 OR specs are verified.
+Verified OR indices (first 10 items): []
+Verified OR lbs (first 10 items): []
+Unverified OR indices (first 10 items): [0, 1, 2, 3, 4, 5, 6, 7, 8]
+Unverified OR lbs (first 10 items): [[-57.588077545166016], [-58.490596771240234], [-55.472286224365234], [-50.37956619262695], [-62.113433837890625], [-56.7911262512207], [-62.75421905517578], [-57.580352783203125], [-64.76292419433594]]
+Start solving intermediate bounds with MIP...
+layer /23 using sparse-features alpha with shape [47]; unstable size 47; total size 256 ([1, 256])
+layer /23 start_node /input-3 using sparse-spec alpha [2, 181, 1, 47] with unstable size 180 total_size 256 output_shape torch.Size([256])
+layer /23 start_node /input-7 using full alpha [2, 256, 1, 47] with unstable size 256 total_size 256 output_shape torch.Size([256])
+layer /23 start_node /input-11 using full alpha [2, 256, 1, 47] with unstable size 256 total_size 256 output_shape torch.Size([256])
+layer /23 start_node /30 using full alpha [2, 9, 1, 47] with unstable size None total_size 9 output_shape 9
+layer /25 using sparse-features alpha with shape [180]; unstable size 180; total size 256 ([1, 256])
+layer /25 start_node /input-7 using full alpha [2, 256, 1, 180] with unstable size 256 total_size 256 output_shape torch.Size([256])
+layer /25 start_node /input-11 using full alpha [2, 256, 1, 180] with unstable size 256 total_size 256 output_shape torch.Size([256])
+layer /25 start_node /30 using full alpha [2, 9, 1, 180] with unstable size None total_size 9 output_shape 9
+layer /27 using full alpha with shape torch.Size([256]); unstable size 256; total size 256 ([1, 256])
+layer /27 start_node /input-11 using full alpha [2, 256, 1, 256] with unstable size 256 total_size 256 output_shape torch.Size([256])
+layer /27 start_node /30 using full alpha [2, 9, 1, 256] with unstable size None total_size 9 output_shape 9
+layer /29 using full alpha with shape torch.Size([256]); unstable size 256; total size 256 ([1, 256])
+layer /29 start_node /30 using full alpha [2, 9, 1, 256] with unstable size None total_size 9 output_shape 9
+Optimizable variables initialized.
+Set parameter WLSAccessID
+INFO     17:19:15     [solver_module.py:119] Set parameter WLSAccessID
+Set parameter WLSSecret
+INFO     17:19:15     [solver_module.py:119] Set parameter WLSSecret
+Set parameter LicenseID to value 2542227
+INFO     17:19:15     [solver_module.py:119] Set parameter LicenseID to value 2542227
+Academic license 2542227 - for non-commercial use only - registered to ka___@unsw.edu.au
+INFO     17:19:15     [solver_module.py:119] Academic license 2542227 - for non-commercial use only - registered to ka___@unsw.edu.au
+preset mip_multi_proc as default setting: 20
+mip_multi_proc: 20, mip_threads: 1,total threads used: 20, mip_perneuron_refine_timeout: 15
+[total time budget for MIP: 24.0]
+
+refine the bounds for layer  /23
+maximum relu layer improved by MIP so far 0
+refine the bounds for layer  /25
+current relu layer: /25, idx: 1
+timeout for this layer is 15
+Removed 0 unstable neurons in MIP based on the coefficient matrix.
+PGD done for relu layer 1
+Solving MIP for lay/input-3_146,[-11.468358993530273,0.6447076797485352]=>[-11.468358993530273,-1e-05] (-1,-1; 15,-1), time: 0.2535s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_246,[-10.558530807495117,1.7702157497406006]=>[-10.558530807495117,-1e-05] (-1,-1; 15,-1), time: 0.4540s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_193,[-0.2477421760559082,18.867040634155273]=>[1e-05,18.867040634155273] (15,-1; -1,-1), time: 0.1520s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_214,[-1.3863351345062256,13.886425018310547]=>[1e-05,13.886425018310547] (15,-1; -1,-1), time: 0.4880s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_7,[-10.432044982910156,1.5244343280792236]=>[-10.432044982910156,-1e-05] (-1,-1; 15,-1), time: 1.0649s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_53,[-3.905057907104492,9.723730087280273]=>[0.01046856175592174,9.723730087280273] (2,-1; -1,-1), time: 1.2542s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_83,[-6.1422929763793945,7.740768909454346]=>[-3.553364301859378,4.668999900153403] (2,-1; 2,-1), time: 1.9800s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_71,[-9.82326602935791,4.413163185119629]=>[-5.623428792301232,2.1495041903132455] (2,-1; 2,-1), time: 2.1426s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_232,[-8.681034088134766,4.506412506103516]=>[-5.17773547128323,2.160000990524759] (2,-1; 2,-1), time: 2.3173s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_241,[-10.383733749389648,5.267342567443848]=>[-7.632897438311211,2.2524425461407804] (2,-1; 2,-1), time: 2.3034s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_206,[-5.355906963348389,10.21747875213623]=>[-3.1324908274396313,6.3502600848743205] (2,-1; 2,-1), time: 1.7177s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_94,[-8.940058708190918,0.5493825674057007]=>[-8.940058708190918,-1e-05] (-1,-1; 15,-1), time: 0.2037s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_171,[-5.203790664672852,6.802821159362793]=>[-1.9434854479650256,4.788957866189018] (2,-1; 2,-1), time: 2.5247s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_88,[-5.784826278686523,11.456043243408203]=>[-0.13674820894905765,9.455168430501404] (2,-1; 2,-1), time: 2.5598s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_248,[-1.4625062942504883,10.84771728515625]=>[1e-05,10.84771728515625] (15,-1; -1,-1), time: 0.2488s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_70,[-12.748144149780273,2.9390673637390137]=>[-7.3539307816829025,1.3952703707758785] (2,-1; 2,-1), time: 2.8154s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_3,[-9.225418090820312,5.778389930725098]=>[-6.458501402297396,1.7260880695492307] (2,-1; 2,-1), time: 2.8236s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_240,[-6.290743350982666,6.87935733795166]=>[-3.574329190916235,3.5636298929597454] (2,-1; 2,-1), time: 2.9696s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_235,[-9.207306861877441,4.057498931884766]=>[-6.33026946500437,2.100365524098936] (2,-1; 2,-1), time: 3.0595s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_49,[-4.237591743469238,12.317054748535156]=>[-2.3196425326841643,7.343197853497981] (2,-1; 2,-1), time: 1.8178s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_230,[-3.3253228664398193,15.051790237426758]=>[1e-05,15.051790237426758] (15,-1; -1,-1), time: 1.1971s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_42,[-9.419588088989258,2.146742582321167]=>[-6.114713681487274,0.3697422443291426] (2,-1; 2,-1), time: 3.5301s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_5,[-7.319491863250732,10.810449600219727]=>[-5.253931192550478,5.808947593666976] (2,-1; 2,-1), time: 1.6805s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_34,[-8.61678695678711,8.32112979888916]=>[-4.980646480924733,5.1105503842935] (2,-1; 2,-1), time: 3.6753s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_114,[-5.0693159103393555,12.34661865234375]=>[-0.9192496884589226,9.334879267690287] (2,-1; 2,-1), time: 3.7040s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_38,[-9.528104782104492,3.0837883949279785]=>[-6.2175615562014945,1.1291650420517212] (2,-1; 2,-1), time: 3.8466s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_81,[-13.440857887268066,2.241560697555542]=>[-8.426661912723924,0.7752809629250863] (2,-1; 2,-1), time: 3.9034s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_197,[-11.146392822265625,0.2612863779067993]=>[-11.146392822265625,-1e-05] (-1,-1; 15,-1), time: 0.2446s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_134,[-6.976565837860107,7.3041534423828125]=>[-4.501290806587536,3.8825690823401233] (2,-1; 2,-1), time: 1.7438s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_254,[-8.707347869873047,5.296651363372803]=>[-5.549673223344807,2.3549939954712924] (2,-1; 2,-1), time: 1.5477s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_33,[-7.565784454345703,5.534618377685547]=>[-5.014139069713372,3.011078541811012] (2,-1; 2,-1), time: 2.0939s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_157,[-11.71917724609375,4.043180465698242]=>[-6.4963949404543415,2.895926725613114] (2,-1; 2,-1), time: 2.1128s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_2,[-8.65381908416748,6.34147310256958]=>[-5.414246635038874,3.083508834821705] (2,-1; 2,-1), time: 1.9098s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_95,[-8.097047805786133,3.875516653060913]=>[-3.685768810323282,2.392004597385867] (2,-1; 2,-1), time: 4.1339s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_116,[-13.943098068237305,0.8962318897247314]=>[-13.943098068237305,-1e-05] (-1,-1; 15,-1), time: 0.2033s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_196,[-8.862946510314941,3.7672576904296875]=>[-5.175308529349453,2.16728996572374] (2,-1; 2,-1), time: 2.0900s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_218,[-7.588841915130615,4.966394424438477]=>[-4.804483902625442,2.0600614961840864] (2,-1; 2,-1), time: 1.9930s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_250,[-5.722946643829346,4.938513278961182]=>[-1.8375167150114158,3.9128819854709715] (2,-1; 2,-1), time: 4.3422s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_143,[-9.55029296875,1.7039341926574707]=>[-9.55029296875,-1e-05] (-1,-1; 15,-1), time: 0.9380s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_99,[-10.64823055267334,2.0176644325256348]=>[-6.410029694229992,0.3044649617103098] (2,-1; 2,-1), time: 2.5767s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_153,[-10.308652877807617,1.4394588470458984]=>[-10.308652877807617,-1e-05] (-1,-1; 15,-1), time: 0.2861s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_44,[-0.2912914752960205,16.183055877685547]=>[1e-05,16.183055877685547] (15,-1; -1,-1), time: 0.2437s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_62,[-12.596189498901367,3.3404407501220703]=>[-7.013255488620352,1.2972633460928336] (2,-1; 2,-1), time: 5.9856s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_183,[-12.079351425170898,0.5613117218017578]=>[-12.079351425170898,-1e-05] (-1,-1; 15,-1), time: 0.1967s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_103,[-6.949566841125488,7.133263111114502]=>[-4.721052953987521,3.4085987535174134] (2,-1; 2,-1), time: 3.4977s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_190,[-9.298585891723633,3.356273889541626]=>[-7.07316510084246,0.7063449104757452] (2,-1; 2,-1), time: 1.7379s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_169,[-2.2932136058807373,12.311145782470703]=>[1e-05,12.311145782470703] (15,-1; -1,-1), time: 1.0124s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_142,[-7.078879356384277,3.177330255508423]=>[-3.5998860316053958,1.8959621723312998] (2,-1; 2,-1), time: 2.6986s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_220,[-5.847001075744629,6.014591217041016]=>[-2.6096541055826754,3.9937609408771406] (2,-1; 2,-1), time: 2.1841s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_74,[-5.6187567710876465,7.030908107757568]=>[-1.9503342961092052,5.01373641741693] (2,-1; 2,-1), time: 2.4947s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_234,[-8.74777889251709,2.858943462371826]=>[-5.568713776908354,1.6743046290724086] (2,-1; 2,-1), time: 1.6335s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_252,[-7.074306964874268,7.393615245819092]=>[-4.50232953539282,3.41913745113514] (2,-1; 2,-1), time: 2.9270s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_43,[-8.515775680541992,6.671452522277832]=>[-3.20853059422005,4.057658175477169] (2,-1; 2,-1), time: 3.8584s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_40,[-8.662434577941895,4.561493873596191]=>[-5.23627884557781,1.7551954370226048] (2,-1; 2,-1), time: 4.4453s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_207,[-9.727444648742676,1.1860986948013306]=>[-9.727444648742676,-1e-05] (-1,-1; 15,-1), time: 0.4347s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_79,[-9.384119033813477,1.9996819496154785]=>[-5.102290896761808,0.2934465059750733] (2,-1; 2,-1), time: 5.6502s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_219,[-9.675494194030762,1.629199743270874]=>[-9.675494194030762,-1e-05] (-1,-1; 15,-1), time: 0.3963s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_98,[-9.743663787841797,3.6366119384765625]=>[-4.490606418921559,2.1971736103429533] (2,-1; 2,-1), time: 4.3507s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_205,[-6.436544418334961,5.5554094314575195]=>[-3.5982859121439,3.1197490213355556] (2,-1; 2,-1), time: 4.3472s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_174,[-4.68581485748291,7.388345718383789]=>[-0.9456265432041497,5.877827918847493] (2,-1; 2,-1), time: 3.9681s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_154,[-11.088518142700195,4.850093841552734]=>[-6.174024664028398,3.072436416269707] (2,-1; 2,-1), time: 4.4634s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_115,[-9.145126342773438,1.783545970916748]=>[-9.145126342773438,-1e-05] (-1,-1; 15,-1), time: 1.1020s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_231,[-6.1701459884643555,2.1606006622314453]=>[-4.131894237792389,0.6592336504273066] (2,-1; 2,-1), time: 2.9332s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_4,[-11.72307014465332,3.135082244873047]=>[-7.875719509788953,0.8074178224785137] (2,-1; 2,-1), time: 3.6352s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_173,[-7.801990032196045,0.21054202318191528]=>[-7.801990032196045,-1e-05] (-1,-1; 15,-1), time: 0.4175s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_172,[-10.781698226928711,0.9604196548461914]=>[-10.781698226928711,-1e-05] (-1,-1; 15,-1), time: 0.2978s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_149,[-7.172740459442139,0.12753081321716309]=>[-7.172740459442139,-1e-05] (-1,-1; 15,-1), time: 0.2442s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_213,[-9.51485824584961,2.852372884750366]=>[-9.51485824584961,-1e-05] (-1,-1; 15,-1), time: 1.3916s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_31,[-11.434392929077148,0.9692769050598145]=>[-11.434392929077148,-1e-05] (-1,-1; 15,-1), time: 0.3157s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_186,[-11.770005226135254,0.9709656238555908]=>[-11.770005226135254,-1e-05] (-1,-1; 15,-1), time: 0.1995s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_253,[-11.716899871826172,1.8159153461456299]=>[-11.716899871826172,-1e-05] (-1,-1; 15,-1), time: 0.6405s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_112,[-11.336891174316406,1.6900262832641602]=>[-11.336891174316406,-1e-05] (-1,-1; 15,-1), time: 0.4441s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_131,[-10.246076583862305,2.6519455909729004]=>[-10.246076583862305,-1e-05] (-1,-1; 15,-1), time: 1.3944s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_122,[-9.508481979370117,2.4102725982666016]=>[-6.155306231159772,0.05216609576072628] (2,-1; 2,-1), time: 2.7750s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_93,[-11.53489875793457,2.410311460494995]=>[-11.53489875793457,-1e-05] (-1,-1; 15,-1), time: 0.7460s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_165,[-9.306756973266602,4.457262992858887]=>[-4.849858785487637,1.8455465429987465] (2,-1; 2,-1), time: 3.4474s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_30,[-5.537731647491455,4.829946041107178]=>[-2.017640296150835,3.5963403134773926] (2,-1; 2,-1), time: 5.9472s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_178,[-6.795899391174316,4.16294527053833]=>[-3.547127475150279,2.082633623836113] (2,-1; 2,-1), time: 2.8039s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_106,[-9.495214462280273,0.7750248908996582]=>[-9.495214462280273,-1e-05] (-1,-1; 15,-1), time: 0.3461s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_59,[-14.741488456726074,2.002244710922241]=>[-9.635908012035378,0.6431702581846586] (2,-1; 2,-1), time: 1.9140s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_55,[-4.57089900970459,6.735894203186035]=>[-1.1850363575992622,4.602680709279532] (2,-1; 2,-1), time: 4.0200s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_244,[-9.802812576293945,1.6571584939956665]=>[-9.802812576293945,-1e-05] (-1,-1; 15,-1), time: 0.4903s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_181,[-7.300259113311768,2.6040234565734863]=>[-3.7932965309276874,0.9324655485990263] (2,-1; 2,-1), time: 3.3453s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_191,[-1.473477840423584,10.13865852355957]=>[1e-05,10.13865852355957] (15,-1; -1,-1), time: 0.8358s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_54,[-7.8445916175842285,5.090500354766846]=>[-4.7190713758387215,2.7396152804476284] (2,-1; 2,-1), time: 2.6379s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_189,[-7.025339126586914,5.316313743591309]=>[-2.686940475622978,3.388119225682263] (2,-1; 2,-1), time: 4.9985s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_225,[-6.643725872039795,5.16812801361084]=>[-3.2862088455476943,3.3587605713791358] (2,-1; 2,-1), time: 2.1196s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_180,[-12.207296371459961,3.5628740787506104]=>[-8.03672414475188,1.1920651612959519] (2,-1; 2,-1), time: 3.9894s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_152,[-10.236371040344238,2.544602870941162]=>[-5.495370955758881,1.3995254124295586] (2,-1; 2,-1), time: 3.0667s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_69,[-10.864153861999512,1.1120460033416748]=>[-10.864153861999512,-1e-05] (-1,-1; 15,-1), time: 0.5614s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_58,[-10.880064010620117,3.18913197517395]=>[-7.184869331004212,0.7452483970145676] (2,-1; 2,-1), time: 2.9373s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_132,[-6.906048774719238,3.76772403717041]=>[-3.4123647994712067,2.362430500019962] (2,-1; 2,-1), time: 3.4719s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_243,[-11.4918851852417,1.7919487953186035]=>[-11.4918851852417,-1e-05] (-1,-1; 15,-1), time: 0.4212s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_130,[-11.061141967773438,2.7607507705688477]=>[-6.718144673409075,1.3674388095157208] (2,-1; 2,-1), time: 2.7495s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_139,[-9.616010665893555,2.472668170928955]=>[-5.584631909411612,1.3928788369479768] (2,-1; 2,-1), time: 2.0725s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_78,[-7.842514514923096,3.9736576080322266]=>[-4.318603129441256,1.9156576099129468] (2,-1; 2,-1), time: 2.3272s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_223,[-6.564835071563721,4.896304130554199]=>[-4.27179297935414,1.5684125621335803] (2,-1; 2,-1), time: 2.4392s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_45,[-10.648429870605469,1.1797430515289307]=>[-10.648429870605469,-1e-05] (-1,-1; 15,-1), time: 0.3533s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_217,[-11.036163330078125,1.686366081237793]=>[-11.036163330078125,-1e-05] (-1,-1; 15,-1), time: 0.7839s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_18,[-11.526442527770996,0.15196609497070312]=>[-11.526442527770996,-1e-05] (-1,-1; 15,-1), time: 0.2037s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_66,[-10.900238990783691,1.512129306793213]=>[-10.900238990783691,-1e-05] (-1,-1; 15,-1), time: 0.3231s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_72,[-8.87717342376709,4.559081077575684]=>[-4.866431476286459,2.094380372720907] (2,-1; 2,-1), time: 2.6712s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_82,[-8.883302688598633,3.2256407737731934]=>[-5.031257284672646,1.272713106794495] (2,-1; 2,-1), time: 2.2851s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_187,[-8.347502708435059,5.306012153625488]=>[-3.790224061378056,3.4326294696519675] (2,-1; 2,-1), time: 2.7149s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_222,[-9.522096633911133,0.4792904853820801]=>[-9.522096633911133,-1e-05] (-1,-1; 15,-1), time: 0.2684s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_238,[-12.648327827453613,0.5766818523406982]=>[-12.648327827453613,-1e-05] (-1,-1; 15,-1), time: 0.1786s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_13,[-14.819558143615723,0.6993582248687744]=>[-14.819558143615723,-1e-05] (-1,-1; 15,-1), time: 0.1851s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_35,[-11.285722732543945,0.2911098003387451]=>[-11.285722732543945,-1e-05] (-1,-1; 15,-1), time: 0.2286s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_140,[-10.134891510009766,2.0394222736358643]=>[-10.134891510009766,-1e-05] (-1,-1; 15,-1), time: 0.5703s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_97,[-9.276820182800293,3.741046905517578]=>[-4.692525494442824,2.1243343253338662] (2,-1; 2,-1), time: 2.7279s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_138,[-8.962811470031738,2.05842661857605]=>[-5.362415919972044,0.6790067639460768] (2,-1; 2,-1), time: 2.4689s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_96,[-5.446206092834473,9.394723892211914]=>[-0.7895122624587463,6.854320902409912] (2,-1; 2,-1), time: 3.5639s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_41,[-12.798501968383789,2.2848665714263916]=>[-9.281247007163092,0.10031401399684947] (2,-1; 2,-1), time: 3.0508s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_201,[-10.600117683410645,1.5507876873016357]=>[-10.600117683410645,-1e-05] (-1,-1; 15,-1), time: 0.6766s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_118,[-11.614250183105469,1.3017299175262451]=>[-11.614250183105469,-1e-05] (-1,-1; 15,-1), time: 0.3907s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_126,[-9.80344009399414,3.822707176208496]=>[-6.661778124100803,0.46827222441229666] (2,-1; 2,-1), time: 2.7361s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_245,[-6.357346057891846,6.253888130187988]=>[-3.5097638044544808,3.1613803120279496] (2,-1; 2,-1), time: 2.3663s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_21,[-16.605712890625,0.9737699031829834]=>[-16.605712890625,-1e-05] (-1,-1; 15,-1), time: 0.1918s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_221,[-13.138242721557617,0.6202740669250488]=>[-13.138242721557617,-1e-05] (-1,-1; 15,-1), time: 0.1863s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_150,[-8.4385986328125,3.517634391784668]=>[-5.347180991474523,1.3295896917108079] (2,-1; 2,-1), time: 2.0386s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_224,[-6.937472343444824,4.157193660736084]=>[-2.4261155756281543,2.7520241923751474] (2,-1; 2,-1), time: 7.2074s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_210,[-9.515029907226562,0.05154383182525635]=>[-9.515029907226562,-1e-05] (-1,-1; 15,-1), time: 0.1879s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_159,[-11.541848182678223,0.5502152442932129]=>[-11.541848182678223,-1e-05] (-1,-1; 15,-1), time: 0.2613s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_128,[-6.960313320159912,4.823901653289795]=>[-4.471566998055808,1.7616771347853029] (2,-1; 2,-1), time: 3.9563s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_107,[-9.38572883605957,0.5422012805938721]=>[-9.38572883605957,-1e-05] (-1,-1; 15,-1), time: 0.1874s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_199,[-14.829532623291016,1.0109283924102783]=>[-14.829532623291016,-1e-05] (-1,-1; 15,-1), time: 0.2092s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_215,[-10.8767671585083,2.8852429389953613]=>[-8.210891630240962,0.022393755051770825] (2,-1; 2,-1), time: 2.1275s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_144,[-5.938939094543457,11.300179481506348]=>[-1.1681783377992345,8.59144654776381] (2,-1; 2,-1), time: 3.1575s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_105,[-12.810468673706055,0.4269707202911377]=>[-12.810468673706055,-1e-05] (-1,-1; 15,-1), time: 0.1889s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_46,[-11.617395401000977,0.4625263214111328]=>[-11.617395401000977,-1e-05] (-1,-1; 15,-1), time: 0.1922s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_156,[-13.522012710571289,0.41336989402770996]=>[-13.522012710571289,-1e-05] (-1,-1; 15,-1), time: 0.1650s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_91,[-5.71794319152832,10.766664505004883]=>[-1.345750886415195,7.998519404455793] (2,-1; 2,-1), time: 2.1952s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_255,[-12.122049331665039,2.900683879852295]=>[-12.122049331665039,-1e-05] (-1,-1; 15,-1), time: 1.0412s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_37,[-12.131989479064941,1.2236237525939941]=>[-12.131989479064941,-1e-05] (-1,-1; 15,-1), time: 0.3844s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_50,[-10.693305015563965,0.3662874698638916]=>[-10.693305015563965,-1e-05] (-1,-1; 15,-1), time: 0.2987s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_237,[-10.587203025817871,0.4878658056259155]=>[-10.587203025817871,-1e-05] (-1,-1; 15,-1), time: 0.1891s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_216,[-11.813432693481445,1.9622052907943726]=>[-7.149294047417488,0.5619325843633349] (2,-1; 2,-1), time: 3.8123s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_161,[-13.635343551635742,0.30791735649108887]=>[-13.635343551635742,-1e-05] (-1,-1; 15,-1), time: 0.1838s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_64,[-10.491663932800293,1.9945590496063232]=>[-6.339303635129716,0.6003626662143307] (2,-1; 2,-1), time: 1.9369s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_163,[-13.025735855102539,0.3061182498931885]=>[-13.025735855102539,-1e-05] (-1,-1; 15,-1), time: 0.2167s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_100,[-11.785842895507812,0.3367955684661865]=>[-11.785842895507812,-1e-05] (-1,-1; 15,-1), time: 0.2182s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_148,[-4.825848579406738,8.501193046569824]=>[-0.6246025231259731,6.517064645933531] (2,-1; 2,-1), time: 5.8478s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_124,[-10.930253982543945,0.5555895566940308]=>[-10.930253982543945,-1e-05] (-1,-1; 15,-1), time: 0.1762s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_102,[-6.280205726623535,10.068035125732422]=>[-2.08532318140494,6.705858968593052] (2,-1; 2,-1), time: 1.9218s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_179,[-11.711071014404297,0.40068840980529785]=>[-11.711071014404297,-1e-05] (-1,-1; 15,-1), time: 0.2326s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_212,[-0.043569326400756836,17.450542449951172]=>[1e-05,17.450542449951172] (15,-1; -1,-1), time: 0.4560s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_101,[-6.32175874710083,7.004913330078125]=>[-2.870659117111986,4.448406151889792] (2,-1; 2,-1), time: 2.5294s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_121,[-15.571240425109863,0.46486687660217285]=>[-15.571240425109863,-1e-05] (-1,-1; 15,-1), time: 0.1547s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_22,[-8.082905769348145,3.979595899581909]=>[-4.872303590428445,0.8309820150847161] (2,-1; 2,-1), time: 4.4044s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_61,[-13.136781692504883,0.4733964204788208]=>[-13.136781692504883,-1e-05] (-1,-1; 15,-1), time: 0.2003s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_127,[-14.305383682250977,0.1226499080657959]=>[-14.305383682250977,-1e-05] (-1,-1; 15,-1), time: 0.1887s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_80,[-12.130535125732422,0.1445164680480957]=>[-12.130535125732422,-1e-05] (-1,-1; 15,-1), time: 0.1868s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_242,[-4.9668169021606445,6.60728645324707]=>[-1.7221262072911758,4.3869761436843175] (2,-1; 2,-1), time: 3.0383s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_57,[-11.239925384521484,1.8230736255645752]=>[-11.239925384521484,-1e-05] (-1,-1; 15,-1), time: 0.9573s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_104,[-13.987188339233398,1.3401358127593994]=>[-13.987188339233398,-1e-05] (-1,-1; 15,-1), time: 0.3331s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_123,[-12.301620483398438,0.40138959884643555]=>[-12.301620483398438,-1e-05] (-1,-1; 15,-1), time: 0.1731s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_211,[-15.4390869140625,0.05203580856323242]=>[-15.4390869140625,-1e-05] (-1,-1; 15,-1), time: 0.1535s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_151,[-15.75101089477539,0.13219749927520752]=>[-15.75101089477539,-1e-05] (-1,-1; 15,-1), time: 0.2085s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_233,[-0.4064788818359375,13.355945587158203]=>[1e-05,13.355945587158203] (15,-1; -1,-1), time: 0.2815s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_17,[-9.810111999511719,2.998769521713257]=>[-6.261689776722181,1.0639586757885169] (2,-1; 2,-1), time: 2.4332s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_108,[-10.884021759033203,2.8424692153930664]=>[-10.884021759033203,-1e-05] (-1,-1; 15,-1), time: 0.9828s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_65,[-14.740060806274414,3.4655098915100098]=>[-9.9487263992543,0.7969581435213798] (2,-1; 2,-1), time: 2.2106s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_155,[-9.097674369812012,1.0059152841567993]=>[-5.761965183664523,0.061225084812373334] (2,-1; 2,-1), time: 2.1758s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_137,[-8.274360656738281,2.0317978858947754]=>[-5.339023861763295,0.20031591502501409] (2,-1; 2,-1), time: 1.9871s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_188,[-8.76705551147461,4.020752906799316]=>[-5.616763054427906,1.858593385241492] (2,-1; 2,-1), time: 1.5806s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_135,[-9.58481216430664,2.3723292350769043]=>[-4.222495408652759,1.3222795483398055] (2,-1; 2,-1), time: 9.2947s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_177,[-6.14829158782959,4.089364528656006]=>[-3.002065882374385,2.121218391249342] (2,-1; 2,-1), time: 2.7892s, #vars: 1393, #constrs: 653, improved: True
+Solving MIP for lay/input-3_136,[-6.696088790893555,3.564378023147583]=>[-4.541835128789713,0.9546456539276994] (2,-1; 2,-1), time: 1.8718s, #vars: 1393, #constrs: 653, improved: True
+PGD done for relu layer 2
+MIP improved 168 nodes out of 168 unstable nodes for layer /25, time 18.8510
+MIP got 0 timeout nodes out of 168 nodes for layer /25
+maximum relu layer improved by MIP so far 1
+refine the bounds for layer  /27
+current relu layer: /27, idx: 2
+timeout for this layer is 15
+Removed 0 unstable neurons in MIP based on the coefficient matrix.
+Solving MIP for lay/input-7_31,[-67.13491821289062,6.623987197875977]=>[-67.13491821289062,-1e-05] (-1,-1; 15,-1), time: 0.1820s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_124,[-29.320056915283203,2.6620144844055176]=>[-29.320056915283203,-1e-05] (-1,-1; 15,-1), time: 0.1828s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_156,[-55.11149597167969,3.3315391540527344]=>[-55.11149597167969,-1e-05] (-1,-1; 15,-1), time: 0.1749s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_213,[-60.35890197753906,0.09399175643920898]=>[-60.35890197753906,-1e-05] (-1,-1; 15,-1), time: 0.2138s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_121,[-77.94674682617188,5.998706817626953]=>[-77.94674682617188,-1e-05] (-1,-1; 15,-1), time: 0.2723s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_148,[-31.152408599853516,1.5981149673461914]=>[-31.152408599853516,-1e-05] (-1,-1; 15,-1), time: 0.2896s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_11,[-70.59422302246094,2.5245752334594727]=>[-70.59422302246094,-1e-05] (-1,-1; 15,-1), time: 0.3242s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_27,[-73.76884460449219,8.899624824523926]=>[-73.76884460449219,-1e-05] (-1,-1; 15,-1), time: 0.4711s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_108,[-23.17510986328125,1.9299912452697754]=>[-23.17510986328125,-1e-05] (-1,-1; 15,-1), time: 0.1263s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_249,[-57.77302932739258,0.036722660064697266]=>[-57.77302932739258,-1e-05] (-1,-1; 15,-1), time: 0.1332s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_174,[-60.708892822265625,2.11738920211792]=>[-60.708892822265625,-1e-05] (-1,-1; 15,-1), time: 0.5542s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_203,[-52.305694580078125,4.650846481323242]=>[-52.305694580078125,-1e-05] (-1,-1; 15,-1), time: 0.6298s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_118,[-55.10342788696289,6.2106499671936035]=>[-55.10342788696289,-1e-05] (-1,-1; 15,-1), time: 0.8792s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_235,[-25.88686180114746,1.41788911819458]=>[-25.88686180114746,-1e-05] (-1,-1; 15,-1), time: 0.1602s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_182,[-20.876008987426758,2.1591453552246094]=>[-20.876008987426758,-1e-05] (-1,-1; 15,-1), time: 0.4320s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_62,[-25.629703521728516,1.5366530418395996]=>[-25.629703521728516,-1e-05] (-1,-1; 15,-1), time: 0.2956s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_126,[-49.55638122558594,2.17969012260437]=>[-49.55638122558594,-1e-05] (-1,-1; 15,-1), time: 0.3505s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_84,[-19.708972930908203,2.602816581726074]=>[-19.708972930908203,-1e-05] (-1,-1; 15,-1), time: 0.4210s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_109,[-58.6302604675293,0.9710750579833984]=>[-58.6302604675293,-1e-05] (-1,-1; 15,-1), time: 0.1807s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_54,[-43.26664352416992,1.5000624656677246]=>[-43.26664352416992,-1e-05] (-1,-1; 15,-1), time: 0.1534s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_216,[-17.52337074279785,3.6766273975372314]=>[-17.52337074279785,-1e-05] (-1,-1; 15,-1), time: 0.5805s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_44,[-29.353561401367188,2.1514878273010254]=>[-29.353561401367188,-1e-05] (-1,-1; 15,-1), time: 0.1462s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_232,[-37.496551513671875,1.0046286582946777]=>[-37.496551513671875,-1e-05] (-1,-1; 15,-1), time: 0.2206s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_129,[-34.01454544067383,3.771453380584717]=>[-34.01454544067383,-1e-05] (-1,-1; 15,-1), time: 0.4764s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_178,[-29.139188766479492,2.6400160789489746]=>[-29.139188766479492,-1e-05] (-1,-1; 15,-1), time: 0.1507s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_125,[-20.61280059814453,1.75779128074646]=>[-20.61280059814453,-1e-05] (-1,-1; 15,-1), time: 0.1410s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_202,[-19.837818145751953,1.4065701961517334]=>[-19.837818145751953,-1e-05] (-1,-1; 15,-1), time: 0.1417s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_218,[-24.649234771728516,2.266308307647705]=>[-24.649234771728516,-1e-05] (-1,-1; 15,-1), time: 0.4521s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_208,[-31.846294403076172,1.313976764678955]=>[-31.846294403076172,-1e-05] (-1,-1; 15,-1), time: 0.3345s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_184,[-26.785221099853516,1.9907386302947998]=>[-26.785221099853516,-1e-05] (-1,-1; 15,-1), time: 0.1510s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_37,[-32.64351272583008,2.320373058319092]=>[-32.64351272583008,-1e-05] (-1,-1; 15,-1), time: 0.3667s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_64,[-32.232933044433594,2.483283519744873]=>[-32.232933044433594,-1e-05] (-1,-1; 15,-1), time: 0.1485s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_185,[-26.078838348388672,2.1706671714782715]=>[-26.078838348388672,-1e-05] (-1,-1; 15,-1), time: 0.1627s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_157,[-53.32668685913086,2.972047805786133]=>[-53.32668685913086,-1e-05] (-1,-1; 15,-1), time: 0.2865s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_209,[-43.02463150024414,0.6187715530395508]=>[-43.02463150024414,-1e-05] (-1,-1; 15,-1), time: 0.1543s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_146,[-51.905113220214844,2.5666093826293945]=>[-51.905113220214844,-1e-05] (-1,-1; 15,-1), time: 0.1432s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_252,[-60.9221305847168,4.25894832611084]=>[-60.9221305847168,-1e-05] (-1,-1; 15,-1), time: 0.2711s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_41,[-30.922470092773438,1.7759475708007812]=>[-30.922470092773438,-1e-05] (-1,-1; 15,-1), time: 0.2561s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_72,[-60.32444763183594,5.089807033538818]=>[-60.32444763183594,-1e-05] (-1,-1; 15,-1), time: 0.4948s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_99,[-30.138172149658203,1.5173602104187012]=>[-30.138172149658203,-1e-05] (-1,-1; 15,-1), time: 0.3004s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_229,[-33.82943344116211,1.924652099609375]=>[-33.82943344116211,-1e-05] (-1,-1; 15,-1), time: 0.1513s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_243,[-22.09650230407715,2.0866808891296387]=>[-22.09650230407715,-1e-05] (-1,-1; 15,-1), time: 0.1866s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_136,[-33.17695617675781,1.1839900016784668]=>[-33.17695617675781,-1e-05] (-1,-1; 15,-1), time: 0.1345s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_7,[-32.50027847290039,2.4968342781066895]=>[-32.50027847290039,-1e-05] (-1,-1; 15,-1), time: 0.4578s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_5,[-68.25215148925781,1.424422264099121]=>[-68.25215148925781,-1e-05] (-1,-1; 15,-1), time: 0.1968s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_82,[-22.686656951904297,0.9807283878326416]=>[-22.686656951904297,-1e-05] (-1,-1; 15,-1), time: 0.3313s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_75,[-26.683795928955078,1.162186622619629]=>[-26.683795928955078,-1e-05] (-1,-1; 15,-1), time: 0.1519s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_131,[-20.91448211669922,2.12626051902771]=>[-20.91448211669922,-1e-05] (-1,-1; 15,-1), time: 0.1655s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_77,[-29.711336135864258,1.730032205581665]=>[-29.711336135864258,-1e-05] (-1,-1; 15,-1), time: 0.1584s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_255,[-27.003753662109375,1.363893985748291]=>[-27.003753662109375,-1e-05] (-1,-1; 15,-1), time: 0.2016s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_116,[-26.064373016357422,1.6098182201385498]=>[-26.064373016357422,-1e-05] (-1,-1; 15,-1), time: 0.2056s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_236,[-28.563743591308594,0.8796095848083496]=>[-28.563743591308594,-1e-05] (-1,-1; 15,-1), time: 0.2632s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_30,[-20.809518814086914,2.7580924034118652]=>[-20.809518814086914,-1e-05] (-1,-1; 15,-1), time: 0.6637s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_225,[-20.74831771850586,2.3127329349517822]=>[-20.74831771850586,-1e-05] (-1,-1; 15,-1), time: 0.5431s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_48,[-47.552520751953125,2.028210163116455]=>[-47.552520751953125,-1e-05] (-1,-1; 15,-1), time: 0.3215s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_111,[-38.6346435546875,0.5367908477783203]=>[-38.6346435546875,-1e-05] (-1,-1; 15,-1), time: 0.2520s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_46,[-22.82419204711914,1.5730392932891846]=>[-22.82419204711914,-1e-05] (-1,-1; 15,-1), time: 0.4042s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_130,[-29.153982162475586,0.9235403537750244]=>[-29.153982162475586,-1e-05] (-1,-1; 15,-1), time: 0.1552s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_188,[-36.915184020996094,1.4148712158203125]=>[-36.915184020996094,-1e-05] (-1,-1; 15,-1), time: 0.1573s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_52,[-25.251392364501953,0.7261695861816406]=>[-25.251392364501953,-1e-05] (-1,-1; 15,-1), time: 0.1623s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_170,[-22.917587280273438,2.336998701095581]=>[-22.917587280273438,-1e-05] (-1,-1; 15,-1), time: 0.1658s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_56,[-31.198524475097656,0.9499716758728027]=>[-31.198524475097656,-1e-05] (-1,-1; 15,-1), time: 0.3364s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_144,[-24.26336669921875,0.8855328559875488]=>[-24.26336669921875,-1e-05] (-1,-1; 15,-1), time: 0.1492s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_134,[-28.24085235595703,2.103325128555298]=>[-28.24085235595703,-1e-05] (-1,-1; 15,-1), time: 0.1591s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_137,[-36.5882453918457,0.27310967445373535]=>[-36.5882453918457,-1e-05] (-1,-1; 15,-1), time: 0.1510s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_32,[-26.364437103271484,1.106982707977295]=>[-26.364437103271484,-1e-05] (-1,-1; 15,-1), time: 0.2823s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_238,[-18.655620574951172,2.541414260864258]=>[-18.655620574951172,-1e-05] (-1,-1; 15,-1), time: 0.1609s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_151,[-20.240434646606445,2.640509605407715]=>[-20.240434646606445,-1e-05] (-1,-1; 15,-1), time: 0.3741s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_81,[-21.8359317779541,1.8133578300476074]=>[-21.8359317779541,-1e-05] (-1,-1; 15,-1), time: 0.3924s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_10,[-34.79240036010742,2.0061755180358887]=>[-34.79240036010742,-1e-05] (-1,-1; 15,-1), time: 0.1458s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_227,[-31.095272064208984,1.6408381462097168]=>[-31.095272064208984,-1e-05] (-1,-1; 15,-1), time: 0.1454s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_191,[-39.411067962646484,1.5681438446044922]=>[-39.411067962646484,-1e-05] (-1,-1; 15,-1), time: 0.1530s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_169,[-28.848526000976562,1.3968415260314941]=>[-28.848526000976562,-1e-05] (-1,-1; 15,-1), time: 0.1433s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_223,[-53.128013610839844,0.367769718170166]=>[-53.128013610839844,-1e-05] (-1,-1; 15,-1), time: 0.1488s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_38,[-20.502599716186523,1.9834198951721191]=>[-20.502599716186523,-1e-05] (-1,-1; 15,-1), time: 0.1466s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_20,[-42.5602912902832,2.2099502086639404]=>[-42.5602912902832,-1e-05] (-1,-1; 15,-1), time: 1.1415s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_192,[-61.990928649902344,9.568603515625]=>[-61.990928649902344,-1e-05] (-1,-1; 15,-1), time: 2.8050s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_68,[-34.32460403442383,1.5841803550720215]=>[-34.32460403442383,-1e-05] (-1,-1; 15,-1), time: 0.1416s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_22,[-22.18806266784668,2.2985591888427734]=>[-22.18806266784668,-1e-05] (-1,-1; 15,-1), time: 0.1626s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_42,[-35.21575164794922,2.0530054569244385]=>[-35.21575164794922,-1e-05] (-1,-1; 15,-1), time: 0.1616s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_163,[-25.564619064331055,1.6444602012634277]=>[-25.564619064331055,-1e-05] (-1,-1; 15,-1), time: 0.3680s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_90,[-28.045711517333984,0.7077827453613281]=>[-28.045711517333984,-1e-05] (-1,-1; 15,-1), time: 0.1648s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_173,[-17.268535614013672,2.991051197052002]=>[-17.268535614013672,-1e-05] (-1,-1; 15,-1), time: 2.9897s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_96,[-37.709476470947266,1.543729305267334]=>[-37.709476470947266,-1e-05] (-1,-1; 15,-1), time: 0.1815s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_26,[-43.93417739868164,0.5464677810668945]=>[-43.93417739868164,-1e-05] (-1,-1; 15,-1), time: 0.1815s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_103,[-41.60581588745117,3.264847755432129]=>[-41.60581588745117,-1e-05] (-1,-1; 15,-1), time: 0.6075s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_12,[-26.395694732666016,0.6698431968688965]=>[-26.395694732666016,-1e-05] (-1,-1; 15,-1), time: 0.1657s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_127,[-33.65888977050781,2.2457423210144043]=>[-33.65888977050781,-1e-05] (-1,-1; 15,-1), time: 0.4946s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_164,[-22.434892654418945,1.8245892524719238]=>[-22.434892654418945,-1e-05] (-1,-1; 15,-1), time: 0.3354s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_247,[-22.649871826171875,2.602065086364746]=>[-22.649871826171875,-1e-05] (-1,-1; 15,-1), time: 0.8960s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_105,[-50.96727752685547,4.95870304107666]=>[-50.96727752685547,-1e-05] (-1,-1; 15,-1), time: 3.2301s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_110,[-35.36515426635742,1.034726619720459]=>[-35.36515426635742,-1e-05] (-1,-1; 15,-1), time: 0.1679s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_28,[-20.11301040649414,1.9125423431396484]=>[-20.11301040649414,-1e-05] (-1,-1; 15,-1), time: 0.1564s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_69,[-24.388221740722656,2.0530202388763428]=>[-24.388221740722656,-1e-05] (-1,-1; 15,-1), time: 0.1702s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_175,[-34.038047790527344,0.27300500869750977]=>[-34.038047790527344,-1e-05] (-1,-1; 15,-1), time: 0.1671s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_13,[-21.41960334777832,1.6240754127502441]=>[-21.41960334777832,-1e-05] (-1,-1; 15,-1), time: 0.2047s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_40,[-26.077293395996094,2.077009439468384]=>[-26.077293395996094,-1e-05] (-1,-1; 15,-1), time: 0.3009s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_251,[-32.57849884033203,2.674511194229126]=>[-32.57849884033203,-1e-05] (-1,-1; 15,-1), time: 0.1585s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_86,[-34.206085205078125,1.8502206802368164]=>[-34.206085205078125,-1e-05] (-1,-1; 15,-1), time: 0.1975s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_119,[-35.49317169189453,0.6140584945678711]=>[-35.49317169189453,-1e-05] (-1,-1; 15,-1), time: 0.3066s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_15,[-27.98743438720703,1.8562850952148438]=>[-27.98743438720703,-1e-05] (-1,-1; 15,-1), time: 0.1663s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_167,[-29.774612426757812,1.8225204944610596]=>[-29.774612426757812,-1e-05] (-1,-1; 15,-1), time: 0.2024s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_21,[-27.59626579284668,1.7801671028137207]=>[-27.59626579284668,-1e-05] (-1,-1; 15,-1), time: 0.1585s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_159,[-30.85004234313965,1.8010282516479492]=>[-30.85004234313965,-1e-05] (-1,-1; 15,-1), time: 0.2405s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_100,[-27.040250778198242,1.289069414138794]=>[-27.040250778198242,-1e-05] (-1,-1; 15,-1), time: 0.2605s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_4,[-28.87893295288086,2.138331174850464]=>[-28.87893295288086,-1e-05] (-1,-1; 15,-1), time: 0.3495s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_6,[-31.809112548828125,1.1729249954223633]=>[-31.809112548828125,-1e-05] (-1,-1; 15,-1), time: 0.1905s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_197,[-22.28152084350586,2.869722366333008]=>[-22.28152084350586,-1e-05] (-1,-1; 15,-1), time: 0.7490s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_198,[-34.86490249633789,2.2272071838378906]=>[-34.86490249633789,-1e-05] (-1,-1; 15,-1), time: 0.4314s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_135,[-21.090181350708008,1.7860956192016602]=>[-21.090181350708008,-1e-05] (-1,-1; 15,-1), time: 0.1604s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_61,[-75.92161560058594,5.30803108215332]=>[-75.92161560058594,-1e-05] (-1,-1; 15,-1), time: 0.2095s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_93,[-30.32343101501465,1.0234308242797852]=>[-30.32343101501465,-1e-05] (-1,-1; 15,-1), time: 0.1659s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_106,[-23.115236282348633,2.226773262023926]=>[-23.115236282348633,-1e-05] (-1,-1; 15,-1), time: 0.3354s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_92,[-27.098873138427734,2.6734676361083984]=>[-27.098873138427734,-1e-05] (-1,-1; 15,-1), time: 0.1702s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_101,[-26.174427032470703,1.3626086711883545]=>[-26.174427032470703,-1e-05] (-1,-1; 15,-1), time: 0.1962s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_2,[-26.7636661529541,1.7645679712295532]=>[-26.7636661529541,-1e-05] (-1,-1; 15,-1), time: 0.3392s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_34,[-39.55589294433594,1.0704078674316406]=>[-39.55589294433594,-1e-05] (-1,-1; 15,-1), time: 0.4129s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_233,[-23.521127700805664,2.455789566040039]=>[-23.521127700805664,-1e-05] (-1,-1; 15,-1), time: 0.5724s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_133,[-21.916759490966797,2.7957091331481934]=>[-21.916759490966797,-1e-05] (-1,-1; 15,-1), time: 0.8452s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_66,[-46.68013000488281,3.3901381492614746]=>[-46.68013000488281,-1e-05] (-1,-1; 15,-1), time: 4.4732s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_117,[-18.737478256225586,2.411195755004883]=>[-18.737478256225586,-1e-05] (-1,-1; 15,-1), time: 2.4990s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_149,[-21.024295806884766,3.736238718032837]=>[-21.024295806884766,-1e-05] (-1,-1; 15,-1), time: 1.7827s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_172,[-21.565725326538086,3.5859298706054688]=>[-21.565725326538086,-1e-05] (-1,-1; 15,-1), time: 2.0700s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_43,[-41.54840087890625,11.707340240478516]=>[-41.54840087890625,-1e-05] (-1,-1; 15,-1), time: 10.9035s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_74,[-36.0612907409668,40.937721252441406]=>[-7.253444589585655,27.1813330073408] (9,-1; 2,-1), time: 18.1430s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_107,[-43.69535827636719,10.531916618347168]=>[-17.652933666274492,2.2247874840549016] (9,-1; 9,-1), time: 30.0065s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_211,[-56.74773025512695,20.961151123046875]=>[-25.15544907701876,6.745181176417847] (9,-1; 9,-1), time: 30.0102s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_200,[-55.82555389404297,24.288623809814453]=>[-24.14934697731336,10.859151039799174] (9,-1; 9,-1), time: 30.0092s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_205,[-55.948944091796875,7.591935634613037]=>[-25.626327016425577,0.011716999381578191] (9,-1; 9,-1), time: 30.0070s, #vars: 1835, #constrs: 1188, improved: True
+Solving MIP for lay/input-7_35,[-39.19554901123047,6.7496843338012695]=>[-19.027145717020794,0.9158443609505402] (9,-1; 9,-1), time: 30.0065s, #vars: 1835, #constrs: 1188, improved: True
+PGD done for relu layer 3
+Run alpha-CROWN after refining relu idx 1
+relu layer: 1 has unstable to stable neurons: [(7, -1), (53, 1), (146, -1), (246, -1), (214, 1), (193, 1), (230, 1), (94, -1), (248, 1), (197, -1), (143, -1), (116, -1), (153, -1), (44, 1), (183, -1), (169, 1), (207, -1), (115, -1), (213, -1), (219, -1), (173, -1), (131, -1), (172, -1), (253, -1), (149, -1), (31, -1), (186, -1), (112, -1), (93, -1), (106, -1), (191, 1), (244, -1), (69, -1), (243, -1), (217, -1), (45, -1), (66, -1), (18, -1), (222, -1), (140, -1), (238, -1), (13, -1), (35, -1), (201, -1), (118, -1), (255, -1), (21, -1), (221, -1), (210, -1), (159, -1), (199, -1), (107, -1), (105, -1), (37, -1), (57, -1), (46, -1), (50, -1), (156, -1), (237, -1), (100, -1), (108, -1), (179, -1), (212, 1), (161, -1), (163, -1), (121, -1), (124, -1), (104, -1), (61, -1), (233, 1), (127, -1), (80, -1), (151, -1), (123, -1), (211, -1)]
+alpha/beta optimization time: 9.160134315490723
+best_l after optimization: -58.98731231689453
+beta sum per layer: []
+alpha/beta optimization time: 10.205807209014893
+alpha-CROWN with intermediate bounds by MIP: tensor([[-6.59354401, -6.16305828, -6.11672020, -5.65356922, -6.76738930,
+         -6.66023016, -6.58190441, -7.37234354, -7.07854843]], device='cuda:0') tensor([[6.83460188, 6.02650642, 7.17122173, 7.12608671, 7.37104082, 6.77617788,
+         6.68093967, 8.25930595, 6.60829496]], device='cuda:0')
+MIP improved 130 nodes out of 239 unstable nodes for layer /27, time 34.5142
+MIP got 5 timeout nodes out of 239 nodes for layer /27
+maximum relu layer improved by MIP so far 2
+Refine time 53.7643 exceeds the limit 24.0, stop refining.
+MIP finished with 53.76427435874939s
+torch.Size([1, 9])
+refined global lb: tensor([[-6.59354401],
+        [-6.16305828],
+        [-6.11672020],
+        [-5.65356922],
+        [-6.76738930],
+        [-6.66023016],
+        [-6.58190441],
+        [-7.37234354],
+        [-7.07854843]], device='cuda:0') min: tensor(-7.37234354, device='cuda:0')
+0 / 9 OR specs are verified.
+Verified OR indices (first 10 items): []
+Verified OR lbs (first 10 items): []
+Unverified OR indices (first 10 items): [0, 1, 2, 3, 4, 5, 6, 7, 8]
+Unverified OR lbs (first 10 items): [[-6.593544006347656], [-6.163058280944824], [-6.116720199584961], [-5.653569221496582], [-6.767389297485352], [-6.6602301597595215], [-6.581904411315918], [-7.37234354019165], [-7.078548431396484]]
+###### Verifying property Instance 0 ######
+Batch size: 9
+First 10 spec matrices
+C: tensor([[[-1.,  0.,  0.,  0.,  0.,  0.,  1.,  0.,  0.,  0.]],
+
+        [[ 0., -1.,  0.,  0.,  0.,  0.,  1.,  0.,  0.,  0.]],
+
+        [[ 0.,  0., -1.,  0.,  0.,  0.,  1.,  0.,  0.,  0.]],
+
+        [[ 0.,  0.,  0., -1.,  0.,  0.,  1.,  0.,  0.,  0.]],
+
+        [[ 0.,  0.,  0.,  0., -1.,  0.,  1.,  0.,  0.,  0.]],
+
+        [[ 0.,  0.,  0.,  0.,  0., -1.,  1.,  0.,  0.,  0.]],
+
+        [[ 0.,  0.,  0.,  0.,  0.,  0.,  1., -1.,  0.,  0.]],
+
+        [[ 0.,  0.,  0.,  0.,  0.,  0.,  1.,  0., -1.,  0.]],
+
+        [[ 0.,  0.,  0.,  0.,  0.,  0.,  1.,  0.,  0., -1.]]], device='cuda:0')
+RHS: tensor([[0.],
+        [0.],
+        [0.],
+        [0.],
+        [0.],
+        [0.],
+        [0.],
+        [0.],
+        [0.]], device='cuda:0')
+OR spec sizes: tensor([1, 1, 1, 1, 1, 1, 1, 1, 1], device='cuda:0', dtype=torch.int32)
+Remaining timeout: -35.43384289741516
+Model prediction is: tensor([ 5.96702099e-03, -3.60265374e-04,  1.98335946e-02, -4.28399444e-03,
+         5.50948083e-04, -6.01984560e-04,  9.91357088e-01, -1.23855025e-02,
+        -2.89195776e-03, -1.55719370e-03], device='cuda:0')
+Activation BaB batch 1/1 
+build_with_refined_bounds batch [1/1]
+Optimizable variables initialized.
+all alpha initialized
+directly get lb and ub from refined bounds
+c shape: torch.Size([9, 1, 10])
+lA shapes: [torch.Size([9, 1, 256]), torch.Size([9, 1, 256]), torch.Size([9, 1, 256]), torch.Size([9, 1, 256])]
+torch.Size([9, 1])
+(alpha-)CROWN with fixed intermediate bounds: tensor([[-6.59354401],
+        [-6.16305828],
+        [-6.11672020],
+        [-5.65356922],
+        [-6.76738930],
+        [-6.66023016],
+        [-6.58190441],
+        [-7.37234354],
+        [-7.07854843]], device='cuda:0') tensor([[inf],
+        [inf],
+        [inf],
+        [inf],
+        [inf],
+        [inf],
+        [inf],
+        [inf],
+        [inf]], device='cuda:0')
+Intermediate layers: /input,/input-3,/input-7,/input-11
+Keeping alphas for these layers: ['/30']
+Node /23 input 0: size torch.Size([256]) unstable 47
+Node /25 input 0: size torch.Size([256]) unstable 93
+Node /27 input 0: size torch.Size([256]) unstable 115
+Node /29 input 0: size torch.Size([256]) unstable 256
+-----------------
+# of unstable neurons: 511
+-----------------
+
+BaB round 1
+batch: 4
+splitting decisions: 
+split level 0: [/input-11, 43] [/input-11, 133] [/input-11, 75] [/input-11, 229] 
+best_l after optimization: -459.98614501953125
+beta sum per layer: [0.0, 0.0009060732554644346, 0.0, 0.01650337129831314]
+alpha/beta optimization time: 0.7604939937591553
+pruning_in_iteration open status: False
+ratio of positive domain = 0 / 8 = 0.0
+pruning-in-iteration extra time: 0.0007839202880859375
+torch.Size([8, 1])
+Time: prepare 0.0038    bound 0.7620    transfer 0.0023    finalize 0.0002    func 0.7683    
+Accumulated time: func 0.7683    prepare 0.0283    bound 0.7620    transfer 0.0023    finalize 0.0002    
+max lb tensor(-6.58190441) min lb tensor(-7.37234354)
+Number of Verified Splits: 0 of 8
+Current worst splitting domains lb-rhs (depth):
+-7.37234 (1), -7.37234 (1), -7.07855 (1), -7.07855 (1), -6.76739 (0), -6.66023 (1), -6.66023 (1), -6.59354 (0), -6.58190 (1), -6.58190 (1), -6.16306 (0), -6.11672 (0), -5.65357 (0), 
+Length of domains: 13
+Current (lb-rhs): -7.37234354019165
+8 domains visited
+Time: pickout 0.0007    decision 0.1557    set_bounds 0.0024    solve 0.7688    add 0.0031    
+Accumulated time: pickout 0.0007    decision 0.1557    set_bounds 0.0024    solve 0.7688    add 0.0031    
+current_vram/total_varm: 0.0GB/102.0GB, batch_size increase to 8
+Time out!!!!!!!!
+Removing temporary cuts path: /tmp/abcrown_cuts_lsji2m6g
+Result: timeout
+Time: 66.37188792228699
+Warning: environment still referenced so free is deferred (Continue to use WLS)
+INFO     17:20:13     [__init__.py:1489] Warning: environment still referenced so free is deferred (Continue to use WLS)
+
+------------------------- COMMAND ------------------------------
+/data1/Kane/miniconda3/envs/abcrown25/bin/python /data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/abcrown.py --config /data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/exp_configs/vnncomp25/relusplitter.yaml --precompile_jit --onnx_path /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/relusplitter/onnx/mnist_fc_vnncomp2022_mnist-net_256x4.onnx --vnnlib_path /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/relusplitter/vnnlib/mnist_fc_vnncomp2022_prop_0_0.05.vnnlib --results_file /data1/Kane/ACT/audit_results/abcrown25_supplemental_20260526/relusplitter/0011__mnist_fc_vnncomp2022_mnist-net_256x4__mnist_fc_vnncomp2022_prop_0_0.05.result --timeout 30.0 --save_adv_example --pgd_order=skip
+----------------------------------------------------------------
+

@@ -1,0 +1,1059 @@
+[0;93m2026-05-26 09:14:49.187531116 [W:onnxruntime:Default, device_discovery.cc:325 DiscoverDevicesForPlatform] GPU device discovery failed: device_discovery.cc:92 ReadFileContents Failed to open file: "/sys/class/drm/card0/device/vendor"[m
+Configurations:
+
+general:
+  device: cuda
+  seed: 100
+  conv_mode: patches
+  deterministic: false
+  double_fp: false
+  loss_reduction_func: sum
+  sparse_alpha: true
+  sparse_interm: true
+  save_adv_example: true
+  verify_onnxruntime_output: false
+  eval_adv_example: false
+  show_adv_example: false
+  precompile_jit: true
+  prepare_only: false
+  complete_verifier: bab
+  enable_incomplete_verification: true
+  csv_name: instances.csv
+  results_file: /data1/Kane/ACT/audit_results/abcrown_nopgd_20260525/cora_2024/0171__cifar10-set__cifar10-img386.result
+  root_path: ../../vnncomp2024_benchmarks/benchmarks/cora
+  deterministic_opt: false
+  graph_optimizer: 'Customized("custom_graph_optimizer", "default_optimizer")'
+  buffer_has_batchdim: false
+  save_output: false
+  output_file: out.pkl
+  return_optimized_model: false
+model:
+  name: null
+  path: null
+  onnx_path: /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/./onnx/cifar10-set.onnx
+  onnx_path_prefix: ''
+  cache_onnx_conversion: false
+  debug_onnx: false
+  onnx_quirks: null
+  input_shape: null
+  onnx_loader: default_onnx_and_vnnlib_loader
+  onnx_optimization_flags: []
+  onnx_vnnlib_joint_optimization_flags: none
+  check_optimized: false
+  flatten_final_output: false
+  optimize_graph: null
+  with_jacobian: false
+data:
+  start: 0
+  end: 10000
+  select_instance: null
+  num_outputs: 10
+  mean: 0.0
+  std: 1.0
+  pkl_path: null
+  dataset: null
+  data_filter_path: null
+  data_idx_file: null
+specification:
+  type: lp
+  robustness_type: verified-acc
+  norm: .inf
+  epsilon: null
+  epsilon_min: 0.0
+  vnnlib_path: /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/vnnlib/cifar10-img386.vnnlib
+  vnnlib_path_prefix: ''
+  rhs_offset: null
+solver:
+  batch_size: 10240
+  auto_enlarge_batch_size: false
+  min_batch_size_ratio: 0.1
+  use_float64_in_last_iteration: false
+  early_stop_patience: 10
+  start_save_best: 0.5
+  bound_prop_method: alpha-crown
+  init_bound_prop_method: same
+  prune_after_crown: true
+  optimize_disjuncts_separately: false
+  crown:
+    batch_size: 1000000000
+    max_crown_size: 1000000000
+    activation_bound_option: adaptive
+    compare_crown_with_ibp: false
+  alpha-crown:
+    alpha: true
+    lr_alpha: 0.3
+    iteration: 20
+    share_alphas: false
+    lr_decay: 0.98
+    full_conv_alpha: true
+    max_coeff_mul: .inf
+    matmul_share_alphas: false
+    disable_optimization: []
+    max_time: 1.0
+  invprop:
+    apply_output_constraints_to: []
+    tighten_input_bounds: false
+    best_of_oc_and_no_oc: false
+    directly_optimize: []
+    oc_lr: 0.1
+    share_gammas: false
+  beta-crown:
+    lr_alpha: 0.03
+    lr_beta: 0.1
+    lr_decay: 0.98
+    optimizer: adam
+    iteration: 5
+    beta: true
+    beta_warmup: true
+    enable_opt_interm_bounds: false
+    all_node_split_LP: false
+  forward:
+    refine: false
+    max_dim: 10000
+    reset_threshold: 1.0
+  multi_class:
+    label_batch_size: 32
+    skip_with_refined_bound: true
+  mip:
+    unstable_neuron_threshold: 0
+    parallel_solvers: null
+    solver_threads: 1
+    refine_neuron_timeout: 15
+    refine_neuron_time_percentage: 0.8
+    early_stop: true
+    adv_warmup: true
+    mip_solver: gurobi
+    skip_unsafe: false
+    topk_filter: 1.0
+    sliding_window: -1
+    extra_constraint: false
+    refine_neuron_timeout_increasement: 0
+    timeout_neuron_percentage: 0.3
+    remaining_timeout_threshold: 1
+    remove_unstable_neurons: false
+    lp_solver: false
+bab:
+  initial_max_domains: 100
+  backing_up_max_domain: null
+  max_domains: .inf
+  decision_thresh: 0
+  timeout: 30.0
+  timeout_scale: 1
+  max_iterations: -1
+  override_timeout: null
+  get_upper_bound: false
+  pruning_in_iteration: true
+  pruning_in_iteration_ratio: 0.2
+  sort_targets: false
+  batched_domain_list: true
+  optimized_interm: ''
+  interm_transfer: false
+  recompute_interm: false
+  sort_domain_interval: -1
+  vanilla_crown: false
+  tree_traversal: depth_first
+  cut:
+    enabled: false
+    cuts_path: /tmp/abcrown_cuts
+    implication: false
+    bab_cut: false
+    lp_cut: false
+    method: null
+    lr: 0.01
+    lr_decay: 1.0
+    iteration: 100
+    bab_iteration: -1
+    early_stop_patience: -1
+    lr_beta: 0.02
+    number_cuts: 50
+    topk_cuts_in_filter: 1000
+    batch_size_primal: 100
+    max_num: 1000000000
+    patches_cut: false
+    cplex_cuts: false
+    cplex_cuts_wait: 0
+    cplex_cuts_revpickup: true
+    cut_reference_bounds: true
+    fix_intermediate_bounds: false
+    biccos:
+      enabled: false
+      constraint_strengthening: true
+      recursively_strengthening: false
+      drop_ratio: 0.5
+      verified_bonus: 0.3
+      max_infer_iter: 20
+      heuristic: neuron_influence_score
+      save_biccos_cuts: false
+      multi_tree_branching:
+        enabled: false
+        restore_best_tree: false
+        keep_n_best_domains: 1
+        k_splits: 1
+        iterations: 1
+  branching:
+    method: kfsb
+    candidates: 3
+    reduceop: max
+    enable_intermediate_bound_opt: false
+    branching_input_and_activation: false
+    branching_input_and_activation_order: [input, relu]
+    branching_input_iterations: 30
+    branching_relu_iterations: 50
+    nonlinear_split:
+      method: bbps
+      disable: false
+      branching_point_method: uniform
+      num_branches: 2
+      filter: false
+      filter_beta: false
+      filter_clamp: false
+      filter_batch_size: 10000
+      filter_iterations: 25
+      relu_only: false
+      loose_tanh_threshold: null
+      branching_point:
+        db_path: branching_points.pt
+        num_iterations: 1000
+        batch_size: 1000000
+        range_l: -5.0
+        range_u: 5.0
+        log_interval: 100
+        step_size_1d: 0.01
+        step_size: 0.2
+    input_split:
+      enable_clip_domains: false
+      split_hint: null
+      reorder_bab: false
+      enable: false
+      enhanced_bound_prop_method: alpha-crown
+      enhanced_branching_method: naive
+      enhanced_bound_patience: 100000000.0
+      attack_patience: 100000000.0
+      adv_check: 0
+      split_partitions: 2
+      sb_margin_weight: 1.0
+      sb_sum: false
+      sb_primary_spec: null
+      bf_backup_thresh: -1
+      bf_rhs_offset: 0
+      bf_iters: 1000000000.0
+      bf_batch_size: 100000
+      bf_zero_crossing_score: false
+      touch_zero_score: 0
+      ibp_enhancement: false
+      compare_with_old_bounds: false
+      update_rhs_with_attack: false
+      sb_coeff_thresh: 0.001
+      sort_index: null
+      sort_descending: true
+      show_progress: false
+      presplit_domains: null
+      skip_getting_worst_domain: false
+  attack:
+    enabled: false
+    beam_candidates: 8
+    beam_depth: 7
+    max_dive_fix_ratio: 0.8
+    min_local_free_ratio: 0.2
+    mip_start_iteration: 5
+    mip_timeout: 30.0
+    adv_pool_threshold: null
+    refined_mip_attacker: false
+    refined_batch_size: null
+attack:
+  pgd_order: skip
+  pgd_steps: 100
+  pgd_restarts: 30
+  pgd_batch_size: 100000000
+  pgd_early_stop: true
+  pgd_lr_decay: 0.99
+  pgd_alpha: auto
+  pgd_alpha_scale: false
+  pgd_loss_mode: null
+  pgd_restart_when_stuck: false
+  enable_mip_attack: false
+  adv_saver: default_adv_saver
+  adv_verifier: default_adv_verifier
+  early_stop_condition: default_early_stop_condition
+  adv_example_finalizer: default_adv_example_finalizer
+  pgd_loss: default_pgd_loss
+  cex_path: ./test_cex.txt
+  attack_mode: PGD
+  attack_tolerance: 0.0
+  attack_func: attack_with_general_specs
+  gama_lambda: 10.0
+  gama_decay: 0.9
+  check_clean: false
+  input_split:
+    pgd_steps: 100
+    pgd_restarts: 30
+    pgd_alpha: auto
+  input_split_enhanced:
+    pgd_steps: 200
+    pgd_restarts: 500000
+    pgd_alpha: auto
+  input_split_check_adv:
+    enabled: auto
+    pgd_steps: 5
+    pgd_restarts: 5
+    pgd_alpha: auto
+    max_num_domains: 10
+debug:
+  view_model: false
+  lp_test: null
+  rescale_vnnlib_ptb: null
+  test_optimized_bounds: false
+  test_optimized_bounds_after_n_iterations: 0
+  print_verbose_decisions: false
+  sanity_check: null
+  save_minimal_config: null
+  save_minimal_config_omit_keys: []
+
+Experiments at Tue May 26 09:14:50 2026 on dell-pro-max-tower-t2
+Pre-compile jit kernels on a toy network...
+JIT kernels compiled in 0.9812s.
+Internal results will be saved to /data1/Kane/ACT/audit_results/abcrown_nopgd_20260525/cora_2024/0171__cifar10-set__cifar10-img386.result./data1/Kane/miniconda3/envs/GenBaB/lib/python3.11/site-packages/onnx2pytorch/convert/operations.py:154: UserWarning: The given NumPy array is not writable, and PyTorch does not support non-writable tensors. This means writing to this tensor will result in undefined behavior. You may want to copy the array to protect its data or make it writable before converting it to a tensor. This type of warning will be suppressed for the rest of this program. (Triggered internally at /pytorch/torch/csrc/utils/tensor_numpy.cpp:206.)
+  weight = torch.from_numpy(numpy_helper.to_array(params[0]))
+/data1/Kane/miniconda3/envs/GenBaB/lib/python3.11/site-packages/onnx2pytorch/convert/model.py:151: UserWarning: Using experimental implementation that allows 'batch_size > 1'.Batchnorm layers could potentially produce false outputs.
+  warnings.warn(
+/data1/Kane/miniconda3/envs/GenBaB/lib/python3.11/site-packages/onnx2pytorch/utils.py:21: TracerWarning: Converting a tensor to a Python boolean might cause the trace to be incorrect. We can't record the data flow of Python values, so this value will be treated as a constant in the future. This means that the trace might not generalize to other inputs!
+  return value.ndim == 0 or value.shape == torch.Size([1])
+/data1/Kane/miniconda3/envs/GenBaB/lib/python3.11/site-packages/onnx2pytorch/operations/add.py:34: TracerWarning: Converting a tensor to a Python boolean might cause the trace to be incorrect. We can't record the data flow of Python values, so this value will be treated as a constant in the future. This means that the trace might not generalize to other inputs!
+  elif all(x == 1 for x in input[0].shape):
+/data1/Kane/GenBaB/alpha-beta-CROWN/complete_verifier/auto_LiRPA/operators/leaf.py:91: UserWarning: The "has_batchdim" option for BoundBuffers is deprecated. It may be removed from the next release.
+  warnings.warn('The "has_batchdim" option for BoundBuffers is deprecated.'
+
+
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% idx: 0, vnnlib ID: 0 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Using onnx /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/./onnx/cifar10-set.onnx
+Using vnnlib /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/vnnlib/cifar10-img386.vnnlib
+Precompiled vnnlib file found at /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/vnnlib/cifar10-img386.vnnlib.compiled
+Loading onnx /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/./onnx/cifar10-set.onnx with quirks {}
+Finished onnx model loading in 0.0256 seconds
+Model: BoundedModule(
+  (/0): BoundInput(name=/0, inputs=[], perturbed=True)
+  (/1): BoundBuffers(name=/1, inputs=[], perturbed=False)
+  (/2): BoundBuffers(name=/2, inputs=[], perturbed=False)
+  (/19): BoundParams(name=/19, inputs=[], perturbed=False)
+  (/20): BoundParams(name=/20, inputs=[], perturbed=False)
+  (/21): BoundParams(name=/21, inputs=[], perturbed=False)
+  (/22): BoundParams(name=/22, inputs=[], perturbed=False)
+  (/23): BoundParams(name=/23, inputs=[], perturbed=False)
+  (/24): BoundParams(name=/24, inputs=[], perturbed=False)
+  (/25): BoundParams(name=/25, inputs=[], perturbed=False)
+  (/26): BoundParams(name=/26, inputs=[], perturbed=False)
+  (/27): BoundParams(name=/27, inputs=[], perturbed=False)
+  (/28): BoundParams(name=/28, inputs=[], perturbed=False)
+  (/29): BoundParams(name=/29, inputs=[], perturbed=False)
+  (/30): BoundParams(name=/30, inputs=[], perturbed=False)
+  (/31): BoundParams(name=/31, inputs=[], perturbed=False)
+  (/32): BoundParams(name=/32, inputs=[], perturbed=False)
+  (/33): BoundParams(name=/33, inputs=[], perturbed=False)
+  (/34): BoundParams(name=/34, inputs=[], perturbed=False)
+  (/35): BoundMul(name=/35, inputs=[/0, /1], perturbed=True)
+  (/36): BoundAdd(name=/36, inputs=[/35, /2], perturbed=True)
+  (/input): BoundLinear(name=/input, inputs=[/36, /19, /20], perturbed=True)
+  (/38): BoundRelu(name=/38, inputs=[/input], perturbed=True)
+  (/input-3): BoundLinear(name=/input-3, inputs=[/38, /21, /22], perturbed=True)
+  (/40): BoundRelu(name=/40, inputs=[/input-3], perturbed=True)
+  (/input-7): BoundLinear(name=/input-7, inputs=[/40, /23, /24], perturbed=True)
+  (/42): BoundRelu(name=/42, inputs=[/input-7], perturbed=True)
+  (/input-11): BoundLinear(name=/input-11, inputs=[/42, /25, /26], perturbed=True)
+  (/44): BoundRelu(name=/44, inputs=[/input-11], perturbed=True)
+  (/input-15): BoundLinear(name=/input-15, inputs=[/44, /27, /28], perturbed=True)
+  (/46): BoundRelu(name=/46, inputs=[/input-15], perturbed=True)
+  (/input-19): BoundLinear(name=/input-19, inputs=[/46, /29, /30], perturbed=True)
+  (/48): BoundRelu(name=/48, inputs=[/input-19], perturbed=True)
+  (/input-23): BoundLinear(name=/input-23, inputs=[/48, /31, /32], perturbed=True)
+  (/50): BoundRelu(name=/50, inputs=[/input-23], perturbed=True)
+  (/51): BoundLinear(name=/51, inputs=[/50, /33, /34], perturbed=True)
+)
+Original output: tensor([[-0.22231899, -1.31445384,  2.80961943, -0.31635675,  1.58475757,
+         -0.92762488,  1.79679036, -0.45502138, -1.80607319, -1.50415671]],
+       device='cuda:0')
+Split layers:
+Nonlinear functions:
+   BoundRelu(name=/38, inputs=[/input], perturbed=True)
+   BoundRelu(name=/40, inputs=[/input-3], perturbed=True)
+   BoundRelu(name=/42, inputs=[/input-7], perturbed=True)
+   BoundRelu(name=/44, inputs=[/input-11], perturbed=True)
+   BoundRelu(name=/46, inputs=[/input-15], perturbed=True)
+   BoundRelu(name=/48, inputs=[/input-19], perturbed=True)
+   BoundRelu(name=/50, inputs=[/input-23], perturbed=True)
+layer /38 using sparse-features alpha with shape [43]; unstable size 43; total size 250 ([1, 250])
+layer /38 start_node /input-3 using sparse-spec alpha [2, 43, 1, 43] with unstable size 42 total_size 250 output_shape torch.Size([250])
+layer /38 start_node /input-7 using sparse-spec alpha [2, 13, 1, 43] with unstable size 12 total_size 250 output_shape torch.Size([250])
+layer /38 start_node /input-11 using sparse-spec alpha [2, 14, 1, 43] with unstable size 13 total_size 250 output_shape torch.Size([250])
+layer /38 start_node /input-15 using sparse-spec alpha [2, 9, 1, 43] with unstable size 8 total_size 250 output_shape torch.Size([250])
+layer /38 start_node /input-19 using sparse-spec alpha [2, 14, 1, 43] with unstable size 13 total_size 250 output_shape torch.Size([250])
+layer /38 start_node /input-23 using sparse-spec alpha [2, 31, 1, 43] with unstable size 30 total_size 250 output_shape torch.Size([250])
+layer /38 start_node /51 using full alpha [2, 9, 1, 43] with unstable size None total_size 9 output_shape 9
+layer /40 using sparse-features alpha with shape [42]; unstable size 42; total size 250 ([1, 250])
+layer /40 start_node /input-7 using sparse-spec alpha [2, 13, 1, 42] with unstable size 12 total_size 250 output_shape torch.Size([250])
+layer /40 start_node /input-11 using sparse-spec alpha [2, 14, 1, 42] with unstable size 13 total_size 250 output_shape torch.Size([250])
+layer /40 start_node /input-15 using sparse-spec alpha [2, 9, 1, 42] with unstable size 8 total_size 250 output_shape torch.Size([250])
+layer /40 start_node /input-19 using sparse-spec alpha [2, 14, 1, 42] with unstable size 13 total_size 250 output_shape torch.Size([250])
+layer /40 start_node /input-23 using sparse-spec alpha [2, 31, 1, 42] with unstable size 30 total_size 250 output_shape torch.Size([250])
+layer /40 start_node /51 using full alpha [2, 9, 1, 42] with unstable size None total_size 9 output_shape 9
+layer /42 using sparse-features alpha with shape [12]; unstable size 12; total size 250 ([1, 250])
+layer /42 start_node /input-11 using sparse-spec alpha [2, 14, 1, 12] with unstable size 13 total_size 250 output_shape torch.Size([250])
+layer /42 start_node /input-15 using sparse-spec alpha [2, 9, 1, 12] with unstable size 8 total_size 250 output_shape torch.Size([250])
+layer /42 start_node /input-19 using sparse-spec alpha [2, 14, 1, 12] with unstable size 13 total_size 250 output_shape torch.Size([250])
+layer /42 start_node /input-23 using sparse-spec alpha [2, 31, 1, 12] with unstable size 30 total_size 250 output_shape torch.Size([250])
+layer /42 start_node /51 using full alpha [2, 9, 1, 12] with unstable size None total_size 9 output_shape 9
+layer /44 using sparse-features alpha with shape [13]; unstable size 13; total size 250 ([1, 250])
+layer /44 start_node /input-15 using sparse-spec alpha [2, 9, 1, 13] with unstable size 8 total_size 250 output_shape torch.Size([250])
+layer /44 start_node /input-19 using sparse-spec alpha [2, 14, 1, 13] with unstable size 13 total_size 250 output_shape torch.Size([250])
+layer /44 start_node /input-23 using sparse-spec alpha [2, 31, 1, 13] with unstable size 30 total_size 250 output_shape torch.Size([250])
+layer /44 start_node /51 using full alpha [2, 9, 1, 13] with unstable size None total_size 9 output_shape 9
+layer /46 using sparse-features alpha with shape [8]; unstable size 8; total size 250 ([1, 250])
+layer /46 start_node /input-19 using sparse-spec alpha [2, 14, 1, 8] with unstable size 13 total_size 250 output_shape torch.Size([250])
+layer /46 start_node /input-23 using sparse-spec alpha [2, 31, 1, 8] with unstable size 30 total_size 250 output_shape torch.Size([250])
+layer /46 start_node /51 using full alpha [2, 9, 1, 8] with unstable size None total_size 9 output_shape 9
+layer /48 using sparse-features alpha with shape [13]; unstable size 13; total size 250 ([1, 250])
+layer /48 start_node /input-23 using sparse-spec alpha [2, 31, 1, 13] with unstable size 30 total_size 250 output_shape torch.Size([250])
+layer /48 start_node /51 using full alpha [2, 9, 1, 13] with unstable size None total_size 9 output_shape 9
+layer /50 using sparse-features alpha with shape [30]; unstable size 30; total size 250 ([1, 250])
+layer /50 start_node /51 using full alpha [2, 9, 1, 30] with unstable size None total_size 9 output_shape 9
+Optimizable variables initialized.
+initial CROWN bounds: tensor([[ 1.57125425,  2.85292721,  1.77792478, -0.11662376,  2.43405151,
+         -0.72880721,  1.97530675,  3.38788843,  3.07077885]], device='cuda:0') None
+prune_after_crown optimization in use: original label size = 9 pruned label size = 2
+best_l after optimization: -0.7585611343383789
+alpha/beta optimization time: 0.6175518035888672
+initial alpha-crown bounds: tensor([[        inf,         inf,         inf, -0.06417513,         inf,
+         -0.69438601,         inf,         inf,         inf]], device='cuda:0')
+Number of class (without rhs): 2 ; Worst class: (+ rhs) -0.6943860054016113
+Total VNNLIB file length: 9, max property batch size: 100, total number of batches: 1
+lA shape: [torch.Size([9, 1, 250]), torch.Size([9, 1, 250]), torch.Size([9, 1, 250]), torch.Size([9, 1, 250]), torch.Size([9, 1, 250]), torch.Size([9, 1, 250]), torch.Size([9, 1, 250])]
+
+Properties batch 0, size 9
+Remaining timeout: 29.241402864456177
+Verifying property 0 with 9 instances.
+##### Instance 0 first 10 spec matrices: 
+tensor([[[-1.,  0.,  1.,  0.,  0.,  0.,  0.,  0.,  0.,  0.]],
+
+        [[ 0., -1.,  1.,  0.,  0.,  0.,  0.,  0.,  0.,  0.]],
+
+        [[ 0.,  0.,  1., -1.,  0.,  0.,  0.,  0.,  0.,  0.]],
+
+        [[ 0.,  0.,  1.,  0., -1.,  0.,  0.,  0.,  0.,  0.]],
+
+        [[ 0.,  0.,  1.,  0.,  0., -1.,  0.,  0.,  0.,  0.]],
+
+        [[ 0.,  0.,  1.,  0.,  0.,  0., -1.,  0.,  0.,  0.]],
+
+        [[ 0.,  0.,  1.,  0.,  0.,  0.,  0., -1.,  0.,  0.]],
+
+        [[ 0.,  0.,  1.,  0.,  0.,  0.,  0.,  0., -1.,  0.]],
+
+        [[ 0.,  0.,  1.,  0.,  0.,  0.,  0.,  0.,  0., -1.]]],
+       dtype=torch.float64)
+thresholds: tensor([0., 0., 0., 0., 0., 0., 0., 0., 0.], device='cuda:0') ######
+Initial alpha-CROWN verified for spec index tensor([0, 1, 2, 4, 6, 7, 8], device='cuda:0') with bound tensor([inf, inf, inf, inf, inf, inf, inf], device='cuda:0').
+Remaining spec index tensor([3, 5], device='cuda:0') with bounds tensor([[-0.06417513],
+        [-0.69438601]], device='cuda:0') need to verify.
+Model prediction is: tensor([-0.22231899, -1.31445384,  2.80961943, -0.31635675,  1.58475757,
+        -0.92762488,  1.79679036, -0.45502138, -1.80607319, -1.50415671],
+       device='cuda:0')
+build_with_refined_bounds batch [1/1]
+setting alpha for layer /38 start_node /51 with alignment adjustment
+setting alpha for layer /40 start_node /51 with alignment adjustment
+setting alpha for layer /42 start_node /51 with alignment adjustment
+setting alpha for layer /44 start_node /51 with alignment adjustment
+setting alpha for layer /46 start_node /51 with alignment adjustment
+setting alpha for layer /48 start_node /51 with alignment adjustment
+setting alpha for layer /50 start_node /51 with alignment adjustment
+all alpha initialized
+directly get lb and ub from refined bounds
+c shape: torch.Size([2, 1, 10])
+lA shapes: [torch.Size([2, 1, 250]), torch.Size([2, 1, 250]), torch.Size([2, 1, 250]), torch.Size([2, 1, 250]), torch.Size([2, 1, 250]), torch.Size([2, 1, 250]), torch.Size([2, 1, 250])]
+(alpha-)CROWN with fixed intermediate bounds: tensor([[-0.06417513],
+        [-0.69438601]], device='cuda:0') tensor([[inf],
+        [inf]], device='cuda:0')
+Intermediate layers: /input,/input-3,/input-7,/input-11,/input-15,/input-19,/input-23,/51
+Keeping alphas for these layers: ['/51']
+Keeping alphas for these layers: ['/51']
+Node /38 input 0: size torch.Size([250]) unstable 43
+Node /40 input 0: size torch.Size([250]) unstable 42
+Node /42 input 0: size torch.Size([250]) unstable 11
+Node /44 input 0: size torch.Size([250]) unstable 13
+Node /46 input 0: size torch.Size([250]) unstable 7
+Node /48 input 0: size torch.Size([250]) unstable 12
+Node /50 input 0: size torch.Size([250]) unstable 30
+-----------------
+# of unstable neurons: 158
+-----------------
+
+BaB round 1
+batch: 2
+splitting decisions: 
+split level 0: [/input-3, 178] [/input, 191] 
+split level 1: [/input, 218] [/input-11, 139] 
+split level 2: [/input, 90] [/input, 209] 
+split level 3: [/input-3, 142] [/input-15, 228] 
+split level 4: [/input, 167] [/input, 217] 
+split level 5: [/input-3, 16] [/input, 189] 
+split level 6: [/input, 1] [/input, 122] 
+split level 7: [/input-3, 247] [/input, 1] 
+split level 8: [/input-3, 199] [/input, 110] 
+pruning_in_iteration open status: True
+ratio of positive domain = 704 / 1024 = 0.6875
+pruning-in-iteration extra time: 0.001600027084350586
+Time: prepare 0.0118    bound 0.1167    transfer 0.0015    finalize 0.0080    func 0.1381    
+Accumulated time: func 0.1381    prepare 0.0123    bound 0.1167    transfer 0.0015    finalize 0.0080    
+Current worst splitting domains lb-rhs (depth):
+-0.46405 (9), -0.46214 (9), -0.46018 (9), -0.45976 (9), -0.44278 (9), -0.44147 (9), -0.44140 (9), -0.44026 (9), -0.43976 (9), -0.43899 (9), -0.43858 (9), -0.43857 (9), -0.43699 (9), -0.43633 (9), -0.43294 (9), -0.43261 (9), -0.41977 (9), -0.41847 (9), -0.41685 (9), -0.41677 (9), 
+Length of domains: 320
+Time: pickout 0.0006    decision 0.0954    set_bounds 0.0505    solve 0.1382    add 0.0015    
+Accumulated time: pickout 0.0006    decision 0.0954    set_bounds 0.0505    solve 0.1382    add 0.0015    
+Current (lb-rhs): -0.4640524387359619
+320 domains visited
+Cumulative time: 0.30182456970214844
+
+BaB round 2
+batch: 320
+splitting decisions: 
+split level 0: [/input, 205] [/input-7, 35] [/input, 205] [/input-7, 35] [/input-3, 33] [/input-3, 33] [/input-7, 35] [/input-3, 33] [/input-3, 33] [/input-7, 35] 
+pruning_in_iteration open status: True
+ratio of positive domain = 332 / 640 = 0.51875
+pruning-in-iteration extra time: 0.0008838176727294922
+Time: prepare 0.0168    bound 0.0396    transfer 0.0008    finalize 0.0045    func 0.0618    
+Accumulated time: func 0.1998    prepare 0.0292    bound 0.1563    transfer 0.0023    finalize 0.0126    
+Current worst splitting domains lb-rhs (depth):
+-0.45405 (10), -0.45210 (10), -0.45022 (10), -0.44968 (10), -0.43270 (10), -0.43125 (10), -0.43063 (10), -0.42930 (10), -0.42889 (10), -0.42742 (10), -0.42668 (10), -0.42661 (10), -0.42653 (10), -0.42628 (10), -0.42224 (10), -0.42064 (10), -0.41066 (10), -0.40888 (10), -0.40561 (10), -0.40512 (10), 
+Length of domains: 308
+Time: pickout 0.0036    decision 0.0230    set_bounds 0.0079    solve 0.0619    add 0.0012    
+Accumulated time: pickout 0.0041    decision 0.1184    set_bounds 0.0584    solve 0.2001    add 0.0026    
+Current (lb-rhs): -0.4540458917617798
+628 domains visited
+Cumulative time: 0.40120530128479004
+
+BaB round 3
+batch: 308
+splitting decisions: 
+split level 0: [/input, 205] [/input, 205] [/input, 205] [/input, 205] [/input, 205] [/input, 205] [/input-7, 35] [/input, 205] [/input, 205] [/input, 205] 
+pruning_in_iteration open status: True
+ratio of positive domain = 355 / 616 = 0.5762987012987013
+pruning-in-iteration extra time: 0.0008871555328369141
+Time: prepare 0.0166    bound 0.0375    transfer 0.0009    finalize 0.0046    func 0.0597    
+Accumulated time: func 0.2595    prepare 0.0460    bound 0.1938    transfer 0.0031    finalize 0.0172    
+Current worst splitting domains lb-rhs (depth):
+-0.43814 (11), -0.43626 (11), -0.43415 (11), -0.43387 (11), -0.41708 (11), -0.41559 (11), -0.41388 (11), -0.41309 (11), -0.41211 (11), -0.41114 (11), -0.41074 (11), -0.41065 (11), -0.40992 (11), -0.40982 (11), -0.40650 (11), -0.40491 (11), -0.39230 (11), -0.39069 (11), -0.38876 (11), -0.38645 (11), 
+Length of domains: 261
+Time: pickout 0.0034    decision 0.0219    set_bounds 0.0087    solve 0.1611    add 0.0015    
+Accumulated time: pickout 0.0075    decision 0.1403    set_bounds 0.0671    solve 0.3612    add 0.0041    
+Current (lb-rhs): -0.43814146518707275
+889 domains visited
+Cumulative time: 0.6003706455230713
+
+BaB round 4
+batch: 261
+splitting decisions: 
+split level 0: [/input, 39] [/input-3, 176] [/input, 39] [/input-3, 176] [/input, 39] [/input-3, 176] [/input, 39] [/input-3, 176] [/input, 39] [/input-3, 176] 
+pruning_in_iteration open status: True
+ratio of positive domain = 128 / 522 = 0.24521072796934862
+pruning-in-iteration extra time: 0.0003178119659423828
+Time: prepare 0.0149    bound 0.0336    transfer 0.0007    finalize 0.0031    func 0.0523    
+Accumulated time: func 0.3118    prepare 0.0611    bound 0.2274    transfer 0.0038    finalize 0.0203    
+Current worst splitting domains lb-rhs (depth):
+-0.42899 (12), -0.42706 (12), -0.42503 (12), -0.42460 (12), -0.40756 (12), -0.40598 (12), -0.40434 (12), -0.40402 (12), -0.40261 (12), -0.40159 (12), -0.40158 (12), -0.40108 (12), -0.40011 (12), -0.40003 (12), -0.39778 (12), -0.39622 (12), -0.38255 (12), -0.38084 (12), -0.37959 (12), -0.37699 (12), 
+Length of domains: 394
+Time: pickout 0.0037    decision 0.0218    set_bounds 0.0072    solve 0.0524    add 0.0013    
+Accumulated time: pickout 0.0112    decision 0.1621    set_bounds 0.0744    solve 0.4136    add 0.0054    
+Current (lb-rhs): -0.42899203300476074
+1283 domains visited
+Cumulative time: 0.6878030300140381
+
+BaB round 5
+batch: 394
+splitting decisions: 
+split level 0: [/input-3, 161] [/input-3, 33] [/input-3, 161] [/input-3, 161] [/input-3, 33] [/input-3, 161] [/input-3, 33] [/input-3, 161] [/input-3, 161] [/input-3, 33] 
+pruning_in_iteration open status: True
+ratio of positive domain = 350 / 788 = 0.4441624365482234
+pruning-in-iteration extra time: 0.0006120204925537109
+Time: prepare 0.0234    bound 0.0356    transfer 0.0009    finalize 0.0045    func 0.0651    
+Accumulated time: func 0.3769    prepare 0.0846    bound 0.2630    transfer 0.0047    finalize 0.0248    
+Current worst splitting domains lb-rhs (depth):
+-0.41874 (13), -0.41669 (13), -0.41482 (13), -0.41435 (13), -0.39711 (13), -0.39553 (13), -0.39395 (13), -0.39345 (13), -0.39227 (13), -0.39116 (13), -0.39111 (13), -0.39068 (13), -0.38976 (13), -0.38965 (13), -0.38742 (13), -0.38596 (13), -0.37199 (13), -0.37026 (13), -0.36914 (13), -0.36673 (13), 
+Length of domains: 438
+Time: pickout 0.0046    decision 0.0265    set_bounds 0.0131    solve 0.0652    add 0.0014    
+Accumulated time: pickout 0.0157    decision 0.1886    set_bounds 0.0875    solve 0.4788    add 0.0067    
+Current (lb-rhs): -0.41873598098754883
+1721 domains visited
+Cumulative time: 0.80035400390625
+
+BaB round 6
+batch: 438
+splitting decisions: 
+split level 0: [/input-7, 35] [/input, 233] [/input, 233] [/input-7, 35] [/input, 233] [/input, 233] [/input-7, 35] [/input, 233] [/input, 233] [/input-7, 35] 
+pruning_in_iteration open status: True
+ratio of positive domain = 345 / 876 = 0.3938356164383562
+pruning-in-iteration extra time: 0.0008769035339355469
+Time: prepare 0.0268    bound 0.0354    transfer 0.0009    finalize 0.0061    func 0.0693    
+Accumulated time: func 0.4462    prepare 0.1117    bound 0.2985    transfer 0.0056    finalize 0.0308    
+Current worst splitting domains lb-rhs (depth):
+-0.40378 (14), -0.40203 (14), -0.40010 (14), -0.39979 (14), -0.38189 (14), -0.38054 (14), -0.37938 (14), -0.37828 (14), -0.37795 (14), -0.37638 (14), -0.37626 (14), -0.37558 (14), -0.37553 (14), -0.37543 (14), -0.37269 (14), -0.37134 (14), -0.35714 (14), -0.35558 (14), -0.35459 (14), -0.35226 (14), 
+Length of domains: 531
+Time: pickout 0.0052    decision 0.0276    set_bounds 0.0110    solve 0.0695    add 0.0015    
+Accumulated time: pickout 0.0209    decision 0.2162    set_bounds 0.0985    solve 0.5483    add 0.0083    
+Current (lb-rhs): -0.40378105640411377
+2252 domains visited
+Cumulative time: 0.9168837070465088
+
+BaB round 7
+batch: 531
+splitting decisions: 
+split level 0: [/input, 90] [/input, 90] [/input, 90] [/input, 90] [/input, 90] [/input, 90] [/input, 90] [/input, 90] [/input, 90] [/input, 90] 
+pruning_in_iteration open status: True
+ratio of positive domain = 388 / 1062 = 0.36534839924670437
+pruning-in-iteration extra time: 0.0009753704071044922
+Time: prepare 0.0313    bound 0.0396    transfer 0.0017    finalize 0.0069    func 0.0796    
+Accumulated time: func 0.5259    prepare 0.1432    bound 0.3380    transfer 0.0073    finalize 0.0378    
+Current worst splitting domains lb-rhs (depth):
+-0.39459 (15), -0.38518 (15), -0.38307 (15), -0.38290 (15), -0.37322 (15), -0.37208 (15), -0.37024 (15), -0.36755 (15), -0.36671 (15), -0.36169 (15), -0.36140 (15), -0.35962 (15), -0.35880 (15), -0.35864 (15), -0.35627 (15), -0.35493 (15), -0.34830 (15), -0.34705 (15), -0.34265 (15), -0.34141 (15), 
+Length of domains: 674
+Time: pickout 0.0063    decision 0.0306    set_bounds 0.0160    solve 0.0798    add 0.0022    
+Accumulated time: pickout 0.0272    decision 0.2468    set_bounds 0.1145    solve 0.6281    add 0.0105    
+Current (lb-rhs): -0.39458703994750977
+2926 domains visited
+Cumulative time: 1.0547666549682617
+
+BaB round 8
+batch: 674
+splitting decisions: 
+split level 0: [/input-3, 74] [/input-3, 74] [/input-3, 74] [/input-3, 74] [/input-3, 74] [/input-3, 74] [/input-3, 74] [/input-3, 74] [/input-3, 74] [/input-3, 74] 
+pruning_in_iteration open status: True
+ratio of positive domain = 525 / 1348 = 0.3894658753709199
+pruning-in-iteration extra time: 0.0009124279022216797
+Time: prepare 0.0410    bound 0.0420    transfer 0.0024    finalize 0.0083    func 0.0938    
+Accumulated time: func 0.6197    prepare 0.1844    bound 0.3800    transfer 0.0097    finalize 0.0461    
+Current worst splitting domains lb-rhs (depth):
+-0.37764 (16), -0.37605 (16), -0.37369 (16), -0.37351 (16), -0.35602 (16), -0.35511 (16), -0.35357 (16), -0.35237 (16), -0.35171 (16), -0.35056 (16), -0.34960 (16), -0.34955 (16), -0.34938 (16), -0.34919 (16), -0.34607 (16), -0.34445 (16), -0.33118 (16), -0.33011 (16), -0.32777 (16), -0.32578 (16), 
+Length of domains: 823
+Time: pickout 0.0092    decision 0.0351    set_bounds 0.1203    solve 0.0940    add 0.0023    
+Accumulated time: pickout 0.0364    decision 0.2820    set_bounds 0.2348    solve 0.7221    add 0.0128    
+Current (lb-rhs): -0.3776378631591797
+3749 domains visited
+Cumulative time: 1.3185365200042725
+
+BaB round 9
+batch: 823
+splitting decisions: 
+split level 0: [/input, 44] [/input, 44] [/input, 44] [/input, 44] [/input, 44] [/input, 44] [/input, 44] [/input, 44] [/input, 44] [/input, 44] 
+pruning_in_iteration open status: True
+ratio of positive domain = 750 / 1646 = 0.45565006075334147
+pruning-in-iteration extra time: 0.0008382797241210938
+Time: prepare 0.0501    bound 0.0361    transfer 0.0029    finalize 0.0114    func 0.1006    
+Accumulated time: func 0.7203    prepare 0.2347    bound 0.4162    transfer 0.0126    finalize 0.0574    
+Current worst splitting domains lb-rhs (depth):
+-0.37103 (17), -0.36949 (17), -0.36716 (17), -0.36693 (17), -0.34959 (17), -0.34868 (17), -0.34690 (17), -0.34574 (17), -0.34514 (17), -0.34415 (17), -0.34311 (17), -0.34301 (17), -0.34278 (17), -0.34254 (17), -0.33943 (17), -0.33785 (17), -0.32475 (17), -0.32361 (17), -0.32109 (17), -0.31934 (17), 
+Length of domains: 896
+Time: pickout 0.0093    decision 0.0391    set_bounds 0.0255    solve 0.1009    add 0.0025    
+Accumulated time: pickout 0.0457    decision 0.3211    set_bounds 0.2602    solve 0.8230    add 0.0153    
+Current (lb-rhs): -0.3710348606109619
+4645 domains visited
+Cumulative time: 1.49996018409729
+
+BaB round 10
+batch: 896
+splitting decisions: 
+split level 0: [/input-3, 187] [/input-3, 187] [/input-3, 187] [/input-3, 187] [/input-3, 187] [/input-3, 187] [/input-3, 187] [/input-3, 187] [/input-3, 187] [/input-3, 187] 
+pruning_in_iteration open status: True
+ratio of positive domain = 782 / 1792 = 0.4363839285714286
+pruning-in-iteration extra time: 0.0008270740509033203
+Time: prepare 0.0546    bound 0.0359    transfer 0.0027    finalize 0.1155    func 0.2087    
+Accumulated time: func 0.9290    prepare 0.2894    bound 0.4520    transfer 0.0153    finalize 0.1729    
+Current worst splitting domains lb-rhs (depth):
+-0.36236 (18), -0.36081 (18), -0.35835 (18), -0.35810 (18), -0.34115 (18), -0.34018 (18), -0.33831 (18), -0.33701 (18), -0.33606 (18), -0.33565 (18), -0.33458 (18), -0.33422 (18), -0.33415 (18), -0.33342 (18), -0.33026 (18), -0.32850 (18), -0.31634 (18), -0.31515 (18), -0.31217 (18), -0.31077 (18), 
+Length of domains: 1010
+Time: pickout 0.0125    decision 0.0423    set_bounds 0.0278    solve 0.2090    add 0.0026    
+Accumulated time: pickout 0.0582    decision 0.3634    set_bounds 0.2880    solve 1.0320    add 0.0179    
+Current (lb-rhs): -0.3623628616333008
+5655 domains visited
+Cumulative time: 1.7983124256134033
+
+BaB round 11
+batch: 1010
+splitting decisions: 
+split level 0: [/input-3, 161] [/input-3, 161] [/input-3, 161] [/input-3, 161] [/input-3, 161] [/input-3, 161] [/input-3, 161] [/input-3, 161] [/input-3, 161] [/input-3, 161] 
+pruning_in_iteration open status: True
+ratio of positive domain = 907 / 2020 = 0.44900990099009896
+pruning-in-iteration extra time: 0.0010819435119628906
+Time: prepare 0.0609    bound 0.0371    transfer 0.0020    finalize 0.0141    func 0.1142    
+Accumulated time: func 1.0432    prepare 0.3505    bound 0.4891    transfer 0.0173    finalize 0.1870    
+Current worst splitting domains lb-rhs (depth):
+-0.35218 (19), -0.35061 (19), -0.34842 (19), -0.34816 (19), -0.33044 (19), -0.32950 (19), -0.32792 (19), -0.32672 (19), -0.32581 (19), -0.32521 (19), -0.32411 (19), -0.32401 (19), -0.32391 (19), -0.32345 (19), -0.32003 (19), -0.31842 (19), -0.30550 (19), -0.30436 (19), -0.30191 (19), -0.30016 (19), 
+Length of domains: 1113
+Time: pickout 0.0115    decision 0.0464    set_bounds 0.0313    solve 0.1150    add 0.0090    
+Accumulated time: pickout 0.0697    decision 0.4097    set_bounds 0.3193    solve 1.1470    add 0.0269    
+Current (lb-rhs): -0.3521847724914551
+6768 domains visited
+Cumulative time: 2.0165815353393555
+
+BaB round 12
+batch: 1113
+splitting decisions: 
+split level 0: [/input-3, 162] [/input-3, 162] [/input-3, 162] [/input-3, 162] [/input-3, 162] [/input-3, 162] [/input-3, 162] [/input-3, 162] [/input-3, 162] [/input, 39] 
+pruning_in_iteration open status: True
+ratio of positive domain = 890 / 2226 = 0.3998203054806828
+pruning-in-iteration extra time: 0.0011115074157714844
+Time: prepare 0.0693    bound 0.0381    transfer 0.0029    finalize 0.1203    func 0.2309    
+Accumulated time: func 1.2741    prepare 0.4201    bound 0.5272    transfer 0.0202    finalize 0.3073    
+Current worst splitting domains lb-rhs (depth):
+-0.33287 (20), -0.33128 (20), -0.32928 (20), -0.32907 (20), -0.31091 (20), -0.30999 (20), -0.30900 (20), -0.30790 (20), -0.30675 (20), -0.30647 (20), -0.30598 (20), -0.30569 (20), -0.30494 (20), -0.30429 (20), -0.30427 (20), -0.30421 (20), -0.30070 (20), -0.29932 (20), -0.29892 (20), -0.29798 (20), 
+Length of domains: 1336
+Time: pickout 0.0134    decision 0.0513    set_bounds 0.0350    solve 0.2312    add 0.0037    
+Accumulated time: pickout 0.0831    decision 0.4610    set_bounds 0.3543    solve 1.3782    add 0.0306    
+Current (lb-rhs): -0.3328695297241211
+8104 domains visited
+Cumulative time: 2.35632586479187
+
+BaB round 13
+batch: 1336
+splitting decisions: 
+split level 0: [/input, 39] [/input, 39] [/input, 39] [/input, 39] [/input, 39] [/input, 39] [/input, 39] [/input, 39] [/input, 44] [/input, 39] 
+pruning_in_iteration open status: True
+ratio of positive domain = 1058 / 2672 = 0.39595808383233533
+pruning-in-iteration extra time: 0.0008733272552490234
+Time: prepare 0.0834    bound 0.0377    transfer 0.0039    finalize 0.0196    func 0.1447    
+Accumulated time: func 1.4188    prepare 0.5038    bound 0.5649    transfer 0.0241    finalize 0.3269    
+Current worst splitting domains lb-rhs (depth):
+-0.32394 (21), -0.32232 (21), -0.32007 (21), -0.32002 (21), -0.30195 (21), -0.30104 (21), -0.29991 (21), -0.29947 (21), -0.29820 (21), -0.29738 (21), -0.29687 (21), -0.29672 (21), -0.29582 (21), -0.29567 (21), -0.29550 (21), -0.29505 (21), -0.29193 (21), -0.29060 (21), -0.28782 (21), -0.28763 (21), 
+Length of domains: 1614
+Time: pickout 0.0155    decision 0.0591    set_bounds 0.0408    solve 0.1453    add 0.0046    
+Accumulated time: pickout 0.0986    decision 0.5202    set_bounds 0.3950    solve 1.5236    add 0.0352    
+Current (lb-rhs): -0.32394444942474365
+9718 domains visited
+Cumulative time: 2.6283297538757324
+
+BaB round 14
+batch: 1614
+splitting decisions: 
+split level 0: [/input, 40] [/input, 40] [/input, 40] [/input, 40] [/input, 40] [/input, 40] [/input, 40] [/input, 40] [/input, 40] [/input, 40] 
+pruning_in_iteration open status: True
+ratio of positive domain = 777 / 3228 = 0.24070631970260226
+pruning-in-iteration extra time: 0.000644683837890625
+Time: prepare 0.1028    bound 0.0351    transfer 0.0035    finalize 0.0230    func 0.1650    
+Accumulated time: func 1.5838    prepare 0.6068    bound 0.6000    transfer 0.0276    finalize 0.3498    
+Current worst splitting domains lb-rhs (depth):
+-0.31235 (22), -0.31059 (22), -0.30853 (22), -0.30827 (22), -0.29797 (22), -0.29751 (22), -0.29429 (22), -0.29319 (22), -0.29019 (22), -0.28842 (22), -0.28742 (22), -0.28683 (22), -0.28604 (22), -0.28601 (22), -0.28543 (22), -0.28500 (22), -0.28456 (22), -0.28373 (22), -0.28371 (22), -0.28368 (22), 
+Length of domains: 2451
+Time: pickout 0.0192    decision 0.0652    set_bounds 0.1599    solve 0.1657    add 0.0177    
+Accumulated time: pickout 0.1178    decision 0.5853    set_bounds 0.5549    solve 1.6892    add 0.0529    
+Current (lb-rhs): -0.31234753131866455
+12169 domains visited
+Cumulative time: 3.0635745525360107
+
+BaB round 15
+batch: 2451
+splitting decisions: 
+split level 0: [/input, 10] [/input, 10] [/input, 10] [/input, 10] [/input, 10] [/input, 10] [/input, 10] [/input, 112] [/input, 141] [/input, 141] 
+pruning_in_iteration open status: False
+ratio of positive domain = 974 / 4902 = 0.19869441044471647
+pruning-in-iteration extra time: 3.910064697265625e-05
+Time: prepare 0.1560    bound 0.0351    transfer 0.0073    finalize 0.0374    func 0.2359    
+Accumulated time: func 1.8197    prepare 0.7630    bound 0.6351    transfer 0.0349    finalize 0.3872    
+Current worst splitting domains lb-rhs (depth):
+-0.29972 (23), -0.29789 (23), -0.29601 (23), -0.29560 (23), -0.29391 (23), -0.29265 (23), -0.29043 (23), -0.29034 (23), -0.28381 (23), -0.28363 (23), -0.28267 (23), -0.28212 (23), -0.28044 (23), -0.27924 (23), -0.27910 (23), -0.27836 (23), -0.27758 (23), -0.27678 (23), -0.27577 (23), -0.27573 (23), 
+Length of domains: 3885
+Time: pickout 0.0317    decision 0.0941    set_bounds 0.1868    solve 0.2369    add 0.0101    
+Accumulated time: pickout 0.1495    decision 0.6795    set_bounds 0.7417    solve 1.9262    add 0.0629    
+Current (lb-rhs): -0.2997230291366577
+16054 domains visited
+Cumulative time: 3.633328437805176
+
+BaB round 16
+batch: 3885
+splitting decisions: 
+split level 0: [/input, 112] [/input, 141] [/input, 141] [/input, 141] [/input, 141] [/input, 141] [/input, 10] [/input, 112] [/input, 112] [/input, 141] 
+pruning_in_iteration open status: True
+ratio of positive domain = 2630 / 7770 = 0.33848133848133843
+pruning-in-iteration extra time: 0.0008480548858642578
+Time: prepare 0.2504    bound 0.0424    transfer 0.0134    finalize 0.1832    func 0.4899    
+Accumulated time: func 2.3096    prepare 1.0137    bound 0.6776    transfer 0.0482    finalize 0.5704    
+Current worst splitting domains lb-rhs (depth):
+-0.29013 (24), -0.28821 (24), -0.28643 (24), -0.28601 (24), -0.28421 (24), -0.28291 (24), -0.28071 (24), -0.28071 (24), -0.27928 (24), -0.27911 (24), -0.27700 (24), -0.27684 (24), -0.27613 (24), -0.27428 (24), -0.27381 (24), -0.27242 (24), -0.27218 (24), -0.26928 (24), -0.26783 (24), -0.26700 (24), 
+Length of domains: 5140
+Time: pickout 0.0491    decision 0.1473    set_bounds 0.2338    solve 0.4913    add 0.0333    
+Accumulated time: pickout 0.1986    decision 0.8267    set_bounds 0.9756    solve 2.4175    add 0.0962    
+Current (lb-rhs): -0.29013383388519287
+21194 domains visited
+Cumulative time: 4.605894565582275
+
+BaB round 17
+batch: 5140
+splitting decisions: 
+split level 0: [/input, 35] [/input, 35] [/input, 35] [/input, 35] [/input, 35] [/input, 35] [/input, 35] [/input, 35] [/input, 35] [/input, 112] 
+pruning_in_iteration open status: True
+ratio of positive domain = 4802 / 10280 = 0.4671206225680934
+pruning-in-iteration extra time: 0.0009493827819824219
+Time: prepare 0.3342    bound 0.0471    transfer 0.0151    finalize 0.0766    func 0.4733    
+Accumulated time: func 2.7829    prepare 1.3481    bound 0.7246    transfer 0.0633    finalize 0.6470    
+Current worst splitting domains lb-rhs (depth):
+-0.28584 (25), -0.28428 (25), -0.28207 (25), -0.28207 (25), -0.27976 (25), -0.27888 (25), -0.27664 (25), -0.27613 (25), -0.26967 (25), -0.26941 (25), -0.26858 (25), -0.26738 (25), -0.26722 (25), -0.26633 (25), -0.26466 (25), -0.26412 (25), -0.26342 (25), -0.26272 (25), -0.26258 (25), -0.26199 (25), 
+Length of domains: 5478
+Time: pickout 0.0664    decision 0.1925    set_bounds 0.4309    solve 0.4754    add 0.0131    
+Accumulated time: pickout 0.2650    decision 1.0193    set_bounds 1.4064    solve 2.8929    add 0.1092    
+Current (lb-rhs): -0.28584182262420654
+26672 domains visited
+Cumulative time: 5.8128883838653564
+
+BaB round 18
+batch: 5478
+splitting decisions: 
+split level 0: [/input, 112] [/input, 112] [/input, 112] [/input, 112] [/input, 112] [/input, 112] [/input, 112] [/input, 112] [/input, 112] [/input-3, 247] 
+pruning_in_iteration open status: True
+ratio of positive domain = 4787 / 10956 = 0.4369295363271267
+pruning-in-iteration extra time: 0.0009431838989257812
+Time: prepare 0.3576    bound 0.0481    transfer 0.0202    finalize 0.0796    func 0.5063    
+Accumulated time: func 3.2892    prepare 1.7060    bound 0.7728    transfer 0.0836    finalize 0.7266    
+Current worst splitting domains lb-rhs (depth):
+-0.27882 (26), -0.27745 (26), -0.27528 (26), -0.27526 (26), -0.27278 (26), -0.27224 (26), -0.27008 (26), -0.26937 (26), -0.26304 (26), -0.26303 (26), -0.26275 (26), -0.26095 (26), -0.26085 (26), -0.26008 (26), -0.25810 (26), -0.25784 (26), -0.25701 (26), -0.25601 (26), -0.25568 (26), -0.25518 (26), 
+Length of domains: 6169
+Time: pickout 0.0769    decision 0.2024    set_bounds 0.4673    solve 0.5085    add 0.0133    
+Accumulated time: pickout 0.3419    decision 1.2216    set_bounds 1.8737    solve 3.4014    add 0.1225    
+Current (lb-rhs): -0.2788189649581909
+32841 domains visited
+Cumulative time: 7.116783618927002
+
+BaB round 19
+batch: 6169
+splitting decisions: 
+split level 0: [/input, 112] [/input, 35] [/input, 40] [/input, 112] [/input, 35] [/input, 35] [/input, 35] [/input, 112] [/input, 35] [/input, 112] 
+pruning_in_iteration open status: True
+ratio of positive domain = 6922 / 12338 = 0.5610309612579024
+pruning-in-iteration extra time: 0.0012538433074951172
+Time: prepare 0.4201    bound 0.0485    transfer 0.0298    finalize 0.0875    func 0.5872    
+Accumulated time: func 3.8765    prepare 2.1264    bound 0.8213    transfer 0.1134    finalize 0.8140    
+Current worst splitting domains lb-rhs (depth):
+-0.27370 (27), -0.27209 (27), -0.27010 (27), -0.26989 (27), -0.26748 (27), -0.26663 (27), -0.26456 (27), -0.26408 (27), -0.25799 (27), -0.25753 (27), -0.25722 (27), -0.25515 (27), -0.25501 (27), -0.25427 (27), -0.25254 (27), -0.25198 (27), -0.25187 (27), -0.25044 (27), -0.25042 (27), -0.24978 (27), 
+Length of domains: 5416
+Time: pickout 0.0876    decision 0.2368    set_bounds 0.5016    solve 0.5894    add 0.0135    
+Accumulated time: pickout 0.4294    decision 1.4584    set_bounds 2.3753    solve 3.9908    add 0.1360    
+Current (lb-rhs): -0.2737003564834595
+38257 domains visited
+Cumulative time: 8.592896461486816
+
+BaB round 20
+batch: 5416
+splitting decisions: 
+split level 0: [/input-3, 5] [/input, 112] [/input, 112] [/input, 112] [/input, 112] [/input, 40] [/input, 112] [/input, 112] [/input, 112] [/input, 35] 
+pruning_in_iteration open status: True
+ratio of positive domain = 5296 / 10832 = 0.48892171344165436
+pruning-in-iteration extra time: 0.0011866092681884766
+Time: prepare 0.3870    bound 0.0478    transfer 0.0249    finalize 0.0775    func 0.5380    
+Accumulated time: func 4.4144    prepare 2.5138    bound 0.8691    transfer 0.1383    finalize 0.8915    
+Current worst splitting domains lb-rhs (depth):
+-0.26775 (28), -0.26614 (28), -0.26419 (28), -0.26397 (28), -0.26156 (28), -0.26073 (28), -0.25868 (28), -0.25817 (28), -0.25150 (28), -0.25138 (28), -0.25046 (28), -0.24927 (28), -0.24913 (28), -0.24841 (28), -0.24667 (28), -0.24625 (28), -0.24612 (28), -0.24582 (28), -0.24457 (28), -0.24444 (28), 
+Length of domains: 5536
+Time: pickout 0.0848    decision 0.3590    set_bounds 0.3441    solve 0.5402    add 0.0119    
+Accumulated time: pickout 0.5142    decision 1.8174    set_bounds 2.7194    solve 4.5309    add 0.1479    
+Current (lb-rhs): -0.2677488327026367
+43793 domains visited
+Cumulative time: 9.972949028015137
+
+BaB round 21
+batch: 5536
+splitting decisions: 
+split level 0: [/input, 112] [/input, 112] [/input, 112] [/input, 112] [/input, 112] [/input, 112] [/input, 112] [/input, 112] [/input, 112] [/input, 112] 
+pruning_in_iteration open status: True
+ratio of positive domain = 6323 / 11072 = 0.5710802023121387
+pruning-in-iteration extra time: 0.0011990070343017578
+Time: prepare 0.4233    bound 0.0473    transfer 0.0280    finalize 0.2546    func 0.7537    
+Accumulated time: func 5.1682    prepare 2.9374    bound 0.9164    transfer 0.1662    finalize 1.1461    
+Current worst splitting domains lb-rhs (depth):
+-0.26645 (29), -0.26485 (29), -0.26291 (29), -0.26268 (29), -0.26025 (29), -0.25942 (29), -0.25738 (29), -0.25688 (29), -0.25017 (29), -0.25005 (29), -0.24793 (29), -0.24781 (29), -0.24710 (29), -0.24680 (29), -0.24534 (29), -0.24481 (29), -0.24324 (29), -0.24310 (29), -0.24249 (29), -0.24210 (29), 
+Length of domains: 4749
+Time: pickout 0.0935    decision 0.3680    set_bounds 0.3215    solve 0.7557    add 0.0105    
+Accumulated time: pickout 0.6076    decision 2.1854    set_bounds 3.0408    solve 5.2866    add 0.1584    
+Current (lb-rhs): -0.2664470672607422
+48542 domains visited
+Cumulative time: 11.566020727157593
+
+BaB round 22
+batch: 4749
+splitting decisions: 
+split level 0: [/input, 112] [/input, 112] [/input, 112] [/input, 112] [/input, 112] [/input, 112] [/input, 112] [/input, 112] [/input, 112] [/input-23, 61] 
+pruning_in_iteration open status: True
+ratio of positive domain = 5102 / 9498 = 0.5371657190987577
+pruning-in-iteration extra time: 0.001203775405883789
+Time: prepare 0.3658    bound 0.0442    transfer 0.0242    finalize 0.0677    func 0.5029    
+Accumulated time: func 5.6711    prepare 3.3035    bound 0.9606    transfer 0.1904    finalize 1.2137    
+Current worst splitting domains lb-rhs (depth):
+-0.26271 (30), -0.26100 (30), -0.25916 (30), -0.25881 (30), -0.25660 (30), -0.25564 (30), -0.25358 (30), -0.25315 (30), -0.24656 (30), -0.24628 (30), -0.24529 (30), -0.24433 (30), -0.24409 (30), -0.24332 (30), -0.24168 (30), -0.24107 (30), -0.23962 (30), -0.23928 (30), -0.23860 (30), -0.23785 (30), 
+Length of domains: 4396
+Time: pickout 0.0799    decision 0.1831    set_bounds 0.3227    solve 0.5051    add 0.0093    
+Accumulated time: pickout 0.6875    decision 2.3685    set_bounds 3.3635    solve 5.7917    add 0.1677    
+Current (lb-rhs): -0.2627127170562744
+52938 domains visited
+Cumulative time: 12.702003479003906
+
+BaB round 23
+batch: 4396
+splitting decisions: 
+split level 0: [/input-23, 61] [/input-23, 61] [/input-23, 61] [/input-23, 61] [/input, 112] [/input-23, 61] [/input, 112] [/input-23, 61] [/input-23, 61] [/input-23, 61] 
+pruning_in_iteration open status: True
+ratio of positive domain = 4451 / 8792 = 0.5062556869881711
+pruning-in-iteration extra time: 0.0011489391326904297
+Time: prepare 0.3486    bound 0.0444    transfer 0.0220    finalize 0.2263    func 0.6424    
+Accumulated time: func 6.3135    prepare 3.6524    bound 1.0050    transfer 0.2124    finalize 1.4400    
+Current worst splitting domains lb-rhs (depth):
+-0.26123 (31), -0.25953 (31), -0.25768 (31), -0.25735 (31), -0.25510 (31), -0.25414 (31), -0.25209 (31), -0.25166 (31), -0.24504 (31), -0.24476 (31), -0.24279 (31), -0.24257 (31), -0.24180 (31), -0.24016 (31), -0.23956 (31), -0.23807 (31), -0.23778 (31), -0.23711 (31), -0.23463 (31), -0.23444 (31), 
+Length of domains: 4341
+Time: pickout 0.0822    decision 0.1762    set_bounds 0.3037    solve 0.6441    add 0.0091    
+Accumulated time: pickout 0.7697    decision 2.5447    set_bounds 3.6672    solve 6.4358    add 0.1768    
+Current (lb-rhs): -0.2612348794937134
+57279 domains visited
+Cumulative time: 13.949392795562744
+
+BaB round 24
+batch: 4341
+splitting decisions: 
+split level 0: [/input-23, 61] [/input-23, 61] [/input-23, 61] [/input-23, 61] [/input-23, 61] [/input-23, 61] [/input-23, 61] [/input, 147] [/input-23, 61] [/input-23, 61] 
+pruning_in_iteration open status: True
+ratio of positive domain = 4186 / 8682 = 0.4821469707440682
+pruning-in-iteration extra time: 0.00115203857421875
+Time: prepare 0.3475    bound 0.0428    transfer 0.0220    finalize 0.2190    func 0.6325    
+Accumulated time: func 6.9460    prepare 4.0002    bound 1.0478    transfer 0.2344    finalize 1.6590    
+Current worst splitting domains lb-rhs (depth):
+-0.25825 (32), -0.25643 (32), -0.25464 (32), -0.25424 (32), -0.25197 (32), -0.25098 (32), -0.24892 (32), -0.24855 (32), -0.24203 (32), -0.24163 (32), -0.23966 (32), -0.23941 (32), -0.23866 (32), -0.23710 (32), -0.23638 (32), -0.23505 (32), -0.23492 (32), -0.23417 (32), -0.23149 (32), -0.23148 (32), 
+Length of domains: 4496
+Time: pickout 0.0858    decision 0.1665    set_bounds 0.1396    solve 0.6345    add 0.0091    
+Accumulated time: pickout 0.8555    decision 2.7113    set_bounds 3.8068    solve 7.0704    add 0.1859    
+Current (lb-rhs): -0.2582463026046753
+61775 domains visited
+Cumulative time: 15.015852451324463
+
+BaB round 25
+batch: 4496
+splitting decisions: 
+split level 0: [/input-23, 61] [/input-23, 61] [/input-23, 61] [/input-23, 61] [/input-23, 61] [/input-23, 61] [/input-3, 77] [/input-23, 61] [/input-3, 77] [/input-3, 77] 
+pruning_in_iteration open status: True
+ratio of positive domain = 4250 / 8992 = 0.47264234875444844
+pruning-in-iteration extra time: 0.001241445541381836
+Time: prepare 0.3644    bound 0.0445    transfer 0.0233    finalize 0.0659    func 0.4992    
+Accumulated time: func 7.4452    prepare 4.3649    bound 1.0923    transfer 0.2577    finalize 1.7249    
+Current worst splitting domains lb-rhs (depth):
+-0.25724 (33), -0.25544 (33), -0.25364 (33), -0.25324 (33), -0.25097 (33), -0.24997 (33), -0.24791 (33), -0.24753 (33), -0.24101 (33), -0.24060 (33), -0.23862 (33), -0.23838 (33), -0.23764 (33), -0.23604 (33), -0.23536 (33), -0.23401 (33), -0.23392 (33), -0.23318 (33), -0.23046 (33), -0.23040 (33), 
+Length of domains: 4742
+Time: pickout 0.0869    decision 0.1799    set_bounds 0.3025    solve 0.6671    add 0.0097    
+Accumulated time: pickout 0.9424    decision 2.8911    set_bounds 4.1093    solve 7.7375    add 0.1956    
+Current (lb-rhs): -0.2572377920150757
+66517 domains visited
+Cumulative time: 16.2969012260437
+
+BaB round 26
+batch: 4742
+splitting decisions: 
+split level 0: [/input-23, 61] [/input-23, 61] [/input-23, 61] [/input-23, 61] [/input, 40] [/input, 112] [/input-11, 78] [/input, 112] [/input-3, 129] [/input, 141] 
+pruning_in_iteration open status: True
+ratio of positive domain = 3002 / 9484 = 0.31653310839308313
+pruning-in-iteration extra time: 0.0011773109436035156
+Time: prepare 0.3857    bound 0.0454    transfer 0.0240    finalize 0.2350    func 0.6912    
+Accumulated time: func 8.1365    prepare 4.7509    bound 1.1377    transfer 0.2817    finalize 1.9598    
+Current worst splitting domains lb-rhs (depth):
+-0.24561 (34), -0.24351 (34), -0.24195 (34), -0.24127 (34), -0.23945 (34), -0.23849 (34), -0.23821 (34), -0.23699 (34), -0.23657 (34), -0.23610 (34), -0.23597 (34), -0.23466 (34), -0.23151 (34), -0.22952 (34), -0.22938 (34), -0.22900 (34), -0.22872 (34), -0.22705 (34), -0.22657 (34), -0.22632 (34), 
+Length of domains: 6482
+Time: pickout 0.0942    decision 0.1845    set_bounds 0.1576    solve 0.6939    add 0.0153    
+Accumulated time: pickout 1.0366    decision 3.0756    set_bounds 4.2669    solve 8.4314    add 0.2109    
+Current (lb-rhs): -0.2456110715866089
+72999 domains visited
+Cumulative time: 17.470306873321533
+
+BaB round 27
+batch: 6482
+splitting decisions: 
+split level 0: [/input, 112] [/input-3, 129] [/input-3, 32] [/input-11, 78] [/input-3, 129] [/input-3, 32] [/input, 40] [/input-3, 32] [/input-3, 129] [/input-3, 32] 
+pruning_in_iteration open status: True
+ratio of positive domain = 4331 / 12964 = 0.3340789879666769
+pruning-in-iteration extra time: 0.0010464191436767578
+Time: prepare 0.5237    bound 0.0553    transfer 0.0363    finalize 0.2740    func 0.8901    
+Accumulated time: func 9.0266    prepare 5.2750    bound 1.1929    transfer 0.3181    finalize 2.2338    
+Current worst splitting domains lb-rhs (depth):
+-0.24303 (35), -0.24095 (35), -0.23932 (35), -0.23867 (35), -0.23686 (35), -0.23567 (35), -0.23348 (35), -0.23333 (35), -0.22679 (35), -0.22609 (35), -0.22503 (35), -0.22444 (35), -0.22437 (35), -0.22397 (35), -0.22332 (35), -0.22299 (35), -0.22298 (35), -0.22273 (35), -0.22242 (35), -0.22172 (35), 
+Length of domains: 8633
+Time: pickout 0.1281    decision 0.2587    set_bounds 0.3821    solve 0.8938    add 0.0651    
+Accumulated time: pickout 1.1648    decision 3.3343    set_bounds 4.6490    solve 9.3252    add 0.2760    
+Current (lb-rhs): -0.24303150177001953
+81632 domains visited
+Cumulative time: 19.23525333404541
+
+BaB round 28
+batch: 8633
+splitting decisions: 
+split level 0: [/input, 62] [/input, 40] [/input-3, 129] [/input, 141] [/input, 40] [/input-3, 32] [/input-19, 140] [/input-19, 140] [/input, 218] [/input, 235] 
+pruning_in_iteration open status: True
+ratio of positive domain = 6319 / 17266 = 0.365979381443299
+pruning-in-iteration extra time: 0.000993490219116211
+Time: prepare 0.6960    bound 0.0643    transfer 0.0470    finalize 0.1406    func 1.1628    
+Accumulated time: func 10.1894    prepare 5.9713    bound 1.2573    transfer 0.3650    finalize 2.3744    
+Current worst splitting domains lb-rhs (depth):
+-0.22979 (36), -0.22869 (36), -0.22735 (36), -0.22728 (36), -0.22603 (36), -0.22552 (36), -0.22508 (36), -0.22497 (36), -0.22358 (36), -0.22277 (36), -0.22248 (36), -0.22207 (36), -0.22205 (36), -0.22188 (36), -0.22058 (36), -0.22012 (36), -0.21992 (36), -0.21992 (36), -0.21989 (36), -0.21942 (36), 
+Length of domains: 10947
+Time: pickout 0.1687    decision 0.5343    set_bounds 0.4845    solve 1.1666    add 0.0274    
+Accumulated time: pickout 1.3334    decision 3.8686    set_bounds 5.1335    solve 10.4919    add 0.3034    
+Current (lb-rhs): -0.22978806495666504
+92579 domains visited
+Cumulative time: 21.671029806137085
+
+BaB round 29
+batch: 10240
+splitting decisions: 
+split level 0: [/input, 62] [/input-3, 32] [/input-19, 140] [/input, 109] [/input-3, 32] [/input-3, 32] [/input, 178] [/input-19, 140] [/input, 178] [/input-3, 32] 
+pruning_in_iteration open status: True
+ratio of positive domain = 8064 / 20480 = 0.39375000000000004
+pruning-in-iteration extra time: 0.0009865760803222656
+Time: prepare 0.8386    bound 0.0733    transfer 0.0562    finalize 0.3768    func 1.3458    
+Accumulated time: func 11.5353    prepare 6.8102    bound 1.3306    transfer 0.4212    finalize 2.7511    
+Current worst splitting domains lb-rhs (depth):
+-0.22651 (37), -0.22540 (37), -0.22410 (37), -0.22406 (37), -0.22278 (37), -0.22234 (37), -0.22185 (37), -0.22177 (37), -0.22034 (37), -0.21960 (37), -0.21890 (37), -0.21886 (37), -0.21869 (37), -0.21721 (37), -0.21690 (37), -0.21688 (37), -0.21681 (37), -0.21674 (37), -0.21636 (37), -0.21630 (37), 
+Length of domains: 13123
+Time: pickout 0.2004    decision 0.4009    set_bounds 0.5202    solve 1.3504    add 0.0354    
+Accumulated time: pickout 1.5338    decision 4.2695    set_bounds 5.6537    solve 11.8423    add 0.3388    
+Current (lb-rhs): -0.22651159763336182
+104995 domains visited
+Cumulative time: 24.238182306289673
+
+BaB round 30
+batch: 10240
+splitting decisions: 
+split level 0: [/input-19, 140] [/input-19, 140] [/input-3, 129] [/input-19, 140] [/input, 35] [/input-19, 140] [/input-19, 140] [/input-19, 140] [/input, 109] [/input-19, 140] 
+pruning_in_iteration open status: True
+ratio of positive domain = 7347 / 20480 = 0.358740234375
+pruning-in-iteration extra time: 0.0006895065307617188
+Time: prepare 0.8731    bound 0.0744    transfer 0.0543    finalize 0.1640    func 1.1672    
+Accumulated time: func 12.7025    prepare 7.6837    bound 1.4050    transfer 0.4756    finalize 2.9152    
+Current worst splitting domains lb-rhs (depth):
+-0.22251 (38), -0.22198 (38), -0.22098 (38), -0.22030 (38), -0.22018 (38), -0.21898 (38), -0.21867 (38), -0.21794 (38), -0.21721 (37), -0.21656 (38), -0.21642 (38), -0.21637 (38), -0.21584 (38), -0.21556 (38), -0.21541 (37), -0.21515 (37), -0.21439 (38), -0.21424 (38), -0.21379 (38), -0.21379 (38), 
+Length of domains: 16016
+Time: pickout 0.2104    decision 0.6550    set_bounds 0.5540    solve 1.4491    add 0.0336    
+Accumulated time: pickout 1.7442    decision 4.9246    set_bounds 6.2077    solve 13.2914    add 0.3724    
+Current (lb-rhs): -0.22251451015472412
+118128 domains visited
+Cumulative time: 27.195975303649902
+
+BaB round 31
+batch: 10240
+splitting decisions: 
+split level 0: [/input-11, 5] [/input-11, 5] [/input-3, 129] [/input-3, 172] [/input-11, 5] [/input-3, 129] [/input-3, 129] [/input-3, 129] [/input-3, 129] [/input-11, 5] 
+pruning_in_iteration open status: True
+ratio of positive domain = 6752 / 20480 = 0.3296875
+pruning-in-iteration extra time: 0.0008676052093505859
+Time: prepare 0.8721    bound 0.0745    transfer 0.0112    finalize 0.1592    func 1.1178    
+Accumulated time: func 13.8203    prepare 8.5561    bound 1.4795    transfer 0.4868    finalize 3.0743    
+Current worst splitting domains lb-rhs (depth):
+-0.22251 (38), -0.22018 (38), -0.21824 (39), -0.21794 (38), -0.21721 (37), -0.21715 (39), -0.21657 (39), -0.21645 (39), -0.21642 (38), -0.21541 (37), -0.21515 (37), -0.21492 (39), -0.21341 (39), -0.21336 (39), -0.21277 (37), -0.21266 (39), -0.21252 (39), -0.21133 (39), -0.21092 (39), -0.21089 (39), 
+Length of domains: 19504
+Time: pickout 0.2244    decision 0.4029    set_bounds 0.5736    solve 1.1219    add 0.1171    
+Accumulated time: pickout 1.9686    decision 5.3274    set_bounds 6.7814    solve 14.4133    add 0.4895    
+Current (lb-rhs): -0.22251451015472412
+131856 domains visited
+Time out!!!!!!!!
+Result: timeout
+Time: 30.712796688079834
+
+------------------------- COMMAND ------------------------------
+/data1/Kane/miniconda3/envs/GenBaB/bin/python /data1/Kane/GenBaB/alpha-beta-CROWN/complete_verifier/abcrown.py --config /data1/Kane/GenBaB/alpha-beta-CROWN/complete_verifier/exp_configs/vnncomp24/cora.yaml --precompile_jit --onnx_path /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/./onnx/cifar10-set.onnx --vnnlib_path /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/vnnlib/cifar10-img386.vnnlib --results_file /data1/Kane/ACT/audit_results/abcrown_nopgd_20260525/cora_2024/0171__cifar10-set__cifar10-img386.result --timeout 30.0 --save_adv_example --pgd_order=skip
+----------------------------------------------------------------
+

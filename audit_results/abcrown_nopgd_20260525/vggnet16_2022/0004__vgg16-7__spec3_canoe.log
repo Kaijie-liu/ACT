@@ -1,0 +1,728 @@
+[0;93m2026-05-26 17:35:00.722944063 [W:onnxruntime:Default, device_discovery.cc:283 GetGpuDevices] Failed to detect devices under "/sys/class/drm/card0": device_discovery.cc:93 ReadFileContents Failed to open file: "/sys/class/drm/card0/device/vendor"[m
+INFO     17:35:01     [tensor_storage.py:70] Hugepage enabled for branch-and-bound domains.
+Configurations:
+
+general:
+  device: cuda
+  seed: 100
+  conv_mode: patches
+  deterministic: false
+  double_fp: false
+  loss_reduction_func: max
+  sparse_alpha: true
+  sparse_interm: true
+  save_adv_example: true
+  verify_onnxruntime_output: false
+  eval_adv_example: false
+  onnx_adv_example: false
+  show_adv_example: false
+  precompile_jit: true
+  reset_seed_after_precompile: false
+  prepare_only: false
+  complete_verifier: bab
+  enable_incomplete_verification: true
+  csv_name: instances.csv
+  results_file: /data1/Kane/ACT/audit_results/abcrown_nopgd_20260525/vggnet16_2022/0004__vgg16-7__spec3_canoe.result
+  root_path: ../../vnncomp2023_benchmarks/benchmarks/vggnet16
+  deterministic_opt: false
+  graph_optimizer: 'Customized("custom_graph_optimizer", "maxpool_to_relu")'
+  buffer_has_batchdim: false
+  save_output: false
+  output_file: out.pkl
+  return_optimized_model: false
+  store_all_specs_on_cpu: false
+  adhoc_tuning: 'Customized("custom_adhoc_tuning", "customized_vggnet16_tuning")'
+model:
+  name: null
+  path: null
+  onnx_path: /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/vggnet16_2022/onnx/vgg16-7.onnx
+  onnx_path_prefix: ''
+  cache_onnx_conversion: true
+  debug_onnx: false
+  onnx_quirks: null
+  input_shape: null
+  onnx_loader: default_onnx_and_vnnlib_loader
+  onnx_optimization_flags: []
+  onnx_vnnlib_joint_optimization_flags: none
+  check_optimized: false
+  flatten_final_output: false
+  optimize_graph: null
+  with_jacobian: false
+data:
+  start: 0
+  end: 10000
+  select_instance: null
+  num_outputs: 10
+  mean: 0.0
+  std: 1.0
+  pkl_path: null
+  dataset: null
+  data_filter_path: null
+  data_idx_file: null
+specification:
+  type: lp
+  robustness_type: verified-acc
+  norm: .inf
+  epsilon: null
+  epsilon_min: 0.0
+  vnnlib_path: /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/vggnet16_2022/vnnlib/spec3_canoe.vnnlib
+  vnnlib_path_prefix: ''
+  shrink_eps: null
+  rhs_offset: null
+solver:
+  batch_size: 1
+  auto_enlarge_batch_size: false
+  batched_crown_auto_enlarge_max_vram_ratio: 0.9
+  min_batch_size_ratio: 0.1
+  use_float64_in_last_iteration: false
+  early_stop_patience: 10
+  start_save_best: 0.5
+  bound_prop_method: dynamic-forward+backward
+  init_bound_prop_method: same
+  prune_after_crown: true
+  optimize_disjuncts_separately: false
+  build_batch_size: 1000000
+  skip_with_refined_bound: true
+  forward_before_compute_bounds: false
+  crown:
+    batch_size: 64
+    max_crown_size: 1000000000
+    activation_bound_option: adaptive
+    compare_crown_with_ibp: false
+  alpha-crown:
+    alpha: true
+    lr_alpha: 0.1
+    iteration: 100
+    share_alphas: false
+    lr_decay: 0.98
+    full_conv_alpha: true
+    max_coeff_mul: .inf
+    matmul_share_alphas: false
+    disable_optimization: []
+    max_time: 1.0
+    alpha_dtype: float16
+  invprop:
+    apply_output_constraints_to: []
+    tighten_input_bounds: false
+    best_of_oc_and_no_oc: false
+    directly_optimize: []
+    oc_lr: 0.1
+    share_gammas: false
+  beta-crown:
+    lr_alpha: 0.01
+    lr_beta: 0.05
+    lr_decay: 0.98
+    optimizer: adam
+    iteration: 10
+    beta: true
+    beta_warmup: true
+    enable_opt_interm_bounds: false
+    all_node_split_LP: false
+  forward:
+    refine: false
+    max_dim: 100
+    reset_threshold: 1.0
+  intermediate_refinement:
+    enabled: false
+    batch_size: 10
+    opt_coeffs: false
+    opt_bias: false
+    lr: 0.05
+    layers: [-1]
+    max_domains: 1000
+  mip:
+    unstable_neuron_threshold: 0
+    parallel_solvers: null
+    solver_threads: 1
+    refine_neuron_timeout: 15
+    refine_neuron_time_percentage: 0.8
+    early_stop: true
+    adv_warmup: true
+    mip_solver: gurobi
+    skip_unsafe: false
+    topk_filter: 1.0
+    sliding_window: -1
+    extra_constraint: false
+    refine_neuron_timeout_increasement: 0
+    timeout_neuron_percentage: 0.3
+    remaining_timeout_threshold: 1
+    remove_unstable_neurons: false
+    lp_solver: false
+bab:
+  max_domains: .inf
+  decision_thresh: 0
+  timeout: 1200.0
+  timeout_scale: 1
+  max_iterations: -1
+  override_timeout: null
+  get_upper_bound: false
+  pruning_in_iteration: true
+  pruning_in_iteration_ratio: 0.2
+  sort_targets: false
+  batched_domain_list: true
+  optimized_interm: ''
+  interm_transfer: true
+  recompute_interm: false
+  sort_domain_interval: -1
+  vanilla_crown: false
+  tree_traversal: depth_first
+  hugetensor_allocator: true
+  cut:
+    enabled: false
+    cuts_path: null
+    implication: false
+    bab_cut: false
+    lp_cut: false
+    method: null
+    lr: 0.01
+    lr_decay: 1.0
+    iteration: 100
+    bab_iteration: -1
+    early_stop_patience: -1
+    lr_beta: 0.02
+    number_cuts: 50
+    topk_cuts_in_filter: 1000
+    batch_size_primal: 100
+    max_num: 1000000000
+    patches_cut: false
+    cplex_cuts: false
+    cplex_cuts_wait: 0
+    cplex_cuts_revpickup: true
+    cut_reference_bounds: true
+    fix_intermediate_bounds: false
+    _tmp_cuts: null
+    fixed_cuts: false
+    add_implied_cuts: false
+    add_input_cuts: false
+    biccos:
+      enabled: false
+      constraint_strengthening: true
+      recursively_strengthening: false
+      drop_ratio: 0.5
+      verified_bonus: 0.3
+      max_infer_iter: 20
+      max_domain: 10000.0
+      heuristic: neuron_influence_score
+      save_biccos_cuts: false
+      multi_tree_branching:
+        enabled: false
+        restore_best_tree: false
+        keep_n_best_domains: 1
+        k_splits: 1
+        iterations: 1
+  clip_n_verify:
+    rearrange_constraints: false
+    alpha_crown: false
+    prune: false
+    final_layer: false
+    clip_input_domain:
+      enabled: false
+      clip_type: relaxed
+      heuristic_K: 0.0
+      clip_iterations: 1
+      clip_calculate_volume_metrics: false
+    clip_interm_domain:
+      enabled: false
+      with_input: false
+      clip_in_alpha_crown: false
+      topk_objective: 0
+  branching:
+    method: sb
+    candidates: 3
+    reduceop: min
+    enable_intermediate_bound_opt: false
+    branching_input_and_activation: false
+    branching_input_and_activation_order: [input, relu]
+    branching_input_iterations: 30
+    branching_relu_iterations: 50
+    nonlinear_split:
+      method: bbps
+      disable: false
+      branching_point_method: uniform
+      num_branches: 2
+      filter: false
+      filter_beta: false
+      filter_clamp: false
+      filter_batch_size: 10000
+      filter_iterations: 25
+      relu_only: false
+      loose_tanh_threshold: null
+      branching_point:
+        db_path: branching_points.pt
+        num_iterations: 1000
+        batch_size: 1000000
+        range_l: -5.0
+        range_u: 5.0
+        log_interval: 100
+        step_size_1d: 0.01
+        step_size: 0.2
+    input_split:
+      split_hint: null
+      enable: true
+      reorder_bab: false
+      input_dim_threshold: 20
+      adv_check: 0
+      split_partitions: 2
+      sb_margin_weight: 1.0
+      sb_sum: false
+      sb_primary_spec: null
+      bf_backup_thresh: -1
+      bf_rhs_offset: 0
+      bf_iters: 1000000000.0
+      bf_batch_size: 100000
+      bf_zero_crossing_score: false
+      touch_zero_score: 0
+      ibp_enhancement: false
+      compare_with_old_bounds: true
+      update_rhs_with_attack: false
+      sb_coeff_thresh: 0.001
+      sort_index: null
+      sort_descending: true
+      show_progress: false
+      presplit_domains: null
+      skip_getting_worst_domain: false
+  attack:
+    enabled: false
+    beam_candidates: 8
+    beam_depth: 7
+    max_dive_fix_ratio: 0.8
+    min_local_free_ratio: 0.2
+    mip_start_iteration: 5
+    mip_timeout: 30.0
+    adv_pool_threshold: null
+    refined_mip_attacker: false
+    refined_batch_size: null
+attack:
+  general_attack: true
+  pgd_order: skip
+  pgd_steps: 100
+  pgd_restarts: 30
+  pgd_batch_size: 100000000
+  pgd_early_stop: true
+  pgd_lr_decay: 0.99
+  pgd_alpha: auto
+  pgd_alpha_scale: false
+  pgd_loss_mode: null
+  pgd_restart_when_stuck: false
+  enable_mip_attack: false
+  adv_saver: default_adv_saver
+  adv_verifier: default_adv_verifier
+  early_stop_condition: default_early_stop_condition
+  adv_example_finalizer: default_adv_example_finalizer
+  pgd_loss: default_pgd_loss
+  cex_path: ./test_cex.txt
+  attack_mode: PGD
+  attack_tolerance: 0.0
+  attack_func: attack_with_general_specs
+  gama_lambda: 10.0
+  gama_decay: 0.9
+  input_split:
+    pgd_steps: 100
+    pgd_restarts: 30
+    pgd_alpha: auto
+  input_split_check_adv:
+    enabled: auto
+    pgd_steps: 5
+    pgd_restarts: 5
+    pgd_alpha: auto
+    max_num_domains: 10
+debug:
+  view_model: false
+  lp_test: null
+  rescale_vnnlib_ptb: null
+  test_optimized_bounds: false
+  test_optimized_bounds_after_n_iterations: 0
+  print_verbose_decisions: false
+  sanity_check: null
+  save_minimal_config: null
+  save_minimal_config_omit_keys: []
+
+Experiments at Tue May 26 17:35:01 2026 on dell-pro-max-tower-t2
+Pre-compile jit kernels on a toy network...
+JIT kernels compiled in 1.3601s.
+Internal results will be saved to /data1/Kane/ACT/audit_results/abcrown_nopgd_20260525/vggnet16_2022/0004__vgg16-7__spec3_canoe.result.
+
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% idx: 0, vnnlib ID: 0 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Using onnx /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/vggnet16_2022/onnx/vgg16-7.onnx
+Using vnnlib /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/vggnet16_2022/vnnlib/spec3_canoe.vnnlib
+150528 inputs and 1000 outputs in vnnlib
+Loading cached onnx model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/vggnet16_2022/onnx/vgg16-7.onnx.cached
+Cached converted model loaded in 4.6889 seconds
+Finished vnnlib processing in 0.087731 seconds
+Number of perturbed inputs: 5
+torch allclose failed: norm 3.93642476410605e-05
+Model: BoundedModule(
+  (/input-1): BoundInput(name=/input-1, inputs=[], perturbed=True)
+  (/33): BoundParams(name=/33, inputs=[], perturbed=False)
+  (/34): BoundParams(name=/34, inputs=[], perturbed=False)
+  (/35): BoundParams(name=/35, inputs=[], perturbed=False)
+  (/36): BoundParams(name=/36, inputs=[], perturbed=False)
+  (/37): BoundParams(name=/37, inputs=[], perturbed=False)
+  (/38): BoundParams(name=/38, inputs=[], perturbed=False)
+  (/39): BoundParams(name=/39, inputs=[], perturbed=False)
+  (/40): BoundParams(name=/40, inputs=[], perturbed=False)
+  (/41): BoundParams(name=/41, inputs=[], perturbed=False)
+  (/42): BoundParams(name=/42, inputs=[], perturbed=False)
+  (/43): BoundParams(name=/43, inputs=[], perturbed=False)
+  (/44): BoundParams(name=/44, inputs=[], perturbed=False)
+  (/45): BoundParams(name=/45, inputs=[], perturbed=False)
+  (/46): BoundParams(name=/46, inputs=[], perturbed=False)
+  (/47): BoundParams(name=/47, inputs=[], perturbed=False)
+  (/48): BoundParams(name=/48, inputs=[], perturbed=False)
+  (/49): BoundParams(name=/49, inputs=[], perturbed=False)
+  (/50): BoundParams(name=/50, inputs=[], perturbed=False)
+  (/51): BoundParams(name=/51, inputs=[], perturbed=False)
+  (/52): BoundParams(name=/52, inputs=[], perturbed=False)
+  (/53): BoundParams(name=/53, inputs=[], perturbed=False)
+  (/54): BoundParams(name=/54, inputs=[], perturbed=False)
+  (/55): BoundParams(name=/55, inputs=[], perturbed=False)
+  (/56): BoundParams(name=/56, inputs=[], perturbed=False)
+  (/57): BoundParams(name=/57, inputs=[], perturbed=False)
+  (/58): BoundParams(name=/58, inputs=[], perturbed=False)
+  (/59): BoundParams(name=/59, inputs=[], perturbed=False)
+  (/60): BoundParams(name=/60, inputs=[], perturbed=False)
+  (/61): BoundParams(name=/61, inputs=[], perturbed=False)
+  (/62): BoundParams(name=/62, inputs=[], perturbed=False)
+  (/63): BoundParams(name=/63, inputs=[], perturbed=False)
+  (/64): BoundParams(name=/64, inputs=[], perturbed=False)
+  (/input): BoundConv(name=/input, inputs=[/input-1, /33, /34], perturbed=True)
+  (/input-4): BoundRelu(name=/input-4, inputs=[/input], perturbed=True)
+  (/input-8): BoundConv(name=/input-8, inputs=[/input-4, /35, /36], perturbed=True)
+  (/68): BoundRelu(name=/68, inputs=[/input-8], perturbed=True)
+  (/input-16): BoundConv(name=/input-16, inputs=[/input-12/conv_4, /37, /38], perturbed=True)
+  (/input-20): BoundRelu(name=/input-20, inputs=[/input-16], perturbed=True)
+  (/input-24): BoundConv(name=/input-24, inputs=[/input-20, /39, /40], perturbed=True)
+  (/73): BoundRelu(name=/73, inputs=[/input-24], perturbed=True)
+  (/input-32): BoundConv(name=/input-32, inputs=[/input-28/conv_4, /41, /42], perturbed=True)
+  (/input-36): BoundRelu(name=/input-36, inputs=[/input-32], perturbed=True)
+  (/input-40): BoundConv(name=/input-40, inputs=[/input-36, /43, /44], perturbed=True)
+  (/input-44): BoundRelu(name=/input-44, inputs=[/input-40], perturbed=True)
+  (/input-48): BoundConv(name=/input-48, inputs=[/input-44, /45, /46], perturbed=True)
+  (/80): BoundRelu(name=/80, inputs=[/input-48], perturbed=True)
+  (/input-56): BoundConv(name=/input-56, inputs=[/input-52/conv_4, /47, /48], perturbed=True)
+  (/input-60): BoundRelu(name=/input-60, inputs=[/input-56], perturbed=True)
+  (/input-64): BoundConv(name=/input-64, inputs=[/input-60, /49, /50], perturbed=True)
+  (/input-68): BoundRelu(name=/input-68, inputs=[/input-64], perturbed=True)
+  (/input-72): BoundConv(name=/input-72, inputs=[/input-68, /51, /52], perturbed=True)
+  (/87): BoundRelu(name=/87, inputs=[/input-72], perturbed=True)
+  (/input-80): BoundConv(name=/input-80, inputs=[/input-76/conv_4, /53, /54], perturbed=True)
+  (/input-84): BoundRelu(name=/input-84, inputs=[/input-80], perturbed=True)
+  (/input-88): BoundConv(name=/input-88, inputs=[/input-84, /55, /56], perturbed=True)
+  (/input-92): BoundRelu(name=/input-92, inputs=[/input-88], perturbed=True)
+  (/input-96): BoundConv(name=/input-96, inputs=[/input-92, /57, /58], perturbed=True)
+  (/94): BoundRelu(name=/94, inputs=[/input-96], perturbed=True)
+  (/96): BoundFlatten(name=/96, inputs=[/95/conv_4], perturbed=True)
+  (/input-100): BoundLinear(name=/input-100, inputs=[/96, /59, /60], perturbed=True)
+  (/98): BoundRelu(name=/98, inputs=[/input-100], perturbed=True)
+  (/99): BoundFlatten(name=/99, inputs=[/98], perturbed=True)
+  (/input-104): BoundLinear(name=/input-104, inputs=[/99, /61, /62], perturbed=True)
+  (/101): BoundRelu(name=/101, inputs=[/input-104], perturbed=True)
+  (/102): BoundFlatten(name=/102, inputs=[/101], perturbed=True)
+  (/103): BoundLinear(name=/103, inputs=[/102, /63, /64], perturbed=True)
+  (/input-12/conv_1): BoundConv(name=/input-12/conv_1, inputs=[/68, /input-12/conv_1_w], perturbed=True)
+  (/input-12/conv_1_relu): BoundRelu(name=/input-12/conv_1_relu, inputs=[/input-12/conv_1], perturbed=True)
+  (/input-12/conv_1_w): BoundParams(name=/input-12/conv_1_w, inputs=[], perturbed=False)
+  (/input-12/conv_2): BoundConv(name=/input-12/conv_2, inputs=[/input-12/conv_1_relu, /input-12/conv_2_w], perturbed=True)
+  (/input-12/conv_2_relu): BoundRelu(name=/input-12/conv_2_relu, inputs=[/input-12/conv_2], perturbed=True)
+  (/input-12/conv_2_w): BoundParams(name=/input-12/conv_2_w, inputs=[], perturbed=False)
+  (/input-12/conv_4): BoundConv(name=/input-12/conv_4, inputs=[/input-12/conv_2_relu, /input-12/conv_3_w], perturbed=True)
+  (/input-12/conv_3_w): BoundParams(name=/input-12/conv_3_w, inputs=[], perturbed=False)
+  (/input-28/conv_1): BoundConv(name=/input-28/conv_1, inputs=[/73, /input-28/conv_1_w], perturbed=True)
+  (/input-28/conv_1_relu): BoundRelu(name=/input-28/conv_1_relu, inputs=[/input-28/conv_1], perturbed=True)
+  (/input-28/conv_1_w): BoundParams(name=/input-28/conv_1_w, inputs=[], perturbed=False)
+  (/input-28/conv_2): BoundConv(name=/input-28/conv_2, inputs=[/input-28/conv_1_relu, /input-28/conv_2_w], perturbed=True)
+  (/input-28/conv_2_relu): BoundRelu(name=/input-28/conv_2_relu, inputs=[/input-28/conv_2], perturbed=True)
+  (/input-28/conv_2_w): BoundParams(name=/input-28/conv_2_w, inputs=[], perturbed=False)
+  (/input-28/conv_4): BoundConv(name=/input-28/conv_4, inputs=[/input-28/conv_2_relu, /input-28/conv_3_w], perturbed=True)
+  (/input-28/conv_3_w): BoundParams(name=/input-28/conv_3_w, inputs=[], perturbed=False)
+  (/input-52/conv_1): BoundConv(name=/input-52/conv_1, inputs=[/80, /input-52/conv_1_w], perturbed=True)
+  (/input-52/conv_1_relu): BoundRelu(name=/input-52/conv_1_relu, inputs=[/input-52/conv_1], perturbed=True)
+  (/input-52/conv_1_w): BoundParams(name=/input-52/conv_1_w, inputs=[], perturbed=False)
+  (/input-52/conv_2): BoundConv(name=/input-52/conv_2, inputs=[/input-52/conv_1_relu, /input-52/conv_2_w], perturbed=True)
+  (/input-52/conv_2_relu): BoundRelu(name=/input-52/conv_2_relu, inputs=[/input-52/conv_2], perturbed=True)
+  (/input-52/conv_2_w): BoundParams(name=/input-52/conv_2_w, inputs=[], perturbed=False)
+  (/input-52/conv_4): BoundConv(name=/input-52/conv_4, inputs=[/input-52/conv_2_relu, /input-52/conv_3_w], perturbed=True)
+  (/input-52/conv_3_w): BoundParams(name=/input-52/conv_3_w, inputs=[], perturbed=False)
+  (/input-76/conv_1): BoundConv(name=/input-76/conv_1, inputs=[/87, /input-76/conv_1_w], perturbed=True)
+  (/input-76/conv_1_relu): BoundRelu(name=/input-76/conv_1_relu, inputs=[/input-76/conv_1], perturbed=True)
+  (/input-76/conv_1_w): BoundParams(name=/input-76/conv_1_w, inputs=[], perturbed=False)
+  (/input-76/conv_2): BoundConv(name=/input-76/conv_2, inputs=[/input-76/conv_1_relu, /input-76/conv_2_w], perturbed=True)
+  (/input-76/conv_2_relu): BoundRelu(name=/input-76/conv_2_relu, inputs=[/input-76/conv_2], perturbed=True)
+  (/input-76/conv_2_w): BoundParams(name=/input-76/conv_2_w, inputs=[], perturbed=False)
+  (/input-76/conv_4): BoundConv(name=/input-76/conv_4, inputs=[/input-76/conv_2_relu, /input-76/conv_3_w], perturbed=True)
+  (/input-76/conv_3_w): BoundParams(name=/input-76/conv_3_w, inputs=[], perturbed=False)
+  (/95/conv_1): BoundConv(name=/95/conv_1, inputs=[/94, /95/conv_1_w], perturbed=True)
+  (/95/conv_1_relu): BoundRelu(name=/95/conv_1_relu, inputs=[/95/conv_1], perturbed=True)
+  (/95/conv_1_w): BoundParams(name=/95/conv_1_w, inputs=[], perturbed=False)
+  (/95/conv_2): BoundConv(name=/95/conv_2, inputs=[/95/conv_1_relu, /95/conv_2_w], perturbed=True)
+  (/95/conv_2_relu): BoundRelu(name=/95/conv_2_relu, inputs=[/95/conv_2], perturbed=True)
+  (/95/conv_2_w): BoundParams(name=/95/conv_2_w, inputs=[], perturbed=False)
+  (/95/conv_4): BoundConv(name=/95/conv_4, inputs=[/95/conv_2_relu, /95/conv_3_w], perturbed=True)
+  (/95/conv_3_w): BoundParams(name=/95/conv_3_w, inputs=[], perturbed=False)
+)
+Original output in the first batch: tensor([[ 4.64334011e+00, -2.07696795e+00,  1.95696449e+00, -5.43687865e-03,
+         -4.00435776e-01,  1.73981261e+00,  7.30083084e+00, -4.12721348e+00,
+         -4.56332493e+00, -6.15741682e+00, -4.07975864e+00, -1.54742992e+00,
+         -2.68273187e+00, -3.55868530e+00, -1.58727586e+00, -5.40437603e+00,
+         -1.70156074e+00, -4.68504810e+00, -4.74540901e+00, -6.15042877e+00,
+         -1.69663978e+00, -5.22713423e+00, -1.67747587e-01, -6.80606985e+00,
+         -7.20283556e+00, -4.77120018e+00, -3.44098806e+00, -2.77946591e-01,
+         -5.24336672e+00, -3.23618722e+00, -8.18748713e-01, -3.16922498e+00,
+         -1.52994645e+00,  2.71036595e-01,  2.86371374e+00, -1.63003290e+00,
+          8.95353138e-01, -2.51121712e+00, -2.31380248e+00, -2.76216388e-01,
+         -2.94242954e+00, -4.12025642e+00, -5.52499723e+00, -5.30812597e+00,
+         -3.39360356e+00, -6.13180828e+00, -2.34721327e+00, -2.63029432e+00,
+         -4.01121855e+00,  9.05521095e-01,  7.50492215e-01, -2.70762849e+00,
+         -2.72005773e+00,  1.06108129e-01, -4.08094883e+00, -3.26035452e+00,
+         -3.09177160e+00, -4.48410463e+00,  6.32715225e-02, -1.52528369e+00,
+         -7.61090994e-01, -1.14220619e+00, -1.15304136e+00,  5.02720404e+00,
+         -1.76336420e+00,  1.80353689e+00, -6.46200275e+00, -6.87739253e-01,
+         -4.92442036e+00, -5.89990234e+00, -4.02594233e+00, -1.68618381e+00,
+         -4.67332029e+00, -3.53801227e+00, -5.23814297e+00, -4.95113230e+00,
+         -4.86960793e+00, -6.25617933e+00, -1.09079289e+00, -1.70285034e+00,
+         -6.43929720e+00, -9.63154221e+00, -5.80560970e+00, -5.70370483e+00,
+         -4.70292377e+00, -6.75052500e+00, -6.08631372e+00, -1.68152535e+00,
+          5.72897255e-01, -4.85672426e+00, -1.89652801e+00, -5.09152460e+00,
+         -2.03764057e+00, -3.79222655e+00, -1.12267268e+00, -4.89618731e+00,
+          7.28575945e-01,  1.61629045e+00,  7.56261408e-01,  4.99570280e-01,
+          1.36577058e+00,  3.40651929e-01, -4.23137379e+00, -2.03078103e+00,
+         -1.68474901e+00, -6.69980097e+00, -3.87360096e+00, -4.17633867e+00,
+         -2.45518565e+00, -2.72314048e+00, -2.63492560e+00, -2.06300354e+00,
+          4.68836451e+00,  2.73846102e+00, -7.98610389e-01, -3.78421044e+00,
+         -2.51169562e+00, -4.15768385e+00,  3.29396796e+00,  7.21522748e-01,
+          2.27595091e+00,  2.26127338e+00,  5.96174097e+00,  9.18361425e-01,
+          4.08849895e-01,  9.77061450e-01, -2.35979581e+00, -4.77105474e+00,
+         -2.83716750e+00,  1.25491381e+00,  2.81936264e+00, -4.42561531e+00,
+         -6.05933785e-01, -6.81581068e+00, -5.66515112e+00, -3.38336539e+00,
+         -3.26755159e-02, -2.70070052e+00, -9.74568462e+00, -3.71271753e+00,
+         -4.56862736e+00, -2.06909418e+00, -2.15164614e+00, -1.69627261e+00,
+          5.02956676e+00, -3.60761428e+00, -8.63549232e-01,  4.95960951e+00,
+          3.01002073e+00,  3.54982734e+00,  2.05576229e+00, -8.83273840e-01,
+         -3.14228058e+00, -8.69462192e-01, -1.95759130e+00, -1.22759557e+00,
+         -1.15354419e+00, -2.20615816e+00, -1.96544158e+00,  5.39565504e-01,
+         -1.92326736e+00, -2.17747629e-01, -1.73454061e-01,  6.73555315e-01,
+         -3.03798556e+00, -3.10954523e+00, -2.09372950e+00, -4.37106180e+00,
+          3.42681646e+00, -9.09939528e-01,  1.71257472e+00, -5.53429127e-05,
+          4.35959756e-01, -7.14811385e-01, -2.16853619e-03, -8.34732831e-01,
+         -1.62406754e+00, -1.89852488e+00,  1.91029143e+00, -3.49409819e-01,
+         -2.87086904e-01, -1.80937633e-01, -2.90817499e-01, -2.49076533e+00,
+          1.17710102e+00,  1.50101900e+00,  9.67221379e-01, -1.79998279e+00,
+         -1.26629889e+00,  9.14367497e-01, -1.39468813e+00, -4.31340754e-01,
+         -9.32470381e-01,  6.09088652e-02, -1.59155083e+00,  3.38495672e-02,
+         -1.70071435e+00, -1.04055071e+00, -1.32761049e+00, -1.18659586e-02,
+         -2.10962009e+00, -2.08251739e+00,  1.40048170e+00, -4.85668838e-01,
+         -1.72446585e+00,  6.14167869e-01,  6.70254171e-01,  3.49603391e+00,
+          3.02970791e+00,  2.15090871e+00, -2.91961098e+00,  4.24815130e+00,
+         -1.11132717e+00, -6.28049970e-01, -2.39050460e+00, -1.37839198e+00,
+          9.94348168e-01, -2.62492990e+00,  8.86367857e-01, -9.72420454e-01,
+          3.57120919e+00,  7.38213599e-01, -1.51548490e-01,  5.56986332e+00,
+          1.37539601e+00, -5.22797465e-01, -1.10515729e-01, -1.05782926e-01,
+         -1.06793654e+00, -1.67342648e-01,  2.45059705e+00,  1.16554105e+00,
+          8.84479880e-01, -1.28890529e-01,  8.03708360e-02,  2.08806300e+00,
+         -3.56951654e-01, -1.78165245e+00,  1.39831555e+00,  1.44338930e+00,
+          1.67167521e+00,  1.02907658e+00, -1.38322079e+00, -1.78676724e+00,
+          2.57561207e-01, -1.39075530e+00, -2.63098907e+00, -1.65511358e+00,
+          1.28553987e+00,  3.58838487e+00,  8.97469282e-01,  6.07585728e-01,
+         -3.37855935e+00,  2.63183379e+00,  1.18009686e+00, -8.00110042e-01,
+          3.82925987e+00,  2.71645522e+00,  3.92542195e+00,  9.16445315e-01,
+          8.18537712e-01,  3.42877924e-01, -7.63626277e-01,  2.95743585e+00,
+          1.12251604e+00, -1.87448084e+00, -9.45748150e-01, -7.48483658e-01,
+         -3.17782235e+00, -3.84532332e+00, -1.53504503e+00, -6.33989048e+00,
+         -5.31156635e+00, -1.43689418e+00, -4.20004940e+00, -7.96144724e+00,
+         -4.32061291e+00, -3.24937725e+00, -5.21043348e+00, -3.49808192e+00,
+         -5.32896614e+00, -3.71104789e+00, -6.75226986e-01, -3.96325922e+00,
+         -4.92396545e+00, -4.61987495e+00, -4.25539875e+00, -7.45904827e+00,
+         -4.33537102e+00, -6.39146376e+00, -5.19097662e+00, -2.08130527e+00,
+         -1.51296127e+00, -4.70119858e+00,  1.52355170e+00, -1.73310137e+00,
+          9.46295559e-01, -3.17083526e+00, -4.25863838e+00, -5.61502409e+00,
+         -2.47492266e+00, -2.47587729e+00, -2.90999794e+00, -1.90473223e+00,
+         -1.85460448e+00, -5.23341608e+00, -2.71514356e-01, -2.61879086e+00,
+         -3.74868870e+00, -2.44544411e+00,  7.36208558e-01,  9.72016513e-01,
+         -8.33200157e-01, -1.15901083e-01, -1.65989113e+00, -5.22421122e-01,
+         -3.03335762e+00,  2.75228715e+00, -4.18637133e+00, -2.32531023e+00,
+          5.25487244e-01, -8.14707088e+00, -8.24282646e+00, -3.20014524e+00,
+         -5.86664629e+00,  4.93890822e-01, -3.65264201e+00,  1.91936362e+00,
+          9.07612033e-03, -9.08476293e-01, -3.95687675e+00, -4.74253035e+00,
+         -2.08824110e+00, -2.12370205e+00, -3.11636209e+00, -7.19948769e+00,
+         -4.57600451e+00, -7.57825375e-01, -2.92365789e-01, -2.19802350e-01,
+         -5.11125898e+00, -1.06398642e+00, -1.45249796e+00, -2.79718590e+00,
+          1.81265175e+00,  4.17028046e+00,  6.04318905e+00, -3.06789827e+00,
+         -6.31342649e+00, -4.98710775e+00, -6.78260136e+00, -3.85548496e+00,
+         -2.05358315e+00, -4.73924541e+00, -7.06878185e-01, -3.98675132e+00,
+          2.60797232e-01, -2.47423649e+00,  1.35286033e+00,  1.32174239e-01,
+          3.66739422e-01, -3.60411811e+00, -4.82445621e+00, -2.05861306e+00,
+         -3.16596007e+00, -2.69460964e+00, -3.27487397e+00, -3.25393051e-01,
+         -3.67488480e+00, -4.14262772e+00, -3.96505380e+00, -1.69811678e+00,
+         -1.06782651e+00,  2.48608828e+00, -3.25935245e+00, -5.06184959e+00,
+         -3.43921399e+00, -4.34880972e+00, -9.96685028e-01, -4.46184301e+00,
+         -8.46829951e-01, -1.44179690e+00,  2.59534031e-01, -5.88029146e+00,
+         -5.24022865e+00,  1.62880945e+00, -1.36175799e+00, -6.05094194e+00,
+         -2.03974748e+00,  3.21493840e+00,  5.22611260e-01,  5.39461565e+00,
+         -2.24135780e+00, -3.22268438e+00,  3.42141581e+00,  4.46809006e+00,
+         -3.32565546e+00, -4.22910976e+00,  1.29007769e+00, -2.33171535e+00,
+         -4.98331100e-01,  1.00004661e+00,  3.94366193e+00,  7.77423978e-01,
+          2.35479307e+00,  3.10571742e+00, -2.74942303e+00,  3.42843175e+00,
+          1.08564024e+01,  3.40080619e+00, -4.06914234e+00, -2.63149619e-01,
+          2.09195900e+00,  1.40854371e+00,  4.09294456e-01, -2.24762177e+00,
+          5.04439974e+00,  6.70036602e+00,  2.12298846e+00,  3.02754784e+00,
+          4.40305853e+00, -1.40533710e+00,  3.98205471e+00, -1.63617229e+00,
+         -4.67025471e+00, -2.58482313e+00, -2.74839664e+00,  3.50834703e+00,
+          9.38213634e+00,  1.67109966e+00,  2.00636768e+00, -2.13172317e+00,
+          4.84993792e+00,  9.31289577e+00,  1.62846386e+00,  5.54874945e+00,
+         -1.38064086e+00, -3.55382949e-01,  6.32448971e-01,  2.67553806e+00,
+          1.57812071e+00,  1.69440305e+00, -6.03545904e-01,  1.19594312e+00,
+          4.26692295e+00,  1.19996519e+01, -1.20582211e+00,  2.48278213e+00,
+         -1.97297025e+00,  7.89640570e+00,  9.25949669e+00, -1.16843474e+00,
+         -7.27367759e-01, -5.12429953e+00, -7.41875648e-01,  1.96496105e+00,
+          5.36508083e+00,  2.83844256e+00, -1.06532228e+00,  1.14929986e+00,
+          5.12416744e+00, -2.58533978e+00,  7.62757826e+00,  8.30657005e+00,
+         -2.25700572e-01, -4.01687479e+00, -4.58956146e+00, -3.70220757e+00,
+          2.22866654e+00,  2.32355070e+00,  9.58969057e-01,  1.59537625e+00,
+          2.99920921e+01,  2.95618176e+00, -2.80882740e+00,  3.77865583e-01,
+          2.09054327e+00,  1.01725483e+00,  8.27533841e-01,  2.55187345e+00,
+         -5.19467068e+00, -3.18211651e+00, -1.10287631e+00,  3.71737361e+00,
+          1.05147476e+01, -2.16447067e+00,  7.00413465e+00,  3.02688146e+00,
+          1.75580215e+00, -1.76492143e+00,  1.08754814e+00,  3.77761841e+00,
+         -7.06171036e-01, -5.59630871e+00, -7.28350878e-01, -6.47884369e+00,
+         -9.97644663e-01, -1.22883534e+00, -1.50261903e+00,  2.18328857e+00,
+         -2.63832641e+00,  8.47437561e-01,  1.16051207e+01,  1.02019846e+00,
+         -2.09928203e+00, -1.94345522e+00, -7.46594608e-01, -1.17736983e+00,
+         -1.33369279e+00, -2.69713902e+00,  4.69805813e+00,  2.97001815e+00,
+          2.66293335e+00,  3.88339448e+00,  4.96459293e+00,  3.33088326e+00,
+          3.36693019e-01,  2.13550830e+00,  4.70732832e+00,  2.75372028e-01,
+         -3.65303826e+00, -2.45074487e+00,  4.54339266e+00,  4.54402637e+00,
+         -1.01869538e-01,  5.07580900e+00, -1.24069965e+00, -5.68733692e+00,
+          3.97609234e+00,  4.39861965e+00, -1.94603145e+00, -4.10532206e-01,
+         -5.01660645e-01, -2.75486803e+00, -3.93349099e+00, -2.84647608e+00,
+          5.06376982e+00,  2.61368513e+00, -3.03651953e+00,  1.10720205e+00,
+          6.30188417e+00,  5.61251783e+00,  5.02698231e+00, -1.71529794e+00,
+          8.43629956e-01, -2.79097652e+00, -4.41467345e-01, -4.12716150e+00,
+         -4.47719955e+00, -1.04354274e+00, -4.38316488e+00, -6.08927846e-01,
+          4.16943461e-01, -5.68781042e+00,  8.33462811e+00,  3.42680752e-01,
+         -3.13421082e+00,  1.28426850e-01,  8.75267792e+00,  5.40491104e+00,
+         -1.95946121e+00, -2.83471793e-02,  5.82671499e+00,  2.01951599e+00,
+         -4.30866671e+00, -3.34826732e+00,  5.00346613e+00,  1.61287951e+00,
+         -3.52223015e+00, -2.49776149e+00,  1.30170107e+00, -2.62681913e+00,
+          1.66042626e+00,  1.14975567e+01,  9.44238901e-01,  3.49861717e+00,
+          9.98133278e+00,  4.84700537e+00,  2.69326305e+00, -9.90331709e-01,
+         -1.54029167e+00, -1.93312740e+00, -2.69457072e-01, -8.81251752e-01,
+          4.20002365e+00,  3.56942639e-02,  6.42373860e-01,  2.57504511e+00,
+         -3.88223026e-03,  4.79312241e-01, -9.22851324e-01,  8.98530662e-01,
+         -5.72721815e+00,  2.97831774e+00,  5.91684437e+00,  4.30242825e+00,
+          3.25673127e+00, -1.17343748e+00,  7.36373216e-02, -4.24053955e+00,
+          2.17321062e+00,  1.51471114e+00,  4.03473854e+00,  1.94524002e+00,
+          3.64715075e+00,  4.31524873e-01,  2.17255592e+00,  6.70299530e-01,
+          4.64695978e+00, -1.61664140e+00, -2.46788770e-01,  2.29694939e+00,
+          6.48806286e+00, -3.89805412e+00,  3.30934197e-01,  3.41180015e+00,
+          1.29398000e+00, -1.65282035e+00,  5.15194607e+00, -2.39440799e+00,
+         -1.22518547e-01,  8.18790150e+00, -4.44179487e+00,  2.73671079e+00,
+         -1.63991868e+00,  1.18199892e+01,  4.59067106e+00, -1.85745561e+00,
+          3.75161827e-01,  3.27504349e+00,  4.09733963e+00,  3.22620106e+00,
+         -4.24192953e+00,  2.53211081e-01, -1.62118518e+00,  3.04837966e+00,
+          8.35032403e-01, -1.92819560e+00,  8.39403725e+00,  9.54099274e+00,
+         -1.46704233e+00,  7.32065201e+00,  1.62980568e+00,  1.33412266e+00,
+          1.55289364e+00,  4.68843997e-01,  2.40695071e+00, -6.24653518e-01,
+         -6.02599049e+00, -4.87004995e+00, -2.73373693e-01, -4.80667543e+00,
+         -2.34091902e+00,  1.16191101e+00, -5.55922985e-01,  1.22660077e+00,
+         -1.65766656e+00,  4.09583139e+00, -1.57764244e+00,  1.95187438e+00,
+         -2.82507873e+00,  1.25483525e+00, -5.02132940e+00, -1.61456859e+00,
+         -1.40113246e+00,  4.25772333e+00,  1.01491690e+00, -6.04308784e-01,
+         -7.15205669e-01, -2.81939089e-01,  6.77751112e+00,  1.10806525e+00,
+          3.75035548e+00,  7.89646089e-01,  7.01959515e+00, -2.82605553e+00,
+         -1.24823773e+00, -1.22202194e+00,  3.50659323e+00,  2.17567444e+00,
+          1.71641827e+00,  1.24461746e+00, -2.20822549e+00,  6.63606119e+00,
+          8.22279263e+00, -2.24874949e+00, -3.74112511e+00, -3.43147707e+00,
+         -3.64929175e+00, -1.94360042e+00,  4.59615850e+00,  1.36033547e+00,
+          2.44252801e+00,  2.38793144e+01,  4.40188169e+00, -5.43874919e-01,
+          5.13616943e+00,  1.36634755e+00,  1.48840368e+00,  3.28189945e+00,
+         -1.23167586e+00,  8.24346256e+00,  3.21324706e+00,  2.70309162e+00,
+         -5.88914335e-01, -6.01940036e-01,  9.78012025e-01,  2.00010538e-01,
+         -6.54284000e+00,  3.89130235e+00,  3.70983744e+00, -4.20975894e-01,
+          1.45455945e+00, -4.83467150e+00,  4.93790674e+00, -6.53692305e-01,
+         -3.88305306e+00, -1.18971777e+00,  2.88127446e+00,  3.75311345e-01,
+          9.94309902e-01, -3.27674508e-01,  1.75019324e+00,  3.99168181e+00,
+          3.89297295e+00, -1.57188386e-01,  5.62970698e-01,  3.82040501e-01,
+          1.05441429e-01, -2.34027648e+00,  2.72538328e+00,  5.93607330e+00,
+         -6.55567932e+00,  6.44378853e+00, -3.04335380e+00,  3.46752703e-01,
+          4.38841152e+00,  2.45092177e+00, -6.13703489e-01, -1.77280545e-01,
+          3.56042087e-01,  1.23066854e+00, -4.04511499e+00, -4.99450541e+00,
+          3.63528824e+00, -6.36487722e+00, -1.76761016e-01,  2.15087581e+00,
+          1.16872609e+00,  4.32821131e+00, -1.47394633e+00,  2.86928797e+00,
+          4.78373909e+00, -7.56410503e+00, -4.01743412e+00, -1.77985287e+00,
+          9.57993090e-01, -2.66069579e+00,  8.08296394e+00, -5.50762892e+00,
+         -4.49228382e+00, -1.13837206e+00,  3.00960827e+00, -2.45066851e-01,
+          3.36433554e+00,  3.16017842e+00, -4.25576210e+00,  3.22126579e+00,
+          2.01212215e+00,  3.74673629e+00,  1.72093141e+00, -4.94782686e+00,
+          5.64106560e+00,  1.88775766e+00,  6.94083691e+00,  6.30342436e+00,
+          3.02019882e+00,  3.10542393e+00,  4.54247952e-01,  1.25301588e+00,
+          5.40686464e+00, -3.41921926e+00, -1.19313419e+00, -1.02490997e+00,
+          3.96316075e+00,  9.58009005e-01, -2.86796641e+00,  3.78508592e+00,
+          2.89031863e+00, -9.40374017e-01,  1.24753296e+00,  3.25287986e+00,
+          6.76820660e+00,  4.61225033e+00, -1.14081156e+00,  6.60327196e+00,
+         -9.00236249e-01,  3.60658431e+00,  6.13229156e-01, -4.15791035e+00,
+         -2.84021330e+00,  1.26113005e+01,  4.60846710e+00,  1.29671705e+00,
+         -9.28702235e-01,  3.35636282e+00, -3.56861204e-01, -1.42389941e+00,
+          5.05890942e+00,  1.98793697e+00, -1.01961291e+00, -3.30582356e+00,
+          3.27019989e-01,  3.79238772e+00,  1.34674749e+01, -4.67769480e+00,
+          3.27595282e+00,  3.93484759e+00, -2.23266482e+00,  1.17859769e+00,
+         -4.68501520e+00,  4.89404380e-01,  4.70810461e+00,  1.42248607e+00,
+         -1.27516770e+00, -4.42980909e+00,  2.54144430e+00, -3.56393814e+00,
+          9.77492571e-01, -6.44032955e-01,  6.40818739e+00,  1.83574986e+00,
+         -1.56361365e+00,  9.35523987e+00, -5.26966333e-01,  3.50135541e+00,
+          6.05747938e+00,  6.12961435e+00,  8.58885288e+00,  9.06725407e-01,
+          5.04515553e+00, -1.42695618e+00,  9.97468567e+00,  9.55031872e+00,
+         -2.74896383e+00,  2.95237923e+00, -8.97028446e-01,  2.50744909e-01,
+         -2.76960254e+00,  7.20397711e-01,  1.37898183e+00,  1.57669401e+00,
+          2.40298367e+00, -1.23911202e+00,  8.41893494e-01,  3.50824404e+00,
+          4.76236999e-01, -1.64243138e+00, -2.25067854e+00, -2.26841569e+00,
+          1.27111542e+00,  3.08825994e+00,  4.04381752e+00,  8.17317665e-01,
+         -8.56824160e-01,  9.17758405e-01,  5.23814964e+00, -1.82025993e+00,
+          3.49028039e+00, -1.14890254e+00,  8.81581116e+00,  1.07181988e+01,
+          6.56979024e-01, -2.61294723e+00, -4.74419117e+00,  7.04300117e+00,
+          6.99267006e+00, -4.69585133e+00, -2.35955691e+00,  8.52543640e+00,
+          3.12085199e+00, -4.59215164e+00,  4.55236101e+00, -1.46842957e+00,
+         -4.39170456e+00, -2.69050181e-01, -3.28510451e+00, -3.58295947e-01,
+         -1.83221114e+00,  6.76558256e+00,  6.07514429e+00, -5.11764228e-01,
+          1.97508705e+00, -2.74817419e+00, -5.69561148e+00,  2.63442373e+00,
+         -5.37829518e-01, -3.15173125e+00,  2.42105293e+00,  2.98863769e+00,
+         -4.37681580e+00, -3.59185600e+00,  9.48274994e+00,  2.00337219e+00,
+         -1.65954936e+00, -3.59208512e+00, -5.11415625e+00, -2.36611515e-01,
+          3.30933118e+00,  2.00270510e+00,  5.22589445e+00, -1.42525280e+00,
+         -2.99314117e+00,  5.29395437e+00,  8.12354279e+00, -1.32766306e+00,
+          1.29151845e+00,  2.78549576e+00,  3.05916977e+00,  9.64436114e-01,
+         -2.01047468e+00,  1.50601780e+00, -3.36326301e-01,  2.02396154e+00,
+         -9.15977478e-01,  9.65351820e-01, -3.90154988e-01, -8.70547891e-02,
+         -7.15121508e-01,  8.94122982e+00, -9.41568673e-01, -2.75771523e+00,
+          9.47262883e-01, -1.21474469e+00,  3.76669455e+00, -3.58956599e+00,
+         -2.92252016e+00, -8.79419684e-01, -5.65453815e+00,  1.09428930e+00,
+          2.45017171e+00, -2.30080843e+00,  3.62851113e-01,  5.53952157e-01,
+         -2.03421712e+00,  1.30815446e-01, -4.95587683e+00, -4.02961111e+00,
+          1.64330053e+00,  3.77769738e-01,  1.18916857e+00, -6.60677850e-01,
+         -1.35068619e+00,  4.31707621e-01,  3.80731654e+00,  4.53189254e-01,
+         -1.19265604e+00,  5.65386534e-01,  2.00406909e+00, -4.03699636e-01,
+         -2.63124585e+00, -9.66374338e-01, -4.72680950e+00, -1.95188272e+00,
+         -3.97358298e+00, -2.21237946e+00,  5.16428053e-01, -1.57740986e+00,
+          3.52418685e+00,  1.83645856e+00,  3.35741830e+00,  2.76680636e+00,
+          4.59224892e+00,  3.57824469e+00,  5.06317556e-01,  1.26177406e+01,
+          3.80653524e+00,  1.48184986e+01,  1.17565813e+01,  5.63425159e+00,
+         -4.73111361e-01,  1.05517530e+00,  1.61756325e+00,  5.91472673e+00,
+          3.63093913e-01, -3.25671768e+00, -3.30251765e+00,  1.09503245e+00,
+         -1.61609370e-02, -1.42253792e+00, -1.94619668e+00, -5.17393875e+00,
+         -2.68479109e+00, -6.64304352e+00, -5.88076735e+00, -5.37428713e+00,
+         -4.70979404e+00, -3.25458145e+00,  1.60370934e+00, -2.39559793e+00]],
+       device='cuda:0')/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/perturbations.py:364: UserWarning: The reduce argument of torch.scatter with Tensor src is deprecated and will be removed in a future PyTorch release. Use torch.scatter_reduce instead for more reduction options. (Triggered internally at /pytorch/aten/src/ATen/native/TensorAdvancedIndexing.cpp:232.)
+  self.x_L_sparse.scatter_(dim=-1, index=index, src=(x_L - lb).view(batch_size, -1), reduce='add')
+
+build batch [1/1]
+Using Linf sparse perturbation. Perturbed dimensions: 5.
+Avg perturbation: 2.002119981625583e-05
+initial dynamic-forward+backward bounds (first 10 items): [6.112778186798096]
+Global lower bound: 6.112778186798096
+verified with init bound!
+Result: unsat
+Time: 7.495748281478882
+
+------------------------- COMMAND ------------------------------
+/data1/Kane/miniconda3/envs/abcrown25/bin/python /data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/abcrown.py --config /data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/exp_configs/vnncomp23/vggnet16.yaml --precompile_jit --onnx_path /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/vggnet16_2022/onnx/vgg16-7.onnx --vnnlib_path /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/vggnet16_2022/vnnlib/spec3_canoe.vnnlib --results_file /data1/Kane/ACT/audit_results/abcrown_nopgd_20260525/vggnet16_2022/0004__vgg16-7__spec3_canoe.result --timeout 1200.0 --save_adv_example --pgd_order=skip
+----------------------------------------------------------------
+

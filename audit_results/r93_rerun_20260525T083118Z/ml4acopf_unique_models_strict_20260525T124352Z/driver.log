@@ -1,0 +1,111 @@
+[ACT] Auto-detecting project root: .
+[ACT] Gurobi license found: modules/gurobi/gurobi.lic
+{
+  "benchmark": "ml4acopf_2024",
+  "instance_id": 0,
+  "status": "OK",
+  "cli_normalized": "OK",
+  "wall_s": 5.503581122960895,
+  "peak_rss_mb": 1007.625,
+  "returncode": 0,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/ml4acopf_unique_models_strict_20260525T124352Z/per_instance_ml4acopf_2024_20260525T124358555337Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/ml4acopf_unique_models_strict_20260525T124352Z",
+  "stdout_tail": "act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 22 inputs, 186 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 22 inputs, 186 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'ml4acopf_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed 14_ieee_prop9.vnnlib: 2 query(ies)\n/data1/Kane/ACT/act/back_end/solver/solver_hz.py:2201: RuntimeWarning: invalid value encountered in matmul\n  np.concatenate([C @ Gc, C @ Gb], axis=1)],\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cpu, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=ml4acopf_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cpu, timeout=30.0s)\n  [  1/1] ml4acopf_2024/./onnx/14_ieee_ml4acopf-linear-residual.onnx@./vnnlib/14_ieee_prop9.vnnlib: UNKNOWN (2.5s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.0 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/ml4acopf_unique_models_strict_20260525T124352Z/per_instance_ml4acopf_2024_20260525T124358555337Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+}
+{
+  "benchmark": "ml4acopf_2024",
+  "instance_id": 14,
+  "status": "EXIT_NONZERO",
+  "cli_normalized": "ERROR_WATCHDOG_EXIT_NONZERO",
+  "wall_s": 3.0020803189836442,
+  "peak_rss_mb": 823.3046875,
+  "returncode": 1,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/ml4acopf_unique_models_strict_20260525T124352Z/per_instance_ml4acopf_2024_watchdog_iid14_20260525T124402553702Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/ml4acopf_unique_models_strict_20260525T124352Z",
+  "stdout_tail": "evice=cpu, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=ml4acopf_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cpu, timeout=30.0s)\n  [  1/1] ml4acopf_2024/./onnx/118_ieee_ml4acopf.onnx@./vnnlib/118_ieee_prop2.vnnlib: ERROR_NotImplementedError (0.1s)  V=0 A=0 U=0 E=1  R=0\nTraceback (most recent call last):\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 1195, in cmd_verify\n    _run_vnnlib_verify(args)\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 549, in _run_vnnlib_verify\n    return _run_vnnlib_verify_hybridz(args)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 1080, in _run_vnnlib_verify_hybridz\n    raise RuntimeError(\nRuntimeError: VERIFICATION_RUN_FAILED: ERROR=1. Per-instance log preserved; inspect instance error fields.\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.0 min\n  ERROR        1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/ml4acopf_unique_models_strict_20260525T124352Z/per_instance_ml4acopf_2024_20260525T124401728967Z.json\n\n\u274c Test failed: VERIFICATION_RUN_FAILED: ERROR=1. Per-instance log preserved; inspect instance error fields.\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u274c vnnlib                    FAILED\n================================================================================\n\n"
+}
+{
+  "benchmark": "ml4acopf_2024",
+  "instance_id": 19,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 35.12118472403381,
+  "peak_rss_mb": 2246.1953125,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/ml4acopf_unique_models_strict_20260525T124352Z/per_instance_ml4acopf_2024_watchdog_iid19_20260525T124437676270Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/ml4acopf_unique_models_strict_20260525T124352Z",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: ml4acopf_2024/./onnx/300_ieee_ml4acopf-linear-nonresidual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/ml4acopf_2024/onnx/300_ieee_ml4acopf-linear-nonresidual.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: 300_ieee_ml4acopf-linear-nonresidual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 402]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 402)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 402 inputs, 3804 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 402 inputs, 3804 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'ml4acopf_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed 300_ieee_prop3.vnnlib: 276 query(ies)\n"
+}
+{
+  "benchmark": "ml4acopf_2024",
+  "instance_id": 23,
+  "status": "OK",
+  "cli_normalized": "OK",
+  "wall_s": 3.5025272319326177,
+  "peak_rss_mb": 951.60546875,
+  "returncode": 0,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/ml4acopf_unique_models_strict_20260525T124352Z/per_instance_ml4acopf_2024_20260525T124440351621Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/ml4acopf_unique_models_strict_20260525T124352Z",
+  "stdout_tail": "ib_loader.data_model_loader:  \u2713 Input shape: (1, 22)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 22 inputs, 186 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 22 inputs, 186 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'ml4acopf_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed 14_ieee_prop9.vnnlib: 2 query(ies)\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cpu, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=ml4acopf_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cpu, timeout=30.0s)\n  [  1/1] ml4acopf_2024/./onnx/14_ieee_ml4acopf-linear-nonresidual.onnx@./vnnlib/14_ieee_prop9.vnnlib: UNKNOWN (0.6s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.0 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/ml4acopf_unique_models_strict_20260525T124352Z/per_instance_ml4acopf_2024_20260525T124440351621Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+}
+{
+  "benchmark": "ml4acopf_2024",
+  "instance_id": 37,
+  "status": "OK",
+  "cli_normalized": "OK",
+  "wall_s": 7.004444560036063,
+  "peak_rss_mb": 1767.81640625,
+  "returncode": 0,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/ml4acopf_unique_models_strict_20260525T124352Z/per_instance_ml4acopf_2024_20260525T124447501343Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/ml4acopf_unique_models_strict_20260525T124352Z",
+  "stdout_tail": "r.data_model_loader:  \u2713 Input shape: (1, 198)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 198 inputs, 1696 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 198 inputs, 1696 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'ml4acopf_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed 118_ieee_prop2.vnnlib: 1 query(ies)\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cpu, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=ml4acopf_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cpu, timeout=30.0s)\n  [  1/1] ml4acopf_2024/./onnx/118_ieee_ml4acopf-linear-nonresidual.onnx@./vnnlib/118_ieee_prop2.vnnlib: UNKNOWN (4.3s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.1 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/ml4acopf_unique_models_strict_20260525T124352Z/per_instance_ml4acopf_2024_20260525T124447501343Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+}
+{
+  "benchmark": "ml4acopf_2024",
+  "instance_id": 42,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 128.47676646499895,
+  "peak_rss_mb": 818.484375,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/ml4acopf_unique_models_strict_20260525T124352Z/per_instance_ml4acopf_2024_watchdog_iid42_20260525T124656662561Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/ml4acopf_unique_models_strict_20260525T124352Z",
+  "stdout_tail": " device=cpu, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=ml4acopf_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cpu, timeout=30.0s)\n  [  1/1] ml4acopf_2024/./onnx/14_ieee_ml4acopf.onnx@./vnnlib/14_ieee_prop9.vnnlib: ERROR_NotImplementedError (0.2s)  V=0 A=0 U=0 E=1  R=0\nTraceback (most recent call last):\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 1195, in cmd_verify\n    _run_vnnlib_verify(args)\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 549, in _run_vnnlib_verify\n    return _run_vnnlib_verify_hybridz(args)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 1080, in _run_vnnlib_verify_hybridz\n    raise RuntimeError(\nRuntimeError: VERIFICATION_RUN_FAILED: ERROR=1. Per-instance log preserved; inspect instance error fields.\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.0 min\n  ERROR        1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/ml4acopf_unique_models_strict_20260525T124352Z/per_instance_ml4acopf_2024_20260525T124450488491Z.json\n\n\u274c Test failed: VERIFICATION_RUN_FAILED: ERROR=1. Per-instance log preserved; inspect instance error fields.\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u274c vnnlib                    FAILED\n================================================================================\n\n"
+}
+{
+  "benchmark": "ml4acopf_2024",
+  "instance_id": 56,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 35.22199360397644,
+  "peak_rss_mb": 2510.51171875,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/ml4acopf_unique_models_strict_20260525T124352Z/per_instance_ml4acopf_2024_watchdog_iid56_20260525T124731886955Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/ml4acopf_unique_models_strict_20260525T124352Z",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: ml4acopf_2024/./onnx/300_ieee_ml4acopf-linear-residual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/ml4acopf_2024/onnx/300_ieee_ml4acopf-linear-residual.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: 300_ieee_ml4acopf-linear-residual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 402]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 402)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 402 inputs, 3804 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 402 inputs, 3804 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'ml4acopf_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed 300_ieee_prop3.vnnlib: 276 query(ies)\n"
+}
+{
+  "benchmark": "ml4acopf_2024",
+  "instance_id": 60,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 35.22422067599837,
+  "peak_rss_mb": 7494.9921875,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/ml4acopf_unique_models_strict_20260525T124352Z/per_instance_ml4acopf_2024_watchdog_iid60_20260525T124807111758Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/ml4acopf_unique_models_strict_20260525T124352Z",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: ml4acopf_2024/./onnx/118_ieee_ml4acopf-linear-residual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/ml4acopf_2024/onnx/118_ieee_ml4acopf-linear-residual.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: 118_ieee_ml4acopf-linear-residual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 198]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 198)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 198 inputs, 1696 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 198 inputs, 1696 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'ml4acopf_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed 118_ieee_prop2.vnnlib: 1 query(ies)\n"
+}
+{
+  "benchmark": "ml4acopf_2024",
+  "instance_id": 65,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 35.121826865011826,
+  "peak_rss_mb": 1896.06640625,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/ml4acopf_unique_models_strict_20260525T124352Z/per_instance_ml4acopf_2024_watchdog_iid65_20260525T124842234777Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/ml4acopf_unique_models_strict_20260525T124352Z",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: ml4acopf_2024/./onnx/300_ieee_ml4acopf.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/ml4acopf_2024/onnx/300_ieee_ml4acopf.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: 300_ieee_ml4acopf.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 402]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 402)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 402 inputs, 3804 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 402 inputs, 3804 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'ml4acopf_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed 300_ieee_prop3.vnnlib: 276 query(ies)\n"
+}
+[watchdog] summary written: /data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/ml4acopf_unique_models_strict_20260525T124352Z/watchdog_summary.json

@@ -1,0 +1,19 @@
+BASE=/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/oom_rerun_20260527T012601Z
+Wed May 27 01:26:01 AM UTC 2026
+=== Wed May 27 01:26:01 AM UTC 2026 :: cuda OOM rerun :: ml4acopf_2024 wall=120s ids=58,59,60 ===
+  rc=1
+  counts: {'OK': 2, 'UNKNOWN_TIMEOUT': 1, 'UNKNOWN_RESOURCE_LIMIT': 0, 'ERROR': 0}
+=== Wed May 27 01:31:10 AM UTC 2026 :: cuda OOM rerun :: metaroom_2023 wall=180s ids=30,33 ===
+  rc=0
+  counts: {'OK': 2, 'UNKNOWN_TIMEOUT': 0, 'UNKNOWN_RESOURCE_LIMIT': 0, 'ERROR': 0}
+=== Wed May 27 01:33:38 AM UTC 2026 :: cuda OOM rerun :: tinyimagenet_2024 wall=180s ids=66,67 ===
+  rc=0
+  counts: {'OK': 2, 'UNKNOWN_TIMEOUT': 0, 'UNKNOWN_RESOURCE_LIMIT': 0, 'ERROR': 0}
+=== Wed May 27 01:34:17 AM UTC 2026 :: cuda OOM rerun :: relusplitter wall=120s ids=14 ===
+  rc=0
+  counts: {'OK': 1, 'UNKNOWN_TIMEOUT': 0, 'UNKNOWN_RESOURCE_LIMIT': 0, 'ERROR': 0}
+=== Wed May 27 01:35:10 AM UTC 2026 :: cuda OOM rerun :: cifar100_2024 wall=180s ids=100,101,102,103,104,105,106,107,109,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,137,138,140,141,142,143,146,147,148,149,150,151,152,155,156,157,159,161,162,163,164,165,167,169,170,171,172,174,175,176,177,178,179,181,184,185,186,187,188,189,190,191,192,193,195,197,198 ===
+  rc=0
+  counts: {'OK': 79, 'UNKNOWN_TIMEOUT': 0, 'UNKNOWN_RESOURCE_LIMIT': 0, 'ERROR': 0}
+Wed May 27 02:03:09 AM UTC 2026
+=== oom_rerun done ===

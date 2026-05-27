@@ -1,0 +1,72 @@
+{
+  "schema_version": 2,
+  "strict_bounded_failure": true,
+  "counts": {
+    "OK": 2,
+    "UNKNOWN_TIMEOUT": 0,
+    "UNKNOWN_RESOURCE_LIMIT": 3,
+    "ERROR": 0
+  },
+  "results": [
+    {
+      "benchmark": "metaroom_2023",
+      "instance_id": 0,
+      "status": "UNKNOWN_RESOURCE_LIMIT",
+      "cli_normalized": "UNKNOWN_RESOURCE_LIMIT",
+      "wall_s": 16.50919971393887,
+      "peak_rss_mb": 17565.3359375,
+      "returncode": -15,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_round2_20260525T225241Z/metaroom_2023/per_instance_metaroom_2023_watchdog_iid0_20260526T011853774059Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_round2_20260525T225241Z/metaroom_2023",
+      "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: metaroom_2023/./onnx/6cnn_tz_35_5_no_custom_OP.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/metaroom_2023/onnx/6cnn_tz_35_5_no_custom_OP.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: 6cnn_tz_35_5_no_custom_OP.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 3, 32, 56]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 3, 32, 56)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 5376 inputs, 20 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 5376 inputs, 20 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'metaroom_2023'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed spec_idx_176_eps_0.00001000.vnnlib: 19 query(ies)\n"
+    },
+    {
+      "benchmark": "metaroom_2023",
+      "instance_id": 1,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 36.0206129780272,
+      "peak_rss_mb": 2339.5390625,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_round2_20260525T225241Z/metaroom_2023/per_instance_metaroom_2023_20260526T011928929831Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_round2_20260525T225241Z/metaroom_2023",
+      "stdout_tail": "ape: (1, 3, 32, 56)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 5376 inputs, 20 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 5376 inputs, 20 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'metaroom_2023'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed spec_idx_79_eps_0.00001000.vnnlib: 19 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cpu, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=metaroom_2023 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cpu, timeout=60.0s)\n  [  1/1] metaroom_2023/./onnx/4cnn_tz_65_10_no_custom_OP.onnx@./vnnlib/spec_idx_79_eps_0.00001000.vnnlib: CERTIFIED (33.1s)  V=1 A=0 U=0 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.6 min\n  CERTIFIED    1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_round2_20260525T225241Z/metaroom_2023/per_instance_metaroom_2023_20260526T011928929831Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "metaroom_2023",
+      "instance_id": 2,
+      "status": "UNKNOWN_RESOURCE_LIMIT",
+      "cli_normalized": "UNKNOWN_RESOURCE_LIMIT",
+      "wall_s": 15.510575055028312,
+      "peak_rss_mb": 16839.20703125,
+      "returncode": -15,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_round2_20260525T225241Z/metaroom_2023/per_instance_metaroom_2023_watchdog_iid2_20260526T011945306309Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_round2_20260525T225241Z/metaroom_2023",
+      "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: metaroom_2023/./onnx/6cnn_tz_65_10_no_custom_OP.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/metaroom_2023/onnx/6cnn_tz_65_10_no_custom_OP.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: 6cnn_tz_65_10_no_custom_OP.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 3, 32, 56]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 3, 32, 56)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 5376 inputs, 20 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 5376 inputs, 20 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'metaroom_2023'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed spec_idx_196_eps_0.00001000.vnnlib: 19 query(ies)\n"
+    },
+    {
+      "benchmark": "metaroom_2023",
+      "instance_id": 3,
+      "status": "UNKNOWN_RESOURCE_LIMIT",
+      "cli_normalized": "UNKNOWN_RESOURCE_LIMIT",
+      "wall_s": 15.812423399067484,
+      "peak_rss_mb": 17550.34765625,
+      "returncode": -15,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_round2_20260525T225241Z/metaroom_2023/per_instance_metaroom_2023_watchdog_iid3_20260526T012001119643Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_round2_20260525T225241Z/metaroom_2023",
+      "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: metaroom_2023/./onnx/6cnn_ry_30_5_no_custom_OP.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/metaroom_2023/onnx/6cnn_ry_30_5_no_custom_OP.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: 6cnn_ry_30_5_no_custom_OP.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 3, 32, 56]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 3, 32, 56)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 5376 inputs, 20 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 5376 inputs, 20 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'metaroom_2023'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed spec_idx_114_eps_0.00000436.vnnlib: 19 query(ies)\n"
+    },
+    {
+      "benchmark": "metaroom_2023",
+      "instance_id": 4,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 35.02286178898066,
+      "peak_rss_mb": 2301.34765625,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_round2_20260525T225241Z/metaroom_2023/per_instance_metaroom_2023_20260526T012035358344Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_round2_20260525T225241Z/metaroom_2023",
+      "stdout_tail": "hape: (1, 3, 32, 56)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 5376 inputs, 20 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 5376 inputs, 20 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'metaroom_2023'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed spec_idx_23_eps_0.00000436.vnnlib: 19 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cpu, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=metaroom_2023 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cpu, timeout=60.0s)\n  [  1/1] metaroom_2023/./onnx/4cnn_ry_47_7_no_custom_OP.onnx@./vnnlib/spec_idx_23_eps_0.00000436.vnnlib: CERTIFIED (32.2s)  V=1 A=0 U=0 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.5 min\n  CERTIFIED    1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/overnight_cpu_round2_20260525T225241Z/metaroom_2023/per_instance_metaroom_2023_20260526T012035358344Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    }
+  ]
+}

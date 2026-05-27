@@ -1,0 +1,34 @@
+=== CORA STRICT: bench=soundnessbench idx=13  timeout=150  start=2026-05-27 12:53:54
+=== onnx=onnx/model.onnx
+=== vnnlib=vnnlib/model_12.vnnlib
+prepare_instance(soundnessbench,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/soundnessbench/onnx/model.onnx,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/soundnessbench/vnnlib/model_12.vnnlib)...
+--- Loading network... done
+--- GPU available: true
+--- Loading specification... done
+--- Storing MATLAB file... done
+______________________________
+ neuralNetwork/verify options 
+------------------------------
+ - GPU: true                                                                                                                                                                                                                                                                                                  
+ - Poly. Method: bounds                                     
+ - Batchsize: 32                                                                                                                                                                          
+ - Interval Center: true                          
+ - Num. init. Generators: Inf 
+ - Num. approx. Error (per nonl. Layer): 50 
+ - approx. Error Heuristic: sensitivity*length 
+ - Falsification Method: none 
+ - Refinement Method: naive     
+ - Num. of Splits: 2                                                                                  
+ - Num. of Dimensions: 1                          
+ - Num. of Neuron-Splits: 1     
+ - Num. of ReLU-Tightening Constraints: 0 
+______________________________
+
+run_instance(soundnessbench,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/soundnessbench/onnx/model.onnx,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/soundnessbench/vnnlib/model_12.vnnlib,/data1/Kane/ACT/audit_results/cora_truestrict_20260527/soundnessbench/0013__model__model_12.result,150,0)...
+--- Loading MATLAB file... done
+--- Deleting MATLAB file... done
+--- GPU available: true
+--- Running verification... done
+Writing results...
+--- opening results file ... done
+--- writing file ...=== CORA STRICT: verdict=unknown wall=10.663s

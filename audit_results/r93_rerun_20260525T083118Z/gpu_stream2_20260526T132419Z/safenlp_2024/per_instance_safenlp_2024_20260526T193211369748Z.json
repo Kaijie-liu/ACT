@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "benchmark": "safenlp_2024",
+  "formal_mode": true,
+  "timestamp_utc": "20260526T193211369748Z",
+  "canonical_root": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks",
+  "receipt_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/gpu_stream2_20260526T132419Z/safenlp_2024",
+  "wall_min": 0.009453010559082032,
+  "counts": {
+    "CERTIFIED": 0,
+    "FALSIFIED": 1,
+    "UNKNOWN": 0,
+    "ERROR": 0
+  },
+  "run_status": "PASSED",
+  "per_instance": [
+    {
+      "official_instance_id": 484,
+      "benchmark": "safenlp_2024",
+      "onnx_model": "onnx/ruarobot/perturbations_0.onnx",
+      "vnnlib_spec": "vnnlib/ruarobot/hyperrectangle_5199.vnnlib",
+      "model_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/safenlp_2024/onnx/ruarobot/perturbations_0.onnx",
+      "spec_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/safenlp_2024/vnnlib/ruarobot/hyperrectangle_5199.vnnlib",
+      "internal_status": "SAT",
+      "reportable_status": "FALSIFIED",
+      "cli_normalized": "FALSIFIED",
+      "count_bucket": "FALSIFIED",
+      "queries": [
+        {
+          "query_index": 0,
+          "internal_status": "SAT",
+          "reportable_status": "FALSIFIED",
+          "receipt_path": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/gpu_stream2_20260526T132419Z/safenlp_2024/safenlp_2024_484_q0_small_dense_lp_witness_0.json"
+        }
+      ],
+      "q_statuses": [
+        "SAT"
+      ],
+      "q_reportables": [
+        "FALSIFIED"
+      ],
+      "q_receipts": [
+        "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/gpu_stream2_20260526T132419Z/safenlp_2024/safenlp_2024_484_q0_small_dense_lp_witness_0.json"
+      ],
+      "error": null,
+      "wall_s": 0.5671520233154297,
+      "timeout_s": 60.0,
+      "instance_budget_exhausted": false
+    }
+  ]
+}

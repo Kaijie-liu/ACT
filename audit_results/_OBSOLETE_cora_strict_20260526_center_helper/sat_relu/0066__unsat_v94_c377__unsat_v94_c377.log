@@ -1,0 +1,34 @@
+=== CORA STRICT: bench=sat_relu idx=66  timeout=100  start=2026-05-26 23:53:32
+=== onnx=onnx/unsat_v94_c377.onnx
+=== vnnlib=vnnlib/unsat_v94_c377.vnnlib
+prepare_instance(sat_relu,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v94_c377.onnx,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/vnnlib/unsat_v94_c377.vnnlib)...
+--- Loading network... done
+--- GPU available: true
+--- Loading specification... done
+--- Storing MATLAB file... done
+______________________________
+ neuralNetwork/verify options 
+------------------------------
+ - GPU: true                                                                                                                                                                                                                                                                                                  
+ - Poly. Method: bounds                                     
+ - Batchsize: 1024                                                                                                                          
+ - Interval Center: false                 
+ - Num. init. Generators: Inf 
+ - Num. approx. Error (per nonl. Layer): Inf 
+ - approx. Error Heuristic: sensitivity*length 
+ - Falsification Method: center 
+ - Refinement Method: naive     
+ - Num. of Splits: 2                                                                                  
+ - Num. of Dimensions: 1                          
+ - Num. of Neuron-Splits: 0     
+ - Num. of ReLU-Tightening Constraints: 0 
+______________________________
+
+run_instance(sat_relu,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v94_c377.onnx,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/vnnlib/unsat_v94_c377.vnnlib,/data1/Kane/ACT/audit_results/cora_strict_20260526/sat_relu/0066__unsat_v94_c377__unsat_v94_c377.result,100,0)...
+--- Loading MATLAB file... done
+--- Deleting MATLAB file... done
+--- GPU available: true
+--- Running verification... done
+Writing results...
+--- opening results file ... done
+--- writing file ...=== CORA STRICT: verdict=unknown wall=1.041s

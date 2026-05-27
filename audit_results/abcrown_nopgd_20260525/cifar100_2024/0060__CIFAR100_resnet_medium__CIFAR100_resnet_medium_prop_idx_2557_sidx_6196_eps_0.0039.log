@@ -1,0 +1,2914 @@
+[0;93m2026-05-26 20:41:11.519603903 [W:onnxruntime:Default, device_discovery.cc:283 GetGpuDevices] Failed to detect devices under "/sys/class/drm/card0": device_discovery.cc:93 ReadFileContents Failed to open file: "/sys/class/drm/card0/device/vendor"[m
+INFO     20:41:12     [tensor_storage.py:70] Hugepage enabled for branch-and-bound domains.
+Configurations:
+
+general:
+  device: cuda
+  seed: 100
+  conv_mode: patches
+  deterministic: false
+  double_fp: false
+  loss_reduction_func: sum
+  sparse_alpha: true
+  sparse_interm: true
+  save_adv_example: true
+  verify_onnxruntime_output: false
+  eval_adv_example: false
+  onnx_adv_example: false
+  show_adv_example: false
+  precompile_jit: true
+  reset_seed_after_precompile: false
+  prepare_only: false
+  complete_verifier: bab
+  enable_incomplete_verification: true
+  csv_name: instances.csv
+  results_file: /data1/Kane/ACT/audit_results/abcrown_nopgd_20260525/cifar100_2024/0060__CIFAR100_resnet_medium__CIFAR100_resnet_medium_prop_idx_2557_sidx_6196_eps_0.0039.result
+  root_path: ../../vnncomp2025_benchmarks/benchmarks/cifar100_2024
+  deterministic_opt: false
+  graph_optimizer: 'Customized("custom_graph_optimizer", "default_optimizer")'
+  buffer_has_batchdim: false
+  save_output: false
+  output_file: out.pkl
+  return_optimized_model: false
+  store_all_specs_on_cpu: false
+  adhoc_tuning: null
+model:
+  name: null
+  path: null
+  onnx_path: /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/onnx/CIFAR100_resnet_medium.onnx
+  onnx_path_prefix: ''
+  cache_onnx_conversion: false
+  debug_onnx: false
+  onnx_quirks: null
+  input_shape: null
+  onnx_loader: default_onnx_and_vnnlib_loader
+  onnx_optimization_flags: [merge_bn]
+  onnx_vnnlib_joint_optimization_flags: none
+  check_optimized: false
+  flatten_final_output: false
+  optimize_graph: null
+  with_jacobian: false
+data:
+  start: 0
+  end: 10000
+  select_instance: null
+  num_outputs: 10
+  mean: 0.0
+  std: 1.0
+  pkl_path: null
+  dataset: null
+  data_filter_path: null
+  data_idx_file: null
+specification:
+  type: lp
+  robustness_type: verified-acc
+  norm: .inf
+  epsilon: null
+  epsilon_min: 0.0
+  vnnlib_path: /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/vnnlib/CIFAR100_resnet_medium_prop_idx_2557_sidx_6196_eps_0.0039.vnnlib
+  vnnlib_path_prefix: ''
+  shrink_eps: null
+  rhs_offset: null
+solver:
+  batch_size: 256
+  auto_enlarge_batch_size: true
+  batched_crown_auto_enlarge_max_vram_ratio: 0.9
+  min_batch_size_ratio: 0.1
+  use_float64_in_last_iteration: false
+  early_stop_patience: 10
+  start_save_best: 0.5
+  bound_prop_method: alpha-crown
+  init_bound_prop_method: same
+  prune_after_crown: true
+  optimize_disjuncts_separately: false
+  build_batch_size: 1000000
+  skip_with_refined_bound: true
+  forward_before_compute_bounds: false
+  crown:
+    batch_size: 1000000000
+    max_crown_size: 1000000000
+    activation_bound_option: adaptive
+    compare_crown_with_ibp: false
+  alpha-crown:
+    alpha: true
+    lr_alpha: 0.25
+    iteration: 20
+    share_alphas: false
+    lr_decay: 0.98
+    full_conv_alpha: false
+    max_coeff_mul: .inf
+    matmul_share_alphas: false
+    disable_optimization: []
+    max_time: 1.0
+    alpha_dtype: float16
+  invprop:
+    apply_output_constraints_to: []
+    tighten_input_bounds: false
+    best_of_oc_and_no_oc: false
+    directly_optimize: []
+    oc_lr: 0.1
+    share_gammas: false
+  beta-crown:
+    lr_alpha: 0.1
+    lr_beta: 0.2
+    lr_decay: 0.98
+    optimizer: adam
+    iteration: 10
+    beta: true
+    beta_warmup: true
+    enable_opt_interm_bounds: false
+    all_node_split_LP: false
+  forward:
+    refine: false
+    max_dim: 10000
+    reset_threshold: 1.0
+  intermediate_refinement:
+    enabled: false
+    batch_size: 10
+    opt_coeffs: false
+    opt_bias: false
+    lr: 0.05
+    layers: [-1]
+    max_domains: 1000
+  mip:
+    unstable_neuron_threshold: 0
+    parallel_solvers: null
+    solver_threads: 1
+    refine_neuron_timeout: 15
+    refine_neuron_time_percentage: 0.8
+    early_stop: true
+    adv_warmup: true
+    mip_solver: gurobi
+    skip_unsafe: false
+    topk_filter: 1.0
+    sliding_window: -1
+    extra_constraint: false
+    refine_neuron_timeout_increasement: 0
+    timeout_neuron_percentage: 0.3
+    remaining_timeout_threshold: 1
+    remove_unstable_neurons: false
+    lp_solver: false
+bab:
+  max_domains: .inf
+  decision_thresh: 0
+  timeout: 100.0
+  timeout_scale: 1
+  max_iterations: -1
+  override_timeout: null
+  get_upper_bound: false
+  pruning_in_iteration: true
+  pruning_in_iteration_ratio: 0.2
+  sort_targets: false
+  batched_domain_list: true
+  optimized_interm: ''
+  interm_transfer: true
+  recompute_interm: false
+  sort_domain_interval: -1
+  vanilla_crown: false
+  tree_traversal: depth_first
+  hugetensor_allocator: true
+  cut:
+    enabled: false
+    cuts_path: null
+    implication: false
+    bab_cut: false
+    lp_cut: false
+    method: null
+    lr: 0.01
+    lr_decay: 1.0
+    iteration: 100
+    bab_iteration: -1
+    early_stop_patience: -1
+    lr_beta: 0.02
+    number_cuts: 50
+    topk_cuts_in_filter: 1000
+    batch_size_primal: 100
+    max_num: 1000000000
+    patches_cut: false
+    cplex_cuts: false
+    cplex_cuts_wait: 0
+    cplex_cuts_revpickup: true
+    cut_reference_bounds: true
+    fix_intermediate_bounds: false
+    _tmp_cuts: null
+    fixed_cuts: false
+    add_implied_cuts: false
+    add_input_cuts: false
+    biccos:
+      enabled: false
+      constraint_strengthening: true
+      recursively_strengthening: false
+      drop_ratio: 0.5
+      verified_bonus: 0.3
+      max_infer_iter: 20
+      max_domain: 10000.0
+      heuristic: neuron_influence_score
+      save_biccos_cuts: false
+      multi_tree_branching:
+        enabled: false
+        restore_best_tree: false
+        keep_n_best_domains: 1
+        k_splits: 1
+        iterations: 1
+  clip_n_verify:
+    rearrange_constraints: false
+    alpha_crown: false
+    prune: false
+    final_layer: false
+    clip_input_domain:
+      enabled: false
+      clip_type: relaxed
+      heuristic_K: 0.0
+      clip_iterations: 1
+      clip_calculate_volume_metrics: false
+    clip_interm_domain:
+      enabled: true
+      with_input: false
+      clip_in_alpha_crown: false
+      topk_objective: 20
+  branching:
+    method: kfsb
+    candidates: 7
+    reduceop: max
+    enable_intermediate_bound_opt: false
+    branching_input_and_activation: false
+    branching_input_and_activation_order: [input, relu]
+    branching_input_iterations: 30
+    branching_relu_iterations: 50
+    nonlinear_split:
+      method: bbps
+      disable: false
+      branching_point_method: uniform
+      num_branches: 2
+      filter: false
+      filter_beta: false
+      filter_clamp: false
+      filter_batch_size: 10000
+      filter_iterations: 25
+      relu_only: false
+      loose_tanh_threshold: null
+      branching_point:
+        db_path: branching_points.pt
+        num_iterations: 1000
+        batch_size: 1000000
+        range_l: -5.0
+        range_u: 5.0
+        log_interval: 100
+        step_size_1d: 0.01
+        step_size: 0.2
+    input_split:
+      split_hint: null
+      enable: false
+      reorder_bab: false
+      input_dim_threshold: 20
+      adv_check: 0
+      split_partitions: 2
+      sb_margin_weight: 1.0
+      sb_sum: false
+      sb_primary_spec: null
+      bf_backup_thresh: -1
+      bf_rhs_offset: 0
+      bf_iters: 1000000000.0
+      bf_batch_size: 100000
+      bf_zero_crossing_score: false
+      touch_zero_score: 0
+      ibp_enhancement: false
+      compare_with_old_bounds: true
+      update_rhs_with_attack: false
+      sb_coeff_thresh: 0.001
+      sort_index: null
+      sort_descending: true
+      show_progress: false
+      presplit_domains: null
+      skip_getting_worst_domain: false
+  attack:
+    enabled: false
+    beam_candidates: 8
+    beam_depth: 7
+    max_dive_fix_ratio: 0.8
+    min_local_free_ratio: 0.2
+    mip_start_iteration: 5
+    mip_timeout: 30.0
+    adv_pool_threshold: null
+    refined_mip_attacker: false
+    refined_batch_size: null
+attack:
+  general_attack: true
+  pgd_order: skip
+  pgd_steps: 100
+  pgd_restarts: 10
+  pgd_batch_size: 100000000
+  pgd_early_stop: true
+  pgd_lr_decay: 0.99
+  pgd_alpha: auto
+  pgd_alpha_scale: false
+  pgd_loss_mode: null
+  pgd_restart_when_stuck: false
+  enable_mip_attack: false
+  adv_saver: default_adv_saver
+  adv_verifier: default_adv_verifier
+  early_stop_condition: default_early_stop_condition
+  adv_example_finalizer: default_adv_example_finalizer
+  pgd_loss: default_pgd_loss
+  cex_path: ./test_cex.txt
+  attack_mode: PGD
+  attack_tolerance: 0.0
+  attack_func: attack_with_general_specs
+  gama_lambda: 10.0
+  gama_decay: 0.9
+  input_split:
+    pgd_steps: 100
+    pgd_restarts: 30
+    pgd_alpha: auto
+  input_split_check_adv:
+    enabled: auto
+    pgd_steps: 5
+    pgd_restarts: 5
+    pgd_alpha: auto
+    max_num_domains: 10
+debug:
+  view_model: false
+  lp_test: null
+  rescale_vnnlib_ptb: null
+  test_optimized_bounds: false
+  test_optimized_bounds_after_n_iterations: 0
+  print_verbose_decisions: false
+  sanity_check: null
+  save_minimal_config: null
+  save_minimal_config_omit_keys: []
+/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/read_vnnlib.py:184: DeprecationWarning: numpy.core.numeric is deprecated and has been renamed to numpy._core.numeric. The numpy._core namespace contains private NumPy internals and its use is discouraged, as NumPy internals can change without warning in any release. In practice, most real-world usage of numpy.core is to access functionality in the public NumPy API. If that is the case, use the public NumPy API. If not, you are using NumPy internals. If you would still like to access an internal attribute, use numpy._core.numeric._frombuffer.
+  final_rv, old_file_sha256 = pickle.load(extf)
+/data1/Kane/miniconda3/envs/abcrown25/lib/python3.11/site-packages/onnx2pytorch/convert/model.py:151: UserWarning: Using experimental implementation that allows 'batch_size > 1'.Batchnorm layers could potentially produce false outputs.
+  warnings.warn(
+/data1/Kane/miniconda3/envs/abcrown25/lib/python3.11/site-packages/onnx2pytorch/utils.py:21: TracerWarning: Converting a tensor to a Python boolean might cause the trace to be incorrect. We can't record the data flow of Python values, so this value will be treated as a constant in the future. This means that the trace might not generalize to other inputs!
+  return value.ndim == 0 or value.shape == torch.Size([1])
+/data1/Kane/miniconda3/envs/abcrown25/lib/python3.11/site-packages/onnx2pytorch/operations/add.py:34: TracerWarning: Converting a tensor to a Python boolean might cause the trace to be incorrect. We can't record the data flow of Python values, so this value will be treated as a constant in the future. This means that the trace might not generalize to other inputs!
+  elif all(x == 1 for x in input[0].shape):
+
+Experiments at Tue May 26 20:41:12 2026 on dell-pro-max-tower-t2
+Pre-compile jit kernels on a toy network...
+JIT kernels compiled in 0.9299s.
+Internal results will be saved to /data1/Kane/ACT/audit_results/abcrown_nopgd_20260525/cifar100_2024/0060__CIFAR100_resnet_medium__CIFAR100_resnet_medium_prop_idx_2557_sidx_6196_eps_0.0039.result.
+
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% idx: 0, vnnlib ID: 0 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Using onnx /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/onnx/CIFAR100_resnet_medium.onnx
+Using vnnlib /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/vnnlib/CIFAR100_resnet_medium_prop_idx_2557_sidx_6196_eps_0.0039.vnnlib
+Precompiled vnnlib file found at /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/vnnlib/CIFAR100_resnet_medium_prop_idx_2557_sidx_6196_eps_0.0039.vnnlib.compiled
+Loading onnx /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/onnx/CIFAR100_resnet_medium.onnx with quirks {}
+Onnx optimization with flags: ['merge_bn']
+Found existed optimized onnx model at /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/onnx/CIFAR100_resnet_medium.onnx.optimized
+Finished onnx model loading in 0.0712 seconds
+Finished vnnlib processing in 0.017670 seconds
+Model: BoundedModule(
+  (/input-1): BoundInput(name=/input-1, inputs=[], perturbed=True)
+  (/43): BoundParams(name=/43, inputs=[], perturbed=False)
+  (/44): BoundParams(name=/44, inputs=[], perturbed=False)
+  (/45): BoundParams(name=/45, inputs=[], perturbed=False)
+  (/46): BoundParams(name=/46, inputs=[], perturbed=False)
+  (/47): BoundParams(name=/47, inputs=[], perturbed=False)
+  (/48): BoundParams(name=/48, inputs=[], perturbed=False)
+  (/49): BoundParams(name=/49, inputs=[], perturbed=False)
+  (/50): BoundParams(name=/50, inputs=[], perturbed=False)
+  (/51): BoundParams(name=/51, inputs=[], perturbed=False)
+  (/52): BoundParams(name=/52, inputs=[], perturbed=False)
+  (/53): BoundParams(name=/53, inputs=[], perturbed=False)
+  (/54): BoundParams(name=/54, inputs=[], perturbed=False)
+  (/55): BoundParams(name=/55, inputs=[], perturbed=False)
+  (/56): BoundParams(name=/56, inputs=[], perturbed=False)
+  (/57): BoundParams(name=/57, inputs=[], perturbed=False)
+  (/58): BoundParams(name=/58, inputs=[], perturbed=False)
+  (/59): BoundParams(name=/59, inputs=[], perturbed=False)
+  (/60): BoundParams(name=/60, inputs=[], perturbed=False)
+  (/61): BoundParams(name=/61, inputs=[], perturbed=False)
+  (/62): BoundParams(name=/62, inputs=[], perturbed=False)
+  (/63): BoundParams(name=/63, inputs=[], perturbed=False)
+  (/64): BoundParams(name=/64, inputs=[], perturbed=False)
+  (/65): BoundParams(name=/65, inputs=[], perturbed=False)
+  (/66): BoundParams(name=/66, inputs=[], perturbed=False)
+  (/67): BoundParams(name=/67, inputs=[], perturbed=False)
+  (/68): BoundParams(name=/68, inputs=[], perturbed=False)
+  (/69): BoundParams(name=/69, inputs=[], perturbed=False)
+  (/70): BoundParams(name=/70, inputs=[], perturbed=False)
+  (/71): BoundParams(name=/71, inputs=[], perturbed=False)
+  (/72): BoundParams(name=/72, inputs=[], perturbed=False)
+  (/73): BoundParams(name=/73, inputs=[], perturbed=False)
+  (/74): BoundParams(name=/74, inputs=[], perturbed=False)
+  (/75): BoundParams(name=/75, inputs=[], perturbed=False)
+  (/76): BoundParams(name=/76, inputs=[], perturbed=False)
+  (/77): BoundParams(name=/77, inputs=[], perturbed=False)
+  (/78): BoundParams(name=/78, inputs=[], perturbed=False)
+  (/79): BoundParams(name=/79, inputs=[], perturbed=False)
+  (/80): BoundParams(name=/80, inputs=[], perturbed=False)
+  (/81): BoundParams(name=/81, inputs=[], perturbed=False)
+  (/82): BoundParams(name=/82, inputs=[], perturbed=False)
+  (/83): BoundParams(name=/83, inputs=[], perturbed=False)
+  (/84): BoundParams(name=/84, inputs=[], perturbed=False)
+  (/input): BoundConv(name=/input, inputs=[/input-1, /43, /44], perturbed=True)
+  (/input-4): BoundRelu(name=/input-4, inputs=[/input], perturbed=True)
+  (/input-8): BoundConv(name=/input-8, inputs=[/input-4, /45, /46], perturbed=True)
+  (/input-12): BoundRelu(name=/input-12, inputs=[/input-8], perturbed=True)
+  (/89): BoundConv(name=/89, inputs=[/input-12, /47, /48], perturbed=True)
+  (/90): BoundConv(name=/90, inputs=[/input-4, /49, /50], perturbed=True)
+  (/91): BoundAdd(name=/91, inputs=[/89, /90], perturbed=True)
+  (/input-16): BoundConv(name=/input-16, inputs=[/91, /51, /52], perturbed=True)
+  (/input-20): BoundRelu(name=/input-20, inputs=[/input-16], perturbed=True)
+  (/94): BoundConv(name=/94, inputs=[/input-20, /53, /54], perturbed=True)
+  (/95): BoundAdd(name=/95, inputs=[/94, /91], perturbed=True)
+  (/input-24): BoundConv(name=/input-24, inputs=[/95, /55, /56], perturbed=True)
+  (/input-28): BoundRelu(name=/input-28, inputs=[/input-24], perturbed=True)
+  (/98): BoundConv(name=/98, inputs=[/input-28, /57, /58], perturbed=True)
+  (/99): BoundAdd(name=/99, inputs=[/98, /95], perturbed=True)
+  (/input-32): BoundConv(name=/input-32, inputs=[/99, /59, /60], perturbed=True)
+  (/input-36): BoundRelu(name=/input-36, inputs=[/input-32], perturbed=True)
+  (/102): BoundConv(name=/102, inputs=[/input-36, /61, /62], perturbed=True)
+  (/103): BoundAdd(name=/103, inputs=[/102, /99], perturbed=True)
+  (/input-40): BoundConv(name=/input-40, inputs=[/103, /63, /64], perturbed=True)
+  (/input-44): BoundRelu(name=/input-44, inputs=[/input-40], perturbed=True)
+  (/106): BoundConv(name=/106, inputs=[/input-44, /65, /66], perturbed=True)
+  (/107): BoundConv(name=/107, inputs=[/103, /67, /68], perturbed=True)
+  (/108): BoundAdd(name=/108, inputs=[/106, /107], perturbed=True)
+  (/input-48): BoundConv(name=/input-48, inputs=[/108, /69, /70], perturbed=True)
+  (/input-52): BoundRelu(name=/input-52, inputs=[/input-48], perturbed=True)
+  (/111): BoundConv(name=/111, inputs=[/input-52, /71, /72], perturbed=True)
+  (/112): BoundAdd(name=/112, inputs=[/111, /108], perturbed=True)
+  (/input-56): BoundConv(name=/input-56, inputs=[/112, /73, /74], perturbed=True)
+  (/input-60): BoundRelu(name=/input-60, inputs=[/input-56], perturbed=True)
+  (/115): BoundConv(name=/115, inputs=[/input-60, /75, /76], perturbed=True)
+  (/116): BoundAdd(name=/116, inputs=[/115, /112], perturbed=True)
+  (/input-64): BoundConv(name=/input-64, inputs=[/116, /77, /78], perturbed=True)
+  (/input-68): BoundRelu(name=/input-68, inputs=[/input-64], perturbed=True)
+  (/119): BoundConv(name=/119, inputs=[/input-68, /79, /80], perturbed=True)
+  (/120): BoundAdd(name=/120, inputs=[/119, /116], perturbed=True)
+  (/121): BoundFlatten(name=/121, inputs=[/120], perturbed=True)
+  (/input-72): BoundLinear(name=/input-72, inputs=[/121, /81, /82], perturbed=True)
+  (/123): BoundRelu(name=/123, inputs=[/input-72], perturbed=True)
+  (/124): BoundLinear(name=/124, inputs=[/123, /83, /84], perturbed=True)
+)
+Original output in the first batch: tensor([[ -9.64820004,  -4.49345398,  -6.64346600,  -8.62534809,  -2.21463084,
+          -8.83027077,  -9.97347832,  -5.20819187,  -8.41630936,  -9.95631123,
+          -4.99632454,  -6.52198458,  -9.22259617,  -7.07847261,  -7.31610394,
+          -8.00303459,  -7.44790077, -12.42022896,  -7.05017710, -10.31999016,
+         -13.82349110,  -7.97800779,  -4.19101286, -10.06161308, -10.03424072,
+          -6.40174723,  -4.52551985,  -2.46535659,  -9.12599945,  -6.80047369,
+         -11.18046284, -10.05278111,  -3.00247574,  -8.17257118,  -8.50520420,
+          -7.47404957,  -5.90138674,  -7.60585117,  -7.35409355,  -7.37693453,
+          -8.70227528,  -9.48141289,  -6.82072878,  -7.38982439,  -4.95728827,
+          -5.68723583,  -9.36415386,  -8.34671021,  -7.75226259, -11.87108803,
+          -3.23326659,  -6.79689598,  -9.86961174, -11.00271988, -11.91431141,
+          -4.47109079,  -9.93415070,  -9.10207844,  -9.37151527,  -6.67232084,
+         -16.13169861,  -7.11038065,  -9.97099495,  -3.91104531,  -2.22958660,
+          -6.74081278,  -5.63375807,  -4.56585932, -12.34132767, -14.51282120,
+          -8.87167072, -15.02165127,  -4.19055891,  -6.18729496,  -2.96935892,
+          -6.49749088, -12.62966061,  -3.60408139,  -4.01398420,  -8.67829418,
+          -6.21025038,  -7.49499226, -10.65367317,  -9.71538544,  -7.30946779,
+          -5.36316538,  -6.76077175,  -7.91939735,  -7.77825546,  -7.94362402,
+          -5.46986103,  -7.09373188,  -6.86658382,  -0.69483668, -10.23472881,
+         -11.91386414,  -7.77774143,  -6.23660040,  -8.72433281,  -7.35936356]],
+       device='cuda:0')
+Split layers:
+Nonlinear functions:
+   BoundRelu(name=/input-4, inputs=[/input], perturbed=True)
+   BoundRelu(name=/input-12, inputs=[/input-8], perturbed=True)
+   BoundRelu(name=/input-20, inputs=[/input-16], perturbed=True)
+   BoundRelu(name=/input-28, inputs=[/input-24], perturbed=True)
+   BoundRelu(name=/input-36, inputs=[/input-32], perturbed=True)
+   BoundRelu(name=/input-44, inputs=[/input-40], perturbed=True)
+   BoundRelu(name=/input-52, inputs=[/input-48], perturbed=True)
+   BoundRelu(name=/input-60, inputs=[/input-56], perturbed=True)
+   BoundRelu(name=/input-68, inputs=[/input-64], perturbed=True)
+   BoundRelu(name=/123, inputs=[/input-72], perturbed=True)
+build batch [1/1]
+layer /input-4 using sparse-features alpha with shape [575]; unstable size 575; total size 14400 ([1, 64, 15, 15])
+layer /input-4 start_node /input-8 using sparse-spec alpha [2, 110, 1, 575] with unstable size 109 total_size 128 output_shape 128
+layer /input-4 start_node /input-16 using sparse-spec alpha [2, 58, 1, 575] with unstable size 57 total_size 128 output_shape 128
+layer /input-4 start_node /input-24 using sparse-spec alpha [2, 29, 1, 575] with unstable size 28 total_size 8192 output_shape torch.Size([128, 8, 8])
+layer /input-4 start_node /input-40 using sparse-spec alpha [2, 140, 1, 575] with unstable size 139 total_size 2048 output_shape torch.Size([128, 4, 4])
+layer /input-4 start_node /input-72 using sparse-spec alpha [2, 40, 1, 575] with unstable size 39 total_size 100 output_shape torch.Size([100])
+layer /input-4 start_node /124 using full alpha [2, 99, 1, 575] with unstable size None total_size 99 output_shape 99
+layer /input-12 using sparse-features alpha with shape [377]; unstable size 377; total size 8192 ([1, 128, 8, 8])
+layer /input-12 start_node /input-16 using sparse-spec alpha [2, 58, 1, 377] with unstable size 57 total_size 128 output_shape 128
+layer /input-12 start_node /input-24 using sparse-spec alpha [2, 29, 1, 377] with unstable size 28 total_size 8192 output_shape torch.Size([128, 8, 8])
+layer /input-12 start_node /input-40 using sparse-spec alpha [2, 140, 1, 377] with unstable size 139 total_size 2048 output_shape torch.Size([128, 4, 4])
+layer /input-12 start_node /input-72 using sparse-spec alpha [2, 40, 1, 377] with unstable size 39 total_size 100 output_shape torch.Size([100])
+layer /input-12 start_node /124 using full alpha [2, 99, 1, 377] with unstable size None total_size 99 output_shape 99
+layer /input-20 using sparse-features alpha with shape [153]; unstable size 153; total size 8192 ([1, 128, 8, 8])
+layer /input-20 start_node /input-24 using sparse-spec alpha [2, 12, 1, 153] with unstable size 11 total_size 128 output_shape 128
+layer /input-20 start_node /input-40 using sparse-spec alpha [2, 140, 1, 153] with unstable size 139 total_size 2048 output_shape torch.Size([128, 4, 4])
+layer /input-20 start_node /input-72 using sparse-spec alpha [2, 40, 1, 153] with unstable size 39 total_size 100 output_shape torch.Size([100])
+layer /input-20 start_node /124 using full alpha [2, 99, 1, 153] with unstable size None total_size 99 output_shape 99
+layer /input-28 using sparse-features alpha with shape [28]; unstable size 28; total size 8192 ([1, 128, 8, 8])
+layer /input-28 start_node /input-40 using sparse-spec alpha [2, 140, 1, 28] with unstable size 139 total_size 2048 output_shape torch.Size([128, 4, 4])
+layer /input-28 start_node /input-72 using sparse-spec alpha [2, 40, 1, 28] with unstable size 39 total_size 100 output_shape torch.Size([100])
+layer /input-28 start_node /124 using full alpha [2, 99, 1, 28] with unstable size None total_size 99 output_shape 99
+layer /input-36 using sparse-features alpha with shape [0]; unstable size 0; total size 8192 ([1, 128, 8, 8])
+layer /input-36 start_node /input-40 using sparse-spec alpha [2, 60, 1, 0] with unstable size 59 total_size 128 output_shape 128
+layer /input-36 start_node /input-72 using sparse-spec alpha [2, 40, 1, 0] with unstable size 39 total_size 100 output_shape torch.Size([100])
+layer /input-36 start_node /124 using full alpha [2, 99, 1, 0] with unstable size None total_size 99 output_shape 99
+layer /input-44 using sparse-features alpha with shape [139]; unstable size 139; total size 2048 ([1, 128, 4, 4])
+layer /input-44 start_node /input-72 using sparse-spec alpha [2, 40, 1, 139] with unstable size 39 total_size 100 output_shape torch.Size([100])
+layer /input-44 start_node /124 using full alpha [2, 99, 1, 139] with unstable size None total_size 99 output_shape 99
+layer /input-52 using sparse-features alpha with shape [0]; unstable size 0; total size 2048 ([1, 128, 4, 4])
+layer /input-52 start_node /input-72 using sparse-spec alpha [2, 40, 1, 0] with unstable size 39 total_size 100 output_shape torch.Size([100])
+layer /input-52 start_node /124 using full alpha [2, 99, 1, 0] with unstable size None total_size 99 output_shape 99
+layer /input-60 using sparse-features alpha with shape [0]; unstable size 0; total size 2048 ([1, 128, 4, 4])
+layer /input-60 start_node /input-72 using sparse-spec alpha [2, 40, 1, 0] with unstable size 39 total_size 100 output_shape torch.Size([100])
+layer /input-60 start_node /124 using full alpha [2, 99, 1, 0] with unstable size None total_size 99 output_shape 99
+layer /input-68 using sparse-features alpha with shape [0]; unstable size 0; total size 2048 ([1, 128, 4, 4])
+layer /input-68 start_node /input-72 using sparse-spec alpha [2, 40, 1, 0] with unstable size 39 total_size 100 output_shape torch.Size([100])
+layer /input-68 start_node /124 using full alpha [2, 99, 1, 0] with unstable size None total_size 99 output_shape 99
+layer /123 using sparse-features alpha with shape [39]; unstable size 39; total size 100 ([1, 100])
+layer /123 start_node /124 using full alpha [2, 99, 1, 39] with unstable size None total_size 99 output_shape 99
+Optimizable variables initialized.
+initial CROWN bounds (first 10 items): [5.921478271484375, 1.176100254058838, 3.0100574493408203, 4.613131999969482, -0.8182396292686462, 3.8805840015411377, 6.520832061767578, 1.721580982208252, 5.0820393562316895, 5.656371593475342]
+prune_after_crown optimization in use
+  original spec size = torch.Size([1, 99])
+  pruned spec size = torch.Size([1, 6])
+Using alpha-CROWN with output constraints to initialize bounds.
+best_l after optimization: -1.688803791999817
+alpha/beta optimization time: 1.734912633895874
+initial alpha-crown bounds (first 10 items): [-0.606414794921875, -0.11370491981506348, 0.10383784770965576, -0.021747350692749023, -0.8446764945983887, -0.20609807968139648]
+Global lower bound: -0.8446764945983887
+torch.Size([1, 6])
+Initializing Domain Clipper...
+Processing layer: /input, input name: /input-1
+Layer: /input
+    lA is a Patch object with shape torch.Size([575, 1, 3, 3, 3]), transferring to matrix.
+    lA transfered from Patch with shape: torch.Size([1, 575, 3, 32, 32])
+    uA is a Patch object with shape torch.Size([575, 1, 3, 3, 3]), transferring to matrix.
+    uA transfered from Patch with shape: torch.Size([1, 575, 3, 32, 32])
+    lbias with shape: torch.Size([1, 575])
+    ubias with shape: torch.Size([1, 575])
+Processing layer: /input-8, input name: /input-1
+Layer: /input-8
+    lA is a Patch object with shape torch.Size([374, 1, 3, 7, 7]), transferring to matrix.
+    lA transfered from Patch with shape: torch.Size([1, 374, 3, 32, 32])
+    uA is a Patch object with shape torch.Size([374, 1, 3, 7, 7]), transferring to matrix.
+    uA transfered from Patch with shape: torch.Size([1, 374, 3, 32, 32])
+    lbias with shape: torch.Size([1, 374])
+    ubias with shape: torch.Size([1, 374])
+Processing layer: /input-16, input name: /input-1
+Layer: /input-16
+    lA is a Patch object with shape torch.Size([144, 1, 3, 23, 23]), transferring to matrix.
+    lA transfered from Patch with shape: torch.Size([1, 144, 3, 32, 32])
+    uA is a Patch object with shape torch.Size([144, 1, 3, 23, 23]), transferring to matrix.
+    uA transfered from Patch with shape: torch.Size([1, 144, 3, 32, 32])
+    lbias with shape: torch.Size([1, 144])
+    ubias with shape: torch.Size([1, 144])
+Processing layer: /input-24, input name: /input-1
+Layer: /input-24
+    lA with shape: torch.Size([1, 27, 3, 32, 32])/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/concretize_func.py:577: UserWarning: torch.searchsorted(): input value tensor is non-contiguous, this will lower the performance due to extra data copy when converting non-contiguous tensor to contiguous, please use contiguous input value tensor if possible. This message will only appear once per program. (Triggered internally at /pytorch/aten/src/ATen/native/BucketizationUtils.h:32.)
+  optimal_beta = _solve_dual_var(constr_a_solve, object_a_solve, constr_d_solve, epsilon_solve) # shape (B_act, H_act)
+
+    uA with shape: torch.Size([1, 27, 3, 32, 32])
+    lbias with shape: torch.Size([1, 27])
+    ubias with shape: torch.Size([1, 27])
+Processing layer: /input-40, input name: /input-1
+Layer: /input-40
+    lA with shape: torch.Size([1, 134, 3, 32, 32])
+    uA with shape: torch.Size([1, 134, 3, 32, 32])
+    lbias with shape: torch.Size([1, 134])
+    ubias with shape: torch.Size([1, 134])
+Processing layer: /input-72, input name: /input-1
+Layer: /input-72
+    lA with shape: torch.Size([1, 38, 3, 32, 32])
+    uA with shape: torch.Size([1, 38, 3, 32, 32])
+    lbias with shape: torch.Size([1, 38])
+    ubias with shape: torch.Size([1, 38])
+Processing layer: /124, input name: /input-1
+Domain Clipper Initialized in 0.0002579689025878906 s.
+94 / 99 OR specs are verified.
+Verified OR indices (first 10 items): [0, 1, 2, 3, 5, 6, 7, 8, 9, 10]
+Verified OR lbs (first 10 items): [[inf], [inf], [inf], [inf], [inf], [inf], [inf], [inf], [inf], [inf]]
+Unverified OR indices (first 10 items): [4, 27, 50, 64, 74]
+Unverified OR lbs (first 10 items): [[-0.606414794921875], [-0.11370491981506348], [-0.021747350692749023], [-0.8446764945983887], [-0.20609807968139648]]
+###### Verifying property Instance 0 ######
+Batch size: 5
+First 10 spec matrices
+C: tensor([[[ 0.,  0.,  0.,  0., -1.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  1.,  0.,  0.,  0.,  0.,
+           0.,  0.]],
+
+        [[ 0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0., -1.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  1.,  0.,  0.,  0.,  0.,
+           0.,  0.]],
+
+        [[ 0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0., -1.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  1.,  0.,  0.,  0.,  0.,
+           0.,  0.]],
+
+        [[ 0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0., -1.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  1.,  0.,  0.,  0.,  0.,
+           0.,  0.]],
+
+        [[ 0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0., -1.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,
+           0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  1.,  0.,  0.,  0.,  0.,
+           0.,  0.]]], device='cuda:0')
+RHS: tensor([[0.],
+        [0.],
+        [0.],
+        [0.],
+        [0.]], device='cuda:0')
+OR spec sizes: tensor([1, 1, 1, 1, 1], device='cuda:0', dtype=torch.int32)
+Remaining timeout: 97.62057614326477
+Model prediction is: tensor([ -9.64820004,  -4.49345398,  -6.64346600,  -8.62534809,  -2.21463084,
+         -8.83027077,  -9.97347832,  -5.20819187,  -8.41630936,  -9.95631123,
+         -4.99632454,  -6.52198458,  -9.22259617,  -7.07847261,  -7.31610394,
+         -8.00303459,  -7.44790077, -12.42022896,  -7.05017710, -10.31999016,
+        -13.82349110,  -7.97800779,  -4.19101286, -10.06161308, -10.03424072,
+         -6.40174723,  -4.52551985,  -2.46535659,  -9.12599945,  -6.80047369,
+        -11.18046284, -10.05278111,  -3.00247574,  -8.17257118,  -8.50520420,
+         -7.47404957,  -5.90138674,  -7.60585117,  -7.35409355,  -7.37693453,
+         -8.70227528,  -9.48141289,  -6.82072878,  -7.38982439,  -4.95728827,
+         -5.68723583,  -9.36415386,  -8.34671021,  -7.75226259, -11.87108803,
+         -3.23326659,  -6.79689598,  -9.86961174, -11.00271988, -11.91431141,
+         -4.47109079,  -9.93415070,  -9.10207844,  -9.37151527,  -6.67232084,
+        -16.13169861,  -7.11038065,  -9.97099495,  -3.91104531,  -2.22958660,
+         -6.74081278,  -5.63375807,  -4.56585932, -12.34132767, -14.51282120,
+         -8.87167072, -15.02165127,  -4.19055891,  -6.18729496,  -2.96935892,
+         -6.49749088, -12.62966061,  -3.60408139,  -4.01398420,  -8.67829418,
+         -6.21025038,  -7.49499226, -10.65367317,  -9.71538544,  -7.30946779,
+         -5.36316538,  -6.76077175,  -7.91939735,  -7.77825546,  -7.94362402,
+         -5.46986103,  -7.09373188,  -6.86658382,  -0.69483668, -10.23472881,
+        -11.91386414,  -7.77774143,  -6.23660040,  -8.72433281,  -7.35936356],
+       device='cuda:0')
+Activation BaB batch 1/1 
+build_with_refined_bounds batch [1/1]
+Optimizable variables initialized.
+all alpha initialized
+directly get lb and ub from refined bounds
+c shape: torch.Size([5, 1, 100])
+lA shapes: [torch.Size([5, 1, 64, 15, 15]), torch.Size([5, 1, 128, 8, 8]), torch.Size([5, 1, 128, 8, 8]), torch.Size([5, 1, 128, 8, 8]), torch.Size([5, 1, 128, 8, 8]), torch.Size([5, 1, 128, 4, 4]), torch.Size([5, 1, 128, 4, 4]), torch.Size([5, 1, 128, 4, 4]), torch.Size([5, 1, 128, 4, 4]), torch.Size([5, 1, 100])]
+torch.Size([5, 1])
+(alpha-)CROWN with fixed intermediate bounds: tensor([[-0.60641479],
+        [-0.11370492],
+        [-0.02174735],
+        [-0.84467649],
+        [-0.20609808]], device='cuda:0') tensor([[inf],
+        [inf],
+        [inf],
+        [inf],
+        [inf]], device='cuda:0')
+Intermediate layers: /input,/input-8,/input-16,/input-24,/input-32,/input-40,/input-48,/input-56,/input-64,/input-72
+Keeping alphas for these layers: ['/124']
+Node /input-4 input 0: size torch.Size([64, 15, 15]) unstable 575
+Node /input-12 input 0: size torch.Size([128, 8, 8]) unstable 374
+Node /input-20 input 0: size torch.Size([128, 8, 8]) unstable 144
+Node /input-28 input 0: size torch.Size([128, 8, 8]) unstable 27
+Node /input-36 input 0: size torch.Size([128, 8, 8]) unstable 0
+Node /input-44 input 0: size torch.Size([128, 4, 4]) unstable 134
+Node /input-52 input 0: size torch.Size([128, 4, 4]) unstable 0
+Node /input-60 input 0: size torch.Size([128, 4, 4]) unstable 0
+Node /input-68 input 0: size torch.Size([128, 4, 4]) unstable 0
+Node /123 input 0: size torch.Size([100]) unstable 38
+-----------------
+# of unstable neurons: 1292
+-----------------
+
+Unstable Index Updated for Domain Clipper
+BaB round 1
+batch: 5
+splitting decisions: 
+split level 0: [/input-72, 43] [/input-72, 97] [/input-72, 37] [/input-72, 42] [/input-72, 88] 
+split level 1: [/input-72, 88] [/input-72, 88] [/input-72, 88] [/input-72, 97] [/input-72, 37] 
+Objective masks generated with topk: 20 objectives.
+Use all histories
+ layer: /input
+    lower bounds improved: average # 192.15, value 9.631365537643433e-06
+    upper bounds improved: average # 181.55, value -1.1108443140983582e-05
+ layer: /input-8
+    lower bounds improved: average # 97.9, value 6.7587941884994505e-06
+    upper bounds improved: average # 78.35, value -5.713105201721191e-06
+ layer: /input-16
+    lower bounds improved: average # 21.0, value 0.008229183405637741
+    upper bounds improved: average # 18.2, value -0.026416897773742676
+ layer: /input-24
+    lower bounds improved: average # 13.0, value 0.009710574150085449
+    upper bounds improved: average # 13.55, value -0.049825158715248105
+ layer: /input-40
+    lower bounds improved: average # 28.9, value 0.016713468730449675
+    upper bounds improved: average # 30.25, value -0.012258663028478622
+ layer: /input-72
+    lower bounds improved: average # 21.85, value 1.4910892486572265
+    upper bounds improved: average # 21.1, value -1.073254680633545
+Time: init 0.0001    concretize 0.0006    
+Accumulated time: init 0.0017    concretize 0.0599    
+Time: get_constraints 0.0025    concretize_interm_bounds 0.0602    update_interm_bounds 0.0014    optimize_interm_bounds 0.0641    
+Accumulated time: optimize_interm_bounds 0.0641    get_constraints 0.0025    concretize_interm_bounds 0.0602    update_interm_bounds 0.0014    
+best_l after optimization: 1.9987329244613647
+beta sum per layer: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.8601877689361572]
+alpha/beta optimization time: 0.21774744987487793
+pruning_in_iteration open status: True
+ratio of positive domain = 14 / 20 = 0.7
+pruning-in-iteration extra time: 0.003094196319580078
+torch.Size([20, 1])
+Time: prepare 0.0004    bound 0.2838    transfer 0.0008    finalize 0.0003    func 0.2854    
+Accumulated time: func 0.2854    prepare 0.0016    bound 0.2838    transfer 0.0008    finalize 0.0003    
+max lb tensor(9.99999975e-05) min lb tensor(-0.74247456)
+Number of Verified Splits: 14 of 20
+Current worst splitting domains lb-rhs (depth):
+-0.74247 (2), -0.47228 (2), -0.45293 (2), -0.15281 (2), -0.10304 (2), -0.07103 (2), 
+Length of domains: 6
+Current (lb-rhs): -0.7424745559692383
+6 domains visited
+Time: pickout 0.0008    decision 0.1480    set_bounds 0.0011    solve 0.2858    add 0.0009    
+Accumulated time: pickout 0.0008    decision 0.1480    set_bounds 0.0011    solve 0.2858    add 0.0009    
+Cumulative time: 0.44957923889160156
+
+BaB round 2
+batch: 6
+splitting decisions: 
+split level 0: [/input-72, 90] [/input-72, 90] [/input-72, 43] [/input-72, 90] [/input-72, 90] [/input-72, 43] 
+split level 1: [/input-72, 97] [/input-72, 97] [/input-40, 1081] [/input-72, 97] [/input-72, 97] [/input-72, 93] 
+Objective masks generated with topk: 20 objectives.
+Use all histories
+ layer: /input
+    lower bounds improved: average # 192.75, value 0.001284404347340266
+    upper bounds improved: average # 181.16666666666666, value -0.0008065787454446157
+ layer: /input-8
+    lower bounds improved: average # 98.95833333333333, value 0.006161817039052646
+    upper bounds improved: average # 79.29166666666667, value -0.006460479150215785
+ layer: /input-16
+    lower bounds improved: average # 25.25, value 0.10108629862467448
+    upper bounds improved: average # 22.041666666666668, value -0.1727581024169922
+ layer: /input-24
+    lower bounds improved: average # 16.0, value 0.09964803854624431
+    upper bounds improved: average # 16.666666666666668, value -0.16478190819422403
+ layer: /input-40
+    lower bounds improved: average # 34.125, value 0.11412233114242554
+    upper bounds improved: average # 34.375, value -0.16245525081952414
+ layer: /input-72
+    lower bounds improved: average # 22.5, value 3.2115519841512046
+    upper bounds improved: average # 22.75, value -2.5463075637817383
+Time: init 0.0001    concretize 0.0013    
+Accumulated time: init 0.0031    concretize 0.0721    
+Time: get_constraints 0.0018    concretize_interm_bounds 0.0125    update_interm_bounds 0.0012    optimize_interm_bounds 0.0155    
+Accumulated time: optimize_interm_bounds 0.0796    get_constraints 0.0043    concretize_interm_bounds 0.0727    update_interm_bounds 0.0026    
+best_l after optimization: 2.878650426864624
+beta sum per layer: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.087102890014648]
+alpha/beta optimization time: 0.1350998878479004
+pruning_in_iteration open status: True
+ratio of positive domain = 16 / 24 = 0.6666666666666667
+pruning-in-iteration extra time: 0.003201723098754883
+torch.Size([24, 1])
+Time: prepare 0.0010    bound 0.1526    transfer 0.0010    finalize 0.0004    func 0.1549    
+Accumulated time: func 0.4403    prepare 0.0035    bound 0.4364    transfer 0.0018    finalize 0.0007    
+max lb tensor(9.99999975e-05) min lb tensor(-0.63830900)
+Number of Verified Splits: 16 of 24
+Current worst splitting domains lb-rhs (depth):
+-0.63831 (4), -0.42801 (4), -0.38742 (4), -0.36760 (4), -0.07098 (4), -0.06896 (4), -0.03680 (4), -0.03482 (4), 
+Length of domains: 8
+Current (lb-rhs): -0.6383090019226074
+14 domains visited
+Time: pickout 0.0013    decision 0.0498    set_bounds 0.0011    solve 0.1553    add 0.0011    
+Accumulated time: pickout 0.0021    decision 0.1977    set_bounds 0.0022    solve 0.4411    add 0.0020    
+Cumulative time: 0.658336877822876
+
+BaB round 3
+batch: 8
+splitting decisions: 
+split level 0: [/input-72, 93] [/input-72, 4] [/input-72, 4] [/input-72, 93] [/input-72, 93] [/input-72, 93] [/input-72, 93] [/input-16, 3804] 
+Objective masks generated with topk: 20 objectives.
+ layer: /input
+    lower bounds improved: average # 192.1875, value 9.669922292232513e-06
+    upper bounds improved: average # 181.5625, value -1.107342541217804e-05
+ layer: /input-8
+    lower bounds improved: average # 97.75, value 3.903917968273163e-05
+    upper bounds improved: average # 79.375, value -5.741603672504425e-06
+ layer: /input-16
+    lower bounds improved: average # 21.5625, value 0.027373477816581726
+    upper bounds improved: average # 19.25, value -0.03714054077863693
+ layer: /input-24
+    lower bounds improved: average # 10.25, value 0.025014067068696022
+    upper bounds improved: average # 11.375, value -0.03965232893824577
+ layer: /input-40
+    lower bounds improved: average # 27.9375, value 0.013655059039592743
+    upper bounds improved: average # 29.6875, value -0.05051123723387718
+ layer: /input-72
+    lower bounds improved: average # 18.5, value 1.0807515382766724
+    upper bounds improved: average # 17.5, value -0.8335856199264526
+Time: init 0.0001    concretize 0.0004    
+Accumulated time: init 0.0044    concretize 0.0775    
+Time: get_constraints 0.0010    concretize_interm_bounds 0.0057    update_interm_bounds 0.0012    optimize_interm_bounds 0.0079    
+Accumulated time: optimize_interm_bounds 0.0874    get_constraints 0.0053    concretize_interm_bounds 0.0784    update_interm_bounds 0.0037    
+best_l after optimization: -0.8542417883872986
+beta sum per layer: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.389030456542969]
+alpha/beta optimization time: 0.12782049179077148
+pruning_in_iteration open status: True
+ratio of positive domain = 8 / 16 = 0.5
+pruning-in-iteration extra time: 0.002860546112060547
+torch.Size([16, 1])
+Time: prepare 0.0008    bound 0.1375    transfer 0.0007    finalize 0.0003    func 0.1394    
+Accumulated time: func 0.5797    prepare 0.0053    bound 0.5739    transfer 0.0025    finalize 0.0011    
+max lb tensor(9.99999975e-05) min lb tensor(-0.61710739)
+Number of Verified Splits: 8 of 16
+Current worst splitting domains lb-rhs (depth):
+-0.61711 (5), -0.41736 (5), -0.36760 (5), -0.36592 (5), -0.06463 (5), -0.05708 (5), -0.03680 (5), -0.03482 (5), 
+Length of domains: 8
+Current (lb-rhs): -0.6171073913574219
+22 domains visited
+Time: pickout 0.0011    decision 0.0499    set_bounds 0.0007    solve 0.1397    add 0.0008    
+Accumulated time: pickout 0.0032    decision 0.2476    set_bounds 0.0029    solve 0.5807    add 0.0028    
+Cumulative time: 0.8507030010223389
+
+BaB round 4
+batch: 8
+splitting decisions: 
+split level 0: [/input-16, 3812] [/input-72, 42] [/input-40, 1081] [/input-72, 48] [/input-72, 42] [/input-72, 42] [/input-16, 3804] [/input-72, 42] 
+Objective masks generated with topk: 20 objectives.
+ layer: /input
+    lower bounds improved: average # 192.4375, value 0.000871242955327034
+    upper bounds improved: average # 181.3125, value -0.000530758872628212
+ layer: /input-8
+    lower bounds improved: average # 98.25, value 0.004630016628652811
+    upper bounds improved: average # 79.9375, value -0.004961371887475252
+ layer: /input-16
+    lower bounds improved: average # 20.375, value 0.05803968012332916
+    upper bounds improved: average # 18.875, value -0.06406405568122864
+ layer: /input-24
+    lower bounds improved: average # 11.125, value 0.04198438674211502
+    upper bounds improved: average # 11.75, value -0.04653402790427208
+ layer: /input-40
+    lower bounds improved: average # 28.9375, value 0.04547380283474922
+    upper bounds improved: average # 29.6875, value -0.056243717670440674
+ layer: /input-72
+    lower bounds improved: average # 18.8125, value 1.092632532119751
+    upper bounds improved: average # 18.0625, value -0.9808946847915649
+Time: init 0.0001    concretize 0.0004    
+Accumulated time: init 0.0060    concretize 0.1050    
+Time: get_constraints 0.0009    concretize_interm_bounds 0.0279    update_interm_bounds 0.0013    optimize_interm_bounds 0.0301    
+Accumulated time: optimize_interm_bounds 0.1175    get_constraints 0.0062    concretize_interm_bounds 0.1063    update_interm_bounds 0.0050    
+best_l after optimization: -1.2063214778900146
+beta sum per layer: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 9.660167694091797]
+alpha/beta optimization time: 0.11806535720825195
+pruning_in_iteration open status: True
+ratio of positive domain = 8 / 16 = 0.5
+pruning-in-iteration extra time: 0.0028319358825683594
+torch.Size([16, 1])
+Time: prepare 0.0008    bound 0.1501    transfer 0.0007    finalize 0.0003    func 0.1519    
+Accumulated time: func 0.7316    prepare 0.0071    bound 0.7240    transfer 0.0032    finalize 0.0014    
+max lb tensor(9.99999975e-05) min lb tensor(-0.61612463)
+Number of Verified Splits: 8 of 16
+Current worst splitting domains lb-rhs (depth):
+-0.61612 (6), -0.36137 (6), -0.35982 (6), -0.34101 (6), -0.23670 (6), -0.04050 (6), -0.03276 (6), -0.03086 (6), 
+Length of domains: 8
+Current (lb-rhs): -0.6161246299743652
+30 domains visited
+Time: pickout 0.0011    decision 0.0472    set_bounds 0.0008    solve 0.1523    add 0.0008    
+Accumulated time: pickout 0.0043    decision 0.2948    set_bounds 0.0037    solve 0.7330    add 0.0036    
+Cumulative time: 1.0530166625976562
+
+BaB round 5
+batch: 8
+splitting decisions: 
+split level 0: [/input-72, 81] [/input-72, 88] [/input-16, 3804] [/input-72, 96] [/input-72, 96] [/input-72, 48] [/input-72, 96] [/input-72, 89] 
+Objective masks generated with topk: 20 objectives.
+ layer: /input
+    lower bounds improved: average # 192.0, value 9.753741323947906e-06
+    upper bounds improved: average # 181.3125, value -1.1168420314788818e-05
+ layer: /input-8
+    lower bounds improved: average # 97.6875, value 3.905687481164932e-05
+    upper bounds improved: average # 79.1875, value -5.7443976402282715e-06
+ layer: /input-16
+    lower bounds improved: average # 17.6875, value 0.013949636369943619
+    upper bounds improved: average # 14.5625, value -0.012666784226894379
+ layer: /input-24
+    lower bounds improved: average # 6.875, value 0.008722608909010887
+    upper bounds improved: average # 6.8125, value -0.01084170676767826
+ layer: /input-40
+    lower bounds improved: average # 22.5, value 0.007329464890062809
+    upper bounds improved: average # 23.8125, value -0.011200891807675362
+ layer: /input-72
+    lower bounds improved: average # 14.75, value 0.2534864544868469
+    upper bounds improved: average # 13.3125, value -0.1623365432024002
+Time: init 0.0001    concretize 0.0009    
+Accumulated time: init 0.0075    concretize 0.1193    
+Time: get_constraints 0.0009    concretize_interm_bounds 0.0145    update_interm_bounds 0.0011    optimize_interm_bounds 0.0166    
+Accumulated time: optimize_interm_bounds 0.1341    get_constraints 0.0072    concretize_interm_bounds 0.1208    update_interm_bounds 0.0061    
+best_l after optimization: -1.6337072849273682
+beta sum per layer: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 7.548975944519043]
+alpha/beta optimization time: 0.11858820915222168
+pruning_in_iteration open status: True
+ratio of positive domain = 9 / 16 = 0.5625
+pruning-in-iteration extra time: 0.0028688907623291016
+torch.Size([16, 1])
+Time: prepare 0.0009    bound 0.1370    transfer 0.0007    finalize 0.0003    func 0.1390    
+Accumulated time: func 0.8706    prepare 0.0089    bound 0.8610    transfer 0.0039    finalize 0.0017    
+max lb tensor(9.99999975e-05) min lb tensor(-0.57243729)
+Number of Verified Splits: 9 of 16
+Current worst splitting domains lb-rhs (depth):
+-0.57244 (7), -0.34481 (7), -0.33834 (7), -0.31386 (7), -0.23217 (7), -0.22763 (7), -0.19700 (7), 
+Length of domains: 7
+Current (lb-rhs): -0.5724372863769531
+37 domains visited
+Time: pickout 0.0011    decision 0.0455    set_bounds 0.0008    solve 0.1393    add 0.0009    
+Accumulated time: pickout 0.0054    decision 0.3404    set_bounds 0.0044    solve 0.8723    add 0.0045    
+Cumulative time: 1.2407841682434082
+
+BaB round 6
+batch: 7
+splitting decisions: 
+split level 0: [/input-72, 48] [/input-72, 90] [/input-72, 81] [/input-72, 89] [/input-72, 81] [/input-72, 4] [/input-16, 3804] 
+Objective masks generated with topk: 20 objectives.
+ layer: /input
+    lower bounds improved: average # 191.92857142857142, value 9.568142039435251e-06
+    upper bounds improved: average # 181.57142857142858, value -1.0967786823000227e-05
+ layer: /input-8
+    lower bounds improved: average # 97.28571428571429, value 4.361942410469055e-05
+    upper bounds improved: average # 79.71428571428571, value -5.738011428288051e-06
+ layer: /input-16
+    lower bounds improved: average # 17.785714285714285, value 0.015824286001069204
+    upper bounds improved: average # 14.857142857142858, value -0.013562418520450592
+ layer: /input-24
+    lower bounds improved: average # 6.071428571428571, value 0.008635839181286948
+    upper bounds improved: average # 6.785714285714286, value -0.009179460150854928
+ layer: /input-40
+    lower bounds improved: average # 22.214285714285715, value 0.00610331552369254
+    upper bounds improved: average # 23.785714285714285, value -0.010130982313837324
+ layer: /input-72
+    lower bounds improved: average # 14.428571428571429, value 0.1057835476739066
+    upper bounds improved: average # 13.714285714285714, value -0.04776132106781006
+Time: init 0.0001    concretize 0.0004    
+Accumulated time: init 0.0088    concretize 0.1243    
+Time: get_constraints 0.0010    concretize_interm_bounds 0.0053    update_interm_bounds 0.0012    optimize_interm_bounds 0.0075    
+Accumulated time: optimize_interm_bounds 0.1416    get_constraints 0.0082    concretize_interm_bounds 0.1261    update_interm_bounds 0.0073    
+best_l after optimization: -1.0732252597808838
+beta sum per layer: [0.0, 0.0, 1.548972725868225, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 8.669686317443848]
+alpha/beta optimization time: 0.11786675453186035
+pruning_in_iteration open status: True
+ratio of positive domain = 4 / 14 = 0.2857142857142857
+pruning-in-iteration extra time: 0.0010027885437011719
+torch.Size([14, 1])
+Time: prepare 0.0008    bound 0.1273    transfer 0.0007    finalize 0.0003    func 0.1291    
+Accumulated time: func 0.9997    prepare 0.0107    bound 0.9883    transfer 0.0046    finalize 0.0020    
+max lb tensor(0.00425816) min lb tensor(-0.55355358)
+Number of Verified Splits: 4 of 14
+Current worst splitting domains lb-rhs (depth):
+-0.55355 (8), -0.32490 (8), -0.29282 (8), -0.27223 (8), -0.21807 (8), -0.14605 (8), -0.11590 (8), -0.11527 (8), -0.06223 (8), -0.03693 (8), 
+Length of domains: 10
+Current (lb-rhs): -0.553553581237793
+47 domains visited
+Time: pickout 0.0011    decision 0.0483    set_bounds 0.0007    solve 0.1294    add 0.0012    
+Accumulated time: pickout 0.0064    decision 0.3887    set_bounds 0.0051    solve 1.0017    add 0.0057    
+Cumulative time: 1.4216094017028809
+
+BaB round 7
+batch: 10
+splitting decisions: 
+split level 0: [/input-8, 1042] [/input-72, 48] [/input-72, 48] [/input-72, 90] [/input-8, 1042] [/input-72, 89] [/input-72, 48] [/input-72, 90] [/input-72, 48] [/input-72, 89] 
+Objective masks generated with topk: 20 objectives.
+ layer: /input
+    lower bounds improved: average # 191.85, value 9.692460298538209e-06
+    upper bounds improved: average # 181.6, value -1.1085718870162965e-05
+ layer: /input-8
+    lower bounds improved: average # 97.35, value 6.704777479171753e-06
+    upper bounds improved: average # 79.3, value -5.711615085601807e-06
+ layer: /input-16
+    lower bounds improved: average # 17.35, value 0.00013768672943115234
+    upper bounds improved: average # 14.65, value -0.0006590440869331359
+ layer: /input-24
+    lower bounds improved: average # 8.2, value 0.002510850876569748
+    upper bounds improved: average # 7.4, value -0.0006775021553039551
+ layer: /input-40
+    lower bounds improved: average # 23.5, value 0.0024726346135139467
+    upper bounds improved: average # 24.8, value -0.0023499250411987303
+ layer: /input-72
+    lower bounds improved: average # 14.7, value 0.2517373085021973
+    upper bounds improved: average # 12.2, value -0.1175498127937317
+Time: init 0.0001    concretize 0.0004    
+Accumulated time: init 0.0102    concretize 0.1293    
+Time: get_constraints 0.0009    concretize_interm_bounds 0.0052    update_interm_bounds 0.0012    optimize_interm_bounds 0.0074    
+Accumulated time: optimize_interm_bounds 0.1490    get_constraints 0.0091    concretize_interm_bounds 0.1314    update_interm_bounds 0.0085    
+best_l after optimization: -1.2337160110473633
+beta sum per layer: [0.0, 0.5187127590179443, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 9.268478393554688]
+alpha/beta optimization time: 0.12214994430541992
+pruning_in_iteration open status: True
+ratio of positive domain = 11 / 20 = 0.55
+pruning-in-iteration extra time: 0.0030264854431152344
+torch.Size([20, 1])
+Time: prepare 0.0009    bound 0.1313    transfer 0.0008    finalize 0.0004    func 0.1335    
+Accumulated time: func 1.1331    prepare 0.0127    bound 1.1196    transfer 0.0054    finalize 0.0024    
+max lb tensor(9.99999975e-05) min lb tensor(-0.54298162)
+Number of Verified Splits: 11 of 20
+Current worst splitting domains lb-rhs (depth):
+-0.54298 (9), -0.31250 (9), -0.27552 (9), -0.26306 (9), -0.19873 (9), -0.13855 (9), -0.09863 (9), -0.08361 (9), -0.05382 (9), 
+Length of domains: 9
+Current (lb-rhs): -0.5429816246032715
+56 domains visited
+Time: pickout 0.0012    decision 0.0488    set_bounds 0.0008    solve 0.1338    add 0.0009    
+Accumulated time: pickout 0.0077    decision 0.4375    set_bounds 0.0059    solve 1.1355    add 0.0066    
+Cumulative time: 1.6072852611541748
+
+BaB round 8
+batch: 9
+splitting decisions: 
+split level 0: [/input-16, 411] [/input-16, 411] [/input-72, 61] [/input-16, 411] [/input-72, 61] [/input-40, 2042] [/input-72, 61] [/input-72, 37] [/input-72, 90] 
+Objective masks generated with topk: 20 objectives.
+ layer: /input
+    lower bounds improved: average # 192.44444444444446, value 9.819451305601331e-06
+    upper bounds improved: average # 181.11111111111111, value -0.00010188379221492344
+ layer: /input-8
+    lower bounds improved: average # 97.88888888888889, value 0.005088957647482554
+    upper bounds improved: average # 79.72222222222223, value -0.010114889178011153
+ layer: /input-16
+    lower bounds improved: average # 18.333333333333332, value 0.03987790478600396
+    upper bounds improved: average # 15.333333333333334, value -0.04501040776570638
+ layer: /input-24
+    lower bounds improved: average # 7.5, value 0.040747914049360484
+    upper bounds improved: average # 7.944444444444445, value -0.04137397805849711
+ layer: /input-40
+    lower bounds improved: average # 22.77777777777778, value 0.03250182337231106
+    upper bounds improved: average # 24.72222222222222, value -0.041069474485185414
+ layer: /input-72
+    lower bounds improved: average # 13.666666666666666, value 0.37205447090996635
+    upper bounds improved: average # 10.944444444444445, value -0.28252585728963214
+Time: init 0.0001    concretize 0.0004    
+Accumulated time: init 0.0116    concretize 0.1345    
+Time: get_constraints 0.0010    concretize_interm_bounds 0.0055    update_interm_bounds 0.0012    optimize_interm_bounds 0.0076    
+Accumulated time: optimize_interm_bounds 0.1566    get_constraints 0.0101    concretize_interm_bounds 0.1368    update_interm_bounds 0.0097    
+best_l after optimization: -0.8425346612930298
+beta sum per layer: [0.0, 0.9099018573760986, 1.648589015007019, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.668672561645508]
+alpha/beta optimization time: 0.12549972534179688
+pruning_in_iteration open status: True
+ratio of positive domain = 8 / 18 = 0.4444444444444444
+pruning-in-iteration extra time: 0.0026803016662597656
+torch.Size([18, 1])
+Time: prepare 0.0009    bound 0.1350    transfer 0.0007    finalize 0.0003    func 0.1370    
+Accumulated time: func 1.2702    prepare 0.0145    bound 1.2546    transfer 0.0061    finalize 0.0027    
+max lb tensor(9.99999975e-05) min lb tensor(-0.52385712)
+Number of Verified Splits: 8 of 18
+Current worst splitting domains lb-rhs (depth):
+-0.52386 (10), -0.29409 (10), -0.26520 (10), -0.22696 (10), -0.17875 (10), -0.09997 (10), -0.08262 (10), -0.05428 (10), -0.05316 (10), -0.03554 (10), 
+Length of domains: 10
+Current (lb-rhs): -0.5238571166992188
+66 domains visited
+Time: pickout 0.0012    decision 0.0480    set_bounds 0.0008    solve 0.1373    add 0.0010    
+Accumulated time: pickout 0.0089    decision 0.4855    set_bounds 0.0067    solve 1.2728    add 0.0075    
+Cumulative time: 1.7957799434661865
+
+BaB round 9
+batch: 10
+splitting decisions: 
+split level 0: [/input-16, 3812] [/input-16, 3812] [/input-16, 3812] [/input-72, 37] [/input-16, 3812] [/input-72, 88] [/input-72, 88] [/input-72, 48] [/input-40, 2042] [/input-72, 88] 
+Objective masks generated with topk: 20 objectives.
+ layer: /input
+    lower bounds improved: average # 192.5, value 9.882450103759766e-06
+    upper bounds improved: average # 181.55, value -1.1187046766281128e-05
+ layer: /input-8
+    lower bounds improved: average # 97.9, value 0.00500757172703743
+    upper bounds improved: average # 79.85, value -0.009119439125061034
+ layer: /input-16
+    lower bounds improved: average # 17.9, value 0.039098608493804934
+    upper bounds improved: average # 15.3, value -0.04185414612293244
+ layer: /input-24
+    lower bounds improved: average # 6.8, value 0.03664534986019134
+    upper bounds improved: average # 7.25, value -0.03684404492378235
+ layer: /input-40
+    lower bounds improved: average # 22.2, value 0.029364728927612306
+    upper bounds improved: average # 23.7, value -0.036963850259780884
+ layer: /input-72
+    lower bounds improved: average # 12.5, value 0.2685758113861084
+    upper bounds improved: average # 9.8, value -0.20874276161193847
+Time: init 0.0001    concretize 0.0004    
+Accumulated time: init 0.0128    concretize 0.1394    
+Time: get_constraints 0.0010    concretize_interm_bounds 0.0052    update_interm_bounds 0.0012    optimize_interm_bounds 0.0074    
+Accumulated time: optimize_interm_bounds 0.1640    get_constraints 0.0111    concretize_interm_bounds 0.1421    update_interm_bounds 0.0108    
+best_l after optimization: -1.530534029006958
+beta sum per layer: [0.0, 0.7823782563209534, 4.521137237548828, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 12.546272277832031]
+alpha/beta optimization time: 0.12638568878173828
+pruning_in_iteration open status: True
+ratio of positive domain = 7 / 20 = 0.35
+pruning-in-iteration extra time: 0.0026471614837646484
+torch.Size([20, 1])
+Time: prepare 0.0010    bound 0.1356    transfer 0.0008    finalize 0.0004    func 0.1378    
+Accumulated time: func 1.4080    prepare 0.0165    bound 1.3902    transfer 0.0069    finalize 0.0031    
+max lb tensor(9.99999975e-05) min lb tensor(-0.46939707)
+Number of Verified Splits: 7 of 20
+Current worst splitting domains lb-rhs (depth):
+-0.46940 (11), -0.32233 (11), -0.24225 (11), -0.22970 (11), -0.20943 (11), -0.16688 (11), -0.12720 (11), -0.08247 (11), -0.06454 (11), -0.03956 (11), -0.03457 (11), -0.03074 (11), -0.02657 (11), 
+Length of domains: 13
+Current (lb-rhs): -0.46939706802368164
+79 domains visited
+Time: pickout 0.0013    decision 0.0461    set_bounds 0.0008    solve 0.1382    add 0.0015    
+Accumulated time: pickout 0.0102    decision 0.5316    set_bounds 0.0075    solve 1.4110    add 0.0090    
+Cumulative time: 1.98378324508667
+
+BaB round 10
+batch: 13
+splitting decisions: 
+split level 0: [/input-16, 173] [/input-16, 173] [/input-16, 173] [/input-8, 1042] [/input-8, 1042] [/input-16, 3804] [/input-72, 78] [/input-72, 90] [/input-72, 78] [/input-8, 1042] 
+Objective masks generated with topk: 20 objectives.
+ layer: /input
+    lower bounds improved: average # 192.76923076923077, value 1.0036791746432964e-05
+    upper bounds improved: average # 181.03846153846155, value -1.1291354894638062e-05
+ layer: /input-8
+    lower bounds improved: average # 97.42307692307692, value 4.637957765505864e-05
+    upper bounds improved: average # 78.76923076923077, value -5.710010345165546e-06
+ layer: /input-16
+    lower bounds improved: average # 18.53846153846154, value 0.016955701204446647
+    upper bounds improved: average # 15.653846153846153, value -0.01369261283140916
+ layer: /input-24
+    lower bounds improved: average # 8.423076923076923, value 0.0107308396926293
+    upper bounds improved: average # 6.038461538461538, value -0.011037629384260911
+ layer: /input-40
+    lower bounds improved: average # 23.384615384615383, value 0.006747424029386961
+    upper bounds improved: average # 24.923076923076923, value -0.017285000819426317
+ layer: /input-72
+    lower bounds improved: average # 13.846153846153847, value 0.10133549800285926
+    upper bounds improved: average # 11.038461538461538, value -0.05759855875602135
+Time: init 0.0001    concretize 0.0004    
+Accumulated time: init 0.0142    concretize 0.1448    
+Time: get_constraints 0.0011    concretize_interm_bounds 0.0056    update_interm_bounds 0.0012    optimize_interm_bounds 0.0079    
+Accumulated time: optimize_interm_bounds 0.1719    get_constraints 0.0121    concretize_interm_bounds 0.1477    update_interm_bounds 0.0120    
+best_l after optimization: -1.201214075088501
+beta sum per layer: [0.0, 2.0294625759124756, 4.2018303871154785, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 16.796707153320312]
+alpha/beta optimization time: 0.13112640380859375
+pruning_in_iteration open status: True
+ratio of positive domain = 10 / 26 = 0.3846153846153846
+pruning-in-iteration extra time: 0.003197908401489258
+torch.Size([26, 1])
+Time: prepare 0.0012    bound 0.1409    transfer 0.0011    finalize 0.0005    func 0.1437    
+Accumulated time: func 1.5517    prepare 0.0188    bound 1.5311    transfer 0.0081    finalize 0.0036    
+max lb tensor(9.99999975e-05) min lb tensor(-0.46071434)
+Number of Verified Splits: 10 of 26
+Current worst splitting domains lb-rhs (depth):
+-0.46071 (12), -0.30237 (12), -0.23502 (12), -0.21100 (12), -0.18746 (12), -0.15542 (12), -0.11966 (12), -0.11931 (12), -0.09134 (12), -0.06016 (12), -0.03375 (12), -0.02207 (12), -0.01369 (12), -0.01017 (12), -0.00929 (12), -0.00457 (12), 
+Length of domains: 16
+Current (lb-rhs): -0.46071434020996094
+95 domains visited
+Time: pickout 0.0016    decision 0.0492    set_bounds 0.0009    solve 0.1440    add 0.0016    
+Accumulated time: pickout 0.0118    decision 0.5808    set_bounds 0.0084    solve 1.5550    add 0.0106    
+Cumulative time: 2.181328296661377
+
+BaB round 11
+batch: 16
+splitting decisions: 
+split level 0: [/input-16, 411] [/input-16, 411] [/input-8, 1042] [/input-72, 41] [/input-16, 3812] [/input-16, 3812] [/input-8, 1042] [/input-16, 3803] [/input-72, 89] [/input-72, 89] 
+Objective masks generated with topk: 20 objectives.
+ layer: /input
+    lower bounds improved: average # 192.5, value 1.000240445137024e-05
+    upper bounds improved: average # 180.375, value -1.1319294571876526e-05
+ layer: /input-8
+    lower bounds improved: average # 97.4375, value 6.68596476316452e-06
+    upper bounds improved: average # 79.0, value -5.7443976402282715e-06
+ layer: /input-16
+    lower bounds improved: average # 18.375, value 0.0008242367766797543
+    upper bounds improved: average # 15.46875, value -0.0023556125815957785
+ layer: /input-24
+    lower bounds improved: average # 8.78125, value 0.0023270503152161837
+    upper bounds improved: average # 5.8125, value -0.0022224849089980125
+ layer: /input-40
+    lower bounds improved: average # 23.0625, value 0.0008289774414151907
+    upper bounds improved: average # 24.46875, value -0.010467353276908398
+ layer: /input-72
+    lower bounds improved: average # 13.9375, value 0.03927890956401825
+    upper bounds improved: average # 11.1875, value -0.010861702263355255
+Time: init 0.0001    concretize 0.0005    
+Accumulated time: init 0.0156    concretize 0.1510    
+Time: get_constraints 0.0011    concretize_interm_bounds 0.0066    update_interm_bounds 0.0012    optimize_interm_bounds 0.0088    
+Accumulated time: optimize_interm_bounds 0.1807    get_constraints 0.0132    concretize_interm_bounds 0.1543    update_interm_bounds 0.0132    
+best_l after optimization: -1.4544870853424072
+beta sum per layer: [0.0, 3.833259105682373, 7.554801940917969, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 20.98760986328125]
+alpha/beta optimization time: 0.13573384284973145
+pruning_in_iteration open status: True
+ratio of positive domain = 19 / 32 = 0.59375
+pruning-in-iteration extra time: 0.003358602523803711
+torch.Size([32, 1])
+Time: prepare 0.0014    bound 0.1465    transfer 0.0013    finalize 0.0005    func 0.1496    
+Accumulated time: func 1.7013    prepare 0.0214    bound 1.6776    transfer 0.0093    finalize 0.0041    
+max lb tensor(9.99999975e-05) min lb tensor(-0.45459843)
+Number of Verified Splits: 19 of 32
+Current worst splitting domains lb-rhs (depth):
+-0.45460 (13), -0.34328 (13), -0.29559 (13), -0.21361 (13), -0.18308 (13), -0.18278 (13), -0.16511 (13), -0.11629 (13), -0.09758 (13), -0.09508 (13), -0.06566 (13), -0.03782 (13), -0.00146 (13), 
+Length of domains: 13
+Current (lb-rhs): -0.45459842681884766
+108 domains visited
+Time: pickout 0.0043    decision 0.0517    set_bounds 0.0010    solve 0.1500    add 0.0014    
+Accumulated time: pickout 0.0160    decision 0.6325    set_bounds 0.0093    solve 1.7050    add 0.0121    
+Cumulative time: 2.390016794204712
+
+BaB round 12
+batch: 13
+splitting decisions: 
+split level 0: [/input-16, 3812] [/input-16, 411] [/input-16, 411] [/input-16, 411] [/input-16, 411] [/input-16, 411] [/input-16, 411] [/input-16, 3812] [/input-16, 3812] [/input-16, 411] 
+Objective masks generated with topk: 20 objectives.
+ layer: /input
+    lower bounds improved: average # 192.15384615384616, value 9.866574635872474e-06
+    upper bounds improved: average # 180.53846153846155, value -1.1298232353650606e-05
+ layer: /input-8
+    lower bounds improved: average # 97.6923076923077, value 6.7396232715019814e-06
+    upper bounds improved: average # 79.0, value -5.755860071915847e-06
+ layer: /input-16
+    lower bounds improved: average # 18.076923076923077, value 0.002124695250621209
+    upper bounds improved: average # 15.153846153846153, value -0.0018007465853140904
+ layer: /input-24
+    lower bounds improved: average # 8.423076923076923, value 0.0027722332340020398
+    upper bounds improved: average # 5.730769230769231, value -0.0020959852979733394
+ layer: /input-40
+    lower bounds improved: average # 23.46153846153846, value 0.0009120209858967707
+    upper bounds improved: average # 24.076923076923077, value -0.009153499053074764
+ layer: /input-72
+    lower bounds improved: average # 13.653846153846153, value 0.035754818182725176
+    upper bounds improved: average # 11.0, value -0.01230406302672166
+Time: init 0.0001    concretize 0.0005    
+Accumulated time: init 0.0169    concretize 0.1570    
+Time: get_constraints 0.0011    concretize_interm_bounds 0.0062    update_interm_bounds 0.0012    optimize_interm_bounds 0.0085    
+Accumulated time: optimize_interm_bounds 0.1892    get_constraints 0.0143    concretize_interm_bounds 0.1605    update_interm_bounds 0.0143    
+best_l after optimization: -1.9872455596923828
+beta sum per layer: [0.0, 2.570376396179199, 17.183269500732422, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 13.156676292419434]
+alpha/beta optimization time: 0.1353762149810791
+pruning_in_iteration open status: True
+ratio of positive domain = 10 / 26 = 0.3846153846153846
+pruning-in-iteration extra time: 0.0032358169555664062
+torch.Size([26, 1])
+Time: prepare 0.0012    bound 0.1459    transfer 0.0010    finalize 0.0005    func 0.1487    
+Accumulated time: func 1.8500    prepare 0.0236    bound 1.8235    transfer 0.0103    finalize 0.0046    
+max lb tensor(9.99999975e-05) min lb tensor(-0.43437195)
+Number of Verified Splits: 10 of 26
+Current worst splitting domains lb-rhs (depth):
+-0.43437 (14), -0.32220 (14), -0.26912 (14), -0.26351 (14), -0.17973 (14), -0.16865 (14), -0.16618 (14), -0.15955 (14), -0.15230 (14), -0.11540 (14), -0.09345 (14), -0.06337 (14), -0.05526 (14), -0.02451 (14), -0.02374 (14), -0.00360 (14), 
+Length of domains: 16
+Current (lb-rhs): -0.4343719482421875
+124 domains visited
+Time: pickout 0.0023    decision 0.0495    set_bounds 0.0009    solve 0.1491    add 0.0013    
+Accumulated time: pickout 0.0184    decision 0.6820    set_bounds 0.0103    solve 1.8540    add 0.0134    
+Cumulative time: 2.593402862548828
+
+BaB round 13
+batch: 16
+splitting decisions: 
+split level 0: [/input-16, 173] [/input-16, 3812] [/input-40, 169] [/input-40, 169] [/input-16, 3812] [/input-40, 169] [/input-16, 3812] [/input-8, 1042] [/input-16, 411] [/input-16, 3812] 
+Objective masks generated with topk: 20 objectives.
+ layer: /input
+    lower bounds improved: average # 191.5625, value 9.825453162193298e-06
+    upper bounds improved: average # 180.625, value -1.1272728443145752e-05
+ layer: /input-8
+    lower bounds improved: average # 97.6875, value 6.7623332142829895e-06
+    upper bounds improved: average # 79.125, value -5.794689059257507e-06
+ layer: /input-16
+    lower bounds improved: average # 17.9375, value 0.0007959352806210518
+    upper bounds improved: average # 15.21875, value -0.0014668165240436792
+ layer: /input-24
+    lower bounds improved: average # 8.375, value 0.0021068027708679438
+    upper bounds improved: average # 5.75, value -0.0017101606354117393
+ layer: /input-40
+    lower bounds improved: average # 23.34375, value 0.00048479996621608734
+    upper bounds improved: average # 23.65625, value -0.009542465209960938
+ layer: /input-72
+    lower bounds improved: average # 13.6875, value 0.029405588284134865
+    upper bounds improved: average # 10.625, value -0.007038872689008713
+Time: init 0.0001    concretize 0.0005    
+Accumulated time: init 0.0183    concretize 0.1635    
+Time: get_constraints 0.0011    concretize_interm_bounds 0.0068    update_interm_bounds 0.0012    optimize_interm_bounds 0.0091    
+Accumulated time: optimize_interm_bounds 0.1983    get_constraints 0.0154    concretize_interm_bounds 0.1673    update_interm_bounds 0.0156    
+best_l after optimization: -1.7407102584838867
+beta sum per layer: [0.0, 3.299539566040039, 34.83382034301758, 0.0, 0.0, 1.6290874481201172, 0.0, 0.0, 0.0, 14.52787971496582]
+alpha/beta optimization time: 0.14016985893249512
+pruning_in_iteration open status: True
+ratio of positive domain = 13 / 32 = 0.40625
+pruning-in-iteration extra time: 0.0031523704528808594
+torch.Size([32, 1])
+Time: prepare 0.0014    bound 0.1513    transfer 0.0011    finalize 0.0005    func 0.1544    
+Accumulated time: func 2.0044    prepare 0.0261    bound 1.9748    transfer 0.0115    finalize 0.0051    
+max lb tensor(0.00066566) min lb tensor(-0.42385912)
+Number of Verified Splits: 13 of 32
+Current worst splitting domains lb-rhs (depth):
+-0.42386 (15), -0.31193 (15), -0.25531 (15), -0.18044 (15), -0.16742 (15), -0.16260 (15), -0.15764 (15), -0.14071 (15), -0.13162 (15), -0.08544 (15), -0.06712 (15), -0.05001 (15), -0.04865 (15), -0.04472 (15), -0.03905 (15), -0.03876 (15), -0.00377 (15), -0.00344 (15), -0.00196 (15), 
+Length of domains: 19
+Current (lb-rhs): -0.4238591194152832
+143 domains visited
+Time: pickout 0.0017    decision 0.0507    set_bounds 0.0010    solve 0.1549    add 0.0022    
+Accumulated time: pickout 0.0201    decision 0.7327    set_bounds 0.0113    solve 2.0089    add 0.0156    
+Cumulative time: 2.804117441177368
+
+BaB round 14
+batch: 19
+splitting decisions: 
+split level 0: [/input-40, 169] [/input-16, 173] [/input-40, 169] [/input-16, 3787] [/input-40, 169] [/input-40, 169] [/input-40, 169] [/input-40, 169] [/input-40, 169] [/input-16, 1643] 
+Objective masks generated with topk: 20 objectives.
+ layer: /input
+    lower bounds improved: average # 191.6315789473684, value 9.747124031970375e-06
+    upper bounds improved: average # 181.05263157894737, value -1.129606052448875e-05
+ layer: /input-8
+    lower bounds improved: average # 97.78947368421052, value 6.737089470813149e-06
+    upper bounds improved: average # 79.57894736842105, value -5.816550631272166e-06
+ layer: /input-16
+    lower bounds improved: average # 18.105263157894736, value 0.0009469860478451377
+    upper bounds improved: average # 15.473684210526315, value -0.0014861539790504857
+ layer: /input-24
+    lower bounds improved: average # 8.526315789473685, value 0.0022506294281859148
+    upper bounds improved: average # 6.105263157894737, value -0.001830253946153741
+ layer: /input-40
+    lower bounds improved: average # 23.63157894736842, value 0.0007304480593455466
+    upper bounds improved: average # 23.842105263157894, value -0.009075887109103956
+ layer: /input-72
+    lower bounds improved: average # 14.052631578947368, value 0.0315157551514475
+    upper bounds improved: average # 10.578947368421053, value -0.007120079115817421
+Time: init 0.0001    concretize 0.0005    
+Accumulated time: init 0.0196    concretize 0.1702    
+Time: get_constraints 0.0011    concretize_interm_bounds 0.0070    update_interm_bounds 0.0011    optimize_interm_bounds 0.0093    
+Accumulated time: optimize_interm_bounds 0.2075    get_constraints 0.0165    concretize_interm_bounds 0.1743    update_interm_bounds 0.0167    
+best_l after optimization: -1.693256139755249
+beta sum per layer: [0.0, 4.167591571807861, 39.358558654785156, 0.0, 0.0, 10.933286666870117, 0.0, 0.0, 0.0, 15.858175277709961]
+alpha/beta optimization time: 0.1263713836669922
+pruning_in_iteration open status: True
+ratio of positive domain = 19 / 38 = 0.5
+pruning-in-iteration extra time: 0.002903461456298828
+torch.Size([38, 1])
+Time: prepare 0.0015    bound 0.1374    transfer 0.0016    finalize 0.0007    func 0.1413    
+Accumulated time: func 2.1457    prepare 0.0286    bound 2.1122    transfer 0.0131    finalize 0.0057    
+max lb tensor(9.99999975e-05) min lb tensor(-0.40762234)
+Number of Verified Splits: 19 of 38
+Current worst splitting domains lb-rhs (depth):
+-0.40762 (16), -0.29833 (16), -0.25510 (16), -0.23789 (16), -0.15593 (16), -0.14928 (16), -0.14155 (16), -0.12649 (16), -0.11776 (16), -0.11187 (16), -0.10983 (16), -0.08699 (16), -0.06708 (16), -0.06694 (16), -0.04295 (16), -0.03610 (16), -0.03444 (16), -0.02734 (16), -0.02580 (16), 
+Length of domains: 19
+Current (lb-rhs): -0.4076223373413086
+162 domains visited
+Time: pickout 0.0019    decision 0.0500    set_bounds 0.0010    solve 0.1416    add 0.0015    
+Accumulated time: pickout 0.0219    decision 0.7827    set_bounds 0.0123    solve 2.1505    add 0.0171    
+Cumulative time: 3.0003671646118164
+
+BaB round 15
+batch: 19
+splitting decisions: 
+split level 0: [/input-72, 78] [/input-72, 78] [/input-16, 3803] [/input-72, 78] [/input-72, 78] [/input-72, 78] [/input-16, 3803] [/input-16, 3803] [/input-72, 78] [/input-72, 37] 
+Objective masks generated with topk: 20 objectives.
+ layer: /input
+    lower bounds improved: average # 191.73684210526315, value 9.734575685701872e-06
+    upper bounds improved: average # 180.78947368421052, value -1.1225476076728419e-05
+ layer: /input-8
+    lower bounds improved: average # 97.63157894736842, value 6.725325396186427e-06
+    upper bounds improved: average # 79.36842105263158, value -5.803218013361881e-06
+ layer: /input-16
+    lower bounds improved: average # 18.0, value 0.0009318229399229351
+    upper bounds improved: average # 15.473684210526315, value -0.0012935337267423932
+ layer: /input-24
+    lower bounds improved: average # 8.421052631578947, value 0.0022385516449024805
+    upper bounds improved: average # 6.2105263157894735, value -0.0018204568248046072
+ layer: /input-40
+    lower bounds improved: average # 23.263157894736842, value 0.0004397166010580565
+    upper bounds improved: average # 23.894736842105264, value -0.008746783200063203
+ layer: /input-72
+    lower bounds improved: average # 13.868421052631579, value 0.030697565329702275
+    upper bounds improved: average # 10.473684210526315, value -0.006708047891917981
+Time: init 0.0001    concretize 0.0005    
+Accumulated time: init 0.0209    concretize 0.1768    
+Time: get_constraints 0.0011    concretize_interm_bounds 0.0069    update_interm_bounds 0.0012    optimize_interm_bounds 0.0092    
+Accumulated time: optimize_interm_bounds 0.2167    get_constraints 0.0176    concretize_interm_bounds 0.1812    update_interm_bounds 0.0179    
+best_l after optimization: -1.4425246715545654
+beta sum per layer: [0.0, 3.889951705932617, 33.27067565917969, 0.0, 0.0, 20.227619171142578, 0.0, 0.0, 0.0, 15.369110107421875]
+alpha/beta optimization time: 0.12917828559875488
+pruning_in_iteration open status: True
+ratio of positive domain = 16 / 38 = 0.42105263157894735
+pruning-in-iteration extra time: 0.002679586410522461
+torch.Size([38, 1])
+Time: prepare 0.0015    bound 0.1403    transfer 0.0012    finalize 0.0006    func 0.1437    
+Accumulated time: func 2.2894    prepare 0.0311    bound 2.2525    transfer 0.0143    finalize 0.0064    
+max lb tensor(9.99999975e-05) min lb tensor(-0.39871979)
+Number of Verified Splits: 16 of 38
+Current worst splitting domains lb-rhs (depth):
+-0.39872 (17), -0.28927 (17), -0.21624 (17), -0.18781 (17), -0.13259 (17), -0.12864 (17), -0.10925 (17), -0.10463 (17), -0.09095 (17), -0.09051 (17), -0.08417 (17), -0.05984 (17), -0.05703 (17), -0.05135 (17), -0.04608 (17), -0.03984 (17), -0.01708 (17), -0.01660 (17), -0.01651 (17), -0.01031 (17), 
+Length of domains: 22
+Current (lb-rhs): -0.39871978759765625
+184 domains visited
+Time: pickout 0.0018    decision 0.0461    set_bounds 0.0010    solve 0.1440    add 0.0024    
+Accumulated time: pickout 0.0237    decision 0.8288    set_bounds 0.0133    solve 2.2945    add 0.0195    
+Cumulative time: 3.1958096027374268
+
+BaB round 16
+batch: 22
+splitting decisions: 
+split level 0: [/input-16, 3803] [/input-72, 37] [/input-72, 78] [/input-72, 37] [/input-40, 169] [/input-72, 37] [/input-16, 3804] [/input-72, 37] [/input-72, 37] [/input-16, 3803] 
+Objective masks generated with topk: 20 objectives.
+ layer: /input
+    lower bounds improved: average # 192.0, value 9.80327075177973e-06
+    upper bounds improved: average # 180.6818181818182, value -1.1200593276457353e-05
+ layer: /input-8
+    lower bounds improved: average # 97.77272727272727, value 6.7339702086015185e-06
+    upper bounds improved: average # 79.22727272727273, value -5.792487751353871e-06
+ layer: /input-16
+    lower bounds improved: average # 17.181818181818183, value 0.0005819756876338612
+    upper bounds improved: average # 14.931818181818182, value -0.0009456263347105546
+ layer: /input-24
+    lower bounds improved: average # 7.409090909090909, value 0.001655076037753712
+    upper bounds improved: average # 5.454545454545454, value -0.001347628506747159
+ layer: /input-40
+    lower bounds improved: average # 22.90909090909091, value 0.0003557425330985676
+    upper bounds improved: average # 22.90909090909091, value -0.006286615675145929
+ layer: /input-72
+    lower bounds improved: average # 12.409090909090908, value 0.02285931327126243
+    upper bounds improved: average # 10.0, value -0.0036931525577198377
+Time: init 0.0001    concretize 0.0005    
+Accumulated time: init 0.0223    concretize 0.1841    
+Time: get_constraints 0.0013    concretize_interm_bounds 0.0075    update_interm_bounds 0.0012    optimize_interm_bounds 0.0100    
+Accumulated time: optimize_interm_bounds 0.2267    get_constraints 0.0189    concretize_interm_bounds 0.1887    update_interm_bounds 0.0191    
+best_l after optimization: -1.7022312879562378
+beta sum per layer: [0.0, 3.2594380378723145, 41.80828094482422, 0.0, 0.0, 33.78266906738281, 0.0, 0.0, 0.0, 21.46794891357422]
+alpha/beta optimization time: 0.12608599662780762
+pruning_in_iteration open status: True
+ratio of positive domain = 24 / 44 = 0.5454545454545454
+pruning-in-iteration extra time: 0.0028672218322753906
+torch.Size([44, 1])
+Time: prepare 0.0018    bound 0.1380    transfer 0.0014    finalize 0.0007    func 0.1419    
+Accumulated time: func 2.4313    prepare 0.0338    bound 2.3905    transfer 0.0157    finalize 0.0071    
+max lb tensor(0.00464153) min lb tensor(-0.37655973)
+Number of Verified Splits: 24 of 44
+Current worst splitting domains lb-rhs (depth):
+-0.37656 (18), -0.26717 (18), -0.26657 (18), -0.20769 (18), -0.17313 (18), -0.17053 (18), -0.11051 (18), -0.09597 (18), -0.09481 (18), -0.08568 (18), -0.07094 (18), -0.06382 (18), -0.06092 (18), -0.05294 (18), -0.03543 (18), -0.03521 (18), -0.03014 (18), -0.02975 (18), -0.01906 (18), -0.01056 (18), 
+Length of domains: 20
+Current (lb-rhs): -0.3765597343444824
+204 domains visited
+Time: pickout 0.0021    decision 0.0497    set_bounds 0.0012    solve 0.1422    add 0.0016    
+Accumulated time: pickout 0.0258    decision 0.8785    set_bounds 0.0145    solve 2.4367    add 0.0211    
+Cumulative time: 3.392911434173584
+
+BaB round 17
+batch: 20
+splitting decisions: 
+split level 0: [/input-40, 1078] [/input-40, 169] [/input-72, 37] [/input-40, 1078] [/input-40, 1078] [/input-40, 169] [/input-40, 1078] [/input-16, 3803] [/input-40, 1078] [/input-16, 3803] 
+Objective masks generated with topk: 20 objectives.
+ layer: /input
+    lower bounds improved: average # 192.15, value 9.806454181671143e-06
+    upper bounds improved: average # 180.75, value -1.120641827583313e-05
+ layer: /input-8
+    lower bounds improved: average # 98.05, value 6.7569315433502196e-06
+    upper bounds improved: average # 78.9, value -5.76898455619812e-06
+ layer: /input-16
+    lower bounds improved: average # 16.25, value 0.0004459977149963379
+    upper bounds improved: average # 14.65, value -0.0005716517567634583
+ layer: /input-24
+    lower bounds improved: average # 6.25, value 0.0009202789515256882
+    upper bounds improved: average # 4.4, value -0.0007506668567657471
+ layer: /input-40
+    lower bounds improved: average # 22.5, value 0.0005820021033287048
+    upper bounds improved: average # 21.5, value -0.003341218829154968
+ layer: /input-72
+    lower bounds improved: average # 10.95, value 0.012833204865455628
+    upper bounds improved: average # 9.6, value -0.001990962028503418
+Time: init 0.0001    concretize 0.0005    
+Accumulated time: init 0.0236    concretize 0.1908    
+Time: get_constraints 0.0012    concretize_interm_bounds 0.0070    update_interm_bounds 0.0012    optimize_interm_bounds 0.0094    
+Accumulated time: optimize_interm_bounds 0.2361    get_constraints 0.0201    concretize_interm_bounds 0.1957    update_interm_bounds 0.0202    
+best_l after optimization: -2.5179829597473145
+beta sum per layer: [0.0, 1.5326520204544067, 33.66155242919922, 0.0, 0.0, 21.93914794921875, 0.0, 0.0, 0.0, 19.617542266845703]
+alpha/beta optimization time: 0.12675166130065918
+pruning_in_iteration open status: True
+ratio of positive domain = 14 / 40 = 0.35
+pruning-in-iteration extra time: 0.0028939247131347656
+torch.Size([40, 1])
+Time: prepare 0.0017    bound 0.1379    transfer 0.0013    finalize 0.0006    func 0.1415    
+Accumulated time: func 2.5728    prepare 0.0365    bound 2.5284    transfer 0.0170    finalize 0.0077    
+max lb tensor(9.99999975e-05) min lb tensor(-0.34854555)
+Number of Verified Splits: 14 of 40
+Current worst splitting domains lb-rhs (depth):
+-0.34855 (19), -0.32379 (19), -0.23422 (19), -0.23129 (19), -0.22281 (19), -0.20790 (19), -0.17758 (19), -0.15805 (19), -0.15068 (19), -0.13860 (19), -0.10876 (19), -0.09119 (19), -0.08537 (19), -0.08417 (19), -0.06787 (19), -0.05444 (19), -0.04559 (19), -0.04435 (19), -0.04235 (19), -0.04107 (19), 
+Length of domains: 26
+Current (lb-rhs): -0.34854555130004883
+230 domains visited
+Time: pickout 0.0019    decision 0.0500    set_bounds 0.0011    solve 0.1418    add 0.0022    
+Accumulated time: pickout 0.0277    decision 0.9285    set_bounds 0.0156    solve 2.5785    add 0.0233    
+Cumulative time: 3.5901429653167725
+
+BaB round 18
+batch: 26
+splitting decisions: 
+split level 0: [/input-16, 3806] [/input-40, 677] [/input-40, 1078] [/input-16, 3803] [/input-40, 1078] [/input-40, 1078] [/input-40, 1078] [/input-40, 1078] [/input-40, 1078] [/input-40, 1078] 
+Objective masks generated with topk: 20 objectives.
+ layer: /input
+    lower bounds improved: average # 191.84615384615384, value 9.74392661681542e-06
+    upper bounds improved: average # 180.96153846153845, value -1.1211117872825036e-05
+ layer: /input-8
+    lower bounds improved: average # 98.15384615384616, value 6.743635122592633e-06
+    upper bounds improved: average # 79.1923076923077, value -5.770761233109694e-06
+ layer: /input-16
+    lower bounds improved: average # 17.576923076923077, value 0.0008519028241817767
+    upper bounds improved: average # 15.384615384615385, value -0.0007720280152100783
+ layer: /input-24
+    lower bounds improved: average # 7.769230769230769, value 0.0014157025859906124
+    upper bounds improved: average # 6.346153846153846, value -0.0011547356843948364
+ layer: /input-40
+    lower bounds improved: average # 23.807692307692307, value 0.0008981826786811536
+    upper bounds improved: average # 21.807692307692307, value -0.004973542231779832
+ layer: /input-72
+    lower bounds improved: average # 9.615384615384615, value 0.019741851549882155
+    upper bounds improved: average # 10.846153846153847, value -0.0029738774666419397
+Time: init 0.0001    concretize 0.0005    
+Accumulated time: init 0.0250    concretize 0.1983    
+Time: get_constraints 0.0014    concretize_interm_bounds 0.0078    update_interm_bounds 0.0013    optimize_interm_bounds 0.0104    
+Accumulated time: optimize_interm_bounds 0.2465    get_constraints 0.0214    concretize_interm_bounds 0.2036    update_interm_bounds 0.0215    
+best_l after optimization: -3.881880760192871
+beta sum per layer: [0.0, 3.1999993324279785, 41.727378845214844, 0.0, 0.0, 44.787986755371094, 0.0, 0.0, 0.0, 17.984413146972656]
+alpha/beta optimization time: 0.12887811660766602
+pruning_in_iteration open status: True
+ratio of positive domain = 14 / 52 = 0.2692307692307693
+pruning-in-iteration extra time: 0.0029544830322265625
+torch.Size([52, 1])
+Time: prepare 0.0020    bound 0.1412    transfer 0.0019    finalize 0.0007    func 0.1458    
+Accumulated time: func 2.7185    prepare 0.0394    bound 2.6695    transfer 0.0189    finalize 0.0084    
+max lb tensor(9.99999975e-05) min lb tensor(-0.31279659)
+Number of Verified Splits: 14 of 52
+Current worst splitting domains lb-rhs (depth):
+-0.31280 (20), -0.30704 (20), -0.28651 (20), -0.27976 (20), -0.20529 (20), -0.19809 (20), -0.19643 (20), -0.19392 (20), -0.17643 (20), -0.17018 (20), -0.16692 (20), -0.16486 (20), -0.14807 (20), -0.12879 (20), -0.12797 (20), -0.11404 (20), -0.11196 (20), -0.10795 (20), -0.10280 (20), -0.09653 (20), 
+Length of domains: 38
+Current (lb-rhs): -0.31279659271240234
+268 domains visited
+Time: pickout 0.0021    decision 0.0494    set_bounds 0.0012    solve 0.1461    add 0.0043    
+Accumulated time: pickout 0.0299    decision 0.9779    set_bounds 0.0168    solve 2.7246    add 0.0276    
+Cumulative time: 3.7936341762542725
+
+BaB round 19
+batch: 38
+splitting decisions: 
+split level 0: [/input-24, 7066] [/input-24, 7066] [/input-24, 7066] [/input-24, 7066] [/input-24, 7066] [/input-24, 7066] [/input-24, 7066] [/input-40, 677] [/input-40, 677] [/input-16, 1643] 
+Objective masks generated with topk: 20 objectives.
+ layer: /input
+    lower bounds improved: average # 191.76315789473685, value 9.699283461821706e-06
+    upper bounds improved: average # 181.21052631578948, value -1.1227044620011983e-05
+ layer: /input-8
+    lower bounds improved: average # 98.1842105263158, value 6.7864985842453805e-06
+    upper bounds improved: average # 79.23684210526316, value -5.769494332765278e-06
+ layer: /input-16
+    lower bounds improved: average # 20.763157894736842, value 0.0008565285488178855
+    upper bounds improved: average # 24.394736842105264, value -0.0009360634966900474
+ layer: /input-24
+    lower bounds improved: average # 8.473684210526315, value 0.0017812265769431466
+    upper bounds improved: average # 6.342105263157895, value -0.0013174783242376226
+ layer: /input-40
+    lower bounds improved: average # 30.36842105263158, value 0.000987240554470765
+    upper bounds improved: average # 27.092105263157894, value -0.006240689832913249
+ layer: /input-72
+    lower bounds improved: average # 10.578947368421053, value 0.02476306494913603
+    upper bounds improved: average # 10.973684210526315, value -0.003687940145793714
+Time: init 0.0001    concretize 0.0006    
+Accumulated time: init 0.0265    concretize 0.2075    
+Time: get_constraints 0.0016    concretize_interm_bounds 0.0095    update_interm_bounds 0.0012    optimize_interm_bounds 0.0123    
+Accumulated time: optimize_interm_bounds 0.2588    get_constraints 0.0230    concretize_interm_bounds 0.2131    update_interm_bounds 0.0227    
+best_l after optimization: -4.231813430786133
+beta sum per layer: [0.0, 6.064332008361816, 39.645259857177734, 18.53668212890625, 0.0, 68.98164367675781, 0.0, 0.0, 0.0, 25.441787719726562]
+alpha/beta optimization time: 0.14982080459594727
+pruning_in_iteration open status: True
+ratio of positive domain = 29 / 76 = 0.381578947368421
+pruning-in-iteration extra time: 0.0023674964904785156
+torch.Size([76, 1])
+Time: prepare 0.0028    bound 0.1642    transfer 0.0046    finalize 0.0012    func 0.1727    
+Accumulated time: func 2.8913    prepare 0.0431    bound 2.8337    transfer 0.0235    finalize 0.0096    
+max lb tensor(9.99999975e-05) min lb tensor(-0.30567074)
+Number of Verified Splits: 29 of 76
+Current worst splitting domains lb-rhs (depth):
+-0.30567 (21), -0.29974 (21), -0.27883 (21), -0.27201 (21), -0.19790 (21), -0.19424 (21), -0.18978 (21), -0.18935 (21), -0.17826 (21), -0.17124 (21), -0.16745 (21), -0.16652 (21), -0.16552 (21), -0.16087 (21), -0.15845 (21), -0.15736 (21), -0.14033 (21), -0.12019 (21), -0.11707 (21), -0.10750 (21), 
+Length of domains: 47
+Current (lb-rhs): -0.30567073822021484
+315 domains visited
+Time: pickout 0.0028    decision 0.0499    set_bounds 0.0013    solve 0.1731    add 0.0047    
+Accumulated time: pickout 0.0327    decision 1.0279    set_bounds 0.0181    solve 2.8977    add 0.0323    
+Cumulative time: 4.025771856307983
+
+BaB round 20
+batch: 47
+splitting decisions: 
+split level 0: [/input-24, 6675] [/input-40, 1930] [/input-40, 1930] [/input-40, 1930] [/input-24, 6685] [/input-40, 1930] [/input-40, 1930] [/input-24, 7066] [/input-24, 7066] [/input-24, 7066] 
+Objective masks generated with topk: 20 objectives.
+ layer: /input
+    lower bounds improved: average # 191.82978723404256, value 9.69280904911934e-06
+    upper bounds improved: average # 181.0, value -1.120702066320054e-05
+ layer: /input-8
+    lower bounds improved: average # 98.12765957446808, value 6.7991303636672646e-06
+    upper bounds improved: average # 79.14893617021276, value -5.757079479542184e-06
+ layer: /input-16
+    lower bounds improved: average # 20.97872340425532, value 0.0011143785841921544
+    upper bounds improved: average # 24.51063829787234, value -0.0008499474918588679
+ layer: /input-24
+    lower bounds improved: average # 8.957446808510639, value 0.0019668259836257774
+    upper bounds improved: average # 6.25531914893617, value -0.0013249884260461686
+ layer: /input-40
+    lower bounds improved: average # 30.53191489361702, value 0.001082421617305025
+    upper bounds improved: average # 27.48936170212766, value -0.006922555096605991
+ layer: /input-72
+    lower bounds improved: average # 11.063829787234043, value 0.027301311492919922
+    upper bounds improved: average # 11.042553191489361, value -0.004048897864970755
+Time: init 0.0001    concretize 0.0007    
+Accumulated time: init 0.0279    concretize 0.2176    
+Time: get_constraints 0.0017    concretize_interm_bounds 0.0103    update_interm_bounds 0.0013    optimize_interm_bounds 0.0133    
+Accumulated time: optimize_interm_bounds 0.2722    get_constraints 0.0247    concretize_interm_bounds 0.2234    update_interm_bounds 0.0240    
+best_l after optimization: -5.002283573150635
+beta sum per layer: [0.0, 8.830183029174805, 40.8665771484375, 61.2966423034668, 0.0, 86.5306625366211, 0.0, 0.0, 0.0, 26.485750198364258]
+alpha/beta optimization time: 0.15727710723876953
+pruning_in_iteration open status: True
+ratio of positive domain = 35 / 94 = 0.37234042553191493
+pruning-in-iteration extra time: 0.002696990966796875
+torch.Size([94, 1])
+Time: prepare 0.0033    bound 0.1727    transfer 0.0024    finalize 0.0012    func 0.1796    
+Accumulated time: func 3.0709    prepare 0.0474    bound 3.0064    transfer 0.0259    finalize 0.0107    
+max lb tensor(0.00631714) min lb tensor(-0.29601240)
+Number of Verified Splits: 35 of 94
+Current worst splitting domains lb-rhs (depth):
+-0.29601 (22), -0.29035 (22), -0.26889 (22), -0.26175 (22), -0.20378 (22), -0.20025 (22), -0.19296 (22), -0.18963 (22), -0.18808 (22), -0.18770 (22), -0.18322 (22), -0.17968 (22), -0.15840 (22), -0.15725 (22), -0.15370 (22), -0.14716 (22), -0.13078 (22), -0.11056 (22), -0.10897 (22), -0.10324 (22), 
+Length of domains: 59
+Current (lb-rhs): -0.29601240158081055
+374 domains visited
+Time: pickout 0.0035    decision 0.0505    set_bounds 0.0017    solve 0.1799    add 0.0056    
+Accumulated time: pickout 0.0362    decision 1.0783    set_bounds 0.0197    solve 3.0776    add 0.0379    
+Cumulative time: 4.2673869132995605
+
+BaB round 21
+batch: 59
+splitting decisions: 
+split level 0: [/input-24, 6685] [/input-24, 6685] [/input-24, 6685] [/input-40, 1930] [/input-24, 6685] [/input-24, 6685] [/input-24, 6685] [/input-40, 62] [/input-24, 6685] [/input-24, 6685] 
+Objective masks generated with topk: 20 objectives.
+ layer: /input
+    lower bounds improved: average # 191.40677966101694, value 9.814372002068213e-06
+    upper bounds improved: average # 182.57627118644066, value -1.1228719505213074e-05
+ layer: /input-8
+    lower bounds improved: average # 96.76271186440678, value 6.6212299516645525e-06
+    upper bounds improved: average # 79.9322033898305, value -5.717878624544305e-06
+ layer: /input-16
+    lower bounds improved: average # 21.559322033898304, value 0.0010003154560671015
+    upper bounds improved: average # 24.838983050847457, value -0.0005802644763962697
+ layer: /input-24
+    lower bounds improved: average # 7.491525423728813, value 0.0017051858417058395
+    upper bounds improved: average # 5.9491525423728815, value -0.0011630300748146187
+ layer: /input-40
+    lower bounds improved: average # 28.45762711864407, value 0.000980187523162971
+    upper bounds improved: average # 28.584745762711865, value -0.00584842188883636
+ layer: /input-72
+    lower bounds improved: average # 13.271186440677965, value 0.023198063090696174
+    upper bounds improved: average # 9.101694915254237, value -0.003464155277963412
+Time: init 0.0001    concretize 0.0008    
+Accumulated time: init 0.0293    concretize 0.2298    
+Time: get_constraints 0.0021    concretize_interm_bounds 0.0125    update_interm_bounds 0.0013    optimize_interm_bounds 0.0159    
+Accumulated time: optimize_interm_bounds 0.2881    get_constraints 0.0268    concretize_interm_bounds 0.2358    update_interm_bounds 0.0253    
+best_l after optimization: -6.969313621520996
+beta sum per layer: [0.0, 8.622066497802734, 30.420833587646484, 126.18185424804688, 0.0, 123.4582290649414, 0.0, 0.0, 0.0, 26.250085830688477]
+alpha/beta optimization time: 0.1648845672607422
+pruning_in_iteration open status: True
+ratio of positive domain = 42 / 118 = 0.35593220338983056
+pruning-in-iteration extra time: 0.0030977725982666016
+torch.Size([118, 1])
+Time: prepare 0.0042    bound 0.1829    transfer 0.0036    finalize 0.0018    func 0.1925    
+Accumulated time: func 3.2634    prepare 0.0526    bound 3.1893    transfer 0.0295    finalize 0.0125    
+max lb tensor(9.99999975e-05) min lb tensor(-0.28211927)
+Number of Verified Splits: 42 of 118
+Current worst splitting domains lb-rhs (depth):
+-0.28212 (23), -0.27639 (23), -0.25516 (23), -0.25435 (23), -0.24868 (23), -0.24792 (23), -0.22881 (23), -0.22086 (23), -0.18089 (23), -0.17645 (23), -0.17587 (23), -0.17439 (23), -0.17344 (23), -0.16850 (23), -0.16562 (23), -0.16215 (23), -0.16195 (23), -0.15615 (23), -0.15480 (23), -0.14901 (23), 
+Length of domains: 76
+Current (lb-rhs): -0.2821192741394043
+450 domains visited
+Time: pickout 0.0039    decision 0.0517    set_bounds 0.0022    solve 0.1929    add 0.0077    
+Accumulated time: pickout 0.0401    decision 1.1301    set_bounds 0.0219    solve 3.2705    add 0.0456    
+Cumulative time: 4.526422739028931
+
+BaB round 22
+batch: 76
+splitting decisions: 
+split level 0: [/input-40, 183] [/input-40, 183] [/input-40, 183] [/input-40, 183] [/input-24, 6675] [/input-24, 6675] [/input-40, 183] [/input-40, 183] [/input-40, 183] [/input-24, 6675] 
+Objective masks generated with topk: 20 objectives.
+ layer: /input
+    lower bounds improved: average # 189.3684210526316, value 9.301265603617618e-06
+    upper bounds improved: average # 172.8421052631579, value -1.0042402305101094e-05
+ layer: /input-8
+    lower bounds improved: average # 96.80263157894737, value 6.447105031264455e-06
+    upper bounds improved: average # 80.64473684210526, value -5.725084951049403e-06
+ layer: /input-16
+    lower bounds improved: average # 18.42105263157895, value 0.0011602983270820818
+    upper bounds improved: average # 16.473684210526315, value -0.0008140851400400463
+ layer: /input-24
+    lower bounds improved: average # 7.065789473684211, value 0.00189412816574699
+    upper bounds improved: average # 6.618421052631579, value -0.0014107779256607358
+ layer: /input-40
+    lower bounds improved: average # 21.18421052631579, value 0.001381645861424898
+    upper bounds improved: average # 24.013157894736842, value -0.007065029520737498
+ layer: /input-72
+    lower bounds improved: average # 14.605263157894736, value 0.028139688466724596
+    upper bounds improved: average # 10.697368421052632, value -0.004168096341584858
+Time: init 0.0001    concretize 0.0010    
+Accumulated time: init 0.0308    concretize 0.2449    
+Time: get_constraints 0.0024    concretize_interm_bounds 0.0155    update_interm_bounds 0.0013    optimize_interm_bounds 0.0192    
+Accumulated time: optimize_interm_bounds 0.3073    get_constraints 0.0292    concretize_interm_bounds 0.2513    update_interm_bounds 0.0267    
+best_l after optimization: -10.475406646728516
+beta sum per layer: [0.0, 12.70150375366211, 40.48068618774414, 149.251708984375, 0.0, 185.46600341796875, 0.0, 0.0, 0.0, 29.491344451904297]
+alpha/beta optimization time: 0.15279555320739746
+pruning_in_iteration open status: True
+ratio of positive domain = 35 / 152 = 0.23026315789473684
+pruning-in-iteration extra time: 0.0016942024230957031
+torch.Size([152, 1])
+Time: prepare 0.0052    bound 0.1741    transfer 0.0047    finalize 0.0020    func 0.1860    
+Accumulated time: func 3.4493    prepare 0.0588    bound 3.3633    transfer 0.0341    finalize 0.0145    
+max lb tensor(0.00230455) min lb tensor(-0.27204800)
+Number of Verified Splits: 35 of 152
+Current worst splitting domains lb-rhs (depth):
+-0.27205 (24), -0.26651 (24), -0.24773 (24), -0.24464 (24), -0.24190 (24), -0.23862 (24), -0.23807 (24), -0.23642 (24), -0.22073 (24), -0.21761 (24), -0.21633 (24), -0.20992 (24), -0.20884 (24), -0.20775 (24), -0.19153 (24), -0.17971 (24), -0.16975 (24), -0.16526 (24), -0.16423 (24), -0.16298 (24), 
+Length of domains: 117
+Current (lb-rhs): -0.2720479965209961
+567 domains visited
+Time: pickout 0.0052    decision 0.0554    set_bounds 0.0026    solve 0.1867    add 0.0119    
+Accumulated time: pickout 0.0453    decision 1.1854    set_bounds 0.0245    solve 3.4572    add 0.0574    
+Cumulative time: 4.788703441619873
+
+BaB round 23
+batch: 117
+splitting decisions: 
+split level 0: [/input-40, 486] [/input-40, 486] [/input-40, 486] [/input-40, 486] [/input-40, 486] [/input-40, 789] [/input-40, 789] [/input-40, 486] [/input-40, 486] [/input-40, 486] 
+Objective masks generated with topk: 20 objectives.
+ layer: /input
+    lower bounds improved: average # 189.76068376068375, value 9.29504505589477e-06
+    upper bounds improved: average # 172.17948717948718, value -9.982981997677403e-06
+ layer: /input-8
+    lower bounds improved: average # 96.76923076923077, value 6.42638048555097e-06
+    upper bounds improved: average # 80.5042735042735, value -5.721791177733332e-06
+ layer: /input-16
+    lower bounds improved: average # 18.11111111111111, value 0.000904991203903133
+    upper bounds improved: average # 18.982905982905983, value -0.0005902216857315128
+ layer: /input-24
+    lower bounds improved: average # 7.0, value 0.0018893920967721532
+    upper bounds improved: average # 6.52991452991453, value -0.001356198237492488
+ layer: /input-40
+    lower bounds improved: average # 21.82051282051282, value 0.0011671734416586722
+    upper bounds improved: average # 26.764957264957264, value -0.004906835719051524
+ layer: /input-72
+    lower bounds improved: average # 14.461538461538462, value 0.027053555871686365
+    upper bounds improved: average # 12.487179487179487, value -0.004014143576988807
+Time: init 0.0001    concretize 0.0016    
+Accumulated time: init 0.0331    concretize 0.2687    
+Time: get_constraints 0.0032    concretize_interm_bounds 0.0240    update_interm_bounds 0.0014    optimize_interm_bounds 0.0286    
+Accumulated time: optimize_interm_bounds 0.3359    get_constraints 0.0325    concretize_interm_bounds 0.2753    update_interm_bounds 0.0280    
+best_l after optimization: -13.796852111816406
+beta sum per layer: [0.0, 18.25051498413086, 53.80101013183594, 183.89317321777344, 0.0, 385.9185791015625, 0.0, 0.0, 0.0, 39.46917724609375]
+alpha/beta optimization time: 0.1690385341644287
+pruning_in_iteration open status: True
+ratio of positive domain = 74 / 234 = 0.3162393162393162
+pruning-in-iteration extra time: 0.002486705780029297
+torch.Size([234, 1])
+Time: prepare 0.0076    bound 0.1997    transfer 0.0105    finalize 0.0030    func 0.2208    
+Accumulated time: func 3.6701    prepare 0.0674    bound 3.5630    transfer 0.0446    finalize 0.0175    
+max lb tensor(9.99999975e-05) min lb tensor(-0.25903511)
+Number of Verified Splits: 74 of 234
+Current worst splitting domains lb-rhs (depth):
+-0.25904 (25), -0.25359 (25), -0.23468 (25), -0.23368 (25), -0.23168 (25), -0.22979 (25), -0.22525 (25), -0.22453 (25), -0.22433 (25), -0.22350 (25), -0.21180 (25), -0.21171 (25), -0.20668 (25), -0.20582 (25), -0.20452 (25), -0.19930 (25), -0.19698 (25), -0.19599 (25), -0.19414 (25), -0.18933 (25), 
+Length of domains: 160
+Current (lb-rhs): -0.2590351104736328
+727 domains visited
+Time: pickout 0.0070    decision 0.0618    set_bounds 0.0037    solve 0.2212    add 0.0155    
+Accumulated time: pickout 0.0524    decision 1.2472    set_bounds 0.0283    solve 3.6784    add 0.0729    
+Cumulative time: 5.098824977874756
+
+BaB round 24
+batch: 160
+splitting decisions: 
+split level 0: [/input-40, 789] [/input-40, 789] [/input-8, 346] [/input-16, 3458] [/input-40, 789] [/input-40, 486] [/input-40, 486] [/input-40, 789] [/input-40, 1797] [/input-16, 3458] 
+Objective masks generated with topk: 20 objectives.
+ layer: /input
+    lower bounds improved: average # 180.65625, value 8.489517495036125e-06
+    upper bounds improved: average # 164.928125, value -9.922496974468232e-06
+ layer: /input-8
+    lower bounds improved: average # 99.6125, value 6.534066051244735e-06
+    upper bounds improved: average # 86.65625, value -5.78220933675766e-06
+ layer: /input-16
+    lower bounds improved: average # 20.06875, value 0.00090520940721035
+    upper bounds improved: average # 26.825, value -0.0006593909114599228
+ layer: /input-24
+    lower bounds improved: average # 6.884375, value 0.0018335694447159767
+    upper bounds improved: average # 6.490625, value -0.001411891169846058
+ layer: /input-40
+    lower bounds improved: average # 26.690625, value 0.0011678056791424752
+    upper bounds improved: average # 28.525, value -0.0031108565628528593
+ layer: /input-72
+    lower bounds improved: average # 14.390625, value 0.02591634392738342
+    upper bounds improved: average # 12.56875, value -0.00425913967192173
+Time: init 0.0001    concretize 0.0021    
+Accumulated time: init 0.0357    concretize 0.3013    
+Time: get_constraints 0.0046    concretize_interm_bounds 0.0329    update_interm_bounds 0.0014    optimize_interm_bounds 0.0389    
+Accumulated time: optimize_interm_bounds 0.3748    get_constraints 0.0371    concretize_interm_bounds 0.3082    update_interm_bounds 0.0294    
+best_l after optimization: -13.760452270507812
+beta sum per layer: [0.0, 23.61697006225586, 67.625244140625, 170.05902099609375, 0.0, 646.0704345703125, 0.0, 0.0, 0.0, 56.31255340576172]
+alpha/beta optimization time: 0.16469454765319824
+pruning_in_iteration open status: True
+ratio of positive domain = 127 / 320 = 0.396875
+pruning-in-iteration extra time: 0.002524852752685547
+torch.Size([320, 1])
+Time: prepare 0.0102    bound 0.2060    transfer 0.0100    finalize 0.0038    func 0.2300    
+Accumulated time: func 3.9002    prepare 0.0786    bound 3.7690    transfer 0.0546    finalize 0.0213    
+max lb tensor(0.00842381) min lb tensor(-0.25433350)
+Number of Verified Splits: 127 of 320
+Current worst splitting domains lb-rhs (depth):
+-0.25433 (26), -0.24881 (26), -0.22904 (26), -0.22883 (26), -0.22676 (26), -0.22510 (26), -0.22027 (26), -0.21975 (26), -0.21969 (26), -0.21714 (26), -0.20482 (26), -0.20165 (26), -0.20018 (26), -0.20002 (26), -0.19957 (26), -0.19314 (26), -0.19212 (26), -0.19077 (26), -0.18951 (26), -0.18207 (26), 
+Length of domains: 193
+Current (lb-rhs): -0.25433349609375
+920 domains visited
+Time: pickout 0.0098    decision 0.0691    set_bounds 0.0054    solve 0.2304    add 0.0162    
+Accumulated time: pickout 0.0622    decision 1.3164    set_bounds 0.0336    solve 3.9088    add 0.0891    
+Cumulative time: 5.430924892425537
+
+BaB round 25
+batch: 193
+splitting decisions: 
+split level 0: [/input-16, 2346] [/input-16, 2346] [/input-16, 2346] [/input-16, 2346] [/input-16, 2346] [/input-16, 2346] [/input-16, 2346] [/input-16, 2346] [/input-16, 2346] [/input-16, 2346] 
+Objective masks generated with topk: 20 objectives.
+ layer: /input
+    lower bounds improved: average # 180.57253886010363, value 8.436508592546294e-06
+    upper bounds improved: average # 164.89637305699483, value -9.917880895841924e-06
+ layer: /input-8
+    lower bounds improved: average # 94.95854922279793, value 6.39095748026754e-06
+    upper bounds improved: average # 74.7720207253886, value -6.33364012513136e-06
+ layer: /input-16
+    lower bounds improved: average # 17.870466321243523, value 0.000796421744662863
+    upper bounds improved: average # 18.569948186528496, value -0.000513640208256677
+ layer: /input-24
+    lower bounds improved: average # 6.072538860103627, value 0.0017190109262812323
+    upper bounds improved: average # 5.5595854922279795, value -0.0012498203800132238
+ layer: /input-40
+    lower bounds improved: average # 21.310880829015545, value 0.0010146649235888467
+    upper bounds improved: average # 26.212435233160623, value -0.002161828347438358
+ layer: /input-72
+    lower bounds improved: average # 17.326424870466322, value 0.024200202269875324
+    upper bounds improved: average # 11.709844559585493, value -0.0037415342627411677
+Time: init 0.0001    concretize 0.0027    
+Accumulated time: init 0.0379    concretize 0.3407    
+Time: get_constraints 0.0052    concretize_interm_bounds 0.0398    update_interm_bounds 0.0015    optimize_interm_bounds 0.0464    
+Accumulated time: optimize_interm_bounds 0.4212    get_constraints 0.0423    concretize_interm_bounds 0.3480    update_interm_bounds 0.0309    
+best_l after optimization: -18.35555648803711
+beta sum per layer: [0.0, 27.35487937927246, 202.9974365234375, 162.30258178710938, 0.0, 820.7491455078125, 0.0, 0.0, 0.0, 66.07159423828125]
+alpha/beta optimization time: 0.1720888614654541
+pruning_in_iteration open status: True
+ratio of positive domain = 125 / 386 = 0.32383419689119175
+pruning-in-iteration extra time: 0.0026352405548095703
+torch.Size([386, 1])
+Time: prepare 0.0129    bound 0.2207    transfer 0.0087    finalize 0.0049    func 0.2472    
+Accumulated time: func 4.1473    prepare 0.0926    bound 3.9897    transfer 0.0633    finalize 0.0261    
+max lb tensor(0.00058126) min lb tensor(-0.24671936)
+Number of Verified Splits: 125 of 386
+Current worst splitting domains lb-rhs (depth):
+-0.24672 (27), -0.24119 (27), -0.22118 (27), -0.22109 (27), -0.21930 (27), -0.21747 (27), -0.21284 (27), -0.21213 (27), -0.21202 (27), -0.20952 (27), -0.19736 (27), -0.19418 (27), -0.19250 (27), -0.19237 (27), -0.19215 (27), -0.18644 (27), -0.18572 (27), -0.18457 (27), -0.18323 (27), -0.18286 (27), 
+Length of domains: 261
+Current (lb-rhs): -0.2467193603515625
+1181 domains visited
+Time: pickout 0.0114    decision 0.0823    set_bounds 0.0058    solve 0.2476    add 0.0236    
+Accumulated time: pickout 0.0735    decision 1.3987    set_bounds 0.0394    solve 4.1564    add 0.1127    
+Cumulative time: 5.802866458892822
+
+BaB round 26
+batch: 256
+splitting decisions: 
+split level 0: [/input-40, 1797] [/input-16, 2333] [/input-40, 1803] [/input-40, 1803] [/input-40, 1797] [/input-40, 1797] [/input-40, 1797] [/input-40, 1803] [/input-40, 1797] [/input-40, 1797] 
+Objective masks generated with topk: 20 objectives.
+ layer: /input
+    lower bounds improved: average # 180.90234375, value 8.483999408781528e-06
+    upper bounds improved: average # 165.2890625, value -9.988667443394661e-06
+ layer: /input-8
+    lower bounds improved: average # 95.07421875, value 6.437272531911731e-06
+    upper bounds improved: average # 74.55859375, value -6.333793862722814e-06
+ layer: /input-16
+    lower bounds improved: average # 19.814453125, value 0.0005867739673703909
+    upper bounds improved: average # 26.380859375, value -0.00039460882544517517
+ layer: /input-24
+    lower bounds improved: average # 5.576171875, value 0.0014748664107173681
+    upper bounds improved: average # 5.134765625, value -0.0011046947911381721
+ layer: /input-40
+    lower bounds improved: average # 22.65234375, value 0.0007979646325111389
+    upper bounds improved: average # 28.169921875, value -0.001479615457355976
+ layer: /input-72
+    lower bounds improved: average # 13.642578125, value 0.020072784274816513
+    upper bounds improved: average # 12.36328125, value -0.003375092288479209
+Time: init 0.0001    concretize 0.0038    
+Accumulated time: init 0.0402    concretize 0.3933    
+Time: get_constraints 0.0066    concretize_interm_bounds 0.0529    update_interm_bounds 0.0016    optimize_interm_bounds 0.0612    
+Accumulated time: optimize_interm_bounds 0.4824    get_constraints 0.0489    concretize_interm_bounds 0.4009    update_interm_bounds 0.0325    
+best_l after optimization: -21.26259994506836
+beta sum per layer: [0.0, 28.369873046875, 339.0303039550781, 179.578369140625, 0.0, 1222.746337890625, 0.0, 0.0, 0.0, 77.49919891357422]
+alpha/beta optimization time: 0.18717360496520996
+pruning_in_iteration open status: True
+ratio of positive domain = 170 / 512 = 0.33203125
+pruning-in-iteration extra time: 0.0032062530517578125
+torch.Size([512, 1])
+Time: prepare 0.0169    bound 0.2506    transfer 0.0211    finalize 0.0059    func 0.2946    
+Accumulated time: func 4.4419    prepare 0.1114    bound 4.2403    transfer 0.0844    finalize 0.0320    
+max lb tensor(0.00111580) min lb tensor(-0.24127579)
+Number of Verified Splits: 170 of 512
+Current worst splitting domains lb-rhs (depth):
+-0.24128 (28), -0.22962 (28), -0.21574 (28), -0.21572 (28), -0.21391 (28), -0.21183 (28), -0.21097 (28), -0.20152 (28), -0.20054 (28), -0.20038 (28), -0.19774 (28), -0.19237 (27), -0.19198 (28), -0.18874 (28), -0.18712 (28), -0.18649 (28), -0.18243 (28), -0.18189 (27), -0.18146 (28), -0.18029 (28), 
+Length of domains: 347
+Current (lb-rhs): -0.24127578735351562
+1523 domains visited
+Time: pickout 0.0146    decision 0.2330    set_bounds 0.0074    solve 0.2951    add 0.0319    
+Accumulated time: pickout 0.0882    decision 1.6317    set_bounds 0.0468    solve 4.4515    add 0.1446    
+current_vram/total_varm: 8.9GB/102.0GB, batch_size increase to 512
+Cumulative time: 6.388599157333374
+
+BaB round 27
+batch: 347
+splitting decisions: 
+split level 0: [/input-40, 1797] [/input-40, 1797] [/input-40, 1797] [/input-40, 1803] [/input-40, 1803] [/input-40, 1803] [/input-40, 1797] [/input-72, 96] [/input-40, 1803] [/input-40, 1803] 
+Objective masks generated with topk: 20 objectives.
+ layer: /input
+    lower bounds improved: average # 180.8184438040346, value 8.48815446284731e-06
+    upper bounds improved: average # 165.11815561959654, value -9.971517822584433e-06
+ layer: /input-8
+    lower bounds improved: average # 98.61671469740634, value 7.1466634699521904e-06
+    upper bounds improved: average # 82.60518731988472, value -6.2690731084312415e-06
+ layer: /input-16
+    lower bounds improved: average # 19.608069164265128, value 0.0004760978115395098
+    upper bounds improved: average # 26.227665706051873, value -0.0003257943290454854
+ layer: /input-24
+    lower bounds improved: average # 6.1685878962536025, value 0.0012539480879945782
+    upper bounds improved: average # 6.7881844380403455, value -0.0009578165815611738
+ layer: /input-40
+    lower bounds improved: average # 22.521613832853024, value 0.0006574748744195064
+    upper bounds improved: average # 27.834293948126803, value -0.0009931975208029623
+ layer: /input-72
+    lower bounds improved: average # 16.354466858789625, value 0.01682634381121105
+    upper bounds improved: average # 11.567723342939482, value -0.002972318390947941
+Time: init 0.0001    concretize 0.0053    
+Accumulated time: init 0.0428    concretize 0.4649    
+Time: get_constraints 0.0092    concretize_interm_bounds 0.0719    update_interm_bounds 0.0017    optimize_interm_bounds 0.0828    
+Accumulated time: optimize_interm_bounds 0.5652    get_constraints 0.0581    concretize_interm_bounds 0.4728    update_interm_bounds 0.0342    
+best_l after optimization: -25.801578521728516
+beta sum per layer: [0.0, 31.55270767211914, 484.0042724609375, 200.76708984375, 0.0, 1776.608642578125, 0.0, 0.0, 0.0, 86.08570861816406]
+alpha/beta optimization time: 0.1849825382232666
+pruning_in_iteration open status: True
+ratio of positive domain = 241 / 694 = 0.3472622478386167
+pruning-in-iteration extra time: 0.003050088882446289
+torch.Size([694, 1])
+Time: prepare 0.0230    bound 0.2698    transfer 0.0389    finalize 0.0078    func 0.3395    
+Accumulated time: func 4.7814    prepare 0.1356    bound 4.5101    transfer 0.1233    finalize 0.0398    
+max lb tensor(0.00459290) min lb tensor(-0.23513079)
+Number of Verified Splits: 241 of 694
+Current worst splitting domains lb-rhs (depth):
+-0.23513 (29), -0.22423 (29), -0.20467 (29), -0.20386 (29), -0.20383 (29), -0.20274 (29), -0.20013 (29), -0.19620 (29), -0.19508 (29), -0.19481 (29), -0.19246 (29), -0.18785 (29), -0.18669 (28), -0.18514 (29), -0.18112 (29), -0.18065 (29), -0.17746 (29), -0.17576 (29), -0.17527 (29), -0.17513 (29), 
+Length of domains: 453
+Current (lb-rhs): -0.23513078689575195
+1976 domains visited
+Time: pickout 0.0198    decision 0.2976    set_bounds 0.0101    solve 0.3404    add 0.0465    
+Accumulated time: pickout 0.1079    decision 1.9293    set_bounds 0.0569    solve 4.7920    add 0.1911    
+Cumulative time: 7.107787609100342
+
+BaB round 28
+batch: 453
+splitting decisions: 
+split level 0: [/input-40, 1803] [/input-40, 1803] [/input-40, 1803] [/input-40, 1797] [/input-40, 1803] [/input-16, 2333] [/input-16, 2333] [/input-16, 2333] [/input-16, 2333] [/input-16, 2333] 
+Objective masks generated with topk: 20 objectives.
+ layer: /input
+    lower bounds improved: average # 183.8896247240618, value 8.227192605568084e-06
+    upper bounds improved: average # 168.2251655629139, value -9.618567973046377e-06
+ layer: /input-8
+    lower bounds improved: average # 93.01986754966887, value 5.9216490907648015e-06
+    upper bounds improved: average # 79.58719646799118, value -6.080734611347021e-06
+ layer: /input-16
+    lower bounds improved: average # 24.194260485651213, value 0.00048782184687144975
+    upper bounds improved: average # 19.56291390728477, value -0.0004058063819708414
+ layer: /input-24
+    lower bounds improved: average # 6.100441501103753, value 0.0011713015322653664
+    upper bounds improved: average # 5.7406181015452535, value -0.0010268559255873658
+ layer: /input-40
+    lower bounds improved: average # 23.02869757174393, value 0.0006779323087359632
+    upper bounds improved: average # 26.33222958057395, value -0.0008161246908158393
+ layer: /input-72
+    lower bounds improved: average # 16.06512141280353, value 0.015246692345894989
+    upper bounds improved: average # 13.649006622516556, value -0.0032844490825998337
+Time: init 0.0001    concretize 0.0070    
+Accumulated time: init 0.0459    concretize 0.5601    
+Time: get_constraints 0.0114    concretize_interm_bounds 0.0956    update_interm_bounds 0.0015    optimize_interm_bounds 0.1086    
+Accumulated time: optimize_interm_bounds 0.6737    get_constraints 0.0695    concretize_interm_bounds 0.5685    update_interm_bounds 0.0356    
+best_l after optimization: -37.07566833496094
+beta sum per layer: [0.0, 39.98897933959961, 626.970703125, 274.7696228027344, 0.0, 2351.35107421875, 0.0, 0.0, 0.0, 98.0484619140625]
+alpha/beta optimization time: 0.2439112663269043
+pruning_in_iteration open status: True
+ratio of positive domain = 233 / 906 = 0.2571743929359823
+pruning-in-iteration extra time: 0.0029044151306152344
+torch.Size([906, 1])
+Time: prepare 0.0294    bound 0.3547    transfer 0.0609    finalize 0.0106    func 0.4558    
+Accumulated time: func 5.2372    prepare 0.1663    bound 4.8648    transfer 0.1843    finalize 0.0504    
+max lb tensor(0.00593281) min lb tensor(-0.22353363)
+Number of Verified Splits: 233 of 906
+Current worst splitting domains lb-rhs (depth):
+-0.22353 (30), -0.21822 (30), -0.20523 (30), -0.19867 (30), -0.19658 (30), -0.19436 (30), -0.18994 (30), -0.18932 (30), -0.18876 (30), -0.18550 (30), -0.18494 (30), -0.18023 (30), -0.18008 (30), -0.17650 (30), -0.17609 (30), -0.17495 (29), -0.17491 (30), -0.17341 (30), -0.17141 (30), -0.16987 (30), 
+Length of domains: 673
+Current (lb-rhs): -0.22353363037109375
+2649 domains visited
+Time: pickout 0.0248    decision 0.3931    set_bounds 0.0129    solve 0.4563    add 0.0702    
+Accumulated time: pickout 0.1327    decision 2.3224    set_bounds 0.0699    solve 5.2483    add 0.2613    
+Cumulative time: 8.071916103363037
+
+BaB round 29
+batch: 512
+splitting decisions: 
+split level 0: [/input-16, 2333] [/input-8, 346] [/input-24, 6675] [/input-24, 6675] [/input-24, 6675] [/input-72, 96] [/input-72, 96] [/input-72, 96] [/input-24, 6675] [/input-8, 346] 
+Objective masks generated with topk: 20 objectives.
+ layer: /input
+    lower bounds improved: average # 183.779296875, value 8.212169632315636e-06
+    upper bounds improved: average # 168.412109375, value -9.6434960141778e-06
+ layer: /input-8
+    lower bounds improved: average # 93.107421875, value 5.927213351242244e-06
+    upper bounds improved: average # 79.65234375, value -6.081652827560902e-06
+ layer: /input-16
+    lower bounds improved: average # 24.556640625, value 0.0006884537870064378
+    upper bounds improved: average # 19.697265625, value -0.0007092771120369434
+ layer: /input-24
+    lower bounds improved: average # 6.1689453125, value 0.0012190762208774686
+    upper bounds improved: average # 6.3115234375, value -0.0014517606468871236
+ layer: /input-40
+    lower bounds improved: average # 23.5283203125, value 0.000929349975194782
+    upper bounds improved: average # 26.7021484375, value -0.000779936439357698
+ layer: /input-72
+    lower bounds improved: average # 16.1220703125, value 0.0156891867518425
+    upper bounds improved: average # 14.0126953125, value -0.004798175301402807
+Time: init 0.0001    concretize 0.0078    
+Accumulated time: init 0.0488    concretize 0.6688    
+Time: get_constraints 0.0134    concretize_interm_bounds 0.1091    update_interm_bounds 0.0017    optimize_interm_bounds 0.1242    
+Accumulated time: optimize_interm_bounds 0.7979    get_constraints 0.0829    concretize_interm_bounds 0.6776    update_interm_bounds 0.0373    
+best_l after optimization: -34.704620361328125
+beta sum per layer: [0.0, 56.48899841308594, 692.689453125, 365.4707946777344, 0.0, 2349.24169921875, 0.0, 0.0, 0.0, 105.16048431396484]
+alpha/beta optimization time: 0.2540428638458252
+pruning_in_iteration open status: True
+ratio of positive domain = 351 / 1024 = 0.3427734375
+pruning-in-iteration extra time: 0.003446340560913086
+torch.Size([1024, 1])
+Time: prepare 0.0342    bound 0.3804    transfer 0.0678    finalize 0.0111    func 0.4937    
+Accumulated time: func 5.7309    prepare 0.2020    bound 5.2452    transfer 0.2521    finalize 0.0615    
+max lb tensor(0.00839710) min lb tensor(-0.20795155)
+Number of Verified Splits: 351 of 1024
+Current worst splitting domains lb-rhs (depth):
+-0.20795 (31), -0.20593 (31), -0.20397 (31), -0.19537 (31), -0.18893 (31), -0.18623 (31), -0.18458 (31), -0.18325 (31), -0.18031 (31), -0.17946 (31), -0.17885 (31), -0.17825 (31), -0.17650 (31), -0.17544 (31), -0.17481 (31), -0.17446 (31), -0.17444 (31), -0.17377 (31), -0.17141 (30), -0.17120 (31), 
+Length of domains: 834
+Current (lb-rhs): -0.20795154571533203
+3322 domains visited
+Time: pickout 0.0282    decision 0.4396    set_bounds 0.0145    solve 0.4943    add 0.0669    
+Accumulated time: pickout 0.1609    decision 2.7620    set_bounds 0.0844    solve 5.7425    add 0.3281    
+current_vram/total_varm: 11.2GB/102.0GB, batch_size increase to 1024
+Cumulative time: 9.123798608779907
+
+BaB round 30
+batch: 834
+splitting decisions: 
+split level 0: [/input-16, 2333] [/input-72, 96] [/input-24, 6675] [/input-24, 6675] [/input-24, 6675] [/input-72, 96] [/input-24, 6675] [/input-72, 27] [/input-24, 6675] [/input-8, 346] 
+Objective masks generated with topk: 20 objectives.
+ layer: /input
+    lower bounds improved: average # 187.66606714628298, value 8.569284380196953e-06
+    upper bounds improved: average # 165.08213429256594, value -9.834310776895757e-06
+ layer: /input-8
+    lower bounds improved: average # 94.22661870503597, value 6.6993449874919095e-06
+    upper bounds improved: average # 75.93285371702638, value -6.14127952703755e-06
+ layer: /input-16
+    lower bounds improved: average # 24.75959232613909, value 0.000806259451438483
+    upper bounds improved: average # 19.813549160671464, value -0.000889935653558452
+ layer: /input-24
+    lower bounds improved: average # 5.1378896882494, value 0.0012600614870194907
+    upper bounds improved: average # 5.677458033573141, value -0.001609249080685403
+ layer: /input-40
+    lower bounds improved: average # 23.941247002398082, value 0.0011212122526100213
+    upper bounds improved: average # 26.90767386091127, value -0.0007549836624154656
+ layer: /input-72
+    lower bounds improved: average # 17.032973621103118, value 0.015895832070915532
+    upper bounds improved: average # 11.1378896882494, value -0.005637336977951818
+Time: init 0.0002    concretize 0.0131    
+Accumulated time: init 0.0527    concretize 0.8409    
+Time: get_constraints 0.0212    concretize_interm_bounds 0.1725    update_interm_bounds 0.0021    optimize_interm_bounds 0.1959    
+Accumulated time: optimize_interm_bounds 0.9938    get_constraints 0.1041    concretize_interm_bounds 0.8501    update_interm_bounds 0.0394    
+best_l after optimization: -35.44738006591797
+beta sum per layer: [0.0, 102.7332534790039, 1122.4921875, 555.2064208984375, 0.0, 4085.286376953125, 0.0, 0.0, 0.0, 160.73431396484375]
+alpha/beta optimization time: 0.49628400802612305
+pruning_in_iteration open status: True
+ratio of positive domain = 690 / 1668 = 0.4136690647482014
+pruning-in-iteration extra time: 0.0034737586975097656
+torch.Size([1668, 1])
+Time: prepare 0.0548    bound 0.6943    transfer 0.1311    finalize 0.0183    func 0.8987    
+Accumulated time: func 6.6295    prepare 0.2586    bound 5.9396    transfer 0.3832    finalize 0.0798    
+max lb tensor(0.00733519) min lb tensor(-0.20258522)
+Number of Verified Splits: 690 of 1668
+Current worst splitting domains lb-rhs (depth):
+-0.20259 (32), -0.20061 (32), -0.19870 (32), -0.19001 (32), -0.18360 (32), -0.18090 (32), -0.17492 (32), -0.17379 (32), -0.16956 (32), -0.16885 (32), -0.16846 (32), -0.16806 (32), -0.16681 (32), -0.16530 (32), -0.16417 (32), -0.16394 (31), -0.16371 (32), -0.16274 (32), -0.16212 (32), -0.16156 (32), 
+Length of domains: 978
+Current (lb-rhs): -0.20258522033691406
+4300 domains visited
+Time: pickout 0.0493    decision 0.8536    set_bounds 0.0230    solve 0.8993    add 0.0977    
+Accumulated time: pickout 0.2102    decision 3.6156    set_bounds 0.1074    solve 6.6419    add 0.4258    
+Cumulative time: 11.062047004699707
+
+BaB round 31
+batch: 978
+splitting decisions: 
+split level 0: [/input-72, 27] [/input-24, 6675] [/input-24, 6675] [/input-72, 27] [/input-72, 27] [/input-72, 46] [/input-24, 6675] [/input-72, 27] [/input-72, 27] [/input-40, 695] 
+Objective masks generated with topk: 20 objectives.
+ layer: /input
+    lower bounds improved: average # 181.89314928425358, value 8.315891636905006e-06
+    upper bounds improved: average # 161.50920245398774, value -9.557525560655964e-06
+ layer: /input-8
+    lower bounds improved: average # 94.24437627811861, value 6.695005638955317e-06
+    upper bounds improved: average # 75.99795501022494, value -6.145791956252116e-06
+ layer: /input-16
+    lower bounds improved: average # 25.27044989775051, value 0.0009048227030319183
+    upper bounds improved: average # 21.187116564417177, value -0.001045967903605268
+ layer: /input-24
+    lower bounds improved: average # 5.208588957055214, value 0.0013020683407539728
+    upper bounds improved: average # 5.991820040899795, value -0.001616627160756866
+ layer: /input-40
+    lower bounds improved: average # 23.62730061349693, value 0.0012940961890425418
+    upper bounds improved: average # 32.90184049079755, value -0.0007419461852933731
+ layer: /input-72
+    lower bounds improved: average # 15.811349693251534, value 0.016181620108325544
+    upper bounds improved: average # 14.190695296523517, value -0.006248863196811793
+Time: init 0.0002    concretize 0.0154    
+Accumulated time: init 0.0565    concretize 1.0425    
+Time: get_constraints 0.0241    concretize_interm_bounds 0.2021    update_interm_bounds 0.0024    optimize_interm_bounds 0.2286    
+Accumulated time: optimize_interm_bounds 1.2224    get_constraints 0.1282    concretize_interm_bounds 1.0522    update_interm_bounds 0.0418    
+best_l after optimization: -15.373178482055664
+beta sum per layer: [0.0, 135.84136962890625, 1296.995361328125, 583.6253051757812, 0.0, 4844.42724609375, 0.0, 0.0, 0.0, 179.90689086914062]
+alpha/beta optimization time: 0.5649816989898682
+pruning_in_iteration open status: True
+ratio of positive domain = 915 / 1956 = 0.46779141104294475
+pruning-in-iteration extra time: 0.004092216491699219
+torch.Size([1956, 1])
+Time: prepare 0.0609    bound 0.7956    transfer 0.1518    finalize 0.0208    func 1.0293    
+Accumulated time: func 7.6588    prepare 0.3213    bound 6.7352    transfer 0.5350    finalize 0.1006    
+max lb tensor(0.00572014) min lb tensor(-0.18807697)
+Number of Verified Splits: 915 of 1956
+Current worst splitting domains lb-rhs (depth):
+-0.18808 (33), -0.18597 (33), -0.18183 (33), -0.18140 (33), -0.17960 (33), -0.17793 (33), -0.17420 (33), -0.17352 (33), -0.16924 (33), -0.16640 (33), -0.16349 (33), -0.16274 (33), -0.16148 (33), -0.16046 (33), -0.15939 (33), -0.15926 (33), -0.15882 (33), -0.15852 (32), -0.15836 (33), -0.15706 (33), 
+Length of domains: 1041
+Current (lb-rhs): -0.18807697296142578
+5341 domains visited
+Time: pickout 0.0558    decision 0.8667    set_bounds 0.0270    solve 1.0300    add 0.2021    
+Accumulated time: pickout 0.2661    decision 4.4823    set_bounds 0.1344    solve 7.6719    add 0.6279    
+Cumulative time: 13.260327816009521
+
+BaB round 32
+batch: 1024
+splitting decisions: 
+split level 0: [/input-24, 6675] [/input-24, 6675] [/input-24, 6675] [/input-72, 27] [/input-72, 27] [/input-24, 6675] [/input-24, 6675] [/input-40, 789] [/input-72, 27] [/input-24, 6675] 
+Objective masks generated with topk: 20 objectives.
+ layer: /input
+    lower bounds improved: average # 181.9052734375, value 8.305774827022105e-06
+    upper bounds improved: average # 161.39013671875, value -9.554511052556336e-06
+ layer: /input-8
+    lower bounds improved: average # 94.255859375, value 6.691741873510182e-06
+    upper bounds improved: average # 76.099609375, value -6.15379394730553e-06
+ layer: /input-16
+    lower bounds improved: average # 25.45458984375, value 0.001032679807394743
+    upper bounds improved: average # 21.20703125, value -0.0012560883769765496
+ layer: /input-24
+    lower bounds improved: average # 5.2958984375, value 0.0014016437344253063
+    upper bounds improved: average # 6.2626953125, value -0.0016188259469345212
+ layer: /input-40
+    lower bounds improved: average # 24.0576171875, value 0.001458639744669199
+    upper bounds improved: average # 33.10009765625, value -0.0007063220837153494
+ layer: /input-72
+    lower bounds improved: average # 15.5380859375, value 0.016222767531871796
+    upper bounds improved: average # 14.49853515625, value -0.007238237652927637
+Time: init 0.0002    concretize 0.0162    
+Accumulated time: init 0.0611    concretize 1.2524    
+Time: get_constraints 0.0271    concretize_interm_bounds 0.2103    update_interm_bounds 0.0026    optimize_interm_bounds 0.2400    
+Accumulated time: optimize_interm_bounds 1.4624    get_constraints 0.1553    concretize_interm_bounds 1.2625    update_interm_bounds 0.0444    
+best_l after optimization: -31.421283721923828
+beta sum per layer: [0.0, 159.50906372070312, 1358.8162841796875, 596.754150390625, 0.0, 4932.373046875, 0.0, 0.0, 0.0, 191.2823944091797]
+alpha/beta optimization time: 0.6308674812316895
+pruning_in_iteration open status: True
+ratio of positive domain = 775 / 2048 = 0.37841796875
+pruning-in-iteration extra time: 0.0038187503814697266
+torch.Size([2048, 1])
+Time: prepare 0.0696    bound 0.8731    transfer 0.1718    finalize 0.0229    func 1.1375    
+Accumulated time: func 8.7963    prepare 0.3932    bound 7.6083    transfer 0.7067    finalize 0.1235    
+max lb tensor(9.99999975e-05) min lb tensor(-0.17536736)
+Number of Verified Splits: 775 of 2048
+Current worst splitting domains lb-rhs (depth):
+-0.17537 (34), -0.17395 (34), -0.17319 (34), -0.17315 (34), -0.17213 (34), -0.16923 (34), -0.16632 (34), -0.16543 (34), -0.16169 (34), -0.16050 (34), -0.16022 (34), -0.15612 (34), -0.15505 (34), -0.15442 (34), -0.15396 (34), -0.15388 (34), -0.15365 (34), -0.15357 (34), -0.15296 (34), -0.15133 (34), 
+Length of domains: 1290
+Current (lb-rhs): -0.1753673553466797
+6614 domains visited
+Time: pickout 0.0598    decision 0.9562    set_bounds 0.1309    solve 1.1385    add 0.1658    
+Accumulated time: pickout 0.3258    decision 5.4385    set_bounds 0.2653    solve 8.8105    add 0.7937    
+current_vram/total_varm: 24.1GB/102.0GB, batch_size increase to 2048
+Cumulative time: 15.733420610427856
+
+BaB round 33
+batch: 1290
+splitting decisions: 
+split level 0: [/input-24, 6675] [/input-24, 6675] [/input-24, 6675] [/input-24, 6675] [/input-24, 6675] [/input-40, 1930] [/input-24, 6675] [/input-24, 6675] [/input-16, 2346] [/input-24, 6675] 
+Objective masks generated with topk: 20 objectives.
+ layer: /input
+    lower bounds improved: average # 181.78333333333333, value 8.084232261938643e-06
+    upper bounds improved: average # 159.83875968992248, value -9.289776632028033e-06
+ layer: /input-8
+    lower bounds improved: average # 104.78372093023256, value 7.151890286179476e-06
+    upper bounds improved: average # 84.86589147286821, value -6.207719791767209e-06
+ layer: /input-16
+    lower bounds improved: average # 25.562403100775192, value 0.0013143179028533227
+    upper bounds improved: average # 20.04922480620155, value -0.0016903045565582985
+ layer: /input-24
+    lower bounds improved: average # 6.6031007751937985, value 0.0016760131185368974
+    upper bounds improved: average # 8.691472868217055, value -0.0019446251004241234
+ layer: /input-40
+    lower bounds improved: average # 25.63720930232558, value 0.001876904798108478
+    upper bounds improved: average # 27.53372093023256, value -0.0007312173067137252
+ layer: /input-72
+    lower bounds improved: average # 15.653875968992248, value 0.01767813808234163
+    upper bounds improved: average # 15.07015503875969, value -0.009410160271696342
+Time: init 0.0003    concretize 0.0233    
+Accumulated time: init 0.0665    concretize 1.5434    
+Time: get_constraints 0.0328    concretize_interm_bounds 0.2915    update_interm_bounds 0.0053    optimize_interm_bounds 0.3296    
+Accumulated time: optimize_interm_bounds 1.7920    get_constraints 0.1881    concretize_interm_bounds 1.5540    update_interm_bounds 0.0497    
+best_l after optimization: -50.12385940551758
+beta sum per layer: [0.0, 249.8455352783203, 1773.029541015625, 772.0888061523438, 0.0, 5756.6865234375, 0.0, 0.0, 0.0, 271.55718994140625]
+alpha/beta optimization time: 0.8525404930114746
+pruning_in_iteration open status: True
+ratio of positive domain = 938 / 2580 = 0.3635658914728682
+pruning-in-iteration extra time: 0.0044596195220947266
+torch.Size([2580, 1])
+Time: prepare 0.0860    bound 1.1845    transfer 0.2124    finalize 0.0285    func 1.5115    
+Accumulated time: func 10.3078    prepare 0.4812    bound 8.7928    transfer 0.9191    finalize 0.1520    
+max lb tensor(9.99999975e-05) min lb tensor(-0.16974545)
+Number of Verified Splits: 938 of 2580
+Current worst splitting domains lb-rhs (depth):
+-0.16975 (35), -0.16762 (35), -0.16134 (35), -0.16112 (35), -0.16074 (35), -0.16050 (35), -0.15986 (35), -0.15920 (35), -0.15742 (35), -0.15607 (35), -0.15026 (35), -0.14992 (35), -0.14932 (35), -0.14907 (35), -0.14856 (35), -0.14830 (35), -0.14797 (35), -0.14786 (35), -0.14777 (35), -0.14769 (35), 
+Length of domains: 1642
+Current (lb-rhs): -0.16974544525146484
+8256 domains visited
+Time: pickout 0.0740    decision 1.8754    set_bounds 0.0373    solve 1.5124    add 0.2262    
+Accumulated time: pickout 0.3999    decision 7.3138    set_bounds 0.3026    solve 10.3228    add 1.0199    
+Cumulative time: 19.48397207260132
+
+BaB round 34
+batch: 1642
+splitting decisions: 
+split level 0: [/input-40, 695] [/input-40, 1930] [/input-40, 695] [/input-40, 695] [/input-72, 46] [/input-72, 46] [/input-72, 46] [/input-72, 46] [/input-40, 695] [/input-72, 46] 
+Objective masks generated with topk: 20 objectives.
+ layer: /input
+    lower bounds improved: average # 187.66686967113276, value 8.551469673918748e-06
+    upper bounds improved: average # 165.11814859926918, value -9.85645111672916e-06
+ layer: /input-8
+    lower bounds improved: average # 100.78136419001218, value 7.038670574994383e-06
+    upper bounds improved: average # 78.94518879415347, value -5.586075071295345e-06
+ layer: /input-16
+    lower bounds improved: average # 23.21954933008526, value 0.0015621498934969978
+    upper bounds improved: average # 20.162302070645556, value -0.0020911763269050405
+ layer: /input-24
+    lower bounds improved: average # 5.966504263093788, value 0.0018815715478485888
+    upper bounds improved: average # 8.007003654080389, value -0.0022966571324635364
+ layer: /input-40
+    lower bounds improved: average # 33.33008526187576, value 0.002197144528109031
+    upper bounds improved: average # 30.058769792935443, value -0.0007589254687096692
+ layer: /input-72
+    lower bounds improved: average # 14.693970767356882, value 0.018367833545234115
+    upper bounds improved: average # 13.524056029232643, value -0.011320080449316882
+Time: init 0.0004    concretize 0.0295    
+Accumulated time: init 0.0737    concretize 1.9125    
+Time: get_constraints 0.0401    concretize_interm_bounds 0.3695    update_interm_bounds 0.0020    optimize_interm_bounds 0.4116    
+Accumulated time: optimize_interm_bounds 2.2036    get_constraints 0.2282    concretize_interm_bounds 1.9234    update_interm_bounds 0.0517    
+best_l after optimization: -58.811614990234375
+beta sum per layer: [0.0, 375.65203857421875, 2253.0966796875, 956.003662109375, 0.0, 7216.43603515625, 0.0, 0.0, 0.0, 352.5658874511719]
+alpha/beta optimization time: 1.0306603908538818
+pruning_in_iteration open status: True
+ratio of positive domain = 1322 / 3284 = 0.402557856272838
+pruning-in-iteration extra time: 0.00411677360534668
+torch.Size([3284, 1])
+Time: prepare 0.1081    bound 1.4446    transfer 0.2731    finalize 0.0335    func 1.8593    
+Accumulated time: func 12.1671    prepare 0.5918    bound 10.2374    transfer 1.1922    finalize 0.1855    
+max lb tensor(0.00011063) min lb tensor(-0.16109371)
+Number of Verified Splits: 1322 of 3284
+Current worst splitting domains lb-rhs (depth):
+-0.16109 (36), -0.16060 (36), -0.15558 (36), -0.15497 (36), -0.15290 (36), -0.15227 (36), -0.15193 (36), -0.14873 (36), -0.14824 (36), -0.14808 (36), -0.14724 (36), -0.14546 (36), -0.14453 (36), -0.14276 (36), -0.14229 (36), -0.14165 (36), -0.14142 (36), -0.14126 (36), -0.14060 (36), -0.14058 (36), 
+Length of domains: 1962
+Current (lb-rhs): -0.16109371185302734
+10218 domains visited
+Time: pickout 0.0975    decision 2.4730    set_bounds 0.0477    solve 1.8606    add 0.2527    
+Accumulated time: pickout 0.4973    decision 9.7868    set_bounds 0.3503    solve 12.1834    add 1.2726    
+Cumulative time: 24.24796462059021
+
+BaB round 35
+batch: 1962
+splitting decisions: 
+split level 0: [/input-8, 346] [/input-8, 346] [/input-40, 695] [/input-40, 695] [/input-40, 695] [/input-40, 695] [/input-8, 346] [/input-40, 695] [/input-40, 695] [/input-8, 346] 
+Objective masks generated with topk: 20 objectives.
+ layer: /input
+    lower bounds improved: average # 183.74872579001018, value 8.192353869553857e-06
+    upper bounds improved: average # 168.22018348623854, value -9.642889254197676e-06
+ layer: /input-8
+    lower bounds improved: average # 99.45795107033639, value 1.0092878499648379e-05
+    upper bounds improved: average # 76.91462793068298, value -2.26133874219735e-05
+ layer: /input-16
+    lower bounds improved: average # 22.625637104994905, value 0.001968960271090664
+    upper bounds improved: average # 19.613914373088686, value -0.00248040530781255
+ layer: /input-24
+    lower bounds improved: average # 7.331039755351682, value 0.0021762254891896224
+    upper bounds improved: average # 7.363149847094801, value -0.002708574318375427
+ layer: /input-40
+    lower bounds improved: average # 31.08460754332314, value 0.0025981753365830664
+    upper bounds improved: average # 29.656218144750255, value -0.0009501691865872414
+ layer: /input-72
+    lower bounds improved: average # 16.862640163098877, value 0.02003810116518042
+    upper bounds improved: average # 13.026503567787971, value -0.013311863431629177
+Time: init 0.0004    concretize 0.0303    
+Accumulated time: init 0.0810    concretize 2.3466    
+Time: get_constraints 0.0492    concretize_interm_bounds 0.4346    update_interm_bounds 0.0033    optimize_interm_bounds 0.4872    
+Accumulated time: optimize_interm_bounds 2.6907    get_constraints 0.2774    concretize_interm_bounds 2.3581    update_interm_bounds 0.0551    
+best_l after optimization: -82.89383697509766
+beta sum per layer: [0.0, 524.53125, 2723.99462890625, 1141.10302734375, 0.0, 8457.88671875, 0.0, 0.0, 0.0, 411.049072265625]
+alpha/beta optimization time: 1.2430925369262695
+pruning_in_iteration open status: True
+ratio of positive domain = 1451 / 3924 = 0.36977573904179406
+pruning-in-iteration extra time: 0.003958940505981445
+torch.Size([3924, 1])
+Time: prepare 0.1361    bound 1.7325    transfer 0.3269    finalize 0.0399    func 2.2355    
+Accumulated time: func 14.4026    prepare 0.7312    bound 11.9699    transfer 1.5191    finalize 0.2254    
+max lb tensor(9.99999975e-05) min lb tensor(-0.15401077)
+Number of Verified Splits: 1451 of 3924
+Current worst splitting domains lb-rhs (depth):
+-0.15401 (37), -0.15189 (37), -0.14700 (37), -0.14635 (37), -0.14590 (37), -0.14484 (37), -0.14373 (37), -0.14180 (37), -0.14125 (37), -0.14004 (37), -0.13959 (37), -0.13953 (37), -0.13856 (37), -0.13736 (37), -0.13640 (37), -0.13615 (37), -0.13494 (37), -0.13451 (37), -0.13419 (37), -0.13407 (37), 
+Length of domains: 2473
+Current (lb-rhs): -0.15401077270507812
+12691 domains visited
+Time: pickout 0.1144    decision 2.8986    set_bounds 0.1603    solve 2.2367    add 0.4745    
+Accumulated time: pickout 0.6118    decision 12.6854    set_bounds 0.5106    solve 14.4201    add 1.7471    
+Cumulative time: 30.166304349899292
+
+BaB round 36
+batch: 2048
+splitting decisions: 
+split level 0: [/input-40, 1179] [/input-40, 1179] [/input-40, 695] [/input-40, 1179] [/input-40, 1179] [/input-40, 1179] [/input-72, 0] [/input-72, 0] [/input-40, 1179] [/input-16, 3806] 
+Objective masks generated with topk: 20 objectives.
+ layer: /input
+    lower bounds improved: average # 183.71728515625, value 8.187413186533377e-06
+    upper bounds improved: average # 168.148681640625, value -9.641298674978316e-06
+ layer: /input-8
+    lower bounds improved: average # 94.289306640625, value 1.1488784366520122e-05
+    upper bounds improved: average # 76.48291015625, value -2.3604790840181522e-05
+ layer: /input-16
+    lower bounds improved: average # 26.35205078125, value 0.0018177757738158107
+    upper bounds improved: average # 21.36279296875, value -0.002243037335574627
+ layer: /input-24
+    lower bounds improved: average # 6.74267578125, value 0.0019335547694936395
+    upper bounds improved: average # 6.89453125, value -0.0024213155265897512
+ layer: /input-40
+    lower bounds improved: average # 25.663818359375, value 0.0023361288476735353
+    upper bounds improved: average # 34.48681640625, value -0.0008229199447669089
+ layer: /input-72
+    lower bounds improved: average # 13.661865234375, value 0.017160456627607346
+    upper bounds improved: average # 14.704345703125, value -0.011911468580365181
+Time: init 0.0005    concretize 0.0366    
+Accumulated time: init 0.0887    concretize 2.7890    
+Time: get_constraints 0.0476    concretize_interm_bounds 0.4429    update_interm_bounds 0.0036    optimize_interm_bounds 0.4941    
+Accumulated time: optimize_interm_bounds 3.1848    get_constraints 0.3250    concretize_interm_bounds 2.8010    update_interm_bounds 0.0587    
+best_l after optimization: -91.73323822021484
+beta sum per layer: [0.0, 510.8426208496094, 2797.69970703125, 1118.10693359375, 0.0, 8184.48828125, 0.0, 0.0, 0.0, 447.40435791015625]
+alpha/beta optimization time: 1.398155689239502
+pruning_in_iteration open status: True
+ratio of positive domain = 1472 / 4096 = 0.359375
+pruning-in-iteration extra time: 0.004373311996459961
+torch.Size([4096, 1])
+Time: prepare 0.1432    bound 1.8946    transfer 0.3401    finalize 0.0436    func 2.4216    
+Accumulated time: func 16.8243    prepare 0.8782    bound 13.8645    transfer 1.8592    finalize 0.2690    
+max lb tensor(0.00060654) min lb tensor(-0.14800978)
+Number of Verified Splits: 1472 of 4096
+Current worst splitting domains lb-rhs (depth):
+-0.14801 (38), -0.14633 (38), -0.14235 (38), -0.14089 (38), -0.14079 (38), -0.13906 (38), -0.13744 (38), -0.13585 (38), -0.13556 (38), -0.13432 (38), -0.13373 (38), -0.13353 (38), -0.13302 (38), -0.13252 (38), -0.13089 (38), -0.12904 (38), -0.12898 (38), -0.12869 (38), -0.12855 (38), -0.12848 (38), 
+Length of domains: 3049
+Current (lb-rhs): -0.1480097770690918
+15315 domains visited
+Time: pickout 0.1236    decision 2.9568    set_bounds 0.1796    solve 2.4230    add 0.3344    
+Accumulated time: pickout 0.7354    decision 15.6422    set_bounds 0.6903    solve 16.8431    add 2.0815    
+Cumulative time: 36.22423481941223
+
+BaB round 37
+batch: 2048
+splitting decisions: 
+split level 0: [/input-40, 1178] [/input-40, 536] [/input-40, 536] [/input-16, 3806] [/input-40, 1179] [/input-40, 695] [/input-40, 1179] [/input-40, 1179] [/input-72, 0] [/input-40, 1178] 
+Objective masks generated with topk: 20 objectives.
+ layer: /input
+    lower bounds improved: average # 183.6689453125, value 8.180464647011831e-06
+    upper bounds improved: average # 168.138427734375, value -9.659328497946262e-06
+ layer: /input-8
+    lower bounds improved: average # 94.31884765625, value 8.456328941974789e-06
+    upper bounds improved: average # 76.651611328125, value -1.3234855941846035e-05
+ layer: /input-16
+    lower bounds improved: average # 26.206298828125, value 0.001572878216393292
+    upper bounds improved: average # 21.195068359375, value -0.002086256630718708
+ layer: /input-24
+    lower bounds improved: average # 6.515625, value 0.0017505012219771743
+    upper bounds improved: average # 6.639892578125, value -0.002200158778578043
+ layer: /input-40
+    lower bounds improved: average # 25.323486328125, value 0.0020813164301216602
+    upper bounds improved: average # 34.39111328125, value -0.0007415523286908865
+ layer: /input-72
+    lower bounds improved: average # 13.115234375, value 0.015447530895471573
+    upper bounds improved: average # 14.534912109375, value -0.011041253805160522
+Time: init 0.0004    concretize 0.0646    
+Accumulated time: init 0.0960    concretize 3.2376    
+Time: get_constraints 0.0454    concretize_interm_bounds 0.4491    update_interm_bounds 0.0033    optimize_interm_bounds 0.4978    
+Accumulated time: optimize_interm_bounds 3.6826    get_constraints 0.3704    concretize_interm_bounds 3.2501    update_interm_bounds 0.0620    
+best_l after optimization: -79.5230712890625
+beta sum per layer: [0.0, 457.24383544921875, 2735.289794921875, 944.7675170898438, 0.0, 7565.125, 0.0, 0.0, 0.0, 443.171875]
+alpha/beta optimization time: 1.2712030410766602
+pruning_in_iteration open status: True
+ratio of positive domain = 1678 / 4096 = 0.40966796875
+pruning-in-iteration extra time: 0.003923177719116211
+torch.Size([4096, 1])
+Time: prepare 0.2563    bound 1.7713    transfer 0.3428    finalize 0.0424    func 2.4135    
+Accumulated time: func 19.2378    prepare 1.1378    bound 15.6357    transfer 2.2020    finalize 0.3114    
+max lb tensor(0.00137711) min lb tensor(-0.14360952)
+Number of Verified Splits: 1678 of 4096
+Current worst splitting domains lb-rhs (depth):
+-0.14361 (39), -0.14168 (39), -0.13685 (39), -0.13658 (39), -0.13607 (39), -0.13556 (38), -0.13474 (39), -0.13302 (38), -0.13064 (39), -0.12993 (39), -0.12909 (39), -0.12906 (39), -0.12898 (38), -0.12869 (38), -0.12818 (39), -0.12767 (37), -0.12722 (38), -0.12555 (39), -0.12522 (37), -0.12483 (38), 
+Length of domains: 3419
+Current (lb-rhs): -0.14360952377319336
+17733 domains visited
+Time: pickout 0.1234    decision 2.9834    set_bounds 0.0587    solve 2.4148    add 0.2994    
+Accumulated time: pickout 0.8588    decision 18.6256    set_bounds 0.7490    solve 19.2579    add 2.3809    
+Cumulative time: 42.15219235420227
+
+BaB round 38
+batch: 2048
+splitting decisions: 
+split level 0: [/input-40, 677] [/input-40, 536] [/input-16, 3806] [/input-16, 3806] [/input-40, 1179] [/input-40, 1179] [/input-24, 2132] [/input-40, 1178] [/input-40, 155] [/input-40, 1179] 
+Objective masks generated with topk: 20 objectives.
+ layer: /input
+    lower bounds improved: average # 183.648193359375, value 8.182338206097484e-06
+    upper bounds improved: average # 168.109130859375, value -9.659852366894484e-06
+ layer: /input-8
+    lower bounds improved: average # 94.40625, value 1.2783020792994648e-05
+    upper bounds improved: average # 76.631103515625, value -5.5446012993343174e-05
+ layer: /input-16
+    lower bounds improved: average # 26.0478515625, value 0.001539888558909297
+    upper bounds improved: average # 21.07666015625, value -0.0019445201614871621
+ layer: /input-24
+    lower bounds improved: average # 6.495361328125, value 0.001669566729106009
+    upper bounds improved: average # 6.45703125, value -0.0021564008202403784
+ layer: /input-40
+    lower bounds improved: average # 24.996826171875, value 0.0019550775177776814
+    upper bounds improved: average # 34.458251953125, value -0.0007329302025027573
+ layer: /input-72
+    lower bounds improved: average # 12.81982421875, value 0.014540493488311768
+    upper bounds improved: average # 14.3935546875, value -0.010353365913033485
+Time: init 0.0004    concretize 0.0329    
+Accumulated time: init 0.1033    concretize 3.6614    
+Time: get_constraints 0.0449    concretize_interm_bounds 0.4242    update_interm_bounds 0.0035    optimize_interm_bounds 0.4726    
+Accumulated time: optimize_interm_bounds 4.1553    get_constraints 0.4153    concretize_interm_bounds 3.6743    update_interm_bounds 0.0655    
+best_l after optimization: -70.55052185058594
+beta sum per layer: [0.0, 432.60321044921875, 2492.74169921875, 1037.716552734375, 0.0, 7335.85595703125, 0.0, 0.0, 0.0, 450.02691650390625]
+alpha/beta optimization time: 1.3116345405578613
+pruning_in_iteration open status: True
+ratio of positive domain = 1794 / 4096 = 0.43798828125
+pruning-in-iteration extra time: 0.00402069091796875
+torch.Size([4096, 1])
+Time: prepare 0.1391    bound 1.7864    transfer 0.3383    finalize 0.1730    func 2.4371    
+Accumulated time: func 21.6749    prepare 1.2806    bound 17.4222    transfer 2.5403    finalize 0.4845    
+max lb tensor(0.00586605) min lb tensor(-0.13862801)
+Number of Verified Splits: 1794 of 4096
+Current worst splitting domains lb-rhs (depth):
+-0.13863 (40), -0.13663 (40), -0.13556 (38), -0.13302 (38), -0.13201 (40), -0.13161 (40), -0.13107 (40), -0.12987 (40), -0.12898 (38), -0.12869 (38), -0.12767 (37), -0.12722 (38), -0.12640 (40), -0.12522 (37), -0.12512 (40), -0.12483 (38), -0.12418 (40), -0.12406 (38), -0.12403 (40), -0.12313 (38), 
+Length of domains: 3673
+Current (lb-rhs): -0.1386280059814453
+20035 domains visited
+Time: pickout 0.1266    decision 2.9901    set_bounds 0.0606    solve 2.4386    add 0.2707    
+Accumulated time: pickout 0.9854    decision 21.6157    set_bounds 0.8095    solve 21.6965    add 2.6516    
+Cumulative time: 48.073835372924805
+
+BaB round 39
+batch: 2048
+splitting decisions: 
+split level 0: [/input-40, 536] [/input-16, 3806] [/input-24, 7076] [/input-40, 155] [/input-40, 155] [/input-16, 3806] [/input-16, 3806] [/input-40, 155] [/input-40, 1177] [/input-40, 155] 
+Objective masks generated with topk: 20 objectives.
+ layer: /input
+    lower bounds improved: average # 183.638427734375, value 8.17786349216476e-06
+    upper bounds improved: average # 168.091552734375, value -9.650582796894014e-06
+ layer: /input-8
+    lower bounds improved: average # 94.430908203125, value 2.0409275748534128e-05
+    upper bounds improved: average # 76.71240234375, value -4.208368409308605e-05
+ layer: /input-16
+    lower bounds improved: average # 25.964111328125, value 0.001452182186767459
+    upper bounds improved: average # 21.03271484375, value -0.0018941046437248588
+ layer: /input-24
+    lower bounds improved: average # 6.51171875, value 0.0016204159474000335
+    upper bounds improved: average # 6.40771484375, value -0.0021574627608060837
+ layer: /input-40
+    lower bounds improved: average # 24.818115234375, value 0.00195622188039124
+    upper bounds improved: average # 34.53857421875, value -0.0007221904816105962
+ layer: /input-72
+    lower bounds improved: average # 12.71533203125, value 0.014128260314464569
+    upper bounds improved: average # 14.345703125, value -0.010094483382999897
+Time: init 0.0004    concretize 0.0335    
+Accumulated time: init 0.1114    concretize 4.1130    
+Time: get_constraints 0.0464    concretize_interm_bounds 0.4522    update_interm_bounds 0.0037    optimize_interm_bounds 0.5023    
+Accumulated time: optimize_interm_bounds 4.6575    get_constraints 0.4617    concretize_interm_bounds 4.1265    update_interm_bounds 0.0692    
+best_l after optimization: -72.97665405273438
+beta sum per layer: [0.0, 412.20928955078125, 2264.049560546875, 925.03369140625, 0.0, 7212.7578125, 0.0, 0.0, 0.0, 444.690185546875]
+alpha/beta optimization time: 1.3453154563903809
+pruning_in_iteration open status: True
+ratio of positive domain = 1651 / 4096 = 0.403076171875
+pruning-in-iteration extra time: 0.004198551177978516
+torch.Size([4096, 1])
+Time: prepare 0.1446    bound 1.8499    transfer 0.3563    finalize 0.1749    func 2.5259    
+Accumulated time: func 24.2008    prepare 1.4285    bound 19.2720    transfer 2.8966    finalize 0.6594    
+max lb tensor(0.00219774) min lb tensor(-0.13380337)
+Number of Verified Splits: 1651 of 4096
+Current worst splitting domains lb-rhs (depth):
+-0.13556 (38), -0.13380 (41), -0.13302 (38), -0.13188 (41), -0.12898 (38), -0.12869 (38), -0.12767 (37), -0.12722 (38), -0.12694 (41), -0.12639 (41), -0.12634 (41), -0.12522 (37), -0.12483 (38), -0.12406 (38), -0.12313 (38), -0.12260 (37), -0.12123 (41), -0.12111 (37), -0.12047 (41), -0.12004 (39), 
+Length of domains: 4070
+Current (lb-rhs): -0.13556385040283203
+22480 domains visited
+Time: pickout 0.1356    decision 2.9582    set_bounds 0.0637    solve 2.5276    add 0.3085    
+Accumulated time: pickout 1.1210    decision 24.5739    set_bounds 0.8733    solve 24.2241    add 2.9601    
+Cumulative time: 54.11510634422302
+
+BaB round 40
+batch: 2048
+splitting decisions: 
+split level 0: [/input-40, 1178] [/input-40, 1178] [/input-40, 155] [/input-40, 1110] [/input-40, 1178] [/input-40, 1110] [/input-40, 1177] [/input-40, 1177] [/input-40, 1177] [/input-16, 3806] 
+Objective masks generated with topk: 20 objectives.
+ layer: /input
+    lower bounds improved: average # 183.633544921875, value 8.178638381650671e-06
+    upper bounds improved: average # 168.064453125, value -9.64085484156385e-06
+ layer: /input-8
+    lower bounds improved: average # 94.455078125, value 3.2484062103321776e-05
+    upper bounds improved: average # 76.7099609375, value -7.177777297329158e-05
+ layer: /input-16
+    lower bounds improved: average # 25.757080078125, value 0.0013626927975565195
+    upper bounds improved: average # 21.071044921875, value -0.0017451855819672346
+ layer: /input-24
+    lower bounds improved: average # 6.4013671875, value 0.0015157462330535054
+    upper bounds improved: average # 6.234619140625, value -0.002054954646155238
+ layer: /input-40
+    lower bounds improved: average # 24.560302734375, value 0.001921966439113021
+    upper bounds improved: average # 34.34619140625, value -0.0006667019333690405
+ layer: /input-72
+    lower bounds improved: average # 12.473876953125, value 0.013135362416505814
+    upper bounds improved: average # 14.184814453125, value -0.009348811581730843
+Time: init 0.0004    concretize 0.0316    
+Accumulated time: init 0.1186    concretize 4.5658    
+Time: get_constraints 0.0446    concretize_interm_bounds 0.4533    update_interm_bounds 0.0035    optimize_interm_bounds 0.5014    
+Accumulated time: optimize_interm_bounds 5.1590    get_constraints 0.5063    concretize_interm_bounds 4.5797    update_interm_bounds 0.0728    
+best_l after optimization: -68.59202575683594
+beta sum per layer: [0.0, 383.86639404296875, 2079.884765625, 762.9332275390625, 0.0, 7375.30908203125, 0.0, 0.0, 0.0, 428.48907470703125]
+alpha/beta optimization time: 1.2971186637878418
+pruning_in_iteration open status: True
+ratio of positive domain = 1650 / 4096 = 0.40283203125
+pruning-in-iteration extra time: 0.0039179325103759766
+torch.Size([4096, 1])
+Time: prepare 0.1440    bound 1.8007    transfer 0.3465    finalize 0.0446    func 2.4711    
+Accumulated time: func 26.6719    prepare 1.5757    bound 21.0728    transfer 3.2431    finalize 0.7040    
+max lb tensor(0.00390911) min lb tensor(-0.12167788)
+Number of Verified Splits: 1650 of 4096
+Current worst splitting domains lb-rhs (depth):
+-0.13556 (38), -0.13302 (38), -0.12898 (38), -0.12869 (38), -0.12767 (37), -0.12722 (38), -0.12522 (37), -0.12483 (38), -0.12406 (38), -0.12313 (38), -0.12260 (37), -0.12168 (42), -0.12146 (42), -0.12111 (37), -0.12074 (42), -0.12004 (39), -0.11990 (39), -0.11990 (37), -0.11966 (42), -0.11940 (38), 
+Length of domains: 4468
+Current (lb-rhs): -0.13556385040283203
+24926 domains visited
+Time: pickout 0.1325    decision 3.0462    set_bounds 0.0622    solve 2.4724    add 0.6475    
+Accumulated time: pickout 1.2535    decision 27.6201    set_bounds 0.9355    solve 26.6965    add 3.6076    
+Cumulative time: 60.527743339538574
+
+BaB round 41
+batch: 2048
+splitting decisions: 
+split level 0: [/input-40, 1177] [/input-40, 536] [/input-40, 1110] [/input-40, 1110] [/input-24, 7076] [/input-40, 155] [/input-40, 1177] [/input-40, 1110] [/input-40, 155] [/input-40, 1110] 
+Objective masks generated with topk: 20 objectives.
+ layer: /input
+    lower bounds improved: average # 183.572265625, value 8.177343261195347e-06
+    upper bounds improved: average # 168.118896484375, value -9.629759006202221e-06
+ layer: /input-8
+    lower bounds improved: average # 94.52001953125, value 5.4078001994639635e-05
+    upper bounds improved: average # 76.693359375, value -0.00010831813415279612
+ layer: /input-16
+    lower bounds improved: average # 25.580322265625, value 0.0013261757558211684
+    upper bounds improved: average # 21.0869140625, value -0.0016175409546121955
+ layer: /input-24
+    lower bounds improved: average # 6.30419921875, value 0.0014570988714694977
+    upper bounds improved: average # 6.079833984375, value -0.0019508905243128538
+ layer: /input-40
+    lower bounds improved: average # 24.21728515625, value 0.00172570557333529
+    upper bounds improved: average # 34.144775390625, value -0.0006900803418830037
+ layer: /input-72
+    lower bounds improved: average # 12.295654296875, value 0.012426777742803097
+    upper bounds improved: average # 14.039306640625, value -0.008738698437809944
+Time: init 0.0004    concretize 0.0341    
+Accumulated time: init 0.1266    concretize 5.0001    
+Time: get_constraints 0.0465    concretize_interm_bounds 0.4348    update_interm_bounds 0.0036    optimize_interm_bounds 0.4850    
+Accumulated time: optimize_interm_bounds 5.6439    get_constraints 0.5528    concretize_interm_bounds 5.0146    update_interm_bounds 0.0764    
+best_l after optimization: -56.44272994995117
+beta sum per layer: [0.0, 353.8438720703125, 1716.6123046875, 680.5802001953125, 0.0, 7406.40380859375, 0.0, 0.0, 0.0, 414.61102294921875]
+alpha/beta optimization time: 1.3456027507781982
+pruning_in_iteration open status: True
+ratio of positive domain = 1769 / 4096 = 0.431884765625
+pruning-in-iteration extra time: 0.004595041275024414
+torch.Size([4096, 1])
+Time: prepare 0.1411    bound 1.8330    transfer 0.3371    finalize 0.0443    func 2.3556    
+Accumulated time: func 29.0275    prepare 1.7200    bound 22.9057    transfer 3.5802    finalize 0.7483    
+max lb tensor(0.00372696) min lb tensor(-0.11681652)
+Number of Verified Splits: 1769 of 4096
+Current worst splitting domains lb-rhs (depth):
+-0.13556 (38), -0.13302 (38), -0.12898 (38), -0.12869 (38), -0.12767 (37), -0.12722 (38), -0.12522 (37), -0.12483 (38), -0.12406 (38), -0.12313 (38), -0.12260 (37), -0.12111 (37), -0.12004 (39), -0.11990 (39), -0.11990 (37), -0.11940 (38), -0.11846 (37), -0.11845 (39), -0.11682 (43), -0.11628 (37), 
+Length of domains: 4747
+Current (lb-rhs): -0.13556385040283203
+27253 domains visited
+Time: pickout 0.1302    decision 2.9575    set_bounds 0.0627    solve 2.3571    add 0.3026    
+Accumulated time: pickout 1.3837    decision 30.5776    set_bounds 0.9982    solve 29.0535    add 3.9102    
+Cumulative time: 66.37424921989441
+
+BaB round 42
+batch: 2048
+splitting decisions: 
+split level 0: [/input-40, 1178] [/input-40, 1110] [/input-40, 1178] [/input-40, 1178] [/input-40, 1110] [/input-40, 1178] [/input-40, 1110] [/input-40, 1177] [/input-40, 155] [/input-40, 1110] 
+Objective masks generated with topk: 20 objectives.
+ layer: /input
+    lower bounds improved: average # 183.6025390625, value 8.2141523307655e-06
+    upper bounds improved: average # 168.080810546875, value -1.0310126526746899e-05
+ layer: /input-8
+    lower bounds improved: average # 94.573486328125, value 0.00010136699711438268
+    upper bounds improved: average # 76.674560546875, value -0.0001875430898508057
+ layer: /input-16
+    lower bounds improved: average # 25.506103515625, value 0.0013514095917344093
+    upper bounds improved: average # 21.13916015625, value -0.0015911625232547522
+ layer: /input-24
+    lower bounds improved: average # 6.30908203125, value 0.0014803881058469415
+    upper bounds improved: average # 6.07421875, value -0.0019807610660791397
+ layer: /input-40
+    lower bounds improved: average # 24.0322265625, value 0.001658841036260128
+    upper bounds improved: average # 34.003662109375, value -0.0007334995898418128
+ layer: /input-72
+    lower bounds improved: average # 12.28515625, value 0.012515950947999954
+    upper bounds improved: average # 14.036376953125, value -0.008608578704297543
+Time: init 0.0004    concretize 0.0329    
+Accumulated time: init 0.1341    concretize 5.4673    
+Time: get_constraints 0.0444    concretize_interm_bounds 0.4677    update_interm_bounds 0.0037    optimize_interm_bounds 0.5158    
+Accumulated time: optimize_interm_bounds 6.1598    get_constraints 0.5972    concretize_interm_bounds 5.4822    update_interm_bounds 0.0801    
+best_l after optimization: -48.992332458496094
+beta sum per layer: [0.0, 344.30169677734375, 1476.9884033203125, 581.361083984375, 0.0, 7213.93310546875, 0.0, 0.0, 0.0, 391.8673095703125]
+alpha/beta optimization time: 1.2618987560272217
+pruning_in_iteration open status: True
+ratio of positive domain = 1826 / 4096 = 0.44580078125
+pruning-in-iteration extra time: 0.00395655632019043
+torch.Size([4096, 1])
+Time: prepare 0.1455    bound 1.7800    transfer 0.3605    finalize 0.0446    func 2.3308    
+Accumulated time: func 31.3583    prepare 1.8693    bound 24.6857    transfer 3.9407    finalize 0.7929    
+max lb tensor(0.00470209) min lb tensor(-0.11034584)
+Number of Verified Splits: 1826 of 4096
+Current worst splitting domains lb-rhs (depth):
+-0.13556 (38), -0.13302 (38), -0.12898 (38), -0.12869 (38), -0.12767 (37), -0.12722 (38), -0.12522 (37), -0.12483 (38), -0.12406 (38), -0.12313 (38), -0.12260 (37), -0.12111 (37), -0.12004 (39), -0.11990 (39), -0.11990 (37), -0.11940 (38), -0.11846 (37), -0.11845 (39), -0.11628 (37), -0.11602 (38), 
+Length of domains: 4969
+Current (lb-rhs): -0.13556385040283203
+29523 domains visited
+Time: pickout 0.1279    decision 3.1207    set_bounds 0.0632    solve 2.3322    add 0.2710    
+Accumulated time: pickout 1.5117    decision 33.6983    set_bounds 1.0614    solve 31.3857    add 4.1813    
+Cumulative time: 72.33337163925171
+
+BaB round 43
+batch: 2048
+splitting decisions: 
+split level 0: [/input-40, 536] [/input-40, 536] [/input-40, 1178] [/input-40, 1177] [/input-40, 1178] [/input-40, 1178] [/input-40, 62] [/input-40, 1178] [/input-40, 1110] [/input-40, 1110] 
+Objective masks generated with topk: 20 objectives.
+ layer: /input
+    lower bounds improved: average # 183.615478515625, value 8.682251063873991e-06
+    upper bounds improved: average # 168.069091796875, value -1.933945168275386e-05
+ layer: /input-8
+    lower bounds improved: average # 94.576171875, value 0.00010724864841904491
+    upper bounds improved: average # 76.62451171875, value -0.00015133341366890818
+ layer: /input-16
+    lower bounds improved: average # 25.356201171875, value 0.001336190733127296
+    upper bounds improved: average # 21.1787109375, value -0.001474313554354012
+ layer: /input-24
+    lower bounds improved: average # 6.22265625, value 0.0014203810133039951
+    upper bounds improved: average # 5.935302734375, value -0.0018611496780067682
+ layer: /input-40
+    lower bounds improved: average # 23.8310546875, value 0.001481363084167242
+    upper bounds improved: average # 33.773681640625, value -0.0007037376053631306
+ layer: /input-72
+    lower bounds improved: average # 12.1025390625, value 0.011810967698693275
+    upper bounds improved: average # 13.922607421875, value -0.008142310194671154
+Time: init 0.0004    concretize 0.0362    
+Accumulated time: init 0.1419    concretize 5.9216    
+Time: get_constraints 0.0419    concretize_interm_bounds 0.4548    update_interm_bounds 0.0037    optimize_interm_bounds 0.5004    
+Accumulated time: optimize_interm_bounds 6.6602    get_constraints 0.6392    concretize_interm_bounds 5.9370    update_interm_bounds 0.0838    
+best_l after optimization: -33.12200927734375
+beta sum per layer: [0.0, 318.6412353515625, 1312.404296875, 566.9022827148438, 0.0, 7013.95068359375, 0.0, 0.0, 0.0, 379.5963134765625]
+alpha/beta optimization time: 1.2682902812957764
+pruning_in_iteration open status: True
+ratio of positive domain = 2032 / 4096 = 0.49609375
+pruning-in-iteration extra time: 0.004708290100097656
+torch.Size([4096, 1])
+Time: prepare 0.1366    bound 1.7710    transfer 0.3416    finalize 0.0445    func 2.2945    
+Accumulated time: func 33.6528    prepare 2.0096    bound 26.4567    transfer 4.2824    finalize 0.8374    
+max lb tensor(0.00332022) min lb tensor(-0.10681820)
+Number of Verified Splits: 2032 of 4096
+Current worst splitting domains lb-rhs (depth):
+-0.13556 (38), -0.13302 (38), -0.12898 (38), -0.12869 (38), -0.12767 (37), -0.12722 (38), -0.12522 (37), -0.12483 (38), -0.12406 (38), -0.12313 (38), -0.12260 (37), -0.12111 (37), -0.12004 (39), -0.11990 (39), -0.11990 (37), -0.11940 (38), -0.11846 (37), -0.11845 (39), -0.11628 (37), -0.11602 (38), 
+Length of domains: 4985
+Current (lb-rhs): -0.13556385040283203
+31587 domains visited
+Time: pickout 0.1311    decision 3.1246    set_bounds 0.0626    solve 2.2958    add 0.2214    
+Accumulated time: pickout 1.6427    decision 36.8229    set_bounds 1.1240    solve 33.6815    add 4.4026    
+Cumulative time: 78.21344685554504
+
+BaB round 44
+batch: 2048
+splitting decisions: 
+split level 0: [/input-40, 796] [/input-40, 1110] [/input-40, 796] [/input-40, 536] [/input-40, 1178] [/input-40, 1110] [/input-40, 1178] [/input-40, 1110] [/input-40, 1177] [/input-40, 1178] 
+Objective masks generated with topk: 20 objectives.
+ layer: /input
+    lower bounds improved: average # 183.599365234375, value 8.523853466613218e-06
+    upper bounds improved: average # 168.110107421875, value -1.7946833395399153e-05
+ layer: /input-8
+    lower bounds improved: average # 94.612548828125, value 0.0002712860587053001
+    upper bounds improved: average # 76.686279296875, value -0.00018582804477773607
+ layer: /input-16
+    lower bounds improved: average # 25.15234375, value 0.0012678371276706457
+    upper bounds improved: average # 21.1416015625, value -0.0013663964346051216
+ layer: /input-24
+    lower bounds improved: average # 6.1572265625, value 0.0014355608727782965
+    upper bounds improved: average # 5.78515625, value -0.0017681969329714775
+ layer: /input-40
+    lower bounds improved: average # 23.897705078125, value 0.001378458458930254
+    upper bounds improved: average # 33.4609375, value -0.0007783651817589998
+ layer: /input-72
+    lower bounds improved: average # 11.94384765625, value 0.011661472730338573
+    upper bounds improved: average # 13.80419921875, value -0.007463180460035801
+Time: init 0.0004    concretize 0.0327    
+Accumulated time: init 0.1493    concretize 6.3661    
+Time: get_constraints 0.0443    concretize_interm_bounds 0.4450    update_interm_bounds 0.0036    optimize_interm_bounds 0.4929    
+Accumulated time: optimize_interm_bounds 7.1531    get_constraints 0.6834    concretize_interm_bounds 6.3820    update_interm_bounds 0.0874    
+best_l after optimization: -24.341827392578125
+beta sum per layer: [0.0, 304.0437316894531, 1166.1337890625, 540.700927734375, 0.0, 6673.4931640625, 0.0, 0.0, 0.0, 395.79754638671875]
+alpha/beta optimization time: 1.153714656829834
+pruning_in_iteration open status: True
+ratio of positive domain = 2039 / 4096 = 0.497802734375
+pruning-in-iteration extra time: 0.003949642181396484
+torch.Size([4096, 1])
+Time: prepare 0.2802    bound 1.6488    transfer 0.3396    finalize 0.0441    func 2.3128    
+Accumulated time: func 35.9657    prepare 2.2930    bound 28.1056    transfer 4.6219    finalize 0.8815    
+max lb tensor(0.00091553) min lb tensor(-0.10341406)
+Number of Verified Splits: 2039 of 4096
+Current worst splitting domains lb-rhs (depth):
+-0.13556 (38), -0.13302 (38), -0.12898 (38), -0.12869 (38), -0.12767 (37), -0.12722 (38), -0.12522 (37), -0.12483 (38), -0.12406 (38), -0.12313 (38), -0.12260 (37), -0.12111 (37), -0.12004 (39), -0.11990 (39), -0.11990 (37), -0.11940 (38), -0.11846 (37), -0.11845 (39), -0.11628 (37), -0.11602 (38), 
+Length of domains: 4994
+Current (lb-rhs): -0.13556385040283203
+33644 domains visited
+Time: pickout 0.1309    decision 3.0809    set_bounds 0.0631    solve 2.3144    add 0.2288    
+Accumulated time: pickout 1.7736    decision 39.9037    set_bounds 1.1871    solve 35.9959    add 4.6315    
+Cumulative time: 84.07662343978882
+
+BaB round 45
+batch: 2048
+splitting decisions: 
+split level 0: [/input-40, 1178] [/input-16, 6658] [/input-24, 2139] [/input-24, 2139] [/input-40, 62] [/input-40, 1110] [/input-40, 1110] [/input-40, 1178] [/input-40, 1110] [/input-40, 1178] 
+Objective masks generated with topk: 20 objectives.
+ layer: /input
+    lower bounds improved: average # 183.626220703125, value 8.49006391945295e-06
+    upper bounds improved: average # 168.16943359375, value -1.5860226994846016e-05
+ layer: /input-8
+    lower bounds improved: average # 94.6787109375, value 0.00032527060830034316
+    upper bounds improved: average # 76.688720703125, value -0.00033168087247759104
+ layer: /input-16
+    lower bounds improved: average # 25.013671875, value 0.0013114464236423373
+    upper bounds improved: average # 21.1416015625, value -0.0012797259259968996
+ layer: /input-24
+    lower bounds improved: average # 6.087646484375, value 0.0014350018464028835
+    upper bounds improved: average # 5.640380859375, value -0.0017437977949157357
+ layer: /input-40
+    lower bounds improved: average # 24.0205078125, value 0.0012844065204262733
+    upper bounds improved: average # 33.124755859375, value -0.0009176713647320867
+ layer: /input-72
+    lower bounds improved: average # 11.837890625, value 0.011468877084553242
+    upper bounds improved: average # 13.70849609375, value -0.006958655081689358
+Time: init 0.0004    concretize 0.0329    
+Accumulated time: init 0.1570    concretize 6.8021    
+Time: get_constraints 0.0435    concretize_interm_bounds 0.4365    update_interm_bounds 0.0037    optimize_interm_bounds 0.4837    
+Accumulated time: optimize_interm_bounds 7.6368    get_constraints 0.7269    concretize_interm_bounds 6.8185    update_interm_bounds 0.0912    
+best_l after optimization: -25.062856674194336
+beta sum per layer: [0.0, 304.715576171875, 1113.362060546875, 553.9366455078125, 0.0, 6418.8193359375, 0.0, 0.0, 0.0, 401.1786193847656]
+alpha/beta optimization time: 1.2517120838165283
+pruning_in_iteration open status: True
+ratio of positive domain = 1933 / 4096 = 0.471923828125
+pruning-in-iteration extra time: 0.0047109127044677734
+torch.Size([4096, 1])
+Time: prepare 0.1413    bound 1.7380    transfer 0.3268    finalize 0.1883    func 2.3946    
+Accumulated time: func 38.3603    prepare 2.4380    bound 29.8435    transfer 4.9487    finalize 1.0698    
+max lb tensor(9.99999975e-05) min lb tensor(-0.09972286)
+Number of Verified Splits: 1933 of 4096
+Current worst splitting domains lb-rhs (depth):
+-0.13556 (38), -0.13302 (38), -0.12898 (38), -0.12869 (38), -0.12767 (37), -0.12722 (38), -0.12522 (37), -0.12483 (38), -0.12406 (38), -0.12313 (38), -0.12260 (37), -0.12111 (37), -0.12004 (39), -0.11990 (39), -0.11990 (37), -0.11940 (38), -0.11846 (37), -0.11845 (39), -0.11628 (37), -0.11602 (38), 
+Length of domains: 5109
+Current (lb-rhs): -0.13556385040283203
+35807 domains visited
+Time: pickout 0.1317    decision 2.9826    set_bounds 0.0623    solve 2.3962    add 0.2331    
+Accumulated time: pickout 1.9053    decision 42.8864    set_bounds 1.2494    solve 38.3921    add 4.8645    
+Cumulative time: 89.91499280929565
+
+BaB round 46
+batch: 2048
+splitting decisions: 
+split level 0: [/input-16, 6658] [/input-16, 6658] [/input-40, 1177] [/input-16, 6658] [/input-16, 6658] [/input-40, 796] [/input-8, 6363] [/input-16, 6658] [/input-40, 677] [/input-40, 677] 
+Objective masks generated with topk: 20 objectives.
+ layer: /input
+    lower bounds improved: average # 183.689697265625, value 1.0003557690652087e-05
+    upper bounds improved: average # 168.1357421875, value -4.2968415073119104e-05
+ layer: /input-8
+    lower bounds improved: average # 94.626220703125, value 0.00036701426142826676
+    upper bounds improved: average # 76.79248046875, value -0.0005409303121268749
+ layer: /input-16
+    lower bounds improved: average # 24.97216796875, value 0.0015234661987051368
+    upper bounds improved: average # 21.30712890625, value -0.001228686305694282
+ layer: /input-24
+    lower bounds improved: average # 6.14892578125, value 0.0015383847057819366
+    upper bounds improved: average # 5.61962890625, value -0.0017997648101300001
+ layer: /input-40
+    lower bounds improved: average # 24.323974609375, value 0.0013045507948845625
+    upper bounds improved: average # 32.96875, value -0.0011182245798408985
+ layer: /input-72
+    lower bounds improved: average # 11.810791015625, value 0.011527477763593197
+    upper bounds improved: average # 13.73388671875, value -0.007189058233052492
+Time: init 0.0004    concretize 0.0584    
+Accumulated time: init 0.1642    concretize 7.2442    
+Time: get_constraints 0.0441    concretize_interm_bounds 0.4426    update_interm_bounds 0.0034    optimize_interm_bounds 0.4902    
+Accumulated time: optimize_interm_bounds 8.1270    get_constraints 0.7710    concretize_interm_bounds 7.2611    update_interm_bounds 0.0946    
+best_l after optimization: -22.84993553161621
+beta sum per layer: [0.0, 307.696533203125, 1079.637939453125, 491.3908996582031, 0.0, 6113.181640625, 0.0, 0.0, 0.0, 383.17669677734375]
+alpha/beta optimization time: 1.1821775436401367
+pruning_in_iteration open status: True
+ratio of positive domain = 1896 / 4096 = 0.462890625
+pruning-in-iteration extra time: 0.003926753997802734
+torch.Size([4096, 1])
+Time: prepare 0.1472    bound 1.6745    transfer 0.3285    finalize 0.1854    func 2.3362    
+Accumulated time: func 40.6965    prepare 2.5884    bound 31.5180    transfer 5.2771    finalize 1.2553    
+max lb tensor(0.00130367) min lb tensor(-0.08906460)
+Number of Verified Splits: 1896 of 4096
+Current worst splitting domains lb-rhs (depth):
+-0.13556 (38), -0.13302 (38), -0.12898 (38), -0.12869 (38), -0.12767 (37), -0.12722 (38), -0.12522 (37), -0.12483 (38), -0.12406 (38), -0.12313 (38), -0.12260 (37), -0.12111 (37), -0.12004 (39), -0.11990 (39), -0.11990 (37), -0.11940 (38), -0.11846 (37), -0.11845 (39), -0.11628 (37), -0.11602 (38), 
+Length of domains: 5261
+Current (lb-rhs): -0.13556385040283203
+38007 domains visited
+Time: pickout 0.1336    decision 3.0415    set_bounds 0.0634    solve 2.3375    add 0.2731    
+Accumulated time: pickout 2.0389    decision 45.9279    set_bounds 1.3128    solve 40.7297    add 5.1376    
+Cumulative time: 95.80031633377075
+
+BaB round 47
+batch: 2048
+splitting decisions: 
+split level 0: [/input-8, 1173] [/input-24, 2132] [/input-24, 2132] [/input-40, 1178] [/input-40, 62] [/input-24, 2132] [/input-24, 2139] [/input-40, 1177] [/input-40, 62] [/input-24, 2132] 
+Objective masks generated with topk: 20 objectives.
+ layer: /input
+    lower bounds improved: average # 183.7568359375, value 1.2463729945011437e-05
+    upper bounds improved: average # 168.076416015625, value -7.56235167500563e-05
+ layer: /input-8
+    lower bounds improved: average # 94.626708984375, value 0.000375299365259707
+    upper bounds improved: average # 76.68994140625, value -0.00047246430767700076
+ layer: /input-16
+    lower bounds improved: average # 24.814208984375, value 0.0015262095257639885
+    upper bounds improved: average # 21.446044921875, value -0.0011473014019429684
+ layer: /input-24
+    lower bounds improved: average # 6.113525390625, value 0.0015337246004492044
+    upper bounds improved: average # 5.511474609375, value -0.0016566066769883037
+ layer: /input-40
+    lower bounds improved: average # 24.455322265625, value 0.0012485740007832646
+    upper bounds improved: average # 32.81298828125, value -0.001059877802617848
+ layer: /input-72
+    lower bounds improved: average # 11.6357421875, value 0.010648030787706375
+    upper bounds improved: average # 13.6787109375, value -0.0073566441424191
+Time: init 0.0004    concretize 0.0329    
+Accumulated time: init 0.1718    concretize 7.6638    
+Time: get_constraints 0.0437    concretize_interm_bounds 0.4201    update_interm_bounds 0.0033    optimize_interm_bounds 0.4670    
+Accumulated time: optimize_interm_bounds 8.5940    get_constraints 0.8146    concretize_interm_bounds 7.6812    update_interm_bounds 0.0979    
+best_l after optimization: -11.59326171875
+beta sum per layer: [0.0, 292.9920349121094, 1069.7398681640625, 455.46160888671875, 0.0, 5762.6220703125, 0.0, 0.0, 0.0, 360.6235046386719]
+alpha/beta optimization time: 1.1794357299804688
+pruning_in_iteration open status: True
+ratio of positive domain = 1999 / 4096 = 0.488037109375
+pruning-in-iteration extra time: 0.004117012023925781
+torch.Size([4096, 1])
+Time: prepare 0.1471    bound 1.6488    transfer 0.3339    finalize 0.0454    func 2.1754    
+Accumulated time: func 42.8719    prepare 2.7392    bound 33.1668    transfer 5.6110    finalize 1.3007    
+max lb tensor(0.00207043) min lb tensor(-0.08420229)
+Number of Verified Splits: 1999 of 4096
+Current worst splitting domains lb-rhs (depth):
+-0.13556 (38), -0.13302 (38), -0.12898 (38), -0.12869 (38), -0.12767 (37), -0.12722 (38), -0.12522 (37), -0.12483 (38), -0.12406 (38), -0.12313 (38), -0.12260 (37), -0.12111 (37), -0.12004 (39), -0.11990 (39), -0.11990 (37), -0.11940 (38), -0.11846 (37), -0.11845 (39), -0.11628 (37), -0.11602 (38), 
+Length of domains: 5310
+Current (lb-rhs): -0.13556385040283203
+40104 domains visited
+Time: pickout 0.1361    decision 3.0234    set_bounds 0.0611    solve 2.1769    add 0.2365    
+Accumulated time: pickout 2.1751    decision 48.9512    set_bounds 1.3739    solve 42.9066    add 5.3741    
+Time out!!!!!!!!
+Result: timeout
+Time: 103.89120364189148
+
+------------------------- COMMAND ------------------------------
+/data1/Kane/miniconda3/envs/abcrown25/bin/python /data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/abcrown.py --config /data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/exp_configs/vnncomp25/cifar100.yaml --precompile_jit --onnx_path /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/onnx/CIFAR100_resnet_medium.onnx --vnnlib_path /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/vnnlib/CIFAR100_resnet_medium_prop_idx_2557_sidx_6196_eps_0.0039.vnnlib --results_file /data1/Kane/ACT/audit_results/abcrown_nopgd_20260525/cifar100_2024/0060__CIFAR100_resnet_medium__CIFAR100_resnet_medium_prop_idx_2557_sidx_6196_eps_0.0039.result --timeout 100.0 --save_adv_example --pgd_order=skip
+----------------------------------------------------------------
+

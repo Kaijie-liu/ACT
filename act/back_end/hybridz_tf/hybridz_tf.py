@@ -74,6 +74,12 @@ class HybridzTF(TransferFunction):
         LayerKind.MAXPOOL2D.value: lambda L, b, tf: hz_cnn.tf_maxpool2d(L, b, tf),
         # Activations: interval-only
         LayerKind.CLIP.value: lambda L, b, tf: interval_mlp.tf_clip(L, b),
+        LayerKind.FLOOR.value: lambda L, b, tf: interval_mlp.tf_floor(L, b),
+        LayerKind.CEIL.value: lambda L, b, tf: interval_mlp.tf_ceil(L, b),
+        LayerKind.ROUND.value: lambda L, b, tf: interval_mlp.tf_round(L, b),
+        LayerKind.LUT_BOUNDS.value: lambda L, b, tf: interval_mlp.tf_lut_bounds(L, b),
+        LayerKind.SIN.value: lambda L, b, tf: interval_mlp.tf_sin(L, b),
+        LayerKind.COS.value: lambda L, b, tf: interval_mlp.tf_cos(L, b),
         LayerKind.SOFTPLUS.value: lambda L, b, tf: interval_mlp.tf_softplus(L, b),
         LayerKind.SILU.value: lambda L, b, tf: interval_mlp.tf_silu(L, b),
         LayerKind.RELU6.value: lambda L, b, tf: interval_mlp.tf_relu6(L, b),

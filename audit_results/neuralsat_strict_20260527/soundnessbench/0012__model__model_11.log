@@ -1,0 +1,349 @@
+[0;93m2026-05-27 09:45:20.878346591 [W:onnxruntime:Default, device_discovery.cc:283 GetGpuDevices] Failed to detect devices under "/sys/class/drm/card0": device_discovery.cc:93 ReadFileContents Failed to open file: "/sys/class/drm/card0/device/vendor"[m
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2542227
+Academic license 2542227 - for non-commercial use only - registered to ka___@unsw.edu.au
+
+ [!] GlobalSettings:
+	- use_restart                             : True
+	- use_mip_tightening                      : True
+	- use_attack                              : False
+	- attack_interval                         : 10
+	- use_mip_verify                          : True
+	- input_splitting_threshold               : 0.5
+	- hidden_splitting_threshold              : 0.01
+	- safety_num_input_perturbed              : 200
+	- skip_preprocess                         : False
+	- use_save_reasoning_step                 : False
+	- max_iterations                          : 1000000000.0
+	- skip_initial_worst_bound                : -1000000.0
+	- max_domains                             : 1000000000.0
+	- use_decompose                           : False
+	- restart_current_hidden_branches         : 2000
+	- restart_visited_hidden_branches         : 20000
+	- restart_current_input_branches          : 20000
+	- restart_visited_input_branches          : 200000
+	- restart_max_runtime                     : 60.0
+	- restart_max_runtime_percentage          : 0.4
+	- mip_tightening_patience                 : 10
+	- mip_tightening_timeout_per_neuron       : 15.0
+	- mip_tightening_topk                     : 64
+	- use_gpu_tightening                      : False
+	- gpu_tightening_current_hidden_branches  : 1000
+	- gpu_tightening_visited_hidden_branches  : 5000
+	- gpu_tightening_timeout                  : 10.0
+	- gpu_tightening_patience                 : 10
+	- gpu_tightening_topk                     : 500
+	- use_mip_attack                          : False
+	- mip_verify_threshold                    : 2
+	- share_alphas                            : False
+	- backward_batch_size                     : inf
+	- forward_max_dim                         : 10000
+	- forward_dynamic                         : False
+	- use_decompose_incomplete                : False
+	- init_abstraction_method                 : crown-optimized
+	- subverifier_decision_method             : smart
+	- verify_candidate_batch                  : 3
+	- verify_last_timeout                     : 200.0
+	- verify_interm_timeout                   : 20.0
+	- sequential_batch                        : 100
+	- use_sequential_abstract_forward         : False
+	- verify_extra_opts                       : {'sparse_intermediate_bounds': True}
+	- verify_splitting_strategy               : hidden
+	- use_extra_substitution                  : False
+	- verify_max_iteration                    : 4
+	- verify_candidate_num                    : 128
+	- verify_interpolate_factor               : 0.5
+
+ConvertModel(
+  (Gemm_/fst_linear_layer/Gemm_output_0): Linear(in_features=128, out_features=12288, bias=True)
+  (Relu_/relu/Relu_output_0): ReLU()
+  (Constant_/Constant_output_0): Constant(constant=tensor([-1,  3, 64, 64], device='cuda:0'))
+  (Reshape_/Reshape_output_0): Reshape(shape=None)
+  (Conv_/model/model.0/Conv_output_0): Conv2d(3, 24, kernel_size=(1, 1), stride=(1, 1))
+  (Relu_/model/model.1/Relu_output_0): ReLU()
+  (Conv_/model/model.2/Conv_output_0): Conv2d(24, 24, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+  (Relu_/model/model.3/Relu_output_0): ReLU()
+  (Conv_/model/model.4/Conv_output_0): Conv2d(24, 24, kernel_size=(1, 1), stride=(2, 2))
+  (Relu_/model/model.5/Relu_output_0): ReLU()
+  (Conv_/model/model.6/Conv_output_0): Conv2d(24, 24, kernel_size=(1, 1), stride=(2, 2))
+  (Relu_/model/model.7/Relu_output_0): ReLU()
+  (Conv_/model/model.8/Conv_output_0): Conv2d(24, 24, kernel_size=(1, 1), stride=(2, 2))
+  (Relu_/model/model.9/Relu_output_0): ReLU()
+  (Conv_/model/model.10/Conv_output_0): Conv2d(24, 24, kernel_size=(1, 1), stride=(2, 2))
+  (Flatten_/model/model.11/Flatten_output_0): Flatten(start_dim=1, end_dim=-1)
+  (Gemm_output): Linear(in_features=384, out_features=384, bias=True)
+)
+INFO     09:45:24     [!] Input shape: (1, 128)
+INFO     09:45:24     [!] Output shape: (1, 384)
+INFO     09:45:24     [!] VNNLIB: 128 inputs, 384 outputs
+INFO     09:45:24     [!] eps=1.000000, perturbed=128
+[!] Found unsupported layer: <class 'helper.network.onnx2pytorch.operations.constant.Constant'>
+INFO     09:45:24     Params of 1-th run: {'input_split': True, 'abstract_method': 'forward+backward', 'decision_method': 'naive', 'decision_topk': 1}
+INFO     09:45:24     [_setup_restart] _init_abstractor
+DEBUG    09:45:25     [select_params] Try self.input_split=True Settings.backward_batch_size=inf extra_opts={} mode='patches' method='forward+backward'
+DEBUG    09:45:25     [_init_module] Try bound_opts={'conv_mode': 'patches', 'verbosity': 0}
+INFO     09:45:26     [select_params] Success: self.input_split=True Settings.backward_batch_size=inf extra_opts={} mode='patches' method='forward+backward'
+INFO     09:45:26     Try batch size 1000
+INFO     09:45:26     Initial bounds (first 10): tensor([-0.0723, -0.8379, -0.2934,  0.3913,  0.0894, -0.2924,  0.5498, -2.1527,
+        -5.5243, -0.3355])
+INFO     09:45:26     [Input splitting]     Iteration: 1          Remaining: 2          Visited: 2          Bound: -0.008137       Time elapsed (s): 1.66       Iteration elapsed (s): 0.04       GPU Mem (%): 4.16      Batch: 1000      Restart: 1         
+INFO     09:45:26     [Input splitting]     Iteration: 2          Remaining: 4          Visited: 4          Bound: -0.008137       Time elapsed (s): 1.69       Iteration elapsed (s): 0.03       GPU Mem (%): 5.65      Batch: 1000      Restart: 1         
+INFO     09:45:26     [Input splitting]     Iteration: 3          Remaining: 8          Visited: 8          Bound: -0.008142       Time elapsed (s): 1.73       Iteration elapsed (s): 0.04       GPU Mem (%): 8.61      Batch: 1000      Restart: 1         
+INFO     09:45:26     [Input splitting]     Iteration: 4          Remaining: 16         Visited: 16         Bound: -0.008142       Time elapsed (s): 1.80       Iteration elapsed (s): 0.07       GPU Mem (%): 14.53     Batch: 1000      Restart: 1         
+INFO     09:45:26     [Input splitting]     Iteration: 5          Remaining: 32         Visited: 32         Bound: -0.008166       Time elapsed (s): 1.91       Iteration elapsed (s): 0.12       GPU Mem (%): 26.37     Batch: 1000      Restart: 1         
+INFO     09:45:26     [Input splitting]     Iteration: 6          Remaining: 64         Visited: 64         Bound: -0.008166       Time elapsed (s): 2.14       Iteration elapsed (s): 0.23       GPU Mem (%): 50.07     Batch: 1000      Restart: 1         
+DEBUG    09:45:27     Fixed self.batch=64
+INFO     09:45:27     [Input splitting]     Iteration: 7          Remaining: 128        Visited: 128        Bound: -0.008163       Time elapsed (s): 2.67       Iteration elapsed (s): 0.53       GPU Mem (%): 97.45     Batch: 64        Restart: 1         
+DEBUG    09:45:27     Fixed self.batch=64
+INFO     09:45:27     [Input splitting]     Iteration: 8          Remaining: 192        Visited: 192        Bound: -0.008163       Time elapsed (s): 3.11       Iteration elapsed (s): 0.44       GPU Mem (%): 91.13     Batch: 64        Restart: 1         
+DEBUG    09:45:28     Fixed self.batch=64
+INFO     09:45:28     [Input splitting]     Iteration: 9          Remaining: 256        Visited: 256        Bound: -0.008163       Time elapsed (s): 3.59       Iteration elapsed (s): 0.48       GPU Mem (%): 91.08     Batch: 64        Restart: 1         
+DEBUG    09:45:28     Fixed self.batch=64
+INFO     09:45:28     [Input splitting]     Iteration: 10         Remaining: 320        Visited: 320        Bound: -0.008163       Time elapsed (s): 4.06       Iteration elapsed (s): 0.46       GPU Mem (%): 91.08     Batch: 64        Restart: 1         
+DEBUG    09:45:29     Fixed self.batch=64
+INFO     09:45:29     [Input splitting]     Iteration: 11         Remaining: 320        Visited: 384        Bound: -0.008163       Time elapsed (s): 4.55       Iteration elapsed (s): 0.50       GPU Mem (%): 90.51     Batch: 64        Restart: 1         
+DEBUG    09:45:29     Fixed self.batch=64
+INFO     09:45:29     [Input splitting]     Iteration: 12         Remaining: 320        Visited: 448        Bound: -0.008163       Time elapsed (s): 5.05       Iteration elapsed (s): 0.49       GPU Mem (%): 90.51     Batch: 64        Restart: 1         
+DEBUG    09:45:30     Fixed self.batch=64
+INFO     09:45:30     [Input splitting]     Iteration: 13         Remaining: 384        Visited: 512        Bound: -0.008163       Time elapsed (s): 5.51       Iteration elapsed (s): 0.46       GPU Mem (%): 90.46     Batch: 64        Restart: 1         
+DEBUG    09:45:30     Fixed self.batch=64
+INFO     09:45:30     [Input splitting]     Iteration: 14         Remaining: 448        Visited: 576        Bound: -0.008163       Time elapsed (s): 5.95       Iteration elapsed (s): 0.44       GPU Mem (%): 90.46     Batch: 64        Restart: 1         
+DEBUG    09:45:31     Fixed self.batch=64
+INFO     09:45:31     [Input splitting]     Iteration: 15         Remaining: 512        Visited: 640        Bound: -0.008163       Time elapsed (s): 6.41       Iteration elapsed (s): 0.45       GPU Mem (%): 90.46     Batch: 64        Restart: 1         
+DEBUG    09:45:31     Fixed self.batch=64
+INFO     09:45:31     [Input splitting]     Iteration: 16         Remaining: 576        Visited: 704        Bound: -0.008163       Time elapsed (s): 6.85       Iteration elapsed (s): 0.44       GPU Mem (%): 90.46     Batch: 64        Restart: 1         
+DEBUG    09:45:31     Fixed self.batch=64
+INFO     09:45:31     [Input splitting]     Iteration: 17         Remaining: 576        Visited: 768        Bound: -0.008163       Time elapsed (s): 7.33       Iteration elapsed (s): 0.48       GPU Mem (%): 90.46     Batch: 64        Restart: 1         
+DEBUG    09:45:32     Fixed self.batch=64
+INFO     09:45:32     [Input splitting]     Iteration: 18         Remaining: 640        Visited: 832        Bound: -0.008163       Time elapsed (s): 7.81       Iteration elapsed (s): 0.49       GPU Mem (%): 90.46     Batch: 64        Restart: 1         
+DEBUG    09:45:32     Fixed self.batch=64
+INFO     09:45:32     [Input splitting]     Iteration: 19         Remaining: 704        Visited: 896        Bound: -0.008163       Time elapsed (s): 8.28       Iteration elapsed (s): 0.46       GPU Mem (%): 90.46     Batch: 64        Restart: 1         
+DEBUG    09:45:33     Fixed self.batch=64
+INFO     09:45:33     [Input splitting]     Iteration: 20         Remaining: 768        Visited: 960        Bound: -0.008163       Time elapsed (s): 8.73       Iteration elapsed (s): 0.45       GPU Mem (%): 90.46     Batch: 64        Restart: 1         
+DEBUG    09:45:33     Fixed self.batch=64
+INFO     09:45:33     [Input splitting]     Iteration: 21         Remaining: 768        Visited: 1024       Bound: -0.008163       Time elapsed (s): 9.23       Iteration elapsed (s): 0.50       GPU Mem (%): 90.46     Batch: 64        Restart: 1         
+DEBUG    09:45:34     Fixed self.batch=64
+INFO     09:45:34     [Input splitting]     Iteration: 22         Remaining: 832        Visited: 1088       Bound: -0.008163       Time elapsed (s): 9.73       Iteration elapsed (s): 0.49       GPU Mem (%): 90.46     Batch: 64        Restart: 1         
+DEBUG    09:45:34     Fixed self.batch=64
+INFO     09:45:34     [Input splitting]     Iteration: 23         Remaining: 896        Visited: 1152       Bound: -0.008163       Time elapsed (s): 10.23      Iteration elapsed (s): 0.50       GPU Mem (%): 90.46     Batch: 64        Restart: 1         
+DEBUG    09:45:35     Fixed self.batch=64
+INFO     09:45:35     [Input splitting]     Iteration: 24         Remaining: 960        Visited: 1216       Bound: -0.008163       Time elapsed (s): 10.81      Iteration elapsed (s): 0.59       GPU Mem (%): 90.46     Batch: 64        Restart: 1         
+DEBUG    09:45:35     Fixed self.batch=64
+INFO     09:45:35     [Input splitting]     Iteration: 25         Remaining: 1024       Visited: 1280       Bound: -0.008163       Time elapsed (s): 11.29      Iteration elapsed (s): 0.48       GPU Mem (%): 90.46     Batch: 64        Restart: 1         
+DEBUG    09:45:36     Fixed self.batch=64
+INFO     09:45:36     [Input splitting]     Iteration: 26         Remaining: 1088       Visited: 1344       Bound: -0.008163       Time elapsed (s): 12.00      Iteration elapsed (s): 0.70       GPU Mem (%): 90.46     Batch: 64        Restart: 1         
+DEBUG    09:45:37     Fixed self.batch=64
+INFO     09:45:37     [Input splitting]     Iteration: 27         Remaining: 1152       Visited: 1408       Bound: -0.008163       Time elapsed (s): 12.55      Iteration elapsed (s): 0.55       GPU Mem (%): 90.43     Batch: 64        Restart: 1         
+DEBUG    09:45:37     Fixed self.batch=64
+INFO     09:45:37     [Input splitting]     Iteration: 28         Remaining: 1216       Visited: 1472       Bound: -0.008163       Time elapsed (s): 13.03      Iteration elapsed (s): 0.48       GPU Mem (%): 90.98     Batch: 64        Restart: 1         
+DEBUG    09:45:38     Fixed self.batch=64
+INFO     09:45:38     [Input splitting]     Iteration: 29         Remaining: 1280       Visited: 1536       Bound: -0.008163       Time elapsed (s): 13.55      Iteration elapsed (s): 0.52       GPU Mem (%): 90.98     Batch: 64        Restart: 1         
+DEBUG    09:45:38     Fixed self.batch=64
+INFO     09:45:38     [Input splitting]     Iteration: 30         Remaining: 1344       Visited: 1600       Bound: -0.008163       Time elapsed (s): 14.10      Iteration elapsed (s): 0.55       GPU Mem (%): 90.98     Batch: 64        Restart: 1         
+DEBUG    09:45:39     Fixed self.batch=64
+INFO     09:45:39     [Input splitting]     Iteration: 31         Remaining: 1408       Visited: 1664       Bound: -0.008163       Time elapsed (s): 14.62      Iteration elapsed (s): 0.52       GPU Mem (%): 90.98     Batch: 64        Restart: 1         
+DEBUG    09:45:39     Fixed self.batch=64
+INFO     09:45:39     [Input splitting]     Iteration: 32         Remaining: 1472       Visited: 1728       Bound: -0.008163       Time elapsed (s): 15.12      Iteration elapsed (s): 0.49       GPU Mem (%): 90.98     Batch: 64        Restart: 1         
+DEBUG    09:45:40     Fixed self.batch=64
+INFO     09:45:40     [Input splitting]     Iteration: 33         Remaining: 1536       Visited: 1792       Bound: -0.008163       Time elapsed (s): 15.59      Iteration elapsed (s): 0.48       GPU Mem (%): 90.98     Batch: 64        Restart: 1         
+DEBUG    09:45:40     Fixed self.batch=64
+INFO     09:45:40     [Input splitting]     Iteration: 34         Remaining: 1600       Visited: 1856       Bound: -0.008163       Time elapsed (s): 16.05      Iteration elapsed (s): 0.45       GPU Mem (%): 90.41     Batch: 64        Restart: 1         
+DEBUG    09:45:41     Fixed self.batch=64
+INFO     09:45:41     [Input splitting]     Iteration: 35         Remaining: 1664       Visited: 1920       Bound: -0.008163       Time elapsed (s): 16.54      Iteration elapsed (s): 0.49       GPU Mem (%): 90.41     Batch: 64        Restart: 1         
+DEBUG    09:45:41     Fixed self.batch=64
+INFO     09:45:41     [Input splitting]     Iteration: 36         Remaining: 1728       Visited: 1984       Bound: -0.008163       Time elapsed (s): 17.01      Iteration elapsed (s): 0.47       GPU Mem (%): 90.41     Batch: 64        Restart: 1         
+DEBUG    09:45:42     Fixed self.batch=64
+INFO     09:45:42     [Input splitting]     Iteration: 37         Remaining: 1792       Visited: 2048       Bound: -0.008163       Time elapsed (s): 17.46      Iteration elapsed (s): 0.45       GPU Mem (%): 90.41     Batch: 64        Restart: 1         
+DEBUG    09:45:42     Fixed self.batch=64
+INFO     09:45:42     [Input splitting]     Iteration: 38         Remaining: 1856       Visited: 2112       Bound: -0.008163       Time elapsed (s): 17.91      Iteration elapsed (s): 0.45       GPU Mem (%): 90.41     Batch: 64        Restart: 1         
+DEBUG    09:45:43     Fixed self.batch=64
+INFO     09:45:43     [Input splitting]     Iteration: 39         Remaining: 1920       Visited: 2176       Bound: -0.008163       Time elapsed (s): 18.37      Iteration elapsed (s): 0.46       GPU Mem (%): 90.41     Batch: 64        Restart: 1         
+DEBUG    09:45:43     Fixed self.batch=64
+INFO     09:45:43     [Input splitting]     Iteration: 40         Remaining: 1984       Visited: 2240       Bound: -0.008163       Time elapsed (s): 18.87      Iteration elapsed (s): 0.50       GPU Mem (%): 90.41     Batch: 64        Restart: 1         
+DEBUG    09:45:43     Fixed self.batch=64
+INFO     09:45:43     [Input splitting]     Iteration: 41         Remaining: 1984       Visited: 2304       Bound: -0.008163       Time elapsed (s): 19.33      Iteration elapsed (s): 0.46       GPU Mem (%): 90.41     Batch: 64        Restart: 1         
+DEBUG    09:45:44     Fixed self.batch=64
+INFO     09:45:44     [Input splitting]     Iteration: 42         Remaining: 2048       Visited: 2368       Bound: -0.008163       Time elapsed (s): 19.81      Iteration elapsed (s): 0.48       GPU Mem (%): 90.41     Batch: 64        Restart: 1         
+DEBUG    09:45:45     Fixed self.batch=64
+INFO     09:45:45     [Input splitting]     Iteration: 43         Remaining: 2112       Visited: 2432       Bound: -0.008163       Time elapsed (s): 20.57      Iteration elapsed (s): 0.76       GPU Mem (%): 90.41     Batch: 64        Restart: 1         
+DEBUG    09:45:45     Fixed self.batch=64
+INFO     09:45:45     [Input splitting]     Iteration: 44         Remaining: 2176       Visited: 2496       Bound: -0.008163       Time elapsed (s): 21.10      Iteration elapsed (s): 0.53       GPU Mem (%): 90.41     Batch: 64        Restart: 1         
+DEBUG    09:45:46     Fixed self.batch=64
+INFO     09:45:46     [Input splitting]     Iteration: 45         Remaining: 2240       Visited: 2560       Bound: -0.008163       Time elapsed (s): 21.69      Iteration elapsed (s): 0.59       GPU Mem (%): 90.43     Batch: 64        Restart: 1         
+DEBUG    09:45:46     Fixed self.batch=64
+INFO     09:45:46     [Input splitting]     Iteration: 46         Remaining: 2304       Visited: 2624       Bound: -0.008163       Time elapsed (s): 22.23      Iteration elapsed (s): 0.54       GPU Mem (%): 90.98     Batch: 64        Restart: 1         
+DEBUG    09:45:47     Fixed self.batch=64
+INFO     09:45:47     [Input splitting]     Iteration: 47         Remaining: 2368       Visited: 2688       Bound: -0.008163       Time elapsed (s): 22.73      Iteration elapsed (s): 0.50       GPU Mem (%): 90.98     Batch: 64        Restart: 1         
+DEBUG    09:45:47     Fixed self.batch=64
+INFO     09:45:47     [Input splitting]     Iteration: 48         Remaining: 2432       Visited: 2752       Bound: -0.008163       Time elapsed (s): 23.22      Iteration elapsed (s): 0.49       GPU Mem (%): 90.98     Batch: 64        Restart: 1         
+DEBUG    09:45:48     Fixed self.batch=64
+INFO     09:45:48     [Input splitting]     Iteration: 49         Remaining: 2496       Visited: 2816       Bound: -0.008163       Time elapsed (s): 23.71      Iteration elapsed (s): 0.48       GPU Mem (%): 90.98     Batch: 64        Restart: 1         
+DEBUG    09:45:48     Fixed self.batch=64
+INFO     09:45:48     [Input splitting]     Iteration: 50         Remaining: 2560       Visited: 2880       Bound: -0.008163       Time elapsed (s): 24.17      Iteration elapsed (s): 0.47       GPU Mem (%): 90.98     Batch: 64        Restart: 1         
+DEBUG    09:45:49     Fixed self.batch=64
+INFO     09:45:49     [Input splitting]     Iteration: 51         Remaining: 2560       Visited: 2944       Bound: -0.008163       Time elapsed (s): 24.65      Iteration elapsed (s): 0.48       GPU Mem (%): 90.98     Batch: 64        Restart: 1         
+DEBUG    09:45:49     Fixed self.batch=64
+INFO     09:45:49     [Input splitting]     Iteration: 52         Remaining: 2624       Visited: 3008       Bound: -0.008163       Time elapsed (s): 25.19      Iteration elapsed (s): 0.54       GPU Mem (%): 90.41     Batch: 64        Restart: 1         
+DEBUG    09:45:50     Fixed self.batch=64
+INFO     09:45:50     [Input splitting]     Iteration: 53         Remaining: 2688       Visited: 3072       Bound: -0.008163       Time elapsed (s): 25.77      Iteration elapsed (s): 0.58       GPU Mem (%): 90.41     Batch: 64        Restart: 1         
+DEBUG    09:45:50     Fixed self.batch=64
+INFO     09:45:50     [Input splitting]     Iteration: 54         Remaining: 2752       Visited: 3136       Bound: -0.008163       Time elapsed (s): 26.28      Iteration elapsed (s): 0.51       GPU Mem (%): 90.41     Batch: 64        Restart: 1         
+DEBUG    09:45:51     Fixed self.batch=64
+INFO     09:45:51     [Input splitting]     Iteration: 55         Remaining: 2816       Visited: 3200       Bound: -0.008163       Time elapsed (s): 26.77      Iteration elapsed (s): 0.49       GPU Mem (%): 90.41     Batch: 64        Restart: 1         
+DEBUG    09:45:51     Fixed self.batch=64
+INFO     09:45:51     [Input splitting]     Iteration: 56         Remaining: 2880       Visited: 3264       Bound: -0.008163       Time elapsed (s): 27.26      Iteration elapsed (s): 0.49       GPU Mem (%): 90.41     Batch: 64        Restart: 1         
+DEBUG    09:45:52     Fixed self.batch=64
+INFO     09:45:52     [Input splitting]     Iteration: 57         Remaining: 2944       Visited: 3328       Bound: -0.008163       Time elapsed (s): 27.74      Iteration elapsed (s): 0.47       GPU Mem (%): 90.41     Batch: 64        Restart: 1         
+DEBUG    09:45:52     Fixed self.batch=64
+INFO     09:45:52     [Input splitting]     Iteration: 58         Remaining: 3008       Visited: 3392       Bound: -0.008163       Time elapsed (s): 28.22      Iteration elapsed (s): 0.47       GPU Mem (%): 90.39     Batch: 64        Restart: 1         
+DEBUG    09:45:53     Fixed self.batch=64
+INFO     09:45:53     [Input splitting]     Iteration: 59         Remaining: 3072       Visited: 3456       Bound: -0.008163       Time elapsed (s): 28.71      Iteration elapsed (s): 0.49       GPU Mem (%): 90.39     Batch: 64        Restart: 1         
+DEBUG    09:45:53     Fixed self.batch=64
+INFO     09:45:53     [Input splitting]     Iteration: 60         Remaining: 3136       Visited: 3520       Bound: -0.008163       Time elapsed (s): 29.20      Iteration elapsed (s): 0.49       GPU Mem (%): 90.39     Batch: 64        Restart: 1         
+DEBUG    09:45:54     Fixed self.batch=64
+INFO     09:45:54     [Input splitting]     Iteration: 61         Remaining: 3200       Visited: 3584       Bound: -0.008163       Time elapsed (s): 29.69      Iteration elapsed (s): 0.49       GPU Mem (%): 90.39     Batch: 64        Restart: 1         
+DEBUG    09:45:54     Fixed self.batch=64
+INFO     09:45:54     [Input splitting]     Iteration: 62         Remaining: 3264       Visited: 3648       Bound: -0.008163       Time elapsed (s): 30.14      Iteration elapsed (s): 0.45       GPU Mem (%): 90.39     Batch: 64        Restart: 1         
+DEBUG    09:45:55     Fixed self.batch=64
+INFO     09:45:55     [Input splitting]     Iteration: 63         Remaining: 3328       Visited: 3712       Bound: -0.008163       Time elapsed (s): 30.65      Iteration elapsed (s): 0.51       GPU Mem (%): 90.39     Batch: 64        Restart: 1         
+DEBUG    09:45:55     Fixed self.batch=64
+INFO     09:45:55     [Input splitting]     Iteration: 64         Remaining: 3392       Visited: 3776       Bound: -0.008163       Time elapsed (s): 31.18      Iteration elapsed (s): 0.53       GPU Mem (%): 90.39     Batch: 64        Restart: 1         
+DEBUG    09:45:56     Fixed self.batch=64
+INFO     09:45:56     [Input splitting]     Iteration: 65         Remaining: 3456       Visited: 3840       Bound: -0.008163       Time elapsed (s): 31.66      Iteration elapsed (s): 0.47       GPU Mem (%): 90.39     Batch: 64        Restart: 1         
+DEBUG    09:45:56     Fixed self.batch=64
+INFO     09:45:56     [Input splitting]     Iteration: 66         Remaining: 3520       Visited: 3904       Bound: -0.008163       Time elapsed (s): 32.20      Iteration elapsed (s): 0.54       GPU Mem (%): 90.41     Batch: 64        Restart: 1         
+DEBUG    09:45:57     Fixed self.batch=64
+INFO     09:45:57     [Input splitting]     Iteration: 67         Remaining: 3584       Visited: 3968       Bound: -0.008163       Time elapsed (s): 32.76      Iteration elapsed (s): 0.56       GPU Mem (%): 90.41     Batch: 64        Restart: 1         
+DEBUG    09:45:57     Fixed self.batch=64
+INFO     09:45:57     [Input splitting]     Iteration: 68         Remaining: 3648       Visited: 4032       Bound: -0.008163       Time elapsed (s): 33.35      Iteration elapsed (s): 0.59       GPU Mem (%): 90.96     Batch: 64        Restart: 1         
+DEBUG    09:45:58     Fixed self.batch=64
+INFO     09:45:58     [Input splitting]     Iteration: 69         Remaining: 3712       Visited: 4096       Bound: -0.008163       Time elapsed (s): 33.83      Iteration elapsed (s): 0.48       GPU Mem (%): 90.96     Batch: 64        Restart: 1         
+DEBUG    09:45:58     Fixed self.batch=64
+INFO     09:45:58     [Input splitting]     Iteration: 70         Remaining: 3776       Visited: 4160       Bound: -0.008163       Time elapsed (s): 34.28      Iteration elapsed (s): 0.45       GPU Mem (%): 90.96     Batch: 64        Restart: 1         
+DEBUG    09:45:59     Fixed self.batch=64
+INFO     09:45:59     [Input splitting]     Iteration: 71         Remaining: 3840       Visited: 4224       Bound: -0.008163       Time elapsed (s): 34.78      Iteration elapsed (s): 0.51       GPU Mem (%): 90.96     Batch: 64        Restart: 1         
+DEBUG    09:46:00     Fixed self.batch=64
+INFO     09:46:00     [Input splitting]     Iteration: 72         Remaining: 3904       Visited: 4288       Bound: -0.008163       Time elapsed (s): 35.47      Iteration elapsed (s): 0.68       GPU Mem (%): 90.96     Batch: 64        Restart: 1         
+DEBUG    09:46:00     Fixed self.batch=64
+INFO     09:46:00     [Input splitting]     Iteration: 73         Remaining: 3968       Visited: 4352       Bound: -0.008163       Time elapsed (s): 35.95      Iteration elapsed (s): 0.48       GPU Mem (%): 90.39     Batch: 64        Restart: 1         
+DEBUG    09:46:01     Fixed self.batch=64
+INFO     09:46:01     [Input splitting]     Iteration: 74         Remaining: 4032       Visited: 4416       Bound: -0.008163       Time elapsed (s): 36.41      Iteration elapsed (s): 0.46       GPU Mem (%): 90.39     Batch: 64        Restart: 1         
+DEBUG    09:46:01     Fixed self.batch=64
+INFO     09:46:01     [Input splitting]     Iteration: 75         Remaining: 4032       Visited: 4480       Bound: -0.008163       Time elapsed (s): 36.89      Iteration elapsed (s): 0.48       GPU Mem (%): 90.39     Batch: 64        Restart: 1         
+DEBUG    09:46:01     Fixed self.batch=64
+INFO     09:46:01     [Input splitting]     Iteration: 76         Remaining: 4096       Visited: 4544       Bound: -0.008163       Time elapsed (s): 37.34      Iteration elapsed (s): 0.45       GPU Mem (%): 90.39     Batch: 64        Restart: 1         
+DEBUG    09:46:02     Fixed self.batch=64
+INFO     09:46:02     [Input splitting]     Iteration: 77         Remaining: 4160       Visited: 4608       Bound: -0.008163       Time elapsed (s): 37.95      Iteration elapsed (s): 0.60       GPU Mem (%): 90.39     Batch: 64        Restart: 1         
+DEBUG    09:46:03     Fixed self.batch=64
+INFO     09:46:03     [Input splitting]     Iteration: 78         Remaining: 4224       Visited: 4672       Bound: -0.008163       Time elapsed (s): 38.39      Iteration elapsed (s): 0.44       GPU Mem (%): 90.39     Batch: 64        Restart: 1         
+DEBUG    09:46:03     Fixed self.batch=64
+INFO     09:46:03     [Input splitting]     Iteration: 79         Remaining: 4288       Visited: 4736       Bound: -0.008163       Time elapsed (s): 38.85      Iteration elapsed (s): 0.45       GPU Mem (%): 90.39     Batch: 64        Restart: 1         
+DEBUG    09:46:04     Fixed self.batch=64
+INFO     09:46:04     [Input splitting]     Iteration: 80         Remaining: 4352       Visited: 4800       Bound: -0.008163       Time elapsed (s): 39.37      Iteration elapsed (s): 0.52       GPU Mem (%): 90.39     Batch: 64        Restart: 1         
+DEBUG    09:46:04     Fixed self.batch=64
+INFO     09:46:04     [Input splitting]     Iteration: 81         Remaining: 4416       Visited: 4864       Bound: -0.008163       Time elapsed (s): 39.96      Iteration elapsed (s): 0.59       GPU Mem (%): 90.40     Batch: 64        Restart: 1         
+DEBUG    09:46:05     Fixed self.batch=64
+INFO     09:46:05     [Input splitting]     Iteration: 82         Remaining: 4480       Visited: 4928       Bound: -0.008163       Time elapsed (s): 40.44      Iteration elapsed (s): 0.48       GPU Mem (%): 90.42     Batch: 64        Restart: 1         
+DEBUG    09:46:05     Fixed self.batch=64
+INFO     09:46:05     [Input splitting]     Iteration: 83         Remaining: 4544       Visited: 4992       Bound: -0.008163       Time elapsed (s): 40.90      Iteration elapsed (s): 0.46       GPU Mem (%): 90.96     Batch: 64        Restart: 1         
+DEBUG    09:46:06     Fixed self.batch=64
+INFO     09:46:06     [Input splitting]     Iteration: 84         Remaining: 4608       Visited: 5056       Bound: -0.008163       Time elapsed (s): 41.39      Iteration elapsed (s): 0.50       GPU Mem (%): 90.96     Batch: 64        Restart: 1         
+DEBUG    09:46:06     Fixed self.batch=64
+INFO     09:46:06     [Input splitting]     Iteration: 85         Remaining: 4672       Visited: 5120       Bound: -0.008163       Time elapsed (s): 41.87      Iteration elapsed (s): 0.48       GPU Mem (%): 90.96     Batch: 64        Restart: 1         
+DEBUG    09:46:07     Fixed self.batch=64
+INFO     09:46:07     [Input splitting]     Iteration: 86         Remaining: 4736       Visited: 5184       Bound: -0.008163       Time elapsed (s): 42.36      Iteration elapsed (s): 0.49       GPU Mem (%): 90.96     Batch: 64        Restart: 1         
+DEBUG    09:46:07     Fixed self.batch=64
+INFO     09:46:07     [Input splitting]     Iteration: 87         Remaining: 4800       Visited: 5248       Bound: -0.008163       Time elapsed (s): 42.87      Iteration elapsed (s): 0.51       GPU Mem (%): 90.96     Batch: 64        Restart: 1         
+DEBUG    09:46:08     Fixed self.batch=64
+INFO     09:46:08     [Input splitting]     Iteration: 88         Remaining: 4864       Visited: 5312       Bound: -0.008163       Time elapsed (s): 43.46      Iteration elapsed (s): 0.59       GPU Mem (%): 90.39     Batch: 64        Restart: 1         
+DEBUG    09:46:08     Fixed self.batch=64
+INFO     09:46:08     [Input splitting]     Iteration: 89         Remaining: 4928       Visited: 5376       Bound: -0.008163       Time elapsed (s): 43.97      Iteration elapsed (s): 0.49       GPU Mem (%): 90.39     Batch: 64        Restart: 1         
+DEBUG    09:46:09     Fixed self.batch=64
+INFO     09:46:09     [Input splitting]     Iteration: 90         Remaining: 4992       Visited: 5440       Bound: -0.008163       Time elapsed (s): 44.47      Iteration elapsed (s): 0.50       GPU Mem (%): 90.39     Batch: 64        Restart: 1         
+DEBUG    09:46:09     Fixed self.batch=64
+INFO     09:46:09     [Input splitting]     Iteration: 91         Remaining: 5056       Visited: 5504       Bound: -0.008163       Time elapsed (s): 44.92      Iteration elapsed (s): 0.45       GPU Mem (%): 90.39     Batch: 64        Restart: 1         
+DEBUG    09:46:10     Fixed self.batch=64
+INFO     09:46:10     [Input splitting]     Iteration: 92         Remaining: 5120       Visited: 5568       Bound: -0.008163       Time elapsed (s): 45.42      Iteration elapsed (s): 0.50       GPU Mem (%): 90.39     Batch: 64        Restart: 1         
+DEBUG    09:46:10     Fixed self.batch=64
+INFO     09:46:10     [Input splitting]     Iteration: 93         Remaining: 5184       Visited: 5632       Bound: -0.008163       Time elapsed (s): 45.98      Iteration elapsed (s): 0.56       GPU Mem (%): 90.39     Batch: 64        Restart: 1         
+DEBUG    09:46:11     Fixed self.batch=64
+INFO     09:46:11     [Input splitting]     Iteration: 94         Remaining: 5248       Visited: 5696       Bound: -0.008163       Time elapsed (s): 46.44      Iteration elapsed (s): 0.46       GPU Mem (%): 90.39     Batch: 64        Restart: 1         
+DEBUG    09:46:11     Fixed self.batch=64
+INFO     09:46:11     [Input splitting]     Iteration: 95         Remaining: 5312       Visited: 5760       Bound: -0.008163       Time elapsed (s): 46.91      Iteration elapsed (s): 0.47       GPU Mem (%): 90.39     Batch: 64        Restart: 1         
+DEBUG    09:46:12     Fixed self.batch=64
+INFO     09:46:12     [Input splitting]     Iteration: 96         Remaining: 5376       Visited: 5824       Bound: -0.008163       Time elapsed (s): 47.36      Iteration elapsed (s): 0.45       GPU Mem (%): 90.39     Batch: 64        Restart: 1         
+DEBUG    09:46:12     Fixed self.batch=64
+INFO     09:46:12     [Input splitting]     Iteration: 97         Remaining: 5440       Visited: 5888       Bound: -0.008163       Time elapsed (s): 47.86      Iteration elapsed (s): 0.50       GPU Mem (%): 90.39     Batch: 64        Restart: 1         
+DEBUG    09:46:13     Fixed self.batch=64
+INFO     09:46:13     [Input splitting]     Iteration: 98         Remaining: 5504       Visited: 5952       Bound: -0.008163       Time elapsed (s): 48.41      Iteration elapsed (s): 0.55       GPU Mem (%): 90.39     Batch: 64        Restart: 1         
+DEBUG    09:46:13     Fixed self.batch=64
+INFO     09:46:13     [Input splitting]     Iteration: 99         Remaining: 5568       Visited: 6016       Bound: -0.008163       Time elapsed (s): 48.96      Iteration elapsed (s): 0.55       GPU Mem (%): 90.39     Batch: 64        Restart: 1         
+DEBUG    09:46:14     Fixed self.batch=64
+INFO     09:46:14     [Input splitting]     Iteration: 100        Remaining: 5632       Visited: 6080       Bound: -0.008163       Time elapsed (s): 49.43      Iteration elapsed (s): 0.47       GPU Mem (%): 90.41     Batch: 64        Restart: 1         
+DEBUG    09:46:14     Fixed self.batch=64
+INFO     09:46:14     [Input splitting]     Iteration: 101        Remaining: 5696       Visited: 6144       Bound: -0.008163       Time elapsed (s): 49.96      Iteration elapsed (s): 0.53       GPU Mem (%): 90.96     Batch: 64        Restart: 1         
+DEBUG    09:46:15     Fixed self.batch=64
+INFO     09:46:15     [Input splitting]     Iteration: 102        Remaining: 5696       Visited: 6208       Bound: -0.008163       Time elapsed (s): 50.45      Iteration elapsed (s): 0.48       GPU Mem (%): 90.96     Batch: 64        Restart: 1         
+DEBUG    09:46:15     Fixed self.batch=64
+INFO     09:46:15     [Input splitting]     Iteration: 103        Remaining: 5760       Visited: 6272       Bound: -0.008163       Time elapsed (s): 50.94      Iteration elapsed (s): 0.48       GPU Mem (%): 90.96     Batch: 64        Restart: 1         
+DEBUG    09:46:16     Fixed self.batch=64
+INFO     09:46:16     [Input splitting]     Iteration: 104        Remaining: 5824       Visited: 6336       Bound: -0.008163       Time elapsed (s): 51.41      Iteration elapsed (s): 0.47       GPU Mem (%): 90.96     Batch: 64        Restart: 1         
+DEBUG    09:46:16     Fixed self.batch=64
+INFO     09:46:16     [Input splitting]     Iteration: 105        Remaining: 5888       Visited: 6400       Bound: -0.008163       Time elapsed (s): 51.90      Iteration elapsed (s): 0.50       GPU Mem (%): 90.96     Batch: 64        Restart: 1         
+DEBUG    09:46:17     Fixed self.batch=64
+INFO     09:46:17     [Input splitting]     Iteration: 106        Remaining: 5952       Visited: 6464       Bound: -0.008163       Time elapsed (s): 52.43      Iteration elapsed (s): 0.53       GPU Mem (%): 90.96     Batch: 64        Restart: 1         
+DEBUG    09:46:17     Fixed self.batch=64
+INFO     09:46:17     [Input splitting]     Iteration: 107        Remaining: 6016       Visited: 6528       Bound: -0.008163       Time elapsed (s): 52.93      Iteration elapsed (s): 0.49       GPU Mem (%): 90.39     Batch: 64        Restart: 1         
+DEBUG    09:46:18     Fixed self.batch=64
+INFO     09:46:18     [Input splitting]     Iteration: 108        Remaining: 6080       Visited: 6592       Bound: -0.008163       Time elapsed (s): 53.41      Iteration elapsed (s): 0.48       GPU Mem (%): 90.39     Batch: 64        Restart: 1         
+DEBUG    09:46:18     Fixed self.batch=64
+INFO     09:46:18     [Input splitting]     Iteration: 109        Remaining: 6144       Visited: 6656       Bound: -0.008163       Time elapsed (s): 53.89      Iteration elapsed (s): 0.48       GPU Mem (%): 90.39     Batch: 64        Restart: 1         
+DEBUG    09:46:19     Fixed self.batch=64
+INFO     09:46:19     [Input splitting]     Iteration: 110        Remaining: 6208       Visited: 6720       Bound: -0.008163       Time elapsed (s): 54.39      Iteration elapsed (s): 0.50       GPU Mem (%): 90.39     Batch: 64        Restart: 1         
+DEBUG    09:46:19     Fixed self.batch=64
+INFO     09:46:19     [Input splitting]     Iteration: 111        Remaining: 6272       Visited: 6784       Bound: -0.008163       Time elapsed (s): 54.88      Iteration elapsed (s): 0.48       GPU Mem (%): 90.39     Batch: 64        Restart: 1         
+DEBUG    09:46:20     Fixed self.batch=64
+INFO     09:46:20     [Input splitting]     Iteration: 112        Remaining: 6336       Visited: 6848       Bound: -0.008163       Time elapsed (s): 55.37      Iteration elapsed (s): 0.48       GPU Mem (%): 90.39     Batch: 64        Restart: 1         
+DEBUG    09:46:20     Fixed self.batch=64
+INFO     09:46:20     [Input splitting]     Iteration: 113        Remaining: 6400       Visited: 6912       Bound: -0.008163       Time elapsed (s): 55.89      Iteration elapsed (s): 0.51       GPU Mem (%): 90.39     Batch: 64        Restart: 1         
+DEBUG    09:46:20     Fixed self.batch=64
+INFO     09:46:20     [Input splitting]     Iteration: 114        Remaining: 6464       Visited: 6976       Bound: -0.008163       Time elapsed (s): 56.36      Iteration elapsed (s): 0.47       GPU Mem (%): 90.39     Batch: 64        Restart: 1         
+DEBUG    09:46:21     Fixed self.batch=64
+INFO     09:46:21     [Input splitting]     Iteration: 115        Remaining: 6528       Visited: 7040       Bound: -0.008163       Time elapsed (s): 56.81      Iteration elapsed (s): 0.45       GPU Mem (%): 90.39     Batch: 64        Restart: 1         
+DEBUG    09:46:21     Fixed self.batch=64
+INFO     09:46:21     [Input splitting]     Iteration: 116        Remaining: 6592       Visited: 7104       Bound: -0.008163       Time elapsed (s): 57.29      Iteration elapsed (s): 0.48       GPU Mem (%): 90.39     Batch: 64        Restart: 1         
+DEBUG    09:46:22     Fixed self.batch=64
+INFO     09:46:22     [Input splitting]     Iteration: 117        Remaining: 6656       Visited: 7168       Bound: -0.008163       Time elapsed (s): 57.73      Iteration elapsed (s): 0.45       GPU Mem (%): 90.39     Batch: 64        Restart: 1         
+DEBUG    09:46:22     Fixed self.batch=64
+INFO     09:46:22     [Input splitting]     Iteration: 118        Remaining: 6720       Visited: 7232       Bound: -0.008163       Time elapsed (s): 58.18      Iteration elapsed (s): 0.44       GPU Mem (%): 90.39     Batch: 64        Restart: 1         
+DEBUG    09:46:23     Fixed self.batch=64
+INFO     09:46:23     [Input splitting]     Iteration: 119        Remaining: 6784       Visited: 7296       Bound: -0.008163       Time elapsed (s): 58.70      Iteration elapsed (s): 0.52       GPU Mem (%): 90.41     Batch: 64        Restart: 1         
+DEBUG    09:46:23     Fixed self.batch=64
+INFO     09:46:23     [Input splitting]     Iteration: 120        Remaining: 6848       Visited: 7360       Bound: -0.008163       Time elapsed (s): 59.19      Iteration elapsed (s): 0.49       GPU Mem (%): 90.42     Batch: 64        Restart: 1         
+DEBUG    09:46:24     Fixed self.batch=64
+INFO     09:46:24     [Input splitting]     Iteration: 121        Remaining: 6912       Visited: 7424       Bound: -0.008163       Time elapsed (s): 59.69      Iteration elapsed (s): 0.51       GPU Mem (%): 90.96     Batch: 64        Restart: 1         
+DEBUG    09:46:24     Fixed self.batch=64
+INFO     09:46:24     [Input splitting]     Iteration: 122        Remaining: 6976       Visited: 7488       Bound: -0.008163       Time elapsed (s): 60.22      Iteration elapsed (s): 0.53       GPU Mem (%): 90.96     Batch: 64        Restart: 1         
+DEBUG    09:46:25     Fixed self.batch=64
+INFO     09:46:25     [Input splitting]     Iteration: 123        Remaining: 7040       Visited: 7552       Bound: -0.008163       Time elapsed (s): 60.70      Iteration elapsed (s): 0.48       GPU Mem (%): 90.96     Batch: 64        Restart: 1         
+DEBUG    09:46:25     Fixed self.batch=64
+INFO     09:46:25     [Input splitting]     Iteration: 124        Remaining: 7104       Visited: 7616       Bound: -0.008163       Time elapsed (s): 61.14      Iteration elapsed (s): 0.44       GPU Mem (%): 90.96     Batch: 64        Restart: 1         
+DEBUG    09:46:26     Fixed self.batch=64
+INFO     09:46:26     [Input splitting]     Iteration: 125        Remaining: 7168       Visited: 7680       Bound: -0.008163       Time elapsed (s): 61.62      Iteration elapsed (s): 0.48       GPU Mem (%): 90.96     Batch: 64        Restart: 1         
+DEBUG    09:46:26     [Restart] Runtime exceeded 59.69732398986817 seconds (40.0%)
+DEBUG    09:46:26     Restarting
+INFO     09:46:26     Params of 2-th run: {'input_split': True, 'abstract_method': 'backward', 'decision_method': 'smart', 'decision_topk': 1}
+INFO     09:46:26     [_setup_restart] _init_abstractor
+DEBUG    09:46:27     [select_params] Try self.input_split=True Settings.backward_batch_size=inf extra_opts={} mode='patches' method='backward'
+DEBUG    09:46:27     [_init_module] Try bound_opts={'conv_mode': 'patches', 'verbosity': 0}
+INFO     09:46:27     [select_params] Success: self.input_split=True Settings.backward_batch_size=inf extra_opts={} mode='patches' method='backward'
+INFO     09:46:27     Try batch size 1000
+INFO     09:46:27     Initial bounds (first 10): tensor([-0.0723, -0.8379, -0.2933,  0.3913,  0.0894, -0.2868,  0.5499, -2.1113,
+        -5.5241, -0.3291])
+INFO     09:46:27     [Input splitting]     Iteration: 126        Remaining: 0          Visited: 2          Bound: 0.000001        Time elapsed (s): 62.96      Iteration elapsed (s): 0.10       GPU Mem (%): 21.72     Batch: 1000      Restart: 2         
+INFO     09:46:27     Verified: 1 	 Remain: 0
+INFO     09:46:27     [!] Iterations: 126
+INFO     09:46:27     [!] Result: unsat
+INFO     09:46:27     [!] Runtime: 63.8723
+unsat,63.8723

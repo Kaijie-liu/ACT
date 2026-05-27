@@ -135,6 +135,22 @@ class _LayerGraphBuilder:
         # from baking sample-local bounds into a globally-quantified ACT Net.
         self._compile_time_values: Dict[str, torch.Tensor] = {}
 
+        # Explicit predecessor overrides for helper-emitted layers that do
+        # not correspond to FX nodes. Filled in by handlers that splice a
+        # synthetic layer between two FX-tracked layers (e.g. inserting
+        # EXPAND for var-var Div broadcast in nn4sys pensieve). The FX-based
+        # ``_build_preds_succs`` pass would otherwise reconstruct preds from
+        # FX dataflow only and miss the helper edge, leaving the helper's
+        # consumer to (a) lookup `before[L][1]` and raise IndexError, or
+        # (b) consume the original (un-broadcast) bounds and propagate a
+        # silent size mismatch into tf.
+        self._explicit_preds: Dict[int, List[int]] = {}
+
+        # Reverse map: which layer produced each variable id. Updated on
+        # every ``_add_layer`` so a handler that needs to know "who feeds
+        # var v" can ask without walking the FX graph again.
+        self._var_to_producer_layer: Dict[int, int] = {}
+
     # -------------------------------------------------------------------------
     # Public API
     # -------------------------------------------------------------------------
@@ -189,7 +205,35 @@ class _LayerGraphBuilder:
             out_vars=out_vars,
         )
         self.layers.append(layer)
+        # Maintain reverse var-to-producer map so handlers (and the
+        # explicit-pred fixup in _build_preds_succs) can ask which layer
+        # produced any given var without re-walking FX. New vars from
+        # later layers will overwrite older ones, which is exactly what
+        # we want — Var IDs are SSA-style: each var is written exactly
+        # once when its producing layer is added.
+        for v in out_vars:
+            self._var_to_producer_layer[v] = layer.id
         return layer.id
+
+    def _set_explicit_preds(self, layer_id: int, preds: List[int]) -> None:
+        """Record an explicit predecessor list for a layer that the FX-
+        based pred reconstruction will not get right on its own. Used by
+        handlers that splice a synthetic helper layer (e.g. EXPAND for
+        nn4sys broadcast Div, or the per-step MULs in the OnnxPow chain
+        where both operands come from the same source layer).
+
+        IMPORTANT: duplicates are PRESERVED here, unlike the FX walk
+        which dedups. Several transfer functions (e.g. tf_mul, tf_div)
+        use positional indexing into ``preds[layer_id]`` to retrieve the
+        two operand bounds — if the operands legitimately come from the
+        same source layer (``Mul(x, x)`` for ``Pow(x, 2)``), the preds
+        list MUST contain that layer's id twice so ``preds[1]`` exists.
+
+        Negative / None / self-id entries are still filtered out
+        (negatives mean "placeholder predecessor"; the wrapper's
+        INPUT_SPEC-connect-all pass handles those)."""
+        cleaned = [p for p in preds if p is not None and p >= 0 and p != layer_id]
+        self._explicit_preds[layer_id] = cleaned
     
     def _register_node(self, name: str, layer_id: Optional[int] = None) -> None:
         """Register node's output vars, shape, and layer mapping."""
@@ -284,14 +328,40 @@ class _LayerGraphBuilder:
             return [int(x) for x in evaluated.reshape(-1).tolist()]
         return None
 
-    def _evaluate_constant_subgraph(self, node_name: str) -> Optional[torch.Tensor]:
-        """Recursively evaluate an fx node whose inputs trace back to constants only.
+    def _evaluate_constant_subgraph(
+        self,
+        node_name: str,
+        *,
+        allow_sample_substitution: bool = False,
+    ) -> Optional[torch.Tensor]:
+        """Recursively evaluate an fx node whose inputs trace back to constants.
 
-        Returns the concrete tensor or None if the chain involves any variable
-        (i.e. an actual model activation). Used by ``_resolve_slice_input_to_int_list``
-        to recover Slice bounds whose value is computed by a chain of constant
-        ops (e.g. YOLO's ``slice_23`` where starts/ends come from constant
-        ``Concat(initializer_X, initializer_Y)``).
+        Returns the concrete tensor, or None when the chain involves a
+        runtime activation (a path back to the model placeholder).
+
+        ``allow_sample_substitution`` controls what happens at the
+        placeholder. Default is **False (fail-closed)**, i.e. the
+        evaluation aborts and returns ``None``. Setting it to ``True``
+        substitutes the builder's ``sample_input`` and lets the chain
+        continue — but the resulting ACT IR is then only **locally
+        valid around that sample**, NOT for the entire input box.
+
+        Soundness:
+          * Formal verification of an input *box* must NOT consume a
+            constant resolved this way, because any conversion of a
+            data-dependent shape/index/branch into a fixed tensor is
+            only correct at the center point. Use the default.
+          * Tools that explicitly want sample-local correctness (e.g.
+            an adversarial-perturbation smoke around a fixed witness)
+            may opt in with ``allow_sample_substitution=True``.
+
+        The R12 audit (advisor 2026-05-25) found that the previous
+        unconditional substitution silently downgraded soundness for
+        any handler that read shape/index from such a chain
+        (``OnnxConstantOfShape``, ``OnnxExpand``, ``OnnxSlice`` via
+        ``_resolve_slice_input_to_int_list``). All current handlers
+        therefore stay on the default; an explicit opt-in is required
+        before re-enabling.
         """
         cached = self._resolve_constant_tensor(node_name)
         if cached is not None:
@@ -302,11 +372,11 @@ class _LayerGraphBuilder:
         if target_node is None:
             return None
         if target_node.op == 'placeholder':
-            # The chain reached the model input. If a concrete ``sample_input``
-            # was passed, substitute it so the chain can continue; the resulting
-            # IR is locally valid around that sample. Without one, treat as
-            # genuinely variable and abort the constant evaluation.
-            if self.sample_input is not None:
+            # Fail-closed: a placeholder input is a runtime value, not a
+            # constant. Allowing substitution makes the result a sample-
+            # local approximation, which breaks the ACT Net's
+            # universally-quantified soundness over the input spec.
+            if allow_sample_substitution and self.sample_input is not None:
                 return self.sample_input
             return None
         if target_node.op != 'call_module':
@@ -317,7 +387,10 @@ class _LayerGraphBuilder:
         arg_vals: List[Any] = []
         for a in target_node.args:
             if isinstance(a, fx.Node):
-                v = self._evaluate_constant_subgraph(a.name)
+                v = self._evaluate_constant_subgraph(
+                    a.name,
+                    allow_sample_substitution=allow_sample_substitution,
+                )
                 if v is None:
                     return None
                 arg_vals.append(v)
@@ -545,13 +618,22 @@ class _LayerGraphBuilder:
                 # -> connect to previous layer (internal layer within multi-layer conversion)
                 preds[i] = [i - 1]
             # else: Mapped layer with FX predecessors OR takes network input - keep as-is
-        
+
+        # Apply explicit predecessor overrides registered by handlers that
+        # splice a helper layer (e.g. EXPAND for nn4sys broadcast Div) that
+        # the FX walk cannot see. Overrides REPLACE the FX-derived list:
+        # the handler knows exactly which producer feeds its consumer and
+        # the FX walk does not.
+        for lid, override in self._explicit_preds.items():
+            if 0 <= lid < n_layers:
+                preds[lid] = [p for p in override if 0 <= p < n_layers]
+
         # Build succs from preds
         for i in range(n_layers):
             for pred_id in preds[i]:
                 if i not in succs[pred_id]:
                     succs[pred_id].append(i)
-        
+
         _assert_dag(preds, succs, n_layers)
         return preds, succs
 
@@ -1293,6 +1375,26 @@ class TorchToACT:
                 preds[first_model].insert(0, last_wrapper)
             if first_model not in succs[last_wrapper]:
                 succs[last_wrapper].append(first_model)
+
+            # Additional placeholder-readers: any model layer whose in_vars
+            # overlap INPUT_SPEC's out_vars but currently has no FX predecessor
+            # is also reading model input directly (e.g. lsnc_relu uses Slice
+            # AND Gather BOTH on the model input alongside the main Gemm chain;
+            # nn4sys pensieve similarly emits Gather on input in parallel
+            # branches). Without this wiring, analyze.py leaves their Bin at
+            # the +/-inf default sized (B, len(out_vars)), which is wrong both
+            # in magnitude and shape and triggers downstream view/index errors.
+            input_spec_out = set(self.layers[last_wrapper].out_vars)
+            for lid in range(self._wrapper_offset, n):
+                L = self.layers[lid]
+                if not L.in_vars:
+                    continue  # CONSTANTs etc.; seeded separately by analyze
+                if last_wrapper in preds[lid]:
+                    continue
+                if input_spec_out.intersection(L.in_vars):
+                    preds[lid].append(last_wrapper)
+                    if lid not in succs[last_wrapper]:
+                        succs[last_wrapper].append(lid)
         
         # Connect last model layer to ASSERT
         assert_id = n - 1

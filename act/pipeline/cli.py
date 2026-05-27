@@ -700,6 +700,23 @@ def aggregate_reportable_verdicts(q_reportables: list) -> str:
     return "UNKNOWN"
 
 
+def remaining_instance_query_budget(timeout_s: float, elapsed_s: float) -> float:
+    """Return the remaining per-instance budget available to another query.
+
+    The hybridz VNNLIB path may need to verify many disjunctive queries for
+    one official instance. Each query previously received the full CLI
+    ``--timeout`` value, allowing an instance with hundreds of queries to run
+    for hundreds of timeout periods. This helper gives the query loop an
+    aggregate, fail-closed budget: once exhausted, an unvisited query becomes
+    UNKNOWN and the instance cannot be incorrectly promoted to CERTIFIED.
+
+    This is cooperative accounting between queries. A single long-running
+    ``analyze()`` call still requires a process-level watchdog for hard wall
+    interruption.
+    """
+    return max(0.0, float(timeout_s) - max(0.0, float(elapsed_s)))
+
+
 def select_pairs_by_official_ids(pairs: list, instance_ids: str | None) -> list:
     """Select stable VNN-COMP instances for formal sentinel/audit runs.
 
@@ -826,6 +843,8 @@ def _run_vnnlib_verify_hybridz(args) -> None:
         q_reportables: list[str] = []
         q_receipts: list[Optional[str]] = []
         instance_error: Optional[str] = None
+        instance_budget_start = _time.monotonic()
+        instance_budget_exhausted = False
         try:
             pair = load_vnnlib_pair(
                 category=p["category"], onnx_model=p["onnx_model"],
@@ -863,6 +882,18 @@ def _run_vnnlib_verify_hybridz(args) -> None:
                 dtype=dtype,
             )
             for q_idx, (in_spec, out_spec) in enumerate(queries):
+                remaining_s = remaining_instance_query_budget(
+                    timeout_s, _time.monotonic() - instance_budget_start
+                )
+                if remaining_s <= 0.0:
+                    # There are unexplored UNSAFE branches. Fail closed as
+                    # UNKNOWN instead of certifying an incompletely checked
+                    # instance.
+                    q_statuses.append("UNKNOWN")
+                    q_reportables.append("UNKNOWN")
+                    q_receipts.append(None)
+                    instance_budget_exhausted = True
+                    break
                 vm = VerifiableModel(
                     input_layer=in_layer,
                     input_spec=InputSpecLayer(spec=in_spec),
@@ -870,8 +901,17 @@ def _run_vnnlib_verify_hybridz(args) -> None:
                     output_spec=OutputSpecLayer(spec=out_spec),
                 )
                 net = TorchToACT(vm).run()
+                remaining_s = remaining_instance_query_budget(
+                    timeout_s, _time.monotonic() - instance_budget_start
+                )
+                if remaining_s <= 0.0:
+                    q_statuses.append("UNKNOWN")
+                    q_reportables.append("UNKNOWN")
+                    q_receipts.append(None)
+                    instance_budget_exhausted = True
+                    break
                 solver = HZVerifier(
-                    device=device, dtype=dtype, timeout_s=timeout_s,
+                    device=device, dtype=dtype, timeout_s=remaining_s,
                     strict_replay=True, onnx_path=onnx_p,
                     vnnlib_path=vnn_p,
                     # Use official_instance_id (row position in instances.csv
@@ -895,7 +935,9 @@ def _run_vnnlib_verify_hybridz(args) -> None:
                         os.environ.get("ACT_HZ_SMALL_DENSE_LP_FALLBACK", "0") == "1"
                     ),
                 )
-                q_status, _, _ = verify_once_hz(net=net, solver=solver, timelimit=timeout_s)
+                q_status, _, _ = verify_once_hz(
+                    net=net, solver=solver, timelimit=remaining_s
+                )
                 q_internal = str(q_status)
                 q_statuses.append(q_internal)
                 q_reportables.append(
@@ -969,6 +1011,8 @@ def _run_vnnlib_verify_hybridz(args) -> None:
             "q_receipts": q_receipts,
             "error": instance_error,
             "wall_s": float(elapsed),
+            "timeout_s": timeout_s,
+            "instance_budget_exhausted": instance_budget_exhausted,
         })
         print(f"  [{i + 1:3d}/{total}] {tag}: {normalized} ({elapsed:.1f}s)  "
               f"V={counts['CERTIFIED']} A={counts['FALSIFIED']} "

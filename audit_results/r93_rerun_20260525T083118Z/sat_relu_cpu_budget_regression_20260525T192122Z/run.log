@@ -1,0 +1,1828 @@
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/sat_v30_c38.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v30_c38.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: sat_v30_c38.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 30]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 30)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 30 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 30 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed sat_v30_c38.vnnlib: 1 query(ies)
+[ACT] Auto-detecting project root: .
+[ACT] Gurobi license found: modules/gurobi/gurobi.lic
+✅ Device Manager Initialized: device=cpu, dtype=torch.float64
+
+================================================================================
+ACT: Abstract Constraint Transformer
+Inference-based whitebox fuzzing for neural network verification
+================================================================================
+
+
+================================================================================
+VERIFICATION TEST: VNNLIB → VerifiableModel → verify_once
+================================================================================
+
+[vnnlib] category=sat_relu max_instances=100 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cpu, timeout=30.0s)
+  [  1/100] sat_relu/onnx/sat_v30_c38.onnx@vnnlib/sat_v30_c38.vnnlib: FALSIFIED (0.2s)  V=0 A=1 U=0 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/unsat_v30_c38.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v30_c38.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: unsat_v30_c38.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 30]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 30)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 30 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 30 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed unsat_v30_c38.vnnlib: 1 query(ies)
+  [  2/100] sat_relu/onnx/unsat_v30_c38.onnx@vnnlib/unsat_v30_c38.vnnlib: UNKNOWN (0.1s)  V=0 A=1 U=1 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/sat_v65_c187.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v65_c187.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: sat_v65_c187.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 65]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 65)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 65 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 65 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed sat_v65_c187.vnnlib: 1 query(ies)
+  [  3/100] sat_relu/onnx/sat_v65_c187.onnx@vnnlib/sat_v65_c187.vnnlib: UNKNOWN (0.2s)  V=0 A=1 U=2 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/unsat_v65_c187.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v65_c187.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: unsat_v65_c187.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 65]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 65)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 65 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 65 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed unsat_v65_c187.vnnlib: 1 query(ies)
+  [  4/100] sat_relu/onnx/unsat_v65_c187.onnx@vnnlib/unsat_v65_c187.vnnlib: UNKNOWN (0.2s)  V=0 A=1 U=3 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/sat_v91_c217.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v91_c217.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: sat_v91_c217.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 91]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 91)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 91 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 91 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed sat_v91_c217.vnnlib: 1 query(ies)
+  [  5/100] sat_relu/onnx/sat_v91_c217.onnx@vnnlib/sat_v91_c217.vnnlib: FALSIFIED (0.3s)  V=0 A=2 U=3 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/unsat_v91_c217.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v91_c217.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: unsat_v91_c217.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 91]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 91)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 91 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 91 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed unsat_v91_c217.vnnlib: 1 query(ies)
+  [  6/100] sat_relu/onnx/unsat_v91_c217.onnx@vnnlib/unsat_v91_c217.vnnlib: UNKNOWN (0.3s)  V=0 A=2 U=4 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/sat_v14_c57.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v14_c57.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: sat_v14_c57.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 14]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 14)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 14 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 14 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed sat_v14_c57.vnnlib: 1 query(ies)
+  [  7/100] sat_relu/onnx/sat_v14_c57.onnx@vnnlib/sat_v14_c57.vnnlib: FALSIFIED (0.1s)  V=0 A=3 U=4 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/unsat_v14_c57.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v14_c57.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: unsat_v14_c57.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 14]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 14)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 14 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 14 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed unsat_v14_c57.vnnlib: 1 query(ies)
+  [  8/100] sat_relu/onnx/unsat_v14_c57.onnx@vnnlib/unsat_v14_c57.vnnlib: UNKNOWN (0.1s)  V=0 A=3 U=5 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/sat_v95_c275.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v95_c275.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: sat_v95_c275.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 95]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 95)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 95 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 95 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed sat_v95_c275.vnnlib: 1 query(ies)
+  [  9/100] sat_relu/onnx/sat_v95_c275.onnx@vnnlib/sat_v95_c275.vnnlib: UNKNOWN (0.5s)  V=0 A=3 U=6 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/unsat_v95_c275.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v95_c275.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: unsat_v95_c275.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 95]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 95)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 95 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 95 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed unsat_v95_c275.vnnlib: 1 query(ies)
+  [ 10/100] sat_relu/onnx/unsat_v95_c275.onnx@vnnlib/unsat_v95_c275.vnnlib: UNKNOWN (0.4s)  V=0 A=3 U=7 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/sat_v6_c27.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v6_c27.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: sat_v6_c27.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 6]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 6)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 6 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 6 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed sat_v6_c27.vnnlib: 1 query(ies)
+  [ 11/100] sat_relu/onnx/sat_v6_c27.onnx@vnnlib/sat_v6_c27.vnnlib: FALSIFIED (0.0s)  V=0 A=4 U=7 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/unsat_v6_c30.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v6_c30.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: unsat_v6_c30.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 6]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 6)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 6 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 6 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed unsat_v6_c30.vnnlib: 1 query(ies)
+  [ 12/100] sat_relu/onnx/unsat_v6_c30.onnx@vnnlib/unsat_v6_c30.vnnlib: UNKNOWN (0.1s)  V=0 A=4 U=8 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/sat_v6_c27.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v6_c27.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: sat_v6_c27.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 6]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 6)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 6 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 6 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed sat_v6_c27.vnnlib: 1 query(ies)
+  [ 13/100] sat_relu/onnx/sat_v6_c27.onnx@vnnlib/sat_v6_c27.vnnlib: FALSIFIED (0.0s)  V=0 A=5 U=8 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/unsat_v6_c30.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v6_c30.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: unsat_v6_c30.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 6]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 6)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 6 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 6 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed unsat_v6_c30.vnnlib: 1 query(ies)
+  [ 14/100] sat_relu/onnx/unsat_v6_c30.onnx@vnnlib/unsat_v6_c30.vnnlib: UNKNOWN (0.1s)  V=0 A=5 U=9 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/sat_v100_c373.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v100_c373.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: sat_v100_c373.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 100]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 100)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 100 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 100 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed sat_v100_c373.vnnlib: 1 query(ies)
+  [ 15/100] sat_relu/onnx/sat_v100_c373.onnx@vnnlib/sat_v100_c373.vnnlib: UNKNOWN (0.9s)  V=0 A=5 U=10 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/unsat_v100_c373.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v100_c373.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: unsat_v100_c373.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 100]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 100)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 100 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 100 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed unsat_v100_c373.vnnlib: 1 query(ies)
+  [ 16/100] sat_relu/onnx/unsat_v100_c373.onnx@vnnlib/unsat_v100_c373.vnnlib: UNKNOWN (0.8s)  V=0 A=5 U=11 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/sat_v51_c255.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v51_c255.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: sat_v51_c255.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 51]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 51)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 51 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 51 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed sat_v51_c255.vnnlib: 1 query(ies)
+  [ 17/100] sat_relu/onnx/sat_v51_c255.onnx@vnnlib/sat_v51_c255.vnnlib: UNKNOWN (0.2s)  V=0 A=5 U=12 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/unsat_v51_c255.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v51_c255.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: unsat_v51_c255.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 51]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 51)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 51 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 51 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed unsat_v51_c255.vnnlib: 1 query(ies)
+  [ 18/100] sat_relu/onnx/unsat_v51_c255.onnx@vnnlib/unsat_v51_c255.vnnlib: UNKNOWN (0.2s)  V=0 A=5 U=13 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/sat_v25_c45.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v25_c45.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: sat_v25_c45.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 25]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 25)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 25 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 25 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed sat_v25_c45.vnnlib: 1 query(ies)
+  [ 19/100] sat_relu/onnx/sat_v25_c45.onnx@vnnlib/sat_v25_c45.vnnlib: FALSIFIED (0.1s)  V=0 A=6 U=13 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/unsat_v25_c45.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v25_c45.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: unsat_v25_c45.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 25]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 25)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 25 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 25 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed unsat_v25_c45.vnnlib: 1 query(ies)
+  [ 20/100] sat_relu/onnx/unsat_v25_c45.onnx@vnnlib/unsat_v25_c45.vnnlib: UNKNOWN (0.1s)  V=0 A=6 U=14 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/sat_v90_c111.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v90_c111.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: sat_v90_c111.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 90]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 90)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 90 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 90 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed sat_v90_c111.vnnlib: 1 query(ies)
+  [ 21/100] sat_relu/onnx/sat_v90_c111.onnx@vnnlib/sat_v90_c111.vnnlib: UNKNOWN (0.1s)  V=0 A=6 U=15 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/unsat_v90_c111.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v90_c111.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: unsat_v90_c111.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 90]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 90)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 90 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 90 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed unsat_v90_c111.vnnlib: 1 query(ies)
+  [ 22/100] sat_relu/onnx/unsat_v90_c111.onnx@vnnlib/unsat_v90_c111.vnnlib: UNKNOWN (0.1s)  V=0 A=6 U=16 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/sat_v63_c267.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v63_c267.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: sat_v63_c267.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 63]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 63)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 63 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 63 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed sat_v63_c267.vnnlib: 1 query(ies)
+  [ 23/100] sat_relu/onnx/sat_v63_c267.onnx@vnnlib/sat_v63_c267.vnnlib: UNKNOWN (0.3s)  V=0 A=6 U=17 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/unsat_v63_c267.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v63_c267.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: unsat_v63_c267.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 63]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 63)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 63 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 63 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed unsat_v63_c267.vnnlib: 1 query(ies)
+  [ 24/100] sat_relu/onnx/unsat_v63_c267.onnx@vnnlib/unsat_v63_c267.vnnlib: UNKNOWN (0.3s)  V=0 A=6 U=18 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/sat_v18_c87.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v18_c87.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: sat_v18_c87.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 18]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 18)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 18 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 18 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed sat_v18_c87.vnnlib: 1 query(ies)
+  [ 25/100] sat_relu/onnx/sat_v18_c87.onnx@vnnlib/sat_v18_c87.vnnlib: FALSIFIED (0.2s)  V=0 A=7 U=18 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/unsat_v18_c88.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v18_c88.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: unsat_v18_c88.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 18]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 18)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 18 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 18 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed unsat_v18_c88.vnnlib: 1 query(ies)
+  [ 26/100] sat_relu/onnx/unsat_v18_c88.onnx@vnnlib/unsat_v18_c88.vnnlib: UNKNOWN (0.2s)  V=0 A=7 U=19 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/sat_v92_c117.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v92_c117.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: sat_v92_c117.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 92]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 92)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 92 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 92 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed sat_v92_c117.vnnlib: 1 query(ies)
+  [ 27/100] sat_relu/onnx/sat_v92_c117.onnx@vnnlib/sat_v92_c117.vnnlib: UNKNOWN (0.1s)  V=0 A=7 U=20 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/unsat_v92_c117.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v92_c117.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: unsat_v92_c117.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 92]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 92)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 92 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 92 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed unsat_v92_c117.vnnlib: 1 query(ies)
+  [ 28/100] sat_relu/onnx/unsat_v92_c117.onnx@vnnlib/unsat_v92_c117.vnnlib: UNKNOWN (0.1s)  V=0 A=7 U=21 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/sat_v94_c313.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v94_c313.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: sat_v94_c313.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 94]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 94)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 94 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 94 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed sat_v94_c313.vnnlib: 1 query(ies)
+  [ 29/100] sat_relu/onnx/sat_v94_c313.onnx@vnnlib/sat_v94_c313.vnnlib: UNKNOWN (0.5s)  V=0 A=7 U=22 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/unsat_v94_c313.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v94_c313.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: unsat_v94_c313.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 94]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 94)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 94 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 94 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed unsat_v94_c313.vnnlib: 1 query(ies)
+  [ 30/100] sat_relu/onnx/unsat_v94_c313.onnx@vnnlib/unsat_v94_c313.vnnlib: UNKNOWN (0.5s)  V=0 A=7 U=23 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/sat_v24_c66.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v24_c66.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: sat_v24_c66.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 24]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 24)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 24 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 24 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed sat_v24_c66.vnnlib: 1 query(ies)
+  [ 31/100] sat_relu/onnx/sat_v24_c66.onnx@vnnlib/sat_v24_c66.vnnlib: FALSIFIED (0.1s)  V=0 A=8 U=23 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/unsat_v24_c66.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v24_c66.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: unsat_v24_c66.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 24]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 24)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 24 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 24 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed unsat_v24_c66.vnnlib: 1 query(ies)
+  [ 32/100] sat_relu/onnx/unsat_v24_c66.onnx@vnnlib/unsat_v24_c66.vnnlib: UNKNOWN (0.2s)  V=0 A=8 U=24 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/sat_v67_c154.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v67_c154.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: sat_v67_c154.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 67]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 67)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 67 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 67 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed sat_v67_c154.vnnlib: 1 query(ies)
+  [ 33/100] sat_relu/onnx/sat_v67_c154.onnx@vnnlib/sat_v67_c154.vnnlib: UNKNOWN (0.1s)  V=0 A=8 U=25 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/unsat_v67_c154.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v67_c154.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: unsat_v67_c154.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 67]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 67)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 67 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 67 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed unsat_v67_c154.vnnlib: 1 query(ies)
+  [ 34/100] sat_relu/onnx/unsat_v67_c154.onnx@vnnlib/unsat_v67_c154.vnnlib: UNKNOWN (0.1s)  V=0 A=8 U=26 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/sat_v58_c75.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v58_c75.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: sat_v58_c75.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 58]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 58)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 58 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 58 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed sat_v58_c75.vnnlib: 1 query(ies)
+  [ 35/100] sat_relu/onnx/sat_v58_c75.onnx@vnnlib/sat_v58_c75.vnnlib: UNKNOWN (0.0s)  V=0 A=8 U=27 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/unsat_v58_c75.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v58_c75.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: unsat_v58_c75.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 58]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 58)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 58 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 58 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed unsat_v58_c75.vnnlib: 1 query(ies)
+  [ 36/100] sat_relu/onnx/unsat_v58_c75.onnx@vnnlib/unsat_v58_c75.vnnlib: UNKNOWN (0.1s)  V=0 A=8 U=28 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/sat_v40_c142.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v40_c142.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: sat_v40_c142.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 40]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 40)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 40 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 40 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed sat_v40_c142.vnnlib: 1 query(ies)
+  [ 37/100] sat_relu/onnx/sat_v40_c142.onnx@vnnlib/sat_v40_c142.vnnlib: UNKNOWN (0.1s)  V=0 A=8 U=29 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/unsat_v40_c142.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v40_c142.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: unsat_v40_c142.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 40]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 40)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 40 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 40 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed unsat_v40_c142.vnnlib: 1 query(ies)
+  [ 38/100] sat_relu/onnx/unsat_v40_c142.onnx@vnnlib/unsat_v40_c142.vnnlib: UNKNOWN (0.1s)  V=0 A=8 U=30 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/sat_v26_c84.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v26_c84.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: sat_v26_c84.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 26]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 26)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 26 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 26 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed sat_v26_c84.vnnlib: 1 query(ies)
+  [ 39/100] sat_relu/onnx/sat_v26_c84.onnx@vnnlib/sat_v26_c84.vnnlib: FALSIFIED (0.2s)  V=0 A=9 U=30 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/unsat_v26_c84.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v26_c84.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: unsat_v26_c84.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 26]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 26)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 26 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 26 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed unsat_v26_c84.vnnlib: 1 query(ies)
+  [ 40/100] sat_relu/onnx/unsat_v26_c84.onnx@vnnlib/unsat_v26_c84.vnnlib: UNKNOWN (0.2s)  V=0 A=9 U=31 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/sat_v46_c142.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v46_c142.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: sat_v46_c142.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 46]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 46)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 46 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 46 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed sat_v46_c142.vnnlib: 1 query(ies)
+  [ 41/100] sat_relu/onnx/sat_v46_c142.onnx@vnnlib/sat_v46_c142.vnnlib: UNKNOWN (0.1s)  V=0 A=9 U=32 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/unsat_v46_c142.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v46_c142.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: unsat_v46_c142.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 46]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 46)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 46 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 46 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed unsat_v46_c142.vnnlib: 1 query(ies)
+  [ 42/100] sat_relu/onnx/unsat_v46_c142.onnx@vnnlib/unsat_v46_c142.vnnlib: UNKNOWN (0.1s)  V=0 A=9 U=33 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/sat_v56_c239.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v56_c239.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: sat_v56_c239.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 56]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 56)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 56 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 56 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed sat_v56_c239.vnnlib: 1 query(ies)
+  [ 43/100] sat_relu/onnx/sat_v56_c239.onnx@vnnlib/sat_v56_c239.vnnlib: UNKNOWN (0.2s)  V=0 A=9 U=34 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/unsat_v56_c239.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v56_c239.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: unsat_v56_c239.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 56]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 56)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 56 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 56 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed unsat_v56_c239.vnnlib: 1 query(ies)
+  [ 44/100] sat_relu/onnx/unsat_v56_c239.onnx@vnnlib/unsat_v56_c239.vnnlib: UNKNOWN (0.2s)  V=0 A=9 U=35 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/sat_v10_c26.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v10_c26.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: sat_v10_c26.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 10]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 10)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 10 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 10 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed sat_v10_c26.vnnlib: 1 query(ies)
+  [ 45/100] sat_relu/onnx/sat_v10_c26.onnx@vnnlib/sat_v10_c26.vnnlib: FALSIFIED (0.0s)  V=0 A=10 U=35 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/unsat_v10_c26.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v10_c26.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: unsat_v10_c26.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 10]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 10)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 10 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 10 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed unsat_v10_c26.vnnlib: 1 query(ies)
+  [ 46/100] sat_relu/onnx/unsat_v10_c26.onnx@vnnlib/unsat_v10_c26.vnnlib: UNKNOWN (0.1s)  V=0 A=10 U=36 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/sat_v73_c156.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v73_c156.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: sat_v73_c156.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 73]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 73)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 73 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 73 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed sat_v73_c156.vnnlib: 1 query(ies)
+  [ 47/100] sat_relu/onnx/sat_v73_c156.onnx@vnnlib/sat_v73_c156.vnnlib: UNKNOWN (0.1s)  V=0 A=10 U=37 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/unsat_v73_c156.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v73_c156.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: unsat_v73_c156.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 73]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 73)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 73 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 73 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed unsat_v73_c156.vnnlib: 1 query(ies)
+  [ 48/100] sat_relu/onnx/unsat_v73_c156.onnx@vnnlib/unsat_v73_c156.vnnlib: UNKNOWN (0.1s)  V=0 A=10 U=38 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/sat_v85_c186.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v85_c186.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: sat_v85_c186.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 85]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 85)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 85 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 85 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed sat_v85_c186.vnnlib: 1 query(ies)
+  [ 49/100] sat_relu/onnx/sat_v85_c186.onnx@vnnlib/sat_v85_c186.vnnlib: UNKNOWN (0.2s)  V=0 A=10 U=39 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/unsat_v85_c186.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v85_c186.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: unsat_v85_c186.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 85]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 85)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 85 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 85 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed unsat_v85_c186.vnnlib: 1 query(ies)
+  [ 50/100] sat_relu/onnx/unsat_v85_c186.onnx@vnnlib/unsat_v85_c186.vnnlib: UNKNOWN (0.2s)  V=0 A=10 U=40 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/sat_v54_c125.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v54_c125.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: sat_v54_c125.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 54]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 54)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 54 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 54 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed sat_v54_c125.vnnlib: 1 query(ies)
+  [ 51/100] sat_relu/onnx/sat_v54_c125.onnx@vnnlib/sat_v54_c125.vnnlib: UNKNOWN (0.1s)  V=0 A=10 U=41 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/unsat_v54_c125.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v54_c125.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: unsat_v54_c125.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 54]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 54)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 54 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 54 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed unsat_v54_c125.vnnlib: 1 query(ies)
+  [ 52/100] sat_relu/onnx/unsat_v54_c125.onnx@vnnlib/unsat_v54_c125.vnnlib: UNKNOWN (0.1s)  V=0 A=10 U=42 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/sat_v9_c9.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v9_c9.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: sat_v9_c9.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 9]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 9)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 9 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 9 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed sat_v9_c9.vnnlib: 1 query(ies)
+  [ 53/100] sat_relu/onnx/sat_v9_c9.onnx@vnnlib/sat_v9_c9.vnnlib: FALSIFIED (0.0s)  V=0 A=11 U=42 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/unsat_v9_c9.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v9_c9.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: unsat_v9_c9.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 9]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 9)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 9 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 9 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed unsat_v9_c9.vnnlib: 1 query(ies)
+  [ 54/100] sat_relu/onnx/unsat_v9_c9.onnx@vnnlib/unsat_v9_c9.vnnlib: CERTIFIED (0.0s)  V=1 A=11 U=42 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/sat_v9_c14.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v9_c14.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: sat_v9_c14.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 9]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 9)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 9 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 9 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed sat_v9_c14.vnnlib: 1 query(ies)
+  [ 55/100] sat_relu/onnx/sat_v9_c14.onnx@vnnlib/sat_v9_c14.vnnlib: FALSIFIED (0.0s)  V=1 A=12 U=42 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/unsat_v9_c14.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v9_c14.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: unsat_v9_c14.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 9]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 9)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 9 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 9 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed unsat_v9_c14.vnnlib: 1 query(ies)
+  [ 56/100] sat_relu/onnx/unsat_v9_c14.onnx@vnnlib/unsat_v9_c14.vnnlib: UNKNOWN (0.1s)  V=1 A=12 U=43 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/sat_v92_c180.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v92_c180.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: sat_v92_c180.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 92]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 92)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 92 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 92 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed sat_v92_c180.vnnlib: 1 query(ies)
+  [ 57/100] sat_relu/onnx/sat_v92_c180.onnx@vnnlib/sat_v92_c180.vnnlib: UNKNOWN (0.2s)  V=1 A=12 U=44 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/unsat_v92_c180.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v92_c180.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: unsat_v92_c180.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 92]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 92)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 92 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 92 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed unsat_v92_c180.vnnlib: 1 query(ies)
+  [ 58/100] sat_relu/onnx/unsat_v92_c180.onnx@vnnlib/unsat_v92_c180.vnnlib: UNKNOWN (0.2s)  V=1 A=12 U=45 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/sat_v83_c328.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v83_c328.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: sat_v83_c328.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 83]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 83)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 83 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 83 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed sat_v83_c328.vnnlib: 1 query(ies)
+  [ 59/100] sat_relu/onnx/sat_v83_c328.onnx@vnnlib/sat_v83_c328.vnnlib: UNKNOWN (0.5s)  V=1 A=12 U=46 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/unsat_v83_c328.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v83_c328.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: unsat_v83_c328.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 83]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 83)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 83 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 83 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed unsat_v83_c328.vnnlib: 1 query(ies)
+  [ 60/100] sat_relu/onnx/unsat_v83_c328.onnx@vnnlib/unsat_v83_c328.vnnlib: UNKNOWN (0.5s)  V=1 A=12 U=47 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/sat_v37_c63.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v37_c63.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: sat_v37_c63.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 37]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 37)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 37 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 37 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed sat_v37_c63.vnnlib: 1 query(ies)
+  [ 61/100] sat_relu/onnx/sat_v37_c63.onnx@vnnlib/sat_v37_c63.vnnlib: UNKNOWN (0.0s)  V=1 A=12 U=48 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/unsat_v37_c63.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v37_c63.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: unsat_v37_c63.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 37]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 37)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 37 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 37 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed unsat_v37_c63.vnnlib: 1 query(ies)
+  [ 62/100] sat_relu/onnx/unsat_v37_c63.onnx@vnnlib/unsat_v37_c63.vnnlib: UNKNOWN (0.0s)  V=1 A=12 U=49 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/sat_v99_c485.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v99_c485.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: sat_v99_c485.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 99]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 99)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 99 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 99 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed sat_v99_c485.vnnlib: 1 query(ies)
+  [ 63/100] sat_relu/onnx/sat_v99_c485.onnx@vnnlib/sat_v99_c485.vnnlib: UNKNOWN (1.6s)  V=1 A=12 U=50 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/unsat_v99_c485.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v99_c485.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: unsat_v99_c485.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 99]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 99)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 99 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 99 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed unsat_v99_c485.vnnlib: 1 query(ies)
+  [ 64/100] sat_relu/onnx/unsat_v99_c485.onnx@vnnlib/unsat_v99_c485.vnnlib: UNKNOWN (1.4s)  V=1 A=12 U=51 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/sat_v94_c377.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v94_c377.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: sat_v94_c377.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 94]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 94)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 94 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 94 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed sat_v94_c377.vnnlib: 1 query(ies)
+  [ 65/100] sat_relu/onnx/sat_v94_c377.onnx@vnnlib/sat_v94_c377.vnnlib: UNKNOWN (0.8s)  V=1 A=12 U=52 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/unsat_v94_c377.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v94_c377.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: unsat_v94_c377.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 94]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 94)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 94 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 94 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed unsat_v94_c377.vnnlib: 1 query(ies)
+  [ 66/100] sat_relu/onnx/unsat_v94_c377.onnx@vnnlib/unsat_v94_c377.vnnlib: UNKNOWN (0.8s)  V=1 A=12 U=53 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/sat_v87_c243.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v87_c243.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: sat_v87_c243.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 87]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 87)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 87 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 87 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed sat_v87_c243.vnnlib: 1 query(ies)
+  [ 67/100] sat_relu/onnx/sat_v87_c243.onnx@vnnlib/sat_v87_c243.vnnlib: UNKNOWN (0.3s)  V=1 A=12 U=54 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/unsat_v87_c243.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v87_c243.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: unsat_v87_c243.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 87]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 87)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 87 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 87 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed unsat_v87_c243.vnnlib: 1 query(ies)
+  [ 68/100] sat_relu/onnx/unsat_v87_c243.onnx@vnnlib/unsat_v87_c243.vnnlib: UNKNOWN (0.3s)  V=1 A=12 U=55 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/sat_v25_c40.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v25_c40.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: sat_v25_c40.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 25]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 25)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 25 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 25 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed sat_v25_c40.vnnlib: 1 query(ies)
+  [ 69/100] sat_relu/onnx/sat_v25_c40.onnx@vnnlib/sat_v25_c40.vnnlib: FALSIFIED (0.1s)  V=1 A=13 U=55 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/unsat_v25_c40.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v25_c40.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: unsat_v25_c40.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 25]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 25)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 25 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 25 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed unsat_v25_c40.vnnlib: 1 query(ies)
+  [ 70/100] sat_relu/onnx/unsat_v25_c40.onnx@vnnlib/unsat_v25_c40.vnnlib: UNKNOWN (0.1s)  V=1 A=13 U=56 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/sat_v34_c98.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v34_c98.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: sat_v34_c98.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 34]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 34)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 34 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 34 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed sat_v34_c98.vnnlib: 1 query(ies)
+  [ 71/100] sat_relu/onnx/sat_v34_c98.onnx@vnnlib/sat_v34_c98.vnnlib: UNKNOWN (0.0s)  V=1 A=13 U=57 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/unsat_v34_c98.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v34_c98.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: unsat_v34_c98.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 34]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 34)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 34 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 34 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed unsat_v34_c98.vnnlib: 1 query(ies)
+  [ 72/100] sat_relu/onnx/unsat_v34_c98.onnx@vnnlib/unsat_v34_c98.vnnlib: UNKNOWN (0.0s)  V=1 A=13 U=58 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/sat_v70_c178.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v70_c178.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: sat_v70_c178.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 70]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 70)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 70 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 70 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed sat_v70_c178.vnnlib: 1 query(ies)
+  [ 73/100] sat_relu/onnx/sat_v70_c178.onnx@vnnlib/sat_v70_c178.vnnlib: UNKNOWN (0.2s)  V=1 A=13 U=59 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/unsat_v70_c178.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v70_c178.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: unsat_v70_c178.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 70]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 70)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 70 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 70 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed unsat_v70_c178.vnnlib: 1 query(ies)
+  [ 74/100] sat_relu/onnx/unsat_v70_c178.onnx@vnnlib/unsat_v70_c178.vnnlib: UNKNOWN (0.2s)  V=1 A=13 U=60 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/sat_v20_c40.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v20_c40.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: sat_v20_c40.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 20]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 20)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 20 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 20 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed sat_v20_c40.vnnlib: 1 query(ies)
+  [ 75/100] sat_relu/onnx/sat_v20_c40.onnx@vnnlib/sat_v20_c40.vnnlib: FALSIFIED (0.1s)  V=1 A=14 U=60 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/unsat_v20_c40.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v20_c40.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: unsat_v20_c40.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 20]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 20)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 20 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 20 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed unsat_v20_c40.vnnlib: 1 query(ies)
+  [ 76/100] sat_relu/onnx/unsat_v20_c40.onnx@vnnlib/unsat_v20_c40.vnnlib: UNKNOWN (0.2s)  V=1 A=14 U=61 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/sat_v30_c44.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v30_c44.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: sat_v30_c44.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 30]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 30)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 30 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 30 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed sat_v30_c44.vnnlib: 1 query(ies)
+  [ 77/100] sat_relu/onnx/sat_v30_c44.onnx@vnnlib/sat_v30_c44.vnnlib: FALSIFIED (0.1s)  V=1 A=15 U=61 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/unsat_v30_c44.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v30_c44.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: unsat_v30_c44.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 30]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 30)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 30 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 30 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed unsat_v30_c44.vnnlib: 1 query(ies)
+  [ 78/100] sat_relu/onnx/unsat_v30_c44.onnx@vnnlib/unsat_v30_c44.vnnlib: UNKNOWN (0.1s)  V=1 A=15 U=62 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/sat_v63_c286.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v63_c286.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: sat_v63_c286.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 63]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 63)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 63 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 63 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed sat_v63_c286.vnnlib: 1 query(ies)
+  [ 79/100] sat_relu/onnx/sat_v63_c286.onnx@vnnlib/sat_v63_c286.vnnlib: UNKNOWN (0.4s)  V=1 A=15 U=63 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/unsat_v63_c286.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v63_c286.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: unsat_v63_c286.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 63]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 63)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 63 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 63 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed unsat_v63_c286.vnnlib: 1 query(ies)
+  [ 80/100] sat_relu/onnx/unsat_v63_c286.onnx@vnnlib/unsat_v63_c286.vnnlib: UNKNOWN (0.3s)  V=1 A=15 U=64 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/sat_v38_c132.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v38_c132.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: sat_v38_c132.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 38]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 38)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 38 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 38 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed sat_v38_c132.vnnlib: 1 query(ies)
+  [ 81/100] sat_relu/onnx/sat_v38_c132.onnx@vnnlib/sat_v38_c132.vnnlib: UNKNOWN (0.1s)  V=1 A=15 U=65 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/unsat_v38_c132.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v38_c132.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: unsat_v38_c132.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 38]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 38)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 38 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 38 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed unsat_v38_c132.vnnlib: 1 query(ies)
+  [ 82/100] sat_relu/onnx/unsat_v38_c132.onnx@vnnlib/unsat_v38_c132.vnnlib: UNKNOWN (0.1s)  V=1 A=15 U=66 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/sat_v33_c140.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v33_c140.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: sat_v33_c140.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 33]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 33)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 33 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 33 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed sat_v33_c140.vnnlib: 1 query(ies)
+  [ 83/100] sat_relu/onnx/sat_v33_c140.onnx@vnnlib/sat_v33_c140.vnnlib: UNKNOWN (0.1s)  V=1 A=15 U=67 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/unsat_v33_c140.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v33_c140.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: unsat_v33_c140.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 33]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 33)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 33 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 33 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed unsat_v33_c140.vnnlib: 1 query(ies)
+  [ 84/100] sat_relu/onnx/unsat_v33_c140.onnx@vnnlib/unsat_v33_c140.vnnlib: UNKNOWN (0.1s)  V=1 A=15 U=68 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/sat_v90_c449.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v90_c449.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: sat_v90_c449.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 90]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 90)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 90 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 90 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed sat_v90_c449.vnnlib: 1 query(ies)
+  [ 85/100] sat_relu/onnx/sat_v90_c449.onnx@vnnlib/sat_v90_c449.vnnlib: UNKNOWN (1.2s)  V=1 A=15 U=69 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/unsat_v90_c449.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v90_c449.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: unsat_v90_c449.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 90]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 90)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 90 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 90 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed unsat_v90_c449.vnnlib: 1 query(ies)
+  [ 86/100] sat_relu/onnx/unsat_v90_c449.onnx@vnnlib/unsat_v90_c449.vnnlib: UNKNOWN (1.1s)  V=1 A=15 U=70 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/sat_v75_c99.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v75_c99.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: sat_v75_c99.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 75]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 75)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 75 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 75 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed sat_v75_c99.vnnlib: 1 query(ies)
+  [ 87/100] sat_relu/onnx/sat_v75_c99.onnx@vnnlib/sat_v75_c99.vnnlib: UNKNOWN (0.1s)  V=1 A=15 U=71 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/unsat_v75_c99.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v75_c99.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: unsat_v75_c99.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 75]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 75)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 75 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 75 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed unsat_v75_c99.vnnlib: 1 query(ies)
+  [ 88/100] sat_relu/onnx/unsat_v75_c99.onnx@vnnlib/unsat_v75_c99.vnnlib: UNKNOWN (0.1s)  V=1 A=15 U=72 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/sat_v82_c130.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v82_c130.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: sat_v82_c130.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 82]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 82)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 82 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 82 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed sat_v82_c130.vnnlib: 1 query(ies)
+  [ 89/100] sat_relu/onnx/sat_v82_c130.onnx@vnnlib/sat_v82_c130.vnnlib: FALSIFIED (0.1s)  V=1 A=16 U=72 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/unsat_v82_c130.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v82_c130.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: unsat_v82_c130.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 82]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 82)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 82 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 82 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed unsat_v82_c130.vnnlib: 1 query(ies)
+  [ 90/100] sat_relu/onnx/unsat_v82_c130.onnx@vnnlib/unsat_v82_c130.vnnlib: UNKNOWN (0.1s)  V=1 A=16 U=73 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/sat_v64_c234.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v64_c234.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: sat_v64_c234.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 64]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 64)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 64 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 64 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed sat_v64_c234.vnnlib: 1 query(ies)
+  [ 91/100] sat_relu/onnx/sat_v64_c234.onnx@vnnlib/sat_v64_c234.vnnlib: UNKNOWN (0.2s)  V=1 A=16 U=74 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/unsat_v64_c234.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v64_c234.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: unsat_v64_c234.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 64]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 64)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 64 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 64 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed unsat_v64_c234.vnnlib: 1 query(ies)
+  [ 92/100] sat_relu/onnx/unsat_v64_c234.onnx@vnnlib/unsat_v64_c234.vnnlib: UNKNOWN (0.2s)  V=1 A=16 U=75 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/sat_v39_c77.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v39_c77.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: sat_v39_c77.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 39]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 39)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 39 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 39 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed sat_v39_c77.vnnlib: 1 query(ies)
+  [ 93/100] sat_relu/onnx/sat_v39_c77.onnx@vnnlib/sat_v39_c77.vnnlib: FALSIFIED (0.0s)  V=1 A=17 U=75 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/unsat_v39_c77.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v39_c77.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: unsat_v39_c77.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 39]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 39)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 39 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 39 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed unsat_v39_c77.vnnlib: 1 query(ies)
+  [ 94/100] sat_relu/onnx/unsat_v39_c77.onnx@vnnlib/unsat_v39_c77.vnnlib: UNKNOWN (0.0s)  V=1 A=17 U=76 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/sat_v16_c39.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v16_c39.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: sat_v16_c39.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 16]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 16)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 16 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 16 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed sat_v16_c39.vnnlib: 1 query(ies)
+  [ 95/100] sat_relu/onnx/sat_v16_c39.onnx@vnnlib/sat_v16_c39.vnnlib: FALSIFIED (0.1s)  V=1 A=18 U=76 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/unsat_v16_c39.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v16_c39.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: unsat_v16_c39.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 16]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 16)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 16 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 16 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed unsat_v16_c39.vnnlib: 1 query(ies)
+  [ 96/100] sat_relu/onnx/unsat_v16_c39.onnx@vnnlib/unsat_v16_c39.vnnlib: UNKNOWN (0.1s)  V=1 A=18 U=77 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/sat_v85_c207.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v85_c207.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: sat_v85_c207.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 85]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 85)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 85 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 85 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed sat_v85_c207.vnnlib: 1 query(ies)
+  [ 97/100] sat_relu/onnx/sat_v85_c207.onnx@vnnlib/sat_v85_c207.vnnlib: UNKNOWN (0.2s)  V=1 A=18 U=78 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/unsat_v85_c207.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v85_c207.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: unsat_v85_c207.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 85]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 85)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 85 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 85 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed unsat_v85_c207.vnnlib: 1 query(ies)
+  [ 98/100] sat_relu/onnx/unsat_v85_c207.onnx@vnnlib/unsat_v85_c207.vnnlib: UNKNOWN (0.2s)  V=1 A=18 U=79 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/sat_v44_c52.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v44_c52.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: sat_v44_c52.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 44]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 44)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 44 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 44 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed sat_v44_c52.vnnlib: 1 query(ies)
+  [ 99/100] sat_relu/onnx/sat_v44_c52.onnx@vnnlib/sat_v44_c52.vnnlib: UNKNOWN (0.0s)  V=1 A=18 U=80 E=0  R=0
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/unsat_v44_c52.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v44_c52.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: unsat_v44_c52.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 44]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 44)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 44 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 44 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed unsat_v44_c52.vnnlib: 1 query(ies)
+  [100/100] sat_relu/onnx/unsat_v44_c52.onnx@vnnlib/unsat_v44_c52.vnnlib: UNKNOWN (0.0s)  V=1 A=18 U=81 E=0  R=0
+
+[vnnlib/hybridz] FINAL — total=100 wall=0.4 min
+  CERTIFIED    1
+  FALSIFIED    18
+  UNKNOWN      81
+  [structured] per-instance log → /data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/sat_relu_cpu_budget_regression_20260525T192122Z/per_instance_sat_relu_20260525T092147773294Z.json
+
+================================================================================
+VERIFICATION TEST SUMMARY
+================================================================================
+  ✅ vnnlib                    PASSED
+================================================================================
+

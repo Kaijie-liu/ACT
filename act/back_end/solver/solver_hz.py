@@ -1642,7 +1642,10 @@ class HZVerifier(Solver):
             set_current_relu_idx(ridx)
             return ops["hz_apply_relu_v8"](hz_in, method=method)
         if op == "lrelu":
-            return ops["hz_apply_leaky_relu_v8"](hz_in, alpha=meta["alpha"])
+            # Accept either ``alpha`` (legacy) or ``negative_slope`` (PyTorch
+            # converter); fall back to ONNX/torch default of 0.01.
+            alpha = meta.get("alpha", meta.get("negative_slope", 0.01))
+            return ops["hz_apply_leaky_relu_v8"](hz_in, alpha=float(alpha))
 
         # ── ACT ops (sigmoid/tanh K-piece -- ACT innovation) ──
         # Dim guard: ACT's hz_apply_piecewise has a Python-level loop over

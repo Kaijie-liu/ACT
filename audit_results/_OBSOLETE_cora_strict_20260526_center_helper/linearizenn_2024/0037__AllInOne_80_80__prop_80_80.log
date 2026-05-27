@@ -1,0 +1,34 @@
+=== CORA STRICT: bench=linearizenn_2024 idx=37  timeout=900  start=2026-05-27 00:11:54
+=== onnx=onnx/AllInOne_80_80.onnx
+=== vnnlib=vnnlib/prop_80_80.vnnlib
+prepare_instance(linearizenn_2024,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_80_80.onnx,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/vnnlib/prop_80_80.vnnlib)...
+--- Loading network... done
+--- GPU available: true
+--- Loading specification... done
+--- Storing MATLAB file... done
+______________________________
+ neuralNetwork/verify options 
+------------------------------
+ - GPU: true                                                                                                                                                                                                                                                                                                  
+ - Poly. Method: bounds                                     
+ - Batchsize: 1024                                                                                                                          
+ - Interval Center: false                 
+ - Num. init. Generators: Inf 
+ - Num. approx. Error (per nonl. Layer): Inf 
+ - approx. Error Heuristic: sensitivity*length 
+ - Falsification Method: center 
+ - Refinement Method: naive     
+ - Num. of Splits: 2                                                                                  
+ - Num. of Dimensions: 1                          
+ - Num. of Neuron-Splits: 1     
+ - Num. of ReLU-Tightening Constraints: 0 
+______________________________
+
+run_instance(linearizenn_2024,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/onnx/AllInOne_80_80.onnx,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/linearizenn_2024/vnnlib/prop_80_80.vnnlib,/data1/Kane/ACT/audit_results/cora_strict_20260526/linearizenn_2024/0037__AllInOne_80_80__prop_80_80.result,900,0)...
+--- Loading MATLAB file... done
+--- Deleting MATLAB file... done
+--- GPU available: true
+--- Running verification... done
+Writing results...
+--- opening results file ... done
+--- writing file ...=== CORA STRICT: verdict=unknown wall=3.365s

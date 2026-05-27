@@ -1,0 +1,84 @@
+{
+  "schema_version": 2,
+  "strict_bounded_failure": true,
+  "counts": {
+    "OK": 0,
+    "UNKNOWN_TIMEOUT": 0,
+    "UNKNOWN_RESOURCE_LIMIT": 0,
+    "ERROR": 6
+  },
+  "results": [
+    {
+      "benchmark": "collins_aerospace_benchmark",
+      "instance_id": 0,
+      "status": "EXIT_NONZERO",
+      "cli_normalized": "ERROR_WATCHDOG_EXIT_NONZERO",
+      "wall_s": 32.51730477903038,
+      "peak_rss_mb": 4083.828125,
+      "returncode": 1,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/gpu_stream1_20260526T124338Z/collins_aerospace_benchmark/per_instance_collins_aerospace_benchmark_watchdog_iid0_20260526T124413072655Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/gpu_stream1_20260526T124338Z/collins_aerospace_benchmark",
+      "stdout_tail": "============================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=collins_aerospace_benchmark max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=60.0s)\n  [  1/1] collins_aerospace_benchmark/onnx/yolov5nano_LRelu_640.onnx@vnnlib/img_14421_perturbed_bbox_3_delta_0.001.vnnlib: ERROR_ValueError (29.7s)  V=0 A=0 U=0 E=1  R=0\nTraceback (most recent call last):\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 1195, in cmd_verify\n    _run_vnnlib_verify(args)\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 549, in _run_vnnlib_verify\n    return _run_vnnlib_verify_hybridz(args)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 1080, in _run_vnnlib_verify_hybridz\n    raise RuntimeError(\nRuntimeError: VERIFICATION_RUN_FAILED: ERROR=1. Per-instance log preserved; inspect instance error fields.\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.5 min\n  ERROR        1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/gpu_stream1_20260526T124338Z/collins_aerospace_benchmark/per_instance_collins_aerospace_benchmark_20260526T124412389070Z.json\n\n\u274c Test failed: VERIFICATION_RUN_FAILED: ERROR=1. Per-instance log preserved; inspect instance error fields.\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u274c vnnlib                    FAILED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "collins_aerospace_benchmark",
+      "instance_id": 1,
+      "status": "EXIT_NONZERO",
+      "cli_normalized": "ERROR_WATCHDOG_EXIT_NONZERO",
+      "wall_s": 33.52197291702032,
+      "peak_rss_mb": 4086.11328125,
+      "returncode": 1,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/gpu_stream1_20260526T124338Z/collins_aerospace_benchmark/per_instance_collins_aerospace_benchmark_watchdog_iid1_20260526T124446596000Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/gpu_stream1_20260526T124338Z/collins_aerospace_benchmark",
+      "stdout_tail": "=============================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=collins_aerospace_benchmark max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=60.0s)\n  [  1/1] collins_aerospace_benchmark/onnx/yolov5nano_LRelu_640.onnx@vnnlib/img_6876_perturbed_bbox_0_delta_0.005.vnnlib: ERROR_ValueError (30.3s)  V=0 A=0 U=0 E=1  R=0\nTraceback (most recent call last):\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 1195, in cmd_verify\n    _run_vnnlib_verify(args)\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 549, in _run_vnnlib_verify\n    return _run_vnnlib_verify_hybridz(args)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 1080, in _run_vnnlib_verify_hybridz\n    raise RuntimeError(\nRuntimeError: VERIFICATION_RUN_FAILED: ERROR=1. Per-instance log preserved; inspect instance error fields.\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.5 min\n  ERROR        1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/gpu_stream1_20260526T124338Z/collins_aerospace_benchmark/per_instance_collins_aerospace_benchmark_20260526T124445454971Z.json\n\n\u274c Test failed: VERIFICATION_RUN_FAILED: ERROR=1. Per-instance log preserved; inspect instance error fields.\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u274c vnnlib                    FAILED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "collins_aerospace_benchmark",
+      "instance_id": 2,
+      "status": "EXIT_NONZERO",
+      "cli_normalized": "ERROR_WATCHDOG_EXIT_NONZERO",
+      "wall_s": 32.51996619999409,
+      "peak_rss_mb": 4087.0234375,
+      "returncode": 1,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/gpu_stream1_20260526T124338Z/collins_aerospace_benchmark/per_instance_collins_aerospace_benchmark_watchdog_iid2_20260526T124519116623Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/gpu_stream1_20260526T124338Z/collins_aerospace_benchmark",
+      "stdout_tail": "=============================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=collins_aerospace_benchmark max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=60.0s)\n  [  1/1] collins_aerospace_benchmark/onnx/yolov5nano_LRelu_640.onnx@vnnlib/img_14386_perturbed_bbox_7_delta_0.01.vnnlib: ERROR_ValueError (29.7s)  V=0 A=0 U=0 E=1  R=0\nTraceback (most recent call last):\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 1195, in cmd_verify\n    _run_vnnlib_verify(args)\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 549, in _run_vnnlib_verify\n    return _run_vnnlib_verify_hybridz(args)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 1080, in _run_vnnlib_verify_hybridz\n    raise RuntimeError(\nRuntimeError: VERIFICATION_RUN_FAILED: ERROR=1. Per-instance log preserved; inspect instance error fields.\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.5 min\n  ERROR        1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/gpu_stream1_20260526T124338Z/collins_aerospace_benchmark/per_instance_collins_aerospace_benchmark_20260526T124518484659Z.json\n\n\u274c Test failed: VERIFICATION_RUN_FAILED: ERROR=1. Per-instance log preserved; inspect instance error fields.\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u274c vnnlib                    FAILED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "collins_aerospace_benchmark",
+      "instance_id": 3,
+      "status": "EXIT_NONZERO",
+      "cli_normalized": "ERROR_WATCHDOG_EXIT_NONZERO",
+      "wall_s": 32.020852461922914,
+      "peak_rss_mb": 4086.69140625,
+      "returncode": 1,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/gpu_stream1_20260526T124338Z/collins_aerospace_benchmark/per_instance_collins_aerospace_benchmark_watchdog_iid3_20260526T124551138476Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/gpu_stream1_20260526T124338Z/collins_aerospace_benchmark",
+      "stdout_tail": "==============================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=collins_aerospace_benchmark max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=60.0s)\n  [  1/1] collins_aerospace_benchmark/onnx/yolov5nano_LRelu_640.onnx@vnnlib/img_8758_perturbed_bbox_3_delta_0.02.vnnlib: ERROR_ValueError (29.3s)  V=0 A=0 U=0 E=1  R=0\nTraceback (most recent call last):\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 1195, in cmd_verify\n    _run_vnnlib_verify(args)\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 549, in _run_vnnlib_verify\n    return _run_vnnlib_verify_hybridz(args)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 1080, in _run_vnnlib_verify_hybridz\n    raise RuntimeError(\nRuntimeError: VERIFICATION_RUN_FAILED: ERROR=1. Per-instance log preserved; inspect instance error fields.\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.5 min\n  ERROR        1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/gpu_stream1_20260526T124338Z/collins_aerospace_benchmark/per_instance_collins_aerospace_benchmark_20260526T124550461182Z.json\n\n\u274c Test failed: VERIFICATION_RUN_FAILED: ERROR=1. Per-instance log preserved; inspect instance error fields.\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u274c vnnlib                    FAILED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "collins_aerospace_benchmark",
+      "instance_id": 4,
+      "status": "EXIT_NONZERO",
+      "cli_normalized": "ERROR_WATCHDOG_EXIT_NONZERO",
+      "wall_s": 32.019255573977716,
+      "peak_rss_mb": 4086.390625,
+      "returncode": 1,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/gpu_stream1_20260526T124338Z/collins_aerospace_benchmark/per_instance_collins_aerospace_benchmark_watchdog_iid4_20260526T124623158702Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/gpu_stream1_20260526T124338Z/collins_aerospace_benchmark",
+      "stdout_tail": "==============================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=collins_aerospace_benchmark max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=60.0s)\n  [  1/1] collins_aerospace_benchmark/onnx/yolov5nano_LRelu_640.onnx@vnnlib/img_8758_perturbed_bbox_4_delta_0.05.vnnlib: ERROR_ValueError (29.3s)  V=0 A=0 U=0 E=1  R=0\nTraceback (most recent call last):\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 1195, in cmd_verify\n    _run_vnnlib_verify(args)\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 549, in _run_vnnlib_verify\n    return _run_vnnlib_verify_hybridz(args)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 1080, in _run_vnnlib_verify_hybridz\n    raise RuntimeError(\nRuntimeError: VERIFICATION_RUN_FAILED: ERROR=1. Per-instance log preserved; inspect instance error fields.\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.5 min\n  ERROR        1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/gpu_stream1_20260526T124338Z/collins_aerospace_benchmark/per_instance_collins_aerospace_benchmark_20260526T124622487366Z.json\n\n\u274c Test failed: VERIFICATION_RUN_FAILED: ERROR=1. Per-instance log preserved; inspect instance error fields.\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u274c vnnlib                    FAILED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "collins_aerospace_benchmark",
+      "instance_id": 5,
+      "status": "EXIT_NONZERO",
+      "cli_normalized": "ERROR_WATCHDOG_EXIT_NONZERO",
+      "wall_s": 32.02019466308411,
+      "peak_rss_mb": 4084.78125,
+      "returncode": 1,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/gpu_stream1_20260526T124338Z/collins_aerospace_benchmark/per_instance_collins_aerospace_benchmark_watchdog_iid5_20260526T124655179482Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/gpu_stream1_20260526T124338Z/collins_aerospace_benchmark",
+      "stdout_tail": "==============================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=collins_aerospace_benchmark max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=60.0s)\n  [  1/1] collins_aerospace_benchmark/onnx/yolov5nano_LRelu_640.onnx@vnnlib/img_12761_perturbed_bbox_0_delta_0.1.vnnlib: ERROR_ValueError (29.3s)  V=0 A=0 U=0 E=1  R=0\nTraceback (most recent call last):\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 1195, in cmd_verify\n    _run_vnnlib_verify(args)\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 549, in _run_vnnlib_verify\n    return _run_vnnlib_verify_hybridz(args)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 1080, in _run_vnnlib_verify_hybridz\n    raise RuntimeError(\nRuntimeError: VERIFICATION_RUN_FAILED: ERROR=1. Per-instance log preserved; inspect instance error fields.\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.5 min\n  ERROR        1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/gpu_stream1_20260526T124338Z/collins_aerospace_benchmark/per_instance_collins_aerospace_benchmark_20260526T124654465818Z.json\n\n\u274c Test failed: VERIFICATION_RUN_FAILED: ERROR=1. Per-instance log preserved; inspect instance error fields.\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u274c vnnlib                    FAILED\n================================================================================\n\n"
+    }
+  ]
+}

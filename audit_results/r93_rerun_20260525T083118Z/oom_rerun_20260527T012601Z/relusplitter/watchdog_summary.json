@@ -1,0 +1,24 @@
+{
+  "schema_version": 2,
+  "strict_bounded_failure": true,
+  "counts": {
+    "OK": 1,
+    "UNKNOWN_TIMEOUT": 0,
+    "UNKNOWN_RESOURCE_LIMIT": 0,
+    "ERROR": 0
+  },
+  "results": [
+    {
+      "benchmark": "relusplitter",
+      "instance_id": 14,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 49.55732879205607,
+      "peak_rss_mb": 2170.15625,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/oom_rerun_20260527T012601Z/relusplitter/per_instance_relusplitter_20260527T013507336378Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/oom_rerun_20260527T012601Z/relusplitter",
+      "stdout_tail": "ing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 784 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 784 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Ground truth label: 1\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'relusplitter'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed mnist_fc_vnncomp2022_prop_7_0.03.vnnlib: 1 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=relusplitter max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=120.0s)\n  [  1/1] relusplitter/onnx/mnist_fc_vnncomp2022_mnist-net_256x4.onnx@vnnlib/mnist_fc_vnncomp2022_prop_7_0.03.vnnlib: UNKNOWN (44.8s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.7 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/oom_rerun_20260527T012601Z/relusplitter/per_instance_relusplitter_20260527T013507336378Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    }
+  ]
+}

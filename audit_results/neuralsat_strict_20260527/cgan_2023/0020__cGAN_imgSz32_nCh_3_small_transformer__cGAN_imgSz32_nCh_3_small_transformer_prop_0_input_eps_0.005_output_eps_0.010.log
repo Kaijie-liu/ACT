@@ -1,0 +1,840 @@
+[0;93m2026-05-27 11:01:04.095791803 [W:onnxruntime:Default, device_discovery.cc:283 GetGpuDevices] Failed to detect devices under "/sys/class/drm/card0": device_discovery.cc:93 ReadFileContents Failed to open file: "/sys/class/drm/card0/device/vendor"[m
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2542227
+Academic license 2542227 - for non-commercial use only - registered to ka___@unsw.edu.au
+
+ [!] GlobalSettings:
+	- use_restart                             : True
+	- use_mip_tightening                      : True
+	- use_attack                              : False
+	- attack_interval                         : 10
+	- use_mip_verify                          : True
+	- input_splitting_threshold               : 0.5
+	- hidden_splitting_threshold              : 0.01
+	- safety_num_input_perturbed              : 200
+	- skip_preprocess                         : False
+	- use_save_reasoning_step                 : False
+	- max_iterations                          : 1000000000.0
+	- skip_initial_worst_bound                : -1000000.0
+	- max_domains                             : 1000000000.0
+	- use_decompose                           : False
+	- restart_current_hidden_branches         : 2000
+	- restart_visited_hidden_branches         : 20000
+	- restart_current_input_branches          : 20000
+	- restart_visited_input_branches          : 200000
+	- restart_max_runtime                     : 60.0
+	- restart_max_runtime_percentage          : 0.4
+	- mip_tightening_patience                 : 10
+	- mip_tightening_timeout_per_neuron       : 15.0
+	- mip_tightening_topk                     : 64
+	- use_gpu_tightening                      : False
+	- gpu_tightening_current_hidden_branches  : 1000
+	- gpu_tightening_visited_hidden_branches  : 5000
+	- gpu_tightening_timeout                  : 10.0
+	- gpu_tightening_patience                 : 10
+	- gpu_tightening_topk                     : 500
+	- use_mip_attack                          : False
+	- mip_verify_threshold                    : 2
+	- share_alphas                            : False
+	- backward_batch_size                     : inf
+	- forward_max_dim                         : 10000
+	- forward_dynamic                         : False
+	- use_decompose_incomplete                : False
+	- init_abstraction_method                 : crown-optimized
+	- subverifier_decision_method             : smart
+	- verify_candidate_batch                  : 3
+	- verify_last_timeout                     : 200.0
+	- verify_interm_timeout                   : 20.0
+	- sequential_batch                        : 100
+	- use_sequential_abstract_forward         : False
+	- verify_extra_opts                       : {'sparse_intermediate_bounds': True}
+	- verify_splitting_strategy               : hidden
+	- use_extra_substitution                  : False
+	- verify_max_iteration                    : 4
+	- verify_candidate_num                    : 128
+	- verify_interpolate_factor               : 0.5
+
+[!] onnx2pytorch failed, try onnxsim
+ConvertModel(
+  (Gemm_onnx::Reshape_247): Linear(in_features=5, out_features=1024, bias=True)
+  (Reshape_input): Reshape(shape=[  -1 1024    1    1])
+  (BatchNormalization_input.3): BatchNormWrapper(
+    (bnu): BatchNormUnsafe(1024, eps=9.999999747378752e-06, momentum=0.8999999761581421, affine=True, track_running_stats=True)
+  )
+  (Relu_onnx::Upsample_251): ReLU()
+  (Upsample_input.7): Upsample()
+  (Conv_onnx::Add_265): Conv2d(1024, 1024, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+  (Upsample_input.11): Upsample()
+  (Conv_onnx::Add_279): Conv2d(1024, 1024, kernel_size=(1, 1), stride=(1, 1))
+  (Add_input.15): Add()
+  (BatchNormalization_input.19): BatchNormWrapper(
+    (bnu): BatchNormUnsafe(1024, eps=9.999999747378752e-06, momentum=0.8999999761581421, affine=True, track_running_stats=True)
+  )
+  (Relu_onnx::Upsample_282): ReLU()
+  (Upsample_input.23): Upsample()
+  (Conv_onnx::Add_296): Conv2d(1024, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+  (Upsample_input.27): Upsample()
+  (Conv_onnx::Add_310): Conv2d(1024, 512, kernel_size=(1, 1), stride=(1, 1))
+  (Add_input.31): Add()
+  (BatchNormalization_input.35): BatchNormWrapper(
+    (bnu): BatchNormUnsafe(512, eps=9.999999747378752e-06, momentum=0.8999999761581421, affine=True, track_running_stats=True)
+  )
+  (Relu_onnx::Upsample_313): ReLU()
+  (Upsample_input.39): Upsample()
+  (Conv_onnx::Add_327): Conv2d(512, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+  (Upsample_input.43): Upsample()
+  (Conv_onnx::Add_341): Conv2d(512, 256, kernel_size=(1, 1), stride=(1, 1))
+  (Add_input.47): Add()
+  (Conv_onnx::Reshape_361): Conv2d(256, 32, kernel_size=(1, 1), stride=(1, 1))
+  (Reshape_onnx::Transpose_372): Reshape(shape=[-1 32 64])
+  (Conv_onnx::MaxPool_382): Conv2d(256, 32, kernel_size=(1, 1), stride=(1, 1))
+  (MaxPool_onnx::Reshape_383): MaxPool2d(kernel_size=(2, 2), stride=(2, 2), padding=(0, 0), dilation=1, ceil_mode=False)
+  (Reshape_onnx::MatMul_398): Reshape(shape=[-1 32 16])
+  (Transpose_onnx::MatMul_399): Transpose()
+  (MatMul_input.51): MatMul()
+  (Softmax_onnx::Transpose_401): Softmax(dim=2)
+  (Conv_onnx::MaxPool_411): Conv2d(256, 128, kernel_size=(1, 1), stride=(1, 1))
+  (MaxPool_onnx::Reshape_412): MaxPool2d(kernel_size=(2, 2), stride=(2, 2), padding=(0, 0), dilation=1, ceil_mode=False)
+  (Reshape_onnx::MatMul_427): Reshape(shape=[ -1 128  16])
+  (Transpose_onnx::MatMul_428): Transpose()
+  (MatMul_onnx::Reshape_429): MatMul()
+  (Reshape_input.55): Reshape(shape=[ -1 128   8   8])
+  (Conv_onnx::Mul_450): Conv2d(128, 256, kernel_size=(1, 1), stride=(1, 1))
+  (Mul_onnx::Add_451): mul()
+  (Add_input.59): Add()
+  (BatchNormalization_input.63): BatchNormWrapper(
+    (bnu): BatchNormUnsafe(256, eps=9.999999747378752e-06, momentum=0.8999999761581421, affine=True, track_running_stats=True)
+  )
+  (Relu_onnx::Upsample_454): ReLU()
+  (Upsample_input.67): Upsample()
+  (Conv_onnx::Add_468): Conv2d(256, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+  (Upsample_input.71): Upsample()
+  (Conv_onnx::Add_482): Conv2d(256, 128, kernel_size=(1, 1), stride=(1, 1))
+  (Add_input.75): Add()
+  (BatchNormalization_input.79): BatchNormWrapper(
+    (bnu): BatchNormUnsafe(128, eps=9.999999747378752e-06, momentum=0.8999999761581421, affine=True, track_running_stats=True)
+  )
+  (Relu_onnx::Upsample_485): ReLU()
+  (Upsample_input.83): Upsample()
+  (Conv_onnx::Add_499): Conv2d(128, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+  (Upsample_input.87): Upsample()
+  (Conv_onnx::Add_513): Conv2d(128, 64, kernel_size=(1, 1), stride=(1, 1))
+  (Add_input.91): Add()
+  (BatchNormalization_input.95): BatchNormWrapper(
+    (bnu): BatchNormUnsafe(64, eps=9.999999747378752e-06, momentum=0.9998999834060669, affine=True, track_running_stats=True)
+  )
+  (Relu_onnx::Conv_516): ReLU()
+  (Conv_onnx::Tanh_526): Conv2d(64, 3, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+  (Tanh_input.99): mul()
+  (Conv_input.103): Conv2d(3, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+  (Relu_onnx::Pad_538): ReLU()
+  (AveragePool_onnx::Add_540): AvgPool2d(kernel_size=(2, 2), stride=(2, 2), padding=(0, 0))
+  (AveragePool_input.107): AvgPool2d(kernel_size=(2, 2), stride=(2, 2), padding=(0, 0))
+  (Conv_onnx::Add_552): Conv2d(3, 64, kernel_size=(1, 1), stride=(1, 1))
+  (Add_input.111): Add()
+  (Relu_onnx::Conv_554): ReLU()
+  (Conv_onnx::Pad_564): Conv2d(64, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+  (AveragePool_onnx::Add_566): AvgPool2d(kernel_size=(2, 2), stride=(2, 2), padding=(0, 0))
+  (Conv_onnx::Pad_576): Conv2d(64, 128, kernel_size=(1, 1), stride=(1, 1))
+  (AveragePool_onnx::Add_578): AvgPool2d(kernel_size=(2, 2), stride=(2, 2), padding=(0, 0))
+  (Add_input.115): Add()
+  (Conv_onnx::Reshape_598): Conv2d(128, 16, kernel_size=(1, 1), stride=(1, 1))
+  (Reshape_onnx::Transpose_609): Reshape(shape=[-1 16 64])
+  (Conv_onnx::MaxPool_619): Conv2d(128, 16, kernel_size=(1, 1), stride=(1, 1))
+  (MaxPool_onnx::Reshape_620): MaxPool2d(kernel_size=(2, 2), stride=(2, 2), padding=(0, 0), dilation=1, ceil_mode=False)
+  (Reshape_onnx::MatMul_635): Reshape(shape=[-1 16 16])
+  (Transpose_onnx::MatMul_636): Transpose()
+  (MatMul_input.119): MatMul()
+  (Softmax_onnx::Transpose_638): Softmax(dim=2)
+  (Conv_onnx::MaxPool_648): Conv2d(128, 64, kernel_size=(1, 1), stride=(1, 1))
+  (MaxPool_onnx::Reshape_649): MaxPool2d(kernel_size=(2, 2), stride=(2, 2), padding=(0, 0), dilation=1, ceil_mode=False)
+  (Reshape_onnx::MatMul_664): Reshape(shape=[-1 64 16])
+  (Transpose_onnx::MatMul_665): Transpose()
+  (MatMul_onnx::Reshape_666): MatMul()
+  (Reshape_input.123): Reshape(shape=[-1 64  8  8])
+  (Conv_onnx::Mul_687): Conv2d(64, 128, kernel_size=(1, 1), stride=(1, 1))
+  (Mul_onnx::Add_688): mul()
+  (Add_input.127): Add()
+  (Relu_onnx::Conv_690): ReLU()
+  (Conv_onnx::Pad_700): Conv2d(128, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+  (AveragePool_onnx::Add_702): AvgPool2d(kernel_size=(2, 2), stride=(2, 2), padding=(0, 0))
+  (Conv_onnx::Pad_712): Conv2d(128, 256, kernel_size=(1, 1), stride=(1, 1))
+  (AveragePool_onnx::Add_714): AvgPool2d(kernel_size=(2, 2), stride=(2, 2), padding=(0, 0))
+  (Add_input.131): Add()
+  (Relu_onnx::Conv_716): ReLU()
+  (Conv_onnx::Pad_726): Conv2d(256, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+  (AveragePool_onnx::Add_728): AvgPool2d(kernel_size=(2, 2), stride=(2, 2), padding=(0, 0))
+  (Conv_onnx::Pad_738): Conv2d(256, 512, kernel_size=(1, 1), stride=(1, 1))
+  (AveragePool_onnx::Add_740): AvgPool2d(kernel_size=(2, 2), stride=(2, 2), padding=(0, 0))
+  (Add_input.135): Add()
+  (Relu_onnx::Conv_742): ReLU()
+  (Conv_onnx::Pad_752): Conv2d(512, 1024, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+  (AveragePool_onnx::Add_754): AvgPool2d(kernel_size=(2, 2), stride=(2, 2), padding=(0, 0))
+  (Conv_onnx::Pad_764): Conv2d(512, 1024, kernel_size=(1, 1), stride=(1, 1))
+  (AveragePool_onnx::Add_766): AvgPool2d(kernel_size=(2, 2), stride=(2, 2), padding=(0, 0))
+  (Add_input.139): Add()
+  (Relu_onnx::Conv_768): ReLU()
+  (Conv_onnx::Add_778): Conv2d(1024, 1024, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+  (Add_input.143): Add()
+  (Relu_onnx::Reshape_780): ReLU()
+  (Reshape_onnx::Gemm_782): Flatten(start_dim=1, end_dim=-1)
+  (Gemm_onnx::Sigmoid_792): Linear(in_features=1024, out_features=1, bias=True)
+  (Sigmoid_onnx::Squeeze_793): Sigmoid()
+  (Squeeze_Y): Identity()
+)
+INFO     11:01:16     [!] Input shape: (1, 5)
+INFO     11:01:16     [!] Output shape: (1, 1)
+INFO     11:01:16     [!] VNNLIB: 5 inputs, 1 outputs
+INFO     11:01:16     [!] eps=0.010000, perturbed=2
+[!] Found unsupported layer: <class 'helper.network.onnx2pytorch.operations.reshape.Reshape'>
+INFO     11:01:16     Params of 1-th run: {'input_split': True, 'abstract_method': 'forward+backward', 'decision_method': 'naive', 'decision_topk': 1}
+INFO     11:01:16     [_setup_restart] _init_abstractor
+DEBUG    11:01:16     [select_params] Try self.input_split=True Settings.backward_batch_size=inf extra_opts={} mode='patches' method='forward+backward'
+DEBUG    11:01:16     [_init_module] Try bound_opts={'conv_mode': 'patches', 'verbosity': 0}
+Traceback (most recent call last):
+  File "/data1/Kane/neuralsat/src/abstractor/abstractor.py", line 201, in _check_module
+    lb, _ = self.net.compute_bounds(x=(x,), method=method, bound_upper=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 1235, in compute_bounds
+    return self._compute_bounds_main(C=C,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 1326, in _compute_bounds_main
+    self.check_prior_bounds(final, C=C)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 835, in check_prior_bounds
+    self.check_prior_bounds(n)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 835, in check_prior_bounds
+    self.check_prior_bounds(n)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 835, in check_prior_bounds
+    self.check_prior_bounds(n)
+  [Previous line repeated 48 more times]
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 848, in check_prior_bounds
+    self.compute_intermediate_bounds(node.inputs[i], prior_checked=True)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 878, in compute_intermediate_bounds
+    node.lower, node.upper = self.forward_general(node=node, concretize=True)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/forward_bound.py", line 34, in forward_general
+    self.forward_general(node=l_pre, offset=offset)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/forward_bound.py", line 34, in forward_general
+    self.forward_general(node=l_pre, offset=offset)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/forward_bound.py", line 34, in forward_general
+    self.forward_general(node=l_pre, offset=offset)
+  [Previous line repeated 1 more time]
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/forward_bound.py", line 24, in forward_general
+    node.linear = LinearBound(None, node.value, None, node.value, node.value, node.value)
+                                    ^^^^^^^^^^
+  File "/data1/Kane/miniconda3/envs/neuralsat/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1964, in __getattr__
+    raise AttributeError(
+AttributeError: 'BoundPrimConstant' object has no attribute 'value'
+INFO     11:01:17     [_check_module] Failed: self.input_split=True Settings.backward_batch_size=inf extra_opts={} mode='patches' method='forward+backward'
+DEBUG    11:01:17     [select_params] Try self.input_split=True Settings.backward_batch_size=inf extra_opts={} mode='matrix' method='forward+backward'
+DEBUG    11:01:17     [_init_module] Try bound_opts={'conv_mode': 'matrix', 'verbosity': 0}
+Traceback (most recent call last):
+  File "/data1/Kane/neuralsat/src/abstractor/abstractor.py", line 201, in _check_module
+    lb, _ = self.net.compute_bounds(x=(x,), method=method, bound_upper=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 1235, in compute_bounds
+    return self._compute_bounds_main(C=C,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 1326, in _compute_bounds_main
+    self.check_prior_bounds(final, C=C)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 835, in check_prior_bounds
+    self.check_prior_bounds(n)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 835, in check_prior_bounds
+    self.check_prior_bounds(n)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 835, in check_prior_bounds
+    self.check_prior_bounds(n)
+  [Previous line repeated 46 more times]
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 848, in check_prior_bounds
+    self.compute_intermediate_bounds(node.inputs[i], prior_checked=True)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 878, in compute_intermediate_bounds
+    node.lower, node.upper = self.forward_general(node=node, concretize=True)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/forward_bound.py", line 34, in forward_general
+    self.forward_general(node=l_pre, offset=offset)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/forward_bound.py", line 41, in forward_general
+    linear = node.linear = node.bound_forward(self.dim_in, *inp)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/operators/linear.py", line 842, in bound_forward
+    return super().bound_forward(
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/operators/linear.py", line 690, in bound_forward
+    res = self.bound_forward_with_weight(dim_in, x, w)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/operators/linear.py", line 717, in bound_forward_with_weight
+    res_mul = self.bound_forward_both_perturbed(dim_in, x_unsqueeze, y_unsqueeze)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/miniconda3/envs/neuralsat/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1964, in __getattr__
+    raise AttributeError(
+AttributeError: 'BoundMatMul' object has no attribute 'bound_forward_both_perturbed'
+INFO     11:01:18     [_check_module] Failed: self.input_split=True Settings.backward_batch_size=inf extra_opts={} mode='matrix' method='forward+backward'
+DEBUG    11:01:18     [select_params] Try self.input_split=True Settings.backward_batch_size=inf extra_opts={} mode='patches' method='backward'
+DEBUG    11:01:18     [_init_module] Try bound_opts={'conv_mode': 'patches', 'verbosity': 0}
+INFO     11:01:19     [_check_module] Failed: self.input_split=True Settings.backward_batch_size=inf extra_opts={} mode='patches' method='backward'
+DEBUG    11:01:19     [select_params] Try self.input_split=True Settings.backward_batch_size=inf extra_opts={} mode='matrix' method='backward'
+DEBUG    11:01:19     [_init_module] Try bound_opts={'conv_mode': 'matrix', 'verbosity': 0}
+INFO     11:01:21     [_check_module] Failed: self.input_split=True Settings.backward_batch_size=inf extra_opts={} mode='matrix' method='backward'
+DEBUG    11:01:21     [select_params] Try self.input_split=True Settings.backward_batch_size=inf extra_opts={'use_full_conv_alpha': False} mode='patches' method='forward+backward'
+DEBUG    11:01:21     [_init_module] Try bound_opts={'conv_mode': 'patches', 'verbosity': 0, 'use_full_conv_alpha': False}
+Traceback (most recent call last):
+  File "/data1/Kane/neuralsat/src/abstractor/abstractor.py", line 201, in _check_module
+    lb, _ = self.net.compute_bounds(x=(x,), method=method, bound_upper=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 1235, in compute_bounds
+    return self._compute_bounds_main(C=C,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 1326, in _compute_bounds_main
+    self.check_prior_bounds(final, C=C)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 835, in check_prior_bounds
+    self.check_prior_bounds(n)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 835, in check_prior_bounds
+    self.check_prior_bounds(n)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 835, in check_prior_bounds
+    self.check_prior_bounds(n)
+  [Previous line repeated 48 more times]
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 848, in check_prior_bounds
+    self.compute_intermediate_bounds(node.inputs[i], prior_checked=True)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 878, in compute_intermediate_bounds
+    node.lower, node.upper = self.forward_general(node=node, concretize=True)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/forward_bound.py", line 34, in forward_general
+    self.forward_general(node=l_pre, offset=offset)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/forward_bound.py", line 34, in forward_general
+    self.forward_general(node=l_pre, offset=offset)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/forward_bound.py", line 34, in forward_general
+    self.forward_general(node=l_pre, offset=offset)
+  [Previous line repeated 1 more time]
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/forward_bound.py", line 24, in forward_general
+    node.linear = LinearBound(None, node.value, None, node.value, node.value, node.value)
+                                    ^^^^^^^^^^
+  File "/data1/Kane/miniconda3/envs/neuralsat/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1964, in __getattr__
+    raise AttributeError(
+AttributeError: 'BoundPrimConstant' object has no attribute 'value'
+INFO     11:01:22     [_check_module] Failed: self.input_split=True Settings.backward_batch_size=inf extra_opts={'use_full_conv_alpha': False} mode='patches' method='forward+backward'
+DEBUG    11:01:22     [select_params] Try self.input_split=True Settings.backward_batch_size=inf extra_opts={'use_full_conv_alpha': False} mode='matrix' method='forward+backward'
+DEBUG    11:01:22     [_init_module] Try bound_opts={'conv_mode': 'matrix', 'verbosity': 0, 'use_full_conv_alpha': False}
+Traceback (most recent call last):
+  File "/data1/Kane/neuralsat/src/abstractor/abstractor.py", line 201, in _check_module
+    lb, _ = self.net.compute_bounds(x=(x,), method=method, bound_upper=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 1235, in compute_bounds
+    return self._compute_bounds_main(C=C,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 1326, in _compute_bounds_main
+    self.check_prior_bounds(final, C=C)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 835, in check_prior_bounds
+    self.check_prior_bounds(n)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 835, in check_prior_bounds
+    self.check_prior_bounds(n)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 835, in check_prior_bounds
+    self.check_prior_bounds(n)
+  [Previous line repeated 46 more times]
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 848, in check_prior_bounds
+    self.compute_intermediate_bounds(node.inputs[i], prior_checked=True)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 878, in compute_intermediate_bounds
+    node.lower, node.upper = self.forward_general(node=node, concretize=True)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/forward_bound.py", line 34, in forward_general
+    self.forward_general(node=l_pre, offset=offset)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/forward_bound.py", line 41, in forward_general
+    linear = node.linear = node.bound_forward(self.dim_in, *inp)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/operators/linear.py", line 842, in bound_forward
+    return super().bound_forward(
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/operators/linear.py", line 690, in bound_forward
+    res = self.bound_forward_with_weight(dim_in, x, w)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/operators/linear.py", line 717, in bound_forward_with_weight
+    res_mul = self.bound_forward_both_perturbed(dim_in, x_unsqueeze, y_unsqueeze)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/miniconda3/envs/neuralsat/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1964, in __getattr__
+    raise AttributeError(
+AttributeError: 'BoundMatMul' object has no attribute 'bound_forward_both_perturbed'
+INFO     11:01:22     [_check_module] Failed: self.input_split=True Settings.backward_batch_size=inf extra_opts={'use_full_conv_alpha': False} mode='matrix' method='forward+backward'
+DEBUG    11:01:22     [select_params] Try self.input_split=True Settings.backward_batch_size=inf extra_opts={'use_full_conv_alpha': False} mode='patches' method='backward'
+DEBUG    11:01:22     [_init_module] Try bound_opts={'conv_mode': 'patches', 'verbosity': 0, 'use_full_conv_alpha': False}
+INFO     11:01:23     [_check_module] Failed: self.input_split=True Settings.backward_batch_size=inf extra_opts={'use_full_conv_alpha': False} mode='patches' method='backward'
+DEBUG    11:01:23     [select_params] Try self.input_split=True Settings.backward_batch_size=inf extra_opts={'use_full_conv_alpha': False} mode='matrix' method='backward'
+DEBUG    11:01:23     [_init_module] Try bound_opts={'conv_mode': 'matrix', 'verbosity': 0, 'use_full_conv_alpha': False}
+INFO     11:01:24     [_check_module] Failed: self.input_split=True Settings.backward_batch_size=inf extra_opts={'use_full_conv_alpha': False} mode='matrix' method='backward'
+DEBUG    11:01:24     [select_params] Try self.input_split=True Settings.backward_batch_size=inf extra_opts={'sparse_intermediate_bounds': False} mode='patches' method='forward+backward'
+DEBUG    11:01:24     [_init_module] Try bound_opts={'conv_mode': 'patches', 'verbosity': 0, 'sparse_intermediate_bounds': False}
+Traceback (most recent call last):
+  File "/data1/Kane/neuralsat/src/abstractor/abstractor.py", line 201, in _check_module
+    lb, _ = self.net.compute_bounds(x=(x,), method=method, bound_upper=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 1235, in compute_bounds
+    return self._compute_bounds_main(C=C,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 1326, in _compute_bounds_main
+    self.check_prior_bounds(final, C=C)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 835, in check_prior_bounds
+    self.check_prior_bounds(n)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 835, in check_prior_bounds
+    self.check_prior_bounds(n)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 835, in check_prior_bounds
+    self.check_prior_bounds(n)
+  [Previous line repeated 48 more times]
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 848, in check_prior_bounds
+    self.compute_intermediate_bounds(node.inputs[i], prior_checked=True)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 878, in compute_intermediate_bounds
+    node.lower, node.upper = self.forward_general(node=node, concretize=True)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/forward_bound.py", line 34, in forward_general
+    self.forward_general(node=l_pre, offset=offset)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/forward_bound.py", line 34, in forward_general
+    self.forward_general(node=l_pre, offset=offset)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/forward_bound.py", line 34, in forward_general
+    self.forward_general(node=l_pre, offset=offset)
+  [Previous line repeated 1 more time]
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/forward_bound.py", line 24, in forward_general
+    node.linear = LinearBound(None, node.value, None, node.value, node.value, node.value)
+                                    ^^^^^^^^^^
+  File "/data1/Kane/miniconda3/envs/neuralsat/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1964, in __getattr__
+    raise AttributeError(
+AttributeError: 'BoundPrimConstant' object has no attribute 'value'
+INFO     11:01:24     [_check_module] Failed: self.input_split=True Settings.backward_batch_size=inf extra_opts={'sparse_intermediate_bounds': False} mode='patches' method='forward+backward'
+DEBUG    11:01:24     [select_params] Try self.input_split=True Settings.backward_batch_size=inf extra_opts={'sparse_intermediate_bounds': False} mode='matrix' method='forward+backward'
+DEBUG    11:01:24     [_init_module] Try bound_opts={'conv_mode': 'matrix', 'verbosity': 0, 'sparse_intermediate_bounds': False}
+Traceback (most recent call last):
+  File "/data1/Kane/neuralsat/src/abstractor/abstractor.py", line 201, in _check_module
+    lb, _ = self.net.compute_bounds(x=(x,), method=method, bound_upper=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 1235, in compute_bounds
+    return self._compute_bounds_main(C=C,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 1326, in _compute_bounds_main
+    self.check_prior_bounds(final, C=C)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 835, in check_prior_bounds
+    self.check_prior_bounds(n)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 835, in check_prior_bounds
+    self.check_prior_bounds(n)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 835, in check_prior_bounds
+    self.check_prior_bounds(n)
+  [Previous line repeated 46 more times]
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 848, in check_prior_bounds
+    self.compute_intermediate_bounds(node.inputs[i], prior_checked=True)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 878, in compute_intermediate_bounds
+    node.lower, node.upper = self.forward_general(node=node, concretize=True)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/forward_bound.py", line 34, in forward_general
+    self.forward_general(node=l_pre, offset=offset)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/forward_bound.py", line 41, in forward_general
+    linear = node.linear = node.bound_forward(self.dim_in, *inp)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/operators/linear.py", line 842, in bound_forward
+    return super().bound_forward(
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/operators/linear.py", line 690, in bound_forward
+    res = self.bound_forward_with_weight(dim_in, x, w)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/operators/linear.py", line 717, in bound_forward_with_weight
+    res_mul = self.bound_forward_both_perturbed(dim_in, x_unsqueeze, y_unsqueeze)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/miniconda3/envs/neuralsat/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1964, in __getattr__
+    raise AttributeError(
+AttributeError: 'BoundMatMul' object has no attribute 'bound_forward_both_perturbed'
+INFO     11:01:25     [_check_module] Failed: self.input_split=True Settings.backward_batch_size=inf extra_opts={'sparse_intermediate_bounds': False} mode='matrix' method='forward+backward'
+DEBUG    11:01:25     [select_params] Try self.input_split=True Settings.backward_batch_size=inf extra_opts={'sparse_intermediate_bounds': False} mode='patches' method='backward'
+DEBUG    11:01:25     [_init_module] Try bound_opts={'conv_mode': 'patches', 'verbosity': 0, 'sparse_intermediate_bounds': False}
+Traceback (most recent call last):
+  File "/data1/Kane/neuralsat/src/abstractor/abstractor.py", line 201, in _check_module
+    lb, _ = self.net.compute_bounds(x=(x,), method=method, bound_upper=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 1235, in compute_bounds
+    return self._compute_bounds_main(C=C,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 1326, in _compute_bounds_main
+    self.check_prior_bounds(final, C=C)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 835, in check_prior_bounds
+    self.check_prior_bounds(n)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 835, in check_prior_bounds
+    self.check_prior_bounds(n)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 835, in check_prior_bounds
+    self.check_prior_bounds(n)
+  [Previous line repeated 43 more times]
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 848, in check_prior_bounds
+    self.compute_intermediate_bounds(node.inputs[i], prior_checked=True)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 909, in compute_intermediate_bounds
+    node.lower, node.upper = self.backward_general(node, newC, unstable_idx=unstable_idx,)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/backward_bound.py", line 300, in backward_general
+    add_bound(l, l_pre, lA=A[i][0], uA=A[i][1])
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/backward_bound.py", line 721, in add_bound
+    new_node_lA = addA(node_pre.lA, lA)
+                  ^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/backward_bound.py", line 697, in addA
+    return A1 + A2
+           ~~~^~~~
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/patches.py", line 157, in __add__
+    assert self.inserted_zeros == 0
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError
+INFO     11:01:26     [_check_module] Failed: self.input_split=True Settings.backward_batch_size=inf extra_opts={'sparse_intermediate_bounds': False} mode='patches' method='backward'
+DEBUG    11:01:26     [select_params] Try self.input_split=True Settings.backward_batch_size=inf extra_opts={'sparse_intermediate_bounds': False} mode='matrix' method='backward'
+DEBUG    11:01:26     [_init_module] Try bound_opts={'conv_mode': 'matrix', 'verbosity': 0, 'sparse_intermediate_bounds': False}
+INFO     11:01:27     [_check_module] Failed: self.input_split=True Settings.backward_batch_size=inf extra_opts={'sparse_intermediate_bounds': False} mode='matrix' method='backward'
+DEBUG    11:01:27     [select_params] Try self.input_split=True Settings.backward_batch_size=512 extra_opts={} mode='patches' method='forward+backward'
+DEBUG    11:01:27     [_init_module] Try bound_opts={'conv_mode': 'patches', 'verbosity': 0}
+Traceback (most recent call last):
+  File "/data1/Kane/neuralsat/src/abstractor/abstractor.py", line 201, in _check_module
+    lb, _ = self.net.compute_bounds(x=(x,), method=method, bound_upper=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 1235, in compute_bounds
+    return self._compute_bounds_main(C=C,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 1326, in _compute_bounds_main
+    self.check_prior_bounds(final, C=C)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 835, in check_prior_bounds
+    self.check_prior_bounds(n)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 835, in check_prior_bounds
+    self.check_prior_bounds(n)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 835, in check_prior_bounds
+    self.check_prior_bounds(n)
+  [Previous line repeated 48 more times]
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 848, in check_prior_bounds
+    self.compute_intermediate_bounds(node.inputs[i], prior_checked=True)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 878, in compute_intermediate_bounds
+    node.lower, node.upper = self.forward_general(node=node, concretize=True)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/forward_bound.py", line 34, in forward_general
+    self.forward_general(node=l_pre, offset=offset)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/forward_bound.py", line 34, in forward_general
+    self.forward_general(node=l_pre, offset=offset)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/forward_bound.py", line 34, in forward_general
+    self.forward_general(node=l_pre, offset=offset)
+  [Previous line repeated 1 more time]
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/forward_bound.py", line 24, in forward_general
+    node.linear = LinearBound(None, node.value, None, node.value, node.value, node.value)
+                                    ^^^^^^^^^^
+  File "/data1/Kane/miniconda3/envs/neuralsat/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1964, in __getattr__
+    raise AttributeError(
+AttributeError: 'BoundPrimConstant' object has no attribute 'value'
+INFO     11:01:27     [_check_module] Failed: self.input_split=True Settings.backward_batch_size=512 extra_opts={} mode='patches' method='forward+backward'
+DEBUG    11:01:28     [select_params] Try self.input_split=True Settings.backward_batch_size=512 extra_opts={} mode='matrix' method='forward+backward'
+DEBUG    11:01:28     [_init_module] Try bound_opts={'conv_mode': 'matrix', 'verbosity': 0}
+Traceback (most recent call last):
+  File "/data1/Kane/neuralsat/src/abstractor/abstractor.py", line 201, in _check_module
+    lb, _ = self.net.compute_bounds(x=(x,), method=method, bound_upper=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 1235, in compute_bounds
+    return self._compute_bounds_main(C=C,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 1326, in _compute_bounds_main
+    self.check_prior_bounds(final, C=C)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 835, in check_prior_bounds
+    self.check_prior_bounds(n)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 835, in check_prior_bounds
+    self.check_prior_bounds(n)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 835, in check_prior_bounds
+    self.check_prior_bounds(n)
+  [Previous line repeated 46 more times]
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 848, in check_prior_bounds
+    self.compute_intermediate_bounds(node.inputs[i], prior_checked=True)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 878, in compute_intermediate_bounds
+    node.lower, node.upper = self.forward_general(node=node, concretize=True)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/forward_bound.py", line 34, in forward_general
+    self.forward_general(node=l_pre, offset=offset)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/forward_bound.py", line 41, in forward_general
+    linear = node.linear = node.bound_forward(self.dim_in, *inp)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/operators/linear.py", line 842, in bound_forward
+    return super().bound_forward(
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/operators/linear.py", line 690, in bound_forward
+    res = self.bound_forward_with_weight(dim_in, x, w)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/operators/linear.py", line 717, in bound_forward_with_weight
+    res_mul = self.bound_forward_both_perturbed(dim_in, x_unsqueeze, y_unsqueeze)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/miniconda3/envs/neuralsat/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1964, in __getattr__
+    raise AttributeError(
+AttributeError: 'BoundMatMul' object has no attribute 'bound_forward_both_perturbed'
+INFO     11:01:28     [_check_module] Failed: self.input_split=True Settings.backward_batch_size=512 extra_opts={} mode='matrix' method='forward+backward'
+DEBUG    11:01:28     [select_params] Try self.input_split=True Settings.backward_batch_size=512 extra_opts={} mode='patches' method='backward'
+DEBUG    11:01:28     [_init_module] Try bound_opts={'conv_mode': 'patches', 'verbosity': 0}
+INFO     11:01:28     [_check_module] Failed: self.input_split=True Settings.backward_batch_size=512 extra_opts={} mode='patches' method='backward'
+DEBUG    11:01:29     [select_params] Try self.input_split=True Settings.backward_batch_size=512 extra_opts={} mode='matrix' method='backward'
+DEBUG    11:01:29     [_init_module] Try bound_opts={'conv_mode': 'matrix', 'verbosity': 0}
+INFO     11:01:31     [_check_module] Failed: self.input_split=True Settings.backward_batch_size=512 extra_opts={} mode='matrix' method='backward'
+DEBUG    11:01:31     [select_params] Try self.input_split=True Settings.backward_batch_size=128 extra_opts={} mode='patches' method='forward+backward'
+DEBUG    11:01:31     [_init_module] Try bound_opts={'conv_mode': 'patches', 'verbosity': 0}
+Traceback (most recent call last):
+  File "/data1/Kane/neuralsat/src/abstractor/abstractor.py", line 201, in _check_module
+    lb, _ = self.net.compute_bounds(x=(x,), method=method, bound_upper=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 1235, in compute_bounds
+    return self._compute_bounds_main(C=C,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 1326, in _compute_bounds_main
+    self.check_prior_bounds(final, C=C)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 835, in check_prior_bounds
+    self.check_prior_bounds(n)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 835, in check_prior_bounds
+    self.check_prior_bounds(n)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 835, in check_prior_bounds
+    self.check_prior_bounds(n)
+  [Previous line repeated 48 more times]
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 848, in check_prior_bounds
+    self.compute_intermediate_bounds(node.inputs[i], prior_checked=True)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 878, in compute_intermediate_bounds
+    node.lower, node.upper = self.forward_general(node=node, concretize=True)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/forward_bound.py", line 34, in forward_general
+    self.forward_general(node=l_pre, offset=offset)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/forward_bound.py", line 34, in forward_general
+    self.forward_general(node=l_pre, offset=offset)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/forward_bound.py", line 34, in forward_general
+    self.forward_general(node=l_pre, offset=offset)
+  [Previous line repeated 1 more time]
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/forward_bound.py", line 24, in forward_general
+    node.linear = LinearBound(None, node.value, None, node.value, node.value, node.value)
+                                    ^^^^^^^^^^
+  File "/data1/Kane/miniconda3/envs/neuralsat/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1964, in __getattr__
+    raise AttributeError(
+AttributeError: 'BoundPrimConstant' object has no attribute 'value'
+INFO     11:01:31     [_check_module] Failed: self.input_split=True Settings.backward_batch_size=128 extra_opts={} mode='patches' method='forward+backward'
+DEBUG    11:01:31     [select_params] Try self.input_split=True Settings.backward_batch_size=128 extra_opts={} mode='matrix' method='forward+backward'
+DEBUG    11:01:31     [_init_module] Try bound_opts={'conv_mode': 'matrix', 'verbosity': 0}
+Traceback (most recent call last):
+  File "/data1/Kane/neuralsat/src/abstractor/abstractor.py", line 201, in _check_module
+    lb, _ = self.net.compute_bounds(x=(x,), method=method, bound_upper=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 1235, in compute_bounds
+    return self._compute_bounds_main(C=C,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 1326, in _compute_bounds_main
+    self.check_prior_bounds(final, C=C)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 835, in check_prior_bounds
+    self.check_prior_bounds(n)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 835, in check_prior_bounds
+    self.check_prior_bounds(n)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 835, in check_prior_bounds
+    self.check_prior_bounds(n)
+  [Previous line repeated 46 more times]
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 848, in check_prior_bounds
+    self.compute_intermediate_bounds(node.inputs[i], prior_checked=True)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 878, in compute_intermediate_bounds
+    node.lower, node.upper = self.forward_general(node=node, concretize=True)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/forward_bound.py", line 34, in forward_general
+    self.forward_general(node=l_pre, offset=offset)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/forward_bound.py", line 41, in forward_general
+    linear = node.linear = node.bound_forward(self.dim_in, *inp)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/operators/linear.py", line 842, in bound_forward
+    return super().bound_forward(
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/operators/linear.py", line 690, in bound_forward
+    res = self.bound_forward_with_weight(dim_in, x, w)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/operators/linear.py", line 717, in bound_forward_with_weight
+    res_mul = self.bound_forward_both_perturbed(dim_in, x_unsqueeze, y_unsqueeze)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/miniconda3/envs/neuralsat/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1964, in __getattr__
+    raise AttributeError(
+AttributeError: 'BoundMatMul' object has no attribute 'bound_forward_both_perturbed'
+INFO     11:01:32     [_check_module] Failed: self.input_split=True Settings.backward_batch_size=128 extra_opts={} mode='matrix' method='forward+backward'
+DEBUG    11:01:32     [select_params] Try self.input_split=True Settings.backward_batch_size=128 extra_opts={} mode='patches' method='backward'
+DEBUG    11:01:32     [_init_module] Try bound_opts={'conv_mode': 'patches', 'verbosity': 0}
+INFO     11:01:32     [_check_module] Failed: self.input_split=True Settings.backward_batch_size=128 extra_opts={} mode='patches' method='backward'
+DEBUG    11:01:32     [select_params] Try self.input_split=True Settings.backward_batch_size=128 extra_opts={} mode='matrix' method='backward'
+DEBUG    11:01:32     [_init_module] Try bound_opts={'conv_mode': 'matrix', 'verbosity': 0}
+INFO     11:01:36     [_check_module] Failed: self.input_split=True Settings.backward_batch_size=128 extra_opts={} mode='matrix' method='backward'
+DEBUG    11:01:36     [select_params] Try self.input_split=True Settings.backward_batch_size=32 extra_opts={} mode='patches' method='forward+backward'
+DEBUG    11:01:36     [_init_module] Try bound_opts={'conv_mode': 'patches', 'verbosity': 0}
+Traceback (most recent call last):
+  File "/data1/Kane/neuralsat/src/abstractor/abstractor.py", line 201, in _check_module
+    lb, _ = self.net.compute_bounds(x=(x,), method=method, bound_upper=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 1235, in compute_bounds
+    return self._compute_bounds_main(C=C,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 1326, in _compute_bounds_main
+    self.check_prior_bounds(final, C=C)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 835, in check_prior_bounds
+    self.check_prior_bounds(n)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 835, in check_prior_bounds
+    self.check_prior_bounds(n)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 835, in check_prior_bounds
+    self.check_prior_bounds(n)
+  [Previous line repeated 48 more times]
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 848, in check_prior_bounds
+    self.compute_intermediate_bounds(node.inputs[i], prior_checked=True)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 878, in compute_intermediate_bounds
+    node.lower, node.upper = self.forward_general(node=node, concretize=True)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/forward_bound.py", line 34, in forward_general
+    self.forward_general(node=l_pre, offset=offset)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/forward_bound.py", line 34, in forward_general
+    self.forward_general(node=l_pre, offset=offset)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/forward_bound.py", line 34, in forward_general
+    self.forward_general(node=l_pre, offset=offset)
+  [Previous line repeated 1 more time]
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/forward_bound.py", line 24, in forward_general
+    node.linear = LinearBound(None, node.value, None, node.value, node.value, node.value)
+                                    ^^^^^^^^^^
+  File "/data1/Kane/miniconda3/envs/neuralsat/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1964, in __getattr__
+    raise AttributeError(
+AttributeError: 'BoundPrimConstant' object has no attribute 'value'
+INFO     11:01:36     [_check_module] Failed: self.input_split=True Settings.backward_batch_size=32 extra_opts={} mode='patches' method='forward+backward'
+DEBUG    11:01:37     [select_params] Try self.input_split=True Settings.backward_batch_size=32 extra_opts={} mode='matrix' method='forward+backward'
+DEBUG    11:01:37     [_init_module] Try bound_opts={'conv_mode': 'matrix', 'verbosity': 0}
+Traceback (most recent call last):
+  File "/data1/Kane/neuralsat/src/abstractor/abstractor.py", line 201, in _check_module
+    lb, _ = self.net.compute_bounds(x=(x,), method=method, bound_upper=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 1235, in compute_bounds
+    return self._compute_bounds_main(C=C,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 1326, in _compute_bounds_main
+    self.check_prior_bounds(final, C=C)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 835, in check_prior_bounds
+    self.check_prior_bounds(n)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 835, in check_prior_bounds
+    self.check_prior_bounds(n)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 835, in check_prior_bounds
+    self.check_prior_bounds(n)
+  [Previous line repeated 46 more times]
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 848, in check_prior_bounds
+    self.compute_intermediate_bounds(node.inputs[i], prior_checked=True)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 878, in compute_intermediate_bounds
+    node.lower, node.upper = self.forward_general(node=node, concretize=True)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/forward_bound.py", line 34, in forward_general
+    self.forward_general(node=l_pre, offset=offset)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/forward_bound.py", line 41, in forward_general
+    linear = node.linear = node.bound_forward(self.dim_in, *inp)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/operators/linear.py", line 842, in bound_forward
+    return super().bound_forward(
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/operators/linear.py", line 690, in bound_forward
+    res = self.bound_forward_with_weight(dim_in, x, w)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/operators/linear.py", line 717, in bound_forward_with_weight
+    res_mul = self.bound_forward_both_perturbed(dim_in, x_unsqueeze, y_unsqueeze)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/miniconda3/envs/neuralsat/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1964, in __getattr__
+    raise AttributeError(
+AttributeError: 'BoundMatMul' object has no attribute 'bound_forward_both_perturbed'
+INFO     11:01:37     [_check_module] Failed: self.input_split=True Settings.backward_batch_size=32 extra_opts={} mode='matrix' method='forward+backward'
+DEBUG    11:01:37     [select_params] Try self.input_split=True Settings.backward_batch_size=32 extra_opts={} mode='patches' method='backward'
+DEBUG    11:01:37     [_init_module] Try bound_opts={'conv_mode': 'patches', 'verbosity': 0}
+INFO     11:01:38     [_check_module] Failed: self.input_split=True Settings.backward_batch_size=32 extra_opts={} mode='patches' method='backward'
+DEBUG    11:01:38     [select_params] Try self.input_split=True Settings.backward_batch_size=32 extra_opts={} mode='matrix' method='backward'
+DEBUG    11:01:38     [_init_module] Try bound_opts={'conv_mode': 'matrix', 'verbosity': 0}
+INFO     11:01:40     [_check_module] Failed: self.input_split=True Settings.backward_batch_size=32 extra_opts={} mode='matrix' method='backward'
+DEBUG    11:01:40     [select_params] Try self.input_split=True Settings.backward_batch_size=512 extra_opts={'use_full_conv_alpha': False, 'use_shared_alpha': True} mode='patches' method='forward+backward'
+DEBUG    11:01:40     [_init_module] Try bound_opts={'conv_mode': 'patches', 'verbosity': 0, 'use_full_conv_alpha': False, 'use_shared_alpha': True}
+Traceback (most recent call last):
+  File "/data1/Kane/neuralsat/src/abstractor/abstractor.py", line 201, in _check_module
+    lb, _ = self.net.compute_bounds(x=(x,), method=method, bound_upper=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 1235, in compute_bounds
+    return self._compute_bounds_main(C=C,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 1326, in _compute_bounds_main
+    self.check_prior_bounds(final, C=C)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 835, in check_prior_bounds
+    self.check_prior_bounds(n)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 835, in check_prior_bounds
+    self.check_prior_bounds(n)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 835, in check_prior_bounds
+    self.check_prior_bounds(n)
+  [Previous line repeated 48 more times]
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 848, in check_prior_bounds
+    self.compute_intermediate_bounds(node.inputs[i], prior_checked=True)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 878, in compute_intermediate_bounds
+    node.lower, node.upper = self.forward_general(node=node, concretize=True)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/forward_bound.py", line 34, in forward_general
+    self.forward_general(node=l_pre, offset=offset)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/forward_bound.py", line 34, in forward_general
+    self.forward_general(node=l_pre, offset=offset)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/forward_bound.py", line 34, in forward_general
+    self.forward_general(node=l_pre, offset=offset)
+  [Previous line repeated 1 more time]
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/forward_bound.py", line 24, in forward_general
+    node.linear = LinearBound(None, node.value, None, node.value, node.value, node.value)
+                                    ^^^^^^^^^^
+  File "/data1/Kane/miniconda3/envs/neuralsat/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1964, in __getattr__
+    raise AttributeError(
+AttributeError: 'BoundPrimConstant' object has no attribute 'value'
+INFO     11:01:41     [_check_module] Failed: self.input_split=True Settings.backward_batch_size=512 extra_opts={'use_full_conv_alpha': False, 'use_shared_alpha': True} mode='patches' method='forward+backward'
+DEBUG    11:01:41     [select_params] Try self.input_split=True Settings.backward_batch_size=512 extra_opts={'use_full_conv_alpha': False, 'use_shared_alpha': True} mode='matrix' method='forward+backward'
+DEBUG    11:01:41     [_init_module] Try bound_opts={'conv_mode': 'matrix', 'verbosity': 0, 'use_full_conv_alpha': False, 'use_shared_alpha': True}
+Traceback (most recent call last):
+  File "/data1/Kane/neuralsat/src/abstractor/abstractor.py", line 201, in _check_module
+    lb, _ = self.net.compute_bounds(x=(x,), method=method, bound_upper=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 1235, in compute_bounds
+    return self._compute_bounds_main(C=C,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 1326, in _compute_bounds_main
+    self.check_prior_bounds(final, C=C)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 835, in check_prior_bounds
+    self.check_prior_bounds(n)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 835, in check_prior_bounds
+    self.check_prior_bounds(n)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 835, in check_prior_bounds
+    self.check_prior_bounds(n)
+  [Previous line repeated 46 more times]
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 848, in check_prior_bounds
+    self.compute_intermediate_bounds(node.inputs[i], prior_checked=True)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/bound_general.py", line 878, in compute_intermediate_bounds
+    node.lower, node.upper = self.forward_general(node=node, concretize=True)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/forward_bound.py", line 34, in forward_general
+    self.forward_general(node=l_pre, offset=offset)
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/forward_bound.py", line 41, in forward_general
+    linear = node.linear = node.bound_forward(self.dim_in, *inp)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/operators/linear.py", line 842, in bound_forward
+    return super().bound_forward(
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/operators/linear.py", line 690, in bound_forward
+    res = self.bound_forward_with_weight(dim_in, x, w)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/neuralsat/src/abstractor/auto_LiRPA/operators/linear.py", line 717, in bound_forward_with_weight
+    res_mul = self.bound_forward_both_perturbed(dim_in, x_unsqueeze, y_unsqueeze)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/miniconda3/envs/neuralsat/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1964, in __getattr__
+    raise AttributeError(
+AttributeError: 'BoundMatMul' object has no attribute 'bound_forward_both_perturbed'
+INFO     11:01:41     [_check_module] Failed: self.input_split=True Settings.backward_batch_size=512 extra_opts={'use_full_conv_alpha': False, 'use_shared_alpha': True} mode='matrix' method='forward+backward'
+DEBUG    11:01:41     [select_params] Try self.input_split=True Settings.backward_batch_size=512 extra_opts={'use_full_conv_alpha': False, 'use_shared_alpha': True} mode='patches' method='backward'
+DEBUG    11:01:41     [_init_module] Try bound_opts={'conv_mode': 'patches', 'verbosity': 0, 'use_full_conv_alpha': False, 'use_shared_alpha': True}
+INFO     11:01:42     [_check_module] Failed: self.input_split=True Settings.backward_batch_size=512 extra_opts={'use_full_conv_alpha': False, 'use_shared_alpha': True} mode='patches' method='backward'
+DEBUG    11:01:42     [select_params] Try self.input_split=True Settings.backward_batch_size=512 extra_opts={'use_full_conv_alpha': False, 'use_shared_alpha': True} mode='matrix' method='backward'
+DEBUG    11:01:42     [_init_module] Try bound_opts={'conv_mode': 'matrix', 'verbosity': 0, 'use_full_conv_alpha': False, 'use_shared_alpha': True}
+INFO     11:01:44     [_check_module] Failed: self.input_split=True Settings.backward_batch_size=512 extra_opts={'use_full_conv_alpha': False, 'use_shared_alpha': True} mode='matrix' method='backward'
+INFO     11:01:44     [setup] Initialization failed
+Traceback (most recent call last):
+  File "/data1/Kane/neuralsat/src/main.py", line 97, in <module>
+    status = verifier.verify(objectives, timeout=timeout, force_split=args.force_split)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<@beartype(verifier.verifier.Verifier.verify) at 0x7d13dbc798a0>", line 113, in verify
+  File "/data1/Kane/neuralsat/src/verifier/verifier.py", line 73, in verify
+    self.status = self._verify(
+                  ^^^^^^^^^^^^^
+  File "<@beartype(verifier.verifier.Verifier._verify) at 0x7d13dbc799e0>", line 113, in _verify
+  File "/data1/Kane/neuralsat/src/verifier/verifier.py", line 124, in _verify
+    status = self._verify_with_restart(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<@beartype(verifier.verifier.Verifier._verify_with_restart) at 0x7d13dbc79d00>", line 132, in _verify_with_restart
+  File "/data1/Kane/neuralsat/src/verifier/verifier.py", line 170, in _verify_with_restart
+    new_reference_bounds = self._setup_restart(nth_restart, objective)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<@beartype(verifier.utils._setup_restart) at 0x7d13dbc5bd80>", line 51, in _setup_restart
+  File "/data1/Kane/neuralsat/src/verifier/utils.py", line 405, in _setup_restart
+    self._init_abstractor(abstract_method, objective)
+  File "<@beartype(verifier.utils._init_abstractor) at 0x7d13dbc5bb00>", line 87, in _init_abstractor
+  File "/data1/Kane/neuralsat/src/verifier/utils.py", line 299, in _init_abstractor
+    self.abstractor.setup(objective, extra_opts=extra_opts, preprocess=preprocess)
+  File "<@beartype(abstractor.abstractor.NetworkAbstractor.setup) at 0x7d13dbc5a160>", line 69, in setup
+  File "/data1/Kane/neuralsat/src/abstractor/abstractor.py", line 95, in setup
+    raise NotImplementedError('Initialization failed')
+NotImplementedError: Initialization failed

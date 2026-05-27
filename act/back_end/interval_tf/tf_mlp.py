@@ -26,8 +26,33 @@ def tf_dense(L: Layer, Bin: Bounds) -> Fact:
     W_pos = L.params.get("weight_pos", torch.clamp(W, min=0))
     W_neg = L.params.get("weight_neg", torch.clamp(W, max=0))
     b = L.params.get("bias", torch.zeros(W.shape[0]))
-    
-    B = affine_bounds(W_pos, W_neg, b, Bin)
+
+    # affine_bounds is documented as 2D ``[B, n_in] -> [B, n_out]``. Most
+    # ACT models present DENSE input that way already, but attention-style
+    # graphs (vit_2023) apply the linear per token: input_shape is
+    # ``(1, T, in_features)`` and Bin arrives flattened as ``(1, T*in_features)``.
+    # Reshape into ``[B*T, in_features]`` for the matmul, then fold back.
+    # The reshape is sound: the linear is the same map applied independently
+    # to every prefix index, so interval bounds compose row-wise.
+    in_shape = L.params.get("input_shape")
+    in_features = int(W.shape[1])
+    n_per_sample = int(Bin.lb.shape[1])
+    if (in_shape is not None and len(in_shape) >= 3
+            and n_per_sample == in_features * (n_per_sample // in_features)
+            and n_per_sample != in_features):
+        prefix_numel = n_per_sample // in_features
+        B_in = int(Bin.lb.shape[0])
+        # Reshape to (B*prefix, in_features). The prefix indices stay
+        # interval-bound independently per row, so the unflattened
+        # apply-then-flatten is equivalent to per-row affine.
+        lb2 = Bin.lb.reshape(B_in * prefix_numel, in_features)
+        ub2 = Bin.ub.reshape(B_in * prefix_numel, in_features)
+        B2 = affine_bounds(W_pos, W_neg, b, Bounds(lb2, ub2))
+        out_lb = B2.lb.reshape(B_in, prefix_numel * int(W.shape[0]))
+        out_ub = B2.ub.reshape(B_in, prefix_numel * int(W.shape[0]))
+        B = Bounds(out_lb, out_ub)
+    else:
+        B = affine_bounds(W_pos, W_neg, b, Bin)
     C = ConSet(); C.replace(Con("EQ", tuple(L.out_vars + L.in_vars), {"tag": f"dense:{L.id}", "W": W, "b": b}))
     C.add_box(L.id, L.out_vars, B); return Fact(B,C)
 
@@ -61,7 +86,12 @@ def tf_relu(L: Layer, Bin: Bounds) -> Fact:
     C.add_box(L.id,L.out_vars,B); return Fact(B,C)
 
 def tf_lrelu(L: Layer, Bin: Bounds) -> Fact:
-    a=float(L.params["alpha"]); l,u=Bin.lb,Bin.ub; on=l>=0; off=u<=0; amb=~(on|off)
+    # The PyTorch-side LeakyReLU converter stores the slope under
+    # ``negative_slope`` (the nn.LeakyReLU attribute name); the older
+    # back-end ops used ``alpha``. Accept either key; default to 0.01 which
+    # matches both ONNX's LeakyReLU default and torch's nn.LeakyReLU default.
+    a=float(L.params.get("alpha", L.params.get("negative_slope", 0.01)))
+    l,u=Bin.lb,Bin.ub; on=l>=0; off=u<=0; amb=~(on|off)
     z=torch.zeros_like(l)
     lb=torch.minimum(a*torch.minimum(l,z), torch.maximum(l,z))
     ub=torch.maximum(a*torch.maximum(u,z), torch.maximum(u,z))
@@ -95,6 +125,237 @@ def tf_clip(L: Layer, Bin: Bounds) -> Fact:
     a,b=L.params["a"],L.params["b"]; B=Bounds(torch.clamp(Bin.lb,a,b), torch.clamp(Bin.ub,a,b))
     C=ConSet(); C.replace(Con("INEQ", tuple(L.out_vars+L.in_vars), {"tag":f"clip:{L.id}","a":a,"b":b}))
     C.add_box(L.id,L.out_vars,B); return Fact(B,C)
+
+def tf_floor(L: Layer, Bin: Bounds) -> Fact:
+    """Sound interval transfer for y = floor(x).
+
+    floor is monotone non-decreasing, so for x in [lb, ub]:
+        y_lb = floor(lb), y_ub = floor(ub).
+    This is sound AND tight (every integer in [y_lb, y_ub] is reachable
+    by some x in the input interval whenever x's interval crosses the
+    integer boundary)."""
+    B = Bounds(torch.floor(Bin.lb), torch.floor(Bin.ub))
+    C = ConSet()
+    C.replace(Con("INEQ", tuple(L.out_vars + L.in_vars), {"tag": f"floor:{L.id}"}))
+    C.add_box(L.id, L.out_vars, B)
+    return Fact(B, C)
+
+
+def tf_ceil(L: Layer, Bin: Bounds) -> Fact:
+    """Sound interval transfer for y = ceil(x). Mirror of floor."""
+    B = Bounds(torch.ceil(Bin.lb), torch.ceil(Bin.ub))
+    C = ConSet()
+    C.replace(Con("INEQ", tuple(L.out_vars + L.in_vars), {"tag": f"ceil:{L.id}"}))
+    C.add_box(L.id, L.out_vars, B)
+    return Fact(B, C)
+
+
+def tf_round(L: Layer, Bin: Bounds) -> Fact:
+    """Sound interval transfer for y = round(x) (PyTorch banker's /
+    half-to-even rounding).
+
+    Round-to-nearest-even is discontinuous at half integers but remains
+    monotone non-decreasing. Therefore the tight interval image is
+        [round(lb), round(ub)].
+    For example, the singleton interval [0.5, 0.5] maps exactly to
+    [0, 0], rather than the looser [0, 1]."""
+    B = Bounds(torch.round(Bin.lb), torch.round(Bin.ub))
+    C = ConSet()
+    C.replace(Con("INEQ", tuple(L.out_vars + L.in_vars), {"tag": f"round:{L.id}"}))
+    C.add_box(L.id, L.out_vars, B)
+    return Fact(B, C)
+
+
+def tf_lut_bounds(L: Layer, Bin: Bounds) -> Fact:
+    """Zero-indegree source layer emitting precomputed per-element bounds.
+
+    Used by the cctsdb_yolo_2023 dynamic-Slice envelope (Option A in
+    ``CCTSDB_DYNAMIC_SLICE_DESIGN.md``): a static initializer ``T`` is
+    windowed by integer offsets bounded by VNNLIB input variables; at
+    conversion time we precompute ``min/max T[candidate]`` for every
+    output position over the candidate-window envelope. The result is a
+    sealed (lb, ub) pair stored on the layer.
+
+    ``Bin`` is the analyze-default sentinel (zero predecessors) and is
+    ignored. We return the stored bounds as the layer's output. The
+    bounds are batched to ``[B, numel]`` so downstream tfs see the
+    standard 2-D layout."""
+    lb = L.params["lb"]
+    ub = L.params["ub"]
+    if not isinstance(lb, torch.Tensor) or not isinstance(ub, torch.Tensor):
+        raise TypeError(
+            f"LUT_BOUNDS layer {L.id}: 'lb' and 'ub' params must be tensors; "
+            f"got {type(lb).__name__} / {type(ub).__name__}"
+        )
+    if lb.shape != ub.shape:
+        raise ValueError(
+            f"LUT_BOUNDS layer {L.id}: lb shape {tuple(lb.shape)} != ub shape "
+            f"{tuple(ub.shape)}"
+        )
+    if (lb > ub).any():
+        raise ValueError(
+            f"LUT_BOUNDS layer {L.id}: stored bounds have lb > ub at some "
+            f"position — soundness invariant violated upstream of analyze"
+        )
+    # Flatten + restore batch dim to match the ACT 2-D bounds convention.
+    flat_lb = lb.reshape(-1)
+    flat_ub = ub.reshape(-1)
+    B_size = Bin.lb.shape[0] if (Bin is not None and Bin.lb.dim() >= 1) else 1
+    out_lb = flat_lb.unsqueeze(0).expand(B_size, -1).contiguous()
+    out_ub = flat_ub.unsqueeze(0).expand(B_size, -1).contiguous()
+    B = Bounds(out_lb, out_ub)
+    C = ConSet()
+    C.replace(Con("INEQ", tuple(L.out_vars), {"tag": f"lut_bounds:{L.id}"}))
+    C.add_box(L.id, L.out_vars, B)
+    return Fact(B, C)
+
+
+def precompute_lut_envelope(
+    T: torch.Tensor,
+    *,
+    window_size: tuple,
+    starts_lb: tuple,
+    starts_ub: tuple,
+    steps: tuple = None,
+) -> tuple:
+    """Precompute the per-output-element envelope of a static initializer
+    ``T`` under a bounded-start dynamic-Slice window.
+
+    Args:
+      T: the static initializer tensor (any rank).
+      window_size: the FIXED output spatial size (one entry per axis;
+        same rank as starts_lb / starts_ub). For cctsdb's slice_23 this
+        is e.g. (height, width) of the crop.
+      starts_lb / starts_ub: inclusive integer bounds on the per-axis
+        start position. Both have one entry per axis. The candidate set
+        for each axis is ``{starts_lb[i], starts_lb[i]+1, ...,
+        starts_ub[i]}`` (intersected with the valid index range).
+      steps: per-axis stride (default 1 each).
+
+    Returns:
+      ``(lb_tensor, ub_tensor)`` each shaped ``window_size``. For each
+      output position ``j``, lb_tensor[j] = min over candidate windows of
+      ``T[window_at(start, j)]``; ub_tensor[j] = max.
+
+    Soundness: the candidate set is exactly the set of integer starts
+    the runtime could choose given the input bounds. The min/max over
+    this set is a sound (and minimal among element-wise envelopes)
+    enclosure of every possible runtime output value.
+
+    Complexity: for a window of total size W and total candidate count
+    K (product of per-axis interval sizes), the naive implementation
+    is O(W * K * T.dim()). We use a tighter loop-over-candidates with
+    in-place per-window updates, which is O(K * W). Acceptable for
+    CCTSDB (T ~ a small feature-map, K < 10^4).
+    """
+    import torch as _t
+    T64 = T.to(torch.float64)
+    rank = len(window_size)
+    assert len(starts_lb) == rank and len(starts_ub) == rank, (
+        f"window_size / starts_lb / starts_ub rank mismatch: {window_size} / "
+        f"{starts_lb} / {starts_ub}"
+    )
+    if steps is None:
+        steps = (1,) * rank
+    assert len(steps) == rank
+    for i in range(rank):
+        if starts_lb[i] > starts_ub[i]:
+            raise ValueError(
+                f"LUT envelope: starts_lb[{i}]={starts_lb[i]} > "
+                f"starts_ub[{i}]={starts_ub[i]}"
+            )
+        if window_size[i] < 1:
+            raise ValueError(f"LUT envelope: window_size[{i}] must be >= 1")
+    # Enumerate per-axis candidate start values (integer lattice).
+    cand_per_axis = [list(range(int(starts_lb[i]), int(starts_ub[i]) + 1))
+                     for i in range(rank)]
+
+    out_lb = _t.full(window_size, float("inf"), dtype=torch.float64)
+    out_ub = _t.full(window_size, float("-inf"), dtype=torch.float64)
+
+    # Iterate over Cartesian product of per-axis starts. For each
+    # (start_0, ..., start_{rank-1}), slice T at the corresponding
+    # window and update min/max element-wise.
+    from itertools import product
+    for starts in product(*cand_per_axis):
+        slices = []
+        valid = True
+        for i, s in enumerate(starts):
+            end = s + window_size[i] * steps[i]
+            if s < 0 or end > T64.shape[i]:
+                valid = False
+                break
+            slices.append(slice(s, end, steps[i]))
+        if not valid:
+            # An out-of-range start is skipped: at runtime the verifier
+            # cannot reach a window that extends past T's edge, because
+            # the original ONNX Slice would have raised. Skipping is
+            # sound (we don't widen for impossible runtime paths); if
+            # ALL starts were skipped, the resulting envelope would be
+            # ``[+inf, -inf]`` and the layer flagged as empty below.
+            continue
+        window = T64[tuple(slices)]
+        # Reduce to the right rank (drop any trailing dims of T that
+        # extend beyond the windowed axes — same shape contract as
+        # ONNX Slice with starts/ends/axes covering the first `rank` dims).
+        out_lb = torch.minimum(out_lb, window)
+        out_ub = torch.maximum(out_ub, window)
+
+    if torch.isinf(out_lb).any() or torch.isinf(out_ub).any():
+        raise ValueError(
+            "LUT envelope: every candidate window was out of range; "
+            "the dynamic-Slice envelope is empty (likely a bug in "
+            "starts_lb / starts_ub / window_size derivation)"
+        )
+    return out_lb, out_ub
+
+
+def _tf_periodic_trig(
+    L: Layer, Bin: Bounds, *, fn, max_phase: float, min_phase: float, tag: str
+) -> Fact:
+    """Sound element-wise interval envelope for sine/cosine.
+
+    Extrema occur at ``phase + 2*pi*k``. Endpoint evaluation plus an
+    extrema-containment check is exact for a scalar interval. Bounds are
+    padded by a small floating-point guard only for the phase membership
+    test, so a representational rounding at an extremum can widen rather
+    than under-approximate.
+    """
+    l, u = Bin.lb, Bin.ub
+    two_pi = 2.0 * torch.pi
+    eps = torch.finfo(l.dtype).eps * 32.0 * (1.0 + torch.maximum(l.abs(), u.abs()))
+    lp, up = l - eps, u + eps
+
+    def contains(phase: float) -> torch.Tensor:
+        first_k = torch.ceil((lp - phase) / two_pi)
+        last_k = torch.floor((up - phase) / two_pi)
+        return first_k <= last_k
+
+    fl, fu = fn(l), fn(u)
+    lb = torch.minimum(fl, fu)
+    ub = torch.maximum(fl, fu)
+    lb = torch.where(contains(min_phase), torch.full_like(lb, -1.0), lb)
+    ub = torch.where(contains(max_phase), torch.full_like(ub, 1.0), ub)
+    B = Bounds(lb, ub)
+    C = ConSet()
+    C.replace(Con("INEQ", tuple(L.out_vars + L.in_vars), {"tag": f"{tag}:{L.id}"}))
+    C.add_box(L.id, L.out_vars, B)
+    return Fact(B, C)
+
+
+def tf_sin(L: Layer, Bin: Bounds) -> Fact:
+    return _tf_periodic_trig(
+        L, Bin, fn=torch.sin, max_phase=float(torch.pi / 2),
+        min_phase=float(-torch.pi / 2), tag="sin",
+    )
+
+
+def tf_cos(L: Layer, Bin: Bounds) -> Fact:
+    return _tf_periodic_trig(
+        L, Bin, fn=torch.cos, max_phase=0.0,
+        min_phase=float(torch.pi), tag="cos",
+    )
+
 
 def tf_add(L: Layer, Bx: Bounds, By: Bounds) -> Fact:
     B=Bounds(Bx.lb+By.lb, Bx.ub+By.ub); C=ConSet()

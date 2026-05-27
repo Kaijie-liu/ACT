@@ -42,6 +42,12 @@ class IntervalTF(TransferFunction):
         LayerKind.LRELU.value: lambda L, bounds, tf: tf_lrelu(L, bounds),
         LayerKind.ABS.value: lambda L, bounds, tf: tf_abs(L, bounds),
         LayerKind.CLIP.value: lambda L, bounds, tf: tf_clip(L, bounds),
+        LayerKind.FLOOR.value: lambda L, bounds, tf: tf_floor(L, bounds),
+        LayerKind.CEIL.value: lambda L, bounds, tf: tf_ceil(L, bounds),
+        LayerKind.ROUND.value: lambda L, bounds, tf: tf_round(L, bounds),
+        LayerKind.LUT_BOUNDS.value: lambda L, bounds, tf: tf_lut_bounds(L, bounds),
+        LayerKind.SIN.value: lambda L, bounds, tf: tf_sin(L, bounds),
+        LayerKind.COS.value: lambda L, bounds, tf: tf_cos(L, bounds),
 
         # Multi-input operations
         LayerKind.ADD.value: lambda L, bounds, tf: tf_add(L,

@@ -1,0 +1,20 @@
+=== CORA STRICT: bench=nn4sys idx=137  timeout=50  start=2026-05-27 02:28:46
+=== onnx=onnx/mscn_128d.onnx
+=== vnnlib=vnnlib/cardinality_0_3800_128.vnnlib
+prepare_instance(nn4sys,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/mscn_128d.onnx,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/vnnlib/cardinality_0_3800_128.vnnlib)...
+--- Loading network...
+Unexpected Error! --- Index exceeds array bounds.
+ --- CORAerror/aux_readInfo [594]
+ --- CORAerror/CORAerror [63]
+ --- prepare_instance/aux_readNetworkAndOptions [221]
+ --- prepare_instance/prepare_instance [9]
+ --- cora_strict_sweep_runner/cora_strict_sweep_runner [167]
+
+run_instance(nn4sys,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/mscn_128d.onnx,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/vnnlib/cardinality_0_3800_128.vnnlib,/data1/Kane/ACT/audit_results/cora_strict_20260526/nn4sys/0137__mscn_128d__cardinality_0_3800_128.result,50,0)...
+--- Loading MATLAB file...
+Unexpected Error! --- Unable to find file or directory "nn4sys_mscn_128d_cardinality_0_3800_128.mat".
+ --- run_instance/run_instance [21]
+ --- cora_strict_sweep_runner/cora_strict_sweep_runner [168]
+
+ done
+=== CORA STRICT: verdict=unknown wall=0.521s

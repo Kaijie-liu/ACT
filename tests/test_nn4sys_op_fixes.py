@@ -135,6 +135,47 @@ class TestOnnxHandlerBinding(unittest.TestCase):
                          f"ONNX handler dispatch keys not bound: {missing}")
 
 
+class TestConv1dTupleAttrDefensive(unittest.TestCase):
+    """``_conv1d_to_linear_matrix`` previously unpacked
+    ``stride``/``padding``/``dilation`` as raw values from ``L.params``.
+    When the ONNX→torch path delivers them as length-1 tuples
+    (``stride=(1,)``), the expression ``meshgrid_tensor * stride`` falls
+    through Python's ``tensor * tuple`` path → ``tuple.__rmul__(tensor)``
+    → ``Tensor.__index__`` on a multi-element tensor → ``TypeError:
+    only integer tensors of a single element can be converted to an
+    index``. nn4sys pensieve_big_parallel surfaced this immediately
+    after the broadcast-Div helper-pred fix unblocked its Conv1d.
+
+    Fix: normalize all three params to scalar ints inside the linear-
+    matrix helper. These tests pin the defensiveness."""
+
+    def test_tuple_attrs_do_not_raise(self):
+        from act.back_end.interval_tf.tf_cnn import _conv1d_to_linear_matrix
+        torch.manual_seed(0)
+        weight = torch.randn(2, 1, 3, dtype=torch.float64)
+        # Pass tuples like nn.Conv1d's stride/padding/dilation defaults.
+        m = _conv1d_to_linear_matrix(
+            weight,
+            input_shape=(1, 1, 8),
+            output_shape=(1, 2, 6),
+            stride=(1,), padding=(0,), dilation=(1,), groups=1,
+        )
+        # Output should have shape (out_flat, in_flat) = (12, 8)
+        self.assertEqual(tuple(m.shape), (12, 8))
+
+    def test_scalar_attrs_still_work(self):
+        from act.back_end.interval_tf.tf_cnn import _conv1d_to_linear_matrix
+        torch.manual_seed(1)
+        weight = torch.randn(2, 1, 3, dtype=torch.float64)
+        m = _conv1d_to_linear_matrix(
+            weight,
+            input_shape=(1, 1, 8),
+            output_shape=(1, 2, 6),
+            stride=1, padding=0, dilation=1, groups=1,
+        )
+        self.assertEqual(tuple(m.shape), (12, 8))
+
+
 class TestConv1dInTorch2Act(unittest.TestCase):
     """nn.Conv1d was missing from _convert_module dispatch — nn4sys
     pensieve_*_parallel uses 1D temporal convs on (B, C, L) inputs."""

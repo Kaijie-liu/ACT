@@ -1,0 +1,34 @@
+=== CORA STRICT: bench=cersyve idx=8  timeout=100  start=2026-05-27 12:50:54
+=== onnx=onnx/pendulum_finetune_inv.onnx
+=== vnnlib=vnnlib/prop_pendulum.vnnlib
+prepare_instance(cersyve,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cersyve/onnx/pendulum_finetune_inv.onnx,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cersyve/vnnlib/prop_pendulum.vnnlib)...
+--- Loading network... done
+--- GPU available: true
+--- Loading specification... done
+--- Storing MATLAB file... done
+______________________________
+ neuralNetwork/verify options 
+------------------------------
+ - GPU: true                                                                                                                                                                                                                                                                                                  
+ - Poly. Method: bounds                                     
+ - Batchsize: 1024                                                                                                                          
+ - Interval Center: false                 
+ - Num. init. Generators: Inf 
+ - Num. approx. Error (per nonl. Layer): Inf 
+ - approx. Error Heuristic: sensitivity*length 
+ - Falsification Method: none 
+ - Refinement Method: naive     
+ - Num. of Splits: 2                                                                                  
+ - Num. of Dimensions: 1                          
+ - Num. of Neuron-Splits: 0     
+ - Num. of ReLU-Tightening Constraints: 0 
+______________________________
+
+run_instance(cersyve,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cersyve/onnx/pendulum_finetune_inv.onnx,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cersyve/vnnlib/prop_pendulum.vnnlib,/data1/Kane/ACT/audit_results/cora_truestrict_20260527/cersyve/0008__pendulum_finetune_inv__prop_pendulum.result,100,0)...
+--- Loading MATLAB file... done
+--- Deleting MATLAB file... done
+--- GPU available: true
+--- Running verification... done
+Writing results...
+--- opening results file ... done
+--- writing file ...=== CORA STRICT: verdict=unknown wall=4.163s

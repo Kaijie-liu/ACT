@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "benchmark": "metaroom_2023",
+  "formal_mode": true,
+  "timestamp_utc": "20260526T152335682735Z",
+  "canonical_root": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks",
+  "receipt_dir": "/data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/gpu_stream1_20260526T132419Z/metaroom_2023",
+  "wall_min": 0.06793429056803385,
+  "counts": {
+    "CERTIFIED": 0,
+    "FALSIFIED": 0,
+    "UNKNOWN": 0,
+    "ERROR": 1
+  },
+  "run_status": "FAILED",
+  "per_instance": [
+    {
+      "official_instance_id": 30,
+      "benchmark": "metaroom_2023",
+      "onnx_model": "./onnx/6cnn_tz_49_8_no_custom_OP.onnx",
+      "vnnlib_spec": "./vnnlib/spec_idx_185_eps_0.00001000.vnnlib",
+      "model_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/metaroom_2023/onnx/6cnn_tz_49_8_no_custom_OP.onnx",
+      "spec_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/metaroom_2023/vnnlib/spec_idx_185_eps_0.00001000.vnnlib",
+      "internal_status": "ERROR",
+      "reportable_status": "ERROR",
+      "cli_normalized": "ERROR_OutOfMemoryError",
+      "count_bucket": "ERROR",
+      "queries": [],
+      "q_statuses": [],
+      "q_reportables": [],
+      "q_receipts": [],
+      "error": "OutOfMemoryError: CUDA out of memory. Tried to allocate 222.00 MiB. GPU 0 has a total capacity of 94.96 GiB of which 221.06 MiB is free. Process 2687037 has 690.00 MiB memory in use. Process 1455029 has 62.12 GiB memory in use. Process 1497368 has 30.58 GiB memory in use. Including non-PyTorch memory, this process has 766.00 MiB memory in use. Of the allocated memory 92.16 MiB is allocated by PyTorch, and 13.84 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)",
+      "wall_s": 4.07597279548645,
+      "timeout_s": 90.0,
+      "instance_budget_exhausted": false
+    }
+  ]
+}

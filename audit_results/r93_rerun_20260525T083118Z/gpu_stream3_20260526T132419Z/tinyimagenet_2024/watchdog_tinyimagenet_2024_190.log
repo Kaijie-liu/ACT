@@ -1,0 +1,43 @@
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: tinyimagenet_2024/onnx/TinyImageNet_resnet_medium.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/tinyimagenet_2024/onnx/TinyImageNet_resnet_medium.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (raw-first strategy)
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: TinyImageNet_resnet_medium.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 3, 56, 56)
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 3, 56, 56)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 9408 inputs, 200 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 9408 inputs, 200 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Ground truth label: 91
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'tinyimagenet_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed TinyImageNet_resnet_medium_prop_idx_6362_sidx_7345_eps_0.0039.vnnlib: 1 query(ies)
+INFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=19 out_dim=200 relus=10 (triangle for relu 1..7, eq_lagr_v8 for last 3)
+[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic
+✅ Device Manager Initialized: device=cuda:0, dtype=torch.float64
+
+================================================================================
+ACT: Abstract Constraint Transformer
+Inference-based whitebox fuzzing for neural network verification
+================================================================================
+
+
+================================================================================
+VERIFICATION TEST: VNNLIB → VerifiableModel → verify_once
+================================================================================
+
+[vnnlib] category=tinyimagenet_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=120.0s)
+  [  1/1] tinyimagenet_2024/onnx/TinyImageNet_resnet_medium.onnx@vnnlib/TinyImageNet_resnet_medium_prop_idx_6362_sidx_7345_eps_0.0039.vnnlib: UNKNOWN (12.9s)  V=0 A=0 U=1 E=0  R=0
+
+[vnnlib/hybridz] FINAL — total=1 wall=0.2 min
+  UNKNOWN      1
+  [structured] per-instance log → /data1/Kane/ACT/audit_results/r93_rerun_20260525T083118Z/gpu_stream3_20260526T132419Z/tinyimagenet_2024/per_instance_tinyimagenet_2024_20260526T164425208852Z.json
+
+================================================================================
+VERIFICATION TEST SUMMARY
+================================================================================
+  ✅ vnnlib                    PASSED
+================================================================================
+

@@ -123,6 +123,18 @@ class LayerKind(str, enum.Enum):
     SOFTSIGN = "SOFTSIGN"
     ABS = "ABS"
     CLIP = "CLIP"
+    FLOOR = "FLOOR"   # y = floor(x); monotone non-decreasing
+    CEIL = "CEIL"     # y = ceil(x); monotone non-decreasing
+    ROUND = "ROUND"   # y = round(x) (banker's / half-to-even); monotone, tight bound = [round(lb), round(ub)]
+    LUT_BOUNDS = "LUT_BOUNDS"   # Zero-indegree source layer emitting precomputed per-element [lb,ub].
+                                # Used for cctsdb_yolo_2023's dynamic-Slice envelope: a static
+                                # initializer T is windowed by integer offsets coming from bounded
+                                # input vars; at conversion we precompute, for each output position,
+                                # ``min/max T[candidate]`` over the candidate window. The bounds
+                                # are stored as ``params['lb']`` and ``params['ub']``. See
+                                # CCTSDB_DYNAMIC_SLICE_DESIGN.md.
+    SIN = "SIN"       # y = sin(x); periodic interval envelope
+    COS = "COS"       # y = cos(x); periodic interval envelope
     ADD = "ADD"
     SUB = "SUB"
     MUL = "MUL"
@@ -477,6 +489,43 @@ REGISTRY: Dict[str, Dict[str, Any]] = {
     LayerKind.CLIP.value: {
         "params_required": [],
         "params_optional": ["min", "max"],
+    },
+    LayerKind.FLOOR.value: {
+        "params_required": [],
+        "params_optional": ["input_shape", "output_shape"],
+    },
+    LayerKind.CEIL.value: {
+        "params_required": [],
+        "params_optional": ["input_shape", "output_shape"],
+    },
+    LayerKind.ROUND.value: {
+        "params_required": [],
+        "params_optional": ["input_shape", "output_shape"],
+    },
+    LayerKind.LUT_BOUNDS.value: {
+        # Required tensors: the precomputed per-element bounds. The layer
+        # has zero predecessors; analyze.py seeds these as the layer's
+        # before-fact directly. Both lb/ub must be float64 tensors of
+        # identical shape; the runtime treats them as a sealed "constant
+        # interval" — there is no internal dependence on any input var.
+        "params_required": ["lb", "ub"],
+        "params_optional": [
+            "input_shape", "output_shape",
+            # Provenance for audit: which source initializer this envelope
+            # was distilled from, and the (start_lb, start_ub, step) window
+            # parameters that drove the min/max. Optional because tests
+            # synthesize the layer directly.
+            "source_initializer_name",
+            "window_starts_lb", "window_starts_ub", "window_steps",
+        ],
+    },
+    LayerKind.SIN.value: {
+        "params_required": [],
+        "params_optional": ["input_shape", "output_shape"],
+    },
+    LayerKind.COS.value: {
+        "params_required": [],
+        "params_optional": ["input_shape", "output_shape"],
     },
     LayerKind.ADD.value: {
         "params_required": [],

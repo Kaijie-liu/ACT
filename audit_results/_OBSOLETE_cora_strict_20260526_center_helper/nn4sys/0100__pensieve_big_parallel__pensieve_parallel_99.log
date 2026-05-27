@@ -1,0 +1,21 @@
+=== CORA STRICT: bench=nn4sys idx=100  timeout=140  start=2026-05-27 01:09:13
+=== onnx=onnx/pensieve_big_parallel.onnx
+=== vnnlib=vnnlib/pensieve_parallel_99.vnnlib
+prepare_instance(nn4sys,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/pensieve_big_parallel.onnx,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/vnnlib/pensieve_parallel_99.vnnlib)...
+--- Loading network...
+Unexpected Error! --- Index exceeds array bounds.
+ --- CORAerror/aux_readInfo [594]
+ --- CORAerror/CORAerror [63]
+ --- prepare_instance/aux_readNetworkAndOptions [221]
+ --- prepare_instance/prepare_instance [9]
+ --- cora_strict_sweep_runner/cora_strict_sweep_runner [167]
+
+run_instance(nn4sys,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/pensieve_big_parallel.onnx,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/vnnlib/pensieve_parallel_99.vnnlib,/data1/Kane/ACT/audit_results/cora_strict_20260526/nn4sys/0100__pensieve_big_parallel__pensieve_parallel_99.result,140,0)...
+--- Loading MATLAB file...
+Unexpected Error! --- Unable to find file or directory "nn4sys_pensieve_big_parallel_pensieve_parallel_99.mat".
+ --- run_instance/run_instance [21]
+ --- cora_strict_sweep_runner/cora_strict_sweep_runner [168]
+
+ done
+=== CORA STRICT: verdict=unknown wall=0.636s
+[2026-05-27 01:09:14] [nn4sys] 100/194 sat=0 unsat=0 timeout=100 err=0 resumed=0

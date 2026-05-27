@@ -1,0 +1,34 @@
+=== CORA STRICT: bench=tinyimagenet_2024 idx=18  timeout=100  start=2026-05-27 02:59:09
+=== onnx=onnx/TinyImageNet_resnet_medium.onnx
+=== vnnlib=vnnlib/TinyImageNet_resnet_medium_prop_idx_2063_sidx_8156_eps_0.0039.vnnlib
+prepare_instance(tinyimagenet_2024,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/tinyimagenet_2024/onnx/TinyImageNet_resnet_medium.onnx,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/tinyimagenet_2024/vnnlib/TinyImageNet_resnet_medium_prop_idx_2063_sidx_8156_eps_0.0039.vnnlib)...
+--- Loading network... done
+--- GPU available: true
+--- Loading specification... done
+--- Storing MATLAB file... done
+______________________________
+ neuralNetwork/verify options 
+------------------------------
+ - GPU: true                                                                                                                                                                                                                                                                                                  
+ - Poly. Method: bounds                                     
+ - Batchsize: 4                                                                                                                                                                                                     
+ - Interval Center: true                          
+ - Num. init. Generators: 500 
+ - Num. approx. Error (per nonl. Layer): 10 
+ - approx. Error Heuristic: sensitivity*length 
+ - Falsification Method: center 
+ - Refinement Method: naive     
+ - Num. of Splits: 2                                                                                  
+ - Num. of Dimensions: 1                          
+ - Num. of Neuron-Splits: 0     
+ - Num. of ReLU-Tightening Constraints: 0 
+______________________________
+
+run_instance(tinyimagenet_2024,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/tinyimagenet_2024/onnx/TinyImageNet_resnet_medium.onnx,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/tinyimagenet_2024/vnnlib/TinyImageNet_resnet_medium_prop_idx_2063_sidx_8156_eps_0.0039.vnnlib,/data1/Kane/ACT/audit_results/cora_strict_20260526/tinyimagenet_2024/0018__TinyImageNet_resnet_medium__TinyImageNet_resnet_medium_prop_idx_2063_sidx_8156_eps_0.0039.result,100,0)...
+--- Loading MATLAB file... done
+--- Deleting MATLAB file... done
+--- GPU available: true
+--- Running verification... done
+Writing results...
+--- opening results file ... done
+--- writing file ...=== CORA STRICT: verdict=unknown wall=12.347s

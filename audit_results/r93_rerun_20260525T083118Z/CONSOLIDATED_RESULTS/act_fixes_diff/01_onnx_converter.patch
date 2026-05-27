@@ -1,0 +1,193 @@
+diff --git a/act/front_end/vnnlib_loader/onnx_converter.py b/act/front_end/vnnlib_loader/onnx_converter.py
+index c964a48..d21a8e3 100644
+--- a/act/front_end/vnnlib_loader/onnx_converter.py
++++ b/act/front_end/vnnlib_loader/onnx_converter.py
+@@ -67,79 +67,108 @@ def convert_onnx_to_pytorch(
+         ONNXConversionError: If conversion fails
+     """
+     if not onnx_path.exists():
+-        raise ONNXConversionError(f"ONNX file not found: {onnx_path}")
+-    
++        # The runner may have substituted a sibling .onnx.gz when the .onnx
++        # is a broken symlink (nn4sys mscn_2048d_*). Try the .gz sibling
++        # before giving up.
++        gz_sibling = onnx_path.parent / f"{onnx_path.name}.gz"
++        if gz_sibling.exists():
++            onnx_path = gz_sibling
++        else:
++            raise ONNXConversionError(f"ONNX file not found: {onnx_path}")
++
+     try:
+         # Import here to avoid requiring onnx for non-VNNLIB workflows
+         import onnx
+         from onnx2torch import convert
+-        
++
++        # Auto-decompress .onnx.gz to a tempfile before parsing. onnx2torch
++        # cannot read gzipped protobuf directly, so we materialise the raw
++        # .onnx into a NamedTemporaryFile and re-target the conversion path.
++        if str(onnx_path).endswith(".onnx.gz"):
++            import gzip, tempfile
++            with gzip.open(str(onnx_path), "rb") as f_in:
++                tmp = tempfile.NamedTemporaryFile(suffix=".onnx", delete=False)
++                try:
++                    while True:
++                        chunk = f_in.read(8 * 1024 * 1024)
++                        if not chunk:
++                            break
++                        tmp.write(chunk)
++                finally:
++                    tmp.close()
++            logger.info(f"Decompressed {onnx_path.name} → {tmp.name}")
++            onnx_path = Path(tmp.name)
++
+         # Load ONNX model
+         logger.info(f"Loading ONNX model from {onnx_path}")
+         onnx_model = onnx.load(str(onnx_path))
+-        
+-        # Upgrade old opsets for onnx2torch compatibility (e.g. ACAS Xu ships opset 8)
+-        try:
+-            from onnx import version_converter
+-            current_opset = max((op.version for op in onnx_model.opset_import if not op.domain or op.domain == 'ai.onnx'), default=0)
+-            if 0 < current_opset < 13:
+-                logger.info(f"Upgrading ONNX opset {current_opset} → 13")
+-                onnx_model = version_converter.convert_version(onnx_model, 13)
+-        except Exception as e:
+-            logger.warning(f"Opset upgrade failed ({e}), proceeding with original opset")
+-        
+-        onnx_model = _preprocess_onnx_for_onnx2torch(onnx_model)
++        current_opset = max((op.version for op in onnx_model.opset_import if not op.domain or op.domain == 'ai.onnx'), default=0)
+ 
+-        # Optionally simplify
+-        if simplify:
++        # nn4sys mscn_*.onnx (opset 10) breaks under opset→13 upgrade + onnxsim
++        # (Slice_9 KeyError from onnx2torch). The raw graph converts fine on its
++        # own. Try the cheap raw path first; only fall back to the preprocessing
++        # ladder when the raw convert fails for a reason that preprocessing has
++        # been observed to fix.
++        def _convert_raw():
++            raw_model = onnx.load(str(onnx_path))
++            raw_model = _preprocess_onnx_for_onnx2torch(raw_model)
+             try:
+-                import onnxsim
+-                logger.info("Simplifying ONNX model")
+-                onnx_model, check = onnxsim.simplify(onnx_model)
+-                if not check:
+-                    logger.warning("ONNX simplification check failed, using original model")
+-            except ImportError:
+-                logger.warning("onnxsim not available, skipping simplification")
++                from onnx import shape_inference
++                raw_model = shape_inference.infer_shapes(raw_model)
+             except Exception as e:
+-                logger.warning(f"ONNX simplification failed: {e}, using original model")
+-
+-        # Propagate types/shapes through the graph after any earlier rewrites.
+-        # VNN-COMP ONNX files can leave intermediate values with ValueType.UNKNOWN
+-        # (nn4sys) or lose annotations during onnxsim simplification; without this
+-        # step onnx2torch raises "Got unexpected input value type".
+-        try:
+-            from onnx import shape_inference
+-            onnx_model = shape_inference.infer_shapes(onnx_model)
+-        except Exception as e:
+-            logger.warning(f"ONNX shape inference failed ({e}); proceeding without it")
++                logger.debug("raw shape inference suppressed: %s", e)
++            return convert(raw_model)
+ 
+-        # Convert to PyTorch. Simplification occasionally leaves intermediate
+-        # values with ValueType.UNKNOWN (nn4sys); only retry-without-simplify
+-        # for that specific upstream error so unrelated conversion bugs
+-        # (unsupported ops, shape errors) still surface normally.
+-        logger.info("Converting ONNX to PyTorch")
+-        try:
+-            pytorch_model = convert(onnx_model)
+-        except Exception as convert_err:
+-            if simplify and "ValueType.UNKNOWN" in str(convert_err):
+-                logger.warning(
+-                    f"onnx2torch failed on simplified graph ({convert_err}); "
+-                    f"retrying with simplify=False"
+-                )
+-                raw_model = onnx.load(str(onnx_path))
+-                # Apply the same preprocessing here too -- without it, the
+-                # fallback can hit the very issues the main path's
+-                # _preprocess_onnx_for_onnx2torch was added to fix.
+-                raw_model = _preprocess_onnx_for_onnx2torch(raw_model)
++        def _convert_with_full_pipeline():
++            m = onnx.load(str(onnx_path))
++            try:
++                from onnx import version_converter
++                if 0 < current_opset < 13:
++                    logger.info(f"Upgrading ONNX opset {current_opset} → 13")
++                    m = version_converter.convert_version(m, 13)
++            except Exception as e:
++                logger.warning(f"Opset upgrade failed ({e}), proceeding with original opset")
++            m = _preprocess_onnx_for_onnx2torch(m)
++            if simplify:
+                 try:
+-                    from onnx import shape_inference
+-                    raw_model = shape_inference.infer_shapes(raw_model)
++                    import onnxsim
++                    logger.info("Simplifying ONNX model")
++                    m_sim, check = onnxsim.simplify(m)
++                    if check:
++                        m = m_sim
++                    else:
++                        logger.warning("ONNX simplification check failed, using original model")
++                except ImportError:
++                    logger.warning("onnxsim not available, skipping simplification")
+                 except Exception as e:
+-                    # Intentional: shape inference is best-effort; converter handles missing shapes downstream.
+-                    logger.debug("suppressed: %s", e)
+-                pytorch_model = convert(raw_model)
+-            else:
+-                raise
++                    logger.warning(f"ONNX simplification failed: {e}, using original model")
++            try:
++                from onnx import shape_inference
++                m = shape_inference.infer_shapes(m)
++            except Exception as e:
++                logger.warning(f"ONNX shape inference failed ({e}); proceeding without it")
++            return convert(m)
++
++        # Order: try the historically-working simplify+upgrade pipeline FIRST
++        # (used to clean up shape annotations + dead nodes; ml4acopf 14_ieee_*
++        # and other opset-14 models rely on its constant folding). Only fall
++        # back to the raw path when the full pipeline fails — that covers
++        # nn4sys mscn_*.onnx where opset 10→13 + onnxsim rename a node
++        # (Slice_9 KeyError from onnx2torch).
++        logger.info("Converting ONNX to PyTorch (simplify-first; raw fallback)")
++        try:
++            pytorch_model = _convert_with_full_pipeline()
++        except Exception as full_err:
++            logger.warning(
++                f"Full pipeline failed ({type(full_err).__name__}: {str(full_err)[:120]}); "
++                f"retrying with raw graph (no opset upgrade, no simplify)"
++            )
++            try:
++                pytorch_model = _convert_raw()
++            except Exception as raw_err:
++                # Both paths failed — re-raise the simpler raw error which is
++                # usually a clearer signal of the actual unsupported op.
++                raise raw_err
+         pytorch_model.eval()
+         
+         # Convert model to match device_manager settings
+@@ -182,7 +211,18 @@ def get_onnx_input_shape(onnx_path: Path) -> Tuple[int, ...]:
+     try:
+         import onnx
+ 
+-        onnx_model = onnx.load(str(onnx_path))
++        # Honour .gz fallback when the .onnx symlink is broken (nn4sys mscn_2048d_*).
++        actual = onnx_path
++        if not actual.exists():
++            gz_sibling = onnx_path.parent / f"{onnx_path.name}.gz"
++            if gz_sibling.exists():
++                actual = gz_sibling
++        if str(actual).endswith(".onnx.gz"):
++            import gzip, io
++            with gzip.open(str(actual), "rb") as f:
++                onnx_model = onnx.load(io.BytesIO(f.read()))
++        else:
++            onnx_model = onnx.load(str(actual))
+         graph = onnx_model.graph
+ 
+         if not graph.input:

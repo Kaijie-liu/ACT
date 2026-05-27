@@ -1,0 +1,35 @@
+=== CORA STRICT: bench=collins_rul_cnn_2022 idx=55  timeout=600  start=2026-05-27 13:38:21
+=== onnx=onnx/NN_rul_full_window_40.onnx
+=== vnnlib=vnnlib/robustness_8perturbations_delta40_epsilon10_w40.vnnlib
+prepare_instance(collins_rul_cnn_2022,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_8perturbations_delta40_epsilon10_w40.vnnlib)...
+--- Loading network... done
+--- GPU available: true
+--- Loading specification... done
+--- Storing MATLAB file... done
+______________________________
+ neuralNetwork/verify options 
+------------------------------
+ - GPU: true                                                                                                                                                                                                                                                                                                  
+ - Poly. Method: bounds                                     
+ - Batchsize: 1024                                                                                                                          
+ - Interval Center: true                          
+ - Num. init. Generators: Inf 
+ - Num. approx. Error (per nonl. Layer): 100 
+ - approx. Error Heuristic: sensitivity*length 
+ - Falsification Method: none 
+ - Refinement Method: naive     
+ - Num. of Splits: 2                                                                                  
+ - Num. of Dimensions: 1                          
+ - Num. of Neuron-Splits: 0     
+ - Num. of ReLU-Tightening Constraints: 0 
+______________________________
+
+run_instance(collins_rul_cnn_2022,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_full_window_40.onnx,/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_8perturbations_delta40_epsilon10_w40.vnnlib,/data1/Kane/ACT/audit_results/cora_truestrict_20260527/collins_rul_cnn_2022/0055__NN_rul_full_window_40__robustness_8perturbations_delta40_epsilon10_w40.result,600,0)...
+--- Loading MATLAB file... done
+--- Deleting MATLAB file... done
+--- GPU available: true
+--- Running verification... done
+Writing results...
+--- opening results file ... done
+--- writing file ...=== CORA STRICT: verdict=unknown wall=9.275s
+[2026-05-27 13:38:30] [collins_rul_cnn_2022] 55/62 sat=0 unsat=0 timeout=55 err=0 resumed=0

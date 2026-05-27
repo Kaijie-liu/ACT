@@ -101,6 +101,31 @@ def analyze(
                 )
                 val_b = val.unsqueeze(0).expand(B_size, -1).contiguous()  # [B, numel]
                 before[layer.id] = Fact(bounds=Bounds(val_b.clone(), val_b.clone()), cons=ConSet())
+            elif layer.kind == LayerKind.LUT_BOUNDS.value:
+                # Zero-indegree LUT envelope layer (cctsdb_yolo_2023 dynamic
+                # Slice). The bounds were precomputed at conversion and are
+                # sealed into ``params['lb']`` and ``params['ub']``. Seed
+                # `before` with the same (batched) interval so any later
+                # ``Bjoin`` over a LUT predecessor reads finite bounds
+                # rather than the +/-inf sentinel.
+                B_size = entry_fact.bounds.lb.shape[0]
+                lb_raw = layer.params.get("lb")
+                ub_raw = layer.params.get("ub")
+                if not isinstance(lb_raw, torch.Tensor) or not isinstance(ub_raw, torch.Tensor):
+                    raise TypeError(
+                        f"LUT_BOUNDS layer {layer.id} requires tensor params 'lb' and 'ub'"
+                    )
+                lb = lb_raw.reshape(-1).to(
+                    device=entry_fact.bounds.lb.device,
+                    dtype=entry_fact.bounds.lb.dtype,
+                )
+                ub = ub_raw.reshape(-1).to(
+                    device=entry_fact.bounds.lb.device,
+                    dtype=entry_fact.bounds.lb.dtype,
+                )
+                lb_b = lb.unsqueeze(0).expand(B_size, -1).contiguous()
+                ub_b = ub.unsqueeze(0).expand(B_size, -1).contiguous()
+                before[layer.id] = Fact(bounds=Bounds(lb_b.clone(), ub_b.clone()), cons=ConSet())
             # Other zero-indegree kinds (none today) would be seeded similarly.
             seeds.append(layer.id)
     else:
@@ -110,13 +135,52 @@ def analyze(
         before[entry_id] = entry_fact
         seeds = [entry_id]
 
+    # R16 (advisor 2026-05-25): track which layers have been visited at
+    # least once so we can defer multi-pred nodes until all their preds
+    # are concretized. Otherwise a multi-input op (e.g. ViT's CONCAT)
+    # may be popped from the worklist while one branch is still at the
+    # default (-inf, +inf) sentinel; the box_join propagates ±inf into
+    # an interior DENSE / matmul where ``±inf * 0_weight`` produces NaN,
+    # poisoning the entire downstream chain irrecoverably.
+    visited: set = {entry_id}
+    # CONSTANT seeds are concretized at initialization (before is set
+    # to the constant value above), so they count as visited too. Any
+    # other zero-indegree kinds that got into ``seeds`` have ``before``
+    # at the +/-inf default, but no consumer needs them to be ready
+    # before its own first visit — they will be re-enqueued via the
+    # changed_or_maskdiff path on subsequent passes.
+    for layer in net.layers:
+        if not net.preds.get(layer.id) and layer.kind in (
+            LayerKind.CONSTANT.value, LayerKind.LUT_BOUNDS.value,
+        ):
+            visited.add(layer.id)
+
     WL = deque(seeds)
+    deferred_counts: Dict[int, int] = {}
+    DEFER_RETRY_LIMIT = max(64, 4 * len(net.layers))
     while WL:
         lid = WL.popleft(); layer = net.by_id[lid]
 
+        # Ready-check: if any predecessor has not yet been visited, defer
+        # this layer until its preds are concretized. The worklist is
+        # FIFO; re-appending sends it to the back so other ready nodes
+        # progress first. Bounded retry guards against pathological
+        # cycles (the DAG check at conversion should prevent these, but
+        # cheap insurance never hurts).
+        preds_list = net.preds.get(lid, [])
+        if preds_list and any(p not in visited for p in preds_list):
+            tries = deferred_counts.get(lid, 0) + 1
+            deferred_counts[lid] = tries
+            if tries <= DEFER_RETRY_LIMIT:
+                WL.append(lid)
+                continue
+            # Last-resort: give up deferring and run with whatever preds
+            # have so far. Exceeding the bound implies a cycle or a
+            # disconnected component the wrapper missed; we surface it
+            # via the resulting +/-inf bounds rather than hanging.
+
         # merge predecessors into before[lid]
-        if net.preds.get(lid):
-            preds_list = net.preds[lid]
+        if preds_list:
             # Initialize from first predecessor (not infinite bounds)
             first_bounds = after[preds_list[0]].bounds
             Bjoin = Bounds(lb=first_bounds.lb.clone(), ub=first_bounds.ub.clone())
@@ -135,6 +199,7 @@ def analyze(
             before[lid] = Fact(Bjoin, Cjoin)
 
         out_fact = dispatch_tf(layer, before, after, net)
+        visited.add(lid)
 
         if changed_or_maskdiff(layer, out_fact.bounds, None, eps):
             after[lid] = out_fact

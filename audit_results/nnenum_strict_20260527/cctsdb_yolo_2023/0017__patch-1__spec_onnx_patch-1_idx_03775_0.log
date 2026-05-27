@@ -1,0 +1,21 @@
+Traceback (most recent call last):
+  File "/data1/Kane/nnenum/src/nnenum/nnenum.py", line 308, in main
+    network = load_onnx_network_optimized(onnx_filename)
+  File "/data1/Kane/nnenum/src/nnenum/onnx_network.py", line 356, in load_onnx_network_optimized
+    assert network_input is None, f"multiple onnx network inputs {network_input} and {i}"        
+AssertionError: multiple onnx network inputs 0 and 0
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/data1/Kane/miniconda3/envs/nnenumenv/lib/python3.8/runpy.py", line 194, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/data1/Kane/miniconda3/envs/nnenumenv/lib/python3.8/runpy.py", line 87, in _run_code
+    exec(code, run_globals)
+  File "/data1/Kane/nnenum/src/nnenum/nnenum.py", line 451, in <module>
+    main()
+  File "/data1/Kane/nnenum/src/nnenum/nnenum.py", line 311, in main
+    network = load_onnx_network(onnx_filename)
+  File "/data1/Kane/nnenum/src/nnenum/onnx_network.py", line 873, in load_onnx_network
+    assert o in Settings.ONNX_WHITELIST, f"Onnx model contains node with op {o}, which may not be a linear operation. " + \
+AssertionError: Onnx model contains node with op Cast, which may not be a linear operation. Updated Settings.WHITELIST if you want to override this.

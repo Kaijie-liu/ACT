@@ -1,0 +1,1278 @@
+[0;93m2026-05-26 22:56:08.646089263 [W:onnxruntime:Default, device_discovery.cc:283 GetGpuDevices] Failed to detect devices under "/sys/class/drm/card0": device_discovery.cc:93 ReadFileContents Failed to open file: "/sys/class/drm/card0/device/vendor"[m
+INFO     22:56:09     [tensor_storage.py:70] Hugepage enabled for branch-and-bound domains.
+Configurations:
+
+general:
+  device: cuda
+  seed: 100
+  conv_mode: matrix
+  deterministic: false
+  double_fp: false
+  loss_reduction_func: min
+  sparse_alpha: false
+  sparse_interm: false
+  save_adv_example: true
+  verify_onnxruntime_output: false
+  eval_adv_example: false
+  onnx_adv_example: false
+  show_adv_example: false
+  precompile_jit: true
+  reset_seed_after_precompile: false
+  prepare_only: false
+  complete_verifier: bab
+  enable_incomplete_verification: true
+  csv_name: instances.csv
+  results_file: /data1/Kane/ACT/audit_results/abcrown_nopgd_20260525/vit_2023/0011__pgd_2_3_16__pgd_2_3_16_3660.result
+  root_path: ../../vnncomp2023_benchmarks/benchmarks/vit
+  deterministic_opt: false
+  graph_optimizer: 'Customized("custom_graph_optimizer", "default_optimizer")'
+  buffer_has_batchdim: false
+  save_output: false
+  output_file: out.pkl
+  return_optimized_model: false
+  store_all_specs_on_cpu: false
+  adhoc_tuning: 'Customized("custom_adhoc_tuning", "customized_vit_tuning")'
+model:
+  name: null
+  path: null
+  onnx_path: /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/vit_2023/onnx/pgd_2_3_16.onnx
+  onnx_path_prefix: ''
+  cache_onnx_conversion: false
+  debug_onnx: false
+  onnx_quirks: null
+  input_shape: null
+  onnx_loader: default_onnx_and_vnnlib_loader
+  onnx_optimization_flags: []
+  onnx_vnnlib_joint_optimization_flags: none
+  check_optimized: false
+  flatten_final_output: false
+  optimize_graph: null
+  with_jacobian: false
+data:
+  start: 0
+  end: 10000
+  select_instance: null
+  num_outputs: 10
+  mean: 0.0
+  std: 1.0
+  pkl_path: null
+  dataset: null
+  data_filter_path: null
+  data_idx_file: null
+specification:
+  type: lp
+  robustness_type: verified-acc
+  norm: .inf
+  epsilon: null
+  epsilon_min: 0.0
+  vnnlib_path: /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/vit_2023/vnnlib/pgd_2_3_16_3660.vnnlib
+  vnnlib_path_prefix: ''
+  shrink_eps: null
+  rhs_offset: null
+solver:
+  batch_size: 32
+  auto_enlarge_batch_size: true
+  batched_crown_auto_enlarge_max_vram_ratio: 0.9
+  min_batch_size_ratio: 0.0
+  use_float64_in_last_iteration: false
+  early_stop_patience: 10
+  start_save_best: 0.5
+  bound_prop_method: alpha-crown
+  init_bound_prop_method: same
+  prune_after_crown: true
+  optimize_disjuncts_separately: false
+  build_batch_size: 1000000
+  skip_with_refined_bound: true
+  forward_before_compute_bounds: true
+  crown:
+    batch_size: 1000000000
+    max_crown_size: 1000000000
+    activation_bound_option: adaptive
+    compare_crown_with_ibp: false
+  alpha-crown:
+    alpha: true
+    lr_alpha: 0.5
+    iteration: 50
+    share_alphas: false
+    lr_decay: 0.98
+    full_conv_alpha: true
+    max_coeff_mul: .inf
+    matmul_share_alphas: false
+    disable_optimization: [Exp]
+    max_time: 0.3
+    alpha_dtype: float16
+  invprop:
+    apply_output_constraints_to: []
+    tighten_input_bounds: false
+    best_of_oc_and_no_oc: false
+    directly_optimize: []
+    oc_lr: 0.1
+    share_gammas: false
+  beta-crown:
+    lr_alpha: 0.05
+    lr_beta: 0.05
+    lr_decay: 0.98
+    optimizer: adam
+    iteration: 10
+    beta: true
+    beta_warmup: true
+    enable_opt_interm_bounds: false
+    all_node_split_LP: false
+  forward:
+    refine: false
+    max_dim: 10000
+    reset_threshold: 1.0
+  intermediate_refinement:
+    enabled: false
+    batch_size: 10
+    opt_coeffs: false
+    opt_bias: false
+    lr: 0.05
+    layers: [-1]
+    max_domains: 1000
+  mip:
+    unstable_neuron_threshold: 0
+    parallel_solvers: null
+    solver_threads: 1
+    refine_neuron_timeout: 15
+    refine_neuron_time_percentage: 0.8
+    early_stop: true
+    adv_warmup: true
+    mip_solver: gurobi
+    skip_unsafe: false
+    topk_filter: 1.0
+    sliding_window: -1
+    extra_constraint: false
+    refine_neuron_timeout_increasement: 0
+    timeout_neuron_percentage: 0.3
+    remaining_timeout_threshold: 1
+    remove_unstable_neurons: false
+    lp_solver: false
+bab:
+  max_domains: .inf
+  decision_thresh: 0
+  timeout: 100.0
+  timeout_scale: 1
+  max_iterations: -1
+  override_timeout: null
+  get_upper_bound: false
+  pruning_in_iteration: false
+  pruning_in_iteration_ratio: 0.2
+  sort_targets: false
+  batched_domain_list: true
+  optimized_interm: ''
+  interm_transfer: true
+  recompute_interm: false
+  sort_domain_interval: -1
+  vanilla_crown: false
+  tree_traversal: depth_first
+  hugetensor_allocator: true
+  cut:
+    enabled: false
+    cuts_path: null
+    implication: false
+    bab_cut: false
+    lp_cut: false
+    method: null
+    lr: 0.01
+    lr_decay: 1.0
+    iteration: 100
+    bab_iteration: -1
+    early_stop_patience: -1
+    lr_beta: 0.02
+    number_cuts: 50
+    topk_cuts_in_filter: 1000
+    batch_size_primal: 100
+    max_num: 1000000000
+    patches_cut: false
+    cplex_cuts: false
+    cplex_cuts_wait: 0
+    cplex_cuts_revpickup: true
+    cut_reference_bounds: true
+    fix_intermediate_bounds: false
+    _tmp_cuts: null
+    fixed_cuts: false
+    add_implied_cuts: false
+    add_input_cuts: false
+    biccos:
+      enabled: false
+      constraint_strengthening: true
+      recursively_strengthening: false
+      drop_ratio: 0.5
+      verified_bonus: 0.3
+      max_infer_iter: 20
+      max_domain: 10000.0
+      heuristic: neuron_influence_score
+      save_biccos_cuts: false
+      multi_tree_branching:
+        enabled: false
+        restore_best_tree: false
+        keep_n_best_domains: 1
+        k_splits: 1
+        iterations: 1
+  clip_n_verify:
+    rearrange_constraints: false
+    alpha_crown: false
+    prune: false
+    final_layer: false
+    clip_input_domain:
+      enabled: false
+      clip_type: relaxed
+      heuristic_K: 0.0
+      clip_iterations: 1
+      clip_calculate_volume_metrics: false
+    clip_interm_domain:
+      enabled: false
+      with_input: false
+      clip_in_alpha_crown: false
+      topk_objective: 0
+  branching:
+    method: kfsb
+    candidates: 3
+    reduceop: min
+    enable_intermediate_bound_opt: false
+    branching_input_and_activation: false
+    branching_input_and_activation_order: [input, relu]
+    branching_input_iterations: 30
+    branching_relu_iterations: 50
+    nonlinear_split:
+      method: bbps
+      disable: false
+      branching_point_method: uniform
+      num_branches: 2
+      filter: false
+      filter_beta: false
+      filter_clamp: false
+      filter_batch_size: 10000
+      filter_iterations: 25
+      relu_only: false
+      loose_tanh_threshold: null
+      branching_point:
+        db_path: branching_points.pt
+        num_iterations: 1000
+        batch_size: 1000000
+        range_l: -5.0
+        range_u: 5.0
+        log_interval: 100
+        step_size_1d: 0.01
+        step_size: 0.2
+    input_split:
+      split_hint: null
+      enable: false
+      reorder_bab: false
+      input_dim_threshold: 20
+      adv_check: 0
+      split_partitions: 2
+      sb_margin_weight: 1.0
+      sb_sum: false
+      sb_primary_spec: null
+      bf_backup_thresh: -1
+      bf_rhs_offset: 0
+      bf_iters: 1000000000.0
+      bf_batch_size: 100000
+      bf_zero_crossing_score: false
+      touch_zero_score: 0
+      ibp_enhancement: false
+      compare_with_old_bounds: true
+      update_rhs_with_attack: false
+      sb_coeff_thresh: 0.001
+      sort_index: null
+      sort_descending: true
+      show_progress: false
+      presplit_domains: null
+      skip_getting_worst_domain: false
+  attack:
+    enabled: false
+    beam_candidates: 8
+    beam_depth: 7
+    max_dive_fix_ratio: 0.8
+    min_local_free_ratio: 0.2
+    mip_start_iteration: 5
+    mip_timeout: 30.0
+    adv_pool_threshold: null
+    refined_mip_attacker: false
+    refined_batch_size: null
+attack:
+  general_attack: true
+  pgd_order: skip
+  pgd_steps: 100
+  pgd_restarts: 30
+  pgd_batch_size: 100000000
+  pgd_early_stop: true
+  pgd_lr_decay: 0.99
+  pgd_alpha: auto
+  pgd_alpha_scale: false
+  pgd_loss_mode: null
+  pgd_restart_when_stuck: false
+  enable_mip_attack: false
+  adv_saver: default_adv_saver
+  adv_verifier: default_adv_verifier
+  early_stop_condition: default_early_stop_condition
+  adv_example_finalizer: default_adv_example_finalizer
+  pgd_loss: default_pgd_loss
+  cex_path: ./test_cex.txt
+  attack_mode: PGD
+  attack_tolerance: 0.0
+  attack_func: attack_with_general_specs
+  gama_lambda: 10.0
+  gama_decay: 0.9
+  input_split:
+    pgd_steps: 100
+    pgd_restarts: 30
+    pgd_alpha: auto
+  input_split_check_adv:
+    enabled: auto
+    pgd_steps: 5
+    pgd_restarts: 5
+    pgd_alpha: auto
+    max_num_domains: 10
+debug:
+  view_model: false
+  lp_test: null
+  rescale_vnnlib_ptb: null
+  test_optimized_bounds: false
+  test_optimized_bounds_after_n_iterations: 0
+  print_verbose_decisions: false
+  sanity_check: null
+  save_minimal_config: null
+  save_minimal_config_omit_keys: []
+/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/read_vnnlib.py:184: DeprecationWarning: numpy.core.numeric is deprecated and has been renamed to numpy._core.numeric. The numpy._core namespace contains private NumPy internals and its use is discouraged, as NumPy internals can change without warning in any release. In practice, most real-world usage of numpy.core is to access functionality in the public NumPy API. If that is the case, use the public NumPy API. If not, you are using NumPy internals. If you would still like to access an internal attribute, use numpy._core.numeric._frombuffer.
+  final_rv, old_file_sha256 = pickle.load(extf)
+/data1/Kane/miniconda3/envs/abcrown25/lib/python3.11/site-packages/onnx2pytorch/convert/layer.py:29: UserWarning: The given NumPy array is not writable, and PyTorch does not support non-writable tensors. This means writing to this tensor will result in undefined behavior. You may want to copy the array to protect its data or make it writable before converting it to a tensor. This type of warning will be suppressed for the rest of this program. (Triggered internally at /pytorch/torch/csrc/utils/tensor_numpy.cpp:206.)
+  layer.weight.data = torch.from_numpy(numpy_helper.to_array(weight))
+/data1/Kane/miniconda3/envs/abcrown25/lib/python3.11/site-packages/onnx2pytorch/convert/model.py:151: UserWarning: Using experimental implementation that allows 'batch_size > 1'.Batchnorm layers could potentially produce false outputs.
+  warnings.warn(
+/data1/Kane/miniconda3/envs/abcrown25/lib/python3.11/site-packages/onnx2pytorch/operations/shape.py:7: TracerWarning: torch.tensor results are registered as constants in the trace. You can safely ignore this warning if you use this function to create tensors out of constant variables that would be the same every time you call this function. In any other case, this might cause the trace to be incorrect.
+  return torch.tensor(input.shape, device=input.device)
+/data1/Kane/miniconda3/envs/abcrown25/lib/python3.11/site-packages/onnx2pytorch/operations/gather.py:14: TracerWarning: Converting a tensor to a Python boolean might cause the trace to be incorrect. We can't record the data flow of Python values, so this value will be treated as a constant in the future. This means that the trace might not generalize to other inputs!
+  if indices.numel() == 1 and indices == -1:
+/data1/Kane/miniconda3/envs/abcrown25/lib/python3.11/site-packages/onnx2pytorch/operations/slice.py:51: TracerWarning: Converting a tensor to a Python boolean might cause the trace to be incorrect. We can't record the data flow of Python values, so this value will be treated as a constant in the future. This means that the trace might not generalize to other inputs!
+  end = min(end, shape[axes])
+/data1/Kane/miniconda3/envs/abcrown25/lib/python3.11/site-packages/onnx2pytorch/operations/reshape.py:36: TracerWarning: Converting a tensor to a Python boolean might cause the trace to be incorrect. We can't record the data flow of Python values, so this value will be treated as a constant in the future. This means that the trace might not generalize to other inputs!
+  if shape[0] == 1 and len(shape) in [2, 3, 4, 5] and self.quirks.get("fix_batch_size") is True:
+/data1/Kane/miniconda3/envs/abcrown25/lib/python3.11/site-packages/onnx2pytorch/operations/reshape.py:36: TracerWarning: Using len to get tensor shape might cause the trace to be incorrect. Recommended usage would be tensor.shape[0]. Passing a tensor of different shape might lead to errors or silently give incorrect results.
+  if shape[0] == 1 and len(shape) in [2, 3, 4, 5] and self.quirks.get("fix_batch_size") is True:
+/data1/Kane/miniconda3/envs/abcrown25/lib/python3.11/site-packages/onnx2pytorch/operations/reshape.py:54: TracerWarning: torch.tensor results are registered as constants in the trace. You can safely ignore this warning if you use this function to create tensors out of constant variables that would be the same every time you call this function. In any other case, this might cause the trace to be incorrect.
+  if (torch.prod(torch.tensor(input.shape)) != torch.prod(shape) and len(input.size()) == len(shape) + 1
+/data1/Kane/miniconda3/envs/abcrown25/lib/python3.11/site-packages/onnx2pytorch/operations/reshape.py:58: TracerWarning: Iterating over a tensor might cause the trace to be incorrect. Passing a tensor of different shape won't change the number of iterations executed (and might lead to errors or silently give incorrect results).
+  shape = [x if x != 0 else input.size(i) for i, x in enumerate(shape)]
+/data1/Kane/miniconda3/envs/abcrown25/lib/python3.11/site-packages/onnx2pytorch/operations/constantofshape.py:16: TracerWarning: Iterating over a tensor might cause the trace to be incorrect. Passing a tensor of different shape won't change the number of iterations executed (and might lead to errors or silently give incorrect results).
+  return self.constant.expand(*shape).to(shape.device)
+/data1/Kane/miniconda3/envs/abcrown25/lib/python3.11/site-packages/onnx2pytorch/operations/constantofshape.py:16: TracerWarning: Using len to get tensor shape might cause the trace to be incorrect. Recommended usage would be tensor.shape[0]. Passing a tensor of different shape might lead to errors or silently give incorrect results.
+  return self.constant.expand(*shape).to(shape.device)
+/data1/Kane/miniconda3/envs/abcrown25/lib/python3.11/site-packages/onnx2pytorch/utils.py:21: TracerWarning: Converting a tensor to a Python boolean might cause the trace to be incorrect. We can't record the data flow of Python values, so this value will be treated as a constant in the future. This means that the trace might not generalize to other inputs!
+  return value.ndim == 0 or value.shape == torch.Size([1])
+/data1/Kane/miniconda3/envs/abcrown25/lib/python3.11/site-packages/onnx2pytorch/operations/add.py:34: TracerWarning: Converting a tensor to a Python boolean might cause the trace to be incorrect. We can't record the data flow of Python values, so this value will be treated as a constant in the future. This means that the trace might not generalize to other inputs!
+  elif all(x == 1 for x in input[0].shape):
+/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/operators/leaf.py:91: UserWarning: The "has_batchdim" option for BoundBuffers is deprecated. It may be removed from the next release.
+  warnings.warn('The "has_batchdim" option for BoundBuffers is deprecated.'
+
+Experiments at Tue May 26 22:56:09 2026 on dell-pro-max-tower-t2
+Pre-compile jit kernels on a toy network...
+JIT kernels compiled in 1.0851s.
+Internal results will be saved to /data1/Kane/ACT/audit_results/abcrown_nopgd_20260525/vit_2023/0011__pgd_2_3_16__pgd_2_3_16_3660.result.
+
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% idx: 0, vnnlib ID: 0 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Using onnx /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/vit_2023/onnx/pgd_2_3_16.onnx
+Using vnnlib /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/vit_2023/vnnlib/pgd_2_3_16_3660.vnnlib
+Precompiled vnnlib file found at /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/vit_2023/vnnlib/pgd_2_3_16_3660.vnnlib.compiled
+Loading onnx /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/vit_2023/onnx/pgd_2_3_16.onnx with quirks {}
+Finished onnx model loading in 0.0208 seconds
+Finished vnnlib processing in 0.043015 seconds
+Model: BoundedModule(
+  (/input-1): BoundInput(name=/input-1, inputs=[], perturbed=True)
+  (/1): BoundBuffers(name=/1, inputs=[], perturbed=False)
+  (/2): BoundBuffers(name=/2, inputs=[], perturbed=False)
+  (/51): BoundBuffers(name=/51, inputs=[], perturbed=False)
+  (/52): BoundParams(name=/52, inputs=[], perturbed=False)
+  (/53): BoundParams(name=/53, inputs=[], perturbed=False)
+  (/54): BoundBuffers(name=/54, inputs=[], perturbed=False)
+  (/55): BoundBuffers(name=/55, inputs=[], perturbed=False)
+  (/56): BoundBuffers(name=/56, inputs=[], perturbed=False)
+  (/57): BoundBuffers(name=/57, inputs=[], perturbed=False)
+  (/58): BoundParams(name=/58, inputs=[], perturbed=False)
+  (/59): BoundParams(name=/59, inputs=[], perturbed=False)
+  (/60): BoundBuffers(name=/60, inputs=[], perturbed=False)
+  (/61): BoundBuffers(name=/61, inputs=[], perturbed=False)
+  (/63): BoundBuffers(name=/63, inputs=[], perturbed=False)
+  (/64): BoundParams(name=/64, inputs=[], perturbed=False)
+  (/65): BoundParams(name=/65, inputs=[], perturbed=False)
+  (/66): BoundParams(name=/66, inputs=[], perturbed=False)
+  (/67): BoundParams(name=/67, inputs=[], perturbed=False)
+  (/68): BoundParams(name=/68, inputs=[], perturbed=False)
+  (/69): BoundParams(name=/69, inputs=[], perturbed=False)
+  (/70): BoundBuffers(name=/70, inputs=[], perturbed=False)
+  (/71): BoundBuffers(name=/71, inputs=[], perturbed=False)
+  (/72): BoundBuffers(name=/72, inputs=[], perturbed=False)
+  (/73): BoundBuffers(name=/73, inputs=[], perturbed=False)
+  (/74): BoundBuffers(name=/74, inputs=[], perturbed=False)
+  (/75): BoundBuffers(name=/75, inputs=[], perturbed=False)
+  (/76): BoundBuffers(name=/76, inputs=[], perturbed=False)
+  (/77): BoundBuffers(name=/77, inputs=[], perturbed=False)
+  (/78): BoundBuffers(name=/78, inputs=[], perturbed=False)
+  (/79): BoundBuffers(name=/79, inputs=[], perturbed=False)
+  (/80): BoundBuffers(name=/80, inputs=[], perturbed=False)
+  (/81): BoundBuffers(name=/81, inputs=[], perturbed=False)
+  (/82): BoundParams(name=/82, inputs=[], perturbed=False)
+  (/83): BoundParams(name=/83, inputs=[], perturbed=False)
+  (/84): BoundParams(name=/84, inputs=[], perturbed=False)
+  (/85): BoundParams(name=/85, inputs=[], perturbed=False)
+  (/86): BoundBuffers(name=/86, inputs=[], perturbed=False)
+  (/87): BoundBuffers(name=/87, inputs=[], perturbed=False)
+  (/89): BoundParams(name=/89, inputs=[], perturbed=False)
+  (/90): BoundParams(name=/90, inputs=[], perturbed=False)
+  (/91): BoundParams(name=/91, inputs=[], perturbed=False)
+  (/92): BoundParams(name=/92, inputs=[], perturbed=False)
+  (/93): BoundParams(name=/93, inputs=[], perturbed=False)
+  (/94): BoundParams(name=/94, inputs=[], perturbed=False)
+  (/95): BoundBuffers(name=/95, inputs=[], perturbed=False)
+  (/96): BoundBuffers(name=/96, inputs=[], perturbed=False)
+  (/98): BoundBuffers(name=/98, inputs=[], perturbed=False)
+  (/99): BoundParams(name=/99, inputs=[], perturbed=False)
+  (/100): BoundParams(name=/100, inputs=[], perturbed=False)
+  (/101): BoundParams(name=/101, inputs=[], perturbed=False)
+  (/102): BoundParams(name=/102, inputs=[], perturbed=False)
+  (/103): BoundParams(name=/103, inputs=[], perturbed=False)
+  (/104): BoundParams(name=/104, inputs=[], perturbed=False)
+  (/105): BoundBuffers(name=/105, inputs=[], perturbed=False)
+  (/106): BoundBuffers(name=/106, inputs=[], perturbed=False)
+  (/107): BoundBuffers(name=/107, inputs=[], perturbed=False)
+  (/108): BoundBuffers(name=/108, inputs=[], perturbed=False)
+  (/109): BoundBuffers(name=/109, inputs=[], perturbed=False)
+  (/110): BoundBuffers(name=/110, inputs=[], perturbed=False)
+  (/111): BoundBuffers(name=/111, inputs=[], perturbed=False)
+  (/112): BoundBuffers(name=/112, inputs=[], perturbed=False)
+  (/113): BoundBuffers(name=/113, inputs=[], perturbed=False)
+  (/114): BoundBuffers(name=/114, inputs=[], perturbed=False)
+  (/115): BoundBuffers(name=/115, inputs=[], perturbed=False)
+  (/116): BoundBuffers(name=/116, inputs=[], perturbed=False)
+  (/117): BoundParams(name=/117, inputs=[], perturbed=False)
+  (/118): BoundParams(name=/118, inputs=[], perturbed=False)
+  (/119): BoundParams(name=/119, inputs=[], perturbed=False)
+  (/120): BoundParams(name=/120, inputs=[], perturbed=False)
+  (/121): BoundBuffers(name=/121, inputs=[], perturbed=False)
+  (/122): BoundBuffers(name=/122, inputs=[], perturbed=False)
+  (/124): BoundParams(name=/124, inputs=[], perturbed=False)
+  (/125): BoundParams(name=/125, inputs=[], perturbed=False)
+  (/126): BoundParams(name=/126, inputs=[], perturbed=False)
+  (/127): BoundParams(name=/127, inputs=[], perturbed=False)
+  (/128): BoundParams(name=/128, inputs=[], perturbed=False)
+  (/129): BoundParams(name=/129, inputs=[], perturbed=False)
+  (/130): BoundBuffers(name=/130, inputs=[], perturbed=False)
+  (/131): BoundBuffers(name=/131, inputs=[], perturbed=False)
+  (/133): BoundParams(name=/133, inputs=[], perturbed=False)
+  (/134): BoundParams(name=/134, inputs=[], perturbed=False)
+  (/135): BoundConstant(name=/135, inputs=[], perturbed=False)
+  (/136): BoundCast(name=/136, inputs=[/51], perturbed=False)
+  (/137): BoundConstant(name=/137, value=tensor([1], device='cuda:0'))
+  (/138): BoundReshape(name=/138, inputs=[/136, /137], perturbed=False)
+  (/139): BoundGather(name=/139, inputs=[/135, /138], perturbed=False)
+  (/140): BoundConstant(name=/140, value=tensor([0], device='cuda:0'))
+  (/141): BoundSqueeze(name=/141, inputs=[/139, /140], perturbed=False)
+  (/142): BoundConv(name=/142, inputs=[/input-1, /52, /53], perturbed=True)
+  (/143): BoundConstant(name=/143, inputs=[], perturbed=False)
+  (/shape): BoundConcat(name=/shape, inputs=[/143, /54], perturbed=False)
+  (/145): BoundSplit(name=/145, inputs=[/shape], perturbed=False)
+  (/146): BoundSplit(name=/146, inputs=[/shape], perturbed=False)
+  (/147): BoundSplit(name=/147, inputs=[/shape], perturbed=False)
+  (/148): BoundConstant(name=/148, value=tensor([0], device='cuda:0'))
+  (/149): BoundSqueeze(name=/149, inputs=[/145, /148], perturbed=False)
+  (/150): BoundConstant(name=/150, value=tensor([0], device='cuda:0'))
+  (/151): BoundSqueeze(name=/151, inputs=[/146, /150], perturbed=False)
+  (/152): BoundConstant(name=/152, value=tensor([0], device='cuda:0'))
+  (/153): BoundSqueeze(name=/153, inputs=[/147, /152], perturbed=False)
+  (/154): BoundConstant(name=/154, value=tensor([0], device='cuda:0'))
+  (/155): BoundUnsqueeze(name=/155, inputs=[/149, /154], perturbed=False)
+  (/156): BoundConstant(name=/156, value=tensor([0], device='cuda:0'))
+  (/157): BoundUnsqueeze(name=/157, inputs=[/151, /156], perturbed=False)
+  (/158): BoundConstant(name=/158, value=tensor([0], device='cuda:0'))
+  (/159): BoundUnsqueeze(name=/159, inputs=[/153, /158], perturbed=False)
+  (/160): BoundConcat(name=/160, inputs=[/155, /157, /159], perturbed=False)
+  (/161): BoundReshape(name=/161, inputs=[/142, /160], perturbed=True)
+  (/162): BoundTranspose(name=/162, inputs=[/161], perturbed=True)
+  (/163): BoundConstant(name=/163, value=tensor([0], device='cuda:0'))
+  (/164): BoundUnsqueeze(name=/164, inputs=[/141, /163], perturbed=False)
+  (/shape-3): BoundConcat(name=/shape-3, inputs=[/164, /55, /56], perturbed=False)
+  (/166): BoundSplit(name=/166, inputs=[/shape-3], perturbed=False)
+  (/167): BoundSplit(name=/167, inputs=[/shape-3], perturbed=False)
+  (/168): BoundSplit(name=/168, inputs=[/shape-3], perturbed=False)
+  (/169): BoundConstant(name=/169, value=tensor([0], device='cuda:0'))
+  (/170): BoundSqueeze(name=/170, inputs=[/166, /169], perturbed=False)
+  (/171): BoundConstant(name=/171, value=tensor([0], device='cuda:0'))
+  (/172): BoundSqueeze(name=/172, inputs=[/167, /171], perturbed=False)
+  (/173): BoundConstant(name=/173, value=tensor([0], device='cuda:0'))
+  (/174): BoundSqueeze(name=/174, inputs=[/168, /173], perturbed=False)
+  (/175): BoundConstant(name=/175, value=tensor([0], device='cuda:0'))
+  (/176): BoundUnsqueeze(name=/176, inputs=[/170, /175], perturbed=False)
+  (/177): BoundConstant(name=/177, value=tensor([0], device='cuda:0'))
+  (/178): BoundUnsqueeze(name=/178, inputs=[/172, /177], perturbed=False)
+  (/179): BoundConstant(name=/179, value=tensor([0], device='cuda:0'))
+  (/180): BoundUnsqueeze(name=/180, inputs=[/174, /179], perturbed=False)
+  (/181): BoundConcat(name=/181, inputs=[/176, /178, /180], perturbed=False)
+  (/182): BoundConstant(name=/182, value=tensor([-1], device='cuda:0'))
+  (/183): BoundReshape(name=/183, inputs=[/181, /182], perturbed=False)
+  (/184): BoundShape(name=/184, inputs=[/183], perturbed=False)
+  (/185): BoundConstantOfShape(name=/185, inputs=[/184], perturbed=False)
+  (/186): BoundConstant(name=/186, value=-1)
+  (/187): BoundMul(name=/187, inputs=[/185, /186], perturbed=False)
+  (/188): BoundEqual(name=/188, inputs=[/183, /187], perturbed=False)
+  (/189): BoundWhere(name=/189, inputs=[/188, /185, /183], perturbed=False)
+  (/190): BoundExpand(name=/190, inputs=[/57, /189], perturbed=False)
+  (/191): BoundCast(name=/191, inputs=[/190], perturbed=False)
+  (/192): BoundAdd(name=/192, inputs=[/191, /1], perturbed=False)
+  (/193): BoundConcat(name=/193, inputs=[/192, /162], perturbed=True)
+  (/194): BoundAdd(name=/194, inputs=[/193, /2], perturbed=True)
+  (/input): BoundTranspose(name=/input, inputs=[/194], perturbed=True)
+  (/196): BoundBatchNormalization(name=/196, inputs=[/input, /58, /59, /60, /61], perturbed=True)
+  (/197): BoundTranspose(name=/197, inputs=[/196], perturbed=True)
+  (/198): BoundConstant(name=/198, inputs=[], perturbed=False)
+  (/199): BoundCast(name=/199, inputs=[/63], perturbed=False)
+  (/200): BoundConstant(name=/200, value=tensor([1], device='cuda:0'))
+  (/201): BoundReshape(name=/201, inputs=[/199, /200], perturbed=False)
+  (/202): BoundGather(name=/202, inputs=[/198, /201], perturbed=False)
+  (/203): BoundConstant(name=/203, value=tensor([0], device='cuda:0'))
+  (/204): BoundSqueeze(name=/204, inputs=[/202, /203], perturbed=False)
+  (/205): BoundTranspose(name=/205, inputs=[/64], perturbed=False)
+  (/206): BoundMatMul(name=/206, inputs=[/197, /205], perturbed=True)
+  (/207): BoundAdd(name=/207, inputs=[/65, /206], perturbed=True)
+  (/208): BoundTranspose(name=/208, inputs=[/66], perturbed=False)
+  (/209): BoundMatMul(name=/209, inputs=[/197, /208], perturbed=True)
+  (/210): BoundAdd(name=/210, inputs=[/67, /209], perturbed=True)
+  (/211): BoundTranspose(name=/211, inputs=[/68], perturbed=False)
+  (/212): BoundMatMul(name=/212, inputs=[/197, /211], perturbed=True)
+  (/213): BoundAdd(name=/213, inputs=[/69, /212], perturbed=True)
+  (/214): BoundConstant(name=/214, value=tensor([0], device='cuda:0'))
+  (/215): BoundUnsqueeze(name=/215, inputs=[/204, /214], perturbed=False)
+  (/shape-7): BoundConcat(name=/shape-7, inputs=[/215, /70, /71, /72], perturbed=False)
+  (/shape-11): BoundConcat(name=/shape-11, inputs=[/215, /73, /74, /75], perturbed=False)
+  (/shape-15): BoundConcat(name=/shape-15, inputs=[/215, /76, /77, /78], perturbed=False)
+  (/219): BoundSplit(name=/219, inputs=[/shape-7], perturbed=False)
+  (/220): BoundSplit(name=/220, inputs=[/shape-7], perturbed=False)
+  (/221): BoundSplit(name=/221, inputs=[/shape-7], perturbed=False)
+  (/222): BoundSplit(name=/222, inputs=[/shape-7], perturbed=False)
+  (/223): BoundConstant(name=/223, value=tensor([0], device='cuda:0'))
+  (/224): BoundSqueeze(name=/224, inputs=[/219, /223], perturbed=False)
+  (/225): BoundConstant(name=/225, value=tensor([0], device='cuda:0'))
+  (/226): BoundSqueeze(name=/226, inputs=[/220, /225], perturbed=False)
+  (/227): BoundConstant(name=/227, value=tensor([0], device='cuda:0'))
+  (/228): BoundSqueeze(name=/228, inputs=[/221, /227], perturbed=False)
+  (/229): BoundConstant(name=/229, value=tensor([0], device='cuda:0'))
+  (/230): BoundSqueeze(name=/230, inputs=[/222, /229], perturbed=False)
+  (/231): BoundConstant(name=/231, value=tensor([0], device='cuda:0'))
+  (/232): BoundUnsqueeze(name=/232, inputs=[/224, /231], perturbed=False)
+  (/233): BoundConstant(name=/233, value=tensor([0], device='cuda:0'))
+  (/234): BoundUnsqueeze(name=/234, inputs=[/226, /233], perturbed=False)
+  (/235): BoundConstant(name=/235, value=tensor([0], device='cuda:0'))
+  (/236): BoundUnsqueeze(name=/236, inputs=[/228, /235], perturbed=False)
+  (/237): BoundConstant(name=/237, value=tensor([0], device='cuda:0'))
+  (/238): BoundUnsqueeze(name=/238, inputs=[/230, /237], perturbed=False)
+  (/239): BoundConcat(name=/239, inputs=[/232, /234, /236, /238], perturbed=False)
+  (/240): BoundReshape(name=/240, inputs=[/207, /239], perturbed=True)
+  (/241): BoundTranspose(name=/241, inputs=[/240], perturbed=True)
+  (/242): BoundSplit(name=/242, inputs=[/shape-11], perturbed=False)
+  (/243): BoundSplit(name=/243, inputs=[/shape-11], perturbed=False)
+  (/244): BoundSplit(name=/244, inputs=[/shape-11], perturbed=False)
+  (/245): BoundSplit(name=/245, inputs=[/shape-11], perturbed=False)
+  (/246): BoundConstant(name=/246, value=tensor([0], device='cuda:0'))
+  (/247): BoundSqueeze(name=/247, inputs=[/242, /246], perturbed=False)
+  (/248): BoundConstant(name=/248, value=tensor([0], device='cuda:0'))
+  (/249): BoundSqueeze(name=/249, inputs=[/243, /248], perturbed=False)
+  (/250): BoundConstant(name=/250, value=tensor([0], device='cuda:0'))
+  (/251): BoundSqueeze(name=/251, inputs=[/244, /250], perturbed=False)
+  (/252): BoundConstant(name=/252, value=tensor([0], device='cuda:0'))
+  (/253): BoundSqueeze(name=/253, inputs=[/245, /252], perturbed=False)
+  (/254): BoundConstant(name=/254, value=tensor([0], device='cuda:0'))
+  (/255): BoundUnsqueeze(name=/255, inputs=[/247, /254], perturbed=False)
+  (/256): BoundConstant(name=/256, value=tensor([0], device='cuda:0'))
+  (/257): BoundUnsqueeze(name=/257, inputs=[/249, /256], perturbed=False)
+  (/258): BoundConstant(name=/258, value=tensor([0], device='cuda:0'))
+  (/259): BoundUnsqueeze(name=/259, inputs=[/251, /258], perturbed=False)
+  (/260): BoundConstant(name=/260, value=tensor([0], device='cuda:0'))
+  (/261): BoundUnsqueeze(name=/261, inputs=[/253, /260], perturbed=False)
+  (/262): BoundConcat(name=/262, inputs=[/255, /257, /259, /261], perturbed=False)
+  (/263): BoundReshape(name=/263, inputs=[/210, /262], perturbed=True)
+  (/264): BoundSplit(name=/264, inputs=[/shape-15], perturbed=False)
+  (/265): BoundSplit(name=/265, inputs=[/shape-15], perturbed=False)
+  (/266): BoundSplit(name=/266, inputs=[/shape-15], perturbed=False)
+  (/267): BoundSplit(name=/267, inputs=[/shape-15], perturbed=False)
+  (/268): BoundConstant(name=/268, value=tensor([0], device='cuda:0'))
+  (/269): BoundSqueeze(name=/269, inputs=[/264, /268], perturbed=False)
+  (/270): BoundConstant(name=/270, value=tensor([0], device='cuda:0'))
+  (/271): BoundSqueeze(name=/271, inputs=[/265, /270], perturbed=False)
+  (/272): BoundConstant(name=/272, value=tensor([0], device='cuda:0'))
+  (/273): BoundSqueeze(name=/273, inputs=[/266, /272], perturbed=False)
+  (/274): BoundConstant(name=/274, value=tensor([0], device='cuda:0'))
+  (/275): BoundSqueeze(name=/275, inputs=[/267, /274], perturbed=False)
+  (/276): BoundConstant(name=/276, value=tensor([0], device='cuda:0'))
+  (/277): BoundUnsqueeze(name=/277, inputs=[/269, /276], perturbed=False)
+  (/278): BoundConstant(name=/278, value=tensor([0], device='cuda:0'))
+  (/279): BoundUnsqueeze(name=/279, inputs=[/271, /278], perturbed=False)
+  (/280): BoundConstant(name=/280, value=tensor([0], device='cuda:0'))
+  (/281): BoundUnsqueeze(name=/281, inputs=[/273, /280], perturbed=False)
+  (/282): BoundConstant(name=/282, value=tensor([0], device='cuda:0'))
+  (/283): BoundUnsqueeze(name=/283, inputs=[/275, /282], perturbed=False)
+  (/284): BoundConcat(name=/284, inputs=[/277, /279, /281, /283], perturbed=False)
+  (/285): BoundReshape(name=/285, inputs=[/213, /284], perturbed=True)
+  (/286): BoundTranspose(name=/286, inputs=[/285], perturbed=True)
+  (/287): BoundTranspose(name=/287, inputs=[/263], perturbed=True)
+  (/288): BoundMatMul(name=/288, inputs=[/241, /287], perturbed=True)
+  (/input-4): BoundMul(name=/input-4, inputs=[/288, /79], perturbed=True)
+  (/290/split/1): BoundConstant(name=/290/split/1, value=tensor([3], device='cuda:0'))
+  (/290/split/2): BoundReduceMax(name=/290/split/2, inputs=[/input-4, /290/split/1], perturbed=True)
+  (/290/split/3): BoundConstant(name=/290/split/3, value=tensor([3], device='cuda:0'))
+  (/290/split/4): BoundUnsqueeze(name=/290/split/4, inputs=[/290/split/2, /290/split/3], perturbed=True)
+  (/290/split/5): BoundSub(name=/290/split/5, inputs=[/input-4, /290/split/4], perturbed=True)
+  (/290/split/6): BoundExp(name=/290/split/6, inputs=[/290/split/5], perturbed=True)
+  (/290/split/7): BoundConstant(name=/290/split/7, value=tensor([3], device='cuda:0'))
+  (/290/split/8): BoundReduceSum(name=/290/split/8, inputs=[/290/split/6, /290/split/7], perturbed=True)
+  (/291): BoundMatMul(name=/291, inputs=[/290/mul, /286], perturbed=True)
+  (/292): BoundTranspose(name=/292, inputs=[/291], perturbed=True)
+  (/shape-19): BoundConcat(name=/shape-19, inputs=[/215, /80, /81], perturbed=False)
+  (/294): BoundSplit(name=/294, inputs=[/shape-19], perturbed=False)
+  (/295): BoundSplit(name=/295, inputs=[/shape-19], perturbed=False)
+  (/296): BoundSplit(name=/296, inputs=[/shape-19], perturbed=False)
+  (/297): BoundConstant(name=/297, value=tensor([0], device='cuda:0'))
+  (/298): BoundSqueeze(name=/298, inputs=[/294, /297], perturbed=False)
+  (/299): BoundConstant(name=/299, value=tensor([0], device='cuda:0'))
+  (/300): BoundSqueeze(name=/300, inputs=[/295, /299], perturbed=False)
+  (/301): BoundConstant(name=/301, value=tensor([0], device='cuda:0'))
+  (/302): BoundSqueeze(name=/302, inputs=[/296, /301], perturbed=False)
+  (/303): BoundConstant(name=/303, value=tensor([0], device='cuda:0'))
+  (/304): BoundUnsqueeze(name=/304, inputs=[/298, /303], perturbed=False)
+  (/305): BoundConstant(name=/305, value=tensor([0], device='cuda:0'))
+  (/306): BoundUnsqueeze(name=/306, inputs=[/300, /305], perturbed=False)
+  (/307): BoundConstant(name=/307, value=tensor([0], device='cuda:0'))
+  (/308): BoundUnsqueeze(name=/308, inputs=[/302, /307], perturbed=False)
+  (/309): BoundConcat(name=/309, inputs=[/304, /306, /308], perturbed=False)
+  (/310): BoundReshape(name=/310, inputs=[/292, /309], perturbed=True)
+  (/311): BoundTranspose(name=/311, inputs=[/82], perturbed=False)
+  (/312): BoundMatMul(name=/312, inputs=[/310, /311], perturbed=True)
+  (/313): BoundAdd(name=/313, inputs=[/83, /312], perturbed=True)
+  (/314): BoundAdd(name=/314, inputs=[/313, /194], perturbed=True)
+  (/input-8): BoundTranspose(name=/input-8, inputs=[/314], perturbed=True)
+  (/316): BoundBatchNormalization(name=/316, inputs=[/input-8, /84, /85, /86, /87], perturbed=True)
+  (/317): BoundTranspose(name=/317, inputs=[/316], perturbed=True)
+  (/318): BoundTranspose(name=/318, inputs=[/89], perturbed=False)
+  (/319): BoundMatMul(name=/319, inputs=[/317, /318], perturbed=True)
+  (/input-12): BoundAdd(name=/input-12, inputs=[/90, /319], perturbed=True)
+  (/321): BoundRelu(name=/321, inputs=[/input-12], perturbed=True)
+  (/322): BoundTranspose(name=/322, inputs=[/91], perturbed=False)
+  (/323): BoundMatMul(name=/323, inputs=[/321, /322], perturbed=True)
+  (/324): BoundAdd(name=/324, inputs=[/92, /323], perturbed=True)
+  (/325): BoundAdd(name=/325, inputs=[/324, /314], perturbed=True)
+  (/input-16): BoundTranspose(name=/input-16, inputs=[/325], perturbed=True)
+  (/327): BoundBatchNormalization(name=/327, inputs=[/input-16, /93, /94, /95, /96], perturbed=True)
+  (/328): BoundTranspose(name=/328, inputs=[/327], perturbed=True)
+  (/329): BoundCast(name=/329, inputs=[/98], perturbed=False)
+  (/330): BoundConstant(name=/330, value=tensor([1], device='cuda:0'))
+  (/331): BoundReshape(name=/331, inputs=[/329, /330], perturbed=False)
+  (/332): BoundGather(name=/332, inputs=[/198, /331], perturbed=False)
+  (/333): BoundConstant(name=/333, value=tensor([0], device='cuda:0'))
+  (/334): BoundSqueeze(name=/334, inputs=[/332, /333], perturbed=False)
+  (/335): BoundTranspose(name=/335, inputs=[/99], perturbed=False)
+  (/336): BoundMatMul(name=/336, inputs=[/328, /335], perturbed=True)
+  (/337): BoundAdd(name=/337, inputs=[/100, /336], perturbed=True)
+  (/338): BoundTranspose(name=/338, inputs=[/101], perturbed=False)
+  (/339): BoundMatMul(name=/339, inputs=[/328, /338], perturbed=True)
+  (/340): BoundAdd(name=/340, inputs=[/102, /339], perturbed=True)
+  (/341): BoundTranspose(name=/341, inputs=[/103], perturbed=False)
+  (/342): BoundMatMul(name=/342, inputs=[/328, /341], perturbed=True)
+  (/343): BoundAdd(name=/343, inputs=[/104, /342], perturbed=True)
+  (/344): BoundConstant(name=/344, value=tensor([0], device='cuda:0'))
+  (/345): BoundUnsqueeze(name=/345, inputs=[/334, /344], perturbed=False)
+  (/shape-23): BoundConcat(name=/shape-23, inputs=[/345, /105, /106, /107], perturbed=False)
+  (/shape-27): BoundConcat(name=/shape-27, inputs=[/345, /108, /109, /110], perturbed=False)
+  (/shape-31): BoundConcat(name=/shape-31, inputs=[/345, /111, /112, /113], perturbed=False)
+  (/349): BoundSplit(name=/349, inputs=[/shape-23], perturbed=False)
+  (/350): BoundSplit(name=/350, inputs=[/shape-23], perturbed=False)
+  (/351): BoundSplit(name=/351, inputs=[/shape-23], perturbed=False)
+  (/352): BoundSplit(name=/352, inputs=[/shape-23], perturbed=False)
+  (/353): BoundConstant(name=/353, value=tensor([0], device='cuda:0'))
+  (/354): BoundSqueeze(name=/354, inputs=[/349, /353], perturbed=False)
+  (/355): BoundConstant(name=/355, value=tensor([0], device='cuda:0'))
+  (/356): BoundSqueeze(name=/356, inputs=[/350, /355], perturbed=False)
+  (/357): BoundConstant(name=/357, value=tensor([0], device='cuda:0'))
+  (/358): BoundSqueeze(name=/358, inputs=[/351, /357], perturbed=False)
+  (/359): BoundConstant(name=/359, value=tensor([0], device='cuda:0'))
+  (/360): BoundSqueeze(name=/360, inputs=[/352, /359], perturbed=False)
+  (/361): BoundConstant(name=/361, value=tensor([0], device='cuda:0'))
+  (/362): BoundUnsqueeze(name=/362, inputs=[/354, /361], perturbed=False)
+  (/363): BoundConstant(name=/363, value=tensor([0], device='cuda:0'))
+  (/364): BoundUnsqueeze(name=/364, inputs=[/356, /363], perturbed=False)
+  (/365): BoundConstant(name=/365, value=tensor([0], device='cuda:0'))
+  (/366): BoundUnsqueeze(name=/366, inputs=[/358, /365], perturbed=False)
+  (/367): BoundConstant(name=/367, value=tensor([0], device='cuda:0'))
+  (/368): BoundUnsqueeze(name=/368, inputs=[/360, /367], perturbed=False)
+  (/369): BoundConcat(name=/369, inputs=[/362, /364, /366, /368], perturbed=False)
+  (/370): BoundReshape(name=/370, inputs=[/337, /369], perturbed=True)
+  (/371): BoundTranspose(name=/371, inputs=[/370], perturbed=True)
+  (/372): BoundSplit(name=/372, inputs=[/shape-27], perturbed=False)
+  (/373): BoundSplit(name=/373, inputs=[/shape-27], perturbed=False)
+  (/374): BoundSplit(name=/374, inputs=[/shape-27], perturbed=False)
+  (/375): BoundSplit(name=/375, inputs=[/shape-27], perturbed=False)
+  (/376): BoundConstant(name=/376, value=tensor([0], device='cuda:0'))
+  (/377): BoundSqueeze(name=/377, inputs=[/372, /376], perturbed=False)
+  (/378): BoundConstant(name=/378, value=tensor([0], device='cuda:0'))
+  (/379): BoundSqueeze(name=/379, inputs=[/373, /378], perturbed=False)
+  (/380): BoundConstant(name=/380, value=tensor([0], device='cuda:0'))
+  (/381): BoundSqueeze(name=/381, inputs=[/374, /380], perturbed=False)
+  (/382): BoundConstant(name=/382, value=tensor([0], device='cuda:0'))
+  (/383): BoundSqueeze(name=/383, inputs=[/375, /382], perturbed=False)
+  (/384): BoundConstant(name=/384, value=tensor([0], device='cuda:0'))
+  (/385): BoundUnsqueeze(name=/385, inputs=[/377, /384], perturbed=False)
+  (/386): BoundConstant(name=/386, value=tensor([0], device='cuda:0'))
+  (/387): BoundUnsqueeze(name=/387, inputs=[/379, /386], perturbed=False)
+  (/388): BoundConstant(name=/388, value=tensor([0], device='cuda:0'))
+  (/389): BoundUnsqueeze(name=/389, inputs=[/381, /388], perturbed=False)
+  (/390): BoundConstant(name=/390, value=tensor([0], device='cuda:0'))
+  (/391): BoundUnsqueeze(name=/391, inputs=[/383, /390], perturbed=False)
+  (/392): BoundConcat(name=/392, inputs=[/385, /387, /389, /391], perturbed=False)
+  (/393): BoundReshape(name=/393, inputs=[/340, /392], perturbed=True)
+  (/394): BoundSplit(name=/394, inputs=[/shape-31], perturbed=False)
+  (/395): BoundSplit(name=/395, inputs=[/shape-31], perturbed=False)
+  (/396): BoundSplit(name=/396, inputs=[/shape-31], perturbed=False)
+  (/397): BoundSplit(name=/397, inputs=[/shape-31], perturbed=False)
+  (/398): BoundConstant(name=/398, value=tensor([0], device='cuda:0'))
+  (/399): BoundSqueeze(name=/399, inputs=[/394, /398], perturbed=False)
+  (/400): BoundConstant(name=/400, value=tensor([0], device='cuda:0'))
+  (/401): BoundSqueeze(name=/401, inputs=[/395, /400], perturbed=False)
+  (/402): BoundConstant(name=/402, value=tensor([0], device='cuda:0'))
+  (/403): BoundSqueeze(name=/403, inputs=[/396, /402], perturbed=False)
+  (/404): BoundConstant(name=/404, value=tensor([0], device='cuda:0'))
+  (/405): BoundSqueeze(name=/405, inputs=[/397, /404], perturbed=False)
+  (/406): BoundConstant(name=/406, value=tensor([0], device='cuda:0'))
+  (/407): BoundUnsqueeze(name=/407, inputs=[/399, /406], perturbed=False)
+  (/408): BoundConstant(name=/408, value=tensor([0], device='cuda:0'))
+  (/409): BoundUnsqueeze(name=/409, inputs=[/401, /408], perturbed=False)
+  (/410): BoundConstant(name=/410, value=tensor([0], device='cuda:0'))
+  (/411): BoundUnsqueeze(name=/411, inputs=[/403, /410], perturbed=False)
+  (/412): BoundConstant(name=/412, value=tensor([0], device='cuda:0'))
+  (/413): BoundUnsqueeze(name=/413, inputs=[/405, /412], perturbed=False)
+  (/414): BoundConcat(name=/414, inputs=[/407, /409, /411, /413], perturbed=False)
+  (/415): BoundReshape(name=/415, inputs=[/343, /414], perturbed=True)
+  (/416): BoundTranspose(name=/416, inputs=[/415], perturbed=True)
+  (/417): BoundTranspose(name=/417, inputs=[/393], perturbed=True)
+  (/418): BoundMatMul(name=/418, inputs=[/371, /417], perturbed=True)
+  (/input-20): BoundMul(name=/input-20, inputs=[/418, /114], perturbed=True)
+  (/420/split/1): BoundConstant(name=/420/split/1, value=tensor([3], device='cuda:0'))
+  (/420/split/2): BoundReduceMax(name=/420/split/2, inputs=[/input-20, /420/split/1], perturbed=True)
+  (/420/split/3): BoundConstant(name=/420/split/3, value=tensor([3], device='cuda:0'))
+  (/420/split/4): BoundUnsqueeze(name=/420/split/4, inputs=[/420/split/2, /420/split/3], perturbed=True)
+  (/420/split/5): BoundSub(name=/420/split/5, inputs=[/input-20, /420/split/4], perturbed=True)
+  (/420/split/6): BoundExp(name=/420/split/6, inputs=[/420/split/5], perturbed=True)
+  (/420/split/7): BoundConstant(name=/420/split/7, value=tensor([3], device='cuda:0'))
+  (/420/split/8): BoundReduceSum(name=/420/split/8, inputs=[/420/split/6, /420/split/7], perturbed=True)
+  (/421): BoundMatMul(name=/421, inputs=[/420/mul, /416], perturbed=True)
+  (/422): BoundTranspose(name=/422, inputs=[/421], perturbed=True)
+  (/shape-35): BoundConcat(name=/shape-35, inputs=[/345, /115, /116], perturbed=False)
+  (/424): BoundSplit(name=/424, inputs=[/shape-35], perturbed=False)
+  (/425): BoundSplit(name=/425, inputs=[/shape-35], perturbed=False)
+  (/426): BoundSplit(name=/426, inputs=[/shape-35], perturbed=False)
+  (/427): BoundConstant(name=/427, value=tensor([0], device='cuda:0'))
+  (/428): BoundSqueeze(name=/428, inputs=[/424, /427], perturbed=False)
+  (/429): BoundConstant(name=/429, value=tensor([0], device='cuda:0'))
+  (/430): BoundSqueeze(name=/430, inputs=[/425, /429], perturbed=False)
+  (/431): BoundConstant(name=/431, value=tensor([0], device='cuda:0'))
+  (/432): BoundSqueeze(name=/432, inputs=[/426, /431], perturbed=False)
+  (/433): BoundConstant(name=/433, value=tensor([0], device='cuda:0'))
+  (/434): BoundUnsqueeze(name=/434, inputs=[/428, /433], perturbed=False)
+  (/435): BoundConstant(name=/435, value=tensor([0], device='cuda:0'))
+  (/436): BoundUnsqueeze(name=/436, inputs=[/430, /435], perturbed=False)
+  (/437): BoundConstant(name=/437, value=tensor([0], device='cuda:0'))
+  (/438): BoundUnsqueeze(name=/438, inputs=[/432, /437], perturbed=False)
+  (/439): BoundConcat(name=/439, inputs=[/434, /436, /438], perturbed=False)
+  (/440): BoundReshape(name=/440, inputs=[/422, /439], perturbed=True)
+  (/441): BoundTranspose(name=/441, inputs=[/117], perturbed=False)
+  (/442): BoundMatMul(name=/442, inputs=[/440, /441], perturbed=True)
+  (/443): BoundAdd(name=/443, inputs=[/118, /442], perturbed=True)
+  (/444): BoundAdd(name=/444, inputs=[/443, /325], perturbed=True)
+  (/input-24): BoundTranspose(name=/input-24, inputs=[/444], perturbed=True)
+  (/446): BoundBatchNormalization(name=/446, inputs=[/input-24, /119, /120, /121, /122], perturbed=True)
+  (/447): BoundTranspose(name=/447, inputs=[/446], perturbed=True)
+  (/448): BoundTranspose(name=/448, inputs=[/124], perturbed=False)
+  (/449): BoundMatMul(name=/449, inputs=[/447, /448], perturbed=True)
+  (/input-28): BoundAdd(name=/input-28, inputs=[/125, /449], perturbed=True)
+  (/451): BoundRelu(name=/451, inputs=[/input-28], perturbed=True)
+  (/452): BoundTranspose(name=/452, inputs=[/126], perturbed=False)
+  (/453): BoundMatMul(name=/453, inputs=[/451, /452], perturbed=True)
+  (/454): BoundAdd(name=/454, inputs=[/127, /453], perturbed=True)
+  (/455): BoundAdd(name=/455, inputs=[/454, /444], perturbed=True)
+  (/456): BoundConstant(name=/456, value=tensor([1], device='cuda:0'))
+  (/input-32): BoundReduceMean(name=/input-32, inputs=[/455, /456], perturbed=True)
+  (/458): BoundBatchNormalization(name=/458, inputs=[/input-32, /128, /129, /130, /131], perturbed=True)
+  (/459): BoundLinear(name=/459, inputs=[/458, /133, /134], perturbed=True)
+  (/290/reciprocal): BoundReciprocal(name=/290/reciprocal, inputs=[/290/split/8], perturbed=True)
+  (/290/mul): BoundMul(name=/290/mul, inputs=[/290/split/6, /290/reciprocal], perturbed=True)
+  (/420/reciprocal): BoundReciprocal(name=/420/reciprocal, inputs=[/420/split/8], perturbed=True)
+  (/420/mul): BoundMul(name=/420/mul, inputs=[/420/split/6, /420/reciprocal], perturbed=True)
+)
+Original output in the first batch: tensor([[ 4.06130838, -1.83089066,  0.47853196, -1.45424581,  0.50768942,
+         -1.32313728, -3.88931012, -0.33443671,  3.49650407, -1.08241713]],
+       device='cuda:0')
+Split layers:
+Nonlinear functions:
+   BoundMatMul(name=/288, inputs=[/241, /287], perturbed=True)
+   BoundExp(name=/290/split/6, inputs=[/290/split/5], perturbed=True)
+   BoundMatMul(name=/291, inputs=[/290/mul, /286], perturbed=True)
+   BoundRelu(name=/321, inputs=[/input-12], perturbed=True)
+   BoundMatMul(name=/418, inputs=[/371, /417], perturbed=True)
+   BoundExp(name=/420/split/6, inputs=[/420/split/5], perturbed=True)
+   BoundMatMul(name=/421, inputs=[/420/mul, /416], perturbed=True)
+   BoundRelu(name=/451, inputs=[/input-28], perturbed=True)
+   BoundReciprocal(name=/290/reciprocal, inputs=[/290/split/8], perturbed=True)
+   BoundMul(name=/290/mul, inputs=[/290/split/6, /290/reciprocal], perturbed=True)
+   BoundReciprocal(name=/420/reciprocal, inputs=[/420/split/8], perturbed=True)
+   BoundMul(name=/420/mul, inputs=[/420/split/6, /420/reciprocal], perturbed=True)
+build batch [1/1]
+layer /321 start_node /371 using full alpha [2, 240, 1, 5, 96] with unstable size None total_size 240 output_shape torch.Size([3, 5, 16])
+layer /321 start_node /417 using full alpha [2, 240, 1, 5, 96] with unstable size None total_size 240 output_shape torch.Size([3, 16, 5])
+layer /321 start_node /420/split/5 using full alpha [2, 75, 1, 5, 96] with unstable size None total_size 75 output_shape torch.Size([3, 5, 5])
+layer /321 start_node /420/split/8 using full alpha [2, 15, 1, 5, 96] with unstable size None total_size 15 output_shape torch.Size([3, 5, 1])
+layer /321 start_node /420/split/6 using full alpha [2, 75, 1, 5, 96] with unstable size None total_size 75 output_shape torch.Size([3, 5, 5])
+layer /321 start_node /420/reciprocal using full alpha [2, 15, 1, 5, 96] with unstable size None total_size 15 output_shape torch.Size([3, 5, 1])
+layer /321 start_node /420/mul using full alpha [2, 75, 1, 5, 96] with unstable size None total_size 75 output_shape torch.Size([3, 5, 5])
+layer /321 start_node /416 using full alpha [2, 240, 1, 5, 96] with unstable size None total_size 240 output_shape torch.Size([3, 5, 16])
+layer /321 start_node /input-28 using full alpha [2, 480, 1, 5, 96] with unstable size None total_size 480 output_shape torch.Size([5, 96])
+layer /321 start_node /459 using full alpha [2, 9, 1, 5, 96] with unstable size None total_size 9 output_shape 9
+layer /451 start_node /459 using full alpha [2, 9, 1, 5, 96] with unstable size None total_size 9 output_shape 9
+Optimizable variables initialized.
+initial CROWN bounds (first 10 items): [0.452034592628479, -1.9282877445220947, 1.1654224395751953, -0.7260227203369141, 0.740768551826477, 1.5094226598739624, -0.02169935777783394, -2.513371229171753, 0.4151562750339508]
+prune_after_crown optimization in use
+  original spec size = torch.Size([1, 9])
+  pruned spec size = torch.Size([1, 4])
+Using alpha-CROWN to initialize bounds.
+best_l after optimization: 3.6920504570007324
+alpha/beta optimization time: 24.31600570678711
+initial alpha-crown bounds (first 10 items): [0.8626841902732849, 1.3157093524932861, 2.0660812854766846, -0.5524243116378784]
+Global lower bound: -0.5524243116378784
+torch.Size([1, 4])
+8 / 9 OR specs are verified.
+Verified OR indices (first 10 items): [0, 1, 2, 3, 4, 5, 6, 8]
+Verified OR lbs (first 10 items): [[inf], [0.8626841902732849], [inf], [1.3157093524932861], [inf], [inf], [2.0660812854766846], [inf]]
+Unverified OR indices (first 10 items): [7]
+Unverified OR lbs (first 10 items): [[-0.5524243116378784]]
+###### Verifying property Instance 0 ######
+Batch size: 1
+First 10 spec matrices
+C: tensor([[[ 1.,  0.,  0.,  0.,  0.,  0.,  0.,  0., -1.,  0.]]], device='cuda:0')
+RHS: tensor([[0.]], device='cuda:0')
+OR spec sizes: tensor([1], device='cuda:0', dtype=torch.int32)
+Remaining timeout: 74.58909010887146
+Model prediction is: tensor([ 4.06130838, -1.83089066,  0.47853196, -1.45424581,  0.50768942,
+        -1.32313728, -3.88931012, -0.33443671,  3.49650407, -1.08241713],
+       device='cuda:0')
+Activation BaB batch 1/1 
+build_with_refined_bounds batch [1/1]
+Optimizable variables initialized.
+all alpha initialized
+true A is required, we do a full backward CROWN pass to obtain it
+torch.Size([1, 1])
+(alpha-)CROWN with fixed intermediate bounds: tensor([[-0.55209577]], device='cuda:0', grad_fn=<ViewBackward0>) tensor([[2.77705765]], device='cuda:0', grad_fn=<ViewBackward0>)
+Intermediate layers: /241,/287,/290/split/5,/290/mul,/286,/input-12,/371,/417,/420/split/5,/420/mul,/416,/input-28,/290/split/8,/290/split/6,/290/reciprocal,/420/split/8,/420/split/6,/420/reciprocal
+Keeping alphas for these layers: ['/459']
+Node /288 input 0: size torch.Size([3, 5, 16]) unstable 240
+Node /288 input 1: size torch.Size([3, 16, 5]) unstable 240
+Node /291 input 0: size torch.Size([3, 5, 5]) unstable 75
+Node /291 input 1: size torch.Size([3, 5, 16]) unstable 240
+Node /321 input 0: size torch.Size([5, 96]) unstable 91
+Node /418 input 0: size torch.Size([3, 5, 16]) unstable 240
+Node /418 input 1: size torch.Size([3, 16, 5]) unstable 240
+Node /421 input 0: size torch.Size([3, 5, 5]) unstable 75
+Node /421 input 1: size torch.Size([3, 5, 16]) unstable 240
+Node /451 input 0: size torch.Size([5, 96]) unstable 112
+Node /290/reciprocal input 0: size torch.Size([3, 5, 1]) unstable 15
+Node /290/mul input 0: size torch.Size([3, 5, 5]) unstable 75
+Node /290/mul input 1: size torch.Size([3, 5, 1]) unstable 15
+Node /420/reciprocal input 0: size torch.Size([3, 5, 1]) unstable 15
+Node /420/mul input 0: size torch.Size([3, 5, 5]) unstable 75
+Node /420/mul input 1: size torch.Size([3, 5, 1]) unstable 15
+-----------------
+# of unstable neurons: 2003
+-----------------
+
+BaB round 1
+batch: 1
+splitting decisions: 
+split level 0: [/input-28, 337] 
+Traceback (most recent call last):
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/abcrown.py", line 392, in <module>
+    abcrown.main()
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/abcrown.py", line 354, in main
+    verified_status = self.complete_verifier(
+                      ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/complete_verifier_func.py", line 164, in complete_verifier
+    l, num_domains_visited, ret = self.bab(
+                                  ^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/complete_verifier_func.py", line 112, in bab
+    batch_result = general_bab(
+                   ^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/bab.py", line 485, in general_bab
+    global_lb = act_split_round(
+                ^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/bab.py", line 199, in act_split_round
+    split_domain(net, domains, d, batch, impl_params=impl_params,
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/bab.py", line 123, in split_domain
+    ret = net.update_bounds(
+          ^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/beta_CROWN_solver.py", line 414, in update_bounds
+    tmp_ret = self.net.compute_bounds(
+              ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 1372, in compute_bounds
+    self.forward(*x, interm_bounds=interm_bounds, cache_bounds=cache_bounds)
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 550, in forward
+    return self.get_forward_value(self[final_node_name])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in get_forward_value
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 476, in <listcomp>
+    inputs = [self.get_forward_value(inp) for inp in node.inputs]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/bound_general.py", line 480, in get_forward_value
+    fv = node.forward(*inputs)
+         ^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/auto_LiRPA/operators/add_sub.py", line 35, in forward
+    return x + y
+           ~~^~~
+RuntimeError: The size of tensor a (9) must match the size of tensor b (5) at non-singleton dimension 1
+
+------------------------- COMMAND ------------------------------
+/data1/Kane/miniconda3/envs/abcrown25/bin/python /data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/abcrown.py --config /data1/Kane/alpha-beta-CROWN_vnncomp2025/complete_verifier/exp_configs/vnncomp23/vit.yaml --precompile_jit --onnx_path /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/vit_2023/onnx/pgd_2_3_16.onnx --vnnlib_path /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/vit_2023/vnnlib/pgd_2_3_16_3660.vnnlib --results_file /data1/Kane/ACT/audit_results/abcrown_nopgd_20260525/vit_2023/0011__pgd_2_3_16__pgd_2_3_16_3660.result --timeout 100.0 --save_adv_example --pgd_order=skip
+----------------------------------------------------------------
+

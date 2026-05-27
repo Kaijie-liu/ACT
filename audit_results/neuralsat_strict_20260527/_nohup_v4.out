@@ -1,0 +1,55 @@
+[2026-05-27 13:35:49] ===[laneB] start — 13 benchmarks
+[2026-05-27 13:35:49] ===[laneA] start — 13 benchmarks
+[2026-05-27 13:35:49] ===dual-lane: A pid=1461955   B pid=1461956
+[2026-05-27 13:35:49] [laneB][cersyve] instances=12
+[2026-05-27 13:35:49] [laneA][test] instances=5
+[2026-05-27 13:35:49] [laneB][cersyve] DONE — total=12 new=0 resumed=12 sat=0 unsat=0 timeout=0 err=0
+[2026-05-27 13:35:49] [laneA][test] DONE — total=5 new=0 resumed=5 sat=0 unsat=0 timeout=0 err=0
+[2026-05-27 13:35:49] [laneB][soundnessbench] instances=50
+[2026-05-27 13:35:49] [laneA][lsnc_relu] instances=80
+[2026-05-27 13:35:50] [laneB][soundnessbench] DONE — total=50 new=0 resumed=50 sat=0 unsat=0 timeout=0 err=0
+[2026-05-27 13:35:50] [laneB][cgan_2023] instances=21
+[2026-05-27 13:35:50] [laneB][cgan_2023] DONE — total=21 new=0 resumed=21 sat=0 unsat=0 timeout=0 err=0
+[2026-05-27 13:35:50] [laneB][malbeware] instances=150
+[2026-05-27 13:35:50] [laneA][lsnc_relu] DONE — total=80 new=0 resumed=80 sat=0 unsat=0 timeout=0 err=0
+[2026-05-27 13:35:51] [laneA][sat_relu] instances=100
+[2026-05-27 13:35:52] [laneA][sat_relu] DONE — total=100 new=0 resumed=100 sat=0 unsat=0 timeout=0 err=0
+[2026-05-27 13:35:52] [laneA][tllverifybench_2023] instances=32
+[2026-05-27 13:35:52] [laneA][tllverifybench_2023] DONE — total=32 new=0 resumed=32 sat=0 unsat=0 timeout=0 err=0
+[2026-05-27 13:35:52] [laneA][traffic_signs_recognition_2023] instances=45
+[2026-05-27 13:35:53] [laneA][traffic_signs_recognition_2023] DONE — total=45 new=0 resumed=45 sat=0 unsat=0 timeout=0 err=0
+[2026-05-27 13:35:53] [laneA][linearizenn_2024] instances=60
+[2026-05-27 13:37:31] [laneB][malbeware] 10/150 sat=0 unsat=10 timeout=0 err=0 resumed=0
+[2026-05-27 13:39:39] [laneB][malbeware] 20/150 sat=0 unsat=20 timeout=0 err=0 resumed=0
+[2026-05-27 13:41:25] [laneB][malbeware] 30/150 sat=1 unsat=29 timeout=0 err=0 resumed=0
+[2026-05-27 13:42:56] [laneB][malbeware] 40/150 sat=1 unsat=39 timeout=0 err=0 resumed=0
+[2026-05-27 13:44:49] [laneB][malbeware] 50/150 sat=1 unsat=49 timeout=0 err=0 resumed=0
+[2026-05-27 13:52:32] [laneB][malbeware] 60/150 sat=1 unsat=56 timeout=1 err=2 resumed=0
+[2026-05-27 13:52:57] [laneA][linearizenn_2024] 10/60 sat=0 unsat=9 timeout=1 err=0 resumed=0
+[2026-05-27 13:54:53] [laneA][linearizenn_2024] 20/60 sat=0 unsat=19 timeout=1 err=0 resumed=0
+[2026-05-27 13:55:26] [laneB][malbeware] 70/150 sat=1 unsat=65 timeout=1 err=3 resumed=0
+[2026-05-27 13:57:42] [laneA][linearizenn_2024] 30/60 sat=0 unsat=29 timeout=1 err=0 resumed=0
+[2026-05-27 13:59:22] [laneB][malbeware] 80/150 sat=1 unsat=74 timeout=1 err=4 resumed=0
+[2026-05-27 14:00:26] [laneA][linearizenn_2024] 40/60 sat=0 unsat=39 timeout=1 err=0 resumed=0
+[2026-05-27 14:01:43] [laneA][linearizenn_2024] 50/60 sat=0 unsat=49 timeout=1 err=0 resumed=0
+[2026-05-27 14:04:56] [laneA][linearizenn_2024] 60/60 sat=0 unsat=59 timeout=1 err=0 resumed=0
+[2026-05-27 14:04:56] [laneA][linearizenn_2024] DONE — total=60 new=60 resumed=0 sat=0 unsat=59 timeout=1 err=0
+[2026-05-27 14:04:56] [laneA][ml4acopf_2024] instances=69
+[2026-05-27 14:07:50] [laneB][malbeware] 90/150 sat=1 unsat=80 timeout=3 err=6 resumed=0
+[2026-05-27 14:08:13] [laneA][ml4acopf_2024] 10/69 sat=0 unsat=0 timeout=0 err=10 resumed=0
+scripts/run_neuralsat_strict_parallel.sh: line 117: 1948186 Segmentation fault      timeout --kill-after=10 "${KILL_AT}s" "$PY_BIN" "$NEURALSAT_DIR/src/main.py" --net "$ONNX" --spec "$VNNLIB" --timeout "$USE_TO" --result_file "$RAW" --export_cex --disable_attack > "$LOG" 2>&1
+scripts/run_neuralsat_strict_parallel.sh: line 117: 1956588 Segmentation fault      timeout --kill-after=10 "${KILL_AT}s" "$PY_BIN" "$NEURALSAT_DIR/src/main.py" --net "$ONNX" --spec "$VNNLIB" --timeout "$USE_TO" --result_file "$RAW" --export_cex --disable_attack > "$LOG" 2>&1
+scripts/run_neuralsat_strict_parallel.sh: line 117: 1962585 Segmentation fault      timeout --kill-after=10 "${KILL_AT}s" "$PY_BIN" "$NEURALSAT_DIR/src/main.py" --net "$ONNX" --spec "$VNNLIB" --timeout "$USE_TO" --result_file "$RAW" --export_cex --disable_attack > "$LOG" 2>&1
+scripts/run_neuralsat_strict_parallel.sh: line 117: 1965487 Segmentation fault      timeout --kill-after=10 "${KILL_AT}s" "$PY_BIN" "$NEURALSAT_DIR/src/main.py" --net "$ONNX" --spec "$VNNLIB" --timeout "$USE_TO" --result_file "$RAW" --export_cex --disable_attack > "$LOG" 2>&1
+scripts/run_neuralsat_strict_parallel.sh: line 117: 1971083 Segmentation fault      timeout --kill-after=10 "${KILL_AT}s" "$PY_BIN" "$NEURALSAT_DIR/src/main.py" --net "$ONNX" --spec "$VNNLIB" --timeout "$USE_TO" --result_file "$RAW" --export_cex --disable_attack > "$LOG" 2>&1
+[2026-05-27 14:09:42] [laneB][malbeware] 100/150 sat=1 unsat=89 timeout=3 err=7 resumed=0
+[2026-05-27 14:16:00] [laneB][malbeware] 110/150 sat=1 unsat=96 timeout=6 err=7 resumed=0
+[2026-05-27 14:20:30] [laneB][malbeware] 120/150 sat=1 unsat=104 timeout=8 err=7 resumed=0
+[2026-05-27 14:20:59] [laneA][ml4acopf_2024] 20/69 sat=0 unsat=0 timeout=1 err=19 resumed=0
+[2026-05-27 14:24:57] [laneB][malbeware] 130/150 sat=1 unsat=112 timeout=10 err=7 resumed=0
+[2026-05-27 14:31:11] [laneB][malbeware] 140/150 sat=1 unsat=119 timeout=13 err=7 resumed=0
+[2026-05-27 14:36:13] [laneB][malbeware] 150/150 sat=1 unsat=127 timeout=15 err=7 resumed=0
+[2026-05-27 14:36:13] [laneB][malbeware] DONE — total=150 new=150 resumed=0 sat=1 unsat=127 timeout=15 err=7
+[2026-05-27 14:36:13] [laneB][collins_rul_cnn_2022] instances=62
+[2026-05-27 14:44:53] [laneB][collins_rul_cnn_2022] 10/62 sat=0 unsat=5 timeout=5 err=0 resumed=0
+[2026-05-27 14:57:12] [laneA][ml4acopf_2024] 30/69 sat=0 unsat=0 timeout=4 err=26 resumed=0
