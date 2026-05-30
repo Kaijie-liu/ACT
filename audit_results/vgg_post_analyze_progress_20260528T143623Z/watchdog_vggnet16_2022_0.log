@@ -1,0 +1,72 @@
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: vggnet16_2022/onnx/vgg16-7.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/vggnet16_2022/onnx/vgg16-7.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: vgg16-7.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 3, 224, 224]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 3, 224, 224)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 150528 inputs, 1000 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 150528 inputs, 1000 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'vggnet16_2022'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed spec0_suit.vnnlib: 1 query(ies)
+[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic
+✅ Device Manager Initialized: device=cuda:0, dtype=torch.float64
+
+================================================================================
+ACT: Abstract Constraint Transformer
+Inference-based whitebox fuzzing for neural network verification
+================================================================================
+
+
+================================================================================
+VERIFICATION TEST: VNNLIB → VerifiableModel → verify_once
+================================================================================
+
+[vnnlib] category=vggnet16_2022 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=180.0s)
+[ANALYZE-PROGRESS] L0 INPUT lb_shape=(1, 3, 224, 224)
+[ANALYZE-PROGRESS] L1 INPUT_SPEC lb_shape=(1, 3, 224, 224)
+[ANALYZE-PROGRESS] L2 CONV2D lb_shape=(1, 3211264)
+[ANALYZE-PROGRESS] L3 RELU lb_shape=(1, 3211264)
+[ANALYZE-PROGRESS] L4 CONV2D lb_shape=(1, 3211264)
+[ANALYZE-PROGRESS] L5 RELU lb_shape=(1, 3211264)
+[ANALYZE-PROGRESS] L6 MAXPOOL2D lb_shape=(1, 802816)
+[ANALYZE-PROGRESS] L7 CONV2D lb_shape=(1, 1605632)
+[ANALYZE-PROGRESS] L8 RELU lb_shape=(1, 1605632)
+[ANALYZE-PROGRESS] L9 CONV2D lb_shape=(1, 1605632)
+[ANALYZE-PROGRESS] L10 RELU lb_shape=(1, 1605632)
+[ANALYZE-PROGRESS] L11 MAXPOOL2D lb_shape=(1, 401408)
+[ANALYZE-PROGRESS] L12 CONV2D lb_shape=(1, 802816)
+[ANALYZE-PROGRESS] L13 RELU lb_shape=(1, 802816)
+[ANALYZE-PROGRESS] L14 CONV2D lb_shape=(1, 802816)
+[ANALYZE-PROGRESS] L15 RELU lb_shape=(1, 802816)
+[ANALYZE-PROGRESS] L16 CONV2D lb_shape=(1, 802816)
+[ANALYZE-PROGRESS] L17 RELU lb_shape=(1, 802816)
+[ANALYZE-PROGRESS] L18 MAXPOOL2D lb_shape=(1, 200704)
+[ANALYZE-PROGRESS] L19 CONV2D lb_shape=(1, 401408)
+[ANALYZE-PROGRESS] L20 RELU lb_shape=(1, 401408)
+[ANALYZE-PROGRESS] L21 CONV2D lb_shape=(1, 401408)
+[ANALYZE-PROGRESS] L22 RELU lb_shape=(1, 401408)
+[ANALYZE-PROGRESS] L23 CONV2D lb_shape=(1, 401408)
+[ANALYZE-PROGRESS] L24 RELU lb_shape=(1, 401408)
+[ANALYZE-PROGRESS] L25 MAXPOOL2D lb_shape=(1, 100352)
+[ANALYZE-PROGRESS] L26 CONV2D lb_shape=(1, 100352)
+[ANALYZE-PROGRESS] L27 RELU lb_shape=(1, 100352)
+[ANALYZE-PROGRESS] L28 CONV2D lb_shape=(1, 100352)
+[ANALYZE-PROGRESS] L29 RELU lb_shape=(1, 100352)
+[ANALYZE-PROGRESS] L30 CONV2D lb_shape=(1, 100352)
+[ANALYZE-PROGRESS] L31 RELU lb_shape=(1, 100352)
+[ANALYZE-PROGRESS] L32 MAXPOOL2D lb_shape=(1, 25088)
+[ANALYZE-PROGRESS] L33 FLATTEN lb_shape=(1, 25088)
+[ANALYZE-PROGRESS] L34 DENSE lb_shape=(1, 4096)
+[ANALYZE-PROGRESS] L35 RELU lb_shape=(1, 4096)
+[ANALYZE-PROGRESS] L36 DENSE lb_shape=(1, 4096)
+[ANALYZE-PROGRESS] L37 RELU lb_shape=(1, 4096)
+[ANALYZE-PROGRESS] L38 DENSE lb_shape=(1, 1000)
+[ANALYZE-PROGRESS] L39 ASSERT lb_shape=(1, 1000)
+[HZ-PROGRESS] analyze done globalC=74

@@ -1,0 +1,24 @@
+{
+  "schema_version": 2,
+  "strict_bounded_failure": false,
+  "counts": {
+    "OK": 1,
+    "UNKNOWN_TIMEOUT": 0,
+    "UNKNOWN_RESOURCE_LIMIT": 0,
+    "ERROR": 0
+  },
+  "results": [
+    {
+      "benchmark": "traffic_signs_recognition_2023",
+      "instance_id": 0,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 56.53413963096682,
+      "peak_rss_mb": 1781.5546875,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/traffic_softmax_order_iid0_20260529T131345Z/per_instance_traffic_signs_recognition_2023_20260529T131442689891Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/traffic_softmax_order_iid0_20260529T131345Z",
+      "stdout_tail": "\n[HZ-PROGRESS] start L6 BIAS in=dim=12544 ng=712 nb=0 nc=0\n[HZ-PROGRESS] L6 BIAS -> dim=12544 ng=712 nb=0 nc=0\n[HZ-PROGRESS] start L7 SIGN in=dim=12544 ng=712 nb=0 nc=0\n[HZ-PROGRESS] L7 SIGN -> dim=12544 ng=698 nb=0 nc=0\n[HZ-PROGRESS] start L8 TRANSPOSE in=dim=12544 ng=698 nb=0 nc=0\n[HZ-PROGRESS] L8 TRANSPOSE -> dim=12544 ng=698 nb=0 nc=0\n[HZ-PROGRESS] start L9 CONV2D in=dim=12544 ng=698 nb=0 nc=0\n[HZ-PROGRESS] L9 CONV2D -> dim=23328 ng=698 nb=0 nc=0\n[HZ-PROGRESS] start L10 TRANSPOSE in=dim=23328 ng=698 nb=0 nc=0\n[HZ-PROGRESS] L10 TRANSPOSE -> dim=23328 ng=698 nb=0 nc=0\n[HZ-PROGRESS] start L11 RESHAPE in=dim=23328 ng=698 nb=0 nc=0\n[HZ-PROGRESS] L11 RESHAPE -> dim=23328 ng=698 nb=0 nc=0\n[HZ-PROGRESS] start L12 SIGN in=dim=23328 ng=698 nb=0 nc=0\n[HZ-PROGRESS] L12 SIGN -> dim=23328 ng=5764 nb=0 nc=0\n[HZ-PROGRESS] start L13 BIAS in=dim=23328 ng=5764 nb=0 nc=0\n[HZ-PROGRESS] L13 BIAS -> dim=23328 ng=5764 nb=0 nc=0\n[HZ-PROGRESS] start L14 SIGN in=dim=23328 ng=5764 nb=0 nc=0\n[HZ-PROGRESS] L14 SIGN -> dim=23328 ng=4881 nb=0 nc=0\n[HZ-PROGRESS] start L15 DENSE in=dim=23328 ng=4881 nb=0 nc=0\n[HZ-PROGRESS] L15 DENSE -> dim=43 ng=4881 nb=0 nc=0\n[HZ-PROGRESS] start L16 SOFTMAX in=dim=43 ng=4881 nb=0 nc=0\n[HZ-PROGRESS] L16 SOFTMAX -> dim=43 ng=4881 nb=0 nc=0\n  [  1/1] traffic_signs_recognition_2023/onnx/3_30_30_QConv_16_3_QConv_32_2_Dense_43_ep_30.onnx@vnnlib/model_30_idx_7573_eps_1.00000.vnnlib: UNKNOWN (53.7s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.9 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/traffic_softmax_order_iid0_20260529T131345Z/per_instance_traffic_signs_recognition_2023_20260529T131442689891Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    }
+  ]
+}

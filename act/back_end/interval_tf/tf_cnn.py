@@ -302,10 +302,17 @@ def tf_flatten(L: Layer, Bin: Bounds) -> Fact:
         f"flatten out_vars length {len(L.out_vars)} != output elements {lb_flat.shape[1]}"
     )
     if "output_shape" in L.params:
+        # Flatten preserves numel. Compare total elements (across all
+        # output dims), not output_shape[1:], because ONNX Flatten with
+        # axis>=2 yields a 2D output ``(prod(in[:axis]), prod(in[axis:]))``
+        # where dim 0 is NOT the analyze batch dim. Fix #9 (cgan_2023
+        # small_transformer, 2026-05-27): the prior dims=output_shape[1:]
+        # check failed on axis=2 layouts (e.g. (64,16) where 64 is a
+        # compressed-leading-dims slot, not B_in).
         expected = 1
-        dims = output_shape[1:] if len(output_shape) > 1 else output_shape
-        for dim in dims:
+        for dim in output_shape:
             expected *= int(dim)
+        expected //= max(B_in, 1)
         assert lb_flat.shape[1] == expected, f"flatten output numel {lb_flat.shape[1]} != expected {expected}"
     B_out = Bounds(lb_flat, ub_flat)
     # Note: bounds validity is checked in analyze.py with detailed debug info
@@ -604,21 +611,12 @@ def tf_convtranspose2d(L: Layer, Bin: Bounds) -> Fact:
     )
     B_output = Bounds(lb_out.reshape(B_in, -1), ub_out.reshape(B_in, -1))
 
-    W_equiv = _convtranspose2d_to_linear_matrix(
-        weight, input_shape, output_shape, stride, padding, output_padding, dilation, groups
-    )
-
-    if bias is not None:
-        b_equiv = bias.repeat(out_h * out_w)
-    else:
-        b_equiv = Bin.lb.new_zeros(out_channels * out_h * out_w)
-    
     # Create constraints
     C = ConSet()
     C.replace(Con("EQ", tuple(L.out_vars + L.in_vars), {
         "tag": f"convtranspose2d:{L.id}",
-        "W": W_equiv,
-        "b": b_equiv,
+        "weight": weight,
+        "b": bias,
         "input_shape": input_shape,
         "output_shape": output_shape,
         "conv_params": {

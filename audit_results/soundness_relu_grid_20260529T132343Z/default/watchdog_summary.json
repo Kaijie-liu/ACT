@@ -1,0 +1,156 @@
+{
+  "schema_version": 2,
+  "strict_bounded_failure": false,
+  "counts": {
+    "OK": 12,
+    "UNKNOWN_TIMEOUT": 0,
+    "UNKNOWN_RESOURCE_LIMIT": 0,
+    "ERROR": 0
+  },
+  "results": [
+    {
+      "benchmark": "soundnessbench",
+      "instance_id": 0,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 7.504236674052663,
+      "peak_rss_mb": 2168.5078125,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/soundness_relu_grid_20260529T132343Z/default/per_instance_soundnessbench_20260529T132351614734Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/soundness_relu_grid_20260529T132343Z/default",
+      "stdout_tail": "nnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 128 inputs, 384 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 128 inputs, 384 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'soundnessbench'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed model_0.vnnlib: 1 query(ies)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=6 out_dim=384 relus=6 (triangle for relu 1..5, eq_lagr_v8 for last 1)\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=soundnessbench max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=150.0s)\n  [  1/1] soundnessbench/onnx/model.onnx@vnnlib/model_0.vnnlib: UNKNOWN (4.1s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.1 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/soundness_relu_grid_20260529T132343Z/default/per_instance_soundnessbench_20260529T132351614734Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "soundnessbench",
+      "instance_id": 1,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 7.004163769073784,
+      "peak_rss_mb": 2193.26953125,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/soundness_relu_grid_20260529T132343Z/default/per_instance_soundnessbench_20260529T132358769164Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/soundness_relu_grid_20260529T132343Z/default",
+      "stdout_tail": "nnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 128 inputs, 384 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 128 inputs, 384 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'soundnessbench'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed model_1.vnnlib: 1 query(ies)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=6 out_dim=384 relus=6 (triangle for relu 1..5, eq_lagr_v8 for last 1)\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=soundnessbench max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=150.0s)\n  [  1/1] soundnessbench/onnx/model.onnx@vnnlib/model_1.vnnlib: UNKNOWN (3.8s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.1 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/soundness_relu_grid_20260529T132343Z/default/per_instance_soundnessbench_20260529T132358769164Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "soundnessbench",
+      "instance_id": 2,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 7.004823904950172,
+      "peak_rss_mb": 2200.1796875,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/soundness_relu_grid_20260529T132343Z/default/per_instance_soundnessbench_20260529T132405790023Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/soundness_relu_grid_20260529T132343Z/default",
+      "stdout_tail": "nnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 128 inputs, 384 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 128 inputs, 384 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'soundnessbench'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed model_2.vnnlib: 1 query(ies)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=6 out_dim=384 relus=6 (triangle for relu 1..5, eq_lagr_v8 for last 1)\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=soundnessbench max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=150.0s)\n  [  1/1] soundnessbench/onnx/model.onnx@vnnlib/model_2.vnnlib: UNKNOWN (3.9s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.1 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/soundness_relu_grid_20260529T132343Z/default/per_instance_soundnessbench_20260529T132405790023Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "soundnessbench",
+      "instance_id": 3,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 7.004213788895868,
+      "peak_rss_mb": 2199.73828125,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/soundness_relu_grid_20260529T132343Z/default/per_instance_soundnessbench_20260529T132412883999Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/soundness_relu_grid_20260529T132343Z/default",
+      "stdout_tail": "nnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 128 inputs, 384 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 128 inputs, 384 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'soundnessbench'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed model_3.vnnlib: 1 query(ies)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=6 out_dim=384 relus=6 (triangle for relu 1..5, eq_lagr_v8 for last 1)\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=soundnessbench max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=150.0s)\n  [  1/1] soundnessbench/onnx/model.onnx@vnnlib/model_3.vnnlib: UNKNOWN (3.9s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.1 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/soundness_relu_grid_20260529T132343Z/default/per_instance_soundnessbench_20260529T132412883999Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "soundnessbench",
+      "instance_id": 4,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 7.003988082986325,
+      "peak_rss_mb": 2197.3984375,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/soundness_relu_grid_20260529T132343Z/default/per_instance_soundnessbench_20260529T132419791537Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/soundness_relu_grid_20260529T132343Z/default",
+      "stdout_tail": "nnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 128 inputs, 384 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 128 inputs, 384 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'soundnessbench'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed model_4.vnnlib: 1 query(ies)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=6 out_dim=384 relus=6 (triangle for relu 1..5, eq_lagr_v8 for last 1)\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=soundnessbench max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=150.0s)\n  [  1/1] soundnessbench/onnx/model.onnx@vnnlib/model_4.vnnlib: UNKNOWN (3.8s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.1 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/soundness_relu_grid_20260529T132343Z/default/per_instance_soundnessbench_20260529T132419791537Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "soundnessbench",
+      "instance_id": 5,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 7.004085090011358,
+      "peak_rss_mb": 2252.3125,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/soundness_relu_grid_20260529T132343Z/default/per_instance_soundnessbench_20260529T132426828549Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/soundness_relu_grid_20260529T132343Z/default",
+      "stdout_tail": "nnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 128 inputs, 384 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 128 inputs, 384 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'soundnessbench'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed model_5.vnnlib: 1 query(ies)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=6 out_dim=384 relus=6 (triangle for relu 1..5, eq_lagr_v8 for last 1)\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=soundnessbench max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=150.0s)\n  [  1/1] soundnessbench/onnx/model.onnx@vnnlib/model_5.vnnlib: UNKNOWN (3.9s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.1 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/soundness_relu_grid_20260529T132343Z/default/per_instance_soundnessbench_20260529T132426828549Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "soundnessbench",
+      "instance_id": 6,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 7.004976075026207,
+      "peak_rss_mb": 2196.359375,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/soundness_relu_grid_20260529T132343Z/default/per_instance_soundnessbench_20260529T132433939202Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/soundness_relu_grid_20260529T132343Z/default",
+      "stdout_tail": "nnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 128 inputs, 384 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 128 inputs, 384 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'soundnessbench'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed model_6.vnnlib: 1 query(ies)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=6 out_dim=384 relus=6 (triangle for relu 1..5, eq_lagr_v8 for last 1)\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=soundnessbench max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=150.0s)\n  [  1/1] soundnessbench/onnx/model.onnx@vnnlib/model_6.vnnlib: UNKNOWN (4.0s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.1 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/soundness_relu_grid_20260529T132343Z/default/per_instance_soundnessbench_20260529T132433939202Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "soundnessbench",
+      "instance_id": 7,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 7.004776639980264,
+      "peak_rss_mb": 2196.0703125,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/soundness_relu_grid_20260529T132343Z/default/per_instance_soundnessbench_20260529T132440860621Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/soundness_relu_grid_20260529T132343Z/default",
+      "stdout_tail": "nnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 128 inputs, 384 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 128 inputs, 384 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'soundnessbench'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed model_7.vnnlib: 1 query(ies)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=6 out_dim=384 relus=6 (triangle for relu 1..5, eq_lagr_v8 for last 1)\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=soundnessbench max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=150.0s)\n  [  1/1] soundnessbench/onnx/model.onnx@vnnlib/model_7.vnnlib: UNKNOWN (3.9s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.1 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/soundness_relu_grid_20260529T132343Z/default/per_instance_soundnessbench_20260529T132440860621Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "soundnessbench",
+      "instance_id": 8,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 7.003631072002463,
+      "peak_rss_mb": 2199.67578125,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/soundness_relu_grid_20260529T132343Z/default/per_instance_soundnessbench_20260529T132447895688Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/soundness_relu_grid_20260529T132343Z/default",
+      "stdout_tail": "nnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 128 inputs, 384 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 128 inputs, 384 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'soundnessbench'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed model_8.vnnlib: 1 query(ies)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=6 out_dim=384 relus=6 (triangle for relu 1..5, eq_lagr_v8 for last 1)\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=soundnessbench max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=150.0s)\n  [  1/1] soundnessbench/onnx/model.onnx@vnnlib/model_8.vnnlib: UNKNOWN (3.9s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.1 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/soundness_relu_grid_20260529T132343Z/default/per_instance_soundnessbench_20260529T132447895688Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "soundnessbench",
+      "instance_id": 9,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 7.004005130962469,
+      "peak_rss_mb": 2184.44140625,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/soundness_relu_grid_20260529T132343Z/default/per_instance_soundnessbench_20260529T132454958457Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/soundness_relu_grid_20260529T132343Z/default",
+      "stdout_tail": "nnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 128 inputs, 384 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 128 inputs, 384 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'soundnessbench'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed model_9.vnnlib: 1 query(ies)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=6 out_dim=384 relus=6 (triangle for relu 1..5, eq_lagr_v8 for last 1)\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=soundnessbench max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=150.0s)\n  [  1/1] soundnessbench/onnx/model.onnx@vnnlib/model_9.vnnlib: UNKNOWN (3.9s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.1 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/soundness_relu_grid_20260529T132343Z/default/per_instance_soundnessbench_20260529T132454958457Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "soundnessbench",
+      "instance_id": 10,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 7.004929168964736,
+      "peak_rss_mb": 2195.2265625,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/soundness_relu_grid_20260529T132343Z/default/per_instance_soundnessbench_20260529T132501873070Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/soundness_relu_grid_20260529T132343Z/default",
+      "stdout_tail": "iB of which 188.81 MiB is free. Process 2687037 has 690.00 MiB memory in use. Process 1238833 has 59.53 GiB memory in use. Including non-PyTorch memory, this process has 32.73 GiB memory in use. Process 1238885 has 1.56 GiB memory in use. Of the allocated memory 32.06 GiB is allocated by PyTorch, and 25.63 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=soundnessbench max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=150.0s)\n  [  1/1] soundnessbench/onnx/model.onnx@vnnlib/model_10.vnnlib: UNKNOWN (3.9s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.1 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/soundness_relu_grid_20260529T132343Z/default/per_instance_soundnessbench_20260529T132501873070Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "soundnessbench",
+      "instance_id": 11,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 7.004601024091244,
+      "peak_rss_mb": 2197.15625,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/soundness_relu_grid_20260529T132343Z/default/per_instance_soundnessbench_20260529T132508908883Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/soundness_relu_grid_20260529T132343Z/default",
+      "stdout_tail": "lib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 128 inputs, 384 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 128 inputs, 384 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'soundnessbench'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed model_11.vnnlib: 1 query(ies)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=6 out_dim=384 relus=6 (triangle for relu 1..5, eq_lagr_v8 for last 1)\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=soundnessbench max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=150.0s)\n  [  1/1] soundnessbench/onnx/model.onnx@vnnlib/model_11.vnnlib: UNKNOWN (3.9s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.1 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/soundness_relu_grid_20260529T132343Z/default/per_instance_soundnessbench_20260529T132508908883Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    }
+  ]
+}

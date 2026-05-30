@@ -1,0 +1,28 @@
+benchmark,N,V_unsat,A_sat,T_timeout,U_unknown,E_unsupported_strict,E_other,wall_sec_sum,wall_sec_max,notes
+test,5,0,0,0,0,0,5,139.9,17.1,NNV has no exec-policy for the smoke test net
+cersyve,12,0,0,0,0,12,0,117.2,10.8,cp-star only -> unsupported_strict
+cgan_2023,21,0,0,0,0,2,19,388.9,29.9,2 cp-star + 19 R2026a load err (small_transformer)
+tllverifybench_2023,32,0,0,19,13,0,0,13501.1,630.4,relax-star + approx-star sound; 0 V (very tight properties)
+cctsdb_yolo_2023,39,0,0,0,0,0,39,357.3,11.6,NNV upstream error: 'Working on supporting this one'
+traffic_signs_recognition_2023,45,0,0,0,0,0,45,393.9,10.3,R2026a QConv int8 quant unsupported (upstream parser limit)
+soundnessbench,50,0,0,0,0,0,50,2037.7,100.9,R2026a ReshapeLayer.ONNXParams missing (parser regression)
+linearizenn_2024,60,0,0,0,0,60,0,759.5,14.3,matlab2nnv fails -> upstream try/catch falls back to cp-star -> unsupported_strict
+collins_rul_cnn_2022,62,39,0,0,23,0,0,920.8,56.4,clean: V+U=N, all sound approx-star
+ml4acopf_2024,69,0,0,0,0,69,0,1084.5,29.0,cp-star only -> all unsupported_strict
+dist_shift_2023,72,0,0,0,0,0,72,922.2,14.2,exact-star path errors at load (R2026a)
+yolo_2023,72,0,0,0,0,72,0,945.2,14.4,cp-star only -> all unsupported_strict
+lsnc_relu,80,0,0,0,0,0,80,2052.4,11.1,NNV upstream error: 'IR not supported in MATLAB'
+metaroom_2023,100,93,0,5,2,0,0,2467.6,240.2,strongest single benchmark: 93 V via approx-star (sound)
+sat_relu,100,4,0,94,2,0,0,13188.5,130.4,exact-star + approx-star; SAT slice (50 inst) all timeout (no helper to witness)
+malbeware,150,49,0,90,1,0,10,13969.7,167.9,49 V via exact-star (20 parpool workers per instance)
+cora_2024,180,18,0,161,1,0,0,11534.6,63.5,relax-star-area
+acasxu_2023,186,75,0,104,6,0,1,17137.2,146.3,75 V via exact-star + approx-star; 1 MATLAB licmgr crash
+nn4sys,194,17,0,7,0,105,65,3602.0,70.1,17 V from lindex (approx-star); 105 mscn cp-star; 65 onnx::If unsupported
+safenlp_2024,1080,162,0,910,0,0,8,51790.0,106.0,largest benchmark; 162 V from approx-star; 0 SAT (no helper)
+vit_2023,200,0,0,0,0,195,5,6435.2,116.3,cp-star only -> 195 unsupported_strict; 5 R2026a load err
+tinyimagenet_2024,200,0,0,0,0,195,5,5769.2,108.0,cp-star only -> 195 unsupported_strict; 5 R2026a load err
+cifar100_2024,200,0,0,0,0,200,0,2833.3,87.4,cp-star only -> all unsupported_strict
+relusplitter,220,0,0,3,137,0,80,4171.5,210.2,relax-star-area; 0 V (most timeout); 80 ops unsupported
+vggnet16_2022,18,0,0,0,0,18,0,386.7,23.2,cp-star only -> all unsupported_strict
+collins_aerospace_benchmark,6,0,0,0,0,0,6,100.9,19.0,YOLO arch unsupported (similar to cctsdb_yolo)
+TOTAL,3453,457,0,1393,185,928,490,157007.0,630.4,V/A semantics: V=sound UNSAT  A=IMPOSSIBLE under STRICT (no helper to witness counterexample). Resolved=(V+A)/N=13.2%

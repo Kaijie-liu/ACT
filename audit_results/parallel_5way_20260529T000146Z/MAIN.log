@@ -1,0 +1,15 @@
+Started: Fri May 29 10:01:46 AM AEST 2026
+  spawned cgan_2023 PID=2881438 wall=180s rss=12GB
+  spawned safenlp_2024 PID=2881442 wall=60s rss=8GB
+  spawned cora_2024 PID=2881446 wall=300s rss=12GB
+  spawned metaroom_2023 PID=2881450 wall=60s rss=8GB
+  spawned ml4acopf_2024 PID=2881454 wall=180s rss=12GB
+Waiting for all 5 to finish...
+
+==== SYNTHESIS ====
+  cgan_2023                      n= 21 V=  0 A= 0 ERR= 0 {'UNKNOWN_TIMEOUT': 21} mean=189s
+  safenlp_2024                   n= 31 V= 10 A= 0 ERR= 2 {'UNKNOWN': 19, 'CERTIFIED': 10, 'ERROR_AcceleratorError': 1, 'ERROR_WATCHDOG_EXIT_NONZERO': 1} mean=3s ⭐
+  cora_2024                      n= 32 V=  9 A= 1 ERR= 4 {'UNKNOWN': 18, 'ERROR_VNNLibParseError': 2, 'FALSIFIED': 1, 'CERTIFIED': 9, 'ERROR_WATCHDOG_EXIT_NONZERO': 2} mean=124s ⭐
+  metaroom_2023                  n= 16 V= 10 A= 0 ERR= 0 {'CERTIFIED': 10, 'UNKNOWN': 4, 'UNKNOWN_TIMEOUT': 2} mean=25s ⭐
+  ml4acopf_2024                  n= 31 V= 11 A= 0 ERR= 2 {'UNKNOWN': 18, 'CERTIFIED': 11, 'ERROR_OutOfMemoryError': 1, 'ERROR_WATCHDOG_EXIT_NONZERO': 1} mean=33s ⭐
+ALL DONE: Fri May 29 11:10:34 AM AEST 2026

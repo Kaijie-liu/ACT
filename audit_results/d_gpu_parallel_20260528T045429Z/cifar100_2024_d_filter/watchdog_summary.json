@@ -1,0 +1,72 @@
+{
+  "schema_version": 2,
+  "strict_bounded_failure": false,
+  "counts": {
+    "OK": 2,
+    "UNKNOWN_TIMEOUT": 0,
+    "UNKNOWN_RESOURCE_LIMIT": 0,
+    "ERROR": 3
+  },
+  "results": [
+    {
+      "benchmark": "cifar100_2024",
+      "instance_id": 0,
+      "status": "EXIT_NONZERO",
+      "cli_normalized": "ERROR_WATCHDOG_EXIT_NONZERO",
+      "wall_s": 14.12895483803004,
+      "peak_rss_mb": 1869.6015625,
+      "returncode": 1,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/d_gpu_parallel_20260528T045429Z/cifar100_2024_d_filter/per_instance_cifar100_2024_watchdog_iid0_20260528T051501556710Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/d_gpu_parallel_20260528T045429Z/cifar100_2024_d_filter",
+      "stdout_tail": "loat64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=cifar100_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=240.0s)\n  [  1/1] cifar100_2024/onnx/CIFAR100_resnet_medium.onnx@vnnlib/CIFAR100_resnet_medium_prop_idx_7641_sidx_1041_eps_0.0039.vnnlib: ERROR_OutOfMemoryError (9.1s)  V=0 A=0 U=0 E=1  R=0\nTraceback (most recent call last):\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 1195, in cmd_verify\n    _run_vnnlib_verify(args)\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 549, in _run_vnnlib_verify\n    return _run_vnnlib_verify_hybridz(args)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 1080, in _run_vnnlib_verify_hybridz\n    raise RuntimeError(\nRuntimeError: VERIFICATION_RUN_FAILED: ERROR=1. Per-instance log preserved; inspect instance error fields.\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.2 min\n  ERROR        1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/d_gpu_parallel_20260528T045429Z/cifar100_2024_d_filter/per_instance_cifar100_2024_20260528T051459465737Z.json\n\n\u274c Test failed: VERIFICATION_RUN_FAILED: ERROR=1. Per-instance log preserved; inspect instance error fields.\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u274c vnnlib                    FAILED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "cifar100_2024",
+      "instance_id": 40,
+      "status": "EXIT_NONZERO",
+      "cli_normalized": "ERROR_WATCHDOG_EXIT_NONZERO",
+      "wall_s": 19.591307758935727,
+      "peak_rss_mb": 1856.0234375,
+      "returncode": 1,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/d_gpu_parallel_20260528T045429Z/cifar100_2024_d_filter/per_instance_cifar100_2024_watchdog_iid40_20260528T051521148811Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/d_gpu_parallel_20260528T045429Z/cifar100_2024_d_filter",
+      "stdout_tail": "oat64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=cifar100_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=240.0s)\n  [  1/1] cifar100_2024/onnx/CIFAR100_resnet_medium.onnx@vnnlib/CIFAR100_resnet_medium_prop_idx_6010_sidx_5369_eps_0.0039.vnnlib: ERROR_OutOfMemoryError (12.1s)  V=0 A=0 U=0 E=1  R=0\nTraceback (most recent call last):\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 1195, in cmd_verify\n    _run_vnnlib_verify(args)\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 549, in _run_vnnlib_verify\n    return _run_vnnlib_verify_hybridz(args)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 1080, in _run_vnnlib_verify_hybridz\n    raise RuntimeError(\nRuntimeError: VERIFICATION_RUN_FAILED: ERROR=1. Per-instance log preserved; inspect instance error fields.\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.2 min\n  ERROR        1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/d_gpu_parallel_20260528T045429Z/cifar100_2024_d_filter/per_instance_cifar100_2024_20260528T051519282957Z.json\n\n\u274c Test failed: VERIFICATION_RUN_FAILED: ERROR=1. Per-instance log preserved; inspect instance error fields.\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u274c vnnlib                    FAILED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "cifar100_2024",
+      "instance_id": 80,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 18.063360127969645,
+      "peak_rss_mb": 1926.62109375,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/d_gpu_parallel_20260528T045429Z/cifar100_2024_d_filter/per_instance_cifar100_2024_20260528T051536676304Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/d_gpu_parallel_20260528T045429Z/cifar100_2024_d_filter",
+      "stdout_tail": "_loader:  \u2713 Parsed VNNLIB: 3072 inputs, 100 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Ground truth label: 66\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cifar100_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed CIFAR100_resnet_medium_prop_idx_815_sidx_1902_eps_0.0039.vnnlib: 1 query(ies)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=19 out_dim=100 relus=10 (triangle for relu 1..7, eq_lagr_v8 for last 3)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=cifar100_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=240.0s)\n  [  1/1] cifar100_2024/onnx/CIFAR100_resnet_medium.onnx@vnnlib/CIFAR100_resnet_medium_prop_idx_815_sidx_1902_eps_0.0039.vnnlib: UNKNOWN (11.8s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.2 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/d_gpu_parallel_20260528T045429Z/cifar100_2024_d_filter/per_instance_cifar100_2024_20260528T051536676304Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "cifar100_2024",
+      "instance_id": 120,
+      "status": "EXIT_NONZERO",
+      "cli_normalized": "ERROR_WATCHDOG_EXIT_NONZERO",
+      "wall_s": 23.54400591296144,
+      "peak_rss_mb": 3050.66015625,
+      "returncode": 1,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/d_gpu_parallel_20260528T045429Z/cifar100_2024_d_filter/per_instance_cifar100_2024_watchdog_iid120_20260528T051602757117Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/d_gpu_parallel_20260528T045429Z/cifar100_2024_d_filter",
+      "stdout_tail": "float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=cifar100_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=240.0s)\n  [  1/1] cifar100_2024/onnx/CIFAR100_resnet_large.onnx@vnnlib/CIFAR100_resnet_large_prop_idx_2993_sidx_2485_eps_0.0039.vnnlib: ERROR_OutOfMemoryError (18.3s)  V=0 A=0 U=0 E=1  R=0\nTraceback (most recent call last):\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 1195, in cmd_verify\n    _run_vnnlib_verify(args)\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 549, in _run_vnnlib_verify\n    return _run_vnnlib_verify_hybridz(args)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 1080, in _run_vnnlib_verify_hybridz\n    raise RuntimeError(\nRuntimeError: VERIFICATION_RUN_FAILED: ERROR=1. Per-instance log preserved; inspect instance error fields.\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.3 min\n  ERROR        1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/d_gpu_parallel_20260528T045429Z/cifar100_2024_d_filter/per_instance_cifar100_2024_20260528T051601288711Z.json\n\n\u274c Test failed: VERIFICATION_RUN_FAILED: ERROR=1. Per-instance log preserved; inspect instance error fields.\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u274c vnnlib                    FAILED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "cifar100_2024",
+      "instance_id": 160,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 26.021415291936137,
+      "peak_rss_mb": 3188.08984375,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/d_gpu_parallel_20260528T045429Z/cifar100_2024_d_filter/per_instance_cifar100_2024_20260528T051626684787Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/d_gpu_parallel_20260528T045429Z/cifar100_2024_d_filter",
+      "stdout_tail": "use. Process 1033677 has 696.00 MiB memory in use. Of the allocated memory 24.61 GiB is allocated by PyTorch, and 1.62 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)\nWARNING:act.back_end.solver.solver_hz:L25 FALLBACK (AttributeError): 'SparseGcZ' object has no attribute 'Gc'\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=cifar100_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=240.0s)\n  [  1/1] cifar100_2024/onnx/CIFAR100_resnet_large.onnx@vnnlib/CIFAR100_resnet_large_prop_idx_5162_sidx_8126_eps_0.0039.vnnlib: UNKNOWN (20.7s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.3 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/d_gpu_parallel_20260528T045429Z/cifar100_2024_d_filter/per_instance_cifar100_2024_20260528T051626684787Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    }
+  ]
+}

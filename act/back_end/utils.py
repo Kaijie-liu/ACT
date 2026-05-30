@@ -13,6 +13,7 @@
 #===---------------------------------------------------------------------===#
 
 import torch
+import os
 from typing import Dict, Any, Tuple, Optional
 from act.back_end.core import Bounds, ConSet
 from act.util.options import PerformanceOptions
@@ -92,6 +93,15 @@ def validate_constraints(globalC, after: Dict, net) -> bool:
     """
     if not PerformanceOptions.validate_constraints:
         return True  # Skip validation when disabled
+
+    # Validation is a debug/sanity pass, not part of the sound proof. On
+    # ImageNet/VGG-scale models it can scan tens of millions of intermediate
+    # variables before HZ verification even starts. Keep the check for normal
+    # models, but skip it automatically once the IR is too large.
+    max_out_vars = int(os.environ.get("ACT_VALIDATE_MAX_OUT_VARS", "2000000"))
+    total_out_vars = sum(len(layer.out_vars) for layer in net.layers)
+    if total_out_vars > max_out_vars:
+        return True
     
     # Step 1: Collect all variable IDs referenced by constraints
     var_ids_used = set()

@@ -1,0 +1,84 @@
+{
+  "schema_version": 2,
+  "strict_bounded_failure": false,
+  "counts": {
+    "OK": 1,
+    "UNKNOWN_TIMEOUT": 5,
+    "UNKNOWN_RESOURCE_LIMIT": 0,
+    "ERROR": 0
+  },
+  "results": [
+    {
+      "benchmark": "collins_aerospace_benchmark",
+      "instance_id": 0,
+      "status": "UNKNOWN_TIMEOUT",
+      "cli_normalized": "UNKNOWN_TIMEOUT",
+      "wall_s": 188.50032132398337,
+      "peak_rss_mb": 7848.07421875,
+      "returncode": -15,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/sparse_input_gpu_sweep_20260528T150124Z/collins_aerospace_benchmark/per_instance_collins_aerospace_benchmark_watchdog_iid0_20260528T150435056301Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/sparse_input_gpu_sweep_20260528T150124Z/collins_aerospace_benchmark",
+      "stdout_tail": "us=0 (triangle for relu 1..-1, eq_lagr_v8 for last 1)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=60 out_dim=277200 relus=0 (triangle for relu 1..-1, eq_lagr_v8 for last 1)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=60 out_dim=277200 relus=0 (triangle for relu 1..-1, eq_lagr_v8 for last 1)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=60 out_dim=277200 relus=0 (triangle for relu 1..-1, eq_lagr_v8 for last 1)\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=collins_aerospace_benchmark max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=180.0s)\n  [  1/1] collins_aerospace_benchmark/onnx/yolov5nano_LRelu_640.onnx@vnnlib/img_14421_perturbed_bbox_3_delta_0.001.vnnlib: UNKNOWN (183.4s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=3.1 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/sparse_input_gpu_sweep_20260528T150124Z/collins_aerospace_benchmark/per_instance_collins_aerospace_benchmark_20260528T150432271716Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "collins_aerospace_benchmark",
+      "instance_id": 1,
+      "status": "UNKNOWN_TIMEOUT",
+      "cli_normalized": "UNKNOWN_TIMEOUT",
+      "wall_s": 188.5209453520365,
+      "peak_rss_mb": 7881.88671875,
+      "returncode": -15,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/sparse_input_gpu_sweep_20260528T150124Z/collins_aerospace_benchmark/per_instance_collins_aerospace_benchmark_watchdog_iid1_20260528T150743579342Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/sparse_input_gpu_sweep_20260528T150124Z/collins_aerospace_benchmark",
+      "stdout_tail": "t64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: yolov5nano_LRelu_640.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 3, 640, 640]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 3, 640, 640)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 1228800 inputs, 277200 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 1228800 inputs, 277200 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_aerospace_benchmark'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed img_6876_perturbed_bbox_0_delta_0.005.vnnlib: 19 query(ies)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=60 out_dim=277200 relus=0 (triangle for relu 1..-1, eq_lagr_v8 for last 1)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=60 out_dim=277200 relus=0 (triangle for relu 1..-1, eq_lagr_v8 for last 1)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=60 out_dim=277200 relus=0 (triangle for relu 1..-1, eq_lagr_v8 for last 1)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=60 out_dim=277200 relus=0 (triangle for relu 1..-1, eq_lagr_v8 for last 1)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=60 out_dim=277200 relus=0 (triangle for relu 1..-1, eq_lagr_v8 for last 1)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=60 out_dim=277200 relus=0 (triangle for relu 1..-1, eq_lagr_v8 for last 1)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=60 out_dim=277200 relus=0 (triangle for relu 1..-1, eq_lagr_v8 for last 1)\n"
+    },
+    {
+      "benchmark": "collins_aerospace_benchmark",
+      "instance_id": 2,
+      "status": "UNKNOWN_TIMEOUT",
+      "cli_normalized": "UNKNOWN_TIMEOUT",
+      "wall_s": 188.52032290189527,
+      "peak_rss_mb": 7861.74609375,
+      "returncode": -15,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/sparse_input_gpu_sweep_20260528T150124Z/collins_aerospace_benchmark/per_instance_collins_aerospace_benchmark_watchdog_iid2_20260528T151052100177Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/sparse_input_gpu_sweep_20260528T150124Z/collins_aerospace_benchmark",
+      "stdout_tail": "lus=0 (triangle for relu 1..-1, eq_lagr_v8 for last 1)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=60 out_dim=277200 relus=0 (triangle for relu 1..-1, eq_lagr_v8 for last 1)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=60 out_dim=277200 relus=0 (triangle for relu 1..-1, eq_lagr_v8 for last 1)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=60 out_dim=277200 relus=0 (triangle for relu 1..-1, eq_lagr_v8 for last 1)\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=collins_aerospace_benchmark max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=180.0s)\n  [  1/1] collins_aerospace_benchmark/onnx/yolov5nano_LRelu_640.onnx@vnnlib/img_14386_perturbed_bbox_7_delta_0.01.vnnlib: UNKNOWN (184.9s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=3.1 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/sparse_input_gpu_sweep_20260528T150124Z/collins_aerospace_benchmark/per_instance_collins_aerospace_benchmark_20260528T151051010143Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "collins_aerospace_benchmark",
+      "instance_id": 3,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 188.11677991296165,
+      "peak_rss_mb": 7824.65625,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/sparse_input_gpu_sweep_20260528T150124Z/collins_aerospace_benchmark/per_instance_collins_aerospace_benchmark_20260528T151356853668Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/sparse_input_gpu_sweep_20260528T150124Z/collins_aerospace_benchmark",
+      "stdout_tail": "elus=0 (triangle for relu 1..-1, eq_lagr_v8 for last 1)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=60 out_dim=277200 relus=0 (triangle for relu 1..-1, eq_lagr_v8 for last 1)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=60 out_dim=277200 relus=0 (triangle for relu 1..-1, eq_lagr_v8 for last 1)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=60 out_dim=277200 relus=0 (triangle for relu 1..-1, eq_lagr_v8 for last 1)\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=collins_aerospace_benchmark max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=180.0s)\n  [  1/1] collins_aerospace_benchmark/onnx/yolov5nano_LRelu_640.onnx@vnnlib/img_8758_perturbed_bbox_3_delta_0.02.vnnlib: UNKNOWN (182.4s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=3.0 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/sparse_input_gpu_sweep_20260528T150124Z/collins_aerospace_benchmark/per_instance_collins_aerospace_benchmark_20260528T151356853668Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "collins_aerospace_benchmark",
+      "instance_id": 4,
+      "status": "UNKNOWN_TIMEOUT",
+      "cli_normalized": "UNKNOWN_TIMEOUT",
+      "wall_s": 188.51870791602414,
+      "peak_rss_mb": 7861.9140625,
+      "returncode": -15,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/sparse_input_gpu_sweep_20260528T150124Z/collins_aerospace_benchmark/per_instance_collins_aerospace_benchmark_watchdog_iid4_20260528T151708737023Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/sparse_input_gpu_sweep_20260528T150124Z/collins_aerospace_benchmark",
+      "stdout_tail": "at64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: yolov5nano_LRelu_640.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 3, 640, 640]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 3, 640, 640)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 1228800 inputs, 277200 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 1228800 inputs, 277200 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_aerospace_benchmark'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed img_8758_perturbed_bbox_4_delta_0.05.vnnlib: 19 query(ies)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=60 out_dim=277200 relus=0 (triangle for relu 1..-1, eq_lagr_v8 for last 1)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=60 out_dim=277200 relus=0 (triangle for relu 1..-1, eq_lagr_v8 for last 1)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=60 out_dim=277200 relus=0 (triangle for relu 1..-1, eq_lagr_v8 for last 1)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=60 out_dim=277200 relus=0 (triangle for relu 1..-1, eq_lagr_v8 for last 1)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=60 out_dim=277200 relus=0 (triangle for relu 1..-1, eq_lagr_v8 for last 1)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=60 out_dim=277200 relus=0 (triangle for relu 1..-1, eq_lagr_v8 for last 1)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=60 out_dim=277200 relus=0 (triangle for relu 1..-1, eq_lagr_v8 for last 1)\n"
+    },
+    {
+      "benchmark": "collins_aerospace_benchmark",
+      "instance_id": 5,
+      "status": "UNKNOWN_TIMEOUT",
+      "cli_normalized": "UNKNOWN_TIMEOUT",
+      "wall_s": 188.51392722094897,
+      "peak_rss_mb": 7860.01171875,
+      "returncode": -15,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/sparse_input_gpu_sweep_20260528T150124Z/collins_aerospace_benchmark/per_instance_collins_aerospace_benchmark_watchdog_iid5_20260528T152017251634Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/sparse_input_gpu_sweep_20260528T150124Z/collins_aerospace_benchmark",
+      "stdout_tail": "b_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: yolov5nano_LRelu_640.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 3, 640, 640]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 3, 640, 640)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 1228800 inputs, 277200 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 1228800 inputs, 277200 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'collins_aerospace_benchmark'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed img_12761_perturbed_bbox_0_delta_0.1.vnnlib: 19 query(ies)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=60 out_dim=277200 relus=0 (triangle for relu 1..-1, eq_lagr_v8 for last 1)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=60 out_dim=277200 relus=0 (triangle for relu 1..-1, eq_lagr_v8 for last 1)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=60 out_dim=277200 relus=0 (triangle for relu 1..-1, eq_lagr_v8 for last 1)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=60 out_dim=277200 relus=0 (triangle for relu 1..-1, eq_lagr_v8 for last 1)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=60 out_dim=277200 relus=0 (triangle for relu 1..-1, eq_lagr_v8 for last 1)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=60 out_dim=277200 relus=0 (triangle for relu 1..-1, eq_lagr_v8 for last 1)\n"
+    }
+  ]
+}

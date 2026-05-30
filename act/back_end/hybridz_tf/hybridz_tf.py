@@ -157,12 +157,21 @@ class HybridzTF(TransferFunction):
         if n > self._HZ_MAX_INPUT_DIM:
             return None
         c = ((lb + ub) / 2.0).view(-1, 1)
-        rad = (ub - lb) / 2.0
+        rad = ((ub - lb) / 2.0).clamp_min(0)
+        active = torch.nonzero(rad > 0, as_tuple=False).view(-1)
+        ng = int(active.numel())
+        if ng == n:
+            Gc = torch.diag(rad)
+        else:
+            Gc = torch.zeros((n, ng), dtype=lb.dtype, device=lb.device)
+            if ng > 0:
+                cols = torch.arange(ng, dtype=torch.long, device=lb.device)
+                Gc[active, cols] = rad[active]
         return HZono(
             c=c,
-            Gc=torch.diag(rad),
+            Gc=Gc,
             Gb=lb.new_zeros(n, 0),
-            Ac=lb.new_zeros(0, n),
+            Ac=lb.new_zeros(0, ng),
             Ab=lb.new_zeros(0, 0),
             b=lb.new_zeros(0, 1),
         )

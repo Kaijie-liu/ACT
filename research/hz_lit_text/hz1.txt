@@ -1,0 +1,466 @@
+                                                     Hybrid Zonotopes Exactly Represent ReLU Neural Networks
+                                                                        Joshua Ortiz, Alyssa Vellucci, Justin Koeln, Justin Ruths
+
+
+                                           Abstract— We show that hybrid zonotopes offer an equivalent       bounds on the output reachability of neural networks. [13]
+                                        representation of feed-forward fully connected neural networks       demonstrates how these analytic expression of relaxations of
+                                        with ReLU activation functions. Our approach demonstrates            ReLU neural networks can be used to, for example, train
+                                        that the complexity of binary variables is equal to the total
+                                        number of neurons in the network and hence grows linearly            networks to be more robust to adversarial attack. Star sets
+                                        in the size of the network. We demonstrate the utility of            offer similar expressiveness as hybrid zonotopes and have
+                                        the hybrid zonotope formulation through three case studies           also been used to provide approximate and exact reachabil-
+arXiv:2304.02755v1 [cs.LG] 5 Apr 2023
+
+
+
+
+                                        including nonlinear function approximation, MPC closed-loop          ity of feed-forward ReLU neural networks [14]. However,
+                                        reachability and verification, and robustness of classification on   like [2], the computational complexity of the mixed-integer
+                                        the MNIST dataset.
+                                                                                                             program (number of binary variables) grows exponentially.
+                                                              I. I NTRODUCTION                                  At the heart of our approach is the ability of hybrid
+                                                                                                             zonotopes to maintain an exact analytic expression from
+                                           We leverage the recently introduced concept of a hybrid           input to output. Crucially, this expression preserves how
+                                        zonotope to develop an equivalent representation of feed-            previous layers impact the propagation of the sets without
+                                        forward fully connected neural networks whose activation             iterative calculations or overapproximation. In contrast to
+                                        functions are rectified linear activation functions (ReLU) [1].      MILP approaches (e.g., [15]), which also provide exact
+                                        We show that this exact and analytic expression of the input-        input-output relationships for ReLU neural network certifica-
+                                        output mapping of the neural network enables verification            tion, the hybrid zonotope representation, due to the memory
+                                        and robustness quantification for general neural networks            feature of zonotopes, enables it to be used in a variety of
+                                        and, when neural networks are embedded in closed-loop con-           ways, including for closed loop analysis.
+                                        trol applications, facilitates closed-loop reachability analysis        Notation: Matrices are denoted by uppercase letters, e.g.,
+                                        and safety guarantees. This work was developed separately            G ∈ Rn×ng , and sets by uppercase calligraphic letters, e.g.,
+                                        from, and in parallel to, a recently posted article [2]. The         Z ⊂ Rn . Vectors and scalars are denoted by lowercase
+                                        overall goal of our paper and use of hybrid zonotopes is             letters. The n-dimensional unit hypercube is denoted by
+                                        similar, however, we show our approach leads to linear               B∞n
+                                                                                                                   = {x ∈ Rn ∣ ∥x∥∞ ≤ 1}. The set of all n-dimensional
+                                        growth in complexity, whereas the complexity in [2] grows            binary vectors is denoted by {−1, 1}n . Matrices and vectors
+                                        exponentially.                                                       of all 0 and 1 elements are denoted by 0 and 1, respectively,
+                                           To verify neural networks, a wide range of methods have           of appropriate dimension. The Kronecker product of matrices
+                                        been proposed to upper and lower bound the output of                 A ∈ Rm×n and B ∈ Rp×q is given as A ⊗ B ∈ Rpm×qn .
+                                        neural networks. In [3], preactivation upper and lower bounds           Given the sets Z, W ⊂ Rn , Y ⊂ Rm , and matrix R ∈ Rm×n ,
+                                        are calculated and propagated layer-by-layer to calculate an         the linear mapping of Z by R is RZ = {Rz ∣ z ∈ Z}, the
+                                        overall Lipschitz constant bound for the entire network. Due         Minkowski sum of Z and W is Z ⊕ W = {z + w ∣ z ∈ Z, w ∈
+                                        to their speed these iterative approaches continue to be used        W}, the generalized intersection of Z and Y under R is
+                                        (e.g., [4]). However, it requires that bounds be recomputed          Z ∩R Y = {z ∈ Z ∣ Rz ∈ Y}, and the Cartesian product of Z
+                                        if the input set changes and the iterative bounding erases           and Y is Z × Y = {(z, y)∣ z ∈ Z, y ∈ Y}.
+                                        any memory that exists between the layers. Semi-definite
+                                        programming relaxations have been used to regain the layer-                            II. H YBRID Z ONOTOPES
+                                        to-layer history in a computationally efficient manner [5] and          Definition 1: [1, Def. 3] The set Zh ⊂ Rn is a hybrid
+                                        mixed-integer linear programming (MILP) has been used to             zonotope if there exists Gc ∈ Rn×ng , Gb ∈ Rn×nb , c ∈ Rn ,
+                                        compute exact Lipschitz bounds [6]. In the context of control        Ac ∈ Rnc ×ng , Ab ∈ Rnc ×nb , and b ∈ Rnc such that
+                                        systems, closed-loop reachability has been investigated with
+                                                                                                                      ⎧                   RRRR[ ξb ] ∈ B∞  × {−1, 1}nb ,⎫
+                                                                                                                                                  c
+
+                                        similar methods [7], [8].                                                     ⎪
+                                                                                                                      ⎪ c b ξc               R
+                                                                                                                                                        ng
+                                                                                                                                                                        ⎪
+                                                                                                                                                                        ⎪
+                                                                                                                Zh = ⎨[G G ] [ ξb ] + c RRR     ξ
+                                                                                                                                                               c        ⎬ . (1)
+                                           Hybrid zonotopes are a generalization of constrained                       ⎪
+                                                                                                                      ⎪                      RR [A A ] [ b ] = b ⎪
+                                                                                                                                              R       c  b   ξ          ⎪
+                                                                                                                      ⎩                       R              ξ          ⎭
+                                        zonotopes, which were introduced several years earlier [9].             A hybrid zonotope is the union of 2nb constrained zono-
+                                        Like our paper here, authors have leveraged constrained              topes corresponding to the possible combinations of binary
+                                        zonotopes [10], [11] or polytopes [12] to propagate sets             factors, ξ b . The hybrid zonotope is given in Hybrid Con-
+                                        through approximated ReLU activation functions to compute            strained Generator-representation and the shorthand notation
+                                                                                                             of Zh = ⟨Gc , Gb , c, Ac , Ab , b⟩ ⊂ Rn is used to denote the
+                                          The authors are with the Department of Mechanical Engi-
+                                        neering, The University of Texas at Dallas. Correspondence to        set given by (1). Continuous and binary generators refer to
+                                        jruths@utdallas.edu.                                                 the columns of Gc and Gb , respectively. A hybrid zonotope
+with no binary generators is a constrained zonotope, Zc =
+⟨G, c, A, b⟩ ⊂ Rn , and a hybrid zonotope with no binary
+generators and no constraints is a zonotope, Z = ⟨G, c⟩ ⊂
+Rn . Identities and time complexity of linear mappings,
+Minkowski sums, generalized intersections, and generalized
+half-space intersections are reported in [1, Section 3.2]. An
+identity and time complexity for Cartesian products is given
+in [16]. Preliminary methods for removing redundant gener-
+ators and constraints of a hybrid zonotope were reported in
+[1] and further developed in [16].                                          Fig. 1: The intersection of the blue zonotope, Z1 , and red
+   Example 1 (Zonotope Memory (see also [17])): If                          hybrid zonotope, Z2 ∪Z3 , is equivalent to the ReLU function
+we consider a dynamic system xk+1 = Axk + Buk ,                             (purple) over the interval [−a, a] (here shown for a = 10).
+with x0       ∈    X0    =     ⟨Gcx , Gbx , cx , Acx , Abx , bx ⟩ and
+u0 ∈ U = ⟨Gu , Gu , cu , Au , Abu , bu ⟩, then by the linear
+                 c    b      c
+
+mapping and Minkowski sum identities,                                       ReLU functions that operate element-wise, i.e., for the pre-
+                                                                            activation vector v `+1 = W ` x` + b` ∈ Rn`+1 ,
+   x1 ∈ X1 = ⟨[AGcx BGcu ], [AGbx BGbu ], Acx + Bcu ,
+                                                                                            φ(v ` ) = [ϕ(v1` ) ⋯ ϕ(vn` ` )]⊺ ,                 (4)
+                                                                      (2)
+                           Ac              Abx              b               where the ReLU function is defined as ϕ(vi ) = max{0, vi }.
+                          [ x        ],[               ] , [ x ] ⟩.
+                                 Acu             Abu        bu                 The goal of this paper is to show that such a feed-
+                                                                            forward neural network with only ReLU activation units
+The effect of the linear mapping is encoded in the transfor-                can be exactly - and analytically - represented by a hybrid
+mation of the continuous and binary generators. The memory                  zonotope. Core to our approach is the idea that sets (in-
+is, however, captured in the fact that the continuous and                   cluding hybrid zonotopes) can be used to describe functions.
+binary factors that define the sets X0 and U are embedded                   We can accomplish this by expressing an extended set that
+in the definition of X1 . To ignore this connection - what                  expresses the input-to-output relationship. Given the input
+happens with iterative methods - is to erase this memory                    set X ⊂ Rn and output set Y = {f (x) ∶ x ∈ X } ⊂ Rm , the
+by treating the factors of X1 as new unrelated factors.                     function f over the input set X can be expressed by the
+This feature of memory is especially visible when creating                  set F ⊂ Rn+m of extended vectors [x⊺ y ⊺ ]⊺ ∈ Rn+m such
+extended vectors, e.g.,                                                     that F = {[x⊺ y ⊺ ]⊺ ∶ y = f (x), x ∈ X }. Zonotope-based
+                                                                            sets especially enable function representations through the
+   x          Gc                Gbx                        cx
+  [ 0 ] ∈ ⟨ [ xc           c],[                  ],[            ],          “memory” engendered by the factors. The crucial connection
+   x1        AGx         BGu   AGbx        BGbu       Acx + Bcu             is that some of the factors that define the output zonotope
+                        ⎡Ac        ⎤ ⎡Ab        ⎤ ⎡b ⎤
+                        ⎢ x        ⎥ ⎢ x        ⎥ ⎢ x⎥                      set are factors derived from the input zonotope.
+                        ⎢ c        ⎥ ⎢ b        ⎥ ⎢ ⎥
+                        ⎢Ax        ⎥ , ⎢Ax      ⎥ , ⎢bx ⎥ ⟩.                   To begin, we represent a single ReLU activation function
+                        ⎢          ⎥ ⎢          ⎥ ⎢ ⎥
+                        ⎢      A c ⎥   ⎢    A b ⎥ ⎢ ⎥
+                                              u ⎦ ⎣bu ⎦
+                                                                            xi = ϕ(vi ) as a set of points [vi xi ]⊺ ∈ R2 over a predeter-
+                        ⎣        u⎦ ⎣
+                                                                            mined domain vi ∈ [−a, a]. We assume a > 0 is chosen large
+Specifically, the continuous and binary factors that spec-                  enough to capture the largest anticipated absolute value of
+ify the hybrid zontope X1 are [(ξxc )⊺ (ξuc )⊺ ]⊺ and                       the input vi such that ∣vi ∣ ≤ a.
+[(ξxb )⊺ (ξub )⊺ ]⊺ , respectively, where ξxc and ξxb specify X0 and           Lemma 1: The set Φ ⊂ R2 of points satisfying the ReLU
+ξuc and ξub specify U. There are no new factors introduced                  activation function over the domain Di = [−a, a] can be
+specific to X1 - all are inherited from X0 or U. In this case               exactly represented as a hybrid zonotope with ng = 4
+the redundant constraints can be dropped.                                   continuous generators, nb = 1 binary generator, and nc = 2
+III. N EURAL N ETWORK R EPRESENTATION AS A H YBRID                          constraints.
+                    Z ONOTOPE                                                    Proof: To satisfy the ReLU function for vi ∈ [−a, a],
+                                                                            Φ = {[vi xi ]⊺ ∶ xi = max{0, vi }, ∣vi ∣ ≤ a}. Note that Φ =
+   Consider an L-layered feed-forward fully-connected neu-                  Φ1 ∪ Φ2 , where Φ1 = {[vi xi ]⊺ ∶ −a ≤ vi ≤ 0, xi = 0} and
+ral network f ∶ Rn → Rm mapping inputs x ∈ Rn to outputs                    Φ2 = {[vi xi ]⊺ ∶ 0 ≤ vi ≤ a, xi = vi }. To represent this set,
+y = f (x) ∈ Rm such that                                                    consider the zonotopes
+               x0 = x,                                                               a/2   a/2      0            a/2      a/2        −a
+                                                                              Z1 = ⟨[a        ] , [a ]⟩ , Z2 = ⟨[a              ] , [ a ]⟩ ,
+           x   `+1
+                     = φ(W x + b ),
+                           ` `   `
+                                             ` ∈ {0, ⋯, L − 1},       (3)             /2    0       /2            /2       0         − /2
+                                                                                                                                               (5)
+      y = f (x) = W L xL + bL ,                                                      a/2   a/2      a
+                                                                              Z3 = ⟨[a        ] , [a ]⟩ .
+                                                                                      /2    0       /2
+where W ` ∈ Rn`+1 ×n` and b` ∈ Rn`+1 are the weight matrix
+and bias vector between layers ` and ` + 1, with n0 = n                     As shown in Figure 1, Z1 , Z2 , and Z3 are the same
+and nL+1 = m. For this paper, all activation functions φ are                parallelogram with shifted centers. Additionally, Figure 1
+shows that Z1 ∩ Z2 = Φ1 and Z1 ∩ Z3 = Φ2 . Therefore,                           The affine map v `+1 = W ` x` + b` provides the connection
+Φ = (Z1 ∩ Z2 ) ∪ (Z1 ∩ Z3 ) = Z1 ∩ (Z2 ∪ Z3 ). Note that                     between layers ` = 0, . . . , L−1. For the hybrid zonotope sets,
+Z2 ∪Z3 can be directly expressed as the unconstrained hybrid                 the inter-layer connections provide constraints between x0
+zonotope                                                                     and v 1 , x1 and v 2 , . . . , xL−1 and vL (the final affine mapping
+                   a/2         a/2
+                                                                             y = W L xL + bL provides a transformation of the final layer
+                                         a     0
+       Z2 ∪ Z3 = ⟨[a               ] , [a ] , [ ] , [ ], [ ], [ ]⟩ .   (6)   to the output, but not additional constraints). Since v ` has
+                    /2         0         /2    0
+                                                                             dimension n` , these L vector constraints provide n1 +⋅ ⋅ ⋅+nL
+Then, using the identities for the intersection operation in [1]             additional constraints over the L layers. This leads to a total
+(see Proposition 7),                                                         of nc = 3(n1 + ⋅ ⋅ ⋅ + nL ) constraints.
+                                                                                With the set F defined, it is now possible to consider a
+   Φ = Z1 ∩ (Z2 ∪ Z3 ),                                                (7)   general set of inputs X ⊂ Rn , assuming X ⊆ [−a1n , a1n ],
+          a/2   a/2     0 0      0      0                                    and identify the corresponding set of outputs Y ⊂ Rm such
+     = ⟨ [a                 ] , [ ] , [a ] ,                           (8)   that y ∈ Y if and only if there exists x ∈ X such that y = f (x).
+           /2    0      0 0      0      /2
+                                                                                Corollary 1: Given a hybrid zonotope of inputs X ⊂ Rn
+                  a/2    a/2     −a/2 −a/2      −a       0                   and a hybrid zonotope F ⊂ Rn+m of points satisfying
+                 [a                        ] , [ a ] , [ a ] ⟩,
+                   /2     0      −a/2  0        − /2    − /2                 the input-output mapping of a feed-forward ReLU neural
+                                                                             network with ReLU activation functions, the set of corre-
+with ng = 4 continuous generators, nb = 1 binary generator,                  sponding outputs Y ⊂ Rm is a hybrid zonotope with ng,y =
+and nc = 2 constraints.                                                      ng,x + 4nN continuous generators, nb,y = nb,x + nN binary
+   We can now assemble the individual ReLU functions as                      generators, and nc,y = n + nc,x + 3nN constraints, assuming
+a hybrid zonotope into a hybrid zonotope representation for                  X has ng,x continuous generators, nb,x binary generators,
+the entire neural network.                                                   and nc,x constraints and the neural network has a total of
+   Theorem 1: A feed-forward ReLU neural network f ∶                         nN ReLU activation functions.
+Rn → Rm with nN total ReLU activation functions (neurons)                          Proof: Consider the vector [x⊺ y ⊺ ]⊺ ∈ Rn+m . If x ∈
+can be exactly represented as a hybrid zonotope with ng =                    [−a1n , a1n ] and y = f (x), then [x⊺ y ⊺ ]⊺ ∈ F ⊂ Rn+m . Ad-
+4nN continuous generators, nb = nN binary generators, and                    ditionally, if x ∈ X , then [x⊺ y ⊺ ]⊺ ∈ F ∩[In 0n×m ] X . Finally,
+nc = 3nN constraints.                                                        the output set Y = [0m×n Im ](F ∩[In 0n×m ] X ), which has
+      Proof: The proof constructs the set F ⊂ Rn+m of                        ng,y = ng,x + 4nN continuous generators, nb,y = nb,x + nN
+extended vectors [x⊺ y ⊺ ]⊺ ∈ Rn+m such that F = {[x⊺ y ⊺ ]⊺ ∶               binary generators, and nc,y = n + nc,x + 3nN constraints
+y = f (x), x ∈ [−a1n , a1n ]}. Building on Lemma 1, we                       based on the definition of the generalized intersection from
+construct the vector-valued element-wise ReLU function to                    [1] (see Proposition 2) and the fact that the projection does
+compose a full layer of the neural network and then connect                  not change the number of generators or constraints.
+the layers through the affine mapping of weights and biases.                    A powerful outcome of Corollary 1 is that the hybrid
+It is always possible to select the parameter a large enough                 zonotope representation of the neural network, F does not
+since the function f is Lipschitz continuous over a bounded                  need to be recomputed or reformulated if the input domain
+domain.                                                                      X changes. This is particularly appealing in the context of
+   For a single layer of the neural network, we can represent                inspecting robustness and variation in the mapping provided
+the vector of n` ReLU activation functions x` = φ(v ` ), from                by the neural network. This notion will be used in the MNIST
+(3), as a set of vectors [(v ` )⊺ (x` )⊺ ]⊺ ∈ R2n` over the do-              case study in Section V-C.
+main D = [−a1n` , a1n` ]. Note that [v1` x`1 ⋯ vn` `+1 x`n`+1 ]⊺ ∈
+Φ × ⋯ × Φ ≜ Φn` ⊂ R2n` and that [(v ` )⊺ (x` )⊺ ]⊺ =                          IV. C LOSED - LOOP R EACHABILITY OF L INEAR S YSTEMS
+                                                                                       UNDER N EURAL N ETWORK C ONTROL
+T [v1` x`1 ⋯ vn` `+1 x`n`+1 ]⊺ , where
+                                                                                Consider the discrete-time linear system xk+1 = Axk +
+                             I ⊗ [1 0]                                       Buk , where xk ∈ Rn are the states and uk ∈ Rm are
+                        T = [ n`         ].                            (9)
+                             In` ⊗ [0 1]                                     the inputs. We assume closed-loop control using a neural
+                                                                             network such that uk = f (xk ), resulting in the closed-loop
+Therefore, [(v ` )⊺ (x` )⊺ ]⊺ ∈ T Φn` are the points where
+                                                                             dynamics
+v ` ∈ [−a1n` , a1n` ] and x` = φ(v ` ). Thus the transformation
+                                                                                               xk+1 = Axk + Bf (xk ).                (10)
+T reorders the inputs and outputs of the Cartesian product
+of individual ReLU sets into an overall input-output set for                    Theorem 2: Assume the reachable set Rk at time step k
+the entire layer. Note that the hybrid zonotope T Φn` has                    is represented as a hybrid zonotope with ng,k continuous
+ng = 4n` continuous generators, nb = 1n` binary generators,                  generators, nb,k binary generators, and nc,k constraints and
+and nc = 2n` constraints based on the definition of the                      that the neural network with nN ReLU activation functions
+Cartesian product for hybrid zonotopes [16]. This process                    is represented as a hybrid zonotope F with 4nN continuous
+can be repeated for each of the L hidden layers of the neural                generators, nN binary generators, and 3nN constraints. Then
+network. This leads to ng = 4(n1 + ⋅ ⋅ ⋅ + nL ) continuous                   the reachable set Rk+1 at time step k+1 is a hybrid zonotope
+factors, nb = 1(n1 + ⋅ ⋅ ⋅ + nL ) continuous factors, and nc =               with ng = ng,k + 4nN continuous generators, nb = nb,k + nN
+3(n1 + ⋅ ⋅ ⋅ + nL ) constraints.                                             binary generators, and nc = n + nc,k + 3nN constraints.
+Fig. 2: (Left) Hybrid zonotope of the neural network that approximates the function cos(x1 ) + sin(x2 ). (Right) Top-down
+view of the surface reveals the intricate faceting that corresponds to binary factors (equivalent to ReLU activations) being
+on/off. The colormap of the original function is overlaid to show how the faceting follows the contours.
+
+
+                                                                     k                                      k
+      Proof: The proof is similar to that of Corollary 1.          ∑κ=0 nb,κ binary generators, and ∑κ=0 nc,κ .
+First, we can write (10) as xk+1 = [A B][x⊺k u⊺ ]⊺ . Then             However, from the proof of Theorem 2, Rκ+1 =
+we note that [x⊺k u⊺ ]⊺ ∈ F ∩[In 0n×m ] Rk such that xk+1 ∈        [A B](F ∩[In 0n×m ] Rκ ), hence Rκ+1 and Rκ share common
+[A B](F ∩[In 0n×m ] Rk ).                                          factors. Namely, all continuous and binary factors that char-
+   The result of Theorem 2 can be repeated recursively             acterize Rκ also contribute to characterize Rκ+1 . Thus the
+starting from R0 = X0 to compute the reachable set Rk at           extended vector [x⊺κ x⊺κ+1 ]⊺ belongs to a hybrid zonotope
+any time step k. We omit the simple proof to satisfy space         with max(ng,κ , ng,κ+1 ) continuous and max(nb,κ , nb,κ+1 )
+constraints.                                                       binary generators. The constraints do stack and become
+   Corollary 2: Assume the initial conditions set R0 is rep-       nc,κ + nc,κ+1 .
+resented as a hybrid zonotope with ng,0 continuous gener-             Extending this pairwise relationship forward, R0∶k has
+ators, nb,0 binary generators, and nc,0 constraints and that       max(ng,0 , . . . , ng,k ) = ng,k = ng,0 + 4knN continuous
+the neural network with nN ReLU activation functions is            generators, max(nb,0 , . . . , nb,k ) = nb,k = nb,0 + 4knN binary
+represented as a hybrid zonotope F with 4nN continuous             generators, and nc,0 + (n + 3nN ) ∑kκ=0 κ constraints.
+generators, nN binary generators, and 3nN constraints. Then
+the hybrid zonotope set representation complexity of the                    V. A PPLICATIONS & D EMONSTRATIONS
+reachable set Rk at time step k grows linearly with k,                The neural networks in this paper are feed-forward fully-
+resulting in ng,k = ng,0 +4knN continuous generators, nb,k =       connected neural networks with only ReLU activation units,
+nb,0 + knN binary generators, and nc,k = nc,0 + k(n + 3nN )        and specified by the number of layers and width of each
+constraints.                                                       layer, e.g., [4,10,7,2] is a network with inputs in R4 , outputs
+   In the following result, we demonstrate how the reachable       in R2 , and with two hidden layers of 10 and 7 ReLU units,
+sets over time can be stacked to provide additional inter-         respectively. The networks are trained in MATLAB using the
+pretability with regard to the history of the control policy       stochastic gradient descent optimizer with momentum (0.95)
+used. This result will be used in the context of the MPC           and 100 epochs. The hybrid zonotopes have been coded in
+case study in Section V-B.                                         MATLAB. Optimization problems have been solved using
+   Corollary 3: Assume the initial conditions set R0 is rep-       GUROBI [18]. These examples are conducted on a laptop
+resented as a hybrid zonotope with ng,0 continuous gener-          computer using one core of an 1.9 GHz Intel i7 processor
+ators, nb,0 binary generators, and nc,0 constraints and that       and 16GB of RAM.
+the neural network with nN ReLU activation functions is
+represented as a hybrid zonotope F with 4nN continuous             A. Nonlinear Function Approximation
+generators, nN binary generators, and 3nN constraints. Then           Over the input domain [−5, 5] × [−5, 5] we train a ReLU
+the hybrid zonotope set representation of the aggregate            feed-forward neural network with layer sizes [2,20,10,10,1]
+reachable set [x⊺0 x⊺1 ⋯ x⊺k ]⊺ ∈ R0∶k = R0 × R1 × ⋯ × Rk          to approximate the function cos(x1 ) + sin(x2 ) by grid sam-
+has complexity ng,k = ng,0 + 4knN continuous generators,           pling 400 points.
+nb,k = nb,0 + knN binary generators, and nc,k = nc,0 + (n +           There are 20 + 10 + 10 = 40 = nN total ReLU functions
+3nN ) ∑kκ=0 κ constraints.                                         in the network and we build a hybrid zonotope F capturing
+      Proof: Following from Corollary 2, the hybrid zonotope       the input-output mapping using the extended vector [x⊺ y ⊺ ]⊺ .
+R0∶k is the Cartesian product of sets Rκ for κ = 1, 2, . . . , k   The hybrid zonotope has n + 4nN = 2 + 4 × 40 = 162
+each with ng,κ = ng,0 + 4κnN continuous generators, nb,κ =         continuous generators, nN = 40 binary generators, and
+nb,0 + κnN binary generators, and nc,κ = n + nc,0 + 3κnN           3nN = 120 constraints. Of the 240 possible combinations
+constraints. If these sets were unrelated, the resulting hy-       of binary factors, 829 satisfy the constraints, leading to 829
+brid zonotope would have ∑kκ=0 ng,κ continuous generators,         constrained zonotopes which appear as facets of the surface
+                                                     0
+
+
+                0.5
+
+
+
+
+                  0                                                        1
+                                                   -0.25
+                                  0             0.25
+                -0.5                                                       0
+
+
+                                                                          -1
+                  -1
+                                                                           -1
+                                                                                 0                                   -1
+                                                                                                                0
+                                                                                       1                   1
+                       0              1          2                3                         2         2
+                                                                                                 3
+
+
+Fig. 3: (Right) The hybrid zonotope representation of the neural network trained to learn an MPC policy to reach the origin
+while avoiding constraints, e.g., avoid x ≤ −1. (Left) The evolution of the system state following the inputs produced by the
+neural network model. The initial state set at k = 0 is shown in gray, and steps k = 1, . . . , 5 alternate color between blue
+and red. The inset plot shows (green arrow) the break between the k = 4 and k = 5 reachable set to show that the final state
+set sits within the goal set (green box).
+
+
+plotted in Figure 2. There is a one-to-one correspondence             different sequences of linear control policies) that satisfy the
+between these 829 feasible binary factor combinations and             constraints. Part of the utility of the extended state vector
+the combinations of the 40 ReLU units being active (> 0) or           is that the initial set (gray square) is originally specified as
+inactive (≤ 0).                                                       an unconstrained zonotope with a center and two continuous
+                                                                      generators. As seen in Figure 3, the initial set is faceted by
+B. Model Predictive Control Policy & Closed-Loop Reach-               constraints at later time steps to reveal the sets of initial
+ability Analysis                                                      conditions that correspond to different sequences of linear
+  We consider a double integrator system discretized with a           feedback control policies.
+sampling time of 1 second,                                               Suppose that we wish to check that the system reaches the
+                                                                      goal set [−0.25, 0.25]×[−0.25, 0.25] (green square in Figure
+                        1   1        0.5
+                xk+1 = [      ] x + [ ] uk .               (11)       3) for any initial condition in the gray region. Although
+                        0   1 k       1
+                                                                      this can be confirmed by visual inspection, it can also
+As in [2], [19], [8], an MPC control policy is designed to            be rigorously ensured by evaluating set containment. The
+stablize the system to the origin while respecting the state          containment check of two hybrid zonotopes can be posed as
+and input constraints, xk ∈ [−5, 5] × [−1, 1] and uk ∈ [−1, 1].       a feasibility evaluation of a mixed-integer linear program.
+A prediction horizon of 10 steps is used, with state and input
+weighting matrices Q = I2 and R = I, the terminal region              C. Classification Robustness on MNIST
+O∞LQR
+      , and with terminal penalty matrix P∞ , the solution of            The MNIST dataset is a canonical classification problem
+the discrete time algebraic Riccati equation. We grid the state       in which 28 × 28 pixel images of handwritten numbers are
+space over [−0.5, 3] × [−1, 1] to produce 10,201 state-input          classified into the digits 0-9. For clarity of presentation, we
+pairs to train a neural network with layer sizes [2, 8, 4, 1].        consider here the classification task to classify the digits “1”
+   The mapping of state-to-control provided by the neural             and “7”. We train a ReLU feedfoward network with layer
+network is visualized as a hybrid zonotope surface in three           sizes [784,5,5,1] on a corpus of 13,007 images of the digits
+dimensions in Figure 3 (right). This hybrid zonotope, with            1 and 7, in which the input is the vectorized image (stacking
+n = 2 and nN = 4 + 8 = 12, has 50 continuous factors, 12              columns) and the output value +1 denotes a “1” and the
+binary factors, and 36 constraints. Each facet of the surface         output value −1 denotes a “7”. The trained network achieves
+corresponds to a different combination of binary factors.             an accuracy of 99.5% on a test bank of 2,163 images of
+Although there are 212 different factor combinations, there           the digits 1 and 7. Figure 4 (left) shows the neural network
+are only 32 facets in the surface. The remaining binary factor        output over the test image set, with outliers denoting images
+combinations do not satisfy the linear constraints.                   that are classified poorly and - in a handful of cases -
+   We now use the hybrid zonotope representation of the               incorrectly. Inset are example images of “the 1 that looks
+trained neural network to analyze the closed-loop reacha-             most like a 7” (worst 1) and “the 7 that looks most like a 1”
+bility of the system, similar to the approach taken for an            (worst 7). These examples show that the output range over
+explicit MPC controller [20]. We consider an initial state            the images that are 1s spans nearly the entire interval [-1,1]
+(the gray square in Figure 3), x(0) ∈ [2.5, 3] × [−0.25, 0.25].       (same is true for 7s) despite the overall good performance
+Following Corollary 3, we construct the hybrid zonotope               of 99.5%.
+for the extended vector of states across time, [x⊺0 ⋯ x⊺5 ]⊺ .           The hybrid zonotope representation of the network allows
+Despite the 60 binary generators in the extended state hybrid         us to explore this output range more rigorously as a function
+zonotope, there are only 8 binary factor combinations (8              of the input space. We define the 1s input space as a zonotope
+                                                    worst
+                                                      “7”
+                      +1
+      (classified as a 1)
+                                                                                              1
+
+
+
+
+                                                                        prediction interval
+                       0
+         (classification                                                                      0                                  1s
+             boundary)                                                                                                           7s
+
+                                 worst
+                       -1                                                                     -1
+                                   “1”
+      (classified as a 7)
+                                                                                               0.1     0.2       0.3       0.4        0.5
+                        labeled as “1”             labeled as “7”
+Fig. 4: (Left) The trained neural network achieves classification accuracy of 99.5% on the test image set, with outliers
+distributed across the entire output range [−1, 1]. Inset plots show example images of worst case classification. (Right) The
+output range of the neural network, computed using the hybrid zonotope representation, over input sets centered at the
+nominal (mean) image of a “1” or a “7” and with expanding size moving left to right. On top, sample images from the 7s
+input set (defined in the text) from randomly generated binary factors at different fractions of σ.
+
+
+whose center is the mean value of the vectorized images of          still human-identifiable as their correct digit. Being able to
+the digit 1 (both training and testing). Defining σ ∈ R784          quantify the output bounds on a network over a given input
+as the standard deviation of the same vectorized images,            domain is a powerful tool to probe the robustness of a neural
+the (continuous) generator matrix of the 1s input set is            network. This is especially true in the context of adversarial
+Gc = diag(σ). It is important to note that while the input          attacks on neural networks, in which small adjustments can
+set has been defined by the images, the input set is now            lead to large changes in output value (e.g., classification
+the interval box “containing” one standard deviation away           outcome) [21].
+from the mean image in 784-dimensional space. Thus this
+                                                                                                         VI. C ONCLUSIONS
+1s input set contains the entire continuous region around
+the nominal image of the digit 1. We follow the same                   In this paper, we have shown that it is possible to exactly
+procedure to produce the 7s input space. With these input           represent a ReLU feed-forward neural network as a hybrid
+spaces, the hybrid zonotope representing the neural network         zonotope. This approach provides the ability to characterize
+has 784 + 4 × 10 = 824 continuous generators, 10 binary             variation and robustness of the mapping given by the neural
+generators, and 30 constraints.                                     network and offers rigorous ways to certify safety and
+   We now consider an adjustment to these input sets such           reachability in closed-loop control application.
+that Gc = diag(ασ), where 0 < α ≤ 1 specifies a fractional             A direction for future work is to formulate the Lipschitz
+value of the standard deviation. When α approaches zero,            constant for the neural network directly from the hybrid
+the input set approaches a single point, located at the             zonotope representation. Also, although the binary factors
+center (mean) value. Given the classification accuracy of the       scale linearly with the number of ReLU neurons in the
+neural network, this mean point will be reliably classified         network, focusing on ways to best leverage advancements
+correctly, hence we expect the classification output range of       in mixed-integer linear optimization solvers will unlock the
+the 1s input set with small α to be very near +1 and the            ability to analyze larger and larger networks.
+output range of the 7s input set with small α to be very                                             VII. ACKNOWLEDGMENTS
+near −1. As α grows, we expect that the output range to
+                                                                     We thank Neera Jain and Trevor Bird for sharing their
+grow since we observed that misclassifications occur in the
+                                                                    MATLAB code for hybrid zonotopes.
+test dataset. Figure 4 (right) demonstrates how the hybrid
+zonotope representation of the neural network allows exact                                                   R EFERENCES
+characterization of the upper and lower bounds of the output         [1] T. J. Bird, H. C. Pangborn, N. Jain, and J. P. Koeln, “Hybrid
+hybrid zonotope subject to the 1s input set and the 7s input             zonotopes: a new set representation for reachability analysis
+set. The calculation of the upper and lower bounds along                 of mixed logical dynamical systems,” 2021. [Online]. Available:
+                                                                         https://arxiv.org/abs/2106.14831
+each dimension of a hybrid zonotope can be cast as a mixed-          [2] Y. Zhang and X. Xu, “Reachability analysis and safety verification
+integer linear optimization problem.                                     of neural feedback systems via hybrid zonotopes,” arXiv preprint
+   Figure 4 (right) demonstrates that although the classifica-           arXiv:2210.03244, 2022.
+                                                                     [3] L. Weng, H. Zhang, H. Chen, Z. Song, C.-J. Hsieh, L. Daniel,
+tion accuracy is good on the test images, relatively small               D. Boning, and I. Dhillon, “Towards fast computation of certified
+perturbations (in this case perturbations on the order of                robustness for relu networks,” in International Conference on Machine
+0.3σ) are sufficient to compromise the classification of some            Learning. PMLR, 2018, pp. 5276–5285.
+                                                                     [4] Z. Shi, Y. Wang, H. Zhang, Z. Kolter, and C.-J. Hsieh, “Efficiently
+images. The sample images from the 7s input set shows that               computing local lipschitz constants of neural networks via bound
+sample images from input sets corresponding to α = 0.3 are               propagation,” arXiv preprint arXiv:2210.07394, 2022.
+ [5] M. Fazlyab, A. Robey, H. Hassani, M. Morari, and G. Pappas,
+     “Efficient and accurate estimation of lipschitz constants for deep
+     neural networks,” Advances in Neural Information Processing Systems,
+     vol. 32, 2019.
+ [6] M. Jordan and A. G. Dimakis, “Exactly computing the local lipschitz
+     constant of relu networks,” Advances in Neural Information Processing
+     Systems, vol. 33, pp. 7344–7353, 2020.
+ [7] N. Hashemi, J. Ruths, and M. Fazlyab, “Certifying incremental
+     quadratic constraints for neural networks via convex optimization,”
+     in Learning for Dynamics and Control. PMLR, 2021, pp. 842–853.
+ [8] M. Everett, G. Habibi, C. Sun, and J. P. How, “Reachability analysis
+     of neural feedback loops,” IEEE Access, vol. 9, pp. 163 938–163 953,
+     2021.
+ [9] J. K. Scott, D. M. Raimondo, G. R. Marseglia, and R. D. Braatz,
+     “Constrained zonotopes: A new tool for set-based estimation and fault
+     detection,” Automatica, vol. 69, pp. 126–136, 2016.
+[10] L. K. Chung, A. Dai, D. Knowles, S. Kousik, and G. X. Gao,
+     “Constrained feedforward neural network training via reachability
+     analysis,” arXiv preprint arXiv:2107.07696, 2021.
+[11] Y. Zhang and X. Xu, “Safety verification of neural feedback systems
+     based on constrained zonotopes,” arXiv preprint arXiv:2204.00903,
+     2022.
+[12] W. Xiang, H.-D. Tran, J. A. Rosenfeld, and T. T. Johnson, “Reachable
+     set estimation and safety verification for piecewise linear systems
+     with neural network controllers,” in 2018 Annual American Control
+     Conference (ACC), 2018, pp. 1574–1579.
+[13] E. Wong and Z. Kolter, “Provable defenses against adversarial ex-
+     amples via the convex outer adversarial polytope,” in International
+     Conference on Machine Learning. PMLR, 2018, pp. 5286–5295.
+[14] H.-D. Tran, D. Manzanas Lopez, P. Musau, X. Yang, L. V. Nguyen,
+     W. Xiang, and T. T. Johnson, “Star-based reachability analysis of
+     deep neural networks,” in International symposium on formal methods.
+     Springer, 2019, pp. 670–686.
+[15] V. Tjeng, K. Xiao, and R. Tedrake, “Evaluating robustness of
+     neural networks with mixed integer programming,” arXiv preprint
+     arXiv:1711.07356, 2017.
+[16] T. J. Bird, “Hybrid zonotopes: A mixed-integer set
+     representation for the analysis of hybrid systems,” 9 2022.
+     [Online].      Available:     https://hammer.purdue.edu/articles/thesis/
+     Hybrid Zonotopes A Mixed-Integer Set Representation for the
+     Analysis of Hybrid Systems/21225332
+[17] N. Kochdumper, B. Schürmann, and M. Althoff, “Utilizing depen-
+     dencies to obtain subsets of reachable sets,” in Proceedings of the
+     23rd International Conference on Hybrid Systems: Computation and
+     Control, 2020, pp. 1–10.
+[18] L. G. Optimization, “Llc gurobi optimization,” Gurobi optimizer
+     reference manual, 2021.
+[19] H. Hu, M. Fazlyab, M. Morari, and G. J. Pappas, “Reach-sdp: Reacha-
+     bility analysis of closed-loop systems with neural network controllers
+     via semidefinite programming,” in 2020 59th IEEE Conference on
+     Decision and Control (CDC). IEEE, 2020, pp. 5929–5934.
+[20] T. J. Bird, N. Jain, H. C. Pangborn, and J. P. Koeln, “Set-based
+     reachability and the explicit solution of linear mpc using hybrid
+     zonotopes,” in 2022 American Control Conference (ACC), 2022, pp.
+     158–165.
+[21] K. Eykholt, I. Evtimov, E. Fernandes, B. Li, A. Rahmati, C. Xiao,
+     A. Prakash, T. Kohno, and D. Song, “Robust physical-world attacks
+     on deep learning visual classification,” in Proceedings of the IEEE
+     conference on computer vision and pattern recognition, 2018, pp.
+     1625–1634.
+

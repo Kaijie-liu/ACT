@@ -1,0 +1,700 @@
+                                                Reachability Analysis and Safety Verification of Neural Feedback
+                                                                Systems via Hybrid Zonotopes
+                                                                                             Yuhao Zhang and Xiangru Xu
+
+
+                                             Abstract— Hybrid zonotopes generalize constrained zono-
+                                          topes by introducing additional binary variables and possess
+                                          some unique properties that make them convenient to represent
+                                          nonconvex sets. This paper presents novel hybrid zonotope-
+                                          based methods for the reachability analysis and safety veri-
+arXiv:2210.03244v1 [math.OC] 6 Oct 2022
+
+
+
+
+                                          fication of neural feedback systems. Algorithms are proposed
+                                          to compute the input-output relationship of each layer of a
+                                          feedforward neural network, as well as the exact reachable               Fig. 1: The neural feedback system is given as x(t + 1) =
+                                          sets of neural feedback systems. In addition, a sufficient and           Ad x(t)+Bd u(t) where the state feedback controller u(t) =
+                                          necessary condition is formulated as a mixed-integer linear              π(x(t)) is a given `-layer FNN with the ReLU activation
+                                          program to certify whether the trajectories of a neural feedback         function. At each time step, the neural feedback system maps
+                                          system can avoid unsafe regions. The proposed approach
+                                          is shown to yield a formulation that provides the tightest
+                                                                                                                   a hybrid zonotope as the input set to another hybrid zonotope
+                                          convex relaxation for the reachable sets of the neural feedback          as the output set. The initial set is X0 and the reachable set
+                                          system. Complexity reduction techniques for the reachable                at time t from X0 is Rt (X0 ).
+                                          sets are developed to balance the computation efficiency and
+                                          approximation accuracy. Two numerical examples demonstrate
+                                          the superior performance of the proposed approach compared               verification problems. Besides, the computation complexity
+                                          to other existing methods.                                               increases rapidly for deep neural networks.
+                                                                                                                      Recently, a new set representation named the hybrid zono-
+                                                                 I. I NTRODUCTION                                  tope was introduced in [16]. Through the addition of binary
+                                                                                                                   generators, hybrid zonotope can represent non-convex sets
+                                             Artificial neural networks have shown their extraordinary             with flat faces. And the reachability analysis based on hybrid
+                                          performance in many fields such as auto-driving systems [1]              zonotopes will lead to the formulation of mixed-integer linear
+                                          and mobile robots [2]. Implementation of neural networks in              programs (MILPs), for which many state-of-the-art solvers
+                                          such controlled systems also raises safety concerns as even a            such as Gurobi [17] and learning-based solver MLOPT [18]
+                                          small chance of failure may cause catastrophic consequences.             can be utilized to accelerate the computation.
+                                          Therefore, it’s critical to find an efficient method to verify the          In this work, we present hybrid zonotope-based methods
+                                          safety properties of controlled systems with neural network              for reachability analysis and safety verification of neural
+                                          components before real implementations. However, analyz-                 feedback systems with ReLU-activated feed-forward neural
+                                          ing properties of neural networks is notoriously difficult due           network (FNN) controllers (see Figure 1). The contributions
+                                          to their highly non-convex and nonlinear natures [3].                    of this paper are threefold: (i) For neural feedback systems
+                                             Various methods have been proposed to perform reacha-                 with hybrid zonotopes as the input sets, a novel approach
+                                          bility analysis and safety verification for the neural feedback          is presented to compute the nonconvex exact reachable sets
+                                          systems (i.e., feedback systems with neural network con-                 represented as hybrid zonotopes; (ii) Based on the convex
+                                          trollers) [4], [5], [6], [7], [8]. Based on quadratic constraints,       relaxation property of the computed reachable sets and the
+                                          a reachable set over-approximation method was proposed                   properties of hybrid zonotopes, heuristic reduction methods
+                                          in [9], [10] using semi-definite programming (SDP). A                    are proposed to reduce the complexity growth of the hybrid
+                                          fast reachability method was introduced in [11] by relax-                zonotope sets; (iii) Using the computed reachable sets, an
+                                          ing the SDP into linear programming (LP). Learning-based                 MILP-based condition is provided to verify the unsafe region
+                                          reachability methods were also developed in [12], [13] for               avoidance of neural feedback systems, for which off-the-shelf
+                                          neural feedback systems with probabilistic guarantees on                 solvers can be employed. The efficiency of the proposed
+                                          the correctness of the approximated reachable sets. Set-                 methods is demonstrated through two numerical examples.
+                                          based methods were also proposed to compute the exact
+                                          reachable sets of neural feedback systems using star sets                      II. P RELIMINARIES & P ROBLEM S TATEMENT
+                                          [14] and constrained zonotopes [15]. Despite their interesting           A. Hybrid Zonotopes
+                                          results, these two methods can only deal with convex set
+                                          representations which limit their usage for complex safety                 Definition 1: Let Z, Zc , Zh ⊂ Rn . Z is a zonotope if (1)
+                                                                                                                   holds [19], Zc is a constrained zonotope if (2) holds [20],
+                                            Yuhao Zhang and Xiangru Xu are with the Department of Mechanical       and Zh is a hybrid zonotope if (3) holds [16]:
+                                          Engineering, University of Wisconsin-Madison, Madison, WI, USA. Email:
+                                          {yuhao.zhang2,xiangru.xu}@wisc.edu.                                       ∃(c, G) ∈ Rn × Rn×ng : Z = {Gξ + c | kξk∞ ≤ 1} , (1)
+                                                                     (Gbw 1+cz )−(Gbz 1+cw )          −Abz 1−bz          Ab 1+b
+ ∃(c, G, A, b) ∈ Rn × Rn×ng × Rnc ×ng × Rnc :                                   2            , Âbz =     2     , Âbw = w 2 w , ĉ =
+                                                                     (Gbw 1+cz )+(Gbz 1+cw )           −Abz 1+bz            −Abw 1+bw
+                     Zc = {Gξ + c | kξk∞ ≤ 1, Aξ = b} , (2)                     2            , b̂z =        2     , b̂w =       2     .
+ ∃(c, G , G , A , Ab , b) ∈ Rn ×Rn×ng ×Rn×nb ×Rnc ×ng
+         c       b   c                                               Then the union of Zh and Wh is a hybrid zonotope Zh ∪
+                                                                     Wh = HZ cu , Gcu , Gbu , Acu , Abu , bu ⊂ Rn where
+                      × Rnc ×nb × Rnc :         (3)
+                                                                      Gcu = Gcz Gcw 0 , Gbu = Gbz Gbw Ĝb ,
+                       c                                                                                          
+                        ξ       ng          nb 
+                          b ∈ B∞ × {−1, 1} , 
+     
+              c                             
+               ξ        ξ
+                                                                                                      b
+                                                                                                                       Âbz
+                                                                               c                                          
+        c b                                                                     Az      0 0               Az     0
+            
+ Zh = G G          +c      c b  ξc             ,
+               ξb
+                                       
+                           A A                                        Acu =  0 Acw 0 , Abu =  0 Abw Âbw  ,
+                                       b =b
+     
+                                              
+                                               
+                                     ξ
+                                              
+                                                                                   Ac3        I                 Ab3
+             n
+where B∞g = {x ∈ Rng | kxk∞ ≤ 1} is the unit hy-                                                                     1
+                                                                                                                       
+                                                                                I       0             0      0       21
+percube in Rng . The shorthand notations of the zono-                         −I 0                0       0       1
+                                                                                                                     21 
+                                                                                                                          
+                                                                                                                      1 
+                                                                                                 
+tope, constrained zonotope and hybrid zonotope are given                      0
+                                                                                       I 
+                                                                                          
+                                                                                                    0
+                                                                                                            0      − 2 1
+by Z = Zhc, Gi, Zc = CZhc, G, A, bi, and Zh =                            c
+                                                                               0 −I  b  0                 0      − 12 1
+                                                                      A3 =                , A3 =  1                    ,
+HZhc, Gc , Gb , Ac , Ab , bi, respectively.                                   0
+                                                                                       0
+                                                                                                    21I
+                                                                                                            0       1
+                                                                                                                     21 
+                                                                                                                          
+   Note that a hybrid zonotope degenerates into a constrained                                                        1
+                                                                                                   − 2 I
+                                                                              0        0                   0       21 
+                                                                                                                        
+                                                                                                            1        1 
+zonotope when nb = 0, and a constrained zonotope de-                          0        0           0      2I     −21
+generates into a zonotope when nc = 0. For a given                              0       0             0    − 12 I − 12 1
+hybrid zonotope HZhc, Gc , Gb , Ac , Ab , bi, the vector c is                                        T
+                                                                       cu = ĉ, bu = b̂Tz b̂Tw bT3 ,
+called the center, the columns of Gb are called the binary                                                                     T
+generators, and the columns of Gc are called the continuous            b3 = 21 1T 12 1T 12 1T 12 1T 0T 1T 0T 1T .
+                                                                              
+generators (or simply generators if binary generators are not           The emptiness of a hybrid zonotope can be checked by
+present). For simplicity, we define the set B(Ac , Ab , b) =         solving an MILP.
+                    n
+{(ξ c , ξ b ) ∈ B∞g × {−1, 1}nb | Ac ξ c + Ab ξ b = b}.                 Lemma 4: [16] Given Zh = HZhc, Gc , Gb , Ac , Ab , bi
+We denote G[:, i] as the i-th column of a matrix G. The              ⊂ Rn , Zh 6= ∅ if and only if min{||ξ c ||∞ | Ac ξ c + Ab ξ b =
+complexity of a hybrid zonotope is described by its degrees-         b, ξ c ∈ Rng , ξ b ∈ {−1, 1}nb } ≤ 1.
+of freedom order or simply order oh = (ng + nb − nc )/n.
+   The equivalence of a hybrid zonotope with a finite collec-        B. Problem Statement
+tion of constrained zonotopes is stated by the result below.           Consider a discrete-time linear system:
+   Lemma 1: [16, Theorem 5] The set Zh ⊂ Rn is a hybrid
+zonotope if and only if it is the union of a finite number of                        x(t + 1) = Ad x(t) + Bd u(t)                  (4)
+constrained zonotopes.                                               where x(t) ∈ Rn , u(t) ∈ Rm are the state and the control
+   Similar to constrained zonotopes, hybrid zonotopes are            input. Ad ∈ Rn×n , Bd ∈ Rn×m are the state matrix and the
+closed under linear map and intersections.                           input matrix, respectively.
+   Lemma 2: [16, Proposition 7] For any R ∈ Rm×n , Zh =
+                                                                       We assume a state-feedback controller
+HZhcz , Gcz , Gbz , Acz , Abz , bz i ⊂ Rn , Yh = HZhcy , Gcy ,
+Gby , Acy , Aby , by i ⊂ Rn , and H− = {x ∈ Rm |hT x ≤ f } ⊂                                 u(t) = π(x(t)),                       (5)
+Rn the following identities hold:
+                                                                     which is parameterized by an `-layer FNN with the Rectified
+    RZh = HZhRcz , RGcz , RGbz , Acz , Abz , bz i,                   Linear Unit (ReLU) activation function. The closed-loop
+ Zh ∩ Yh = HZhcz , Gcz 0 , Gbz 0 ,
+                                           
+                                                                     system with system model (4) and controller (5) is denoted
+                 c
+                   Az        0
+                                     b
+                                        Az     0
+                                                   
+                                                          bz
+                                                                    as:
+                0         Acy  ,  0       Aby  ,  by i,               x(t + 1) = fcl (x(t)) , Ad x(t) + Bd π(x(t)).          (6)
+                     c           c
+                   Gz −Gy               Gz −Gby
+                                         b             cy − cz
+                                           
+                                             A  c
+                                                     0
+                                                                       For the closed-loop system (6), we denote Rt (X0 ) ,
+Zh ∩ H− = HZhcz , Gz 0 , Gbz , T z c dm ,
+                         c         
+                                            h Gz                     {x(t) ∈ Rn |x(0) ∈ X0 , x(k + 1) = fcl (x(k)), k =
+                                                    2               0, 1, . . . , t − 1} the (forward) reachable set at time t from
+                      Abz
+                             
+                                          bz                         a given set of initial conditions X0 ⊂ Rn .
+                                ,                   i,
+                    hT Gbz         f − hT cz − d2m                      For the `-layer FNN controller, let W(k−1) be the k-th
+where dm = i=1
+               Png,z T c
+                       h Gz [:, i] + i=1
+                                         Pnb,z T b
+                                                 h Gz [:, i] + f −   layer weight matrix and v(k−1) be the k-th layer bias vector,
+hT cz .                                                              for k = 1, . . . , `. Denote x(k) as the neurons of the k-th
+   Hybrid zonotopes are also closed under union operation.           layer, then, for k = 1, . . . , ` − 1, we have
+   Lemma 3: [21, Proposition 1] (Union) For any Zh =
+                                                                               x(k) = ReLU (W(k−1) x(k−1) + v(k−1) )               (7)
+HZ cz , Gcz , Gbz , Acz , Abz , bz      ⊂ Rn and Wh              =
+HZ cw , Gw , Gw , Aw , Aw , bw ⊂ Rn , define the vec-
+             c   b      c      b
+                                                                     where x(0) = x(t) and ReLU (x) = max{0, x}. Only the
+tors Ĝb ∈ Rn , ĉ ∈ Rn , Âbz ∈ Rnc,z , b̂z ∈                       linear map is applied in the last layer, i.e., π(x(t)) = x(`) =
+Rnc,z , Âbw ∈ Rnc,w , and b̂w ∈ Rnc,w , such that Ĝb =             W(`−1) x(`−1) + v(`−1) .
+   We assume the initial set and the unsafe set for the closed-    Algorithm 1: Exact output analysis for one layer of
+loop system (8) are both represented by hybrid zonotopes. In       FNN via hybrid zonotopes
+this paper, we will investigate the following two problems.         Input: weight matrix W, bias vector v, hybrid
+   Problem 1: (Reachability analysis) Given an initial set X0              zonotope input sets Zh
+that is represented as a hybrid zonotope, the parameters of the     Output: exact output set R as a hybrid zonotope
+FNN controller π and a time horizon T ∈ Z>0 , compute the         1 Function R = ReachNN(Zh ,W,v):
+reachable set Rt (X0 ) for the closed-loop system (6) where       2    R = WZh + v ;                 // linear map
+t = 1, . . . , T .                                                3    [lb up] ← range of x in I ;            // MILP
+   Problem 2: (Safety verification) Given unsafe set O rep-       4    map = f ind(lb < 0)
+resented by a hybrid zonotope, verify whether the state           5    for i in map do
+trajectories of the closed-loop system (6) can avoid the          6        R = StepReLU(R, i, lb[i], up[i])
+unsafe region for t = 1, . . . , T .
+                                                                   7    return R
+   III. E XACT R EACHABILITY ANALYSIS AND S AFETY                 8  Function R̃ = StepReLU(R,i,lbi ,upi ):
+                     V ERIFICATION                                 9    Ei = [e1 · · · ei−1 0 ei+1 · · · enI ]
+   In this section, we consider Problem 1 and Problem 2 for       10    if upi ≤ 0 then
+the closed-loop system with an FNN controller as in (6).          11        I = Ei R ;                   // linear map
+                                                                  12    if lbi < 0 & upi > 0 then
+A. Output Analysis of Standalone FNN                              13         I+ = R ∩ H +i
+                                                                                           ;                    // Lemma 2
+                                                                                         i
+   In this subsection, we will present an algorithm to compute    14         I− = R ∩ H −  ;                    // Lemma 2
+the exact output set of a given FNN as in (7) with an input       15         I = I+ ∪ Ei I− ;                   // Lemma 3
+set represented as a hybrid zonotope.
+                                                                  16    return R̃ = I
+   From the definition of the FNN in (7), the output of
+layer k is the input of layer k + 1, for k = 1, . . . , ` − 1.
+Therefore, the output set of an FNN defined in can be
+derived layer by layer and we will focus on finding the             Algorithm 2: Compute G1 , G2 in Theorem 1
+input-output relationship for one layer. Using Lemma 2, we           Input: continuous generator matrix Gc ∈ Rn×ng and
+can pass an input set as a hybrid zonotope Zh = HZhc,                        binary generator matrix Gb ∈ Rn×nb from
+Gc , Gb , Ac , Ab , bi through a linear map as WZh + v =                     hybrid zonotope Zh , nπb - the number of
+HZhWc + v, WGc , WGb , Ac , Ab , bi. Thus, the only dif-                     binary generators of Zhπ
+ficulty remaining is to find the output of a ReLU activation         Output: matrices G1 , G2
+                                                                                c            b
+function for a hybrid zonotope. Inspired by the output             1 G1 ←− G ; G2 ←− G ;
+                                                                                   π
+analysis algorithm for FNN using the star sets representation      2 k ←− log2 (nb + 1) − log2 (nb + 1);
+in [22], we present Algorithm 1 to compute the exact output        3 repeat
+set using hybrid zonotopes. Note that in Line 13-14, H−   i
+                                                            =      4     G1 ←− [G1 0n×1 ];
+          n      T               i
+{x ∈ R | ei x ≤ 0} and H+ = {x ∈ R | ei x ≥ 0}  n     T            5     G1 ←− [G1 G1 ]; G2 ←− [G2 G2 ];
+denote the half-spaces with i-th canonical vector ei , for         6     m ←− 2 ∗ (# columns of G1 + # columns of G2 );
+i = 1, . . . , n. Algorithm 1 reveals that when the input set      7     G1 ←− [G1 0n×m ]; G2 ←− [G2 0n×1 ];
+Zh to the FNN π is a hybrid zonotope, the exact output of          8     k ←− k − 1;
+the FNN can also be represented as a hybrid zonotope.              9 until k ≤ 0;
+                                                                  10 return G1 , G2
+B. Exact Reachable Set for Neural Feedback System
+   Next, we consider the reachability analysis for the closed-
+loop system (6). Recall that fcl (x) = Ad x + Bd π(x). Note                               nπb + 1
+                                                                         ccl = Ad (c + (          − 1)Gb 1) + Bd cπ ,
+that a conservative over-approximation of the exact reachable                             nb + 1
+set can be obtained by trivially adding the two terms of fcl            Accl = Acπ , Abcl = Abπ , bcl = bπ ,
+with the Minkowski sum. The following theorem provides
+the exact form of fcl (Zh ) = {fcl (x)|x ∈ Zh } for a given       matrices G1 and G2 are given by Algorithm 2, nb and nπb are
+hybrid zonotope Zh .                                              the numbers of binary generators of Zh and Zhπ , respectively.
+   Theorem 1: Given any hybrid zonotope Zh = HZhc,                     Proof: We will firstly show that fcl (Zh ) ⊆ Zhcl . Let
+Gc , Gb , Ac , Ab , bi ⊂ Rn where Gc ∈ Rn×ng , Gb ∈               x be any element of set Zh , i.e., x ∈ Zh . Clearly, there
+Rn×nb , Ac ∈ Rnc ×ng and Ab ∈ Rnc ×nb , let                       exists (ξ1c , ξ1b ) ∈ B(Ac , Ab , b), such that x = c + Gc ξ1c +
+π(Zh ) = HZhcπ , Gcπ , Gbπ , Acπ , Abπ , bπ i , Zhπ be the        Gb ξ1b . From Line 13-15 in Algorithm 1 and using Lemma
+computed output set using Algorithm 1. Then, fcl (Zh ) =          2 and Lemma 3, it can be observed that Gcπ has the same
+HZhccl , Gccl , Gbcl , Accl , Abcl , bcl i , Zhcl , where         structure as G1 and Gbπ has the same structure     as  G2 . Since
+                                                                                                                     ξ1c
+                                                                  π(x) ∈ π(Zh ) = Zh , there must exist ξ = c and ξ b =
+                                                                                          π                     c
+      Gccl = Ad G1 + Bd Gcπ , Gbcl = Ad G2 + Bd Gbπ ,                                                                ξ2
+ b
+ ξ1                                                                        piecewise linear bounds as in [23].
+         such that (ξ c , ξ b ) ∈ B(Acπ , Abπ , bπ ) and π(x) = cπ +
+ ξ2b
+Gcπ ξ c +Gbπ ξ b . According to the switch rule between the two            C. Safety Verification
+sets in the union operation in [21], we have ξ2c = 0 and ξ2b =                Denote the exact reachable set from initial set X0 at time t
+                                  T
+                                                                           computed by (8) be Rt (X0 ) = HZhct , Gct , Gbt , Act , Abt , bt i
+ T
+ −1          1 · · · −1T 1 . Thus, we get G1 ξ c = Gc ξ1c
+                               nπ +1                                       for t = 1, . . . , T . Assume the unsafe region is represented by
+and G2 ξ b = Gb ξ1b − ( nbb +1 − 1)Gb 1. Therefore, fcl (x) =
+Ad x + Bd π(x) = Ad (c + Gc ξπ1c + Gb ξ1b ) + Bd (cπ + Gcπ ξ c +           a hybrid zonotope O = HZhco , Gco , Gbo , Aco , Abo , bo i. The
+                                     n +1
+Gbπ ξ b ) = (Ad c + Bd cπ + ( nbb +1 − 1)Ad Gb 1) + (Ad G1 +               following result provides a sufficient and necessary condition
+Bd Gcπ )ξ c + (Ad G2 + Bd Gbπ )ξ b = ccl + Gccl ξ c + Gbcl ξ b ,           on the safety verification of the closed-loop system (6).
+where (ξ c , ξ b ) ∈ B(Acπ , Abπ , bπ ) = B(Accl , Abcl , bcl ). Thus,        Proposition 1: Given the reachable sets R1 , . . . , RT and
+we have fcl (x) ∈ Zhcl . As x is arbitrarily chosen in Zh , we             unsafe set O defined above, the state trajectories of the
+get that fcl (Zh ) ⊆ Zhcl .                                                closed-loop system (6) will not enter the unsafe region if and
+                                                                           only if the following condition is satisfied for t ∈ {1, . . . , T }:
+   Next, we prove that Zhcl ⊆ fcl (Zh ) holds. For any
+z ∈ Zhcl , there exists (ξ c , ξ b ) ∈ B(Accl , Abcl , bcl ) such
+                                                                                               c               b          
+                                                                    that                         At 0             At 0
+                                                              nπ +1
+z = ccl + Gccl ξ c + Gbcl ξ b = (Ad c + Bd cπ + ( nbb +1 −                  min ||ξ c ||∞  0 Aco  ξ c +  0 Abo  ξ b
+1)Ad Gb 1) + (Ad G1 +BdGcπ )ξ c + (A                           b    b                           Gc −Gco          Gbt −Gbo
+                                                                                 
+                                   c
+                                                  dbG 2 + Bd Gπ )ξ .                           t
+                                 ξ                 ξ
+                                                                                                                                
+Partition ξ c and ξ b into 1c and ξ b = 1b . It follows that                              bt                                     
+                                 ξ2                ξ2                            =  bo  , ξ c ∈ Rng,t , ξ b ∈ {−1, 1}nb,t > 1. (9)
+                                                               nπ +1
+(ξ1c , ξ1b ) ∈ B(Ac , Ab , b) and z =Ad c+Bd cπ +(c+(nbb +1      −                co − ct
+                                                                                                                                 
+                                      ξ c
+                                                                ξ b           Avoiding unsafe regions can be equivalently expressed as
+1)Ad Gb 1+(Ad G1 +Bd Gcπ ) 1c +(Ad G2 +Bd Gbπ ) 1b =                       none of the reachable sets intersect with the unsafe set. Since
+                                      ξ2                        ξ2
+Ad (c + G ξ1 + G ξ1 ) + Bd (cπ + Gcπ ξ c + Gbπ ξ b ). Let
+               c c        b b                                              Proposition 1 is a straight-forward application of Lemma 2
+x = c + Gc ξ1c + Gb ξ1b , we get x ∈ Zh and π(x) =                         and Lemma 4, the proof is omitted due to space limitation.
+cπ + Gcπ ξ c + Gbπ ξ b . Then, z = Ad x + Bd π(x) = fcl (x) ∈                 Remark 3: The safety verification problem is formulated
+fcl (Zh ). Since z is arbitrary, we have Zhcl ⊆ fcl (Zh ). In              as T MILPs (9) with ng,t continuous variables and nb,t
+conclusion, we have fcl (Zh ) = Zhcl .                                     binary variables. Although MILPs are well known to be
+   Based on Theorem 1, the exact reachable sets of closed-                 NP-hard problems in general, some common commercial
+loop system (6) can be computed as follows:                                MILP solvers such as Gurobi [17] have shown promising
+                                                                           performance in both average solving time and wide ranges
+          R0 = X0 , Rt = fcl (Rt−1 ), t = 1, . . . , T.             (8)    of solvable problems. Recently, learning-based MILP solvers
+                                                                           were proposed in [18] that can significantly alleviate the
+   The reachable sets computed by (8) are exact as long as the
+                                                                           computational burden . The fast development of these MILP
+initial set can be represented by a hybrid zonotope. The price
+                                                                           solvers enables us to incorporate these off-the-shelf tools into
+of accuracy, however, is that the complexity order (i.e., the
+                                                                           our verification problem.
+numbers of continuous and binary generators - ng and nb ) of
+the hybrid zonotope reachable sets will grow exponentially.                                IV. C OMPLEXITY R EDUCTION
+If nπ is the total number of neurons in π, then, in the worst                 Due to the intersection and union operation in Algorithm
+case, nb will increase in the order of 2nπ − 1 and ng will                 1, both the number of continuous generators and the number
+increase in the order of 4nπ − 1. Thus, complexity reduction               of binary generators will increase fast. As mentioned in
+techniques are needed to reduce the computation burden,                    Section III-B, in the worst case, these two numbers will
+which will be introduced in the next section.                              grow exponentially which makes Theorem 1 computationally
+   Remark 1: In our prior work [15], a method based on                     heavy. In this section, we will introduce two order reduction
+constrained zonotopes was proposed to compute exact reach-                 techniques that can provide over-approximated reachable sets
+able sets of neural feedback systems. Different from the exact             with fewer continuous and binary generators.
+reachability analysis in this section, the input set considered
+in [15] is limited to a single constrained zonotope, which is              A. Reducing Number of Binary Generators
+unable to represent non-convex sets as the hybrid zonotope                    Given a hybrid zonotope, it’s possible that the set can be
+does. Although one may apply Lemma 3 to convert the                        represented by another hybrid zonotope with fewer binary
+unions of constrained zonotopes into hybrid zonotopes, this                generators. A rigorous approach is proposed in [16] to
+will result in a set with a larger complexity order as it will             remove the redundant binary generators by exploring the
+take much more union operations than Algorithm 1 of this                   independent feasible solutions for the binary variable ξ b .
+work. Numerical comparisons of these two methods will be                   Although this approach can reduce the complexity of the
+demonstrated by examples in Section V.                                     hybrid zonotope representation, one major limitation is that
+   Remark 2: Although only linear feedback systems are                     it can not further reduce the binary generators without
+considered in this work, the proposed approach can be                      altering the set. In this subsection, however, we explore the
+readily extended to general nonlinear feedback systems by                  relationship between the union and convex hull operations
+abstracting nonlinear dynamics with a set of optimally tight               of hybrid zonotopes, and provide a novel method to reduce
+the number of binary generators while guaranteeing an over-
+approximation.
+   Let’s first consider two constrained zonotopes
+Zc = CZhcz , Gz , Az , bz i ⊂ Rn and Wc =
+CZhcw , Gw , Aw , bw i ⊂ Rn . It’s obvious that Zc and Wc
+are also equivalent to two degenerated hybrid zonotopes:
+HZhcz , Gz , ∅, Az , ∅, bz i and HZhcw , Gw , ∅, Aw , ∅, bw i.
+   For any set X ⊂ Rn , we denote the convex hull of X
+as conv(X ) [24]. According to Theorem 5 in [25], we can            Fig. 2: Hybrid zonotope Zh (blue) and constrained zonotope
+compute the convex hull of Z ∪W as a constrained zonotope           Zc (gray) given in Example 1. Zc constructed by relaxing
+Cc = conv(Zc ∪ Wc ) = CZhcch , Gch , Ach , bch i where              all the binary constraints becomes the convex hull of Zh .
+                                        cz + cw
+ Gch = Gz Gw cz −c
+                             
+                      2
+                         w
+                             0 , cch =            ,   (10)                Proof: From Line 15 in Algorithm 1 and Lemma
+                                            2 
+       
+                      − b2z 0
+                                           1                      1, we know that Zh can be represented by the union of
+          Az     0                           2 bz
+ Ach =    0     Aw      bw
+                              0   , b   =   1
+                                               bw  , (11)          a finite number of constrained zonotopes. Without loss of
+                                     ch
+                                        
+                         2                  2
+         A3,1 A3,2 A3,1 I                   −11                     generality, assume Zh = Zc,1 ∪ Zc,2 ∪ · · · ∪ Zc,N with
+                                     1 2                      Zc,i , , i = 1, . . . , N being constrained zonotopes. It can be
+          I                0             −21                        observed that using Lemma 5, we can eliminate one binary
+        −I           0              − 1 1
+ A3,1 =                                 2                        variable each time by replacing the union of two constrained
+         0  , A3,2 =  I  , A3,0 =  1 1  .       (12)
+                       
+                                          2
+                                          1
+                                                                    zonotopes with their convex hull. Based on properties of
+          0              −I               21                        convex hull, by repeating the same            for N −1
+                                                                                                           procedure        times,
+                                                                    we can get Zc = CZhc, Gc Gb , Ac Ab , bi =
+                                                                                                      
+  According to Lemma 3, we can compute the union of
+Zc and Wc as a hybrid zonotope: Uh = Zc ∪ Wc =                      conv(· · · conv(Zc,1 ∪ Zc,2 ) · · · ∪ Zc,N ) = conv(Zh ).
+HZhcu , Gcu , Gbu , Acu , Abu , bu i where                             Remark 4: Note that Theorem 2 is not true for an arbi-
+                                                                    trary hybrid zonotope. Although for any hybrid zonotope,
+                        cz − cw         cz + cw                     relaxing the binary constraints into linear constraints leads
+ Gcu = Gz Gw 0 , Gbu =
+                
+                                 , cu =         (13)
+                            2 
+                          −b                2                     to an over-approximation of the hybrid zonotope, it’s not
+                                          bz
+                                      
+        Az 0 0              2
+                              z
+                                           2                        guaranteed to be the tightest convex relaxation. However,
+   c                  b    bw            bw 
+ Au = 0 Aw 0 , Au = 2
+                               , bu = 2 , (14)
+                                                                   Theorem 2 shows that our reachable set formulation com-
+          Ac3   I          Ab3            b3                        puted by (8) can provide the tightest convex relaxation
+                           −1
+                                     −1 
+        I 0           0 0 2 1              2 1
+                                                                    of the neural feedback systems with ReLU-activated FNN
+   c
+      −I 0  b 0 0 −1 1               −1 1                     controllers. This property is similar to the ideal formulation
+ A3 =                      2           2 
+       0 I  , A3 = 0 0 1 1  , b3 =  −1 1. (15)
+                    
+                            2              2
+                                                                    for MILPs in [26]. Finding the tightest convex relaxation for
+                                          −1
+        0 −I          0 0 12 1             2 1
+                                                                    a general hybrid zonotope is still an open problem and will
+                                                                    be explored in our future work.
+   The relationship between the union and convex hull of two           Example 1: Consider a hybrid zonotope reachable set
+constrained zonotopes is summarized below.                          computed by (8): Zh = HZhc, Gc , Gb , Ac , Ab , bi where
+   Lemma 5: Consider two constrained zonotopes Zc , Wc ⊂                                                                       
+Rn , and let Uh = Zc ∪ Wc be a hybrid zonotope computed                    0.25              −1 1 0 0 −0.5             1     0 0
+                                                                    c=            , Gc =                                            ,
+as in (13)-(15) and Cc = conv(Zc ∪ Wc ) be a constrained                   2.25              −1 −1 0 0 −1 −0.5 0 0
+                                                                                                                           
+zonotope computed as in (10)-(12). If the binary variable                                        1 0 1 0 0 0 0 0
+constraint in Uh is relaxed to continuous variable constraint,                 −0.75               0 1 0 1 0 0 0 0
+                                                                    Gb =                 , Ac = 
+                                                                                                
+                                                                                                0 0 0 0 1 0 1 0 ,
+                                                                                                                            
+i.e., replace ξ b ∈ {−1, 1} with ξ b ∈ [−1, 1], to get a relaxed               −0.75
+constrained zonotope Uc , then Uc is equivalent to Cc .                                            0 0 0 0 0 1 0 1
+       Proof: It’s easy to check that Gch = [Gz Gw Gbu 0]         Ab = 1 1 −1 −1 , b = 1 1 1 1 .
+                                                                                                T                  T
+                           Az      0 − b2z 0
+                                           bw
+and Ach           =        0 Aw
+                                            2    0. Therefore,     Using     Theorem      2   to   relax    all   the     binary
+                                     c                              constraints,  then   the  constrained   zonotope    Z      =
+                                  A3       b3    I                                                                        c
+                                                                    CZhc, Gc Gb , Ac Ab , bi is the convex hull
+                                                                                               
+we have     c Cc b  = c CZhc      ch , Gch ,   Ach , bch i  =
+CZhcu , Gu Gu , Au Abu , bi = Uc .
+                                    
+                                                                    of Zh as depicted in Figure 2, i.e. Zc = conv(Zh ).
+   The following theorem extends Lemma 5 to the reachable              Using Theorem 2, we can reduce the desired number
+sets computed by (8).                                               of binary generators of a hybrid zonotope by replacing
+   Theorem 2: Given any hybrid zonotope Zh                     =    them with the same number of continuous generators. For
+hc, Gc , Gb , Ac , Ab , bi     from       the     reachable   set   example, given a hybrid zonotope Zh with ng continuous
+computation (8), the convex hull of Zh can be                       generators and nb binary generators, we can reduce n̂b binary
+constructed      as  the    constrained      zonotope Zc      =    generators and get an over-approximated hybrid zonotope
+CZhc, Gc Gb , Ac Ab , bi, i.e., Zc = conv(Zh ).
+                               
+                                                                    Ẑh with ng + n̂b continuous generators and nb − n̂b binary
+generators. When n̂b = nb , Ẑh becomes a constrained                   ΛA Ac , Ab − ΛA Ab , b − ΛA bi satisfies Zh ⊆ Z̃h for every
+zonotope which is also the convex hull of Zh .                          ΛG ∈ Rn×nc and ΛA ∈ Rnc ×nc .
+                                                                                                                            c     ng
+                                                                            Proof: Clearly, z ∈ Zhif and only  c if ∃ξ ∈   Bb∞ and
+B. Reducing Number of Continuous Generators
+                                                                          b            nb               z        G      c      G     b
+    In this subsection, we introduce two methods to reduce the          ∃ξ ∈ {−1, 1} such that               =     c ξ +         b ξ +
+                                                                                                        0        A             A
+number of continuous generators. For a zonotope, generator
+                                                                                                           c             b
+                                                                          c                                z      G            G
+reduction can be done by identifying parallel generators                     . For any such ξ c and ξ b ,      =     c  ξ c
+                                                                                                                            +         b
+                                                                                                                                  b ξ +
+                                                                         −b                                0      A             A
+and combining parallel generators through addition [27].                          Λ (b − Ac ξ c − Ab ξ b )
+                                                                                                         
+                                                                          c
+The same approach can be applied to a constrained zono-                       + G                             , which implies z ∈ Z̃h .
+                                                                         −b       ΛA (b − Ac ξ c − Ab ξ b )
+                                                                +
+tope Z  c = CZhc, G, A, bi if the lifted zonotope Z =
+      c      G                                                             Proposition 3 allows us to choose any ΛA and ΛG to get
+Zh        ,      i = Zhc+ , G+ i has parallel generators G+ [:
+      b      A                                                          an over-approximation of a hybrid zonotope. Next, we will
+, i] || G+ [:, j] [20]. In this case, the parallel generators can       introduce a heuristic approach to select proper ΛA and ΛG
+be similarly reduced by simply combining parallel generators            that leads to a less conservative over-approximation.
+through addition G+ [:, i] + G+ [:, j] in the lifted zonotope              Consider the equality constraints of the hybrid zonotope
+which is then transformed back to a reduced constrained                 Ac ξ c + Ab ξ b = b, which can be represented equivalently as
+zonotope with fewer generators.                                                  X
+    This lift-then-reduce strategy can also be extended to                               Ac [i, j]ξ c [j]+Ab [i, j]ξ b [j] = b[i], (17)
+hybrid zonotopes. The following proposition is inspired by                    j∈{1,...,ng }
+similar results for constrained zonotopes in [20].                                                            ∀i ∈ {1, . . . , nc }.
+    Proposition 2: Consider           a         hybrid       zonotope
+Zh = HZhc, Gc , Gb , Ac, Ab , bi ⊂  Rn and a                             Following the procedure in [20], choose
+                                      Ac1 Ab1 b1                          ΛG = Gc Ec,r (Ac [r, c])−1 , ΛA = Ac Ec,r (Ac [r, c])−1 , (18)
+partition Ac Ab b =
+                           
+                                                          . For every
+                                      Ac2 Ab2 b2
+                                                      z                 where Ec,r ∈ Rng ×nc is zero except for a one in the
+z ∈ Rn , z ∈ Zh if and only if                             ∈ Zh+ ,
+                                                   0                   (c, r) position and Ac [r, c] is the entry of Ac in the (r, c)
+                                                                        position. With Z̃h = HZhc̃, G̃c , G̃b , Ãc , Ãb , b̃i = HZhc +
+                c  b
+             c       G      G
+HZ                ,      ,       , Ac2 , Ab2 , b2 .
+          −b1        Ac1    Ab1                                         ΛG b, Gc −ΛG Ac , Gb −ΛG Ab , Ac −ΛA Ac , Ab −ΛA Ab , b−
+       Proof: We have z ∈ Zh iff ∃(ξ c , ξ b ) ∈ B(Ac , Ab , b)         ΛA bi, this transformation uses the r-th row of (17) to solve
+such that z = c + Gc ξ c + Gb ξ b . And clearly, the latter             for ξ c [c] in terms of ξ c [k], k ∈ {1, . . . , c − 1, c + 1, . . . , ng }.
+condition
+   holds       iff ∃(ξ
+                             c b               c     b
+                            , ξ ) ∈b B(A2 , A2 , b2 ), such that     This yields that G̃c and Ãc have identical zero c-th columns
+                         c
+  z           c        G           G                                    and Ãc , Ãb and b̃ have identically zero r-th rows. Removing
+       =            +       ξc +          ξb .
+  0         −b1        Ac1         Ab1                                  these columns and rows results in a hybrid zonotope with one
+    For a hybrid zonotope Zh = HZhc, Gc , Gb , Ac , Ab , bi,            less continuous generator and one less equality constraint.
+we can form a lifted hybrid zonotope Zh+ by Proposition 2:                 This strategy ensures that the removed r-th equality con-
+                         c   b 
+                          c     G         G
+                                                                       straint is still imposed in the reduced hybrid zonotope but
+           +
+        Zh = HZ               ,        ,         , ∅, ∅, ∅ .     (16)   the ability to constraint the c-th continuous variable is lost,
+                         −b      Ac       Ab
+                                                                        i.e., |ξ c [c]| ≤ 1. In order to select which continuous variable
+   It’s obvious that this lifted hybrid zonotope Zh+ is equiv-          to eliminate, we consider the Hausdorff error introduced by
+alent to a union of lifted zonotopes with the same group of             reduction dH (r, c, Zh ) = maxz̃∈Z̃h minz∈Zh ||z̃ − z||2 .
+generators and                         Zch
+                   shifted centers,i.e.,     = Z1 ∪Z2 ∪· · ·∪Z2nb ,
+                         c + Gb ξib      G                              C. Reduction Algorithm
+where Zi = Z                          ,         and ξib ∈ {−1, 1}nb
+                      −b + Ab ξib        Ac                                Algorithm 3 summarizes the procedures in this section for
+for i = 1, . . . , 2nb .                                                reducing the numbers of continuous and binary generators
+   Therefore, if there exist parallel generators for any of             of hybrid zonotopes computed by the reachability analysis
+the lifted zonotopes, all the other lifted zonotopes have the           (8). In this algorithm, Line 1-5 perform binary generator
+same set of parallel generators. We then combine the parallel           reduction, Line 6-7 are used to remove redundant parallel
+generators for the lifted zonotopes and use Proposition 2 to            continuous generators, and Line 8-11 implement Proposition
+transform the reduced lifted zonotopes back to a reduced                3 to further reduce continuous generators.
+hybrid zonotope with fewer continuous generators.
+   The approach described above can be used to remove                                              V. S IMULATION
+the continuous generators based on the generator directions.              In this section, two simulation examples are provided
+In what follows, we provide another method to reduce a                  to demonstrate the performance of the proposed hybrid
+continuous generator and an equality constraint at the same             zonotope-based reachability analysis method.
+time. The following proposition extends Proposition 5 in [20]             Example 2: Consider    a double integrator model [10],
+                                                                                                                
+and is required in the complexity reduction algorithm.                                     1 1               0.5
+   Proposition 3: Let Zh = HZhc, Gc , Gb , Ac , Ab , bi.                [11]: x(t + 1) =           x(t) +          u(t). We use the
+                                                                                           0 1                1
+The set Z̃h , HZhc+ΛG b, Gc −ΛG Ac , Gb −ΛG Ab , Ac −                   same 3-layer FNN with ReLU activation functions in [11] as
+     Algorithm 3: Complexity reduction for hybrid zono-              the safety verification conditions between the MILP-based
+     topes computed by (8)                                           method in Proposition 1 and the LP-based method in [15].
+   Input: hybrid zonotope Zh = HZhc, Gc , Gb , Ac ,                  We use the commercial solver Gurobi to solve the MILP-
+            Ab , bi, n̂g - number of continuous generators           based conditions and the runtime is shorter than the runtime
+            to reduce, n̂b - number of continuous                    of MOSEK [28] solving the LP-based conditions. This is
+            generators to reduce                                     due to the fact that the LP-based conditions require solving
+   Output:     reduced   hybrid zonotope Ẑh                         multiple LPs for each time step, while in our approach, only
+    b        b
+ 1 G1 G2 ←− G ;
+                         b
+                                    // Partition by n̂b              one MILP is solved for each time step.
+    b        b
+                         b
+ 2 A1 A2 ←− A ;                     //                by n̂b
+              c                      Partition                               Algorithm           Runtime [s]   Approx. Error
+                      Gb1 , Âc ←− Ac Ab1
+     c
+                                             
+ 3 Ĝ ←− G                                                                  Reach-HZ (ours)          0.146             0
+     b           b    b        b
+ 4 Ĝ ←− G2 , Â ←− A2 , ĉ ←− c, b̂ ←− b                                    Reach-CZ [15]           0.312             0
+                         c   b    c    b
+ 5 Ẑh ←− HZhĉ, Ĝ , Ĝ , Â , Â , b̂i
+                                                                             Reach-LP [11]           0.032           3.34
+     +                                                                     Reach-LP-Partition        2.297           0.23
+ 6 Ẑh ←− lift Ẑh using (16)                                               Reach-SDP [10]           108.77          0.79
+                                                +
+ 7 Ẑh ←− remove parallel generators in Ẑh and unlift                     Reach-SDP-Partition      5222.91          0.33
+ 8 for i ∈ {1, . . . , max{nc , n̂g }} do
+                                                                     TABLE I: Comparison of different reachability methods for
+ 9     (r, c) ←− argminr,c dH (r, c, Ẑh )                           Example 2. Reach-HZ returns exact reachable sets within a
+10     (ΛG , ΛA ) ←− (18)                                            shorter time compared with Reach-CZ.
+11     Ẑh ←− HZhĉ + ΛG b̂, Ĝc − ΛG Âc , Ĝb −
+        ΛG Âb , Âc − ΛA Âc , Âb − ΛA Âb , b̂ − ΛA b̂i                   Problem Formulation     LP [15]     MILP (ours)
+                                                                                 Runtime [s]          0.063        0.016
+12    return Ẑh
+                                                                     TABLE II: Runtimes of the LP-based method in [15] and
+                                                                     the MILP-based condition in Proposition 1.
+the feedback controller. Algorithm 1 is implemented to get
+exact output sets of the FNN and then utilized to compute
+the reachable sets of the closed-loop system for T = 2 time
+steps based on Theorem  1 and Algorithm
+                                           2. Theinitial set
+                                                               is
+                          2.5      0.2 0       0.25
+given by X0 = HZ                ,           ,        , ∅, ∅, ∅ .
+                           0        0 0.2        0
+   We denote the proposed exact reachability analysis method
+based on (8) and Theorem 1 as Reach-HZ. We compare the
+proposed method with the Reach-CZ algorithm ([15]), the
+Reach-LP algorithm ([11]), and the Reach-SDP algorithm
+([10]). For the latter two algorithms, we also test the version
+with initial set partition, i.e., Reach-LP-Partition and Reach-
+SDP-Partition. Table I summarizes the computation times              Fig. 3: Reachable sets computed for the double integrator
+and set over-approximation errors for the proposed method            example. The initial set X0 is shown in cyan and the star-
+and other state-of-the-art methods. The approximation errors         shaped unsafe region is in magenta. Reachable set computed
+are computed based on the difference ratio of sizes of com-          by Reach-HZ is plotted in blue. Reachable set computed by
+puted reachable sets and exact reachable sets at the last time       Reach-CZ ([15]) is in black, the LP-based method ([11]) is
+step. Note that although both the proposed Reach-HZ method           in red, and the SDP-based method ([10]) is in green.
+and the Reach-CZ method can return the exact reachable
+sets, Reach-HZ only takes about half of the time of Reach-             Example 3: Consider a 4-D lateral dynamics model:
+CZ. This results from the fact that Reach-CZ computes                                                         
+each reachable set as multiple constrained zonotopes while                          0   1    5    0             0
+                                                                                   0 −5 0 −9.5               25
+our Reach-HZ represents each reachable set compactly as                 x(t + 1) =                    x(t) +   u(t).
+                                                                                   0   0    0    1           0
+a single hybrid zonotope. Our algorithms are implemented
+in Python with Gurobi [17]. The computer used for all the                           0 0.05 0 −2.8               50
+algorithms has a 3.7GHz CPU and 32GB memory.                         A 2-layer FNN is employed as the feedback controller and
+   Figure 3 illustrates reachable sets of the double integrator      the initial set is given by X0 = [0.1, 0.9] × [−0.9, −0.1] ×
+system using different methods. It can be observed that both         [0.05, 0.15] × [0.05, 0.15].
+our method and Reach-CZ provide more accurate reachable                 We implement the proposed Reach-HZ method and the
+sets for all the time steps compared with other methods.             relaxed version denoted as Reach-HZ-Relax which combine
+For the safety verification, we consider a star-shaped unsafe        Reach-HZ with the complexity reduction method in Algo-
+region as plotted in Figure 3, which is represented by a             rithm 3. We also run the Reach-CZ and Reach-CZ-Approx
+hybrid zonotope. Table II compares the times used to solve           algorithms from [15] for comparison. Figure 4 shows the
+                                                                           [4] C. Huang, J. Fan, W. Li, X. Chen, and Q. Zhu, “ReachNN: Reachabil-
+                                                                               ity analysis of neural-network controlled systems,” ACM Transactions
+                                                                               on Embedded Computing Systems, vol. 18, no. 5s, pp. 1–22, 2019.
+                                                                           [5] R. Ivanov, J. Weimer, R. Alur, G. J. Pappas, and I. Lee, “Verisig:
+                                                                               Verifying safety properties of hybrid systems with neural network
+                                                                               controllers,” in Proceedings of the 22nd ACM International Conference
+                                                                               on Hybrid Systems: Computation and Control, 2019, pp. 169–178.
+                                                                           [6] H. Yin, P. Seiler, and M. Arcak, “Stability analysis using quadratic
+                                                                               constraints for systems with neural network controllers,” IEEE Trans-
+                                                                               actions on Automatic Control, vol. 67, no. 4, pp. 1980–1987, 2021.
+                                                                           [7] N. Kochdumper, C. Schilling, M. Althoff, and S. Bak, “Open-and
+                                                                               closed-loop neural network verification using polynomial zonotopes,”
+                                                                               arXiv preprint arXiv:2207.02715, 2022.
+                                                                           [8] H. Dai, B. Landry, L. Yang, M. Pavone, and R. Tedrake, “Lyapunov-
+Fig. 4: Reachable sets computed for the lateral dynamics                       stable neural-network control,” arXiv preprint arXiv:2109.14152,
+                                                                               2021.
+example. Reachable set computed by Reach-HZ is plotted in                  [9] M. Fazlyab, M. Morari, and G. J. Pappas, “Safety verification and
+blue and the Reach-CZ method ([15]) is in black. Our Reach-                    robustness analysis of neural networks via quadratic constraints and
+HZ-Relax computes the tightest convex relaxation (green),                      semidefinite programming,” IEEE Transactions on Automatic Control,
+                                                                               vol. 67, no. 1, pp. 1–15, 2022.
+while the Reach-CZ-Approx method ([15]) only provides a                   [10] H. Hu, M. Fazlyab, M. Morari, and G. J. Pappas, “Reach-SDP:
+more conservative convex relaxation (red).                                     Reachability analysis of closed-loop systems with neural network
+                                                                               controllers via semidefinite programming,” in IEEE 59th Conference
+                                                                               on Decision and Control. IEEE, 2020, pp. 5929–5934.
+           Algorithm              Runtime [s]     Approx. Error
+                                                                          [11] M. Everett, G. Habibi, C. Sun, and J. P. How, “Reachability analysis
+       Reach-HZ (ours)              0.062               0                      of neural feedback loops,” IEEE Access, vol. 9, pp. 163 938–163 953,
+     Reach-HZ-Relax (ours)          0.079             0.08                     2021.
+        Reach-CZ [15]               0.110               0                 [12] A. Chakrabarty, C. Danielson, S. Di Cairano, and A. Raghunathan,
+     Reach-CZ-Approx [15]           0.047             0.20                     “Active learning for estimating reachable sets for systems with un-
+                                                                               known dynamics,” IEEE Transactions on Cybernetics, 2020.
+TABLE III: Comparison of different reachability-based                     [13] A. Devonport and M. Arcak, “Data-driven reachable set computation
+methods for the lateral dynamics example.                                      using adaptive Gaussian process classification and Monte Carlo meth-
+                                                                               ods,” in American Control Conference. IEEE, 2020, pp. 2629–2634.
+                                                                          [14] H.-D. Tran, F. Cai, M. L. Diego, P. Musau, T. T. Johnson, and
+one-step reachable sets of the lateral dynamics system com-                    X. Koutsoukos, “Safety verification of cyber-physical systems with
+                                                                               reinforcement learning control,” ACM Transactions on Embedded
+puted by four different methods and Table III summarizes                       Computing Systems, vol. 18, no. 5s, pp. 1–22, 2019.
+their runtimes. Similar to the previous example, our Reach-               [15] Y. Zhang and X. Xu, “Safety verification of neural feedback systems
+HZ method provides the exact reachable set in a shorter                        based on constrained zonotopes,” in 61th Conference on Decision and
+                                                                               Control. IEEE, 2022, accepted (arXiv preprint arXiv:2204.00903).
+time compared with Reach-CZ. Furthermore, our Reach-HZ-                   [16] T. J. Bird, H. C. Pangborn, N. Jain, and J. P. Koeln, “Hybrid zonotopes:
+Relax method provides the tightest convex relaxation (the                      A new set representation for reachability analysis of mixed logical
+convex hull) of the reachable set while Reach-CZ-Approx                        dynamical systems,” arXiv preprint arXiv:2106.14831, 2021.
+                                                                          [17] Gurobi Optimization, LLC, “Gurobi optimizer reference manual,”
+returns a more conservative convex relaxation.                                 2022. [Online]. Available: https://www.gurobi.com
+                                                                          [18] D. Bertsimas and B. Stellato, “Online mixed-integer optimization in
+                       VI. C ONCLUSION                                         milliseconds,” INFORMS Journal on Computing, 2022.
+                                                                          [19] P. McMullen, “On zonotopes,” Transactions of the American Mathe-
+   In this work, we introduce a novel approach for com-                        matical Society, vol. 159, pp. 91–109, 1971.
+puting exact reachable sets for neural feedback systems                   [20] J. K. Scott, D. M. Raimondo, G. R. Marseglia, and R. D. Braatz,
+                                                                               “Constrained zonotopes: A new tool for set-based estimation and fault
+based on hybrid zonotopes. We show that when the input                         detection,” Automatica, vol. 69, pp. 126–136, 2016.
+set is a hybrid zonotope, the computed reachable sets can                 [21] T. J. Bird and N. Jain, “Unions and complements of hybrid zonotopes,”
+also be compactly represented by hybrid zonotopes. Based                       IEEE Control Systems Letters, vol. 6, pp. 1778–1783, 2021.
+                                                                          [22] H.-D. Tran, D. Manzanas Lopez, P. Musau, X. Yang, L. V. Nguyen,
+on the reachability analysis, an MILP-based condition is                       W. Xiang, and T. T. Johnson, “Star-based reachability analysis of deep
+presented for safety verification of the neural feedback                       neural networks,” in International Symposium on Formal Methods.
+system. Complexity reduction techniques are also proposed                      Springer, 2019, pp. 670–686.
+                                                                          [23] C. Sidrane, A. Maleki, A. Irfan, and M. J. Kochenderfer, “Overt: An
+for the hybrid zonotopes to reduce the computation burden.                     algorithm for safety verification of neural network control policies for
+As demonstrated in two numerical examples, the proposed                        nonlinear systems,” Journal of Machine Learning Research, vol. 23,
+approach outperforms other methods for reachability analysis                   no. 117, pp. 1–45, 2022.
+                                                                          [24] S. Boyd, S. P. Boyd, and L. Vandenberghe, Convex optimization.
+and safety verification of neural feedback systems.                            Cambridge University Press, 2004.
+                                                                          [25] V. Raghuraman and J. P. Koeln, “Set operations and order reductions
+                          R EFERENCES                                          for constrained zonotopes,” Automatica, vol. 139, p. 110204, 2022.
+                                                                          [26] R. Anderson, J. Huchette, W. Ma, C. Tjandraatmadja, and J. P. Vielma,
+[1] S. Grigorescu, B. Trasnea, T. Cocias, and G. Macesanu, “A survey of        “Strong mixed-integer programming formulations for trained neural
+    deep learning techniques for autonomous driving,” Journal of Field         networks,” Mathematical Programming, vol. 183, no. 1, pp. 3–39,
+    Robotics, vol. 37, no. 3, pp. 362–386, 2020.                               2020.
+[2] D. A. Pomerleau, Neural network perception for mobile robot guid-     [27] M. Althoff, “On computing the Minkowski difference of zonotopes,”
+    ance. Springer Science & Business Media, 2012, vol. 239.                   arXiv preprint arXiv:1512.02794, 2015.
+[3] G. Katz, C. Barrett, D. L. Dill, K. Julian, and M. J. Kochenderfer,   [28] MOSEK ApS, “The MOSEK Fusion API for Python manual.
+    “Reluplex: An efficient SMT solver for verifying deep neural net-          Version 9.3.18,” 2019. [Online]. Available: http://docs.mosek.com/9.
+    works,” in International Conference on Computer Aided Verification.        3/pythonfusion/index.html
+    Springer, 2017, pp. 97–117.
+

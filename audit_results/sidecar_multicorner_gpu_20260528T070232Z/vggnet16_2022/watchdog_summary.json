@@ -1,0 +1,72 @@
+{
+  "schema_version": 2,
+  "strict_bounded_failure": false,
+  "counts": {
+    "OK": 0,
+    "UNKNOWN_TIMEOUT": 5,
+    "UNKNOWN_RESOURCE_LIMIT": 0,
+    "ERROR": 0
+  },
+  "results": [
+    {
+      "benchmark": "vggnet16_2022",
+      "instance_id": 0,
+      "status": "UNKNOWN_TIMEOUT",
+      "cli_normalized": "UNKNOWN_TIMEOUT",
+      "wall_s": 610.3595760469325,
+      "peak_rss_mb": 41580.171875,
+      "returncode": -15,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/sidecar_multicorner_gpu_20260528T070232Z/vggnet16_2022/per_instance_vggnet16_2022_watchdog_iid0_20260528T073641496853Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/sidecar_multicorner_gpu_20260528T070232Z/vggnet16_2022",
+      "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: vggnet16_2022/onnx/vgg16-7.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/vggnet16_2022/onnx/vgg16-7.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: vgg16-7.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 3, 224, 224]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 3, 224, 224)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 150528 inputs, 1000 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 150528 inputs, 1000 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'vggnet16_2022'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed spec0_suit.vnnlib: 1 query(ies)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=13 out_dim=1000 relus=15 (triangle for relu 1..12, eq_lagr_v8 for last 3)\n"
+    },
+    {
+      "benchmark": "vggnet16_2022",
+      "instance_id": 1,
+      "status": "UNKNOWN_TIMEOUT",
+      "cli_normalized": "UNKNOWN_TIMEOUT",
+      "wall_s": 610.4163380799582,
+      "peak_rss_mb": 41550.078125,
+      "returncode": -15,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/sidecar_multicorner_gpu_20260528T070232Z/vggnet16_2022/per_instance_vggnet16_2022_watchdog_iid1_20260528T074651919104Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/sidecar_multicorner_gpu_20260528T070232Z/vggnet16_2022",
+      "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: vggnet16_2022/onnx/vgg16-7.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/vggnet16_2022/onnx/vgg16-7.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: vgg16-7.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 3, 224, 224]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 3, 224, 224)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 150528 inputs, 1000 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 150528 inputs, 1000 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'vggnet16_2022'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed spec1_Scottish_deerhound.vnnlib: 1 query(ies)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=13 out_dim=1000 relus=15 (triangle for relu 1..12, eq_lagr_v8 for last 3)\n"
+    },
+    {
+      "benchmark": "vggnet16_2022",
+      "instance_id": 2,
+      "status": "UNKNOWN_TIMEOUT",
+      "cli_normalized": "UNKNOWN_TIMEOUT",
+      "wall_s": 610.3705781929893,
+      "peak_rss_mb": 41552.30078125,
+      "returncode": -15,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/sidecar_multicorner_gpu_20260528T070232Z/vggnet16_2022/per_instance_vggnet16_2022_watchdog_iid2_20260528T075702290114Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/sidecar_multicorner_gpu_20260528T070232Z/vggnet16_2022",
+      "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: vggnet16_2022/onnx/vgg16-7.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/vggnet16_2022/onnx/vgg16-7.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: vgg16-7.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 3, 224, 224]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 3, 224, 224)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 150528 inputs, 1000 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 150528 inputs, 1000 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'vggnet16_2022'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed spec2_Airedale.vnnlib: 1 query(ies)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=13 out_dim=1000 relus=15 (triangle for relu 1..12, eq_lagr_v8 for last 3)\n"
+    },
+    {
+      "benchmark": "vggnet16_2022",
+      "instance_id": 3,
+      "status": "UNKNOWN_TIMEOUT",
+      "cli_normalized": "UNKNOWN_TIMEOUT",
+      "wall_s": 610.1801025799941,
+      "peak_rss_mb": 41561.7265625,
+      "returncode": -15,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/sidecar_multicorner_gpu_20260528T070232Z/vggnet16_2022/per_instance_vggnet16_2022_watchdog_iid3_20260528T080712470689Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/sidecar_multicorner_gpu_20260528T070232Z/vggnet16_2022",
+      "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: vggnet16_2022/onnx/vgg16-7.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/vggnet16_2022/onnx/vgg16-7.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: vgg16-7.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 3, 224, 224]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 3, 224, 224)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 150528 inputs, 1000 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 150528 inputs, 1000 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'vggnet16_2022'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed spec3_canoe.vnnlib: 1 query(ies)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=13 out_dim=1000 relus=15 (triangle for relu 1..12, eq_lagr_v8 for last 3)\n"
+    },
+    {
+      "benchmark": "vggnet16_2022",
+      "instance_id": 4,
+      "status": "UNKNOWN_TIMEOUT",
+      "cli_normalized": "UNKNOWN_TIMEOUT",
+      "wall_s": 610.8576169860316,
+      "peak_rss_mb": 41548.4453125,
+      "returncode": -15,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/sidecar_multicorner_gpu_20260528T070232Z/vggnet16_2022/per_instance_vggnet16_2022_watchdog_iid4_20260528T081723328851Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/sidecar_multicorner_gpu_20260528T070232Z/vggnet16_2022",
+      "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: vggnet16_2022/onnx/vgg16-7.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/vggnet16_2022/onnx/vgg16-7.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: vgg16-7.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 3, 224, 224]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 3, 224, 224)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 150528 inputs, 1000 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 150528 inputs, 1000 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'vggnet16_2022'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed spec4_grille.vnnlib: 1 query(ies)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=13 out_dim=1000 relus=15 (triangle for relu 1..12, eq_lagr_v8 for last 3)\n"
+    }
+  ]
+}

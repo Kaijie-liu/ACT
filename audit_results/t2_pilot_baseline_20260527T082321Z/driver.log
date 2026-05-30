@@ -1,0 +1,15 @@
+[ACT] Auto-detecting project root: ../ACT
+[ACT] Gurobi license found: ../ACT/modules/gurobi/gurobi.lic
+{
+  "benchmark": "cifar100_2024",
+  "instance_id": 0,
+  "status": "OK",
+  "cli_normalized": "OK",
+  "wall_s": 60.082716702949256,
+  "peak_rss_mb": 10615.09375,
+  "returncode": 0,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/t2_pilot_baseline_20260527T082321Z/per_instance_cifar100_2024_20260527T082423973224Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/t2_pilot_baseline_20260527T082321Z",
+  "stdout_tail": "nlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 3072 inputs, 100 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Ground truth label: 92\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cifar100_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed CIFAR100_resnet_medium_prop_idx_7641_sidx_1041_eps_0.0039.vnnlib: 1 query(ies)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=19 out_dim=100 relus=10 (triangle for relu 1..7, eq_lagr_v8 for last 3)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cpu, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=cifar100_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cpu, timeout=120.0s)\n  [  1/1] cifar100_2024/onnx/CIFAR100_resnet_medium.onnx@vnnlib/CIFAR100_resnet_medium_prop_idx_7641_sidx_1041_eps_0.0039.vnnlib: UNKNOWN (55.5s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.9 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/t2_pilot_baseline_20260527T082321Z/per_instance_cifar100_2024_20260527T082423973224Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+}
+[watchdog] summary written: /data1/Kane/ACT/audit_results/t2_pilot_baseline_20260527T082321Z/watchdog_summary.json

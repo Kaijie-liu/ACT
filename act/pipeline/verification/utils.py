@@ -1149,11 +1149,22 @@ def _convert_OnnxResize(self, mod: nn.Module, node: fx.Node) -> None:
     if not self._get_predecessor_state(node):
         raise ValueError(f"OnnxResize: missing predecessor for {node.name}")
     args = [a for a in node.args if isinstance(a, fx.Node)]
+    # ONNX Resize positional args: (input, roi, scales, sizes). Any of
+    # roi/scales/sizes may be empty/skipped. Match by SHAPE not by type:
+    # the real `scales` (or `sizes`) tensor has ``numel == len(input.shape)``
+    # (one entry per dim, e.g. 4 for NCHW). ``roi`` typically has 8 entries
+    # (start+end per spatial dim) and was previously matched as a stray
+    # float candidate, causing Fix #8 failures on cgan_2023 iids 18/19/20
+    # (`cannot resolve scales or sizes`).
     scales_t: Optional[torch.Tensor] = None
     sizes_t: Optional[torch.Tensor] = None
+    expected_numel = len(self.shape)
     for a in args[1:]:
         t = self._resolve_constant_tensor(a.name)
         if t is None or t.numel() == 0:
+            continue
+        if t.numel() != expected_numel:
+            # Likely the ``roi`` tensor (numel = 2 * spatial_rank). Skip.
             continue
         if t.dtype.is_floating_point and scales_t is None:
             scales_t = t

@@ -1,0 +1,84 @@
+{
+  "schema_version": 2,
+  "strict_bounded_failure": false,
+  "counts": {
+    "OK": 2,
+    "UNKNOWN_TIMEOUT": 4,
+    "UNKNOWN_RESOURCE_LIMIT": 0,
+    "ERROR": 0
+  },
+  "results": [
+    {
+      "benchmark": "collins_aerospace_benchmark",
+      "instance_id": 0,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 305.646426685038,
+      "peak_rss_mb": 7796.0390625,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/gather_slice_chain_20260529T150826Z/collins_aerospace_benchmark/per_instance_collins_aerospace_benchmark_20260529T151330875746Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/gather_slice_chain_20260529T150826Z/collins_aerospace_benchmark",
+      "stdout_tail": "86749 has 674.00 MiB memory in use. Process 1689878 has 1.26 GiB memory in use. Process 1691156 has 674.00 MiB memory in use. Of the allocated memory 80.89 GiB is allocated by PyTorch, and 179.25 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=collins_aerospace_benchmark max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=300.0s)\n  [  1/1] collins_aerospace_benchmark/onnx/yolov5nano_LRelu_640.onnx@vnnlib/img_14421_perturbed_bbox_3_delta_0.001.vnnlib: UNKNOWN (300.2s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=5.0 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/gather_slice_chain_20260529T150826Z/collins_aerospace_benchmark/per_instance_collins_aerospace_benchmark_20260529T151330875746Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "collins_aerospace_benchmark",
+      "instance_id": 1,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 305.6614977759309,
+      "peak_rss_mb": 7956.40625,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/gather_slice_chain_20260529T150826Z/collins_aerospace_benchmark/per_instance_collins_aerospace_benchmark_20260529T151837102467Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/gather_slice_chain_20260529T150826Z/collins_aerospace_benchmark",
+      "stdout_tail": "716802 has 674.00 MiB memory in use. Process 1725834 has 1.26 GiB memory in use. Process 1726133 has 554.00 MiB memory in use. Of the allocated memory 80.88 GiB is allocated by PyTorch, and 187.09 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=collins_aerospace_benchmark max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=300.0s)\n  [  1/1] collins_aerospace_benchmark/onnx/yolov5nano_LRelu_640.onnx@vnnlib/img_6876_perturbed_bbox_0_delta_0.005.vnnlib: UNKNOWN (300.9s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=5.0 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/gather_slice_chain_20260529T150826Z/collins_aerospace_benchmark/per_instance_collins_aerospace_benchmark_20260529T151837102467Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "collins_aerospace_benchmark",
+      "instance_id": 2,
+      "status": "UNKNOWN_TIMEOUT",
+      "cli_normalized": "UNKNOWN_TIMEOUT",
+      "wall_s": 308.5742308709305,
+      "peak_rss_mb": 7959.53125,
+      "returncode": -15,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/gather_slice_chain_20260529T150826Z/collins_aerospace_benchmark/per_instance_collins_aerospace_benchmark_watchdog_iid2_20260529T152348263349Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/gather_slice_chain_20260529T150826Z/collins_aerospace_benchmark",
+      "stdout_tail": "ch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=60 out_dim=277200 relus=0 (triangle for relu 1..-1, eq_lagr_v8 for last 1)\nWARNING:act.back_end.solver.solver_hz:L85 FALLBACK (OutOfMemoryError): CUDA out of memory. Tried to allocate 78.12 GiB. GPU 0 has a total capacity of 94.96 GiB of which 4.08 GiB is free. Process 2687037 has 690.00 MiB memory in use. Including non-PyTorch memory, this process has 81.70 GiB memory in use. Process 1737172 has 1.26 GiB memory in use. Process 1738047 has 674.00 MiB memory in use. Process 1738283 has 6.30 GiB memory in use. Of the allocated memory 22.29 GiB is allocated by PyTorch, and 58.77 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)\nWARNING:act.back_end.solver.solver_hz:L100 FALLBACK (OutOfMemoryError): CUDA out of memory. Tried to allocate 312.50 GiB. GPU 0 has a total capacity of 94.96 GiB of which 4.07 GiB is free. Process 2687037 has 690.00 MiB memory in use. Including non-PyTorch memory, this process has 81.71 GiB memory in use. Process 1737172 has 1.26 GiB memory in use. Process 1738047 has 674.00 MiB memory in use. Process 1738283 has 6.30 GiB memory in use. Of the allocated memory 80.90 GiB is allocated by PyTorch, and 174.16 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)\n"
+    },
+    {
+      "benchmark": "collins_aerospace_benchmark",
+      "instance_id": 3,
+      "status": "UNKNOWN_TIMEOUT",
+      "cli_normalized": "UNKNOWN_TIMEOUT",
+      "wall_s": 308.5766409089556,
+      "peak_rss_mb": 7935.515625,
+      "returncode": -15,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/gather_slice_chain_20260529T150826Z/collins_aerospace_benchmark/per_instance_collins_aerospace_benchmark_watchdog_iid3_20260529T152856840519Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/gather_slice_chain_20260529T150826Z/collins_aerospace_benchmark",
+      "stdout_tail": "56576 has 794.00 MiB memory in use. Process 1757558 has 674.00 MiB memory in use. Process 1757747 has 748.00 MiB memory in use. Of the allocated memory 80.88 GiB is allocated by PyTorch, and 185.17 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=collins_aerospace_benchmark max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=300.0s)\n  [  1/1] collins_aerospace_benchmark/onnx/yolov5nano_LRelu_640.onnx@vnnlib/img_8758_perturbed_bbox_3_delta_0.02.vnnlib: UNKNOWN (305.9s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=5.1 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/gather_slice_chain_20260529T150826Z/collins_aerospace_benchmark/per_instance_collins_aerospace_benchmark_20260529T152856301586Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "collins_aerospace_benchmark",
+      "instance_id": 4,
+      "status": "UNKNOWN_TIMEOUT",
+      "cli_normalized": "UNKNOWN_TIMEOUT",
+      "wall_s": 308.47657928196713,
+      "peak_rss_mb": 7939.15625,
+      "returncode": -15,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/gather_slice_chain_20260529T150826Z/collins_aerospace_benchmark/per_instance_collins_aerospace_benchmark_watchdog_iid4_20260529T153405317671Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/gather_slice_chain_20260529T150826Z/collins_aerospace_benchmark",
+      "stdout_tail": "1765934 has 794.00 MiB memory in use. Process 1767059 has 676.00 MiB memory in use. Process 1767273 has 6.31 GiB memory in use. Of the allocated memory 80.88 GiB is allocated by PyTorch, and 185.17 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=collins_aerospace_benchmark max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=300.0s)\n  [  1/1] collins_aerospace_benchmark/onnx/yolov5nano_LRelu_640.onnx@vnnlib/img_8758_perturbed_bbox_4_delta_0.05.vnnlib: UNKNOWN (304.1s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=5.1 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/gather_slice_chain_20260529T150826Z/collins_aerospace_benchmark/per_instance_collins_aerospace_benchmark_20260529T153403014733Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "collins_aerospace_benchmark",
+      "instance_id": 5,
+      "status": "UNKNOWN_TIMEOUT",
+      "cli_normalized": "UNKNOWN_TIMEOUT",
+      "wall_s": 308.5859213609947,
+      "peak_rss_mb": 7935.09765625,
+      "returncode": -15,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/gather_slice_chain_20260529T150826Z/collins_aerospace_benchmark/per_instance_collins_aerospace_benchmark_watchdog_iid5_20260529T153913904174Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/gather_slice_chain_20260529T150826Z/collins_aerospace_benchmark",
+      "stdout_tail": "ut unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=60 out_dim=277200 relus=0 (triangle for relu 1..-1, eq_lagr_v8 for last 1)\nWARNING:act.back_end.solver.solver_hz:L85 FALLBACK (OutOfMemoryError): CUDA out of memory. Tried to allocate 78.12 GiB. GPU 0 has a total capacity of 94.96 GiB of which 8.87 GiB is free. Process 2687037 has 690.00 MiB memory in use. Including non-PyTorch memory, this process has 81.71 GiB memory in use. Process 1789027 has 684.00 MiB memory in use. Process 1789279 has 756.00 MiB memory in use. Process 1791366 has 2.01 GiB memory in use. Of the allocated memory 22.29 GiB is allocated by PyTorch, and 58.79 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)\nWARNING:act.back_end.solver.solver_hz:L100 FALLBACK (OutOfMemoryError): CUDA out of memory. Tried to allocate 312.50 GiB. GPU 0 has a total capacity of 94.96 GiB of which 8.86 GiB is free. Process 2687037 has 690.00 MiB memory in use. Including non-PyTorch memory, this process has 81.72 GiB memory in use. Process 1789027 has 684.00 MiB memory in use. Process 1789279 has 756.00 MiB memory in use. Process 1791366 has 2.01 GiB memory in use. Of the allocated memory 80.90 GiB is allocated by PyTorch, and 195.42 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)\n"
+    }
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "schema_version": 2,
+  "strict_bounded_failure": false,
+  "counts": {
+    "OK": 5,
+    "UNKNOWN_TIMEOUT": 0,
+    "UNKNOWN_RESOURCE_LIMIT": 0,
+    "ERROR": 0
+  },
+  "results": [
+    {
+      "benchmark": "tinyimagenet_2024",
+      "instance_id": 0,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 18.026631903951056,
+      "peak_rss_mb": 2508.8671875,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/sidecar_multicorner_gpu_20260528T070232Z/tinyimagenet_2024/per_instance_tinyimagenet_2024_20260528T072510632148Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/sidecar_multicorner_gpu_20260528T070232Z/tinyimagenet_2024",
+      "stdout_tail": "nputs, 200 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Ground truth label: 142\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'tinyimagenet_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed TinyImageNet_resnet_medium_prop_idx_1126_sidx_4974_eps_0.0039.vnnlib: 1 query(ies)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=19 out_dim=200 relus=10 (triangle for relu 1..7, eq_lagr_v8 for last 3)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=tinyimagenet_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=240.0s)\n  [  1/1] tinyimagenet_2024/onnx/TinyImageNet_resnet_medium.onnx@vnnlib/TinyImageNet_resnet_medium_prop_idx_1126_sidx_4974_eps_0.0039.vnnlib: UNKNOWN (14.4s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.2 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/sidecar_multicorner_gpu_20260528T070232Z/tinyimagenet_2024/per_instance_tinyimagenet_2024_20260528T072510632148Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "tinyimagenet_2024",
+      "instance_id": 40,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 18.02037976507563,
+      "peak_rss_mb": 2470.46875,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/sidecar_multicorner_gpu_20260528T070232Z/tinyimagenet_2024/per_instance_tinyimagenet_2024_20260528T072528778183Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/sidecar_multicorner_gpu_20260528T070232Z/tinyimagenet_2024",
+      "stdout_tail": "nputs, 200 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Ground truth label: 190\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'tinyimagenet_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed TinyImageNet_resnet_medium_prop_idx_4438_sidx_6486_eps_0.0039.vnnlib: 1 query(ies)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=19 out_dim=200 relus=10 (triangle for relu 1..7, eq_lagr_v8 for last 3)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=tinyimagenet_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=240.0s)\n  [  1/1] tinyimagenet_2024/onnx/TinyImageNet_resnet_medium.onnx@vnnlib/TinyImageNet_resnet_medium_prop_idx_4438_sidx_6486_eps_0.0039.vnnlib: UNKNOWN (14.5s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.2 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/sidecar_multicorner_gpu_20260528T070232Z/tinyimagenet_2024/per_instance_tinyimagenet_2024_20260528T072528778183Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "tinyimagenet_2024",
+      "instance_id": 80,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 19.025576443993486,
+      "peak_rss_mb": 2524.91796875,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/sidecar_multicorner_gpu_20260528T070232Z/tinyimagenet_2024/per_instance_tinyimagenet_2024_20260528T072547648220Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/sidecar_multicorner_gpu_20260528T070232Z/tinyimagenet_2024",
+      "stdout_tail": "nputs, 200 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Ground truth label: 108\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'tinyimagenet_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed TinyImageNet_resnet_medium_prop_idx_7152_sidx_4185_eps_0.0039.vnnlib: 1 query(ies)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=19 out_dim=200 relus=10 (triangle for relu 1..7, eq_lagr_v8 for last 3)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=tinyimagenet_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=240.0s)\n  [  1/1] tinyimagenet_2024/onnx/TinyImageNet_resnet_medium.onnx@vnnlib/TinyImageNet_resnet_medium_prop_idx_7152_sidx_4185_eps_0.0039.vnnlib: UNKNOWN (15.0s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.2 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/sidecar_multicorner_gpu_20260528T070232Z/tinyimagenet_2024/per_instance_tinyimagenet_2024_20260528T072547648220Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "tinyimagenet_2024",
+      "instance_id": 120,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 20.52736178401392,
+      "peak_rss_mb": 2494.859375,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/sidecar_multicorner_gpu_20260528T070232Z/tinyimagenet_2024/per_instance_tinyimagenet_2024_20260528T072607978614Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/sidecar_multicorner_gpu_20260528T070232Z/tinyimagenet_2024",
+      "stdout_tail": "inputs, 200 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Ground truth label: 26\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'tinyimagenet_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed TinyImageNet_resnet_medium_prop_idx_7277_sidx_8835_eps_0.0039.vnnlib: 1 query(ies)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=19 out_dim=200 relus=10 (triangle for relu 1..7, eq_lagr_v8 for last 3)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=tinyimagenet_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=240.0s)\n  [  1/1] tinyimagenet_2024/onnx/TinyImageNet_resnet_medium.onnx@vnnlib/TinyImageNet_resnet_medium_prop_idx_7277_sidx_8835_eps_0.0039.vnnlib: UNKNOWN (16.6s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.3 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/sidecar_multicorner_gpu_20260528T070232Z/tinyimagenet_2024/per_instance_tinyimagenet_2024_20260528T072607978614Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "tinyimagenet_2024",
+      "instance_id": 160,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 18.527520020026714,
+      "peak_rss_mb": 2465.27734375,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/sidecar_multicorner_gpu_20260528T070232Z/tinyimagenet_2024/per_instance_tinyimagenet_2024_20260528T072626453062Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/sidecar_multicorner_gpu_20260528T070232Z/tinyimagenet_2024",
+      "stdout_tail": "inputs, 200 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Ground truth label: 13\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'tinyimagenet_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed TinyImageNet_resnet_medium_prop_idx_5676_sidx_9851_eps_0.0039.vnnlib: 1 query(ies)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=19 out_dim=200 relus=10 (triangle for relu 1..7, eq_lagr_v8 for last 3)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=tinyimagenet_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=240.0s)\n  [  1/1] tinyimagenet_2024/onnx/TinyImageNet_resnet_medium.onnx@vnnlib/TinyImageNet_resnet_medium_prop_idx_5676_sidx_9851_eps_0.0039.vnnlib: UNKNOWN (14.5s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.2 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/sidecar_multicorner_gpu_20260528T070232Z/tinyimagenet_2024/per_instance_tinyimagenet_2024_20260528T072626453062Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: traffic_signs_recognition_2023/onnx/3_30_30_QConv_16_3_QConv_32_2_Dense_43_ep_30.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/traffic_signs_recognition_2023/onnx/3_30_30_QConv_16_3_QConv_32_2_Dense_43_ep_30.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: 3_30_30_QConv_16_3_QConv_32_2_Dense_43_ep_30.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 30, 30, 3)
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 30, 30, 3)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 2700 inputs, 43 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 2700 inputs, 43 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'traffic_signs_recognition_2023'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed model_30_idx_11379_eps_1.00000.vnnlib: 42 query(ies)
+[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic
+✅ Device Manager Initialized: device=cuda:0, dtype=torch.float64
+
+================================================================================
+ACT: Abstract Constraint Transformer
+Inference-based whitebox fuzzing for neural network verification
+================================================================================
+
+
+================================================================================
+VERIFICATION TEST: VNNLIB → VerifiableModel → verify_once
+================================================================================
+
+[vnnlib] category=traffic_signs_recognition_2023 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=180.0s)
+  [  1/1] traffic_signs_recognition_2023/onnx/3_30_30_QConv_16_3_QConv_32_2_Dense_43_ep_30.onnx@vnnlib/model_30_idx_11379_eps_1.00000.vnnlib: UNKNOWN (65.7s)  V=0 A=0 U=1 E=0  R=0
+
+[vnnlib/hybridz] FINAL — total=1 wall=1.1 min
+  UNKNOWN      1
+  [structured] per-instance log → /data1/Kane/ACT/audit_results/sidecar_multicorner_gpu_20260528T070232Z/traffic_signs_recognition_2023/per_instance_traffic_signs_recognition_2023_20260528T071008079364Z.json
+
+================================================================================
+VERIFICATION TEST SUMMARY
+================================================================================
+  ✅ vnnlib                    PASSED
+================================================================================
+

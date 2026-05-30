@@ -1,0 +1,108 @@
+{
+  "schema_version": 2,
+  "strict_bounded_failure": false,
+  "counts": {
+    "OK": 8,
+    "UNKNOWN_TIMEOUT": 0,
+    "UNKNOWN_RESOURCE_LIMIT": 0,
+    "ERROR": 0
+  },
+  "results": [
+    {
+      "benchmark": "lsnc_relu",
+      "instance_id": 0,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 5.002999108983204,
+      "peak_rss_mb": 1627.8359375,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/sparse_input_followup_gpu_20260528T160144Z/lsnc_relu/per_instance_lsnc_relu_20260528T163942405194Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/sparse_input_followup_gpu_20260528T160144Z/lsnc_relu",
+      "stdout_tail": "input shape: [1, 6]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 6)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 6 inputs, 8 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 6 inputs, 8 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'lsnc_relu'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed quadrotor2d_state_0.vnnlib: 13 query(ies)\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=lsnc_relu max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=120.0s)\n  [  1/1] lsnc_relu/onnx/relu_quadrotor2d_state.onnx@vnnlib/quadrotor2d_state_0.vnnlib: UNKNOWN (1.9s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.0 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/sparse_input_followup_gpu_20260528T160144Z/lsnc_relu/per_instance_lsnc_relu_20260528T163942405194Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "lsnc_relu",
+      "instance_id": 10,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 5.002787388046272,
+      "peak_rss_mb": 1625.1015625,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/sparse_input_followup_gpu_20260528T160144Z/lsnc_relu/per_instance_lsnc_relu_20260528T163947365857Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/sparse_input_followup_gpu_20260528T160144Z/lsnc_relu",
+      "stdout_tail": "put shape: [1, 6]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 6)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 6 inputs, 8 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 6 inputs, 8 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'lsnc_relu'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed quadrotor2d_state_10.vnnlib: 13 query(ies)\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=lsnc_relu max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=120.0s)\n  [  1/1] lsnc_relu/onnx/relu_quadrotor2d_state.onnx@vnnlib/quadrotor2d_state_10.vnnlib: UNKNOWN (1.9s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.0 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/sparse_input_followup_gpu_20260528T160144Z/lsnc_relu/per_instance_lsnc_relu_20260528T163947365857Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "lsnc_relu",
+      "instance_id": 20,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 5.503324492950924,
+      "peak_rss_mb": 1629.828125,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/sparse_input_followup_gpu_20260528T160144Z/lsnc_relu/per_instance_lsnc_relu_20260528T163952458243Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/sparse_input_followup_gpu_20260528T160144Z/lsnc_relu",
+      "stdout_tail": "put shape: [1, 6]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 6)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 6 inputs, 8 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 6 inputs, 8 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'lsnc_relu'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed quadrotor2d_state_20.vnnlib: 13 query(ies)\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=lsnc_relu max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=120.0s)\n  [  1/1] lsnc_relu/onnx/relu_quadrotor2d_state.onnx@vnnlib/quadrotor2d_state_20.vnnlib: UNKNOWN (1.9s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.0 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/sparse_input_followup_gpu_20260528T160144Z/lsnc_relu/per_instance_lsnc_relu_20260528T163952458243Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "lsnc_relu",
+      "instance_id": 30,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 5.003274348913692,
+      "peak_rss_mb": 1751.23046875,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/sparse_input_followup_gpu_20260528T160144Z/lsnc_relu/per_instance_lsnc_relu_20260528T163957704181Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/sparse_input_followup_gpu_20260528T160144Z/lsnc_relu",
+      "stdout_tail": "put shape: [1, 6]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 6)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 6 inputs, 8 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 6 inputs, 8 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'lsnc_relu'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed quadrotor2d_state_30.vnnlib: 13 query(ies)\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=lsnc_relu max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=120.0s)\n  [  1/1] lsnc_relu/onnx/relu_quadrotor2d_state.onnx@vnnlib/quadrotor2d_state_30.vnnlib: UNKNOWN (1.8s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.0 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/sparse_input_followup_gpu_20260528T160144Z/lsnc_relu/per_instance_lsnc_relu_20260528T163957704181Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "lsnc_relu",
+      "instance_id": 40,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 5.003024328965694,
+      "peak_rss_mb": 1644.58984375,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/sparse_input_followup_gpu_20260528T160144Z/lsnc_relu/per_instance_lsnc_relu_20260528T164002784044Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/sparse_input_followup_gpu_20260528T160144Z/lsnc_relu",
+      "stdout_tail": "put shape: [1, 6]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 6)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 6 inputs, 8 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 6 inputs, 8 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'lsnc_relu'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed quadrotor2d_state_40.vnnlib: 13 query(ies)\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=lsnc_relu max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=120.0s)\n  [  1/1] lsnc_relu/onnx/relu_quadrotor2d_state.onnx@vnnlib/quadrotor2d_state_40.vnnlib: UNKNOWN (1.9s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.0 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/sparse_input_followup_gpu_20260528T160144Z/lsnc_relu/per_instance_lsnc_relu_20260528T164002784044Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "lsnc_relu",
+      "instance_id": 50,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 5.004122848971747,
+      "peak_rss_mb": 1630.9296875,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/sparse_input_followup_gpu_20260528T160144Z/lsnc_relu/per_instance_lsnc_relu_20260528T164007752427Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/sparse_input_followup_gpu_20260528T160144Z/lsnc_relu",
+      "stdout_tail": "put shape: [1, 6]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 6)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 6 inputs, 8 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 6 inputs, 8 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'lsnc_relu'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed quadrotor2d_state_50.vnnlib: 13 query(ies)\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=lsnc_relu max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=120.0s)\n  [  1/1] lsnc_relu/onnx/relu_quadrotor2d_state.onnx@vnnlib/quadrotor2d_state_50.vnnlib: UNKNOWN (1.8s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.0 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/sparse_input_followup_gpu_20260528T160144Z/lsnc_relu/per_instance_lsnc_relu_20260528T164007752427Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "lsnc_relu",
+      "instance_id": 60,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 5.00564625102561,
+      "peak_rss_mb": 1626.07421875,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/sparse_input_followup_gpu_20260528T160144Z/lsnc_relu/per_instance_lsnc_relu_20260528T164012852309Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/sparse_input_followup_gpu_20260528T160144Z/lsnc_relu",
+      "stdout_tail": "put shape: [1, 6]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 6)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 6 inputs, 8 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 6 inputs, 8 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'lsnc_relu'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed quadrotor2d_state_60.vnnlib: 13 query(ies)\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=lsnc_relu max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=120.0s)\n  [  1/1] lsnc_relu/onnx/relu_quadrotor2d_state.onnx@vnnlib/quadrotor2d_state_60.vnnlib: UNKNOWN (1.9s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.0 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/sparse_input_followup_gpu_20260528T160144Z/lsnc_relu/per_instance_lsnc_relu_20260528T164012852309Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "lsnc_relu",
+      "instance_id": 70,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 5.0031265509314835,
+      "peak_rss_mb": 1661.23828125,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/sparse_input_followup_gpu_20260528T160144Z/lsnc_relu/per_instance_lsnc_relu_20260528T164017864914Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/sparse_input_followup_gpu_20260528T160144Z/lsnc_relu",
+      "stdout_tail": "put shape: [1, 6]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 6)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 6 inputs, 8 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 6 inputs, 8 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'lsnc_relu'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed quadrotor2d_state_70.vnnlib: 13 query(ies)\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=lsnc_relu max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=120.0s)\n  [  1/1] lsnc_relu/onnx/relu_quadrotor2d_state.onnx@vnnlib/quadrotor2d_state_70.vnnlib: UNKNOWN (1.9s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.0 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/sparse_input_followup_gpu_20260528T160144Z/lsnc_relu/per_instance_lsnc_relu_20260528T164017864914Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    }
+  ]
+}

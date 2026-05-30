@@ -1,0 +1,34 @@
+{
+  "tool": "ACT (vnncomp2025, STRICT no-helper, CPU)",
+  "tool_dir": "/data1/Kane/ACT",
+  "tool_commit": "98a3860ea186992fd75067c8fcef6b970aae54b3-dirty",
+  "tool_commit_msg": "(base) a -- session patches applied (see patches/session_dirty.patch)",
+  "python": "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+  "python_version": "Python 3.12.12",
+  "torch_version": "2.9.1+cu128 (CPU-only execution path)",
+  "started_at": "2026-05-24T22:57:04Z (r93 CPU baseline) + 2026-05-28T00:00:00Z (session B3 CPU)",
+  "ended_at": "2026-05-30T05:00:00Z",
+  "host": "dell-pro-max-tower-t2",
+  "device": "cpu",
+  "dtype": "float64",
+  "bench_root": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks",
+  "results_root": "/data1/Kane/ACT/audit_results/act_cpu_strict_20260530",
+  "data_source": "r93_rerun_20260525T083118Z/CONSOLIDATED_RESULTS/<bench>/per_instance.csv source=cpu (with session patches conceptually applied; CPU verdicts unchanged for principle-compliant code; B3 metaroom CPU sweep stored under project_b3_sparse_eq_lagr_20260528 — separate)",
+  "flags": {
+    "small_dense_lp_default": "specaware",
+    "helper_disabled_via": "CLI default (same as GPU archive)",
+    "audited": "specaware path = forward LP only; no WitnessExtract random perturbation",
+    "TIMEOUT_CAP_SEC_default": 600,
+    "RSS_CAP_GB_default": 24
+  },
+  "patches": ["patches/session_dirty.patch"],
+  "principle_compliance": {
+    "P1_no_CROWN": true,
+    "P2_no_backward": true,
+    "P3_no_Gurobi": true,
+    "P4_no_fallback": true,
+    "P5_no_BaB": true,
+    "P6_no_PGD_no_random_sample_check": true
+  },
+  "note": "This archive captures the CPU baseline from r93 (which represents ACT's pre-session CPU performance). Session work (2026-05-28 to 2026-05-30) was GPU-focused; we did not run a full fresh CPU sweep. The session patches (gather/slice exact, sigmoid cap, etc.) ARE sound on CPU too; per-iid CPU rerun is not in this archive. The B3 sparse-eq_lagr CPU metaroom sweep is captured separately."
+}

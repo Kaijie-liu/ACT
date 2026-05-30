@@ -1,0 +1,24 @@
+{
+  "schema_version": 2,
+  "strict_bounded_failure": false,
+  "counts": {
+    "OK": 1,
+    "UNKNOWN_TIMEOUT": 0,
+    "UNKNOWN_RESOURCE_LIMIT": 0,
+    "ERROR": 0
+  },
+  "results": [
+    {
+      "benchmark": "cifar100_2024",
+      "instance_id": 100,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 294.6712891019415,
+      "peak_rss_mb": 23577.09765625,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/b3_compact_v2_strict100/per_instance_cifar100_2024_20260528T005818118009Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/b3_compact_v2_strict100",
+      "stdout_tail": " 1 query(ies)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=20 out_dim=100 relus=10 (triangle for relu 1..7, eq_lagr_v8 for last 3)\n/data1/Kane/miniconda3/envs/act-py312/lib/python3.12/site-packages/torch/utils/_device.py:103: UserWarning: Sparse CSR tensor support is in beta state. If you miss a functionality in the sparse tensor support, please submit a feature request to https://github.com/pytorch/pytorch/issues. (Triggered internally at /pytorch/aten/src/ATen/SparseCsrTensorImpl.cpp:53.)\n  return func(*args, **kwargs)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cpu, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=cifar100_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cpu, timeout=300.0s)\n  [  1/1] cifar100_2024/onnx/CIFAR100_resnet_large.onnx@vnnlib/CIFAR100_resnet_large_prop_idx_496_sidx_1194_eps_0.0039.vnnlib: UNKNOWN (291.5s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=4.9 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/b3_compact_v2_strict100/per_instance_cifar100_2024_20260528T005818118009Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    }
+  ]
+}

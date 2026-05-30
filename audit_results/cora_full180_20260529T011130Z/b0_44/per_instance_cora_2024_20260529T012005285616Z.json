@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "benchmark": "cora_2024",
+  "formal_mode": true,
+  "timestamp_utc": "20260529T012005285616Z",
+  "canonical_root": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks",
+  "receipt_dir": "/data1/Kane/ACT/audit_results/cora_full180_20260529T011130Z/b0_44",
+  "wall_min": 0.7091872970263163,
+  "counts": {
+    "CERTIFIED": 0,
+    "FALSIFIED": 1,
+    "UNKNOWN": 0,
+    "ERROR": 0
+  },
+  "run_status": "PASSED",
+  "per_instance": [
+    {
+      "official_instance_id": 3,
+      "benchmark": "cora_2024",
+      "onnx_model": "./onnx/mnist-point.onnx",
+      "vnnlib_spec": "vnnlib/mnist-img1.vnnlib",
+      "model_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/onnx/mnist-point.onnx",
+      "spec_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/vnnlib/mnist-img1.vnnlib",
+      "internal_status": "SAT",
+      "reportable_status": "FALSIFIED",
+      "cli_normalized": "FALSIFIED",
+      "count_bucket": "FALSIFIED",
+      "queries": [
+        {
+          "query_index": 0,
+          "internal_status": "UNKNOWN",
+          "reportable_status": "UNKNOWN",
+          "receipt_path": null
+        },
+        {
+          "query_index": 1,
+          "internal_status": "SAT",
+          "reportable_status": "FALSIFIED",
+          "receipt_path": "/data1/Kane/ACT/audit_results/cora_full180_20260529T011130Z/b0_44/cora_2024_3_q1_hz_walker_lp_0.json"
+        }
+      ],
+      "q_statuses": [
+        "UNKNOWN",
+        "SAT"
+      ],
+      "q_reportables": [
+        "UNKNOWN",
+        "FALSIFIED"
+      ],
+      "q_receipts": [
+        null,
+        "/data1/Kane/ACT/audit_results/cora_full180_20260529T011130Z/b0_44/cora_2024_3_q1_hz_walker_lp_0.json"
+      ],
+      "error": null,
+      "wall_s": 42.551056146621704,
+      "timeout_s": 300.0,
+      "instance_budget_exhausted": false
+    }
+  ]
+}

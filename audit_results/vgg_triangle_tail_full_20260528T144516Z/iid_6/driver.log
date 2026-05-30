@@ -1,0 +1,15 @@
+[ACT] Auto-detecting project root: .
+[ACT] Gurobi license found: modules/gurobi/gurobi.lic
+{
+  "benchmark": "vggnet16_2022",
+  "instance_id": 6,
+  "status": "OK",
+  "cli_normalized": "OK",
+  "wall_s": 49.03014616796281,
+  "peak_rss_mb": 7463.4140625,
+  "returncode": 0,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/vgg_triangle_tail_full_20260528T144516Z/iid_6/per_instance_vggnet16_2022_20260528T144700274809Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/vgg_triangle_tail_full_20260528T144516Z/iid_6",
+  "stdout_tail": " Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 150528 inputs, 1000 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 150528 inputs, 1000 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'vggnet16_2022'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed spec6_folding_chair.vnnlib: 1 query(ies)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=13 out_dim=1000 relus=15 (triangle for relu 1..12, eq_lagr_v8 for last 3)\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=vggnet16_2022 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=240.0s)\n  [  1/1] vggnet16_2022/onnx/vgg16-7.onnx@vnnlib/spec6_folding_chair.vnnlib: UNKNOWN (43.9s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.7 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/vgg_triangle_tail_full_20260528T144516Z/iid_6/per_instance_vggnet16_2022_20260528T144700274809Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+}
+[watchdog] summary written: /data1/Kane/ACT/audit_results/vgg_triangle_tail_full_20260528T144516Z/iid_6/watchdog_summary.json

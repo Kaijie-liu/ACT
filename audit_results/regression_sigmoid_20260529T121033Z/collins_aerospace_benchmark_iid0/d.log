@@ -1,0 +1,15 @@
+[ACT] Auto-detecting project root: .
+[ACT] Gurobi license found: modules/gurobi/gurobi.lic
+{
+  "benchmark": "collins_aerospace_benchmark",
+  "instance_id": 0,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 248.4502289070515,
+  "peak_rss_mb": 7830.3671875,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/regression_sigmoid_20260529T121033Z/collins_aerospace_benchmark_iid0/per_instance_collins_aerospace_benchmark_watchdog_iid0_20260529T121458322048Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/regression_sigmoid_20260529T121033Z/collins_aerospace_benchmark_iid0",
+  "stdout_tail": "s=0 (triangle for relu 1..-1, eq_lagr_v8 for last 1)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=60 out_dim=277200 relus=0 (triangle for relu 1..-1, eq_lagr_v8 for last 1)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=60 out_dim=277200 relus=0 (triangle for relu 1..-1, eq_lagr_v8 for last 1)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=60 out_dim=277200 relus=0 (triangle for relu 1..-1, eq_lagr_v8 for last 1)\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=collins_aerospace_benchmark max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=240.0s)\n  [  1/1] collins_aerospace_benchmark/onnx/yolov5nano_LRelu_640.onnx@vnnlib/img_14421_perturbed_bbox_3_delta_0.001.vnnlib: UNKNOWN (245.7s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=4.1 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/regression_sigmoid_20260529T121033Z/collins_aerospace_benchmark_iid0/per_instance_collins_aerospace_benchmark_20260529T121457702615Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+}
+[watchdog] summary written: /data1/Kane/ACT/audit_results/regression_sigmoid_20260529T121033Z/collins_aerospace_benchmark_iid0/watchdog_summary.json

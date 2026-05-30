@@ -1,0 +1,28 @@
+[0;93m2026-05-27 22:58:34.175804327 [W:onnxruntime:Default, device_discovery.cc:211 DiscoverDevicesForPlatform] GPU device discovery failed: device_discovery.cc:91 ReadFileContents Failed to open file: "/sys/class/drm/card0/device/vendor"[m
+[94mUserWarning: 
+NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition with CUDA capability sm_120 is not compatible with the current PyTorch installation.
+The current PyTorch install supports CUDA capabilities sm_50 sm_60 sm_61 sm_70 sm_75 sm_80 sm_86 sm_37 sm_90 compute_37.
+If you want to use the NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition GPU with PyTorch, please check the instructions at https://pytorch.org/get-started/locally/
+[0m
+Traceback (most recent call last):
+  File "/data1/Kane/pyrat/run_pure.py", line 159, in <module>
+    main()
+  File "./pyrat/main.py", line 142, in main
+  File "/data1/Kane/miniconda3/envs/pyrat/lib/python3.10/site-packages/trace_events/profiler.py", line 242, in wrapper
+    return func(*call_args, **call_kwargs)
+  File "./pyrat/analyzer/analyzer.py", line 121, in analyze
+  File "./pyrat/analyzer/branch_and_bound.py", line 61, in branch_and_bound
+  File "./pyrat/analyzer/branch_and_bound.py", line 112, in call_analysis
+  File "./pyrat/analyzer/branch_and_bound.py", line 157, in _analyse_and_split
+  File "./pyrat/analyzer/branch_and_bound.py", line 219, in analyze_branch
+  File "/data1/Kane/miniconda3/envs/pyrat/lib/python3.10/site-packages/trace_events/profiler.py", line 242, in wrapper
+    return func(*call_args, **call_kwargs)
+  File "./pyrat/analyzer/analyzer_single.py", line 84, in analyze_single
+  File "/data1/Kane/miniconda3/envs/pyrat/lib/python3.10/site-packages/trace_events/profiler.py", line 242, in wrapper
+    return func(*call_args, **call_kwargs)
+  File "./pyrat/analyzer/analyzer_single.py", line 189, in _analyze_graph
+  File "./pyrat/analysis_results.py", line 343, in add_vars
+  File "./pyrat/domains/con_zonotope.py", line 774, in to_device
+  File "./pyrat/domains/noise_box_group.py", line 180, in broadcast
+  File "./pyrat/domains/noise_matrix.py", line 323, in to_device
+RuntimeError: [enforce fail at alloc_cpu.cpp:117] err == 0. DefaultCPUAllocator: can't allocate memory: you tried to allocate 343256576 bytes. Error code 12 (Cannot allocate memory)

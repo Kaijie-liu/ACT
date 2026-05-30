@@ -1,0 +1,24 @@
+{
+  "tool": "NNV (vnncomp2025, STRICT no-helper)",
+  "tool_dir": "/data1/Kane/nnv",
+  "tool_commit": "696e20d3dbe566ee45cd2e2a3f6c352e44bcd448",
+  "matlab_bin": "/data1/Kane/MATLAB/bin/matlab",
+  "matlab_version": "Startup file: /data1/Kane/cora-vnncomp2025/code/startup.mToolbox "yalmip:R20230609:all" added to the Matlab path.Toolbox "sedumi:1.3:glnxa64" added to the Matlab path.Toolbox "CORA v2025.2.0" added to the Matlab path.Limiting the number of cpu threads to 4. Change using maxNumCompThreads(N).Done.26.1.0.3251617 (R2026a) Update 2",
+  "started_at": "2026-05-28T10:48:55+10:00",
+  "host": "dell-pro-max-tower-t2",
+  "bench_root": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks",
+  "results_root": "/data1/Kane/ACT/audit_results/nnv_strict_20260527",
+  "patches": [
+    "/data1/Kane/ACT/scripts/nnv_patches/run_vnncomp_instance.m.patch"
+  ],
+  "flags": {
+    "NNV_STRICT_NO_HELPER": "1",
+    "falsify_single": "SKIPPED (random sampling + lb/ub corner eval would be helpers)",
+    "cp_star_reachability": "REJECTED (conformal-prediction, not sound; written as unsupported_strict)",
+    "sound_methods_allowed": ["approx-star", "exact-star", "relax-star-area"],
+    "TIMEOUT_CAP_SEC": 0,
+    "KILL_GRACE_SEC": 30,
+    "GPU_FREE_GB_MIN": 20,
+    "GPU_POLL_S": 30
+  }
+}

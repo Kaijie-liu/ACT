@@ -1,0 +1,43 @@
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: cersyve/onnx/lane_keep_finetune_con.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cersyve/onnx/lane_keep_finetune_con.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 11 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: lane_keep_finetune_con.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 4]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 4)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 4 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cersyve'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_lane_keep.vnnlib: 1 query(ies)
+[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic
+✅ Device Manager Initialized: device=cuda:0, dtype=torch.float64
+
+================================================================================
+ACT: Abstract Constraint Transformer
+Inference-based whitebox fuzzing for neural network verification
+================================================================================
+
+
+================================================================================
+VERIFICATION TEST: VNNLIB → VerifiableModel → verify_once
+================================================================================
+
+[vnnlib] category=cersyve max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=60.0s)
+  [  1/1] cersyve/onnx/lane_keep_finetune_con.onnx@vnnlib/prop_lane_keep.vnnlib: UNKNOWN (0.5s)  V=0 A=0 U=1 E=0  R=0
+
+[vnnlib/hybridz] FINAL — total=1 wall=0.0 min
+  UNKNOWN      1
+  [structured] per-instance log → /data1/Kane/ACT/audit_results/cersyve_relu_grid_20260529T133310Z/convex_hull_cont/per_instance_cersyve_20260529T133453123065Z.json
+
+================================================================================
+VERIFICATION TEST SUMMARY
+================================================================================
+  ✅ vnnlib                    PASSED
+================================================================================
+

@@ -1,0 +1,27 @@
+--- /data1/Kane/cora-vnncomp2025/prepare_instance.m.orig	2026-05-26 23:32:42.519111368 +1000
++++ /data1/Kane/cora-vnncomp2025/prepare_instance.m	2026-05-27 12:43:39.238030413 +1000
+@@ -69,10 +69,21 @@
+   % Use the moving statistics for the batch normalization.
+   options.nn.batch_norm_moving_stats = true;
+ 
+-  % Specify falsification method: {'center','fgsm','zonotack'}.
+-  options.nn.falsification_method = 'zonotack';
++  % Specify falsification method: {'none','center','fgsm','zonotack'}.
++  % TRUESTRICT (no helper, audit-grade): use 'none' to skip the entire
++  % falsification block in verify.m (single-point center eval, FGSM gradient,
++  % and zonotack vertex+random sampling are ALL bypassed). With 'none',
++  % verdicts come exclusively from CORA's over-approximative reachability:
++  %   - V (unsat) possible: reach set proves disjoint from unsafe.
++  %   - A (sat) IMPOSSIBLE: over-approximation cannot witness a real counter-
++  %     example. CORA will report U (unknown) instead of A.
++  % This requires the 'none' option, which we added by patching verify.m
++  % (gated wrapper around the falsification block) and validateNNoptions.m
++  % (added 'none' to the allowed list). See archived README for the diff.
++  options.nn.falsification_method = 'none';
+   % Specify input set refinement method: {'naive','zonotack','zonotack-layerwise'}.
+-  options.nn.refinement_method = 'zonotack';
++  % TRUESTRICT: 'naive' = bisection refinement only, no zonotope-heuristic.
++  options.nn.refinement_method = 'naive';
+   % Set number of input generators.
+   options.nn.train.num_init_gens = inf;
+   % Set number of approximation error generators per layer.

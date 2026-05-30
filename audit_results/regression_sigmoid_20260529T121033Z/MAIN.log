@@ -1,0 +1,29 @@
+8-benchmark regression started: Fri May 29 22:10:33 AEST 2026
+  START collins_rul_cnn_2022 iid=0 wall=120 rss=12
+  START acasxu_2023 iid=0 wall=120 rss=8
+  START malbeware iid=0 wall=120 rss=8
+  START ml4acopf_2024 iid=17 wall=180 rss=12
+  DONE collins_rul_cnn_2022 iid=0
+  DONE ml4acopf_2024 iid=17
+  DONE malbeware iid=0
+  DONE acasxu_2023 iid=0
+  START nn4sys iid=0 wall=120 rss=8
+  START lsnc_relu iid=0 wall=120 rss=8
+  START safenlp_2024 iid=0 wall=120 rss=8
+  START collins_aerospace_benchmark iid=0 wall=240 rss=12
+  DONE nn4sys iid=0
+  DONE safenlp_2024 iid=0
+  DONE lsnc_relu iid=0
+  DONE collins_aerospace_benchmark iid=0
+REGRESSION SUMMARY
+  acasxu_2023_iid0                              UNKNOWN                      
+  collins_aerospace_benchmark_iid0              UNKNOWN_TIMEOUT              watchdog killed instance after 248.5s (status=UNKNOWN_TIMEOUT, peak_rss=7830.4 MiB)
+  collins_rul_cnn_2022_iid0                     FALSIFIED                    
+  lsnc_relu_iid0                                UNKNOWN                      
+  malbeware_iid0                                CERTIFIED                    
+  ml4acopf_2024_iid17                           CERTIFIED                    
+  nn4sys_iid0                                   UNKNOWN                      
+  safenlp_2024_iid0                             UNKNOWN                      
+counts: {'UNKNOWN': 4, 'UNKNOWN_TIMEOUT': 1, 'FALSIFIED': 1, 'CERTIFIED': 2}
+PASS
+ROOT=/data1/Kane/ACT/audit_results/regression_sigmoid_20260529T121033Z

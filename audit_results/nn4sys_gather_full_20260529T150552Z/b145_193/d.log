@@ -1,0 +1,591 @@
+[ACT] Auto-detecting project root: ../ACT
+[ACT] Gurobi license found: ../ACT/modules/gurobi/gurobi.lic
+{
+  "benchmark": "nn4sys",
+  "instance_id": 145,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 188.49490751698613,
+  "peak_rss_mb": 18170.37890625,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193/per_instance_nn4sys_watchdog_iid145_20260529T150903151977Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193",
+  "stdout_tail": "RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x6 and 18x1)\nWARNING:act.back_end.solver.solver_hz:L128 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x128 and 384x1)\nWARNING:act.back_end.solver.solver_hz:L137 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x13 and 78x1)\nWARNING:act.back_end.solver.solver_hz:L140 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x128 and 768x1)\nWARNING:act.back_end.solver.solver_hz:L149 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x6 and 12x1)\nWARNING:act.back_end.solver.solver_hz:L152 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x128 and 256x1)\nWARNING:act.back_end.solver.solver_hz:L48 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x6 and 18x1)\nWARNING:act.back_end.solver.solver_hz:L51 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x128 and 384x1)\nWARNING:act.back_end.solver.solver_hz:L60 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x13 and 78x1)\nWARNING:act.back_end.solver.solver_hz:L63 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x128 and 768x1)\nWARNING:act.back_end.solver.solver_hz:L72 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x6 and 12x1)\nWARNING:act.back_end.solver.solver_hz:L75 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x128 and 256x1)\nWARNING:act.back_end.solver.solver_hz:L125 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x6 and 18x1)\nWARNING:act.back_end.solver.solver_hz:L128 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x128 and 384x1)\nWARNING:act.back_end.solver.solver_hz:L137 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x13 and 78x1)\nWARNING:act.back_end.solver.solver_hz:L140 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x128 and 768x1)\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 146,
+  "status": "UNKNOWN_RESOURCE_LIMIT",
+  "cli_normalized": "UNKNOWN_RESOURCE_LIMIT",
+  "wall_s": 54.53287462797016,
+  "peak_rss_mb": 20538.203125,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193/per_instance_nn4sys_watchdog_iid146_20260529T150957685472Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: nn4sys/onnx/mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nWARNING:act.front_end.vnnlib_loader.onnx_converter:Full pipeline failed (KeyError: 'Slice_9'); retrying with raw graph (no opset upgrade, no simplify)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 308 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 308 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 147,
+  "status": "UNKNOWN_RESOURCE_LIMIT",
+  "cli_normalized": "UNKNOWN_RESOURCE_LIMIT",
+  "wall_s": 53.82550853199791,
+  "peak_rss_mb": 20571.765625,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193/per_instance_nn4sys_watchdog_iid147_20260529T151051511436Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: nn4sys/onnx/mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nWARNING:act.front_end.vnnlib_loader.onnx_converter:Full pipeline failed (KeyError: 'Slice_9'); retrying with raw graph (no opset upgrade, no simplify)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 308 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 308 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 148,
+  "status": "UNKNOWN_RESOURCE_LIMIT",
+  "cli_normalized": "UNKNOWN_RESOURCE_LIMIT",
+  "wall_s": 58.92622933804523,
+  "peak_rss_mb": 20741.4609375,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193/per_instance_nn4sys_watchdog_iid148_20260529T151150438109Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: nn4sys/onnx/mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nWARNING:act.front_end.vnnlib_loader.onnx_converter:Full pipeline failed (KeyError: 'Slice_9'); retrying with raw graph (no opset upgrade, no simplify)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 308 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 308 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 149,
+  "status": "UNKNOWN_RESOURCE_LIMIT",
+  "cli_normalized": "UNKNOWN_RESOURCE_LIMIT",
+  "wall_s": 58.731567365000956,
+  "peak_rss_mb": 20684.31640625,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193/per_instance_nn4sys_watchdog_iid149_20260529T151249170145Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: nn4sys/onnx/mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nWARNING:act.front_end.vnnlib_loader.onnx_converter:Full pipeline failed (KeyError: 'Slice_9'); retrying with raw graph (no opset upgrade, no simplify)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 308 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 308 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 150,
+  "status": "UNKNOWN_RESOURCE_LIMIT",
+  "cli_normalized": "UNKNOWN_RESOURCE_LIMIT",
+  "wall_s": 54.329384359996766,
+  "peak_rss_mb": 20771.796875,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193/per_instance_nn4sys_watchdog_iid150_20260529T151343499978Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: nn4sys/onnx/mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nWARNING:act.front_end.vnnlib_loader.onnx_converter:Full pipeline failed (KeyError: 'Slice_9'); retrying with raw graph (no opset upgrade, no simplify)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 308 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 308 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 151,
+  "status": "UNKNOWN_RESOURCE_LIMIT",
+  "cli_normalized": "UNKNOWN_RESOURCE_LIMIT",
+  "wall_s": 55.02917073795106,
+  "peak_rss_mb": 20512.0703125,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193/per_instance_nn4sys_watchdog_iid151_20260529T151438529625Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: nn4sys/onnx/mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nWARNING:act.front_end.vnnlib_loader.onnx_converter:Full pipeline failed (KeyError: 'Slice_9'); retrying with raw graph (no opset upgrade, no simplify)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 308 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 308 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 152,
+  "status": "UNKNOWN_RESOURCE_LIMIT",
+  "cli_normalized": "UNKNOWN_RESOURCE_LIMIT",
+  "wall_s": 58.83637352695223,
+  "peak_rss_mb": 20532.96875,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193/per_instance_nn4sys_watchdog_iid152_20260529T151537366490Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: nn4sys/onnx/mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nWARNING:act.front_end.vnnlib_loader.onnx_converter:Full pipeline failed (KeyError: 'Slice_9'); retrying with raw graph (no opset upgrade, no simplify)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 308 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 308 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 153,
+  "status": "UNKNOWN_RESOURCE_LIMIT",
+  "cli_normalized": "UNKNOWN_RESOURCE_LIMIT",
+  "wall_s": 56.5320761440089,
+  "peak_rss_mb": 20757.30859375,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193/per_instance_nn4sys_watchdog_iid153_20260529T151633899057Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: nn4sys/onnx/mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nWARNING:act.front_end.vnnlib_loader.onnx_converter:Full pipeline failed (KeyError: 'Slice_9'); retrying with raw graph (no opset upgrade, no simplify)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 308 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 308 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 154,
+  "status": "UNKNOWN_RESOURCE_LIMIT",
+  "cli_normalized": "UNKNOWN_RESOURCE_LIMIT",
+  "wall_s": 58.536668981891125,
+  "peak_rss_mb": 20743.50390625,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193/per_instance_nn4sys_watchdog_iid154_20260529T151732436367Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: nn4sys/onnx/mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nWARNING:act.front_end.vnnlib_loader.onnx_converter:Full pipeline failed (KeyError: 'Slice_9'); retrying with raw graph (no opset upgrade, no simplify)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 308 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 308 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 155,
+  "status": "UNKNOWN_RESOURCE_LIMIT",
+  "cli_normalized": "UNKNOWN_RESOURCE_LIMIT",
+  "wall_s": 55.53385215695016,
+  "peak_rss_mb": 20665.125,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193/per_instance_nn4sys_watchdog_iid155_20260529T151827971160Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: nn4sys/onnx/mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nWARNING:act.front_end.vnnlib_loader.onnx_converter:Full pipeline failed (KeyError: 'Slice_9'); retrying with raw graph (no opset upgrade, no simplify)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 308 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 308 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 156,
+  "status": "UNKNOWN_RESOURCE_LIMIT",
+  "cli_normalized": "UNKNOWN_RESOURCE_LIMIT",
+  "wall_s": 53.93414089002181,
+  "peak_rss_mb": 20500.078125,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193/per_instance_nn4sys_watchdog_iid156_20260529T151921906159Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: nn4sys/onnx/mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nWARNING:act.front_end.vnnlib_loader.onnx_converter:Full pipeline failed (KeyError: 'Slice_9'); retrying with raw graph (no opset upgrade, no simplify)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 308 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 308 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 157,
+  "status": "UNKNOWN_RESOURCE_LIMIT",
+  "cli_normalized": "UNKNOWN_RESOURCE_LIMIT",
+  "wall_s": 59.53359029395506,
+  "peak_rss_mb": 20518.46875,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193/per_instance_nn4sys_watchdog_iid157_20260529T152021440623Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: nn4sys/onnx/mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nWARNING:act.front_end.vnnlib_loader.onnx_converter:Full pipeline failed (KeyError: 'Slice_9'); retrying with raw graph (no opset upgrade, no simplify)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 308 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 308 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 158,
+  "status": "UNKNOWN_RESOURCE_LIMIT",
+  "cli_normalized": "UNKNOWN_RESOURCE_LIMIT",
+  "wall_s": 60.535719344974495,
+  "peak_rss_mb": 20558.75,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193/per_instance_nn4sys_watchdog_iid158_20260529T152121976885Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: nn4sys/onnx/mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nWARNING:act.front_end.vnnlib_loader.onnx_converter:Full pipeline failed (KeyError: 'Slice_9'); retrying with raw graph (no opset upgrade, no simplify)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 308 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 308 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 159,
+  "status": "UNKNOWN_RESOURCE_LIMIT",
+  "cli_normalized": "UNKNOWN_RESOURCE_LIMIT",
+  "wall_s": 57.53281986201182,
+  "peak_rss_mb": 20676.70703125,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193/per_instance_nn4sys_watchdog_iid159_20260529T152219510361Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: nn4sys/onnx/mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nWARNING:act.front_end.vnnlib_loader.onnx_converter:Full pipeline failed (KeyError: 'Slice_9'); retrying with raw graph (no opset upgrade, no simplify)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 308 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 308 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 160,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 188.52776060102042,
+  "peak_rss_mb": 6836.44921875,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193/per_instance_nn4sys_watchdog_iid160_20260529T152528038997Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193",
+  "stdout_tail": "m /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/mscn_2048d.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_2048d.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 11, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 11, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 154 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 154 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed cardinality_0_1_2048.vnnlib: 2 query(ies)\nWARNING:act.back_end.solver.solver_hz:L11 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x6 and 18x1)\nWARNING:act.back_end.solver.solver_hz:L14 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x2048 and 6144x1)\nWARNING:act.back_end.solver.solver_hz:L23 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x13 and 78x1)\nWARNING:act.back_end.solver.solver_hz:L26 FALLBACK (RuntimeError): size mismatch, got input (2048), mat (2048x2048), vec (12288)\nWARNING:act.back_end.solver.solver_hz:L35 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x6 and 12x1)\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 161,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 188.50736051099375,
+  "peak_rss_mb": 6992.19921875,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193/per_instance_nn4sys_watchdog_iid161_20260529T152836546895Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193",
+  "stdout_tail": "ta1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/mscn_2048d.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_2048d.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 11, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 11, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 154 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 154 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed cardinality_0_500_2048.vnnlib: 1000 query(ies)\nWARNING:act.back_end.solver.solver_hz:L11 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x6 and 18x1)\nWARNING:act.back_end.solver.solver_hz:L14 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x2048 and 6144x1)\nWARNING:act.back_end.solver.solver_hz:L23 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x13 and 78x1)\nWARNING:act.back_end.solver.solver_hz:L26 FALLBACK (RuntimeError): size mismatch, got input (2048), mat (2048x2048), vec (12288)\nWARNING:act.back_end.solver.solver_hz:L35 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x6 and 12x1)\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 162,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 188.5045027070446,
+  "peak_rss_mb": 7180.27734375,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193/per_instance_nn4sys_watchdog_iid162_20260529T153145051890Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193",
+  "stdout_tail": "ta1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/mscn_2048d.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_2048d.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 11, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 11, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 154 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 154 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed cardinality_0_750_2048.vnnlib: 1500 query(ies)\nWARNING:act.back_end.solver.solver_hz:L11 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x6 and 18x1)\nWARNING:act.back_end.solver.solver_hz:L14 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x2048 and 6144x1)\nWARNING:act.back_end.solver.solver_hz:L23 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x13 and 78x1)\nWARNING:act.back_end.solver.solver_hz:L26 FALLBACK (RuntimeError): size mismatch, got input (2048), mat (2048x2048), vec (12288)\nWARNING:act.back_end.solver.solver_hz:L35 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x6 and 12x1)\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 163,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 188.51165675802622,
+  "peak_rss_mb": 7384.87109375,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193/per_instance_nn4sys_watchdog_iid163_20260529T153453564152Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193",
+  "stdout_tail": "a1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/mscn_2048d.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_2048d.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 11, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 11, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 154 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 154 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed cardinality_0_1000_2048.vnnlib: 2000 query(ies)\nWARNING:act.back_end.solver.solver_hz:L11 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x6 and 18x1)\nWARNING:act.back_end.solver.solver_hz:L14 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x2048 and 6144x1)\nWARNING:act.back_end.solver.solver_hz:L23 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x13 and 78x1)\nWARNING:act.back_end.solver.solver_hz:L26 FALLBACK (RuntimeError): size mismatch, got input (2048), mat (2048x2048), vec (12288)\nWARNING:act.back_end.solver.solver_hz:L35 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x6 and 12x1)\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 164,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 188.61267454305198,
+  "peak_rss_mb": 9604.13671875,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193/per_instance_nn4sys_watchdog_iid164_20260529T153802177530Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193",
+  "stdout_tail": "a1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/mscn_2048d.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_2048d.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 11, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 11, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 154 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 154 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed cardinality_0_2120_2048.vnnlib: 4240 query(ies)\nWARNING:act.back_end.solver.solver_hz:L11 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x6 and 18x1)\nWARNING:act.back_end.solver.solver_hz:L14 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x2048 and 6144x1)\nWARNING:act.back_end.solver.solver_hz:L23 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x13 and 78x1)\nWARNING:act.back_end.solver.solver_hz:L26 FALLBACK (RuntimeError): size mismatch, got input (2048), mat (2048x2048), vec (12288)\nWARNING:act.back_end.solver.solver_hz:L35 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x6 and 12x1)\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 165,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 188.61085172905587,
+  "peak_rss_mb": 11891.671875,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193/per_instance_nn4sys_watchdog_iid165_20260529T154110789268Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193",
+  "stdout_tail": "a1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/mscn_2048d.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_2048d.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 11, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 11, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 154 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 154 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed cardinality_0_2680_2048.vnnlib: 5360 query(ies)\nWARNING:act.back_end.solver.solver_hz:L11 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x6 and 18x1)\nWARNING:act.back_end.solver.solver_hz:L14 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x2048 and 6144x1)\nWARNING:act.back_end.solver.solver_hz:L23 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x13 and 78x1)\nWARNING:act.back_end.solver.solver_hz:L26 FALLBACK (RuntimeError): size mismatch, got input (2048), mat (2048x2048), vec (12288)\nWARNING:act.back_end.solver.solver_hz:L35 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x6 and 12x1)\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 166,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 188.61325882701203,
+  "peak_rss_mb": 14178.5625,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193/per_instance_nn4sys_watchdog_iid166_20260529T154419403097Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193",
+  "stdout_tail": "a1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/mscn_2048d.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_2048d.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 11, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 11, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 154 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 154 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed cardinality_0_3240_2048.vnnlib: 6480 query(ies)\nWARNING:act.back_end.solver.solver_hz:L11 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x6 and 18x1)\nWARNING:act.back_end.solver.solver_hz:L14 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x2048 and 6144x1)\nWARNING:act.back_end.solver.solver_hz:L23 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x13 and 78x1)\nWARNING:act.back_end.solver.solver_hz:L26 FALLBACK (RuntimeError): size mismatch, got input (2048), mat (2048x2048), vec (12288)\nWARNING:act.back_end.solver.solver_hz:L35 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x6 and 12x1)\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 167,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 188.69911041099112,
+  "peak_rss_mb": 16465.42578125,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193/per_instance_nn4sys_watchdog_iid167_20260529T154728102955Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193",
+  "stdout_tail": "a1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/mscn_2048d.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_2048d.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 11, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 11, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 154 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 154 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed cardinality_0_3800_2048.vnnlib: 7600 query(ies)\nWARNING:act.back_end.solver.solver_hz:L11 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x6 and 18x1)\nWARNING:act.back_end.solver.solver_hz:L14 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x2048 and 6144x1)\nWARNING:act.back_end.solver.solver_hz:L23 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x13 and 78x1)\nWARNING:act.back_end.solver.solver_hz:L26 FALLBACK (RuntimeError): size mismatch, got input (2048), mat (2048x2048), vec (12288)\nWARNING:act.back_end.solver.solver_hz:L35 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x6 and 12x1)\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 168,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 188.71284873597324,
+  "peak_rss_mb": 18752.87109375,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193/per_instance_nn4sys_watchdog_iid168_20260529T155036816642Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193",
+  "stdout_tail": "a1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/mscn_2048d.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_2048d.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 11, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 11, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 154 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 154 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed cardinality_0_4360_2048.vnnlib: 8720 query(ies)\nWARNING:act.back_end.solver.solver_hz:L11 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x6 and 18x1)\nWARNING:act.back_end.solver.solver_hz:L14 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x2048 and 6144x1)\nWARNING:act.back_end.solver.solver_hz:L23 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x13 and 78x1)\nWARNING:act.back_end.solver.solver_hz:L26 FALLBACK (RuntimeError): size mismatch, got input (2048), mat (2048x2048), vec (12288)\nWARNING:act.back_end.solver.solver_hz:L35 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x6 and 12x1)\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 169,
+  "status": "UNKNOWN_RESOURCE_LIMIT",
+  "cli_normalized": "UNKNOWN_RESOURCE_LIMIT",
+  "wall_s": 58.53672055492643,
+  "peak_rss_mb": 20649.0078125,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193/per_instance_nn4sys_watchdog_iid169_20260529T155135354097Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: nn4sys/onnx/mscn_2048d.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/mscn_2048d.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_2048d.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 11, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 11, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 154 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 154 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 170,
+  "status": "UNKNOWN_RESOURCE_LIMIT",
+  "cli_normalized": "UNKNOWN_RESOURCE_LIMIT",
+  "wall_s": 56.6353896810906,
+  "peak_rss_mb": 20736.0703125,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193/per_instance_nn4sys_watchdog_iid170_20260529T155231990360Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: nn4sys/onnx/mscn_2048d.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/mscn_2048d.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_2048d.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 11, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 11, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 154 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 154 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 171,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 188.5144702179823,
+  "peak_rss_mb": 7151.3359375,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193/per_instance_nn4sys_watchdog_iid171_20260529T155540505651Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193",
+  "stdout_tail": "lify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nWARNING:act.front_end.vnnlib_loader.onnx_converter:Full pipeline failed (KeyError: 'Slice_9'); retrying with raw graph (no opset upgrade, no simplify)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_2048d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 308 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 308 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed cardinality_1_1_2048_dual.vnnlib: 1 query(ies)\nWARNING:act.back_end.solver.solver_hz:L48 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x6 and 18x1)\nWARNING:act.back_end.solver.solver_hz:L51 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x2048 and 6144x1)\nWARNING:act.back_end.solver.solver_hz:L60 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x13 and 78x1)\nWARNING:act.back_end.solver.solver_hz:L63 FALLBACK (RuntimeError): size mismatch, got input (2048), mat (2048x2048), vec (12288)\nWARNING:act.back_end.solver.solver_hz:L72 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x6 and 12x1)\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 172,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 188.6069730001036,
+  "peak_rss_mb": 7181.76171875,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193/per_instance_nn4sys_watchdog_iid172_20260529T155849114329Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193",
+  "stdout_tail": "-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nWARNING:act.front_end.vnnlib_loader.onnx_converter:Full pipeline failed (KeyError: 'Slice_9'); retrying with raw graph (no opset upgrade, no simplify)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_2048d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 308 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 308 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed cardinality_1_240_2048_dual.vnnlib: 240 query(ies)\nWARNING:act.back_end.solver.solver_hz:L48 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x6 and 18x1)\nWARNING:act.back_end.solver.solver_hz:L51 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x2048 and 6144x1)\nWARNING:act.back_end.solver.solver_hz:L60 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x13 and 78x1)\nWARNING:act.back_end.solver.solver_hz:L63 FALLBACK (RuntimeError): size mismatch, got input (2048), mat (2048x2048), vec (12288)\nWARNING:act.back_end.solver.solver_hz:L72 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x6 and 12x1)\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 173,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 188.50144315406214,
+  "peak_rss_mb": 7177.48828125,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193/per_instance_nn4sys_watchdog_iid173_20260529T160157618459Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193",
+  "stdout_tail": "-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nWARNING:act.front_end.vnnlib_loader.onnx_converter:Full pipeline failed (KeyError: 'Slice_9'); retrying with raw graph (no opset upgrade, no simplify)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_2048d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 308 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 308 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed cardinality_1_360_2048_dual.vnnlib: 360 query(ies)\nWARNING:act.back_end.solver.solver_hz:L48 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x6 and 18x1)\nWARNING:act.back_end.solver.solver_hz:L51 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x2048 and 6144x1)\nWARNING:act.back_end.solver.solver_hz:L60 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x13 and 78x1)\nWARNING:act.back_end.solver.solver_hz:L63 FALLBACK (RuntimeError): size mismatch, got input (2048), mat (2048x2048), vec (12288)\nWARNING:act.back_end.solver.solver_hz:L72 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x6 and 12x1)\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 174,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 188.50468131899834,
+  "peak_rss_mb": 7294.9453125,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193/per_instance_nn4sys_watchdog_iid174_20260529T160506124339Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193",
+  "stdout_tail": "-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nWARNING:act.front_end.vnnlib_loader.onnx_converter:Full pipeline failed (KeyError: 'Slice_9'); retrying with raw graph (no opset upgrade, no simplify)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_2048d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 308 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 308 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed cardinality_1_480_2048_dual.vnnlib: 480 query(ies)\nWARNING:act.back_end.solver.solver_hz:L48 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x6 and 18x1)\nWARNING:act.back_end.solver.solver_hz:L51 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x2048 and 6144x1)\nWARNING:act.back_end.solver.solver_hz:L60 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x13 and 78x1)\nWARNING:act.back_end.solver.solver_hz:L63 FALLBACK (RuntimeError): size mismatch, got input (2048), mat (2048x2048), vec (12288)\nWARNING:act.back_end.solver.solver_hz:L72 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x6 and 12x1)\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 175,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 188.50563598505687,
+  "peak_rss_mb": 7447.25,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193/per_instance_nn4sys_watchdog_iid175_20260529T160814631094Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193",
+  "stdout_tail": "-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nWARNING:act.front_end.vnnlib_loader.onnx_converter:Full pipeline failed (KeyError: 'Slice_9'); retrying with raw graph (no opset upgrade, no simplify)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_2048d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 308 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 308 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed cardinality_1_600_2048_dual.vnnlib: 600 query(ies)\nWARNING:act.back_end.solver.solver_hz:L48 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x6 and 18x1)\nWARNING:act.back_end.solver.solver_hz:L51 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x2048 and 6144x1)\nWARNING:act.back_end.solver.solver_hz:L60 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x13 and 78x1)\nWARNING:act.back_end.solver.solver_hz:L63 FALLBACK (RuntimeError): size mismatch, got input (2048), mat (2048x2048), vec (12288)\nWARNING:act.back_end.solver.solver_hz:L72 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x6 and 12x1)\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 176,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 188.5084214019589,
+  "peak_rss_mb": 7639.44140625,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193/per_instance_nn4sys_watchdog_iid176_20260529T161123141424Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193",
+  "stdout_tail": "-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nWARNING:act.front_end.vnnlib_loader.onnx_converter:Full pipeline failed (KeyError: 'Slice_9'); retrying with raw graph (no opset upgrade, no simplify)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_2048d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 308 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 308 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed cardinality_1_720_2048_dual.vnnlib: 720 query(ies)\nWARNING:act.back_end.solver.solver_hz:L48 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x6 and 18x1)\nWARNING:act.back_end.solver.solver_hz:L51 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x2048 and 6144x1)\nWARNING:act.back_end.solver.solver_hz:L60 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x13 and 78x1)\nWARNING:act.back_end.solver.solver_hz:L63 FALLBACK (RuntimeError): size mismatch, got input (2048), mat (2048x2048), vec (12288)\nWARNING:act.back_end.solver.solver_hz:L72 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x6 and 12x1)\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 177,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 188.4996501459973,
+  "peak_rss_mb": 7840.89453125,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193/per_instance_nn4sys_watchdog_iid177_20260529T161431642979Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193",
+  "stdout_tail": "-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nWARNING:act.front_end.vnnlib_loader.onnx_converter:Full pipeline failed (KeyError: 'Slice_9'); retrying with raw graph (no opset upgrade, no simplify)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_2048d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 308 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 308 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed cardinality_1_840_2048_dual.vnnlib: 840 query(ies)\nWARNING:act.back_end.solver.solver_hz:L48 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x6 and 18x1)\nWARNING:act.back_end.solver.solver_hz:L51 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x2048 and 6144x1)\nWARNING:act.back_end.solver.solver_hz:L60 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x13 and 78x1)\nWARNING:act.back_end.solver.solver_hz:L63 FALLBACK (RuntimeError): size mismatch, got input (2048), mat (2048x2048), vec (12288)\nWARNING:act.back_end.solver.solver_hz:L72 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x6 and 12x1)\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 178,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 188.604756981018,
+  "peak_rss_mb": 8268.875,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193/per_instance_nn4sys_watchdog_iid178_20260529T161740248403Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193",
+  "stdout_tail": "-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nWARNING:act.front_end.vnnlib_loader.onnx_converter:Full pipeline failed (KeyError: 'Slice_9'); retrying with raw graph (no opset upgrade, no simplify)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_2048d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 308 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 308 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed cardinality_1_960_2048_dual.vnnlib: 960 query(ies)\nWARNING:act.back_end.solver.solver_hz:L48 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x6 and 18x1)\nWARNING:act.back_end.solver.solver_hz:L51 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x2048 and 6144x1)\nWARNING:act.back_end.solver.solver_hz:L60 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x13 and 78x1)\nWARNING:act.back_end.solver.solver_hz:L63 FALLBACK (RuntimeError): size mismatch, got input (2048), mat (2048x2048), vec (12288)\nWARNING:act.back_end.solver.solver_hz:L72 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (2048x6 and 12x1)\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 179,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 188.4035926030483,
+  "peak_rss_mb": 18181.92578125,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193/per_instance_nn4sys_watchdog_iid179_20260529T162048653032Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193",
+  "stdout_tail": ", 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 308 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 308 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed cardinality_1_2260_2048_dual.vnnlib: 2260 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=nn4sys max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=180.0s)\n  [  1/1] nn4sys/onnx/mscn_2048d_dual.onnx@vnnlib/cardinality_1_2260_2048_dual.vnnlib: UNKNOWN (185.5s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=3.1 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193/per_instance_nn4sys_20260529T162047889565Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 180,
+  "status": "UNKNOWN_RESOURCE_LIMIT",
+  "cli_normalized": "UNKNOWN_RESOURCE_LIMIT",
+  "wall_s": 53.33472593303304,
+  "peak_rss_mb": 20751.046875,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193/per_instance_nn4sys_watchdog_iid180_20260529T162141988263Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: nn4sys/onnx/mscn_2048d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/mscn_2048d_dual.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nWARNING:act.front_end.vnnlib_loader.onnx_converter:Full pipeline failed (KeyError: 'Slice_9'); retrying with raw graph (no opset upgrade, no simplify)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_2048d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 308 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 308 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 181,
+  "status": "UNKNOWN_RESOURCE_LIMIT",
+  "cli_normalized": "UNKNOWN_RESOURCE_LIMIT",
+  "wall_s": 54.332665294990875,
+  "peak_rss_mb": 20751.9375,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193/per_instance_nn4sys_watchdog_iid181_20260529T162236321596Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: nn4sys/onnx/mscn_2048d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/mscn_2048d_dual.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nWARNING:act.front_end.vnnlib_loader.onnx_converter:Full pipeline failed (KeyError: 'Slice_9'); retrying with raw graph (no opset upgrade, no simplify)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_2048d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 308 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 308 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 182,
+  "status": "UNKNOWN_RESOURCE_LIMIT",
+  "cli_normalized": "UNKNOWN_RESOURCE_LIMIT",
+  "wall_s": 55.330465613049455,
+  "peak_rss_mb": 20740.86328125,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193/per_instance_nn4sys_watchdog_iid182_20260529T162331652645Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: nn4sys/onnx/mscn_2048d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/mscn_2048d_dual.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nWARNING:act.front_end.vnnlib_loader.onnx_converter:Full pipeline failed (KeyError: 'Slice_9'); retrying with raw graph (no opset upgrade, no simplify)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_2048d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 308 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 308 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 183,
+  "status": "UNKNOWN_RESOURCE_LIMIT",
+  "cli_normalized": "UNKNOWN_RESOURCE_LIMIT",
+  "wall_s": 58.036885027075186,
+  "peak_rss_mb": 20776.8359375,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193/per_instance_nn4sys_watchdog_iid183_20260529T162429690132Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: nn4sys/onnx/mscn_2048d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/mscn_2048d_dual.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nWARNING:act.front_end.vnnlib_loader.onnx_converter:Full pipeline failed (KeyError: 'Slice_9'); retrying with raw graph (no opset upgrade, no simplify)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_2048d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 308 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 308 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 184,
+  "status": "UNKNOWN_RESOURCE_LIMIT",
+  "cli_normalized": "UNKNOWN_RESOURCE_LIMIT",
+  "wall_s": 56.639741432038136,
+  "peak_rss_mb": 20751.4140625,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193/per_instance_nn4sys_watchdog_iid184_20260529T162526330500Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: nn4sys/onnx/mscn_2048d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/mscn_2048d_dual.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nWARNING:act.front_end.vnnlib_loader.onnx_converter:Full pipeline failed (KeyError: 'Slice_9'); retrying with raw graph (no opset upgrade, no simplify)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_2048d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 308 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 308 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 185,
+  "status": "UNKNOWN_RESOURCE_LIMIT",
+  "cli_normalized": "UNKNOWN_RESOURCE_LIMIT",
+  "wall_s": 56.23307127808221,
+  "peak_rss_mb": 20804.15234375,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193/per_instance_nn4sys_watchdog_iid185_20260529T162622564689Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: nn4sys/onnx/mscn_2048d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/mscn_2048d_dual.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nWARNING:act.front_end.vnnlib_loader.onnx_converter:Full pipeline failed (KeyError: 'Slice_9'); retrying with raw graph (no opset upgrade, no simplify)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_2048d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 308 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 308 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 186,
+  "status": "UNKNOWN_RESOURCE_LIMIT",
+  "cli_normalized": "UNKNOWN_RESOURCE_LIMIT",
+  "wall_s": 58.93213570595253,
+  "peak_rss_mb": 20641.4921875,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193/per_instance_nn4sys_watchdog_iid186_20260529T162721497882Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: nn4sys/onnx/mscn_2048d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/mscn_2048d_dual.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nWARNING:act.front_end.vnnlib_loader.onnx_converter:Full pipeline failed (KeyError: 'Slice_9'); retrying with raw graph (no opset upgrade, no simplify)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_2048d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 308 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 308 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 187,
+  "status": "UNKNOWN_RESOURCE_LIMIT",
+  "cli_normalized": "UNKNOWN_RESOURCE_LIMIT",
+  "wall_s": 58.43195534206461,
+  "peak_rss_mb": 20569.203125,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193/per_instance_nn4sys_watchdog_iid187_20260529T162819930431Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: nn4sys/onnx/mscn_2048d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/mscn_2048d_dual.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nWARNING:act.front_end.vnnlib_loader.onnx_converter:Full pipeline failed (KeyError: 'Slice_9'); retrying with raw graph (no opset upgrade, no simplify)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_2048d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 308 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 308 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 188,
+  "status": "UNKNOWN_RESOURCE_LIMIT",
+  "cli_normalized": "UNKNOWN_RESOURCE_LIMIT",
+  "wall_s": 59.63319861900527,
+  "peak_rss_mb": 20804.546875,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193/per_instance_nn4sys_watchdog_iid188_20260529T162919564228Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: nn4sys/onnx/mscn_2048d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/mscn_2048d_dual.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nWARNING:act.front_end.vnnlib_loader.onnx_converter:Full pipeline failed (KeyError: 'Slice_9'); retrying with raw graph (no opset upgrade, no simplify)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_2048d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 308 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 308 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 189,
+  "status": "UNKNOWN_RESOURCE_LIMIT",
+  "cli_normalized": "UNKNOWN_RESOURCE_LIMIT",
+  "wall_s": 58.030501164961606,
+  "peak_rss_mb": 20706.06640625,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193/per_instance_nn4sys_watchdog_iid189_20260529T163017595304Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: nn4sys/onnx/mscn_2048d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/mscn_2048d_dual.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nWARNING:act.front_end.vnnlib_loader.onnx_converter:Full pipeline failed (KeyError: 'Slice_9'); retrying with raw graph (no opset upgrade, no simplify)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_2048d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 308 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 308 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 190,
+  "status": "UNKNOWN_RESOURCE_LIMIT",
+  "cli_normalized": "UNKNOWN_RESOURCE_LIMIT",
+  "wall_s": 58.33363344997633,
+  "peak_rss_mb": 20661.07421875,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193/per_instance_nn4sys_watchdog_iid190_20260529T163115929603Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: nn4sys/onnx/mscn_2048d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/mscn_2048d_dual.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nWARNING:act.front_end.vnnlib_loader.onnx_converter:Full pipeline failed (KeyError: 'Slice_9'); retrying with raw graph (no opset upgrade, no simplify)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_2048d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 308 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 308 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 191,
+  "status": "UNKNOWN_RESOURCE_LIMIT",
+  "cli_normalized": "UNKNOWN_RESOURCE_LIMIT",
+  "wall_s": 60.93480470892973,
+  "peak_rss_mb": 20729.5546875,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193/per_instance_nn4sys_watchdog_iid191_20260529T163216864937Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: nn4sys/onnx/mscn_2048d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/mscn_2048d_dual.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nWARNING:act.front_end.vnnlib_loader.onnx_converter:Full pipeline failed (KeyError: 'Slice_9'); retrying with raw graph (no opset upgrade, no simplify)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_2048d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 308 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 308 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 192,
+  "status": "UNKNOWN_RESOURCE_LIMIT",
+  "cli_normalized": "UNKNOWN_RESOURCE_LIMIT",
+  "wall_s": 62.23543487396091,
+  "peak_rss_mb": 20739.65234375,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193/per_instance_nn4sys_watchdog_iid192_20260529T163319146138Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: nn4sys/onnx/mscn_2048d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/mscn_2048d_dual.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nWARNING:act.front_end.vnnlib_loader.onnx_converter:Full pipeline failed (KeyError: 'Slice_9'); retrying with raw graph (no opset upgrade, no simplify)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_2048d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 308 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 308 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 193,
+  "status": "UNKNOWN_RESOURCE_LIMIT",
+  "cli_normalized": "UNKNOWN_RESOURCE_LIMIT",
+  "wall_s": 60.54053638398182,
+  "peak_rss_mb": 20743.7734375,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193/per_instance_nn4sys_watchdog_iid193_20260529T163419687698Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: nn4sys/onnx/mscn_2048d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/mscn_2048d_dual.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nWARNING:act.front_end.vnnlib_loader.onnx_converter:Full pipeline failed (KeyError: 'Slice_9'); retrying with raw graph (no opset upgrade, no simplify)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_2048d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 308 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 308 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\n"
+}
+[watchdog] summary written: /data1/Kane/ACT/audit_results/nn4sys_gather_full_20260529T150552Z/b145_193/watchdog_summary.json

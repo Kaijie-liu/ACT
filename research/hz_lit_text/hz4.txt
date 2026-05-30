@@ -1,0 +1,682 @@
+                                              Hybrid Zonotope-Based Backward Reachability Analysis for Neural
+                                                      Feedback Systems With Nonlinear Plant Models
+                                                                                      Hang Zhang, Yuhao Zhang and Xiangru Xu
+
+
+                                              Abstract— The increasing prevalence of neural networks in             guided partition algorithm. Despite the effectiveness of these
+                                           safety-critical control systems underscores the imperative need          LP-based methods, the computed BRSs are usually limited
+                                           for rigorous methods to ensure the reliability and safety of             in the form of intervals and tend to be conservative.
+                                           these systems. This work introduces a novel approach employ-
+arXiv:2310.06921v3 [math.OC] 19 Mar 2024
+
+
+
+
+                                           ing hybrid zonotopes to compute the over-approximation of                   Recently, Hybrid Zonotope (HZ) was proposed as a new
+                                           backward reachable sets for neural feedback systems with non-            set representation that generalizes the polytope or constrained
+                                           linear plant models and general activation functions. Closed-            zonotope [17]. By including binary variables in the set
+                                           form expressions as hybrid zonotopes are provided for the                representation, an HZ is equivalent to a finite union of
+                                           over-approximated backward reachable sets, and a refinement              polytopes, and therefore, can conveniently represent non-
+                                           procedure is proposed to alleviate the potential conservatism
+                                           of the approximation. Two numerical examples are provided to             convex and disconnected sets with flat faces. HZs have
+                                           illustrate the effectiveness of the proposed approach.                   proven advantages for set-based computations in terms of
+                                                                                                                    computational efficiency and accuracy [17]–[22]. In partic-
+                                                                  I. I NTRODUCTION                                  ular, HZs possess properties that make them well-suited for
+                                              The integration of Neural Networks (NNs) in feedback                  reachability analysis of NFSs by using set operations. For
+                                           control systems necessitates the development of effective                example, [8] showed that a Feed-forward Neural Network
+                                           methods to analyze the system’s behavior with robust and                 (FNN) with ReLU activation functions can be exactly rep-
+                                           reliable performance guarantees. NNs demonstrate remark-                 resented by an HZ and provided algorithms to compute the
+                                           able adaptability and are capable of learning intricate map-             exact and approximated forward reachable sets (FRSs) of
+                                           pings from input to output, rendering them a potent tool                 NFSs; [12] considered NFSs with linear plant models and
+                                           for controlling nonlinear dynamical systems. Nevertheless,               presented results for computing their exact BRSs in the form
+                                           NNs are highly sensitive to even minor perturbations in                  of HZs.
+                                           the input space [1], potentially leading Neural Feedback                    This work aims to compute the HZ representations of the
+                                           Systems (NFSs), which are systems with NN controllers in                 over-approximated BRSs for NFSs where the plant model
+                                           the feedback loop, to safety hazards. To analyze the behavior            is nonlinear and the controller is an FNN with general
+                                           of such NFSs, various methods have been proposed for the                 activation functions. The contributions of this work are at
+                                           reachability analysis of NFSs. The safety properties of these            least twofold: (i) By leveraging over-approximation tools of
+                                           systems can be verified by the forward reachability analysis             nonlinear functions, closed-form identities are provided for
+                                           [2]–[9] or the backward reachability analysis [10]–[12].                 over-approximating the BRSs of NFSs with general nonlinear
+                                              The backward reachability problem is to compute a set of              plant models and ReLU-activated FNN controllers; (ii) The
+                                           states, known as the Backward Reachable Set (BRS), from                  proposed method is extended to NNs with other commonly
+                                           which the system’s trajectories can reach a specified target             used activation functions such as leaky ReLU, tanh, and
+                                           region within a finite time horizon. When the target region              sigmoid. The remainder of this paper is organized as follows:
+                                           is chosen as the unsafe set for safety verification problems,            Section II provides preliminaries on HZ and the problem
+                                           the computed BRS will bound the back-propagated trajecto-                statement; Section III presents the results for NFSs with
+                                           ries that enter the unsafe set. Although there exist various             nonlinear plant models and ReLU-activated FNNs; Section
+                                           methods for computing the BRSs of systems without NNs                    IV extends these results to NFSs with general activation
+                                           [13], [14], they are not directly applicable to NFSs due to              functions; two numerical examples are provided in Section
+                                           the inherently complex and nonlinear nature of NNs. For                  V to demonstrate the performance of the proposed method;
+                                           isolated ReLU-activated NNs, [10] proposed a method to                   and finally, the concluding remarks are made in Section VI.
+                                           compute the exact BRS of NNs by representing the NNs as                     Notation. Vectors and matrices are denoted as bold letters
+                                           piecewise linear functions via the activation patterns of the            (e.g., x ∈ Rn and A ∈ Rn×n ). The i-th component of
+                                           ReLU functions. For the NFS with a linear plant model, a                 a vector x ∈ Rn is denoted by xi with i ∈ {1, . . . , n}.
+                                           method based on Linear Programming (LP) relaxation was                   For a matrix A ∈ Rn×m , A[i : j, :] denotes the matrix
+                                           proposed in [15] to over-approximate the BRSs; this method               constructed by the i-th to j-th rows of A. The identity matrix
+                                           was extended in [11] for NFSs with nonlinear plant models                in Rn×n is denoted as In and ei is the i-th column of I.
+                                           by utilizing the over-approximation tool OVERT [16] and a                The vectors and matrices whose entries are all 0 (resp. 1)
+                                                                                                                    are denoted as 0 (resp. 1). Given sets X ⊂ Rn , Z ⊂ Rm
+                                             H. Zhang, Y. Zhang and X. Xu are with the Department of Mechanical
+                                           Engineering, University of Wisconsin-Madison, Madison, WI, USA. Email:   and a matrix R ∈ Rm×n , the Cartesian product of X and
+                                           {hang.zhang,yuhao.zhang2,xiangru.xu}@wisc.edu.                           Z is X × Z = {(x, z) | x ∈ X , z ∈ Z}, the Minkowski
+sum of X and Z is X ⊕ Z = {x + z | x ∈ X , z ∈ Z}, the             activation function σ(·), i.e., ϕ(x) ≜ [σ(x1 ) · · · σ(xn )]⊤ .
+generalized intersection of X and Z under R is X ∩R Z =            In the last layer, only the linear map is applied, i.e.,
+{x ∈ X | Rx ∈ Z}, and the k-ary Cartesian power of X
+                                                                            π(x(t)) = x(ℓ) = W (ℓ−1) x(ℓ−1) + v (ℓ−1) .
+is X k = X × · · · × X . Given a, a ∈ Rn such that a ≤ a
+where ≤ is in the element-wise sense, the set {x ∈ Rn | a ≤        The activation function considered in this work is not re-
+x ≤ a} is denoted as [[a, a]]. Given two scalar a, a ∈ R such      stricted to ReLU; see Section IV for more discussion. In the
+that a ≤ a, the interval {x ∈ R | a ≤ x ≤ a} is denoted as         following, we assume the FNN controller satisfies π(x) ∈ U,
+[[a, a]].                                                          ∀x ∈ X ; this assumption is not restrictive since the output of
+                                                                   any FNN can be saturated into a given range by adding two
+      II. P RELIMINARIES & P ROBLEM S TATEMENT
+                                                                   additional layers with ReLU activation functions [4], [12].
+A. Hybrid Zonotopes                                                   The NFS consisting of system (1) and the controller (2)
+  Definition 1: [17, Definition 3] The set Z ⊂ Rn is a             is a closed-loop system denoted as:
+hybrid zonotope if there exist c ∈ Rn , Gc ∈ Rn×ng , Gb ∈
+                                                                             x(t + 1) = fcl (x(t)) ≜ f (x(t), π(x(t))).            (4)
+Rn×nb , Ac ∈ Rnc ×ng , Ab ∈ Rnc ×nb , b ∈ Rnc such that
+                              c                                   Given a target set T ⊂ X for the system (4), the set of
+                               ξ       ng             nb 
+                                   ∈ B    ×   {−1,  1}  ,          states that can be mapped into the target set T by (4) in
+      
+                                       ∞
+                                                         
+                  ξc          ξb
+                                                      
+  Z = Gc Gb           b   + c                 c
+                                                                  exactly T steps is defined as the T -step BRS and denoted
+                    ξ                       ξ
+                                  Ac Ab
+                                        
+                                                   =b             as PT (T ) ≜ {x(0) ∈ X | x(t) = fcl (x(t − 1)), x(T ) ∈
+      
+                                                         
+                                             ξb
+                                                         
+                                                                   T , t = 1, 2, . . . , T }. For simplicity, the one-step BRS is also
+         n
+where B∞g = {x ∈ Rng | ∥x∥∞ ≤ 1} is the unit hypercube             denoted as P(T ), i.e., P(T ) = P1 (T ). In this work, we
+in Rng . The HCG-representation of the hybrid zonotope is          assume the state set X , the input set U, the target set T ,
+given by Z = ⟨Gc , Gb , c, Ac , Ab , b⟩.                           and the set that over-approximates the nonlinear plant model
+   Given an HZ Z = ⟨Gc , Gb , c, Ac , Ab , b⟩, the vector          f are all represented as HZs; this assumption enables us
+c is called the center, the columns of Gb are called the           to handle sets and plant models using a unified HZ-based
+binary generators, and the columns of Gc are called the            approach.
+continuous generators. The representation complexity of the           The following problem will be investigated in this work:
+HZ Z is determined by the number of continuous generators          Given a target set T ⊂ X represented as an HZ and a time
+ng , the number of binary generators nb , and the number of        horizon T ∈ Z>0 , compute the over-approximation of BRS
+equality constraints nc [17]. For simplicity, we define the        Pt (T ) of the neural feedback system (4), for t = 1, 2, . . . , T .
+                                      n
+set B(Ac , Ab , b) ≜ {(ξ c , ξ b ) ∈ B∞g × {−1, 1}nb | Ac ξ c +       Compared with our previous result [12] that computes
+Ab ξ b = b}. An HZ with nb binary generators is equivalent         the exact BRS for NFSs consisting of linear plant models
+to the union of 2nb constrained zonotopes [17, Theorem 5].         and ReLU-activated FNN controllers, this work considers
+Identities are provided to compute the linear map and gen-         NFSs consisting of general nonlinear plant models and FNNs
+eralized intersection [17, Proposition 7], the union operation     with general activation functions, and therefore, only over-
+[18, Proposition 1], and the Cartesian product of HZs [19,         approximated BRSs are computed.
+Proposition 3.2.5].
+                                                                     III. BACKWARD R EACHABILITY A NALYSIS OF R E LU
+B. Problem Statement                                                       ACTIVATED N EURAL F EEDBACK S YSTEMS
+  Consider the following discrete-time nonlinear system:              Our proposed method includes three main steps: (i) com-
+                                                                   pute an HZ envelope of the nonlinear function f ; (ii) find
+                  x(t + 1) = f (x(t), u(t))                 (1)    an HZ graph representation of the input-output relationship
+where x(t) ∈ Rn , u(t) ∈ Rm are the state and the control          of the FNN control policy π; (iii) calculate the one-step
+input, respectively. We assume x ∈ X and u ∈ U ≜ [[u, u]],         over-approximated BRS in closed form, and refine the set
+where X ⊂ Rn is called the state set and U ⊂ Rm is called          when an accurate result takes precedence over computational
+the input set. The control input u is given as                     efficiency. In this section, we assume the controller u shown
+                                                                   in (2) is an FNN π with ReLU activation functions across
+                       u(t) = π(x(t))                       (2)    all the layers, i.e., σ(x) = ReLU (x) = max(x, 0); this
+                                                                   assumption will be relaxed in the next section. Note that the
+where π is an ℓ-layer FNN. The k-th layer weight matrix            time index of x and u are omitted for clarity in the section.
+and the bias vector of π are denoted as W (k−1) and v (k−1) ,
+respectively, where k = 1, . . . , ℓ. Denote x(k) as the neurons   A. Envelope of Nonlinear Functions
+of the k-th layer and nk as the dimension of x(k) . Then, for         For NFSs with linear plant models and ReLU activation
+k = 1, . . . , ℓ − 1,                                              functions, HZ-based methods have been proposed to compute
+             x(k) = ϕ(W (k−1) x(k−1) + v (k−1) )            (3)    both the exact FRSs and the exact BRSs [8], [12], [20].
+                                                                   However, since HZs can only represent sets with flat faces
+where x(0) = x(t) and ϕ is the vector-valued activation            (i.e., unions of polytopes), these exact analysis methods are
+function constructed by component-wise repetition of the           inapplicable to the case of general nonlinear plant models
+shown in (4). As the first step towards computing the
+over-approximated BRS of the system (4), we will find an
+envelope of the nonlinear function f .
+   We denote the graph set of a given function f over the
+domain X × U as Gf (X , U) ≜ {[x⊤ u⊤ y ⊤ ]⊤ | y =
+f (x, u), x ∈ X , u ∈ U}. Since the exact representation of
+the graph set Gf (X , U) is difficult to find, we will compute an
+HZ-represented over-approximation of Gf (X , U), denoted as
+Hf (X , U), such that Hf (X , U) ⊇ Gf (X , U). The envelope         Fig. 1: Comparison between OVERT and SOS. Both over-
+of a nonlinear function over a given domain can be found            approximate tanh(x) for x ∈ [[−π/2, π/2]] with the union
+using off-the-shelf methods [23]–[25]. In this work, we make        of 4 polytopes.
+use of two approximation tools, namely Special Ordered Set
+(SOS) [26] and OVERT [16], mainly because the envelopes             For example, to compare the set complexity of the resulting
+obtained by these two methods are easy to compute and can           HZs, we let the number of breakpoints be N for both the SOS
+be readily incorporated with the HZ-based set computations.         and the OVERT approaches. Then, for any one-dimensional
+   The over-approximation method based on SOS was orig-             nonlinear elementary function e(x), the complexity of the
+inally developed for solving nonlinear and nonconvex opti-          HZ representations computed by SOS and OVERT is given
+mization problems [26]. In recent work, SOS approximations          by
+were utilized to compute the FRSs of nonlinear dynamical
+systems [21]. The SOS approximation S of a scalar-valued                nSOS
+                                                                         g   = 2N + 2, nSOS
+                                                                                        b   = N − 1, nSOS
+                                                                                                      c   = N + 4,
+function was defined in [21, Definition 3], while the identity      nOV
+                                                                     g
+                                                                        ERT
+                                                                            = 4N − 4, nOV
+                                                                                       b
+                                                                                          ERT
+                                                                                              = N − 1, nOV
+                                                                                                        c
+                                                                                                           ERT
+                                                                                                               = 2N.
+that converts S into an HZ was provided in [21, Theoem
+4]. The maximum SOS approximation error δ for some                  It can be observed that the HZ representation based on
+common nonlinear functions was provided in [25]. Given              OVERT approximations tends to have a larger set complexity
+an SOS approximation HSOS as an HZ and the maximum                  than the SOS method in terms of more continuous generators
+approximation error δ ∈ Rn , an envelop of the function f           and more equality constraints. However, the OVERT method
+can be given as an HZ Hf (X , U) ≜ HSOS ⊕ E, where E =              usually leads to more accurate over-approximations than
+⟨diag([0⊤          ⊤
+         n+m δ ]), ∅, 02n+m , ∅, ∅, ∅⟩ is the error HZ. For
+                                                                    the SOS method. This is because the approximation error
+nonlinear functions with multidimensional inputs, decompo-          δ in the SOS method remains constant across the entire
+sition techniques can be applied to avoid the exponential           domain, whereas the approximation error in the OVERT
+complexity of SOS approximations [25].                              method varies based on the distance from the breakpoints. An
+   For the OVERT method, a nonlinear function f with                example of over-approximation of the tanh function using
+multidimensional inputs and outputs will be decomposed              both methods is shown in Figure 1. Comparisons of the two
+into multiple elementary functions e(·) with single inputs          methods will be further discussed in Section V.
+and single outputs by the functional rewriting technique, and
+then over-approximations of the element functions will be           B. Over-approximation of One-step BRS
+constructed using a set of optimally chosen piecewise linear           In this subsection, we will compute the closed-form ex-
+upper and lower bounds [16]. In this work, we assume that           pression of an over-approximation of the one-step BRS,
+the number of breakpoints of the piecewise linear upper and         utilizing the HZ envelope of f calculated in Section III-A.
+lower bounds, denoted as N (N ≥ 3), are the same and only              In order to incorporate the FNN controller π into the HZ-
+optimize the breakpoints along one of the piecewise linear          based framework, we apply Algorithm 1 in our previous
+bounds using OVERT. Denote the set of breakpoints for the           work [12] to compute an HZ-represented graph set of π over
+piecewise linear upper (resp., lower) bound as {(xi , yiub )}Ni=1   the domain X , denoted as Hπ = ⟨Gcπ , Gbπ , cπ , Acπ , Abπ , bπ ⟩,
+(resp., {(xi , yilb )}N
+                      i=1 ). Note that the x-coordinates of the     i.e.,
+lower and upper bound are the same. Since the endpoints
+satisfy y1lb = y1ub = e(x1 ) and yN     lb
+                                            = yNub
+                                                   = e(xN ), the         Hπ = Gπ (X ) ≜ {[x⊤ u⊤ ]⊤ | u = π(x), x ∈ X }.
+set bounded by the piecewise linear upper and lower bounds
+can be seen as a union of N − 1 polytopes. Each polytope            Let Hf (X , U) = ⟨Gcf , Gbf , cf , Acf , Abf , bf ⟩ be the com-
+can be constructed by the breakpoints of the upper and              puted HZ envelope of the nonlinear function f over the
+lower bounds, leading to N − 1 V-rep polytopes that over-           domain X ×U using the approach presented in Section III-A,
+approximates the nonlinear element functions. Using [22,            i.e. Hf (X , U) ⊇ Gf (X , U).
+Theorem 5], an HZ envelope representing the union of V-rep             With notations above, the following theorem provides the
+polytopes can be found.                                             closed-form identities of an over-approximation of the one-
+   While both SOS-based and OVERT-based methods can                 step BRS, P(T ), with a given target set represented by an
+utilize decomposition techniques to generate a tight over-          HZ.
+approximation of f , the resultant HZ envelopes exhibit                Theorem 1: Given the state set X , the input set U, and
+varying levels of approximation accuracy and set complexity.        a target set represented by an HZ T = ⟨Gcτ , Gbτ , cτ , Acτ ,
+Abτ , bτ ⟩ ⊂ Rn , the following HZ is an over-approximated                 Using (6b), we have
+one-step BRS of the NFS (4):
+                                                                              [x⊤ u⊤ ]⊤ = [In+m 0][x⊤ u⊤ y ⊤ ]⊤
+               P(T ) = ⟨Gcp , Gbp , cp , Acp , Abp , bp ⟩        (5)                       = [In+m 0](Gcf ξfc + Gbf ξfb + cf )
+        cp = cπ [1 : n, :], Gcp = Gcπ [1 : n, :] 0 0 , Gbp =
+                                                           
+where
+   b
+                                                                                           = Gcf [1 : n + m, :]ξfc + Gbf [1 : n + m, :]ξfb
+  Gπ [1 : n, :] 0 0 and
+             c                                                                              + cf [1 : n + m, :]
+               Aπ                   0                     0
+                                                                           and
+             0                   Acf                     0 
+        c                                                                  y = [0 0 In ][x⊤ u⊤ y ⊤ ]⊤
+                                                             
+                                                            c 
+      Ap =  c 0                   0                     A τ ,
+            Gπ            −Gcf [1 : n + m, :]            0                 = Gcf [n+m+1 : 2n+m, :]ξfc +Gbf [n+m+1 : 2n+m, :]ξfb
+                0 Gcf [n + m + 1 : 2n + m, :] −Gcτ                               + cf [n+m+1 : 2n+m, :].
+             b                                               
+               Aπ                   0                     0
+             0                   Af b
+                                                          0               Combining (6a) and [x⊤ u⊤ ]⊤ from (6b), we have
+        b
+                                                             
+      Ap =  0
+                                   0                     Abτ 
+                                                              ,           Gcπ ξπc +Gbπ ξπb +cπ = Gcf [1 : n+m, :]ξfc +Gbf [1 : n+m, :]ξfb
+            Gbπ           −Gbf [1 : n + m, :]            0                                          + cf [1 : n+m, :].
+                0 Gbf [n + m + 1 : 2n + m, :] −Gbτ
+                                                                         Similarly, by combing (6c) and y computed from (6b), we
+                               bπ                                          get
+                              bf                    
+                                                                           Gcτ ξτc + Gbτ ξτb + cτ = Gcf [n+m+1 : 2n+m, :]ξfc
+                                                    
+      bp =                   bτ                    .
+                                                     
+                   cf [1 : n + m, :] − cπ                                      + Gbf [n+m+1 : 2n+m, :]ξfb + cf [n+m+1 : 2n+m, :].
+               cτ − cf [n + m + 1 : 2n + m, :]
+     Proof: By the definition of the one-step BRS, we have                 Let                      c              b
+                                                                                                    ξπ               ξπ
+P(T ) = {x ∈ X | f (x, u) ∈ T , u = π(x)}                                                    ξ c = ξfc  and ξ b = ξfb  .
+                                                                                                    ξτc              ξτb
+              
+              x
+      = {x |     ∈ X × U, u = π(x), y = f (x, u), y ∈ T }
+              u
+                                                                         Then, it’s easy to check that (ξ c , ξ b ) ∈ B(Acp , Abp , bp ) and
+                       x
+              x                                                              Gcp ξ c + Gbp ξ b + cp = [Gcπ [1 : n, :] 0 0]ξ c
+      = {x |     ∈ Hπ , u ∈ Gf (X , U), y ∈ T }.
+              u
+                         y                                                                           + [Gbπ [1 : n, :] 0 0]ξ b + cπ [1 : n, :].
+Denote
+                                                                         Thus, we have x ∈ P(T ). Since x is arbitrary, we get Hp ⊆
+                          x                                              P(T ).
+                 x
+      Hp = {x |     ∈ Hπ , u ∈ Hf (X , U), y ∈ T }.                          Next, we’ll show that Hp ⊇ P(T ). Let x ∈ P(T ). Then,
+                 u
+                            y                                              there exist (ξ c , ξ b ) ∈ B(Acp , Abp , bp ) such that x = Gcp ξ c +
+Since Hf (X , U) ⊇ Gf (X , U), it’s easy to check that Hp                  Gbp ξ b + cp .
+is an over-approximation of the one-step BRS P(T ), i.e.,                      Partitioning ξ c as ξ c = [(ξπc )⊤ (ξfc )⊤ (ξτc )⊤ ]⊤ and ξ b as
+Hp ⊇ P(T ). The remaining of this proof is then to show                    ξ = [(ξπb )⊤ (ξfb )⊤ (ξτb )⊤ ]⊤ , it follows that
+                                                                             b
+
+that Hp = P(T ).
+   We will first prove that Hp ⊆ P(T ). Let x be any element                                  (ξπc , ξπb ) ∈ B(Acπ , Abπ , bπ ),
+of set Hp . Then, based on the definitions of Hπ , Hf (X , U)                                 (ξfc , ξfb ) ∈ B(Acf , Abf , bf ),
+and T , there exist ξπc , ξπb , ξfc , ξfb , ξτc and ξτb such that                             (ξτc , ξτb ) ∈ B(Acτ , Abτ , bτ ),
+                   (ξπc , ξπb ) ∈ B(Acπ , Abπ , bπ ),                      and
+                   (ξfc , ξfb ) ∈ B(Acf , Abf , bf ),
+                                                                                  x = Gcπ [1 : n, :]ξπc + Gbπ [1 : n, :]ξπb + cπ [1 : n, :]
+                   (ξτc , ξτb ) ∈ B(Acτ , Abτ , bτ ),
+                                                                                    = Gcf [1 : n, :]ξfc + Gbf [1 : n, :]ξfb + cf [1 : n, :].
+and
+                                                                           Choose
+                 [x⊤ u⊤ ]⊤ = Gcπ ξπc + Gbπ ξπb + cπ ,               (6a)
+                                                                           u = Gcπ [n + 1 : n + m, :]ξπc + Gbπ [n + 1 : n + m, :]ξπb
+            [x⊤ u⊤ y ⊤ ]⊤ = Gcf ξfc + Gbf ξfb + cf ,                (6b)
+                                                                               + cπ [n + 1 : n + m, :],
+                           y = Gcτ ξτc + Gbτ ξτb + cτ .             (6c)
+                                                                           y = Gcf [n+m+1 : 2n+m, :]ξfc +Gbf [n+m+1 : 2n+m, :]ξfb
+Therefore, using (6a), we have                                                   + cf [n+m+1 : 2n+m, :].
+      x = [In 0][x⊤ u⊤ ]⊤
+                                                                             Then, it’s easy to check that x,u and y satisfy (6). Thus,
+         = [In 0](Gcπ ξπc + Gbπ ξπb + cπ )                                 x ∈ Hp . Since x is arbitrary, Hp ⊇ P(T ).
+         = Gcπ [1 : n, :]ξπc + Gbπ [1 : n, :]ξπb + cπ [1 : n, :].            Therefore, we conclude that Hp = P(T ).
+   Theorem 1 can be applied to NFSs with general nonlin-                      Lemma 1: Given the state set X , the input set U, the
+ear plant models, but the set P(T ) computed may induce                    target set T , and the graph set of π, Hπ , suppose that the
+redundant equality constraints in the HZ representation. The               prior sets X p × U p satisfies
+following result provides a BRS representation of P(T ) with                                         i P(T ) ⊆ X p × U p ⊆ X × U.
+less redundant constraints for NFSs with a special class of                           Hπ ∩h                                                       (8)
+                                                                                           In       0
+nonlinear plant models.
+   Corollary 1: Consider an NFS (4) where f (x, u) =                       Let Hf (X p , U p ) = ⟨Gcf p , Gbf p , cf p , Acf p , Abf p , bf p ⟩ be the
+g(x) + Bd u. Given the state set X , the input set U and                   over-approximated graph set of the nonlinear function f
+a target set represented by an HZ T = ⟨Gcτ , Gbτ , cτ , Acτ ,              over the domain X p × U p . Then, the one-step BRS of the
+Abτ , bτ ⟩ ⊂ Rn , let Hπ = ⟨Gcπ , Gbπ , cπ , Acπ , Abπ , bπ ⟩ be           NFS (4) can be over-approximated by an HZ whose HCG-
+the computed HZ-based graph set of the FNN π over the                      representation is the same as (5) by replacing ⟨Gcf , Gbf , cf ,
+domain X . Let Hg (X ) = ⟨Gcg , Gbg , cg , Acg , Abg , bg ⟩ be the         Acf , Abf , bf ⟩ with ⟨Gcf p , Gbf p , cf p , Acf p , Abf p , bf p ⟩.
+computed HZ envelope of the nonlinear function g over                            Proof: From (8), we know that P(T ) ⊆ X p ⊆ X
+the domain X . Then, an over-approximated one-step BRS                     and UT ⊆ U p ⊆ U, where UT denotes the projection of
+of the NFS can be computed as an HZ given by P̃(T ) =                      Hπ ∩h           i P(T ) onto the u space. By the definition of
+                                                                                  In 0
+⟨Gcp , Gbp , cp , Ãcp , Ãbp , b̃p ⟩, where Gcp , Gbp , cp are the same   the one-step BRS, we have
+as in Theorem 1,
+                                                                                 P(T ) = {x ∈ X | f (x, u) ∈ T , u = π(x)}
+                 b̃p = b⊤            b⊤    b⊤  b⊤      b⊤
+                                                          
+                               π       g    τ     1       2 ,                           = {x ∈ X p | f (x, u) ∈ T , u = π(x)}
+                            diag(Acπ , Acg , Acτ )
+                                                  
+                Ãcp =                               ,                                  = {x | [x⊤ u⊤ y ⊤ ]⊤ ∈ Gf (X p , U p ),
+                                        A1
+                                                                                                 u = π(x), y ∈ T }
+                            diag(Abπ , Abg , Abτ )
+                                                  
+                Ãbp =                               ,                                  = {x | [x⊤ u⊤ ]⊤ ∈ Hπ ∩h                  i P(T ),
+                                        A2                                                                      In              0
+with                                                                                             [x⊤ u⊤ y ⊤ ]⊤ ∈ Gf (X p , U p ), y ∈ T }
+                                                                                        = {x | [x⊤ u⊤ y ⊤ ]⊤ ∈ Gf (X p , U p ),
+b1 = cg [1 : n, :] − cπ [1 : n, :],
+                                                                                                 [x⊤ u⊤ ]⊤ ∈ Hπ , y ∈ T }.
+ b2 = cτ − Bd cπ [n + 1 : n + m, :] − cg [n + 1 : 2n, :],
+              Gcπ [1 : n, :]       −Gcg [1 : n, :]                         The remaining proof is the same as that of Theorem 1.
+                                                          
+                                                        0
+A1 =                                                         ,
+        Bd Gcπ [n + 1 : n + m, :] Gcg [n + 1 : 2n, :] −Gcτ
+              Gbπ [1 : n, :]       −Gbg [1 : n, :]                           Algorithm 1: BReachNonlin-HZ
+                                                          
+                                                        0
+A2 =                                                         .                Input: State domain X , control input domain U, target
+        Bd Gbπ [n + 1 : n + m, :] Gbg [n + 1 : 2n, :] −Gbτ
+   The proof of Corollary 1 follows the same procedures as                            set T , nonlinear plant model f , neural network
+the proof of Theorem 1, and is thus omitted.                                          controller π, large scalars α, β > 0, time horizon
+                                                                                      T , the number of refinement epochs nr .
+C. Refinement of Over-approximated Multi-step BRS                             Output: Refined over-approximations of t-step BRSs
+   Based on the results of the preceding subsections, the T -                           from t = 1 to T P 1:T (T ).
+                                                                                                                p            p
+step over-approximations of BRS for (4) can be computed                     1 Initialization: P 0 (T ) ← T ; X1:T ← X ; U1:T ← U;
+iteratively as follows:                                                     2 Compute Hπ with α and β ;           // Alg 1 in [12]
+                                                                            3 for r ∈ {0, 1, . . . , nr } do
+   P 0 (T ) = T , P t (T ) = P(P t−1 (T )), t = 1, . . . , T.       (7)     4     for t ∈ {1, 2, . . . , T } do
+                                                                            5         Compute Hf (Xtp , Utp ); // Section III-A
+Since Theorem 1 computes Hf (X , U) over the entire state-
+                                                                            6         P t (T ) ← Pre(P t−1 (T ), Hf (Xtp , Utp ), Hπ );
+input domain X ×U, a naive application of (7) based on The-
+                                                                                        // Over-approximate one-step BRS
+orem 1 may lead to conservative approximations for multi-
+                                                                            7         if nr == 0 or r == nr then
+step computations. In order to mitigate the conservativeness,
+                                                                            8              continue;
+we introduce a refinement procedure aimed at computing
+Hf within more tightly constrained prior sets, denoted as                   9          Xtp , Utp ← GetBox(P t (T ), Hπ );                  // The
+X p × U p where p stands for “prior”. Such procedure allows                             prior sets for Pt (T ).
+the nonlinearity to be approximated over tighter sets, thus
+leading to less conservative results. Concretely, the refine-              10   return P 1:T (T )
+ment procedure employs a recursive approach that utilizes
+the BRSs obtained from the previous Hf to compute the                         Algorithm 1 summarizes the over-approximation of BRS
+new prior sets.                                                            for the closed-loop system (4) with the refinement procedure.
+   With the same notations as in Theorem 1, the follow-                    The prior sets X p ×U p for all the time horizons are initialized
+ing lemma provides a closed-form expression of an over-                    as X × U (line 1) and Hπ is computed over X with the large
+approximation of BRS P(T ) over the prior sets X p × U p .                 scalars α and β by using Algorithm 1 in [12] (line 2). For
+each time horizon t, we compute the over-approximation of                  The PReLU is a parametric activation function defined as
+the nonlinear plant model over the prior set Xtp and Utp (line                                
+                                                                                                 x,     if x > 0,
+5) and then the over-approximated one-step BRS P t (T ) is                            σ (x) =
+                                                                                                 ax, if x ≤ 0.
+computed by Lemma 1 (line 6). If nr = 0 or the refinement
+epoch reaches the maximum number nr , the refinement                     Here a ∈ R≥0 is a parameter that is learned along with other
+procedure will be skipped and the computed BRSs P t (T )                 neural network parameters [27]. When a = 0, it becomes the
+for t = 1 to T will be returned; otherwise, the tighter prior            conventional ReLU; when a is a small positive number, it
+sets are computed based on the over-approximated BRSs and                becomes the Leaky ReLU. Similar to the construction of HZ
+then passed to the next refinement epoch (line 9). Concretely,           for ReLU in [12], given an interval domain [[−α, β]], the two
+in line 9, the bounding box of HπT ≜ Hπ ∩h                   i P (T ),
+                                                                         line segments of PReLU can be exactly represented as two
+                                                      In 0 t
+is computed by the GetBox and is set to be the prior sets                HZs:
+for the refinement procedure. The GetBox only shrinks the
+                                                                                             α         −α           
+bounding intervals of X ×U over the dimensions contributing                         H1,a =      2
+                                                                                               α·a  , ∅,    2
+                                                                                                           −α·a , ∅, ∅, ∅  ,
+                                                                                                2           2
+to the nonlinearity. Let r = [x⊤ u⊤ ]⊤ ∈ Hπ . Such shrinking                                 β      β         
+interval, denoted as [[rflb , rfub ]], can be obtained by solving two                 H2 =     β
+                                                                                                2 , ∅, 2 , ∅, ∅, ∅ .
+                                                                                                         β
+Mixed-Integer linear Programs (MILPs): rflb = minr∈HTπ rf ,                                          2       2
+
+rfub = maxr∈HTπ rf .                                                     The union of H1,a and H2 can be directly computed as
+   Remark 1: The number of refinement epochs nr in Algo-                 a single HZ, Hσ , using Proposition 1 in [18]. Applying
+rithm 1 represents the trade-off between the set approxima-              Proposition 3 in [8] we can remove the redundant continuous
+tion accuracy and the computation efficiency. Specifically,              generators to get
+the refinement procedure mitigates the conservativeness of
+the set approximation but requires computing Hf (Xtp , Utp )                Hσ = H1,a ∪ H2 = ⟨Gch,a , Gbh,a , ch , Ach , Abh , bh ⟩   (9)
+and the bounding hyper-boxes of HZs at each epoch, which
+                                                                         where
+introduces extra computation time. Simulation results for
+                                                                                               − β2 0 0
+                                                                                                                                     β 
+                                                                                      − α2
+                                                                                                                     α 
+different numbers of epochs are given in Section V.                                                                     −2
+                                                                         Gch,a =                                b
+                                                                                                            , Gh,a =           , ch = β2 ,
+   Remark 2: The over-approximated BRSs can be used for                               − α·a
+                                                                                         2     − β2 0 0                − α·a
+                                                                                                                          2            2
+the safety verification of NFSs [12], [17]. Consider an HZ                       
+                                                                                  1    0      1 0
+                                                                                                           
+                                                                                                              1
+                                                                                                                          
+                                                                                                                          1
+initial state set X0 ⊂ X and an HZ unsafe region O ⊂ X .                 Ach =                         b
+                                                                                                    , Ah =        , bh =     .
+                                                                                  0    1      0 1            −1           1
+Suppose that the t-step BRS of O is over-approximated as
+P t (O) via Algorithm 1 for t = 1, · · · , T . Then any trajectory          Since (9) exactly represents PReLU over an interval
+that starts from X0 will not enter into the unsafe region                domain, Algorithm 1 in [12] can be directly applied to
+O within T time steps if all the over-approximated BRSs                  PReLU-activated FNNs, and based on that, the exact graph
+P 1:T (O) have no intersections with the initial set X0 . By [17,        set of FNNs Hπ can be computed. Hence, Theorem 1,
+Proposition 7] and [12, Lemma 1], verifying the emptiness                Lemma 1, and Algorithm 1 can be directly employed to over-
+of the intersection of X0 and P t (O) is equivalent to solve             approximate BRSs for a PReLU-activated NFS (4).
+an MILP.
+                                                                         B. Non-Piecewise Linear Activation Functions
+IV. N EURAL F EEDBACK S YSTEM W ITH G ENERAL T YPES
+                                                                            In addition to piecwise linear activation functions, non-
+             OF ACTIVATION F UNCTIONS
+                                                                         piecewise linear activation functions such as sigmoid and
+   In this section, we extend the results of the preceding sec-          tanh functions, are also widely employed in NNs [28].
+tion that considers ReLU-activated FNNs to FNNs with more                Since the graph of non-piecewise linear functions cannot
+general activation functions. We categorize the activation               be represented exactly by HZs, we will construct an over-
+functions as either piecewise linear or non-piecewise linear.            approximation of the graph set of FNNs Hπ .
+For FNNs with piecewise linear activation functions, their                  Since an activation function is a scalar function, we use
+exact graph sets can be constructed, in which case Theorem               the methods discussed in Section III-A to construct an HZ
+1 and Lemma 1 are directly applicable. For FNNs with                     Ha over the interval domain [[−α, β]] such that
+non-piecewise linear activation functions, their graph sets
+                                                                             Ha ⊃ Ha = [x y]⊤ | y = σ(x), x ∈ [[−α, β]] .
+                                                                                          
+can be over-approximated by using the methods in Section                                                                         (10)
+III-A, based on which the over-approximated BRSs can be
+computed.                                                                The following lemma gives the HZ over-approximation of
+                                                                         the graph of vector-valued activation function ϕ that is con-
+A. Piecewise Linear Activation Functions                                 structed by component-wise repetition of the scalar activation
+   The graph of piecewise linear activation functions can be             function σ over a domain Xa represented as an HZ.
+exactly represented by a finite union of polytopes that is                  Lemma 2: Assume that a domain Xa is represented as an
+equivalent to an HZ. For simplicity, we use the Parametric               HZ such that Xa ⊆ [[−α1, β1]] ⊂ Rnk . Let G(ϕ, Xa ) be the
+ReLU (PReLU) activation function as an example to show                   graph of the vector-valued
+                                                                                                   activation  function ϕ : Rnk →
+                                                                           nk                         ⊤ ⊤ ⊤
+the construction of the graph set.                                       R , i.e., G(ϕ, Xa ) = [x y ] | y = ϕ(x), x ∈ Xa .
+Then G(ϕ, Xa ) can be over-approximated by an HZ, denoted             Lemma 1, the following theorem provides the closed-form
+as G(ϕ, Xa ), where                                                   expression of an over-approximation of the one-step BRS for
+                           nk
+                                                                     NFS (4) with non-piecewise activation functions.
+          G(ϕ, Xa ) = P Ha ∩h             iX ,       (11)                Theorem 3: Given the state set X , the input set U, the tar-
+                                   Ink 0 a
+                                                                      get set T , the prior sets X p × U p , and the over-approximated
+P = [e2 e4 · · · e2nk e1 e3 · · · e2nk −1 ]T ∈ R2nk ×2nk is a         graph set of f given as Hf (X p , U p ) = ⟨Gcf p , Gbf p , cf p ,
+permutation matrix, and Ha is given in (10).                          Acf p , Abf p , bf p ⟩, the one-step BRS of the NFS (4) can be
+      Proof: For simplicity, denote I as [[−α1, β1]]. Since           over-approximated by an HZ whose HCG-representation is
+Xa ⊆ I, we have G(ϕ, Xa ) = G(ϕ, I) ∩h                i X . Then
+                                                                      the same as (5) by replacing ⟨Gcf , Gbf , cf , Acf , Abf , bf ⟩ and
+                                             Ink 0 a
+the proof of (11) is equivalent to showing that G(ϕ, I) ⊆             ⟨Gcπ , Gbπ , cπ , Acπ , Abπ , bπ ⟩ with ⟨Gcf p , Gbf p , cf p , Acf p , Abf p ,
+     nk
+P Ha . Since the vector-valued activation function ϕ is                                c      b         c     b
+                                                                      bf p ⟩ and ⟨Gπ , Gπ , cπ , Aπ , Aπ , bπ ⟩, respectively.
+constructed by component-wise repetition of σ and the per-                  Proof: From the proof of Lemma 1 we have
+mutation matrix P only rearranges the order of the state from
+[x1 y1 x2 y2 · · · xnk ynk ]⊤ to [x1 · · · xnk y1 · · · ynk ]⊤ , we             P(T ) = {x | [x⊤ u⊤ y ⊤ ]⊤ ∈ Gf (X p , U p ),
+can easily check that P Hank ⊆ G(ϕ, I). Hence G(ϕ, I) =                                           [x⊤ u⊤ ]⊤ ∈ Hπ , y ∈ T }
+                  nk
+P Hank ⊂ P Ha which implies G(ϕ, Xa ) ⊃ G(ϕ, Xa ).
+                                                                                           ⊂ {x | [x⊤ u⊤ y ⊤ ]⊤ ∈ Gf (X p , U p ),
+Finally, since HZs are closed under the linear map and
+                                                                 nk
+generalized intersection [17, Proposition 7], and both Ha                                         [x⊤ u⊤ ]⊤ ∈ Hπ , y ∈ T }.
+and Xa are HZs, we concludes that G(ϕ, Xa ) is also an HZ,
+                                                                      The remaining proof is the same as that of Theorem 1.
+which completes the proof.
+                                                                         By using Theorem 3 to over-approximate the one-
+   Lemma 2 provides the transformation from the scalar-
+                                                                      step BRS in line 6 of Algorithm 1, the multi-step over-
+valued nonlinear activation function σ that is over-
+                                                                      approximated BRSs for NFS (4) with non-piecewise linear
+approximated based on Section III-A to vector-valued activa-
+                                                                      activation functions can be computed.
+tion function ϕ, which is more favorable for layer-by-layer
+operations when constructing the graph set of FNNs.                                          V. S IMULATION R ESULTS
+   Denote the output set of Algorithm 1 in [12] by replacing
+                                                                         In this section, we use two simulation examples to il-
+H with Ha as GHπ . The following theorem shows that GHπ
+                                                                      lustrate the performance of the proposed method. The con-
+is an over-approximation of the graph set of FNN π over
+                                                                      sidered NFS consists of a Duffing Oscillator and an FNN
+the HZ-represented domain set X .
+                                                                      controller with either ReLU (Example 1) or tanh (Example
+   Theorem 2: Given an ℓ-layer FNN π : Rn → Rm with
+                                                                      2) activation functions. The simulation examples are imple-
+non-piecewise linear activation functions and the domain set
+                                                                      mented in MATLAB R2022a and executed on a desktop with
+represented as an HZ X ⊂ Rn , the output set GHπ is an over-
+                                                                      an Intel Core i9-12900k CPU and 32GB of RAM.
+approximation of the graph set of FNN π, i.e., GHπ (X , π) =
+                                                                         Example 1: Consider the following discrete-time Duffing
+Hπ ⊃ Hπ .
+                                                                      Oscillator model from [29]:
+      Proof: The proof boils down to showing that the output
+set X (k) computed by Algorithm 1 in [12] bounds all the               x1 (t + 1) = x1 (t) + 0.3x2 (t),
+possible outputs of the k-th layer of the FNN π, given the             x2 (t + 1) = 0.3x1 (t) + 0.82x2 (t) − 0.3x1 (t)3 + 0.3u(t),
+input set from last layer as X (k−1) , k = 1, 2, · · · , ℓ − 1.
+   By employing the identical steps outlined in Algorithm 1           where x1 , x2 ∈ R are the states confined in the state set
+of [12], three set operations are used to calculate the output        X = [[−2, 1.1]] × [[−2, 3]] and u ∈ U = [[0, 5]] is the
+set for the k-th layer:                                               control input. The controller u is a two-layer ReLU-activated
+                                                                      FNN with 10-5 hidden neurons that is trained to learn the
+            Z (k−1) ← W (k−1) X (k−1) +v (k−1) ,             (12a)
+                              nk
+                                                                      control policy given in [29]. The exact BRSs are obtained
+              G ← (P · Ha ) ∩[Ink 0] Z (k−1) ,
+                 (k)
+                                                             (12b)    by selecting samples from which trajectories can reach the
+              X (k) ← [0 Ink ] · G (k) .                     (12c)    target set within T time steps; these samples are chosen
+                                                                      from uniformly distributed grids over X . To the best of
+For any x(k−1) ∈ X (k−1) , let z (k−1) be W (k−1) x(k−1) +            our knowledge, there is no existing set-propagation-based
+v (k−1) . From (12a), we have z (k−1) ∈ Z (k−1) . In terms of         method that can compute the over-approximated BRS for
+                               ⊤              ⊤
+(12b) and Lemma 2, [z (k−1) ϕ(z (k−1) ) ]⊤ ∈ G (k) . From             the system shown above.
+          (k)                        (k)
+(12c), X      is the projection of G      onto ϕ(z (k−1) ) space,        Given the target set T = [[0.95, 1.05]]×[[0.95, 1.05]], Algo-
+                       (k)     (k)
+which implies that x ∈ X           by (3).                            rithm 1 and Theorem 1 can be employed to over-approximate
+   Theorem 2 extends our previous work [12] from the exact            the BRSs since the X , U and T are HZs, satisfying all the
+graph set of ReLU-activated FNN to the over-approximation             conditions of Theorem 1. Note that we use 10 breakpoints
+of the graph set of FNN with more general activation                  to over-approximate the nonlinear term x31 via SOS and
+                           c   b         c    b
+functions. Let Hπ = ⟨Gπ , Gπ , cπ , Aπ , Aπ , bπ ⟩ be the over-       OVERT and then Hf (Xtp , Utp ) is constructed by following
+approximated graph set of FNN π over the domain X using               a similar procedure as the example in [21]. Fig. 2 shows
+Theorem 2, i.e., Hπ ⊃ Hπ . With the same notations in                 the over-approximated and exact BRSs, indicating that the
+                                                                   that the computation time increases almost linearly when
+                                                                   nr ≥ 1 because the refinement procedure does not affect
+                                                                   the set complexity of the computed BRSs, and in addition,
+                                                                   the approximation error is converged after just one epoch in
+                                                                   this example.
+                                                                      Example 2: Consider the same Duffing Oscillator model
+                                                                   in Example 1. Instead of the ReLU-activated FNN controller,
+                                                                   we train a tanh-activated FNN with 5-5 hidden neurons to
+                                                                   learn the same control policy given in [29]. We use OVERT
+                                                                   with 7 breakpoints to construct the over-approximation of
+                                                                   the graph set of FNN Hπ based on Theorem 2, and then
+                                                                   compute the over-approximated BRSs with the same config-
+                                                                   urations as those in Example 1 based on Theorem 3. The
+                                                                   simulation results are shown in Figure 4. It is observed that
+                                                                   all the samples are enclosed by the over-approximated BRSs,
+          (a) Over-approximated BRSs based on SOS.                 consistent with Theorem 3.
+
+                                                                                            VI. C ONCLUSION
+                                                                      In this paper, we proposed a novel HZ-based approach to
+                                                                   over-approximate BRSs of NFSs with nonlinear plant mod-
+                                                                   els. For NFSs with ReLU activation functions, by combining
+                                                                   techniques that over-approximate nonlinear functions with
+                                                                   the exact graph set of ReLU-activated FNNs, we showed the
+                                                                   closed-form of over-approximated BRSs and a refinement
+                                                                   procedure to reduce the conservativeness. In addition, we ex-
+                                                                   tended the results to NFSs with piecewise and non-piecewise
+                                                                   linear activation functions. The performance of the proposed
+                                                                   approach was evaluated using two numerical examples.
+
+                                                                                               R EFERENCES
+                                                                    [1] X. Yuan, P. He, Q. Zhu, and X. Li, “Adversarial examples: Attacks and
+        (b) Over-approximated BRSs based on OVERT.                      defenses for deep learning,” IEEE Transactions on Neural Networks
+                                                                        and Learning Systems, vol. 30, no. 9, pp. 2805–2824, 2019.
+Fig. 2: Over-approximated BRSs without refinement (cyan),           [2] S. Dutta, X. Chen, and S. Sankaranarayanan, “Reachability analysis for
+the refined over-approximated BRSs (dark green), and sam-               neural feedback systems using regressive polynomial rule inference,”
+                                                                        in Proceedings of the 22nd ACM International Conference on Hybrid
+ples (red) from the true BRSs for Example 1.                            Systems: Computation and Control, 2019, pp. 157–168.
+                                                                    [3] C. Huang, J. Fan, W. Li, X. Chen, and Q. Zhu, “ReachNN: Reachabil-
+BRSs computed by Algorithm 1 over-approximates the exact                ity analysis of neural-network controlled systems,” ACM Transactions
+                                                                        on Embedded Computing Systems, vol. 18, no. 5s, pp. 1–22, 2019.
+BRSs, as shown in Theorem 1, and the conservativeness is            [4] M. Everett, G. Habibi, C. Sun, and J. P. How, “Reachability analysis
+greatly mitigated by the refinement procedure. In addition,             of neural feedback loops,” IEEE Access, vol. 9, pp. 163 938–163 953,
+the computed BRSs by using OVERT are less conservative                  2021.
+                                                                    [5] H.-D. Tran, X. Yang, D. Manzanas Lopez, P. Musau, L. V. Nguyen,
+than those by using SOS.                                                W. Xiang, S. Bak, and T. T. Johnson, “NNV: The neural network
+   Fig. 3a shows the set complexity of the t-step BRS via               verification tool for deep neural networks and learning-enabled cyber-
+SOS and OVERT for t = 1, 2, · · · , 8. Note that the BRSs and           physical systems,” in 32nd International Conference on Computer-
+                                                                        Aided Verification. Springer, 2020, pp. 3–17.
+refined BRSs have the same set complexity. The number of            [6] M. Fazlyab, M. Morari, and G. J. Pappas, “Safety verification and
+generators and equality constraints has a linear growth rate            robustness analysis of neural networks via quadratic constraints and
+with respect to time steps. In addition, the number of binary           semidefinite programming,” IEEE Transactions on Automatic Control,
+                                                                        vol. 67, no. 1, pp. 1–15, 2022.
+generators of BRSs is identical due to the same number of           [7] Y. Zhang and X. Xu, “Safety verification of neural feedback systems
+breakpoints used in the OVERT method and the SOS method.                based on constrained zonotopes,” in IEEE 61st Conference on Decision
+                                                                        and Control, 2022, pp. 2737–2744.
+   Fig. 3b and Fig. 3c show the computational time and              [8] ——, “Reachability analysis and safety verification of neural feedback
+the approximation error for five-step BRS with different                systems via hybrid zonotopes,” in American Control Conference.
+numbers of refinement epochs nr . The approximation error               IEEE, 2023, pp. 1915–1921.
+                                                                    [9] N. Kochdumper, C. Schilling, M. Althoff, and S. Bak, “Open-and
+is computed by the ratio between the volumes of the over-               closed-loop neural network verification using polynomial zonotopes,”
+approximated BRS and exact BRS as error = VoverV−V       exact
+                                                      over
+                                                               ,        in NASA Formal Methods Symposium. Springer, 2023, pp. 16–36.
+where Vover and Vexact are the volume of over-approximation        [10] J. A. Vincent and M. Schwager, “Reachable polyhedral marching
+                                                                        (RPM): A safety verification algorithm for robotic systems with deep
+of last-step BRS and exact BRS respectively, which are                  neural network components,” in IEEE International Conference on
+approximated by the Monte Carlo method. It can be observed              Robotics and Automation, 2021, pp. 9029–9035.
+            (a) Set complexities.                                   (b) Computation time.                               (c) Approximation error.
+      Fig. 3: Comparison of the SOS and OVERT approximation methods at each refinement epoch nr for Example 1.
+                                                                                       cessor sets of discrete-time nonlinear systems using hybrid zonotopes,”
+                                                                                       in American Control Conference. IEEE, 2023, pp. 1383–1389.
+                                                                                  [22] ——, “Reachability analysis of nonlinear systems using hybrid zono-
+                                                                                       topes and functional decomposition,” arXiv:2304.06827, 2023.
+                                                                                  [23] G. P. McCormick, “Computability of global solutions to factorable
+                                                                                       nonconvex programs: Part I—Convex underestimating problems,”
+                                                                                       Mathematical programming, vol. 10, no. 1, pp. 147–175, 1976.
+                                                                                  [24] S. Caratzoulas and C. Floudas, “Trigonometric convex underestimator
+                                                                                       for the base functions in fourier space,” Journal of optimization theory
+                                                                                       and applications, vol. 124, no. 2, pp. 339–362, 2005.
+                                                                                  [25] E. Wanufelle, “A global optimization method for mixed integer non-
+                                                                                       linear nonconvex problems related to power systems analysis,” Ph. D.
+                                                                                       dissertation, 2007.
+                                                                                  [26] E. Beale and J. Tomlin, “Special facilities in a general mathematical
+                                                                                       programming system for nonconvex problems using ordered sets of
+                                                                                       variables,” Operational Research, vol. 69, pp. 447–454, 01 1969.
+                                                                                  [27] K. He, X. Zhang, S. Ren, and J. Sun, “Delving deep into rectifiers:
+                                                                                       Surpassing human-level performance on imagenet classification,” in
+                                                                                       Proceedings of the IEEE International Conference on Computer
+                                                                                       Vision, 2015, pp. 1026–1034.
+                                                                                  [28] S. R. Dubey, S. K. Singh, and B. B. Chaudhuri, “Activation functions
+Fig. 4: Over-approximation of BRSs for Example 2. The                                  in deep learning: A comprehensive survey and benchmark,” Neuro-
+approximation error cannot be further reduced when nr > 1.                             computing, vol. 503, pp. 92–108, 2022.
+                                                                                  [29] T. Dang and R. Testylier, “Reachability analysis for polynomial
+                                                                                       dynamical systems using the Bernstein expansion.” Reliabable Com-
+[11] N. Rober, S. M. Katz, C. Sidrane, E. Yel, M. Everett, M. J. Kochen-               puting, vol. 17, no. 2, pp. 128–152, 2012.
+     derfer, and J. P. How, “Backward reachability analysis of neural
+     feedback loops: Techniques for linear and nonlinear systems,” IEEE
+     Open Journal of Control Systems, 2023.
+[12] Y. Zhang, H. Zhang, and X. Xu, “Backward reachability analysis
+     of neural feedback systems using hybrid zonotopes,” IEEE Control
+     Systems Letters, vol. 7, pp. 2779–2784, 2023.
+[13] I. Mitchell, A. Bayen, and C. Tomlin, “A time-dependent Hamilton-
+     Jacobi formulation of reachable sets for continuous dynamic games,”
+     IEEE Transactions on Automatic Control, vol. 50, no. 7, pp. 947–957,
+     2005.
+[14] L. Yang, H. Zhang, J.-B. Jeannin, and N. Ozay, “Efficient backward
+     reachability using the Minkowski difference of constrained zonotopes,”
+     IEEE Transactions on Computer-Aided Design of Integrated Circuits
+     and Systems, vol. 41, no. 11, pp. 3969–3980, 2022.
+[15] N. Rober, M. Everett, and J. P. How, “Backward reachability analysis
+     for neural feedback loops,” in IEEE 61st Conference on Decision and
+     Control, 2022, pp. 2897–2904.
+[16] C. Sidrane, A. Maleki, A. Irfan, and M. J. Kochenderfer, “OVERT: An
+     algorithm for safety verification of neural network control policies for
+     nonlinear systems,” Journal of Machine Learning Research, vol. 23,
+     no. 117, pp. 1–45, 2022.
+[17] T. J. Bird, H. C. Pangborn, N. Jain, and J. P. Koeln, “Hybrid zonotopes:
+     A new set representation for reachability analysis of mixed logical
+     dynamical systems,” Automatica, vol. 154, p. 111107, 2023.
+[18] T. J. Bird and N. Jain, “Unions and complements of hybrid zonotopes,”
+     IEEE Control Systems Letters, vol. 6, pp. 1778–1783, 2021.
+[19] T. J. Bird, “Hybrid zonotopes: A mixed-integer set representation for
+     the analysis of hybrid systems,” Purdue University Graduate School,
+     2022.
+[20] J. Ortiz, A. Vellucci, J. Koeln, and J. Ruths, “Hybrid zonotopes exactly
+     represent ReLU neural networks,” arXiv:2304.02755, 2023.
+[21] J. A. Siefert, T. J. Bird, J. P. Koeln, N. Jain, and H. C. Pangborn, “Suc-
+

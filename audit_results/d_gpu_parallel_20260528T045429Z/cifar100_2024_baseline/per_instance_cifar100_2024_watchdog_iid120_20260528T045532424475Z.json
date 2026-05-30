@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "benchmark": "cifar100_2024",
+  "formal_mode": true,
+  "timestamp_utc": "20260528T045532424475Z",
+  "watchdog_synthetic": true,
+  "strict_bounded_failure": false,
+  "superseded_child_per_instance_json": "/data1/Kane/ACT/audit_results/d_gpu_parallel_20260528T045429Z/cifar100_2024_baseline/per_instance_cifar100_2024_20260528T045530742271Z.json",
+  "wall_min": 0.3426280566006123,
+  "counts": {
+    "CERTIFIED": 0,
+    "FALSIFIED": 0,
+    "UNKNOWN": 0,
+    "ERROR": 1
+  },
+  "run_status": "FAILED",
+  "per_instance": [
+    {
+      "official_instance_id": 120,
+      "benchmark": "cifar100_2024",
+      "internal_status": "ERROR",
+      "reportable_status": "ERROR",
+      "cli_normalized": "ERROR_WATCHDOG_EXIT_NONZERO",
+      "wall_s": 20.557683396036737,
+      "peak_rss_mb": 3054.0390625,
+      "returncode": 1,
+      "watchdog_status": "EXIT_NONZERO",
+      "queries": [],
+      "q_statuses": [],
+      "q_reportables": [],
+      "q_receipts": [],
+      "error": "watchdog killed instance after 20.6s (status=EXIT_NONZERO, peak_rss=3054.0 MiB)"
+    }
+  ]
+}

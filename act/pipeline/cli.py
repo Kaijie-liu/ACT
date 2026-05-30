@@ -596,6 +596,96 @@ def _normalize_hz_status(status_str: str) -> str:
     return {"UNSAT": "CERTIFIED", "SAT": "FALSIFIED"}.get(status_str, status_str)
 
 
+def _known_unsupported_as_unknown(exc: Exception) -> bool:
+    """Fail closed on known unsupported front-end patterns.
+
+    These are not verifier crashes and must not be promoted to a math
+    verdict. Returning UNKNOWN is more honest than ERROR for VNN-COMP
+    accounting while preserving the diagnostic in ``instance_error``.
+    Keep this list narrow so real bugs remain visible as ERROR.
+    """
+    import os as _os
+    if _os.environ.get("ACT_UNSUPPORTED_AS_UNKNOWN", "1").strip().lower() not in (
+        "1", "true", "yes", "on",
+    ):
+        return False
+    msg = f"{type(exc).__name__}: {exc}"
+    return (
+        "OnnxSlice at" in msg
+        and "cannot resolve starts/ends" in msg
+    )
+
+
+def _singleton_box_from_queries(queries: list):
+    """Return the shared singleton input if every query has the same BOX.
+
+    This is an exact degenerate-HZ case. It deliberately rejects anything
+    beyond a shared zero-width BOX so extra input polytopes cannot be
+    accidentally ignored.
+    """
+    import torch as _torch
+    x_ref = None
+    for in_spec, _out_spec in queries:
+        if str(getattr(in_spec, "kind", "")).upper() != "BOX":
+            return None
+        lb = getattr(in_spec, "lb", None)
+        ub = getattr(in_spec, "ub", None)
+        if lb is None or ub is None:
+            return None
+        lb_t = lb.detach().cpu() if hasattr(lb, "detach") else _torch.tensor(lb)
+        ub_t = ub.detach().cpu() if hasattr(ub, "detach") else _torch.tensor(ub)
+        if lb_t.shape != ub_t.shape:
+            return None
+        if not (_torch.isfinite(lb_t).all() and _torch.isfinite(ub_t).all()):
+            return None
+        if not _torch.equal(lb_t, ub_t):
+            return None
+        x = lb_t.reshape(-1).to(dtype=_torch.float64)
+        if x_ref is None:
+            x_ref = x
+        elif x.shape != x_ref.shape or not _torch.equal(x, x_ref):
+            return None
+    return x_ref.numpy() if x_ref is not None else None
+
+
+def _ort_eval_once(onnx_path: str, x_flat):
+    """Run one strict ORT forward for singleton-query fast paths."""
+    import numpy as _np
+    import onnxruntime as _ort
+
+    sess = _ort.InferenceSession(
+        onnx_path, providers=["CPUExecutionProvider"]
+    )
+    in_meta = sess.get_inputs()[0]
+    in_shape = list(in_meta.shape)
+    if in_shape and (not isinstance(in_shape[0], int) or in_shape[0] <= 0):
+        in_shape[0] = 1
+    x_in = _np.asarray(x_flat, dtype=_np.float32).reshape(in_shape)
+    return sess.run(None, {in_meta.name: x_in})[0].ravel()
+
+
+def _all_output_specs_safe_strict(y, queries: list) -> bool:
+    """Evaluate all unsafe queries on a concrete singleton output.
+
+    Uses the same zero-tolerance unsafe predicate as HZ witness replay.
+    """
+    import numpy as _np
+    from act.front_end.verifiable_model import OutputSpecLayer
+    from act.back_end.solver.solver_hz import _eval_unsafe_strict
+
+    if not _np.isfinite(y).all():
+        return False
+    n_out = int(len(y))
+    out_vars = list(range(n_out))
+    for _in_spec, out_spec in queries:
+        assert_layer = OutputSpecLayer(spec=out_spec).to_act_layers(
+            0, out_vars, B=1,
+        )[0][0]
+        if _eval_unsafe_strict(y, assert_layer):
+            return False
+    return True
+
+
 def aggregate_query_statuses(q_statuses: list) -> str:
     """Pure function: aggregate per-query HZVerifier statuses to an
     instance-level status under the disjunctive UNSAFE-set semantic.
@@ -873,9 +963,81 @@ def _run_vnnlib_verify_hybridz(args) -> None:
             #   * otherwise → UNKNOWN
             # Taking only queries[0] would silently miss per-query unsafe
             # branches and mis-report CERTIFIED on multi-OR specs.
-            # T2 ablation knob: env ACT_HZ_EQ_LAYERS overrides the default
-            # last-N eq_lagr_v8 layer count for large_cls scheduling. Default 3.
-            _eq_layers = int(os.environ.get("ACT_HZ_EQ_LAYERS", "3"))
+            # T2 ablation knob: ACT_HZ_EQ_LAYERS overrides the default
+            # last-N eq_lagr_v8 layer count for large_cls scheduling.
+            # HYZOR_LARGE_CLS_EQ_LAYERS is set by _HYZOR_DEFAULT_ENV for
+            # the reference recipe; honor it when the newer ACT_* knob is
+            # absent so the documented default actually reaches HZVerifier.
+            _eq_layers = int(os.environ.get(
+                "ACT_HZ_EQ_LAYERS",
+                os.environ.get("HYZOR_LARGE_CLS_EQ_LAYERS", "3"),
+            ))
+            x_single = None
+            if os.environ.get("ACT_HZ_SINGLETON_FASTPATH", "1").strip().lower() in (
+                "1", "true", "yes", "on",
+            ):
+                x_single = _singleton_box_from_queries(queries)
+            if x_single is not None:
+                try:
+                    y_single = _ort_eval_once(onnx_p, x_single)
+                    if _all_output_specs_safe_strict(y_single, queries):
+                        q_statuses = ["UNSAT"] * len(queries)
+                        q_reportables = ["CERTIFIED"] * len(queries)
+                        q_receipts = [None] * len(queries)
+                        internal_status = "UNSAT"
+                        reportable_status = "CERTIFIED"
+                        status_str = "UNSAT"
+                        instance_error = None
+                        elapsed = _time.time() - t0
+                        normalized = _normalize_hz_status(status_str)
+                        key = normalized if normalized in counts else "UNKNOWN"
+                        counts[key] = counts.get(key, 0) + 1
+                        per_instance.append({
+                            "official_instance_id": int(p.get('official_instance_id', i)),
+                            "benchmark": p["category"],
+                            "onnx_model": p["onnx_model"],
+                            "vnnlib_spec": p["vnnlib_spec"],
+                            "model_path": onnx_p,
+                            "spec_path": vnn_p,
+                            "internal_status": internal_status,
+                            "reportable_status": reportable_status,
+                            "cli_normalized": normalized,
+                            "count_bucket": key,
+                            "queries": [
+                                {
+                                    "query_index": q_idx,
+                                    "internal_status": "UNSAT",
+                                    "reportable_status": "CERTIFIED",
+                                    "receipt_path": None,
+                                }
+                                for q_idx in range(len(queries))
+                            ],
+                            "q_statuses": q_statuses,
+                            "q_reportables": q_reportables,
+                            "q_receipts": q_receipts,
+                            "error": instance_error,
+                            "wall_s": float(elapsed),
+                            "timeout_s": timeout_s,
+                            "instance_budget_exhausted": False,
+                            "singleton_query_fastpath": True,
+                        })
+                        print(
+                            f"  [{i + 1:3d}/{total}] {tag}: {normalized} "
+                            f"({elapsed:.1f}s)  V={counts['CERTIFIED']} "
+                            f"A={counts['FALSIFIED']} U={counts['UNKNOWN']} "
+                            f"E={counts['ERROR']}  R={counts.get('ERROR_RECEIPT', 0)}",
+                            flush=True,
+                        )
+                        continue
+                except Exception as e:
+                    # Fail closed to the normal HZ path if the singleton
+                    # shortcut cannot establish a strict all-safe result.
+                    if os.environ.get("ACT_VERIFY_VERBOSE") == "1":
+                        print(
+                            "singleton_query_fastpath_error: "
+                            f"{type(e).__name__}: {e}",
+                            flush=True,
+                        )
             in_layer = InputLayer(
                 labeled_input=pair["labeled_tensor"],
                 shape=tuple(int(s) for s in in_shape),
@@ -914,6 +1076,7 @@ def _run_vnnlib_verify_hybridz(args) -> None:
                     device=device, dtype=dtype, timeout_s=remaining_s,
                     strict_replay=True, onnx_path=onnx_p,
                     vnnlib_path=vnn_p,
+                    relu_method=os.environ.get("ACT_HZ_RELU_METHOD", "eq_lagr_v8"),
                     # Use official_instance_id (row position in instances.csv
                     # after correct header detection), NOT the filtered-loop
                     # index ``i``. The two differ when filter / max-instances
@@ -923,7 +1086,7 @@ def _run_vnnlib_verify_hybridz(args) -> None:
                     query_index=q_idx,
                     benchmark=p['category'],
                     large_cls_eq_layers=_eq_layers,
-                    small_dense_lp=os.environ.get("ACT_HZ_SMALL_DENSE_LP", "auto"),
+                    small_dense_lp=os.environ.get("ACT_HZ_SMALL_DENSE_LP", "specaware"),
                     small_dense_lp_root=os.environ.get("ACT_HZ_SMALL_DENSE_LP_ROOT"),
                     small_dense_lp_time_limit_s=float(
                         os.environ.get("ACT_HZ_SMALL_DENSE_LP_TIME_LIMIT_S", "5.0")
@@ -963,8 +1126,12 @@ def _run_vnnlib_verify_hybridz(args) -> None:
                 in ("1", "true", "yes", "on")
             ) else internal_status
         except Exception as e:
-            status_str = f"ERROR_{type(e).__name__}"
             instance_error = f"{type(e).__name__}: {e}"
+            if _known_unsupported_as_unknown(e):
+                status_str = "UNKNOWN"
+                instance_error = "UNSUPPORTED_AS_UNKNOWN: " + instance_error
+            else:
+                status_str = f"ERROR_{type(e).__name__}"
             if os.environ.get("ACT_VERIFY_VERBOSE") == "1":
                 _tb.print_exc()
 

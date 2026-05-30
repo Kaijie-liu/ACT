@@ -1,0 +1,24 @@
+{
+  "schema_version": 2,
+  "strict_bounded_failure": false,
+  "counts": {
+    "OK": 1,
+    "UNKNOWN_TIMEOUT": 0,
+    "UNKNOWN_RESOURCE_LIMIT": 0,
+    "ERROR": 0
+  },
+  "results": [
+    {
+      "benchmark": "lsnc_relu",
+      "instance_id": 0,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 5.002820266992785,
+      "peak_rss_mb": 1626.1640625,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/regression_final_20260529T143946Z/lsnc_iid0/per_instance_lsnc_relu_20260529T144004313681Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/regression_final_20260529T143946Z/lsnc_iid0",
+      "stdout_tail": "xtracted input shape: [1, 6]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 6)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 6 inputs, 8 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 6 inputs, 8 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'lsnc_relu'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed quadrotor2d_state_0.vnnlib: 13 query(ies)\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=lsnc_relu max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=180.0s)\n  [  1/1] lsnc_relu/onnx/relu_quadrotor2d_state.onnx@vnnlib/quadrotor2d_state_0.vnnlib: UNKNOWN (2.1s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.0 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/regression_final_20260529T143946Z/lsnc_iid0/per_instance_lsnc_relu_20260529T144004313681Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    }
+  ]
+}

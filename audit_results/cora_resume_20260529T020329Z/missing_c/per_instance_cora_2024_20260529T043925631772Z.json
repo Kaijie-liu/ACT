@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "benchmark": "cora_2024",
+  "formal_mode": true,
+  "timestamp_utc": "20260529T043925631772Z",
+  "canonical_root": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks",
+  "receipt_dir": "/data1/Kane/ACT/audit_results/cora_resume_20260529T020329Z/missing_c",
+  "wall_min": 0.03043489853541056,
+  "counts": {
+    "CERTIFIED": 0,
+    "FALSIFIED": 0,
+    "UNKNOWN": 0,
+    "ERROR": 1
+  },
+  "run_status": "FAILED",
+  "per_instance": [
+    {
+      "official_instance_id": 134,
+      "benchmark": "cora_2024",
+      "onnx_model": "./onnx/cifar10-set.onnx",
+      "vnnlib_spec": "vnnlib/cifar10-img126.vnnlib",
+      "model_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/onnx/cifar10-set.onnx",
+      "spec_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/vnnlib/cifar10-img126.vnnlib",
+      "internal_status": "ERROR",
+      "reportable_status": "ERROR",
+      "cli_normalized": "ERROR_VNNLibParseError",
+      "count_bucket": "ERROR",
+      "queries": [],
+      "q_statuses": [],
+      "q_reportables": [],
+      "q_receipts": [],
+      "error": "VNNLibParseError: Failed to parse /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/vnnlib/cifar10-img126.vnnlib: CUDA error: out of memory\nSearch for `cudaErrorMemoryAllocation' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.\nCUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.\nFor debugging consider passing CUDA_LAUNCH_BLOCKING=1\nCompile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.\n",
+      "wall_s": 1.826021432876587,
+      "timeout_s": 300.0,
+      "instance_budget_exhausted": false
+    }
+  ]
+}

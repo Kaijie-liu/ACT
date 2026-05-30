@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "benchmark": "collins_rul_cnn_2022",
+  "formal_mode": true,
+  "timestamp_utc": "20260529T231303934654Z",
+  "canonical_root": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks",
+  "receipt_dir": "/data1/Kane/ACT/audit_results/eight_bench_rerun_20260529T231224Z/collins_rul_cnn_2022_b0_15",
+  "wall_min": 0.024228453636169434,
+  "counts": {
+    "CERTIFIED": 0,
+    "FALSIFIED": 1,
+    "UNKNOWN": 0,
+    "ERROR": 0
+  },
+  "run_status": "PASSED",
+  "per_instance": [
+    {
+      "official_instance_id": 4,
+      "benchmark": "collins_rul_cnn_2022",
+      "onnx_model": "onnx/NN_rul_small_window_20.onnx",
+      "vnnlib_spec": "vnnlib/robustness_4perturbations_delta5_epsilon10_w20.vnnlib",
+      "model_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx",
+      "spec_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_4perturbations_delta5_epsilon10_w20.vnnlib",
+      "internal_status": "SAT",
+      "reportable_status": "FALSIFIED",
+      "cli_normalized": "FALSIFIED",
+      "count_bucket": "FALSIFIED",
+      "queries": [
+        {
+          "query_index": 0,
+          "internal_status": "UNSAT",
+          "reportable_status": "CERTIFIED",
+          "receipt_path": null
+        },
+        {
+          "query_index": 1,
+          "internal_status": "SAT",
+          "reportable_status": "FALSIFIED",
+          "receipt_path": "/data1/Kane/ACT/audit_results/eight_bench_rerun_20260529T231224Z/collins_rul_cnn_2022_b0_15/collins_rul_cnn_2022_4_q1_hz_walker_lp_0.json"
+        }
+      ],
+      "q_statuses": [
+        "UNSAT",
+        "SAT"
+      ],
+      "q_reportables": [
+        "CERTIFIED",
+        "FALSIFIED"
+      ],
+      "q_receipts": [
+        null,
+        "/data1/Kane/ACT/audit_results/eight_bench_rerun_20260529T231224Z/collins_rul_cnn_2022_b0_15/collins_rul_cnn_2022_4_q1_hz_walker_lp_0.json"
+      ],
+      "error": null,
+      "wall_s": 1.4536371231079102,
+      "timeout_s": 180.0,
+      "instance_budget_exhausted": false
+    }
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "schema_version": 2,
+  "strict_bounded_failure": false,
+  "counts": {
+    "OK": 5,
+    "UNKNOWN_TIMEOUT": 0,
+    "UNKNOWN_RESOURCE_LIMIT": 0,
+    "ERROR": 0
+  },
+  "results": [
+    {
+      "benchmark": "cgan_2023",
+      "instance_id": 5,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 6.5040873780380934,
+      "peak_rss_mb": 1859.94921875,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/cgan_auto_triangle_full_20260529T140706Z/b1/per_instance_cgan_2023_20260529T140713648837Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/cgan_auto_triangle_full_20260529T140706Z/b1",
+      "stdout_tail": "nd.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cgan_2023'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed cGAN_imgSz32_nCh_3_prop_1_input_eps_0.015_output_eps_0.020.vnnlib: 2 query(ies)\nINFO:act.back_end.solver.solver_hz:convtranspose_triangle_profile ACTIVE: convtranspose=4 relus=7 (ReLUs use triangle unless ACT_HZ_AUTO_CONVTRANSPOSE_TRIANGLE=0)\nINFO:act.back_end.solver.solver_hz:convtranspose_triangle_profile ACTIVE: convtranspose=4 relus=7 (ReLUs use triangle unless ACT_HZ_AUTO_CONVTRANSPOSE_TRIANGLE=0)\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=cgan_2023 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=240.0s)\n  [  1/1] cgan_2023/onnx/cGAN_imgSz32_nCh_3.onnx@vnnlib/cGAN_imgSz32_nCh_3_prop_1_input_eps_0.015_output_eps_0.020.vnnlib: UNKNOWN (3.5s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.1 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/cgan_auto_triangle_full_20260529T140706Z/b1/per_instance_cgan_2023_20260529T140713648837Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "cgan_2023",
+      "instance_id": 6,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 6.503364913980477,
+      "peak_rss_mb": 1830.01953125,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/cgan_auto_triangle_full_20260529T140706Z/b1/per_instance_cgan_2023_20260529T140719840984Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/cgan_auto_triangle_full_20260529T140706Z/b1",
+      "stdout_tail": "nd.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cgan_2023'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed cGAN_imgSz32_nCh_3_prop_2_input_eps_0.015_output_eps_0.020.vnnlib: 2 query(ies)\nINFO:act.back_end.solver.solver_hz:convtranspose_triangle_profile ACTIVE: convtranspose=4 relus=7 (ReLUs use triangle unless ACT_HZ_AUTO_CONVTRANSPOSE_TRIANGLE=0)\nINFO:act.back_end.solver.solver_hz:convtranspose_triangle_profile ACTIVE: convtranspose=4 relus=7 (ReLUs use triangle unless ACT_HZ_AUTO_CONVTRANSPOSE_TRIANGLE=0)\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=cgan_2023 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=240.0s)\n  [  1/1] cgan_2023/onnx/cGAN_imgSz32_nCh_3.onnx@vnnlib/cGAN_imgSz32_nCh_3_prop_2_input_eps_0.015_output_eps_0.020.vnnlib: UNKNOWN (3.2s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.1 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/cgan_auto_triangle_full_20260529T140706Z/b1/per_instance_cgan_2023_20260529T140719840984Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "cgan_2023",
+      "instance_id": 7,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 6.50340986601077,
+      "peak_rss_mb": 1828.85546875,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/cgan_auto_triangle_full_20260529T140706Z/b1/per_instance_cgan_2023_20260529T140726398760Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/cgan_auto_triangle_full_20260529T140706Z/b1",
+      "stdout_tail": ".vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cgan_2023'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed cGAN_imgSz32_nCh_3_prop_3_input_eps_0.015_output_eps_0.020.vnnlib: 2 query(ies)\nINFO:act.back_end.solver.solver_hz:convtranspose_triangle_profile ACTIVE: convtranspose=4 relus=7 (ReLUs use triangle unless ACT_HZ_AUTO_CONVTRANSPOSE_TRIANGLE=0)\nINFO:act.back_end.solver.solver_hz:convtranspose_triangle_profile ACTIVE: convtranspose=4 relus=7 (ReLUs use triangle unless ACT_HZ_AUTO_CONVTRANSPOSE_TRIANGLE=0)\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=cgan_2023 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=240.0s)\n  [  1/1] cgan_2023/onnx/cGAN_imgSz32_nCh_3.onnx@vnnlib/cGAN_imgSz32_nCh_3_prop_3_input_eps_0.015_output_eps_0.020.vnnlib: FALSIFIED (3.3s)  V=0 A=1 U=0 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.1 min\n  FALSIFIED    1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/cgan_auto_triangle_full_20260529T140706Z/b1/per_instance_cgan_2023_20260529T140726398760Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "cgan_2023",
+      "instance_id": 8,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 7.003214220050722,
+      "peak_rss_mb": 2213.0078125,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/cgan_auto_triangle_full_20260529T140706Z/b1/per_instance_cgan_2023_20260529T140733574601Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/cgan_auto_triangle_full_20260529T140706Z/b1",
+      "stdout_tail": "rser:Parsed VNNLIB: 5 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 5 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cgan_2023'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed cGAN_imgSz64_nCh_1_prop_0_input_eps_0.010_output_eps_0.015.vnnlib: 2 query(ies)\nINFO:act.back_end.solver.solver_hz:convtranspose_triangle_profile ACTIVE: convtranspose=5 relus=9 (ReLUs use triangle unless ACT_HZ_AUTO_CONVTRANSPOSE_TRIANGLE=0)\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=cgan_2023 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=240.0s)\n  [  1/1] cgan_2023/onnx/cGAN_imgSz64_nCh_1.onnx@vnnlib/cGAN_imgSz64_nCh_1_prop_0_input_eps_0.010_output_eps_0.015.vnnlib: FALSIFIED (3.9s)  V=0 A=1 U=0 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.1 min\n  FALSIFIED    1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/cgan_auto_triangle_full_20260529T140706Z/b1/per_instance_cgan_2023_20260529T140733574601Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "cgan_2023",
+      "instance_id": 9,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 11.006869088974781,
+      "peak_rss_mb": 2305.87109375,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/cgan_auto_triangle_full_20260529T140706Z/b1/per_instance_cgan_2023_20260529T140744538746Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/cgan_auto_triangle_full_20260529T140706Z/b1",
+      "stdout_tail": ".vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cgan_2023'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed cGAN_imgSz64_nCh_1_prop_1_input_eps_0.010_output_eps_0.015.vnnlib: 2 query(ies)\nINFO:act.back_end.solver.solver_hz:convtranspose_triangle_profile ACTIVE: convtranspose=5 relus=9 (ReLUs use triangle unless ACT_HZ_AUTO_CONVTRANSPOSE_TRIANGLE=0)\nINFO:act.back_end.solver.solver_hz:convtranspose_triangle_profile ACTIVE: convtranspose=5 relus=9 (ReLUs use triangle unless ACT_HZ_AUTO_CONVTRANSPOSE_TRIANGLE=0)\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=cgan_2023 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=240.0s)\n  [  1/1] cgan_2023/onnx/cGAN_imgSz64_nCh_1.onnx@vnnlib/cGAN_imgSz64_nCh_1_prop_1_input_eps_0.010_output_eps_0.015.vnnlib: FALSIFIED (7.9s)  V=0 A=1 U=0 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.1 min\n  FALSIFIED    1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/cgan_auto_triangle_full_20260529T140706Z/b1/per_instance_cgan_2023_20260529T140744538746Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    }
+  ]
+}

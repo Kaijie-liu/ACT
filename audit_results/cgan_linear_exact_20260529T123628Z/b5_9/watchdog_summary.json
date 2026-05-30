@@ -1,0 +1,72 @@
+{
+  "schema_version": 2,
+  "strict_bounded_failure": false,
+  "counts": {
+    "OK": 1,
+    "UNKNOWN_TIMEOUT": 3,
+    "UNKNOWN_RESOURCE_LIMIT": 1,
+    "ERROR": 0
+  },
+  "results": [
+    {
+      "benchmark": "cgan_2023",
+      "instance_id": 5,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 186.0982983589638,
+      "peak_rss_mb": 4512.703125,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/cgan_linear_exact_20260529T123628Z/b5_9/per_instance_cgan_2023_20260529T123935538278Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/cgan_linear_exact_20260529T123628Z/b5_9",
+      "stdout_tail": "el_loader:  \u2713 Input shape: (1, 5)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 5 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 5 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cgan_2023'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed cGAN_imgSz32_nCh_3_prop_1_input_eps_0.015_output_eps_0.020.vnnlib: 2 query(ies)\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=cgan_2023 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=180.0s)\n  [  1/1] cgan_2023/onnx/cGAN_imgSz32_nCh_3.onnx@vnnlib/cGAN_imgSz32_nCh_3_prop_1_input_eps_0.015_output_eps_0.020.vnnlib: UNKNOWN (182.7s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=3.0 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/cgan_linear_exact_20260529T123628Z/b5_9/per_instance_cgan_2023_20260529T123935538278Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "cgan_2023",
+      "instance_id": 6,
+      "status": "UNKNOWN_TIMEOUT",
+      "cli_normalized": "UNKNOWN_TIMEOUT",
+      "wall_s": 188.82638828794006,
+      "peak_rss_mb": 8526.75,
+      "returncode": -15,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/cgan_linear_exact_20260529T123628Z/b5_9/per_instance_cgan_2023_watchdog_iid6_20260529T124245586803Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/cgan_linear_exact_20260529T123628Z/b5_9",
+      "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: cgan_2023/onnx/cGAN_imgSz32_nCh_3.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cgan_2023/onnx/cGAN_imgSz32_nCh_3.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: cGAN_imgSz32_nCh_3.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 5]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 5)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 5 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 5 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cgan_2023'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed cGAN_imgSz32_nCh_3_prop_2_input_eps_0.015_output_eps_0.020.vnnlib: 2 query(ies)\n"
+    },
+    {
+      "benchmark": "cgan_2023",
+      "instance_id": 7,
+      "status": "UNKNOWN_TIMEOUT",
+      "cli_normalized": "UNKNOWN_TIMEOUT",
+      "wall_s": 188.40478195494507,
+      "peak_rss_mb": 10132.66796875,
+      "returncode": -15,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/cgan_linear_exact_20260529T123628Z/b5_9/per_instance_cgan_2023_watchdog_iid7_20260529T124553992295Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/cgan_linear_exact_20260529T123628Z/b5_9",
+      "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: cgan_2023/onnx/cGAN_imgSz32_nCh_3.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cgan_2023/onnx/cGAN_imgSz32_nCh_3.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: cGAN_imgSz32_nCh_3.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 5]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 5)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 5 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 5 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cgan_2023'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed cGAN_imgSz32_nCh_3_prop_3_input_eps_0.015_output_eps_0.020.vnnlib: 2 query(ies)\n"
+    },
+    {
+      "benchmark": "cgan_2023",
+      "instance_id": 8,
+      "status": "UNKNOWN_TIMEOUT",
+      "cli_normalized": "UNKNOWN_TIMEOUT",
+      "wall_s": 189.0034575460013,
+      "peak_rss_mb": 8152.60546875,
+      "returncode": -15,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/cgan_linear_exact_20260529T123628Z/b5_9/per_instance_cgan_2023_watchdog_iid8_20260529T124902996471Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/cgan_linear_exact_20260529T123628Z/b5_9",
+      "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: cgan_2023/onnx/cGAN_imgSz64_nCh_1.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cgan_2023/onnx/cGAN_imgSz64_nCh_1.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: cGAN_imgSz64_nCh_1.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 5]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 5)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 5 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 5 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cgan_2023'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed cGAN_imgSz64_nCh_1_prop_0_input_eps_0.010_output_eps_0.015.vnnlib: 2 query(ies)\n"
+    },
+    {
+      "benchmark": "cgan_2023",
+      "instance_id": 9,
+      "status": "UNKNOWN_RESOURCE_LIMIT",
+      "cli_normalized": "UNKNOWN_RESOURCE_LIMIT",
+      "wall_s": 112.8589812379796,
+      "peak_rss_mb": 13414.92578125,
+      "returncode": -15,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/cgan_linear_exact_20260529T123628Z/b5_9/per_instance_cgan_2023_watchdog_iid9_20260529T125055855931Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/cgan_linear_exact_20260529T123628Z/b5_9",
+      "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: cgan_2023/onnx/cGAN_imgSz64_nCh_1.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cgan_2023/onnx/cGAN_imgSz64_nCh_1.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: cGAN_imgSz64_nCh_1.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 5]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 5)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 5 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 5 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cgan_2023'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed cGAN_imgSz64_nCh_1_prop_1_input_eps_0.010_output_eps_0.015.vnnlib: 2 query(ies)\n"
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+[0;93m2026-05-28 00:20:42.305784039 [W:onnxruntime:Default, device_discovery.cc:211 DiscoverDevicesForPlatform] GPU device discovery failed: device_discovery.cc:91 ReadFileContents Failed to open file: "/sys/class/drm/card0/device/vendor"[m
+[94mUserWarning: 
+cuda cannot run in sound mode. Sound mode changed to False.[0m
+[94mUserWarning: 
+NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition with CUDA capability sm_120 is not compatible with the current PyTorch installation.
+The current PyTorch install supports CUDA capabilities sm_50 sm_60 sm_61 sm_70 sm_75 sm_80 sm_86 sm_37 sm_90 compute_37.
+If you want to use the NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition GPU with PyTorch, please check the instructions at https://pytorch.org/get-started/locally/
+[0m
+Traceback (most recent call last):
+  File "/data1/Kane/pyrat/run_pure.py", line 159, in <module>
+    main()
+  File "./pyrat/main.py", line 142, in main
+  File "/data1/Kane/miniconda3/envs/pyrat/lib/python3.10/site-packages/trace_events/profiler.py", line 242, in wrapper
+    return func(*call_args, **call_kwargs)
+  File "./pyrat/analyzer/analyzer.py", line 121, in analyze
+  File "./pyrat/analyzer/branch_and_bound.py", line 61, in branch_and_bound
+  File "./pyrat/analyzer/branch_and_bound.py", line 112, in call_analysis
+  File "./pyrat/analyzer/branch_and_bound.py", line 157, in _analyse_and_split
+  File "./pyrat/analyzer/branch_and_bound.py", line 219, in analyze_branch
+  File "/data1/Kane/miniconda3/envs/pyrat/lib/python3.10/site-packages/trace_events/profiler.py", line 242, in wrapper
+    return func(*call_args, **call_kwargs)
+  File "./pyrat/analyzer/analyzer_single.py", line 84, in analyze_single
+  File "/data1/Kane/miniconda3/envs/pyrat/lib/python3.10/site-packages/trace_events/profiler.py", line 242, in wrapper
+    return func(*call_args, **call_kwargs)
+  File "./pyrat/analyzer/analyzer_single.py", line 178, in _analyze_graph
+  File "./pyrat/analyzer/analyze_vars.py", line 76, in handle_layer
+  File "./pyrat/domains/zonotope.py", line 1407, in handle_layer
+  File "./pyrat/domains/domain.py", line 631, in handle_layer
+  File "./pyrat/domains/con_zonotope.py", line 189, in relu
+  File "./pyrat/domains/con_zonotope.py", line 232, in _constr_relu
+  File "./pyrat/domains/con_zonotope.py", line 744, in add_constraint
+  File "./pyrat/domains/noise_box_group.py", line 316, in concat
+  File "./pyrat/domains/noise_box_group.py", line 232, in __add__
+  File "./pyrat/domains/noise_box_group.py", line 212, in add_one_box
+  File "./pyrat/domains/noise_matrix.py", line 65, in __add__
+  File "./pyrat/domains/abstract_matrix.py", line 132, in __add__
+  File "./pyrat/domains/noise_matrix.py", line 47, in from_values
+  File "./pyrat/domains/torch_matrix.py", line 431, in from_values
+  File "./pyrat/domains/torch_matrix.py", line 423, in as_self
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 32.00 MiB. GPU 0 has a total capacity of 94.96 GiB of which 31.38 MiB is free. Process 2687037 has 690.00 MiB memory in use. Process 1390388 has 836.00 MiB memory in use. Process 1392385 has 1.30 GiB memory in use. Process 1392392 has 2.36 GiB memory in use. Process 1395694 has 87.89 GiB memory in use. Including non-PyTorch memory, this process has 1.28 GiB memory in use. Of the allocated memory 313.79 MiB is allocated by PyTorch, and 84.21 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)

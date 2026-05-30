@@ -1,0 +1,15 @@
+[ACT] Auto-detecting project root: .
+[ACT] Gurobi license found: modules/gurobi/gurobi.lic
+{
+  "benchmark": "collins_rul_cnn_2022",
+  "instance_id": 0,
+  "status": "OK",
+  "cli_normalized": "OK",
+  "wall_s": 4.002322309999727,
+  "peak_rss_mb": 1577.30078125,
+  "returncode": 0,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/regression_sigmoid_20260529T121033Z/collins_rul_cnn_2022_iid0/per_instance_collins_rul_cnn_2022_20260529T121038814552Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/regression_sigmoid_20260529T121033Z/collins_rul_cnn_2022_iid0",
+  "stdout_tail": "untime/tools/python/remove_initializer_from_input.py.\u001b[m\n\u001b[0;93m2026-05-29 22:10:38.811199824 [W:onnxruntime:, graph.cc:1362 Graph] Initializer fc_2_B appears in graph inputs and will not be treated as constant value/weight. This may prevent some of the graph optimizations, like const folding. Move it out of graph inputs if there is no need to override it, by either re-generating the model with latest exporter/converter or with the tool onnxruntime/tools/python/remove_initializer_from_input.py.\u001b[m\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=collins_rul_cnn_2022 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=120.0s)\n  [  1/1] collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx@vnnlib/robustness_2perturbations_delta5_epsilon10_w20.vnnlib: FALSIFIED (0.8s)  V=0 A=1 U=0 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.0 min\n  FALSIFIED    1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/regression_sigmoid_20260529T121033Z/collins_rul_cnn_2022_iid0/per_instance_collins_rul_cnn_2022_20260529T121038814552Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+}
+[watchdog] summary written: /data1/Kane/ACT/audit_results/regression_sigmoid_20260529T121033Z/collins_rul_cnn_2022_iid0/watchdog_summary.json

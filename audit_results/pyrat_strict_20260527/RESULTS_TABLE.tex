@@ -1,0 +1,137 @@
+% Single-page LaTeX results slide for VNN-COMP 2025 sweep, PyRAT STRICT (no-helper).
+% Compile standalone (`pdflatex RESULTS_TABLE.tex`).
+%
+% V = sound UNSAT (pyrat's abstract analyzer proved over-approx \subseteq safe)
+% A = sound SAT  (pyrat's abstract analyzer proved over-approx \subseteq violation;
+%                 no PGD / center / random-sample witness search; the look_random(nb=1)
+%                 witness shim is passive — returns True without invoking model.infer)
+% U = unknown / timeout (combined per the cross-tool table convention)
+% E = tool error (pyrat-internal: AssertionError, AttributeError, NotImplementedError,
+%                 hardware OOM that does not resolve under serial retry)
+%
+% PyRAT is binary-only (.pyc, Python 3.10); STRICT is a runtime monkey-patch
+% (`patches/run_pure.py`) plus forced CLI flags. The .ini knobs come from the
+% competition commit 4a9a4f0:vnn_config/* with parser-compat renames only
+% (see patches/competition_ini_rename.patch). See README_REPRODUCIBILITY.md.
+%
+% Headline finding: PyRAT preserves \approx 100\% of its analyzer-only verifier
+% capability without helpers on the benchmarks it natively handles (acasxu, malbeware,
+% safenlp, linearizenn, dist_shift, collins_rul, tllverifybench). Its losses are
+% (i) the SAT side that depended on PGD (safenlp -592 F, cora -128 F, sat_relu -50 F,
+% soundnessbench -35 F) and (ii) pyrat-internal crashes on ResNet/ViT/YOLO that the
+% competition's PGD was masking (cifar100 -135, tinyimagenet -199, metaroom -39,
+% cctsdb_yolo -39, yolo -31, relusplitter -64).
+
+\documentclass[10pt]{beamer}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage[scaled=0.85]{beramono}
+\usepackage{caption}
+
+\definecolor{cdone}{HTML}{2E7D32}
+\definecolor{cunsup}{HTML}{6A1B9A}
+\definecolor{cwarn}{HTML}{C62828}
+
+\newcommand{\sdone}{{\color{cdone}\textbf{D}}}
+\newcommand{\sunsup}{{\color{cunsup}\textbf{U}}}
+\newcommand{\sblock}{{\color{cwarn}\textbf{B}}}
+
+\title{\large \texttt{PyRAT} VNN-COMP 2025 sweep --- \texttt{STRICT} (no-helper)}
+\date{snapshot: 2026-05-28 14:14}
+
+\begin{document}
+
+\begin{frame}[fragile]
+\frametitle{PyRAT STRICT (no helper): per-benchmark results}
+
+\centering\tiny
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{l c r r r r r r r l}
+\toprule
+\textbf{Benchmark} & \textbf{S} & \textbf{N} & \textbf{T/i (s)} & \textbf{V} & \textbf{A} & \textbf{U} & \textbf{E} & \textbf{Time(s)} & \textbf{Remark} \\
+\midrule
+test                              & \sdone & 5     & 60      & 2            & 0           & 0     & 3   & 26      & smoke baseline (3/5 cancelled by intrinsic shape mismatch) \\
+collins\_aerospace\_benchmark     & \sdone & 6     & 3\,600  & 0            & 0           & 6     & 0   & 152     & YOLO; pyrat returns \texttt{unknown} on all \\
+cersyve                           & \sdone & 12    & 100     & 3            & 4           & 5     & 0   & 749     & 3 V analyzer-proved + 4 A analyzer-proved UNSAFE \\
+vggnet16\_2022                    & \sdone & 18    & 1\,200  & 14           & 1           & 0     & 3   & 1\,224  & VGG-16; 3 hw-OOM unresolved \\
+cgan\_2023                        & \sdone & 21    & 1\,800  & 9            & \textbf{10} & 0     & 2   & 259     & \texttt{small\_transformer} (2/21) fails to load \\
+tllverifybench\_2023              & \sdone & 32    & 600     & 15           & \textbf{15} & 2     & 0   & 6\,642  & analyzer matches official's 15\,V exactly \\
+cctsdb\_yolo\_2023                & \sdone & 39    & 350     & 0            & 0           & 0     & 39  & 101     & exhaustive disabled $\Rightarrow$ unsupported \\
+traffic\_signs\_recognition\_2023 & \sdone & 45    & 480     & 0            & 0           & 45    & 0   & 21\,864 & all 45 timeout (no V/A reachable without PGD) \\
+soundnessbench                    & \sdone & 50    & 150     & 0            & 0           & 50    & 0   & 5\,566  & boundary-stress, needs helper \\
+linearizenn\_2024                 & \sdone & 60    & 900     & 59           & 1           & 0     & 0   & 327     & 59\,V/1\,A \emph{exact match} with official \\
+collins\_rul\_cnn\_2022           & \sdone & 62    & 1\,800  & 39           & \textbf{19} & 4     & 0   & 7\,975  & 39\,V matches official; lost 4\,F$\to$T \\
+ml4acopf\_2024                    & \sdone & 69    & 600     & 37           & 3           & 23    & 6   & 15\,378 & 6 instances exceed 96\,GB VRAM (\texttt{300\_ieee\_*}) \\
+dist\_shift\_2023                 & \sdone & 72    & 300     & 64           & 3           & 5     & 0   & 3\,015  & 64\,V matches official; lost 4\,F$\to$T \\
+yolo\_2023                        & \sdone & 72    & 300     & 40           & 0           & 1     & 31  & 3\,247  & 31 intrinsic \texttt{AttributeError} on \texttt{NoneType} \\
+lsnc\_relu                        & \sdone & 80    & 25      & 0            & 0           & 80    & 0   & 3\,926  & \texttt{T=25} too tight; all timeout \\
+metaroom\_2023                    & \sdone & 100   & 210     & 60           & 0           & 1     & 39  & 679     & 39 hit \texttt{AssertionError} (degenerate bound) \\
+sat\_relu                         & \sdone & 100   & 100     & 12           & 0           & 88    & 0   & 10\,268 & \textbf{+3\,V} vs official 9; SAT half (50) all timeout \\
+malbeware                         & \sdone & 150   & 100     & \textbf{125} & 0           & 25    & 0   & 3\,325  & \textbf{125\,V $>$ official 121\,V} \\
+cora\_2024                        & \sdone & 180   & 30      & 20           & 0           & 160   & 0   & 5\,848  & 20\,V matches official; SAT slice (128) gone \\
+acasxu\_2023                      & \sdone & 186   & 116     & \textbf{138} & \textbf{40} & 8     & 0   & 5\,128  & \textbf{138\,V/40\,A} (off.\ 139/46; near-complete) \\
+nn4sys                            & \sdone & 194   & 800     & 50           & 0           & 144   & 0   & 23\,339 & \textbf{50\,V}, +10 over official 40 (no harness wall cap) \\
+cifar100\_2024                    & \sdone & 200   & 100     & 15           & 0           & 50    & 135 & 11\,691 & 135 \texttt{AssertionError} (degenerate bound) \\
+tinyimagenet\_2024                & \sdone & 200   & 100     & 0            & 0           & 1     & 199 & 4\,192  & 199 \texttt{AssertionError} (degenerate bound) \\
+vit\_2023                         & \sdone & 200   & 100     & 82           & 0           & 118   & 0   & 15\,102 & 82\,V analyzer-proved; PyRAT handles ViT \\
+relusplitter                      & \sdone & 220   & 180     & 41           & 0           & 115   & 64  & 13\,615 & 64 intrinsic (oval21 RSPLITTER models) \\
+safenlp\_2024                     & \sdone & 1\,080 & 20      & \textbf{417} & \textbf{55} & 608   & 0   & 16\,735 & \textbf{417\,V/55\,A} (off.\ 331/647; \textbf{+86\,V} from BaB) \\
+\midrule
+\textbf{TOTAL}                    &        & 3\,453 &        & \textbf{1\,242} & \textbf{151} & 1\,539 & 521 & 180\,386 & V+A=\textbf{1\,393}/3\,453=\textbf{40.3\%} \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.4em}
+\centering\scriptsize
+\textbf{Totals.}\quad
+N=3\,453\quad
+V=\textbf{1\,242}\quad
+A=\textbf{151}\quad
+U+T=1\,539\quad
+E=521\quad
+($\Rightarrow$ resolved=\textbf{1\,393}/3\,453=\textbf{40.3\%},
+sound\,=\,100\%)
+
+\vspace{0.2em}
+\centering\scriptsize
+\textbf{Errors (E=521) breakdown.}\quad
+135 \texttt{cifar100} + 199 \texttt{tinyimagenet} + 39 \texttt{metaroom} +
+39 \texttt{cctsdb\_yolo} + 64 \texttt{relusplitter} + 31 \texttt{yolo} +
+6 \texttt{ml4acopf} + 3 \texttt{vggnet16} + 3 \texttt{test} + 2 \texttt{cgan} =
+521 (all pyrat-internal: AssertionError / AttributeError / hw-OOM on
+\texttt{300\_ieee\_ml4acopf}; \emph{not} our methodology).
+
+\vspace{0.3em}
+\centering\scriptsize
+\textbf{Status.}\;
+\sdone{}=ran to completion under STRICT.
+
+\textbf{Columns.}\;
+N=instances\quad
+T/i=per-instance timeout (max in benchmark)\quad
+V=sound UNSAT (analyzer-only)\quad
+A=sound SAT (analyzer-only; no center / PGD / sampling)\quad
+U=unknown/timeout\quad
+E=tool error\quad
+Time=total wall-clock (s)
+
+\vspace{0.2em}
+\centering\scriptsize
+\textbf{Protocol.}\;
+\texttt{STRICT}=runtime monkey-patch (\texttt{patches/run\_pure.py}) that rebinds
+every PyRAT falsification entry point to a no-op stub before \texttt{pyrat.main()} is
+invoked; \texttt{look\_random(nb=1)} is replaced with a \emph{passive} shim that
+returns \texttt{True} \emph{without} calling \texttt{model.infer}, so the UNSAFE
+witness path preserves the analyzer's verdict but invokes \textbf{no} concrete-point
+evaluation. CLI flags \texttt{--check skip --nb\_random 0 --attack bounds
+--batch\_attack False --exhaustive False} are forced. Audited (sweep
+\texttt{grep} for \texttt{pgd|deepfool|[CEX]|counter[\_ ]ex|infer\_counter}
+over all 3\,453 \texttt{.log} files returns 0 matches). The \texttt{.ini}
+configs are taken from competition commit \texttt{4a9a4f0:vnn\_config/} with
+two semantic-identity parser renames (see \texttt{patches/}).
+
+\end{frame}
+
+\end{document}

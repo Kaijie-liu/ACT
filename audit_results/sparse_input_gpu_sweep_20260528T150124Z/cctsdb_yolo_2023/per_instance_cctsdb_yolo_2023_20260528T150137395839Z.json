@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "benchmark": "cctsdb_yolo_2023",
+  "formal_mode": true,
+  "timestamp_utc": "20260528T150137395839Z",
+  "canonical_root": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks",
+  "receipt_dir": "/data1/Kane/ACT/audit_results/sparse_input_gpu_sweep_20260528T150124Z/cctsdb_yolo_2023",
+  "wall_min": 0.009416786829630534,
+  "counts": {
+    "CERTIFIED": 0,
+    "FALSIFIED": 0,
+    "UNKNOWN": 0,
+    "ERROR": 1
+  },
+  "run_status": "FAILED",
+  "per_instance": [
+    {
+      "official_instance_id": 2,
+      "benchmark": "cctsdb_yolo_2023",
+      "onnx_model": "onnx/patch-3.onnx",
+      "vnnlib_spec": "vnnlib/spec_onnx_patch-3_idx_05840_0.vnnlib",
+      "model_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cctsdb_yolo_2023/onnx/patch-3.onnx",
+      "spec_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cctsdb_yolo_2023/vnnlib/spec_onnx_patch-3_idx_05840_0.vnnlib",
+      "internal_status": "ERROR",
+      "reportable_status": "ERROR",
+      "cli_normalized": "ERROR_ValueError",
+      "count_bucket": "ERROR",
+      "queries": [],
+      "q_statuses": [],
+      "q_reportables": [],
+      "q_receipts": [],
+      "error": "ValueError: OnnxSlice at slice_23: cannot resolve starts/ends",
+      "wall_s": 0.5649547576904297,
+      "timeout_s": 180.0,
+      "instance_budget_exhausted": false
+    }
+  ]
+}

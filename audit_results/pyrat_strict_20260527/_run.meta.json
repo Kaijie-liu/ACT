@@ -1,0 +1,76 @@
+{
+  "tool": "PyRAT (vnncomp2025, STRICT no-helper)",
+  "tool_dir": "/data1/Kane/pyrat",
+  "tool_commit_head": "95c72fc22bf084cde033fe5a65e1232e7af752f5",
+  "tool_commit_head_msg": "Merge branch 'fix-public-version' into 'main'",
+  "tool_commit_competition": "4a9a4f065a623be395ac4b3385a47ea81638dc48",
+  "tool_commit_competition_msg": "Final version for VNN2025 (arXiv:2512.19007 §PyRAT)",
+  "tool_distribution": "PyRAT-public compiled .pyc (CEA proprietary, Python 3.10 only)",
+  "tool_source_state": "binary-only (.pyc); helper-disable mechanism is runtime monkey-patch in run_pure.py + forced CLI flag overrides — no source-level patches were applied (source is not distributed)",
+  "python": "/data1/Kane/miniconda3/envs/pyrat/bin/python",
+  "python_version": "3.10.17",
+  "torch_version": "2.5.1+cuda",
+  "matlab_bin": null,
+  "matlab_version": null,
+  "started_at_main": "2026-05-27T13:15:54+1000",
+  "finished_at_main": "2026-05-28T05:07:33+1000",
+  "started_at_oom_rerun": "2026-05-28T08:46:37+1000",
+  "finished_at_oom_rerun": "2026-05-28T14:14:00+1000",
+  "host": "dell-pro-max-tower-t2",
+  "host_os": "Linux 6.14.0-1020-oem Ubuntu",
+  "host_cpu_cores": 20,
+  "host_gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q (sm_120, 96 GB)",
+  "host_ram_gb": 125,
+  "bench_root": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks",
+  "results_root": "/data1/Kane/ACT/audit_results/pyrat_strict_20260527",
+  "ini_provenance": {
+    "source_commit": "4a9a4f065a623be395ac4b3385a47ea81638dc48",
+    "source_path": "vnn_config/<bench>.ini",
+    "applied_path": "/data1/Kane/pyrat/benchmarks/vnn_files/vnn_config_2025_competition/<bench>.ini",
+    "renames_applied": [
+      "nb_repeat -> nb_restart (semantic-identity rename; HEAD pyrat parser only recognizes nb_restart)",
+      "step_ratio -> lr_attack (semantic-identity rename; same reason)"
+    ],
+    "note": "All other ini knobs are bit-identical to the competition commit's vnn_config/ tree."
+  },
+  "flags": {
+    "helper_disabled_via": "runtime monkey-patch (run_pure.py) + forced CLI flag overrides",
+    "audited": "all 6 falsification entry points patched to no-op; look_random(nb=1) shim returns True without touching model.infer; --check=skip enforced via _force_flags overriding ini's check=both/each_step",
+    "patched_pyrat_symbols": [
+      "pyrat.attacks.attacks.{pgd_attack, pgd_attack_batched, deepfool_attack} -> (None,None) stub",
+      "pyrat.attacks.utils_attacks.{counter_adv, look_for_counter, look_for_counter_adv, infer_counter} -> False",
+      "pyrat.attacks.utils_attacks.look_random -> passive shim: returns True if nb==1, False otherwise (NO model.infer call in either branch)",
+      "pyrat.analyzer.analyzer.{counter_adv, infer_counter, look_random} -> same as above (imported references in analyzer module's globals)",
+      "pyrat.analyzer.analyzer_single.{look_random, look_for_counter} -> same as above",
+      "pyrat.partitioning.scorers.output_influence_scorer.OutputInfluenceScorer.score -> abstract-width fallback (no model.infer)"
+    ],
+    "forced_cli_flags": {
+      "--check": "skip",
+      "--nb_random": "0",
+      "--attack": "bounds",
+      "--batch_attack": "False",
+      "--exhaustive": "False"
+    },
+    "TIMEOUT_CAP_SEC": 0,
+    "KILL_GRACE_SEC": 15,
+    "PER_INSTANCE_OUTER_TIMEOUT_S": "T_csv + 120 (Python subprocess.run timeout, MUST exceed bash watchdog T_csv+45)",
+    "GATE_TINY_MIN_GB": 8,
+    "GATE_MID_MIN_GB": 20,
+    "GATE_BIG_MIN_GB": 40,
+    "GATE_INTERVAL_S": 30,
+    "GATE_TIMEOUT_S": 7200,
+    "MAIN_TINY_WORKERS": 6,
+    "MAIN_MID_WORKERS": 2,
+    "MAIN_BIG_WORKERS": 1,
+    "BIG_ONLY_PARALLEL_SUPERVISOR_WORKERS": 1
+  },
+  "patches": [
+    "patches/run_pure.py.patch (the monkey-patch shim itself)",
+    "patches/competition_ini_rename.patch (nb_repeat/step_ratio renames)"
+  ],
+  "instances_csv_anomalies": [
+    "sat_relu: 2 duplicate (onnx, vnnlib) tuples in instances.csv (sat_v6_c27 and unsat_v6_c30); both archived rows agree on verdict",
+    "traffic_signs_recognition_2023: was double-launched by both supervisors due to skip-if-complete race (BIG_GPU is in both run_all_2025.sh and run_big_only.sh queues; harness check raced); deduplicated post-hoc by keeping non-error/lower-wall row per (onnx, vnnlib)"
+  ],
+  "known_oom_residual": "6 ml4acopf_2024 instances (300_ieee_ml4acopf-linear-{residual,nonresidual}.onnx + prop2/3/4) require >96 GB VRAM in pyrat's BaB single-process. They are reported as 'error' with diagnosis reproduces_OOM_serial in _oom_rerun_results.csv."
+}

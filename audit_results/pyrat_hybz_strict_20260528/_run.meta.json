@@ -1,0 +1,82 @@
+{
+  "tool": "PyRAT (vnncomp2025, STRICT no-helper, HYB_Z domain)",
+  "tool_dir": "/data1/Kane/pyrat",
+  "tool_commit_head": "95c72fc22bf084cde033fe5a65e1232e7af752f5",
+  "tool_commit_head_msg": "Merge branch 'fix-public-version' into 'main'",
+  "tool_commit_competition": "4a9a4f065a623be395ac4b3385a47ea81638dc48",
+  "tool_distribution": "PyRAT-public compiled .pyc (CEA proprietary, Python 3.10 only)",
+  "tool_source_state": "binary-only (.pyc); helper-disable mechanism is the same runtime monkey-patch (scripts/run_pure.py) used in pyrat_strict_20260527/. The ONLY difference vs that sibling archive is the abstract domain selection.",
+  "domain_selection": {
+    "ini_request": "domains = [hyb_z]",
+    "runtime_effective": "['con_z', 'hyb_z']",
+    "explanation": "PyRAT's internal AnalysisParam._domains_clean() unconditionally appends 'con_z' to the domain list whenever 'hyb_z' is selected. This is because the hyb_z (Hybrid Zonotope) abstraction is constructed on top of a constrained-zonotope carrier and is meaningless without it. Both domains are computed per layer and the tightest per-element bound is kept. This is intrinsic to the PyRAT hyb_z implementation, NOT a configuration error — confirmed by reading the bytecode of pyrat.analyzer.analysis_param.AnalysisParam._domains_clean. Verdicts in this archive thus represent PyRAT's 'hyb_z + con_z carrier' analysis. The sibling pyrat_strict_20260527/ archive isolates 'con_z alone'.",
+    "user_facing_label": "hyb_z (with auto-added con_z carrier)"
+  },
+  "hyb_z_knobs": {
+    "domains":             "[hyb_z]",
+    "max_hybz":            -1,
+    "iterative_hybz":      false,
+    "hybz_relu_method":    false,
+    "intermediate_concr":  false,
+    "split_relu":          "false (forced; split_relu would re-trigger con_z BaB branching that competes with hyb_z and dominates the abstraction)",
+    "rationale": "max_hybz=-1 lets PyRAT use unbounded HZ count; iterative_hybz=False uses full HZ from the start (max precision); hybz_relu_method=False is the Ortiz-et-al-2023 (arxiv 2304.02755) abstraction which is the PyRAT default and exact for ReLU."
+  },
+  "python_version":   "3.10.17",
+  "torch_version":    "2.5.1+cuda",
+  "started_at":       "2026-05-28T23:34:23+1000",
+  "phases": [
+    {"phase":"A_dual_supervisor",  "start":"2026-05-28T23:34", "stop":"2026-05-29T??", "note":"initial chain + BIG-only; later interrupted because some CPU benches needed throughput"},
+    {"phase":"B_gpu_only_chain",   "start":"2026-05-29T??",    "note":"chain wrapper restarted, GPU-only ordered queue + CPU-only standalone in parallel"},
+    {"phase":"C_gpu_mid_parallel", "start":"2026-05-29T09:45", "note":"third stream added for medium GPU benches (cora,malbeware,metaroom,yolo,ml4acopf,collins_rul_cnn)"},
+    {"phase":"D_relusplitter_workers_3", "note":"after chain reached relusplitter, switched to standalone workers=3"},
+    {"phase":"E_relusplitter_workers_6", "note":"final upgrade to workers=6 from index 121"}
+  ],
+  "finished_at":      "2026-05-30T00:36+1000",
+  "host":             "dell-pro-max-tower-t2",
+  "host_os":          "Linux 6.14.0-1020-oem Ubuntu",
+  "host_cpu_cores":   20,
+  "host_gpu":         "NVIDIA RTX PRO 6000 Blackwell Max-Q (sm_120, 96 GB)",
+  "host_ram_gb":      125,
+  "bench_root":       "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks",
+  "results_root":     "/data1/Kane/ACT/audit_results/pyrat_hybz_strict_20260528",
+  "ini_provenance": {
+    "source_commit":   "4a9a4f065a623be395ac4b3385a47ea81638dc48",
+    "source_path":     "vnn_config/<bench>.ini (each)",
+    "applied_path":    "/data1/Kane/pyrat/benchmarks/vnn_files/vnn_config_2025_hybz/<bench>.ini",
+    "transformations": [
+      "domains/* line replaced with `domains = [hyb_z]`",
+      "split_relu set to False (forced; see hyb_z_knobs)",
+      "max_hybz = -1 appended",
+      "iterative_hybz = False appended",
+      "hybz_relu_method = False appended",
+      "intermediate_concr = False appended"
+    ],
+    "preserved_per_bench": "Every other competition knob (split, nb_process, lr, n_it_optim, library, device, dtype, check, nb_random, batch_attack, nb_restart, ...) is BIT-IDENTICAL to commit 4a9a4f0:vnn_config/<bench>.ini. Only the domain and the five hyb_z knobs above were touched.",
+    "rename_compat": "Same two parser-compatibility renames as in pyrat_strict_20260527 (nb_repeat -> nb_restart, step_ratio -> lr_attack) are also applied here, inherited from the same competition-ini extraction step."
+  },
+  "flags": {
+    "helper_disabled_via":            "runtime monkey-patch (scripts/run_pure.py) + forced CLI flag overrides; IDENTICAL to pyrat_strict_20260527",
+    "patched_pyrat_symbols":          "see scripts/run_pure.py (every gradient + falsification entry point + simulation-guided scorer made no-op; look_random(nb=1) is a passive shim returning True without invoking model.infer)",
+    "forced_cli_flags": {
+      "--check":         "skip",
+      "--nb_random":     "0",
+      "--attack":        "bounds",
+      "--batch_attack":  "False",
+      "--exhaustive":    "False"
+    },
+    "TIMEOUT_CAP_SEC":   0,
+    "KILL_GRACE_SEC":    15,
+    "PER_INSTANCE_OUTER_TIMEOUT_S": "T_csv + 120",
+    "supervisor_topology": "ad-hoc multi-supervisor (chain + cpu_only + gpu_mid_parallel + workers=3/6 relusplitter standalone). is_complete + is_running gates prevent duplicate processing"
+  },
+  "patches": [
+    "patches/README.md",
+    "patches/hybz_ini/  (26 .ini files; the runtime configs used)",
+    "scripts/run_pure.py  (the runtime monkey-patch payload, same as sibling archive)"
+  ],
+  "instances_csv_anomalies": [
+    "sat_relu has 2 duplicate (onnx, vnnlib) rows in instances.csv (sat_v6_c27, unsat_v6_c30); both rows kept; the per-instance .result file pair agrees on verdict.",
+    "metaroom_2023 was double-processed once during the dual-supervisor phase (chain + GPU-mid hit it concurrently); deduplicated post-hoc by keeping the row with (verdict != error, lower wall_s) per (onnx, vnnlib). Final per-bench tally matches con_z strict's metaroom: V=60 T=1 E=39."
+  ],
+  "comparison_anchor": "/data1/Kane/ACT/audit_results/pyrat_strict_20260527 (same tool, same patches, same forced flags, same ini provenance — only difference is `domains = [con_z]` vs `domains = [hyb_z]`)"
+}

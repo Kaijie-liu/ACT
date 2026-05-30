@@ -1,0 +1,18 @@
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: metaroom_2023/./onnx/6cnn_ry_81_13_no_custom_OP.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/metaroom_2023/onnx/6cnn_ry_81_13_no_custom_OP.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cpu, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: 6cnn_ry_81_13_no_custom_OP.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 3, 32, 56]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 3, 32, 56)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 5376 inputs, 20 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 5376 inputs, 20 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'metaroom_2023'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed spec_idx_144_eps_0.00000436.vnnlib: 19 query(ies)
+/data1/Kane/miniconda3/envs/act-py312/lib/python3.12/site-packages/torch/utils/_device.py:103: UserWarning: Sparse CSR tensor support is in beta state. If you miss a functionality in the sparse tensor support, please submit a feature request to https://github.com/pytorch/pytorch/issues. (Triggered internally at /pytorch/aten/src/ATen/SparseCsrTensorImpl.cpp:53.)
+  return func(*args, **kwargs)

@@ -1,0 +1,50 @@
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: yolo_2023/onnx/TinyYOLO.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/yolo_2023/onnx/TinyYOLO.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: TinyYOLO.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 3, 52, 52]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 3, 52, 52)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 8112 inputs, 21125 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 8112 inputs, 21125 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'yolo_2023'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed TinyYOLO_prop_000356_eps_1_255.vnnlib: 1 query(ies)
+INFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=14 out_dim=21125 relus=7 (triangle for relu 1..6, eq_lagr_v8 for last 1)
+WARNING:act.back_end.solver.solver_hz:L2 FALLBACK (OutOfMemoryError): CUDA out of memory. Tried to allocate 2.57 GiB. GPU 0 has a total capacity of 94.96 GiB of which 1.52 GiB is free. Process 2687037 has 690.00 MiB memory in use. Process 1177283 has 50.25 GiB memory in use. Process 1177901 has 26.29 GiB memory in use. Including non-PyTorch memory, this process has 5.36 GiB memory in use. Process 1177909 has 10.58 GiB memory in use. Of the allocated memory 4.72 GiB is allocated by PyTorch, and 2.97 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+WARNING:act.back_end.solver.solver_hz:L3 FALLBACK (OutOfMemoryError): CUDA out of memory. Tried to allocate 2.57 GiB. GPU 0 has a total capacity of 94.96 GiB of which 1.52 GiB is free. Process 2687037 has 690.00 MiB memory in use. Process 1177283 has 50.25 GiB memory in use. Process 1177901 has 26.29 GiB memory in use. Including non-PyTorch memory, this process has 5.36 GiB memory in use. Process 1177909 has 10.58 GiB memory in use. Of the allocated memory 4.72 GiB is allocated by PyTorch, and 2.97 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+WARNING:act.back_end.solver.solver_hz:L14 FALLBACK (OutOfMemoryError): CUDA out of memory. Tried to allocate 3.49 GiB. GPU 0 has a total capacity of 94.96 GiB of which 1.19 GiB is free. Process 2687037 has 690.00 MiB memory in use. Process 1177283 has 50.25 GiB memory in use. Process 1177901 has 26.61 GiB memory in use. Including non-PyTorch memory, this process has 5.37 GiB memory in use. Process 1177909 has 10.58 GiB memory in use. Of the allocated memory 4.24 GiB is allocated by PyTorch, and 489.38 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+WARNING:act.back_end.solver.solver_hz:L16 FALLBACK (OutOfMemoryError): CUDA out of memory. Tried to allocate 3.49 GiB. GPU 0 has a total capacity of 94.96 GiB of which 1.19 GiB is free. Process 2687037 has 690.00 MiB memory in use. Process 1177283 has 50.25 GiB memory in use. Process 1177901 has 26.61 GiB memory in use. Including non-PyTorch memory, this process has 5.37 GiB memory in use. Process 1177909 has 10.58 GiB memory in use. Of the allocated memory 4.24 GiB is allocated by PyTorch, and 489.30 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+WARNING:act.back_end.solver.solver_hz:L24 FALLBACK (OutOfMemoryError): CUDA out of memory. Tried to allocate 448.00 MiB. GPU 0 has a total capacity of 94.96 GiB of which 323.50 MiB is free. Process 2687037 has 690.00 MiB memory in use. Process 1177283 has 50.25 GiB memory in use. Process 1177901 has 26.61 GiB memory in use. Including non-PyTorch memory, this process has 6.24 GiB memory in use. Process 1177909 has 10.59 GiB memory in use. Of the allocated memory 5.55 GiB is allocated by PyTorch, and 44.62 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+WARNING:act.back_end.solver.solver_hz:L25 FALLBACK (OutOfMemoryError): CUDA out of memory. Tried to allocate 448.00 MiB. GPU 0 has a total capacity of 94.96 GiB of which 321.50 MiB is free. Process 2687037 has 690.00 MiB memory in use. Process 1177283 has 50.25 GiB memory in use. Process 1177901 has 26.61 GiB memory in use. Including non-PyTorch memory, this process has 6.24 GiB memory in use. Process 1177909 has 10.59 GiB memory in use. Of the allocated memory 5.55 GiB is allocated by PyTorch, and 44.62 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic
+✅ Device Manager Initialized: device=cuda:0, dtype=torch.float64
+
+================================================================================
+ACT: Abstract Constraint Transformer
+Inference-based whitebox fuzzing for neural network verification
+================================================================================
+
+
+================================================================================
+VERIFICATION TEST: VNNLIB → VerifiableModel → verify_once
+================================================================================
+
+[vnnlib] category=yolo_2023 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=120.0s)
+  [  1/1] yolo_2023/onnx/TinyYOLO.onnx@vnnlib/TinyYOLO_prop_000356_eps_1_255.vnnlib: UNKNOWN (7.1s)  V=0 A=0 U=1 E=0  R=0
+
+[vnnlib/hybridz] FINAL — total=1 wall=0.1 min
+  UNKNOWN      1
+  [structured] per-instance log → /data1/Kane/ACT/audit_results/yolo_avgpool_exact_20260529T130324Z/b54_71/per_instance_yolo_2023_20260529T130549611131Z.json
+
+================================================================================
+VERIFICATION TEST SUMMARY
+================================================================================
+  ✅ vnnlib                    PASSED
+================================================================================
+

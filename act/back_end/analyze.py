@@ -13,6 +13,7 @@
 #===---------------------------------------------------------------------===#
 
 import torch
+import os
 from collections import deque
 from dataclasses import dataclass
 from typing import Dict, Optional, Tuple, cast
@@ -199,6 +200,16 @@ def analyze(
             before[lid] = Fact(Bjoin, Cjoin)
 
         out_fact = dispatch_tf(layer, before, after, net)
+        if os.environ.get("ACT_HZ_LAYER_PROGRESS", "0") == "1":
+            try:
+                b = out_fact.bounds
+                print(
+                    f"[ANALYZE-PROGRESS] L{layer.id} {layer.kind} "
+                    f"lb_shape={tuple(b.lb.shape)}",
+                    flush=True,
+                )
+            except Exception:
+                print(f"[ANALYZE-PROGRESS] L{layer.id} {layer.kind}", flush=True)
         visited.add(lid)
 
         if changed_or_maskdiff(layer, out_fact.bounds, None, eps):

@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "benchmark": "cifar100_2024",
+  "formal_mode": true,
+  "timestamp_utc": "20260528T104601857545Z",
+  "canonical_root": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks",
+  "receipt_dir": "/data1/Kane/ACT/audit_results/joint_k2_spec_gpu_20260528T104347Z/cifar100_2024",
+  "wall_min": 0.19401694536209108,
+  "counts": {
+    "CERTIFIED": 0,
+    "FALSIFIED": 0,
+    "UNKNOWN": 0,
+    "ERROR": 1
+  },
+  "run_status": "FAILED",
+  "per_instance": [
+    {
+      "official_instance_id": 160,
+      "benchmark": "cifar100_2024",
+      "onnx_model": "onnx/CIFAR100_resnet_large.onnx",
+      "vnnlib_spec": "vnnlib/CIFAR100_resnet_large_prop_idx_5162_sidx_8126_eps_0.0039.vnnlib",
+      "model_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/onnx/CIFAR100_resnet_large.onnx",
+      "spec_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/vnnlib/CIFAR100_resnet_large_prop_idx_5162_sidx_8126_eps_0.0039.vnnlib",
+      "internal_status": "ERROR",
+      "reportable_status": "ERROR",
+      "cli_normalized": "ERROR_OutOfMemoryError",
+      "count_bucket": "ERROR",
+      "queries": [],
+      "q_statuses": [],
+      "q_reportables": [],
+      "q_receipts": [],
+      "error": "OutOfMemoryError: CUDA out of memory. Tried to allocate 512.00 MiB. GPU 0 has a total capacity of 94.96 GiB of which 508.06 MiB is free. Process 2687037 has 690.00 MiB memory in use. Process 3197458 has 1.34 GiB memory in use. Including non-PyTorch memory, this process has 32.86 GiB memory in use. Process 3227885 has 56.08 GiB memory in use. Process 3229285 has 1.51 GiB memory in use. Process 3232412 has 762.00 MiB memory in use. Process 3232779 has 696.00 MiB memory in use. Of the allocated memory 31.14 GiB is allocated by PyTorch, and 1.07 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)",
+      "wall_s": 11.64095687866211,
+      "timeout_s": 240.0,
+      "instance_budget_exhausted": false
+    }
+  ]
+}

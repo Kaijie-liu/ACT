@@ -1,0 +1,44 @@
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: vggnet16_2022/onnx/vgg16-7.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/vggnet16_2022/onnx/vgg16-7.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 8 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: vgg16-7.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 3, 224, 224]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 3, 224, 224)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 150528 inputs, 1000 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 150528 inputs, 1000 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'vggnet16_2022'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed spec2_Airedale.vnnlib: 1 query(ies)
+INFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=13 out_dim=1000 relus=15 (triangle for relu 1..12, eq_lagr_v8 for last 3)
+[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic
+✅ Device Manager Initialized: device=cuda:0, dtype=torch.float64
+
+================================================================================
+ACT: Abstract Constraint Transformer
+Inference-based whitebox fuzzing for neural network verification
+================================================================================
+
+
+================================================================================
+VERIFICATION TEST: VNNLIB → VerifiableModel → verify_once
+================================================================================
+
+[vnnlib] category=vggnet16_2022 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=240.0s)
+  [  1/1] vggnet16_2022/onnx/vgg16-7.onnx@vnnlib/spec2_Airedale.vnnlib: UNKNOWN (46.4s)  V=0 A=0 U=1 E=0  R=0
+
+[vnnlib/hybridz] FINAL — total=1 wall=0.8 min
+  UNKNOWN      1
+  [structured] per-instance log → /data1/Kane/ACT/audit_results/vgg_triangle_tail_full_20260528T144516Z/iid_2/per_instance_vggnet16_2022_20260528T144607709974Z.json
+
+================================================================================
+VERIFICATION TEST SUMMARY
+================================================================================
+  ✅ vnnlib                    PASSED
+================================================================================
+

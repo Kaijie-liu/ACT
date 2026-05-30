@@ -182,7 +182,12 @@ def hz_dense(hz, W, b=None):
            if b is not None else None)
 
     if isinstance(hz, SparseGcZ):
-        return hz.apply_dense(W_t, b_t)
+        out = hz.apply_dense(W_t, b_t)
+        # SparseGcZ.apply_dense densifies (W·Gc_sparse is dense).
+        # T2 re-conversion attempt so a low-density result returns to
+        # sparse storage without an extra round-trip through eq_lagr.
+        from act.back_end.hybridz_tf.sparse_gc_t2 import act_maybe_compact_hz
+        return act_maybe_compact_hz(out)
     if isinstance(hz, LazyChainHZ):
         return hz.with_dense(W_t, b_t)
     if isinstance(hz, BoxHZ):
@@ -201,6 +206,10 @@ def hz_dense(hz, W, b=None):
     out = hz_multiply(hz, W_t)
     if b_t is not None:
         out = _hz_add_const_native(out, b_t)
+    # T2 sparse-Gc: opt-in post-dense prune + dense->sparse conversion.
+    # No-op when ACT_HZ_PRUNE_GC / ACT_HZ_DENSE_TO_SPARSE are unset.
+    from act.back_end.hybridz_tf.sparse_gc_t2 import act_maybe_compact_hz
+    out = act_maybe_compact_hz(out)
     return _propagate_base_any(hz, out)
 
 
@@ -344,12 +353,41 @@ def hz_conv2d(hz, weight, bias=None, *, input_shape,
 
     # HZono path: use ACT tf_cnn.hz_conv2d
     from act.back_end.hybridz_tf.tf_cnn import hz_conv2d as _act_conv2d_inner
+    # T2b pre-conv prediction: if the predicted output dense Gc would
+    # exceed the budget, pre-convert HZono → SparseGcZ so the conv
+    # uses the sparse-on-sparse fast path instead of allocating a
+    # huge dense block. Rescues the resnet_large family where the
+    # dense allocation in _conv2d_generators OOMs before any post-conv
+    # T2 conversion can act.
+    from act.back_end.hybridz_tf.sparse_gc_t2 import (
+        act_preconv_sparse_enabled, act_preconv_budget_bytes,
+        act_hz_dense_to_sparse, act_maybe_compact_hz,
+    )
+    if act_preconv_sparse_enabled() and isinstance(hz, HZono) and hz.nb == 0:
+        kH, kW = int(weight_t.shape[2]), int(weight_t.shape[3])
+        out_H_pred = (H + 2 * pad_use - kH) // stride[0] + 1
+        out_W_pred = (W_ + 2 * pad_use - kW) // stride[1] + 1
+        n_out_pred = Cout * out_H_pred * out_W_pred
+        predicted_dense_bytes = n_out_pred * hz.ng * hz.Gc.element_size() if hz.Gc.numel() else 0
+        if predicted_dense_bytes > act_preconv_budget_bytes():
+            converted = act_hz_dense_to_sparse(hz, density_threshold=1.0)
+            if isinstance(converted, SparseGcZ):
+                try:
+                    return converted.apply_conv(weight_t, bias_t, (C, H, W_), stride, pad_use)
+                except (MemoryError, RuntimeError) as e:
+                    msg = str(e).lower()
+                    if "memory" not in msg and "alloc" not in msg:
+                        raise
+                    # fall through to dense path
     out = _act_conv2d_inner(
         hz, weight_t, bias_t,
         stride=stride, padding=pad_use,
         dilation=(int(dilation), int(dilation)) if not isinstance(dilation, tuple) else dilation,
         groups=int(groups), input_shape=input_shape,
     )
+    # T2 sparse-Gc: opt-in post-conv prune + dense->sparse conversion.
+    # No-op when ACT_HZ_PRUNE_GC / ACT_HZ_DENSE_TO_SPARSE are unset.
+    out = act_maybe_compact_hz(out)
     return _propagate_base_any(hz, out)
 
 
@@ -443,10 +481,55 @@ def hz_apply_relu_v8(hz, *, method: str = "eq_lagr_v8"):
             return _make_or_box(relu_lb, relu_ub,
                                 dtype=hz.dtype, device=hz.device)
     if isinstance(hz, SparseGcZ):
-        # Keep early selective facets in sparse factor coordinates. Previous
-        # experiments densified Gc just to add a few rows, consuming tens of
-        # GiB and changing downstream routing before the cuts could pay off.
-        return _sparse_relu_with_optional_cuts(hz)
+        # B3 precision lever (default OFF): sparse-eq_lagr ReLU.
+        # Adds tight eq_lagr_v8-equivalent encoding directly on
+        # SparseGcZ via structured elimination (no general sparse QR).
+        # Algebraically equivalent to dense eq_lagr_v8 + project_eq_elim.
+        # See act/back_end/hybridz_tf/algorithms/sparse_eq_lagr.py.
+        from act.back_end.hybridz_tf.sparse_gc_t2 import (
+            act_tail_densify_enabled, act_tail_densify_dim_threshold,
+            act_tail_densify_ng_threshold,
+            act_sparse_eq_lagr_enabled, act_sparse_eq_lagr_max_unstable,
+        )
+        if act_sparse_eq_lagr_enabled():
+            # Probe unstable count cheaply via current bounds.
+            lb_probe, ub_probe = hz.bounds()
+            k_probe = int(((lb_probe < 0) & (ub_probe > 0)).sum())
+            if k_probe <= act_sparse_eq_lagr_max_unstable():
+                from act.back_end.hybridz_tf.algorithms.sparse_eq_lagr import (
+                    apply_relu_eq_lagr_sparse,
+                )
+                from act.back_end.hybridz_tf.sparse_gc_t2 import (
+                    act_sparse_eq_lagr_compact_rows,
+                )
+                try:
+                    return apply_relu_eq_lagr_sparse(
+                        hz, external_bounds=(lb_probe, ub_probe),
+                        compact_rows=act_sparse_eq_lagr_compact_rows(),
+                    )
+                except (MemoryError, RuntimeError) as e:
+                    msg = str(e).lower()
+                    if "memory" not in msg and "alloc" not in msg:
+                        raise
+                    # Fall through to legacy sparse triangle.
+
+        # T2c precision lever (default OFF): at the classifier tail
+        # (dim ≤ threshold, ng ≤ threshold), densify back to HZono so
+        # the tighter eq_lagr_v8 / chull / compact encodings can fire.
+        if (act_tail_densify_enabled()
+                and hz.dim <= act_tail_densify_dim_threshold()
+                and hz.ng <= act_tail_densify_ng_threshold()
+                and hz.nb == 0):
+            try:
+                hz = hz.to_hzono()
+            except (MemoryError, RuntimeError) as e:
+                if "memory" not in str(e).lower() and "alloc" not in str(e).lower():
+                    raise
+                return _sparse_relu_with_optional_cuts(hz)
+            # Fall through to HZono method-specific dispatch below.
+        else:
+            # Legacy: sparse triangle (+ optional facets).
+            return _sparse_relu_with_optional_cuts(hz)
     if isinstance(hz, BoxHZ):
         relu_lb = torch.clamp(hz.lb, min=0.0)
         relu_ub = torch.clamp(hz.ub, min=0.0)

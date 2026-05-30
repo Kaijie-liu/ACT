@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "benchmark": "malbeware",
+  "formal_mode": true,
+  "timestamp_utc": "20260529T231626396578Z",
+  "canonical_root": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks",
+  "receipt_dir": "/data1/Kane/ACT/audit_results/eight_bench_rerun_20260529T231224Z/malbeware_b75_112",
+  "wall_min": 0.11240483919779459,
+  "counts": {
+    "CERTIFIED": 0,
+    "FALSIFIED": 1,
+    "UNKNOWN": 0,
+    "ERROR": 0
+  },
+  "run_status": "PASSED",
+  "per_instance": [
+    {
+      "official_instance_id": 82,
+      "benchmark": "malbeware",
+      "onnx_model": "onnx/malware_malimg_family_scaled_4-25.onnx",
+      "vnnlib_spec": "vnnlib/malbeware_family-C2LOP.P_label-6_eps-2_idx-30.vnnlib",
+      "model_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/malbeware/onnx/malware_malimg_family_scaled_4-25.onnx",
+      "spec_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/malbeware/vnnlib/malbeware_family-C2LOP.P_label-6_eps-2_idx-30.vnnlib",
+      "internal_status": "SAT",
+      "reportable_status": "FALSIFIED",
+      "cli_normalized": "FALSIFIED",
+      "count_bucket": "FALSIFIED",
+      "queries": [
+        {
+          "query_index": 0,
+          "internal_status": "UNSAT",
+          "reportable_status": "CERTIFIED",
+          "receipt_path": null
+        },
+        {
+          "query_index": 1,
+          "internal_status": "UNSAT",
+          "reportable_status": "CERTIFIED",
+          "receipt_path": null
+        },
+        {
+          "query_index": 2,
+          "internal_status": "UNSAT",
+          "reportable_status": "CERTIFIED",
+          "receipt_path": null
+        },
+        {
+          "query_index": 3,
+          "internal_status": "UNSAT",
+          "reportable_status": "CERTIFIED",
+          "receipt_path": null
+        },
+        {
+          "query_index": 4,
+          "internal_status": "UNSAT",
+          "reportable_status": "CERTIFIED",
+          "receipt_path": null
+        },
+        {
+          "query_index": 5,
+          "internal_status": "UNSAT",
+          "reportable_status": "CERTIFIED",
+          "receipt_path": null
+        },
+        {
+          "query_index": 6,
+          "internal_status": "SAT",
+          "reportable_status": "FALSIFIED",
+          "receipt_path": "/data1/Kane/ACT/audit_results/eight_bench_rerun_20260529T231224Z/malbeware_b75_112/malbeware_82_q6_hz_walker_lp_0.json"
+        }
+      ],
+      "q_statuses": [
+        "UNSAT",
+        "UNSAT",
+        "UNSAT",
+        "UNSAT",
+        "UNSAT",
+        "UNSAT",
+        "SAT"
+      ],
+      "q_reportables": [
+        "CERTIFIED",
+        "CERTIFIED",
+        "CERTIFIED",
+        "CERTIFIED",
+        "CERTIFIED",
+        "CERTIFIED",
+        "FALSIFIED"
+      ],
+      "q_receipts": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "/data1/Kane/ACT/audit_results/eight_bench_rerun_20260529T231224Z/malbeware_b75_112/malbeware_82_q6_hz_walker_lp_0.json"
+      ],
+      "error": null,
+      "wall_s": 6.744219064712524,
+      "timeout_s": 120.0,
+      "instance_budget_exhausted": false
+    }
+  ]
+}

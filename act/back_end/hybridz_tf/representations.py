@@ -257,7 +257,8 @@ class BoxHZ:
 
     @property
     def ng(self) -> int:
-        return self.dim
+        rad = ((self.ub - self.lb) / 2.0).clamp_min(0)
+        return int((rad > 0).sum().item())
 
     @property
     def nb(self) -> int:
@@ -360,8 +361,13 @@ class LazyChainHZ:
         return int(self.root_lb.numel())
 
     @property
+    def n_active_root(self) -> int:
+        rad = ((self.root_ub - self.root_lb) / 2.0).clamp_min(0)
+        return int((rad > 0).sum().item())
+
+    @property
     def ng(self) -> int:
-        return self.n_root  # conceptual
+        return self.n_active_root
 
     @property
     def nb(self) -> int:
@@ -425,7 +431,9 @@ class LazyChainHZ:
         return self.c_chain - rad_out, self.c_chain + rad_out
 
     def materialization_bytes(self) -> int:
-        return int(self.dim) * int(self.n_root) * 8
+        return int(self.dim) * int(self.n_active_root) * torch.empty(
+            (), dtype=self.dtype, device=self.device
+        ).element_size()
 
     def can_materialize(self) -> bool:
         if self.dim > _materialize_dim_cap():
@@ -456,24 +464,30 @@ class LazyChainHZ:
 
     def to_full_hzono(self) -> HZono:
         """Materialise Gc by pushing diag(rad_root) through the chain."""
-        rad = ((self.root_ub - self.root_lb) / 2.0).abs()
+        rad = ((self.root_ub - self.root_lb) / 2.0).clamp_min(0)
+        active_idx = torch.nonzero(rad > 0, as_tuple=False).view(-1)
         n_root = int(rad.numel())
-        chunk = max(1, min(n_root, 2048))
+        n_active = int(active_idx.numel())
         Gc_cols = []
-        for i0 in range(0, n_root, chunk):
-            i1 = min(i0 + chunk, n_root)
+        if n_active > 0:
+            chunk = max(1, min(n_active, 2048))
+        for i0 in range(0, n_active, chunk if n_active > 0 else 1):
+            i1 = min(i0 + chunk, n_active)
+            cols = active_idx[i0:i1]
             batch = torch.zeros((i1 - i0, n_root),
                                 dtype=self.dtype, device=self.device)
             rows = torch.arange(i1 - i0, dtype=torch.long, device=self.device)
-            cols = torch.arange(i0, i1, dtype=torch.long, device=self.device)
-            batch[rows, cols] = rad[i0:i1]
+            batch[rows, cols] = rad[cols]
             cols_out = self._push_batch_through_ops(batch)
             Gc_cols.append(cols_out)
-        Gc = torch.cat(Gc_cols, dim=0).T.contiguous()  # (dim, n_root)
+        if Gc_cols:
+            Gc = torch.cat(Gc_cols, dim=0).T.contiguous()  # (dim, n_active)
+        else:
+            Gc = torch.zeros((self.dim, 0), dtype=self.dtype, device=self.device)
         n = self.dim
         c = self.c_chain.view(-1, 1)
         Gb = torch.zeros((n, 0), dtype=self.dtype, device=self.device)
-        Ac = torch.zeros((0, n_root), dtype=self.dtype, device=self.device)
+        Ac = torch.zeros((0, n_active), dtype=self.dtype, device=self.device)
         Ab = torch.zeros((0, 0), dtype=self.dtype, device=self.device)
         b = torch.zeros((0, 1), dtype=self.dtype, device=self.device)
         return HZono(c=c, Gc=Gc, Gb=Gb, Ac=Ac, Ab=Ab, b=b)
@@ -552,6 +566,62 @@ class LazyChainHZ:
         if len(self.ops) != 1 or self.ops[0]["kind"] != "conv":
             return None
         op = self.ops[0]
+        rad = ((self.root_ub - self.root_lb) / 2.0).clamp_min(0)
+        active_idx = torch.nonzero(rad > 0, as_tuple=False).view(-1)
+        n_active = int(active_idx.numel())
+        if n_active == 0:
+            empty = torch.sparse_coo_tensor(
+                torch.zeros((2, 0), dtype=torch.long, device=self.device),
+                torch.zeros(0, dtype=self.dtype, device=self.device),
+                (self.dim, 0), dtype=self.dtype, device=self.device,
+            ).coalesce()
+            return SparseGcZ(c=self.c_chain, Gc_sparse=empty,
+                             dtype=self.dtype, device=self.device)
+
+        # For VNNLIBs that perturb only a handful of input pixels, building
+        # the full sparse convolution matrix is wasteful: it creates columns
+        # for every zero-radius input. Push only the active root basis columns
+        # through the lazy chain, then sparsify the compact result.
+        elem = torch.empty((), dtype=self.dtype, device=self.device).element_size()
+        dense_bytes = n_active * (self.n_root + self.dim) * elem
+        direct_active_cap = int(os.environ.get("ACT_HZ_DIRECT_ACTIVE_MAX", "2048"))
+        if n_active <= direct_active_cap and dense_bytes <= _sparse_gc_budget_bytes():
+            all_ind = []
+            all_val = []
+            max_chunk = max(1, int(_sparse_gc_budget_bytes() // max((self.n_root + self.dim) * elem, 1)))
+            chunk = max(1, min(n_active, direct_active_cap, max_chunk))
+            for i0 in range(0, n_active, chunk):
+                i1 = min(i0 + chunk, n_active)
+                cols = active_idx[i0:i1]
+                batch = torch.zeros((i1 - i0, self.n_root),
+                                    dtype=self.dtype, device=self.device)
+                rows = torch.arange(i1 - i0, dtype=torch.long, device=self.device)
+                batch[rows, cols] = rad[cols]
+                out = self._push_batch_through_ops(batch)
+                nz = torch.nonzero(out != 0, as_tuple=False)
+                if nz.numel() == 0:
+                    continue
+                # out is (local_active_col, output_row); sparse Gc wants
+                # (output_row, compact_active_col).
+                ind = torch.stack([nz[:, 1], nz[:, 0] + i0], dim=0)
+                all_ind.append(ind)
+                all_val.append(out[nz[:, 0], nz[:, 1]])
+            if all_ind:
+                ind = torch.cat(all_ind, dim=1)
+                vals = torch.cat(all_val, dim=0)
+            else:
+                ind = torch.zeros((2, 0), dtype=torch.long, device=self.device)
+                vals = torch.zeros(0, dtype=self.dtype, device=self.device)
+            Gc_sparse = torch.sparse_coo_tensor(
+                ind, vals, (self.dim, n_active),
+                dtype=self.dtype, device=self.device,
+            ).coalesce()
+            if Gc_sparse._nnz() * (elem + 8) <= _sparse_gc_budget_bytes():
+                return SparseGcZ(
+                    c=self.c_chain, Gc_sparse=Gc_sparse,
+                    dtype=self.dtype, device=self.device,
+                )
+
         # Pre-flight memory check via exact nnz count.
         try:
             est_nnz = _conv2d_sparse_nnz(
@@ -561,7 +631,6 @@ class LazyChainHZ:
             return None
         if est_nnz * 16 > _sparse_gc_budget_bytes():
             return None
-        rad = ((self.root_ub - self.root_lb) / 2.0).abs()
         try:
             W_sparse = build_sparse_conv_matrix(
                 op["weight"], op["in_shape"], op["stride"], op["pad"],
@@ -573,13 +642,27 @@ class LazyChainHZ:
             return None
         rad_flat = rad.flatten().to(dtype=self.dtype, device=self.device)
         ind = W_sparse.indices()
-        # Scale each conv-matrix entry by the radius of its input column.
-        vals = W_sparse.values() * rad_flat[ind[1]]
+        active_map = torch.full((self.n_root,), -1, dtype=torch.long, device=self.device)
+        active_map[active_idx] = torch.arange(n_active, dtype=torch.long, device=self.device)
+        keep = active_map[ind[1]] >= 0
+        if not bool(keep.any().item()):
+            return None
+        # Scale each kept conv-matrix entry by the radius of its input column,
+        # and remap original input columns to compact active columns.
+        kept_in = ind[1, keep]
+        vals = W_sparse.values()[keep] * rad_flat[kept_in]
+        nz = vals != 0
+        if not bool(nz.any().item()):
+            return None
+        vals = vals[nz]
+        row_idx = ind[0, keep][nz]
+        col_idx = active_map[kept_in[nz]]
+        ind = torch.stack([row_idx, col_idx], dim=0)
         Gc_sparse = torch.sparse_coo_tensor(
-            ind, vals, W_sparse.shape,
+            ind, vals, (W_sparse.shape[0], n_active),
             dtype=self.dtype, device=self.device,
         ).coalesce()
-        if Gc_sparse._nnz() * 16 > _sparse_gc_budget_bytes():
+        if Gc_sparse._nnz() * (elem + 8) > _sparse_gc_budget_bytes():
             return None
         return SparseGcZ(
             c=self.c_chain, Gc_sparse=Gc_sparse,
@@ -603,25 +686,41 @@ class LazyChainHZ:
 
 
 class SparseGcZ:
-    """HZ with sparse-COO Gc storage and nb = 0.
+    """HZ with sparse-COO storage and optional binary generators.
 
-    Used as an intermediate after a single conv on a BoxHZ root when
-    the dense materialisation doesn't fit but the sparse Gc does.
-    Supports triangle ReLU and sparse inequality cuts (which preserve
-    sparse-Gc structure), and converts to dense ``HZono`` via
-    ``to_hzono()`` when subsequent transformations need the dense form
-    (e.g. eq_lagr ReLU).
+    Until 2026-05-28 this stored only ``Gc_sparse`` with ``nb = 0``.
+    Extended with optional ``Gb_sparse`` (binary generators) and
+    ``Ab_sparse`` (binary-side constraint coefficients) so that the
+    sparse-eq_lagr ReLU encoding (introduced for B3, see
+    ``act/back_end/hybridz_tf/algorithms/sparse_eq_lagr.py``) can run
+    on the sparse path without densifying. ``Gb_sparse = None``
+    preserves the original nb=0 behaviour and all existing callers
+    (T2/T2b sparse conv chain + sparse triangle ReLU) work unchanged.
     """
 
     def __init__(self, *, c: torch.Tensor, Gc_sparse: torch.Tensor,
                  dtype, device, Ac_sparse: Optional[torch.Tensor] = None,
+                 Gb_sparse: Optional[torch.Tensor] = None,
+                 Ab_sparse: Optional[torch.Tensor] = None,
                  b: Optional[torch.Tensor] = None,
                  eq_mask: Optional[torch.Tensor] = None):
         self.c = c.flatten().to(dtype=dtype, device=device)
         self.Gc_sparse = Gc_sparse.coalesce()
         self.dtype = dtype
         self.device = device
+        n = int(self.c.numel())
         ng = int(self.Gc_sparse.shape[1])
+
+        # Binary generators (optional).
+        if Gb_sparse is None:
+            Gb_sparse = torch.sparse_coo_tensor(
+                torch.zeros((2, 0), dtype=torch.long, device=device),
+                torch.zeros(0, dtype=dtype, device=device),
+                (n, 0), dtype=dtype, device=device,
+            )
+        self.Gb_sparse = Gb_sparse.coalesce().to(dtype=dtype, device=device)
+        nb = int(self.Gb_sparse.shape[1])
+
         if Ac_sparse is None:
             Ac_sparse = torch.sparse_coo_tensor(
                 torch.zeros((2, 0), dtype=torch.long, device=device),
@@ -630,6 +729,23 @@ class SparseGcZ:
             )
         self.Ac_sparse = Ac_sparse.coalesce().to(dtype=dtype, device=device)
         nc = int(self.Ac_sparse.shape[0])
+
+        if Ab_sparse is None:
+            Ab_sparse = torch.sparse_coo_tensor(
+                torch.zeros((2, 0), dtype=torch.long, device=device),
+                torch.zeros(0, dtype=dtype, device=device),
+                (nc, nb), dtype=dtype, device=device,
+            )
+        self.Ab_sparse = Ab_sparse.coalesce().to(dtype=dtype, device=device)
+        if int(self.Ab_sparse.shape[0]) != nc:
+            raise ValueError(
+                f"SparseGcZ: Ab_sparse row count {self.Ab_sparse.shape[0]} != Ac_sparse row count {nc}"
+            )
+        if int(self.Ab_sparse.shape[1]) != nb:
+            raise ValueError(
+                f"SparseGcZ: Ab_sparse col count {self.Ab_sparse.shape[1]} != Gb_sparse col count {nb}"
+            )
+
         self.b = (
             torch.zeros((nc, 1), dtype=dtype, device=device)
             if b is None else b.to(dtype=dtype, device=device).view(-1, 1)
@@ -658,7 +774,7 @@ class SparseGcZ:
 
     @property
     def nb(self) -> int:
-        return 0
+        return int(self.Gb_sparse.shape[1])
 
     @property
     def nc(self) -> int:
@@ -671,24 +787,37 @@ class SparseGcZ:
         ).coalesce()
 
     def bounds(self) -> Tuple[torch.Tensor, torch.Tensor]:
-        if self.Gc_sparse._nnz() == 0:
-            rad = torch.zeros(self.dim, dtype=self.dtype, device=self.device)
-        else:
+        rad = torch.zeros(self.dim, dtype=self.dtype, device=self.device)
+        if self.Gc_sparse._nnz() > 0:
             ind = self.Gc_sparse.indices()
             val = self.Gc_sparse.values().abs()
-            rad = torch.zeros(self.dim, dtype=self.dtype, device=self.device)
             rad.scatter_add_(0, ind[0], val)
+        # Binary generators contribute |Gb_sparse| with xi_b in {-1,+1}.
+        if self.Gb_sparse._nnz() > 0:
+            ind_b = self.Gb_sparse.indices()
+            val_b = self.Gb_sparse.values().abs()
+            rad.scatter_add_(0, ind_b[0], val_b)
         return self.c - rad, self.c + rad
 
     def to_hzono(self) -> HZono:
-        """Densify Gc → return HZono."""
+        """Densify Gc + Gb → return HZono."""
         Gc_dense = self.Gc_sparse.to_dense()
+        Gb_dense = (
+            self.Gb_sparse.to_dense()
+            if self.nb > 0
+            else torch.zeros((self.dim, 0), dtype=self.dtype, device=self.device)
+        )
+        Ab_dense = (
+            self.Ab_sparse.to_dense()
+            if self.nb > 0
+            else torch.zeros((self.nc, 0), dtype=self.dtype, device=self.device)
+        )
         return HZono(
             c=self.c.view(-1, 1),
             Gc=Gc_dense,
-            Gb=torch.zeros((self.dim, 0), dtype=self.dtype, device=self.device),
+            Gb=Gb_dense,
             Ac=self.Ac_sparse.to_dense(),
-            Ab=torch.zeros((self.nc, 0), dtype=self.dtype, device=self.device),
+            Ab=Ab_dense,
             b=self.b.clone(),
             eq_mask=self.eq_mask.clone(),
         )
@@ -999,6 +1128,87 @@ class SparseGcZ:
         c4 = self.c.view(1, Cin, Hin, Win)
         c_new = F.conv2d(c4, weight_t, bias_t,
                           stride=stride, padding=pad).view(-1)
+
+        # Exact sparse scatter path. When the generator matrix is genuinely
+        # sparse (the common case after zero-width input pruning), avoid both
+        # building the full convolution matrix and densifying each generator
+        # column into a full feature map. Each sparse input entry contributes
+        # to at most Cout*kH*kW sparse output entries.
+        if os.environ.get("HYZOR_SPARSE_CONV_SCATTER", "1") == "1":
+            ind0 = self.Gc_sparse.indices()
+            val0 = self.Gc_sparse.values()
+            nnz0 = int(val0.numel())
+            est_entries = nnz0 * int(Cout) * int(kH) * int(kW)
+            max_scatter_entries = int(os.environ.get(
+                "HYZOR_SPARSE_CONV_SCATTER_MAX_ENTRIES", "5000000"
+            ))
+            elem = torch.empty((), dtype=self.dtype, device=self.device).element_size()
+            if (0 < est_entries <= max_scatter_entries
+                    and est_entries * (elem + 16) <= _sparse_gc_budget_bytes()):
+                rows_in = ind0[0]
+                cols_in = ind0[1]
+                cin = rows_in // (Hin * Win)
+                rem = rows_in % (Hin * Win)
+                ih = rem // Win
+                iw = rem % Win
+                all_ind = []
+                all_val = []
+                cout_idx = torch.arange(Cout, dtype=torch.long, device=self.device).view(-1, 1)
+                for kh in range(int(kH)):
+                    oh_num = ih + int(pad) - kh
+                    ok_h = (oh_num >= 0) & (oh_num % int(stride[0]) == 0)
+                    oh = oh_num // int(stride[0])
+                    ok_h = ok_h & (oh >= 0) & (oh < Hout)
+                    if not bool(ok_h.any().item()):
+                        continue
+                    for kw in range(int(kW)):
+                        ow_num = iw + int(pad) - kw
+                        ok = ok_h & (ow_num >= 0) & (ow_num % int(stride[1]) == 0)
+                        ow = ow_num // int(stride[1])
+                        ok = ok & (ow >= 0) & (ow < Wout)
+                        if not bool(ok.any().item()):
+                            continue
+                        sel_cin = cin[ok]
+                        sel_oh = oh[ok]
+                        sel_ow = ow[ok]
+                        sel_cols = cols_in[ok]
+                        sel_vals = val0[ok]
+                        w = weight_t[:, sel_cin, kh, kw]
+                        contrib = w * sel_vals.view(1, -1)
+                        nz = contrib != 0
+                        if not bool(nz.any().item()):
+                            continue
+                        out_rows = (
+                            cout_idx * (Hout * Wout)
+                            + sel_oh.view(1, -1) * Wout
+                            + sel_ow.view(1, -1)
+                        )
+                        out_cols = sel_cols.view(1, -1).expand(Cout, -1)
+                        all_ind.append(torch.stack([out_rows[nz], out_cols[nz]], dim=0))
+                        all_val.append(contrib[nz])
+                if all_ind:
+                    Gc_new = torch.sparse_coo_tensor(
+                        torch.cat(all_ind, dim=1),
+                        torch.cat(all_val, dim=0),
+                        (n_out, self.ng),
+                        dtype=self.dtype, device=self.device,
+                    ).coalesce()
+                else:
+                    Gc_new = torch.sparse_coo_tensor(
+                        torch.zeros((2, 0), dtype=torch.long, device=self.device),
+                        torch.zeros(0, dtype=self.dtype, device=self.device),
+                        (n_out, self.ng),
+                        dtype=self.dtype, device=self.device,
+                    ).coalesce()
+                Gc_new = _sparsify_with_row_slack(
+                    Gc_new, sparsify_thresh,
+                    dtype=self.dtype, device=self.device,
+                )
+                return SparseGcZ(
+                    c=c_new, Gc_sparse=Gc_new,
+                    dtype=self.dtype, device=self.device,
+                    Ac_sparse=self.Ac_sparse, b=self.b, eq_mask=self.eq_mask,
+                )
 
         # Fast path: sparse conv operator × sparse Gc.
         if os.environ.get("HYZOR_SPARSE_CONV_MM", "1") == "1":

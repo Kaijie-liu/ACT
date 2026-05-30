@@ -1,0 +1,25 @@
+[0;93m2026-05-28 01:02:06.672965649 [W:onnxruntime:Default, device_discovery.cc:211 DiscoverDevicesForPlatform] GPU device discovery failed: device_discovery.cc:91 ReadFileContents Failed to open file: "/sys/class/drm/card0/device/vendor"[m
+[94mUserWarning: 
+cuda cannot run in sound mode. Sound mode changed to False.[0m
+[94mUserWarning: This model does not support preprocessing properties to refine output spec
+ The output dim is not one dimensional. Returning a model with no preprocessing[0m
+[94mUserWarning: 
+NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition with CUDA capability sm_120 is not compatible with the current PyTorch installation.
+The current PyTorch install supports CUDA capabilities sm_50 sm_60 sm_61 sm_70 sm_75 sm_80 sm_86 sm_37 sm_90 compute_37.
+If you want to use the NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition GPU with PyTorch, please check the instructions at https://pytorch.org/get-started/locally/
+[0m
+Traceback (most recent call last):
+  File "/data1/Kane/pyrat/run_pure.py", line 159, in <module>
+    main()
+  File "./pyrat/main.py", line 138, in main
+  File "/data1/Kane/miniconda3/envs/pyrat/lib/python3.10/site-packages/trace_events/profiler.py", line 242, in wrapper
+    return func(*call_args, **call_kwargs)
+  File "./pyrat/analyzer/utils_analyzer.py", line 347, in read_inputs
+  File "./pyrat/analyzer/utils_analyzer.py", line 388, in _read_inputs
+  File "./pyrat/domains/domain_factory.py", line 49, in create_box
+  File "./pyrat/domains/torch_box.py", line 45, in __init__
+RuntimeError: CUDA error: out of memory
+CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
+

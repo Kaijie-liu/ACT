@@ -1,0 +1,63 @@
+[ACT] Auto-detecting project root: .
+[ACT] Gurobi license found: modules/gurobi/gurobi.lic
+{
+  "benchmark": "cifar100_2024",
+  "instance_id": 0,
+  "status": "OK",
+  "cli_normalized": "OK",
+  "wall_s": 8.505422018002719,
+  "peak_rss_mb": 2483.765625,
+  "returncode": 0,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/cifar_eq10_clean_20260529T144618Z/per_instance_cifar100_2024_20260529T144627938442Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/cifar_eq10_clean_20260529T144618Z",
+  "stdout_tail": "d.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 3072 inputs, 100 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Ground truth label: 92\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cifar100_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed CIFAR100_resnet_medium_prop_idx_7641_sidx_1041_eps_0.0039.vnnlib: 1 query(ies)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=19 out_dim=100 relus=10 (triangle for relu 1..0, eq_lagr_v8 for last 10)\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=cifar100_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=300.0s)\n  [  1/1] cifar100_2024/onnx/CIFAR100_resnet_medium.onnx@vnnlib/CIFAR100_resnet_medium_prop_idx_7641_sidx_1041_eps_0.0039.vnnlib: UNKNOWN (6.0s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.1 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/cifar_eq10_clean_20260529T144618Z/per_instance_cifar100_2024_20260529T144627938442Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+}
+{
+  "benchmark": "cifar100_2024",
+  "instance_id": 1,
+  "status": "OK",
+  "cli_normalized": "OK",
+  "wall_s": 10.006308267009445,
+  "peak_rss_mb": 2802.65625,
+  "returncode": 0,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/cifar_eq10_clean_20260529T144618Z/per_instance_cifar100_2024_20260529T144637615903Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/cifar_eq10_clean_20260529T144618Z",
+  "stdout_tail": "d.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 3072 inputs, 100 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Ground truth label: 12\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cifar100_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed CIFAR100_resnet_medium_prop_idx_2132_sidx_6868_eps_0.0039.vnnlib: 1 query(ies)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=19 out_dim=100 relus=10 (triangle for relu 1..0, eq_lagr_v8 for last 10)\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=cifar100_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=300.0s)\n  [  1/1] cifar100_2024/onnx/CIFAR100_resnet_medium.onnx@vnnlib/CIFAR100_resnet_medium_prop_idx_2132_sidx_6868_eps_0.0039.vnnlib: UNKNOWN (7.2s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.1 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/cifar_eq10_clean_20260529T144618Z/per_instance_cifar100_2024_20260529T144637615903Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+}
+{
+  "benchmark": "cifar100_2024",
+  "instance_id": 2,
+  "status": "OK",
+  "cli_normalized": "OK",
+  "wall_s": 10.006883461028337,
+  "peak_rss_mb": 2870.04296875,
+  "returncode": 0,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/cifar_eq10_clean_20260529T144618Z/per_instance_cifar100_2024_20260529T144647811638Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/cifar_eq10_clean_20260529T144618Z",
+  "stdout_tail": "d.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 3072 inputs, 100 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Ground truth label: 27\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cifar100_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed CIFAR100_resnet_medium_prop_idx_6232_sidx_3020_eps_0.0039.vnnlib: 1 query(ies)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=19 out_dim=100 relus=10 (triangle for relu 1..0, eq_lagr_v8 for last 10)\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=cifar100_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=300.0s)\n  [  1/1] cifar100_2024/onnx/CIFAR100_resnet_medium.onnx@vnnlib/CIFAR100_resnet_medium_prop_idx_6232_sidx_3020_eps_0.0039.vnnlib: UNKNOWN (7.4s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.1 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/cifar_eq10_clean_20260529T144618Z/per_instance_cifar100_2024_20260529T144647811638Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+}
+{
+  "benchmark": "cifar100_2024",
+  "instance_id": 3,
+  "status": "OK",
+  "cli_normalized": "OK",
+  "wall_s": 9.506562512018718,
+  "peak_rss_mb": 2683.6640625,
+  "returncode": 0,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/cifar_eq10_clean_20260529T144618Z/per_instance_cifar100_2024_20260529T144656962766Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/cifar_eq10_clean_20260529T144618Z",
+  "stdout_tail": "d.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 3072 inputs, 100 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Ground truth label: 85\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cifar100_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed CIFAR100_resnet_medium_prop_idx_9694_sidx_2810_eps_0.0039.vnnlib: 1 query(ies)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=19 out_dim=100 relus=10 (triangle for relu 1..0, eq_lagr_v8 for last 10)\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=cifar100_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=300.0s)\n  [  1/1] cifar100_2024/onnx/CIFAR100_resnet_medium.onnx@vnnlib/CIFAR100_resnet_medium_prop_idx_9694_sidx_2810_eps_0.0039.vnnlib: UNKNOWN (6.5s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.1 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/cifar_eq10_clean_20260529T144618Z/per_instance_cifar100_2024_20260529T144656962766Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+}
+{
+  "benchmark": "cifar100_2024",
+  "instance_id": 4,
+  "status": "OK",
+  "cli_normalized": "OK",
+  "wall_s": 10.506431575980969,
+  "peak_rss_mb": 2935.62109375,
+  "returncode": 0,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/cifar_eq10_clean_20260529T144618Z/per_instance_cifar100_2024_20260529T144707469639Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/cifar_eq10_clean_20260529T144618Z",
+  "stdout_tail": "d.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 3072 inputs, 100 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Ground truth label: 31\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cifar100_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed CIFAR100_resnet_medium_prop_idx_4760_sidx_4651_eps_0.0039.vnnlib: 1 query(ies)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=19 out_dim=100 relus=10 (triangle for relu 1..0, eq_lagr_v8 for last 10)\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=cifar100_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=300.0s)\n  [  1/1] cifar100_2024/onnx/CIFAR100_resnet_medium.onnx@vnnlib/CIFAR100_resnet_medium_prop_idx_4760_sidx_4651_eps_0.0039.vnnlib: UNKNOWN (7.5s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.1 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/cifar_eq10_clean_20260529T144618Z/per_instance_cifar100_2024_20260529T144707469639Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+}
+[watchdog] summary written: /data1/Kane/ACT/audit_results/cifar_eq10_clean_20260529T144618Z/watchdog_summary.json

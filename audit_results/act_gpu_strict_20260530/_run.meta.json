@@ -1,0 +1,41 @@
+{
+  "tool": "ACT (vnncomp2025, STRICT no-helper)",
+  "tool_dir": "/data1/Kane/ACT",
+  "tool_commit": "98a3860ea186992fd75067c8fcef6b970aae54b3-dirty",
+  "tool_commit_msg": "(base) a -- with session 2026-05-28→2026-05-30 patches applied (see patches/session_dirty.patch)",
+  "tool_commit_author": "BUPTlkj",
+  "tool_commit_date": "2026-05-27 15:02:04 +1000",
+  "python": "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+  "python_version": "Python 3.12.12",
+  "torch_version": "2.9.1+cu128",
+  "cuda_version": "12.8",
+  "matlab_bin": null,
+  "matlab_version": null,
+  "started_at": "2026-05-28T00:00:00Z",
+  "ended_at": "2026-05-30T05:00:00Z",
+  "host": "dell-pro-max-tower-t2",
+  "device": "cuda:0",
+  "dtype": "float64",
+  "bench_root": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks",
+  "results_root": "/data1/Kane/ACT/audit_results/act_gpu_strict_20260530",
+  "flags": {
+    "small_dense_lp_default": "specaware",
+    "helper_disabled_via": "CLI default change in act/pipeline/cli.py (small_dense_lp: auto -> specaware)",
+    "audited": "specaware path uses GlobalTriangleLP + LP-feasibility only; auto path (formerly default) used WitnessExtract which calls _ort_replay with +1e-6 slack and random perturbation = violates P6",
+    "TIMEOUT_CAP_SEC_default": 180,
+    "KILL_GRACE_SEC": 3,
+    "RSS_CAP_GB_default": 12,
+    "ACT_HZ_AUTO_SPARSE_HUGE_PROFILE": "1 (default ON; auto-applies VGG-style late triangle on huge sparse-root inputs)",
+    "ACT_HZ_AUTO_CONVTRANSPOSE_TRIANGLE": "1 (default ON; auto-triangle ReLU when ConvTranspose present)",
+    "HYZOR_SIGMOID_DIM_CAP": "2048 (raised from 256 with complexity guard)"
+  },
+  "patches": ["patches/session_dirty.patch"],
+  "principle_compliance": {
+    "P1_no_CROWN": true,
+    "P2_no_backward": true,
+    "P3_no_Gurobi": true,
+    "P4_no_fallback": true,
+    "P5_no_BaB": true,
+    "P6_no_PGD_no_random_sample_check": true
+  }
+}

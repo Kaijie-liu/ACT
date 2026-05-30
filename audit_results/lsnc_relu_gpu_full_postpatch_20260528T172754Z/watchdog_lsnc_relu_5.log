@@ -1,0 +1,42 @@
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: lsnc_relu/onnx/relu_quadrotor2d_state.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/lsnc_relu/onnx/relu_quadrotor2d_state.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: relu_quadrotor2d_state.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 6]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 6)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 6 inputs, 8 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 6 inputs, 8 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'lsnc_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed quadrotor2d_state_5.vnnlib: 13 query(ies)
+[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic
+✅ Device Manager Initialized: device=cuda:0, dtype=torch.float64
+
+================================================================================
+ACT: Abstract Constraint Transformer
+Inference-based whitebox fuzzing for neural network verification
+================================================================================
+
+
+================================================================================
+VERIFICATION TEST: VNNLIB → VerifiableModel → verify_once
+================================================================================
+
+[vnnlib] category=lsnc_relu max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=120.0s)
+  [  1/1] lsnc_relu/onnx/relu_quadrotor2d_state.onnx@vnnlib/quadrotor2d_state_5.vnnlib: UNKNOWN (1.8s)  V=0 A=0 U=1 E=0  R=0
+
+[vnnlib/hybridz] FINAL — total=1 wall=0.0 min
+  UNKNOWN      1
+  [structured] per-instance log → /data1/Kane/ACT/audit_results/lsnc_relu_gpu_full_postpatch_20260528T172754Z/per_instance_lsnc_relu_20260528T172823164717Z.json
+
+================================================================================
+VERIFICATION TEST SUMMARY
+================================================================================
+  ✅ vnnlib                    PASSED
+================================================================================
+

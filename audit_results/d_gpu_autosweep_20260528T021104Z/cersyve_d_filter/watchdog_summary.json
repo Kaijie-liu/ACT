@@ -1,0 +1,156 @@
+{
+  "schema_version": 2,
+  "strict_bounded_failure": false,
+  "counts": {
+    "OK": 12,
+    "UNKNOWN_TIMEOUT": 0,
+    "UNKNOWN_RESOURCE_LIMIT": 0,
+    "ERROR": 0
+  },
+  "results": [
+    {
+      "benchmark": "cersyve",
+      "instance_id": 0,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 4.002844754024409,
+      "peak_rss_mb": 1533.0859375,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/d_gpu_autosweep_20260528T021104Z/cersyve_d_filter/per_instance_cersyve_20260528T021205157184Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/d_gpu_autosweep_20260528T021104Z/cersyve_d_filter",
+      "stdout_tail": "rter:Extracted input shape: [1, 4]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 4)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 4 inputs, 2 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cersyve'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_lane_keep.vnnlib: 1 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=cersyve max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=120.0s)\n  [  1/1] cersyve/onnx/lane_keep_pretrain_con.onnx@vnnlib/prop_lane_keep.vnnlib: UNKNOWN (0.7s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.0 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/d_gpu_autosweep_20260528T021104Z/cersyve_d_filter/per_instance_cersyve_20260528T021205157184Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "cersyve",
+      "instance_id": 1,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 4.5029493069741875,
+      "peak_rss_mb": 1548.359375,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/d_gpu_autosweep_20260528T021104Z/cersyve_d_filter/per_instance_cersyve_20260528T021209322820Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/d_gpu_autosweep_20260528T021104Z/cersyve_d_filter",
+      "stdout_tail": "rter:Extracted input shape: [1, 4]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 4)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 4 inputs, 2 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cersyve'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_lane_keep.vnnlib: 1 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=cersyve max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=120.0s)\n  [  1/1] cersyve/onnx/lane_keep_pretrain_inv.onnx@vnnlib/prop_lane_keep.vnnlib: UNKNOWN (0.9s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.0 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/d_gpu_autosweep_20260528T021104Z/cersyve_d_filter/per_instance_cersyve_20260528T021209322820Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "cersyve",
+      "instance_id": 2,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 4.00296153803356,
+      "peak_rss_mb": 1532.3515625,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/d_gpu_autosweep_20260528T021104Z/cersyve_d_filter/per_instance_cersyve_20260528T021213629168Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/d_gpu_autosweep_20260528T021104Z/cersyve_d_filter",
+      "stdout_tail": "rter:Extracted input shape: [1, 4]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 4)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 4 inputs, 2 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cersyve'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_lane_keep.vnnlib: 1 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=cersyve max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=120.0s)\n  [  1/1] cersyve/onnx/lane_keep_finetune_con.onnx@vnnlib/prop_lane_keep.vnnlib: UNKNOWN (0.7s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.0 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/d_gpu_autosweep_20260528T021104Z/cersyve_d_filter/per_instance_cersyve_20260528T021213629168Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "cersyve",
+      "instance_id": 3,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 4.5029804749647155,
+      "peak_rss_mb": 1547.29296875,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/d_gpu_autosweep_20260528T021104Z/cersyve_d_filter/per_instance_cersyve_20260528T021217833211Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/d_gpu_autosweep_20260528T021104Z/cersyve_d_filter",
+      "stdout_tail": "rter:Extracted input shape: [1, 4]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 4)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 4 inputs, 2 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cersyve'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_lane_keep.vnnlib: 1 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=cersyve max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=120.0s)\n  [  1/1] cersyve/onnx/lane_keep_finetune_inv.onnx@vnnlib/prop_lane_keep.vnnlib: UNKNOWN (0.9s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.0 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/d_gpu_autosweep_20260528T021104Z/cersyve_d_filter/per_instance_cersyve_20260528T021217833211Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "cersyve",
+      "instance_id": 4,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 4.50280927401036,
+      "peak_rss_mb": 1515.6484375,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/d_gpu_autosweep_20260528T021104Z/cersyve_d_filter/per_instance_cersyve_20260528T021222452128Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/d_gpu_autosweep_20260528T021104Z/cersyve_d_filter",
+      "stdout_tail": "nverter:Extracted input shape: [1, 2]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 2)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 2 inputs, 2 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 2 inputs, 2 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cersyve'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_pendulum.vnnlib: 1 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=cersyve max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=120.0s)\n  [  1/1] cersyve/onnx/pendulum_pretrain_con.onnx@vnnlib/prop_pendulum.vnnlib: UNKNOWN (0.9s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.0 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/d_gpu_autosweep_20260528T021104Z/cersyve_d_filter/per_instance_cersyve_20260528T021222452128Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "cersyve",
+      "instance_id": 5,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 4.5028577300254256,
+      "peak_rss_mb": 1588.84375,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/d_gpu_autosweep_20260528T021104Z/cersyve_d_filter/per_instance_cersyve_20260528T021226944549Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/d_gpu_autosweep_20260528T021104Z/cersyve_d_filter",
+      "stdout_tail": "nverter:Extracted input shape: [1, 2]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 2)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 2 inputs, 2 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 2 inputs, 2 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cersyve'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_pendulum.vnnlib: 1 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=cersyve max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=120.0s)\n  [  1/1] cersyve/onnx/pendulum_pretrain_inv.onnx@vnnlib/prop_pendulum.vnnlib: UNKNOWN (1.0s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.0 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/d_gpu_autosweep_20260528T021104Z/cersyve_d_filter/per_instance_cersyve_20260528T021226944549Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "cersyve",
+      "instance_id": 6,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 5.004762495984323,
+      "peak_rss_mb": 1510.95703125,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/d_gpu_autosweep_20260528T021104Z/cersyve_d_filter/per_instance_cersyve_20260528T021231680404Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/d_gpu_autosweep_20260528T021104Z/cersyve_d_filter",
+      "stdout_tail": "nverter:Extracted input shape: [1, 2]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 2)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 2 inputs, 2 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 2 inputs, 2 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cersyve'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_pendulum.vnnlib: 1 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=cersyve max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=120.0s)\n  [  1/1] cersyve/onnx/pendulum_finetune_con.onnx@vnnlib/prop_pendulum.vnnlib: UNKNOWN (1.3s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.0 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/d_gpu_autosweep_20260528T021104Z/cersyve_d_filter/per_instance_cersyve_20260528T021231680404Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "cersyve",
+      "instance_id": 7,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 5.002958440920338,
+      "peak_rss_mb": 1579.85546875,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/d_gpu_autosweep_20260528T021104Z/cersyve_d_filter/per_instance_cersyve_20260528T021236697383Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/d_gpu_autosweep_20260528T021104Z/cersyve_d_filter",
+      "stdout_tail": "nverter:Extracted input shape: [1, 2]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 2)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 2 inputs, 2 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 2 inputs, 2 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cersyve'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_pendulum.vnnlib: 1 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=cersyve max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=120.0s)\n  [  1/1] cersyve/onnx/pendulum_finetune_inv.onnx@vnnlib/prop_pendulum.vnnlib: UNKNOWN (1.0s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.0 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/d_gpu_autosweep_20260528T021104Z/cersyve_d_filter/per_instance_cersyve_20260528T021236697383Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "cersyve",
+      "instance_id": 8,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 4.002120829070918,
+      "peak_rss_mb": 1529.2734375,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/d_gpu_autosweep_20260528T021104Z/cersyve_d_filter/per_instance_cersyve_20260528T021241173448Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/d_gpu_autosweep_20260528T021104Z/cersyve_d_filter",
+      "stdout_tail": "r:Extracted input shape: [1, 4]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 4)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 4 inputs, 2 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cersyve'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_point_mass.vnnlib: 1 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=cersyve max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=120.0s)\n  [  1/1] cersyve/onnx/point_mass_pretrain_con.onnx@vnnlib/prop_point_mass.vnnlib: UNKNOWN (0.7s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.0 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/d_gpu_autosweep_20260528T021104Z/cersyve_d_filter/per_instance_cersyve_20260528T021241173448Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "cersyve",
+      "instance_id": 9,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 4.502955153002404,
+      "peak_rss_mb": 1573.19140625,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/d_gpu_autosweep_20260528T021104Z/cersyve_d_filter/per_instance_cersyve_20260528T021245607681Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/d_gpu_autosweep_20260528T021104Z/cersyve_d_filter",
+      "stdout_tail": "r:Extracted input shape: [1, 4]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 4)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 4 inputs, 2 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cersyve'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_point_mass.vnnlib: 1 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=cersyve max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=120.0s)\n  [  1/1] cersyve/onnx/point_mass_pretrain_inv.onnx@vnnlib/prop_point_mass.vnnlib: UNKNOWN (1.1s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.0 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/d_gpu_autosweep_20260528T021104Z/cersyve_d_filter/per_instance_cersyve_20260528T021245607681Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "cersyve",
+      "instance_id": 10,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 4.002259574015625,
+      "peak_rss_mb": 1528.41796875,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/d_gpu_autosweep_20260528T021104Z/cersyve_d_filter/per_instance_cersyve_20260528T021249583383Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/d_gpu_autosweep_20260528T021104Z/cersyve_d_filter",
+      "stdout_tail": "r:Extracted input shape: [1, 4]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 4)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 4 inputs, 2 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cersyve'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_point_mass.vnnlib: 1 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=cersyve max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=120.0s)\n  [  1/1] cersyve/onnx/point_mass_finetune_con.onnx@vnnlib/prop_point_mass.vnnlib: UNKNOWN (0.6s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.0 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/d_gpu_autosweep_20260528T021104Z/cersyve_d_filter/per_instance_cersyve_20260528T021249583383Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "cersyve",
+      "instance_id": 11,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 4.503103071008809,
+      "peak_rss_mb": 1585.94921875,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/d_gpu_autosweep_20260528T021104Z/cersyve_d_filter/per_instance_cersyve_20260528T021254032799Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/d_gpu_autosweep_20260528T021104Z/cersyve_d_filter",
+      "stdout_tail": "r:Extracted input shape: [1, 4]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 4)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 4 inputs, 2 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cersyve'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_point_mass.vnnlib: 1 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=cersyve max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=120.0s)\n  [  1/1] cersyve/onnx/point_mass_finetune_inv.onnx@vnnlib/prop_point_mass.vnnlib: UNKNOWN (1.0s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.0 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/d_gpu_autosweep_20260528T021104Z/cersyve_d_filter/per_instance_cersyve_20260528T021254032799Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    }
+  ]
+}

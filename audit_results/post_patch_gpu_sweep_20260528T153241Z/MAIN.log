@@ -1,0 +1,15 @@
+ROOT=/data1/Kane/ACT/audit_results/post_patch_gpu_sweep_20260528T153241Z
+spawned dist_shift_2023 PID=909526
+spawned soundnessbench PID=909530
+spawned yolo_2023 PID=909534
+spawned traffic_signs_recognition_2023 PID=909538
+spawned cifar100_2024 PID=909542
+spawned tinyimagenet_2024 PID=909546
+==== SYNTHESIS ====
+cifar100_2024                      n=  5 {'UNKNOWN': 5} mean_wall=9.1s
+dist_shift_2023                    n= 11 {'ERROR_WATCHDOG_EXIT_NONZERO': 1, 'UNKNOWN': 9, 'ERROR_RuntimeError': 1} mean_wall=1.4s
+soundnessbench                     n=  7 {'UNKNOWN': 7} mean_wall=5.6s
+tinyimagenet_2024                  n=  6 {'UNKNOWN': 4, 'ERROR_OutOfMemoryError': 1, 'ERROR_WATCHDOG_EXIT_NONZERO': 1} mean_wall=12.1s
+traffic_signs_recognition_2023     n=  1 {'UNKNOWN': 1} mean_wall=82.2s
+yolo_2023                          n=  7 {'ERROR_WATCHDOG_EXIT_NONZERO': 1, 'ERROR_OutOfMemoryError': 1, 'UNKNOWN': 5} mean_wall=8.1s
+DONE Fri May 29 01:34:10 AEST 2026

@@ -1,0 +1,24 @@
+{
+  "schema_version": 2,
+  "strict_bounded_failure": false,
+  "counts": {
+    "OK": 0,
+    "UNKNOWN_TIMEOUT": 1,
+    "UNKNOWN_RESOURCE_LIMIT": 0,
+    "ERROR": 0
+  },
+  "results": [
+    {
+      "benchmark": "ml4acopf_2024",
+      "instance_id": 56,
+      "status": "UNKNOWN_TIMEOUT",
+      "cli_normalized": "UNKNOWN_TIMEOUT",
+      "wall_s": 608.6402869860176,
+      "peak_rss_mb": 2867.66015625,
+      "returncode": -15,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/ml4acopf_timeout_long_20260529T142501Z/iid_56/per_instance_ml4acopf_2024_watchdog_iid56_20260529T143513041946Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/ml4acopf_timeout_long_20260529T142501Z/iid_56",
+      "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: ml4acopf_2024/./onnx/300_ieee_ml4acopf-linear-residual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/ml4acopf_2024/onnx/300_ieee_ml4acopf-linear-residual.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: 300_ieee_ml4acopf-linear-residual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 402]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 402)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 402 inputs, 3804 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 402 inputs, 3804 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'ml4acopf_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed 300_ieee_prop3.vnnlib: 276 query(ies)\n"
+    }
+  ]
+}

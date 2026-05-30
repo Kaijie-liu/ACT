@@ -1,0 +1,24 @@
+{
+  "schema_version": 2,
+  "strict_bounded_failure": false,
+  "counts": {
+    "OK": 1,
+    "UNKNOWN_TIMEOUT": 0,
+    "UNKNOWN_RESOURCE_LIMIT": 0,
+    "ERROR": 0
+  },
+  "results": [
+    {
+      "benchmark": "vggnet16_2022",
+      "instance_id": 0,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 49.029270772007294,
+      "peak_rss_mb": 7440.94921875,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/vgg_triangle_tail_20260528T144250Z/per_instance_vggnet16_2022_20260528T144339499410Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/vgg_triangle_tail_20260528T144250Z",
+      "stdout_tail": "nc=0\n[HZ-PROGRESS] L27 RELU -> dim=100352 ng=22636 nb=0 nc=0\n[HZ-PROGRESS] start L28 CONV2D in=dim=100352 ng=22636 nb=0 nc=0\n[HZ-PROGRESS] L28 CONV2D -> dim=100352 ng=40960 nb=0 nc=0\n[HZ-PROGRESS] start L29 RELU in=dim=100352 ng=40960 nb=0 nc=0\n[HZ-PROGRESS] L29 RELU -> dim=100352 ng=34583 nb=0 nc=0\n[HZ-PROGRESS] start L30 CONV2D in=dim=100352 ng=34583 nb=0 nc=0\n[HZ-PROGRESS] L30 CONV2D -> dim=100352 ng=55296 nb=0 nc=0\n[HZ-PROGRESS] start L31 RELU in=dim=100352 ng=55296 nb=0 nc=0\n[HZ-PROGRESS] L31 RELU -> dim=100352 ng=48697 nb=0 nc=0\n[HZ-PROGRESS] start L32 MAXPOOL2D in=dim=100352 ng=48697 nb=0 nc=0\n[HZ-PROGRESS] L32 MAXPOOL2D -> dim=25088 ng=14070 nb=0 nc=0\n[HZ-PROGRESS] start L33 FLATTEN in=dim=25088 ng=14070 nb=0 nc=0\n[HZ-PROGRESS] L33 FLATTEN -> dim=25088 ng=14070 nb=0 nc=0\n[HZ-PROGRESS] start L34 DENSE in=dim=25088 ng=14070 nb=0 nc=0\n[HZ-PROGRESS] L34 DENSE -> dim=4096 ng=14070 nb=0 nc=0\n[HZ-PROGRESS] start L35 RELU in=dim=4096 ng=14070 nb=0 nc=0\n[HZ-PROGRESS] L35 RELU -> dim=4096 ng=4096 nb=0 nc=0\n[HZ-PROGRESS] start L36 DENSE in=dim=4096 ng=4096 nb=0 nc=0\n[HZ-PROGRESS] L36 DENSE -> dim=4096 ng=4096 nb=0 nc=0\n[HZ-PROGRESS] start L37 RELU in=dim=4096 ng=4096 nb=0 nc=0\n[HZ-PROGRESS] L37 RELU -> dim=4096 ng=6000 nb=0 nc=0\n[HZ-PROGRESS] start L38 DENSE in=dim=4096 ng=6000 nb=0 nc=0\n[HZ-PROGRESS] L38 DENSE -> dim=1000 ng=6000 nb=0 nc=0\n  [  1/1] vggnet16_2022/onnx/vgg16-7.onnx@vnnlib/spec0_suit.vnnlib: FALSIFIED (44.6s)  V=0 A=1 U=0 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.7 min\n  FALSIFIED    1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/vgg_triangle_tail_20260528T144250Z/per_instance_vggnet16_2022_20260528T144339499410Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    }
+  ]
+}

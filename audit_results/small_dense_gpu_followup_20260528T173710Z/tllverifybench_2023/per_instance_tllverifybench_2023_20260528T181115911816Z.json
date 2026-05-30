@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "benchmark": "tllverifybench_2023",
+  "formal_mode": true,
+  "timestamp_utc": "20260528T181115911816Z",
+  "canonical_root": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks",
+  "receipt_dir": "/data1/Kane/ACT/audit_results/small_dense_gpu_followup_20260528T173710Z/tllverifybench_2023",
+  "wall_min": 0.02920035521189372,
+  "counts": {
+    "CERTIFIED": 0,
+    "FALSIFIED": 1,
+    "UNKNOWN": 0,
+    "ERROR": 0
+  },
+  "run_status": "PASSED",
+  "per_instance": [
+    {
+      "official_instance_id": 3,
+      "benchmark": "tllverifybench_2023",
+      "onnx_model": "onnx/tllBench_n=2_N=M=8_m=1_instance_0_3.onnx",
+      "vnnlib_spec": "vnnlib/property_N=8_3.vnnlib",
+      "model_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/tllverifybench_2023/onnx/tllBench_n=2_N=M=8_m=1_instance_0_3.onnx",
+      "spec_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/tllverifybench_2023/vnnlib/property_N=8_3.vnnlib",
+      "internal_status": "SAT",
+      "reportable_status": "FALSIFIED",
+      "cli_normalized": "FALSIFIED",
+      "count_bucket": "FALSIFIED",
+      "queries": [
+        {
+          "query_index": 0,
+          "internal_status": "SAT",
+          "reportable_status": "FALSIFIED",
+          "receipt_path": "/data1/Kane/ACT/audit_results/small_dense_gpu_followup_20260528T173710Z/tllverifybench_2023/tllverifybench_2023_3_q0_small_dense_lp_witness_0.json"
+        }
+      ],
+      "q_statuses": [
+        "SAT"
+      ],
+      "q_reportables": [
+        "FALSIFIED"
+      ],
+      "q_receipts": [
+        "/data1/Kane/ACT/audit_results/small_dense_gpu_followup_20260528T173710Z/tllverifybench_2023/tllverifybench_2023_3_q0_small_dense_lp_witness_0.json"
+      ],
+      "error": null,
+      "wall_s": 1.751997470855713,
+      "timeout_s": 120.0,
+      "instance_budget_exhausted": false
+    }
+  ]
+}

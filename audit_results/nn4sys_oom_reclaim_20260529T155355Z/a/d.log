@@ -1,0 +1,99 @@
+[ACT] Auto-detecting project root: ../ACT
+[ACT] Gurobi license found: ../ACT/modules/gurobi/gurobi.lic
+{
+  "benchmark": "nn4sys",
+  "instance_id": 146,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 308.585287799011,
+  "peak_rss_mb": 22973.55078125,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_oom_reclaim_20260529T155355Z/a/per_instance_nn4sys_watchdog_iid146_20260529T155906290753Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_oom_reclaim_20260529T155355Z/a",
+  "stdout_tail": "RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x128 and 256x1)\nWARNING:act.back_end.solver.solver_hz:L125 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x6 and 18x1)\nWARNING:act.back_end.solver.solver_hz:L128 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x128 and 384x1)\nWARNING:act.back_end.solver.solver_hz:L137 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x13 and 78x1)\nWARNING:act.back_end.solver.solver_hz:L140 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x128 and 768x1)\nWARNING:act.back_end.solver.solver_hz:L149 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x6 and 12x1)\nWARNING:act.back_end.solver.solver_hz:L152 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x128 and 256x1)\nWARNING:act.back_end.solver.solver_hz:L48 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x6 and 18x1)\nWARNING:act.back_end.solver.solver_hz:L51 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x128 and 384x1)\nWARNING:act.back_end.solver.solver_hz:L60 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x13 and 78x1)\nWARNING:act.back_end.solver.solver_hz:L63 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x128 and 768x1)\nWARNING:act.back_end.solver.solver_hz:L72 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x6 and 12x1)\nWARNING:act.back_end.solver.solver_hz:L75 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x128 and 256x1)\nWARNING:act.back_end.solver.solver_hz:L125 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x6 and 18x1)\nWARNING:act.back_end.solver.solver_hz:L128 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x128 and 384x1)\nWARNING:act.back_end.solver.solver_hz:L137 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x13 and 78x1)\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 147,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 308.5739550740691,
+  "peak_rss_mb": 27782.29296875,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_oom_reclaim_20260529T155355Z/a/per_instance_nn4sys_watchdog_iid147_20260529T160414866545Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_oom_reclaim_20260529T155355Z/a",
+  "stdout_tail": "timeError): mat1 and mat2 shapes cannot be multiplied (128x128 and 384x1)\nWARNING:act.back_end.solver.solver_hz:L137 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x13 and 78x1)\nWARNING:act.back_end.solver.solver_hz:L140 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x128 and 768x1)\nWARNING:act.back_end.solver.solver_hz:L149 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x6 and 12x1)\nWARNING:act.back_end.solver.solver_hz:L152 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x128 and 256x1)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=nn4sys max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=300.0s)\n  [  1/1] nn4sys/onnx/mscn_128d_dual.onnx@vnnlib/cardinality_1_3520_128_dual.vnnlib: UNKNOWN (305.5s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=5.1 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/nn4sys_oom_reclaim_20260529T155355Z/a/per_instance_nn4sys_20260529T160413864709Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 148,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 308.67991927592084,
+  "peak_rss_mb": 32587.18359375,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_oom_reclaim_20260529T155355Z/a/per_instance_nn4sys_watchdog_iid148_20260529T160923547201Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_oom_reclaim_20260529T155355Z/a",
+  "stdout_tail": "RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x6 and 18x1)\nWARNING:act.back_end.solver.solver_hz:L128 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x128 and 384x1)\nWARNING:act.back_end.solver.solver_hz:L137 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x13 and 78x1)\nWARNING:act.back_end.solver.solver_hz:L140 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x128 and 768x1)\nWARNING:act.back_end.solver.solver_hz:L149 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x6 and 12x1)\nWARNING:act.back_end.solver.solver_hz:L152 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x128 and 256x1)\nWARNING:act.back_end.solver.solver_hz:L48 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x6 and 18x1)\nWARNING:act.back_end.solver.solver_hz:L51 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x128 and 384x1)\nWARNING:act.back_end.solver.solver_hz:L60 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x13 and 78x1)\nWARNING:act.back_end.solver.solver_hz:L63 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x128 and 768x1)\nWARNING:act.back_end.solver.solver_hz:L72 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x6 and 12x1)\nWARNING:act.back_end.solver.solver_hz:L75 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x128 and 256x1)\nWARNING:act.back_end.solver.solver_hz:L125 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x6 and 18x1)\nWARNING:act.back_end.solver.solver_hz:L128 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x128 and 384x1)\nWARNING:act.back_end.solver.solver_hz:L137 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x13 and 78x1)\nWARNING:act.back_end.solver.solver_hz:L140 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x128 and 768x1)\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 149,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 309.6801469300408,
+  "peak_rss_mb": 37387.2578125,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_oom_reclaim_20260529T155355Z/a/per_instance_nn4sys_watchdog_iid149_20260529T161433227824Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_oom_reclaim_20260529T155355Z/a",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: nn4sys/onnx/mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nWARNING:act.front_end.vnnlib_loader.onnx_converter:Full pipeline failed (KeyError: 'Slice_9'); retrying with raw graph (no opset upgrade, no simplify)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 308 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 308 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 150,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 309.7740728460485,
+  "peak_rss_mb": 42196.859375,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_oom_reclaim_20260529T155355Z/a/per_instance_nn4sys_watchdog_iid150_20260529T161943003464Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_oom_reclaim_20260529T155355Z/a",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: nn4sys/onnx/mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nWARNING:act.front_end.vnnlib_loader.onnx_converter:Full pipeline failed (KeyError: 'Slice_9'); retrying with raw graph (no opset upgrade, no simplify)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 308 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 308 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 151,
+  "status": "UNKNOWN_TIMEOUT",
+  "cli_normalized": "UNKNOWN_TIMEOUT",
+  "wall_s": 308.86478452803567,
+  "peak_rss_mb": 47000.7421875,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_oom_reclaim_20260529T155355Z/a/per_instance_nn4sys_watchdog_iid151_20260529T162451868719Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_oom_reclaim_20260529T155355Z/a",
+  "stdout_tail": "K (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x6 and 18x1)\nWARNING:act.back_end.solver.solver_hz:L51 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x128 and 384x1)\nWARNING:act.back_end.solver.solver_hz:L60 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x13 and 78x1)\nWARNING:act.back_end.solver.solver_hz:L63 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x128 and 768x1)\nWARNING:act.back_end.solver.solver_hz:L72 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x6 and 12x1)\nWARNING:act.back_end.solver.solver_hz:L75 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x128 and 256x1)\nWARNING:act.back_end.solver.solver_hz:L125 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x6 and 18x1)\nWARNING:act.back_end.solver.solver_hz:L128 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x128 and 384x1)\nWARNING:act.back_end.solver.solver_hz:L137 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x13 and 78x1)\nWARNING:act.back_end.solver.solver_hz:L140 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x128 and 768x1)\nWARNING:act.back_end.solver.solver_hz:L149 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x6 and 12x1)\nWARNING:act.back_end.solver.solver_hz:L152 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x128 and 256x1)\nWARNING:act.back_end.solver.solver_hz:L48 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x6 and 18x1)\nWARNING:act.back_end.solver.solver_hz:L51 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x128 and 384x1)\nWARNING:act.back_end.solver.solver_hz:L60 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x13 and 78x1)\nWARNING:act.back_end.solver.solver_hz:L63 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x128 and 768x1)\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 152,
+  "status": "UNKNOWN_RESOURCE_LIMIT",
+  "cli_normalized": "UNKNOWN_RESOURCE_LIMIT",
+  "wall_s": 126.27432635310106,
+  "peak_rss_mb": 51270.69140625,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_oom_reclaim_20260529T155355Z/a/per_instance_nn4sys_watchdog_iid152_20260529T162658143481Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_oom_reclaim_20260529T155355Z/a",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: nn4sys/onnx/mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nWARNING:act.front_end.vnnlib_loader.onnx_converter:Full pipeline failed (KeyError: 'Slice_9'); retrying with raw graph (no opset upgrade, no simplify)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 308 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 308 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\n"
+}
+{
+  "benchmark": "nn4sys",
+  "instance_id": 153,
+  "status": "UNKNOWN_RESOURCE_LIMIT",
+  "cli_normalized": "UNKNOWN_RESOURCE_LIMIT",
+  "wall_s": 124.67609649302904,
+  "peak_rss_mb": 51253.6640625,
+  "returncode": -15,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/nn4sys_oom_reclaim_20260529T155355Z/a/per_instance_nn4sys_watchdog_iid153_20260529T162902820086Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/nn4sys_oom_reclaim_20260529T155355Z/a",
+  "stdout_tail": "INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: nn4sys/onnx/mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 \u2192 13\nINFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model\nWARNING:act.front_end.vnnlib_loader.onnx_converter:Full pipeline failed (KeyError: 'Slice_9'); retrying with raw graph (no opset upgrade, no simplify)\nINFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64\nINFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_128d_dual.onnx\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Model converted successfully\nINFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...\nINFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 22, 14)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 308 inputs, 1 outputs, type=safety\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 308 inputs, 1 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'\n"
+}
+[watchdog] summary written: /data1/Kane/ACT/audit_results/nn4sys_oom_reclaim_20260529T155355Z/a/watchdog_summary.json

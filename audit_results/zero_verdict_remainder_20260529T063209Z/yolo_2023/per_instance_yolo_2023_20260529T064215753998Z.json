@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "benchmark": "yolo_2023",
+  "formal_mode": true,
+  "timestamp_utc": "20260529T064215753998Z",
+  "canonical_root": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks",
+  "receipt_dir": "/data1/Kane/ACT/audit_results/zero_verdict_remainder_20260529T063209Z/yolo_2023",
+  "wall_min": 0.12275566260019938,
+  "counts": {
+    "CERTIFIED": 0,
+    "FALSIFIED": 0,
+    "UNKNOWN": 0,
+    "ERROR": 1
+  },
+  "run_status": "FAILED",
+  "per_instance": [
+    {
+      "official_instance_id": 64,
+      "benchmark": "yolo_2023",
+      "onnx_model": "onnx/TinyYOLO.onnx",
+      "vnnlib_spec": "vnnlib/TinyYOLO_prop_000170_eps_1_255.vnnlib",
+      "model_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/yolo_2023/onnx/TinyYOLO.onnx",
+      "spec_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/yolo_2023/vnnlib/TinyYOLO_prop_000170_eps_1_255.vnnlib",
+      "internal_status": "ERROR",
+      "reportable_status": "ERROR",
+      "cli_normalized": "ERROR_OutOfMemoryError",
+      "count_bucket": "ERROR",
+      "queries": [],
+      "q_statuses": [],
+      "q_reportables": [],
+      "q_receipts": [],
+      "error": "OutOfMemoryError: CUDA out of memory. Tried to allocate 224.00 MiB. GPU 0 has a total capacity of 94.96 GiB of which 202.88 MiB is free. Process 2687037 has 690.00 MiB memory in use. Process 1853891 has 3.94 GiB memory in use. Process 1853898 has 4.62 GiB memory in use. Process 1932838 has 8.08 GiB memory in use. Process 1950454 has 52.48 GiB memory in use. Process 1983198 has 9.86 GiB memory in use. Including non-PyTorch memory, this process has 14.82 GiB memory in use. Of the allocated memory 14.17 GiB is allocated by PyTorch, and 11.37 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)",
+      "wall_s": 7.365225553512573,
+      "timeout_s": 180.0,
+      "instance_budget_exhausted": false
+    }
+  ]
+}

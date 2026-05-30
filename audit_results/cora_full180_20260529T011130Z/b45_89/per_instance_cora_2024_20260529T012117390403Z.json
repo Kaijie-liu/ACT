@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "benchmark": "cora_2024",
+  "formal_mode": true,
+  "timestamp_utc": "20260529T012117390403Z",
+  "canonical_root": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks",
+  "receipt_dir": "/data1/Kane/ACT/audit_results/cora_full180_20260529T011130Z/b45_89",
+  "wall_min": 1.30503404935201,
+  "counts": {
+    "CERTIFIED": 0,
+    "FALSIFIED": 1,
+    "UNKNOWN": 0,
+    "ERROR": 0
+  },
+  "run_status": "PASSED",
+  "per_instance": [
+    {
+      "official_instance_id": 48,
+      "benchmark": "cora_2024",
+      "onnx_model": "./onnx/mnist-point.onnx",
+      "vnnlib_spec": "vnnlib/mnist-img17.vnnlib",
+      "model_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/onnx/mnist-point.onnx",
+      "spec_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cora_2024/vnnlib/mnist-img17.vnnlib",
+      "internal_status": "SAT",
+      "reportable_status": "FALSIFIED",
+      "cli_normalized": "FALSIFIED",
+      "count_bucket": "FALSIFIED",
+      "queries": [
+        {
+          "query_index": 0,
+          "internal_status": "UNKNOWN",
+          "reportable_status": "UNKNOWN",
+          "receipt_path": null
+        },
+        {
+          "query_index": 1,
+          "internal_status": "UNKNOWN",
+          "reportable_status": "UNKNOWN",
+          "receipt_path": null
+        },
+        {
+          "query_index": 2,
+          "internal_status": "UNKNOWN",
+          "reportable_status": "UNKNOWN",
+          "receipt_path": null
+        },
+        {
+          "query_index": 3,
+          "internal_status": "SAT",
+          "reportable_status": "FALSIFIED",
+          "receipt_path": "/data1/Kane/ACT/audit_results/cora_full180_20260529T011130Z/b45_89/cora_2024_48_q3_hz_walker_lp_0.json"
+        }
+      ],
+      "q_statuses": [
+        "UNKNOWN",
+        "UNKNOWN",
+        "UNKNOWN",
+        "SAT"
+      ],
+      "q_reportables": [
+        "UNKNOWN",
+        "UNKNOWN",
+        "UNKNOWN",
+        "FALSIFIED"
+      ],
+      "q_receipts": [
+        null,
+        null,
+        null,
+        "/data1/Kane/ACT/audit_results/cora_full180_20260529T011130Z/b45_89/cora_2024_48_q3_hz_walker_lp_0.json"
+      ],
+      "error": null,
+      "wall_s": 78.30197167396545,
+      "timeout_s": 300.0,
+      "instance_budget_exhausted": false
+    }
+  ]
+}

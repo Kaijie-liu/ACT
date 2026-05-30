@@ -1,0 +1,42 @@
+[0;93m2026-05-28 01:01:21.613874937 [W:onnxruntime:Default, device_discovery.cc:211 DiscoverDevicesForPlatform] GPU device discovery failed: device_discovery.cc:91 ReadFileContents Failed to open file: "/sys/class/drm/card0/device/vendor"[m
+[94mUserWarning: 
+cuda cannot run in sound mode. Sound mode changed to False.[0m
+[94mUserWarning: This model does not support preprocessing properties to refine output spec
+ The output dim is not one dimensional. Returning a model with no preprocessing[0m
+[94mUserWarning: 
+NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition with CUDA capability sm_120 is not compatible with the current PyTorch installation.
+The current PyTorch install supports CUDA capabilities sm_50 sm_60 sm_61 sm_70 sm_75 sm_80 sm_86 sm_37 sm_90 compute_37.
+If you want to use the NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition GPU with PyTorch, please check the instructions at https://pytorch.org/get-started/locally/
+[0m
+Traceback (most recent call last):
+  File "/data1/Kane/pyrat/run_pure.py", line 159, in <module>
+    main()
+  File "./pyrat/main.py", line 142, in main
+  File "/data1/Kane/miniconda3/envs/pyrat/lib/python3.10/site-packages/trace_events/profiler.py", line 242, in wrapper
+    return func(*call_args, **call_kwargs)
+  File "./pyrat/analyzer/analyzer.py", line 112, in analyze
+  File "./pyrat/analyzer/analyzer_split.py", line 138, in analyze_splits
+  File "./pyrat/analyzer/analyzer_split.py", line 188, in call_analysis
+  File "./pyrat/analyzer/analyzer_split.py", line 236, in _analyze_and_split
+  File "/data1/Kane/miniconda3/envs/pyrat/lib/python3.10/site-packages/trace_events/profiler.py", line 242, in wrapper
+    return func(*call_args, **call_kwargs)
+  File "./pyrat/analyzer/analyzer_single.py", line 84, in analyze_single
+  File "/data1/Kane/miniconda3/envs/pyrat/lib/python3.10/site-packages/trace_events/profiler.py", line 242, in wrapper
+    return func(*call_args, **call_kwargs)
+  File "./pyrat/analyzer/analyzer_single.py", line 178, in _analyze_graph
+  File "./pyrat/analyzer/analyze_vars.py", line 76, in handle_layer
+  File "./pyrat/domains/zonotope.py", line 1407, in handle_layer
+  File "./pyrat/domains/domain.py", line 631, in handle_layer
+  File "./pyrat/domains/zonotope.py", line 265, in dense
+  File "./pyrat/domains/con_zonotope.py", line 146, in matmul
+  File "./pyrat/domains/zonotope.py", line 370, in matmul
+  File "./pyrat/domains/noise_box_group.py", line 180, in broadcast
+  File "./pyrat/domains/abstract_matrix.py", line 241, in matmul
+  File "./pyrat/domains/abstract_matrix.py", line 229, in _matmul
+  File "./pyrat/domains/abstract_matrix.py", line 225, in <lambda>
+  File "./pyrat/domains/operations.py", line 703, in einsum
+  File "/data1/Kane/miniconda3/envs/pyrat/lib/python3.10/site-packages/torch/functional.py", line 397, in einsum
+    return einsum(equation, *_operands)
+  File "/data1/Kane/miniconda3/envs/pyrat/lib/python3.10/site-packages/torch/functional.py", line 402, in einsum
+    return _VF.einsum(equation, operands)  # type: ignore[attr-defined]
+RuntimeError: CUDA error: CUBLAS_STATUS_ALLOC_FAILED when calling `cublasCreate(handle)`

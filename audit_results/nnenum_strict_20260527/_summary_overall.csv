@@ -1,0 +1,28 @@
+benchmark,N,V_unsat,A_sat,T_timeout,U_unknown,E_err,wall_sec_sum,wall_sec_max,notes
+acasxu_2023,186,139,47,0,0,0,388.3,22.8,
+cctsdb_yolo_2023,39,0,0,0,0,39,121.4,7.4,unsupported op (yolo arch)
+cersyve,12,0,0,0,0,12,6.8,0.6,unsupported (cersyve uses learned Lyapunov certificate ops)
+cgan_2023,21,0,0,0,0,21,37.9,4.9,unsupported (cgan generator ops)
+cifar100_2024,200,0,0,0,0,200,986.1,30.8,unsupported (ResNet residual ops)
+collins_aerospace_benchmark,6,0,0,0,0,6,1103.2,376.5,unsupported (YOLO arch)
+collins_rul_cnn_2022,62,39,23,0,0,0,674.0,32.1,
+cora_2024,180,19,1,160,0,0,6590.0,120.1,heavy MNIST set models — mostly timeout
+dist_shift_2023,72,0,0,0,0,72,29.6,0.5,unsupported op
+linearizenn_2024,60,59,1,0,0,0,596.0,43.6,clean
+lsnc_relu,80,0,0,0,0,80,159.0,16.5,unsupported (custom certified Lyapunov layer)
+malbeware,150,88,3,10,0,49,2474.7,190.1,49 err on the heavier ONNX variants
+metaroom_2023,100,14,0,0,0,86,467.9,58.7,86 err on the larger metaroom CNN variants
+ml4acopf_2024,69,0,0,0,0,69,56.5,2.2,unsupported (custom OPF projection)
+nn4sys,194,24,0,0,0,170,1304.4,63.9,170 err: mscn + transformer variants unsupported; 24 lindex OK
+relusplitter,221,15,0,100,0,106,10053.1,272.8,relusplitter has 220 official instances; 1 trailing row counted
+safenlp_2024,1080,285,624,171,0,0,10444.2,113.1,624 SAT via exact-star splitting (sound counterexamples)
+sat_relu,100,9,36,36,0,19,4944.0,162.3,36 SAT via exact-star
+soundnessbench,50,0,0,0,0,50,235.2,16.8,unsupported (deliberately tricky ops)
+test,5,0,0,0,0,5,3.1,0.8,smoke benchmark; nnenum has no exec policy for these
+tinyimagenet_2024,200,0,0,0,0,200,3829.6,69.6,unsupported (ResNet medium)
+tllverifybench_2023,32,2,17,9,0,4,7494.1,667.6,17 SAT via exact-star
+traffic_signs_recognition_2023,45,0,0,0,0,45,217.3,28.4,unsupported (QConv ops)
+vggnet16_2022,18,0,0,0,0,18,1318.3,211.3,unsupported (VGG conv block / size)
+vit_2023,200,0,0,0,0,200,407.2,10.0,unsupported (Transformer)
+yolo_2023,72,0,0,0,0,72,126.2,4.4,unsupported (YOLO arch)
+TOTAL,3454,693,752,486,0,1521,53867.6,667.6,V=sound UNSAT  A=sound SAT (exact-star witnesses)  T=timeout  E=tool-unsupported

@@ -594,15 +594,558 @@ def hz_from_bounds(bounds: Bounds, dtype, device) -> HZono:
     ub = bounds.ub.flatten().to(dtype=dtype, device=device)
     n = lb.shape[0]
     c = ((lb + ub) / 2.0).view(-1, 1)
-    rad = (ub - lb) / 2.0
+    rad = ((ub - lb) / 2.0).clamp_min(0)
+    active = torch.nonzero(rad > 0, as_tuple=False).view(-1)
+    ng = int(active.numel())
+    if ng == n:
+        Gc = torch.diag(rad)
+    else:
+        Gc = torch.zeros((n, ng), dtype=dtype, device=device)
+        if ng > 0:
+            cols = torch.arange(ng, dtype=torch.long, device=device)
+            Gc[active, cols] = rad[active]
     return HZono(
         c=c,
-        Gc=torch.diag(rad),
+        Gc=Gc,
         Gb=torch.zeros((n, 0), dtype=dtype, device=device),
-        Ac=torch.zeros((0, n), dtype=dtype, device=device),
+        Ac=torch.zeros((0, ng), dtype=dtype, device=device),
         Ab=torch.zeros((0, 0), dtype=dtype, device=device),
         b=torch.zeros((0, 1), dtype=dtype, device=device),
         eq_mask=None,
+    )
+
+
+def _zero_factor_hz_feasible(hz: HZono, *, tol: float = 1e-9) -> bool:
+    """Feasibility of an HZ with no continuous/binary factors.
+
+    With ng=nb=0 the factor-space has exactly one assignment. Equality rows
+    require 0 == b; inequality rows require 0 <= b. This is an exact check
+    and is used only for singleton-input fast paths.
+    """
+    if int(hz.ng) != 0 or int(hz.nb) != 0:
+        return False
+    if int(hz.nc) == 0:
+        return True
+    b_flat = hz.b.reshape(-1)
+    em = _eq_mask_of(hz).reshape(-1)
+    eq_ok = bool((torch.abs(b_flat[em]) <= tol).all().item()) if bool(em.any().item()) else True
+    le = ~em
+    le_ok = bool((b_flat[le] >= -tol).all().item()) if bool(le.any().item()) else True
+    return eq_ok and le_ok
+
+
+def _hz_upsample_nearest_nchw(hz: HZono, params: Dict[str, Any]) -> HZono:
+    """Exact HZ transfer for nearest-neighbor NCHW upsample.
+
+    Nearest-neighbor upsample is a linear row-selection/duplication map.  It
+    must preserve the existing factor space instead of materializing an
+    interval box; otherwise a 3-generator latent cGAN input becomes thousands
+    of independent pixel generators after the first resize.
+    """
+    mode = str(params.get("mode", "nearest")).lower()
+    if mode != "nearest":
+        raise ValueError(f"unsupported UPSAMPLE mode for HZ exact path: {mode}")
+    if not isinstance(hz, HZono):
+        if hasattr(hz, "materialization_bytes") and hasattr(hz, "to_full_hzono"):
+            budget = int(
+                float(os.environ.get("HYZOR_UPSAMPLE_MAT_BUDGET_GB", "1.0"))
+                * (1024 ** 3)
+            )
+            if int(hz.materialization_bytes()) > budget:
+                raise ValueError(
+                    "UPSAMPLE LazyChain materialization would exceed budget: "
+                    f"{int(hz.materialization_bytes())} bytes"
+                )
+            hz = hz.to_full_hzono()
+        elif hasattr(hz, "to_hzono"):
+            hz = hz.to_hzono()
+        else:
+            raise ValueError(
+                f"UPSAMPLE exact path cannot coerce {type(hz).__name__} to HZono"
+            )
+    in_shape = tuple(int(x) for x in params.get("input_shape", ()))
+    out_shape = tuple(int(x) for x in params.get("output_shape", ()))
+    if len(in_shape) != 4 or len(out_shape) != 4:
+        raise ValueError("UPSAMPLE exact path currently supports NCHW rank-4 only")
+    n, c, h, w = in_shape
+    n2, c2, h2, w2 = out_shape
+    if n != n2 or c != c2:
+        raise ValueError("UPSAMPLE exact path requires unchanged N and C")
+    if int(hz.dim) != n * c * h * w:
+        raise ValueError(
+            f"UPSAMPLE input dim mismatch: hz.dim={hz.dim}, shape={in_shape}"
+        )
+
+    device = hz.c.device
+    hh = torch.div(
+        torch.arange(h2, device=device, dtype=torch.float64) * h,
+        max(h2, 1),
+        rounding_mode="floor",
+    ).to(torch.long).clamp_(0, h - 1)
+    ww = torch.div(
+        torch.arange(w2, device=device, dtype=torch.float64) * w,
+        max(w2, 1),
+        rounding_mode="floor",
+    ).to(torch.long).clamp_(0, w - 1)
+    nn = torch.arange(n, device=device, dtype=torch.long)
+    cc = torch.arange(c, device=device, dtype=torch.long)
+    grid_n, grid_c, grid_h, grid_w = torch.meshgrid(
+        nn, cc, hh, ww, indexing="ij"
+    )
+    idx = (((grid_n * c + grid_c) * h + grid_h) * w + grid_w).reshape(-1)
+
+    return HZono(
+        c=hz.c.index_select(0, idx),
+        Gc=hz.Gc.index_select(0, idx),
+        Gb=hz.Gb.index_select(0, idx),
+        Ac=hz.Ac,
+        Ab=hz.Ab,
+        b=hz.b,
+        eq_mask=(hz.eq_mask.clone() if hz.eq_mask is not None else None),
+    )
+
+
+def _hz_gather_exact(hz: "HZono", params: Dict[str, Any]) -> "HZono":
+    """Exact HZ transfer for GATHER (ONNX axis-wise index selection).
+
+    GATHER is a linear row-selection: ``output[..., k, ...] = input[..., indices[k], ...]``
+    along the gather axis. This is mathematically equivalent to a permutation /
+    sparse selection matrix; HZ's c, Gc, Gb propagate exactly via ``index_select``
+    on the corresponding flat positions. No new generators, no relaxation.
+
+    Required ``params`` (matching the interval-tf gather meta in tf_mlp.py):
+        - ``axis``: int, ONNX axis (relative to inp_shape, NOT including batch).
+        - ``indices``: list of int — the positions to gather (may be a scalar list).
+        - ``input_shape``: tuple, the shape of the input tensor (no batch dim).
+        - ``output_shape``: tuple, the shape of the output tensor.
+
+    Implementation: compute a flat index permutation from output flat index to
+    input flat index, then apply ``index_select`` to c, Gc, Gb.
+    """
+    if not isinstance(hz, HZono):
+        if hasattr(hz, "to_hzono"):
+            hz = hz.to_hzono()
+        elif hasattr(hz, "to_full_hzono"):
+            hz = hz.to_full_hzono()
+        else:
+            raise ValueError(
+                f"GATHER exact path requires HZono, got {type(hz).__name__}"
+            )
+
+    indices_raw = params.get("indices", None)
+    if indices_raw is None:
+        raise ValueError("GATHER meta missing 'indices'")
+    if not isinstance(indices_raw, torch.Tensor):
+        indices = torch.tensor(indices_raw, dtype=torch.long)
+    else:
+        indices = indices_raw.to(torch.long)
+    indices = indices.reshape(-1)  # always 1-D for flat selection
+
+    axis = int(params.get("axis", 0))
+    in_shape = tuple(int(x) for x in params.get("input_shape", ()))
+    if not in_shape:
+        raise ValueError("GATHER meta missing 'input_shape'")
+    rank = len(in_shape)
+    if axis < 0:
+        axis = rank + axis
+    if axis < 0 or axis >= rank:
+        raise ValueError(f"GATHER invalid axis={axis} for rank={rank}")
+
+    n_in = 1
+    for d in in_shape:
+        n_in *= int(d)
+    if int(hz.dim) != n_in:
+        raise ValueError(
+            f"GATHER input dim mismatch: hz.dim={hz.dim}, input_shape={in_shape}, n_in={n_in}"
+        )
+
+    # Compute prefix/axis/suffix split for flat index arithmetic
+    prefix_size = 1
+    for d in in_shape[:axis]:
+        prefix_size *= int(d)
+    axis_dim = int(in_shape[axis])
+    suffix_size = 1
+    for d in in_shape[axis + 1:]:
+        suffix_size *= int(d)
+
+    n_indices = int(indices.shape[0])
+    device = hz.c.device
+
+    # Bounds-check indices (interval_tf already wrapped negatives but be defensive)
+    indices = indices.to(device).clamp_(0, axis_dim - 1)
+
+    # For each (p, k, s) output position the input flat index is:
+    #   p * axis_dim * suffix_size + indices[k] * suffix_size + s
+    p_idx = torch.arange(prefix_size, device=device, dtype=torch.long).reshape(-1, 1, 1)
+    k_idx = indices.reshape(1, -1, 1)
+    s_idx = torch.arange(suffix_size, device=device, dtype=torch.long).reshape(1, 1, -1)
+
+    flat_in_idx = (
+        p_idx * (axis_dim * suffix_size) + k_idx * suffix_size + s_idx
+    ).reshape(-1)
+
+    return HZono(
+        c=hz.c.index_select(0, flat_in_idx),
+        Gc=hz.Gc.index_select(0, flat_in_idx),
+        Gb=hz.Gb.index_select(0, flat_in_idx),
+        Ac=hz.Ac,
+        Ab=hz.Ab,
+        b=hz.b,
+        eq_mask=(hz.eq_mask.clone() if hz.eq_mask is not None else None),
+    )
+
+
+def _hz_slice_exact(hz: "HZono", params: Dict[str, Any]) -> "HZono":
+    """Exact HZ transfer for SLICE (ONNX axis-wise slicing).
+
+    SLICE selects a contiguous strided subset of indices along one or more axes;
+    it is a linear permutation/selection map and is exactly representable in HZ
+    via index_select on c, Gc, Gb. No new generators, no relaxation.
+
+    Required ``params`` (matching tf_slice meta):
+        - ``starts``, ``ends``, ``axes``, ``steps``: lists describing the slice.
+        - ``input_shape``: tuple of input dims (no batch).
+
+    If the ROUND9 shape-mismatch sentinel is set the meta cannot describe a real
+    permutation; fall back to caller's box-fallback by raising.
+    """
+    if params.get("ROUND9_shape_mismatch_sentinel", False):
+        raise ValueError("SLICE exact path: ROUND9 shape sentinel — cannot do exact")
+    if not isinstance(hz, HZono):
+        if hasattr(hz, "to_hzono"):
+            hz = hz.to_hzono()
+        elif hasattr(hz, "to_full_hzono"):
+            hz = hz.to_full_hzono()
+        else:
+            raise ValueError(
+                f"SLICE exact path requires HZono, got {type(hz).__name__}"
+            )
+
+    in_shape = tuple(int(x) for x in params.get("input_shape", ()))
+    if not in_shape:
+        raise ValueError("SLICE meta missing 'input_shape'")
+    rank = len(in_shape)
+    n_in = 1
+    for d in in_shape:
+        n_in *= int(d)
+    if int(hz.dim) != n_in:
+        raise ValueError(
+            f"SLICE input dim mismatch: hz.dim={hz.dim}, input_shape={in_shape}, n_in={n_in}"
+        )
+
+    starts = list(params.get("starts", []))
+    ends = list(params.get("ends", []))
+    axes = list(params.get("axes", list(range(len(starts)))))
+    steps = list(params.get("steps", [1] * len(axes)))
+
+    # Build per-axis index ranges
+    device = hz.c.device
+    axis_ranges = []
+    for d in range(rank):
+        axis_ranges.append(
+            torch.arange(int(in_shape[d]), device=device, dtype=torch.long)
+        )
+    for i, axis in enumerate(axes):
+        axis = int(axis)
+        if axis < 0:
+            axis = rank + axis
+        s = int(starts[i])
+        e = int(ends[i])
+        st = int(steps[i]) if i < len(steps) else 1
+        # Handle negative indices and clamping per ONNX semantics
+        dim = int(in_shape[axis])
+        if s < 0:
+            s = max(0, s + dim)
+        if e < 0:
+            e = max(0, e + dim)
+        s = max(0, min(s, dim))
+        e = max(0, min(e, dim))
+        # PyTorch arange with step (incl. negative step)
+        if st > 0:
+            axis_ranges[axis] = torch.arange(s, e, st, device=device, dtype=torch.long)
+        elif st < 0:
+            axis_ranges[axis] = torch.arange(s, e, st, device=device, dtype=torch.long)
+        else:
+            raise ValueError(f"SLICE invalid step=0 on axis={axis}")
+
+    # Build flat index = prod for the cartesian product over axis_ranges
+    # Use meshgrid then ravel
+    grids = torch.meshgrid(*axis_ranges, indexing="ij")
+    # Compute flat strides
+    strides = [1] * rank
+    for d in range(rank - 2, -1, -1):
+        strides[d] = strides[d + 1] * int(in_shape[d + 1])
+    flat_in_idx = torch.zeros_like(grids[0])
+    for d in range(rank):
+        flat_in_idx = flat_in_idx + grids[d] * int(strides[d])
+    flat_in_idx = flat_in_idx.reshape(-1)
+
+    return HZono(
+        c=hz.c.index_select(0, flat_in_idx),
+        Gc=hz.Gc.index_select(0, flat_in_idx),
+        Gb=hz.Gb.index_select(0, flat_in_idx),
+        Ac=hz.Ac,
+        Ab=hz.Ab,
+        b=hz.b,
+        eq_mask=(hz.eq_mask.clone() if hz.eq_mask is not None else None),
+    )
+
+
+def _hz_convtranspose2d_native(hz: HZono, params: Dict[str, Any]) -> HZono:
+    """Exact HZ transfer for ``ConvTranspose2d`` without dense W materialization."""
+    if not isinstance(hz, HZono):
+        if hasattr(hz, "to_hzono"):
+            hz = hz.to_hzono()
+        elif hasattr(hz, "to_full_hzono"):
+            hz = hz.to_full_hzono()
+        else:
+            raise ValueError(
+                f"ConvTranspose2d exact path requires HZono, got {type(hz).__name__}"
+            )
+
+    import torch.nn.functional as F
+
+    weight = params.get("weight")
+    if weight is None:
+        raise ValueError("ConvTranspose2d exact path missing weight")
+    weight_t = torch.as_tensor(weight, dtype=hz.c.dtype, device=hz.c.device)
+    bias = params.get("b", params.get("bias", None))
+    bias_t = (
+        torch.as_tensor(bias, dtype=hz.c.dtype, device=hz.c.device).flatten()
+        if bias is not None else None
+    )
+    conv_params = dict(params.get("conv_params", {}) or {})
+    stride = conv_params.get("stride", params.get("stride", 1))
+    padding = conv_params.get("padding", params.get("padding", 0))
+    output_padding = conv_params.get(
+        "output_padding", params.get("output_padding", 0)
+    )
+    dilation = conv_params.get("dilation", params.get("dilation", 1))
+    groups = int(conv_params.get("groups", params.get("groups", 1)))
+    input_shape = tuple(int(x) for x in params.get("input_shape", ()))
+    output_shape = tuple(int(x) for x in params.get("output_shape", ()))
+    if len(input_shape) != 4 or len(output_shape) != 4:
+        raise ValueError("ConvTranspose2d exact path requires rank-4 shapes")
+    _, c_in, h_in, w_in = input_shape
+    _, c_out, h_out, w_out = output_shape
+    if int(hz.dim) != c_in * h_in * w_in:
+        raise ValueError(
+            "ConvTranspose2d input dim mismatch: "
+            f"hz.dim={hz.dim}, input_shape={input_shape}"
+        )
+
+    def _apply_cols(mat: torch.Tensor) -> torch.Tensor:
+        if int(mat.shape[1]) == 0:
+            return torch.zeros(
+                (c_out * h_out * w_out, 0),
+                dtype=hz.c.dtype,
+                device=hz.c.device,
+            )
+        chunk = int(os.environ.get("HYZOR_CONVTRANSPOSE_COL_CHUNK", "128"))
+        outs = []
+        for start in range(0, int(mat.shape[1]), chunk):
+            block = mat[:, start:start + chunk].transpose(0, 1).contiguous()
+            block4 = block.view(-1, c_in, h_in, w_in)
+            out4 = F.conv_transpose2d(
+                block4, weight_t, None,
+                stride=stride, padding=padding,
+                output_padding=output_padding, dilation=dilation,
+                groups=groups,
+            )
+            outs.append(out4.reshape(out4.shape[0], -1).transpose(0, 1))
+        return torch.cat(outs, dim=1) if len(outs) > 1 else outs[0]
+
+    c4 = hz.c.reshape(1, c_in, h_in, w_in)
+    c_out_t = F.conv_transpose2d(
+        c4, weight_t, bias_t,
+        stride=stride, padding=padding,
+        output_padding=output_padding, dilation=dilation,
+        groups=groups,
+    ).reshape(-1, 1)
+    expected_dim = c_out * h_out * w_out
+    if int(c_out_t.numel()) != expected_dim:
+        raise ValueError(
+            "ConvTranspose2d output dim mismatch: "
+            f"got={int(c_out_t.numel())}, expected={expected_dim}"
+        )
+    return HZono(
+        c=c_out_t,
+        Gc=_apply_cols(hz.Gc),
+        Gb=_apply_cols(hz.Gb),
+        Ac=hz.Ac,
+        Ab=hz.Ab,
+        b=hz.b,
+        eq_mask=(hz.eq_mask.clone() if hz.eq_mask is not None else None),
+    )
+
+
+def _assert_is_order_only_zero_threshold(assert_layer: Layer) -> bool:
+    """True iff the output spec only asks pairwise class ordering.
+
+    For a final softmax layer, pairwise zero-threshold comparisons are
+    exactly preserved by the monotone exponential normalization:
+    ``softmax_i >= softmax_j`` iff ``logit_i >= logit_j``.  This helper is
+    intentionally narrow; margins, arbitrary linear rows, ranges, and
+    non-zero thresholds must keep the normal softmax fallback.
+    """
+    try:
+        kind = _kind_str(assert_layer.params.get("kind"))
+        if kind == "TOP1_ROBUST":
+            return True
+        if kind != "UNSAFE_LINEAR":
+            return False
+        C = _to_np_f64(
+            assert_layer.params.get("c", assert_layer.params.get("C"))
+        )
+        d = _to_np_f64(
+            assert_layer.params.get("d", assert_layer.params.get("thresholds"))
+        ).reshape(-1)
+        if C.ndim == 1:
+            C = C.reshape(1, -1)
+        else:
+            C = C.reshape(-1, C.shape[-1])
+        if C.shape[0] != d.shape[0] or not np.all(np.abs(d) <= 1e-12):
+            return False
+        for row in C:
+            nz = np.flatnonzero(np.abs(row) > 1e-12)
+            if nz.size != 2:
+                return False
+            vals = sorted(float(row[i]) for i in nz)
+            if abs(vals[0] + 1.0) > 1e-12 or abs(vals[1] - 1.0) > 1e-12:
+                return False
+        return True
+    except Exception:
+        return False
+
+
+def _hz_sign_convex_hull(hz: HZono, in_bounds: Bounds) -> HZono:
+    """Sound convex-hull transfer for elementwise ``torch.sign``.
+
+    Stable inputs become constants.  For crossing intervals ``l < 0 < u``,
+    introduce one continuous output variable ``y`` in ``[-1, 1]`` and add
+    the two hull facets of the discontinuous sign graph:
+
+      ``y >= 2 x / u - 1`` and ``y <= 2 x / (-l) + 1``.
+
+    This keeps a forward-only HZ relation between the pre-sign affine form
+    and the post-sign abstraction.  It is an over-approximation of
+    torch.sign, including the exact-zero point, and uses no splitting.
+    """
+    if not isinstance(hz, HZono):
+        raise ValueError("SIGN hull currently requires dense HZono")
+    lb = in_bounds.lb.flatten().to(dtype=hz.c.dtype, device=hz.c.device)
+    ub = in_bounds.ub.flatten().to(dtype=hz.c.dtype, device=hz.c.device)
+    n = int(hz.dim)
+    if int(lb.numel()) != n or int(ub.numel()) != n:
+        raise ValueError(
+            f"SIGN hull bound shape mismatch: bounds={int(lb.numel())}, hz.dim={n}"
+        )
+    tol = float(os.environ.get("HYZOR_SIGN_HULL_TOL", "1e-12"))
+    neg = ub < -tol
+    pos = lb > tol
+    exact_zero = (lb.abs() <= tol) & (ub.abs() <= tol)
+    cross = (lb < -tol) & (ub > tol)
+    nonneg_zero = (~pos) & (~exact_zero) & (lb.abs() <= tol) & (ub > tol)
+    nonpos_zero = (~neg) & (~exact_zero) & (ub.abs() <= tol) & (lb < -tol)
+    variable = cross | nonneg_zero | nonpos_zero
+    var_idx = torch.nonzero(variable, as_tuple=False).view(-1)
+    k = int(var_idx.numel())
+    cross_idx = torch.nonzero(cross, as_tuple=False).view(-1)
+    kc = int(cross_idx.numel())
+    max_unstable = int(os.environ.get("HYZOR_SIGN_HULL_MAX_UNSTABLE", "6000"))
+    if k > max_unstable:
+        raise ValueError(f"SIGN hull unstable count {k} exceeds cap {max_unstable}")
+
+    p0 = int(hz.ng)
+    q0 = int(hz.nb)
+    keep_old = kc > 0
+    p_out = (p0 if keep_old else 0) + k
+    budget = int(
+        float(os.environ.get("HYZOR_SIGN_HULL_MAT_BUDGET_GB", "3.0"))
+        * (1024 ** 3)
+    )
+    est = n * max(p_out + q0, 1) * hz.c.element_size()
+    if est > budget:
+        raise ValueError(
+            "SIGN hull materialization would exceed budget: "
+            f"{est / (1024 ** 3):.2f} GiB > {budget / (1024 ** 3):.2f} GiB"
+        )
+
+    c_out = torch.zeros((n, 1), dtype=hz.c.dtype, device=hz.c.device)
+    c_out[pos, 0] = 1.0
+    c_out[neg, 0] = -1.0
+    c_out[nonneg_zero, 0] = 0.5
+    c_out[nonpos_zero, 0] = -0.5
+    Gc_out = torch.zeros((n, p_out), dtype=hz.c.dtype, device=hz.c.device)
+    Gb_out = torch.zeros((n, q0), dtype=hz.c.dtype, device=hz.c.device)
+    if k > 0:
+        new_col0 = p0 if keep_old else 0
+        cols = new_col0 + torch.arange(k, dtype=torch.long, device=hz.c.device)
+        coeff = torch.ones(k, dtype=hz.c.dtype, device=hz.c.device)
+        coeff[nonneg_zero[var_idx] | nonpos_zero[var_idx]] = 0.5
+        Gc_out[var_idx, cols] = coeff
+
+    if not keep_old:
+        return HZono(
+            c=c_out,
+            Gc=Gc_out,
+            Gb=Gb_out,
+            Ac=torch.zeros((0, p_out), dtype=hz.c.dtype, device=hz.c.device),
+            Ab=torch.zeros((0, q0), dtype=hz.c.dtype, device=hz.c.device),
+            b=torch.zeros((0, 1), dtype=hz.c.dtype, device=hz.c.device),
+            eq_mask=None,
+        )
+
+    nc0 = int(hz.nc)
+    Ac_base = torch.cat(
+        [
+            hz.Ac,
+            torch.zeros((nc0, k), dtype=hz.c.dtype, device=hz.c.device),
+        ],
+        dim=1,
+    )
+    Ab_base = hz.Ab.clone()
+    b_base = hz.b.clone()
+    eq_base = _eq_mask_of(hz).clone()
+
+    col_of_dim = torch.full((n,), -1, dtype=torch.long, device=hz.c.device)
+    col_of_dim[var_idx] = torch.arange(k, dtype=torch.long, device=hz.c.device)
+    cross_cols = p0 + col_of_dim[cross_idx]
+    a1 = (2.0 / ub[cross_idx]).view(-1, 1)
+    a2 = (2.0 / (-lb[cross_idx])).view(-1, 1)
+    Gx = hz.Gc.index_select(0, cross_idx)
+    Bx = hz.Gb.index_select(0, cross_idx)
+    cx = hz.c.index_select(0, cross_idx)
+
+    Ac_new = torch.zeros((2 * kc, p_out), dtype=hz.c.dtype, device=hz.c.device)
+    Ab_new = torch.zeros((2 * kc, q0), dtype=hz.c.dtype, device=hz.c.device)
+    b_new = torch.zeros((2 * kc, 1), dtype=hz.c.dtype, device=hz.c.device)
+    rows = torch.arange(kc, dtype=torch.long, device=hz.c.device)
+    Ac_new[rows, :p0] = a1 * Gx
+    Ac_new[rows, cross_cols] = -1.0
+    Ab_new[rows, :] = a1 * Bx
+    b_new[rows, :] = 1.0 - a1 * cx
+
+    rows2 = rows + kc
+    Ac_new[rows2, :p0] = -a2 * Gx
+    Ac_new[rows2, cross_cols] = 1.0
+    Ab_new[rows2, :] = -a2 * Bx
+    b_new[rows2, :] = 1.0 + a2 * cx
+
+    return HZono(
+        c=c_out,
+        Gc=Gc_out,
+        Gb=Gb_out,
+        Ac=torch.cat([Ac_base, Ac_new], dim=0),
+        Ab=torch.cat([Ab_base, Ab_new], dim=0),
+        b=torch.cat([b_base, b_new], dim=0),
+        eq_mask=torch.cat(
+            [
+                eq_base,
+                torch.zeros((2 * kc,), dtype=torch.bool, device=hz.c.device),
+            ],
+            dim=0,
+        ),
     )
 
 
@@ -842,7 +1385,7 @@ class HZVerifier(Solver):
         # refinement; ``witness``/``auto`` also performs ORT-validated
         # counterexample extraction. The backend is explicitly supplied from
         # a module root until it is fully vendored into ACT.
-        small_dense_lp: str = "auto",         # "off" | "base" | "specaware" | "witness" | "auto"
+        small_dense_lp: str = "specaware",    # "off" | "base" | "specaware" | "witness" | "auto"
         small_dense_lp_root: Optional[str] = None,
         small_dense_lp_time_limit_s: float = 5.0,
         # 0 selects the audited cost-aware policy: 20 passes for a single
@@ -899,6 +1442,9 @@ class HZVerifier(Solver):
         self._has_solution: bool = False
         self._var_count: int = 0
         self._stats: Dict[str, Any] = {}
+        self._final_output_ids: Tuple[int, ...] = ()
+        self._final_softmax_order_only: bool = False
+        self._convtranspose_triangle_profile_active: bool = False
 
     def _emit_sat_with_receipt(
         self,
@@ -1290,6 +1836,12 @@ class HZVerifier(Solver):
         *, net: Net, input_ids: List[int], output_ids: List[int],
         assert_layer: Layer,
     ) -> str:
+        if os.environ.get("ACT_HZ_LAYER_PROGRESS", "0") == "1":
+            print(
+                f"[HZ-PROGRESS] consume_cons start layers={len(net.layers)} "
+                f"inputs={len(input_ids)} outputs={len(output_ids)}",
+                flush=True,
+            )
         from act.back_end.hybridz_tf.hz_routing import (
             hz_from_bounds, hz_dense, hz_conv2d, hz_add_const, hz_scale,
             hz_bn, hz_minkowski_sum, hz_sgm_add, shares_generator,
@@ -1324,21 +1876,82 @@ class HZVerifier(Solver):
         device = torch.device(self.cfg["device"])
         dtype = self.cfg["dtype"]
         input_hz = hz_from_bounds(input_box, dtype=dtype, device=device)
+        if os.environ.get("ACT_HZ_LAYER_PROGRESS", "0") == "1":
+            print(
+                f"[HZ-PROGRESS] input_hz dim={input_hz.dim} ng={input_hz.ng} "
+                f"nb={input_hz.nb} nc={input_hz.nc}",
+                flush=True,
+            )
         for poly_con in global_polys:
             input_hz = hz_intersect_polytope(
                 input_hz, poly_con.meta["A"], poly_con.meta["b"])
+
+        # Degenerate input boxes are exact singleton verification problems.
+        # This is not a fallback or random witness search: γ(input_hz) has
+        # at most one point, so strict ORT replay on that point decides the
+        # current query exactly. This rescues sparse VNNLIBs that encode fixed
+        # images as zero-width boxes while preserving the normal HZ path for
+        # every non-singleton input.
+        if (
+            net is not None
+            and assert_layer is not None
+            and int(input_hz.ng) == 0
+            and int(input_hz.nb) == 0
+        ):
+            if not _zero_factor_hz_feasible(input_hz):
+                self._status = SolveStatus.UNSAT
+                self._stats["singleton_input_empty"] = True
+                return self._status
+            x_single = input_hz.c.detach().cpu().numpy().reshape(-1)
+            try:
+                unsafe = strict_replay_for_act(
+                    net=net, x_star=x_single, assert_layer=assert_layer,
+                )
+            except Exception as e:
+                self._stats["singleton_replay_error"] = (
+                    f"{type(e).__name__}: {e}"
+                )
+                unsafe = None
+            if unsafe is True:
+                self._emit_sat_with_receipt(
+                    x_star=x_single,
+                    assert_layer=assert_layer,
+                    source="singleton_input",
+                    model_path_fallback=self.cfg.get("onnx_path"),
+                )
+                return self._status
+            if unsafe is False:
+                self._status = SolveStatus.UNSAT
+                self._stats["singleton_input_certified"] = True
+                return self._status
 
         var_to_hz: Dict[Tuple[int, ...], Any] = {tuple(input_ids): input_hz}
 
         # ── Pre-scan: detect large_cls_proof_mode + count relus/convs ──
         relu_layer_ids: List[int] = []
         conv_count = 0
+        convtranspose_count = 0
         for L in net.layers:
             ku = L.kind.upper()
             if ku == "RELU": relu_layer_ids.append(L.id)
-            elif ku in ("CONV2D", "CONV1D", "CONV3D"): conv_count += 1
+            elif ku in ("CONV", "CONV2D", "CONV1D", "CONV3D"): conv_count += 1
+            elif ku in ("CONVTRANSPOSE2D", "CONVTRANSPOSE", "CONV_TRANSPOSE2D"):
+                convtranspose_count += 1
         total_relu = len(relu_layer_ids)
         out_dim = len(output_ids)
+        self._final_output_ids = tuple(output_ids)
+        self._final_softmax_order_only = (
+            os.environ.get("ACT_HZ_FINAL_SOFTMAX_ORDER_BYPASS", "1")
+            .strip().lower() in ("1", "true", "yes", "on")
+            and _assert_is_order_only_zero_threshold(assert_layer)
+        )
+        if self._final_softmax_order_only:
+            self._stats["final_softmax_order_only_spec"] = True
+        if os.environ.get("ACT_HZ_LAYER_PROGRESS", "0") == "1":
+            print(
+                f"[HZ-PROGRESS] prescan conv={conv_count} relu={total_relu} out_dim={out_dim}",
+                flush=True,
+            )
 
         lc_mode = self.cfg["large_cls_proof_mode"]
         if lc_mode == "auto":
@@ -1366,7 +1979,46 @@ class HZVerifier(Solver):
             self._stats["large_cls_active"] = True
             self._stats["total_relu"] = total_relu
             self._stats["eq_last"] = eq_last
+        sparse_huge_auto = False
+        if large_cls_active and os.environ.get(
+            "ACT_HZ_AUTO_SPARSE_HUGE_PROFILE", "1"
+        ).strip().lower() in ("1", "true", "yes", "on"):
+            sparse_dim_min = int(os.environ.get(
+                "ACT_HZ_SPARSE_HUGE_DIM_MIN", "50000"
+            ))
+            sparse_active_max = int(os.environ.get(
+                "ACT_HZ_SPARSE_HUGE_ACTIVE_MAX", "64"
+            ))
+            sparse_huge_auto = (
+                input_hz.dim >= sparse_dim_min
+                and input_hz.ng <= sparse_active_max
+                and conv_count >= self.cfg["large_cls_conv_threshold"]
+            )
+            if sparse_huge_auto:
+                self._stats["sparse_huge_profile_active"] = True
+                self._stats["sparse_huge_input_dim"] = int(input_hz.dim)
+                self._stats["sparse_huge_input_ng"] = int(input_hz.ng)
+                logger.info(
+                    "sparse_huge_profile ACTIVE: input_dim=%d active_root=%d "
+                    "(late ReLUs use triangle unless ACT_HZ_LATE_RELU overrides)",
+                    input_hz.dim, input_hz.ng,
+                )
         self._lc_active = large_cls_active
+        self._sparse_huge_profile_active = sparse_huge_auto
+        self._convtranspose_triangle_profile_active = (
+            convtranspose_count > 0
+            and self.cfg["relu_method"] == "eq_lagr_v8"
+            and os.environ.get("ACT_HZ_AUTO_CONVTRANSPOSE_TRIANGLE", "1")
+            .strip().lower() in ("1", "true", "yes", "on")
+        )
+        if self._convtranspose_triangle_profile_active:
+            self._stats["convtranspose_triangle_profile_active"] = True
+            self._stats["convtranspose_count"] = int(convtranspose_count)
+            logger.info(
+                "convtranspose_triangle_profile ACTIVE: convtranspose=%d relus=%d "
+                "(ReLUs use triangle unless ACT_HZ_AUTO_CONVTRANSPOSE_TRIANGLE=0)",
+                convtranspose_count, total_relu,
+            )
         self._relu_idx_map = relu_idx_map
         self._total_relu = total_relu
 
@@ -1403,6 +2055,12 @@ class HZVerifier(Solver):
                 "L%d %s  in: dim=%s ng=%s",
                 L.id, tag_for_log, in_dim, in_ng,
             )
+            if os.environ.get("ACT_HZ_LAYER_PROGRESS", "0") == "1":
+                in_desc = (
+                    f"dim={hz_in.dim} ng={hz_in.ng} nb={hz_in.nb} nc={hz_in.nc}"
+                    if hz_in is not None else "none"
+                )
+                print(f"[HZ-PROGRESS] start L{L.id} {L.kind} in={in_desc}", flush=True)
             try:
                 # MaxPool: ACT cons_exporter doesn't generate constraints
                 # for max-pool (it's not a linear op), so op_con is None
@@ -1412,7 +2070,16 @@ class HZVerifier(Solver):
                 # max_pool_node_evaluate via the hz_maxpool2d facade,
                 # which preserves stable-winner rows exactly and falls
                 # back to interval only on unstable blocks.
-                if op_con is None and L.kind == "MAXPOOL2D" and hz_in is not None:
+                if op_con is None and L.kind == "UPSAMPLE" and hz_in is not None:
+                    try:
+                        hz_out = _hz_upsample_nearest_nchw(hz_in, L.params)
+                        self._stats[f"upsample_exact@{L.id}"] = True
+                    except Exception as e:
+                        self._stats[f"upsample_fallback@{L.id}"] = (
+                            f"{type(e).__name__}: {e}"
+                        )
+                        hz_out = self._box_fallback(L, after, hz_from_bounds)
+                elif op_con is None and L.kind == "MAXPOOL2D" and hz_in is not None:
                     try:
                         from act.back_end.hybridz_tf.hz_routing import hz_maxpool2d
                         params = L.params
@@ -1455,6 +2122,13 @@ class HZVerifier(Solver):
                     "L%d done  out: dim=%d ng=%d nb=%d nc=%d",
                     L.id, hz_out.dim, hz_out.ng, hz_out.nb, hz_out.nc,
                 )
+                if os.environ.get("ACT_HZ_LAYER_PROGRESS", "0") == "1":
+                    print(
+                        f"[HZ-PROGRESS] L{L.id} {L.kind} -> "
+                        f"dim={hz_out.dim} ng={hz_out.ng} "
+                        f"nb={hz_out.nb} nc={hz_out.nc}",
+                        flush=True,
+                    )
             except Exception as e:
                 # Sound fallback on any per-layer failure
                 self._stats[f"error@{L.id}"] = f"{type(e).__name__}: {e}"
@@ -1481,12 +2155,32 @@ class HZVerifier(Solver):
         self._first_pass_method = self.cfg["relu_method"]
 
         # ─── Phase 2: LP feasibility ───
+        max_replay_candidates = int(os.environ.get(
+            "ACT_HZ_MAX_REPLAY_CANDIDATES", "1"
+        ))
+        xi_candidates: List[np.ndarray] = []
         try:
-            feas, xi_star = check_unsafe_for_act(
-                out_hz, assert_layer,
-                output_ids=output_ids,
-                timeout_s=self.cfg["timeout_s"]
-            )
+            if max_replay_candidates > 1:
+                feas, xi_candidates = check_unsafe_candidates_for_act(
+                    out_hz, assert_layer,
+                    output_ids=output_ids,
+                    timeout_s=self.cfg["timeout_s"],
+                    max_candidates=max_replay_candidates,
+                )
+                self._stats["unsafe_lp_candidates_requested"] = int(
+                    max_replay_candidates
+                )
+                self._stats["unsafe_lp_candidates_found"] = int(
+                    len(xi_candidates)
+                )
+            else:
+                feas, xi_star = check_unsafe_for_act(
+                    out_hz, assert_layer,
+                    output_ids=output_ids,
+                    timeout_s=self.cfg["timeout_s"]
+                )
+                if xi_star is not None:
+                    xi_candidates = [xi_star]
         except Exception as e:
             self._status = SolveStatus.UNKNOWN
             self._stats["feasibility_error"] = f"{type(e).__name__}: {e}"
@@ -1495,57 +2189,89 @@ class HZVerifier(Solver):
         if feas == "infeasible":
             self._status = SolveStatus.UNSAT
             return self._status
-        if feas == "timeout":
+        if feas == "timeout" and not xi_candidates:
             self._status = SolveStatus.UNKNOWN
             self._stats["timeout"] = True
             return self._status
 
         # ─── Phase 3: witness back to input space ───
-        try:
-            x_star = lp_witness_to_input(xi_star, input_hz)
-        except Exception as e:
-            self._status = SolveStatus.UNKNOWN
-            self._stats["witness_error"] = f"{type(e).__name__}: {e}"
+        replay_attempts = 0
+        replay_errors: List[str] = []
+        for xi_star in xi_candidates:
+            try:
+                x_star = lp_witness_to_input(xi_star, input_hz)
+            except Exception as e:
+                replay_errors.append(f"witness:{type(e).__name__}: {e}")
+                continue
+
+            # ─── Phase 4: strict replay ───
+            ok = True
+            if self.cfg["strict_replay"]:
+                try:
+                    if self.cfg.get("onnx_path") and not getattr(net, "onnx_path", None):
+                        try: net.onnx_path = self.cfg["onnx_path"]
+                        except Exception: pass
+                    ok = strict_replay_for_act(
+                        net=net, x_star=x_star, assert_layer=assert_layer
+                    )
+                    self._last_net_for_replay = net  # R9.3 — see emit fn
+                except Exception as e:
+                    ok = False
+                    replay_errors.append(f"replay:{type(e).__name__}: {e}")
+            replay_attempts += 1
+            if not ok:
+                continue
+
+            x_star_arr = np.asarray(x_star, dtype=np.float64).ravel()
+            self._emit_sat_with_receipt(
+                x_star=x_star_arr,
+                assert_layer=assert_layer,
+                source="hz_walker_lp",
+                model_path_fallback=getattr(net, "onnx_path", None),
+            )
+            # Final cleanup: release intermediate HZ tensors held in var_to_hz
+            try:
+                del var_to_hz, out_hz, input_hz
+                import torch as _t
+                if _t.cuda.is_available() and self.cfg.get("device","cpu").startswith("cuda"):
+                    _t.cuda.empty_cache()
+            except Exception:
+                pass
             return self._status
 
-        # ─── Phase 4: strict replay ───
-        if self.cfg["strict_replay"]:
-            try:
-                if self.cfg.get("onnx_path") and not getattr(net, "onnx_path", None):
-                    try: net.onnx_path = self.cfg["onnx_path"]
-                    except Exception: pass
-                ok = strict_replay_for_act(
-                    net=net, x_star=x_star, assert_layer=assert_layer
-                )
-                self._last_net_for_replay = net  # R9.3 — see emit fn
-            except Exception as e:
-                ok = False
-                self._stats["replay_error"] = f"{type(e).__name__}: {e}"
-            if not ok:
-                self._status = SolveStatus.UNKNOWN
-                self._stats["phantom_rejected"] = True
+        if replay_attempts > 0:
+            self._stats["replay_candidates_tried"] = int(replay_attempts)
+            self._stats["phantom_rejected"] = True
+            if replay_errors:
+                self._stats["replay_errors"] = replay_errors[:4]
+            if feas == "timeout":
+                self._stats["timeout_after_replay_candidates"] = True
                 return self._status
-
-        x_star_arr = np.asarray(x_star, dtype=np.float64).ravel()
-        self._emit_sat_with_receipt(
-            x_star=x_star_arr,
-            assert_layer=assert_layer,
-            source="hz_walker_lp",
-            model_path_fallback=getattr(net, "onnx_path", None),
-        )
-        # Final cleanup: release intermediate HZ tensors held in var_to_hz
-        try:
-            del var_to_hz, out_hz, input_hz
-            import torch as _t
-            if _t.cuda.is_available() and self.cfg.get("device","cpu").startswith("cuda"):
-                _t.cuda.empty_cache()
-        except Exception:
-            pass
+        self._status = SolveStatus.UNKNOWN
+        if replay_errors:
+            self._stats["witness_error"] = "; ".join(replay_errors[:4])
         return self._status
 
     # ----- Per-layer dispatch (cons tag -> HyZor or ACT op) -----
     def _dispatch(self, L, op_con, hz_in, multi_in_hzs, before, after, **ops):
         if op_con is None:
+            if (
+                L.kind == "SIGN"
+                and hz_in is not None
+                and os.environ.get("ACT_HZ_SIGN_HULL", "0").strip().lower()
+                in ("1", "true", "yes", "on")
+            ):
+                try:
+                    hz_out = _hz_sign_convex_hull(hz_in, before[L.id].bounds)
+                    self._stats[f"sign_hull@{L.id}"] = True
+                    return hz_out
+                except Exception as e:
+                    self._stats[f"sign_hull_fallback@{L.id}"] = (
+                        f"{type(e).__name__}: {e}"
+                    )
+            if self._can_bypass_final_softmax(L, hz_in):
+                self._stats[f"final_softmax_order_bypass@{L.id}"] = True
+                return hz_in
             return self._box_fallback(L, after, ops["hz_from_bounds"])
         tag = op_con.meta["tag"]; op = tag.split(":")[0]; meta = op_con.meta
 
@@ -1563,6 +2289,12 @@ class HZVerifier(Solver):
         try:
             if op == "dense":
                 out_dim = int(meta["W"].shape[0])
+            elif op == "convtranspose2d":
+                out_shape = meta.get("output_shape")
+                out_dim = (
+                    int(out_shape[1] * out_shape[2] * out_shape[3])
+                    if out_shape else 0
+                )
             elif op == "conv2d":
                 out_shape = meta.get("output_shape")
                 out_dim = int(out_shape[1] * out_shape[2] * out_shape[3]) if out_shape else 0
@@ -1576,6 +2308,19 @@ class HZVerifier(Solver):
             pass  # if estimation fails, just attempt the op normally
 
         # ── HyZor ops ──
+        if op in ("upsample", "resize"):
+            params = dict(getattr(L, "params", {}) or {})
+            params.update(meta)
+            return _hz_upsample_nearest_nchw(hz_in, params)
+        if op == "softmax":
+            if self._can_bypass_final_softmax(L, hz_in):
+                self._stats[f"final_softmax_order_bypass@{L.id}"] = True
+                return hz_in
+            return self._box_fallback(L, after, ops["hz_from_bounds"])
+        if op == "convtranspose2d":
+            params = dict(getattr(L, "params", {}) or {})
+            params.update(meta)
+            return _hz_convtranspose2d_native(hz_in, params)
         if op == "dense":
             return ops["hz_dense"](hz_in, meta["W"], meta.get("b"))
         if op == "conv2d":
@@ -1621,6 +2366,8 @@ class HZVerifier(Solver):
             # pipelines differ because eq_lagr_v8 also runs PEE.
             method = self.cfg["relu_method"]
             ridx = self._relu_idx_map.get(L.id, 0)
+            if getattr(self, "_convtranspose_triangle_profile_active", False):
+                method = "triangle"
             if getattr(self, "_lc_active", False):
                 eq_last = self.cfg["large_cls_eq_layers"]
                 if ridx <= self._total_relu - eq_last:
@@ -1634,6 +2381,8 @@ class HZVerifier(Solver):
                     late_method = os.environ.get("ACT_HZ_LATE_RELU", "").strip()
                     if late_method:
                         method = late_method
+                    elif getattr(self, "_sparse_huge_profile_active", False):
+                        method = "triangle"
             # Expose the current relu_idx so selective_chull dispatches can
             # look up per-layer masks (set by property-direction driver).
             from act.back_end.hybridz_tf.algorithms.relu_methods import (
@@ -1648,17 +2397,31 @@ class HZVerifier(Solver):
             return ops["hz_apply_leaky_relu_v8"](hz_in, alpha=float(alpha))
 
         # ── ACT ops (sigmoid/tanh K-piece -- ACT innovation) ──
-        # Dim guard: ACT's hz_apply_piecewise has a Python-level loop over
-        # wide neurons; for dim > sigmoid_dim_cap it becomes prohibitively
-        # slow. Fall back to box (sound) on large dims.
+        # Keep the PWL HZ encoding for moderately-wide smooth activations
+        # when the incoming HZ is still simple.  This matters for
+        # dist_shift: its 784-wide Sigmoid arrives with only a few root/ReLU
+        # generators, and box fallback destroys the decisive correlations.
+        # If the state is already complex, fail back to box to avoid OOM.
         if op == "sigmoid":
-            cap = int(os.environ.get("HYZOR_SIGMOID_DIM_CAP", "256"))
-            if int(hz_in.dim) > cap:
+            cap = int(os.environ.get("HYZOR_SIGMOID_DIM_CAP", "2048"))
+            max_gens = int(os.environ.get("HYZOR_SIGMOID_MAX_IN_GENS", "128"))
+            max_cons = int(os.environ.get("HYZOR_SIGMOID_MAX_IN_CONS", "1024"))
+            if (
+                int(hz_in.dim) > cap
+                or int(hz_in.ng) + int(hz_in.nb) > max_gens
+                or int(hz_in.nc) > max_cons
+            ):
                 return self._box_fallback(L, after, ops["hz_from_bounds"])
             return ops["act_hz_apply_sigmoid"](hz_in, K=self.cfg["sigmoid_K"])
         if op == "tanh":
-            cap = int(os.environ.get("HYZOR_TANH_DIM_CAP", "256"))
-            if int(hz_in.dim) > cap:
+            cap = int(os.environ.get("HYZOR_TANH_DIM_CAP", "2048"))
+            max_gens = int(os.environ.get("HYZOR_TANH_MAX_IN_GENS", "128"))
+            max_cons = int(os.environ.get("HYZOR_TANH_MAX_IN_CONS", "1024"))
+            if (
+                int(hz_in.dim) > cap
+                or int(hz_in.ng) + int(hz_in.nb) > max_gens
+                or int(hz_in.nc) > max_cons
+            ):
                 return self._box_fallback(L, after, ops["hz_from_bounds"])
             return ops["act_hz_apply_tanh"](hz_in, K=self.cfg["tanh_K"])
 
@@ -1666,14 +2429,45 @@ class HZVerifier(Solver):
         if op in ("flatten", "reshape", "transpose", "squeeze",
                   "unsqueeze", "tile", "expand"):
             return hz_in
-        # SLICE actually subsets dims; box-fallback is sound (looser but correct)
+        # SLICE is a linear permutation/selection; use exact HZ transfer
+        # when possible (no relaxation), fall back to box on mismatch/error.
         if op == "slice":
-            return self._box_fallback(L, after, ops["hz_from_bounds"])
+            try:
+                return _hz_slice_exact(hz_in, meta)
+            except Exception as _e:
+                self._stats[f"slice_exact_fallback@{L.id}"] = (
+                    f"{type(_e).__name__}: {str(_e)[:120]}"
+                )
+                return self._box_fallback(L, after, ops["hz_from_bounds"])
+        # GATHER (ONNX) is row selection along an axis; exact in HZ.
+        if op == "gather":
+            try:
+                return _hz_gather_exact(hz_in, meta)
+            except Exception as _e:
+                self._stats[f"gather_exact_fallback@{L.id}"] = (
+                    f"{type(_e).__name__}: {str(_e)[:120]}"
+                )
+                return self._box_fallback(L, after, ops["hz_from_bounds"])
 
         # ── Fallback ──
         return self._box_fallback(L, after, ops["hz_from_bounds"])
 
     # ----- Helpers -----
+
+    def _can_bypass_final_softmax(self, L, hz_in) -> bool:
+        if hz_in is None or not getattr(self, "_final_softmax_order_only", False):
+            return False
+        if L.kind != "SOFTMAX":
+            return False
+        out_ids = tuple(getattr(L, "out_vars", ()))
+        if out_ids != getattr(self, "_final_output_ids", ()):
+            return False
+        if int(hz_in.dim) != len(out_ids):
+            return False
+        axis = int((getattr(L, "params", {}) or {}).get("axis", -1))
+        # ACT stores the final classifier vector flattened, so the only
+        # sound default bypass is softmax over the last/only feature axis.
+        return axis in (-1, 0, 1)
 
     def _extract_input_box(self, globalC, input_ids, before):
         for con in globalC:
@@ -1903,10 +2697,75 @@ def verify_once_hz(
             f"range [0, {B})"
         )
 
+    # Exact singleton-input fast path. If the current VNNLIB query has a
+    # zero-width input box, the reachable set is one concrete network output.
+    # Strict replay of that single input decides the query without running
+    # interval/HZ analysis. This is a structured exact HZ degenerate case,
+    # not random sampling or a fallback verifier.
+    pure_box_input = (
+        len(spec_layers) == 1
+        and str(getattr(spec_layers[0], "params", {}).get("kind", "")).upper()
+        == "BOX"
+    )
+    if (
+        pure_box_input
+        and os.environ.get("ACT_HZ_SINGLETON_FASTPATH", "1").strip().lower() in (
+            "1", "true", "yes", "on",
+        )
+    ):
+        lane_lb = seed_bounds.lb[batch_lane].flatten()
+        lane_ub = seed_bounds.ub[batch_lane].flatten()
+        if (
+            torch.isfinite(lane_lb).all().item()
+            and torch.isfinite(lane_ub).all().item()
+            and torch.all(lane_lb == lane_ub).item()
+        ):
+            try:
+                if hasattr(solver, "cfg") and solver.cfg.get("onnx_path"):
+                    try:
+                        net.onnx_path = solver.cfg["onnx_path"]
+                    except Exception:
+                        pass
+                assert_layer_b1 = _slice_assert_layer_lane(assert_layer, batch_lane)
+                x_single = lane_lb.detach().cpu().numpy().reshape(-1)
+                unsafe = strict_replay_for_act(
+                    net=net, x_star=x_single, assert_layer=assert_layer_b1,
+                )
+                if unsafe:
+                    solver._emit_sat_with_receipt(
+                        x_star=x_single,
+                        assert_layer=assert_layer_b1,
+                        source="singleton_input",
+                        model_path_fallback=(
+                            solver.cfg.get("onnx_path")
+                            if hasattr(solver, "cfg") else None
+                        ),
+                    )
+                else:
+                    solver._status = SolveStatus.UNSAT
+                    solver._stats["singleton_input_certified"] = True
+                return solver._status, (
+                    x_single if solver._status == SolveStatus.SAT else None
+                ), {
+                    "status": solver._status,
+                    "ncons": 0,
+                    "solver": "hyzor",
+                    **(solver.stats() if hasattr(solver, "stats") else {}),
+                }
+            except Exception as e:
+                if hasattr(solver, "_stats"):
+                    solver._stats["singleton_fastpath_error"] = (
+                        f"{type(e).__name__}: {e}"
+                    )
+
     entry_fact = Fact(bounds=seed_bounds, cons=ConSet())
     add_all_input_specs(entry_fact.cons, input_ids, spec_layers)
     before, after, globalC = analyze(net, entry_id, entry_fact)
+    if os.environ.get("ACT_HZ_LAYER_PROGRESS", "0") == "1":
+        print(f"[HZ-PROGRESS] analyze done globalC={len(globalC)}", flush=True)
     validate_constraints(globalC, after, net)
+    if os.environ.get("ACT_HZ_LAYER_PROGRESS", "0") == "1":
+        print("[HZ-PROGRESS] validate_constraints done", flush=True)
 
     # HyZor's consume_cons predates batch-native analyze and expects
     # single-lane (1-D) bounds in before/after Facts. Slice lane
@@ -1916,6 +2775,8 @@ def verify_once_hz(
     before_b1, after_b1 = _slice_facts_lane(before, batch_lane), _slice_facts_lane(after, batch_lane)
     globalC_b1 = _slice_globalC_lane(globalC, batch_lane)
     assert_layer_b1 = _slice_assert_layer_lane(assert_layer, batch_lane)
+    if os.environ.get("ACT_HZ_LAYER_PROGRESS", "0") == "1":
+        print(f"[HZ-PROGRESS] slice done globalC_b1={len(globalC_b1)}", flush=True)
 
     if timelimit is not None and hasattr(solver, "cfg"):
         solver.cfg["timeout_s"] = float(timelimit)
@@ -2311,6 +3172,82 @@ def check_unsafe_for_act(out_hz: HZono, assert_layer, *,
 
     # Unknown kind ⇒ conservative report.
     return "feasible", None
+
+
+def check_unsafe_candidates_for_act(
+    out_hz: HZono,
+    assert_layer,
+    *,
+    output_ids=None,
+    timeout_s: float = 30.0,
+    max_candidates: int = 4,
+) -> Tuple[str, List[np.ndarray]]:
+    """Return several structured unsafe LP witnesses for strict replay.
+
+    This is the same forward HZ factor LP used by ``check_unsafe_for_act``.
+    It does not sample input space and does not use gradients; it simply keeps
+    walking later TOP1/MARGIN disjuncts when an earlier LP-feasible assignment
+    later proves to be a strict-replay phantom.
+    """
+    max_candidates = max(1, int(max_candidates))
+    kind = _kind_str(assert_layer.params.get("kind"))
+    if kind not in ("TOP1_ROBUST", "MARGIN_ROBUST"):
+        st, x = check_unsafe_for_act(
+            out_hz, assert_layer, output_ids=output_ids, timeout_s=timeout_s
+        )
+        return st, ([x] if x is not None else [])
+
+    prob = _build_factor_lp(out_hz)
+    p, q = prob["p"], prob["q"]
+    Gc, Gb, c_vec = prob["Gc"], prob["Gb"], prob["c"]
+    t = int(_to_np_f64(assert_layer.params["y_true"]).reshape(-1)[0])
+    margin = 0.0
+    if kind == "MARGIN_ROBUST":
+        margin = float(_to_np_f64(assert_layer.params["margin"]).reshape(-1)[0])
+    n_out = c_vec.size
+
+    def _row_to_obj_y(coef: np.ndarray) -> Tuple[np.ndarray, float]:
+        obj_row = np.concatenate([coef @ Gc, coef @ Gb], axis=0)
+        obj_const = float(coef @ c_vec)
+        return obj_row, obj_const
+
+    t0 = time.perf_counter()
+    def _remaining():
+        return max(0.05, timeout_s - (time.perf_counter() - t0))
+
+    diffY = np.concatenate([Gc, Gb], axis=1)
+    diff_rows = diffY - diffY[t:t+1]
+    diff_c = c_vec - c_vec[t]
+    ub_diff_tight = diff_c + np.abs(diff_rows).sum(axis=1)
+    threshold = -margin
+    candidates = [
+        j for j in range(n_out)
+        if j != t and ub_diff_tight[j] >= threshold
+    ]
+    candidates.sort(key=lambda j: -ub_diff_tight[j])
+
+    witnesses: List[np.ndarray] = []
+    saw_timeout = False
+    for j in candidates:
+        if len(witnesses) >= max_candidates:
+            break
+        coef = np.zeros(n_out)
+        coef[j] = 1.0
+        coef[t] = -1.0
+        obj_row, obj_const = _row_to_obj_y(coef)
+        st, x = _lp_feas_or_minimize(
+            prob, obj_row, rhs_threshold=threshold - obj_const,
+            sense="maximize", timeout_s=_remaining(),
+        )
+        if st == "feasible" and x is not None:
+            witnesses.append(x)
+        elif st == "timeout":
+            saw_timeout = True
+            break
+
+    if witnesses:
+        return ("timeout" if saw_timeout else "feasible"), witnesses
+    return ("timeout" if saw_timeout else "infeasible"), []
 
 
 def lp_witness_to_input(xi_star: np.ndarray, input_hz) -> np.ndarray:
