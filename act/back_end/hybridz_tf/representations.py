@@ -78,6 +78,30 @@ def _enable_sparse_gc() -> bool:
     return os.environ.get("HYZOR_SPARSE_GC", "1") == "1"
 
 
+def _relu_selection_score(lb: torch.Tensor, ub: torch.Tensor) -> torch.Tensor:
+    """Forward-local score for selecting sparse ReLU hull facets.
+
+    ``width`` is the legacy behavior. ``mu`` and ``area`` target the
+    DeepZ/triangle slack directly: for unstable ReLU bounds ``l < 0 < u``,
+    the added slack amplitude is ``-l*u/(2*(u-l))`` and the hull gap area is
+    proportional to ``-l*u``. These scores use only current forward bounds,
+    not gradients, backward bounds, splitting, or sampling.
+    """
+    mode = (
+        os.environ.get("ACT_HZ_EARLY_SELECTIVE_SCORE")
+        or os.environ.get("ACT_HZ_SELECTIVE_SCORE")
+        or "width"
+    ).strip().lower()
+    width = ub - lb
+    if mode in ("mu", "slack", "height"):
+        return (-lb * ub) / torch.clamp(2.0 * width, min=1e-30)
+    if mode in ("area", "product", "gap"):
+        return -lb * ub
+    if mode in ("balanced", "minside", "min_side"):
+        return torch.minimum(-lb, ub)
+    return width
+
+
 def _sparse_gc_budget_bytes() -> int:
     return int(float(os.environ.get("HYZOR_SPARSE_GC_BUDGET_GB", "8.0")) * (1024 ** 3))
 
@@ -759,6 +783,25 @@ class SparseGcZ:
         )
         if int(self.eq_mask.numel()) != nc:
             raise ValueError("SparseGcZ: Ac_sparse/eq_mask row mismatch")
+        object.__setattr__(self, "_base_ng", int(ng))
+        object.__setattr__(self, "_base_nb", int(nb))
+        object.__setattr__(self, "_base_nc", int(nc))
+
+    def _inherit_base(self, out: "SparseGcZ") -> "SparseGcZ":
+        """Preserve shared-factor prefix metadata across exact sparse ops."""
+        object.__setattr__(
+            out, "_base_ng",
+            int(min(getattr(self, "_base_ng", self.ng), out.ng)),
+        )
+        object.__setattr__(
+            out, "_base_nb",
+            int(min(getattr(self, "_base_nb", self.nb), out.nb)),
+        )
+        object.__setattr__(
+            out, "_base_nc",
+            int(min(getattr(self, "_base_nc", self.nc), out.nc)),
+        )
+        return out
 
     @property
     def dim(self) -> int:
@@ -863,10 +906,10 @@ class SparseGcZ:
             ind, scaled_val, self.Gc_sparse.shape,
             dtype=self.dtype, device=self.device,
         ).coalesce()
-        return SparseGcZ(
+        return self._inherit_base(SparseGcZ(
             c=c_new, Gc_sparse=Gc_new, dtype=self.dtype, device=self.device,
             Ac_sparse=self.Ac_sparse, b=self.b, eq_mask=self.eq_mask,
-        )
+        ))
 
     def apply_dense(self, W, b=None) -> HZono:
         """``y = W x + b``. Sparse Gc → dense Gc' = W @ Gc; return HZono.
@@ -969,11 +1012,11 @@ class SparseGcZ:
             all_ind, all_val, (n, ng_out),
             dtype=self.dtype, device=self.device,
         )
-        return SparseGcZ(
+        return self._inherit_base(SparseGcZ(
             c=c_out, Gc_sparse=Gc_out, dtype=self.dtype, device=self.device,
             Ac_sparse=self._constraints_with_ng(ng_out),
             b=self.b, eq_mask=self.eq_mask,
-        )
+        ))
 
     def apply_relu_selective_chull(
         self, *, chull_mask: Optional[torch.Tensor] = None,
@@ -1011,7 +1054,7 @@ class SparseGcZ:
         elif top_k is not None and int(top_k) > 0:
             kk = min(int(top_k), k)
             selected_local = torch.topk(
-                ub[unstable_idx] - lb[unstable_idx], kk
+                _relu_selection_score(lb[unstable_idx], ub[unstable_idx]), kk
             ).indices
         else:
             return out
@@ -1079,7 +1122,7 @@ class SparseGcZ:
         b_cut = torch.empty((2 * n_sel, 1), dtype=self.dtype, device=self.device)
         b_cut[0::2, 0] = mu - (1.0 - lam) * sel_c
         b_cut[1::2, 0] = lam * sel_c + mu
-        return SparseGcZ(
+        return out._inherit_base(SparseGcZ(
             c=out.c, Gc_sparse=out.Gc_sparse,
             dtype=self.dtype, device=self.device,
             Ac_sparse=Ac_out,
@@ -1088,7 +1131,7 @@ class SparseGcZ:
                 out.eq_mask,
                 torch.zeros(2 * n_sel, dtype=torch.bool, device=self.device),
             ]),
-        )
+        ))
 
     def apply_conv(self, weight, bias, in_shape, stride, pad,
                    *, chunk=None, sparsify_thresh=None) -> "SparseGcZ":
@@ -1204,11 +1247,11 @@ class SparseGcZ:
                     Gc_new, sparsify_thresh,
                     dtype=self.dtype, device=self.device,
                 )
-                return SparseGcZ(
+                return self._inherit_base(SparseGcZ(
                     c=c_new, Gc_sparse=Gc_new,
                     dtype=self.dtype, device=self.device,
                     Ac_sparse=self.Ac_sparse, b=self.b, eq_mask=self.eq_mask,
-                )
+                ))
 
         # Fast path: sparse conv operator × sparse Gc.
         if os.environ.get("HYZOR_SPARSE_CONV_MM", "1") == "1":
@@ -1224,11 +1267,11 @@ class SparseGcZ:
                         Gc_raw, sparsify_thresh,
                         dtype=self.dtype, device=self.device,
                     )
-                    return SparseGcZ(
+                    return self._inherit_base(SparseGcZ(
                         c=c_new, Gc_sparse=Gc_new,
                         dtype=self.dtype, device=self.device,
                         Ac_sparse=self.Ac_sparse, b=self.b, eq_mask=self.eq_mask,
-                    )
+                    ))
             except (MemoryError, RuntimeError) as e:
                 msg = str(e).lower()
                 if "memory" not in msg and "alloc" not in msg:
@@ -1279,10 +1322,10 @@ class SparseGcZ:
             all_ind, all_val, (n_out, ng),
             dtype=self.dtype, device=self.device,
         ).coalesce()
-        return SparseGcZ(
+        return self._inherit_base(SparseGcZ(
             c=c_new, Gc_sparse=Gc_new, dtype=self.dtype, device=self.device,
             Ac_sparse=self.Ac_sparse, b=self.b, eq_mask=self.eq_mask,
-        )
+        ))
 
     def reduce_generators(self, target_ng: int) -> "SparseGcZ":
         """Girard-style box overapproximation of low-magnitude generators.

@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "benchmark": "collins_rul_cnn_2022",
+  "formal_mode": true,
+  "timestamp_utc": "20260530T120136718511Z",
+  "canonical_root": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks",
+  "receipt_dir": "/data1/Kane/ACT/audit_results/full_vnncomp_20260530T092003Z/collins_rul_w0",
+  "wall_min": 0.02724680503209432,
+  "counts": {
+    "CERTIFIED": 0,
+    "FALSIFIED": 1,
+    "UNKNOWN": 0,
+    "ERROR": 0
+  },
+  "run_status": "PASSED",
+  "per_instance": [
+    {
+      "official_instance_id": 0,
+      "benchmark": "collins_rul_cnn_2022",
+      "onnx_model": "onnx/NN_rul_small_window_20.onnx",
+      "vnnlib_spec": "vnnlib/robustness_2perturbations_delta5_epsilon10_w20.vnnlib",
+      "model_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx",
+      "spec_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/robustness_2perturbations_delta5_epsilon10_w20.vnnlib",
+      "internal_status": "SAT",
+      "reportable_status": "FALSIFIED",
+      "cli_normalized": "FALSIFIED",
+      "count_bucket": "FALSIFIED",
+      "queries": [
+        {
+          "query_index": 0,
+          "internal_status": "SAT",
+          "reportable_status": "FALSIFIED",
+          "receipt_path": "/data1/Kane/ACT/audit_results/full_vnncomp_20260530T092003Z/collins_rul_w0/collins_rul_cnn_2022_0_q0_hz_walker_lp_0.json"
+        }
+      ],
+      "q_statuses": [
+        "SAT"
+      ],
+      "q_reportables": [
+        "FALSIFIED"
+      ],
+      "q_receipts": [
+        "/data1/Kane/ACT/audit_results/full_vnncomp_20260530T092003Z/collins_rul_w0/collins_rul_cnn_2022_0_q0_hz_walker_lp_0.json"
+      ],
+      "error": null,
+      "wall_s": 1.634777545928955,
+      "timeout_s": 180.0,
+      "instance_budget_exhausted": false
+    }
+  ]
+}

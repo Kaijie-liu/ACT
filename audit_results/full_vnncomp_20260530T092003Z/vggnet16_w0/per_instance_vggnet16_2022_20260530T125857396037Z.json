@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "benchmark": "vggnet16_2022",
+  "formal_mode": true,
+  "timestamp_utc": "20260530T125857396037Z",
+  "canonical_root": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks",
+  "receipt_dir": "/data1/Kane/ACT/audit_results/full_vnncomp_20260530T092003Z/vggnet16_w0",
+  "wall_min": 0.5119531949361166,
+  "counts": {
+    "CERTIFIED": 0,
+    "FALSIFIED": 0,
+    "UNKNOWN": 0,
+    "ERROR": 1
+  },
+  "run_status": "FAILED",
+  "per_instance": [
+    {
+      "official_instance_id": 4,
+      "benchmark": "vggnet16_2022",
+      "onnx_model": "onnx/vgg16-7.onnx",
+      "vnnlib_spec": "vnnlib/spec4_grille.vnnlib",
+      "model_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/vggnet16_2022/onnx/vgg16-7.onnx",
+      "spec_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/vggnet16_2022/vnnlib/spec4_grille.vnnlib",
+      "internal_status": "ERROR",
+      "reportable_status": "ERROR",
+      "cli_normalized": "ERROR_RuntimeError",
+      "count_bucket": "ERROR",
+      "queries": [],
+      "q_statuses": [],
+      "q_reportables": [],
+      "q_receipts": [],
+      "error": "RuntimeError: ONNX conversion failed: Failed to convert /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/vggnet16_2022/onnx/vgg16-7.onnx: Converter is not implemented (OperationDescription(domain='', operation_type='Flatten', version=1))",
+      "wall_s": 30.717094898223877,
+      "timeout_s": 600.0,
+      "instance_budget_exhausted": false
+    }
+  ]
+}

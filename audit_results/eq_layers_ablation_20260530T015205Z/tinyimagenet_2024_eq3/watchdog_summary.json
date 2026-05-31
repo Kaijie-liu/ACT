@@ -1,0 +1,72 @@
+{
+  "schema_version": 2,
+  "strict_bounded_failure": false,
+  "counts": {
+    "OK": 0,
+    "UNKNOWN_TIMEOUT": 0,
+    "UNKNOWN_RESOURCE_LIMIT": 0,
+    "ERROR": 5
+  },
+  "results": [
+    {
+      "benchmark": "tinyimagenet_2024",
+      "instance_id": 0,
+      "status": "EXIT_NONZERO",
+      "cli_normalized": "ERROR_WATCHDOG_EXIT_NONZERO",
+      "wall_s": 11.006488507031463,
+      "peak_rss_mb": 2512.375,
+      "returncode": 1,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/eq_layers_ablation_20260530T015205Z/tinyimagenet_2024_eq3/per_instance_tinyimagenet_2024_watchdog_iid0_20260530T015944824300Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/eq_layers_ablation_20260530T015205Z/tinyimagenet_2024_eq3",
+      "stdout_tail": "=================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=tinyimagenet_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=300.0s)\n  [  1/1] tinyimagenet_2024/onnx/TinyImageNet_resnet_medium.onnx@vnnlib/TinyImageNet_resnet_medium_prop_idx_1126_sidx_4974_eps_0.0039.vnnlib: ERROR_OutOfMemoryError (7.6s)  V=0 A=0 U=0 E=1  R=0\nTraceback (most recent call last):\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 1364, in cmd_verify\n    _run_vnnlib_verify(args)\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 549, in _run_vnnlib_verify\n    return _run_vnnlib_verify_hybridz(args)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 1249, in _run_vnnlib_verify_hybridz\n    raise RuntimeError(\nRuntimeError: VERIFICATION_RUN_FAILED: ERROR=1. Per-instance log preserved; inspect instance error fields.\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.1 min\n  ERROR        1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/eq_layers_ablation_20260530T015205Z/tinyimagenet_2024_eq3/per_instance_tinyimagenet_2024_20260530T015943728274Z.json\n\n\u274c Test failed: VERIFICATION_RUN_FAILED: ERROR=1. Per-instance log preserved; inspect instance error fields.\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u274c vnnlib                    FAILED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "tinyimagenet_2024",
+      "instance_id": 40,
+      "status": "EXIT_NONZERO",
+      "cli_normalized": "ERROR_WATCHDOG_EXIT_NONZERO",
+      "wall_s": 11.005801570019685,
+      "peak_rss_mb": 2482.546875,
+      "returncode": 1,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/eq_layers_ablation_20260530T015205Z/tinyimagenet_2024_eq3/per_instance_tinyimagenet_2024_watchdog_iid40_20260530T015955830700Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/eq_layers_ablation_20260530T015205Z/tinyimagenet_2024_eq3",
+      "stdout_tail": "=================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=tinyimagenet_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=300.0s)\n  [  1/1] tinyimagenet_2024/onnx/TinyImageNet_resnet_medium.onnx@vnnlib/TinyImageNet_resnet_medium_prop_idx_4438_sidx_6486_eps_0.0039.vnnlib: ERROR_OutOfMemoryError (7.3s)  V=0 A=0 U=0 E=1  R=0\nTraceback (most recent call last):\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 1364, in cmd_verify\n    _run_vnnlib_verify(args)\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 549, in _run_vnnlib_verify\n    return _run_vnnlib_verify_hybridz(args)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 1249, in _run_vnnlib_verify_hybridz\n    raise RuntimeError(\nRuntimeError: VERIFICATION_RUN_FAILED: ERROR=1. Per-instance log preserved; inspect instance error fields.\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.1 min\n  ERROR        1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/eq_layers_ablation_20260530T015205Z/tinyimagenet_2024_eq3/per_instance_tinyimagenet_2024_20260530T015954418565Z.json\n\n\u274c Test failed: VERIFICATION_RUN_FAILED: ERROR=1. Per-instance log preserved; inspect instance error fields.\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u274c vnnlib                    FAILED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "tinyimagenet_2024",
+      "instance_id": 80,
+      "status": "EXIT_NONZERO",
+      "cli_normalized": "ERROR_WATCHDOG_EXIT_NONZERO",
+      "wall_s": 11.50706887501292,
+      "peak_rss_mb": 2482.7421875,
+      "returncode": 1,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/eq_layers_ablation_20260530T015205Z/tinyimagenet_2024_eq3/per_instance_tinyimagenet_2024_watchdog_iid80_20260530T020007338254Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/eq_layers_ablation_20260530T015205Z/tinyimagenet_2024_eq3",
+      "stdout_tail": "=================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=tinyimagenet_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=300.0s)\n  [  1/1] tinyimagenet_2024/onnx/TinyImageNet_resnet_medium.onnx@vnnlib/TinyImageNet_resnet_medium_prop_idx_7152_sidx_4185_eps_0.0039.vnnlib: ERROR_OutOfMemoryError (7.9s)  V=0 A=0 U=0 E=1  R=0\nTraceback (most recent call last):\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 1364, in cmd_verify\n    _run_vnnlib_verify(args)\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 549, in _run_vnnlib_verify\n    return _run_vnnlib_verify_hybridz(args)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 1249, in _run_vnnlib_verify_hybridz\n    raise RuntimeError(\nRuntimeError: VERIFICATION_RUN_FAILED: ERROR=1. Per-instance log preserved; inspect instance error fields.\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.1 min\n  ERROR        1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/eq_layers_ablation_20260530T015205Z/tinyimagenet_2024_eq3/per_instance_tinyimagenet_2024_20260530T020005952710Z.json\n\n\u274c Test failed: VERIFICATION_RUN_FAILED: ERROR=1. Per-instance log preserved; inspect instance error fields.\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u274c vnnlib                    FAILED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "tinyimagenet_2024",
+      "instance_id": 120,
+      "status": "EXIT_NONZERO",
+      "cli_normalized": "ERROR_WATCHDOG_EXIT_NONZERO",
+      "wall_s": 11.506776571972296,
+      "peak_rss_mb": 2484.36328125,
+      "returncode": 1,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/eq_layers_ablation_20260530T015205Z/tinyimagenet_2024_eq3/per_instance_tinyimagenet_2024_watchdog_iid120_20260530T020018845496Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/eq_layers_ablation_20260530T015205Z/tinyimagenet_2024_eq3",
+      "stdout_tail": "=================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=tinyimagenet_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=300.0s)\n  [  1/1] tinyimagenet_2024/onnx/TinyImageNet_resnet_medium.onnx@vnnlib/TinyImageNet_resnet_medium_prop_idx_7277_sidx_8835_eps_0.0039.vnnlib: ERROR_OutOfMemoryError (8.0s)  V=0 A=0 U=0 E=1  R=0\nTraceback (most recent call last):\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 1364, in cmd_verify\n    _run_vnnlib_verify(args)\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 549, in _run_vnnlib_verify\n    return _run_vnnlib_verify_hybridz(args)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 1249, in _run_vnnlib_verify_hybridz\n    raise RuntimeError(\nRuntimeError: VERIFICATION_RUN_FAILED: ERROR=1. Per-instance log preserved; inspect instance error fields.\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.1 min\n  ERROR        1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/eq_layers_ablation_20260530T015205Z/tinyimagenet_2024_eq3/per_instance_tinyimagenet_2024_20260530T020017597525Z.json\n\n\u274c Test failed: VERIFICATION_RUN_FAILED: ERROR=1. Per-instance log preserved; inspect instance error fields.\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u274c vnnlib                    FAILED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "tinyimagenet_2024",
+      "instance_id": 160,
+      "status": "EXIT_NONZERO",
+      "cli_normalized": "ERROR_WATCHDOG_EXIT_NONZERO",
+      "wall_s": 11.007511447998695,
+      "peak_rss_mb": 2479.8046875,
+      "returncode": 1,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/eq_layers_ablation_20260530T015205Z/tinyimagenet_2024_eq3/per_instance_tinyimagenet_2024_watchdog_iid160_20260530T020029854105Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/eq_layers_ablation_20260530T015205Z/tinyimagenet_2024_eq3",
+      "stdout_tail": "=================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=tinyimagenet_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=300.0s)\n  [  1/1] tinyimagenet_2024/onnx/TinyImageNet_resnet_medium.onnx@vnnlib/TinyImageNet_resnet_medium_prop_idx_5676_sidx_9851_eps_0.0039.vnnlib: ERROR_OutOfMemoryError (7.6s)  V=0 A=0 U=0 E=1  R=0\nTraceback (most recent call last):\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 1364, in cmd_verify\n    _run_vnnlib_verify(args)\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 549, in _run_vnnlib_verify\n    return _run_vnnlib_verify_hybridz(args)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 1249, in _run_vnnlib_verify_hybridz\n    raise RuntimeError(\nRuntimeError: VERIFICATION_RUN_FAILED: ERROR=1. Per-instance log preserved; inspect instance error fields.\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.1 min\n  ERROR        1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/eq_layers_ablation_20260530T015205Z/tinyimagenet_2024_eq3/per_instance_tinyimagenet_2024_20260530T020028755437Z.json\n\n\u274c Test failed: VERIFICATION_RUN_FAILED: ERROR=1. Per-instance log preserved; inspect instance error fields.\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u274c vnnlib                    FAILED\n================================================================================\n\n"
+    }
+  ]
+}

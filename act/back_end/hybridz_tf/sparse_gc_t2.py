@@ -344,6 +344,18 @@ def act_hz_dense_to_sparse(
         b=b,
         eq_mask=eq_mask,
     )
+    object.__setattr__(
+        out, "_base_ng",
+        int(min(getattr(hz, "_base_ng", ng), out.ng)),
+    )
+    object.__setattr__(
+        out, "_base_nb",
+        int(min(getattr(hz, "_base_nb", 0), out.nb)),
+    )
+    object.__setattr__(
+        out, "_base_nc",
+        int(min(getattr(hz, "_base_nc", hz.nc), out.nc)),
+    )
     _log(
         f"dense_to_sparse: dim={n} ng={ng} density={density:.4f} "
         f"dense_MiB={dense_bytes / 2**20:.1f} sparse_MiB={sparse_bytes / 2**20:.1f}"

@@ -12,6 +12,8 @@ import numpy as np
 
 from act.back_end.solver.solver_hz import (
     HZono, _hz_gather_exact, _hz_slice_exact,
+    _hz_pad_exact, _hz_reduce_sum_exact,
+    _hz_transpose_exact, _hz_avgpool2d_exact,
 )
 
 
@@ -19,10 +21,16 @@ def _concretize(hz: HZono, xi_c: torch.Tensor, xi_b: torch.Tensor = None) -> tor
     """y = c + Gc xi_c + Gb xi_b for given factor space sample."""
     y = hz.c.clone()
     if hz.Gc.numel() > 0:
-        y = y + hz.Gc @ xi_c
+        delta = hz.Gc @ xi_c
+        if y.dim() == 2 and delta.dim() == 1:
+            delta = delta.view(-1, 1)
+        y = y + delta
     if xi_b is not None and hz.Gb.numel() > 0:
-        y = y + hz.Gb @ xi_b
-    return y
+        delta_b = hz.Gb @ xi_b
+        if y.dim() == 2 and delta_b.dim() == 1:
+            delta_b = delta_b.view(-1, 1)
+        y = y + delta_b
+    return y.reshape(-1)
 
 
 def _make_simple_hz(n_feats: int, n_gens: int = 3):
@@ -185,6 +193,114 @@ def test_gather_preserves_constraints():
     print("test_gather_preserves_constraints PASSED")
 
 
+def test_gather_negative_index_wraps():
+    """ONNX Gather negative indices wrap relative to the gathered axis."""
+    hz = _make_simple_hz(n_feats=4, n_gens=2)
+    params = {"axis": 0, "indices": [-1, 0], "input_shape": (4,), "output_shape": (2,)}
+    hz_out = _hz_gather_exact(hz, params)
+    for seed in range(3):
+        torch.manual_seed(seed)
+        xi_c = torch.empty(2, dtype=torch.float64).uniform_(-1, 1)
+        y_in = _concretize(hz, xi_c)
+        y_out_expected = y_in[[3, 0]]
+        y_out_actual = _concretize(hz_out, xi_c)
+        assert torch.allclose(y_out_actual, y_out_expected, atol=1e-12)
+    print("test_gather_negative_index_wraps PASSED")
+
+
+def test_pad_constant_exact():
+    """Constant pad inserts fixed rows with zero generators."""
+    hz = _make_simple_hz(n_feats=4, n_gens=2)
+    params = {"input_shape": (4,), "pads": [1, 2], "mode": "constant", "value": 5.0}
+    hz_out = _hz_pad_exact(hz, params)
+    assert hz_out.dim == 7
+    assert torch.allclose(hz_out.c[[0, 5, 6]].reshape(-1), torch.tensor([5.0, 5.0, 5.0], dtype=torch.float64))
+    assert torch.all(hz_out.Gc[[0, 5, 6]] == 0)
+    for seed in range(3):
+        torch.manual_seed(seed)
+        xi_c = torch.empty(2, dtype=torch.float64).uniform_(-1, 1)
+        y_in = _concretize(hz, xi_c)
+        y_out_expected = torch.cat([torch.tensor([5.0], dtype=torch.float64), y_in, torch.tensor([5.0, 5.0], dtype=torch.float64)])
+        y_out_actual = _concretize(hz_out, xi_c)
+        assert torch.allclose(y_out_actual, y_out_expected, atol=1e-12)
+    print("test_pad_constant_exact PASSED")
+
+
+def test_reduce_sum_axis_exact():
+    """ReduceSum is a linear row aggregation on c/Gc/Gb."""
+    hz = _make_simple_hz(n_feats=6, n_gens=2)
+    params = {"input_shape": (2, 3), "axes": [1], "keepdims": False}
+    hz_out = _hz_reduce_sum_exact(hz, params)
+    assert hz_out.dim == 2
+    for seed in range(3):
+        torch.manual_seed(seed)
+        xi_c = torch.empty(2, dtype=torch.float64).uniform_(-1, 1)
+        y_in = _concretize(hz, xi_c).reshape(2, 3)
+        y_out_expected = y_in.sum(dim=1)
+        y_out_actual = _concretize(hz_out, xi_c)
+        assert torch.allclose(y_out_actual, y_out_expected, atol=1e-12)
+    print("test_reduce_sum_axis_exact PASSED")
+
+
+def test_transpose_exact():
+    """Transpose is an exact row permutation on flattened c/Gc/Gb."""
+    hz = _make_simple_hz(n_feats=6, n_gens=2)
+    params = {
+        "input_shape": (1, 2, 3),
+        "output_shape": (1, 3, 2),
+        "perm": (0, 2, 1),
+    }
+    hz_out = _hz_transpose_exact(hz, params)
+    assert hz_out.dim == 6
+    for seed in range(3):
+        torch.manual_seed(seed)
+        xi_c = torch.empty(2, dtype=torch.float64).uniform_(-1, 1)
+        y_in = _concretize(hz, xi_c).reshape(1, 2, 3)
+        y_out_expected = y_in.permute(0, 2, 1).reshape(-1)
+        y_out_actual = _concretize(hz_out, xi_c)
+        assert torch.allclose(y_out_actual, y_out_expected, atol=1e-12)
+    print("test_transpose_exact PASSED")
+
+
+def test_avgpool2d_exact():
+    """AvgPool2d is linear and exact on every HZ factor column."""
+    import torch.nn.functional as F
+
+    hz = _make_simple_hz(n_feats=16, n_gens=2)
+    params = {
+        "input_shape": (1, 1, 4, 4),
+        "output_shape": (1, 1, 2, 2),
+        "kernel_size": (2, 2),
+        "stride": (2, 2),
+        "padding": (0, 0),
+    }
+    hz_out = _hz_avgpool2d_exact(hz, params)
+    assert hz_out.dim == 4
+    for seed in range(3):
+        torch.manual_seed(seed)
+        xi_c = torch.empty(2, dtype=torch.float64).uniform_(-1, 1)
+        y_in = _concretize(hz, xi_c).reshape(1, 1, 4, 4)
+        y_out_expected = F.avg_pool2d(y_in, (2, 2), (2, 2), (0, 0)).reshape(-1)
+        y_out_actual = _concretize(hz_out, xi_c)
+        assert torch.allclose(y_out_actual, y_out_expected, atol=1e-12)
+    print("test_avgpool2d_exact PASSED")
+
+
+def test_row_ops_preserve_base_metadata():
+    """Exact row ops must not reset shared-root generator ancestry."""
+    hz = _make_simple_hz(n_feats=6, n_gens=4)
+    object.__setattr__(hz, "_base_ng", 2)
+    object.__setattr__(hz, "_base_nb", 0)
+    out = _hz_transpose_exact(
+        hz,
+        {"input_shape": (1, 2, 3), "output_shape": (1, 3, 2), "perm": (0, 2, 1)},
+    )
+    assert out._base_ng == 2
+    out = _hz_reduce_sum_exact(hz, {"input_shape": (2, 3), "axes": [1], "keepdims": False})
+    assert out._base_ng == 2
+    print("test_row_ops_preserve_base_metadata PASSED")
+
+
 if __name__ == "__main__":
     test_gather_axis0_simple()
     test_gather_axis1_multi_dim()
@@ -193,4 +309,10 @@ if __name__ == "__main__":
     test_slice_step_2()
     test_slice_multi_dim()
     test_gather_preserves_constraints()
-    print("\nAll GATHER + SLICE exact tests PASSED ✓")
+    test_gather_negative_index_wraps()
+    test_pad_constant_exact()
+    test_reduce_sum_axis_exact()
+    test_transpose_exact()
+    test_avgpool2d_exact()
+    test_row_ops_preserve_base_metadata()
+    print("\nAll GATHER / SLICE / PAD / REDUCE_SUM exact tests PASSED ✓")

@@ -1,0 +1,16 @@
+[ACT] Auto-detecting project root: .
+[ACT] Gurobi license found: modules/gurobi/gurobi.lic
+{
+  "benchmark": "yolo_2023",
+  "instance_id": 47,
+  "status": "OK",
+  "cli_normalized": "OK",
+  "wall_s": 97.54830224404577,
+  "peak_rss_mb": 24532.74609375,
+  "returncode": 0,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/yolo_iid47_sparseadd_dedup_20260530T061349Z/k128_tail12k_sparseadd_dedup/per_instance_yolo_2023_20260530T061528131418Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/yolo_iid47_sparseadd_dedup_20260530T061349Z/k128_tail12k_sparseadd_dedup",
+  "stdout_tail": " out_dim=10816 ng=28401->28401 nc=46336->46336\n[HZ-PROGRESS] L24 CONV2D -> dim=10816 ng=28401 nb=0 nc=46336\n[HZ-PROGRESS] start L25 CONV2D in=dim=5408 ng=28401 nb=0 nc=46336\n[HZ-CONV] SparseGcZ ok in_dim=5408 out_dim=10816 ng=28401->28401 nc=46336->46336\n[HZ-PROGRESS] L25 CONV2D -> dim=10816 ng=28401 nb=0 nc=46336\n[HZ-PROGRESS] start L26 RELU in=dim=10816 ng=28401 nb=0 nc=46336\n[HZ-SELECTIVE] SparseGcZ top_k=128 dim=10816 ng=28401->31159 nc=46336->46592\n[HZ-PROGRESS] L26 RELU -> dim=10816 ng=31159 nb=0 nc=46592\n[HZ-PROGRESS] start L27 CONV2D in=dim=10816 ng=31159 nb=0 nc=46592\n[HZ-CONV] SparseGcZ ok in_dim=10816 out_dim=10816 ng=31159->31159 nc=46592->46592\n[HZ-PROGRESS] L27 CONV2D -> dim=10816 ng=31159 nb=0 nc=46592\n[HZ-PROGRESS] start L28 ADD in=none\n[HZ-PROGRESS] L28 ADD -> dim=10816 ng=36151 nb=0 nc=90624\n[HZ-PROGRESS] start L29 CONV2D in=dim=10816 ng=36151 nb=0 nc=90624\n[HZ-CONV] SparseGcZ ok in_dim=10816 out_dim=21125 ng=36151->36151 nc=90624->90624\n[HZ-PROGRESS] L29 CONV2D -> dim=21125 ng=36151 nb=0 nc=90624\n[HZ-PROGRESS] start L30 FLATTEN in=dim=21125 ng=36151 nb=0 nc=90624\n[HZ-PROGRESS] L30 FLATTEN -> dim=21125 ng=36151 nb=0 nc=90624\n  [  1/1] yolo_2023/onnx/TinyYOLO.onnx@vnnlib/TinyYOLO_prop_000024_eps_1_255.vnnlib: UNKNOWN (94.4s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=1.6 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/yolo_iid47_sparseadd_dedup_20260530T061349Z/k128_tail12k_sparseadd_dedup/per_instance_yolo_2023_20260530T061528131418Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n[W530 16:15:28.791836681 AllocatorConfig.cpp:28] Warning: PYTORCH_CUDA_ALLOC_CONF is deprecated, use PYTORCH_ALLOC_CONF instead (function operator())\n"
+}
+[watchdog] summary written: /data1/Kane/ACT/audit_results/yolo_iid47_sparseadd_dedup_20260530T061349Z/k128_tail12k_sparseadd_dedup/watchdog_summary.json
+[W530 16:15:29.782271283 AllocatorConfig.cpp:28] Warning: PYTORCH_CUDA_ALLOC_CONF is deprecated, use PYTORCH_ALLOC_CONF instead (function operator())

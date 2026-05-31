@@ -1,0 +1,48 @@
+{
+  "schema_version": 2,
+  "strict_bounded_failure": false,
+  "counts": {
+    "OK": 3,
+    "UNKNOWN_TIMEOUT": 0,
+    "UNKNOWN_RESOURCE_LIMIT": 0,
+    "ERROR": 0
+  },
+  "results": [
+    {
+      "benchmark": "yolo_2023",
+      "instance_id": 0,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 11.00745894096326,
+      "peak_rss_mb": 5179.46484375,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/yolo_selective_score_seq_20260530T051606Z/balanced_k512/per_instance_yolo_2023_20260530T051843166106Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/yolo_selective_score_seq_20260530T051606Z/balanced_k512",
+      "stdout_tail": "IB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 8112 inputs, 21125 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 8112 inputs, 21125 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'yolo_2023'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed TinyYOLO_prop_000005_eps_1_255.vnnlib: 1 query(ies)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=14 out_dim=21125 relus=7 (triangle for relu 1..6, eq_lagr_v8 for last 1)\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=yolo_2023 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=120.0s)\n  [  1/1] yolo_2023/onnx/TinyYOLO.onnx@vnnlib/TinyYOLO_prop_000005_eps_1_255.vnnlib: UNKNOWN (8.2s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.1 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/yolo_selective_score_seq_20260530T051606Z/balanced_k512/per_instance_yolo_2023_20260530T051843166106Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "yolo_2023",
+      "instance_id": 1,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 11.005654387059622,
+      "peak_rss_mb": 5179.34765625,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/yolo_selective_score_seq_20260530T051606Z/balanced_k512/per_instance_yolo_2023_20260530T051854118919Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/yolo_selective_score_seq_20260530T051606Z/balanced_k512",
+      "stdout_tail": "IB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 8112 inputs, 21125 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 8112 inputs, 21125 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'yolo_2023'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed TinyYOLO_prop_000459_eps_1_255.vnnlib: 1 query(ies)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=14 out_dim=21125 relus=7 (triangle for relu 1..6, eq_lagr_v8 for last 1)\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=yolo_2023 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=120.0s)\n  [  1/1] yolo_2023/onnx/TinyYOLO.onnx@vnnlib/TinyYOLO_prop_000459_eps_1_255.vnnlib: UNKNOWN (8.1s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.1 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/yolo_selective_score_seq_20260530T051606Z/balanced_k512/per_instance_yolo_2023_20260530T051854118919Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "yolo_2023",
+      "instance_id": 2,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 11.506192510016263,
+      "peak_rss_mb": 4916.3515625,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/yolo_selective_score_seq_20260530T051606Z/balanced_k512/per_instance_yolo_2023_20260530T051905390680Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/yolo_selective_score_seq_20260530T051606Z/balanced_k512",
+      "stdout_tail": "IB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 8112 inputs, 21125 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 8112 inputs, 21125 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'yolo_2023'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed TinyYOLO_prop_000290_eps_1_255.vnnlib: 1 query(ies)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=14 out_dim=21125 relus=7 (triangle for relu 1..6, eq_lagr_v8 for last 1)\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=yolo_2023 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=120.0s)\n  [  1/1] yolo_2023/onnx/TinyYOLO.onnx@vnnlib/TinyYOLO_prop_000290_eps_1_255.vnnlib: UNKNOWN (8.3s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.1 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/yolo_selective_score_seq_20260530T051606Z/balanced_k512/per_instance_yolo_2023_20260530T051905390680Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    }
+  ]
+}

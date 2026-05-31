@@ -1,0 +1,23 @@
+all-eq-layers probe started: Sat May 30 11:38:17 AM AEST 2026
+  spawned cifar100_2024 PID=3434462
+  spawned yolo_2023 PID=3434467
+  spawned tinyimagenet_2024 PID=3434472
+  spawned traffic_signs_recognition_2023 PID=3434477
+  spawned soundnessbench PID=3434482
+  spawned lsnc_relu PID=3434487
+  spawned cersyve PID=3434492
+  spawned sat_relu PID=3434497
+  spawned collins_aerospace_benchmark PID=3434501
+==== RESULTS ====
+  cifar100_2024                       n=  5 V=0 A=0 {'UNKNOWN': 3, 'ERROR_OutOfMemoryError': 1, 'ERROR_WATCHDOG_EXIT_NONZERO': 1} mean=9s
+  yolo_2023                           n= 12 V=0 A=0 {'UNKNOWN': 8, 'ERROR_OutOfMemoryError': 2, 'ERROR_WATCHDOG_EXIT_NONZERO': 2} mean=7s
+  tinyimagenet_2024                   n= 12 V=0 A=0 {'UNKNOWN': 8, 'ERROR_OutOfMemoryError': 2, 'ERROR_WATCHDOG_EXIT_NONZERO': 2} mean=10s
+  traffic_signs_recognition_2023      n= 10 V=0 A=0 {'UNKNOWN': 10} mean=59s
+  soundnessbench                      n= 11 V=0 A=0 {'UNKNOWN': 9, 'ERROR_RuntimeError': 1, 'ERROR_WATCHDOG_EXIT_NONZERO': 1} mean=4s
+  lsnc_relu                           n= 20 V=0 A=0 {'UNKNOWN': 20} mean=3s
+  cersyve                             n= 12 V=0 A=0 {'UNKNOWN': 12} mean=2s
+  sat_relu                            n= 21 V=0 A=1 {'UNKNOWN': 18, 'FALSIFIED': 1, 'ERROR_AcceleratorError': 1, 'ERROR_WATCHDOG_EXIT_NONZERO': 1} mean=1s ⭐ LIFT!
+  collins_aerospace_benchmark         n=  6 V=0 A=0 {'UNKNOWN': 5, 'ERROR_WATCHDOG_EXIT_NONZERO': 1} mean=338s
+
+  TOTAL V+A across 8 probes: 1
+DONE: Sat May 30 12:12:30 PM AEST 2026

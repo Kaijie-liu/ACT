@@ -1,0 +1,24 @@
+{
+  "schema_version": 2,
+  "strict_bounded_failure": false,
+  "counts": {
+    "OK": 1,
+    "UNKNOWN_TIMEOUT": 0,
+    "UNKNOWN_RESOURCE_LIMIT": 0,
+    "ERROR": 0
+  },
+  "results": [
+    {
+      "benchmark": "yolo_2023",
+      "instance_id": 47,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 226.11963561095763,
+      "peak_rss_mb": 2609.2578125,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/yolo_iid47_guard80_k512_20260530T060102Z/k512_guard80/per_instance_yolo_2023_20260530T060449784762Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/yolo_iid47_guard80_k512_20260530T060102Z/k512_guard80",
+      "stdout_tail": "6\n[HZ-PROGRESS] start L21 RELU in=dim=5408 ng=12000 nb=0 nc=2126\n[HZ-SELECTIVE] HZono top_k=512 dim=5408 ng=12000->16556 nc=2126->13966\n[HZ-PROGRESS] L21 RELU -> dim=5408 ng=12000 nb=0 nc=5847\n[HZ-PROGRESS] start L22 CONV2D in=dim=5408 ng=12000 nb=0 nc=5847\n[HZ-PROGRESS] L22 CONV2D -> dim=5408 ng=12000 nb=0 nc=5847\n[HZ-PROGRESS] start L23 ADD in=none\n[HZ-PROGRESS] L23 ADD -> dim=5408 ng=12000 nb=0 nc=1507\n[HZ-PROGRESS] start L24 CONV2D in=dim=5408 ng=12000 nb=0 nc=1507\n[HZ-PROGRESS] L24 CONV2D -> dim=10816 ng=12000 nb=0 nc=1507\n[HZ-PROGRESS] start L25 CONV2D in=dim=5408 ng=12000 nb=0 nc=1507\n[HZ-PROGRESS] L25 CONV2D -> dim=10816 ng=12000 nb=0 nc=1507\n[HZ-PROGRESS] start L26 RELU in=dim=10816 ng=12000 nb=0 nc=1507\n[HZ-SELECTIVE] HZono top_k=512 dim=10816 ng=12000->22816 nc=1507->24163\n[HZ-PROGRESS] L26 RELU -> dim=10816 ng=12000 nb=0 nc=19073\n[HZ-PROGRESS] start L27 CONV2D in=dim=10816 ng=12000 nb=0 nc=19073\n[HZ-PROGRESS] L27 CONV2D -> dim=10816 ng=12000 nb=0 nc=19073\n[HZ-PROGRESS] start L28 ADD in=none\n[HZ-PROGRESS] L28 ADD -> dim=10816 ng=12000 nb=0 nc=1375\n[HZ-PROGRESS] start L29 CONV2D in=dim=10816 ng=12000 nb=0 nc=1375\n[HZ-PROGRESS] L29 CONV2D -> dim=21125 ng=12000 nb=0 nc=1375\n[HZ-PROGRESS] start L30 FLATTEN in=dim=21125 ng=12000 nb=0 nc=1375\n[HZ-PROGRESS] L30 FLATTEN -> dim=21125 ng=12000 nb=0 nc=1375\n  [  1/1] yolo_2023/onnx/TinyYOLO.onnx@vnnlib/TinyYOLO_prop_000024_eps_1_255.vnnlib: UNKNOWN (223.5s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=3.7 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/yolo_iid47_guard80_k512_20260530T060102Z/k512_guard80/per_instance_yolo_2023_20260530T060449784762Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    }
+  ]
+}

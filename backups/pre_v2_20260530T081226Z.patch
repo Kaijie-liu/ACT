@@ -1,0 +1,1663 @@
+diff --git a/act/back_end/hybridz_tf/algorithms/relu_methods.py b/act/back_end/hybridz_tf/algorithms/relu_methods.py
+index d27e4cb97..3a422034d 100644
+--- a/act/back_end/hybridz_tf/algorithms/relu_methods.py
++++ b/act/back_end/hybridz_tf/algorithms/relu_methods.py
+@@ -46,6 +46,24 @@ import torch
+ from act.back_end.solver.solver_hz import HZono, hz_compute_bounds
+ 
+ 
++def _selective_chull_score(lb: torch.Tensor, ub: torch.Tensor) -> torch.Tensor:
++    """Forward-local score for selecting ReLU hull facets.
++
++    Default ``width`` preserves historical behavior. The other modes rank by
++    the triangle-relaxation slack itself; they require only current forward
++    bounds and do not use backward propagation, gradients, sampling, or split.
++    """
++    mode = os.environ.get("ACT_HZ_SELECTIVE_SCORE", "width").strip().lower()
++    width = ub - lb
++    if mode in ("mu", "slack", "height"):
++        return (-lb * ub) / torch.clamp(2.0 * width, min=1e-30)
++    if mode in ("area", "product", "gap"):
++        return -lb * ub
++    if mode in ("balanced", "minside", "min_side"):
++        return torch.minimum(-lb, ub)
++    return width
++
++
+ # ---------------------------------------------------------------------------
+ # Method 1: DeepZ-style triangle (cheap, lossy)
+ # ---------------------------------------------------------------------------
+@@ -779,7 +797,9 @@ def hz_apply_relu_selective_chull(
+         selected_local = torch.nonzero(in_unst, as_tuple=False).view(-1)
+     elif top_k is not None and top_k > 0:
+         kk = min(int(top_k), k)
+-        _, selected_local = torch.topk(width_uns, kk)
++        _, selected_local = torch.topk(
++            _selective_chull_score(l_uns, u_uns), kk
++        )
+     else:
+         selected_local = torch.zeros(0, dtype=torch.long, device=device)
+ 
+diff --git a/act/back_end/hybridz_tf/hz_routing.py b/act/back_end/hybridz_tf/hz_routing.py
+index 10587b585..3e5ab718f 100644
+--- a/act/back_end/hybridz_tf/hz_routing.py
++++ b/act/back_end/hybridz_tf/hz_routing.py
+@@ -251,11 +251,11 @@ def hz_add_const(hz, c):
+         return hz.with_add_const(c_t)
+     if isinstance(hz, SparseGcZ):
+         c_t = torch.as_tensor(c, dtype=hz.dtype, device=hz.device).flatten()
+-        return SparseGcZ(
++        return hz._inherit_base(SparseGcZ(
+             c=hz.c + c_t, Gc_sparse=hz.Gc_sparse,
+             dtype=hz.dtype, device=hz.device,
+             Ac_sparse=hz.Ac_sparse, b=hz.b, eq_mask=hz.eq_mask,
+-        )
++        ))
+     return _propagate_base_any(hz, _hz_add_const_native(hz, c))
+ 
+ 
+@@ -307,11 +307,24 @@ def hz_conv2d(hz, weight, bias=None, *, input_shape,
+ 
+     if isinstance(hz, SparseGcZ):
+         try:
+-            return hz.apply_conv(weight_t, bias_t, (C, H, W_), stride, pad_use)
++            out_sparse = hz.apply_conv(weight_t, bias_t, (C, H, W_), stride, pad_use)
++            if os.environ.get("ACT_HZ_CONV_DEBUG", "0") == "1":
++                print(
++                    f"[HZ-CONV] SparseGcZ ok in_dim={hz.dim} out_dim={out_sparse.dim} "
++                    f"ng={hz.ng}->{out_sparse.ng} nc={hz.nc}->{out_sparse.nc}",
++                    flush=True,
++                )
++            return out_sparse
+         except (MemoryError, RuntimeError) as e:
+             msg = str(e).lower()
+             if "memory" not in msg and "alloc" not in msg:
+                 raise
++            if os.environ.get("ACT_HZ_CONV_DEBUG", "0") == "1":
++                print(
++                    f"[HZ-CONV] SparseGcZ fallback-to-dense "
++                    f"{type(e).__name__}: {e}",
++                    flush=True,
++                )
+             hz = hz.to_dense_hz()  # density fallback
+ 
+     if isinstance(hz, LazyChainHZ):
+@@ -373,11 +386,26 @@ def hz_conv2d(hz, weight, bias=None, *, input_shape,
+             converted = act_hz_dense_to_sparse(hz, density_threshold=1.0)
+             if isinstance(converted, SparseGcZ):
+                 try:
+-                    return converted.apply_conv(weight_t, bias_t, (C, H, W_), stride, pad_use)
++                    out_sparse = converted.apply_conv(weight_t, bias_t, (C, H, W_), stride, pad_use)
++                    if os.environ.get("ACT_HZ_CONV_DEBUG", "0") == "1":
++                        print(
++                            f"[HZ-CONV] preconv SparseGcZ ok "
++                            f"in_dim={converted.dim} out_dim={out_sparse.dim} "
++                            f"ng={converted.ng}->{out_sparse.ng} "
++                            f"nc={converted.nc}->{out_sparse.nc}",
++                            flush=True,
++                        )
++                    return out_sparse
+                 except (MemoryError, RuntimeError) as e:
+                     msg = str(e).lower()
+                     if "memory" not in msg and "alloc" not in msg:
+                         raise
++                    if os.environ.get("ACT_HZ_CONV_DEBUG", "0") == "1":
++                        print(
++                            f"[HZ-CONV] preconv SparseGcZ fallback-to-dense "
++                            f"{type(e).__name__}: {e}",
++                            flush=True,
++                        )
+                     # fall through to dense path
+     out = _act_conv2d_inner(
+         hz, weight_t, bias_t,
+@@ -388,6 +416,12 @@ def hz_conv2d(hz, weight, bias=None, *, input_shape,
+     # T2 sparse-Gc: opt-in post-conv prune + dense->sparse conversion.
+     # No-op when ACT_HZ_PRUNE_GC / ACT_HZ_DENSE_TO_SPARSE are unset.
+     out = act_maybe_compact_hz(out)
++    if os.environ.get("ACT_HZ_CONV_DEBUG", "0") == "1":
++        print(
++            f"[HZ-CONV] dense path out_type={type(out).__name__} "
++            f"dim={out.dim} ng={out.ng} nc={out.nc}",
++            flush=True,
++        )
+     return _propagate_base_any(hz, out)
+ 
+ 
+@@ -452,10 +486,17 @@ def _sparse_relu_with_optional_cuts(hz: SparseGcZ):
+     mask = get_chull_mask_for_current_relu()
+     k_sel = int(os.environ.get("ACT_HZ_EARLY_SELECTIVE_K", "0") or "0")
+     if mask is not None or k_sel > 0:
+-        return hz.apply_relu_selective_chull(
++        out = hz.apply_relu_selective_chull(
+             chull_mask=mask,
+             top_k=(None if mask is not None else k_sel),
+         )
++        if os.environ.get("ACT_HZ_SELECTIVE_DEBUG", "0") == "1":
++            print(
++                f"[HZ-SELECTIVE] SparseGcZ top_k={k_sel} "
++                f"dim={hz.dim} ng={hz.ng}->{out.ng} nc={hz.nc}->{out.nc}",
++                flush=True,
++            )
++        return out
+     return hz.apply_relu_triangle()
+ 
+ 
+@@ -551,6 +592,13 @@ def hz_apply_relu_v8(hz, *, method: str = "eq_lagr_v8"):
+         new_ng = ng + k_max
+         new_nb = nb
+         new_nc = nc + 2 * k_max
++    elif method in ("selective_chull", "sel_chull"):
++        # selective_chull: DeepZ triangle on all unstable (+1 cont each)
++        # plus two convex-hull facet rows for only top-K/masked unstable.
++        k_sel = int(os.environ.get("ACT_HZ_SELECTIVE_K", "32") or "32")
++        new_ng = ng + k_max
++        new_nb = nb
++        new_nc = nc + 2 * min(max(k_sel, 0), k_max)
+     elif method == "triangle":
+         # DeepZ parallelogram: +1 cont, 0 binary, 0 rows.
+         new_ng = ng + k_max
+@@ -570,6 +618,13 @@ def hz_apply_relu_v8(hz, *, method: str = "eq_lagr_v8"):
+     if peak > budget_bytes:
+         # Even the requested encoding overflows budget: downgrade to
+         # DeepZ triangle (the cheapest sound encoding we have).
++        if os.environ.get("ACT_HZ_SELECTIVE_DEBUG", "0") == "1":
++            print(
++                f"[HZ-SELECTIVE] downgrade method={method} n={n} ng={ng} "
++                f"nc={nc} est_peak_gb={peak / (1024 ** 3):.2f} "
++                f"budget_gb={budget_gb:.2f}",
++                flush=True,
++            )
+         try:
+             return hz_apply_relu_triangle(hz)
+         except Exception:
+@@ -665,6 +720,20 @@ def hz_apply_relu_v8(hz, *, method: str = "eq_lagr_v8"):
+                     pass
+             return hz_after_relu
+         if method == "triangle":
++            # Optional precision lever (ACT_HZ_TRIANGLE_TIGHT_BOUNDS=1):
++            # pass Tier-2/3 cascade bounds as external_bounds. Default OFF
++            # to preserve baseline timings. Sound — Tier 2/3 are valid
++            # Lagrangian/LP relaxations of the HZ constraint set; triangle
++            # built on tighter (lb, ub) is strictly no looser. See
++            # research/hz_zero_benches_deeper_analysis_20260530.md.
++            if os.environ.get("ACT_HZ_TRIANGLE_TIGHT_BOUNDS", "0") == "1":
++                try:
++                    lb_t, ub_t = _hzono_tight_bounds(hz)
++                    return _propagate_base_any(
++                        hz, hz_apply_relu_triangle(hz, external_bounds=(lb_t, ub_t))
++                    )
++                except Exception:
++                    pass
+             return _propagate_base_any(hz, hz_apply_relu_triangle(hz))
+         if method == "compact":
+             return _propagate_base_any(hz, hz_apply_relu_compact(hz))
+@@ -705,6 +774,13 @@ def hz_apply_relu_v8(hz, *, method: str = "eq_lagr_v8"):
+                 chull_mask=_dual_mask_late,
+                 external_bounds=(lb_t, ub_t),
+             )
++            if os.environ.get("ACT_HZ_SELECTIVE_DEBUG", "0") == "1":
++                print(
++                    f"[HZ-SELECTIVE] HZono top_k={k_sel} "
++                    f"dim={hz.dim} ng={hz.ng}->{hz_after.Gc.shape[1]} "
++                    f"nc={hz.b.shape[0]}->{hz_after.b.shape[0]}",
++                    flush=True,
++                )
+             return _propagate_base_any(hz, hz_after)
+         if method in ("convex_hull_cont", "chull_cont", "chull"):
+             # Continuous-only convex-hull ReLU. Goes through the same
+@@ -784,6 +860,206 @@ def _leaky_box(box: BoxHZ, alpha: float):
+ # ---------------------------------------------------------------------------
+ 
+ 
++def _sparse_remap_cols(sp: torch.Tensor, *, shared: int, tail_offset: int,
++                       out_rows: int, out_cols: int, row_offset: int = 0):
++    sp = sp.coalesce()
++    idx = sp.indices()
++    val = sp.values()
++    if int(val.numel()) == 0:
++        return torch.sparse_coo_tensor(
++            torch.zeros((2, 0), dtype=torch.long, device=sp.device),
++            val,
++            (int(out_rows), int(out_cols)),
++            dtype=sp.dtype,
++            device=sp.device,
++        ).coalesce()
++    rows = idx[0] + int(row_offset)
++    cols = idx[1]
++    new_cols = cols.clone()
++    tail = cols >= int(shared)
++    if bool(tail.any().item()):
++        new_cols[tail] = int(tail_offset) + (cols[tail] - int(shared))
++    return torch.sparse_coo_tensor(
++        torch.stack([rows, new_cols]),
++        val,
++        (int(out_rows), int(out_cols)),
++        dtype=sp.dtype,
++        device=sp.device,
++    ).coalesce()
++
++
++def _sparse_select_rows_remap_cols(
++    sp: torch.Tensor, *, row_start: int, row_end: int, row_offset: int,
++    shared: int, tail_offset: int, out_rows: int, out_cols: int,
++):
++    sp = sp.coalesce()
++    idx = sp.indices()
++    val = sp.values()
++    if int(val.numel()) == 0 or int(row_start) >= int(row_end):
++        return torch.sparse_coo_tensor(
++            torch.zeros((2, 0), dtype=torch.long, device=sp.device),
++            val.new_zeros(0),
++            (int(out_rows), int(out_cols)),
++            dtype=sp.dtype,
++            device=sp.device,
++        ).coalesce()
++    mask = (idx[0] >= int(row_start)) & (idx[0] < int(row_end))
++    if not bool(mask.any().item()):
++        return torch.sparse_coo_tensor(
++            torch.zeros((2, 0), dtype=torch.long, device=sp.device),
++            val.new_zeros(0),
++            (int(out_rows), int(out_cols)),
++            dtype=sp.dtype,
++            device=sp.device,
++        ).coalesce()
++    rows = idx[0, mask] - int(row_start) + int(row_offset)
++    cols = idx[1, mask]
++    new_cols = cols.clone()
++    tail = cols >= int(shared)
++    if bool(tail.any().item()):
++        new_cols[tail] = int(tail_offset) + (cols[tail] - int(shared))
++    return torch.sparse_coo_tensor(
++        torch.stack([rows, new_cols]),
++        val[mask],
++        (int(out_rows), int(out_cols)),
++        dtype=sp.dtype,
++        device=sp.device,
++    ).coalesce()
++
++
++def _sparse_sgm_add(hz_x: SparseGcZ, hz_y: SparseGcZ) -> SparseGcZ:
++    """Exact sparse shared-generator residual add.
++
++    The first ``_base_ng`` / ``_base_nb`` factors are shared latent factors.
++    Tails introduced independently on either branch remain independent. This
++    mirrors dense SGM but keeps Gc/Ac/Gb/Ab sparse, avoiding densification at
++    ResNet-style ADD nodes.
++    """
++    if hz_x.dim != hz_y.dim:
++        raise ValueError(f"sparse_sgm_add: shape mismatch {hz_x.dim} vs {hz_y.dim}")
++    dtype = hz_x.dtype
++    device = hz_x.device
++    ng_x, ng_y = hz_x.ng, hz_y.ng
++    nb_x, nb_y = hz_x.nb, hz_y.nb
++    shared_ng = min(int(getattr(hz_x, "_base_ng", ng_x)),
++                    int(getattr(hz_y, "_base_ng", ng_y)), ng_x, ng_y)
++    shared_nb = min(int(getattr(hz_x, "_base_nb", nb_x)),
++                    int(getattr(hz_y, "_base_nb", nb_y)), nb_x, nb_y)
++    ng_x_tail = ng_x - shared_ng
++    ng_y_tail = ng_y - shared_ng
++    nb_x_tail = nb_x - shared_nb
++    nb_y_tail = nb_y - shared_nb
++    ng_new = shared_ng + ng_x_tail + ng_y_tail
++    nb_new = shared_nb + nb_x_tail + nb_y_tail
++    n = hz_x.dim
++
++    Gx = _sparse_remap_cols(
++        hz_x.Gc_sparse, shared=shared_ng, tail_offset=shared_ng,
++        out_rows=n, out_cols=ng_new,
++    )
++    Gy = _sparse_remap_cols(
++        hz_y.Gc_sparse, shared=shared_ng, tail_offset=shared_ng + ng_x_tail,
++        out_rows=n, out_cols=ng_new,
++    )
++    Gc = torch.sparse_coo_tensor(
++        torch.cat([Gx.indices(), Gy.indices()], dim=1),
++        torch.cat([Gx.values(), Gy.values()]),
++        (n, ng_new), dtype=dtype, device=device,
++    ).coalesce()
++
++    Bx = _sparse_remap_cols(
++        hz_x.Gb_sparse, shared=shared_nb, tail_offset=shared_nb,
++        out_rows=n, out_cols=nb_new,
++    )
++    By = _sparse_remap_cols(
++        hz_y.Gb_sparse, shared=shared_nb, tail_offset=shared_nb + nb_x_tail,
++        out_rows=n, out_cols=nb_new,
++    )
++    Gb = torch.sparse_coo_tensor(
++        torch.cat([Bx.indices(), By.indices()], dim=1),
++        torch.cat([Bx.values(), By.values()]),
++        (n, nb_new), dtype=dtype, device=device,
++    ).coalesce()
++
++    nc_x, nc_y = hz_x.nc, hz_y.nc
++    shared_nc = min(int(getattr(hz_x, "_base_nc", nc_x)),
++                    int(getattr(hz_y, "_base_nc", nc_y)), nc_x, nc_y)
++    nc_x_tail = nc_x - shared_nc
++    nc_y_tail = nc_y - shared_nc
++    nc_new = shared_nc + nc_x_tail + nc_y_tail
++    Ac_shared = _sparse_select_rows_remap_cols(
++        hz_x.Ac_sparse, row_start=0, row_end=shared_nc, row_offset=0,
++        shared=shared_ng, tail_offset=shared_ng,
++        out_rows=nc_new, out_cols=ng_new,
++    )
++    Ac_x = _sparse_select_rows_remap_cols(
++        hz_x.Ac_sparse, row_start=shared_nc, row_end=nc_x,
++        row_offset=shared_nc, shared=shared_ng, tail_offset=shared_ng,
++        out_rows=nc_new, out_cols=ng_new,
++    )
++    Ac_y = _sparse_select_rows_remap_cols(
++        hz_y.Ac_sparse, row_start=shared_nc, row_end=nc_y,
++        row_offset=shared_nc + nc_x_tail,
++        shared=shared_ng, tail_offset=shared_ng + ng_x_tail,
++        out_rows=nc_new, out_cols=ng_new,
++    )
++    Ac = torch.sparse_coo_tensor(
++        torch.cat([Ac_shared.indices(), Ac_x.indices(), Ac_y.indices()], dim=1),
++        torch.cat([Ac_shared.values(), Ac_x.values(), Ac_y.values()]),
++        (nc_new, ng_new), dtype=dtype, device=device,
++    ).coalesce()
++
++    Ab_shared = _sparse_select_rows_remap_cols(
++        hz_x.Ab_sparse, row_start=0, row_end=shared_nc, row_offset=0,
++        shared=shared_nb, tail_offset=shared_nb,
++        out_rows=nc_new, out_cols=nb_new,
++    )
++    Ab_x = _sparse_select_rows_remap_cols(
++        hz_x.Ab_sparse, row_start=shared_nc, row_end=nc_x,
++        row_offset=shared_nc, shared=shared_nb, tail_offset=shared_nb,
++        out_rows=nc_new, out_cols=nb_new,
++    )
++    Ab_y = _sparse_select_rows_remap_cols(
++        hz_y.Ab_sparse, row_start=shared_nc, row_end=nc_y,
++        row_offset=shared_nc + nc_x_tail,
++        shared=shared_nb, tail_offset=shared_nb + nb_x_tail,
++        out_rows=nc_new, out_cols=nb_new,
++    )
++    Ab = torch.sparse_coo_tensor(
++        torch.cat([Ab_shared.indices(), Ab_x.indices(), Ab_y.indices()], dim=1),
++        torch.cat([Ab_shared.values(), Ab_x.values(), Ab_y.values()]),
++        (nc_new, nb_new), dtype=dtype, device=device,
++    ).coalesce()
++
++    eq_x = hz_x.eq_mask if hz_x.eq_mask is not None else torch.zeros(nc_x, dtype=torch.bool, device=device)
++    eq_y = hz_y.eq_mask if hz_y.eq_mask is not None else torch.zeros(nc_y, dtype=torch.bool, device=device)
++    b_new = torch.cat([
++        hz_x.b[:shared_nc],
++        hz_x.b[shared_nc:],
++        hz_y.b[shared_nc:].to(dtype=dtype, device=device),
++    ], dim=0)
++    eq_new = torch.cat([
++        eq_x[:shared_nc].to(device=device),
++        eq_x[shared_nc:].to(device=device),
++        eq_y[shared_nc:].to(device=device),
++    ], dim=0)
++    out = SparseGcZ(
++        c=hz_x.c + hz_y.c.to(dtype=dtype, device=device),
++        Gc_sparse=Gc,
++        dtype=dtype,
++        device=device,
++        Ac_sparse=Ac,
++        Gb_sparse=Gb,
++        Ab_sparse=Ab,
++        b=b_new,
++        eq_mask=eq_new,
++    )
++    object.__setattr__(out, "_base_ng", int(shared_ng))
++    object.__setattr__(out, "_base_nb", int(shared_nb))
++    object.__setattr__(out, "_base_nc", int(shared_nc))
++    return out
++
++
+ def hz_minkowski_sum(hz_x, hz_y):
+     """Minkowski sum. HyZor parity (__init__.py:1285): when both operands
+     are dense HZ, dispatch to the prefix-sharing ``add`` (= ``hz_sgm_add``)
+@@ -792,6 +1068,8 @@ def hz_minkowski_sum(hz_x, hz_y):
+     impl did block-diagonal concat, inflating ng through every resnet
+     add block.
+     """
++    if isinstance(hz_x, SparseGcZ) and isinstance(hz_y, SparseGcZ):
++        return _sparse_sgm_add(hz_x, hz_y)
+     hz_x = _coerce_for_combine(hz_x)
+     hz_y = _coerce_for_combine(hz_y)
+     if isinstance(hz_x, BoxHZ) or isinstance(hz_y, BoxHZ):
+@@ -804,6 +1082,8 @@ def hz_minkowski_sum(hz_x, hz_y):
+ 
+ def hz_sgm_add(hz_x, hz_y):
+     """Shared Generator Merge add. Faithful port of HyZor (__init__.py:1295)."""
++    if isinstance(hz_x, SparseGcZ) and isinstance(hz_y, SparseGcZ):
++        return _sparse_sgm_add(hz_x, hz_y)
+     hz_x = _coerce_for_combine(hz_x)
+     hz_y = _coerce_for_combine(hz_y)
+     if isinstance(hz_x, BoxHZ) or isinstance(hz_y, BoxHZ):
+diff --git a/act/back_end/hybridz_tf/representations.py b/act/back_end/hybridz_tf/representations.py
+index 8861b5f4d..2fe952df6 100644
+--- a/act/back_end/hybridz_tf/representations.py
++++ b/act/back_end/hybridz_tf/representations.py
+@@ -78,6 +78,30 @@ def _enable_sparse_gc() -> bool:
+     return os.environ.get("HYZOR_SPARSE_GC", "1") == "1"
+ 
+ 
++def _relu_selection_score(lb: torch.Tensor, ub: torch.Tensor) -> torch.Tensor:
++    """Forward-local score for selecting sparse ReLU hull facets.
++
++    ``width`` is the legacy behavior. ``mu`` and ``area`` target the
++    DeepZ/triangle slack directly: for unstable ReLU bounds ``l < 0 < u``,
++    the added slack amplitude is ``-l*u/(2*(u-l))`` and the hull gap area is
++    proportional to ``-l*u``. These scores use only current forward bounds,
++    not gradients, backward bounds, splitting, or sampling.
++    """
++    mode = (
++        os.environ.get("ACT_HZ_EARLY_SELECTIVE_SCORE")
++        or os.environ.get("ACT_HZ_SELECTIVE_SCORE")
++        or "width"
++    ).strip().lower()
++    width = ub - lb
++    if mode in ("mu", "slack", "height"):
++        return (-lb * ub) / torch.clamp(2.0 * width, min=1e-30)
++    if mode in ("area", "product", "gap"):
++        return -lb * ub
++    if mode in ("balanced", "minside", "min_side"):
++        return torch.minimum(-lb, ub)
++    return width
++
++
+ def _sparse_gc_budget_bytes() -> int:
+     return int(float(os.environ.get("HYZOR_SPARSE_GC_BUDGET_GB", "8.0")) * (1024 ** 3))
+ 
+@@ -759,6 +783,25 @@ class SparseGcZ:
+         )
+         if int(self.eq_mask.numel()) != nc:
+             raise ValueError("SparseGcZ: Ac_sparse/eq_mask row mismatch")
++        object.__setattr__(self, "_base_ng", int(ng))
++        object.__setattr__(self, "_base_nb", int(nb))
++        object.__setattr__(self, "_base_nc", int(nc))
++
++    def _inherit_base(self, out: "SparseGcZ") -> "SparseGcZ":
++        """Preserve shared-factor prefix metadata across exact sparse ops."""
++        object.__setattr__(
++            out, "_base_ng",
++            int(min(getattr(self, "_base_ng", self.ng), out.ng)),
++        )
++        object.__setattr__(
++            out, "_base_nb",
++            int(min(getattr(self, "_base_nb", self.nb), out.nb)),
++        )
++        object.__setattr__(
++            out, "_base_nc",
++            int(min(getattr(self, "_base_nc", self.nc), out.nc)),
++        )
++        return out
+ 
+     @property
+     def dim(self) -> int:
+@@ -863,10 +906,10 @@ class SparseGcZ:
+             ind, scaled_val, self.Gc_sparse.shape,
+             dtype=self.dtype, device=self.device,
+         ).coalesce()
+-        return SparseGcZ(
++        return self._inherit_base(SparseGcZ(
+             c=c_new, Gc_sparse=Gc_new, dtype=self.dtype, device=self.device,
+             Ac_sparse=self.Ac_sparse, b=self.b, eq_mask=self.eq_mask,
+-        )
++        ))
+ 
+     def apply_dense(self, W, b=None) -> HZono:
+         """``y = W x + b``. Sparse Gc → dense Gc' = W @ Gc; return HZono.
+@@ -969,11 +1012,11 @@ class SparseGcZ:
+             all_ind, all_val, (n, ng_out),
+             dtype=self.dtype, device=self.device,
+         )
+-        return SparseGcZ(
++        return self._inherit_base(SparseGcZ(
+             c=c_out, Gc_sparse=Gc_out, dtype=self.dtype, device=self.device,
+             Ac_sparse=self._constraints_with_ng(ng_out),
+             b=self.b, eq_mask=self.eq_mask,
+-        )
++        ))
+ 
+     def apply_relu_selective_chull(
+         self, *, chull_mask: Optional[torch.Tensor] = None,
+@@ -1011,7 +1054,7 @@ class SparseGcZ:
+         elif top_k is not None and int(top_k) > 0:
+             kk = min(int(top_k), k)
+             selected_local = torch.topk(
+-                ub[unstable_idx] - lb[unstable_idx], kk
++                _relu_selection_score(lb[unstable_idx], ub[unstable_idx]), kk
+             ).indices
+         else:
+             return out
+@@ -1079,7 +1122,7 @@ class SparseGcZ:
+         b_cut = torch.empty((2 * n_sel, 1), dtype=self.dtype, device=self.device)
+         b_cut[0::2, 0] = mu - (1.0 - lam) * sel_c
+         b_cut[1::2, 0] = lam * sel_c + mu
+-        return SparseGcZ(
++        return out._inherit_base(SparseGcZ(
+             c=out.c, Gc_sparse=out.Gc_sparse,
+             dtype=self.dtype, device=self.device,
+             Ac_sparse=Ac_out,
+@@ -1088,7 +1131,7 @@ class SparseGcZ:
+                 out.eq_mask,
+                 torch.zeros(2 * n_sel, dtype=torch.bool, device=self.device),
+             ]),
+-        )
++        ))
+ 
+     def apply_conv(self, weight, bias, in_shape, stride, pad,
+                    *, chunk=None, sparsify_thresh=None) -> "SparseGcZ":
+@@ -1204,11 +1247,11 @@ class SparseGcZ:
+                     Gc_new, sparsify_thresh,
+                     dtype=self.dtype, device=self.device,
+                 )
+-                return SparseGcZ(
++                return self._inherit_base(SparseGcZ(
+                     c=c_new, Gc_sparse=Gc_new,
+                     dtype=self.dtype, device=self.device,
+                     Ac_sparse=self.Ac_sparse, b=self.b, eq_mask=self.eq_mask,
+-                )
++                ))
+ 
+         # Fast path: sparse conv operator × sparse Gc.
+         if os.environ.get("HYZOR_SPARSE_CONV_MM", "1") == "1":
+@@ -1224,11 +1267,11 @@ class SparseGcZ:
+                         Gc_raw, sparsify_thresh,
+                         dtype=self.dtype, device=self.device,
+                     )
+-                    return SparseGcZ(
++                    return self._inherit_base(SparseGcZ(
+                         c=c_new, Gc_sparse=Gc_new,
+                         dtype=self.dtype, device=self.device,
+                         Ac_sparse=self.Ac_sparse, b=self.b, eq_mask=self.eq_mask,
+-                    )
++                    ))
+             except (MemoryError, RuntimeError) as e:
+                 msg = str(e).lower()
+                 if "memory" not in msg and "alloc" not in msg:
+@@ -1279,10 +1322,10 @@ class SparseGcZ:
+             all_ind, all_val, (n_out, ng),
+             dtype=self.dtype, device=self.device,
+         ).coalesce()
+-        return SparseGcZ(
++        return self._inherit_base(SparseGcZ(
+             c=c_new, Gc_sparse=Gc_new, dtype=self.dtype, device=self.device,
+             Ac_sparse=self.Ac_sparse, b=self.b, eq_mask=self.eq_mask,
+-        )
++        ))
+ 
+     def reduce_generators(self, target_ng: int) -> "SparseGcZ":
+         """Girard-style box overapproximation of low-magnitude generators.
+@@ -1304,9 +1347,25 @@ class SparseGcZ:
+ 
+         ind = self.Gc_sparse.indices()
+         val = self.Gc_sparse.values()
+-        col_sq = torch.zeros(ng0, dtype=self.dtype, device=self.device)
+-        col_sq.scatter_add_(0, ind[1], val * val)
+-        _, top_idx = torch.topk(col_sq, k=target_ng, largest=True, sorted=False)
++        # Default: column squared-2-norm.
++        col_score = torch.zeros(ng0, dtype=self.dtype, device=self.device)
++        col_score.scatter_add_(0, ind[1], val * val)
++        # Optional spec-aware ranking. See algorithms/spec_aware.py.
++        try:
++            from act.back_end.hybridz_tf.algorithms import spec_aware as _spec_aware
++            if _spec_aware.is_enabled():
++                F = _spec_aware.get_F_for_current()
++                if F is not None and F.dim() == 2 and F.shape[1] == self.dim:
++                    # Dense F @ sparse Gc → (k, ng); per-column sum |entries|.
++                    # Materialize per-column via index_add to avoid dense Gc.
++                    F_at_rows = F[:, ind[0]]  # (k, nnz)
++                    contrib = (F_at_rows * val.unsqueeze(0)).abs().sum(dim=0)  # (nnz,)
++                    spec_score = torch.zeros(ng0, dtype=self.dtype, device=self.device)
++                    spec_score.scatter_add_(0, ind[1], contrib)
++                    col_score = spec_score
++        except Exception:
++            pass
++        _, top_idx = torch.topk(col_score, k=target_ng, largest=True, sorted=False)
+         keep_mask = torch.zeros(ng0, dtype=torch.bool, device=self.device)
+         keep_mask[top_idx] = True
+         new_col_map = -torch.ones(ng0, dtype=torch.long, device=self.device)
+diff --git a/act/back_end/hybridz_tf/sparse_gc_t2.py b/act/back_end/hybridz_tf/sparse_gc_t2.py
+index 7090a51eb..7854449a5 100644
+--- a/act/back_end/hybridz_tf/sparse_gc_t2.py
++++ b/act/back_end/hybridz_tf/sparse_gc_t2.py
+@@ -344,6 +344,18 @@ def act_hz_dense_to_sparse(
+         b=b,
+         eq_mask=eq_mask,
+     )
++    object.__setattr__(
++        out, "_base_ng",
++        int(min(getattr(hz, "_base_ng", ng), out.ng)),
++    )
++    object.__setattr__(
++        out, "_base_nb",
++        int(min(getattr(hz, "_base_nb", 0), out.nb)),
++    )
++    object.__setattr__(
++        out, "_base_nc",
++        int(min(getattr(hz, "_base_nc", hz.nc), out.nc)),
++    )
+     _log(
+         f"dense_to_sparse: dim={n} ng={ng} density={density:.4f} "
+         f"dense_MiB={dense_bytes / 2**20:.1f} sparse_MiB={sparse_bytes / 2**20:.1f}"
+diff --git a/act/back_end/hybridz_tf/tf_mlp.py b/act/back_end/hybridz_tf/tf_mlp.py
+index 9cd284860..973a5173f 100644
+--- a/act/back_end/hybridz_tf/tf_mlp.py
++++ b/act/back_end/hybridz_tf/tf_mlp.py
+@@ -170,6 +170,11 @@ def tf_scale(L, bounds, tf):
+ def tf_relu(L, bounds, tf):
+     hz_in = tf._hz_cache.get(L.id)
+     if hz_in is not None:
++        try:
++            from act.back_end.hybridz_tf.algorithms import spec_aware as _spec_aware
++            _spec_aware.set_current_layer(L.id)
++        except Exception:
++            pass
+         tf._hz_cache[L.id] = hz_reduce(hz_apply_relu(hz_in))
+     fact = interval.tf_relu(L, bounds)
+     if hz_in is not None:
+@@ -180,6 +185,11 @@ def tf_relu(L, bounds, tf):
+ def tf_lrelu(L, bounds, tf):
+     hz_in = tf._hz_cache.get(L.id)
+     if hz_in is not None:
++        try:
++            from act.back_end.hybridz_tf.algorithms import spec_aware as _spec_aware
++            _spec_aware.set_current_layer(L.id)
++        except Exception:
++            pass
+         tf._hz_cache[L.id] = hz_reduce(
+             hz_apply_leaky_relu(hz_in, float(L.params.get("negative_slope", 0.01)))
+         )
+@@ -905,7 +915,22 @@ def hz_reduce(hz: HZono, max_order: float = 3.0) -> HZono:
+ 
+     # Step 2: Reduce continuous generators
+     if ng > max_ng:
+-        col_norms = hz.Gc.abs().sum(dim=0)
++        # Optional spec-aware ranking (ACT_HZ_SPEC_AWARE_GIRARD=1).
++        # Uses precomputed F_t from spec_aware module; falls back to
++        # standard column-norm if F is unavailable or shape-mismatched.
++        # See algorithms/spec_aware.py for design notes.
++        col_norms = None
++        try:
++            from act.back_end.hybridz_tf.algorithms import spec_aware as _spec_aware
++            if _spec_aware.is_enabled():
++                F = _spec_aware.get_F_for_current()
++                if F is not None and F.dim() == 2 and F.shape[1] == hz.Gc.shape[0]:
++                    # Spec-projected per-column score: ||F @ Gc[:, i]||_1
++                    col_norms = (F @ hz.Gc).abs().sum(dim=0)
++        except Exception:
++            col_norms = None
++        if col_norms is None:
++            col_norms = hz.Gc.abs().sum(dim=0)
+         _, sorted_idx = col_norms.sort(descending=True)
+         keep_idx = sorted_idx[: max_ng - n]
+         drop_idx = sorted_idx[max_ng - n :]
+diff --git a/act/back_end/interval_tf/tf_mlp.py b/act/back_end/interval_tf/tf_mlp.py
+index af1cf61a4..156444534 100644
+--- a/act/back_end/interval_tf/tf_mlp.py
++++ b/act/back_end/interval_tf/tf_mlp.py
+@@ -555,7 +555,14 @@ def tf_reduce_sum(L: Layer, Bin: Bounds) -> Fact:
+     lb_out = lb_in.sum(dim=dim, keepdim=keepdims)
+     ub_out = ub_in.sum(dim=dim, keepdim=keepdims)
+     Bout = Bounds(lb_out.reshape(batch_size, -1), ub_out.reshape(batch_size, -1))
+-    C = ConSet(); C.add_box(L.id, L.out_vars, Bout)
++    C = ConSet()
++    C.replace(Con("EQ", tuple(L.out_vars + L.in_vars), {
++        "tag": f"reduce_sum:{L.id}",
++        "axes": list(axes) if axes is not None else None,
++        "keepdims": keepdims,
++        "input_shape": tuple(in_shape) if in_shape is not None else None,
++    }))
++    C.add_box(L.id, L.out_vars, Bout)
+     return Fact(Bout, C)
+ 
+ def tf_bn(L: Layer, Bin: Bounds) -> Fact:
+@@ -709,10 +716,29 @@ def tf_reshape(L: Layer, Bin: Bounds) -> Fact:
+ 
+ def tf_transpose(L: Layer, Bin: Bounds) -> Fact:
+     """Transpose: permute dimensions (identity for bounds)"""
+-    # Transpose doesn't change the values, only the dimension order
+-    B = Bounds(Bin.lb.clone(), Bin.ub.clone())
++    in_shape = L.params.get("input_shape")
++    out_shape = L.params.get("output_shape")
++    perm = L.params.get("perm")
++    if in_shape is not None and perm is not None:
++        in_shape = tuple(int(x) for x in in_shape)
++        perm = tuple(int(x) for x in perm)
++        lb = Bin.lb.reshape(Bin.lb.shape[0], *in_shape).permute(
++            0, *(p + 1 for p in perm)
++        ).reshape(Bin.lb.shape[0], -1)
++        ub = Bin.ub.reshape(Bin.ub.shape[0], *in_shape).permute(
++            0, *(p + 1 for p in perm)
++        ).reshape(Bin.ub.shape[0], -1)
++        B = Bounds(lb, ub)
++    else:
++        # Legacy fallback for older converter paths that did not record shape.
++        B = Bounds(Bin.lb.clone(), Bin.ub.clone())
+     C = ConSet()
+-    C.replace(Con("EQ", tuple(L.out_vars + L.in_vars), {"tag": f"transpose:{L.id}", "perm": L.params.get("perm")}))
++    C.replace(Con("EQ", tuple(L.out_vars + L.in_vars), {
++        "tag": f"transpose:{L.id}",
++        "perm": L.params.get("perm"),
++        "input_shape": L.params.get("input_shape"),
++        "output_shape": L.params.get("output_shape"),
++    }))
+     C.add_box(L.id, L.out_vars, B); return Fact(B, C)
+ 
+ def tf_squeeze(L: Layer, Bin: Bounds) -> Fact:
+diff --git a/act/back_end/layer_schema.py b/act/back_end/layer_schema.py
+index 267fbc574..77f5ac548 100644
+--- a/act/back_end/layer_schema.py
++++ b/act/back_end/layer_schema.py
+@@ -693,7 +693,7 @@ REGISTRY: Dict[str, Dict[str, Any]] = {
+     },
+     LayerKind.TRANSPOSE.value: {
+         "params_required": [],
+-        "params_optional": ["perm"],
++        "params_optional": ["perm", "input_shape", "output_shape"],
+     },
+     LayerKind.SQUEEZE.value: {
+         "params_required": [],
+diff --git a/act/back_end/solver/solver_hz.py b/act/back_end/solver/solver_hz.py
+index 99b25f09a..db4eff3d4 100644
+--- a/act/back_end/solver/solver_hz.py
++++ b/act/back_end/solver/solver_hz.py
+@@ -88,12 +88,15 @@ class HZono:
+     # generator-producing op should propagate via _propagate_base().
+     _base_ng: Optional[int] = None
+     _base_nb: Optional[int] = None
++    _base_nc: Optional[int] = None
+ 
+     def __post_init__(self):
+         if self._base_ng is None:
+             object.__setattr__(self, "_base_ng", int(self.Gc.shape[1]))
+         if self._base_nb is None:
+             object.__setattr__(self, "_base_nb", int(self.Gb.shape[1]))
++        if self._base_nc is None:
++            object.__setattr__(self, "_base_nc", int(self.b.shape[0]))
+ 
+     # ─── Convenience shape accessors (parity with HyZor's HybridZonotope) ──
+     # HyZor exposes ``.dim, .ng, .nb, .nc`` as cached ints; the cons-walker
+@@ -125,12 +128,16 @@ def _propagate_base(parent: HZono, child: HZono) -> HZono:
+     """
+     parent_base_ng = getattr(parent, "_base_ng", None)
+     parent_base_nb = getattr(parent, "_base_nb", None)
++    parent_base_nc = getattr(parent, "_base_nc", None)
+     if parent_base_ng is not None:
+         object.__setattr__(child, "_base_ng",
+                            int(min(int(parent_base_ng), int(child.Gc.shape[1]))))
+     if parent_base_nb is not None:
+         object.__setattr__(child, "_base_nb",
+                            int(min(int(parent_base_nb), int(child.Gb.shape[1]))))
++    if parent_base_nc is not None:
++        object.__setattr__(child, "_base_nc",
++                           int(min(int(parent_base_nc), int(child.b.shape[0]))))
+     return child
+ 
+ 
+@@ -771,8 +778,17 @@ def _hz_gather_exact(hz: "HZono", params: Dict[str, Any]) -> "HZono":
+     n_indices = int(indices.shape[0])
+     device = hz.c.device
+ 
+-    # Bounds-check indices (interval_tf already wrapped negatives but be defensive)
+-    indices = indices.to(device).clamp_(0, axis_dim - 1)
++    # ONNX Gather supports negative indices relative to the gathered axis.
++    # Wrap them, then fail closed on any true out-of-range index. Silent clamp
++    # would select the wrong row and under-approximate the graph.
++    indices = indices.to(device)
++    if bool((indices < 0).any().item()):
++        indices = torch.where(indices < 0, indices + axis_dim, indices)
++    if bool(((indices < 0) | (indices >= axis_dim)).any().item()):
++        bad = indices[((indices < 0) | (indices >= axis_dim))][:8].detach().cpu().tolist()
++        raise ValueError(
++            f"GATHER index out of range for axis_dim={axis_dim}: sample={bad}"
++        )
+ 
+     # For each (p, k, s) output position the input flat index is:
+     #   p * axis_dim * suffix_size + indices[k] * suffix_size + s
+@@ -784,7 +800,7 @@ def _hz_gather_exact(hz: "HZono", params: Dict[str, Any]) -> "HZono":
+         p_idx * (axis_dim * suffix_size) + k_idx * suffix_size + s_idx
+     ).reshape(-1)
+ 
+-    return HZono(
++    out = HZono(
+         c=hz.c.index_select(0, flat_in_idx),
+         Gc=hz.Gc.index_select(0, flat_in_idx),
+         Gb=hz.Gb.index_select(0, flat_in_idx),
+@@ -793,6 +809,125 @@ def _hz_gather_exact(hz: "HZono", params: Dict[str, Any]) -> "HZono":
+         b=hz.b,
+         eq_mask=(hz.eq_mask.clone() if hz.eq_mask is not None else None),
+     )
++    return _propagate_base(hz, out)
++
++
++def _coerce_hzono_for_exact_rowop(hz: Any, op_name: str) -> "HZono":
++    if isinstance(hz, HZono):
++        return hz
++    budget = int(
++        float(os.environ.get("ACT_HZ_ROWOP_MAT_BUDGET_GB", "2.0")) * (1024 ** 3)
++    )
++    if hasattr(hz, "materialization_bytes") and int(hz.materialization_bytes()) > budget:
++        raise ValueError(
++            f"{op_name} exact path materialization would exceed budget: "
++            f"{int(hz.materialization_bytes())} bytes"
++        )
++    if hasattr(hz, "to_hzono"):
++        return hz.to_hzono()
++    if hasattr(hz, "to_full_hzono"):
++        return hz.to_full_hzono()
++    raise ValueError(f"{op_name} exact path requires HZono, got {type(hz).__name__}")
++
++
++def _hz_pad_exact(hz: "HZono", params: Dict[str, Any]) -> "HZono":
++    """Exact HZ transfer for PAD.
++
++    Padding is linear for all PyTorch-supported modes. Constant padding inserts
++    fixed rows (zero generators); reflect/replicate/circular padding duplicates
++    input rows. Both cases preserve the factor-space constraints exactly.
++    """
++    import torch.nn.functional as F
++
++    hz = _coerce_hzono_for_exact_rowop(hz, "PAD")
++    in_shape = tuple(int(x) for x in params.get("input_shape", ()))
++    if not in_shape:
++        raise ValueError("PAD meta missing input_shape")
++    n_in = 1
++    for d in in_shape:
++        n_in *= int(d)
++    if int(hz.dim) != n_in:
++        raise ValueError(f"PAD input dim mismatch: hz.dim={hz.dim}, input_shape={in_shape}")
++
++    pads = params.get("pads", params.get("pad", None))
++    if pads is None:
++        raise ValueError("PAD meta missing pads")
++    pads = [int(x) for x in pads]
++    mode = str(params.get("mode", "constant")).lower()
++    value = float(params.get("value", 0.0))
++    device = hz.c.device
++
++    grid = torch.arange(n_in, device=device, dtype=torch.long).reshape(*in_shape)
++    if mode == "constant":
++        idx_grid = F.pad(grid, pads, mode="constant", value=-1).reshape(-1)
++    else:
++        # F.pad non-constant modes require a batch/channel-like rank. The same
++        # mode on an index tensor is exactly the row-duplication map.
++        idx_grid = F.pad(grid, pads, mode=mode).reshape(-1)
++    valid = idx_grid >= 0
++    out_dim = int(idx_grid.numel())
++    c = hz.c.new_full((out_dim, *tuple(hz.c.shape[1:])), value)
++    Gc = hz.Gc.new_zeros((out_dim, int(hz.Gc.shape[1])))
++    Gb = hz.Gb.new_zeros((out_dim, int(hz.Gb.shape[1])))
++    if bool(valid.any().item()):
++        sel = idx_grid[valid]
++        c[valid] = hz.c.index_select(0, sel)
++        Gc[valid] = hz.Gc.index_select(0, sel)
++        Gb[valid] = hz.Gb.index_select(0, sel)
++    out = HZono(
++        c=c, Gc=Gc, Gb=Gb,
++        Ac=hz.Ac, Ab=hz.Ab, b=hz.b,
++        eq_mask=(hz.eq_mask.clone() if hz.eq_mask is not None else None),
++    )
++    return _propagate_base(hz, out)
++
++
++def _hz_reduce_sum_exact(hz: "HZono", params: Dict[str, Any]) -> "HZono":
++    """Exact HZ transfer for ReduceSum over static axes."""
++    hz = _coerce_hzono_for_exact_rowop(hz, "REDUCE_SUM")
++    in_shape_meta = params.get("input_shape", None)
++    in_shape = tuple(int(x) for x in in_shape_meta) if in_shape_meta else (int(hz.dim),)
++    n_in = 1
++    for d in in_shape:
++        n_in *= int(d)
++    if int(hz.dim) != n_in:
++        raise ValueError(
++            f"REDUCE_SUM input dim mismatch: hz.dim={hz.dim}, input_shape={in_shape}"
++        )
++    axes = params.get("axes", None)
++    rank = len(in_shape)
++    if axes is None or len(axes) == 0:
++        norm_axes = tuple(range(rank))
++    else:
++        norm_axes = tuple(sorted({(int(a) + rank if int(a) < 0 else int(a)) for a in axes}))
++    if any(a < 0 or a >= rank for a in norm_axes):
++        raise ValueError(f"REDUCE_SUM invalid axes={axes} for rank={rank}")
++    keepdims = bool(params.get("keepdims", False))
++
++    def _sum_rows(mat: torch.Tensor) -> torch.Tensor:
++        if mat.dim() == 1:
++            shaped = mat.reshape(*in_shape)
++            reduced = shaped.sum(dim=norm_axes, keepdim=keepdims)
++            return reduced.reshape(-1)
++        cols = int(mat.shape[1])
++        if cols == 0:
++            dummy = mat.new_zeros((*in_shape, 1))
++            out_rows = int(dummy.sum(dim=norm_axes, keepdim=keepdims).reshape(-1, 1).shape[0])
++            return mat.new_zeros((out_rows, 0))
++        shaped = mat.reshape(*in_shape, cols)
++        reduced = shaped.sum(dim=norm_axes, keepdim=keepdims)
++        return reduced.reshape(-1, cols)
++
++    out = HZono(
++        c=_sum_rows(hz.c),
++        Gc=_sum_rows(hz.Gc),
++        Gb=_sum_rows(hz.Gb),
++        Ac=hz.Ac,
++        Ab=hz.Ab,
++        b=hz.b,
++        eq_mask=(hz.eq_mask.clone() if hz.eq_mask is not None else None),
++    )
++    return _propagate_base(hz, out)
+ 
+ 
+ def _hz_slice_exact(hz: "HZono", params: Dict[str, Any]) -> "HZono":
+@@ -880,7 +1015,7 @@ def _hz_slice_exact(hz: "HZono", params: Dict[str, Any]) -> "HZono":
+         flat_in_idx = flat_in_idx + grids[d] * int(strides[d])
+     flat_in_idx = flat_in_idx.reshape(-1)
+ 
+-    return HZono(
++    out = HZono(
+         c=hz.c.index_select(0, flat_in_idx),
+         Gc=hz.Gc.index_select(0, flat_in_idx),
+         Gb=hz.Gb.index_select(0, flat_in_idx),
+@@ -889,6 +1024,124 @@ def _hz_slice_exact(hz: "HZono", params: Dict[str, Any]) -> "HZono":
+         b=hz.b,
+         eq_mask=(hz.eq_mask.clone() if hz.eq_mask is not None else None),
+     )
++    return _propagate_base(hz, out)
++
++
++def _hz_transpose_exact(hz: "HZono", params: Dict[str, Any]) -> "HZono":
++    """Exact HZ transfer for static tensor transpose.
++
++    Transpose is a pure row permutation on the flattened tensor. Keeping it as
++    identity silently feeds later linear layers in the wrong order and destroys
++    the same predicate-variable semantics that Star/ImageStar rely on.
++    """
++    hz = _coerce_hzono_for_exact_rowop(hz, "TRANSPOSE")
++    in_shape = tuple(int(x) for x in params.get("input_shape", ()))
++    perm = tuple(int(x) for x in params.get("perm", ()))
++    if not in_shape:
++        raise ValueError("TRANSPOSE meta missing input_shape")
++    if not perm:
++        raise ValueError("TRANSPOSE meta missing perm")
++    rank = len(in_shape)
++    if len(perm) != rank:
++        raise ValueError(f"TRANSPOSE perm rank {len(perm)} != input rank {rank}")
++    norm_perm = tuple((p + rank if p < 0 else p) for p in perm)
++    if sorted(norm_perm) != list(range(rank)):
++        raise ValueError(f"TRANSPOSE invalid perm={perm} for rank={rank}")
++    n_in = 1
++    for d in in_shape:
++        n_in *= int(d)
++    if int(hz.dim) != n_in:
++        raise ValueError(
++            f"TRANSPOSE input dim mismatch: hz.dim={hz.dim}, input_shape={in_shape}"
++        )
++    idx = torch.arange(n_in, dtype=torch.long, device=hz.c.device).reshape(
++        *in_shape
++    ).permute(*norm_perm).reshape(-1)
++    out = HZono(
++        c=hz.c.index_select(0, idx),
++        Gc=hz.Gc.index_select(0, idx),
++        Gb=hz.Gb.index_select(0, idx),
++        Ac=hz.Ac,
++        Ab=hz.Ab,
++        b=hz.b,
++        eq_mask=(hz.eq_mask.clone() if hz.eq_mask is not None else None),
++    )
++    return _propagate_base(hz, out)
++
++
++def _hz_avgpool2d_exact(hz: "HZono", params: Dict[str, Any]) -> "HZono":
++    """Exact HZ transfer for AvgPool2d via per-generator pooling.
++
++    AvgPool is linear. We avoid materializing the huge dense pooling matrix
++    stored by interval TF and instead push center/Gc/Gb columns through
++    ``torch.nn.functional.avg_pool2d`` in chunks.
++    """
++    import torch.nn.functional as F
++
++    hz = _coerce_hzono_for_exact_rowop(hz, "AVGPOOL2D")
++    in_shape = tuple(int(x) for x in params.get("input_shape", ()))
++    if len(in_shape) == 4 and in_shape[0] == 1:
++        in_shape_3 = in_shape[1:]
++    elif len(in_shape) == 3:
++        in_shape_3 = in_shape
++    else:
++        raise ValueError(f"AVGPOOL2D bad input_shape={in_shape}")
++    c, h, w = in_shape_3
++    if int(hz.dim) != c * h * w:
++        raise ValueError(
++            f"AVGPOOL2D input dim mismatch: hz.dim={hz.dim}, input_shape={in_shape}"
++        )
++
++    kernel_size = params.get("kernel_size", params.get("kernel", None))
++    if kernel_size is None:
++        raise ValueError("AVGPOOL2D meta missing kernel_size")
++    stride = params.get("stride", kernel_size)
++    padding = params.get("padding", 0)
++
++    def _as_pair(x):
++        if isinstance(x, torch.Tensor):
++            x = x.detach().cpu().tolist()
++        if isinstance(x, (list, tuple)):
++            return tuple(int(v) for v in x)
++        return (int(x), int(x))
++
++    kernel_size = _as_pair(kernel_size)
++    stride = _as_pair(stride)
++    padding = _as_pair(padding)
++
++    def _pool_mat(mat: torch.Tensor) -> torch.Tensor:
++        cols = int(mat.shape[1])
++        if cols == 0:
++            sample = F.avg_pool2d(
++                mat.new_zeros((1, c, h, w)), kernel_size, stride, padding
++            )
++            return mat.new_zeros((int(sample.numel()), 0))
++        chunk = int(os.environ.get("ACT_HZ_AVGPOOL_COL_CHUNK", "256"))
++        outs = []
++        for start in range(0, cols, chunk):
++            block = mat[:, start:start + chunk].transpose(0, 1).contiguous()
++            y = F.avg_pool2d(
++                block.reshape(block.shape[0], c, h, w),
++                kernel_size,
++                stride,
++                padding,
++            )
++            outs.append(y.reshape(y.shape[0], -1).transpose(0, 1).contiguous())
++        return torch.cat(outs, dim=1)
++
++    c_out = F.avg_pool2d(
++        hz.c.reshape(1, c, h, w), kernel_size, stride, padding
++    ).reshape(-1, 1)
++    out = HZono(
++        c=c_out,
++        Gc=_pool_mat(hz.Gc),
++        Gb=_pool_mat(hz.Gb),
++        Ac=hz.Ac,
++        Ab=hz.Ab,
++        b=hz.b,
++        eq_mask=(hz.eq_mask.clone() if hz.eq_mask is not None else None),
++    )
++    return _propagate_base(hz, out)
+ 
+ 
+ def _hz_convtranspose2d_native(hz: HZono, params: Dict[str, Any]) -> HZono:
+@@ -1876,6 +2129,38 @@ class HZVerifier(Solver):
+         device = torch.device(self.cfg["device"])
+         dtype = self.cfg["dtype"]
+         input_hz = hz_from_bounds(input_box, dtype=dtype, device=device)
++
++        # Spec-aware Girard setup (env-gated, default OFF).
++        # Precompute per-layer linear spec direction F_t for use as
++        # generator-reduction ranking heuristic. See
++        # act/back_end/hybridz_tf/algorithms/spec_aware.py.
++        try:
++            from act.back_end.hybridz_tf.algorithms import spec_aware as _spec_aware
++            if _spec_aware.is_enabled():
++                F_by_layer = _spec_aware.precompute_spec_F(
++                    net=net,
++                    assert_layer=assert_layer,
++                    before=before,
++                    device=device,
++                    dtype=dtype,
++                    debug=(os.environ.get("ACT_HZ_SPEC_AWARE_DEBUG", "0") == "1"),
++                )
++                _spec_aware.set_context(F_by_layer)
++                if os.environ.get("ACT_HZ_SPEC_AWARE_DEBUG", "0") == "1":
++                    print(
++                        f"[spec_aware] precomputed F for {len(F_by_layer)} layers",
++                        flush=True,
++                    )
++            else:
++                _spec_aware.clear_context()
++        except Exception as _e:
++            try:
++                from act.back_end.hybridz_tf.algorithms import spec_aware as _spec_aware
++                _spec_aware.clear_context()
++            except Exception:
++                pass
++            if os.environ.get("ACT_HZ_SPEC_AWARE_DEBUG", "0") == "1":
++                print(f"[spec_aware] setup error: {_e!r}", flush=True)
+         if os.environ.get("ACT_HZ_LAYER_PROGRESS", "0") == "1":
+             print(
+                 f"[HZ-PROGRESS] input_hz dim={input_hz.dim} ng={input_hz.ng} "
+@@ -2019,6 +2304,25 @@ class HZVerifier(Solver):
+                 "(ReLUs use triangle unless ACT_HZ_AUTO_CONVTRANSPOSE_TRIANGLE=0)",
+                 convtranspose_count, total_relu,
+             )
++        single_relu_dense_chull = (
++            conv_count == 0
++            and convtranspose_count == 0
++            and total_relu == 1
++            and self.cfg["relu_method"] == "eq_lagr_v8"
++            and os.environ.get("ACT_HZ_AUTO_SINGLE_RELU_CHULL", "1")
++            .strip().lower() in ("1", "true", "yes", "on")
++            and int(input_hz.dim)
++            <= int(os.environ.get("ACT_HZ_SINGLE_RELU_CHULL_DIM_MAX", "512"))
++        )
++        if single_relu_dense_chull:
++            self._stats["single_relu_dense_chull_profile_active"] = True
++            self._stats["single_relu_dense_chull_input_dim"] = int(input_hz.dim)
++            logger.info(
++                "single_relu_dense_chull_profile ACTIVE: input_dim=%d "
++                "(single dense ReLU uses convex_hull_cont)",
++                input_hz.dim,
++            )
++        self._single_relu_dense_chull_profile_active = single_relu_dense_chull
+         self._relu_idx_map = relu_idx_map
+         self._total_relu = total_relu
+ 
+@@ -2132,6 +2436,12 @@ class HZVerifier(Solver):
+             except Exception as e:
+                 # Sound fallback on any per-layer failure
+                 self._stats[f"error@{L.id}"] = f"{type(e).__name__}: {e}"
++                if os.environ.get("ACT_HZ_FALLBACK_DEBUG", "0") == "1":
++                    print(
++                        f"[HZ-FALLBACK] L{L.id} {L.kind} "
++                        f"{type(e).__name__}: {e}",
++                        flush=True,
++                    )
+                 hz_out = self._box_fallback(L, after, hz_from_bounds)
+                 logger.warning(
+                     "L%d FALLBACK (%s): %s", L.id, type(e).__name__, e,
+@@ -2301,9 +2611,28 @@ class HZVerifier(Solver):
+             else:
+                 out_dim = 0
+             in_ng = int(hz_in.ng) if hz_in is not None else 0
+-            if out_dim > 0 and in_ng > 0 and _would_oom(out_dim, in_ng):
++            skip_dense_guard = False
++            if op == "conv2d" and _os.environ.get(
++                "ACT_HZ_SKIP_DENSE_GUARD_FOR_SPARSE_CONV", "1"
++            ) in ("1", "true", "yes", "on"):
++                # The old guard estimates a dense output Gc. That is correct
++                # for the plain HZono conv kernel, but too pessimistic for the
++                # sparse/lazy/pre-conv paths in hz_conv2d, and it can erase
++                # useful ReLU hull constraints before those exact storage
++                # paths get a chance to run.
++                hz_type = type(hz_in).__name__ if hz_in is not None else ""
++                skip_dense_guard = (
++                    hz_type in ("SparseGcZ", "LazyChainHZ", "BoxHZ")
++                    or _os.environ.get("ACT_HZ_PRECONV_SPARSE", "0") == "1"
++                )
++            if out_dim > 0 and in_ng > 0 and _would_oom(out_dim, in_ng) and not skip_dense_guard:
+                 self._stats[f"oom_guard@{L.id}"] = f"{op}: out_dim={out_dim}, ng={in_ng}, est_GB={out_dim*in_ng*8*3/(1024**3):.1f}"
+                 return self._box_fallback(L, after, ops["hz_from_bounds"])
++            if out_dim > 0 and in_ng > 0 and skip_dense_guard and _would_oom(out_dim, in_ng):
++                self._stats[f"oom_guard_skipped@{L.id}"] = (
++                    f"{op}: sparse/preconv path, out_dim={out_dim}, ng={in_ng}, "
++                    f"dense_est_GB={out_dim*in_ng*8*3/(1024**3):.1f}"
++                )
+         except Exception:
+             pass  # if estimation fails, just attempt the op normally
+ 
+@@ -2331,6 +2660,10 @@ class HZVerifier(Solver):
+                 stride=cp.get("stride", 1), padding=cp.get("padding", 0),
+                 dilation=cp.get("dilation", 1), groups=cp.get("groups", 1)
+             )
++        if op == "avgpool2d":
++            params = dict(getattr(L, "params", {}) or {})
++            params.update(meta)
++            return _hz_avgpool2d_exact(hz_in, params)
+         if op == "bias":  return ops["hz_add_const"](hz_in, meta["c"])
+         if op == "scale": return ops["hz_scale"](hz_in, meta["a"])
+         if op == "bn":    return ops["hz_bn"](hz_in, meta["A"], meta["c"])
+@@ -2358,6 +2691,14 @@ class HZVerifier(Solver):
+         if op == "concat":
+             if multi_in_hzs is None: multi_in_hzs = [hz_in]
+             return ops["hz_concat"](multi_in_hzs)
++        if op == "pad":
++            params = dict(getattr(L, "params", {}) or {})
++            params.update(meta)
++            return _hz_pad_exact(hz_in, params)
++        if op == "reduce_sum":
++            params = dict(getattr(L, "params", {}) or {})
++            params.update(meta)
++            return _hz_reduce_sum_exact(hz_in, params)
+         if op == "relu":
+             # large_cls_proof_mode: triangle for early relus, eq_lagr_v8 for last N.
+             # If ACT_HZ_LATE_RELU is set, use that method (e.g.
+@@ -2366,6 +2707,8 @@ class HZVerifier(Solver):
+             # pipelines differ because eq_lagr_v8 also runs PEE.
+             method = self.cfg["relu_method"]
+             ridx = self._relu_idx_map.get(L.id, 0)
++            if getattr(self, "_single_relu_dense_chull_profile_active", False):
++                method = "convex_hull_cont"
+             if getattr(self, "_convtranspose_triangle_profile_active", False):
+                 method = "triangle"
+             if getattr(self, "_lc_active", False):
+@@ -2426,7 +2769,17 @@ class HZVerifier(Solver):
+             return ops["act_hz_apply_tanh"](hz_in, K=self.cfg["tanh_K"])
+ 
+         # ── Shape ops ──
+-        if op in ("flatten", "reshape", "transpose", "squeeze",
++        if op == "transpose":
++            try:
++                params = dict(getattr(L, "params", {}) or {})
++                params.update(meta)
++                return _hz_transpose_exact(hz_in, params)
++            except Exception as _e:
++                self._stats[f"transpose_exact_fallback@{L.id}"] = (
++                    f"{type(_e).__name__}: {str(_e)[:120]}"
++                )
++                return self._box_fallback(L, after, ops["hz_from_bounds"])
++        if op in ("flatten", "reshape", "squeeze",
+                   "unsqueeze", "tile", "expand"):
+             return hz_in
+         # SLICE is a linear permutation/selection; use exact HZ transfer
+@@ -2946,6 +3299,96 @@ def _build_factor_lp(hz: HZono):
+     }
+ 
+ 
++def _sp_hstack(left, right):
++    """hstack that preserves scipy sparse matrices when either side is sparse."""
++    try:
++        import scipy.sparse as sp
++        if sp.issparse(left) or sp.issparse(right):
++            return sp.hstack([left, right], format="csr")
++    except Exception:
++        pass
++    return np.concatenate([left, right], axis=1)
++
++
++def _sp_vstack(top, bottom):
++    """vstack that preserves scipy sparse matrices when either side is sparse."""
++    try:
++        import scipy.sparse as sp
++        if sp.issparse(top) or sp.issparse(bottom):
++            return sp.vstack([top, bottom], format="csr")
++    except Exception:
++        pass
++    return np.concatenate([top, bottom], axis=0)
++
++
++def _torch_sparse_to_scipy(sp_t: torch.Tensor):
++    """Convert a torch sparse COO matrix to scipy CSR."""
++    import scipy.sparse as sp
++    sp_t = sp_t.coalesce().detach().cpu()
++    shape = tuple(int(x) for x in sp_t.shape)
++    if sp_t._nnz() == 0:
++        return sp.csr_matrix(shape, dtype=np.float64)
++    ind = sp_t.indices().numpy()
++    val = sp_t.values().numpy().astype(np.float64, copy=False)
++    return sp.coo_matrix((val, (ind[0], ind[1])), shape=shape).tocsr()
++
++
++def _dense_c_to_scipy(C: np.ndarray):
++    import scipy.sparse as sp
++    return sp.csr_matrix(C.astype(np.float64, copy=False))
++
++
++def _build_factor_lp_projected(hz, C: np.ndarray):
++    """Build factor LP for the exact output projection ``z = C y``.
++
++    This is algebraically equivalent to building the full output LP and later
++    multiplying rows by ``C``. It is much cheaper for VNNLIB properties that
++    touch a tiny subset of a huge output vector (e.g. YOLO: 5 rows out of
++    21125 outputs). No backward bounds or splitting are introduced.
++    """
++    C = np.asarray(C, dtype=np.float64)
++    if C.ndim == 1:
++        C = C.reshape(1, -1)
++
++    # SparseGcZ path: keep generator constraints sparse, project only the
++    # small output rows to dense matrices for LP objectives/spec rows.
++    if hasattr(hz, "Gc_sparse") and hasattr(hz, "Ac_sparse"):
++        import scipy.sparse as sp
++        C_sp = _dense_c_to_scipy(C)
++        Gc_sp = _torch_sparse_to_scipy(hz.Gc_sparse)
++        Gb_sp = _torch_sparse_to_scipy(hz.Gb_sparse)
++        Ac_sp = _torch_sparse_to_scipy(hz.Ac_sparse)
++        Ab_sp = _torch_sparse_to_scipy(hz.Ab_sparse)
++        Gc_proj = (C_sp @ Gc_sp).toarray()
++        Gb_proj = (C_sp @ Gb_sp).toarray() if Gb_sp.shape[1] else np.zeros((C.shape[0], 0))
++        c_proj = C @ _to_np_f64(hz.c).reshape(-1)
++        em_t = _eq_mask_of(hz)
++        em = em_t.detach().cpu().numpy().astype(bool)
++        le = ~em
++        b_np = _to_np_f64(hz.b).reshape(-1)
++        A_all = _sp_hstack(Ac_sp, Ab_sp)
++        A_eq = A_all[em] if em.any() else sp.csr_matrix((0, Ac_sp.shape[1] + Ab_sp.shape[1]))
++        A_le = A_all[le] if le.any() else sp.csr_matrix((0, Ac_sp.shape[1] + Ab_sp.shape[1]))
++        b_eq = b_np[em] if em.any() else np.zeros(0)
++        b_le = b_np[le] if le.any() else np.zeros(0)
++        return {
++            "Gc": Gc_proj,
++            "Gb": Gb_proj,
++            "c": c_proj.reshape(-1),
++            "A_eq": A_eq, "b_eq": b_eq,
++            "A_le": A_le, "b_le": b_le,
++            "p": int(Gc_sp.shape[1]),
++            "q": int(Gb_sp.shape[1]),
++        }
++
++    # Dense HZono path.
++    prob = _build_factor_lp(hz)
++    prob["Gc"] = C @ prob["Gc"]
++    prob["Gb"] = C @ prob["Gb"]
++    prob["c"] = C @ prob["c"]
++    return prob
++
++
+ def _lp_feas_or_minimize(prob, obj_row: np.ndarray, rhs_threshold: Optional[float],
+                           sense: str = "maximize",
+                           timeout_s: Optional[float] = None
+@@ -3021,12 +3464,31 @@ def check_unsafe_for_act(out_hz: HZono, assert_layer, *,
+     the relaxation rules out) but ``feasible`` may have spurious
+     witnesses; caller must concretely replay and confirm.
+     """
+-    prob = _build_factor_lp(out_hz)
+-    p, q = prob["p"], prob["q"]
+-    Gc, Gb, c_vec = prob["Gc"], prob["Gb"], prob["c"]
+-    nvars = p + q
+     kind = _kind_str(assert_layer.params.get("kind"))
+ 
++    if kind == "UNSAFE_LINEAR":
++        C = _to_np_f64(assert_layer.params["c"])
++        d_vec = _to_np_f64(assert_layer.params["d"]).reshape(-1)
++        if C.ndim == 1:
++            C = C.reshape(1, -1)
++        # Exact final-property projection: z = C y. This avoids carrying
++        # huge irrelevant output rows into the LP for sparse-output specs.
++        out_dim = int(_to_np_f64(out_hz.c).reshape(-1).size)
++        projected_unsafe_linear = (
++            os.environ.get("ACT_HZ_OUTPUT_SPEC_PROJECTION", "1") == "1"
++            and C.shape[0] < out_dim
++        )
++        prob = (_build_factor_lp_projected(out_hz, C)
++                if projected_unsafe_linear else _build_factor_lp(out_hz))
++        p, q = prob["p"], prob["q"]
++        Gc, Gb, c_vec = prob["Gc"], prob["Gb"], prob["c"]
++        nvars = p + q
++    else:
++        prob = _build_factor_lp(out_hz)
++        p, q = prob["p"], prob["q"]
++        Gc, Gb, c_vec = prob["Gc"], prob["Gb"], prob["c"]
++        nvars = p + q
++
+     def _row_to_obj_y(coef: np.ndarray) -> Tuple[np.ndarray, float]:
+         """y = c + Gc xi_c + Gb xi_b ⇒ coef·y = (coef·c) + obj_row · xi
+         where obj_row = [coef·Gc, coef·Gb] of length nvars."""
+@@ -3049,23 +3511,19 @@ def check_unsafe_for_act(out_hz: HZono, assert_layer, *,
+         return st, x
+ 
+     if kind == "UNSAFE_LINEAR":
+-        C = _to_np_f64(assert_layer.params["c"])
+-        d_vec = _to_np_f64(assert_layer.params["d"]).reshape(-1)
+-        if C.ndim == 1:
+-            C = C.reshape(1, -1)
+         # Unsafe set = {y : Cy <= d}. Polytope is unsafe-reachable iff
+         # exists xi with C(c + Gc xi_c + Gb xi_b) <= d AND hz constraints.
+-        # Build one combined LP where we add C·y <= d as extra <=
+-        # inequalities and check feasibility (any feasible point works).
+-        # Equivalent to: find any xi satisfying hz + C·y <= d.
+-        N = C.shape[0]
+-        # Augment A_le with N rows: C @ Gc | C @ Gb, rhs = d - C @ c
+-        A_le_aug = np.concatenate(
+-            [prob["A_le"],
+-             np.concatenate([C @ Gc, C @ Gb], axis=1)],
+-            axis=0,
+-        )
+-        b_le_aug = np.concatenate([prob["b_le"], d_vec - C @ c_vec])
++        # With projection enabled above, Gc/Gb/c already represent z=C·y,
++        # so the rows are just z <= d. Without projection this branch is
++        # algebraically identical to the legacy C @ Gc / C @ Gb path.
++        if projected_unsafe_linear:
++            prop_rows = np.concatenate([Gc, Gb], axis=1)
++            prop_rhs = d_vec - c_vec
++        else:
++            prop_rows = np.concatenate([C @ Gc, C @ Gb], axis=1)
++            prop_rhs = d_vec - C @ c_vec
++        A_le_aug = _sp_vstack(prob["A_le"], prop_rows)
++        b_le_aug = np.concatenate([prob["b_le"], prop_rhs])
+         prob2 = dict(prob)
+         prob2["A_le"] = A_le_aug
+         prob2["b_le"] = b_le_aug
+diff --git a/act/pipeline/cli.py b/act/pipeline/cli.py
+index a3746c840..4c486fb56 100644
+--- a/act/pipeline/cli.py
++++ b/act/pipeline/cli.py
+@@ -1086,6 +1086,15 @@ def _run_vnnlib_verify_hybridz(args) -> None:
+                     query_index=q_idx,
+                     benchmark=p['category'],
+                     large_cls_eq_layers=_eq_layers,
++                    girard_cap=int(os.environ.get("ACT_HZ_GIRARD_CAP", "6000")),
++                    tail_preserve_dim=int(
++                        os.environ.get("ACT_HZ_TAIL_PRESERVE_DIM", "0")
++                    ),
++                    constraint_keep_weight=float(
++                        os.environ.get("ACT_HZ_CONSTRAINT_KEEP_WEIGHT", "0.0")
++                    ),
++                    sigmoid_K=int(os.environ.get("ACT_HZ_SIGMOID_K", "2")),
++                    tanh_K=int(os.environ.get("ACT_HZ_TANH_K", "2")),
+                     small_dense_lp=os.environ.get("ACT_HZ_SMALL_DENSE_LP", "specaware"),
+                     small_dense_lp_root=os.environ.get("ACT_HZ_SMALL_DENSE_LP_ROOT"),
+                     small_dense_lp_time_limit_s=float(
+diff --git a/act/pipeline/verification/utils.py b/act/pipeline/verification/utils.py
+index 8c88335a9..249b456a0 100644
+--- a/act/pipeline/verification/utils.py
++++ b/act/pipeline/verification/utils.py
+@@ -541,7 +541,14 @@ def _convert_OnnxTranspose(self, mod: nn.Module, node: fx.Node) -> None:
+     output_shape = tuple(self.shape[p] for p in perm)
+     out_vars = self._same_size_forward()
+     layer_id = self._add_layer(
+-        LayerKind.TRANSPOSE.value, {"perm": perm}, self.prev_out, out_vars,
++        LayerKind.TRANSPOSE.value,
++        {
++            "perm": perm,
++            "input_shape": tuple(self.shape),
++            "output_shape": output_shape,
++        },
++        self.prev_out,
++        out_vars,
+     )
+     self.prev_out = out_vars
+     self.shape = output_shape
+diff --git a/tests/test_hz_eq_mask.py b/tests/test_hz_eq_mask.py
+index 08733e424..9c2863734 100644
+--- a/tests/test_hz_eq_mask.py
++++ b/tests/test_hz_eq_mask.py
+@@ -124,6 +124,36 @@ def test_hz_apply_relu_with_unsafe_set_lp_finds_reachable_point():
+     assert witness is not None, "feasible status must yield a witness"
+ 
+ 
++def test_unsafe_linear_output_projection_preserves_feasible_witness():
++    """UNSAFE_LINEAR final projection is an exact LP-size optimization.
++
++    It must preserve the feasibility result and still return a factor-space
++    witness. This covers the common VNNLIB pattern where a small number of
++    output rows are constrained out of a much larger output tensor.
++    """
++    hz = _box_hz([-0.5, -0.5], [1.0, 1.0])
++    lb = torch.tensor([-0.5, -0.5], dtype=torch.float64)
++    ub = torch.tensor([1.0, 1.0], dtype=torch.float64)
++    out = hz_apply_relu(hz_intersect_box(hz, lb, ub), external_bounds=(lb, ub))
++    assert_layer = _UnsafeLinearAssert(C=[[-1.0, 1.0]], d=[0.0])
++
++    import os
++    old = os.environ.get("ACT_HZ_OUTPUT_SPEC_PROJECTION")
++    try:
++        os.environ["ACT_HZ_OUTPUT_SPEC_PROJECTION"] = "0"
++        st_off, w_off = check_unsafe_for_act(out, assert_layer, timeout_s=10.0)
++        os.environ["ACT_HZ_OUTPUT_SPEC_PROJECTION"] = "1"
++        st_on, w_on = check_unsafe_for_act(out, assert_layer, timeout_s=10.0)
++    finally:
++        if old is None:
++            os.environ.pop("ACT_HZ_OUTPUT_SPEC_PROJECTION", None)
++        else:
++            os.environ["ACT_HZ_OUTPUT_SPEC_PROJECTION"] = old
++
++    assert st_off == st_on == "feasible"
++    assert w_off is not None and w_on is not None
++
++
+ def test_hz_apply_relu_default_eq_mask_when_input_clean():
+     """When input HZ has no inequality rows (clean ReLU encoding), the output
+     should still be well-formed with all-equality rows. Smoke test that the
+@@ -145,5 +175,6 @@ def test_hz_apply_relu_default_eq_mask_when_input_clean():
+ if __name__ == "__main__":
+     test_hz_apply_relu_preserves_eq_mask_explicit()
+     test_hz_apply_relu_with_unsafe_set_lp_finds_reachable_point()
++    test_unsafe_linear_output_projection_preserves_feasible_witness()
+     test_hz_apply_relu_default_eq_mask_when_input_clean()
+-    print("OK: 3 eq_mask regression tests pass")
++    print("OK: 4 eq_mask regression tests pass")
+diff --git a/tests/test_hz_gather_slice_exact.py b/tests/test_hz_gather_slice_exact.py
+index 8efff0105..e50b1fdc7 100644
+--- a/tests/test_hz_gather_slice_exact.py
++++ b/tests/test_hz_gather_slice_exact.py
+@@ -12,6 +12,8 @@ import numpy as np
+ 
+ from act.back_end.solver.solver_hz import (
+     HZono, _hz_gather_exact, _hz_slice_exact,
++    _hz_pad_exact, _hz_reduce_sum_exact,
++    _hz_transpose_exact, _hz_avgpool2d_exact,
+ )
+ 
+ 
+@@ -19,10 +21,16 @@ def _concretize(hz: HZono, xi_c: torch.Tensor, xi_b: torch.Tensor = None) -> tor
+     """y = c + Gc xi_c + Gb xi_b for given factor space sample."""
+     y = hz.c.clone()
+     if hz.Gc.numel() > 0:
+-        y = y + hz.Gc @ xi_c
++        delta = hz.Gc @ xi_c
++        if y.dim() == 2 and delta.dim() == 1:
++            delta = delta.view(-1, 1)
++        y = y + delta
+     if xi_b is not None and hz.Gb.numel() > 0:
+-        y = y + hz.Gb @ xi_b
+-    return y
++        delta_b = hz.Gb @ xi_b
++        if y.dim() == 2 and delta_b.dim() == 1:
++            delta_b = delta_b.view(-1, 1)
++        y = y + delta_b
++    return y.reshape(-1)
+ 
+ 
+ def _make_simple_hz(n_feats: int, n_gens: int = 3):
+@@ -185,6 +193,114 @@ def test_gather_preserves_constraints():
+     print("test_gather_preserves_constraints PASSED")
+ 
+ 
++def test_gather_negative_index_wraps():
++    """ONNX Gather negative indices wrap relative to the gathered axis."""
++    hz = _make_simple_hz(n_feats=4, n_gens=2)
++    params = {"axis": 0, "indices": [-1, 0], "input_shape": (4,), "output_shape": (2,)}
++    hz_out = _hz_gather_exact(hz, params)
++    for seed in range(3):
++        torch.manual_seed(seed)
++        xi_c = torch.empty(2, dtype=torch.float64).uniform_(-1, 1)
++        y_in = _concretize(hz, xi_c)
++        y_out_expected = y_in[[3, 0]]
++        y_out_actual = _concretize(hz_out, xi_c)
++        assert torch.allclose(y_out_actual, y_out_expected, atol=1e-12)
++    print("test_gather_negative_index_wraps PASSED")
++
++
++def test_pad_constant_exact():
++    """Constant pad inserts fixed rows with zero generators."""
++    hz = _make_simple_hz(n_feats=4, n_gens=2)
++    params = {"input_shape": (4,), "pads": [1, 2], "mode": "constant", "value": 5.0}
++    hz_out = _hz_pad_exact(hz, params)
++    assert hz_out.dim == 7
++    assert torch.allclose(hz_out.c[[0, 5, 6]].reshape(-1), torch.tensor([5.0, 5.0, 5.0], dtype=torch.float64))
++    assert torch.all(hz_out.Gc[[0, 5, 6]] == 0)
++    for seed in range(3):
++        torch.manual_seed(seed)
++        xi_c = torch.empty(2, dtype=torch.float64).uniform_(-1, 1)
++        y_in = _concretize(hz, xi_c)
++        y_out_expected = torch.cat([torch.tensor([5.0], dtype=torch.float64), y_in, torch.tensor([5.0, 5.0], dtype=torch.float64)])
++        y_out_actual = _concretize(hz_out, xi_c)
++        assert torch.allclose(y_out_actual, y_out_expected, atol=1e-12)
++    print("test_pad_constant_exact PASSED")
++
++
++def test_reduce_sum_axis_exact():
++    """ReduceSum is a linear row aggregation on c/Gc/Gb."""
++    hz = _make_simple_hz(n_feats=6, n_gens=2)
++    params = {"input_shape": (2, 3), "axes": [1], "keepdims": False}
++    hz_out = _hz_reduce_sum_exact(hz, params)
++    assert hz_out.dim == 2
++    for seed in range(3):
++        torch.manual_seed(seed)
++        xi_c = torch.empty(2, dtype=torch.float64).uniform_(-1, 1)
++        y_in = _concretize(hz, xi_c).reshape(2, 3)
++        y_out_expected = y_in.sum(dim=1)
++        y_out_actual = _concretize(hz_out, xi_c)
++        assert torch.allclose(y_out_actual, y_out_expected, atol=1e-12)
++    print("test_reduce_sum_axis_exact PASSED")
++
++
++def test_transpose_exact():
++    """Transpose is an exact row permutation on flattened c/Gc/Gb."""
++    hz = _make_simple_hz(n_feats=6, n_gens=2)
++    params = {
++        "input_shape": (1, 2, 3),
++        "output_shape": (1, 3, 2),
++        "perm": (0, 2, 1),
++    }
++    hz_out = _hz_transpose_exact(hz, params)
++    assert hz_out.dim == 6
++    for seed in range(3):
++        torch.manual_seed(seed)
++        xi_c = torch.empty(2, dtype=torch.float64).uniform_(-1, 1)
++        y_in = _concretize(hz, xi_c).reshape(1, 2, 3)
++        y_out_expected = y_in.permute(0, 2, 1).reshape(-1)
++        y_out_actual = _concretize(hz_out, xi_c)
++        assert torch.allclose(y_out_actual, y_out_expected, atol=1e-12)
++    print("test_transpose_exact PASSED")
++
++
++def test_avgpool2d_exact():
++    """AvgPool2d is linear and exact on every HZ factor column."""
++    import torch.nn.functional as F
++
++    hz = _make_simple_hz(n_feats=16, n_gens=2)
++    params = {
++        "input_shape": (1, 1, 4, 4),
++        "output_shape": (1, 1, 2, 2),
++        "kernel_size": (2, 2),
++        "stride": (2, 2),
++        "padding": (0, 0),
++    }
++    hz_out = _hz_avgpool2d_exact(hz, params)
++    assert hz_out.dim == 4
++    for seed in range(3):
++        torch.manual_seed(seed)
++        xi_c = torch.empty(2, dtype=torch.float64).uniform_(-1, 1)
++        y_in = _concretize(hz, xi_c).reshape(1, 1, 4, 4)
++        y_out_expected = F.avg_pool2d(y_in, (2, 2), (2, 2), (0, 0)).reshape(-1)
++        y_out_actual = _concretize(hz_out, xi_c)
++        assert torch.allclose(y_out_actual, y_out_expected, atol=1e-12)
++    print("test_avgpool2d_exact PASSED")
++
++
++def test_row_ops_preserve_base_metadata():
++    """Exact row ops must not reset shared-root generator ancestry."""
++    hz = _make_simple_hz(n_feats=6, n_gens=4)
++    object.__setattr__(hz, "_base_ng", 2)
++    object.__setattr__(hz, "_base_nb", 0)
++    out = _hz_transpose_exact(
++        hz,
++        {"input_shape": (1, 2, 3), "output_shape": (1, 3, 2), "perm": (0, 2, 1)},
++    )
++    assert out._base_ng == 2
++    out = _hz_reduce_sum_exact(hz, {"input_shape": (2, 3), "axes": [1], "keepdims": False})
++    assert out._base_ng == 2
++    print("test_row_ops_preserve_base_metadata PASSED")
++
++
+ if __name__ == "__main__":
+     test_gather_axis0_simple()
+     test_gather_axis1_multi_dim()
+@@ -193,4 +309,10 @@ if __name__ == "__main__":
+     test_slice_step_2()
+     test_slice_multi_dim()
+     test_gather_preserves_constraints()
+-    print("\nAll GATHER + SLICE exact tests PASSED ✓")
++    test_gather_negative_index_wraps()
++    test_pad_constant_exact()
++    test_reduce_sum_axis_exact()
++    test_transpose_exact()
++    test_avgpool2d_exact()
++    test_row_ops_preserve_base_metadata()
++    print("\nAll GATHER / SLICE / PAD / REDUCE_SUM exact tests PASSED ✓")

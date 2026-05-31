@@ -1,0 +1,36 @@
+Spec-aware Girard v2 pilot started: Sat May 30 06:21:48 PM AEST 2026
+=== Wave A: linearizenn 10 + tinyimagenet 5 + traffic 5 × {OFF,ON} ===
+  spawned lin_OFF knob=0 PID=913152
+  spawned lin_ON knob=1 PID=913157
+  spawned tiny_OFF knob=0 PID=913162
+  spawned tiny_ON knob=1 PID=913167
+  spawned traffic_OFF knob=0 PID=913172
+  spawned traffic_ON knob=1 PID=913177
+=== Wave A done at Sat May 30 06:31:39 PM AEST 2026 ===
+=== Wave B: cifar100 10 × {OFF, ON} ===
+  spawned cifar_OFF knob=0 PID=971870
+  spawned cifar_ON knob=1 PID=971875
+=== Wave B done at Sat May 30 06:33:00 PM AEST 2026 ===
+=== Wave C: yolo 5 × {OFF, ON} ===
+  spawned yolo_OFF knob=0 PID=1033643
+  spawned yolo_ON knob=1 PID=1033648
+=== Wave C done at Sat May 30 06:33:58 PM AEST 2026 ===
+==== SYNTHESIS ====
+lin_OFF         V=  2  A=  0  U=  8  E=  0  n= 10  mean_wall=  13.5s
+lin_ON          V=  2  A=  0  U=  8  E=  0  n= 10  mean_wall=  13.5s
+tiny_OFF        V=  0  A=  0  U=  5  E=  0  n=  5  mean_wall=   8.7s
+tiny_ON         V=  0  A=  0  U=  5  E=  0  n=  5  mean_wall=   8.9s
+traffic_OFF     V=  0  A=  0  U=  5  E=  0  n=  5  mean_wall= 114.6s
+traffic_ON      V=  0  A=  0  U=  5  E=  0  n=  5  mean_wall= 114.5s
+cifar_OFF       V=  0  A=  0  U= 10  E=  0  n= 10  mean_wall=   4.4s
+cifar_ON        V=  0  A=  0  U= 10  E=  0  n= 10  mean_wall=   4.5s
+yolo_OFF        V=  0  A=  0  U=  5  E=  0  n=  5  mean_wall=   7.3s
+yolo_ON         V=  0  A=  0  U=  5  E=  0  n=  5  mean_wall=   7.3s
+
+DELTA (ON - OFF):
+  lin          V: 2 -> 2 (+0)   A: 0 -> 0 (+0)
+  tiny         V: 0 -> 0 (+0)   A: 0 -> 0 (+0)
+  traffic      V: 0 -> 0 (+0)   A: 0 -> 0 (+0)
+  cifar        V: 0 -> 0 (+0)   A: 0 -> 0 (+0)
+  yolo         V: 0 -> 0 (+0)   A: 0 -> 0 (+0)
+DONE: Sat May 30 06:33:58 PM AEST 2026

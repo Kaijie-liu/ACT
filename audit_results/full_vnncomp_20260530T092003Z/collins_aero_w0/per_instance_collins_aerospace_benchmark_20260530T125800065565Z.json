@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "benchmark": "collins_aerospace_benchmark",
+  "formal_mode": true,
+  "timestamp_utc": "20260530T125800065565Z",
+  "canonical_root": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks",
+  "receipt_dir": "/data1/Kane/ACT/audit_results/full_vnncomp_20260530T092003Z/collins_aero_w0",
+  "wall_min": 0.758279009660085,
+  "counts": {
+    "CERTIFIED": 0,
+    "FALSIFIED": 0,
+    "UNKNOWN": 0,
+    "ERROR": 1
+  },
+  "run_status": "FAILED",
+  "per_instance": [
+    {
+      "official_instance_id": 2,
+      "benchmark": "collins_aerospace_benchmark",
+      "onnx_model": "onnx/yolov5nano_LRelu_640.onnx",
+      "vnnlib_spec": "vnnlib/img_14386_perturbed_bbox_7_delta_0.01.vnnlib",
+      "model_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_aerospace_benchmark/onnx/yolov5nano_LRelu_640.onnx",
+      "spec_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_aerospace_benchmark/vnnlib/img_14386_perturbed_bbox_7_delta_0.01.vnnlib",
+      "internal_status": "ERROR",
+      "reportable_status": "ERROR",
+      "cli_normalized": "ERROR_OutOfMemoryError",
+      "count_bucket": "ERROR",
+      "queries": [],
+      "q_statuses": [],
+      "q_reportables": [],
+      "q_receipts": [],
+      "error": "OutOfMemoryError: CUDA out of memory. Tried to allocate 20.00 MiB. GPU 0 has a total capacity of 94.96 GiB of which 23.12 MiB is free. Process 2687037 has 690.00 MiB memory in use. Process 2961044 has 3.24 GiB memory in use. Process 2963729 has 6.97 GiB memory in use. Process 2975512 has 3.29 GiB memory in use. Including non-PyTorch memory, this process has 2.54 GiB memory in use. Process 2984149 has 70.08 GiB memory in use. Process 2984577 has 808.00 MiB memory in use. Process 2984597 has 1.30 GiB memory in use. Process 2984694 has 674.00 MiB memory in use. Process 2984923 has 4.39 GiB memory in use. Process 2984926 has 684.00 MiB memory in use. Of the allocated memory 1.79 GiB is allocated by PyTorch, and 110.83 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)",
+      "wall_s": 45.49665570259094,
+      "timeout_s": 300.0,
+      "instance_budget_exhausted": false
+    }
+  ]
+}

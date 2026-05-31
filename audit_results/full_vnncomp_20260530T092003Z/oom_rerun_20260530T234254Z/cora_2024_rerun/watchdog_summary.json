@@ -1,0 +1,24 @@
+{
+  "schema_version": 2,
+  "strict_bounded_failure": false,
+  "counts": {
+    "OK": 1,
+    "UNKNOWN_TIMEOUT": 0,
+    "UNKNOWN_RESOURCE_LIMIT": 0,
+    "ERROR": 0
+  },
+  "results": [
+    {
+      "benchmark": "cora_2024",
+      "instance_id": 4,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 154.08838833193295,
+      "peak_rss_mb": 3629.85546875,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/full_vnncomp_20260530T092003Z/oom_rerun_20260530T234254Z/cora_2024_rerun/per_instance_cora_2024_20260531T002443728773Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/full_vnncomp_20260530T092003Z/oom_rerun_20260530T234254Z/cora_2024_rerun",
+      "stdout_tail": " (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 784)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 784 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 784 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cora_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed mnist-img1.vnnlib: 9 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=cora_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=300.0s)\n  [  1/1] cora_2024/./onnx/mnist-trades.onnx@vnnlib/mnist-img1.vnnlib: UNKNOWN (151.4s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=2.5 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/full_vnncomp_20260530T092003Z/oom_rerun_20260530T234254Z/cora_2024_rerun/per_instance_cora_2024_20260531T002443728773Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "schema_version": 2,
+  "strict_bounded_failure": false,
+  "counts": {
+    "OK": 1,
+    "UNKNOWN_TIMEOUT": 0,
+    "UNKNOWN_RESOURCE_LIMIT": 0,
+    "ERROR": 0
+  },
+  "results": [
+    {
+      "benchmark": "yolo_2023",
+      "instance_id": 47,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 26.014133782009594,
+      "peak_rss_mb": 2574.43359375,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/yolo_iid47_sparseadd_20260530T061047Z/k128_tail12k_sparseadd/per_instance_yolo_2023_20260530T061114361088Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/yolo_iid47_sparseadd_20260530T061047Z/k128_tail12k_sparseadd",
+      "stdout_tail": "PU 0 has a total capacity of 94.96 GiB of which 6.63 GiB is free. Process 2687037 has 690.00 MiB memory in use. Including non-PyTorch memory, this process has 87.39 GiB memory in use. Of the allocated memory 74.47 GiB is allocated by PyTorch, and 12.28 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)\nWARNING:act.back_end.solver.solver_hz:L29 FALLBACK (OutOfMemoryError): CUDA out of memory. Tried to allocate 26.27 GiB. GPU 0 has a total capacity of 94.96 GiB of which 6.63 GiB is free. Process 2687037 has 690.00 MiB memory in use. Including non-PyTorch memory, this process has 87.39 GiB memory in use. Of the allocated memory 74.47 GiB is allocated by PyTorch, and 12.28 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)\n[HZ-PROGRESS] start L30 FLATTEN in=dim=21125 ng=21125 nb=0 nc=0\n[HZ-PROGRESS] L30 FLATTEN -> dim=21125 ng=21125 nb=0 nc=0\n  [  1/1] yolo_2023/onnx/TinyYOLO.onnx@vnnlib/TinyYOLO_prop_000024_eps_1_255.vnnlib: UNKNOWN (23.2s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.4 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/yolo_iid47_sparseadd_20260530T061047Z/k128_tail12k_sparseadd/per_instance_yolo_2023_20260530T061114361088Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    }
+  ]
+}

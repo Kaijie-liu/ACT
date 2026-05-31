@@ -1,0 +1,51 @@
+eq_layers ablation started: Sat May 30 11:52:05 AM AEST 2026
+=== Wave 1: 4 small benches × 5 eq settings = 20 parallel (each ~3GB) ===
+  spawned linearizenn_2024 eq=0 PID=3525266
+  spawned collins_rul_cnn_2022 eq=0 PID=3525270
+  spawned malbeware eq=0 PID=3525274
+  spawned ml4acopf_2024 eq=0 PID=3525278
+  spawned linearizenn_2024 eq=1 PID=3525282
+  spawned collins_rul_cnn_2022 eq=1 PID=3525286
+  spawned malbeware eq=1 PID=3525293
+  spawned ml4acopf_2024 eq=1 PID=3525297
+  spawned linearizenn_2024 eq=3 PID=3525301
+  spawned collins_rul_cnn_2022 eq=3 PID=3525305
+  spawned malbeware eq=3 PID=3525309
+  spawned ml4acopf_2024 eq=3 PID=3525313
+  spawned linearizenn_2024 eq=5 PID=3525317
+  spawned collins_rul_cnn_2022 eq=5 PID=3525321
+  spawned malbeware eq=5 PID=3525326
+  spawned ml4acopf_2024 eq=5 PID=3525330
+  spawned linearizenn_2024 eq=10 PID=3525334
+  spawned collins_rul_cnn_2022 eq=10 PID=3525338
+  spawned malbeware eq=10 PID=3525342
+  spawned ml4acopf_2024 eq=10 PID=3525346
+=== Wave 1 DONE: Sat May 30 11:58:30 AM AEST 2026 ===
+=== Wave 2: cifar100 × 5 eq settings sequential pairs ===
+  spawned cifar100_2024 eq=0 PID=3547109
+  spawned cifar100_2024 eq=1 PID=3547113
+  spawned cifar100_2024 eq=3 PID=3547117
+  spawned cifar100_2024 eq=5 PID=3547121
+  spawned cifar100_2024 eq=10 PID=3547125
+=== Wave 2 DONE: Sat May 30 11:59:26 AM AEST 2026 ===
+=== Wave 3: tinyimagenet × 5 eq settings ===
+  spawned tinyimagenet_2024 eq=0 PID=3623686
+  spawned tinyimagenet_2024 eq=1 PID=3623690
+  spawned tinyimagenet_2024 eq=3 PID=3623694
+  spawned tinyimagenet_2024 eq=5 PID=3623698
+  spawned tinyimagenet_2024 eq=10 PID=3623702
+=== Wave 3 DONE: Sat May 30 12:00:30 PM AEST 2026 ===
+==== SYNTHESIS ====
+
+Benchmark                               eq=0            eq=1            eq=3            eq=5           eq=10      best
+----------------------------------------------------------------------------------------------------------------------------------
+linearizenn_2024              0/10 (12s,OOM=0)  0/10 (13s,OOM=0)  0/10 (12s,OOM=0)  0/10 (12s,OOM=0)  0/11 (11s,OOM=2)  eq=  10
+collins_rul_cnn_2022          8/11 (3s,OOM=2)  8/11 (2s,OOM=2)  8/10 (3s,OOM=0)  8/11 (3s,OOM=2)  8/10 (3s,OOM=0)  eq=   1
+malbeware                     10/10 (5s,OOM=0)  10/10 (5s,OOM=0)  10/10 (5s,OOM=0)  10/10 (5s,OOM=0)  10/10 (5s,OOM=0)  eq=  10
+ml4acopf_2024                 1/10 (34s,OOM=0)  1/10 (34s,OOM=0)  1/10 (33s,OOM=0)  1/10 (34s,OOM=0)  1/11 (31s,OOM=2)  eq=  10
+cifar100_2024                 0/10 (8s,OOM=10)  0/10 (8s,OOM=10)  0/10 (8s,OOM=10)  0/9 (7s,OOM=8)  0/9 (7s,OOM=8)  eq=   5
+tinyimagenet_2024             0/8 (9s,OOM=6)  0/9 (9s,OOM=8)  0/10 (9s,OOM=10)  0/9 (9s,OOM=8)  0/9 (9s,OOM=8)  eq=   0
+
+Format: V+A/n_done (mean_wall, n_OOM)
+'best' = highest V+A; tie-break by lower wall + fewer OOMs
+DONE: Sat May 30 12:00:30 PM AEST 2026

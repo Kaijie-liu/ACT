@@ -1,0 +1,64 @@
+[ACT] Auto-detecting project root: .
+[ACT] Gurobi license found: modules/gurobi/gurobi.lic
+{
+  "benchmark": "yolo_2023",
+  "instance_id": 25,
+  "status": "OK",
+  "cli_normalized": "OK",
+  "wall_s": 32.01840526203159,
+  "peak_rss_mb": 2596.70703125,
+  "returncode": 0,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/yolo_easy_unsat_sparseadd_20260530T061718Z/easy5/per_instance_yolo_2023_20260530T061751202847Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/yolo_easy_unsat_sparseadd_20260530T061718Z/easy5",
+  "stdout_tail": " Including non-PyTorch memory, this process has 84.12 GiB memory in use. Of the allocated memory 82.83 GiB is allocated by PyTorch, and 668.53 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=yolo_2023 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=220.0s)\n  [  1/1] yolo_2023/onnx/TinyYOLO.onnx@vnnlib/TinyYOLO_prop_000220_eps_1_255.vnnlib: UNKNOWN (29.2s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.5 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/yolo_easy_unsat_sparseadd_20260530T061718Z/easy5/per_instance_yolo_2023_20260530T061751202847Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n[W530 16:17:51.858076087 AllocatorConfig.cpp:28] Warning: PYTORCH_CUDA_ALLOC_CONF is deprecated, use PYTORCH_ALLOC_CONF instead (function operator())\n"
+}
+{
+  "benchmark": "yolo_2023",
+  "instance_id": 6,
+  "status": "OK",
+  "cli_normalized": "OK",
+  "wall_s": 109.56539409502875,
+  "peak_rss_mb": 23921.859375,
+  "returncode": 0,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/yolo_easy_unsat_sparseadd_20260530T061718Z/easy5/per_instance_yolo_2023_20260530T061940818326Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/yolo_easy_unsat_sparseadd_20260530T061718Z/easy5",
+  "stdout_tail": "specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 8112 inputs, 21125 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 8112 inputs, 21125 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'yolo_2023'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed TinyYOLO_prop_000082_eps_1_255.vnnlib: 1 query(ies)\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=yolo_2023 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=220.0s)\n  [  1/1] yolo_2023/onnx/TinyYOLO.onnx@vnnlib/TinyYOLO_prop_000082_eps_1_255.vnnlib: UNKNOWN (106.8s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=1.8 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/yolo_easy_unsat_sparseadd_20260530T061718Z/easy5/per_instance_yolo_2023_20260530T061940818326Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n[W530 16:19:41.439980042 AllocatorConfig.cpp:28] Warning: PYTORCH_CUDA_ALLOC_CONF is deprecated, use PYTORCH_ALLOC_CONF instead (function operator())\n"
+}
+{
+  "benchmark": "yolo_2023",
+  "instance_id": 27,
+  "status": "OK",
+  "cli_normalized": "OK",
+  "wall_s": 114.57057606603485,
+  "peak_rss_mb": 2589.51953125,
+  "returncode": 0,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/yolo_easy_unsat_sparseadd_20260530T061718Z/easy5/per_instance_yolo_2023_20260530T062135154653Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/yolo_easy_unsat_sparseadd_20260530T061718Z/easy5",
+  "stdout_tail": "Including non-PyTorch memory, this process has 93.27 GiB memory in use. Of the allocated memory 92.14 GiB is allocated by PyTorch, and 494.04 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=yolo_2023 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=220.0s)\n  [  1/1] yolo_2023/onnx/TinyYOLO.onnx@vnnlib/TinyYOLO_prop_000420_eps_1_255.vnnlib: UNKNOWN (111.6s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=1.9 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/yolo_easy_unsat_sparseadd_20260530T061718Z/easy5/per_instance_yolo_2023_20260530T062135154653Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n[W530 16:21:35.776595791 AllocatorConfig.cpp:28] Warning: PYTORCH_CUDA_ALLOC_CONF is deprecated, use PYTORCH_ALLOC_CONF instead (function operator())\n"
+}
+{
+  "benchmark": "yolo_2023",
+  "instance_id": 34,
+  "status": "OK",
+  "cli_normalized": "OK",
+  "wall_s": 143.0899784680223,
+  "peak_rss_mb": 2601.47265625,
+  "returncode": 0,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/yolo_easy_unsat_sparseadd_20260530T061718Z/easy5/per_instance_yolo_2023_20260530T062358467237Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/yolo_easy_unsat_sparseadd_20260530T061718Z/easy5",
+  "stdout_tail": "Including non-PyTorch memory, this process has 93.85 GiB memory in use. Of the allocated memory 92.59 GiB is allocated by PyTorch, and 628.47 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=yolo_2023 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=220.0s)\n  [  1/1] yolo_2023/onnx/TinyYOLO.onnx@vnnlib/TinyYOLO_prop_000284_eps_1_255.vnnlib: UNKNOWN (140.4s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=2.3 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/yolo_easy_unsat_sparseadd_20260530T061718Z/easy5/per_instance_yolo_2023_20260530T062358467237Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n[W530 16:23:58.088046733 AllocatorConfig.cpp:28] Warning: PYTORCH_CUDA_ALLOC_CONF is deprecated, use PYTORCH_ALLOC_CONF instead (function operator())\n"
+}
+{
+  "benchmark": "yolo_2023",
+  "instance_id": 36,
+  "status": "OK",
+  "cli_normalized": "OK",
+  "wall_s": 99.56187031499576,
+  "peak_rss_mb": 2573.171875,
+  "returncode": 0,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/yolo_easy_unsat_sparseadd_20260530T061718Z/easy5/per_instance_yolo_2023_20260530T062537872602Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/yolo_easy_unsat_sparseadd_20260530T061718Z/easy5",
+  "stdout_tail": " Including non-PyTorch memory, this process has 92.21 GiB memory in use. Of the allocated memory 91.03 GiB is allocated by PyTorch, and 543.55 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=yolo_2023 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=220.0s)\n  [  1/1] yolo_2023/onnx/TinyYOLO.onnx@vnnlib/TinyYOLO_prop_000323_eps_1_255.vnnlib: UNKNOWN (96.7s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=1.6 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/yolo_easy_unsat_sparseadd_20260530T061718Z/easy5/per_instance_yolo_2023_20260530T062537872602Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n[W530 16:25:38.499077820 AllocatorConfig.cpp:28] Warning: PYTORCH_CUDA_ALLOC_CONF is deprecated, use PYTORCH_ALLOC_CONF instead (function operator())\n"
+}
+[watchdog] summary written: /data1/Kane/ACT/audit_results/yolo_easy_unsat_sparseadd_20260530T061718Z/easy5/watchdog_summary.json
+[W530 16:25:39.438295911 AllocatorConfig.cpp:28] Warning: PYTORCH_CUDA_ALLOC_CONF is deprecated, use PYTORCH_ALLOC_CONF instead (function operator())

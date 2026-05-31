@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "benchmark": "acasxu_2023",
+  "formal_mode": true,
+  "timestamp_utc": "20260530T111825794803Z",
+  "canonical_root": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks",
+  "receipt_dir": "/data1/Kane/ACT/audit_results/full_vnncomp_20260530T092003Z/acasxu_2023_w3",
+  "wall_min": 0.010024789969126384,
+  "counts": {
+    "CERTIFIED": 0,
+    "FALSIFIED": 0,
+    "UNKNOWN": 0,
+    "ERROR": 1
+  },
+  "run_status": "FAILED",
+  "per_instance": [
+    {
+      "official_instance_id": 144,
+      "benchmark": "acasxu_2023",
+      "onnx_model": "onnx/ACASXU_run2a_2_1_batch_2000.onnx",
+      "vnnlib_spec": "vnnlib/prop_4.vnnlib",
+      "model_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/acasxu_2023/onnx/ACASXU_run2a_2_1_batch_2000.onnx",
+      "spec_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/acasxu_2023/vnnlib/prop_4.vnnlib",
+      "internal_status": "ERROR",
+      "reportable_status": "ERROR",
+      "cli_normalized": "ERROR_RuntimeError",
+      "count_bucket": "ERROR",
+      "queries": [],
+      "q_statuses": [],
+      "q_reportables": [],
+      "q_receipts": [],
+      "error": "RuntimeError: ONNX conversion failed: Failed to convert /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/acasxu_2023/onnx/ACASXU_run2a_2_1_batch_2000.onnx: Converter is not implemented (OperationDescription(domain='', operation_type='Flatten', version=1))",
+      "wall_s": 0.6014447212219238,
+      "timeout_s": 120.0,
+      "instance_budget_exhausted": false
+    }
+  ]
+}

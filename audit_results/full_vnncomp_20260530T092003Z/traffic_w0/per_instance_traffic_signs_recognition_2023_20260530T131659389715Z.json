@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "benchmark": "traffic_signs_recognition_2023",
+  "formal_mode": true,
+  "timestamp_utc": "20260530T131659389715Z",
+  "canonical_root": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks",
+  "receipt_dir": "/data1/Kane/ACT/audit_results/full_vnncomp_20260530T092003Z/traffic_w0",
+  "wall_min": 0.052940889199574785,
+  "counts": {
+    "CERTIFIED": 0,
+    "FALSIFIED": 0,
+    "UNKNOWN": 0,
+    "ERROR": 1
+  },
+  "run_status": "FAILED",
+  "per_instance": [
+    {
+      "official_instance_id": 15,
+      "benchmark": "traffic_signs_recognition_2023",
+      "onnx_model": "onnx/3_48_48_QConv_32_5_MP_2_BN_QConv_64_5_MP_2_BN_QConv_64_3_BN_Dense_256_BN_Dense_43_ep_30.onnx",
+      "vnnlib_spec": "vnnlib/model_48_idx_10645_eps_1.00000.vnnlib",
+      "model_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/traffic_signs_recognition_2023/onnx/3_48_48_QConv_32_5_MP_2_BN_QConv_64_5_MP_2_BN_QConv_64_3_BN_Dense_256_BN_Dense_43_ep_30.onnx",
+      "spec_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/traffic_signs_recognition_2023/vnnlib/model_48_idx_10645_eps_1.00000.vnnlib",
+      "internal_status": "ERROR",
+      "reportable_status": "ERROR",
+      "cli_normalized": "ERROR_OutOfMemoryError",
+      "count_bucket": "ERROR",
+      "queries": [],
+      "q_statuses": [],
+      "q_reportables": [],
+      "q_receipts": [],
+      "error": "OutOfMemoryError: CUDA out of memory. Tried to allocate 172.00 MiB. GPU 0 has a total capacity of 94.96 GiB of which 44.88 MiB is free. Process 2687037 has 690.00 MiB memory in use. Process 3036295 has 70.31 GiB memory in use. Process 3067235 has 11.15 GiB memory in use. Process 3069927 has 4.75 GiB memory in use. Process 3069933 has 3.22 GiB memory in use. Process 3074919 has 1.62 GiB memory in use. Including non-PyTorch memory, this process has 2.90 GiB memory in use. Of the allocated memory 2.05 GiB is allocated by PyTorch, and 206.02 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)",
+      "wall_s": 3.176337718963623,
+      "timeout_s": 180.0,
+      "instance_budget_exhausted": false
+    }
+  ]
+}

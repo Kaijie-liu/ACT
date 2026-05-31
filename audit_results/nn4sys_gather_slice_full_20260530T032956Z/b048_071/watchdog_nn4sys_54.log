@@ -1,0 +1,45 @@
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: nn4sys/onnx/pensieve_big_parallel.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/pensieve_big_parallel.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 12 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+WARNING:act.front_end.vnnlib_loader.onnx_converter:Full pipeline failed (RuntimeError: Got unexpected input value type (ValueType.UNKNOWN)); retrying with raw graph (no opset upgrade, no simplify)
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: pensieve_big_parallel.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [12, 8]
+WARNING:act.front_end.vnnlib_loader.onnx_converter:ONNX model has batch size 12, but verification assumes batch=1. Results may be incorrect.
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (12, 8)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 96 inputs, 1 outputs, type=safety
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 96 inputs, 1 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed pensieve_parallel_54.vnnlib: 1 query(ies)
+[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic
+✅ Device Manager Initialized: device=cuda:0, dtype=torch.float64
+
+================================================================================
+ACT: Abstract Constraint Transformer
+Inference-based whitebox fuzzing for neural network verification
+================================================================================
+
+
+================================================================================
+VERIFICATION TEST: VNNLIB → VerifiableModel → verify_once
+================================================================================
+
+[vnnlib] category=nn4sys max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=60.0s)
+  [  1/1] nn4sys/onnx/pensieve_big_parallel.onnx@vnnlib/pensieve_parallel_54.vnnlib: CERTIFIED (0.6s)  V=1 A=0 U=0 E=0  R=0
+
+[vnnlib/hybridz] FINAL — total=1 wall=0.0 min
+  CERTIFIED    1
+  [structured] per-instance log → /data1/Kane/ACT/audit_results/nn4sys_gather_slice_full_20260530T032956Z/b048_071/per_instance_nn4sys_20260530T033025599788Z.json
+
+================================================================================
+VERIFICATION TEST SUMMARY
+================================================================================
+  ✅ vnnlib                    PASSED
+================================================================================
+

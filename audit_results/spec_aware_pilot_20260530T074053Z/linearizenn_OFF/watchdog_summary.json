@@ -1,0 +1,132 @@
+{
+  "schema_version": 2,
+  "strict_bounded_failure": false,
+  "counts": {
+    "OK": 10,
+    "UNKNOWN_TIMEOUT": 0,
+    "UNKNOWN_RESOURCE_LIMIT": 0,
+    "ERROR": 0
+  },
+  "results": [
+    {
+      "benchmark": "linearizenn_2024",
+      "instance_id": 0,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 15.008458034950309,
+      "peak_rss_mb": 1549.03125,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/spec_aware_pilot_20260530T074053Z/linearizenn_OFF/per_instance_linearizenn_2024_20260530T074109307553Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/spec_aware_pilot_20260530T074053Z/linearizenn_OFF",
+      "stdout_tail": "shape: [1, 4]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 4)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 4 inputs, 2 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_10_10.vnnlib: 2 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=linearizenn_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=180.0s)\n  [  1/1] linearizenn_2024/onnx/AllInOne_10_10.onnx@vnnlib/prop_10_10.vnnlib: UNKNOWN (11.9s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.2 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/spec_aware_pilot_20260530T074053Z/linearizenn_OFF/per_instance_linearizenn_2024_20260530T074109307553Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "linearizenn_2024",
+      "instance_id": 5,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 22.51298730506096,
+      "peak_rss_mb": 1561.296875,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/spec_aware_pilot_20260530T074053Z/linearizenn_OFF/per_instance_linearizenn_2024_20260530T074131790471Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/spec_aware_pilot_20260530T074053Z/linearizenn_OFF",
+      "stdout_tail": " [1, 4]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 4)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 4 inputs, 2 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_10_10_4.vnnlib: 2 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=linearizenn_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=180.0s)\n  [  1/1] linearizenn_2024/onnx/AllInOne_10_10.onnx@vnnlib/prop_10_10_4.vnnlib: CERTIFIED (19.4s)  V=1 A=0 U=0 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.3 min\n  CERTIFIED    1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/spec_aware_pilot_20260530T074053Z/linearizenn_OFF/per_instance_linearizenn_2024_20260530T074131790471Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "linearizenn_2024",
+      "instance_id": 10,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 23.013101616990753,
+      "peak_rss_mb": 1559.2109375,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/spec_aware_pilot_20260530T074053Z/linearizenn_OFF/per_instance_linearizenn_2024_20260530T074155145500Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/spec_aware_pilot_20260530T074053Z/linearizenn_OFF",
+      "stdout_tail": " [1, 4]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 4)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 4 inputs, 2 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_30_30_3.vnnlib: 2 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=linearizenn_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=180.0s)\n  [  1/1] linearizenn_2024/onnx/AllInOne_30_30.onnx@vnnlib/prop_30_30_3.vnnlib: CERTIFIED (20.3s)  V=1 A=0 U=0 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.3 min\n  CERTIFIED    1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/spec_aware_pilot_20260530T074053Z/linearizenn_OFF/per_instance_linearizenn_2024_20260530T074155145500Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "linearizenn_2024",
+      "instance_id": 15,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 14.508729194989428,
+      "peak_rss_mb": 1539.2421875,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/spec_aware_pilot_20260530T074053Z/linearizenn_OFF/per_instance_linearizenn_2024_20260530T074209445982Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/spec_aware_pilot_20260530T074053Z/linearizenn_OFF",
+      "stdout_tail": "e: [1, 4]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 4)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 4 inputs, 2 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_30_80_2.vnnlib: 2 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=linearizenn_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=180.0s)\n  [  1/1] linearizenn_2024/onnx/AllInOne_30_80.onnx@vnnlib/prop_30_80_2.vnnlib: UNKNOWN (11.7s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.2 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/spec_aware_pilot_20260530T074053Z/linearizenn_OFF/per_instance_linearizenn_2024_20260530T074209445982Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "linearizenn_2024",
+      "instance_id": 20,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 15.00920125306584,
+      "peak_rss_mb": 1575.2109375,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/spec_aware_pilot_20260530T074053Z/linearizenn_OFF/per_instance_linearizenn_2024_20260530T074224125245Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/spec_aware_pilot_20260530T074053Z/linearizenn_OFF",
+      "stdout_tail": "e: [1, 4]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 4)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 4 inputs, 2 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_50_50_1.vnnlib: 2 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=linearizenn_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=180.0s)\n  [  1/1] linearizenn_2024/onnx/AllInOne_50_50.onnx@vnnlib/prop_50_50_1.vnnlib: UNKNOWN (11.8s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.2 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/spec_aware_pilot_20260530T074053Z/linearizenn_OFF/per_instance_linearizenn_2024_20260530T074224125245Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "linearizenn_2024",
+      "instance_id": 25,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 14.509416674030945,
+      "peak_rss_mb": 1579.328125,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/spec_aware_pilot_20260530T074053Z/linearizenn_OFF/per_instance_linearizenn_2024_20260530T074238902532Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/spec_aware_pilot_20260530T074053Z/linearizenn_OFF",
+      "stdout_tail": "[1, 4]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 4)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 4 inputs, 2 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_50_120_0.vnnlib: 2 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=linearizenn_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=180.0s)\n  [  1/1] linearizenn_2024/onnx/AllInOne_50_120.onnx@vnnlib/prop_50_120_0.vnnlib: UNKNOWN (11.6s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.2 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/spec_aware_pilot_20260530T074053Z/linearizenn_OFF/per_instance_linearizenn_2024_20260530T074238902532Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "linearizenn_2024",
+      "instance_id": 30,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 14.508197839953937,
+      "peak_rss_mb": 1561.125,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/spec_aware_pilot_20260530T074053Z/linearizenn_OFF/per_instance_linearizenn_2024_20260530T074253280762Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/spec_aware_pilot_20260530T074053Z/linearizenn_OFF",
+      "stdout_tail": "shape: [1, 4]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 4)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 4 inputs, 2 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_80_30.vnnlib: 2 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=linearizenn_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=180.0s)\n  [  1/1] linearizenn_2024/onnx/AllInOne_80_30.onnx@vnnlib/prop_80_30.vnnlib: UNKNOWN (11.5s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.2 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/spec_aware_pilot_20260530T074053Z/linearizenn_OFF/per_instance_linearizenn_2024_20260530T074253280762Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "linearizenn_2024",
+      "instance_id": 35,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 14.509941017953679,
+      "peak_rss_mb": 1540.28125,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/spec_aware_pilot_20260530T074053Z/linearizenn_OFF/per_instance_linearizenn_2024_20260530T074307840471Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/spec_aware_pilot_20260530T074053Z/linearizenn_OFF",
+      "stdout_tail": "e: [1, 4]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 4)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 4 inputs, 2 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_80_30_4.vnnlib: 2 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=linearizenn_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=180.0s)\n  [  1/1] linearizenn_2024/onnx/AllInOne_80_30.onnx@vnnlib/prop_80_30_4.vnnlib: UNKNOWN (11.5s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.2 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/spec_aware_pilot_20260530T074053Z/linearizenn_OFF/per_instance_linearizenn_2024_20260530T074307840471Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "linearizenn_2024",
+      "instance_id": 40,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 14.509947185986675,
+      "peak_rss_mb": 1536.68359375,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/spec_aware_pilot_20260530T074053Z/linearizenn_OFF/per_instance_linearizenn_2024_20260530T074322402152Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/spec_aware_pilot_20260530T074053Z/linearizenn_OFF",
+      "stdout_tail": "e: [1, 4]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 4)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 4 inputs, 2 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_80_80_3.vnnlib: 2 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=linearizenn_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=180.0s)\n  [  1/1] linearizenn_2024/onnx/AllInOne_80_80.onnx@vnnlib/prop_80_80_3.vnnlib: UNKNOWN (11.6s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.2 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/spec_aware_pilot_20260530T074053Z/linearizenn_OFF/per_instance_linearizenn_2024_20260530T074322402152Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "linearizenn_2024",
+      "instance_id": 45,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 14.508733167080209,
+      "peak_rss_mb": 1537.0546875,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/spec_aware_pilot_20260530T074053Z/linearizenn_OFF/per_instance_linearizenn_2024_20260530T074336931096Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/spec_aware_pilot_20260530T074053Z/linearizenn_OFF",
+      "stdout_tail": "[1, 4]\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 4)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4 inputs, 2 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 4 inputs, 2 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'linearizenn_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed prop_120_30_2.vnnlib: 2 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=linearizenn_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=180.0s)\n  [  1/1] linearizenn_2024/onnx/AllInOne_120_30.onnx@vnnlib/prop_120_30_2.vnnlib: UNKNOWN (11.6s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.2 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/spec_aware_pilot_20260530T074053Z/linearizenn_OFF/per_instance_linearizenn_2024_20260530T074336931096Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    }
+  ]
+}

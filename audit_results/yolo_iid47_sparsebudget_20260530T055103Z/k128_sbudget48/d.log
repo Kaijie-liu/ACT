@@ -1,0 +1,15 @@
+[ACT] Auto-detecting project root: .
+[ACT] Gurobi license found: modules/gurobi/gurobi.lic
+{
+  "benchmark": "yolo_2023",
+  "instance_id": 47,
+  "status": "OK",
+  "cli_normalized": "OK",
+  "wall_s": 93.05108486197423,
+  "peak_rss_mb": 2662.90234375,
+  "returncode": 0,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/yolo_iid47_sparsebudget_20260530T055103Z/k128_sbudget48/per_instance_yolo_2023_20260530T055237799290Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/yolo_iid47_sparsebudget_20260530T055103Z/k128_sbudget48",
+  "stdout_tail": "nc=1084\n[HZ-PROGRESS] start L23 ADD in=none\n[HZ-PROGRESS] L23 ADD -> dim=5408 ng=12000 nb=0 nc=1768\n[HZ-PROGRESS] start L24 CONV2D in=dim=5408 ng=12000 nb=0 nc=1768\n[HZ-PROGRESS] L24 CONV2D -> dim=10816 ng=12000 nb=0 nc=1768\n[HZ-PROGRESS] start L25 CONV2D in=dim=5408 ng=12000 nb=0 nc=1768\n[HZ-PROGRESS] L25 CONV2D -> dim=10816 ng=12000 nb=0 nc=1768\n[HZ-PROGRESS] start L26 RELU in=dim=10816 ng=12000 nb=0 nc=1768\n[HZ-SELECTIVE] HZono top_k=128 dim=10816 ng=12000->22816 nc=1768->23656\n[HZ-PROGRESS] L26 RELU -> dim=10816 ng=12000 nb=0 nc=16705\n[HZ-PROGRESS] start L27 CONV2D in=dim=10816 ng=12000 nb=0 nc=16705\n[HZ-PROGRESS] L27 CONV2D -> dim=10816 ng=12000 nb=0 nc=16705\n[HZ-PROGRESS] start L28 ADD in=none\n[HZ-PROGRESS] L28 ADD -> dim=10816 ng=12000 nb=0 nc=18473\n[HZ-PROGRESS] start L29 CONV2D in=dim=10816 ng=12000 nb=0 nc=18473\n[sparse_gc_t2] dense_to_sparse: dim=10816 ng=12000 density=0.1416 dense_MiB=990.2 sparse_MiB=280.4\nWARNING:act.back_end.solver.solver_hz:L29 FALLBACK (RuntimeError): CUDA error: insufficient resources when calling `cusparseSpGEMM_workEstimation( handle, opA, opB, &alpha, matA, matB, &beta, matC, computeType, CUSPARSE_SPGEMM_DEFAULT, spgemmDesc, &bufferSize1, dBuffer1)`\n[HZ-PROGRESS] start L30 FLATTEN in=dim=21125 ng=21125 nb=0 nc=0\n[HZ-PROGRESS] L30 FLATTEN -> dim=21125 ng=21125 nb=0 nc=0\n  [  1/1] yolo_2023/onnx/TinyYOLO.onnx@vnnlib/TinyYOLO_prop_000024_eps_1_255.vnnlib: UNKNOWN (90.0s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=1.5 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/yolo_iid47_sparsebudget_20260530T055103Z/k128_sbudget48/per_instance_yolo_2023_20260530T055237799290Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+}
+[watchdog] summary written: /data1/Kane/ACT/audit_results/yolo_iid47_sparsebudget_20260530T055103Z/k128_sbudget48/watchdog_summary.json

@@ -1,0 +1,63 @@
+[ACT] Auto-detecting project root: ../ACT
+[ACT] Gurobi license found: ../ACT/modules/gurobi/gurobi.lic
+{
+  "benchmark": "yolo_2023",
+  "instance_id": 0,
+  "status": "OK",
+  "cli_normalized": "OK",
+  "wall_s": 10.006192603963427,
+  "peak_rss_mb": 2616.10546875,
+  "returncode": 0,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/spec_aware_v2_pilot_20260530T082148Z/yolo_OFF/per_instance_yolo_2023_20260530T083316319213Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/spec_aware_v2_pilot_20260530T082148Z/yolo_OFF",
+  "stdout_tail": "s a total capacity of 94.96 GiB of which 2.32 GiB is free. Process 2687037 has 690.00 MiB memory in use. Process 1033763 has 32.20 GiB memory in use. Including non-PyTorch memory, this process has 59.50 GiB memory in use. Of the allocated memory 55.70 GiB is allocated by PyTorch, and 3.16 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=yolo_2023 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=300.0s)\n  [  1/1] yolo_2023/onnx/TinyYOLO.onnx@vnnlib/TinyYOLO_prop_000005_eps_1_255.vnnlib: UNKNOWN (7.3s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.1 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/spec_aware_v2_pilot_20260530T082148Z/yolo_OFF/per_instance_yolo_2023_20260530T083316319213Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+}
+{
+  "benchmark": "yolo_2023",
+  "instance_id": 15,
+  "status": "OK",
+  "cli_normalized": "OK",
+  "wall_s": 12.007277629920281,
+  "peak_rss_mb": 5195.7890625,
+  "returncode": 0,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/spec_aware_v2_pilot_20260530T082148Z/yolo_OFF/per_instance_yolo_2023_20260530T083327908304Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/spec_aware_v2_pilot_20260530T082148Z/yolo_OFF",
+  "stdout_tail": "NNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 8112 inputs, 21125 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 8112 inputs, 21125 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'yolo_2023'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed TinyYOLO_prop_000004_eps_1_255.vnnlib: 1 query(ies)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=14 out_dim=21125 relus=7 (triangle for relu 1..6, eq_lagr_v8 for last 1)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=yolo_2023 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=300.0s)\n  [  1/1] yolo_2023/onnx/TinyYOLO.onnx@vnnlib/TinyYOLO_prop_000004_eps_1_255.vnnlib: UNKNOWN (8.9s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.1 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/spec_aware_v2_pilot_20260530T082148Z/yolo_OFF/per_instance_yolo_2023_20260530T083327908304Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+}
+{
+  "benchmark": "yolo_2023",
+  "instance_id": 30,
+  "status": "OK",
+  "cli_normalized": "OK",
+  "wall_s": 8.505202156025916,
+  "peak_rss_mb": 2596.12890625,
+  "returncode": 0,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/spec_aware_v2_pilot_20260530T082148Z/yolo_OFF/per_instance_yolo_2023_20260530T083336490327Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/spec_aware_v2_pilot_20260530T082148Z/yolo_OFF",
+  "stdout_tail": "s a total capacity of 94.96 GiB of which 1.27 GiB is free. Process 2687037 has 690.00 MiB memory in use. Process 1034582 has 67.48 GiB memory in use. Including non-PyTorch memory, this process has 25.26 GiB memory in use. Of the allocated memory 21.88 GiB is allocated by PyTorch, and 2.75 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=yolo_2023 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=300.0s)\n  [  1/1] yolo_2023/onnx/TinyYOLO.onnx@vnnlib/TinyYOLO_prop_000103_eps_1_255.vnnlib: UNKNOWN (5.5s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.1 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/spec_aware_v2_pilot_20260530T082148Z/yolo_OFF/per_instance_yolo_2023_20260530T083336490327Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+}
+{
+  "benchmark": "yolo_2023",
+  "instance_id": 47,
+  "status": "OK",
+  "cli_normalized": "OK",
+  "wall_s": 10.505328281084076,
+  "peak_rss_mb": 2614.6484375,
+  "returncode": 0,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/spec_aware_v2_pilot_20260530T082148Z/yolo_OFF/per_instance_yolo_2023_20260530T083346941614Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/spec_aware_v2_pilot_20260530T082148Z/yolo_OFF",
+  "stdout_tail": "a total capacity of 94.96 GiB of which 448.12 MiB is free. Process 2687037 has 690.00 MiB memory in use. Process 1035264 has 41.73 GiB memory in use. Including non-PyTorch memory, this process has 51.85 GiB memory in use. Of the allocated memory 48.47 GiB is allocated by PyTorch, and 2.74 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=yolo_2023 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=300.0s)\n  [  1/1] yolo_2023/onnx/TinyYOLO.onnx@vnnlib/TinyYOLO_prop_000024_eps_1_255.vnnlib: UNKNOWN (7.4s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.1 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/spec_aware_v2_pilot_20260530T082148Z/yolo_OFF/per_instance_yolo_2023_20260530T083346941614Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+}
+{
+  "benchmark": "yolo_2023",
+  "instance_id": 60,
+  "status": "OK",
+  "cli_normalized": "OK",
+  "wall_s": 10.006386229069903,
+  "peak_rss_mb": 2599.66015625,
+  "returncode": 0,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/spec_aware_v2_pilot_20260530T082148Z/yolo_OFF/per_instance_yolo_2023_20260530T083357259253Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/spec_aware_v2_pilot_20260530T082148Z/yolo_OFF",
+  "stdout_tail": "s a total capacity of 94.96 GiB of which 1.78 GiB is free. Process 2687037 has 690.00 MiB memory in use. Including non-PyTorch memory, this process has 37.50 GiB memory in use. Process 1035640 has 54.74 GiB memory in use. Of the allocated memory 35.76 GiB is allocated by PyTorch, and 1.10 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=yolo_2023 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=300.0s)\n  [  1/1] yolo_2023/onnx/TinyYOLO.onnx@vnnlib/TinyYOLO_prop_000037_eps_1_255.vnnlib: UNKNOWN (7.3s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.1 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/spec_aware_v2_pilot_20260530T082148Z/yolo_OFF/per_instance_yolo_2023_20260530T083357259253Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+}
+[watchdog] summary written: /data1/Kane/ACT/audit_results/spec_aware_v2_pilot_20260530T082148Z/yolo_OFF/watchdog_summary.json

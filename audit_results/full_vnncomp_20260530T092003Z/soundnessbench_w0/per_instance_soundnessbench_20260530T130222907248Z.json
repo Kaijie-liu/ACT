@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "benchmark": "soundnessbench",
+  "formal_mode": true,
+  "timestamp_utc": "20260530T130222907248Z",
+  "canonical_root": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks",
+  "receipt_dir": "/data1/Kane/ACT/audit_results/full_vnncomp_20260530T092003Z/soundnessbench_w0",
+  "wall_min": 0.09083545207977295,
+  "counts": {
+    "CERTIFIED": 0,
+    "FALSIFIED": 0,
+    "UNKNOWN": 0,
+    "ERROR": 1
+  },
+  "run_status": "FAILED",
+  "per_instance": [
+    {
+      "official_instance_id": 43,
+      "benchmark": "soundnessbench",
+      "onnx_model": "onnx/model.onnx",
+      "vnnlib_spec": "vnnlib/model_43.vnnlib",
+      "model_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/soundnessbench/onnx/model.onnx",
+      "spec_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/soundnessbench/vnnlib/model_43.vnnlib",
+      "internal_status": "ERROR",
+      "reportable_status": "ERROR",
+      "cli_normalized": "ERROR_OutOfMemoryError",
+      "count_bucket": "ERROR",
+      "queries": [],
+      "q_statuses": [],
+      "q_reportables": [],
+      "q_receipts": [],
+      "error": "OutOfMemoryError: CUDA out of memory. Tried to allocate 18.00 MiB. GPU 0 has a total capacity of 94.96 GiB of which 19.62 MiB is free. Process 2687037 has 690.00 MiB memory in use. Process 2998326 has 3.42 GiB memory in use. Process 3002142 has 8.42 GiB memory in use. Process 3002282 has 5.61 GiB memory in use. Process 3003674 has 574.00 MiB memory in use. Process 3003755 has 882.00 MiB memory in use. Process 3004903 has 65.35 GiB memory in use. Process 3005312 has 1.41 GiB memory in use. Process 3005345 has 6.88 GiB memory in use. Including non-PyTorch memory, this process has 788.00 MiB memory in use. Process 3005795 has 674.00 MiB memory in use. Of the allocated memory 112.88 MiB is allocated by PyTorch, and 15.12 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)",
+      "wall_s": 5.450042009353638,
+      "timeout_s": 120.0,
+      "instance_budget_exhausted": false
+    }
+  ]
+}

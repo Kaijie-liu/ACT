@@ -1,0 +1,15 @@
+[ACT] Auto-detecting project root: ../ACT
+[ACT] Gurobi license found: ../ACT/modules/gurobi/gurobi.lic
+{
+  "benchmark": "malbeware",
+  "instance_id": 23,
+  "status": "OK",
+  "cli_normalized": "OK",
+  "wall_s": 4.503065419965424,
+  "peak_rss_mb": 1376.9375,
+  "returncode": 0,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/full_vnncomp_20260530T092003Z/oom_rerun_20260530T234254Z/malbeware_rerun/per_instance_malbeware_20260531T002450654569Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/full_vnncomp_20260530T092003Z/oom_rerun_20260530T234254Z/malbeware_rerun",
+  "stdout_tail": "nt_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 4096 inputs, 25 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 4096 inputs, 25 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'malbeware'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed malbeware_family-Autorun.K_label-5_eps-1_idx-25.vnnlib: 24 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=malbeware max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=300.0s)\n  [  1/1] malbeware/onnx/malware_malimg_family_scaled_linear-25.onnx@vnnlib/malbeware_family-Autorun.K_label-5_eps-1_idx-25.vnnlib: CERTIFIED (2.1s)  V=1 A=0 U=0 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.0 min\n  CERTIFIED    1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/full_vnncomp_20260530T092003Z/oom_rerun_20260530T234254Z/malbeware_rerun/per_instance_malbeware_20260531T002450654569Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+}
+[watchdog] summary written: /data1/Kane/ACT/audit_results/full_vnncomp_20260530T092003Z/oom_rerun_20260530T234254Z/malbeware_rerun/watchdog_summary.json

@@ -1,0 +1,132 @@
+{
+  "schema_version": 2,
+  "strict_bounded_failure": false,
+  "counts": {
+    "OK": 8,
+    "UNKNOWN_TIMEOUT": 0,
+    "UNKNOWN_RESOURCE_LIMIT": 0,
+    "ERROR": 2
+  },
+  "results": [
+    {
+      "benchmark": "tinyimagenet_2024",
+      "instance_id": 0,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 17.008075607940555,
+      "peak_rss_mb": 2475.8515625,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/all_eq_probe_20260530T013817Z/tinyimagenet_2024/per_instance_tinyimagenet_2024_20260530T013835346624Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/all_eq_probe_20260530T013817Z/tinyimagenet_2024",
+      "stdout_tail": "9408 inputs, 200 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Ground truth label: 142\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'tinyimagenet_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed TinyImageNet_resnet_medium_prop_idx_1126_sidx_4974_eps_0.0039.vnnlib: 1 query(ies)\nINFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=19 out_dim=200 relus=10 (triangle for relu 1..-989, eq_lagr_v8 for last 999)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=tinyimagenet_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=300.0s)\n  [  1/1] tinyimagenet_2024/onnx/TinyImageNet_resnet_medium.onnx@vnnlib/TinyImageNet_resnet_medium_prop_idx_1126_sidx_4974_eps_0.0039.vnnlib: UNKNOWN (13.3s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.2 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/all_eq_probe_20260530T013817Z/tinyimagenet_2024/per_instance_tinyimagenet_2024_20260530T013835346624Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "tinyimagenet_2024",
+      "instance_id": 1,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 18.013068074011244,
+      "peak_rss_mb": 2503.6875,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/all_eq_probe_20260530T013817Z/tinyimagenet_2024/per_instance_tinyimagenet_2024_20260530T013853295599Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/all_eq_probe_20260530T013817Z/tinyimagenet_2024",
+      "stdout_tail": "ry in use. Process 3449627 has 35.94 GiB memory in use. Process 3449634 has 4.39 GiB memory in use. Process 3453040 has 112.00 MiB memory in use. Of the allocated memory 38.11 GiB is allocated by PyTorch, and 5.69 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=tinyimagenet_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=300.0s)\n  [  1/1] tinyimagenet_2024/onnx/TinyImageNet_resnet_medium.onnx@vnnlib/TinyImageNet_resnet_medium_prop_idx_6827_sidx_2613_eps_0.0039.vnnlib: UNKNOWN (14.3s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.2 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/all_eq_probe_20260530T013817Z/tinyimagenet_2024/per_instance_tinyimagenet_2024_20260530T013853295599Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "tinyimagenet_2024",
+      "instance_id": 2,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 17.00714248197619,
+      "peak_rss_mb": 2487.63671875,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/all_eq_probe_20260530T013817Z/tinyimagenet_2024/per_instance_tinyimagenet_2024_20260530T013910758703Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/all_eq_probe_20260530T013817Z/tinyimagenet_2024",
+      "stdout_tail": "ry in use. Process 3460272 has 1.65 GiB memory in use. Process 3460662 has 674.00 MiB memory in use. Process 3460700 has 28.00 MiB memory in use. Of the allocated memory 24.73 GiB is allocated by PyTorch, and 5.52 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=tinyimagenet_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=300.0s)\n  [  1/1] tinyimagenet_2024/onnx/TinyImageNet_resnet_medium.onnx@vnnlib/TinyImageNet_resnet_medium_prop_idx_7943_sidx_6299_eps_0.0039.vnnlib: UNKNOWN (13.6s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.2 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/all_eq_probe_20260530T013817Z/tinyimagenet_2024/per_instance_tinyimagenet_2024_20260530T013910758703Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "tinyimagenet_2024",
+      "instance_id": 3,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 11.005301438039169,
+      "peak_rss_mb": 2529.5546875,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/all_eq_probe_20260530T013817Z/tinyimagenet_2024/per_instance_tinyimagenet_2024_20260530T013921613730Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/all_eq_probe_20260530T013817Z/tinyimagenet_2024",
+      "stdout_tail": "3461589 has 5.35 GiB memory in use. Of the allocated memory 3.99 GiB is allocated by PyTorch, and 797.19 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)\nWARNING:act.back_end.solver.solver_hz:L25 FALLBACK (AttributeError): 'SparseGcZ' object has no attribute 'Gc'\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=tinyimagenet_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=300.0s)\n  [  1/1] tinyimagenet_2024/onnx/TinyImageNet_resnet_medium.onnx@vnnlib/TinyImageNet_resnet_medium_prop_idx_9558_sidx_6082_eps_0.0039.vnnlib: UNKNOWN (7.5s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.1 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/all_eq_probe_20260530T013817Z/tinyimagenet_2024/per_instance_tinyimagenet_2024_20260530T013921613730Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "tinyimagenet_2024",
+      "instance_id": 4,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 12.506723235012032,
+      "peak_rss_mb": 2501.28515625,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/all_eq_probe_20260530T013817Z/tinyimagenet_2024/per_instance_tinyimagenet_2024_20260530T013933963871Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/all_eq_probe_20260530T013817Z/tinyimagenet_2024",
+      "stdout_tail": "3470103 has 694.00 MiB memory in use. Of the allocated memory 6.79 GiB is allocated by PyTorch, and 2.79 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)\nWARNING:act.back_end.solver.solver_hz:L25 FALLBACK (AttributeError): 'SparseGcZ' object has no attribute 'Gc'\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=tinyimagenet_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=300.0s)\n  [  1/1] tinyimagenet_2024/onnx/TinyImageNet_resnet_medium.onnx@vnnlib/TinyImageNet_resnet_medium_prop_idx_2341_sidx_4149_eps_0.0039.vnnlib: UNKNOWN (8.8s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.1 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/all_eq_probe_20260530T013817Z/tinyimagenet_2024/per_instance_tinyimagenet_2024_20260530T013933963871Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "tinyimagenet_2024",
+      "instance_id": 5,
+      "status": "EXIT_NONZERO",
+      "cli_normalized": "ERROR_WATCHDOG_EXIT_NONZERO",
+      "wall_s": 10.005214413045906,
+      "peak_rss_mb": 2487.47265625,
+      "returncode": 1,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/all_eq_probe_20260530T013817Z/tinyimagenet_2024/per_instance_tinyimagenet_2024_watchdog_iid5_20260530T013945282863Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/all_eq_probe_20260530T013817Z/tinyimagenet_2024",
+      "stdout_tail": "============================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=tinyimagenet_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=300.0s)\n  [  1/1] tinyimagenet_2024/onnx/TinyImageNet_resnet_medium.onnx@vnnlib/TinyImageNet_resnet_medium_prop_idx_5478_sidx_174_eps_0.0039.vnnlib: ERROR_OutOfMemoryError (6.6s)  V=0 A=0 U=0 E=1  R=0\nTraceback (most recent call last):\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 1362, in cmd_verify\n    _run_vnnlib_verify(args)\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 549, in _run_vnnlib_verify\n    return _run_vnnlib_verify_hybridz(args)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 1247, in _run_vnnlib_verify_hybridz\n    raise RuntimeError(\nRuntimeError: VERIFICATION_RUN_FAILED: ERROR=1. Per-instance log preserved; inspect instance error fields.\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.1 min\n  ERROR        1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/all_eq_probe_20260530T013817Z/tinyimagenet_2024/per_instance_tinyimagenet_2024_20260530T013944287664Z.json\n\n\u274c Test failed: VERIFICATION_RUN_FAILED: ERROR=1. Per-instance log preserved; inspect instance error fields.\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u274c vnnlib                    FAILED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "tinyimagenet_2024",
+      "instance_id": 6,
+      "status": "EXIT_NONZERO",
+      "cli_normalized": "ERROR_WATCHDOG_EXIT_NONZERO",
+      "wall_s": 9.50503344705794,
+      "peak_rss_mb": 2491.12890625,
+      "returncode": 1,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/all_eq_probe_20260530T013817Z/tinyimagenet_2024/per_instance_tinyimagenet_2024_watchdog_iid6_20260530T013954788412Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/all_eq_probe_20260530T013817Z/tinyimagenet_2024",
+      "stdout_tail": "============================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=tinyimagenet_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=300.0s)\n  [  1/1] tinyimagenet_2024/onnx/TinyImageNet_resnet_medium.onnx@vnnlib/TinyImageNet_resnet_medium_prop_idx_9262_sidx_880_eps_0.0039.vnnlib: ERROR_OutOfMemoryError (6.3s)  V=0 A=0 U=0 E=1  R=0\nTraceback (most recent call last):\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 1362, in cmd_verify\n    _run_vnnlib_verify(args)\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 549, in _run_vnnlib_verify\n    return _run_vnnlib_verify_hybridz(args)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 1247, in _run_vnnlib_verify_hybridz\n    raise RuntimeError(\nRuntimeError: VERIFICATION_RUN_FAILED: ERROR=1. Per-instance log preserved; inspect instance error fields.\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.1 min\n  ERROR        1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/all_eq_probe_20260530T013817Z/tinyimagenet_2024/per_instance_tinyimagenet_2024_20260530T013953871503Z.json\n\n\u274c Test failed: VERIFICATION_RUN_FAILED: ERROR=1. Per-instance log preserved; inspect instance error fields.\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u274c vnnlib                    FAILED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "tinyimagenet_2024",
+      "instance_id": 7,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 11.006270009092987,
+      "peak_rss_mb": 2504.84375,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/all_eq_probe_20260530T013817Z/tinyimagenet_2024/per_instance_tinyimagenet_2024_20260530T014004908757Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/all_eq_probe_20260530T013817Z/tinyimagenet_2024",
+      "stdout_tail": "is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)\nWARNING:act.back_end.solver.solver_hz:L8 FALLBACK (AttributeError): 'SparseGcZ' object has no attribute 'Gc'\nWARNING:act.back_end.solver.solver_hz:L25 FALLBACK (AttributeError): 'SparseGcZ' object has no attribute 'Gc'\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=tinyimagenet_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=300.0s)\n  [  1/1] tinyimagenet_2024/onnx/TinyImageNet_resnet_medium.onnx@vnnlib/TinyImageNet_resnet_medium_prop_idx_6252_sidx_9972_eps_0.0039.vnnlib: UNKNOWN (7.9s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.1 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/all_eq_probe_20260530T013817Z/tinyimagenet_2024/per_instance_tinyimagenet_2024_20260530T014004908757Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "tinyimagenet_2024",
+      "instance_id": 8,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 12.008099070983008,
+      "peak_rss_mb": 2488.28125,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/all_eq_probe_20260530T013817Z/tinyimagenet_2024/per_instance_tinyimagenet_2024_20260530T014016789783Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/all_eq_probe_20260530T013817Z/tinyimagenet_2024",
+      "stdout_tail": " 3488036 has 674.00 MiB memory in use. Of the allocated memory 6.18 GiB is allocated by PyTorch, and 2.38 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)\nWARNING:act.back_end.solver.solver_hz:L25 FALLBACK (AttributeError): 'SparseGcZ' object has no attribute 'Gc'\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=tinyimagenet_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=300.0s)\n  [  1/1] tinyimagenet_2024/onnx/TinyImageNet_resnet_medium.onnx@vnnlib/TinyImageNet_resnet_medium_prop_idx_2146_sidx_298_eps_0.0039.vnnlib: UNKNOWN (8.7s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.1 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/all_eq_probe_20260530T013817Z/tinyimagenet_2024/per_instance_tinyimagenet_2024_20260530T014016789783Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "tinyimagenet_2024",
+      "instance_id": 9,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 12.507776621961966,
+      "peak_rss_mb": 2521.7578125,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/all_eq_probe_20260530T013817Z/tinyimagenet_2024/per_instance_tinyimagenet_2024_20260530T014029018387Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/all_eq_probe_20260530T013817Z/tinyimagenet_2024",
+      "stdout_tail": " 3492583 has 674.00 MiB memory in use. Of the allocated memory 6.35 GiB is allocated by PyTorch, and 2.11 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)\nWARNING:act.back_end.solver.solver_hz:L25 FALLBACK (AttributeError): 'SparseGcZ' object has no attribute 'Gc'\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=tinyimagenet_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=300.0s)\n  [  1/1] tinyimagenet_2024/onnx/TinyImageNet_resnet_medium.onnx@vnnlib/TinyImageNet_resnet_medium_prop_idx_538_sidx_2467_eps_0.0039.vnnlib: UNKNOWN (9.0s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.1 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/all_eq_probe_20260530T013817Z/tinyimagenet_2024/per_instance_tinyimagenet_2024_20260530T014029018387Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    }
+  ]
+}

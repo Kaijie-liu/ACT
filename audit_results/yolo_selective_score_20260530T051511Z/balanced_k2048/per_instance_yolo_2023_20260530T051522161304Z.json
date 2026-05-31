@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "benchmark": "yolo_2023",
+  "formal_mode": true,
+  "timestamp_utc": "20260530T051522161304Z",
+  "canonical_root": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks",
+  "receipt_dir": "/data1/Kane/ACT/audit_results/yolo_selective_score_20260530T051511Z/balanced_k2048",
+  "wall_min": 0.09839624961217244,
+  "counts": {
+    "CERTIFIED": 0,
+    "FALSIFIED": 0,
+    "UNKNOWN": 0,
+    "ERROR": 1
+  },
+  "run_status": "FAILED",
+  "per_instance": [
+    {
+      "official_instance_id": 0,
+      "benchmark": "yolo_2023",
+      "onnx_model": "onnx/TinyYOLO.onnx",
+      "vnnlib_spec": "vnnlib/TinyYOLO_prop_000005_eps_1_255.vnnlib",
+      "model_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/yolo_2023/onnx/TinyYOLO.onnx",
+      "spec_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/yolo_2023/vnnlib/TinyYOLO_prop_000005_eps_1_255.vnnlib",
+      "internal_status": "ERROR",
+      "reportable_status": "ERROR",
+      "cli_normalized": "ERROR_OutOfMemoryError",
+      "count_bucket": "ERROR",
+      "queries": [],
+      "q_statuses": [],
+      "q_reportables": [],
+      "q_receipts": [],
+      "error": "OutOfMemoryError: CUDA out of memory. Tried to allocate 492.00 MiB. GPU 0 has a total capacity of 94.96 GiB of which 131.56 MiB is free. Process 2687037 has 690.00 MiB memory in use. Process 281423 has 2.31 GiB memory in use. Process 282694 has 57.43 GiB memory in use. Process 282695 has 4.39 GiB memory in use. Process 282696 has 13.03 GiB memory in use. Process 282697 has 7.91 GiB memory in use. Including non-PyTorch memory, this process has 4.39 GiB memory in use. Process 282698 has 4.39 GiB memory in use. Of the allocated memory 3.75 GiB is allocated by PyTorch, and 3.25 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)",
+      "wall_s": 5.903704881668091,
+      "timeout_s": 120.0,
+      "instance_budget_exhausted": false
+    }
+  ]
+}

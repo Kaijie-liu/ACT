@@ -555,7 +555,14 @@ def tf_reduce_sum(L: Layer, Bin: Bounds) -> Fact:
     lb_out = lb_in.sum(dim=dim, keepdim=keepdims)
     ub_out = ub_in.sum(dim=dim, keepdim=keepdims)
     Bout = Bounds(lb_out.reshape(batch_size, -1), ub_out.reshape(batch_size, -1))
-    C = ConSet(); C.add_box(L.id, L.out_vars, Bout)
+    C = ConSet()
+    C.replace(Con("EQ", tuple(L.out_vars + L.in_vars), {
+        "tag": f"reduce_sum:{L.id}",
+        "axes": list(axes) if axes is not None else None,
+        "keepdims": keepdims,
+        "input_shape": tuple(in_shape) if in_shape is not None else None,
+    }))
+    C.add_box(L.id, L.out_vars, Bout)
     return Fact(Bout, C)
 
 def tf_bn(L: Layer, Bin: Bounds) -> Fact:
@@ -709,10 +716,29 @@ def tf_reshape(L: Layer, Bin: Bounds) -> Fact:
 
 def tf_transpose(L: Layer, Bin: Bounds) -> Fact:
     """Transpose: permute dimensions (identity for bounds)"""
-    # Transpose doesn't change the values, only the dimension order
-    B = Bounds(Bin.lb.clone(), Bin.ub.clone())
+    in_shape = L.params.get("input_shape")
+    out_shape = L.params.get("output_shape")
+    perm = L.params.get("perm")
+    if in_shape is not None and perm is not None:
+        in_shape = tuple(int(x) for x in in_shape)
+        perm = tuple(int(x) for x in perm)
+        lb = Bin.lb.reshape(Bin.lb.shape[0], *in_shape).permute(
+            0, *(p + 1 for p in perm)
+        ).reshape(Bin.lb.shape[0], -1)
+        ub = Bin.ub.reshape(Bin.ub.shape[0], *in_shape).permute(
+            0, *(p + 1 for p in perm)
+        ).reshape(Bin.ub.shape[0], -1)
+        B = Bounds(lb, ub)
+    else:
+        # Legacy fallback for older converter paths that did not record shape.
+        B = Bounds(Bin.lb.clone(), Bin.ub.clone())
     C = ConSet()
-    C.replace(Con("EQ", tuple(L.out_vars + L.in_vars), {"tag": f"transpose:{L.id}", "perm": L.params.get("perm")}))
+    C.replace(Con("EQ", tuple(L.out_vars + L.in_vars), {
+        "tag": f"transpose:{L.id}",
+        "perm": L.params.get("perm"),
+        "input_shape": L.params.get("input_shape"),
+        "output_shape": L.params.get("output_shape"),
+    }))
     C.add_box(L.id, L.out_vars, B); return Fact(B, C)
 
 def tf_squeeze(L: Layer, Bin: Bounds) -> Fact:

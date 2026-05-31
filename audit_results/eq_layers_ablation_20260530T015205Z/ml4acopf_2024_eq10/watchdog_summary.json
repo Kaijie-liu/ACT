@@ -1,0 +1,132 @@
+{
+  "schema_version": 2,
+  "strict_bounded_failure": false,
+  "counts": {
+    "OK": 9,
+    "UNKNOWN_TIMEOUT": 0,
+    "UNKNOWN_RESOURCE_LIMIT": 0,
+    "ERROR": 1
+  },
+  "results": [
+    {
+      "benchmark": "ml4acopf_2024",
+      "instance_id": 0,
+      "status": "EXIT_NONZERO",
+      "cli_normalized": "ERROR_WATCHDOG_EXIT_NONZERO",
+      "wall_s": 8.507345560006797,
+      "peak_rss_mb": 1141.9140625,
+      "returncode": 1,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/eq_layers_ablation_20260530T015205Z/ml4acopf_2024_eq10/per_instance_ml4acopf_2024_watchdog_iid0_20260530T015217542637Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/eq_layers_ablation_20260530T015205Z/ml4acopf_2024_eq10",
+      "stdout_tail": "alized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=ml4acopf_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=180.0s)\n  [  1/1] ml4acopf_2024/./onnx/14_ieee_ml4acopf-linear-residual.onnx@./vnnlib/14_ieee_prop9.vnnlib: ERROR_ValueError (2.9s)  V=0 A=0 U=0 E=1  R=0\nTraceback (most recent call last):\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 1364, in cmd_verify\n    _run_vnnlib_verify(args)\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 549, in _run_vnnlib_verify\n    return _run_vnnlib_verify_hybridz(args)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 1249, in _run_vnnlib_verify_hybridz\n    raise RuntimeError(\nRuntimeError: VERIFICATION_RUN_FAILED: ERROR=1. Per-instance log preserved; inspect instance error fields.\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.0 min\n  ERROR        1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/eq_layers_ablation_20260530T015205Z/ml4acopf_2024_eq10/per_instance_ml4acopf_2024_20260530T015215837032Z.json\n\n\u274c Test failed: VERIFICATION_RUN_FAILED: ERROR=1. Per-instance log preserved; inspect instance error fields.\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u274c vnnlib                    FAILED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "ml4acopf_2024",
+      "instance_id": 5,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 10.010724523919635,
+      "peak_rss_mb": 1723.91015625,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/eq_layers_ablation_20260530T015205Z/ml4acopf_2024_eq10/per_instance_ml4acopf_2024_20260530T015225873299Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/eq_layers_ablation_20260530T015205Z/ml4acopf_2024_eq10",
+      "stdout_tail": "t_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 22)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 22 inputs, 186 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 22 inputs, 186 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'ml4acopf_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed 14_ieee_prop6.vnnlib: 2 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=ml4acopf_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=180.0s)\n  [  1/1] ml4acopf_2024/./onnx/14_ieee_ml4acopf-linear-residual.onnx@./vnnlib/14_ieee_prop6.vnnlib: UNKNOWN (4.2s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.1 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/eq_layers_ablation_20260530T015205Z/ml4acopf_2024_eq10/per_instance_ml4acopf_2024_20260530T015225873299Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "ml4acopf_2024",
+      "instance_id": 10,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 118.18092260998674,
+      "peak_rss_mb": 2023.90625,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/eq_layers_ablation_20260530T015205Z/ml4acopf_2024_eq10/per_instance_ml4acopf_2024_20260530T015424478527Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/eq_layers_ablation_20260530T015205Z/ml4acopf_2024_eq10",
+      "stdout_tail": "nd.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 22)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 22 inputs, 186 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 22 inputs, 186 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'ml4acopf_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed 14_ieee_prop3.vnnlib: 20 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=ml4acopf_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=180.0s)\n  [  1/1] ml4acopf_2024/./onnx/14_ieee_ml4acopf-linear-residual.onnx@./vnnlib/14_ieee_prop3.vnnlib: UNKNOWN (113.8s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=1.9 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/eq_layers_ablation_20260530T015205Z/ml4acopf_2024_eq10/per_instance_ml4acopf_2024_20260530T015424478527Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "ml4acopf_2024",
+      "instance_id": 15,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 185.09796475502662,
+      "peak_rss_mb": 1812.91796875,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/eq_layers_ablation_20260530T015205Z/ml4acopf_2024_eq10/per_instance_ml4acopf_2024_20260530T015729945173Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/eq_layers_ablation_20260530T015205Z/ml4acopf_2024_eq10",
+      "stdout_tail": "front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 198)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 198 inputs, 1696 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 198 inputs, 1696 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'ml4acopf_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed 118_ieee_prop4.vnnlib: 236 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=ml4acopf_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=180.0s)\n  [  1/1] ml4acopf_2024/./onnx/118_ieee_ml4acopf.onnx@./vnnlib/118_ieee_prop4.vnnlib: UNKNOWN (180.6s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=3.0 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/eq_layers_ablation_20260530T015205Z/ml4acopf_2024_eq10/per_instance_ml4acopf_2024_20260530T015729945173Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "ml4acopf_2024",
+      "instance_id": 20,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 16.509464256931096,
+      "peak_rss_mb": 2856.48046875,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/eq_layers_ablation_20260530T015205Z/ml4acopf_2024_eq10/per_instance_ml4acopf_2024_20260530T015746317937Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/eq_layers_ablation_20260530T015205Z/ml4acopf_2024_eq10",
+      "stdout_tail": "der.data_model_loader:  \u2713 Input shape: (1, 402)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 402 inputs, 3804 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 402 inputs, 3804 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'ml4acopf_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed 300_ieee_prop105.vnnlib: 2 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=ml4acopf_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=180.0s)\n  [  1/1] ml4acopf_2024/./onnx/300_ieee_ml4acopf-linear-nonresidual.onnx@./vnnlib/300_ieee_prop105.vnnlib: UNKNOWN (13.2s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.2 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/eq_layers_ablation_20260530T015205Z/ml4acopf_2024_eq10/per_instance_ml4acopf_2024_20260530T015746317937Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "ml4acopf_2024",
+      "instance_id": 25,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 9.007156334933825,
+      "peak_rss_mb": 1995.7109375,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/eq_layers_ablation_20260530T015205Z/ml4acopf_2024_eq10/per_instance_ml4acopf_2024_20260530T015755096241Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/eq_layers_ablation_20260530T015205Z/ml4acopf_2024_eq10",
+      "stdout_tail": "nd.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 22)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 22 inputs, 186 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 22 inputs, 186 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'ml4acopf_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed 14_ieee_prop2.vnnlib: 1 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=ml4acopf_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=180.0s)\n  [  1/1] ml4acopf_2024/./onnx/14_ieee_ml4acopf-linear-nonresidual.onnx@./vnnlib/14_ieee_prop2.vnnlib: UNKNOWN (5.5s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.1 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/eq_layers_ablation_20260530T015205Z/ml4acopf_2024_eq10/per_instance_ml4acopf_2024_20260530T015755096241Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "ml4acopf_2024",
+      "instance_id": 30,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 5.00454355601687,
+      "peak_rss_mb": 1656.3515625,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/eq_layers_ablation_20260530T015205Z/ml4acopf_2024_eq10/per_instance_ml4acopf_2024_20260530T015800069599Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/eq_layers_ablation_20260530T015205Z/ml4acopf_2024_eq10",
+      "stdout_tail": ".vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 22)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 22 inputs, 186 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 22 inputs, 186 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'ml4acopf_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed 14_ieee_prop13.vnnlib: 2 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=ml4acopf_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=180.0s)\n  [  1/1] ml4acopf_2024/./onnx/14_ieee_ml4acopf-linear-nonresidual.onnx@./vnnlib/14_ieee_prop13.vnnlib: UNKNOWN (1.2s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.0 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/eq_layers_ablation_20260530T015205Z/ml4acopf_2024_eq10/per_instance_ml4acopf_2024_20260530T015800069599Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "ml4acopf_2024",
+      "instance_id": 35,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 5.503908534999937,
+      "peak_rss_mb": 1681.7734375,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/eq_layers_ablation_20260530T015205Z/ml4acopf_2024_eq10/per_instance_ml4acopf_2024_20260530T015805325148Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/eq_layers_ablation_20260530T015205Z/ml4acopf_2024_eq10",
+      "stdout_tail": ".vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 22)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 22 inputs, 186 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 22 inputs, 186 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'ml4acopf_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed 14_ieee_prop10.vnnlib: 2 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=ml4acopf_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=180.0s)\n  [  1/1] ml4acopf_2024/./onnx/14_ieee_ml4acopf-linear-nonresidual.onnx@./vnnlib/14_ieee_prop10.vnnlib: UNKNOWN (1.4s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.0 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/eq_layers_ablation_20260530T015205Z/ml4acopf_2024_eq10/per_instance_ml4acopf_2024_20260530T015805325148Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "ml4acopf_2024",
+      "instance_id": 40,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 8.005251253023744,
+      "peak_rss_mb": 1922.0078125,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/eq_layers_ablation_20260530T015205Z/ml4acopf_2024_eq10/per_instance_ml4acopf_2024_20260530T015813554054Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/eq_layers_ablation_20260530T015205Z/ml4acopf_2024_eq10",
+      "stdout_tail": "b_loader.data_model_loader:  \u2713 Input shape: (1, 198)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 198 inputs, 1696 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 198 inputs, 1696 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'ml4acopf_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed 118_ieee_prop5.vnnlib: 2 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=ml4acopf_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=180.0s)\n  [  1/1] ml4acopf_2024/./onnx/118_ieee_ml4acopf-linear-nonresidual.onnx@./vnnlib/118_ieee_prop5.vnnlib: UNKNOWN (4.4s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.1 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/eq_layers_ablation_20260530T015205Z/ml4acopf_2024_eq10/per_instance_ml4acopf_2024_20260530T015813554054Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "ml4acopf_2024",
+      "instance_id": 45,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 4.003614728106186,
+      "peak_rss_mb": 1671.87109375,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/eq_layers_ablation_20260530T015205Z/ml4acopf_2024_eq10/per_instance_ml4acopf_2024_20260530T015817908644Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/eq_layers_ablation_20260530T015205Z/ml4acopf_2024_eq10",
+      "stdout_tail": "\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Input shape: (1, 22)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 22 inputs, 186 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 22 inputs, 186 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'ml4acopf_2024'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed 14_ieee_prop8.vnnlib: 2 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=ml4acopf_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=180.0s)\n  [  1/1] ml4acopf_2024/./onnx/14_ieee_ml4acopf.onnx@./vnnlib/14_ieee_prop8.vnnlib: CERTIFIED (0.8s)  V=1 A=0 U=0 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.0 min\n  CERTIFIED    1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/eq_layers_ablation_20260530T015205Z/ml4acopf_2024_eq10/per_instance_ml4acopf_2024_20260530T015817908644Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    }
+  ]
+}

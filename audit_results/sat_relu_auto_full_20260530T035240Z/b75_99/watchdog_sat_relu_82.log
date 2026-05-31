@@ -1,0 +1,44 @@
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/sat_v33_c140.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v33_c140.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: sat_v33_c140.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 33]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 33)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 33 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 33 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed sat_v33_c140.vnnlib: 1 query(ies)
+INFO:act.back_end.solver.solver_hz:single_relu_dense_chull_profile ACTIVE: input_dim=33 (single dense ReLU uses convex_hull_cont)
+[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic
+✅ Device Manager Initialized: device=cuda:0, dtype=torch.float64
+
+================================================================================
+ACT: Abstract Constraint Transformer
+Inference-based whitebox fuzzing for neural network verification
+================================================================================
+
+
+================================================================================
+VERIFICATION TEST: VNNLIB → VerifiableModel → verify_once
+================================================================================
+
+[vnnlib] category=sat_relu max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=120.0s)
+  [  1/1] sat_relu/onnx/sat_v33_c140.onnx@vnnlib/sat_v33_c140.vnnlib: FALSIFIED (0.8s)  V=0 A=1 U=0 E=0  R=0
+
+[vnnlib/hybridz] FINAL — total=1 wall=0.0 min
+  FALSIFIED    1
+  [structured] per-instance log → /data1/Kane/ACT/audit_results/sat_relu_auto_full_20260530T035240Z/b75_99/per_instance_sat_relu_20260530T035316127745Z.json
+
+================================================================================
+VERIFICATION TEST SUMMARY
+================================================================================
+  ✅ vnnlib                    PASSED
+================================================================================
+

@@ -1,0 +1,16 @@
+[ACT] Auto-detecting project root: .
+[ACT] Gurobi license found: modules/gurobi/gurobi.lic
+{
+  "benchmark": "yolo_2023",
+  "instance_id": 25,
+  "status": "OK",
+  "cli_normalized": "OK",
+  "wall_s": 51.52879838901572,
+  "peak_rss_mb": 2578.04296875,
+  "returncode": 0,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/yolo_iid25_k256_sparseadd_20260530T062847Z/k256_tail12k/per_instance_yolo_2023_20260530T062939456420Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/yolo_iid25_k256_sparseadd_20260530T062847Z/k256_tail12k",
+  "stdout_tail": "ing non-PyTorch memory, this process has 85.82 GiB memory in use. Of the allocated memory 84.52 GiB is allocated by PyTorch, and 668.78 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)\n[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=yolo_2023 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=260.0s)\n  [  1/1] yolo_2023/onnx/TinyYOLO.onnx@vnnlib/TinyYOLO_prop_000220_eps_1_255.vnnlib: UNKNOWN (48.4s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.8 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/yolo_iid25_k256_sparseadd_20260530T062847Z/k256_tail12k/per_instance_yolo_2023_20260530T062939456420Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n[W530 16:29:39.078198162 AllocatorConfig.cpp:28] Warning: PYTORCH_CUDA_ALLOC_CONF is deprecated, use PYTORCH_ALLOC_CONF instead (function operator())\n"
+}
+[watchdog] summary written: /data1/Kane/ACT/audit_results/yolo_iid25_k256_sparseadd_20260530T062847Z/k256_tail12k/watchdog_summary.json
+[W530 16:29:41.285607298 AllocatorConfig.cpp:28] Warning: PYTORCH_CUDA_ALLOC_CONF is deprecated, use PYTORCH_ALLOC_CONF instead (function operator())

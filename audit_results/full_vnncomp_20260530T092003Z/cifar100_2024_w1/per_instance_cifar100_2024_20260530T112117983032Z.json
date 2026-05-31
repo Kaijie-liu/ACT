@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "benchmark": "cifar100_2024",
+  "formal_mode": true,
+  "timestamp_utc": "20260530T112117983032Z",
+  "canonical_root": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks",
+  "receipt_dir": "/data1/Kane/ACT/audit_results/full_vnncomp_20260530T092003Z/cifar100_2024_w1",
+  "wall_min": 0.09504312674204508,
+  "counts": {
+    "CERTIFIED": 0,
+    "FALSIFIED": 0,
+    "UNKNOWN": 0,
+    "ERROR": 1
+  },
+  "run_status": "FAILED",
+  "per_instance": [
+    {
+      "official_instance_id": 69,
+      "benchmark": "cifar100_2024",
+      "onnx_model": "onnx/CIFAR100_resnet_medium.onnx",
+      "vnnlib_spec": "vnnlib/CIFAR100_resnet_medium_prop_idx_6049_sidx_4719_eps_0.0039.vnnlib",
+      "model_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/onnx/CIFAR100_resnet_medium.onnx",
+      "spec_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/vnnlib/CIFAR100_resnet_medium_prop_idx_6049_sidx_4719_eps_0.0039.vnnlib",
+      "internal_status": "ERROR",
+      "reportable_status": "ERROR",
+      "cli_normalized": "ERROR_OutOfMemoryError",
+      "count_bucket": "ERROR",
+      "queries": [],
+      "q_statuses": [],
+      "q_reportables": [],
+      "q_receipts": [],
+      "error": "OutOfMemoryError: CUDA out of memory. Tried to allocate 2.00 MiB. GPU 0 has a total capacity of 94.96 GiB of which 12.25 MiB is free. Process 2687037 has 690.00 MiB memory in use. Process 1487055 has 2.39 GiB memory in use. Process 1651571 has 50.39 GiB memory in use. Process 1653156 has 37.84 GiB memory in use. Process 1665631 has 674.00 MiB memory in use. Process 1665685 has 716.00 MiB memory in use. Including non-PyTorch memory, this process has 722.00 MiB memory in use. Process 1671738 has 674.00 MiB memory in use. Process 1671840 has 644.00 MiB memory in use. Of the allocated memory 51.02 MiB is allocated by PyTorch, and 18.98 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)",
+      "wall_s": 5.702531337738037,
+      "timeout_s": 240.0,
+      "instance_budget_exhausted": false
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: sat_relu/onnx/unsat_v24_c66.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/unsat_v24_c66.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 9 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: unsat_v24_c66.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Extracted input shape: [1, 24]
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 24)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 24 inputs, 2 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 24 inputs, 2 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'sat_relu'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed unsat_v24_c66.vnnlib: 1 query(ies)
+INFO:act.back_end.solver.solver_hz:single_relu_dense_chull_profile ACTIVE: input_dim=24 (single dense ReLU uses convex_hull_cont)
+[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic
+✅ Device Manager Initialized: device=cuda:0, dtype=torch.float64
+
+================================================================================
+ACT: Abstract Constraint Transformer
+Inference-based whitebox fuzzing for neural network verification
+================================================================================
+
+
+================================================================================
+VERIFICATION TEST: VNNLIB → VerifiableModel → verify_once
+================================================================================
+
+[vnnlib] category=sat_relu max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=120.0s)
+  [  1/1] sat_relu/onnx/unsat_v24_c66.onnx@vnnlib/unsat_v24_c66.vnnlib: UNKNOWN (1.1s)  V=0 A=0 U=1 E=0  R=0
+
+[vnnlib/hybridz] FINAL — total=1 wall=0.0 min
+  UNKNOWN      1
+  [structured] per-instance log → /data1/Kane/ACT/audit_results/full_vnncomp_20260530T092003Z/sat_relu_w0/per_instance_sat_relu_20260530T120403752886Z.json
+
+================================================================================
+VERIFICATION TEST SUMMARY
+================================================================================
+  ✅ vnnlib                    PASSED
+================================================================================
+

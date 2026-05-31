@@ -1,0 +1,27 @@
+[ACT] Auto-detecting project root: ../ACT
+[ACT] Gurobi license found: ../ACT/modules/gurobi/gurobi.lic
+{
+  "benchmark": "cgan_2023",
+  "instance_id": 19,
+  "status": "EXIT_NONZERO",
+  "cli_normalized": "ERROR_WATCHDOG_EXIT_NONZERO",
+  "wall_s": 25.51591729396023,
+  "peak_rss_mb": 4447.6015625,
+  "returncode": 1,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/sigmoid_K_ablation_20260530T022248Z/cgan_2023_tanhK2/per_instance_cgan_2023_watchdog_iid19_20260530T023549519015Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/sigmoid_K_ablation_20260530T022248Z/cgan_2023_tanhK2",
+  "stdout_tail": "====================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=cgan_2023 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=300.0s)\n  [  1/1] cgan_2023/onnx/cGAN_imgSz32_nCh_3_small_transformer.onnx@vnnlib/cGAN_imgSz32_nCh_3_small_transformer_prop_0_input_eps_0.005_output_eps_0.010.vnnlib: ERROR_OutOfMemoryError (22.1s)  V=0 A=0 U=0 E=1  R=0\nTraceback (most recent call last):\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 1364, in cmd_verify\n    _run_vnnlib_verify(args)\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 549, in _run_vnnlib_verify\n    return _run_vnnlib_verify_hybridz(args)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 1249, in _run_vnnlib_verify_hybridz\n    raise RuntimeError(\nRuntimeError: VERIFICATION_RUN_FAILED: ERROR=1. Per-instance log preserved; inspect instance error fields.\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.4 min\n  ERROR        1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/sigmoid_K_ablation_20260530T022248Z/cgan_2023_tanhK2/per_instance_cgan_2023_20260530T023548338983Z.json\n\n\u274c Test failed: VERIFICATION_RUN_FAILED: ERROR=1. Per-instance log preserved; inspect instance error fields.\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u274c vnnlib                    FAILED\n================================================================================\n\n"
+}
+{
+  "benchmark": "cgan_2023",
+  "instance_id": 20,
+  "status": "EXIT_NONZERO",
+  "cli_normalized": "ERROR_WATCHDOG_EXIT_NONZERO",
+  "wall_s": 26.015115458983928,
+  "peak_rss_mb": 4458.9140625,
+  "returncode": 1,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/sigmoid_K_ablation_20260530T022248Z/cgan_2023_tanhK2/per_instance_cgan_2023_watchdog_iid20_20260530T023615535553Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/sigmoid_K_ablation_20260530T022248Z/cgan_2023_tanhK2",
+  "stdout_tail": "====================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=cgan_2023 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=300.0s)\n  [  1/1] cgan_2023/onnx/cGAN_imgSz32_nCh_3_small_transformer.onnx@vnnlib/cGAN_imgSz32_nCh_3_small_transformer_prop_1_input_eps_0.010_output_eps_0.015.vnnlib: ERROR_OutOfMemoryError (22.6s)  V=0 A=0 U=0 E=1  R=0\nTraceback (most recent call last):\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 1364, in cmd_verify\n    _run_vnnlib_verify(args)\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 549, in _run_vnnlib_verify\n    return _run_vnnlib_verify_hybridz(args)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/data1/Kane/ACT/act/pipeline/cli.py\", line 1249, in _run_vnnlib_verify_hybridz\n    raise RuntimeError(\nRuntimeError: VERIFICATION_RUN_FAILED: ERROR=1. Per-instance log preserved; inspect instance error fields.\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.4 min\n  ERROR        1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/sigmoid_K_ablation_20260530T022248Z/cgan_2023_tanhK2/per_instance_cgan_2023_20260530T023614264778Z.json\n\n\u274c Test failed: VERIFICATION_RUN_FAILED: ERROR=1. Per-instance log preserved; inspect instance error fields.\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u274c vnnlib                    FAILED\n================================================================================\n\n"
+}
+[watchdog] summary written: /data1/Kane/ACT/audit_results/sigmoid_K_ablation_20260530T022248Z/cgan_2023_tanhK2/watchdog_summary.json

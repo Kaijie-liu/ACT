@@ -1,0 +1,15 @@
+[ACT] Auto-detecting project root: .
+[ACT] Gurobi license found: modules/gurobi/gurobi.lic
+{
+  "benchmark": "yolo_2023",
+  "instance_id": 0,
+  "status": "OK",
+  "cli_normalized": "OK",
+  "wall_s": 29.516498822020367,
+  "peak_rss_mb": 4739.6328125,
+  "returncode": 0,
+  "per_instance_json": "/data1/Kane/ACT/audit_results/yolo_selective_debug_20260530T053013Z/per_instance_yolo_2023_20260530T053044592646Z.json",
+  "out_dir": "/data1/Kane/ACT/audit_results/yolo_selective_debug_20260530T053013Z",
+  "stdout_tail": "L20 CONV2D -> dim=5408 ng=6000 nb=0 nc=0\n[HZ-PROGRESS] start L21 RELU in=dim=5408 ng=6000 nb=0 nc=0\n[HZ-SELECTIVE] HZono top_k=512 dim=5408 ng=6000->11408 nc=0->1024\n[HZ-PROGRESS] L21 RELU -> dim=5408 ng=6000 nb=0 nc=1024\n[HZ-PROGRESS] start L22 CONV2D in=dim=5408 ng=6000 nb=0 nc=1024\n[HZ-PROGRESS] L22 CONV2D -> dim=5408 ng=6000 nb=0 nc=1024\n[HZ-PROGRESS] start L23 ADD in=none\n[HZ-PROGRESS] L23 ADD -> dim=5408 ng=6000 nb=0 nc=1024\n[HZ-PROGRESS] start L24 CONV2D in=dim=5408 ng=6000 nb=0 nc=1024\n[HZ-PROGRESS] L24 CONV2D -> dim=10816 ng=6000 nb=0 nc=1024\n[HZ-PROGRESS] start L25 CONV2D in=dim=5408 ng=6000 nb=0 nc=1024\n[HZ-PROGRESS] L25 CONV2D -> dim=10816 ng=6000 nb=0 nc=1024\n[HZ-PROGRESS] start L26 RELU in=dim=10816 ng=6000 nb=0 nc=1024\n[HZ-SELECTIVE] HZono top_k=512 dim=10816 ng=6000->16816 nc=1024->23680\n[HZ-PROGRESS] L26 RELU -> dim=10816 ng=16816 nb=0 nc=1024\n[HZ-PROGRESS] start L27 CONV2D in=dim=10816 ng=16816 nb=0 nc=1024\n[HZ-PROGRESS] L27 CONV2D -> dim=10816 ng=16816 nb=0 nc=1024\n[HZ-PROGRESS] start L28 ADD in=none\n[HZ-PROGRESS] L28 ADD -> dim=10816 ng=16816 nb=0 nc=1024\n[HZ-PROGRESS] start L29 CONV2D in=dim=10816 ng=16816 nb=0 nc=1024\n[HZ-PROGRESS] L29 CONV2D -> dim=21125 ng=16816 nb=0 nc=1024\n[HZ-PROGRESS] start L30 FLATTEN in=dim=21125 ng=16816 nb=0 nc=1024\n[HZ-PROGRESS] L30 FLATTEN -> dim=21125 ng=16816 nb=0 nc=1024\n  [  1/1] yolo_2023/onnx/TinyYOLO.onnx@vnnlib/TinyYOLO_prop_000005_eps_1_255.vnnlib: UNKNOWN (26.8s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.4 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/yolo_selective_debug_20260530T053013Z/per_instance_yolo_2023_20260530T053044592646Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+}
+[watchdog] summary written: /data1/Kane/ACT/audit_results/yolo_selective_debug_20260530T053013Z/watchdog_summary.json

@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "benchmark": "lsnc_relu",
+  "formal_mode": true,
+  "timestamp_utc": "20260530T125910976843Z",
+  "canonical_root": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks",
+  "receipt_dir": "/data1/Kane/ACT/audit_results/full_vnncomp_20260530T092003Z/lsnc_relu_w0",
+  "wall_min": 0.013915749390920003,
+  "counts": {
+    "CERTIFIED": 0,
+    "FALSIFIED": 0,
+    "UNKNOWN": 0,
+    "ERROR": 1
+  },
+  "run_status": "FAILED",
+  "per_instance": [
+    {
+      "official_instance_id": 22,
+      "benchmark": "lsnc_relu",
+      "onnx_model": "onnx/relu_quadrotor2d_state.onnx",
+      "vnnlib_spec": "vnnlib/quadrotor2d_state_22.vnnlib",
+      "model_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/lsnc_relu/onnx/relu_quadrotor2d_state.onnx",
+      "spec_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/lsnc_relu/vnnlib/quadrotor2d_state_22.vnnlib",
+      "internal_status": "ERROR",
+      "reportable_status": "ERROR",
+      "cli_normalized": "ERROR_RuntimeError",
+      "count_bucket": "ERROR",
+      "queries": [],
+      "q_statuses": [],
+      "q_reportables": [],
+      "q_receipts": [],
+      "error": "RuntimeError: ONNX conversion failed: Failed to convert /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/lsnc_relu/onnx/relu_quadrotor2d_state.onnx: CUDA error: out of memory\nSearch for `cudaErrorMemoryAllocation' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.\nCUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.\nFor debugging consider passing CUDA_LAUNCH_BLOCKING=1\nCompile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.\n",
+      "wall_s": 0.8348944187164307,
+      "timeout_s": 120.0,
+      "instance_budget_exhausted": false
+    }
+  ]
+}

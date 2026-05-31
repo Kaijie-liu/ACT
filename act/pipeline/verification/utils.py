@@ -541,7 +541,14 @@ def _convert_OnnxTranspose(self, mod: nn.Module, node: fx.Node) -> None:
     output_shape = tuple(self.shape[p] for p in perm)
     out_vars = self._same_size_forward()
     layer_id = self._add_layer(
-        LayerKind.TRANSPOSE.value, {"perm": perm}, self.prev_out, out_vars,
+        LayerKind.TRANSPOSE.value,
+        {
+            "perm": perm,
+            "input_shape": tuple(self.shape),
+            "output_shape": output_shape,
+        },
+        self.prev_out,
+        out_vars,
     )
     self.prev_out = out_vars
     self.shape = output_shape

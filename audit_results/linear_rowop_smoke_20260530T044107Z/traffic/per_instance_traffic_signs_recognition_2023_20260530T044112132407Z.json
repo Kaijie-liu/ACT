@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "benchmark": "traffic_signs_recognition_2023",
+  "formal_mode": true,
+  "timestamp_utc": "20260530T044112132407Z",
+  "canonical_root": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks",
+  "receipt_dir": "/data1/Kane/ACT/audit_results/linear_rowop_smoke_20260530T044107Z/traffic",
+  "wall_min": 0.004894312222798665,
+  "counts": {
+    "CERTIFIED": 0,
+    "FALSIFIED": 0,
+    "UNKNOWN": 0,
+    "ERROR": 1
+  },
+  "run_status": "FAILED",
+  "per_instance": [
+    {
+      "official_instance_id": 0,
+      "benchmark": "traffic_signs_recognition_2023",
+      "onnx_model": "onnx/3_30_30_QConv_16_3_QConv_32_2_Dense_43_ep_30.onnx",
+      "vnnlib_spec": "vnnlib/model_30_idx_7573_eps_1.00000.vnnlib",
+      "model_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/traffic_signs_recognition_2023/onnx/3_30_30_QConv_16_3_QConv_32_2_Dense_43_ep_30.onnx",
+      "spec_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/traffic_signs_recognition_2023/vnnlib/model_30_idx_7573_eps_1.00000.vnnlib",
+      "internal_status": "ERROR",
+      "reportable_status": "ERROR",
+      "cli_normalized": "ERROR_ValueError",
+      "count_bucket": "ERROR",
+      "queries": [],
+      "q_statuses": [],
+      "q_reportables": [],
+      "q_receipts": [],
+      "error": "ValueError: Layer(id=0, kind=TRANSPOSE) schema violation:\n- Unknown params_optional/params_required: 'input_shape' (no close match), 'output_shape' (no close match). Add to REGISTRY['TRANSPOSE']['params_optional/params_required'] in layer_schema.py if intentional.",
+      "wall_s": 0.293628454208374,
+      "timeout_s": 180.0,
+      "instance_budget_exhausted": false
+    }
+  ]
+}

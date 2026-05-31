@@ -1,0 +1,67 @@
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: nn4sys/onnx/mscn_128d.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/mscn_128d.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 10 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: mscn_128d.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 11, 14)
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 11, 14)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 154 inputs, 1 outputs, type=safety
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 154 inputs, 1 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'nn4sys'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed cardinality_0_1000_128.vnnlib: 2000 query(ies)
+WARNING:act.back_end.solver.solver_hz:L11 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x6 and 18x1)
+WARNING:act.back_end.solver.solver_hz:L14 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x128 and 384x1)
+WARNING:act.back_end.solver.solver_hz:L23 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x13 and 78x1)
+WARNING:act.back_end.solver.solver_hz:L26 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x128 and 768x1)
+WARNING:act.back_end.solver.solver_hz:L35 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x6 and 12x1)
+WARNING:act.back_end.solver.solver_hz:L38 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x128 and 256x1)
+WARNING:act.back_end.solver.solver_hz:L11 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x6 and 18x1)
+WARNING:act.back_end.solver.solver_hz:L14 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x128 and 384x1)
+WARNING:act.back_end.solver.solver_hz:L23 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x13 and 78x1)
+WARNING:act.back_end.solver.solver_hz:L26 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x128 and 768x1)
+WARNING:act.back_end.solver.solver_hz:L35 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x6 and 12x1)
+WARNING:act.back_end.solver.solver_hz:L38 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x128 and 256x1)
+WARNING:act.back_end.solver.solver_hz:L11 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x6 and 18x1)
+WARNING:act.back_end.solver.solver_hz:L14 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x128 and 384x1)
+WARNING:act.back_end.solver.solver_hz:L23 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x13 and 78x1)
+WARNING:act.back_end.solver.solver_hz:L26 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x128 and 768x1)
+WARNING:act.back_end.solver.solver_hz:L35 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x6 and 12x1)
+WARNING:act.back_end.solver.solver_hz:L38 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x128 and 256x1)
+WARNING:act.back_end.solver.solver_hz:L11 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x6 and 18x1)
+WARNING:act.back_end.solver.solver_hz:L14 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x128 and 384x1)
+WARNING:act.back_end.solver.solver_hz:L23 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x13 and 78x1)
+WARNING:act.back_end.solver.solver_hz:L26 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x128 and 768x1)
+WARNING:act.back_end.solver.solver_hz:L35 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x6 and 12x1)
+WARNING:act.back_end.solver.solver_hz:L38 FALLBACK (RuntimeError): mat1 and mat2 shapes cannot be multiplied (128x128 and 256x1)
+[ACT] Using existing Gurobi license: modules/gurobi/gurobi.lic
+✅ Device Manager Initialized: device=cuda:0, dtype=torch.float64
+
+================================================================================
+ACT: Abstract Constraint Transformer
+Inference-based whitebox fuzzing for neural network verification
+================================================================================
+
+
+================================================================================
+VERIFICATION TEST: VNNLIB → VerifiableModel → verify_once
+================================================================================
+
+[vnnlib] category=nn4sys max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=60.0s)
+  [  1/1] nn4sys/onnx/mscn_128d.onnx@vnnlib/cardinality_0_1000_128.vnnlib: UNKNOWN (63.5s)  V=0 A=0 U=1 E=0  R=0
+
+[vnnlib/hybridz] FINAL — total=1 wall=1.1 min
+  UNKNOWN      1
+  [structured] per-instance log → /data1/Kane/ACT/audit_results/nn4sys_gather_slice_full_20260530T032956Z/b120_143/per_instance_nn4sys_20260530T034357286663Z.json
+
+================================================================================
+VERIFICATION TEST SUMMARY
+================================================================================
+  ✅ vnnlib                    PASSED
+================================================================================
+

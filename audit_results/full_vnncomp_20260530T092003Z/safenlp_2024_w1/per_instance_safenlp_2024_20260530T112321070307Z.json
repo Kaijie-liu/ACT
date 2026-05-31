@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "benchmark": "safenlp_2024",
+  "formal_mode": true,
+  "timestamp_utc": "20260530T112321070307Z",
+  "canonical_root": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks",
+  "receipt_dir": "/data1/Kane/ACT/audit_results/full_vnncomp_20260530T092003Z/safenlp_2024_w1",
+  "wall_min": 0.021625645955403647,
+  "counts": {
+    "CERTIFIED": 0,
+    "FALSIFIED": 0,
+    "UNKNOWN": 0,
+    "ERROR": 1
+  },
+  "run_status": "FAILED",
+  "per_instance": [
+    {
+      "official_instance_id": 606,
+      "benchmark": "safenlp_2024",
+      "onnx_model": "onnx/medical/perturbations_0.onnx",
+      "vnnlib_spec": "vnnlib/medical/hyperrectangle_34.vnnlib",
+      "model_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/safenlp_2024/onnx/medical/perturbations_0.onnx",
+      "spec_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/safenlp_2024/vnnlib/medical/hyperrectangle_34.vnnlib",
+      "internal_status": "ERROR",
+      "reportable_status": "ERROR",
+      "cli_normalized": "ERROR_RuntimeError",
+      "count_bucket": "ERROR",
+      "queries": [],
+      "q_statuses": [],
+      "q_reportables": [],
+      "q_receipts": [],
+      "error": "RuntimeError: CUDA error: CUBLAS_STATUS_ALLOC_FAILED when calling `cublasCreate(handle)`",
+      "wall_s": 1.2974920272827148,
+      "timeout_s": 60.0,
+      "instance_budget_exhausted": false
+    }
+  ]
+}

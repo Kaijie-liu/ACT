@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "benchmark": "collins_rul_cnn_2022",
+  "formal_mode": true,
+  "timestamp_utc": "20260530T015242747021Z",
+  "canonical_root": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks",
+  "receipt_dir": "/data1/Kane/ACT/audit_results/eq_layers_ablation_20260530T015205Z/collins_rul_cnn_2022_eq0",
+  "wall_min": 0.05348743200302124,
+  "counts": {
+    "CERTIFIED": 0,
+    "FALSIFIED": 0,
+    "UNKNOWN": 0,
+    "ERROR": 1
+  },
+  "run_status": "FAILED",
+  "per_instance": [
+    {
+      "official_instance_id": 20,
+      "benchmark": "collins_rul_cnn_2022",
+      "onnx_model": "onnx/NN_rul_small_window_20.onnx",
+      "vnnlib_spec": "vnnlib/if_then_7levels_w20.vnnlib",
+      "model_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/onnx/NN_rul_small_window_20.onnx",
+      "spec_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/collins_rul_cnn_2022/vnnlib/if_then_7levels_w20.vnnlib",
+      "internal_status": "ERROR",
+      "reportable_status": "ERROR",
+      "cli_normalized": "ERROR_OutOfMemoryError",
+      "count_bucket": "ERROR",
+      "queries": [
+        {
+          "query_index": 0,
+          "internal_status": "UNKNOWN",
+          "reportable_status": "UNKNOWN",
+          "receipt_path": null
+        }
+      ],
+      "q_statuses": [
+        "UNKNOWN"
+      ],
+      "q_reportables": [
+        "UNKNOWN"
+      ],
+      "q_receipts": [
+        null
+      ],
+      "error": "OutOfMemoryError: CUDA out of memory. Tried to allocate 20.00 MiB. GPU 0 has a total capacity of 94.96 GiB of which 12.44 MiB is free. Process 2687037 has 690.00 MiB memory in use. Process 3523176 has 81.72 GiB memory in use. Process 3526835 has 676.00 MiB memory in use. Process 3526836 has 910.00 MiB memory in use. Process 3526844 has 676.00 MiB memory in use. Process 3526973 has 830.00 MiB memory in use. Process 3526856 has 876.00 MiB memory in use. Process 3526979 has 796.00 MiB memory in use. Process 3526993 has 830.00 MiB memory in use. Process 3526996 has 676.00 MiB memory in use. Process 3527003 has 676.00 MiB memory in use. Process 3527031 has 676.00 MiB memory in use. Process 3527291 has 802.00 MiB memory in use. Process 3527318 has 802.00 MiB memory in use. Including non-PyTorch memory, this process has 874.00 MiB memory in use. Process 3527461 has 802.00 MiB memory in use. Process 3527551 has 950.00 MiB memory in use. Process 3527655 has 646.00 MiB memory in use. Of the allocated memory 210.25 MiB is allocated by PyTorch, and 3.75 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)",
+      "wall_s": 3.2091891765594482,
+      "timeout_s": 180.0,
+      "instance_budget_exhausted": false
+    }
+  ]
+}

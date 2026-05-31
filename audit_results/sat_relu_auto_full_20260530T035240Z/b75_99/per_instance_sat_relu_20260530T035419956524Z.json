@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "benchmark": "sat_relu",
+  "formal_mode": true,
+  "timestamp_utc": "20260530T035419956524Z",
+  "canonical_root": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks",
+  "receipt_dir": "/data1/Kane/ACT/audit_results/sat_relu_auto_full_20260530T035240Z/b75_99",
+  "wall_min": 0.010010147094726562,
+  "counts": {
+    "CERTIFIED": 0,
+    "FALSIFIED": 1,
+    "UNKNOWN": 0,
+    "ERROR": 0
+  },
+  "run_status": "PASSED",
+  "per_instance": [
+    {
+      "official_instance_id": 98,
+      "benchmark": "sat_relu",
+      "onnx_model": "onnx/sat_v44_c52.onnx",
+      "vnnlib_spec": "vnnlib/sat_v44_c52.vnnlib",
+      "model_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/onnx/sat_v44_c52.onnx",
+      "spec_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/sat_relu/vnnlib/sat_v44_c52.vnnlib",
+      "internal_status": "SAT",
+      "reportable_status": "FALSIFIED",
+      "cli_normalized": "FALSIFIED",
+      "count_bucket": "FALSIFIED",
+      "queries": [
+        {
+          "query_index": 0,
+          "internal_status": "SAT",
+          "reportable_status": "FALSIFIED",
+          "receipt_path": "/data1/Kane/ACT/audit_results/sat_relu_auto_full_20260530T035240Z/b75_99/sat_relu_98_q0_hz_walker_lp_0.json"
+        }
+      ],
+      "q_statuses": [
+        "SAT"
+      ],
+      "q_reportables": [
+        "FALSIFIED"
+      ],
+      "q_receipts": [
+        "/data1/Kane/ACT/audit_results/sat_relu_auto_full_20260530T035240Z/b75_99/sat_relu_98_q0_hz_walker_lp_0.json"
+      ],
+      "error": null,
+      "wall_s": 0.6005830764770508,
+      "timeout_s": 120.0,
+      "instance_budget_exhausted": false
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "benchmark": "acasxu_2023",
+  "formal_mode": true,
+  "timestamp_utc": "20260530T112403701036Z",
+  "canonical_root": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks",
+  "receipt_dir": "/data1/Kane/ACT/audit_results/full_vnncomp_20260530T092003Z/acasxu_2023_w1",
+  "wall_min": 0.015456020832061768,
+  "counts": {
+    "CERTIFIED": 0,
+    "FALSIFIED": 0,
+    "UNKNOWN": 0,
+    "ERROR": 1
+  },
+  "run_status": "FAILED",
+  "per_instance": [
+    {
+      "official_instance_id": 85,
+      "benchmark": "acasxu_2023",
+      "onnx_model": "onnx/ACASXU_run2a_5_5_batch_2000.onnx",
+      "vnnlib_spec": "vnnlib/prop_2.vnnlib",
+      "model_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/acasxu_2023/onnx/ACASXU_run2a_5_5_batch_2000.onnx",
+      "spec_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/acasxu_2023/vnnlib/prop_2.vnnlib",
+      "internal_status": "ERROR",
+      "reportable_status": "ERROR",
+      "cli_normalized": "ERROR_OutOfMemoryError",
+      "count_bucket": "ERROR",
+      "queries": [],
+      "q_statuses": [],
+      "q_reportables": [],
+      "q_receipts": [],
+      "error": "OutOfMemoryError: CUDA out of memory. Tried to allocate 20.00 MiB. GPU 0 has a total capacity of 94.96 GiB of which 11.62 MiB is free. Process 2687037 has 690.00 MiB memory in use. Process 1787513 has 3.76 GiB memory in use. Process 1818569 has 44.16 GiB memory in use. Process 1818646 has 38.38 GiB memory in use. Process 1830876 has 3.75 GiB memory in use. Process 1830913 has 716.00 MiB memory in use. Process 1830916 has 674.00 MiB memory in use. Process 1831127 has 674.00 MiB memory in use. Process 1837040 has 644.00 MiB memory in use. Process 1837039 has 644.00 MiB memory in use. Including non-PyTorch memory, this process has 652.00 MiB memory in use. Of the allocated memory 156.50 KiB is allocated by PyTorch, and 1.85 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)",
+      "wall_s": 0.927290678024292,
+      "timeout_s": 120.0,
+      "instance_budget_exhausted": false
+    }
+  ]
+}

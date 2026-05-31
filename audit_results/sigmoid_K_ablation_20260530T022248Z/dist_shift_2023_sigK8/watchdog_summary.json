@@ -1,0 +1,132 @@
+{
+  "schema_version": 2,
+  "strict_bounded_failure": false,
+  "counts": {
+    "OK": 10,
+    "UNKNOWN_TIMEOUT": 0,
+    "UNKNOWN_RESOURCE_LIMIT": 0,
+    "ERROR": 0
+  },
+  "results": [
+    {
+      "benchmark": "dist_shift_2023",
+      "instance_id": 0,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 5.003216248005629,
+      "peak_rss_mb": 1668.4921875,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/sigmoid_K_ablation_20260530T022248Z/dist_shift_2023_sigK8/per_instance_dist_shift_2023_20260530T022254220368Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/sigmoid_K_ablation_20260530T022248Z/dist_shift_2023_sigK8",
+      "stdout_tail": "8420 has 1.38 GiB memory in use. Process 3758421 has 64.69 GiB memory in use. Including non-PyTorch memory, this process has 17.43 GiB memory in use. Process 3758417 has 7.52 GiB memory in use. Of the allocated memory 16.77 GiB is allocated by PyTorch, and 18.17 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=dist_shift_2023 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=120.0s)\n  [  1/1] dist_shift_2023/./onnx/mnist_concat.onnx@./vnnlib/index7901_delta0.13.vnnlib: UNKNOWN (2.0s)  V=0 A=0 U=1 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.0 min\n  UNKNOWN      1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/sigmoid_K_ablation_20260530T022248Z/dist_shift_2023_sigK8/per_instance_dist_shift_2023_20260530T022254220368Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "dist_shift_2023",
+      "instance_id": 7,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 14.508264670032077,
+      "peak_rss_mb": 6899.265625,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/sigmoid_K_ablation_20260530T022248Z/dist_shift_2023_sigK8/per_instance_dist_shift_2023_20260530T022308269783Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/sigmoid_K_ablation_20260530T022248Z/dist_shift_2023_sigK8",
+      "stdout_tail": "nnlib_loader.data_model_loader:  \u2713 Input shape: (1, 792)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 792 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 792 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'dist_shift_2023'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed index8900_delta0.13.vnnlib: 1 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=dist_shift_2023 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=120.0s)\n  [  1/1] dist_shift_2023/./onnx/mnist_concat.onnx@./vnnlib/index8900_delta0.13.vnnlib: CERTIFIED (11.0s)  V=1 A=0 U=0 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.2 min\n  CERTIFIED    1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/sigmoid_K_ablation_20260530T022248Z/dist_shift_2023_sigK8/per_instance_dist_shift_2023_20260530T022308269783Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "dist_shift_2023",
+      "instance_id": 14,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 15.009222180000506,
+      "peak_rss_mb": 6952.18359375,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/sigmoid_K_ablation_20260530T022248Z/dist_shift_2023_sigK8/per_instance_dist_shift_2023_20260530T022323274587Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/sigmoid_K_ablation_20260530T022248Z/dist_shift_2023_sigK8",
+      "stdout_tail": "nnlib_loader.data_model_loader:  \u2713 Input shape: (1, 792)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 792 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 792 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'dist_shift_2023'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed index6405_delta0.13.vnnlib: 1 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=dist_shift_2023 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=120.0s)\n  [  1/1] dist_shift_2023/./onnx/mnist_concat.onnx@./vnnlib/index6405_delta0.13.vnnlib: CERTIFIED (11.5s)  V=1 A=0 U=0 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.2 min\n  CERTIFIED    1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/sigmoid_K_ablation_20260530T022248Z/dist_shift_2023_sigK8/per_instance_dist_shift_2023_20260530T022323274587Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "dist_shift_2023",
+      "instance_id": 21,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 13.50880311394576,
+      "peak_rss_mb": 6875.42578125,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/sigmoid_K_ablation_20260530T022248Z/dist_shift_2023_sigK8/per_instance_dist_shift_2023_20260530T022337082783Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/sigmoid_K_ablation_20260530T022248Z/dist_shift_2023_sigK8",
+      "stdout_tail": "nnlib_loader.data_model_loader:  \u2713 Input shape: (1, 792)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 792 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 792 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'dist_shift_2023'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed index2251_delta0.13.vnnlib: 1 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=dist_shift_2023 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=120.0s)\n  [  1/1] dist_shift_2023/./onnx/mnist_concat.onnx@./vnnlib/index2251_delta0.13.vnnlib: CERTIFIED (10.3s)  V=1 A=0 U=0 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.2 min\n  CERTIFIED    1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/sigmoid_K_ablation_20260530T022248Z/dist_shift_2023_sigK8/per_instance_dist_shift_2023_20260530T022337082783Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "dist_shift_2023",
+      "instance_id": 28,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 13.507826637011021,
+      "peak_rss_mb": 6941.3984375,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/sigmoid_K_ablation_20260530T022248Z/dist_shift_2023_sigK8/per_instance_dist_shift_2023_20260530T022350573466Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/sigmoid_K_ablation_20260530T022248Z/dist_shift_2023_sigK8",
+      "stdout_tail": "nnlib_loader.data_model_loader:  \u2713 Input shape: (1, 792)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 792 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 792 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'dist_shift_2023'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed index7606_delta0.13.vnnlib: 1 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=dist_shift_2023 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=120.0s)\n  [  1/1] dist_shift_2023/./onnx/mnist_concat.onnx@./vnnlib/index7606_delta0.13.vnnlib: CERTIFIED (10.2s)  V=1 A=0 U=0 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.2 min\n  CERTIFIED    1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/sigmoid_K_ablation_20260530T022248Z/dist_shift_2023_sigK8/per_instance_dist_shift_2023_20260530T022350573466Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "dist_shift_2023",
+      "instance_id": 35,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 16.008583368966356,
+      "peak_rss_mb": 6924.59765625,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/sigmoid_K_ablation_20260530T022248Z/dist_shift_2023_sigK8/per_instance_dist_shift_2023_20260530T022406670917Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/sigmoid_K_ablation_20260530T022248Z/dist_shift_2023_sigK8",
+      "stdout_tail": "nnlib_loader.data_model_loader:  \u2713 Input shape: (1, 792)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 792 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 792 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'dist_shift_2023'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed index4799_delta0.13.vnnlib: 1 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=dist_shift_2023 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=120.0s)\n  [  1/1] dist_shift_2023/./onnx/mnist_concat.onnx@./vnnlib/index4799_delta0.13.vnnlib: CERTIFIED (12.9s)  V=1 A=0 U=0 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.2 min\n  CERTIFIED    1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/sigmoid_K_ablation_20260530T022248Z/dist_shift_2023_sigK8/per_instance_dist_shift_2023_20260530T022406670917Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "dist_shift_2023",
+      "instance_id": 42,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 17.00776794401463,
+      "peak_rss_mb": 6869.6015625,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/sigmoid_K_ablation_20260530T022248Z/dist_shift_2023_sigK8/per_instance_dist_shift_2023_20260530T022423651778Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/sigmoid_K_ablation_20260530T022248Z/dist_shift_2023_sigK8",
+      "stdout_tail": "nnlib_loader.data_model_loader:  \u2713 Input shape: (1, 792)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 792 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 792 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'dist_shift_2023'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed index4312_delta0.13.vnnlib: 1 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=dist_shift_2023 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=120.0s)\n  [  1/1] dist_shift_2023/./onnx/mnist_concat.onnx@./vnnlib/index4312_delta0.13.vnnlib: CERTIFIED (13.9s)  V=1 A=0 U=0 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.2 min\n  CERTIFIED    1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/sigmoid_K_ablation_20260530T022248Z/dist_shift_2023_sigK8/per_instance_dist_shift_2023_20260530T022423651778Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "dist_shift_2023",
+      "instance_id": 49,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 14.506851574988104,
+      "peak_rss_mb": 6838.87890625,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/sigmoid_K_ablation_20260530T022248Z/dist_shift_2023_sigK8/per_instance_dist_shift_2023_20260530T022438082779Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/sigmoid_K_ablation_20260530T022248Z/dist_shift_2023_sigK8",
+      "stdout_tail": "nnlib_loader.data_model_loader:  \u2713 Input shape: (1, 792)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 792 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 792 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'dist_shift_2023'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed index7336_delta0.13.vnnlib: 1 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=dist_shift_2023 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=120.0s)\n  [  1/1] dist_shift_2023/./onnx/mnist_concat.onnx@./vnnlib/index7336_delta0.13.vnnlib: CERTIFIED (11.3s)  V=1 A=0 U=0 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.2 min\n  CERTIFIED    1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/sigmoid_K_ablation_20260530T022248Z/dist_shift_2023_sigK8/per_instance_dist_shift_2023_20260530T022438082779Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "dist_shift_2023",
+      "instance_id": 56,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 15.007734676008113,
+      "peak_rss_mb": 6949.2578125,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/sigmoid_K_ablation_20260530T022248Z/dist_shift_2023_sigK8/per_instance_dist_shift_2023_20260530T022452886863Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/sigmoid_K_ablation_20260530T022248Z/dist_shift_2023_sigK8",
+      "stdout_tail": "nnlib_loader.data_model_loader:  \u2713 Input shape: (1, 792)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 792 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 792 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'dist_shift_2023'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed index6412_delta0.13.vnnlib: 1 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=dist_shift_2023 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=120.0s)\n  [  1/1] dist_shift_2023/./onnx/mnist_concat.onnx@./vnnlib/index6412_delta0.13.vnnlib: CERTIFIED (11.6s)  V=1 A=0 U=0 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.2 min\n  CERTIFIED    1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/sigmoid_K_ablation_20260530T022248Z/dist_shift_2023_sigK8/per_instance_dist_shift_2023_20260530T022452886863Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    },
+    {
+      "benchmark": "dist_shift_2023",
+      "instance_id": 63,
+      "status": "OK",
+      "cli_normalized": "OK",
+      "wall_s": 14.50770166690927,
+      "peak_rss_mb": 6846.5625,
+      "returncode": 0,
+      "per_instance_json": "/data1/Kane/ACT/audit_results/sigmoid_K_ablation_20260530T022248Z/dist_shift_2023_sigK8/per_instance_dist_shift_2023_20260530T022507622273Z.json",
+      "out_dir": "/data1/Kane/ACT/audit_results/sigmoid_K_ablation_20260530T022248Z/dist_shift_2023_sigK8",
+      "stdout_tail": "nnlib_loader.data_model_loader:  \u2713 Input shape: (1, 792)\nINFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 792 inputs, 10 outputs, type=unknown\nINFO:act.front_end.vnnlib_loader.data_model_loader:  \u2713 Parsed VNNLIB: 792 inputs, 10 outputs\nINFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'dist_shift_2023'\nINFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed index5391_delta0.13.vnnlib: 1 query(ies)\n[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic\n\u2705 Device Manager Initialized: device=cuda:0, dtype=torch.float64\n\n================================================================================\nACT: Abstract Constraint Transformer\nInference-based whitebox fuzzing for neural network verification\n================================================================================\n\n\n================================================================================\nVERIFICATION TEST: VNNLIB \u2192 VerifiableModel \u2192 verify_once\n================================================================================\n\n[vnnlib] category=dist_shift_2023 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=120.0s)\n  [  1/1] dist_shift_2023/./onnx/mnist_concat.onnx@./vnnlib/index5391_delta0.13.vnnlib: CERTIFIED (11.5s)  V=1 A=0 U=0 E=0  R=0\n\n[vnnlib/hybridz] FINAL \u2014 total=1 wall=0.2 min\n  CERTIFIED    1\n  [structured] per-instance log \u2192 /data1/Kane/ACT/audit_results/sigmoid_K_ablation_20260530T022248Z/dist_shift_2023_sigK8/per_instance_dist_shift_2023_20260530T022507622273Z.json\n\n================================================================================\nVERIFICATION TEST SUMMARY\n================================================================================\n  \u2705 vnnlib                    PASSED\n================================================================================\n\n"
+    }
+  ]
+}

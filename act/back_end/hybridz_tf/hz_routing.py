@@ -251,11 +251,11 @@ def hz_add_const(hz, c):
         return hz.with_add_const(c_t)
     if isinstance(hz, SparseGcZ):
         c_t = torch.as_tensor(c, dtype=hz.dtype, device=hz.device).flatten()
-        return SparseGcZ(
+        return hz._inherit_base(SparseGcZ(
             c=hz.c + c_t, Gc_sparse=hz.Gc_sparse,
             dtype=hz.dtype, device=hz.device,
             Ac_sparse=hz.Ac_sparse, b=hz.b, eq_mask=hz.eq_mask,
-        )
+        ))
     return _propagate_base_any(hz, _hz_add_const_native(hz, c))
 
 
@@ -307,11 +307,24 @@ def hz_conv2d(hz, weight, bias=None, *, input_shape,
 
     if isinstance(hz, SparseGcZ):
         try:
-            return hz.apply_conv(weight_t, bias_t, (C, H, W_), stride, pad_use)
+            out_sparse = hz.apply_conv(weight_t, bias_t, (C, H, W_), stride, pad_use)
+            if os.environ.get("ACT_HZ_CONV_DEBUG", "0") == "1":
+                print(
+                    f"[HZ-CONV] SparseGcZ ok in_dim={hz.dim} out_dim={out_sparse.dim} "
+                    f"ng={hz.ng}->{out_sparse.ng} nc={hz.nc}->{out_sparse.nc}",
+                    flush=True,
+                )
+            return out_sparse
         except (MemoryError, RuntimeError) as e:
             msg = str(e).lower()
             if "memory" not in msg and "alloc" not in msg:
                 raise
+            if os.environ.get("ACT_HZ_CONV_DEBUG", "0") == "1":
+                print(
+                    f"[HZ-CONV] SparseGcZ fallback-to-dense "
+                    f"{type(e).__name__}: {e}",
+                    flush=True,
+                )
             hz = hz.to_dense_hz()  # density fallback
 
     if isinstance(hz, LazyChainHZ):
@@ -373,11 +386,26 @@ def hz_conv2d(hz, weight, bias=None, *, input_shape,
             converted = act_hz_dense_to_sparse(hz, density_threshold=1.0)
             if isinstance(converted, SparseGcZ):
                 try:
-                    return converted.apply_conv(weight_t, bias_t, (C, H, W_), stride, pad_use)
+                    out_sparse = converted.apply_conv(weight_t, bias_t, (C, H, W_), stride, pad_use)
+                    if os.environ.get("ACT_HZ_CONV_DEBUG", "0") == "1":
+                        print(
+                            f"[HZ-CONV] preconv SparseGcZ ok "
+                            f"in_dim={converted.dim} out_dim={out_sparse.dim} "
+                            f"ng={converted.ng}->{out_sparse.ng} "
+                            f"nc={converted.nc}->{out_sparse.nc}",
+                            flush=True,
+                        )
+                    return out_sparse
                 except (MemoryError, RuntimeError) as e:
                     msg = str(e).lower()
                     if "memory" not in msg and "alloc" not in msg:
                         raise
+                    if os.environ.get("ACT_HZ_CONV_DEBUG", "0") == "1":
+                        print(
+                            f"[HZ-CONV] preconv SparseGcZ fallback-to-dense "
+                            f"{type(e).__name__}: {e}",
+                            flush=True,
+                        )
                     # fall through to dense path
     out = _act_conv2d_inner(
         hz, weight_t, bias_t,
@@ -388,6 +416,12 @@ def hz_conv2d(hz, weight, bias=None, *, input_shape,
     # T2 sparse-Gc: opt-in post-conv prune + dense->sparse conversion.
     # No-op when ACT_HZ_PRUNE_GC / ACT_HZ_DENSE_TO_SPARSE are unset.
     out = act_maybe_compact_hz(out)
+    if os.environ.get("ACT_HZ_CONV_DEBUG", "0") == "1":
+        print(
+            f"[HZ-CONV] dense path out_type={type(out).__name__} "
+            f"dim={out.dim} ng={out.ng} nc={out.nc}",
+            flush=True,
+        )
     return _propagate_base_any(hz, out)
 
 
@@ -452,10 +486,17 @@ def _sparse_relu_with_optional_cuts(hz: SparseGcZ):
     mask = get_chull_mask_for_current_relu()
     k_sel = int(os.environ.get("ACT_HZ_EARLY_SELECTIVE_K", "0") or "0")
     if mask is not None or k_sel > 0:
-        return hz.apply_relu_selective_chull(
+        out = hz.apply_relu_selective_chull(
             chull_mask=mask,
             top_k=(None if mask is not None else k_sel),
         )
+        if os.environ.get("ACT_HZ_SELECTIVE_DEBUG", "0") == "1":
+            print(
+                f"[HZ-SELECTIVE] SparseGcZ top_k={k_sel} "
+                f"dim={hz.dim} ng={hz.ng}->{out.ng} nc={hz.nc}->{out.nc}",
+                flush=True,
+            )
+        return out
     return hz.apply_relu_triangle()
 
 
@@ -551,6 +592,13 @@ def hz_apply_relu_v8(hz, *, method: str = "eq_lagr_v8"):
         new_ng = ng + k_max
         new_nb = nb
         new_nc = nc + 2 * k_max
+    elif method in ("selective_chull", "sel_chull"):
+        # selective_chull: DeepZ triangle on all unstable (+1 cont each)
+        # plus two convex-hull facet rows for only top-K/masked unstable.
+        k_sel = int(os.environ.get("ACT_HZ_SELECTIVE_K", "32") or "32")
+        new_ng = ng + k_max
+        new_nb = nb
+        new_nc = nc + 2 * min(max(k_sel, 0), k_max)
     elif method == "triangle":
         # DeepZ parallelogram: +1 cont, 0 binary, 0 rows.
         new_ng = ng + k_max
@@ -570,6 +618,13 @@ def hz_apply_relu_v8(hz, *, method: str = "eq_lagr_v8"):
     if peak > budget_bytes:
         # Even the requested encoding overflows budget: downgrade to
         # DeepZ triangle (the cheapest sound encoding we have).
+        if os.environ.get("ACT_HZ_SELECTIVE_DEBUG", "0") == "1":
+            print(
+                f"[HZ-SELECTIVE] downgrade method={method} n={n} ng={ng} "
+                f"nc={nc} est_peak_gb={peak / (1024 ** 3):.2f} "
+                f"budget_gb={budget_gb:.2f}",
+                flush=True,
+            )
         try:
             return hz_apply_relu_triangle(hz)
         except Exception:
@@ -665,6 +720,20 @@ def hz_apply_relu_v8(hz, *, method: str = "eq_lagr_v8"):
                     pass
             return hz_after_relu
         if method == "triangle":
+            # Optional precision lever (ACT_HZ_TRIANGLE_TIGHT_BOUNDS=1):
+            # pass Tier-2/3 cascade bounds as external_bounds. Default OFF
+            # to preserve baseline timings. Sound — Tier 2/3 are valid
+            # Lagrangian/LP relaxations of the HZ constraint set; triangle
+            # built on tighter (lb, ub) is strictly no looser. See
+            # research/hz_zero_benches_deeper_analysis_20260530.md.
+            if os.environ.get("ACT_HZ_TRIANGLE_TIGHT_BOUNDS", "0") == "1":
+                try:
+                    lb_t, ub_t = _hzono_tight_bounds(hz)
+                    return _propagate_base_any(
+                        hz, hz_apply_relu_triangle(hz, external_bounds=(lb_t, ub_t))
+                    )
+                except Exception:
+                    pass
             return _propagate_base_any(hz, hz_apply_relu_triangle(hz))
         if method == "compact":
             return _propagate_base_any(hz, hz_apply_relu_compact(hz))
@@ -705,6 +774,13 @@ def hz_apply_relu_v8(hz, *, method: str = "eq_lagr_v8"):
                 chull_mask=_dual_mask_late,
                 external_bounds=(lb_t, ub_t),
             )
+            if os.environ.get("ACT_HZ_SELECTIVE_DEBUG", "0") == "1":
+                print(
+                    f"[HZ-SELECTIVE] HZono top_k={k_sel} "
+                    f"dim={hz.dim} ng={hz.ng}->{hz_after.Gc.shape[1]} "
+                    f"nc={hz.b.shape[0]}->{hz_after.b.shape[0]}",
+                    flush=True,
+                )
             return _propagate_base_any(hz, hz_after)
         if method in ("convex_hull_cont", "chull_cont", "chull"):
             # Continuous-only convex-hull ReLU. Goes through the same
@@ -784,6 +860,206 @@ def _leaky_box(box: BoxHZ, alpha: float):
 # ---------------------------------------------------------------------------
 
 
+def _sparse_remap_cols(sp: torch.Tensor, *, shared: int, tail_offset: int,
+                       out_rows: int, out_cols: int, row_offset: int = 0):
+    sp = sp.coalesce()
+    idx = sp.indices()
+    val = sp.values()
+    if int(val.numel()) == 0:
+        return torch.sparse_coo_tensor(
+            torch.zeros((2, 0), dtype=torch.long, device=sp.device),
+            val,
+            (int(out_rows), int(out_cols)),
+            dtype=sp.dtype,
+            device=sp.device,
+        ).coalesce()
+    rows = idx[0] + int(row_offset)
+    cols = idx[1]
+    new_cols = cols.clone()
+    tail = cols >= int(shared)
+    if bool(tail.any().item()):
+        new_cols[tail] = int(tail_offset) + (cols[tail] - int(shared))
+    return torch.sparse_coo_tensor(
+        torch.stack([rows, new_cols]),
+        val,
+        (int(out_rows), int(out_cols)),
+        dtype=sp.dtype,
+        device=sp.device,
+    ).coalesce()
+
+
+def _sparse_select_rows_remap_cols(
+    sp: torch.Tensor, *, row_start: int, row_end: int, row_offset: int,
+    shared: int, tail_offset: int, out_rows: int, out_cols: int,
+):
+    sp = sp.coalesce()
+    idx = sp.indices()
+    val = sp.values()
+    if int(val.numel()) == 0 or int(row_start) >= int(row_end):
+        return torch.sparse_coo_tensor(
+            torch.zeros((2, 0), dtype=torch.long, device=sp.device),
+            val.new_zeros(0),
+            (int(out_rows), int(out_cols)),
+            dtype=sp.dtype,
+            device=sp.device,
+        ).coalesce()
+    mask = (idx[0] >= int(row_start)) & (idx[0] < int(row_end))
+    if not bool(mask.any().item()):
+        return torch.sparse_coo_tensor(
+            torch.zeros((2, 0), dtype=torch.long, device=sp.device),
+            val.new_zeros(0),
+            (int(out_rows), int(out_cols)),
+            dtype=sp.dtype,
+            device=sp.device,
+        ).coalesce()
+    rows = idx[0, mask] - int(row_start) + int(row_offset)
+    cols = idx[1, mask]
+    new_cols = cols.clone()
+    tail = cols >= int(shared)
+    if bool(tail.any().item()):
+        new_cols[tail] = int(tail_offset) + (cols[tail] - int(shared))
+    return torch.sparse_coo_tensor(
+        torch.stack([rows, new_cols]),
+        val[mask],
+        (int(out_rows), int(out_cols)),
+        dtype=sp.dtype,
+        device=sp.device,
+    ).coalesce()
+
+
+def _sparse_sgm_add(hz_x: SparseGcZ, hz_y: SparseGcZ) -> SparseGcZ:
+    """Exact sparse shared-generator residual add.
+
+    The first ``_base_ng`` / ``_base_nb`` factors are shared latent factors.
+    Tails introduced independently on either branch remain independent. This
+    mirrors dense SGM but keeps Gc/Ac/Gb/Ab sparse, avoiding densification at
+    ResNet-style ADD nodes.
+    """
+    if hz_x.dim != hz_y.dim:
+        raise ValueError(f"sparse_sgm_add: shape mismatch {hz_x.dim} vs {hz_y.dim}")
+    dtype = hz_x.dtype
+    device = hz_x.device
+    ng_x, ng_y = hz_x.ng, hz_y.ng
+    nb_x, nb_y = hz_x.nb, hz_y.nb
+    shared_ng = min(int(getattr(hz_x, "_base_ng", ng_x)),
+                    int(getattr(hz_y, "_base_ng", ng_y)), ng_x, ng_y)
+    shared_nb = min(int(getattr(hz_x, "_base_nb", nb_x)),
+                    int(getattr(hz_y, "_base_nb", nb_y)), nb_x, nb_y)
+    ng_x_tail = ng_x - shared_ng
+    ng_y_tail = ng_y - shared_ng
+    nb_x_tail = nb_x - shared_nb
+    nb_y_tail = nb_y - shared_nb
+    ng_new = shared_ng + ng_x_tail + ng_y_tail
+    nb_new = shared_nb + nb_x_tail + nb_y_tail
+    n = hz_x.dim
+
+    Gx = _sparse_remap_cols(
+        hz_x.Gc_sparse, shared=shared_ng, tail_offset=shared_ng,
+        out_rows=n, out_cols=ng_new,
+    )
+    Gy = _sparse_remap_cols(
+        hz_y.Gc_sparse, shared=shared_ng, tail_offset=shared_ng + ng_x_tail,
+        out_rows=n, out_cols=ng_new,
+    )
+    Gc = torch.sparse_coo_tensor(
+        torch.cat([Gx.indices(), Gy.indices()], dim=1),
+        torch.cat([Gx.values(), Gy.values()]),
+        (n, ng_new), dtype=dtype, device=device,
+    ).coalesce()
+
+    Bx = _sparse_remap_cols(
+        hz_x.Gb_sparse, shared=shared_nb, tail_offset=shared_nb,
+        out_rows=n, out_cols=nb_new,
+    )
+    By = _sparse_remap_cols(
+        hz_y.Gb_sparse, shared=shared_nb, tail_offset=shared_nb + nb_x_tail,
+        out_rows=n, out_cols=nb_new,
+    )
+    Gb = torch.sparse_coo_tensor(
+        torch.cat([Bx.indices(), By.indices()], dim=1),
+        torch.cat([Bx.values(), By.values()]),
+        (n, nb_new), dtype=dtype, device=device,
+    ).coalesce()
+
+    nc_x, nc_y = hz_x.nc, hz_y.nc
+    shared_nc = min(int(getattr(hz_x, "_base_nc", nc_x)),
+                    int(getattr(hz_y, "_base_nc", nc_y)), nc_x, nc_y)
+    nc_x_tail = nc_x - shared_nc
+    nc_y_tail = nc_y - shared_nc
+    nc_new = shared_nc + nc_x_tail + nc_y_tail
+    Ac_shared = _sparse_select_rows_remap_cols(
+        hz_x.Ac_sparse, row_start=0, row_end=shared_nc, row_offset=0,
+        shared=shared_ng, tail_offset=shared_ng,
+        out_rows=nc_new, out_cols=ng_new,
+    )
+    Ac_x = _sparse_select_rows_remap_cols(
+        hz_x.Ac_sparse, row_start=shared_nc, row_end=nc_x,
+        row_offset=shared_nc, shared=shared_ng, tail_offset=shared_ng,
+        out_rows=nc_new, out_cols=ng_new,
+    )
+    Ac_y = _sparse_select_rows_remap_cols(
+        hz_y.Ac_sparse, row_start=shared_nc, row_end=nc_y,
+        row_offset=shared_nc + nc_x_tail,
+        shared=shared_ng, tail_offset=shared_ng + ng_x_tail,
+        out_rows=nc_new, out_cols=ng_new,
+    )
+    Ac = torch.sparse_coo_tensor(
+        torch.cat([Ac_shared.indices(), Ac_x.indices(), Ac_y.indices()], dim=1),
+        torch.cat([Ac_shared.values(), Ac_x.values(), Ac_y.values()]),
+        (nc_new, ng_new), dtype=dtype, device=device,
+    ).coalesce()
+
+    Ab_shared = _sparse_select_rows_remap_cols(
+        hz_x.Ab_sparse, row_start=0, row_end=shared_nc, row_offset=0,
+        shared=shared_nb, tail_offset=shared_nb,
+        out_rows=nc_new, out_cols=nb_new,
+    )
+    Ab_x = _sparse_select_rows_remap_cols(
+        hz_x.Ab_sparse, row_start=shared_nc, row_end=nc_x,
+        row_offset=shared_nc, shared=shared_nb, tail_offset=shared_nb,
+        out_rows=nc_new, out_cols=nb_new,
+    )
+    Ab_y = _sparse_select_rows_remap_cols(
+        hz_y.Ab_sparse, row_start=shared_nc, row_end=nc_y,
+        row_offset=shared_nc + nc_x_tail,
+        shared=shared_nb, tail_offset=shared_nb + nb_x_tail,
+        out_rows=nc_new, out_cols=nb_new,
+    )
+    Ab = torch.sparse_coo_tensor(
+        torch.cat([Ab_shared.indices(), Ab_x.indices(), Ab_y.indices()], dim=1),
+        torch.cat([Ab_shared.values(), Ab_x.values(), Ab_y.values()]),
+        (nc_new, nb_new), dtype=dtype, device=device,
+    ).coalesce()
+
+    eq_x = hz_x.eq_mask if hz_x.eq_mask is not None else torch.zeros(nc_x, dtype=torch.bool, device=device)
+    eq_y = hz_y.eq_mask if hz_y.eq_mask is not None else torch.zeros(nc_y, dtype=torch.bool, device=device)
+    b_new = torch.cat([
+        hz_x.b[:shared_nc],
+        hz_x.b[shared_nc:],
+        hz_y.b[shared_nc:].to(dtype=dtype, device=device),
+    ], dim=0)
+    eq_new = torch.cat([
+        eq_x[:shared_nc].to(device=device),
+        eq_x[shared_nc:].to(device=device),
+        eq_y[shared_nc:].to(device=device),
+    ], dim=0)
+    out = SparseGcZ(
+        c=hz_x.c + hz_y.c.to(dtype=dtype, device=device),
+        Gc_sparse=Gc,
+        dtype=dtype,
+        device=device,
+        Ac_sparse=Ac,
+        Gb_sparse=Gb,
+        Ab_sparse=Ab,
+        b=b_new,
+        eq_mask=eq_new,
+    )
+    object.__setattr__(out, "_base_ng", int(shared_ng))
+    object.__setattr__(out, "_base_nb", int(shared_nb))
+    object.__setattr__(out, "_base_nc", int(shared_nc))
+    return out
+
+
 def hz_minkowski_sum(hz_x, hz_y):
     """Minkowski sum. HyZor parity (__init__.py:1285): when both operands
     are dense HZ, dispatch to the prefix-sharing ``add`` (= ``hz_sgm_add``)
@@ -792,6 +1068,8 @@ def hz_minkowski_sum(hz_x, hz_y):
     impl did block-diagonal concat, inflating ng through every resnet
     add block.
     """
+    if isinstance(hz_x, SparseGcZ) and isinstance(hz_y, SparseGcZ):
+        return _sparse_sgm_add(hz_x, hz_y)
     hz_x = _coerce_for_combine(hz_x)
     hz_y = _coerce_for_combine(hz_y)
     if isinstance(hz_x, BoxHZ) or isinstance(hz_y, BoxHZ):
@@ -804,6 +1082,8 @@ def hz_minkowski_sum(hz_x, hz_y):
 
 def hz_sgm_add(hz_x, hz_y):
     """Shared Generator Merge add. Faithful port of HyZor (__init__.py:1295)."""
+    if isinstance(hz_x, SparseGcZ) and isinstance(hz_y, SparseGcZ):
+        return _sparse_sgm_add(hz_x, hz_y)
     hz_x = _coerce_for_combine(hz_x)
     hz_y = _coerce_for_combine(hz_y)
     if isinstance(hz_x, BoxHZ) or isinstance(hz_y, BoxHZ):

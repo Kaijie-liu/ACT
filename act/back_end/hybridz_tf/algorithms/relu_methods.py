@@ -46,6 +46,24 @@ import torch
 from act.back_end.solver.solver_hz import HZono, hz_compute_bounds
 
 
+def _selective_chull_score(lb: torch.Tensor, ub: torch.Tensor) -> torch.Tensor:
+    """Forward-local score for selecting ReLU hull facets.
+
+    Default ``width`` preserves historical behavior. The other modes rank by
+    the triangle-relaxation slack itself; they require only current forward
+    bounds and do not use backward propagation, gradients, sampling, or split.
+    """
+    mode = os.environ.get("ACT_HZ_SELECTIVE_SCORE", "width").strip().lower()
+    width = ub - lb
+    if mode in ("mu", "slack", "height"):
+        return (-lb * ub) / torch.clamp(2.0 * width, min=1e-30)
+    if mode in ("area", "product", "gap"):
+        return -lb * ub
+    if mode in ("balanced", "minside", "min_side"):
+        return torch.minimum(-lb, ub)
+    return width
+
+
 # ---------------------------------------------------------------------------
 # Method 1: DeepZ-style triangle (cheap, lossy)
 # ---------------------------------------------------------------------------
@@ -779,7 +797,9 @@ def hz_apply_relu_selective_chull(
         selected_local = torch.nonzero(in_unst, as_tuple=False).view(-1)
     elif top_k is not None and top_k > 0:
         kk = min(int(top_k), k)
-        _, selected_local = torch.topk(width_uns, kk)
+        _, selected_local = torch.topk(
+            _selective_chull_score(l_uns, u_uns), kk
+        )
     else:
         selected_local = torch.zeros(0, dtype=torch.long, device=device)
 

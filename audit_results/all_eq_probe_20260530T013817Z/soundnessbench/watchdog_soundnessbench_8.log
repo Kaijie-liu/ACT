@@ -1,0 +1,44 @@
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: soundnessbench/onnx/model.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/soundnessbench/onnx/model.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: model.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 128)
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 128)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 128 inputs, 384 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 128 inputs, 384 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'soundnessbench'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed model_8.vnnlib: 1 query(ies)
+INFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=6 out_dim=384 relus=6 (triangle for relu 1..-993, eq_lagr_v8 for last 999)
+WARNING:act.back_end.solver.solver_hz:L5 FALLBACK (OutOfMemoryError): CUDA out of memory. Tried to allocate 3.59 GiB. GPU 0 has a total capacity of 94.96 GiB of which 3.51 GiB is free. Process 2687037 has 690.00 MiB memory in use. Process 3434660 has 81.72 GiB memory in use. Process 3434657 has 1.34 GiB memory in use. Process 3465947 has 4.39 GiB memory in use. Process 3465977 has 770.00 MiB memory in use. Including non-PyTorch memory, this process has 1.63 GiB memory in use. Process 3469669 has 674.00 MiB memory in use. Of the allocated memory 990.72 MiB is allocated by PyTorch, and 21.28 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic
+✅ Device Manager Initialized: device=cuda:0, dtype=torch.float64
+
+================================================================================
+ACT: Abstract Constraint Transformer
+Inference-based whitebox fuzzing for neural network verification
+================================================================================
+
+
+================================================================================
+VERIFICATION TEST: VNNLIB → VerifiableModel → verify_once
+================================================================================
+
+[vnnlib] category=soundnessbench max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=180.0s)
+  [  1/1] soundnessbench/onnx/model.onnx@vnnlib/model_8.vnnlib: UNKNOWN (4.3s)  V=0 A=0 U=1 E=0  R=0
+
+[vnnlib/hybridz] FINAL — total=1 wall=0.1 min
+  UNKNOWN      1
+  [structured] per-instance log → /data1/Kane/ACT/audit_results/all_eq_probe_20260530T013817Z/soundnessbench/per_instance_soundnessbench_20260530T013929477480Z.json
+
+================================================================================
+VERIFICATION TEST SUMMARY
+================================================================================
+  ✅ vnnlib                    PASSED
+================================================================================
+

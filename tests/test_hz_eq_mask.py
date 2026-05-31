@@ -124,6 +124,36 @@ def test_hz_apply_relu_with_unsafe_set_lp_finds_reachable_point():
     assert witness is not None, "feasible status must yield a witness"
 
 
+def test_unsafe_linear_output_projection_preserves_feasible_witness():
+    """UNSAFE_LINEAR final projection is an exact LP-size optimization.
+
+    It must preserve the feasibility result and still return a factor-space
+    witness. This covers the common VNNLIB pattern where a small number of
+    output rows are constrained out of a much larger output tensor.
+    """
+    hz = _box_hz([-0.5, -0.5], [1.0, 1.0])
+    lb = torch.tensor([-0.5, -0.5], dtype=torch.float64)
+    ub = torch.tensor([1.0, 1.0], dtype=torch.float64)
+    out = hz_apply_relu(hz_intersect_box(hz, lb, ub), external_bounds=(lb, ub))
+    assert_layer = _UnsafeLinearAssert(C=[[-1.0, 1.0]], d=[0.0])
+
+    import os
+    old = os.environ.get("ACT_HZ_OUTPUT_SPEC_PROJECTION")
+    try:
+        os.environ["ACT_HZ_OUTPUT_SPEC_PROJECTION"] = "0"
+        st_off, w_off = check_unsafe_for_act(out, assert_layer, timeout_s=10.0)
+        os.environ["ACT_HZ_OUTPUT_SPEC_PROJECTION"] = "1"
+        st_on, w_on = check_unsafe_for_act(out, assert_layer, timeout_s=10.0)
+    finally:
+        if old is None:
+            os.environ.pop("ACT_HZ_OUTPUT_SPEC_PROJECTION", None)
+        else:
+            os.environ["ACT_HZ_OUTPUT_SPEC_PROJECTION"] = old
+
+    assert st_off == st_on == "feasible"
+    assert w_off is not None and w_on is not None
+
+
 def test_hz_apply_relu_default_eq_mask_when_input_clean():
     """When input HZ has no inequality rows (clean ReLU encoding), the output
     should still be well-formed with all-equality rows. Smoke test that the
@@ -145,5 +175,6 @@ def test_hz_apply_relu_default_eq_mask_when_input_clean():
 if __name__ == "__main__":
     test_hz_apply_relu_preserves_eq_mask_explicit()
     test_hz_apply_relu_with_unsafe_set_lp_finds_reachable_point()
+    test_unsafe_linear_output_projection_preserves_feasible_witness()
     test_hz_apply_relu_default_eq_mask_when_input_clean()
-    print("OK: 3 eq_mask regression tests pass")
+    print("OK: 4 eq_mask regression tests pass")

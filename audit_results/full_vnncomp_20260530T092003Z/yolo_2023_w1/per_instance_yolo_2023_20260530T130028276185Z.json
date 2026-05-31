@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "benchmark": "yolo_2023",
+  "formal_mode": true,
+  "timestamp_utc": "20260530T130028276185Z",
+  "canonical_root": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks",
+  "receipt_dir": "/data1/Kane/ACT/audit_results/full_vnncomp_20260530T092003Z/yolo_2023_w1",
+  "wall_min": 0.13598333597183226,
+  "counts": {
+    "CERTIFIED": 0,
+    "FALSIFIED": 0,
+    "UNKNOWN": 0,
+    "ERROR": 1
+  },
+  "run_status": "FAILED",
+  "per_instance": [
+    {
+      "official_instance_id": 58,
+      "benchmark": "yolo_2023",
+      "onnx_model": "onnx/TinyYOLO.onnx",
+      "vnnlib_spec": "vnnlib/TinyYOLO_prop_000165_eps_1_255.vnnlib",
+      "model_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/yolo_2023/onnx/TinyYOLO.onnx",
+      "spec_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/yolo_2023/vnnlib/TinyYOLO_prop_000165_eps_1_255.vnnlib",
+      "internal_status": "ERROR",
+      "reportable_status": "ERROR",
+      "cli_normalized": "ERROR_OutOfMemoryError",
+      "count_bucket": "ERROR",
+      "queries": [],
+      "q_statuses": [],
+      "q_reportables": [],
+      "q_receipts": [],
+      "error": "OutOfMemoryError: CUDA out of memory. Tried to allocate 494.00 MiB. GPU 0 has a total capacity of 94.96 GiB of which 114.31 MiB is free. Process 2687037 has 690.00 MiB memory in use. Process 2988236 has 8.26 GiB memory in use. Process 2991912 has 46.13 GiB memory in use. Process 2994356 has 5.75 GiB memory in use. Process 2995532 has 6.88 GiB memory in use. Process 2996422 has 674.00 MiB memory in use. Process 2997252 has 582.00 MiB memory in use. Process 2997254 has 1.95 GiB memory in use. Process 2998210 has 16.93 GiB memory in use. Including non-PyTorch memory, this process has 4.39 GiB memory in use. Process 2998326 has 1.07 GiB memory in use. Process 2998362 has 1.27 GiB memory in use. Of the allocated memory 3.75 GiB is allocated by PyTorch, and 3.13 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)",
+      "wall_s": 8.158920049667358,
+      "timeout_s": 180.0,
+      "instance_budget_exhausted": false
+    }
+  ]
+}

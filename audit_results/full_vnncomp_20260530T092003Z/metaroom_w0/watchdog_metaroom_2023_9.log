@@ -1,0 +1,44 @@
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: metaroom_2023/./onnx/6cnn_ry_49_8_no_custom_OP.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/metaroom_2023/onnx/6cnn_ry_49_8_no_custom_OP.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+WARNING:act.front_end.vnnlib_loader.onnx_converter:Full pipeline failed (AcceleratorError: CUDA error: out of memory
+Search for `cudaErrorMemoryAllocation' in https://docs.nvidia.com/cuda/cuda-runtime-api/group_); retrying with raw graph (no opset upgrade, no simplify)
+[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic
+✅ Device Manager Initialized: device=cuda:0, dtype=torch.float64
+
+================================================================================
+ACT: Abstract Constraint Transformer
+Inference-based whitebox fuzzing for neural network verification
+================================================================================
+
+
+================================================================================
+VERIFICATION TEST: VNNLIB → VerifiableModel → verify_once
+================================================================================
+
+[vnnlib] category=metaroom_2023 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=120.0s)
+  [  1/1] metaroom_2023/./onnx/6cnn_ry_49_8_no_custom_OP.onnx@./vnnlib/spec_idx_124_eps_0.00000436.vnnlib: ERROR_RuntimeError (1.1s)  V=0 A=0 U=0 E=1  R=0
+Traceback (most recent call last):
+  File "/data1/Kane/ACT/act/pipeline/cli.py", line 1371, in cmd_verify
+    _run_vnnlib_verify(args)
+  File "/data1/Kane/ACT/act/pipeline/cli.py", line 549, in _run_vnnlib_verify
+    return _run_vnnlib_verify_hybridz(args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data1/Kane/ACT/act/pipeline/cli.py", line 1256, in _run_vnnlib_verify_hybridz
+    raise RuntimeError(
+RuntimeError: VERIFICATION_RUN_FAILED: ERROR=1. Per-instance log preserved; inspect instance error fields.
+
+[vnnlib/hybridz] FINAL — total=1 wall=0.0 min
+  ERROR        1
+  [structured] per-instance log → /data1/Kane/ACT/audit_results/full_vnncomp_20260530T092003Z/metaroom_w0/per_instance_metaroom_2023_20260530T125754033880Z.json
+
+❌ Test failed: VERIFICATION_RUN_FAILED: ERROR=1. Per-instance log preserved; inspect instance error fields.
+
+================================================================================
+VERIFICATION TEST SUMMARY
+================================================================================
+  ❌ vnnlib                    FAILED
+================================================================================
+

@@ -1,0 +1,49 @@
+INFO:act.front_end.vnnlib_loader.data_model_loader:Loading VNNLIB instance: cifar100_2024/onnx/CIFAR100_resnet_large.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:[1/3] Converting ONNX model to PyTorch...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/onnx/CIFAR100_resnet_large.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch (simplify-first; raw fallback)
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 12 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: CIFAR100_resnet_large.onnx
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Model converted successfully
+INFO:act.front_end.vnnlib_loader.data_model_loader:[2/3] Extracting input shape...
+INFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 3, 32, 32)
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Input shape: (1, 3, 32, 32)
+INFO:act.front_end.vnnlib_loader.data_model_loader:[3/3] Parsing VNNLIB specification...
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 3072 inputs, 100 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Parsed VNNLIB: 3072 inputs, 100 outputs
+INFO:act.front_end.vnnlib_loader.data_model_loader:  ✓ Ground truth label: 68
+INFO:act.front_end.vnnlib_loader.data_model_loader:Successfully loaded VNNLIB instance from 'cifar100_2024'
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed CIFAR100_resnet_large_prop_idx_2993_sidx_2485_eps_0.0039.vnnlib: 1 query(ies)
+INFO:act.back_end.solver.solver_hz:large_cls_proof_mode ACTIVE: conv=20 out_dim=100 relus=10 (triangle for relu 1..5, eq_lagr_v8 for last 5)
+WARNING:act.back_end.solver.solver_hz:L4 FALLBACK (OutOfMemoryError): CUDA out of memory. Tried to allocate 1.91 GiB. GPU 0 has a total capacity of 94.96 GiB of which 1.07 GiB is free. Process 2687037 has 690.00 MiB memory in use. Process 3528541 has 81.71 GiB memory in use. Process 3591638 has 798.00 MiB memory in use. Including non-PyTorch memory, this process has 8.09 GiB memory in use. Process 3591634 has 870.00 MiB memory in use. Process 3591636 has 798.00 MiB memory in use. Process 3591637 has 798.00 MiB memory in use. Of the allocated memory 7.42 GiB is allocated by PyTorch, and 25.50 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+WARNING:act.back_end.solver.solver_hz:L7 FALLBACK (AttributeError): 'SparseGcZ' object has no attribute 'Gc'
+WARNING:act.back_end.solver.solver_hz:L23 FALLBACK (OutOfMemoryError): CUDA out of memory. Tried to allocate 2.03 GiB. GPU 0 has a total capacity of 94.96 GiB of which 24.88 MiB is free. Process 2687037 has 690.00 MiB memory in use. Process 3528541 has 81.71 GiB memory in use. Process 3591638 has 798.00 MiB memory in use. Including non-PyTorch memory, this process has 8.21 GiB memory in use. Process 3591634 has 1.63 GiB memory in use. Process 3591636 has 798.00 MiB memory in use. Process 3591637 has 870.00 MiB memory in use. Of the allocated memory 5.87 GiB is allocated by PyTorch, and 1.70 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+WARNING:act.back_end.solver.solver_hz:L25 FALLBACK (AttributeError): 'SparseGcZ' object has no attribute 'Gc'
+[ACT] Using existing Gurobi license: ../ACT/modules/gurobi/gurobi.lic
+✅ Device Manager Initialized: device=cuda:0, dtype=torch.float64
+
+================================================================================
+ACT: Abstract Constraint Transformer
+Inference-based whitebox fuzzing for neural network verification
+================================================================================
+
+
+================================================================================
+VERIFICATION TEST: VNNLIB → VerifiableModel → verify_once
+================================================================================
+
+[vnnlib] category=cifar100_2024 max_instances=1 mode=hybridz (full TOP1_ROBUST via labeled_tensor collapse; device=cuda, timeout=300.0s)
+  [  1/1] cifar100_2024/onnx/CIFAR100_resnet_large.onnx@vnnlib/CIFAR100_resnet_large_prop_idx_2993_sidx_2485_eps_0.0039.vnnlib: UNKNOWN (10.2s)  V=0 A=0 U=1 E=0  R=0
+
+[vnnlib/hybridz] FINAL — total=1 wall=0.2 min
+  UNKNOWN      1
+  [structured] per-instance log → /data1/Kane/ACT/audit_results/eq_layers_ablation_20260530T015205Z/cifar100_2024_eq5/per_instance_cifar100_2024_20260530T015911662930Z.json
+
+================================================================================
+VERIFICATION TEST SUMMARY
+================================================================================
+  ✅ vnnlib                    PASSED
+================================================================================
+

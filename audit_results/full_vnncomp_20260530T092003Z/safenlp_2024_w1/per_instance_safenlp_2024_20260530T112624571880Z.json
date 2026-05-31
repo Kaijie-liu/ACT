@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "benchmark": "safenlp_2024",
+  "formal_mode": true,
+  "timestamp_utc": "20260530T112624571880Z",
+  "canonical_root": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks",
+  "receipt_dir": "/data1/Kane/ACT/audit_results/full_vnncomp_20260530T092003Z/safenlp_2024_w1",
+  "wall_min": 0.019770089785257974,
+  "counts": {
+    "CERTIFIED": 0,
+    "FALSIFIED": 0,
+    "UNKNOWN": 0,
+    "ERROR": 1
+  },
+  "run_status": "FAILED",
+  "per_instance": [
+    {
+      "official_instance_id": 647,
+      "benchmark": "safenlp_2024",
+      "onnx_model": "onnx/ruarobot/perturbations_0.onnx",
+      "vnnlib_spec": "vnnlib/ruarobot/hyperrectangle_1215.vnnlib",
+      "model_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/safenlp_2024/onnx/ruarobot/perturbations_0.onnx",
+      "spec_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/safenlp_2024/vnnlib/ruarobot/hyperrectangle_1215.vnnlib",
+      "internal_status": "ERROR",
+      "reportable_status": "ERROR",
+      "cli_normalized": "ERROR_RuntimeError",
+      "count_bucket": "ERROR",
+      "queries": [],
+      "q_statuses": [],
+      "q_reportables": [],
+      "q_receipts": [],
+      "error": "RuntimeError: Expected all tensors to be on the same device, but got mat2 is on cpu, different from other tensors on cuda:0 (when checking argument in method wrapper_CUDA_mm)",
+      "wall_s": 1.1861729621887207,
+      "timeout_s": 60.0,
+      "instance_budget_exhausted": false
+    }
+  ]
+}

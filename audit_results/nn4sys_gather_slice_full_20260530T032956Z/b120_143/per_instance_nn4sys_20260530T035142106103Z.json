@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "benchmark": "nn4sys",
+  "formal_mode": true,
+  "timestamp_utc": "20260530T035142106103Z",
+  "canonical_root": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks",
+  "receipt_dir": "/data1/Kane/ACT/audit_results/nn4sys_gather_slice_full_20260530T032956Z/b120_143",
+  "wall_min": 1.05795077085495,
+  "counts": {
+    "CERTIFIED": 0,
+    "FALSIFIED": 0,
+    "UNKNOWN": 1,
+    "ERROR": 0
+  },
+  "run_status": "PASSED",
+  "per_instance": [
+    {
+      "official_instance_id": 142,
+      "benchmark": "nn4sys",
+      "onnx_model": "onnx/mscn_128d_dual.onnx",
+      "vnnlib_spec": "vnnlib/cardinality_1_720_128_dual.vnnlib",
+      "model_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/onnx/mscn_128d_dual.onnx",
+      "spec_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/nn4sys/vnnlib/cardinality_1_720_128_dual.vnnlib",
+      "internal_status": "UNKNOWN",
+      "reportable_status": "UNKNOWN",
+      "cli_normalized": "UNKNOWN",
+      "count_bucket": "UNKNOWN",
+      "queries": [
+        {
+          "query_index": 0,
+          "internal_status": "UNSAT",
+          "reportable_status": "CERTIFIED",
+          "receipt_path": null
+        },
+        {
+          "query_index": 1,
+          "internal_status": "UNSAT",
+          "reportable_status": "CERTIFIED",
+          "receipt_path": null
+        },
+        {
+          "query_index": 2,
+          "internal_status": "UNKNOWN",
+          "reportable_status": "UNKNOWN",
+          "receipt_path": null
+        }
+      ],
+      "q_statuses": [
+        "UNSAT",
+        "UNSAT",
+        "UNKNOWN"
+      ],
+      "q_reportables": [
+        "CERTIFIED",
+        "CERTIFIED",
+        "UNKNOWN"
+      ],
+      "q_receipts": [
+        null,
+        null,
+        null
+      ],
+      "error": null,
+      "wall_s": 63.476998805999756,
+      "timeout_s": 60.0,
+      "instance_budget_exhausted": true
+    }
+  ]
+}

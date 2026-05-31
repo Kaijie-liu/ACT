@@ -693,7 +693,7 @@ REGISTRY: Dict[str, Dict[str, Any]] = {
     },
     LayerKind.TRANSPOSE.value: {
         "params_required": [],
-        "params_optional": ["perm"],
+        "params_optional": ["perm", "input_shape", "output_shape"],
     },
     LayerKind.SQUEEZE.value: {
         "params_required": [],

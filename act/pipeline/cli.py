@@ -1086,6 +1086,15 @@ def _run_vnnlib_verify_hybridz(args) -> None:
                     query_index=q_idx,
                     benchmark=p['category'],
                     large_cls_eq_layers=_eq_layers,
+                    girard_cap=int(os.environ.get("ACT_HZ_GIRARD_CAP", "6000")),
+                    tail_preserve_dim=int(
+                        os.environ.get("ACT_HZ_TAIL_PRESERVE_DIM", "0")
+                    ),
+                    constraint_keep_weight=float(
+                        os.environ.get("ACT_HZ_CONSTRAINT_KEEP_WEIGHT", "0.0")
+                    ),
+                    sigmoid_K=int(os.environ.get("ACT_HZ_SIGMOID_K", "2")),
+                    tanh_K=int(os.environ.get("ACT_HZ_TANH_K", "2")),
                     small_dense_lp=os.environ.get("ACT_HZ_SMALL_DENSE_LP", "specaware"),
                     small_dense_lp_root=os.environ.get("ACT_HZ_SMALL_DENSE_LP_ROOT"),
                     small_dense_lp_time_limit_s=float(

@@ -88,12 +88,15 @@ class HZono:
     # generator-producing op should propagate via _propagate_base().
     _base_ng: Optional[int] = None
     _base_nb: Optional[int] = None
+    _base_nc: Optional[int] = None
 
     def __post_init__(self):
         if self._base_ng is None:
             object.__setattr__(self, "_base_ng", int(self.Gc.shape[1]))
         if self._base_nb is None:
             object.__setattr__(self, "_base_nb", int(self.Gb.shape[1]))
+        if self._base_nc is None:
+            object.__setattr__(self, "_base_nc", int(self.b.shape[0]))
 
     # ─── Convenience shape accessors (parity with HyZor's HybridZonotope) ──
     # HyZor exposes ``.dim, .ng, .nb, .nc`` as cached ints; the cons-walker
@@ -125,12 +128,16 @@ def _propagate_base(parent: HZono, child: HZono) -> HZono:
     """
     parent_base_ng = getattr(parent, "_base_ng", None)
     parent_base_nb = getattr(parent, "_base_nb", None)
+    parent_base_nc = getattr(parent, "_base_nc", None)
     if parent_base_ng is not None:
         object.__setattr__(child, "_base_ng",
                            int(min(int(parent_base_ng), int(child.Gc.shape[1]))))
     if parent_base_nb is not None:
         object.__setattr__(child, "_base_nb",
                            int(min(int(parent_base_nb), int(child.Gb.shape[1]))))
+    if parent_base_nc is not None:
+        object.__setattr__(child, "_base_nc",
+                           int(min(int(parent_base_nc), int(child.b.shape[0]))))
     return child
 
 
@@ -771,8 +778,17 @@ def _hz_gather_exact(hz: "HZono", params: Dict[str, Any]) -> "HZono":
     n_indices = int(indices.shape[0])
     device = hz.c.device
 
-    # Bounds-check indices (interval_tf already wrapped negatives but be defensive)
-    indices = indices.to(device).clamp_(0, axis_dim - 1)
+    # ONNX Gather supports negative indices relative to the gathered axis.
+    # Wrap them, then fail closed on any true out-of-range index. Silent clamp
+    # would select the wrong row and under-approximate the graph.
+    indices = indices.to(device)
+    if bool((indices < 0).any().item()):
+        indices = torch.where(indices < 0, indices + axis_dim, indices)
+    if bool(((indices < 0) | (indices >= axis_dim)).any().item()):
+        bad = indices[((indices < 0) | (indices >= axis_dim))][:8].detach().cpu().tolist()
+        raise ValueError(
+            f"GATHER index out of range for axis_dim={axis_dim}: sample={bad}"
+        )
 
     # For each (p, k, s) output position the input flat index is:
     #   p * axis_dim * suffix_size + indices[k] * suffix_size + s
@@ -784,7 +800,7 @@ def _hz_gather_exact(hz: "HZono", params: Dict[str, Any]) -> "HZono":
         p_idx * (axis_dim * suffix_size) + k_idx * suffix_size + s_idx
     ).reshape(-1)
 
-    return HZono(
+    out = HZono(
         c=hz.c.index_select(0, flat_in_idx),
         Gc=hz.Gc.index_select(0, flat_in_idx),
         Gb=hz.Gb.index_select(0, flat_in_idx),
@@ -793,6 +809,125 @@ def _hz_gather_exact(hz: "HZono", params: Dict[str, Any]) -> "HZono":
         b=hz.b,
         eq_mask=(hz.eq_mask.clone() if hz.eq_mask is not None else None),
     )
+    return _propagate_base(hz, out)
+
+
+def _coerce_hzono_for_exact_rowop(hz: Any, op_name: str) -> "HZono":
+    if isinstance(hz, HZono):
+        return hz
+    budget = int(
+        float(os.environ.get("ACT_HZ_ROWOP_MAT_BUDGET_GB", "2.0")) * (1024 ** 3)
+    )
+    if hasattr(hz, "materialization_bytes") and int(hz.materialization_bytes()) > budget:
+        raise ValueError(
+            f"{op_name} exact path materialization would exceed budget: "
+            f"{int(hz.materialization_bytes())} bytes"
+        )
+    if hasattr(hz, "to_hzono"):
+        return hz.to_hzono()
+    if hasattr(hz, "to_full_hzono"):
+        return hz.to_full_hzono()
+    raise ValueError(f"{op_name} exact path requires HZono, got {type(hz).__name__}")
+
+
+def _hz_pad_exact(hz: "HZono", params: Dict[str, Any]) -> "HZono":
+    """Exact HZ transfer for PAD.
+
+    Padding is linear for all PyTorch-supported modes. Constant padding inserts
+    fixed rows (zero generators); reflect/replicate/circular padding duplicates
+    input rows. Both cases preserve the factor-space constraints exactly.
+    """
+    import torch.nn.functional as F
+
+    hz = _coerce_hzono_for_exact_rowop(hz, "PAD")
+    in_shape = tuple(int(x) for x in params.get("input_shape", ()))
+    if not in_shape:
+        raise ValueError("PAD meta missing input_shape")
+    n_in = 1
+    for d in in_shape:
+        n_in *= int(d)
+    if int(hz.dim) != n_in:
+        raise ValueError(f"PAD input dim mismatch: hz.dim={hz.dim}, input_shape={in_shape}")
+
+    pads = params.get("pads", params.get("pad", None))
+    if pads is None:
+        raise ValueError("PAD meta missing pads")
+    pads = [int(x) for x in pads]
+    mode = str(params.get("mode", "constant")).lower()
+    value = float(params.get("value", 0.0))
+    device = hz.c.device
+
+    grid = torch.arange(n_in, device=device, dtype=torch.long).reshape(*in_shape)
+    if mode == "constant":
+        idx_grid = F.pad(grid, pads, mode="constant", value=-1).reshape(-1)
+    else:
+        # F.pad non-constant modes require a batch/channel-like rank. The same
+        # mode on an index tensor is exactly the row-duplication map.
+        idx_grid = F.pad(grid, pads, mode=mode).reshape(-1)
+    valid = idx_grid >= 0
+    out_dim = int(idx_grid.numel())
+    c = hz.c.new_full((out_dim, *tuple(hz.c.shape[1:])), value)
+    Gc = hz.Gc.new_zeros((out_dim, int(hz.Gc.shape[1])))
+    Gb = hz.Gb.new_zeros((out_dim, int(hz.Gb.shape[1])))
+    if bool(valid.any().item()):
+        sel = idx_grid[valid]
+        c[valid] = hz.c.index_select(0, sel)
+        Gc[valid] = hz.Gc.index_select(0, sel)
+        Gb[valid] = hz.Gb.index_select(0, sel)
+    out = HZono(
+        c=c, Gc=Gc, Gb=Gb,
+        Ac=hz.Ac, Ab=hz.Ab, b=hz.b,
+        eq_mask=(hz.eq_mask.clone() if hz.eq_mask is not None else None),
+    )
+    return _propagate_base(hz, out)
+
+
+def _hz_reduce_sum_exact(hz: "HZono", params: Dict[str, Any]) -> "HZono":
+    """Exact HZ transfer for ReduceSum over static axes."""
+    hz = _coerce_hzono_for_exact_rowop(hz, "REDUCE_SUM")
+    in_shape_meta = params.get("input_shape", None)
+    in_shape = tuple(int(x) for x in in_shape_meta) if in_shape_meta else (int(hz.dim),)
+    n_in = 1
+    for d in in_shape:
+        n_in *= int(d)
+    if int(hz.dim) != n_in:
+        raise ValueError(
+            f"REDUCE_SUM input dim mismatch: hz.dim={hz.dim}, input_shape={in_shape}"
+        )
+    axes = params.get("axes", None)
+    rank = len(in_shape)
+    if axes is None or len(axes) == 0:
+        norm_axes = tuple(range(rank))
+    else:
+        norm_axes = tuple(sorted({(int(a) + rank if int(a) < 0 else int(a)) for a in axes}))
+    if any(a < 0 or a >= rank for a in norm_axes):
+        raise ValueError(f"REDUCE_SUM invalid axes={axes} for rank={rank}")
+    keepdims = bool(params.get("keepdims", False))
+
+    def _sum_rows(mat: torch.Tensor) -> torch.Tensor:
+        if mat.dim() == 1:
+            shaped = mat.reshape(*in_shape)
+            reduced = shaped.sum(dim=norm_axes, keepdim=keepdims)
+            return reduced.reshape(-1)
+        cols = int(mat.shape[1])
+        if cols == 0:
+            dummy = mat.new_zeros((*in_shape, 1))
+            out_rows = int(dummy.sum(dim=norm_axes, keepdim=keepdims).reshape(-1, 1).shape[0])
+            return mat.new_zeros((out_rows, 0))
+        shaped = mat.reshape(*in_shape, cols)
+        reduced = shaped.sum(dim=norm_axes, keepdim=keepdims)
+        return reduced.reshape(-1, cols)
+
+    out = HZono(
+        c=_sum_rows(hz.c),
+        Gc=_sum_rows(hz.Gc),
+        Gb=_sum_rows(hz.Gb),
+        Ac=hz.Ac,
+        Ab=hz.Ab,
+        b=hz.b,
+        eq_mask=(hz.eq_mask.clone() if hz.eq_mask is not None else None),
+    )
+    return _propagate_base(hz, out)
 
 
 def _hz_slice_exact(hz: "HZono", params: Dict[str, Any]) -> "HZono":
@@ -880,7 +1015,7 @@ def _hz_slice_exact(hz: "HZono", params: Dict[str, Any]) -> "HZono":
         flat_in_idx = flat_in_idx + grids[d] * int(strides[d])
     flat_in_idx = flat_in_idx.reshape(-1)
 
-    return HZono(
+    out = HZono(
         c=hz.c.index_select(0, flat_in_idx),
         Gc=hz.Gc.index_select(0, flat_in_idx),
         Gb=hz.Gb.index_select(0, flat_in_idx),
@@ -889,6 +1024,124 @@ def _hz_slice_exact(hz: "HZono", params: Dict[str, Any]) -> "HZono":
         b=hz.b,
         eq_mask=(hz.eq_mask.clone() if hz.eq_mask is not None else None),
     )
+    return _propagate_base(hz, out)
+
+
+def _hz_transpose_exact(hz: "HZono", params: Dict[str, Any]) -> "HZono":
+    """Exact HZ transfer for static tensor transpose.
+
+    Transpose is a pure row permutation on the flattened tensor. Keeping it as
+    identity silently feeds later linear layers in the wrong order and destroys
+    the same predicate-variable semantics that Star/ImageStar rely on.
+    """
+    hz = _coerce_hzono_for_exact_rowop(hz, "TRANSPOSE")
+    in_shape = tuple(int(x) for x in params.get("input_shape", ()))
+    perm = tuple(int(x) for x in params.get("perm", ()))
+    if not in_shape:
+        raise ValueError("TRANSPOSE meta missing input_shape")
+    if not perm:
+        raise ValueError("TRANSPOSE meta missing perm")
+    rank = len(in_shape)
+    if len(perm) != rank:
+        raise ValueError(f"TRANSPOSE perm rank {len(perm)} != input rank {rank}")
+    norm_perm = tuple((p + rank if p < 0 else p) for p in perm)
+    if sorted(norm_perm) != list(range(rank)):
+        raise ValueError(f"TRANSPOSE invalid perm={perm} for rank={rank}")
+    n_in = 1
+    for d in in_shape:
+        n_in *= int(d)
+    if int(hz.dim) != n_in:
+        raise ValueError(
+            f"TRANSPOSE input dim mismatch: hz.dim={hz.dim}, input_shape={in_shape}"
+        )
+    idx = torch.arange(n_in, dtype=torch.long, device=hz.c.device).reshape(
+        *in_shape
+    ).permute(*norm_perm).reshape(-1)
+    out = HZono(
+        c=hz.c.index_select(0, idx),
+        Gc=hz.Gc.index_select(0, idx),
+        Gb=hz.Gb.index_select(0, idx),
+        Ac=hz.Ac,
+        Ab=hz.Ab,
+        b=hz.b,
+        eq_mask=(hz.eq_mask.clone() if hz.eq_mask is not None else None),
+    )
+    return _propagate_base(hz, out)
+
+
+def _hz_avgpool2d_exact(hz: "HZono", params: Dict[str, Any]) -> "HZono":
+    """Exact HZ transfer for AvgPool2d via per-generator pooling.
+
+    AvgPool is linear. We avoid materializing the huge dense pooling matrix
+    stored by interval TF and instead push center/Gc/Gb columns through
+    ``torch.nn.functional.avg_pool2d`` in chunks.
+    """
+    import torch.nn.functional as F
+
+    hz = _coerce_hzono_for_exact_rowop(hz, "AVGPOOL2D")
+    in_shape = tuple(int(x) for x in params.get("input_shape", ()))
+    if len(in_shape) == 4 and in_shape[0] == 1:
+        in_shape_3 = in_shape[1:]
+    elif len(in_shape) == 3:
+        in_shape_3 = in_shape
+    else:
+        raise ValueError(f"AVGPOOL2D bad input_shape={in_shape}")
+    c, h, w = in_shape_3
+    if int(hz.dim) != c * h * w:
+        raise ValueError(
+            f"AVGPOOL2D input dim mismatch: hz.dim={hz.dim}, input_shape={in_shape}"
+        )
+
+    kernel_size = params.get("kernel_size", params.get("kernel", None))
+    if kernel_size is None:
+        raise ValueError("AVGPOOL2D meta missing kernel_size")
+    stride = params.get("stride", kernel_size)
+    padding = params.get("padding", 0)
+
+    def _as_pair(x):
+        if isinstance(x, torch.Tensor):
+            x = x.detach().cpu().tolist()
+        if isinstance(x, (list, tuple)):
+            return tuple(int(v) for v in x)
+        return (int(x), int(x))
+
+    kernel_size = _as_pair(kernel_size)
+    stride = _as_pair(stride)
+    padding = _as_pair(padding)
+
+    def _pool_mat(mat: torch.Tensor) -> torch.Tensor:
+        cols = int(mat.shape[1])
+        if cols == 0:
+            sample = F.avg_pool2d(
+                mat.new_zeros((1, c, h, w)), kernel_size, stride, padding
+            )
+            return mat.new_zeros((int(sample.numel()), 0))
+        chunk = int(os.environ.get("ACT_HZ_AVGPOOL_COL_CHUNK", "256"))
+        outs = []
+        for start in range(0, cols, chunk):
+            block = mat[:, start:start + chunk].transpose(0, 1).contiguous()
+            y = F.avg_pool2d(
+                block.reshape(block.shape[0], c, h, w),
+                kernel_size,
+                stride,
+                padding,
+            )
+            outs.append(y.reshape(y.shape[0], -1).transpose(0, 1).contiguous())
+        return torch.cat(outs, dim=1)
+
+    c_out = F.avg_pool2d(
+        hz.c.reshape(1, c, h, w), kernel_size, stride, padding
+    ).reshape(-1, 1)
+    out = HZono(
+        c=c_out,
+        Gc=_pool_mat(hz.Gc),
+        Gb=_pool_mat(hz.Gb),
+        Ac=hz.Ac,
+        Ab=hz.Ab,
+        b=hz.b,
+        eq_mask=(hz.eq_mask.clone() if hz.eq_mask is not None else None),
+    )
+    return _propagate_base(hz, out)
 
 
 def _hz_convtranspose2d_native(hz: HZono, params: Dict[str, Any]) -> HZono:
@@ -2019,6 +2272,25 @@ class HZVerifier(Solver):
                 "(ReLUs use triangle unless ACT_HZ_AUTO_CONVTRANSPOSE_TRIANGLE=0)",
                 convtranspose_count, total_relu,
             )
+        single_relu_dense_chull = (
+            conv_count == 0
+            and convtranspose_count == 0
+            and total_relu == 1
+            and self.cfg["relu_method"] == "eq_lagr_v8"
+            and os.environ.get("ACT_HZ_AUTO_SINGLE_RELU_CHULL", "1")
+            .strip().lower() in ("1", "true", "yes", "on")
+            and int(input_hz.dim)
+            <= int(os.environ.get("ACT_HZ_SINGLE_RELU_CHULL_DIM_MAX", "512"))
+        )
+        if single_relu_dense_chull:
+            self._stats["single_relu_dense_chull_profile_active"] = True
+            self._stats["single_relu_dense_chull_input_dim"] = int(input_hz.dim)
+            logger.info(
+                "single_relu_dense_chull_profile ACTIVE: input_dim=%d "
+                "(single dense ReLU uses convex_hull_cont)",
+                input_hz.dim,
+            )
+        self._single_relu_dense_chull_profile_active = single_relu_dense_chull
         self._relu_idx_map = relu_idx_map
         self._total_relu = total_relu
 
@@ -2132,6 +2404,12 @@ class HZVerifier(Solver):
             except Exception as e:
                 # Sound fallback on any per-layer failure
                 self._stats[f"error@{L.id}"] = f"{type(e).__name__}: {e}"
+                if os.environ.get("ACT_HZ_FALLBACK_DEBUG", "0") == "1":
+                    print(
+                        f"[HZ-FALLBACK] L{L.id} {L.kind} "
+                        f"{type(e).__name__}: {e}",
+                        flush=True,
+                    )
                 hz_out = self._box_fallback(L, after, hz_from_bounds)
                 logger.warning(
                     "L%d FALLBACK (%s): %s", L.id, type(e).__name__, e,
@@ -2301,9 +2579,28 @@ class HZVerifier(Solver):
             else:
                 out_dim = 0
             in_ng = int(hz_in.ng) if hz_in is not None else 0
-            if out_dim > 0 and in_ng > 0 and _would_oom(out_dim, in_ng):
+            skip_dense_guard = False
+            if op == "conv2d" and _os.environ.get(
+                "ACT_HZ_SKIP_DENSE_GUARD_FOR_SPARSE_CONV", "1"
+            ) in ("1", "true", "yes", "on"):
+                # The old guard estimates a dense output Gc. That is correct
+                # for the plain HZono conv kernel, but too pessimistic for the
+                # sparse/lazy/pre-conv paths in hz_conv2d, and it can erase
+                # useful ReLU hull constraints before those exact storage
+                # paths get a chance to run.
+                hz_type = type(hz_in).__name__ if hz_in is not None else ""
+                skip_dense_guard = (
+                    hz_type in ("SparseGcZ", "LazyChainHZ", "BoxHZ")
+                    or _os.environ.get("ACT_HZ_PRECONV_SPARSE", "0") == "1"
+                )
+            if out_dim > 0 and in_ng > 0 and _would_oom(out_dim, in_ng) and not skip_dense_guard:
                 self._stats[f"oom_guard@{L.id}"] = f"{op}: out_dim={out_dim}, ng={in_ng}, est_GB={out_dim*in_ng*8*3/(1024**3):.1f}"
                 return self._box_fallback(L, after, ops["hz_from_bounds"])
+            if out_dim > 0 and in_ng > 0 and skip_dense_guard and _would_oom(out_dim, in_ng):
+                self._stats[f"oom_guard_skipped@{L.id}"] = (
+                    f"{op}: sparse/preconv path, out_dim={out_dim}, ng={in_ng}, "
+                    f"dense_est_GB={out_dim*in_ng*8*3/(1024**3):.1f}"
+                )
         except Exception:
             pass  # if estimation fails, just attempt the op normally
 
@@ -2331,6 +2628,10 @@ class HZVerifier(Solver):
                 stride=cp.get("stride", 1), padding=cp.get("padding", 0),
                 dilation=cp.get("dilation", 1), groups=cp.get("groups", 1)
             )
+        if op == "avgpool2d":
+            params = dict(getattr(L, "params", {}) or {})
+            params.update(meta)
+            return _hz_avgpool2d_exact(hz_in, params)
         if op == "bias":  return ops["hz_add_const"](hz_in, meta["c"])
         if op == "scale": return ops["hz_scale"](hz_in, meta["a"])
         if op == "bn":    return ops["hz_bn"](hz_in, meta["A"], meta["c"])
@@ -2358,6 +2659,14 @@ class HZVerifier(Solver):
         if op == "concat":
             if multi_in_hzs is None: multi_in_hzs = [hz_in]
             return ops["hz_concat"](multi_in_hzs)
+        if op == "pad":
+            params = dict(getattr(L, "params", {}) or {})
+            params.update(meta)
+            return _hz_pad_exact(hz_in, params)
+        if op == "reduce_sum":
+            params = dict(getattr(L, "params", {}) or {})
+            params.update(meta)
+            return _hz_reduce_sum_exact(hz_in, params)
         if op == "relu":
             # large_cls_proof_mode: triangle for early relus, eq_lagr_v8 for last N.
             # If ACT_HZ_LATE_RELU is set, use that method (e.g.
@@ -2366,6 +2675,8 @@ class HZVerifier(Solver):
             # pipelines differ because eq_lagr_v8 also runs PEE.
             method = self.cfg["relu_method"]
             ridx = self._relu_idx_map.get(L.id, 0)
+            if getattr(self, "_single_relu_dense_chull_profile_active", False):
+                method = "convex_hull_cont"
             if getattr(self, "_convtranspose_triangle_profile_active", False):
                 method = "triangle"
             if getattr(self, "_lc_active", False):
@@ -2426,7 +2737,17 @@ class HZVerifier(Solver):
             return ops["act_hz_apply_tanh"](hz_in, K=self.cfg["tanh_K"])
 
         # ── Shape ops ──
-        if op in ("flatten", "reshape", "transpose", "squeeze",
+        if op == "transpose":
+            try:
+                params = dict(getattr(L, "params", {}) or {})
+                params.update(meta)
+                return _hz_transpose_exact(hz_in, params)
+            except Exception as _e:
+                self._stats[f"transpose_exact_fallback@{L.id}"] = (
+                    f"{type(_e).__name__}: {str(_e)[:120]}"
+                )
+                return self._box_fallback(L, after, ops["hz_from_bounds"])
+        if op in ("flatten", "reshape", "squeeze",
                   "unsqueeze", "tile", "expand"):
             return hz_in
         # SLICE is a linear permutation/selection; use exact HZ transfer
@@ -2946,6 +3267,96 @@ def _build_factor_lp(hz: HZono):
     }
 
 
+def _sp_hstack(left, right):
+    """hstack that preserves scipy sparse matrices when either side is sparse."""
+    try:
+        import scipy.sparse as sp
+        if sp.issparse(left) or sp.issparse(right):
+            return sp.hstack([left, right], format="csr")
+    except Exception:
+        pass
+    return np.concatenate([left, right], axis=1)
+
+
+def _sp_vstack(top, bottom):
+    """vstack that preserves scipy sparse matrices when either side is sparse."""
+    try:
+        import scipy.sparse as sp
+        if sp.issparse(top) or sp.issparse(bottom):
+            return sp.vstack([top, bottom], format="csr")
+    except Exception:
+        pass
+    return np.concatenate([top, bottom], axis=0)
+
+
+def _torch_sparse_to_scipy(sp_t: torch.Tensor):
+    """Convert a torch sparse COO matrix to scipy CSR."""
+    import scipy.sparse as sp
+    sp_t = sp_t.coalesce().detach().cpu()
+    shape = tuple(int(x) for x in sp_t.shape)
+    if sp_t._nnz() == 0:
+        return sp.csr_matrix(shape, dtype=np.float64)
+    ind = sp_t.indices().numpy()
+    val = sp_t.values().numpy().astype(np.float64, copy=False)
+    return sp.coo_matrix((val, (ind[0], ind[1])), shape=shape).tocsr()
+
+
+def _dense_c_to_scipy(C: np.ndarray):
+    import scipy.sparse as sp
+    return sp.csr_matrix(C.astype(np.float64, copy=False))
+
+
+def _build_factor_lp_projected(hz, C: np.ndarray):
+    """Build factor LP for the exact output projection ``z = C y``.
+
+    This is algebraically equivalent to building the full output LP and later
+    multiplying rows by ``C``. It is much cheaper for VNNLIB properties that
+    touch a tiny subset of a huge output vector (e.g. YOLO: 5 rows out of
+    21125 outputs). No backward bounds or splitting are introduced.
+    """
+    C = np.asarray(C, dtype=np.float64)
+    if C.ndim == 1:
+        C = C.reshape(1, -1)
+
+    # SparseGcZ path: keep generator constraints sparse, project only the
+    # small output rows to dense matrices for LP objectives/spec rows.
+    if hasattr(hz, "Gc_sparse") and hasattr(hz, "Ac_sparse"):
+        import scipy.sparse as sp
+        C_sp = _dense_c_to_scipy(C)
+        Gc_sp = _torch_sparse_to_scipy(hz.Gc_sparse)
+        Gb_sp = _torch_sparse_to_scipy(hz.Gb_sparse)
+        Ac_sp = _torch_sparse_to_scipy(hz.Ac_sparse)
+        Ab_sp = _torch_sparse_to_scipy(hz.Ab_sparse)
+        Gc_proj = (C_sp @ Gc_sp).toarray()
+        Gb_proj = (C_sp @ Gb_sp).toarray() if Gb_sp.shape[1] else np.zeros((C.shape[0], 0))
+        c_proj = C @ _to_np_f64(hz.c).reshape(-1)
+        em_t = _eq_mask_of(hz)
+        em = em_t.detach().cpu().numpy().astype(bool)
+        le = ~em
+        b_np = _to_np_f64(hz.b).reshape(-1)
+        A_all = _sp_hstack(Ac_sp, Ab_sp)
+        A_eq = A_all[em] if em.any() else sp.csr_matrix((0, Ac_sp.shape[1] + Ab_sp.shape[1]))
+        A_le = A_all[le] if le.any() else sp.csr_matrix((0, Ac_sp.shape[1] + Ab_sp.shape[1]))
+        b_eq = b_np[em] if em.any() else np.zeros(0)
+        b_le = b_np[le] if le.any() else np.zeros(0)
+        return {
+            "Gc": Gc_proj,
+            "Gb": Gb_proj,
+            "c": c_proj.reshape(-1),
+            "A_eq": A_eq, "b_eq": b_eq,
+            "A_le": A_le, "b_le": b_le,
+            "p": int(Gc_sp.shape[1]),
+            "q": int(Gb_sp.shape[1]),
+        }
+
+    # Dense HZono path.
+    prob = _build_factor_lp(hz)
+    prob["Gc"] = C @ prob["Gc"]
+    prob["Gb"] = C @ prob["Gb"]
+    prob["c"] = C @ prob["c"]
+    return prob
+
+
 def _lp_feas_or_minimize(prob, obj_row: np.ndarray, rhs_threshold: Optional[float],
                           sense: str = "maximize",
                           timeout_s: Optional[float] = None
@@ -3021,11 +3432,30 @@ def check_unsafe_for_act(out_hz: HZono, assert_layer, *,
     the relaxation rules out) but ``feasible`` may have spurious
     witnesses; caller must concretely replay and confirm.
     """
-    prob = _build_factor_lp(out_hz)
-    p, q = prob["p"], prob["q"]
-    Gc, Gb, c_vec = prob["Gc"], prob["Gb"], prob["c"]
-    nvars = p + q
     kind = _kind_str(assert_layer.params.get("kind"))
+
+    if kind == "UNSAFE_LINEAR":
+        C = _to_np_f64(assert_layer.params["c"])
+        d_vec = _to_np_f64(assert_layer.params["d"]).reshape(-1)
+        if C.ndim == 1:
+            C = C.reshape(1, -1)
+        # Exact final-property projection: z = C y. This avoids carrying
+        # huge irrelevant output rows into the LP for sparse-output specs.
+        out_dim = int(_to_np_f64(out_hz.c).reshape(-1).size)
+        projected_unsafe_linear = (
+            os.environ.get("ACT_HZ_OUTPUT_SPEC_PROJECTION", "1") == "1"
+            and C.shape[0] < out_dim
+        )
+        prob = (_build_factor_lp_projected(out_hz, C)
+                if projected_unsafe_linear else _build_factor_lp(out_hz))
+        p, q = prob["p"], prob["q"]
+        Gc, Gb, c_vec = prob["Gc"], prob["Gb"], prob["c"]
+        nvars = p + q
+    else:
+        prob = _build_factor_lp(out_hz)
+        p, q = prob["p"], prob["q"]
+        Gc, Gb, c_vec = prob["Gc"], prob["Gb"], prob["c"]
+        nvars = p + q
 
     def _row_to_obj_y(coef: np.ndarray) -> Tuple[np.ndarray, float]:
         """y = c + Gc xi_c + Gb xi_b ⇒ coef·y = (coef·c) + obj_row · xi
@@ -3049,23 +3479,19 @@ def check_unsafe_for_act(out_hz: HZono, assert_layer, *,
         return st, x
 
     if kind == "UNSAFE_LINEAR":
-        C = _to_np_f64(assert_layer.params["c"])
-        d_vec = _to_np_f64(assert_layer.params["d"]).reshape(-1)
-        if C.ndim == 1:
-            C = C.reshape(1, -1)
         # Unsafe set = {y : Cy <= d}. Polytope is unsafe-reachable iff
         # exists xi with C(c + Gc xi_c + Gb xi_b) <= d AND hz constraints.
-        # Build one combined LP where we add C·y <= d as extra <=
-        # inequalities and check feasibility (any feasible point works).
-        # Equivalent to: find any xi satisfying hz + C·y <= d.
-        N = C.shape[0]
-        # Augment A_le with N rows: C @ Gc | C @ Gb, rhs = d - C @ c
-        A_le_aug = np.concatenate(
-            [prob["A_le"],
-             np.concatenate([C @ Gc, C @ Gb], axis=1)],
-            axis=0,
-        )
-        b_le_aug = np.concatenate([prob["b_le"], d_vec - C @ c_vec])
+        # With projection enabled above, Gc/Gb/c already represent z=C·y,
+        # so the rows are just z <= d. Without projection this branch is
+        # algebraically identical to the legacy C @ Gc / C @ Gb path.
+        if projected_unsafe_linear:
+            prop_rows = np.concatenate([Gc, Gb], axis=1)
+            prop_rhs = d_vec - c_vec
+        else:
+            prop_rows = np.concatenate([C @ Gc, C @ Gb], axis=1)
+            prop_rhs = d_vec - C @ c_vec
+        A_le_aug = _sp_vstack(prob["A_le"], prop_rows)
+        b_le_aug = np.concatenate([prob["b_le"], prop_rhs])
         prob2 = dict(prob)
         prob2["A_le"] = A_le_aug
         prob2["b_le"] = b_le_aug
