@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 import importlib
+import json
 import os
 import sys
 import time
@@ -89,6 +90,17 @@ class HZono:
     _base_ng: Optional[int] = None
     _base_nb: Optional[int] = None
     _base_nc: Optional[int] = None
+    # Root-identity tracking for the shared-prefix concat fast path.
+    # Two HZ objects with the SAME `_base_root_id` are guaranteed to
+    # trace back to the same input HZ ancestor, so their first
+    # `_base_ng/_base_nb` factor columns refer to the SAME factors.
+    # Two HZ with different (or absent) `_base_root_id` cannot be
+    # safely shared-prefix-merged. `None` means "no claim of shared
+    # root" — the safe-by-default state. Set explicitly via
+    # `_assign_fresh_root_id()` at input HZ construction; propagated
+    # by `_propagate_base()` (single parent) and intersected by
+    # `_propagate_base_multi()` (multi parent).
+    _base_root_id: Optional[int] = None
 
     def __post_init__(self):
         if self._base_ng is None:
@@ -120,11 +132,34 @@ class HZono:
         return int(self.b.shape[0])
 
 
+# Module-level counter for fresh root IDs. Single-threaded ACT
+# propagation makes this safe without locking. Each input HZ created
+# via _assign_fresh_root_id() gets a unique ID; all derived HZ inherit
+# via _propagate_base/_propagate_base_multi.
+_HZ_ROOT_COUNTER = [0]
+
+
+def _assign_fresh_root_id(hz: "HZono") -> "HZono":
+    """Assign a fresh `_base_root_id` to an input HZ. Returns ``hz``.
+
+    Call this at input HZ construction (i.e., the top of
+    `hz_from_bounds` or equivalent). Downstream propagation will
+    inherit / intersect this UID via `_propagate_base*`.
+    """
+    _HZ_ROOT_COUNTER[0] += 1
+    object.__setattr__(hz, "_base_root_id", int(_HZ_ROOT_COUNTER[0]))
+    return hz
+
+
 def _propagate_base(parent: HZono, child: HZono) -> HZono:
     """Mirror HyZor ``HybridZonotope._with_base``: child base = min(parent, child.ng).
 
     Returns child (mutated). Use after every HZ-producing op so the
     base-generator budget tracks through the cascade.
+
+    Also propagates the root-identity UID (`_base_root_id`) when the
+    parent has one, so the shared-prefix concat fast path can verify
+    same-ancestor lineage across CONCAT inputs.
     """
     parent_base_ng = getattr(parent, "_base_ng", None)
     parent_base_nb = getattr(parent, "_base_nb", None)
@@ -138,6 +173,9 @@ def _propagate_base(parent: HZono, child: HZono) -> HZono:
     if parent_base_nc is not None:
         object.__setattr__(child, "_base_nc",
                            int(min(int(parent_base_nc), int(child.b.shape[0]))))
+    parent_root = getattr(parent, "_base_root_id", None)
+    if parent_root is not None:
+        object.__setattr__(child, "_base_root_id", int(parent_root))
     return child
 
 
@@ -539,6 +577,394 @@ def hz_add_const(hz: HZono, v: torch.Tensor) -> HZono:
     )
 
 
+def _hz_factor_normalize_unique_ids(hz: "HZono",
+                                      factor_ids: List[int]
+                                      ) -> Tuple["HZono", List[int]]:
+    """Stage 3d-1b helper: sum columns with identical factor IDs so the
+    output HZ has each factor appearing exactly once.
+
+    Preconditions (caller verifies):
+      - `len(factor_ids) == hz.Gc.shape[1]`
+      - `hz.Ac.shape[0] == 0` (no constraints — Ac column remapping is
+        not safely defined when summing columns; first prototype
+        restricts to constraint-free HZs)
+      - `hz.Gb.shape[1] == 0` (no binary generators)
+
+    Deterministic order: a factor's output column index is its
+    FIRST-APPEARANCE index in `factor_ids`. This avoids relying on
+    dict iteration order and makes the result fully reproducible.
+
+    Math: the original HZ describes the set
+       {c + sum_j Gc[:, j] * xi_j : xi ∈ [-1, 1]^ng}
+    After grouping cols by factor ID, the equivalent set is
+       {c + sum_f (sum_{j: ids[j]=f} Gc[:, j]) * xi_f : xi_f ∈ [-1, 1]^F}
+    because each xi_f corresponds to all jointly-identified columns and
+    the sum is taken at that single shared xi. THIS IS EXACT (no over
+    or under-approximation).
+    """
+    ng = int(hz.Gc.shape[1])
+    if ng == 0 or len(factor_ids) != ng:
+        return hz, list(factor_ids)
+    # Detect whether any duplicates exist first; if none, return hz as-is
+    # (constraints don't matter when there's nothing to normalize).
+    seen_once: Dict[int, int] = {}
+    has_dup = False
+    for j, fid in enumerate(factor_ids):
+        if fid in seen_once:
+            has_dup = True
+            break
+        seen_once[fid] = j
+    if not has_dup:
+        return hz, list(factor_ids)
+    # Duplicates require column-summation, which is only safely defined
+    # for constraint-free HZs (Ac column remap is not trivially correct
+    # under arbitrary summation patterns).
+    if int(hz.Ac.shape[0]) != 0 or int(hz.Gb.shape[1]) != 0:
+        raise ValueError(
+            "factor_normalize_unique_ids requires nc=0 and nb=0 when "
+            f"there are duplicates; got nc={hz.Ac.shape[0]} nb={hz.Gb.shape[1]}"
+        )
+    # Group columns by ID preserving first-appearance order.
+    first_idx: Dict[int, int] = {}
+    new_ids: List[int] = []
+    groups: List[List[int]] = []  # list of (col indices) per new col
+    for j, fid in enumerate(factor_ids):
+        if fid not in first_idx:
+            first_idx[fid] = len(new_ids)
+            new_ids.append(fid)
+            groups.append([j])
+        else:
+            groups[first_idx[fid]].append(j)
+    n_out = int(hz.c.shape[0])
+    dtype = hz.c.dtype
+    device = hz.c.device
+    new_Gc = torch.zeros(n_out, len(new_ids), dtype=dtype, device=device)
+    for new_j, col_list in enumerate(groups):
+        for old_j in col_list:
+            new_Gc[:, new_j] += hz.Gc[:, old_j]
+    new_hz = HZono(
+        c=hz.c.clone(),
+        Gc=new_Gc,
+        Gb=torch.zeros(n_out, 0, dtype=dtype, device=device),
+        Ac=torch.zeros(0, len(new_ids), dtype=dtype, device=device),
+        Ab=torch.zeros(0, 0, dtype=dtype, device=device),
+        b=torch.zeros(0, 1, dtype=dtype, device=device),
+        eq_mask=None,
+    )
+    return new_hz, new_ids
+
+
+def hz_factor_aware_sum(hz_x: "HZono", hz_y: "HZono",
+                         ids_x: List[int], ids_y: List[int]
+                         ) -> Tuple["HZono", List[int]]:
+    """Stage 3d-1b factor-identity-aware ADD.
+
+    For each unique factor ID f in `set(ids_x) ∪ set(ids_y)`:
+        out_col_f = (hz_x.Gc[:, idx_x(f)] if f in ids_x else 0)
+                  + (hz_y.Gc[:, idx_y(f)] if f in ids_y else 0)
+
+    Deterministic output order: first all unique IDs from `ids_x` in
+    their order, then unique IDs only-in-`ids_y` in `ids_y`'s order.
+
+    Mathematical soundness:
+      Each xi_f (continuous factor in [-1, 1]) represents the SAME
+      latent factor across the two operands. Both x and y describe their
+      values as linear functions of (xi_root, xi_aux_shared, ...). The
+      sum x(xi) + y(xi) at the SHARED xi is also a linear function of
+      the same xi (with summed coefficients on shared cols, copied
+      coefficients on only-x or only-y cols). This is EXACT.
+
+      In contrast, block-diagonal sum (current sgm_add for the tail)
+      treats x and y as functions of INDEPENDENT xi_x and xi_y, even on
+      cols that correspond to the same latent factor. That admits xi*
+      configurations where the same factor takes two different values
+      simultaneously — that's the CIFAR phantom Stage 3c localized.
+
+    Preconditions (caller verifies):
+      - both HZs are dense HZono
+      - nc_x == 0 AND nc_y == 0
+      - nb_x == 0 AND nb_y == 0
+      - len(ids_x) == hz_x.Gc.shape[1]
+      - len(ids_y) == hz_y.Gc.shape[1]
+      - hz_x and hz_y have the same shape on c (same output dim)
+    """
+    # Preconditions
+    if not isinstance(hz_x, HZono) or not isinstance(hz_y, HZono):
+        raise ValueError("not dense HZono")
+    if int(hz_x.Ac.shape[0]) != 0 or int(hz_y.Ac.shape[0]) != 0:
+        raise ValueError("nc > 0")
+    if int(hz_x.Gb.shape[1]) != 0 or int(hz_y.Gb.shape[1]) != 0:
+        raise ValueError("nb > 0")
+    if len(ids_x) != int(hz_x.Gc.shape[1]):
+        raise ValueError(
+            f"ids_x len {len(ids_x)} != ng_x {hz_x.Gc.shape[1]}"
+        )
+    if len(ids_y) != int(hz_y.Gc.shape[1]):
+        raise ValueError(
+            f"ids_y len {len(ids_y)} != ng_y {hz_y.Gc.shape[1]}"
+        )
+    if int(hz_x.c.shape[0]) != int(hz_y.c.shape[0]):
+        raise ValueError("output dim mismatch")
+
+    # Step 1: normalize self-duplicates so each operand has unique IDs.
+    hz_x_n, ids_x_n = _hz_factor_normalize_unique_ids(hz_x, ids_x)
+    hz_y_n, ids_y_n = _hz_factor_normalize_unique_ids(hz_y, ids_y)
+
+    # Step 2: merge by factor ID.
+    id_to_x_idx = {fid: j for j, fid in enumerate(ids_x_n)}
+    id_to_y_idx = {fid: j for j, fid in enumerate(ids_y_n)}
+    # Output IDs: x's order, then y's IDs not in x (in y's order).
+    only_y_ids: List[int] = []
+    only_y_x_idx: List[int] = []  # the corresponding y col indices
+    for j, fid in enumerate(ids_y_n):
+        if fid not in id_to_x_idx:
+            only_y_ids.append(fid)
+            only_y_x_idx.append(j)
+    ids_out = list(ids_x_n) + only_y_ids
+    n_out_rows = int(hz_x_n.c.shape[0])
+    n_out_cols = len(ids_out)
+    dtype = hz_x_n.c.dtype
+    device = hz_x_n.c.device
+    new_Gc = torch.zeros(n_out_rows, n_out_cols, dtype=dtype, device=device)
+    new_Gc[:, :len(ids_x_n)] = hz_x_n.Gc
+    # Add y's contribution on shared IDs.
+    for j, fid in enumerate(ids_y_n):
+        if fid in id_to_x_idx:
+            new_Gc[:, id_to_x_idx[fid]] += hz_y_n.Gc[:, j]
+    # Copy y's only-y columns to the tail.
+    if only_y_x_idx:
+        tail_start = len(ids_x_n)
+        # Use index_select for efficiency
+        sel = torch.tensor(only_y_x_idx, dtype=torch.long, device=device)
+        new_Gc[:, tail_start:] = hz_y_n.Gc.index_select(1, sel)
+    new_c = hz_x_n.c + hz_y_n.c.to(dtype=dtype, device=device)
+    hz_out = HZono(
+        c=new_c,
+        Gc=new_Gc,
+        Gb=torch.zeros(n_out_rows, 0, dtype=dtype, device=device),
+        Ac=torch.zeros(0, n_out_cols, dtype=dtype, device=device),
+        Ab=torch.zeros(0, 0, dtype=dtype, device=device),
+        b=torch.zeros(0, 1, dtype=dtype, device=device),
+        eq_mask=None,
+    )
+    return hz_out, ids_out
+
+
+def hz_sparse_factor_aware_sum(hz_x, hz_y, ids_x: List[int],
+                               ids_y: List[int]):
+    """Exact factor-identity-aware ADD for constraint-free ``SparseGcZ``.
+
+    This is the sparse analogue of :func:`hz_factor_aware_sum`. Columns
+    carrying the same factor ID are references to the same latent
+    continuous variable, so an ADD must sum their coefficients into one
+    output column. Treating them as independent columns is sound but
+    weaker and is the residual-network phantom source we are targeting.
+
+    Preconditions are intentionally strict and checked here:
+      - both operands are ``SparseGcZ``
+      - ``nc == 0`` and ``nb == 0`` on both operands
+      - factor-id lists match ``ng`` exactly
+      - output dimensions match
+
+    If any precondition fails the caller should fall back to the legacy
+    block-diagonal path.
+    """
+    from act.back_end.hybridz_tf.representations import SparseGcZ
+
+    if not isinstance(hz_x, SparseGcZ) or not isinstance(hz_y, SparseGcZ):
+        raise ValueError("not SparseGcZ")
+    if int(hz_x.nc) != 0 or int(hz_y.nc) != 0:
+        raise ValueError("nc > 0")
+    if int(hz_x.nb) != 0 or int(hz_y.nb) != 0:
+        raise ValueError("nb > 0")
+    if len(ids_x) != int(hz_x.ng):
+        raise ValueError(f"ids_x len {len(ids_x)} != ng_x {hz_x.ng}")
+    if len(ids_y) != int(hz_y.ng):
+        raise ValueError(f"ids_y len {len(ids_y)} != ng_y {hz_y.ng}")
+    if int(hz_x.dim) != int(hz_y.dim):
+        raise ValueError("output dim mismatch")
+
+    ids_out: List[int] = []
+    id_to_out: Dict[int, int] = {}
+    for fid in list(ids_x) + list(ids_y):
+        if fid not in id_to_out:
+            id_to_out[fid] = len(ids_out)
+            ids_out.append(fid)
+
+    dtype = hz_x.dtype
+    device = hz_x.device
+    n_out = int(hz_x.dim)
+    n_cols = len(ids_out)
+
+    def _remap_sparse(G, ids: List[int]):
+        G = G.coalesce()
+        if G._nnz() == 0:
+            return (
+                torch.zeros((2, 0), dtype=torch.long, device=device),
+                torch.zeros(0, dtype=dtype, device=device),
+            )
+        ind = G.indices()
+        val = G.values().to(dtype=dtype, device=device)
+        # Map every old sparse column to its factor-aware output column.
+        col_map = torch.tensor(
+            [id_to_out[fid] for fid in ids],
+            dtype=torch.long,
+            device=device,
+        )
+        new_cols = col_map.index_select(0, ind[1].to(device=device))
+        new_ind = torch.stack([ind[0].to(device=device), new_cols], dim=0)
+        return new_ind, val
+
+    ind_x, val_x = _remap_sparse(hz_x.Gc_sparse, ids_x)
+    ind_y, val_y = _remap_sparse(hz_y.Gc_sparse, ids_y)
+    if val_x.numel() == 0:
+        all_ind, all_val = ind_y, val_y
+    elif val_y.numel() == 0:
+        all_ind, all_val = ind_x, val_x
+    else:
+        all_ind = torch.cat([ind_x, ind_y], dim=1)
+        all_val = torch.cat([val_x, val_y], dim=0)
+    Gc_new = torch.sparse_coo_tensor(
+        all_ind,
+        all_val,
+        (n_out, n_cols),
+        dtype=dtype,
+        device=device,
+    ).coalesce()
+
+    c_new = hz_x.c.to(dtype=dtype, device=device).flatten() + hz_y.c.to(
+        dtype=dtype,
+        device=device,
+    ).flatten()
+    out = SparseGcZ(
+        c=c_new,
+        Gc_sparse=Gc_new,
+        dtype=dtype,
+        device=device,
+    )
+    object.__setattr__(
+        out,
+        "_base_ng",
+        int(min(
+            getattr(hz_x, "_base_ng", hz_x.ng),
+            getattr(hz_y, "_base_ng", hz_y.ng),
+            out.ng,
+        )),
+    )
+    object.__setattr__(out, "_base_nb", 0)
+    object.__setattr__(out, "_base_nc", 0)
+    root_x = getattr(hz_x, "_base_root_id", None)
+    root_y = getattr(hz_y, "_base_root_id", None)
+    object.__setattr__(
+        out,
+        "_base_root_id",
+        root_x if root_x is not None and root_x == root_y else None,
+    )
+    return out, ids_out
+
+
+def hz_mixed_factor_aware_sum(hz_x, hz_y, ids_x: List[int],
+                              ids_y: List[int]) -> Tuple["HZono", List[int]]:
+    """Exact factor-aware ADD for one dense ``HZono`` and one ``SparseGcZ``.
+
+    The output is dense ``HZono`` because one operand is already dense and
+    dense downstream operators can consume it directly. Preconditions match
+    the sparse/dense helpers: no constraints and no binaries on either side.
+    """
+    from act.back_end.hybridz_tf.representations import SparseGcZ
+
+    if isinstance(hz_x, HZono) and isinstance(hz_y, SparseGcZ):
+        dense_hz, dense_ids = hz_x, ids_x
+        sparse_hz, sparse_ids = hz_y, ids_y
+        dense_first = True
+    elif isinstance(hz_x, SparseGcZ) and isinstance(hz_y, HZono):
+        dense_hz, dense_ids = hz_y, ids_y
+        sparse_hz, sparse_ids = hz_x, ids_x
+        dense_first = False
+    else:
+        raise ValueError("expected one HZono and one SparseGcZ")
+
+    if int(dense_hz.Ac.shape[0]) != 0 or int(sparse_hz.nc) != 0:
+        raise ValueError("nc > 0")
+    if int(dense_hz.Gb.shape[1]) != 0 or int(sparse_hz.nb) != 0:
+        raise ValueError("nb > 0")
+    if len(dense_ids) != int(dense_hz.Gc.shape[1]):
+        raise ValueError(
+            f"dense ids len {len(dense_ids)} != ng {dense_hz.Gc.shape[1]}"
+        )
+    if len(sparse_ids) != int(sparse_hz.ng):
+        raise ValueError(
+            f"sparse ids len {len(sparse_ids)} != ng {sparse_hz.ng}"
+        )
+    if int(dense_hz.c.shape[0]) != int(sparse_hz.dim):
+        raise ValueError("output dim mismatch")
+
+    ids_out: List[int] = []
+    id_to_out: Dict[int, int] = {}
+    # Preserve the caller-facing order contract: x IDs first, then y-only.
+    for fid in (list(ids_x) + list(ids_y)):
+        if fid not in id_to_out:
+            id_to_out[fid] = len(ids_out)
+            ids_out.append(fid)
+
+    dtype = dense_hz.c.dtype
+    device = dense_hz.c.device
+    n_out = int(dense_hz.c.shape[0])
+    n_cols = len(ids_out)
+    new_Gc = torch.zeros(n_out, n_cols, dtype=dtype, device=device)
+
+    dense_col_map = torch.tensor(
+        [id_to_out[fid] for fid in dense_ids],
+        dtype=torch.long,
+        device=device,
+    )
+    new_Gc.index_add_(1, dense_col_map, dense_hz.Gc.to(dtype=dtype, device=device))
+
+    Gs = sparse_hz.Gc_sparse.coalesce()
+    if Gs._nnz() > 0:
+        ind = Gs.indices().to(device=device)
+        val = Gs.values().to(dtype=dtype, device=device)
+        sparse_col_map = torch.tensor(
+            [id_to_out[fid] for fid in sparse_ids],
+            dtype=torch.long,
+            device=device,
+        )
+        mapped_cols = sparse_col_map.index_select(0, ind[1])
+        new_Gc.index_put_((ind[0], mapped_cols), val, accumulate=True)
+
+    c_x = hz_x.c.view(-1, 1) if isinstance(hz_x, HZono) else hz_x.c.view(-1, 1)
+    c_y = hz_y.c.view(-1, 1) if isinstance(hz_y, HZono) else hz_y.c.view(-1, 1)
+    new_c = c_x.to(dtype=dtype, device=device) + c_y.to(dtype=dtype, device=device)
+    hz_out = HZono(
+        c=new_c,
+        Gc=new_Gc,
+        Gb=torch.zeros(n_out, 0, dtype=dtype, device=device),
+        Ac=torch.zeros(0, n_cols, dtype=dtype, device=device),
+        Ab=torch.zeros(0, 0, dtype=dtype, device=device),
+        b=torch.zeros(0, 1, dtype=dtype, device=device),
+        eq_mask=None,
+    )
+    object.__setattr__(
+        hz_out,
+        "_base_ng",
+        int(min(
+            getattr(hz_x, "_base_ng", int(hz_x.ng)),
+            getattr(hz_y, "_base_ng", int(hz_y.ng)),
+            hz_out.ng,
+        )),
+    )
+    object.__setattr__(hz_out, "_base_nb", 0)
+    object.__setattr__(hz_out, "_base_nc", 0)
+    root_x = getattr(hz_x, "_base_root_id", None)
+    root_y = getattr(hz_y, "_base_root_id", None)
+    object.__setattr__(
+        hz_out,
+        "_base_root_id",
+        root_x if root_x is not None and root_x == root_y else None,
+    )
+    return hz_out, ids_out
+
+
 def hz_minkowski_sum(hz1: HZono, hz2: HZono) -> HZono:
     """Block-diagonal stacking of the two constraint systems. Each branch
     keeps its own row semantics; eq_mask is concatenated row-wise."""
@@ -596,7 +1022,13 @@ def hz_minkowski_sum(hz1: HZono, hz2: HZono) -> HZono:
 
 
 def hz_from_bounds(bounds: Bounds, dtype, device) -> HZono:
-    """Box-from-bounds factory. No constraints, eq_mask trivially None."""
+    """Box-from-bounds factory. No constraints, eq_mask trivially None.
+
+    Assigns a fresh `_base_root_id` (via `_assign_fresh_root_id`) so
+    that the shared-prefix concat fast path can verify same-ancestor
+    lineage of CONCAT inputs. Downstream ops propagate this UID via
+    `_propagate_base` / `_propagate_base_multi`.
+    """
     lb = bounds.lb.flatten().to(dtype=dtype, device=device)
     ub = bounds.ub.flatten().to(dtype=dtype, device=device)
     n = lb.shape[0]
@@ -611,7 +1043,7 @@ def hz_from_bounds(bounds: Bounds, dtype, device) -> HZono:
         if ng > 0:
             cols = torch.arange(ng, dtype=torch.long, device=device)
             Gc[active, cols] = rad[active]
-    return HZono(
+    out = HZono(
         c=c,
         Gc=Gc,
         Gb=torch.zeros((n, 0), dtype=dtype, device=device),
@@ -620,6 +1052,7 @@ def hz_from_bounds(bounds: Bounds, dtype, device) -> HZono:
         b=torch.zeros((0, 1), dtype=dtype, device=device),
         eq_mask=None,
     )
+    return _assign_fresh_root_id(out)
 
 
 def _zero_factor_hz_feasible(hz: HZono, *, tol: float = 1e-9) -> bool:
@@ -1654,9 +2087,9 @@ class HZVerifier(Solver):
         instance_id: int = -1,
         query_index: int = 0,
     ):
-        if small_dense_lp not in ("off", "base", "specaware", "witness", "auto"):
+        if small_dense_lp not in ("off", "base", "specaware", "witness", "auto", "smalldense_dag"):
             raise ValueError(
-                "small_dense_lp must be one of off/base/specaware/witness/auto; "
+                "small_dense_lp must be one of off/base/specaware/witness/auto/smalldense_dag; "
                 f"got {small_dense_lp!r}"
             )
         if int(small_dense_lp_refinement_passes) < 0:
@@ -1890,9 +2323,92 @@ class HZVerifier(Solver):
     def set_objective_linear(self, vids, coeffs, const=0.0, sense="min"): pass
     def optimize(self, timelimit: Optional[float] = None) -> None: pass
 
+    def _build_direct_query_payload(self, *, input_box, assert_layer):
+        """P10 helper: extract (lb_x, ub_x, unsafe_rows) for the CURRENT
+        ACT query so the small-dense backend can verify a single
+        disjunct without re-parsing the whole VNNLib.
+
+        Soundness contract:
+        - `unsafe_rows` lists the linear unsafe halfspaces (c·y ≤ d)
+          of the SAME query the solver is currently processing. For
+          TOP1_ROBUST specs we materialize one row per rival j != t:
+          `e_j - e_t` ≤ 0.
+        - Returns None if the current spec cannot be safely decomposed
+          into linear halfspaces (e.g. unsupported `kind`). Caller MUST
+          fall back to the full-VNNLib path rather than silently
+          pretending the verification succeeded.
+        """
+        def _unavailable(reason: str):
+            self._stats["small_dense_lp_direct_query_unavailable_reason"] = reason
+            return None
+
+        try:
+            kind = _kind_str(assert_layer.params.get("kind"))
+        except Exception:
+            return _unavailable("missing_or_invalid_assert_kind")
+        self._stats["small_dense_lp_direct_query_kind"] = kind
+        try:
+            lb_t = input_box.lb.detach().cpu().numpy().flatten().astype(np.float64)
+            ub_t = input_box.ub.detach().cpu().numpy().flatten().astype(np.float64)
+        except Exception:
+            return _unavailable("input_box_unavailable")
+        unsafe_rows: List[Tuple[np.ndarray, float]] = []
+        if kind == "UNSAFE_LINEAR":
+            try:
+                C = _to_np_f64(
+                    assert_layer.params.get("c", assert_layer.params.get("C"))
+                )
+                d = _to_np_f64(
+                    assert_layer.params.get(
+                        "d", assert_layer.params.get("thresholds")
+                    )
+                ).reshape(-1)
+            except Exception:
+                return _unavailable("unsafe_linear_params_unavailable")
+            if C.ndim == 1:
+                C = C.reshape(1, -1)
+            if C.shape[0] != d.shape[0]:
+                return _unavailable("unsafe_linear_shape_mismatch")
+            for i in range(C.shape[0]):
+                unsafe_rows.append(
+                    (np.ascontiguousarray(C[i], dtype=np.float64), float(d[i]))
+                )
+        elif kind == "TOP1_ROBUST":
+            try:
+                y_true = int(_to_np_f64(
+                    assert_layer.params["y_true"]
+                ).reshape(-1)[0])
+                # SpecAwareLP expects the post-affine output dim. We can
+                # derive it from `output_layer`'s bias inside the backend,
+                # but at this layer we only know `assert_layer` — leave
+                # the row construction to the backend by passing a
+                # dense one-row-per-rival list via the model's output
+                # dim, which we read from the input_layer's net output
+                # spec when available. If unavailable, bail.
+                n_out = int(assert_layer.params.get("n_out", 0))
+            except Exception:
+                return _unavailable("top1_params_unavailable")
+            if n_out <= 0:
+                return _unavailable("top1_n_out_unavailable")
+            for j in range(n_out):
+                if j == y_true:
+                    continue
+                row = np.zeros(n_out, dtype=np.float64)
+                row[j] = 1.0
+                row[y_true] = -1.0
+                unsafe_rows.append((row, 0.0))
+        else:
+            return _unavailable(f"unsupported_kind:{kind}")
+        if not unsafe_rows:
+            return _unavailable("no_unsafe_rows")
+        self._stats["small_dense_lp_direct_query_n_rows"] = int(len(unsafe_rows))
+        self._stats.pop("small_dense_lp_direct_query_unavailable_reason", None)
+        return (lb_t, ub_t, unsafe_rows)
+
     def _try_small_dense_lp(
         self, *, conv_count: int,
         net=None, assert_layer=None,
+        input_box: Optional[Bounds] = None,
     ) -> Optional[str]:
         """Try the sound forward-LP portfolio before the HZ walk.
 
@@ -1926,6 +2442,20 @@ class HZVerifier(Solver):
         if not onnx_path or not vnnlib_path:
             return None
 
+        # P8: forward identity context to SpecAwareLP / WitnessExtract /
+        # SmallDenseDAG via env so their per-pass trace records can tag
+        # (benchmark, iid, query_index). Default OFF; only the trace
+        # consumer reads these. Use explicit None check so 0 doesn't
+        # become "" via `0 or "" → ""`.
+        def _stringify(v):
+            return "" if v is None else str(v)
+        os.environ["ACT_HZ_PASS_TRACE_BENCH"] = _stringify(
+            self.cfg.get("benchmark"))
+        os.environ["ACT_HZ_PASS_TRACE_IID"] = _stringify(
+            self.cfg.get("instance_id"))
+        os.environ["ACT_HZ_PASS_TRACE_QIDX"] = _stringify(
+            self.cfg.get("query_index"))
+
         module_root = self.cfg.get("small_dense_lp_root")
         if not module_root:
             sibling = Path(__file__).resolve().parents[4] / "HyZor"
@@ -1945,7 +2475,14 @@ class HZVerifier(Solver):
 
         try:
             base = importlib.import_module("GlobalTriangleLP")
-            if not base.is_small_dense(Path(onnx_path)):
+            # smalldense_dag: use SmallDenseDAG.is_dag_supported as the gate
+            # instead of the sequential is_small_dense (which rejects DAG
+            # topologies like cersyve's multi-stream residuals).
+            if mode == "smalldense_dag":
+                dag = importlib.import_module("SmallDenseDAG")
+                if not dag.is_dag_supported(Path(onnx_path)):
+                    return None
+            elif not base.is_small_dense(Path(onnx_path)):
                 return None
             refinement_passes: Optional[int] = None
             refinement_policy: Optional[str] = None
@@ -1996,14 +2533,55 @@ class HZVerifier(Solver):
             elif mode == "specaware":
                 backend = importlib.import_module("SpecAwareLP")
                 backend_label = "specaware"
-                verdict, elapsed = backend.verify(
+                # P10: env-gated direct-disjunct path.
+                # Default OFF. When ON, skip the full-vnnlib re-parse +
+                # disjunct loop inside SpecAwareLP.verify() and call the
+                # public per-disjunct wrapper with the current ACT
+                # query's (lb_x, ub_x, unsafe_rows). This avoids the
+                # O(N²) cli.py × SpecAwareLP redundancy on multi-disjunct
+                # VNNLib specs (e.g. nn4sys lindex 800-disjunct OR).
+                _direct_query_on = os.environ.get(
+                    "ACT_HZ_SMALL_DENSE_DIRECT_QUERY", "0"
+                ).strip().lower() in ("1", "true", "yes", "on")
+                _direct_payload = None
+                if _direct_query_on and input_box is not None and assert_layer is not None:
+                    _direct_payload = self._build_direct_query_payload(
+                        input_box=input_box, assert_layer=assert_layer,
+                    )
+                if _direct_payload is not None:
+                    lb_x, ub_x, unsafe_rows = _direct_payload
+                    self._stats["small_dense_lp_direct_query"] = True
+                    verdict, elapsed = backend.verify_one_disjunct_from_arrays(
+                        Path(onnx_path), lb_x, ub_x, unsafe_rows,
+                        time_limit_per_lp=float(self.cfg["small_dense_lp_time_limit_s"]),
+                        max_refinement_passes=int(refinement_passes),
+                    )
+                else:
+                    if _direct_query_on:
+                        # Trace why direct-query couldn't be used so we
+                        # don't silently fall back without a signal.
+                        self._stats["small_dense_lp_direct_query_unavailable"] = True
+                    verdict, elapsed = backend.verify(
+                        Path(onnx_path),
+                        Path(vnnlib_path),
+                        time_limit_per_lp=float(self.cfg["small_dense_lp_time_limit_s"]),
+                        max_refinement_passes=int(refinement_passes),
+                    )
+                witness = None
+                y_ort = None
+            elif mode == "smalldense_dag":
+                # New DAG-aware backend for residual / multi-stream small
+                # dense MLPs (cersyve-class) where SequentialExtract fails.
+                backend = importlib.import_module("SmallDenseDAG")
+                backend_label = "smalldense_dag"
+                result = backend.verify_with_falsification(
                     Path(onnx_path),
                     Path(vnnlib_path),
                     time_limit_per_lp=float(self.cfg["small_dense_lp_time_limit_s"]),
-                    max_refinement_passes=int(refinement_passes),
+                    return_witness=True,
+                    max_refinement_passes=int(refinement_passes or 0),
                 )
-                witness = None
-                y_ort = None
+                verdict, witness, y_ort, elapsed = result
             else:  # "witness" or "auto"
                 backend = importlib.import_module("WitnessExtract")
                 backend_label = "witness"
@@ -2089,6 +2667,12 @@ class HZVerifier(Solver):
         *, net: Net, input_ids: List[int], output_ids: List[int],
         assert_layer: Layer,
     ) -> str:
+        # P7: per-phase wall timing for `ACT_HZ_SMALL_DENSE_TRACE_OUT`
+        # diagnostic. All writes are to `self._stats` so verify_once_hz can
+        # collect them after we return. Zero-overhead when no env knob is
+        # set (just monotonic() reads — sub-microsecond).
+        _t_consume_start = time.monotonic()
+        self._stats["t_consume_start"] = _t_consume_start
         if os.environ.get("ACT_HZ_LAYER_PROGRESS", "0") == "1":
             print(
                 f"[HZ-PROGRESS] consume_cons start layers={len(net.layers)} "
@@ -2124,11 +2708,42 @@ class HZVerifier(Solver):
                     cons_by_layer.setdefault(lid, []).append(con)
                 except ValueError: pass
 
+        # Reset per-query ReLU trace + layer counter so prior queries'
+        # state doesn't leak into output-aware pair selection. No-op when
+        # the trace/cut env knobs are off.
+        try:
+            from act.back_end.hybridz_tf.tf_mlp import (
+                _relu_trace_reset, _relu_layer_counter_reset,
+            )
+            _relu_trace_reset()
+            _relu_layer_counter_reset()
+        except Exception:
+            pass
+
         # Build initial input HZ
         input_box = self._extract_input_box(globalC, input_ids, before)
         device = torch.device(self.cfg["device"])
         dtype = self.cfg["dtype"]
         input_hz = hz_from_bounds(input_box, dtype=dtype, device=device)
+        # 2026-06-02 Stage 3c hook: stash root counts AND the input box so
+        # per-layer snapshots can distinguish "root" generators (from
+        # initial input box) from "aux" generators (added by ReLU
+        # relaxations / reductions during propagation), AND reconstruct
+        # a concrete input candidate from LP factor solution for ORT
+        # replay. With pure forward propagation without column-reordering
+        # reductions, the first ``root_ng`` columns of any downstream HZ's
+        # Gc are still the root input perturbations; columns after that
+        # are auxiliary slack.
+        self._stats["root_ng"] = int(input_hz.ng)
+        self._stats["root_nb"] = int(input_hz.nb)
+        self._stats["root_nc"] = int(input_hz.nc)
+        try:
+            self._stats["input_lb"] = input_box.lb.detach().to(
+                "cpu", torch.float64).clone()
+            self._stats["input_ub"] = input_box.ub.detach().to(
+                "cpu", torch.float64).clone()
+        except Exception:
+            pass
         if os.environ.get("ACT_HZ_LAYER_PROGRESS", "0") == "1":
             print(
                 f"[HZ-PROGRESS] input_hz dim={input_hz.dim} ng={input_hz.ng} "
@@ -2294,13 +2909,64 @@ class HZVerifier(Solver):
         self._relu_idx_map = relu_idx_map
         self._total_relu = total_relu
 
+        # End of Phase 1 (setup/prescan), start Phase 2 (small-dense LP).
+        self._stats["t_phase1_setup_s"] = time.monotonic() - _t_consume_start
+        _t_phase2_start = time.monotonic()
         small_dense_status = self._try_small_dense_lp(
             conv_count=conv_count, net=net, assert_layer=assert_layer,
+            input_box=input_box,
+        )
+        self._stats["t_phase2_small_dense_lp_s"] = (
+            time.monotonic() - _t_phase2_start
         )
         if small_dense_status is not None:
+            self._stats["small_dense_lp_decided"] = True
+            self._stats["t_consume_total_s"] = (
+                time.monotonic() - _t_consume_start
+            )
             return small_dense_status
+        self._stats["small_dense_lp_decided"] = False
+        _t_phase3_start = time.monotonic()
 
         op_counts: Dict[str, int] = {}
+        # 2026-06-02 Stage 3d-0 factor-ID scout (read-only).
+        # When ACT_HZ_FACTOR_ID_SCOUT=<path> is set, track per-Gc-column
+        # factor IDs in parallel with the live HZ propagation. Does NOT
+        # alter dispatch. At every ADD layer, log how many tail columns
+        # of the two operands carry the SAME factor ID (those are the
+        # ones that the current shared-root sgm_add wastes by block-
+        # diagonalling them, but a true factor-aware ADD could merge).
+        # Output: one JSONL line per ADD layer plus one summary line.
+        _factor_scout = os.environ.get("ACT_HZ_FACTOR_ID_SCOUT", "") or None
+        _factor_records: List[Dict[str, Any]] = []
+        _factor_ids_by_var: Dict[Tuple[int, ...], List[int]] = {}
+        _factor_next_id = [0]
+        # 2026-06-02 Stage 3d-1b factor-aware ADD prototype (env-gated).
+        # When ACT_HZ_FACTOR_ID_SGM=1, ADD layers that satisfy strict
+        # preconditions (both operands dense HZono, nc==0, nb==0, factor
+        # IDs tracked, len(ids) == ng) get a factor-aware sum that
+        # collapses same-factor columns. Falls back to the legacy
+        # dispatch on any precondition failure. Default OFF.
+        _factor_sgm_enabled = os.environ.get(
+            "ACT_HZ_FACTOR_ID_SGM", "0").strip().lower() in (
+            "1", "true", "yes", "on")
+        _factor_sgm_trace = os.environ.get("ACT_HZ_FACTOR_ID_SGM_TRACE", "") or None
+        # R0.5 strong scout (see consume_cons body) also needs factor IDs.
+        _r05_scout_init = bool(os.environ.get("ACT_HZ_R05_SCOUT", "").strip())
+        # When the prototype is enabled, we also need the scout
+        # tracking to work (otherwise we don't have factor IDs).
+        if _factor_sgm_enabled or _factor_scout or _r05_scout_init:
+            n_in = int(input_hz.ng)
+            _factor_ids_by_var[tuple(input_ids)] = list(range(n_in))
+            _factor_next_id[0] = n_in
+        # P2 block-trace hook (env: ACT_HZ_BLOCK_TRACE_OUT=<path>).
+        # When the env var is set, append one JSONL record per layer with
+        # shape (dim/ng/nb/nc), wall_s, peak CUDA memory, and (for RELU
+        # only) unstable-neuron count derived from cheap box bounds on the
+        # incoming HZ. Used by the CIFAR sentinel sweep to find which block
+        # the input-pixel correlation collapses in. Default OFF.
+        _block_trace_path = os.environ.get("ACT_HZ_BLOCK_TRACE_OUT", "") or None
+        _block_trace_t0 = time.time()
         for L in net.layers:
             if L.kind in ("INPUT", "INPUT_SPEC", "ASSERT"):
                 continue
@@ -2318,6 +2984,10 @@ class HZVerifier(Solver):
                  if not c.meta.get("tag", "").startswith("box:")),
                 None
             )
+
+            _layer_t_start = time.time()
+            if _block_trace_path is not None and torch.cuda.is_available():
+                torch.cuda.reset_peak_memory_stats()
 
             # Per-layer logging (so OOM-kill leaves a trail)
             tag_for_log = (op_con.meta["tag"] if op_con else f"box-fallback({L.kind})")
@@ -2342,6 +3012,11 @@ class HZVerifier(Solver):
                 # max_pool_node_evaluate via the hz_maxpool2d facade,
                 # which preserves stable-winner rows exactly and falls
                 # back to interval only on unstable blocks.
+                # Stage 3d-1b: scope-stable flag for factor-aware ADD
+                # intercept. Set by the SGM intercept inside the `else:`
+                # branch below; the scout block checks it to avoid
+                # overwriting the intercept's authoritative IDs.
+                _factor_aware_handled = False
                 if op_con is None and L.kind == "UPSAMPLE" and hz_in is not None:
                     try:
                         hz_out = _hz_upsample_nearest_nchw(hz_in, L.params)
@@ -2371,23 +3046,179 @@ class HZVerifier(Solver):
                         # Sound fallback on any failure (shape mismatch etc.)
                         self._stats[f"maxpool_fallback@{L.id}"] = f"{type(e).__name__}: {e}"
                         hz_out = self._box_fallback(L, after, hz_from_bounds)
+                elif (op_con is None and L.kind == "CONCAT"
+                      and multi_in_hzs is not None):
+                    # ACT cons_exporter doesn't currently emit a tagged op for
+                    # multi-input CONCAT, so op_con is None and the generic
+                    # _dispatch fallback would box-collapse the inputs. Route
+                    # explicitly to hz_concat (block-diagonal sound layout)
+                    # to preserve generators and constraints. Used by lsnc_relu
+                    # (Lyapunov DAG with 3 Concats), residual heads, etc.
+                    try:
+                        from act.back_end.hybridz_tf.hz_routing import hz_concat
+                        hz_out = hz_concat(multi_in_hzs)
+                        self._stats[f"concat_exact@{L.id}"] = True
+                    except Exception as e:
+                        self._stats[f"concat_fallback@{L.id}"] = (
+                            f"{type(e).__name__}: {e}"
+                        )
+                        if os.environ.get("ACT_HZ_FALLBACK_DEBUG", "0") == "1":
+                            print(
+                                f"[HZ-FALLBACK] L{L.id} CONCAT "
+                                f"{type(e).__name__}: {e}",
+                                flush=True,
+                            )
+                        hz_out = self._box_fallback(L, after, hz_from_bounds)
                 else:
-                    hz_out = self._dispatch(
-                        L, op_con, hz_in, multi_in_hzs, before, after,
-                        # HyZor ops
-                        hz_dense=hz_dense, hz_conv2d=hz_conv2d,
-                        hz_add_const=hz_add_const, hz_scale=hz_scale, hz_bn=hz_bn,
-                        hz_sgm_add=hz_sgm_add, hz_minkowski_sum=hz_minkowski_sum,
-                        shares_generator=shares_generator, hz_concat=hz_concat,
-                        hz_apply_relu_v8=hz_apply_relu_v8,
-                        hz_apply_leaky_relu_v8=hz_apply_leaky_relu_v8,
-                        hz_from_bounds=hz_from_bounds,
-                        # ACT ops (sigmoid/tanh K-piece)
-                        act_hz_apply_sigmoid=act_hz_apply_sigmoid,
-                        act_hz_apply_tanh=act_hz_apply_tanh,
-                    )
+                    # Stage 3d-1b: factor-aware ADD intercept (env-gated).
+                    # When ACT_HZ_FACTOR_ID_SGM=1 AND L.kind == ADD AND
+                    # both operands meet the strict preconditions (dense
+                    # HZono, nc=0, nb=0, factor IDs tracked and length-
+                    # consistent), use the factor-identity-aware sum
+                    # instead of the legacy block-diagonal-tail dispatch.
+                    # Any precondition failure falls through to the
+                    # normal _dispatch path.
+                    _factor_aware_handled = False
+                    if _factor_sgm_enabled and str(L.kind).upper() == "ADD":
+                        # Always emit a debug record for ADD layers so we can
+                        # diagnose precondition failures.
+                        _debug_state = {"sgm_on": True}
+                        try:
+                            if multi_in_hzs is None or len(multi_in_hzs) < 2:
+                                _debug_state["fail"] = "no_multi_in_hzs"
+                            else:
+                                hz_a = multi_in_hzs[0]
+                                hz_b = multi_in_hzs[1]
+                                def _hz_ng_for_debug(_hz):
+                                    if isinstance(_hz, HZono):
+                                        return int(_hz.Gc.shape[1])
+                                    if type(_hz).__name__ == "SparseGcZ":
+                                        return int(_hz.ng)
+                                    return -1
+
+                                def _hz_nc_for_debug(_hz):
+                                    if isinstance(_hz, HZono):
+                                        return int(_hz.Ac.shape[0])
+                                    if type(_hz).__name__ == "SparseGcZ":
+                                        return int(_hz.nc)
+                                    return -1
+
+                                def _hz_nb_for_debug(_hz):
+                                    if isinstance(_hz, HZono):
+                                        return int(_hz.Gb.shape[1])
+                                    if type(_hz).__name__ == "SparseGcZ":
+                                        return int(_hz.nb)
+                                    return -1
+
+                                _debug_state["type_a"] = type(hz_a).__name__
+                                _debug_state["type_b"] = type(hz_b).__name__
+                                _debug_state["nc_a"] = _hz_nc_for_debug(hz_a)
+                                _debug_state["nc_b"] = _hz_nc_for_debug(hz_b)
+                                _debug_state["nb_a"] = _hz_nb_for_debug(hz_a)
+                                _debug_state["nb_b"] = _hz_nb_for_debug(hz_b)
+                                _debug_state["ng_a"] = _hz_ng_for_debug(hz_a)
+                                _debug_state["ng_b"] = _hz_ng_for_debug(hz_b)
+                                _dense_pair = (
+                                    isinstance(hz_a, HZono)
+                                    and isinstance(hz_b, HZono)
+                                )
+                                _sparse_pair = (
+                                    type(hz_a).__name__ == "SparseGcZ"
+                                    and type(hz_b).__name__ == "SparseGcZ"
+                                )
+                                _mixed_pair = (
+                                    (isinstance(hz_a, HZono)
+                                     and type(hz_b).__name__ == "SparseGcZ")
+                                    or (type(hz_a).__name__ == "SparseGcZ"
+                                        and isinstance(hz_b, HZono))
+                                )
+                                _pre_ok = (
+                                    (_dense_pair or _sparse_pair or _mixed_pair)
+                                    and _debug_state["nc_a"] == 0
+                                    and _debug_state["nc_b"] == 0
+                                    and _debug_state["nb_a"] == 0
+                                    and _debug_state["nb_b"] == 0
+                                )
+                                if not _pre_ok:
+                                    _debug_state["fail"] = "pre_check"
+                                else:
+                                    preds = net.preds.get(L.id, [])
+                                    _debug_state["n_preds"] = len(preds)
+                                    ids_a = ids_b = None
+                                    if len(preds) >= 2:
+                                        ids_a = _factor_ids_by_var.get(
+                                            tuple(net.by_id[preds[0]].out_vars)
+                                        )
+                                        ids_b = _factor_ids_by_var.get(
+                                            tuple(net.by_id[preds[1]].out_vars)
+                                        )
+                                    _debug_state["ids_a_len"] = (
+                                        len(ids_a) if ids_a is not None else None
+                                    )
+                                    _debug_state["ids_b_len"] = (
+                                        len(ids_b) if ids_b is not None else None
+                                    )
+                                    if ids_a is None or ids_b is None:
+                                        _debug_state["fail"] = "ids_missing"
+                                    elif (len(ids_a) != _debug_state["ng_a"]
+                                          or len(ids_b) != _debug_state["ng_b"]):
+                                        _debug_state["fail"] = "ids_length_mismatch"
+                                    else:
+                                        if _dense_pair:
+                                            hz_out, _ids_out = hz_factor_aware_sum(
+                                                hz_a, hz_b, ids_a, ids_b
+                                            )
+                                            _debug_state["mode"] = "dense"
+                                        else:
+                                            if _sparse_pair:
+                                                hz_out, _ids_out = hz_sparse_factor_aware_sum(
+                                                    hz_a, hz_b, ids_a, ids_b
+                                                )
+                                                _debug_state["mode"] = "sparse"
+                                            else:
+                                                hz_out, _ids_out = hz_mixed_factor_aware_sum(
+                                                    hz_a, hz_b, ids_a, ids_b
+                                                )
+                                                _debug_state["mode"] = "mixed"
+                                        _factor_ids_by_var[tuple(L.out_vars)] = _ids_out
+                                        _debug_state["ng_out"] = len(_ids_out)
+                                        _debug_state["fail"] = None
+                                        _factor_aware_handled = True
+                        except Exception as _e:
+                            _debug_state["fail"] = f"{type(_e).__name__}: {_e}"
+                            _factor_aware_handled = False
+                        self._stats[f"factor_aware_add@{L.id}"] = _debug_state
+                        if _factor_sgm_trace:
+                            try:
+                                import json as _jm
+                                from pathlib import Path as _PPathFA
+                                _PPathFA(_factor_sgm_trace).parent.mkdir(
+                                    parents=True, exist_ok=True)
+                                _rec = {"layer_id": int(L.id), **_debug_state}
+                                with open(_factor_sgm_trace, "a") as _fa_f:
+                                    _fa_f.write(_jm.dumps(_rec) + "\n")
+                            except Exception:
+                                pass
+                    if not _factor_aware_handled:
+                        hz_out = self._dispatch(
+                            L, op_con, hz_in, multi_in_hzs, before, after,
+                            # HyZor ops
+                            hz_dense=hz_dense, hz_conv2d=hz_conv2d,
+                            hz_add_const=hz_add_const, hz_scale=hz_scale, hz_bn=hz_bn,
+                            hz_sgm_add=hz_sgm_add, hz_minkowski_sum=hz_minkowski_sum,
+                            shares_generator=shares_generator, hz_concat=hz_concat,
+                            hz_apply_relu_v8=hz_apply_relu_v8,
+                            hz_apply_leaky_relu_v8=hz_apply_leaky_relu_v8,
+                            hz_from_bounds=hz_from_bounds,
+                            # ACT ops (sigmoid/tanh K-piece)
+                            act_hz_apply_sigmoid=act_hz_apply_sigmoid,
+                            act_hz_apply_tanh=act_hz_apply_tanh,
+                        )
 
                 # Girard reduction: cap ng to keep memory bounded
+                # R0.5 scout: capture pre-reduce ng so we can attribute
+                # ng-shrink to Girard vs the op itself.
+                _r05_pre_reduce_ng = int(hz_out.ng)
                 hz_out = self._maybe_reduce(hz_out)
 
                 logger.debug(
@@ -2401,6 +3232,79 @@ class HZVerifier(Solver):
                         f"nb={hz_out.nb} nc={hz_out.nc}",
                         flush=True,
                     )
+                if _block_trace_path is not None:
+                    layer_wall_s = time.time() - _layer_t_start
+                    peak_mb = (
+                        torch.cuda.max_memory_allocated() / 1e6
+                        if torch.cuda.is_available() else 0.0
+                    )
+                    unstable = None
+                    # Cheap unstable-ReLU count from incoming HZ box bounds.
+                    if L.kind == "RELU" and hz_in is not None:
+                        try:
+                            with torch.no_grad():
+                                half = (
+                                    hz_in.Gc.abs().sum(dim=1)
+                                    + hz_in.Gb.abs().sum(dim=1)
+                                )
+                                c_flat = hz_in.c.squeeze(-1)
+                                lb = c_flat - half
+                                ub = c_flat + half
+                                unstable = int(((lb < 0) & (ub > 0)).sum().item())
+                        except Exception:
+                            unstable = None
+                    # Per-layer OUTPUT box bound summary (added 2026-06-02 for
+                    # CIFAR sentinel margin tracing — answer "where does margin
+                    # first cross zero?"). Cheap interval projection of the HZ:
+                    # lb_i = c_i - sum_j |Gc[i,j]| - sum_j |Gb[i,j]|.
+                    # Records:
+                    #   out_lb_min  = min over i of lb_i   (most-negative output)
+                    #   out_ub_max  = max over i of ub_i   (most-positive output)
+                    #   out_radius_mean = mean of (ub - lb) / 2 across i
+                    # ub_min and lb_max bracket the spec margin: when
+                    # ub_min > 0 the output set is in the positive orthant,
+                    # which is the typical safety condition for ACASXu-style
+                    # specs. For CIFAR top-k it's the per-class score range.
+                    out_lb_min = out_ub_max = out_radius_mean = None
+                    try:
+                        with torch.no_grad():
+                            out_half = (
+                                hz_out.Gc.abs().sum(dim=1)
+                                + hz_out.Gb.abs().sum(dim=1)
+                            )
+                            out_c_flat = hz_out.c.squeeze(-1)
+                            out_lb = out_c_flat - out_half
+                            out_ub = out_c_flat + out_half
+                            out_lb_min = float(out_lb.min().item())
+                            out_ub_max = float(out_ub.max().item())
+                            out_radius_mean = float(out_half.mean().item())
+                    except Exception:
+                        pass
+                    rec = {
+                        "event": "layer_post",
+                        "layer_id": int(L.id),
+                        "kind": str(L.kind),
+                        "tag": tag_for_log,
+                        "in_dim": (int(hz_in.dim) if hz_in is not None else None),
+                        "in_ng": (int(hz_in.ng) if hz_in is not None else None),
+                        "in_nc": (int(hz_in.nc) if hz_in is not None else None),
+                        "out_dim": int(hz_out.dim),
+                        "out_ng": int(hz_out.ng),
+                        "out_nb": int(hz_out.nb),
+                        "out_nc": int(hz_out.nc),
+                        "wall_layer_s": float(layer_wall_s),
+                        "peak_alloc_mb": float(peak_mb),
+                        "wall_cum_s": float(time.time() - _block_trace_t0),
+                        "unstable_count": unstable,
+                        "out_lb_min": out_lb_min,
+                        "out_ub_max": out_ub_max,
+                        "out_radius_mean": out_radius_mean,
+                    }
+                    try:
+                        with open(_block_trace_path, "a") as _btf:
+                            _btf.write(json.dumps(rec) + "\n")
+                    except Exception:
+                        pass
             except Exception as e:
                 # Sound fallback on any per-layer failure
                 self._stats[f"error@{L.id}"] = f"{type(e).__name__}: {e}"
@@ -2417,22 +3321,761 @@ class HZVerifier(Solver):
                 )
 
             var_to_hz[tuple(L.out_vars)] = hz_out
-            op_kind = (op_con.meta["tag"].split(":")[0]
-                       if op_con else f"box-fallback({L.kind})")
+            # 2026-06-02 Stage 3d-0 factor-ID scout (read-only).
+            # Track per-Gc-column factor IDs in parallel with live
+            # propagation. Logs counts at ADD layers to quantify how
+            # many tail columns are SAME-FACTOR-ID duplicates that a
+            # true factor-aware ADD could merge. Does not change the
+            # verifier behaviour in any way.
+            if _factor_scout or _factor_sgm_enabled or _r05_scout_init:
+                try:
+                    parent_ids = _factor_ids_by_var.get(tuple(L.in_vars))
+                    multi_parent_ids = None
+                    if multi_in_hzs is not None:
+                        multi_parent_ids = []
+                        for pid in net.preds.get(L.id, []):
+                            pred = net.by_id[pid]
+                            multi_parent_ids.append(
+                                _factor_ids_by_var.get(tuple(pred.out_vars))
+                            )
+                    out_ng = int(hz_out.ng)
+                    ids_out = None
+                    kind = str(L.kind).upper()
+                    AFFINE = (
+                        "CONV2D", "DENSE", "BIAS", "BN", "SCALE",
+                        "FLATTEN", "REDUCE_SUM", "EXPAND", "MUL",
+                        "AVGPOOL2D", "MAXPOOL2D", "RESHAPE", "TRANSPOSE",
+                        "UPSAMPLE", "SLICE",
+                    )
+                    if kind == "RELU":
+                        if parent_ids is None:
+                            ids_out = None  # fall through; unknown
+                        elif out_ng < len(parent_ids):
+                            # RELU shrink: some parent cols were dropped
+                            # by stable-mask compaction. We don't know
+                            # which cols were removed without instrumenting
+                            # the operator itself — set ids_out=None so
+                            # the sanity guard surfaces the loss cleanly
+                            # rather than producing a length-mismatched
+                            # ids list.
+                            ids_out = None
+                        else:
+                            n_added = out_ng - len(parent_ids)
+                            new_ids = list(range(
+                                _factor_next_id[0],
+                                _factor_next_id[0] + n_added,
+                            ))
+                            _factor_next_id[0] += n_added
+                            ids_out = list(parent_ids) + new_ids
+                    elif (kind == "ADD" and multi_parent_ids is not None
+                          and len(multi_parent_ids) >= 2
+                          and all(m is not None for m in multi_parent_ids[:2])
+                          and not _factor_aware_handled):
+                        # When the factor-aware intercept already ran for
+                        # this ADD, the IDs were authoritatively set there.
+                        # Skip the scout's legacy-layout reconstruction.
+                        ids_x, ids_y = multi_parent_ids[0], multi_parent_ids[1]
+                        ng_x, ng_y = len(ids_x), len(ids_y)
+                        # sgm_add uses shared_ng = min(_base_ng_x, _base_ng_y,
+                        # ng_x, ng_y). For CIFAR (no Girard before cap)
+                        # _base_ng == input root ng on both sides. We compute
+                        # it the same way to match the actual output layout.
+                        try:
+                            # multi_in_hzs were collected in the same order
+                            # as net.preds.get(L.id, []); use them to read
+                            # the actual _base_ng on each parent HZ.
+                            parent_hzs = multi_in_hzs
+                            bx_ng = int(getattr(parent_hzs[0], "_base_ng",
+                                                ng_x) or ng_x)
+                            by_ng = int(getattr(parent_hzs[1], "_base_ng",
+                                                ng_y) or ng_y)
+                        except Exception:
+                            bx_ng, by_ng = ng_x, ng_y
+                        sgm_shared = min(bx_ng, by_ng, ng_x, ng_y)
+                        x_tail = ids_x[sgm_shared:]
+                        y_tail = ids_y[sgm_shared:]
+                        x_tail_set = set(x_tail)
+                        y_tail_set = set(y_tail)
+                        shared_in_tail = x_tail_set & y_tail_set
+                        # The id-equality prefix (typically longer than
+                        # sgm_shared; this is the "missed shared range").
+                        id_prefix = 0
+                        cap = min(ng_x, ng_y)
+                        while (id_prefix < cap
+                               and ids_x[id_prefix] == ids_y[id_prefix]):
+                            id_prefix += 1
+                        ideal_ids_set = set(ids_x) | set(ids_y)
+                        # The actual sgm_add output layout:
+                        #   [ids_x[:sgm_shared] | ids_x[sgm_shared:] | ids_y[sgm_shared:]]
+                        ids_out_actual = (
+                            list(ids_x[:sgm_shared])
+                            + list(x_tail) + list(y_tail)
+                        )
+                        savings = len(ids_out_actual) - len(ideal_ids_set)
+                        rec = {
+                            "event": "factor_id_add",
+                            "layer_id": int(L.id),
+                            "kind": kind,
+                            "ng_x": ng_x, "ng_y": ng_y,
+                            "base_ng_x": bx_ng, "base_ng_y": by_ng,
+                            "sgm_shared_ng": sgm_shared,
+                            "id_equality_prefix": id_prefix,
+                            "x_tail_count": len(x_tail),
+                            "y_tail_count": len(y_tail),
+                            "shared_in_tail_count": len(shared_in_tail),
+                            "actual_out_ng": len(ids_out_actual),
+                            "ideal_out_ng": len(ideal_ids_set),
+                            "savings_potential": savings,
+                            "hz_out_ng": out_ng,
+                        }
+                        _factor_records.append(rec)
+                        ids_out = ids_out_actual
+                        if len(ids_out) != out_ng:
+                            ids_out = None  # model diverged; downstream lost
+                    elif kind in AFFINE and parent_ids is not None:
+                        # Affine ops preserve continuous-generator factor
+                        # ids — UNLESS the op fell back to box (e.g. CUDA
+                        # OOM), in which case the output is a BoxHZ with
+                        # axis-aligned generators that DO NOT trace back
+                        # to input pixels. Detect via self._stats error tag.
+                        op_fellback_here = (
+                            f"error@{L.id}" in self._stats
+                            or any(k.endswith(f"@{L.id}")
+                                   and k.startswith(("maxpool_fallback",
+                                                     "concat_fallback",
+                                                     "upsample_fallback"))
+                                   for k in self._stats)
+                        )
+                        if op_fellback_here:
+                            # Box-fallback wipes algebraic root identity;
+                            # scout must not claim preservation.
+                            ids_out = None
+                        elif out_ng == len(parent_ids):
+                            ids_out = list(parent_ids)
+                        elif (out_ng > len(parent_ids)
+                              and os.environ.get(
+                                  "ACT_HZ_R05_AFFINE_INHERIT", "0").strip()
+                                  in ("1", "true", "yes", "on")):
+                            # P1 (env-gated): assume affine grow keeps
+                            # the first len(parent_ids) cols inheriting
+                            # parent IDs and the rest are aux. This is
+                            # the standard "tail-append slack" convention;
+                            # if any operator actually permutes cols
+                            # instead, downstream factor-aware ADD will
+                            # detect inconsistency (ng/ids mismatch).
+                            n_added = out_ng - len(parent_ids)
+                            new_ids_p1 = list(range(
+                                _factor_next_id[0],
+                                _factor_next_id[0] + n_added,
+                            ))
+                            _factor_next_id[0] += n_added
+                            ids_out = list(parent_ids) + new_ids_p1
+                        else:
+                            # Shape mismatch (e.g. Girard reduction kicked in)
+                            ids_out = None
+                    if ids_out is not None:
+                        _factor_ids_by_var[tuple(L.out_vars)] = ids_out
+                    # Per-layer debug record (Stage 3d-0 scout v2)
+                    _factor_records.append({
+                        "event": "factor_id_layer",
+                        "layer_id": int(L.id),
+                        "kind": kind,
+                        "hz_in_type": (
+                            type(hz_in).__name__ if hz_in is not None else None
+                        ),
+                        "hz_out_type": type(hz_out).__name__,
+                        "parent_ids_len": (len(parent_ids)
+                                            if parent_ids is not None else None),
+                        "multi_parent_ids_lens": (
+                            [len(m) if m is not None else None
+                             for m in multi_parent_ids]
+                            if multi_parent_ids is not None else None
+                        ),
+                        "hz_out_ng": out_ng,
+                        "hz_in_base_ng": (
+                            int(getattr(hz_in, "_base_ng"))
+                            if hz_in is not None
+                            and getattr(hz_in, "_base_ng", None) is not None
+                            else None
+                        ),
+                        "hz_out_base_ng": (
+                            int(getattr(hz_out, "_base_ng"))
+                            if getattr(hz_out, "_base_ng", None) is not None
+                            else None
+                        ),
+                        "multi_parent_base_ngs": (
+                            [
+                                (int(getattr(h, "_base_ng"))
+                                 if getattr(h, "_base_ng", None) is not None
+                                 else None)
+                                for h in multi_in_hzs
+                            ]
+                            if multi_in_hzs is not None else None
+                        ),
+                        "ids_out_len": (len(ids_out)
+                                        if ids_out is not None else None),
+                    })
+                except Exception as _exc:
+                    _factor_records.append({
+                        "event": "factor_id_error",
+                        "layer_id": int(L.id),
+                        "err": f"{type(_exc).__name__}: {_exc}",
+                    })
+            # 2026-06-02 R0.5 strong scout (env-gated, read-only).
+            # When ACT_HZ_R05_SCOUT=<path> is set, write a per-layer JSONL
+            # record with categorical drop-reason classification:
+            #   relu_stable_collapse | girard_reduce | sign_op_drop |
+            #   avgpool2d_op_drop | maxpool2d_op_drop | reduce_sum_op_drop |
+            #   concat_internal_drop | affine_op_drop | op_fallback |
+            #   ids_unknown_upstream | preserve
+            # Also records per-layer root-id survivor count: how many of
+            # the input-pixel factor IDs (those in [0, root_ng)) are still
+            # present in the surviving ids_out set. This is the strong-
+            # measurement R0.5 needs to lock implementation boundaries.
+            _r05_path = os.environ.get("ACT_HZ_R05_SCOUT", "") or None
+            if _r05_path:
+                try:
+                    kind_r05 = str(L.kind).upper()
+                    root_ng_setpoint = int(self._stats.get("root_ng", 0))
+                    parent_ids_r05 = _factor_ids_by_var.get(tuple(L.in_vars))
+                    multi_parent_ids_r05 = None
+                    if multi_in_hzs is not None:
+                        multi_parent_ids_r05 = []
+                        for pid in net.preds.get(L.id, []):
+                            pred = net.by_id[pid]
+                            multi_parent_ids_r05.append(
+                                _factor_ids_by_var.get(tuple(pred.out_vars))
+                            )
+                    ids_out_r05 = _factor_ids_by_var.get(tuple(L.out_vars))
+                    def _count_root(ids):
+                        if ids is None or root_ng_setpoint <= 0:
+                            return None
+                        return sum(1 for i in ids
+                                   if 0 <= int(i) < root_ng_setpoint)
+                    root_in_r05 = None
+                    if parent_ids_r05 is not None:
+                        root_in_r05 = _count_root(parent_ids_r05)
+                    elif (multi_parent_ids_r05 is not None
+                          and all(m is not None
+                                  for m in multi_parent_ids_r05[:2])):
+                        root_in_set = set()
+                        for m in multi_parent_ids_r05[:2]:
+                            root_in_set |= {int(i) for i in m
+                                            if 0 <= int(i) < root_ng_setpoint}
+                        root_in_r05 = len(root_in_set)
+                    root_out_r05 = _count_root(ids_out_r05)
+                    ng_in_total = (
+                        int(hz_in.ng) if hz_in is not None
+                        else (sum(int(h.ng) for h in multi_in_hzs)
+                              if multi_in_hzs else 0)
+                    )
+                    ng_pre = int(_r05_pre_reduce_ng)
+                    ng_post = int(hz_out.ng)
+                    AFFINE_R05 = (
+                        "CONV2D", "DENSE", "BIAS", "BN", "SCALE",
+                        "FLATTEN", "REDUCE_SUM", "EXPAND", "MUL",
+                        "AVGPOOL2D", "MAXPOOL2D", "RESHAPE", "TRANSPOSE",
+                        "UPSAMPLE", "SLICE",
+                    )
+                    reason = "preserve"
+                    fallback_seen = (
+                        f"error@{L.id}" in self._stats
+                        or any(k.endswith(f"@{L.id}")
+                               and k.startswith(("maxpool_fallback",
+                                                 "concat_fallback",
+                                                 "upsample_fallback"))
+                               for k in self._stats)
+                    )
+                    if (parent_ids_r05 is None
+                        and (multi_parent_ids_r05 is None
+                             or not all(m is not None
+                                        for m in multi_parent_ids_r05[:2]))):
+                        reason = "ids_unknown_upstream"
+                    elif fallback_seen:
+                        reason = "op_fallback"
+                    elif ng_post < ng_pre:
+                        reason = "girard_reduce"
+                    elif kind_r05 == "RELU":
+                        plen = (len(parent_ids_r05)
+                                if parent_ids_r05 is not None else 0)
+                        if ng_pre < plen:
+                            reason = "relu_stable_collapse"
+                    elif kind_r05 in ("SIGN", "AVGPOOL2D", "MAXPOOL2D",
+                                       "REDUCE_SUM"):
+                        plen = (len(parent_ids_r05)
+                                if parent_ids_r05 is not None else 0)
+                        if ng_pre < plen:
+                            reason = f"{kind_r05.lower()}_op_drop"
+                        elif ng_pre > plen and ids_out_r05 is None:
+                            # SIGN can also grow ng via slack columns
+                            # (analogous to RELU triangle), losing tracking.
+                            reason = f"{kind_r05.lower()}_ng_grew_scout_gave_up"
+                    elif kind_r05 == "CONCAT" and multi_parent_ids_r05:
+                        sum_parents = sum(
+                            len(m) for m in multi_parent_ids_r05
+                            if m is not None
+                        )
+                        if ng_pre < sum_parents:
+                            reason = "concat_internal_drop"
+                    elif kind_r05 in AFFINE_R05:
+                        plen = (len(parent_ids_r05)
+                                if parent_ids_r05 is not None else 0)
+                        if ng_pre < plen:
+                            reason = "affine_op_drop"
+                        elif ng_pre > plen and ids_out_r05 is None:
+                            # Affine op grew ng (e.g. conv with internal
+                            # generator expansion) — scout heuristic
+                            # "out_ng == len(parent_ids)" gave up but the
+                            # actual operator is still affine, so root
+                            # IDs MAY be algebraically preserved even
+                            # though the scout dropped tracking.
+                            reason = "affine_ng_grew_scout_gave_up"
+                        elif (ng_pre > plen
+                              and ids_out_r05 is not None
+                              and len(ids_out_r05) == ng_pre):
+                            # P1 inherit assumption applied: first plen
+                            # cols inherited parent IDs, rest are aux.
+                            # NOT verified algebraically — flagged so
+                            # downstream inconsistency surfaces clearly.
+                            reason = "affine_ng_grew_p1_inherit_assumed"
+                    elif kind_r05 == "RELU":
+                        # RELU normally GROWS ng via triangle aux. If the
+                        # scout dropped ids_out despite the parent IDs
+                        # being known, it means the RELU branch in the
+                        # scout couldn't reconstruct (aux-id assignment
+                        # failed or hz_out.ng != len(parent_ids) + n_added).
+                        plen = (len(parent_ids_r05)
+                                if parent_ids_r05 is not None else 0)
+                        if ng_pre > plen and ids_out_r05 is None:
+                            reason = "relu_ng_grew_scout_gave_up"
+                        elif ng_pre < plen and ids_out_r05 is None:
+                            # RELU shrink (some cols compacted by
+                            # stable mask). Scout can't tell which
+                            # cols were dropped without operator-level
+                            # instrumentation.
+                            reason = "relu_ng_shrink_scout_gave_up"
+                    # SANITY GUARD (per advisor): if parent IDs were known
+                    # but ids_out is None, the reason MUST NOT be
+                    # "preserve". Catch any case the kind-specific branches
+                    # above missed.
+                    if (reason == "preserve"
+                        and ids_out_r05 is None
+                        and (parent_ids_r05 is not None
+                             or (multi_parent_ids_r05 is not None
+                                 and any(m is not None
+                                          for m in multi_parent_ids_r05[:2])))):
+                        reason = f"scout_lost_tracking_{kind_r05.lower()}"
+                    # Capture op_fallback error text when present, so we
+                    # can distinguish CUDA OOM from other fallbacks at
+                    # aggregate time.
+                    fallback_err = None
+                    if reason == "op_fallback":
+                        fallback_err = self._stats.get(f"error@{L.id}")
+                        if fallback_err is None:
+                            for k in self._stats:
+                                if k.endswith(f"@{L.id}") and (
+                                    "fallback" in k
+                                    or k.startswith("error@")
+                                ):
+                                    fallback_err = self._stats[k]
+                                    break
+                    rec_r05 = {
+                        "event": "r05_layer",
+                        "layer_id": int(L.id),
+                        "kind": kind_r05,
+                        "root_ng_setpoint": root_ng_setpoint,
+                        "ng_in_total": ng_in_total,
+                        "ng_pre_reduce": ng_pre,
+                        "ng_post_reduce": ng_post,
+                        "parent_ids_len": (
+                            len(parent_ids_r05)
+                            if parent_ids_r05 is not None else None
+                        ),
+                        "multi_parent_lens": (
+                            [len(m) if m is not None else None
+                             for m in multi_parent_ids_r05]
+                            if multi_parent_ids_r05 is not None else None
+                        ),
+                        "ids_out_len": (
+                            len(ids_out_r05)
+                            if ids_out_r05 is not None else None
+                        ),
+                        "root_ids_in": root_in_r05,
+                        "root_ids_out": root_out_r05,
+                        "root_ids_dropped": (
+                            None
+                            if (root_in_r05 is None or root_out_r05 is None)
+                            else max(0, root_in_r05 - root_out_r05)
+                        ),
+                        "reason": reason,
+                        "fallback_err": (str(fallback_err)
+                                          if fallback_err is not None
+                                          else None),
+                    }
+                    from pathlib import Path as _PP_r05
+                    _PP_r05(_r05_path).parent.mkdir(
+                        parents=True, exist_ok=True)
+                    with open(_r05_path, "a") as _r05f:
+                        _r05f.write(json.dumps(rec_r05) + "\n")
+                except Exception as _r05e:
+                    try:
+                        with open(_r05_path, "a") as _r05f:
+                            _r05f.write(json.dumps({
+                                "event": "r05_error",
+                                "layer_id": int(L.id),
+                                "err": f"{type(_r05e).__name__}: {_r05e}",
+                            }) + "\n")
+                    except Exception:
+                        pass
+            # 2026-06-02 CIFAR end-cap research hook: when
+            # ACT_HZ_ENDCAP_SNAPSHOT_DIR=<dir> is set, pickle the HZ at each
+            # layer matching ACT_HZ_ENDCAP_SNAPSHOT_KIND (default: FLATTEN).
+            # The snapshot is used by a standalone pilot script (Stage 2 of
+            # the CIFAR sentinel research) to build a final-block LP end-cap
+            # without modifying the production verifier. Default OFF; never
+            # writes anything unless the env vars are explicit.
+            _endcap_dir = os.environ.get(
+                "ACT_HZ_ENDCAP_SNAPSHOT_DIR", "").strip()
+            if _endcap_dir:
+                _endcap_kinds = {
+                    _k.strip().upper().split(".")[-1]
+                    for _k in os.environ.get(
+                        "ACT_HZ_ENDCAP_SNAPSHOT_KIND", "FLATTEN"
+                    ).split(",")
+                    if _k.strip()
+                }
+                _layer_kind_for_snapshot = str(L.kind).upper().split(".")[-1]
+                if _layer_kind_for_snapshot in _endcap_kinds:
+                    # Diagnostic: record the HZ type and attributes at this
+                    # layer BEFORE attempting to write. Surfaces silent-fail
+                    # cases where hz_out is e.g. SparseGcZ (no .Gc) and the
+                    # snapshot writer's HZono path raises AttributeError.
+                    # See [[p2-single-dense-endcap-20260603]] soundnessbench
+                    # finding.
+                    self._stats[f"endcap_snapshot_attempt@{L.id}"] = {
+                        "hz_type": type(hz_out).__name__,
+                        "ng": int(getattr(hz_out, "ng", 0)),
+                        "nb": int(getattr(hz_out, "nb", 0)),
+                        "nc": int(getattr(hz_out, "nc", 0)),
+                        "dim": int(getattr(hz_out, "dim", 0)),
+                        "has_Gc": hasattr(hz_out, "Gc"),
+                        "has_Gc_sparse": hasattr(hz_out, "Gc_sparse"),
+                        "has_to_full_hzono": hasattr(hz_out, "to_full_hzono"),
+                        "has_lb_ub": (hasattr(hz_out, "lb")
+                                      and hasattr(hz_out, "ub")),
+                    }
+                    try:
+                        import pickle as _pickle
+                        from pathlib import Path as _PPath
+                        _PPath(_endcap_dir).mkdir(parents=True, exist_ok=True)
+                        _snap_path = _PPath(_endcap_dir) / (
+                            f"L{int(L.id):03d}_{_layer_kind_for_snapshot}.pkl"
+                        )
+                        _root_ng_for_snapshot = int(
+                            self._stats.get("root_ng", 0)
+                        )
+                        _root_only_snapshot = os.environ.get(
+                            "ACT_HZ_ENDCAP_ROOT_ONLY", "0"
+                        ).strip().lower() in ("1", "true", "yes", "on")
+                        _snapshot_hz = hz_out
+                        # 2026-06-03 P2.1: when hz_out is SparseGcZ at the
+                        # snapshot point, the HZono-only write path below
+                        # would silently fail (no .Gc attribute). Convert
+                        # to dense HZono via the operator's own to_hzono()
+                        # which preserves all factors (no precision loss).
+                        # The dense Gc is dim*ng floats; for soundnessbench
+                        # ng=98304 dim=384 that's ~300MB per snapshot,
+                        # manageable. For pathologically wide ng a sparse
+                        # snapshot format would be needed (deferred).
+                        if (not hasattr(_snapshot_hz, "Gc")
+                                and hasattr(_snapshot_hz, "to_hzono")):
+                            _snapshot_hz = _snapshot_hz.to_hzono()
+                        if _root_only_snapshot and not hasattr(
+                            _snapshot_hz, "Gc"
+                        ):
+                            # Root-only endcap export is intentionally more
+                            # general than full HZono pickling: LazyChainHZ
+                            # and SparseGcZ often preserve the root factors
+                            # exactly but do not expose a dense `.Gc`. The
+                            # endcap FAL scout only needs root columns to
+                            # propose a structured xi_root candidate followed
+                            # by strict ORT replay, so materialise the minimal
+                            # root slice instead of falling back to BoxHZ or
+                            # allocating all aux columns.
+                            if hasattr(_snapshot_hz, "to_full_hzono"):
+                                _snapshot_hz = _snapshot_hz.to_full_hzono()
+                            elif hasattr(_snapshot_hz, "Gc_sparse"):
+                                _sp = _snapshot_hz.Gc_sparse.coalesce()
+                                _sp_ind = _sp.indices()
+                                _sp_val = _sp.values()
+                                _keep = _sp_ind[1] < _root_ng_for_snapshot
+                                _root_ind = _sp_ind[:, _keep]
+                                _root_val = _sp_val[_keep]
+                                _root_sparse = torch.sparse_coo_tensor(
+                                    _root_ind,
+                                    _root_val,
+                                    (
+                                        int(_snapshot_hz.dim),
+                                        min(
+                                            _root_ng_for_snapshot,
+                                            int(_sp.shape[1]),
+                                        ),
+                                    ),
+                                    dtype=_snapshot_hz.dtype,
+                                    device=_snapshot_hz.device,
+                                ).coalesce()
+                                _snapshot_hz = HZono(
+                                    c=_snapshot_hz.c.view(-1, 1),
+                                    Gc=_root_sparse.to_dense(),
+                                    Gb=torch.zeros(
+                                        (int(_snapshot_hz.dim), 0),
+                                        dtype=_snapshot_hz.dtype,
+                                        device=_snapshot_hz.device,
+                                    ),
+                                    Ac=torch.zeros(
+                                        (0, int(_root_sparse.shape[1])),
+                                        dtype=_snapshot_hz.dtype,
+                                        device=_snapshot_hz.device,
+                                    ),
+                                    Ab=torch.zeros(
+                                        (0, 0),
+                                        dtype=_snapshot_hz.dtype,
+                                        device=_snapshot_hz.device,
+                                    ),
+                                    b=torch.zeros(
+                                        (0, 1),
+                                        dtype=_snapshot_hz.dtype,
+                                        device=_snapshot_hz.device,
+                                    ),
+                                )
+                            else:
+                                raise RuntimeError(
+                                    "root-only snapshot cannot materialize "
+                                    f"{type(hz_out).__name__}"
+                                )
+                        if _root_only_snapshot and _root_ng_for_snapshot > 0:
+                            _gc_payload = _snapshot_hz.Gc[
+                                :,
+                                :min(
+                                    _root_ng_for_snapshot,
+                                    int(_snapshot_hz.ng),
+                                )
+                            ]
+                            _gb_payload = _snapshot_hz.Gb[:, :0]
+                            _ac_payload = _snapshot_hz.Ac[:, :0]
+                            _ab_payload = _snapshot_hz.Ab[:, :0]
+                            _b_payload = _snapshot_hz.b[:0]
+                        else:
+                            _gc_payload = _snapshot_hz.Gc
+                            _gb_payload = _snapshot_hz.Gb
+                            _ac_payload = _snapshot_hz.Ac
+                            _ab_payload = _snapshot_hz.Ab
+                            _b_payload = _snapshot_hz.b
+                        # Materialize tensors to CPU + float64 for portability.
+                        _payload = {
+                            "layer_id": int(L.id),
+                            "kind": _layer_kind_for_snapshot,
+                            "type": type(hz_out).__name__,
+                            "c": _snapshot_hz.c.detach().to("cpu", torch.float64),
+                            "Gc": _gc_payload.detach().to("cpu", torch.float64),
+                            "Gb": _gb_payload.detach().to("cpu", torch.float64),
+                            "Ac": _ac_payload.detach().to("cpu", torch.float64),
+                            "Ab": _ab_payload.detach().to("cpu", torch.float64),
+                            "b":  _b_payload.detach().to("cpu", torch.float64),
+                            "dim": int(_snapshot_hz.dim),
+                            "ng": (
+                                int(_gc_payload.shape[1])
+                                if _root_only_snapshot else int(hz_out.ng)
+                            ),
+                            "nb": (
+                                0 if _root_only_snapshot else int(hz_out.nb)
+                            ),
+                            "nc": (
+                                0 if _root_only_snapshot else int(hz_out.nc)
+                            ),
+                            "ng_full": int(hz_out.ng),
+                            "nb_full": int(hz_out.nb),
+                            "nc_full": int(hz_out.nc),
+                            "root_only": bool(_root_only_snapshot),
+                            # Stage 3c: root vs aux factor provenance.
+                            # root_ng is the ng at the INPUT layer (one per
+                            # input pixel for box-typed specs). With pure
+                            # forward propagation without column-reordering
+                            # reductions, columns 0..root_ng-1 of this HZ's
+                            # Gc are still root input perturbations; columns
+                            # after are aux. ACT_HZ_ENDCAP_INPUT_BOX_DIR adds
+                            # the actual lb/ub of the input box so the pilot
+                            # can reconstruct concrete input candidates.
+                            "root_ng": _root_ng_for_snapshot,
+                            "root_nb": int(self._stats.get("root_nb", 0)),
+                            "root_nc": int(self._stats.get("root_nc", 0)),
+                        }
+                        _ilb = self._stats.get("input_lb")
+                        _iub = self._stats.get("input_ub")
+                        if _ilb is not None and _iub is not None:
+                            _payload["input_lb"] = _ilb
+                            _payload["input_ub"] = _iub
+                        # eq_mask is optional (only some HZ types carry it).
+                        _eq = getattr(hz_out, "eq_mask", None)
+                        if _eq is not None:
+                            _payload["eq_mask"] = _eq.detach().to("cpu")
+                        with open(_snap_path, "wb") as _f:
+                            _pickle.dump(_payload, _f)
+                        self._stats[f"endcap_snapshot@{L.id}"] = str(_snap_path)
+                    except Exception as _e:
+                        import traceback as _tb
+                        self._stats[f"endcap_snapshot_fail@{L.id}"] = (
+                            f"{type(_e).__name__}: {_e}"
+                        )
+                        # Capture the top stack frame inside the try block
+                        # so we know which line (Gc access, pickle, etc.)
+                        # raised.
+                        _tb_lines = _tb.format_exc().splitlines()
+                        self._stats[f"endcap_snapshot_traceback@{L.id}"] = (
+                            "\n".join(_tb_lines[-8:])
+                        )
+            if op_con is not None:
+                op_kind = op_con.meta["tag"].split(":")[0]
+            elif self._stats.get(f"concat_exact@{L.id}"):
+                op_kind = "concat_exact"
+            elif self._stats.get(f"upsample_exact@{L.id}"):
+                op_kind = "upsample_exact"
+            else:
+                op_kind = f"box-fallback({L.kind})"
             op_counts[op_kind] = op_counts.get(op_kind, 0) + 1
 
+        # End of Phase 3 (layer-walk / forward HZ propagation).
+        self._stats["t_phase3_layer_walk_s"] = (
+            time.monotonic() - _t_phase3_start
+        )
+        _t_phase4_start = time.monotonic()
         out_hz = var_to_hz.get(tuple(output_ids))
+        # Stage 3d-0 factor-ID scout: write records.
+        if _factor_scout and _factor_records:
+            try:
+                import json as _json
+                from pathlib import Path as _PPath
+                _scout_path = _PPath(_factor_scout)
+                _scout_path.parent.mkdir(parents=True, exist_ok=True)
+                with open(_scout_path, "a") as _f:
+                    for _rec in _factor_records:
+                        _f.write(_json.dumps(_rec) + "\n")
+                    # Summary at the end of the iid.
+                    _total_savings = sum(
+                        r["savings_potential"] for r in _factor_records
+                        if r["event"] == "factor_id_add"
+                    )
+                    _add_count = sum(
+                        1 for r in _factor_records
+                        if r["event"] == "factor_id_add"
+                    )
+                    _summary = {
+                        "event": "factor_id_summary",
+                        "total_add_layers": _add_count,
+                        "total_records": len(_factor_records),
+                        "total_savings_potential": _total_savings,
+                        "final_unique_ids": _factor_next_id[0],
+                    }
+                    _f.write(_json.dumps(_summary) + "\n")
+            except Exception:
+                pass
         if out_hz is None:
             self._status = SolveStatus.UNKNOWN
             self._stats["error"] = "no output HZ"
+            self._stats["t_consume_total_s"] = (
+                time.monotonic() - _t_consume_start
+            )
             return self._status
+        # Record final-HZ shape for diagnostic (cheap; one-time per call).
+        try:
+            self._stats["out_hz_dim"] = int(out_hz.dim)
+            self._stats["out_hz_ng"] = int(out_hz.ng)
+            self._stats["out_hz_nb"] = int(out_hz.nb)
+            self._stats["out_hz_nc"] = int(out_hz.nc)
+        except Exception:
+            pass
         self._stats["op_counts"] = op_counts
+
+        # Phantom-margin diagnostic (env-gated). Computes the REAL LP
+        # phantom margin: for each unsafe direction the LP solves
+        #   - UNSAFE_LINEAR (unsafe = c·y <= d):  margin = max{ d - c·y }
+        #   - TOP1_ROBUST (unsafe = y_t < y_j):   margin = max{ y_j - y_t }
+        # over the existing factor LP relaxation via scipy linprog and
+        # records the optimum. margin > 0 = LP allows phantom inside the
+        # unsafe halfspace by that slack. The box margin (cheap proxy) is
+        # recorded for comparison only.
+        # No autograd, no backward bound propagation, no randomness.
+        # See _compute_phantom_margin_summary() for the full output schema
+        # including n_rivals_total / n_lp_solved / n_lp_safe / n_lp_loose /
+        # n_lp_timeout_or_fail / worst_rival_ids.
+        # Dump ReLU trace to file (env-gated) so the offline pair-selector
+        # can compute output-aware target pairs from out_hz + trace.
+        try:
+            from act.back_end.hybridz_tf.tf_mlp import _trace_dump_to_file
+            _trace_dump_to_file()
+        except Exception:
+            pass
+
+        # Dump out_hz's Gc/Gb/c to .npz so the offline selector can compute
+        # per-rival per-binary contribution score |Gb_out[j, i] - Gb_out[t, i]|.
+        _out_hz_dump = os.environ.get("ACT_HZ_OUTPUT_HZ_DUMP_FILE", "")
+        if _out_hz_dump:
+            try:
+                _Gc_np = out_hz.Gc.detach().cpu().numpy()
+                _Gb_np = out_hz.Gb.detach().cpu().numpy()
+                _c_np = out_hz.c.detach().cpu().numpy()
+                Path(_out_hz_dump).parent.mkdir(parents=True, exist_ok=True)
+                np.savez(_out_hz_dump, Gc=_Gc_np, Gb=_Gb_np, c=_c_np)
+            except Exception as _e:
+                self._stats["output_hz_dump_error"] = (
+                    f"{type(_e).__name__}: {_e}"
+                )
+
+        if os.environ.get("ACT_HZ_PHANTOM_MARGIN_DIAG", "0") == "1":
+            try:
+                _diag = _compute_phantom_margin_summary(
+                    out_hz=out_hz,
+                    assert_layer=assert_layer,
+                    output_ids=output_ids,
+                    timeout_s=float(os.environ.get(
+                        "ACT_HZ_PHANTOM_MARGIN_TIMEOUT_S", "30")),
+                    max_rivals=int(os.environ.get(
+                        "ACT_HZ_PHANTOM_MARGIN_MAX_RIVALS", "20")),
+                )
+                _diag_path = os.environ.get(
+                    "ACT_HZ_PHANTOM_MARGIN_OUT",
+                    "/tmp/phantom_margin_diag.jsonl",
+                )
+                _record = {
+                    "benchmark": self.cfg.get("benchmark", "?"),
+                    "instance_id": self.cfg.get("instance_id", "?"),
+                    "query_index": self.cfg.get("query_index", "?"),
+                    "onnx_basename": Path(
+                        self.cfg.get("onnx_path") or ""
+                    ).name,
+                    "vnnlib_basename": Path(
+                        self.cfg.get("vnnlib_path") or ""
+                    ).name,
+                    **_diag,
+                }
+                import json as _json
+                Path(_diag_path).parent.mkdir(parents=True, exist_ok=True)
+                with open(_diag_path, "a") as _f:
+                    _f.write(_json.dumps(_record) + "\n")
+                self._stats["phantom_margin_diag_written"] = _diag_path
+            except Exception as _e:
+                self._stats["phantom_margin_diag_error"] = (
+                    f"{type(_e).__name__}: {_e}"
+                )
 
         # Stash for Tier 1A LP-aggressive retry: if Phase 2/4 ends UNKNOWN,
         # we re-walk with relu_method='exact_lp' (tighter ReLU encoding).
         self._first_pass_method = self.cfg["relu_method"]
 
-        # ─── Phase 2: LP feasibility ───
+        # End of Phase 3 (layer walk continues to here when out_hz was None).
+        # Already recorded if out_hz path completed above.
+        _t_phase4_unsafe_start = time.monotonic()
+        # ─── Phase 2: LP feasibility (outer phase 4: unsafe check) ───
         max_replay_candidates = int(os.environ.get(
             "ACT_HZ_MAX_REPLAY_CANDIDATES", "1"
         ))
@@ -2462,17 +4105,34 @@ class HZVerifier(Solver):
         except Exception as e:
             self._status = SolveStatus.UNKNOWN
             self._stats["feasibility_error"] = f"{type(e).__name__}: {e}"
+            self._stats["t_phase4_unsafe_check_s"] = (
+                time.monotonic() - _t_phase4_unsafe_start
+            )
+            self._stats["t_consume_total_s"] = (
+                time.monotonic() - _t_consume_start
+            )
             return self._status
+        self._stats["t_phase4_unsafe_check_s"] = (
+            time.monotonic() - _t_phase4_unsafe_start
+        )
+        self._stats["unsafe_lp_feas"] = str(feas)
 
         if feas == "infeasible":
             self._status = SolveStatus.UNSAT
+            self._stats["t_consume_total_s"] = (
+                time.monotonic() - _t_consume_start
+            )
             return self._status
         if feas == "timeout" and not xi_candidates:
             self._status = SolveStatus.UNKNOWN
             self._stats["timeout"] = True
+            self._stats["t_consume_total_s"] = (
+                time.monotonic() - _t_consume_start
+            )
             return self._status
 
         # ─── Phase 3: witness back to input space ───
+        _t_phase5_witness_start = time.monotonic()
         replay_attempts = 0
         replay_errors: List[str] = []
         for xi_star in xi_candidates:
@@ -2507,6 +4167,12 @@ class HZVerifier(Solver):
                 source="hz_walker_lp",
                 model_path_fallback=getattr(net, "onnx_path", None),
             )
+            self._stats["t_phase5_witness_replay_s"] = (
+                time.monotonic() - _t_phase5_witness_start
+            )
+            self._stats["t_consume_total_s"] = (
+                time.monotonic() - _t_consume_start
+            )
             # Final cleanup: release intermediate HZ tensors held in var_to_hz
             try:
                 del var_to_hz, out_hz, input_hz
@@ -2517,6 +4183,9 @@ class HZVerifier(Solver):
                 pass
             return self._status
 
+        self._stats["t_phase5_witness_replay_s"] = (
+            time.monotonic() - _t_phase5_witness_start
+        )
         if replay_attempts > 0:
             self._stats["replay_candidates_tried"] = int(replay_attempts)
             self._stats["phantom_rejected"] = True
@@ -2524,10 +4193,16 @@ class HZVerifier(Solver):
                 self._stats["replay_errors"] = replay_errors[:4]
             if feas == "timeout":
                 self._stats["timeout_after_replay_candidates"] = True
+                self._stats["t_consume_total_s"] = (
+                    time.monotonic() - _t_consume_start
+                )
                 return self._status
         self._status = SolveStatus.UNKNOWN
         if replay_errors:
             self._stats["witness_error"] = "; ".join(replay_errors[:4])
+        self._stats["t_consume_total_s"] = (
+            time.monotonic() - _t_consume_start
+        )
         return self._status
 
     # ----- Per-layer dispatch (cons tag -> HyZor or ACT op) -----
@@ -2619,7 +4294,17 @@ class HZVerifier(Solver):
             params.update(meta)
             return _hz_convtranspose2d_native(hz_in, params)
         if op == "dense":
-            return ops["hz_dense"](hz_in, meta["W"], meta.get("b"))
+            # Pass DENSE layer shape metadata so hz_dense can detect
+            # batched ONNX MatMul `(K, in) @ (in, out)` and expand W to
+            # block-diagonal form. mscn_128d's per-sample MLPs need this.
+            # ``L.params`` is set by torch2act._convert_linear and
+            # utils._convert_OnnxMatMul; missing metadata → no expansion.
+            _L_params = getattr(L, "params", None) or {}
+            return ops["hz_dense"](
+                hz_in, meta["W"], meta.get("b"),
+                input_shape=_L_params.get("input_shape"),
+                in_features=_L_params.get("in_features"),
+            )
         if op == "conv2d":
             cp = meta.get("conv_params", {})
             return ops["hz_conv2d"](
@@ -2834,6 +4519,25 @@ class HZVerifier(Solver):
         than a default verification behavior.
         """
         cap = self.cfg["girard_cap"]
+        # Root-preserving Girard (env-gated, advisor P2 follow-on):
+        # `reduce_constraints` does not preserve column order — its
+        # Phase-5 policy merges cols by L1 norm and similar heuristics.
+        # So lifting `cap` to `root_ng` does NOT guarantee the surviving
+        # cols are the root cols. The principle-compliant escape: when
+        # reducing past root_ng would force the surviving Gc to be
+        # smaller than the input pixel count, skip the reduction
+        # entirely. Trades memory (HZ stays at hz.ng) for root identity
+        # preservation. Default OFF.
+        if os.environ.get(
+            "ACT_HZ_GIRARD_PRESERVE_ROOT", "0").strip().lower() in (
+            "1", "true", "yes", "on"):
+            root_ng = int(self._stats.get("root_ng", 0))
+            if root_ng > 0 and cap < root_ng:
+                # Skip reduce: the requested cap would compress past
+                # root_ng but we have no col-preserving policy. Honest
+                # NO-OP. Sound (skipping a widening is identity); the
+                # downstream ops absorb the larger generator count.
+                return hz
         if int(hz.ng) <= cap:
             return hz
         tail_dim = int(self.cfg.get("tail_preserve_dim", 0) or 0)
@@ -2987,6 +4691,12 @@ def verify_once_hz(
         seed_from_input_specs, add_all_input_specs, validate_constraints,
     )
 
+    # P7: env-gated per-query trace. Writes one JSONL record per
+    # verify_once_hz call to `ACT_HZ_SMALL_DENSE_TRACE_OUT`. Default OFF
+    # (env unset = monotonic() reads only, ~sub-microsecond overhead).
+    _t_outer_start = time.monotonic()
+    _trace_path = os.environ.get("ACT_HZ_SMALL_DENSE_TRACE_OUT", "") or None
+
     # consume_cons reads `.bounds` from before/after for _box_fallback
     # paths, so we need TIGHT bounds. An earlier attempt forced
     # interval-only TF for speed; it caused a regression on
@@ -3004,6 +4714,7 @@ def verify_once_hz(
     spec_layers = gather_input_spec_layers(net)
     assert_layer = get_assert_layer(net)
 
+    _t_outer_after_setup = time.monotonic()
     # Run analyze with the batched seed (new TFs require [B, *shape]).
     seed_bounds = seed_from_input_specs(spec_layers)
     if seed_bounds.lb.dim() < 2:
@@ -3017,6 +4728,72 @@ def verify_once_hz(
             f"verify_once_hz: batch_lane={batch_lane} out of "
             f"range [0, {B})"
         )
+
+    # P7 trace JSONL-write helper. Called at every verify_once_hz exit
+    # path. Bundles outer timings + solver._stats inner-phase timings
+    # into a single JSONL record. No-op when env unset.
+    def _emit_trace_record(status, *, route_tag):
+        if _trace_path is None:
+            return
+        try:
+            cfg = getattr(solver, "cfg", {}) or {}
+            stats = getattr(solver, "_stats", {}) or {}
+            # Cheap input-box hash for pair-detection across queries
+            try:
+                _lb = seed_bounds.lb.detach().cpu().numpy().tobytes()
+                _ub = seed_bounds.ub.detach().cpu().numpy().tobytes()
+                import hashlib as _hl
+                _ib_hash = _hl.sha1(_lb + _ub).hexdigest()[:16]
+            except Exception:
+                _ib_hash = None
+            rec = {
+                "benchmark": cfg.get("benchmark"),
+                "instance_id": cfg.get("instance_id"),
+                "query_index": cfg.get("query_index"),
+                "route": route_tag,  # "singleton" | "consume_cons" | ...
+                "status": str(status),
+                "input_box_hash": _ib_hash,
+                "input_dim": int(seed_bounds.lb.numel())
+                              if hasattr(seed_bounds, "lb") else None,
+                "n_layers": int(len(net.layers)) if net is not None else None,
+                # Outer timings (verify_once_hz level)
+                "t_setup_s": round(_t_outer_after_setup - _t_outer_start, 6),
+                "t_analyze_s": round(stats.get("_t_analyze_s", 0.0), 6),
+                "t_consume_cons_s": round(stats.get(
+                    "_t_consume_cons_outer_s", 0.0), 6),
+                "t_total_s": round(time.monotonic() - _t_outer_start, 6),
+                "singleton_fastpath_fired": bool(
+                    stats.get("singleton_input_certified")
+                    or route_tag == "singleton"
+                ),
+                # Inner timings (consume_cons phase boundaries) — written
+                # by consume_cons() into self._stats; None if not reached.
+                "t_phase1_setup_s": stats.get("t_phase1_setup_s"),
+                "t_phase2_small_dense_lp_s": stats.get(
+                    "t_phase2_small_dense_lp_s"),
+                "small_dense_lp_decided": stats.get("small_dense_lp_decided"),
+                "t_phase3_layer_walk_s": stats.get("t_phase3_layer_walk_s"),
+                "t_phase4_unsafe_check_s": stats.get(
+                    "t_phase4_unsafe_check_s"),
+                "unsafe_lp_feas": stats.get("unsafe_lp_feas"),
+                "t_phase5_witness_replay_s": stats.get(
+                    "t_phase5_witness_replay_s"),
+                "t_consume_total_s_inner": stats.get("t_consume_total_s"),
+                # Final HZ shape
+                "out_hz_dim": stats.get("out_hz_dim"),
+                "out_hz_ng": stats.get("out_hz_ng"),
+                "out_hz_nb": stats.get("out_hz_nb"),
+                "out_hz_nc": stats.get("out_hz_nc"),
+                # Decisions / pointers
+                "fal_receipt_path": stats.get("fal_receipt_path"),
+                "feasibility_error": stats.get("feasibility_error"),
+                "timeout_after_replay": stats.get(
+                    "timeout_after_replay_candidates"),
+            }
+            with open(_trace_path, "a") as _f:
+                _f.write(json.dumps(rec) + "\n")
+        except Exception:
+            pass  # never let trace I/O affect verifier behavior
 
     # Exact singleton-input fast path. If the current VNNLIB query has a
     # zero-width input box, the reachable set is one concrete network output.
@@ -3065,6 +4842,7 @@ def verify_once_hz(
                 else:
                     solver._status = SolveStatus.UNSAT
                     solver._stats["singleton_input_certified"] = True
+                _emit_trace_record(solver._status, route_tag="singleton")
                 return solver._status, (
                     x_single if solver._status == SolveStatus.SAT else None
                 ), {
@@ -3081,7 +4859,10 @@ def verify_once_hz(
 
     entry_fact = Fact(bounds=seed_bounds, cons=ConSet())
     add_all_input_specs(entry_fact.cons, input_ids, spec_layers)
+    _t_analyze_start = time.monotonic()
     before, after, globalC = analyze(net, entry_id, entry_fact)
+    if hasattr(solver, "_stats"):
+        solver._stats["_t_analyze_s"] = time.monotonic() - _t_analyze_start
     if os.environ.get("ACT_HZ_LAYER_PROGRESS", "0") == "1":
         print(f"[HZ-PROGRESS] analyze done globalC={len(globalC)}", flush=True)
     validate_constraints(globalC, after, net)
@@ -3102,11 +4883,16 @@ def verify_once_hz(
     if timelimit is not None and hasattr(solver, "cfg"):
         solver.cfg["timeout_s"] = float(timelimit)
 
+    _t_cc_start = time.monotonic()
     st = solver.consume_cons(
         globalC_b1, before_b1, after_b1,
         net=net, input_ids=input_ids, output_ids=output_ids,
         assert_layer=assert_layer_b1,
     )
+    if hasattr(solver, "_stats"):
+        solver._stats["_t_consume_cons_outer_s"] = (
+            time.monotonic() - _t_cc_start
+        )
     ce_input = None
     if st == SolveStatus.SAT and solver.has_solution():
         ce_input = solver.get_values(input_ids)
@@ -3118,6 +4904,7 @@ def verify_once_hz(
         stats.update(solver.stats() if hasattr(solver, "stats") else {})
     except Exception:
         pass
+    _emit_trace_record(st, route_tag="consume_cons")
     return st, ce_input, stats
 
 
@@ -3411,6 +5198,243 @@ def _lp_feas_or_minimize(prob, obj_row: np.ndarray, rhs_threshold: Optional[floa
     if res.status == 1:
         return "timeout", None
     return "feasible", None  # conservative on unknown status
+
+
+def _compute_phantom_margin_summary(out_hz: HZono, assert_layer, *,
+                                       output_ids=None,
+                                       timeout_s: float = 30.0,
+                                       max_rivals: int = 20) -> Dict[str, Any]:
+    """Compute the REAL LP phantom margin against the HZ relaxation.
+
+    Definition (LP-feasibility-based, NOT box-based):
+      For each unsafe halfspace c_i·y <= d_i (or TOP1 rival y_rival - y_true):
+        margin_i = max{ d_i - c_i·y : y in HZ relaxation }
+      If margin_i > 0 the LP can place y strictly inside unsafe halfspace
+      with that much slack. Total phantom_margin = max_i margin_i.
+
+    Returns a SUMMARY dict (no raw lb/ub arrays) suitable for JSONL logging:
+      lp_phantom_margin_max:  float (largest realized slack across rivals)
+      lp_phantom_margin_mean: float (mean across solved rivals)
+      box_phantom_margin_max: float (box-only upper bound, for comparison)
+      box_range_mean:         float (avg width of output box)
+      lp_to_box_ratio:        lp_max / box_max (1.0 = box was already tight)
+      n_rivals_requested:     int (target_count; min of n_rivals_total, max_rivals)
+      n_rivals_total:         int (UNSAFE_LINEAR row count or n_out-1 for TOP1)
+      n_lp_solved:            int (rivals whose LP returned a finite optimum)
+      n_lp_safe:              int (solved rivals with margin <= 0)
+      n_lp_loose:             int (solved rivals with margin > 0)
+      n_lp_timeout_or_fail:   int (rivals where LP did NOT converge in budget)
+      worst_rival_ids:        list[int] up to 10 rival indices with highest margin
+      worst_rival_margins:    list[float] matching margins
+      assert_kind:            str
+      output_ng / output_nb / output_nc: shape stats of HZ
+
+    Soundness: read-only diagnostic. Same HZ relaxation that the verifier's
+    feasibility check uses. No randomness, no gradient/backward computation.
+    """
+    import json
+    from scipy.optimize import linprog
+    diag: Dict[str, Any] = {
+        "assert_kind": _kind_str(assert_layer.params.get("kind"))
+                       if assert_layer is not None else "?",
+        "output_ng": int(out_hz.ng) if hasattr(out_hz, "ng") else None,
+        "output_nb": int(out_hz.nb) if hasattr(out_hz, "nb") else None,
+        "output_nc": int(out_hz.nc) if hasattr(out_hz, "nc") else None,
+        "assert_y_true": None,
+    }
+    # Surface the true label up front so the offline pair-selector does
+    # not need an env-var work-around to know which class to use as t.
+    if assert_layer is not None and _kind_str(
+        assert_layer.params.get("kind")
+    ) == "TOP1_ROBUST":
+        try:
+            _yt = int(_to_np_f64(
+                assert_layer.params["y_true"]
+            ).reshape(-1)[0])
+            diag["assert_y_true"] = _yt
+        except Exception:
+            pass
+    # Box-only baseline (cheap upper bound) for direct comparison.
+    try:
+        _b = hz_compute_bounds(out_hz, exact=False)
+        _lb = _b.lb.detach().cpu().numpy().ravel()
+        _ub = _b.ub.detach().cpu().numpy().ravel()
+        diag["box_range_mean"] = float(np.mean(_ub - _lb))
+    except Exception:
+        _lb = _ub = None
+        diag["box_range_mean"] = None
+
+    kind = diag["assert_kind"]
+    # Build factor LP once
+    if kind == "UNSAFE_LINEAR":
+        C = _to_np_f64(assert_layer.params["c"])
+        d_vec = _to_np_f64(assert_layer.params["d"]).reshape(-1)
+        if C.ndim == 1:
+            C = C.reshape(1, -1)
+        out_dim = int(_to_np_f64(out_hz.c).reshape(-1).size)
+        if C.shape[0] < out_dim:
+            prob = _build_factor_lp_projected(out_hz, C)
+        else:
+            prob = _build_factor_lp(out_hz)
+        Gc, Gb, c_vec = prob["Gc"], prob["Gb"], prob["c"]
+        rivals_meta = []
+        for i in range(C.shape[0]):
+            if C.shape[0] < out_dim:
+                # Already projected: row i of Gc/Gb directly
+                obj_row_y = np.zeros(C.shape[0])
+                obj_row_y[i] = -1.0  # minimize C[i]·y == maximize -(C[i]·y)
+                obj_row_xi = np.concatenate(
+                    [obj_row_y @ Gc, obj_row_y @ Gb], axis=0)
+                obj_const = float(obj_row_y @ c_vec)
+            else:
+                obj_row_xi = np.concatenate(
+                    [-C[i] @ Gc, -C[i] @ Gb], axis=0)
+                obj_const = float(-C[i] @ c_vec)
+            rivals_meta.append((obj_row_xi, obj_const, float(-d_vec[i])))
+    elif kind == "TOP1_ROBUST":
+        t = int(_to_np_f64(assert_layer.params["y_true"]).reshape(-1)[0])
+        prob = _build_factor_lp(out_hz)
+        Gc, Gb, c_vec = prob["Gc"], prob["Gb"], prob["c"]
+        n_out = c_vec.size
+        # For each rival j != t: obj = y_j - y_t = (Gc[j]-Gc[t])·xi_c +
+        # (Gb[j]-Gb[t])·xi_b + (c[j]-c[t]). Maximize. Margin = max value.
+        # Cheap pre-rank rivals by box bound to focus LP on top candidates.
+        n_total_rivals = n_out - 1
+        if _lb is not None and _ub is not None:
+            box_rivals_score = _ub - _lb[t]
+            box_rivals_score[t] = -np.inf
+            top_j = np.argsort(-box_rivals_score)[:max_rivals]
+        else:
+            top_j = [j for j in range(n_out) if j != t][:max_rivals]
+        rivals_meta = []
+        rival_indices: List[int] = []
+        for j in top_j:
+            if j == t:
+                continue
+            obj_row_y = np.zeros(n_out)
+            obj_row_y[j] = +1.0
+            obj_row_y[t] = -1.0
+            obj_row_xi = np.concatenate(
+                [obj_row_y @ Gc, obj_row_y @ Gb], axis=0)
+            obj_const = float(obj_row_y @ c_vec)
+            rivals_meta.append((obj_row_xi, obj_const, 0.0))
+            rival_indices.append(int(j))
+        diag["n_rivals_total"] = int(n_total_rivals)
+    else:
+        diag["lp_phantom_margin_max"] = None
+        diag["lp_phantom_margin_mean"] = None
+        diag["box_phantom_margin_max"] = None
+        diag["lp_to_box_ratio"] = None
+        diag["n_rivals_total"] = 0
+        diag["n_rivals_requested"] = 0
+        diag["n_lp_solved"] = 0
+        diag["n_lp_safe"] = 0
+        diag["n_lp_loose"] = 0
+        diag["n_lp_timeout_or_fail"] = 0
+        diag["worst_rival_ids"] = []
+        diag["worst_rival_margins"] = []
+        return diag
+
+    if kind == "UNSAFE_LINEAR":
+        rival_indices = list(range(len(rivals_meta)))
+        diag["n_rivals_total"] = int(len(rivals_meta))
+
+    # Per-rival LP solves
+    p, q = prob["p"], prob["q"]
+    nvars = p + q
+    A_eq = prob["A_eq"] if prob["A_eq"].shape[0] > 0 else None
+    b_eq = prob["b_eq"] if prob["A_eq"].shape[0] > 0 else None
+    A_ub = prob["A_le"] if prob["A_le"].shape[0] > 0 else None
+    b_ub = prob["b_le"] if prob["A_le"].shape[0] > 0 else None
+    bounds = [(-1.0, 1.0)] * nvars
+    t0_lp = time.perf_counter()
+    per_lp_budget = max(0.5, timeout_s / max(1, len(rivals_meta)))
+
+    lp_margins: List[float] = []
+    solved_rival_ids: List[int] = []
+    box_margins: List[float] = []
+    n_loose = 0
+    n_safe = 0
+    n_timeout_or_fail = 0
+    diag["n_rivals_requested"] = int(len(rivals_meta))
+    for ridx, (obj_row_xi, obj_const, threshold) in enumerate(rivals_meta):
+        if time.perf_counter() - t0_lp > timeout_s:
+            # Remaining rivals are unsolved due to global timeout.
+            n_timeout_or_fail += len(rivals_meta) - ridx
+            break
+        try:
+            res = linprog(
+                c=-obj_row_xi,
+                A_ub=A_ub, b_ub=b_ub,
+                A_eq=A_eq, b_eq=b_eq,
+                bounds=bounds,
+                method="highs",
+                options={"time_limit": per_lp_budget},
+            )
+        except Exception:
+            n_timeout_or_fail += 1
+            continue
+        if not (res.status == 0 and res.success):
+            n_timeout_or_fail += 1
+            continue
+        max_obj = float(-res.fun + obj_const)
+        margin = max_obj - threshold
+        lp_margins.append(margin)
+        solved_rival_ids.append(rival_indices[ridx])
+        if margin > 0:
+            n_loose += 1
+        else:
+            n_safe += 1
+    # Box margins for direct comparison (loose upper bound)
+    if kind == "UNSAFE_LINEAR" and _lb is not None and _ub is not None:
+        for i in range(C.shape[0]):
+            c_vec_row = C[i]
+            min_cy = float(sum(
+                c_k * (_lb[k] if c_k >= 0 else _ub[k])
+                for k, c_k in enumerate(c_vec_row)
+            ))
+            box_margins.append(float(d_vec[i] - min_cy))
+    elif kind == "TOP1_ROBUST" and _lb is not None and _ub is not None:
+        for j in range(_ub.shape[0]):
+            if j == t:
+                continue
+            box_margins.append(float(_ub[j] - _lb[t]))
+
+    diag["lp_phantom_margin_max"] = (
+        float(max(lp_margins)) if lp_margins else None
+    )
+    diag["lp_phantom_margin_mean"] = (
+        float(np.mean(lp_margins)) if lp_margins else None
+    )
+    diag["box_phantom_margin_max"] = (
+        float(max(box_margins)) if box_margins else None
+    )
+    box_max = diag["box_phantom_margin_max"]
+    lp_max = diag["lp_phantom_margin_max"]
+    diag["lp_to_box_ratio"] = (
+        (lp_max / box_max) if (lp_max is not None and box_max
+                                and abs(box_max) > 1e-9) else None
+    )
+    diag["n_lp_solved"] = len(lp_margins)
+    diag["n_lp_safe"] = n_safe
+    diag["n_lp_loose"] = n_loose
+    diag["n_lp_timeout_or_fail"] = n_timeout_or_fail
+    # Back-compat aliases for the old field names that this turn's prior
+    # JSONL records use.
+    diag["n_rivals_probed"] = diag["n_lp_solved"]
+    diag["n_lp_unbounded_or_loose"] = diag["n_lp_loose"]
+    diag["n_lp_proves_safe"] = diag["n_lp_safe"]
+    # Worst rivals (descending by margin) — only loose ones are useful.
+    if lp_margins:
+        order = np.argsort(-np.asarray(lp_margins))
+        top10 = list(order[: min(10, len(lp_margins))])
+        diag["worst_rival_ids"] = [int(solved_rival_ids[k]) for k in top10]
+        diag["worst_rival_margins"] = [float(lp_margins[k]) for k in top10]
+    else:
+        diag["worst_rival_ids"] = []
+        diag["worst_rival_margins"] = []
+    diag["lp_elapsed_s"] = float(time.perf_counter() - t0_lp)
+    return diag
 
 
 def check_unsafe_for_act(out_hz: HZono, assert_layer, *,

@@ -61,7 +61,15 @@ def _propagate_base_any(parent, child):
 
 
 def _propagate_base_multi(parents, child):
-    """min() propagation from multiple parents (concat / sgm / minkowski)."""
+    """min() propagation from multiple parents (concat / sgm / minkowski).
+
+    Also intersects the root-identity UID (`_base_root_id`): if ALL
+    parents share the same non-None UID, the child inherits it; if any
+    parent lacks the UID OR parents disagree, the child's UID is set
+    to None (no claim of shared root). This ensures the shared-prefix
+    concat fast path cannot incorrectly merge inputs from independent
+    roots (see test_independent_roots_with_same_base_ng_must_not_merge).
+    """
     if not isinstance(child, HZono):
         return child
     hz_parents = [p for p in parents if isinstance(p, HZono)]
@@ -75,6 +83,11 @@ def _propagate_base_multi(parents, child):
                        int(min(base_ng, int(child.Gc.shape[1]))))
     object.__setattr__(child, "_base_nb",
                        int(min(base_nb, int(child.Gb.shape[1]))))
+    root_ids = [getattr(p, "_base_root_id", None) for p in hz_parents]
+    if all(r is not None and r == root_ids[0] for r in root_ids):
+        object.__setattr__(child, "_base_root_id", int(root_ids[0]))
+    else:
+        object.__setattr__(child, "_base_root_id", None)
     return child
 from act.back_end.hybridz_tf.representations import (
     BoxHZ, LazyChainHZ, SparseGcZ,
@@ -138,7 +151,15 @@ def hz_from_bounds(bounds, *, dtype=torch.float64, device="cpu"):
       3. Dense HZono otherwise
 
     Faithful port of HyZor ``hz_from_bounds`` (__init__.py:936).
+
+    Assigns a fresh `_base_root_id` to the resulting HZono so the
+    shared-prefix concat fast path can verify common-ancestor lineage
+    of CONCAT inputs. (SparseGcZ / BoxHZ paths are unaffected; root_id
+    propagation across non-HZono → HZono conversions is a future TODO.)
     """
+    from act.back_end.solver.solver_hz import (
+        HZono as _HZono, _assign_fresh_root_id,
+    )
     lb = bounds.lb.flatten().to(dtype=dtype, device=device)
     ub = bounds.ub.flatten().to(dtype=dtype, device=device)
     n = int(lb.numel())
@@ -160,7 +181,10 @@ def hz_from_bounds(bounds, *, dtype=torch.float64, device="cpu"):
             return SparseGcZ(c=c, Gc_sparse=Gc_sparse,
                              dtype=dtype, device=device)
 
-    return _make_or_box(lb, ub, dtype=dtype, device=device)
+    out = _make_or_box(lb, ub, dtype=dtype, device=device)
+    if isinstance(out, _HZono):
+        _assign_fresh_root_id(out)
+    return out
 
 
 # ---------------------------------------------------------------------------
@@ -168,18 +192,118 @@ def hz_from_bounds(bounds, *, dtype=torch.float64, device="cpu"):
 # ---------------------------------------------------------------------------
 
 
-def hz_dense(hz, W, b=None):
+def _batched_matmul_K_from_metadata(input_shape, in_features, hz_dim):
+    """Return K >= 2 iff the DENSE layer is a batched ONNX MatMul whose
+    HZ-flattened input dim is `K * in_features`.
+
+    The decision is made on **layer metadata**, NOT on dim divisibility
+    alone. Three conditions must all hold:
+
+      1. `input_shape[-1] == in_features` — confirms the last axis is the
+         contracting MatMul dim, so `prod(input_shape[:-1])` is the
+         batch / sample axis count.
+      2. `prod(input_shape) == hz_dim` — confirms the upstream HZ really
+         carries the full pre-batched tensor flattened in row-major order
+         (no extra reshape mismatched the layout).
+      3. `K = prod(input_shape[:-1]) >= 2` — only a genuine batched
+         case; plain DENSE returns K = 1 and goes through the standard
+         path unchanged.
+
+    Any missing / inconsistent metadata returns K = 1 (no expansion).
+    This is fail-closed: a wrongly-detected K could change verdict, so
+    we expand ONLY when the front-end metadata is unambiguous.
+    """
+    if not input_shape or in_features is None or hz_dim <= 0:
+        return 1
+    try:
+        in_features = int(in_features)
+        last_dim = int(input_shape[-1])
+    except Exception:
+        return 1
+    if in_features <= 0 or last_dim != in_features:
+        return 1
+    prod = 1
+    for d in input_shape:
+        try:
+            prod *= int(d)
+        except Exception:
+            return 1
+    if prod != int(hz_dim):
+        return 1
+    K = prod // in_features
+    return K if K >= 2 else 1
+
+
+def _build_block_diag(W_t, b_t, K):
+    """Expand `W` and `b` into K-block-diagonal form.
+
+    Used only when `_batched_matmul_K_from_metadata` returns K >= 2.
+    Mathematically equivalent to applying `W` independently to each
+    of the K input blocks (ONNX batched-matmul semantics); sound.
+
+    Memory cost: K^2 * out * in floats. Caller is responsible for the
+    K range (we cap at K >= 2 in the detection helper).
+    """
+    out_features = int(W_t.shape[0])
+    in_features = int(W_t.shape[1])
+    Wbig = torch.zeros(
+        (K * out_features, K * in_features),
+        dtype=W_t.dtype, device=W_t.device,
+    )
+    for k in range(K):
+        Wbig[k * out_features:(k + 1) * out_features,
+             k * in_features:(k + 1) * in_features] = W_t
+    bbig = b_t.repeat(K) if b_t is not None else None
+    return Wbig, bbig
+
+
+def _maybe_batched_block_diag(W_t, b_t, hz_dim,
+                              input_shape=None, in_features=None):
+    """Wrapper that picks K from metadata when available, else returns
+    K=1 (no expansion).
+
+    The legacy dim-divisibility heuristic is REMOVED: without explicit
+    metadata, we never expand. This trades coverage for safety — better
+    to leave a shape-mismatch error visible than to silently re-shape
+    a plain DENSE layer into something the model didn't intend.
+    """
+    K = _batched_matmul_K_from_metadata(input_shape, in_features, hz_dim)
+    if K < 2:
+        return W_t, b_t, 1
+    Wbig, bbig = _build_block_diag(W_t, b_t, K)
+    return Wbig, bbig, K
+
+
+def hz_dense(hz, W, b=None, *, input_shape=None, in_features=None):
     """``y = W x + b``. 4-way dispatch faithful to HyZor (__init__.py:974).
 
       - SparseGcZ → ``hz.apply_dense(W, b)`` (densifies, returns HZono)
       - LazyChainHZ → ``hz.with_dense(W, b)`` (extends chain)
       - BoxHZ → IBP snapshot (rebuilds via _make_or_box)
       - HZono → ``hz_multiply(hz, W) + hz_add_const(b)``
+
+    Optional ``input_shape`` / ``in_features`` come from the ACT-net
+    DENSE layer params (set by ``torch2act._convert_linear`` and
+    ``utils._convert_OnnxMatMul``). When present and they confirm a
+    batched MatMul (last dim == in_features, prod(shape) == hz.dim,
+    K >= 2), W is expanded to a block-diagonal `(K*out, K*in)` matrix
+    before dispatch. Otherwise the layer goes through unchanged.
     """
     W_t = torch.as_tensor(W, dtype=hz.dtype if hasattr(hz, "dtype") else hz.c.dtype,
                           device=hz.device if hasattr(hz, "device") else hz.c.device)
     b_t = (torch.as_tensor(b, dtype=W_t.dtype, device=W_t.device).flatten()
            if b is not None else None)
+    # Batched MatMul detection (explicit metadata only).
+    hz_dim = int(getattr(hz, "dim", 0) or 0)
+    if hz_dim == 0 and hasattr(hz, "c"):
+        try:
+            hz_dim = int(hz.c.shape[0])
+        except Exception:
+            hz_dim = 0
+    W_t, b_t, _K_batches = _maybe_batched_block_diag(
+        W_t, b_t, hz_dim,
+        input_shape=input_shape, in_features=in_features,
+    )
 
     if isinstance(hz, SparseGcZ):
         out = hz.apply_dense(W_t, b_t)
@@ -209,6 +333,7 @@ def hz_dense(hz, W, b=None):
     # T2 sparse-Gc: opt-in post-dense prune + dense->sparse conversion.
     # No-op when ACT_HZ_PRUNE_GC / ACT_HZ_DENSE_TO_SPARSE are unset.
     from act.back_end.hybridz_tf.sparse_gc_t2 import act_maybe_compact_hz
+    out = _propagate_base_any(hz, out)
     out = act_maybe_compact_hz(out)
     return _propagate_base_any(hz, out)
 
@@ -269,6 +394,184 @@ def hz_bn(hz, A, c):
 # ---------------------------------------------------------------------------
 
 
+def _is_recoverable_conv_failure(e):
+    """True for failures the fallback-safe affine propagation chain
+    should attempt to recover from.
+
+    The previous heuristic only matched "memory" or "alloc" substrings,
+    which missed CUDA cusparseSpGEMM "insufficient resources" failures
+    and led to a silent op_fallback → BoxHZ that wiped root identity
+    (see [[r05-p1-affine-inherit-20260602]] TinyImageNet L9 finding).
+
+    The classification trades false-positive recovery (we may retry on
+    a non-recoverable bug) for never silently letting a recoverable
+    CUDA path collapse to box-fallback. This is the right trade for a
+    forward-only verifier: BoxHZ at a conv layer wipes correlation,
+    losing every downstream witness path. A loud retry is strictly
+    better than a silent precision collapse.
+    """
+    if isinstance(e, MemoryError):
+        return True
+    msg = str(e).lower()
+    triggers = (
+        "out of memory",
+        "cuda out of memory",
+        "memory", "alloc",
+        "insufficient resources",
+        "insufficient resource",
+        "cuda error",
+        "cusparse", "cublas", "cudnn",
+        "launch failed", "launch failure",
+    )
+    return any(t in msg for t in triggers)
+
+
+def _hz_conv2d_chunked(hz, weight, bias, stride, padding,
+                       dilation, groups, input_shape, chunk_size):
+    """Dense HZono conv with column-chunked Gc/Gb generator processing.
+
+    Mathematically identical to ``tf_cnn.hz_conv2d`` (each col is
+    convolved independently), but bounds peak allocation at
+    ``chunk_size * B * Cp * Hp * Wp`` floats instead of
+    ``ng * B * Cp * Hp * Wp``.
+
+    Used as a secondary fallback when the single-shot dense conv OOMs
+    on GPU after the sparse path already failed.
+    """
+    from act.back_end.hybridz_tf.tf_cnn import _conv2d_generators
+    import torch.nn.functional as F
+
+    if len(input_shape) == 4:
+        _, C, H, W = input_shape
+    elif len(input_shape) == 3:
+        C, H, W = input_shape
+    else:
+        raise ValueError(f"_hz_conv2d_chunked: bad input_shape {input_shape}")
+
+    weight_t = weight.to(hz.c)
+    spatial_in = C * H * W
+    B = hz.c.numel() // spatial_in
+    c_img = hz.c.view(B, C, H, W)
+    out_c = F.conv2d(
+        c_img,
+        weight_t,
+        bias=bias.to(hz.c) if bias is not None else None,
+        stride=stride,
+        padding=padding,
+        dilation=dilation,
+        groups=groups,
+    )
+    _, Cp, Hp, Wp = out_c.shape
+    new_c = out_c.reshape(-1, 1)
+    n_out_per_sample = Cp * Hp * Wp
+
+    def _chunked(G):
+        if G.shape[1] == 0:
+            return G.new_zeros(B * n_out_per_sample, 0)
+        chunks = []
+        for start in range(0, G.shape[1], chunk_size):
+            end = min(start + chunk_size, G.shape[1])
+            chunks.append(_conv2d_generators(
+                G[:, start:end], weight_t, B, C, H, W,
+                stride, padding, dilation, groups, n_out_per_sample))
+        return torch.cat(chunks, dim=1)
+
+    new_Gc = _chunked(hz.Gc)
+    new_Gb = _chunked(hz.Gb)
+    return HZono(
+        c=new_c, Gc=new_Gc, Gb=new_Gb,
+        Ac=hz.Ac.clone(), Ab=hz.Ab.clone(), b=hz.b.clone(),
+        eq_mask=None if hz.eq_mask is None else hz.eq_mask.clone(),
+    )
+
+
+def _hz_to_cpu(hz):
+    """Move an HZono to CPU (all six tensors). Returns a new HZono."""
+    return HZono(
+        c=hz.c.cpu(), Gc=hz.Gc.cpu(), Gb=hz.Gb.cpu(),
+        Ac=hz.Ac.cpu(), Ab=hz.Ab.cpu(), b=hz.b.cpu(),
+        eq_mask=None if hz.eq_mask is None else hz.eq_mask.cpu(),
+    )
+
+
+def _hz_to_device(hz, device):
+    """Move an HZono to a target device. Returns a new HZono."""
+    return HZono(
+        c=hz.c.to(device), Gc=hz.Gc.to(device), Gb=hz.Gb.to(device),
+        Ac=hz.Ac.to(device), Ab=hz.Ab.to(device), b=hz.b.to(device),
+        eq_mask=None if hz.eq_mask is None else hz.eq_mask.to(device),
+    )
+
+
+def _dense_conv_with_fallback_chain(hz, weight, bias, stride, padding,
+                                      dilation, groups, input_shape):
+    """Dense HZono conv with fallback chain: GPU single-shot → GPU
+    chunked → CPU single-shot. Each step recovers from
+    ``_is_recoverable_conv_failure`` errors only; other exceptions
+    re-raise immediately.
+
+    Returns an HZono on the ORIGINAL device of ``hz`` (CPU result is
+    moved back if step 3 fires).
+
+    No-op pass-through when ``ACT_HZ_CONV_FALLBACK_SAFE=0`` (default
+    OFF): just calls the inner conv once. The fallback chain is
+    explicitly opt-in until regression coverage validates it.
+    """
+    from act.back_end.hybridz_tf.tf_cnn import hz_conv2d as _inner
+
+    safe_on = os.environ.get(
+        "ACT_HZ_CONV_FALLBACK_SAFE", "0").strip().lower() in (
+        "1", "true", "yes", "on")
+
+    if not safe_on:
+        return _inner(
+            hz, weight, bias, stride=stride, padding=padding,
+            dilation=dilation, groups=groups, input_shape=input_shape,
+        )
+
+    orig_device = hz.c.device
+
+    # Step 1: single-shot dense GPU (same device as hz)
+    try:
+        out = _inner(
+            hz, weight, bias, stride=stride, padding=padding,
+            dilation=dilation, groups=groups, input_shape=input_shape,
+        )
+        return out
+    except (MemoryError, RuntimeError) as e1:
+        if not _is_recoverable_conv_failure(e1):
+            raise
+        if os.environ.get("ACT_HZ_CONV_DEBUG", "0") == "1":
+            print(f"[HZ-CONV] dense step 1 fail ({type(e1).__name__}: {e1}); "
+                  f"trying chunked", flush=True)
+
+    # Step 2: chunked dense on the same device
+    chunk = int(os.environ.get("ACT_HZ_CONV_FALLBACK_CHUNK", "512"))
+    try:
+        out = _hz_conv2d_chunked(
+            hz, weight, bias, stride, padding, dilation, groups,
+            input_shape, chunk_size=chunk,
+        )
+        return out
+    except (MemoryError, RuntimeError) as e2:
+        if not _is_recoverable_conv_failure(e2):
+            raise
+        if os.environ.get("ACT_HZ_CONV_DEBUG", "0") == "1":
+            print(f"[HZ-CONV] dense step 2 chunked fail "
+                  f"({type(e2).__name__}: {e2}); trying CPU", flush=True)
+
+    # Step 3: CPU single-shot (slow but no GPU resource constraints)
+    hz_cpu = _hz_to_cpu(hz)
+    weight_cpu = weight.detach().cpu()
+    bias_cpu = bias.detach().cpu() if bias is not None else None
+    out_cpu = _inner(
+        hz_cpu, weight_cpu, bias_cpu,
+        stride=stride, padding=padding,
+        dilation=dilation, groups=groups, input_shape=input_shape,
+    )
+    return _hz_to_device(out_cpu, orig_device)
+
+
 def hz_conv2d(hz, weight, bias=None, *, input_shape,
               stride=1, padding=0, dilation=1, groups=1):
     """2D conv. 4-way dispatch faithful to HyZor (__init__.py:1007)."""
@@ -316,8 +619,7 @@ def hz_conv2d(hz, weight, bias=None, *, input_shape,
                 )
             return out_sparse
         except (MemoryError, RuntimeError) as e:
-            msg = str(e).lower()
-            if "memory" not in msg and "alloc" not in msg:
+            if not _is_recoverable_conv_failure(e):
                 raise
             if os.environ.get("ACT_HZ_CONV_DEBUG", "0") == "1":
                 print(
@@ -397,8 +699,7 @@ def hz_conv2d(hz, weight, bias=None, *, input_shape,
                         )
                     return out_sparse
                 except (MemoryError, RuntimeError) as e:
-                    msg = str(e).lower()
-                    if "memory" not in msg and "alloc" not in msg:
+                    if not _is_recoverable_conv_failure(e):
                         raise
                     if os.environ.get("ACT_HZ_CONV_DEBUG", "0") == "1":
                         print(
@@ -406,8 +707,8 @@ def hz_conv2d(hz, weight, bias=None, *, input_shape,
                             f"{type(e).__name__}: {e}",
                             flush=True,
                         )
-                    # fall through to dense path
-    out = _act_conv2d_inner(
+                    # fall through to dense path (with fallback chain)
+    out = _dense_conv_with_fallback_chain(
         hz, weight_t, bias_t,
         stride=stride, padding=pad_use,
         dilation=(int(dilation), int(dilation)) if not isinstance(dilation, tuple) else dilation,
@@ -415,6 +716,7 @@ def hz_conv2d(hz, weight, bias=None, *, input_shape,
     )
     # T2 sparse-Gc: opt-in post-conv prune + dense->sparse conversion.
     # No-op when ACT_HZ_PRUNE_GC / ACT_HZ_DENSE_TO_SPARSE are unset.
+    out = _propagate_base_any(hz, out)
     out = act_maybe_compact_hz(out)
     if os.environ.get("ACT_HZ_CONV_DEBUG", "0") == "1":
         print(
@@ -626,7 +928,7 @@ def hz_apply_relu_v8(hz, *, method: str = "eq_lagr_v8"):
                 flush=True,
             )
         try:
-            return hz_apply_relu_triangle(hz)
+            return _propagate_base_any(hz, hz_apply_relu_triangle(hz))
         except Exception:
             return _box_fallback_relu(hz)
 
@@ -718,7 +1020,7 @@ def hz_apply_relu_v8(hz, *, method: str = "eq_lagr_v8"):
                     )
                 except Exception:
                     pass
-            return hz_after_relu
+            return _propagate_base_any(hz, hz_after_relu)
         if method == "triangle":
             # Optional precision lever (ACT_HZ_TRIANGLE_TIGHT_BOUNDS=1):
             # pass Tier-2/3 cascade bounds as external_bounds. Default OFF
@@ -1101,12 +1403,189 @@ def shares_generator(hz_x, hz_y) -> bool:
     return _act_shares_generator(hz_x, hz_y)
 
 
+def _try_shared_prefix_concat(hz_list, tol=1e-10):
+    """Shared-generator concat fast path (env-gated).
+
+    When all HZono inputs share a common ancestor (so their first
+    `shared_ng` continuous generators, `shared_nb` binary generators,
+    and `shared_nc` constraint rows ARE the same underlying factors /
+    constraints), this layout avoids the duplication that
+    block-diagonal concat introduces.
+
+    Algorithm (mirrors `hz_sgm_add` in algorithms/sgm.py:62-191):
+
+      shared_ng = min(_base_ng across inputs)
+      shared_nb = min(_base_nb across inputs)
+      shared_nc = min(_base_nc across inputs)
+
+      output Gc = [shared_block_vstack | per-input tail block-diag]
+        shared_block_vstack[i-th row block, :shared_ng] = hz_i.Gc[:, :shared_ng]
+        tail per input i occupies a disjoint column range
+
+      output Ac = same column structure
+        rows 0:shared_nc come from hz_list[0] (sanity-checked equal across inputs)
+        rows shared_nc..end are per-input tail constraints with shared
+        columns kept verbatim and own tail columns block-diagonaled
+
+    Returns the merged HZono on success, or `None` if the shared prefix
+    is empty OR if the numerical sanity check fails (in which case the
+    caller should fall back to block-diagonal concat).
+    """
+    if not hz_list or any(not isinstance(h, HZono) for h in hz_list):
+        return None
+    # ROOT IDENTITY GUARD (2026-06-01 audit response): refuse to merge
+    # when inputs cannot be proven to share a common ancestor. Without
+    # this guard, two HZ with coincidentally-equal `_base_ng` (e.g.,
+    # from independent roots, manually-constructed tests, or future
+    # cross-instance reasoning) would be incorrectly merged, producing
+    # an UNSOUND under-approximation that excludes valid concrete
+    # points. See test_independent_roots_with_same_base_ng_must_not_merge.
+    #
+    # `_base_root_id` is assigned by `_assign_fresh_root_id()` at input
+    # HZ construction and propagated through `_propagate_base*`. If
+    # any input lacks the UID (None) OR inputs disagree, return None
+    # so the caller falls back to sound block-diagonal layout.
+    root_ids = [getattr(h, "_base_root_id", None) for h in hz_list]
+    if any(r is None for r in root_ids) or not all(
+        r == root_ids[0] for r in root_ids
+    ):
+        return None
+    base_ngs = [int(getattr(h, "_base_ng", int(h.Gc.shape[1])))
+                for h in hz_list]
+    base_nbs = [int(getattr(h, "_base_nb", int(h.Gb.shape[1])))
+                for h in hz_list]
+    base_ncs = [int(getattr(h, "_base_nc", int(h.b.shape[0])))
+                for h in hz_list]
+    shared_ng = min(base_ngs)
+    shared_nb = min(base_nbs)
+    shared_nc = min(base_ncs)
+    if shared_ng == 0 and shared_nb == 0 and shared_nc == 0:
+        # No shared prefix to exploit; block-diag is identical to this
+        # path's output, so skip the extra work.
+        return None
+    # Sanity: shared constraint rows must be numerically equal across
+    # inputs. If not, the _base_nc tracking is out of sync with the
+    # actual rows (which would indicate an upstream bug), so we
+    # conservatively fall back to block-diag instead of silently
+    # producing a possibly-loose-or-unsound merged result.
+    if shared_nc > 0:
+        ref_Ac = hz_list[0].Ac[:shared_nc, :shared_ng]
+        ref_Ab = hz_list[0].Ab[:shared_nc, :shared_nb]
+        ref_b = hz_list[0].b[:shared_nc]
+        for h in hz_list[1:]:
+            if not torch.allclose(h.Ac[:shared_nc, :shared_ng],
+                                  ref_Ac, atol=tol, rtol=tol):
+                return None
+            if not torch.allclose(h.Ab[:shared_nc, :shared_nb],
+                                  ref_Ab, atol=tol, rtol=tol):
+                return None
+            if not torch.allclose(h.b[:shared_nc], ref_b,
+                                  atol=tol, rtol=tol):
+                return None
+    dtype = hz_list[0].c.dtype
+    device = hz_list[0].c.device
+    ns = [int(h.c.shape[0]) for h in hz_list]
+    n_total = sum(ns)
+    # Per-input tail sizes
+    tail_ngs = [int(h.Gc.shape[1]) - shared_ng for h in hz_list]
+    tail_nbs = [int(h.Gb.shape[1]) - shared_nb for h in hz_list]
+    tail_ncs = [int(h.b.shape[0]) - shared_nc for h in hz_list]
+    # Output dimensions
+    ng_total = shared_ng + sum(tail_ngs)
+    nb_total = shared_nb + sum(tail_nbs)
+    nc_total = shared_nc + sum(tail_ncs)
+    # Build output Gc: shared block stacked vertically + tail block-diag
+    c_new = torch.cat([h.c for h in hz_list], dim=0)
+    Gc_out = torch.zeros((n_total, ng_total), dtype=dtype, device=device)
+    Gb_out = torch.zeros((n_total, nb_total), dtype=dtype, device=device)
+    row_off = 0
+    tail_ng_off = shared_ng
+    tail_nb_off = shared_nb
+    for i, h in enumerate(hz_list):
+        ni = ns[i]
+        if shared_ng > 0:
+            Gc_out[row_off:row_off + ni, :shared_ng] = h.Gc[:, :shared_ng]
+        if tail_ngs[i] > 0:
+            Gc_out[row_off:row_off + ni,
+                   tail_ng_off:tail_ng_off + tail_ngs[i]] = h.Gc[:, shared_ng:]
+        if shared_nb > 0:
+            Gb_out[row_off:row_off + ni, :shared_nb] = h.Gb[:, :shared_nb]
+        if tail_nbs[i] > 0:
+            Gb_out[row_off:row_off + ni,
+                   tail_nb_off:tail_nb_off + tail_nbs[i]] = h.Gb[:, shared_nb:]
+        row_off += ni
+        tail_ng_off += tail_ngs[i]
+        tail_nb_off += tail_nbs[i]
+    # Build output constraint matrices Ac / Ab / b / eq_mask
+    Ac_out = torch.zeros((nc_total, ng_total), dtype=dtype, device=device)
+    Ab_out = torch.zeros((nc_total, nb_total), dtype=dtype, device=device)
+    b_out = torch.zeros((nc_total, 1), dtype=dtype, device=device)
+    em_out = torch.zeros(nc_total, dtype=torch.bool, device=device)
+    # Shared rows: one copy at the top (from hz_list[0])
+    if shared_nc > 0:
+        h0 = hz_list[0]
+        if shared_ng > 0:
+            Ac_out[:shared_nc, :shared_ng] = h0.Ac[:shared_nc, :shared_ng]
+        if shared_nb > 0:
+            Ab_out[:shared_nc, :shared_nb] = h0.Ab[:shared_nc, :shared_nb]
+        b_out[:shared_nc] = h0.b[:shared_nc]
+        em_out[:shared_nc] = _eq_mask_of(h0)[:shared_nc]
+    # Per-input tail constraint rows
+    row_c = shared_nc
+    tail_ng_off = shared_ng
+    tail_nb_off = shared_nb
+    for i, h in enumerate(hz_list):
+        nci_tail = tail_ncs[i]
+        if nci_tail > 0:
+            # Tail constraint rows may still reference shared generators
+            # (their first shared_ng / shared_nb columns) — copy verbatim.
+            if shared_ng > 0:
+                Ac_out[row_c:row_c + nci_tail, :shared_ng] = (
+                    h.Ac[shared_nc:, :shared_ng]
+                )
+            if tail_ngs[i] > 0:
+                Ac_out[row_c:row_c + nci_tail,
+                       tail_ng_off:tail_ng_off + tail_ngs[i]] = (
+                    h.Ac[shared_nc:, shared_ng:]
+                )
+            if shared_nb > 0:
+                Ab_out[row_c:row_c + nci_tail, :shared_nb] = (
+                    h.Ab[shared_nc:, :shared_nb]
+                )
+            if tail_nbs[i] > 0:
+                Ab_out[row_c:row_c + nci_tail,
+                       tail_nb_off:tail_nb_off + tail_nbs[i]] = (
+                    h.Ab[shared_nc:, shared_nb:]
+                )
+            b_out[row_c:row_c + nci_tail] = h.b[shared_nc:]
+            em_out[row_c:row_c + nci_tail] = _eq_mask_of(h)[shared_nc:]
+        row_c += nci_tail
+        tail_ng_off += tail_ngs[i]
+        tail_nb_off += tail_nbs[i]
+    out = HZono(c=c_new, Gc=Gc_out, Gb=Gb_out,
+                Ac=Ac_out, Ab=Ab_out, b=b_out, eq_mask=em_out)
+    # Output's _base_ng / _base_nb / _base_nc reflect the shared prefix
+    # we just stitched together. Inherit the shared root_id.
+    object.__setattr__(out, "_base_ng", int(shared_ng))
+    object.__setattr__(out, "_base_nb", int(shared_nb))
+    object.__setattr__(out, "_base_nc", int(shared_nc))
+    object.__setattr__(out, "_base_root_id", int(root_ids[0]))
+    return out
+
+
 def hz_concat(hz_list):
     """Concatenate HZ instances. Faithful port of HyZor (__init__.py:1320).
 
     All-HZono path implements block-diagonal layout inline (avoiding
     circular dependency on hz_ops).
+
+    Env knob `ACT_HZ_CONCAT_SHARED_PREFIX=1` enables an experimental
+    shared-prefix fast path that exploits common ancestors across
+    inputs (avoids generator duplication). Default OFF until validated
+    on more benchmarks. Falls back to block-diagonal layout if the
+    shared prefix is empty or fails numerical sanity check.
     """
+    import os as _os
     hz_list = list(hz_list)
     if len(hz_list) == 1:
         return hz_list[0]
@@ -1119,6 +1598,13 @@ def hz_concat(hz_list):
         ub_cat = torch.cat([b.ub for b in boxes], dim=0)
         return _make_or_box(lb_cat, ub_cat,
                             dtype=boxes[0].dtype, device=boxes[0].device)
+
+    # Optional shared-prefix fast path (env-gated; default OFF).
+    if (_os.environ.get("ACT_HZ_CONCAT_SHARED_PREFIX", "0").strip()
+            .lower() in ("1", "true", "yes", "on")):
+        merged = _try_shared_prefix_concat(hz_list)
+        if merged is not None:
+            return merged
 
     # All HZono: build block-diagonal layout inline.
     dtype = hz_list[0].c.dtype

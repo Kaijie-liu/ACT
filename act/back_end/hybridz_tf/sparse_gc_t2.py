@@ -356,6 +356,11 @@ def act_hz_dense_to_sparse(
         out, "_base_nc",
         int(min(getattr(hz, "_base_nc", hz.nc), out.nc)),
     )
+    root_id = getattr(hz, "_base_root_id", None)
+    object.__setattr__(
+        out, "_base_root_id",
+        None if root_id is None else int(root_id),
+    )
     _log(
         f"dense_to_sparse: dim={n} ng={ng} density={density:.4f} "
         f"dense_MiB={dense_bytes / 2**20:.1f} sparse_MiB={sparse_bytes / 2**20:.1f}"

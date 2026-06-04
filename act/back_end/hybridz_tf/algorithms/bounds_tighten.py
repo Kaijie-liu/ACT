@@ -326,7 +326,14 @@ def hz_bounds_eq_elim_lp(
     lb_out = np.full(len(solve_idx), -np.inf)
     ub_out = np.full(len(solve_idx), np.inf)
 
-    # Optional highspy warm-start.
+    # Optional highspy warm-start (default ON).
+    # PRINCIPLE (P3): No Gurobi, no commercial MILP, no integer variables,
+    # no BaB. HiGHS LP API is allowed — both scipy.linprog(method='highs')
+    # and direct highspy qualify since neither uses integer variables.
+    # Default is HIGHSPY warm-start ON because it preserves the warm-start
+    # advantage of HiGHS for the scipy-loop inner LP family. Set
+    # HYZOR_SCIPY_LOOP_HIGHSPY=0 to opt into the audit-strict path that
+    # rebuilds each LP via scipy.optimize.linprog.
     _highspy_on = _os.environ.get("HYZOR_SCIPY_LOOP_HIGHSPY", "1") == "1"
     _hp_solver = None
     if _highspy_on:

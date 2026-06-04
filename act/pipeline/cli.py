@@ -612,7 +612,10 @@ def _known_unsupported_as_unknown(exc: Exception) -> bool:
     msg = f"{type(exc).__name__}: {exc}"
     return (
         "OnnxSlice at" in msg
-        and "cannot resolve starts/ends" in msg
+        and (
+            "cannot resolve starts/ends" in msg
+            or "fixed-shape LUT_BOUNDS would be unsound" in msg
+        )
     )
 
 
@@ -932,9 +935,17 @@ def _run_vnnlib_verify_hybridz(args) -> None:
         q_statuses: list[str] = []
         q_reportables: list[str] = []
         q_receipts: list[Optional[str]] = []
+        q_solver_stats: list[dict] = []
         instance_error: Optional[str] = None
         instance_budget_start = _time.monotonic()
         instance_budget_exhausted = False
+        # Initialized here (pre-try) so the end-of-iter env-restore block is
+        # safe even if `try:` raises before the per-query loop populates it.
+        _iid_env_restore: Dict[str, Optional[str]] = {}
+        # cifar-endcap profile: per-iid tmp snapshot dir; declared at
+        # per-iid scope so the end-of-iid cleanup block always has it.
+        _cifar_endcap_snap_dir: Optional[str] = None
+        _mlp_endcap_snap_dir: Optional[str] = None
         try:
             pair = load_vnnlib_pair(
                 category=p["category"], onnx_model=p["onnx_model"],
@@ -1072,6 +1083,264 @@ def _run_vnnlib_verify_hybridz(args) -> None:
                     q_receipts.append(None)
                     instance_budget_exhausted = True
                     break
+                # Witness profile: small-dense benches where LP-witness
+                # extraction + ORT zero-tol replay produced sound V/A in
+                # 2026-05/06 audits. See:
+                #   project_safenlp_b14_frozen (+22 over B14)
+                #   project_sat_relu_reopened_20260601 (+15 FAL)
+                #   project_audit_final_consolidated_20260601 (dist_shift +5V,
+                #     malbeware +2V, metaroom +2V)
+                _small_dense_witness_profile = p['category'] in {
+                    "linearizenn_2024",
+                    "tllverifybench_2023",
+                    "acasxu_2023",
+                    "safenlp_2024",
+                    "sat_relu",
+                    "dist_shift_2023",
+                    "malbeware",
+                    "metaroom_2023",
+                }
+                _small_dense_dag_profile = p['category'] == "cersyve"
+                # nn4sys lindex/lindex_deep specs have thousands of
+                # independent UNSAFE_LINEAR rows over a one-dimensional box.
+                # The direct query path avoids re-parsing all disjuncts for
+                # every ACT query, the bound cache avoids repeated initial LP
+                # bound solves, and the stable-affine fast path exactly closes
+                # boxes where interval propagation fixes every ReLU side. All
+                # three are fail-closed and remain forward-only continuous LP
+                # checks; they do not introduce fallback/BaB/sampling.
+                _nn4sys_lindex_profile = (
+                    p['category'] == "nn4sys"
+                    and "lindex" in str(vnn_p).lower()
+                )
+                # 2026-06-02 cifar100_2024 narrow profile: factor-aware ADD
+                # + L38 FLATTEN snapshot + end-cap LP witness sidecar.
+                # Validated by a 200-iid sweep that produced 15 sound FAL
+                # (0 LOST, 0 ERR, 15/15 receipts independently passing
+                # input_box_holds + vnnlib_query_holds + spec_zero_tol_holds).
+                # All four knobs are env-gated and forward-only:
+                #   ACT_HZ_FACTOR_ID_SGM        - ResNet residual factor-aware ADD
+                #   ACT_HZ_ENDCAP_SNAPSHOT_DIR  - persist L38 HZ to disk
+                #   ACT_HZ_ENDCAP_SNAPSHOT_KIND - "FLATTEN" for this profile
+                #   ACT_HZ_CIFAR_ENDCAP_WITNESS - post-UNK xi_root + ORT replay
+                # User opt-out: ACT_HZ_CIFAR_ENDCAP_PROFILE=0
+                _cifar_endcap_profile = (
+                    p['category'] == "cifar100_2024"
+                    and os.environ.get(
+                        "ACT_HZ_CIFAR_ENDCAP_PROFILE", "1"
+                    ).strip().lower() not in ("0", "false", "no", "off")
+                )
+                # 2026-06-03 generic MLP end-cap profile — STRUCTURAL gate.
+                # Logic extracted to act.back_end.profiles for test coverage;
+                # see tests/test_generic_mlp_endcap_gate.py (14/14 cases).
+                # The gate enforces tail shape + final out_dim + top-1 robust
+                # vnnlib + CIFAR-narrow exclusion; the sidecar itself runs a
+                # SECOND fail-closed check on snapshot root provenance
+                # (research/generic_mlp_endcap_reuse.py lines 221/225). CERT
+                # promotion is DISABLED by default (opt-in via
+                # ACT_HZ_MLP_ENDCAP_ALLOW_CERT=1).
+                from act.back_end.profiles import (
+                    supports_generic_mlp_endcap as _supports_mlp_endcap,
+                )
+                _mlp_gate_result = _supports_mlp_endcap(
+                    layers=net.layers,
+                    pair=pair,
+                    cifar_endcap_active=bool(_cifar_endcap_profile),
+                )
+                _generic_mlp_endcap_profile = _mlp_gate_result.enabled
+                _mlp_gate_diag = {
+                    "category": p['category'],
+                    "tail_supported": _mlp_gate_result.tail_supported,
+                    "tail_kinds": (
+                        list(_mlp_gate_result.tail_kinds)
+                        if _mlp_gate_result.tail_kinds is not None
+                        else None
+                    ),
+                    "final_out_dim": _mlp_gate_result.final_out_dim,
+                    "is_top1_robust": _mlp_gate_result.is_top1_robust,
+                    "cifar_endcap_active": _mlp_gate_result.cifar_endcap_active,
+                    "enabled": _mlp_gate_result.enabled,
+                }
+                # 2026-06-03 residual sparse-conv profile. This is a
+                # structure-triggered profile for detector-style conv
+                # residual nets whose tails remain convolutional rather than
+                # entering a dense classifier MLP. It enables exact
+                # factor-aware ADD plus sparse pre-conv materialisation so
+                # repeated residual factors are merged instead of duplicated.
+                # It is deliberately NOT enabled for CIFAR/Tiny classifier
+                # tails, which have their own end-cap profiles above.
+                _kinds_for_profile = [str(L.kind).upper() for L in net.layers]
+                _n_conv_for_profile = sum(
+                    1 for _k in _kinds_for_profile if _k in ("CONV", "CONV2D")
+                )
+                _n_add_for_profile = sum(
+                    1 for _k in _kinds_for_profile if _k == "ADD"
+                )
+                _has_dense_tail_for_profile = any(
+                    _k in ("DENSE", "GEMM", "MATMUL")
+                    for _k in _kinds_for_profile
+                )
+                _last_non_assert_for_profile = next(
+                    (
+                        L for L in reversed(net.layers)
+                        if str(L.kind).upper() != "ASSERT"
+                    ),
+                    None,
+                )
+                _out_dim_for_profile = (
+                    len(_last_non_assert_for_profile.out_vars)
+                    if _last_non_assert_for_profile is not None else 0
+                )
+                _residual_sparse_conv_profile = (
+                    os.environ.get(
+                        "ACT_HZ_RESIDUAL_SPARSE_PROFILE", "1"
+                    ).strip().lower() not in ("0", "false", "no", "off")
+                    and not _cifar_endcap_profile
+                    and not _generic_mlp_endcap_profile
+                    and _n_conv_for_profile >= 6
+                    and _n_add_for_profile >= 2
+                    and not _has_dense_tail_for_profile
+                    and _out_dim_for_profile >= 1024
+                )
+                # _iid_env_restore (declared above the per-iid try) tracks
+                # env vars THIS iid sets so we can restore them at end-of-
+                # iid (avoids profile leaking into later iids in the same
+                # Python process when cli is run directly with multiple
+                # --instance-ids; watchdog_runner spawns one subprocess
+                # per iid so it's unaffected, but we shouldn't rely on it).
+                if _nn4sys_lindex_profile:
+                    for _k in (
+                        "ACT_HZ_SMALL_DENSE_DIRECT_QUERY",
+                        "ACT_HZ_SPECAWARE_BOUND_CACHE",
+                        "ACT_HZ_STABLE_AFFINE_FASTPATH",
+                    ):
+                        if _k not in _iid_env_restore:
+                            _iid_env_restore[_k] = os.environ.get(_k)
+                        os.environ.setdefault(_k, "1")
+                if _cifar_endcap_profile:
+                    # Track env vars in _iid_env_restore so a later iid
+                    # in the same Python process (or a different
+                    # benchmark in a script) does NOT inherit these.
+                    for _k in (
+                        "ACT_HZ_FACTOR_ID_SGM",
+                        "ACT_HZ_ENDCAP_SNAPSHOT_DIR",
+                        "ACT_HZ_ENDCAP_SNAPSHOT_KIND",
+                        "ACT_HZ_CIFAR_ENDCAP_WITNESS",
+                    ):
+                        if _k not in _iid_env_restore:
+                            _iid_env_restore[_k] = os.environ.get(_k)
+                    # Per-iid temp dir for the L38 snapshot. The .pkl is
+                    # cleaned up at end-of-iid (see end of try block).
+                    import tempfile as _tf
+                    _cifar_endcap_snap_dir = _tf.mkdtemp(
+                        prefix=f"cifar_endcap_iid{p.get('official_instance_id', i)}_"
+                    )
+                    os.environ.setdefault("ACT_HZ_FACTOR_ID_SGM", "1")
+                    os.environ.setdefault(
+                        "ACT_HZ_ENDCAP_SNAPSHOT_DIR", _cifar_endcap_snap_dir
+                    )
+                    os.environ.setdefault("ACT_HZ_ENDCAP_SNAPSHOT_KIND", "FLATTEN")
+                    os.environ.setdefault("ACT_HZ_CIFAR_ENDCAP_WITNESS", "1")
+                if _generic_mlp_endcap_profile:
+                    for _k in (
+                        "ACT_HZ_FACTOR_ID_SGM",
+                        "ACT_HZ_R05_AFFINE_INHERIT",
+                        "ACT_HZ_CONV_FALLBACK_SAFE",
+                        "ACT_HZ_GIRARD_PRESERVE_ROOT",
+                        "ACT_HZ_ENDCAP_SNAPSHOT_DIR",
+                        "ACT_HZ_ENDCAP_SNAPSHOT_KIND",
+                        "ACT_HZ_GENERIC_MLP_ENDCAP_WITNESS",
+                    ):
+                        if _k not in _iid_env_restore:
+                            _iid_env_restore[_k] = os.environ.get(_k)
+                    import tempfile as _tf
+                    _mlp_endcap_snap_dir = _tf.mkdtemp(
+                        prefix=(
+                            "mlp_endcap_"
+                            f"{p['category']}_iid{p.get('official_instance_id', i)}_"
+                        )
+                    )
+                    os.environ.setdefault("ACT_HZ_FACTOR_ID_SGM", "1")
+                    os.environ.setdefault("ACT_HZ_R05_AFFINE_INHERIT", "1")
+                    os.environ.setdefault("ACT_HZ_CONV_FALLBACK_SAFE", "1")
+                    os.environ.setdefault("ACT_HZ_GIRARD_PRESERVE_ROOT", "1")
+                    os.environ.setdefault(
+                        "ACT_HZ_ENDCAP_SNAPSHOT_DIR", _mlp_endcap_snap_dir
+                    )
+                    os.environ.setdefault("ACT_HZ_ENDCAP_SNAPSHOT_KIND", "FLATTEN")
+                    os.environ.setdefault(
+                        "ACT_HZ_GENERIC_MLP_ENDCAP_WITNESS", "1"
+                    )
+                if _residual_sparse_conv_profile:
+                    for _k in (
+                        "ACT_HZ_FACTOR_ID_SGM",
+                        "ACT_HZ_R05_AFFINE_INHERIT",
+                        "ACT_HZ_CONV_FALLBACK_SAFE",
+                        "ACT_HZ_GIRARD_PRESERVE_ROOT",
+                        "ACT_HZ_PRECONV_SPARSE",
+                        "ACT_HZ_PRECONV_BUDGET_MIB",
+                        "ACT_HZ_DENSE_TO_SPARSE",
+                        "ACT_HZ_SPARSE_GC_DENSITY",
+                    ):
+                        if _k not in _iid_env_restore:
+                            _iid_env_restore[_k] = os.environ.get(_k)
+                    os.environ.setdefault("ACT_HZ_FACTOR_ID_SGM", "1")
+                    os.environ.setdefault("ACT_HZ_R05_AFFINE_INHERIT", "1")
+                    os.environ.setdefault("ACT_HZ_CONV_FALLBACK_SAFE", "1")
+                    os.environ.setdefault("ACT_HZ_GIRARD_PRESERVE_ROOT", "1")
+                    os.environ.setdefault("ACT_HZ_PRECONV_SPARSE", "1")
+                    os.environ.setdefault("ACT_HZ_PRECONV_BUDGET_MIB", "512")
+                    os.environ.setdefault("ACT_HZ_DENSE_TO_SPARSE", "1")
+                    os.environ.setdefault("ACT_HZ_SPARSE_GC_DENSITY", "1.0")
+                _small_dense_lp_mode = os.environ.get("ACT_HZ_SMALL_DENSE_LP")
+                if _small_dense_lp_mode is None:
+                    if _small_dense_dag_profile:
+                        _small_dense_lp_mode = "smalldense_dag"
+                    elif _small_dense_witness_profile:
+                        _small_dense_lp_mode = "witness"
+                    else:
+                        _small_dense_lp_mode = "specaware"
+                _small_dense_lp_refinement = os.environ.get(
+                    "ACT_HZ_SMALL_DENSE_LP_REFINEMENT_PASSES"
+                )
+                if _small_dense_lp_refinement is None:
+                    # ACASXu: 50 passes proven sufficient (autoprofile, 14/15 A
+                    # recovered). New audit benches use 80 (full audit setting
+                    # that produced sat_relu +15A, safenlp +22).
+                    if p['category'] == "acasxu_2023":
+                        _small_dense_lp_refinement = "50"
+                    elif p['category'] in {
+                        "safenlp_2024", "sat_relu",
+                        "dist_shift_2023", "malbeware", "metaroom_2023",
+                        # linearizenn_2024 needs 80 passes too — under default
+                        # 20-pass profile it gives 0V whereas with 80 passes +
+                        # 20s LP it gives 16V on full bench. The historical
+                        # 46V is NOT reproducible (see
+                        # project_linearizenn_regression_p0_investigation),
+                        # but 16V is real and worth keeping.
+                        "linearizenn_2024",
+                    }:
+                        _small_dense_lp_refinement = "80"
+                    elif _small_dense_witness_profile:
+                        _small_dense_lp_refinement = "20"
+                    else:
+                        _small_dense_lp_refinement = "0"
+                _small_dense_lp_time_limit = os.environ.get(
+                    "ACT_HZ_SMALL_DENSE_LP_TIME_LIMIT_S"
+                )
+                if _small_dense_lp_time_limit is None:
+                    # ACASXu: 15s default. New audit benches: 20s (matches
+                    # the audit run that produced their gains).
+                    if p['category'] == "acasxu_2023":
+                        _small_dense_lp_time_limit = "15.0"
+                    elif p['category'] in {
+                        "safenlp_2024", "sat_relu",
+                        "dist_shift_2023", "malbeware", "metaroom_2023",
+                        "linearizenn_2024",
+                    }:
+                        _small_dense_lp_time_limit = "20.0"
+                    else:
+                        _small_dense_lp_time_limit = "5.0"
                 solver = HZVerifier(
                     device=device, dtype=dtype, timeout_s=remaining_s,
                     strict_replay=True, onnx_path=onnx_p,
@@ -1095,13 +1364,13 @@ def _run_vnnlib_verify_hybridz(args) -> None:
                     ),
                     sigmoid_K=int(os.environ.get("ACT_HZ_SIGMOID_K", "2")),
                     tanh_K=int(os.environ.get("ACT_HZ_TANH_K", "2")),
-                    small_dense_lp=os.environ.get("ACT_HZ_SMALL_DENSE_LP", "specaware"),
+                    small_dense_lp=_small_dense_lp_mode,
                     small_dense_lp_root=os.environ.get("ACT_HZ_SMALL_DENSE_LP_ROOT"),
                     small_dense_lp_time_limit_s=float(
-                        os.environ.get("ACT_HZ_SMALL_DENSE_LP_TIME_LIMIT_S", "5.0")
+                        _small_dense_lp_time_limit
                     ),
                     small_dense_lp_refinement_passes=int(
-                        os.environ.get("ACT_HZ_SMALL_DENSE_LP_REFINEMENT_PASSES", "0")
+                        _small_dense_lp_refinement
                     ),
                     small_dense_lp_fallback_on_unknown=(
                         os.environ.get("ACT_HZ_SMALL_DENSE_LP_FALLBACK", "0") == "1"
@@ -1111,11 +1380,446 @@ def _run_vnnlib_verify_hybridz(args) -> None:
                     net=net, solver=solver, timelimit=remaining_s
                 )
                 q_internal = str(q_status)
+                # A1 narrow sidecar (env: ACT_HZ_CIFAR_ENDCAP_WITNESS=1,
+                # default OFF, cifar100_2024 only). When the verifier
+                # returns UNKNOWN AND a FLATTEN snapshot is available
+                # (via the ACT_HZ_ENDCAP_SNAPSHOT_DIR research hook),
+                # attempt the factor-aware-endcap-LP-root-xi witness:
+                # extract LP xi_root, reconstruct concrete input, ORT-
+                # replay the raw ONNX, and check the vnnlib unsafe
+                # condition at strict zero tolerance. If all 3 checks
+                # pass, upgrade the verdict to SAT/FALSIFIED with a
+                # receipt. Otherwise leave UNKNOWN.
+                # Advisor 2026-06-03 A+: new env knob
+                # `ACT_HZ_TOPK_RIVAL_WITNESS=K` selects topK candidate
+                # rivals (legacy ∪ topK by LP UB descending). Legacy
+                # `ACT_HZ_CIFAR_ENDCAP_WITNESS=1` defaults K=5 and is
+                # kept as an alias for backward compatibility.
+                _topk_raw = os.environ.get(
+                    "ACT_HZ_TOPK_RIVAL_WITNESS", "0").strip()
+                try:
+                    _topk_val = int(_topk_raw)
+                except ValueError:
+                    _topk_val = 0
+                _legacy_on = os.environ.get(
+                    "ACT_HZ_CIFAR_ENDCAP_WITNESS", "0"
+                ).strip().lower() in ("1", "true", "yes", "on")
+                if _topk_val >= 1:
+                    _witness_on = True
+                    _topk_K = _topk_val
+                elif _legacy_on:
+                    _witness_on = True
+                    _topk_K = 5
+                else:
+                    _witness_on = False
+                    _topk_K = 0
+                _witness_receipt_path = None
+                _cifar_witness_diag = {
+                    "witness_on": bool(_witness_on),
+                    "topk_raw": _topk_raw,
+                    "topk_K": int(_topk_K),
+                    "legacy_on": bool(_legacy_on),
+                    "q_internal_before": q_internal,
+                    "category": p['category'],
+                    "snap_dir_env": os.environ.get(
+                        "ACT_HZ_ENDCAP_SNAPSHOT_DIR", ""),
+                    "snap_glob_count": None,
+                }
+                if (
+                    _witness_on
+                    and q_internal == "UNKNOWN"
+                    and p['category'] == "cifar100_2024"
+                ):
+                    _snap_dir = os.environ.get(
+                        "ACT_HZ_ENDCAP_SNAPSHOT_DIR", "")
+                    if _snap_dir:
+                        try:
+                            from pathlib import Path as _PWit
+                            _snap_glob = list(
+                                _PWit(_snap_dir).glob("L*_FLATTEN.pkl")
+                            )
+                            _cifar_witness_diag["snap_glob_count"] = len(
+                                _snap_glob)
+                            if _snap_glob:
+                                import sys as _swit
+                                _swit.path.insert(0, "/data1/Kane/HyZor")
+                                from receipt_factor_aware_endcap_lp import (
+                                    _parse_vnnlib_full,
+                                    _extract_xi_root_candidates,
+                                    _disjunct_holds_zero_tol,
+                                    _ort_eval,
+                                    _validate_cifar_top1_robust,
+                                )
+                                import pickle as _pkw, json as _jsw
+                                import numpy as _npw
+                                _snap_path = str(_snap_glob[0])
+                                _lb_v, _ub_v, _disjuncts = _parse_vnnlib_full(
+                                    str(vnn_p))
+                                # Fail-closed scope guard: only CIFAR
+                                # top-1 robust shape can produce a
+                                # receipt from this sidecar. Any
+                                # structural mismatch raises here and
+                                # the outer except converts to UNKNOWN.
+                                _validate_cifar_top1_robust(
+                                    _lb_v, _ub_v, _disjuncts)
+                                with open(_snap_path, "rb") as _f_pkw:
+                                    _snap_data = _pkw.load(_f_pkw)
+                                # Hardening (advisor 2026-06-02
+                                # post-TinyImageNet scout): the
+                                # xi_root → x_cand reconstruction
+                                # assumes root factors map bijectively
+                                # to input pixels. TinyImageNet's
+                                # snapshot shows root_ng > ng, which
+                                # means reduction has compressed the
+                                # root factor space — the
+                                # reconstruction would be unsound. Two
+                                # explicit preconditions:
+                                #   root_ng == input_dim  (every input
+                                #     pixel has its own factor)
+                                #   root_ng <= ng         (no root
+                                #     factors got dropped)
+                                # Failure raises and the outer except
+                                # converts to UNKNOWN (no receipt).
+                                _root_ng = int(_snap_data.get("root_ng", -1))
+                                _snap_ng = int(_snap_data.get("ng", -1))
+                                _input_dim = int(_lb_v.shape[0])
+                                if _root_ng != _input_dim:
+                                    raise RuntimeError(
+                                        f"sidecar root_ng={_root_ng} != "
+                                        f"input_dim={_input_dim}; "
+                                        f"witness reconstruction unsound"
+                                    )
+                                if _root_ng > _snap_ng:
+                                    raise RuntimeError(
+                                        f"sidecar root_ng={_root_ng} > "
+                                        f"ng={_snap_ng}; root factors "
+                                        f"compressed by reduction"
+                                    )
+                                # Advisor 2026-06-03 A+: iterate up to K
+                                # candidates (legacy ∪ topK by LP UB
+                                # descending). First one whose strict
+                                # ORT replay satisfies the vnnlib unsafe
+                                # condition wins; remaining candidates
+                                # are skipped.
+                                _cands, _y_t = _extract_xi_root_candidates(
+                                    _snap_data, str(onnx_p), str(vnn_p),
+                                    K=_topk_K, include_legacy=True,
+                                )
+                                _c_box = (_lb_v + _ub_v) / 2.0
+                                _half = (_ub_v - _lb_v) / 2.0
+                                _cand_log = []
+                                _all_pass = False
+                                _wr = -1
+                                _lp_m = float("nan")
+                                _winning_attempt = None
+                                _y_ort = None
+                                for _idx, _cand in enumerate(_cands):
+                                    _xi = _npw.clip(
+                                        _cand["xi_root"], -1.0, 1.0)
+                                    _x_cand = _c_box + _half * _xi
+                                    _in_box = bool(
+                                        _npw.all(_x_cand >= _lb_v - 1e-12)
+                                        and _npw.all(_x_cand <= _ub_v + 1e-12)
+                                    )
+                                    _y_ort = _ort_eval(
+                                        str(onnx_p),
+                                        _x_cand.reshape((1, 3, 32, 32))
+                                        .astype(_npw.float64),
+                                    )
+                                    _qh = any(
+                                        _disjunct_holds_zero_tol(_y_ort, _d)
+                                        for _d in _disjuncts
+                                    )
+                                    _attempt_pass = bool(_in_box and _qh)
+                                    _cand_log.append({
+                                        "attempt_idx": _idx,
+                                        "rival": int(_cand["rival"]),
+                                        "source_rank": _cand["source_rank"],
+                                        "lp_min": float(_cand["lp_min"]),
+                                        "lp_upper_bound": float(
+                                            _cand["lp_upper_bound"]),
+                                        "input_box_holds": _in_box,
+                                        "vnnlib_query_holds": _qh,
+                                        "ort_y_argmax": int(
+                                            _npw.argmax(_y_ort)),
+                                        "ort_y_true_logit": float(
+                                            _y_ort[_y_t]),
+                                        "ort_y_rival_logit": float(
+                                            _y_ort[int(_cand["rival"])]),
+                                        "all_checks_pass": _attempt_pass,
+                                    })
+                                    if _attempt_pass:
+                                        _all_pass = True
+                                        _wr = int(_cand["rival"])
+                                        _lp_m = float(_cand["lp_min"])
+                                        _winning_attempt = _idx
+                                        break
+                                _receipt = {
+                                    "source": "factor_aware_endcap_lp_topk_root_xi",
+                                    "advisor_profile": "ACT_HZ_TOPK_RIVAL_WITNESS",
+                                    "K": int(_topk_K),
+                                    "snapshot_path": _snap_path,
+                                    "onnx_path": str(onnx_p),
+                                    "vnnlib_path": str(vnn_p),
+                                    "y_true_from_vnnlib": int(_y_t),
+                                    "n_candidates_tried": len(_cand_log),
+                                    "winning_attempt_idx": _winning_attempt,
+                                    "worst_rival": int(_wr),
+                                    "lp_worst_min": float(_lp_m),
+                                    "input_box_holds": (
+                                        _cand_log[_winning_attempt][
+                                            "input_box_holds"]
+                                        if _winning_attempt is not None
+                                        else False
+                                    ),
+                                    "vnnlib_query_holds": _all_pass,
+                                    "spec_zero_tol_holds": _all_pass,
+                                    "all_checks_pass": _all_pass,
+                                    "ort_y_argmax": (
+                                        int(_npw.argmax(_y_ort))
+                                        if _y_ort is not None else -1),
+                                    "ort_y_true": (
+                                        float(_y_ort[_y_t])
+                                        if _y_ort is not None
+                                        else float("nan")),
+                                    "ort_y_worst": (
+                                        float(_y_ort[_wr])
+                                        if _y_ort is not None and _wr >= 0
+                                        else float("nan")),
+                                    "candidate_log": _cand_log,
+                                }
+                                # Write receipt next to per_instance.
+                                # 2026-06-03 (advisor Phase 1.5): include iid
+                                # in the filename so per-iid receipts don't
+                                # overwrite each other when multiple iids run
+                                # into the same out-dir (the calibration sweep
+                                # uses one out-dir per cap, not per iid).
+                                _rdir = (
+                                    os.environ.get("ACT_FAL_RECEIPT_DIR")
+                                    or results_dir
+                                    or _snap_dir
+                                )
+                                _iid_for_path = p.get(
+                                    "official_instance_id", i)
+                                _receipt_path = (
+                                    Path(_rdir)
+                                    / (f"endcap_witness_iid{_iid_for_path}"
+                                       f"_q{len(q_statuses)}.json")
+                                )
+                                _receipt_path.parent.mkdir(
+                                    parents=True, exist_ok=True)
+                                with open(_receipt_path, "w") as _f_jsw:
+                                    _jsw.dump(_receipt, _f_jsw, indent=2,
+                                              default=float)
+                                if _all_pass:
+                                    q_internal = "SAT"
+                                    _witness_receipt_path = str(_receipt_path)
+                                    # Honor the formal-mode receipt contract:
+                                    # this witness has full audit trail
+                                    # (receipt JSON with input_box_holds /
+                                    # vnnlib_query_holds / spec_zero_tol_holds
+                                    # all True, independent ORT replay).
+                                    # Mark it as REPORTABLE_FALSIFIED so
+                                    # reportable_verdict_for_cli returns
+                                    # FALSIFIED in both formal and non-formal
+                                    # modes.
+                                    solver._stats["formal_result"] = (
+                                        "REPORTABLE_FALSIFIED"
+                                    )
+                                    solver._stats["fal_receipt_path"] = (
+                                        str(_receipt_path)
+                                    )
+                                solver._stats[
+                                    "cifar_endcap_witness_result"
+                                ] = _receipt
+                        except Exception as _e:
+                            solver._stats[
+                                "cifar_endcap_witness_error"
+                            ] = f"{type(_e).__name__}: {_e}"
+                _generic_mlp_on = os.environ.get(
+                    "ACT_HZ_GENERIC_MLP_ENDCAP_WITNESS", "0"
+                ).strip().lower() in ("1", "true", "yes", "on")
+                # Diagnostic: record whether the sidecar would even consider
+                # firing, and (if not) why. Useful when a structural gate
+                # passes but no FAL is produced.
+                _mlp_sidecar_diag = {
+                    "generic_mlp_on_env": _generic_mlp_on,
+                    "q_internal": q_internal,
+                    "snap_dir_env": os.environ.get(
+                        "ACT_HZ_ENDCAP_SNAPSHOT_DIR", ""),
+                    "snap_glob_count": None,
+                }
+                if _generic_mlp_on and q_internal == "UNKNOWN":
+                    _snap_dir = os.environ.get(
+                        "ACT_HZ_ENDCAP_SNAPSHOT_DIR", "")
+                    if _snap_dir:
+                        try:
+                            from pathlib import Path as _PMlp
+                            _snap_glob = list(
+                                _PMlp(_snap_dir).glob("L*_FLATTEN.pkl")
+                            )
+                            _mlp_sidecar_diag["snap_glob_count"] = len(
+                                _snap_glob)
+                            if _snap_glob:
+                                import json as _jmlp
+                                from types import SimpleNamespace as _NSMlp
+                                from research.generic_mlp_endcap_reuse import (
+                                    run as _run_generic_mlp_endcap,
+                                )
+                                _rdir = (
+                                    os.environ.get("ACT_FAL_RECEIPT_DIR")
+                                    or results_dir
+                                    or _snap_dir
+                                )
+                                _safe_bench = str(p['category']).replace(
+                                    "/", "_")
+                                _safe_iid = int(p.get(
+                                    'official_instance_id', i))
+                                _result_path = (
+                                    _PMlp(_rdir)
+                                    / (
+                                        f"generic_mlp_endcap_{_safe_bench}"
+                                        f"_iid{_safe_iid}"
+                                        f"_q{len(q_statuses)}.json"
+                                    )
+                                )
+                                _args_mlp = _NSMlp(
+                                    snapshot=str(_snap_glob[0]),
+                                    onnx=str(onnx_p),
+                                    vnnlib=str(vnn_p),
+                                    out=str(_result_path),
+                                    time_limit_s=float(os.environ.get(
+                                        "ACT_HZ_MLP_ENDCAP_LP_TIME_LIMIT_S",
+                                        "15.0",
+                                    )),
+                                    max_rivals=int(os.environ.get(
+                                        "ACT_HZ_MLP_ENDCAP_MAX_RIVALS", "0"
+                                    )),
+                                    cert_tol=float(os.environ.get(
+                                        "ACT_HZ_MLP_ENDCAP_CERT_TOL", "1e-8"
+                                    )),
+                                    fal_replay_threshold=float(os.environ.get(
+                                        "ACT_HZ_MLP_ENDCAP_FAL_REPLAY_THRESHOLD",
+                                        "0.0",
+                                    )),
+                                    progress_every=0,
+                                )
+                                _res_mlp = _run_generic_mlp_endcap(_args_mlp)
+                                _PMlp(_result_path).parent.mkdir(
+                                    parents=True, exist_ok=True)
+                                with open(_result_path, "w") as _f_mlp:
+                                    _jmlp.dump(_res_mlp, _f_mlp, indent=2,
+                                               default=float)
+                                solver._stats[
+                                    "generic_mlp_endcap_result"
+                                ] = {
+                                    "verdict": _res_mlp.get("verdict"),
+                                    "n_positive": _res_mlp.get("n_positive"),
+                                    "n_rivals": _res_mlp.get("n_rivals"),
+                                    "lp_min": _res_mlp.get("lp_min"),
+                                    "worst_rival": _res_mlp.get("worst_rival"),
+                                    "wall_s": _res_mlp.get("wall_s"),
+                                    "result_path": str(_result_path),
+                                }
+                                # CERT promotion is DISABLED by default
+                                # (advisor 2026-06-03): the canonical HZ
+                                # verifier already handles CERT for the
+                                # CIFAR/Tiny tail family; the LP-based CERT
+                                # path is new attack surface that needs a
+                                # separate audit. Opt-in via
+                                # ACT_HZ_MLP_ENDCAP_ALLOW_CERT=1 only when
+                                # research validation is in place.
+                                _mlp_allow_cert = os.environ.get(
+                                    "ACT_HZ_MLP_ENDCAP_ALLOW_CERT", "0"
+                                ).strip().lower() in (
+                                    "1", "true", "yes", "on"
+                                )
+                                if (_res_mlp.get("verdict") == "CERT"
+                                        and _mlp_allow_cert):
+                                    q_internal = "UNSAT"
+                                    solver._stats["formal_result"] = (
+                                        "REPORTABLE_CERTIFIED"
+                                    )
+                                elif _res_mlp.get("verdict") == "FAL":
+                                    _fal = _res_mlp.get("fal_receipt") or {}
+                                    if bool(_fal.get("all_checks_pass")):
+                                        q_internal = "SAT"
+                                        _witness_receipt_path = str(
+                                            _result_path)
+                                        solver._stats["formal_result"] = (
+                                            "REPORTABLE_FALSIFIED"
+                                        )
+                                        solver._stats["fal_receipt_path"] = (
+                                            str(_result_path)
+                                        )
+                        except Exception as _e:
+                            solver._stats[
+                                "generic_mlp_endcap_error"
+                            ] = f"{type(_e).__name__}: {_e}"
                 q_statuses.append(q_internal)
                 q_reportables.append(
                     reportable_verdict_for_cli(solver, q_internal)
                 )
-                q_receipts.append(solver._stats.get("fal_receipt_path"))
+                q_receipts.append(
+                    _witness_receipt_path
+                    or solver._stats.get("fal_receipt_path")
+                )
+                q_solver_stats.append({
+                    "small_dense_lp_dispatch": solver._stats.get(
+                        "small_dense_lp_dispatch"),
+                    "small_dense_lp_backend": solver._stats.get(
+                        "small_dense_lp_backend"),
+                    "small_dense_lp_verdict": solver._stats.get(
+                        "small_dense_lp_verdict"),
+                    "small_dense_lp_elapsed_s": solver._stats.get(
+                        "small_dense_lp_elapsed_s"),
+                    "small_dense_lp_refinement_passes": solver._stats.get(
+                        "small_dense_lp_refinement_passes"),
+                    "small_dense_lp_direct_query": solver._stats.get(
+                        "small_dense_lp_direct_query"),
+                    "small_dense_lp_direct_query_kind": solver._stats.get(
+                        "small_dense_lp_direct_query_kind"),
+                    "small_dense_lp_direct_query_n_rows": solver._stats.get(
+                        "small_dense_lp_direct_query_n_rows"),
+                    "small_dense_lp_direct_query_unavailable": solver._stats.get(
+                        "small_dense_lp_direct_query_unavailable"),
+                    "small_dense_lp_direct_query_unavailable_reason": (
+                        solver._stats.get(
+                            "small_dense_lp_direct_query_unavailable_reason")
+                    ),
+                    "generic_mlp_endcap_result": solver._stats.get(
+                        "generic_mlp_endcap_result"),
+                    "generic_mlp_endcap_error": solver._stats.get(
+                        "generic_mlp_endcap_error"),
+                    "generic_mlp_endcap_gate": _mlp_gate_diag,
+                    "generic_mlp_endcap_sidecar_diag": _mlp_sidecar_diag,
+                    # 2026-06-03 P2.1 snapshot-writer diagnostics. Surfaces
+                    # the hz_out type + attrs at every snapshot-attempt
+                    # layer, plus any silent failures with traceback.
+                    # Diagnoses the soundnessbench case where the structural
+                    # gate fires but `snap_glob_count=0` because hz_out is
+                    # SparseGcZ and the HZono-only writer raises
+                    # AttributeError inside its own try/except.
+                    "endcap_snapshot_diag": {
+                        _k: solver._stats[_k]
+                        for _k in solver._stats
+                        if _k.startswith((
+                            "endcap_snapshot@",
+                            "endcap_snapshot_attempt@",
+                            "endcap_snapshot_fail@",
+                            "endcap_snapshot_traceback@",
+                        ))
+                    },
+                    # 2026-06-03 (advisor Phase 1.5): expose the CIFAR
+                    # narrow-profile receipt summary so aggregators can
+                    # see lp_worst_min / ort_y_* per iid without re-reading
+                    # the separate `endcap_witness_iid<n>_q*.json` file.
+                    "cifar_endcap_witness_result": solver._stats.get(
+                        "cifar_endcap_witness_result"),
+                    "cifar_endcap_witness_diag": _cifar_witness_diag,
+                    "cifar_endcap_witness_error": solver._stats.get(
+                        "cifar_endcap_witness_error"),
+                })
                 # Short-circuit on FALSIFIED — any per-query SAT is sufficient.
                 if q_internal == "SAT":
                     break
@@ -1179,12 +1883,15 @@ def _run_vnnlib_verify_hybridz(args) -> None:
                     "internal_status": q_status,
                     "reportable_status": q_reportables[q_idx],
                     "receipt_path": q_receipts[q_idx],
+                    "solver_stats": q_solver_stats[q_idx]
+                    if q_idx < len(q_solver_stats) else {},
                 }
                 for q_idx, q_status in enumerate(q_statuses)
             ],
             "q_statuses": q_statuses,
             "q_reportables": q_reportables,
             "q_receipts": q_receipts,
+            "q_solver_stats": q_solver_stats,
             "error": instance_error,
             "wall_s": float(elapsed),
             "timeout_s": timeout_s,
@@ -1194,6 +1901,28 @@ def _run_vnnlib_verify_hybridz(args) -> None:
               f"V={counts['CERTIFIED']} A={counts['FALSIFIED']} "
               f"U={counts['UNKNOWN']} E={counts['ERROR']}  "
               f"R={counts.get('ERROR_RECEIPT', 0)}", flush=True)
+        # Restore env mutations made by per-iid profile auto-on so they
+        # don't leak into the next iid in the same Python process.
+        for _k, _prev in _iid_env_restore.items():
+            if _prev is None:
+                os.environ.pop(_k, None)
+            else:
+                os.environ[_k] = _prev
+        # Cifar-endcap profile cleanup: remove the per-iid snapshot dir
+        # and any L*_FLATTEN.pkl inside. Receipt JSONs were written to
+        # ACT_FAL_RECEIPT_DIR / per_instance, NOT here, so they survive.
+        if _cifar_endcap_snap_dir is not None:
+            try:
+                import shutil as _sh
+                _sh.rmtree(_cifar_endcap_snap_dir, ignore_errors=True)
+            except Exception:
+                pass
+        if _mlp_endcap_snap_dir is not None and results_dir:
+            try:
+                import shutil as _sh
+                _sh.rmtree(_mlp_endcap_snap_dir, ignore_errors=True)
+            except Exception:
+                pass
 
     wall_min = (_time.time() - t_start) / 60.0
     print(f"\n[vnnlib/hybridz] FINAL — total={total} wall={wall_min:.1f} min")

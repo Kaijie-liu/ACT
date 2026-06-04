@@ -18,11 +18,14 @@ import psutil
 import logging
 import functools
 import threading
+import math
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import List, Callable, Any, Dict, Optional, Tuple
 from dataclasses import dataclass
 from contextlib import contextmanager
 import torch
+import torch.fx as fx
+import torch.nn as nn
 
 logger = logging.getLogger(__name__)
 
@@ -147,6 +150,362 @@ def _broadcast_const_to_size(const: torch.Tensor, size: int, dtype: torch.dtype)
     raise ValueError(
         f"Cannot broadcast constant of shape {tuple(const.shape)} to flat size {size}"
     )
+
+
+@dataclass(frozen=True)
+class _DynIndexInterval:
+    """Interval for a Slice index expression.
+
+    ``base`` is a provenance token for the dynamic quantity. For cctsdb's
+    supported pattern, both start and end trace to the same casted input
+    coordinate and differ only by ``offset``. We require matching bases
+    before declaring a constant window size; interval arithmetic alone is
+    not enough because two unrelated variables can have intervals shifted
+    by a constant.
+    """
+
+    lb: float
+    ub: float
+    base: Optional[str] = None
+    offset: float = 0.0
+
+
+def _const_tensor_for_node(self, node_name: str) -> Optional[torch.Tensor]:
+    tensor = self._resolve_constant_tensor(node_name)
+    if tensor is None:
+        tensor = self._evaluate_constant_subgraph(node_name)
+    return tensor.detach().clone() if isinstance(tensor, torch.Tensor) else None
+
+
+def _fx_node_by_name(self, node_name: str):
+    if self.fx_graph is None:
+        return None
+    return next((n for n in self.fx_graph.nodes if n.name == node_name), None)
+
+
+def _constant_layer_tensor(self, node_name: str) -> Optional[torch.Tensor]:
+    layer_id = self.node_to_layer_id.get(node_name)
+    if layer_id is None or layer_id < 0 or layer_id >= len(self.layers):
+        return None
+    layer = self.layers[layer_id]
+    if layer.kind != LayerKind.CONSTANT.value:
+        return None
+    value = layer.params.get("value")
+    shape = layer.params.get("output_shape", layer.params.get("input_shape"))
+    if not isinstance(value, torch.Tensor) or shape is None:
+        return None
+    return value.detach().clone().reshape(tuple(int(x) for x in shape))
+
+
+def _input_bounds_flat(self) -> Optional[Tuple[torch.Tensor, torch.Tensor]]:
+    bounds = getattr(self, "input_bounds", None)
+    if bounds is None:
+        return None
+    lb, ub = bounds
+    if not isinstance(lb, torch.Tensor) or not isinstance(ub, torch.Tensor):
+        return None
+    if lb.numel() != ub.numel():
+        return None
+    return lb.detach().reshape(-1).to(torch.float64), ub.detach().reshape(-1).to(torch.float64)
+
+
+def _constant_intervals_from_tensor(tensor: torch.Tensor) -> List[_DynIndexInterval]:
+    vals = tensor.detach().cpu().reshape(-1).tolist()
+    return [_DynIndexInterval(float(v), float(v), None, float(v)) for v in vals]
+
+
+def _resolve_dyn_index_intervals(self, node_name: str) -> Optional[List[_DynIndexInterval]]:
+    """Resolve a Slice starts/ends FX subgraph to conservative intervals.
+
+    Supported deliberately-small grammar:
+      constant
+      Gather(input, const_idx)              -> input-box interval
+      Cast(expr)                            -> conservative integer envelope
+      Unsqueeze(expr)                       -> shape-only, same flat intervals
+      Add/Sub(expr, constant)               -> offset shift
+
+    Anything else returns None so the caller fails closed.
+    """
+    const = _const_tensor_for_node(self, node_name)
+    if const is not None:
+        return _constant_intervals_from_tensor(const)
+
+    node = _fx_node_by_name(self, node_name)
+    if node is None or node.op != "call_module":
+        return None
+    mod = self.modules.get(str(node.target))
+    if mod is None:
+        return None
+    args = [a for a in node.args if hasattr(a, "name")]
+    cls_name = type(mod).__name__
+
+    if "Gather" in cls_name:
+        if len(args) < 2:
+            return None
+        data_node, idx_node = args[0], args[1]
+        if getattr(data_node, "op", None) != "placeholder":
+            return None
+        axis = int(getattr(mod, "_axis", getattr(mod, "axis", 0)))
+        if axis != 0:
+            return None
+        idx_t = _const_tensor_for_node(self, idx_node.name)
+        bounds = _input_bounds_flat(self)
+        if idx_t is None or bounds is None:
+            return None
+        lb_flat, ub_flat = bounds
+        out: List[_DynIndexInterval] = []
+        for raw_idx in idx_t.detach().cpu().reshape(-1).tolist():
+            idx = int(raw_idx)
+            if idx < 0:
+                idx += int(lb_flat.numel())
+            if idx < 0 or idx >= int(lb_flat.numel()):
+                return None
+            out.append(
+                _DynIndexInterval(
+                    float(lb_flat[idx].item()),
+                    float(ub_flat[idx].item()),
+                    base=f"input:{idx}",
+                    offset=0.0,
+                )
+            )
+        return out
+
+    if "Cast" in cls_name:
+        if len(args) < 1:
+            return None
+        inner = _resolve_dyn_index_intervals(self, args[0].name)
+        if inner is None:
+            return None
+        out = []
+        for iv in inner:
+            # ONNX / torch Cast from float to integer truncates toward zero.
+            # Truncation is monotone, so applying it to the interval endpoints
+            # gives a sound and tighter integer envelope than floor/ceil.
+            lo = math.trunc(min(iv.lb, iv.ub))
+            hi = math.trunc(max(iv.lb, iv.ub))
+            out.append(
+                _DynIndexInterval(
+                    min(lo, hi),
+                    max(lo, hi),
+                    base=f"cast:{node_name}",
+                    offset=0.0,
+                )
+            )
+        return out
+
+    if "Unsqueeze" in cls_name:
+        if len(args) < 1:
+            return None
+        return _resolve_dyn_index_intervals(self, args[0].name)
+
+    if "Concat" in cls_name:
+        axis = int(getattr(mod, "axis", getattr(mod, "_axis", 0)))
+        if axis not in (0, -1):
+            return None
+        out: List[_DynIndexInterval] = []
+        for arg in args:
+            part = _resolve_dyn_index_intervals(self, arg.name)
+            if part is None:
+                return None
+            out.extend(part)
+        return out
+
+    if "BinaryMathOperation" in cls_name:
+        if len(args) < 2:
+            return None
+        left = _resolve_dyn_index_intervals(self, args[0].name)
+        right = _resolve_dyn_index_intervals(self, args[1].name)
+        op_func = getattr(mod, "_operator", None)
+        if op_func is None:
+            op_func = getattr(mod, "math_op_function", None)
+        op_name = getattr(op_func, "__name__", "").lower()
+        if left is None and right is None:
+            return None
+
+        def _is_const_interval(xs: Optional[List[_DynIndexInterval]]) -> bool:
+            return xs is not None and all(x.base is None for x in xs)
+
+        if left is not None and right is not None:
+            if _is_const_interval(left) and not _is_const_interval(right):
+                dyn = right
+                const_vals = [x.offset for x in left]
+                dyn_is_left = False
+            elif _is_const_interval(right) and not _is_const_interval(left):
+                dyn = left
+                const_vals = [x.offset for x in right]
+                dyn_is_left = True
+            else:
+                # Do not attempt var-var index arithmetic in parser-time
+                # envelopes. cctsdb only needs var +/- constant.
+                return None
+        elif left is not None:
+            dyn = left
+            dyn_is_left = True
+            const_t = _const_tensor_for_node(self, args[1].name)
+            if const_t is None:
+                return None
+            const_vals = const_t.detach().cpu().reshape(-1).tolist()
+        else:
+            dyn = right
+            dyn_is_left = False
+            const_t = _const_tensor_for_node(self, args[0].name)
+            if const_t is None:
+                return None
+            const_vals = const_t.detach().cpu().reshape(-1).tolist()
+
+        if dyn is None:
+            return None
+        if len(const_vals) == 1:
+            const_vals = const_vals * len(dyn)
+        if len(const_vals) != len(dyn):
+            return None
+        out = []
+        for iv, c_raw in zip(dyn, const_vals):
+            c = float(c_raw)
+            if "add" in op_name:
+                shift = c
+            elif "sub" in op_name and dyn_is_left:
+                shift = -c
+            else:
+                return None
+            out.append(
+                _DynIndexInterval(
+                    iv.lb + shift,
+                    iv.ub + shift,
+                    iv.base,
+                    iv.offset + shift,
+                )
+            )
+        return out
+
+    return None
+
+
+def _normalised_start_bounds(raw_lb: int, raw_ub: int, dim: int, step: int) -> Optional[Tuple[int, int]]:
+    if step <= 0:
+        return None
+    if raw_lb > raw_ub:
+        return None
+    # Enumerate the integer index interval to correctly handle negative
+    # ONNX indices before clamping. Dynamic cctsdb ranges are small; a
+    # broad range would be too loose and too expensive, so fail closed.
+    if raw_ub - raw_lb > 10000:
+        return None
+    vals = []
+    for raw in range(raw_lb, raw_ub + 1):
+        v = raw + dim if raw < 0 else raw
+        vals.append(min(max(v, 0), dim))
+    return min(vals), max(vals)
+
+
+def _try_emit_dynamic_slice_lut_bounds(
+    self,
+    node: fx.Node,
+    args: List[fx.Node],
+    axes: List[int],
+    steps: List[int],
+) -> bool:
+    self._last_dynamic_slice_lut_error = None
+
+    def fail(reason: str) -> bool:
+        self._last_dynamic_slice_lut_error = reason
+        return False
+
+    starts_iv = _resolve_dyn_index_intervals(self, args[1].name)
+    ends_iv = _resolve_dyn_index_intervals(self, args[2].name)
+    if starts_iv is None or ends_iv is None or len(starts_iv) != len(ends_iv):
+        return fail("dynamic Slice starts/ends are not in the supported bounded-index grammar")
+    if len(starts_iv) != len(axes) or len(axes) != len(steps):
+        return fail("dynamic Slice starts/ends rank does not match axes/steps")
+
+    T = _constant_layer_tensor(self, args[0].name)
+    if T is None:
+        # ``_evaluate_constant_subgraph`` intentionally refuses placeholder-
+        # rooted values. That is correct; dynamic Slice over arbitrary runtime
+        # activations is outside this bounded-LUT subset.
+        T = _const_tensor_for_node(self, args[0].name)
+    if T is None:
+        return fail("dynamic Slice over runtime activation is outside LUT_BOUNDS subset")
+    T = T.detach().clone().to(self.dtype)
+    rank = len(tuple(T.shape))
+    if rank == 0:
+        return fail("dynamic Slice over scalar tensor is unsupported")
+
+    full_starts_lb = [0] * rank
+    full_starts_ub = [0] * rank
+    full_window = [int(d) for d in T.shape]
+    full_steps = [1] * rank
+    norm_axes: List[int] = []
+
+    for s_iv, e_iv, ax_raw, step_raw in zip(starts_iv, ends_iv, axes, steps):
+        ax = int(ax_raw) + rank if int(ax_raw) < 0 else int(ax_raw)
+        if ax < 0 or ax >= rank:
+            return fail(f"dynamic Slice axis {ax_raw} is outside rank-{rank} tensor")
+        step = int(step_raw)
+        if step <= 0:
+            return fail("dynamic Slice LUT_BOUNDS only supports positive steps")
+        if s_iv.base != e_iv.base:
+            return fail("dynamic Slice start/end do not share the same index provenance")
+        window_f = e_iv.offset - s_iv.offset
+        if abs(window_f - round(window_f)) > 1e-9:
+            return fail("dynamic Slice window size is not an integer constant")
+        window = int(round(window_f))
+        if window < 1:
+            return fail("dynamic Slice window size must be positive")
+        raw_lb = math.floor(min(s_iv.lb, s_iv.ub))
+        raw_ub = math.ceil(max(s_iv.lb, s_iv.ub))
+        nb = _normalised_start_bounds(raw_lb, raw_ub, int(T.shape[ax]), step)
+        if nb is None:
+            return fail("dynamic Slice start range is too broad or has unsupported step semantics")
+        s_lb, s_ub = nb
+        # All windows must be in-bounds after normalisation.
+        if s_lb < 0 or s_ub + window * step > int(T.shape[ax]):
+            return fail(
+                "dynamic Slice start range can produce out-of-bounds / "
+                "variable-shape windows; fixed-shape LUT_BOUNDS would be unsound"
+            )
+        full_starts_lb[ax] = s_lb
+        full_starts_ub[ax] = s_ub
+        full_window[ax] = window
+        full_steps[ax] = step
+        norm_axes.append(ax)
+
+    # Avoid huge parser-time envelopes; cctsdb's supported ranges are small.
+    cand = 1
+    for lo, hi in zip(full_starts_lb, full_starts_ub):
+        cand *= int(hi - lo + 1)
+        if cand > 10000:
+            return fail("dynamic Slice candidate lattice exceeds LUT_BOUNDS safety cap")
+
+    from act.back_end.interval_tf.tf_mlp import precompute_lut_envelope
+
+    lb_t, ub_t = precompute_lut_envelope(
+        T,
+        window_size=tuple(full_window),
+        starts_lb=tuple(full_starts_lb),
+        starts_ub=tuple(full_starts_ub),
+        steps=tuple(full_steps),
+    )
+    out_vars = self._alloc_ids(int(lb_t.numel()) or 1)
+    layer_id = self._add_layer(
+        LayerKind.LUT_BOUNDS.value,
+        {
+            "lb": lb_t.to(torch.float64),
+            "ub": ub_t.to(torch.float64),
+            "input_shape": tuple(int(d) for d in T.shape),
+            "output_shape": tuple(int(d) for d in lb_t.shape),
+            "source_initializer_name": args[0].name,
+            "window_starts_lb": tuple(full_starts_lb),
+            "window_starts_ub": tuple(full_starts_ub),
+            "window_steps": tuple(full_steps),
+        },
+        [],
+        out_vars,
+    )
+    self.prev_out = out_vars
+    self.shape = tuple(int(d) for d in lb_t.shape)
+    self._register_node(node.name, layer_id)
+    return True
 
 
 @dataclass
@@ -512,8 +871,6 @@ class ProgressTracker:  # pragma: no cover
 # a _LayerGraphBuilder instance and these touch its private API directly.
 # -----------------------------------------------------------------------------
 
-import torch.fx as fx
-import torch.nn as nn
 from act.back_end.layer_schema import LayerKind
 
 def _convert_OnnxNeg(self, mod: nn.Module, node: fx.Node) -> None:
@@ -936,6 +1293,20 @@ def _convert_OnnxSlice(self, mod: nn.Module, node: fx.Node) -> None:
     starts = self._resolve_slice_input_to_int_list(args[1].name)
     ends = self._resolve_slice_input_to_int_list(args[2].name)
     if starts is None or ends is None:
+        axes_dyn = (self._resolve_slice_input_to_int_list(args[3].name)
+                    if len(args) > 3 else None)
+        steps_dyn = (self._resolve_slice_input_to_int_list(args[4].name)
+                     if len(args) > 4 else None)
+        if axes_dyn is not None:
+            if steps_dyn is None:
+                steps_dyn = [1] * len(axes_dyn)
+            if _try_emit_dynamic_slice_lut_bounds(
+                self, node, args, axes_dyn, steps_dyn,
+            ):
+                return
+            reason = getattr(self, "_last_dynamic_slice_lut_error", None)
+            if reason:
+                raise ValueError(f"OnnxSlice at {node.name}: {reason}")
         raise ValueError(f"OnnxSlice at {node.name}: cannot resolve starts/ends")
     axes = (self._resolve_slice_input_to_int_list(args[3].name)
             if len(args) > 3 else None) or list(range(len(starts)))

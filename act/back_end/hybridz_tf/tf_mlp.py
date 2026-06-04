@@ -12,6 +12,7 @@
 #
 # ===---------------------------------------------------------------------===#
 
+import os
 import torch
 import torch.nn.functional as F
 from act.back_end.core import Bounds, Fact
@@ -27,6 +28,937 @@ from act.back_end.solver.solver_hz import (
 )
 import act.back_end.interval_tf.tf_mlp as interval
 import act.back_end.interval_tf.tf_cnn as interval_cnn
+
+
+# Process-global ReLU-trace store. ENV-GATED. Only populated when
+# `ACT_HZ_RELU_TRACE=1` is set. Each entry is the metadata needed to
+# reconstruct the affine relationship between (xi_c, xi_b) and the
+# (pre, post) activation of each unstable neuron in that ReLU call.
+#
+# Used by `_pair_relu_hull_cuts` (see solver_hz.py) to generate
+# joint convex-hull facets for selected ReLU pairs and add them as
+# extra LP rows in the unsafe-feasibility check.
+#
+# Soundness: every entry must be derived strictly from forward HZ state
+# (no backward bound propagation, no autograd). See the docstring of
+# `_relu_trace_record_v8` for the exact encoding contract.
+RELU_TRACE_STORE: "list[dict]" = []
+
+# Process-global per-layer counter (incremented each time hz_apply_relu runs)
+# and per-layer pair selection override. When `ACT_HZ_CORR_PAIR_CUT_TARGET_FILE`
+# env points to a JSON file with `{layer_counter: [[a_idx, b_idx], ...]}`
+# the file's contents take precedence over width-score selection for that
+# layer's correlated cuts. Used by two-pass output-aware pair selection.
+RELU_LAYER_COUNTER = [0]  # mutable container so we can reset per query
+PAIR_TARGETS_BY_LAYER: "dict[int, list[tuple[int, int]]]" = {}
+
+
+def _relu_layer_counter_reset():
+    """Reset the per-call ReLU layer counter. Should be called at the
+    start of each verifier query so layer_id numbering restarts at 0.
+
+    Also clears PAIR_TARGETS_BY_LAYER and the loaded-file path cache so
+    a same-process re-query (or change of target file) doesn't carry
+    stale targets into the new query."""
+    RELU_LAYER_COUNTER[0] = 0
+    PAIR_TARGETS_BY_LAYER.clear()
+    # Reset the cache key tracker; _maybe_load_pair_targets checks this
+    # before deciding to reread the JSON file.
+    _PAIR_TARGETS_CACHE_KEY[0] = ""
+
+
+_PAIR_TARGETS_CACHE_KEY = [""]  # mtime+path key for the last-loaded targets
+
+
+def _maybe_load_pair_targets():
+    """Lazily load pair-target overrides from the env-pointed JSON file.
+
+    The cache is keyed by `path:mtime` so changing the target file
+    between queries (or rewriting it) forces a fresh load. Returns the
+    dict; empty dict if unset/unreadable.
+    """
+    global PAIR_TARGETS_BY_LAYER
+    target_file = os.environ.get("ACT_HZ_CORR_PAIR_CUT_TARGET_FILE", "")
+    if not target_file:
+        return PAIR_TARGETS_BY_LAYER
+    try:
+        import os as _os
+        st = _os.stat(target_file)
+        key = f"{target_file}:{st.st_mtime_ns}"
+    except Exception:
+        key = target_file
+    if PAIR_TARGETS_BY_LAYER and _PAIR_TARGETS_CACHE_KEY[0] == key:
+        return PAIR_TARGETS_BY_LAYER
+    try:
+        import json
+        with open(target_file) as f:
+            raw = json.load(f)
+        PAIR_TARGETS_BY_LAYER.clear()
+        for k, v in raw.items():
+            PAIR_TARGETS_BY_LAYER[int(k)] = [tuple(p) for p in v]
+        _PAIR_TARGETS_CACHE_KEY[0] = key
+    except Exception:
+        pass
+    return PAIR_TARGETS_BY_LAYER
+
+
+def _relu_trace_record_triangle(
+    *,
+    hz_in: HZono,
+    unstable_idx: torch.Tensor,
+    alpha: torch.Tensor,
+    beta: torch.Tensor,
+    col_eps: torch.Tensor,
+    ng_old: int,
+    nb_old: int,
+):
+    """Record a triangle-ReLU layer's trace entry.
+
+    Triangle encoding (DeepZ):
+      post[i] = lam[i] * pre[i] + mu[i] + mu[i] * eps_new[i]
+    where lam[i] = ub[i]/(ub[i]-lb[i]), mu[i] = -lb[i]*ub[i]/(2*(ub[i]-lb[i])).
+    `col_eps[i]` is the new continuous-generator column index in the NEW
+    HZ's xi_c for unstable neuron i.
+
+    No binaries are introduced by triangle, so `col_z` is empty and
+    `col_eps` carries the new continuous-generator columns. The offline
+    selector can target triangle layers by scoring these `col_eps`
+    columns against the final output HZ's continuous generator matrix.
+    """
+    if os.environ.get("ACT_HZ_RELU_TRACE", "0") != "1":
+        return
+    try:
+        Gc_unst = hz_in.Gc[unstable_idx].detach().cpu().numpy()
+        Gb_unst = hz_in.Gb[unstable_idx].detach().cpu().numpy()
+        c_unst = hz_in.c[unstable_idx, 0].detach().cpu().numpy()
+        lam = (beta / (beta - alpha)).detach().cpu().numpy()
+        mu = (-alpha * beta / (2.0 * (beta - alpha))).detach().cpu().numpy()
+        entry = {
+            "layer_count": len(RELU_TRACE_STORE),
+            "k": int(unstable_idx.numel()),
+            "encoding": "triangle",
+            "unstable_idx": unstable_idx.detach().cpu().numpy().tolist(),
+            "alpha": alpha.detach().cpu().numpy().tolist(),
+            "beta": beta.detach().cpu().numpy().tolist(),
+            "col_eps": col_eps.detach().cpu().numpy().tolist(),
+            "col_z": [],  # triangle adds no binaries
+            "lam": lam.tolist(),
+            "mu": mu.tolist(),
+            "ng_old": int(ng_old),
+            "nb_old": int(nb_old),
+            "Gc_pre": Gc_unst,
+            "Gb_pre": Gb_unst,
+            "c_pre": c_unst,
+        }
+        RELU_TRACE_STORE.append(entry)
+    except Exception:
+        pass
+
+
+def _trace_dump_to_file():
+    """If `ACT_HZ_RELU_TRACE_DUMP_FILE` is set, write the per-layer
+    (col_z, k, layer_count, unstable_idx) summary to disk. Continuous
+    factors (col_xi2 / Gc_pre / Gb_pre / c_pre) are omitted to keep the
+    file small — they're only needed inline during cut emission, not
+    by the offline selector."""
+    target_path = os.environ.get("ACT_HZ_RELU_TRACE_DUMP_FILE", "")
+    if not target_path or not RELU_TRACE_STORE:
+        return
+    try:
+        import json
+        summary = []
+        for entry in RELU_TRACE_STORE:
+            item = {
+                "layer_count": entry["layer_count"],
+                "k": entry["k"],
+                "col_z": list(entry.get("col_z", [])),
+                "unstable_idx": list(entry["unstable_idx"]),
+                "alpha": list(entry["alpha"]),
+                "beta": list(entry["beta"]),
+                "encoding": entry.get("encoding", "eq_lagr_v8"),
+            }
+            if "col_eps" in entry:
+                item["col_eps"] = list(entry["col_eps"])
+            summary.append(item)
+        with open(target_path, "w") as f:
+            json.dump(summary, f)
+    except Exception:
+        pass
+
+
+def _relu_trace_record_v8(
+    *,
+    hz_in: HZono,
+    unstable_idx: torch.Tensor,
+    alpha: torch.Tensor,
+    beta: torch.Tensor,
+    col_xi2: torch.Tensor,
+    col_z: torch.Tensor,
+    ng_old: int,
+    nb_old: int,
+):
+    """Append one entry to RELU_TRACE_STORE describing the v8 eq_lagr
+    ReLU's encoding for the current call.
+
+    The entry records, for each unstable neuron i:
+      - pre_affine: pre[i] = hz_in.c[i] + hz_in.Gc[i] @ xi_c_old + hz_in.Gb[i] @ xi_b_old
+      - post_affine: post[i] = (beta[i]/2) * (1 - xi2[i])
+      - bounds: (alpha[i], beta[i])
+      - col_xi2_idx: the index of xi2[i] in the NEW HZ's xi_c (ng_old + k + t)
+      - col_z_idx: the index of z[i] in the NEW HZ's xi_b (nb_old + t)
+    The entry also records ng_old/nb_old so callers can map old xi_c/xi_b
+    indices into the new HZ (just the first ng_old / nb_old columns).
+    """
+    if os.environ.get("ACT_HZ_RELU_TRACE", "0") != "1":
+        return
+    try:
+        Gc_unst = hz_in.Gc[unstable_idx].detach().cpu().numpy()
+        Gb_unst = hz_in.Gb[unstable_idx].detach().cpu().numpy()
+        c_unst = hz_in.c[unstable_idx, 0].detach().cpu().numpy()
+        entry = {
+            "layer_count": len(RELU_TRACE_STORE),
+            "k": int(unstable_idx.numel()),
+            "unstable_idx": unstable_idx.detach().cpu().numpy().tolist(),
+            "alpha": alpha.detach().cpu().numpy().tolist(),
+            "beta": beta.detach().cpu().numpy().tolist(),
+            "col_xi2": col_xi2.detach().cpu().numpy().tolist(),
+            "col_z": col_z.detach().cpu().numpy().tolist(),
+            "ng_old": int(ng_old),
+            "nb_old": int(nb_old),
+            "Gc_pre": Gc_unst,
+            "Gb_pre": Gb_unst,
+            "c_pre": c_unst,
+        }
+        RELU_TRACE_STORE.append(entry)
+    except Exception as _e:
+        # Trace recording is best-effort and never blocks the production
+        # ReLU encoding. Failures are silent and surface only via the
+        # diagnostic LP returning no extra cuts.
+        pass
+
+
+def _relu_trace_reset():
+    """Clear the per-instance trace store. Call at the start of every
+    verifier query so prior queries' ReLU traces don't leak in."""
+    RELU_TRACE_STORE.clear()
+
+
+def _pair_hull_facets_9vertex(la: float, ua: float,
+                               lb_: float, ub_: float) -> "list[dict]":
+    """DEPRECATED — independent-box pairwise ReLU lifted hull.
+
+    Audit finding (2026-05-31): under the eq_lagr_v8 per-neuron EXACT
+    triangle encoding, this independent-box hull is MATHEMATICALLY
+    REDUNDANT — it equals the Cartesian product of two single-neuron
+    triangle hulls, which is already implied by the v8 encoding. The
+    cifar iid 0 experiment confirmed LP_max unchanged regardless of how
+    many such cuts are added (224 / 1462 rows → identical 1.4384).
+
+    The actually-tightening math is the CORRELATED joint hull (linear
+    image of the input HZ's LP polytope under (xi → (pre_a, pre_b))),
+    implemented in `_correlated_pair_hull_facets`.
+
+    Kept here for reference + the existing `_build_pair_cut_rows_for_relu`
+    integration path, gated by the env knob `ACT_HZ_PAIR_RELU_CUTS=1`
+    which is documented as redundant/experimental. Default OFF, no
+    production usage.
+    """
+    if not (la < 0 < ua and lb_ < 0 < ub_):
+        return []
+    try:
+        from scipy.spatial import ConvexHull
+    except ImportError:
+        return []
+    import numpy as _np
+    pts = _np.array([
+        [la, lb_, max(0.0, la), max(0.0, lb_)],
+        [la,  0.0, max(0.0, la), 0.0],
+        [la, ub_, max(0.0, la), max(0.0, ub_)],
+        [0.0, lb_, 0.0, max(0.0, lb_)],
+        [0.0, 0.0, 0.0, 0.0],
+        [0.0, ub_, 0.0, max(0.0, ub_)],
+        [ua, lb_, max(0.0, ua), max(0.0, lb_)],
+        [ua, 0.0, max(0.0, ua), 0.0],
+        [ua, ub_, max(0.0, ua), max(0.0, ub_)],
+    ], dtype=_np.float64)
+    pts_u = _np.unique(pts, axis=0)
+    if pts_u.shape[0] < 5:
+        return []
+    try:
+        hull = ConvexHull(pts_u)
+    except Exception:
+        return []
+    cuts = []
+    for eq in hull.equations:
+        # eq: a*pre_a + b*pre_b + c*post_a + d*post_b + e <= 0
+        cuts.append({
+            "c_pa": float(eq[0]), "c_pb": float(eq[1]),
+            "c_postA": float(eq[2]), "c_postB": float(eq[3]),
+            "rhs": float(-eq[4]),
+        })
+    return cuts
+
+
+def _correlated_pair_hull_facets(
+    hz_in: HZono,
+    a_idx: int,
+    b_idx: int,
+    alpha_a: float, beta_a: float,
+    alpha_b: float, beta_b: float,
+    n_dirs: int = 8,
+    lp_timeout_s: float = 2.0,
+) -> "list[dict]":
+    """Compute facets of the CORRELATED 4D pairwise ReLU lifted hull.
+
+    The correlation comes from the fact that pre_a(xi) and pre_b(xi) are
+    BOTH affine functions of the SAME factor vector xi, which itself is
+    constrained by the input HZ. The image of the HZ's feasible factor
+    polytope under `xi → (pre_a, pre_b)` is a 2D polytope (NOT the box
+    `[la, ua] × [lb, ub]`). We approximate this image by solving 2*n_dirs
+    SciPy LPs over the HZ constraints to obtain a support polytope
+    `P_outer`, split it by the axes `pa=0` and `pb=0` into up to 4
+    sign-cells, lift the cell vertices to 4D via the exact ReLU, and
+    take the convex hull. Returned facets hold for every real input AND
+    are NOT implied by independent triangle×triangle constraints.
+
+    Soundness:
+      - The 2D outer polytope CONTAINS the true joint image (we only
+        bound supports from finite directions, never under-approximate).
+      - Sign-cell decomposition partitions the outer polytope; vertices
+        of each cell lie inside the outer polytope.
+      - In each cell the ReLU map is affine; lifting vertices and taking
+        their hull is exact for the cell.
+      - Hull of the union of cells contains the true lifted joint set.
+      - Every cut from this hull is a valid linear inequality over the
+        true joint set, hence valid for the LP relaxation.
+
+    No autograd, no backward bound propagation, no randomness. Only
+    SciPy HiGHS LPs over the existing HZ constraint matrices.
+
+    Args:
+      hz_in: HZono BEFORE the ReLU (provides Ac, Ab, b, Gc, Gb, c, eq_mask).
+      a_idx, b_idx: indices of the two unstable neurons within hz_in.
+      alpha_*, beta_*: pre-activation bounds for each neuron.
+      n_dirs: number of axis-aligned directions (must be multiple of 4).
+      lp_timeout_s: per-LP wall-clock cap.
+
+    Returns:
+      list of facet dicts with keys 'c_pa', 'c_pb', 'c_postA', 'c_postB',
+      'rhs' representing the inequality
+        c_pa*pre_a + c_pb*pre_b + c_postA*post_a + c_postB*post_b <= rhs.
+      Empty list on degenerate inputs.
+    """
+    if not (alpha_a < 0 < beta_a and alpha_b < 0 < beta_b):
+        return []
+    try:
+        from scipy.optimize import linprog
+        from scipy.spatial import ConvexHull
+    except ImportError:
+        return []
+    import numpy as _np
+
+    # ─── Build factor-space LP problem from hz_in ───
+    # Mirrors _build_factor_lp in solver_hz.py but inline here to avoid
+    # an import cycle and to keep the cut path self-contained.
+    em = hz_in.eq_mask
+    if em is None:
+        em_np = _np.ones(int(hz_in.b.shape[0]), dtype=bool)
+    else:
+        em_np = em.detach().cpu().numpy().astype(bool)
+    le_np = ~em_np
+    Ac_np = hz_in.Ac.detach().cpu().numpy()
+    Ab_np = hz_in.Ab.detach().cpu().numpy()
+    b_np = hz_in.b.detach().cpu().numpy().reshape(-1)
+    if em_np.any():
+        A_eq = _np.concatenate([Ac_np[em_np], Ab_np[em_np]], axis=1)
+        b_eq = b_np[em_np]
+    else:
+        A_eq = None
+        b_eq = None
+    if le_np.any():
+        A_ub = _np.concatenate([Ac_np[le_np], Ab_np[le_np]], axis=1)
+        b_ub = b_np[le_np]
+    else:
+        A_ub = None
+        b_ub = None
+    p = int(hz_in.Gc.shape[1])
+    q = int(hz_in.Gb.shape[1])
+    nvars = p + q
+    bounds = [(-1.0, 1.0)] * nvars
+
+    # Affine maps: pre_x(xi) = Gc_x @ xi_c + Gb_x @ xi_b + c_x
+    Gc_a = hz_in.Gc[a_idx].detach().cpu().numpy()
+    Gb_a = hz_in.Gb[a_idx].detach().cpu().numpy()
+    c_a = float(hz_in.c[a_idx, 0].detach().cpu().item())
+    Gc_b = hz_in.Gc[b_idx].detach().cpu().numpy()
+    Gb_b = hz_in.Gb[b_idx].detach().cpu().numpy()
+    c_b = float(hz_in.c[b_idx, 0].detach().cpu().item())
+
+    # ─── Solve n_dirs LPs to derive OUTER half-spaces ───
+    # For each direction d_i, max{d_i·(pa,pb) : xi feasible} gives a sound
+    # upper bound rhs_i. The half-space {(pa, pb) : d_i·(pa, pb) <= rhs_i}
+    # CONTAINS the true reachable set. Intersection of all such half-spaces
+    # is the OUTER polygon (vs. the convex hull of support points which is
+    # an INNER approximation — using it as the basis for cuts would
+    # produce unsound facets that exclude real reachable inputs).
+    angles = _np.linspace(0.0, 2.0 * _np.pi, n_dirs, endpoint=False)
+    halfspaces: "list[tuple[float, float, float]]" = []  # (d1, d2, rhs)
+    for theta in angles:
+        d1 = float(_np.cos(theta))
+        d2 = float(_np.sin(theta))
+        obj_xi = _np.concatenate([
+            d1 * Gc_a + d2 * Gc_b,
+            d1 * Gb_a + d2 * Gb_b,
+        ])
+        obj_const = d1 * c_a + d2 * c_b
+        try:
+            res = linprog(
+                c=-obj_xi,
+                A_ub=A_ub, b_ub=b_ub,
+                A_eq=A_eq, b_eq=b_eq,
+                bounds=bounds,
+                method="highs",
+                options={"time_limit": lp_timeout_s},
+            )
+            if not (res.status == 0 and res.success):
+                continue
+            rhs_max = float(-res.fun + obj_const)
+            halfspaces.append((d1, d2, rhs_max))
+        except Exception:
+            continue
+
+    if len(halfspaces) < 3:
+        return []
+
+    # ─── Build OUTER polygon via half-space intersection ───
+    # Use scipy.spatial.HalfspaceIntersection. Format requires
+    # (A | b) rows where A·x + b <= 0, i.e., d·x - rhs <= 0.
+    from scipy.spatial import HalfspaceIntersection
+    A_hs = _np.zeros((len(halfspaces), 3), dtype=_np.float64)
+    for i, (d1, d2, rhs) in enumerate(halfspaces):
+        A_hs[i, 0] = d1
+        A_hs[i, 1] = d2
+        A_hs[i, 2] = -rhs  # half-space format: A·x + b <= 0
+    # Need an interior point. Use box midpoint of axis-aligned support.
+    pa_max = max((h[2] for h in halfspaces if abs(h[1]) < 1e-9 and h[0] > 0),
+                 default=alpha_a)
+    pa_min = -max((h[2] for h in halfspaces if abs(h[1]) < 1e-9 and h[0] < 0),
+                  default=-beta_a)
+    pb_max = max((h[2] for h in halfspaces if abs(h[0]) < 1e-9 and h[1] > 0),
+                 default=alpha_b)
+    pb_min = -max((h[2] for h in halfspaces if abs(h[0]) < 1e-9 and h[1] < 0),
+                  default=-beta_b)
+    interior_pt = _np.array([
+        0.5 * (pa_min + pa_max),
+        0.5 * (pb_min + pb_max),
+    ], dtype=_np.float64)
+    try:
+        hs = HalfspaceIntersection(A_hs, interior_pt)
+        outer_verts_unord = hs.intersections
+    except Exception:
+        return []
+    if outer_verts_unord.shape[0] < 3:
+        return []
+    # scipy's HalfspaceIntersection returns vertices in arbitrary order;
+    # to walk POLYGON EDGES (adjacent vertex pairs) for axis-crossing
+    # detection we must order them by polar angle around the polygon's
+    # centroid. Otherwise consecutive `outer_verts[i]` and `[i+1]` may be
+    # polygon DIAGONALS (going through interior), causing edge-axis
+    # intersections to be computed on the wrong segments and missing
+    # genuine cell-corner points.
+    centroid = outer_verts_unord.mean(axis=0)
+    angles_ord = _np.arctan2(
+        outer_verts_unord[:, 1] - centroid[1],
+        outer_verts_unord[:, 0] - centroid[0],
+    )
+    order = _np.argsort(angles_ord)
+    outer_verts = outer_verts_unord[order]
+
+    # ─── Lift to 4D via exact ReLU; include axis intersections to handle
+    # the kink at pa=0 / pb=0 within the outer polygon.
+    # Strategy:
+    #   - For each outer vertex, lift directly.
+    #   - For each edge of outer polygon, if it crosses pa=0 or pb=0,
+    #     add the intersection point and lift it.
+    lifted: "list[list[float]]" = []
+    def _lift(p_pair):
+        pa, pb = float(p_pair[0]), float(p_pair[1])
+        return [pa, pb, max(0.0, pa), max(0.0, pb)]
+
+    nv = outer_verts.shape[0]
+    for i in range(nv):
+        v0 = outer_verts[i]
+        v1 = outer_verts[(i + 1) % nv]
+        lifted.append(_lift(v0))
+        # Intersection with pa=0
+        if (v0[0] < 0) != (v1[0] < 0):
+            t = -v0[0] / (v1[0] - v0[0] + 1e-30)
+            if 0.0 < t < 1.0:
+                cross = v0 + t * (v1 - v0)
+                lifted.append(_lift(cross))
+        # Intersection with pb=0
+        if (v0[1] < 0) != (v1[1] < 0):
+            t = -v0[1] / (v1[1] - v0[1] + 1e-30)
+            if 0.0 < t < 1.0:
+                cross = v0 + t * (v1 - v0)
+                lifted.append(_lift(cross))
+
+    # Add the lift of (0, 0) when it lies inside the outer polygon. Without
+    # this point, the 4-sign-cell decomposition of the polygon may miss the
+    # cell-corner at the origin, leading to a 4D hull that excludes some
+    # real lifted points whose (pa, pb) lies in the small (+,+) (or other)
+    # cell of the polygon. (0, 0) lies inside iff every half-space's RHS
+    # is non-negative (since each constraint is d·x <= rhs and the origin
+    # gives d·0 = 0).
+    origin_inside = all(rhs >= -1e-12 for _, _, rhs in halfspaces)
+    if origin_inside:
+        lifted.append(_lift((0.0, 0.0)))
+
+    pts4d = _np.array(lifted, dtype=_np.float64)
+    pts4d_unique = _np.unique(pts4d, axis=0)
+    if pts4d_unique.shape[0] < 5:
+        return []
+
+    try:
+        hull4 = ConvexHull(pts4d_unique, qhull_options="QJ")
+    except Exception:
+        return []
+
+    facets: "list[dict]" = []
+    for eq in hull4.equations:
+        # eq: a*pa + b*pb + c*postA + d*postB + e <= 0
+        a, b_eq_coef, c_e, d_e, e_e = eq
+        # Skip facets that are pure pa/pb axis bounds (these are box-only,
+        # not joint cuts) — keep them only if they involve at least one post.
+        coef_mag = abs(a) + abs(b_eq_coef) + abs(c_e) + abs(d_e)
+        if coef_mag < 1e-9:
+            continue
+        facets.append({
+            "c_pa": float(a),
+            "c_pb": float(b_eq_coef),
+            "c_postA": float(c_e),
+            "c_postB": float(d_e),
+            "rhs": float(-e_e),
+        })
+    return facets
+
+
+def _build_correlated_pair_cut_rows_for_relu(
+    hz_in: HZono,
+    unstable_idx: torch.Tensor,
+    alpha: torch.Tensor,
+    beta: torch.Tensor,
+    col_xi2: torch.Tensor,
+    ng_new: int,
+    nb_new: int,
+    max_pairs: int,
+    n_dirs: int = 8,
+    lp_timeout_s: float = 2.0,
+    layer_counter: int = -1,
+) -> "tuple[torch.Tensor, torch.Tensor, torch.Tensor]":
+    """Build LP rows for CORRELATED pair-hull cuts.
+
+    Same row-emission scheme as `_build_pair_cut_rows_for_relu` but uses
+    `_correlated_pair_hull_facets` to compute the per-pair facets
+    against the input HZ's true joint reachable set.
+
+    Pair selection:
+      - If `ACT_HZ_CORR_PAIR_CUT_TARGET_FILE` is set AND `layer_counter`
+        is a key in that file: use the file's pair list verbatim
+        (output-aware two-pass selection).
+      - Otherwise: fall back to width-product score (forward-only).
+    """
+    import numpy as _np
+    device = hz_in.c.device
+    dtype = hz_in.c.dtype
+    k = int(unstable_idx.numel())
+    if k < 2 or max_pairs <= 0:
+        return (
+            hz_in.c.new_zeros((0, ng_new)),
+            hz_in.c.new_zeros((0, nb_new)),
+            hz_in.c.new_zeros((0, 1)),
+        )
+
+    alpha_np = alpha.detach().cpu().numpy()
+    beta_np = beta.detach().cpu().numpy()
+    widths = beta_np - alpha_np
+
+    # ─── Pair selection: output-aware override > width-score fallback ───
+    target_file_set = bool(os.environ.get("ACT_HZ_CORR_PAIR_CUT_TARGET_FILE", ""))
+    targets_by_layer = _maybe_load_pair_targets()
+    if target_file_set and not (layer_counter >= 0 and layer_counter in targets_by_layer):
+        # Output-aware mode is an explicit whitelist. If a target file is
+        # provided, layers absent from the file must emit no cuts; falling
+        # back to width-score here silently adds unrelated cuts, makes the
+        # experiment no longer target-file controlled, and can explode large
+        # triangle layers in dense conv nets.
+        return (
+            hz_in.c.new_zeros((0, ng_new)),
+            hz_in.c.new_zeros((0, nb_new)),
+            hz_in.c.new_zeros((0, 1)),
+        )
+    if target_file_set and layer_counter >= 0 and layer_counter in targets_by_layer:
+        # Output-aware override: use the file's target pair list verbatim.
+        # Filter to pairs whose indices are valid for current k.
+        raw_pairs = targets_by_layer[layer_counter]
+        pairs = [
+            (int(a), int(b)) for a, b in raw_pairs
+            if 0 <= int(a) < k and 0 <= int(b) < k and int(a) != int(b)
+        ][:max_pairs]
+    elif max_pairs >= k * (k - 1) // 2:
+        pairs = [(i, j) for i in range(k) for j in range(i + 1, k)]
+    else:
+        m = min(k, max(8, int(round((1 + (1 + 8 * max_pairs) ** 0.5) / 2))))
+        top_neuron_idx = _np.argsort(-widths)[:m]
+        pairs = [
+            (int(top_neuron_idx[i]), int(top_neuron_idx[j]))
+            for i in range(m) for j in range(i + 1, m)
+        ][:max_pairs]
+    if not pairs:
+        return (
+            hz_in.c.new_zeros((0, ng_new)),
+            hz_in.c.new_zeros((0, nb_new)),
+            hz_in.c.new_zeros((0, 1)),
+        )
+
+    ng = int(hz_in.Gc.shape[1])
+    nb = int(hz_in.Gb.shape[1])
+    col_xi2_np = col_xi2.detach().cpu().numpy()
+    unstable_np = unstable_idx.detach().cpu().numpy()
+
+    rows_Ac: "list[_np.ndarray]" = []
+    rows_Ab: "list[_np.ndarray]" = []
+    rhss: "list[float]" = []
+
+    Gc_pre_t = hz_in.Gc.detach().cpu().numpy()
+    Gb_pre_t = hz_in.Gb.detach().cpu().numpy()
+    c_pre_t = hz_in.c[:, 0].detach().cpu().numpy()
+
+    for a_local, b_local in pairs:
+        a_abs = int(unstable_np[a_local])
+        b_abs = int(unstable_np[b_local])
+        la = float(alpha_np[a_local]); ua = float(beta_np[a_local])
+        lb_p = float(alpha_np[b_local]); ub_p = float(beta_np[b_local])
+        facets = _correlated_pair_hull_facets(
+            hz_in=hz_in,
+            a_idx=a_abs, b_idx=b_abs,
+            alpha_a=la, beta_a=ua,
+            alpha_b=lb_p, beta_b=ub_p,
+            n_dirs=n_dirs, lp_timeout_s=lp_timeout_s,
+        )
+        if not facets:
+            continue
+        Gc_a = Gc_pre_t[a_abs]
+        Gb_a = Gb_pre_t[a_abs]
+        c_a = float(c_pre_t[a_abs])
+        Gc_b = Gc_pre_t[b_abs]
+        Gb_b = Gb_pre_t[b_abs]
+        c_b = float(c_pre_t[b_abs])
+        col_a = int(col_xi2_np[a_local])
+        col_b = int(col_xi2_np[b_local])
+        beta_a_f = float(beta_np[a_local])
+        beta_b_f = float(beta_np[b_local])
+        for f in facets:
+            c_pa = f["c_pa"]; c_pb = f["c_pb"]
+            c_postA = f["c_postA"]; c_postB = f["c_postB"]
+            rhs_f = f["rhs"]
+            if (abs(c_pa) + abs(c_pb) + abs(c_postA) + abs(c_postB)) < 1e-12:
+                continue
+            row_Ac = _np.zeros(ng_new, dtype=_np.float64)
+            row_Ab = _np.zeros(nb_new, dtype=_np.float64)
+            row_Ac[:ng] = c_pa * Gc_a + c_pb * Gc_b
+            row_Ab[:nb] = c_pa * Gb_a + c_pb * Gb_b
+            row_Ac[col_a] += c_postA * (-beta_a_f / 2.0)
+            row_Ac[col_b] += c_postB * (-beta_b_f / 2.0)
+            row_rhs = (rhs_f - c_pa * c_a - c_pb * c_b
+                       - c_postA * (beta_a_f / 2.0)
+                       - c_postB * (beta_b_f / 2.0))
+            rows_Ac.append(row_Ac)
+            rows_Ab.append(row_Ab)
+            rhss.append(float(row_rhs))
+
+    if not rows_Ac:
+        return (
+            hz_in.c.new_zeros((0, ng_new)),
+            hz_in.c.new_zeros((0, nb_new)),
+            hz_in.c.new_zeros((0, 1)),
+        )
+    Ac_rows = torch.tensor(_np.stack(rows_Ac), device=device, dtype=dtype)
+    Ab_rows = torch.tensor(_np.stack(rows_Ab), device=device, dtype=dtype)
+    b_rows = torch.tensor(
+        _np.asarray(rhss).reshape(-1, 1), device=device, dtype=dtype
+    )
+    return Ac_rows, Ab_rows, b_rows
+
+
+def _build_triangle_corr_pair_cuts(
+    hz_in: HZono,
+    unstable_idx: torch.Tensor,
+    alpha: torch.Tensor,
+    beta: torch.Tensor,
+    lam: torch.Tensor,
+    mu: torch.Tensor,
+    col_eps: torch.Tensor,
+    ng_new: int,
+    nb_new: int,
+    max_pairs: int,
+    n_dirs: int = 8,
+    lp_timeout_s: float = 2.0,
+    layer_counter: int = -1,
+) -> "tuple[torch.Tensor, torch.Tensor, torch.Tensor]":
+    """Correlated pair-ReLU cuts for the TRIANGLE encoding.
+
+    Triangle: post[i] = lam[i]*pre[i] + mu[i] + mu[i]*eps_new[i],
+    pre[i] = c_pre[i] + Gc_pre[i] @ xi_c_old + Gb_pre[i] @ xi_b_old.
+
+    The 4D hull facet
+      c_pa*pre_a + c_pb*pre_b + c_postA*post_a + c_postB*post_b <= rhs
+    expands (after substitution) to an inequality in
+    (xi_c_old, xi_b_old, eps_new_a, eps_new_b). Specifically:
+
+      coef on xi_c_old: (c_pa + c_postA*lam_a)*Gc_pre_a
+                      + (c_pb + c_postB*lam_b)*Gc_pre_b
+      coef on xi_b_old: (c_pa + c_postA*lam_a)*Gb_pre_a
+                      + (c_pb + c_postB*lam_b)*Gb_pre_b
+      coef on eps_new_a (at col_eps[a]): c_postA * mu_a
+      coef on eps_new_b (at col_eps[b]): c_postB * mu_b
+      rhs_new = rhs - (c_pa + c_postA*lam_a)*c_pre_a
+                    - (c_pb + c_postB*lam_b)*c_pre_b
+                    - c_postA*mu_a - c_postB*mu_b
+
+    Pair selection mirrors v8: respect ACT_HZ_CORR_PAIR_CUT_TARGET_FILE
+    when set, else width score.
+    """
+    import numpy as _np
+    device = hz_in.c.device
+    dtype = hz_in.c.dtype
+    k = int(unstable_idx.numel())
+    if k < 2 or max_pairs <= 0:
+        return (
+            hz_in.c.new_zeros((0, ng_new)),
+            hz_in.c.new_zeros((0, nb_new)),
+            hz_in.c.new_zeros((0, 1)),
+        )
+
+    alpha_np = alpha.detach().cpu().numpy()
+    beta_np = beta.detach().cpu().numpy()
+    lam_np = lam.detach().cpu().numpy()
+    mu_np = mu.detach().cpu().numpy()
+    widths = beta_np - alpha_np
+
+    target_file_set = bool(os.environ.get("ACT_HZ_CORR_PAIR_CUT_TARGET_FILE", ""))
+    targets_by_layer = _maybe_load_pair_targets()
+    if target_file_set and not (layer_counter >= 0 and layer_counter in targets_by_layer):
+        # Target-file mode is an explicit whitelist. Do not add width-score
+        # fallback cuts to unlisted triangle layers; on dense-conv nets those
+        # layers are huge and this turns a small target experiment into an
+        # accidental all-layer cut sweep.
+        return (
+            hz_in.c.new_zeros((0, ng_new)),
+            hz_in.c.new_zeros((0, nb_new)),
+            hz_in.c.new_zeros((0, 1)),
+        )
+    if target_file_set and layer_counter >= 0 and layer_counter in targets_by_layer:
+        raw_pairs = targets_by_layer[layer_counter]
+        pairs = [
+            (int(a), int(b)) for a, b in raw_pairs
+            if 0 <= int(a) < k and 0 <= int(b) < k and int(a) != int(b)
+        ][:max_pairs]
+    elif max_pairs >= k * (k - 1) // 2:
+        pairs = [(i, j) for i in range(k) for j in range(i + 1, k)]
+    else:
+        m = min(k, max(8, int(round((1 + (1 + 8 * max_pairs) ** 0.5) / 2))))
+        top_neuron_idx = _np.argsort(-widths)[:m]
+        pairs = [
+            (int(top_neuron_idx[i]), int(top_neuron_idx[j]))
+            for i in range(m) for j in range(i + 1, m)
+        ][:max_pairs]
+    if not pairs:
+        return (
+            hz_in.c.new_zeros((0, ng_new)),
+            hz_in.c.new_zeros((0, nb_new)),
+            hz_in.c.new_zeros((0, 1)),
+        )
+
+    ng = int(hz_in.Gc.shape[1])
+    nb = int(hz_in.Gb.shape[1])
+    col_eps_np = col_eps.detach().cpu().numpy()
+    unstable_np = unstable_idx.detach().cpu().numpy()
+
+    rows_Ac: "list[_np.ndarray]" = []
+    rows_Ab: "list[_np.ndarray]" = []
+    rhss: "list[float]" = []
+
+    Gc_pre_t = hz_in.Gc.detach().cpu().numpy()
+    Gb_pre_t = hz_in.Gb.detach().cpu().numpy()
+    c_pre_t = hz_in.c[:, 0].detach().cpu().numpy()
+
+    for a_local, b_local in pairs:
+        a_abs = int(unstable_np[a_local])
+        b_abs = int(unstable_np[b_local])
+        la = float(alpha_np[a_local]); ua = float(beta_np[a_local])
+        lb_p = float(alpha_np[b_local]); ub_p = float(beta_np[b_local])
+        facets = _correlated_pair_hull_facets(
+            hz_in=hz_in,
+            a_idx=a_abs, b_idx=b_abs,
+            alpha_a=la, beta_a=ua,
+            alpha_b=lb_p, beta_b=ub_p,
+            n_dirs=n_dirs, lp_timeout_s=lp_timeout_s,
+        )
+        if not facets:
+            continue
+        Gc_a = Gc_pre_t[a_abs]
+        Gb_a = Gb_pre_t[a_abs]
+        c_a = float(c_pre_t[a_abs])
+        Gc_b = Gc_pre_t[b_abs]
+        Gb_b = Gb_pre_t[b_abs]
+        c_b = float(c_pre_t[b_abs])
+        col_a = int(col_eps_np[a_local])
+        col_b = int(col_eps_np[b_local])
+        lam_a = float(lam_np[a_local]); lam_b = float(lam_np[b_local])
+        mu_a = float(mu_np[a_local]); mu_b = float(mu_np[b_local])
+        for f in facets:
+            c_pa = f["c_pa"]; c_pb = f["c_pb"]
+            c_postA = f["c_postA"]; c_postB = f["c_postB"]
+            rhs_f = f["rhs"]
+            if (abs(c_pa) + abs(c_pb) + abs(c_postA) + abs(c_postB)) < 1e-12:
+                continue
+            mix_a = c_pa + c_postA * lam_a
+            mix_b = c_pb + c_postB * lam_b
+            row_Ac = _np.zeros(ng_new, dtype=_np.float64)
+            row_Ab = _np.zeros(nb_new, dtype=_np.float64)
+            row_Ac[:ng] = mix_a * Gc_a + mix_b * Gc_b
+            row_Ab[:nb] = mix_a * Gb_a + mix_b * Gb_b
+            row_Ac[col_a] += c_postA * mu_a
+            row_Ac[col_b] += c_postB * mu_b
+            row_rhs = (rhs_f
+                       - mix_a * c_a
+                       - mix_b * c_b
+                       - c_postA * mu_a
+                       - c_postB * mu_b)
+            rows_Ac.append(row_Ac)
+            rows_Ab.append(row_Ab)
+            rhss.append(float(row_rhs))
+
+    if not rows_Ac:
+        return (
+            hz_in.c.new_zeros((0, ng_new)),
+            hz_in.c.new_zeros((0, nb_new)),
+            hz_in.c.new_zeros((0, 1)),
+        )
+    Ac_rows = torch.tensor(_np.stack(rows_Ac), device=device, dtype=dtype)
+    Ab_rows = torch.tensor(_np.stack(rows_Ab), device=device, dtype=dtype)
+    b_rows = torch.tensor(
+        _np.asarray(rhss).reshape(-1, 1), device=device, dtype=dtype
+    )
+    return Ac_rows, Ab_rows, b_rows
+
+
+def _build_pair_cut_rows_for_relu(
+    hz_in: HZono,
+    unstable_idx: torch.Tensor,
+    alpha: torch.Tensor,
+    beta: torch.Tensor,
+    col_xi2: torch.Tensor,
+    ng_new: int,
+    nb_new: int,
+    max_pairs: int,
+) -> "tuple[torch.Tensor, torch.Tensor, torch.Tensor]":
+    """Generate inequality rows for top-K unstable neuron pairs' joint
+    ReLU hull facets. Returns (Ac_rows, Ab_rows, b_rows) ready to append.
+
+    Pair scoring (forward-only, deterministic, P6-compliant):
+      score(a, b) = (beta_a - alpha_a) * (beta_b - alpha_b)
+    The widest pairs are most likely to contain phantom solutions in the
+    triangle relaxation; pair-hull cuts have most slack to remove.
+    """
+    import numpy as _np
+    device = hz_in.c.device
+    dtype = hz_in.c.dtype
+    k = int(unstable_idx.numel())
+    if k < 2 or max_pairs <= 0:
+        return (
+            hz_in.c.new_zeros((0, ng_new)),
+            hz_in.c.new_zeros((0, nb_new)),
+            hz_in.c.new_zeros((0, 1)),
+        )
+
+    alpha_np = alpha.detach().cpu().numpy()
+    beta_np = beta.detach().cpu().numpy()
+    widths = beta_np - alpha_np
+    # Score pairs by product of widths (decreasing).
+    if max_pairs >= k * (k - 1) // 2:
+        # All pairs (small k)
+        pairs = [(i, j) for i in range(k) for j in range(i + 1, k)]
+    else:
+        # Pick top-K by score deterministically. To keep it cheap, take
+        # top-M neurons by width then enumerate pairs among them.
+        m = min(k, max(8, int(round((1 + (1 + 8 * max_pairs) ** 0.5) / 2))))
+        top_neuron_idx = _np.argsort(-widths)[:m]
+        pairs = [
+            (int(top_neuron_idx[i]), int(top_neuron_idx[j]))
+            for i in range(m) for j in range(i + 1, m)
+        ][:max_pairs]
+    if not pairs:
+        return (
+            hz_in.c.new_zeros((0, ng_new)),
+            hz_in.c.new_zeros((0, nb_new)),
+            hz_in.c.new_zeros((0, 1)),
+        )
+
+    Gc_pre = hz_in.Gc[unstable_idx].detach().cpu().numpy()  # (k, ng)
+    Gb_pre = hz_in.Gb[unstable_idx].detach().cpu().numpy()  # (k, nb)
+    c_pre = hz_in.c[unstable_idx, 0].detach().cpu().numpy()  # (k,)
+    ng = int(hz_in.Gc.shape[1])
+    nb = int(hz_in.Gb.shape[1])
+    col_xi2_np = col_xi2.detach().cpu().numpy()  # (k,) absolute indices in new ng
+
+    rows_Ac: "list[_np.ndarray]" = []
+    rows_Ab: "list[_np.ndarray]" = []
+    rhss: "list[float]" = []
+    for a_idx, b_idx in pairs:
+        la = float(alpha_np[a_idx]); ua = float(beta_np[a_idx])
+        lb_p = float(alpha_np[b_idx]); ub_p = float(beta_np[b_idx])
+        facets = _pair_hull_facets_9vertex(la, ua, lb_p, ub_p)
+        if not facets:
+            continue
+        Gc_a, Gc_b = Gc_pre[a_idx], Gc_pre[b_idx]
+        Gb_a, Gb_b = Gb_pre[a_idx], Gb_pre[b_idx]
+        c_a, c_b = float(c_pre[a_idx]), float(c_pre[b_idx])
+        col_a, col_b = int(col_xi2_np[a_idx]), int(col_xi2_np[b_idx])
+        beta_a, beta_b = float(beta_np[a_idx]), float(beta_np[b_idx])
+        for f in facets:
+            c_pa = f["c_pa"]; c_pb = f["c_pb"]
+            c_postA = f["c_postA"]; c_postB = f["c_postB"]
+            rhs = f["rhs"]
+            # Skip degenerate / numerically-zero facets.
+            if (abs(c_pa) + abs(c_pb) + abs(c_postA) + abs(c_postB)) < 1e-12:
+                continue
+            row_Ac = _np.zeros(ng_new, dtype=_np.float64)
+            row_Ab = _np.zeros(nb_new, dtype=_np.float64)
+            row_Ac[:ng] = c_pa * Gc_a + c_pb * Gc_b
+            row_Ab[:nb] = c_pa * Gb_a + c_pb * Gb_b
+            row_Ac[col_a] += c_postA * (-beta_a / 2.0)
+            row_Ac[col_b] += c_postB * (-beta_b / 2.0)
+            row_rhs = (rhs - c_pa * c_a - c_pb * c_b
+                       - c_postA * (beta_a / 2.0)
+                       - c_postB * (beta_b / 2.0))
+            rows_Ac.append(row_Ac)
+            rows_Ab.append(row_Ab)
+            rhss.append(float(row_rhs))
+
+    if not rows_Ac:
+        return (
+            hz_in.c.new_zeros((0, ng_new)),
+            hz_in.c.new_zeros((0, nb_new)),
+            hz_in.c.new_zeros((0, 1)),
+        )
+    Ac_rows = torch.tensor(_np.stack(rows_Ac), device=device, dtype=dtype)
+    Ab_rows = torch.tensor(_np.stack(rows_Ab), device=device, dtype=dtype)
+    b_rows = torch.tensor(
+        _np.asarray(rhss).reshape(-1, 1), device=device, dtype=dtype
+    )
+    return Ac_rows, Ab_rows, b_rows
 
 
 def _hz_fact(fact: Fact, hz: HZono) -> Fact:
@@ -520,16 +1452,159 @@ def hz_apply_relu(hz: HZono, external_bounds=None) -> HZono:
         [em_old, torch.ones(3 * k, dtype=torch.bool, device=device)]
     )
 
+    Ac_final = torch.cat([old_Ac_ext, eq_Ac], dim=0)
+    Ab_final = torch.cat([old_Ab_ext, eq_Ab], dim=0)
+    b_final = torch.cat([hz.b, eq_b], dim=0)
+    em_final = em_new
+
+    # ─── Forward-only pair-ReLU joint hull cuts (env-gated) ───
+    # When ACT_HZ_PAIR_RELU_CUTS=1, generate convex-hull facets for top-K
+    # unstable-pair (pre, post) joint sets and append them as inequality
+    # rows to (Ac, Ab, b). The cuts ARE the v8 encoding's missing joint
+    # structure: each cut is a linear inequality in (xi_c_old, xi_c_new)
+    # that holds for every real input but tightens the LP relaxation.
+    #
+    # Soundness: facets come from scipy.ConvexHull on the 9-vertex lifted
+    # ReLU graph; every facet is derivable from the box + ReLU semantics
+    # (see _pair_hull_facets_9vertex). No autograd, no backward, no
+    # randomness.
+    if os.environ.get("ACT_HZ_PAIR_RELU_CUTS", "0") == "1" and k >= 2:
+        # DEPRECATED: independent-box hull is mathematically redundant.
+        # See _pair_hull_facets_9vertex docstring + corresponding memory
+        # entry. Kept only for retroactive experiments; default OFF.
+        max_pairs = int(os.environ.get("ACT_HZ_PAIR_RELU_CUTS_MAX_PAIRS", "16"))
+        try:
+            cut_Ac, cut_Ab, cut_b = _build_pair_cut_rows_for_relu(
+                hz_in=hz,
+                unstable_idx=unstable_idx,
+                alpha=alpha,
+                beta=beta,
+                col_xi2=col_xi2,
+                ng_new=ng_new,
+                nb_new=nb_new,
+                max_pairs=max_pairs,
+            )
+            if cut_Ac.shape[0] > 0:
+                Ac_final = torch.cat([Ac_final, cut_Ac], dim=0)
+                Ab_final = torch.cat([Ab_final, cut_Ab], dim=0)
+                b_final = torch.cat([b_final, cut_b], dim=0)
+                em_final = torch.cat([
+                    em_final,
+                    torch.zeros(cut_Ac.shape[0], dtype=torch.bool, device=device),
+                ])
+        except Exception:
+            pass
+
+    # ─── Forward-only CORRELATED pair-ReLU joint hull cuts (env-gated) ───
+    # These cuts use 8 SciPy LPs per pair over hz_in's existing constraint
+    # set to compute the TRUE joint reachable set of (pre_a, pre_b), then
+    # lift to 4D and take the hull. The resulting facets are NOT implied
+    # by independent triangle×triangle constraints because they encode
+    # the actual correlation introduced by shared input factors.
+    # Each ReLU call when env-set adds top-K pair cuts; project_eq_elim
+    # downstream propagates them through subsequent layers' linear ops.
+    #
+    # Soundness: facets derived from the convex hull of a SUPER-SET of
+    # the true lifted joint set (the support polytope over-approximates
+    # the linear image). No autograd, no backward bound prop, no
+    # randomness — only 8 SciPy HiGHS LPs per pair.
+    if os.environ.get("ACT_HZ_CORR_PAIR_CUTS", "0") == "1" and k >= 2:
+        max_pairs_c = int(
+            os.environ.get("ACT_HZ_CORR_PAIR_CUT_MAX_PAIRS", "4")
+        )
+        n_dirs = int(os.environ.get("ACT_HZ_CORR_PAIR_CUT_DIRS", "8"))
+        lp_timeout = float(
+            os.environ.get("ACT_HZ_CORR_PAIR_CUT_LP_TIMEOUT_S", "2.0")
+        )
+        layer_counter_now = RELU_LAYER_COUNTER[0]
+        # Optional scope limiter: only emit cuts in the LAST K ReLU layers.
+        # Since we don't know the total layer count up front, use a simple
+        # heuristic — only emit cuts when `layer_counter_now` is in the
+        # explicit target file (output-aware mode) OR when a separate env
+        # whitelist matches. Default: no restriction (legacy behavior).
+        _last_layers_only = os.environ.get(
+            "ACT_HZ_CORR_PAIR_CUT_LAST_LAYERS", ""
+        )
+        _allowed_layers = None
+        if _last_layers_only:
+            try:
+                _allowed_layers = {
+                    int(s.strip()) for s in _last_layers_only.split(",")
+                    if s.strip()
+                }
+            except Exception:
+                _allowed_layers = None
+        if (_allowed_layers is not None
+                and layer_counter_now not in _allowed_layers):
+            # Skip cut emission for this layer.
+            RELU_LAYER_COUNTER[0] += 1
+            _relu_trace_record_v8(
+                hz_in=hz, unstable_idx=unstable_idx, alpha=alpha, beta=beta,
+                col_xi2=col_xi2, col_z=col_z, ng_old=ng, nb_old=nb,
+            )
+            out = HZono(
+                c=out_c, Gc=out_Gc, Gb=out_Gb,
+                Ac=Ac_final, Ab=Ab_final, b=b_final,
+                eq_mask=em_final,
+            )
+            _propagate_base(hz, out)
+            return out
+        try:
+            cc_Ac, cc_Ab, cc_b = _build_correlated_pair_cut_rows_for_relu(
+                hz_in=hz,
+                unstable_idx=unstable_idx,
+                alpha=alpha,
+                beta=beta,
+                col_xi2=col_xi2,
+                ng_new=ng_new,
+                nb_new=nb_new,
+                max_pairs=max_pairs_c,
+                n_dirs=n_dirs,
+                lp_timeout_s=lp_timeout,
+                layer_counter=layer_counter_now,
+            )
+            if cc_Ac.shape[0] > 0:
+                Ac_final = torch.cat([Ac_final, cc_Ac], dim=0)
+                Ab_final = torch.cat([Ab_final, cc_Ab], dim=0)
+                b_final = torch.cat([b_final, cc_b], dim=0)
+                em_final = torch.cat([
+                    em_final,
+                    torch.zeros(cc_Ac.shape[0], dtype=torch.bool, device=device),
+                ])
+        except Exception:
+            # Cut generation is best-effort: failure leaves the v8
+            # encoding intact (no soundness impact).
+            pass
+
     out = HZono(
         c=out_c,
         Gc=out_Gc,
         Gb=out_Gb,
-        Ac=torch.cat([old_Ac_ext, eq_Ac], dim=0),
-        Ab=torch.cat([old_Ab_ext, eq_Ab], dim=0),
-        b=torch.cat([hz.b, eq_b], dim=0),
-        eq_mask=em_new,
+        Ac=Ac_final,
+        Ab=Ab_final,
+        b=b_final,
+        eq_mask=em_final,
     )
     _propagate_base(hz, out)
+
+    # Forward-only ReLU trace: env-gated recording (separate from cuts —
+    # cuts are inline; trace is for downstream diagnostic/analysis).
+    _relu_trace_record_v8(
+        hz_in=hz,
+        unstable_idx=unstable_idx,
+        alpha=alpha,
+        beta=beta,
+        col_xi2=col_xi2,
+        col_z=col_z,
+        ng_old=ng,
+        nb_old=nb,
+    )
+
+    # Per-call ReLU layer counter, used by output-aware cut selection
+    # (PAIR_TARGETS_BY_LAYER indexed by this counter) and by downstream
+    # analysis. Increment unconditionally so layer numbering is stable.
+    RELU_LAYER_COUNTER[0] += 1
+
     return out
 
 

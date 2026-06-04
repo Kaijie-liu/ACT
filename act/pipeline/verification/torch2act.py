@@ -100,6 +100,7 @@ class _LayerGraphBuilder:
         self, model: nn.Module, input_shape: Tuple[int, ...],
         dtype: torch.dtype = torch.float64,
         sample_input: Optional[torch.Tensor] = None,
+        input_bounds: Optional[Tuple[torch.Tensor, torch.Tensor]] = None,
     ):
         self.model = model
         self.input_shape = input_shape
@@ -111,6 +112,11 @@ class _LayerGraphBuilder:
         # never consulted. The resulting ACT Net is locally valid around this
         # sample (e.g. for adversarial perturbation verification near it).
         self.sample_input = sample_input
+        # Sound VNNLIB input BOX bounds for parser-time dynamic-index
+        # envelopes. Unlike ``sample_input``, these bounds describe the
+        # universally quantified input set and may be used by formal
+        # conversion paths such as bounded dynamic OnnxSlice -> LUT_BOUNDS.
+        self.input_bounds = input_bounds
         
         # Layer building state
         self.layers: List[Layer] = []
@@ -1185,6 +1191,7 @@ def build_act(
     input_shape: Tuple[int, ...],
     dtype: torch.dtype = torch.float64,
     sample_input: Optional[torch.Tensor] = None,
+    input_bounds: Optional[Tuple[torch.Tensor, torch.Tensor]] = None,
 ) -> Tuple[List[Layer], Dict[int, List[int]], Dict[int, List[int]]]:
     """
     Build ACT layer graph from a PyTorch model.
@@ -1199,11 +1206,21 @@ def build_act(
             data-derived). When supplied, the resulting ACT Net is locally
             valid around this sample (e.g. for adversarial perturbations near
             it) but is not universally valid for arbitrary inputs.
+        input_bounds: Optional pair ``(lb, ub)`` for the universally
+            quantified input box. Parser-time dynamic-index envelopes may use
+            these bounds only when the resulting ACT layer is sound over the
+            whole box.
 
     Returns:
         Tuple of (layers, preds, succs) forming a DAG
     """
-    builder = _LayerGraphBuilder(model, input_shape, dtype, sample_input=sample_input)
+    builder = _LayerGraphBuilder(
+        model,
+        input_shape,
+        dtype,
+        sample_input=sample_input,
+        input_bounds=input_bounds,
+    )
     return builder.build_layer_graph()
 
 
@@ -1255,6 +1272,16 @@ class TorchToACT:
                 if labeled is not None and hasattr(labeled, 'tensor'):
                     sample_input = labeled.tensor
         self.sample_input = sample_input
+
+        self.input_bounds: Optional[Tuple[torch.Tensor, torch.Tensor]] = None
+        input_spec_layers = [x for x in mods if type(x).__name__ == "InputSpecLayer"]
+        if len(input_spec_layers) == 1:
+            spec_layer = input_spec_layers[0]
+            if getattr(spec_layer, "kind", None) == "BOX":
+                lb = getattr(spec_layer, "lb", None)
+                ub = getattr(spec_layer, "ub", None)
+                if isinstance(lb, torch.Tensor) and isinstance(ub, torch.Tensor):
+                    self.input_bounds = (lb.detach().clone(), ub.detach().clone())
 
         # State
         self.layers: List[Layer] = []
@@ -1321,7 +1348,11 @@ class TorchToACT:
         
         dtype = getattr(self.input_layer, 'dtype', torch.float64)
         model_layers, model_preds, model_succs = build_act(
-            inner, self.shape, dtype, sample_input=self.sample_input,
+            inner,
+            self.shape,
+            dtype,
+            sample_input=self.sample_input,
+            input_bounds=self.input_bounds,
         )
         
         # Offset layer IDs

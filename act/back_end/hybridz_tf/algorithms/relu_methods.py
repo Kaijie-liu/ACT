@@ -69,6 +69,26 @@ def _selective_chull_score(lb: torch.Tensor, ub: torch.Tensor) -> torch.Tensor:
 # ---------------------------------------------------------------------------
 
 
+def _is_relu_recoverable_oom(e: Exception) -> bool:
+    """True for memory-allocation failures we can retry on CPU."""
+    if isinstance(e, MemoryError):
+        return True
+    msg = str(e).lower()
+    return any(t in msg for t in (
+        "out of memory", "cuda out of memory", "memory", "alloc",
+        "insufficient resources", "cuda error",
+    ))
+
+
+def _hz_to_cpu(hz: HZono) -> HZono:
+    """Move all HZono tensors to CPU. Returns a new HZono."""
+    return HZono(
+        c=hz.c.cpu(), Gc=hz.Gc.cpu(), Gb=hz.Gb.cpu(),
+        Ac=hz.Ac.cpu(), Ab=hz.Ab.cpu(), b=hz.b.cpu(),
+        eq_mask=(hz.eq_mask.cpu() if hz.eq_mask is not None else None),
+    )
+
+
 def hz_apply_relu_triangle(hz: HZono, external_bounds: Optional[Tuple[torch.Tensor, torch.Tensor]] = None) -> HZono:
     """Sound DeepZ-style ReLU relaxation.
 
@@ -85,6 +105,88 @@ def hz_apply_relu_triangle(hz: HZono, external_bounds: Optional[Tuple[torch.Tens
     For ``external_bounds`` arg: if provided, used for active/inactive
     classification (HyZor's `external_bounds` semantic). Otherwise the
     unconstrained box bounds are used.
+
+    2026-06-03 P1.6 B advisor reframe: memory-safe path is
+    SparseGcZ-based, NOT CPU-fallback. When
+    ``ACT_HZ_RELU_FALLBACK_SAFE=1`` and the GPU dense allocation
+    OOMs, we route through SparseGcZ.apply_relu_triangle (which
+    builds the aux block as a sparse COO tensor with k nnz instead
+    of dense (n, k) allocation). This avoids materializing the
+    dense output `Gc_out = torch.zeros((n, ng+k))` which is what
+    OOMs on VGG L29 (n=100352, ng+k → 28+ GiB).
+
+    The CPU-fallback variant is retained as a last-resort tier only
+    when the SparseGcZ conversion itself OOMs.
+    """
+    # Memory-safe wrapper: if enabled and GPU OOM occurs, route through
+    # SparseGcZ-based triangle (the aux block is naturally sparse).
+    _safe = os.environ.get("ACT_HZ_RELU_FALLBACK_SAFE", "0").strip().lower() in (
+        "1", "true", "yes", "on")
+    if _safe and hz.c.device.type == "cuda":
+        try:
+            return _hz_apply_relu_triangle_inner(hz, external_bounds)
+        except (MemoryError, RuntimeError) as e:
+            if not _is_relu_recoverable_oom(e):
+                raise
+            n_in = int(hz.c.shape[0])
+            ng_in = int(hz.Gc.shape[1])
+            if os.environ.get("ACT_HZ_RELU_DEBUG", "0") == "1":
+                print(
+                    f"[HZ-RELU] triangle GPU OOM (n={n_in}, ng={ng_in}): "
+                    f"{type(e).__name__}: {e}; "
+                    f"retry SparseGcZ",
+                    flush=True,
+                )
+            try:
+                torch.cuda.empty_cache()
+            except Exception:
+                pass
+            # Tier 1 — SparseGcZ fallback (preserves GPU, sparse aux block).
+            try:
+                from act.back_end.hybridz_tf.sparse_gc_t2 import (
+                    act_hz_dense_to_sparse,
+                )
+                # Force conversion regardless of density: even at dense
+                # density, the OUTPUT sparse representation can fit because
+                # the aux block stays sparse (k nnz vs (n×k) dense).
+                sparse_hz = act_hz_dense_to_sparse(
+                    hz, density_threshold=1.0)
+                if not hasattr(sparse_hz, "Gc_sparse"):
+                    # Conversion declined (e.g., nb>0 incompatible).
+                    raise RuntimeError(
+                        "act_hz_dense_to_sparse returned non-sparse")
+                eb = external_bounds
+                if eb is not None:
+                    eb = (eb[0].to(sparse_hz.device),
+                          eb[1].to(sparse_hz.device))
+                return sparse_hz.apply_relu_triangle(external_bounds=eb)
+            except (MemoryError, RuntimeError) as e_sparse:
+                if not _is_relu_recoverable_oom(e_sparse):
+                    raise
+                if os.environ.get("ACT_HZ_RELU_DEBUG", "0") == "1":
+                    print(
+                        f"[HZ-RELU] SparseGcZ also OOM/failed: "
+                        f"{type(e_sparse).__name__}: {e_sparse}; "
+                        f"falling back to CPU dense",
+                        flush=True,
+                    )
+            try:
+                torch.cuda.empty_cache()
+            except Exception:
+                pass
+            # Tier 2 — CPU dense (last resort; runs out of RAM on huge layers).
+            hz_cpu = _hz_to_cpu(hz)
+            eb_cpu = None
+            if external_bounds is not None:
+                eb_cpu = (external_bounds[0].cpu(),
+                          external_bounds[1].cpu())
+            return _hz_apply_relu_triangle_inner(hz_cpu, eb_cpu)
+    return _hz_apply_relu_triangle_inner(hz, external_bounds)
+
+
+def _hz_apply_relu_triangle_inner(hz: HZono, external_bounds: Optional[Tuple[torch.Tensor, torch.Tensor]] = None) -> HZono:
+    """Body of triangle relaxation; the original implementation
+    without the safety wrapper. Called directly by the wrapper.
     """
     dtype, device = hz.c.dtype, hz.c.device
     n = int(hz.c.shape[0])
@@ -163,9 +265,99 @@ def hz_apply_relu_triangle(hz: HZono, external_bounds: Optional[Tuple[torch.Tens
     Ab_out = hz.Ab
     b_out = hz.b
 
-    return HZono(c=c_out, Gc=Gc_out, Gb=Gb_out,
+    # ─── Optional correlated pair-ReLU cuts for triangle layers ───
+    # The encoding `post = lam*pre + mu + mu*eps` means:
+    #   pre  = c_pre + Gc_pre @ xi_c_old + Gb_pre @ xi_b_old
+    #   post = lam*c_pre + mu + lam*(Gc_pre @ xi_c_old + Gb_pre @ xi_b_old)
+    #          + mu * eps_new
+    # A pairwise hull facet
+    #   c_pa*pre_a + c_pb*pre_b + c_postA*post_a + c_postB*post_b <= rhs
+    # substitutes to an inequality on (xi_c_old, xi_b_old, eps_new_a,
+    # eps_new_b). We emit it the same way as the v8 path (inline append
+    # to Ac/Ab/b before constructing the output HZono).
+    try:
+        if (os.environ.get("ACT_HZ_CORR_PAIR_CUTS", "0") == "1"
+                and k >= 2):
+            from act.back_end.hybridz_tf.tf_mlp import (
+                _build_triangle_corr_pair_cuts, RELU_LAYER_COUNTER,
+            )
+            layer_counter_now = RELU_LAYER_COUNTER[0]
+            max_pairs = int(
+                os.environ.get("ACT_HZ_CORR_PAIR_CUT_MAX_PAIRS", "4")
+            )
+            n_dirs = int(os.environ.get("ACT_HZ_CORR_PAIR_CUT_DIRS", "8"))
+            lp_timeout = float(
+                os.environ.get("ACT_HZ_CORR_PAIR_CUT_LP_TIMEOUT_S", "2.0")
+            )
+            col_eps = torch.arange(k, device=device) + ng0
+            cut_Ac, cut_Ab, cut_b = _build_triangle_corr_pair_cuts(
+                hz_in=hz,
+                unstable_idx=unstable_idx,
+                alpha=l_uns, beta=u_uns,
+                lam=lam, mu=mu,
+                col_eps=col_eps,
+                ng_new=ng, nb_new=nb0,
+                max_pairs=max_pairs,
+                n_dirs=n_dirs,
+                lp_timeout_s=lp_timeout,
+                layer_counter=layer_counter_now,
+            )
+            if cut_Ac.shape[0] > 0:
+                # Append cuts as inequality rows. Use torch.cat unconditionally
+                # — width-0 matrices concat correctly (e.g., (nc, 0) cat
+                # (n_cuts, 0) = (nc + n_cuts, 0)). Earlier replace-on-empty
+                # branch silently dropped the original Ab rows for triangle
+                # layers without binaries, which broke factor LP soundness
+                # and caused phantom LP_max blowups (77 vs baseline 1.44).
+                Ac_out = torch.cat([Ac_out, cut_Ac], dim=0)
+                # Ensure cut_Ab matches Ab_out's width (handles nb0=0 case).
+                if cut_Ab.shape[1] != Ab_out.shape[1]:
+                    cut_Ab = cut_Ab[:, :Ab_out.shape[1]]
+                    if cut_Ab.shape[1] < Ab_out.shape[1]:
+                        cut_Ab = torch.cat([
+                            cut_Ab,
+                            torch.zeros(
+                                cut_Ab.shape[0],
+                                Ab_out.shape[1] - cut_Ab.shape[1],
+                                device=device, dtype=dtype,
+                            ),
+                        ], dim=1)
+                Ab_out = torch.cat([Ab_out, cut_Ab], dim=0)
+                b_out = torch.cat([b_out, cut_b], dim=0)
+                em_old = torch.cat([
+                    em_old,
+                    torch.zeros(cut_Ac.shape[0], dtype=torch.bool, device=device),
+                ])
+    except Exception:
+        # Cut generation best-effort; failure leaves triangle encoding intact.
+        pass
+
+    out = HZono(c=c_out, Gc=Gc_out, Gb=Gb_out,
                  Ac=Ac_out, Ab=Ab_out, b=b_out,
                  eq_mask=em_old.clone())
+
+    # Forward-only triangle-ReLU trace recording + per-layer counter
+    # increment. Mirrors the eq_lagr_v8 hook in tf_mlp.hz_apply_relu so the
+    # offline pair-selector and second-pass cut emitter can target
+    # triangle layers too (covers the conv backbone in large_cls mode
+    # where most ReLUs fall back to triangle due to memory budget).
+    try:
+        from act.back_end.hybridz_tf.tf_mlp import (
+            _relu_trace_record_triangle, RELU_LAYER_COUNTER,
+        )
+        col_eps = torch.arange(k, device=device) + ng0
+        _relu_trace_record_triangle(
+            hz_in=hz,
+            unstable_idx=unstable_idx,
+            alpha=l_uns, beta=u_uns,
+            col_eps=col_eps,
+            ng_old=ng0, nb_old=nb0,
+        )
+        RELU_LAYER_COUNTER[0] += 1
+    except Exception:
+        pass
+
+    return out
 
 
 # ---------------------------------------------------------------------------

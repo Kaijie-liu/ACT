@@ -786,6 +786,7 @@ class SparseGcZ:
         object.__setattr__(self, "_base_ng", int(ng))
         object.__setattr__(self, "_base_nb", int(nb))
         object.__setattr__(self, "_base_nc", int(nc))
+        object.__setattr__(self, "_base_root_id", None)
 
     def _inherit_base(self, out: "SparseGcZ") -> "SparseGcZ":
         """Preserve shared-factor prefix metadata across exact sparse ops."""
@@ -800,6 +801,9 @@ class SparseGcZ:
         object.__setattr__(
             out, "_base_nc",
             int(min(getattr(self, "_base_nc", self.nc), out.nc)),
+        )
+        object.__setattr__(
+            out, "_base_root_id", getattr(self, "_base_root_id", None)
         )
         return out
 
@@ -855,7 +859,7 @@ class SparseGcZ:
             if self.nb > 0
             else torch.zeros((self.nc, 0), dtype=self.dtype, device=self.device)
         )
-        return HZono(
+        out = HZono(
             c=self.c.view(-1, 1),
             Gc=Gc_dense,
             Gb=Gb_dense,
@@ -864,6 +868,24 @@ class SparseGcZ:
             b=self.b.clone(),
             eq_mask=self.eq_mask.clone(),
         )
+        object.__setattr__(
+            out, "_base_ng",
+            int(min(getattr(self, "_base_ng", self.ng), out.ng)),
+        )
+        object.__setattr__(
+            out, "_base_nb",
+            int(min(getattr(self, "_base_nb", self.nb), out.nb)),
+        )
+        object.__setattr__(
+            out, "_base_nc",
+            int(min(getattr(self, "_base_nc", self.nc), out.nc)),
+        )
+        root_id = getattr(self, "_base_root_id", None)
+        object.__setattr__(
+            out, "_base_root_id",
+            None if root_id is None else int(root_id),
+        )
+        return out
 
     # Alias for parity with HyZor's HybridZonotope-style API. HyZor's
     # `to_dense_hz` returns HybridZonotope; here we return HZono with
@@ -928,7 +950,7 @@ class SparseGcZ:
             c_new = c_new + b_t
         n_out = c_new.numel()
         ng = Gc_dense.shape[1]
-        return HZono(
+        out = HZono(
             c=c_new.view(-1, 1),
             Gc=Gc_dense,
             Gb=torch.zeros((n_out, 0), dtype=self.dtype, device=self.device),
@@ -937,6 +959,24 @@ class SparseGcZ:
             b=self.b.clone(),
             eq_mask=self.eq_mask.clone(),
         )
+        object.__setattr__(
+            out, "_base_ng",
+            int(min(getattr(self, "_base_ng", self.ng), out.ng)),
+        )
+        object.__setattr__(
+            out, "_base_nb",
+            int(min(getattr(self, "_base_nb", self.nb), out.nb)),
+        )
+        object.__setattr__(
+            out, "_base_nc",
+            int(min(getattr(self, "_base_nc", self.nc), out.nc)),
+        )
+        root_id = getattr(self, "_base_root_id", None)
+        object.__setattr__(
+            out, "_base_root_id",
+            None if root_id is None else int(root_id),
+        )
+        return out
 
     def apply_relu_triangle(
         self, *,
