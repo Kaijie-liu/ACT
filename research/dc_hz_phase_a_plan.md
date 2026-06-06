@@ -1,5 +1,17 @@
 # Spec-Conditioned HZ (SC-HZ) — Phase A Design Lock
 
+---
+
+> ## ⚠ Post-experiment correction (2026-06-04 night)
+>
+> The §1.3 PRUNE thesis (d_L-driven generator pruning tightens LP UB) was **empirically falsified** by the Phase A K ablation: 40/40 Dense iids show LP UB monotonically **grows** as K shrinks. PRUNE is sound but is a precision no-op on the tested benchmarks.
+>
+> What did work — and produced the 358 NEW A on safenlp_2024 (audited 368/368 STRICT-PASS) — is the per-rival LP enumeration + closed-form box-corner decode + strict ORT replay path. See [research/sc_hz_phase_b_results_20260604.md](sc_hz_phase_b_results_20260604.md) for the corrected framing.
+>
+> Read this design lock as **the original hypothesis tested in Phase A**, not the load-bearing claim of the project.
+
+---
+
 **Date**: 2026-06-04 night
 **Authorization**: research-only proposal under the roadmap future-work track.
 No production default or paper headline changes are authorized by this file.
@@ -88,8 +100,9 @@ PRUNE(h_HZ, d_L, K):
     drop = order[K:]
     G_kept = G[:, keep]                             # (hidden_dim, K)
     r_tail = abs(G[:, drop]).sum(axis=1)            # (hidden_dim,) row-wise L1
-    G_new  = concatenate([G_kept, r_tail[:, None]], axis=1)  # (hidden_dim, K+1)
-    new_factor_ids = keep_ids + [fresh_tail_aux_id]
+    G_tail = diag(r_tail)                           # conceptual; store sparsely / BoxHZ
+    G_new  = concatenate([G_kept, G_tail], axis=1)  # (hidden_dim, K + hidden_dim)
+    new_factor_ids = keep_ids + fresh_tail_aux_ids  # one independent tail id per coordinate
     return HZ(c=c, G=G_new, factor_ids=new_factor_ids,
               binary_generators=h_HZ.binary_generators)        # binary side untouched
 ```
@@ -106,23 +119,30 @@ Proof: any point `c + G ξ` with `ξ ∈ [-1, 1]^ng` can be expressed as:
 ```
 c + G ξ  =  c + G[:, keep] · ξ_keep  +  G[:, drop] · ξ_drop
 ```
-Define `ξ_tail = sign(G[:, drop] · ξ_drop) ∈ [-1, +1]` per row (after a
-common rescaling argument). The contribution of the dropped generators is
-bounded coordinate-wise by:
+The contribution of the dropped generators is bounded coordinate-wise by:
 
 ```
-| G[:, drop] · ξ_drop |_i  <=  Σ_{j ∈ drop} |G[i, j]|  =  r_tail_i  =  |r_tail[:, None] · ξ_tail|_i
+| G[:, drop] · ξ_drop |_i  <=  Σ_{j ∈ drop} |G[i, j]|  =  r_tail_i
 ```
 
-Therefore `(c + G ξ) ∈ (c + G_kept · ξ_keep + r_tail · ξ_tail)` with
-`ξ_keep ∈ [-1, +1]^K, ξ_tail ∈ [-1, +1]`. The pruned HZ contains the
-original HZ. **Sound.**
+Therefore `(c + G ξ) ∈ (c + G_kept · ξ_keep + diag(r_tail) · ξ_tail)` with
+`ξ_keep ∈ [-1, +1]^K` and an independent `ξ_tail ∈ [-1, +1]^hidden_dim`.
+The pruned HZ contains the original HZ. **Sound.**
 
-The bound is tight when the dropped generators are axis-aligned in one
-coordinate; loose when they are mutually-correlated in directions
-non-aligned with the kept generators. This is the standard Girard
-reduction's soundness property; we are simply CHOOSING what to keep by a
-different criterion (per-rival relevance) instead of column-norm.
+Important: a single column `r_tail[:, None]` would be unsound because it only
+creates a one-dimensional segment, not an axis-aligned interval box. Phase A
+must use independent tail coordinates or an equivalent BoxHZ / interval
+remainder representation.
+
+Implementation note: `diag(r_tail)` is a mathematical notation. It must not be
+materialized as a dense matrix for conv-sized tensors. The implementation must
+store the tail as a sparse diagonal, BoxHZ, or interval-remainder sidecar and
+expand only through operators that require explicit columns.
+
+The bound is tight when the dropped generators behave independently per
+coordinate; loose when the dropped directions are strongly correlated. This is
+the standard interval-remainder tradeoff; we are choosing what to keep by a
+different criterion (per-rival relevance) instead of column norm.
 
 ### 1.5 The output query and verdict
 
@@ -134,7 +154,7 @@ y^r  =  W_{N+1} · h_N^r  +  b_{N+1}
 ```
 
 The rival margin `(y^r[r] - y^r[y_t])` lives in 1-D and is bounded by an LP
-over the K+1 generators of `h_N^r`. This LP is much smaller than the
+over the kept generators plus the interval tail of `h_N^r`. This LP is much smaller than the
 original full-HZ LP, **AND** has been per-rival tightened by pruning
 irrelevant generators.
 
@@ -180,7 +200,7 @@ mixed into Phase A because they would make attribution ambiguous.
 |---|---|
 | I1 | Forward-only per the adopted definition (§9 of redesign): no bound at L′ > L refines the bound at L. d_L^r is computed from weights only and used only as a generator-relevance score. |
 | I2 | No gradients. d_L^r is a weight-matrix transpose product, NOT an autograd-derived quantity. |
-| I3 | Continuous LP only. The LP at the end is over the K+1 generators with `ξ ∈ [-1, +1]`. No binary integer reasoning in Phase A. |
+| I3 | Continuous LP only. The LP at the end is over the kept generators plus interval-tail generators with `ξ ∈ [-1, +1]`. No binary integer reasoning in Phase A. |
 | I4 | No BaB, no input splitting. |
 | I5 | No random / corner / PGD candidates. FAL candidates come from the per-rival LP `ξ*` decoded back to input via the existing receipt decoder. |
 | I6 | Soundness. PRUNE is sound by §1.4. The forward HZ ops are existing sound implementations. |
@@ -217,38 +237,89 @@ What is NOT in scope (Phase A):
 
 ## 5. Hard stop gate (Phase A → Phase B)
 
-20 iids per benchmark × 4 benchmarks = 80 sentinels total.
+20 iids per benchmark × 4 benchmarks = 80 sentinels total. The four
+benchmarks are deliberately chosen to span the per-bench signal types
+that SC-HZ should and should NOT lift:
 
-Benchmarks:
-- **cifar100_2024** — 20 iids from atlas v3 near-boundary set (lowest positive
-  `final_lp_margin` UNK iids). Production endcap LP is at the per-neuron
-  triangle math ceiling per §7; SC-HZ tests whether query-local generator
-  budgeting can recover information earlier than the final per-neuron hull.
-- **tinyimagenet_2024** — 20 iids from the current UNKNOWN/OOM pool, stratified
-  by model family and wall time. Dense-conv behavior must be tested outside
-  CIFAR.
-- **safenlp_2024** — 20 iids drawn from the UNK pool (currently large enough
-  UNK). The wide-spec disjunctive nature is where SC-HZ's per-rival forward
-  pays off most.
-- **acasxu_2023** — 20 iids drawn from the UNK pool (currently 98
-  UNK). Small-dense net; per-rival pruning has high directional signal.
+| Benchmark | iid pool | A priori signal expectation | What this benchmark tells us |
+|---|---|---|---|
+| **safenlp_2024** | 20 random from UNK pool, seed=20260604 | **HIGH** — primary positive signal target | wide-spec disjunctive; many rivals per iid → per-rival pruning should let small disjuncts get LP-tight individually. If safenlp shows ≥+3 V/A or ≥30% LP UB reduction, the SC-HZ thesis is supported. |
+| **acasxu_2023** | 20 random from UNK pool, seed=20260604 | **MEDIUM-HIGH** — small-dense positive signal | mid-network blowup in ng; per-rival pruning has high directional contrast → LP should tighten on the rival the proof needs. |
+| **tinyimagenet_2024** | 20 random from UNK or OOM-cut pool | **MEDIUM** — dense-conv outside-CIFAR signal | tests whether SC-HZ helps on a dense-conv architecture where production hits Girard cap. Failure here means SC-HZ is wide-spec-only. |
+| **cifar100_2024** | 20 lowest positive `final_lp_margin` UNK iids from atlas v3 | **LOW / NONE — sanity control** | §7 has already shown production endcap LP is bit-exact with the spec-LP at the per-neuron level. `ng_at_snapshot` < 6000 on all 185 UNK iids (no Girard cap fires). SC-HZ's pruning **must not tighten LP UB here** because there is no compressed representation to override. If CIFAR DOES show LP UB tightening, PRUNE has a bug (it cannot tighten what is already at the math ceiling). |
+
+### Why include CIFAR if it should not lift
+
+CIFAR is a **negative control**. The §7 finding is the strongest evidence
+the project has that per-neuron triangle is at the math ceiling; SC-HZ
+operating on top of this should produce **LP UB ≥ production baseline** on
+every CIFAR sentinel (pruning is over-approximating, so it can only loosen
+or stay equal). A CIFAR LP UB *tightening* would mean PRUNE accidentally
+modified bound information (forbidden by I1), so the CIFAR row is
+diagnostic: it catches a class of implementation bug that the
+positive-signal benchmarks cannot.
+
+The cumulative-gate V/A and median-LP-UB statistics below are computed on the
+**positive-signal group only** (`safenlp_2024`, `acasxu_2023`,
+`tinyimagenet_2024`). CIFAR is not credit. It is a negative-control audit:
+the expected behaviour is "0 new V/A on CIFAR, LP UB unchanged or slightly
+looser". A CIFAR lift or unexplained tightening is a bug signal, not a
+success.
+
+### Sentinel iid file + pool-size caveat
+
+The 80 sentinels are committed at:
+
+```text
+audit_results/sc_hz_phase_a_sentinels_20260604.json
+```
+
+with seed = 20260604. CIFAR (20) + TinyImageNet (20) come from a real
+UNK pool of size 185 / 165 respectively; **safenlp and acasxu sentinel
+pools fell back to `list(range(50))`** because the §9 5-benchmark sweep
+did not include those two benchmarks. This is acceptable for the
+deterministic selection record, BUT the Phase A driver MUST do a
+pre-flight check:
+
+```text
+For each safenlp / acasxu sentinel iid in the JSON:
+  Run a 60-second production verification (existing path, K=ng = full).
+  If the iid resolves to V or A under production:
+    substitute the next iid in benchmark order until 20 production-UNK iids are gathered.
+  Record the substitutions in the per-iid receipt.
+```
+
+This pre-flight is a 1-iid-at-a-time verification, cheap, and guarantees
+the gate measures lift on iids that are CURRENTLY UNK (not iids that
+production already handles).
 
 ### Gate criteria
 
 **PASS** iff:
 - All 80 iids complete fail-closed (crashes become explicit ERROR rows, not
   silent drops).
-- Cumulative new V/A across the 80 sentinels ≥ **5**, OR median LP UB reduction
-  across completed UNKNOWN rows ≥ **25%** relative to production baseline.
+- On the positive-signal group (`safenlp_2024`, `acasxu_2023`,
+  `tinyimagenet_2024`), new V/A ≥ **5**, OR at least two of the three
+  positive benchmarks have per-benchmark median LP UB reduction ≥ **25%**
+  across completed UNKNOWN rows relative to production baseline.
+- CIFAR negative-control rows show no unexplained new V/A and no unexplained
+  LP UB tightening relative to production.
 
 **FAIL** iff:
-- Any iid crashes or violates soundness (caught by a parallel ORT replay
-  check on every claimed CERT — Phase A includes this audit).
-- Cumulative new V/A = **0** AND median LP UB reduction < **10%**.
+- Any iid crashes or violates soundness. FAL witnesses must pass strict ORT
+  replay; CERT claims must pass independent LP/provenance/no-lost audit.
+- Positive-signal new V/A = **0** AND every positive benchmark has median LP UB
+  reduction < **10%**.
+- CIFAR negative-control rows show unexplained tightening or new V/A.
 
 **INCONCLUSIVE** in between → advisor decides whether to expand K-cap or
 close. Default action on INCONCLUSIVE is widen K from 256 → 512 and re-run
 the 10 iids that showed the smallest LP UB reduction.
+
+Gate output must report `new_cert`, `new_fal_strict_replay`,
+`phantom_lp_sat`, `median_ub_reduction_by_benchmark`, and
+`cifar_negative_control_status` as separate fields. Do not collapse them into
+one "improvement" count.
 
 If PASS, proceed to Phase B (expanded 6-8 benchmark pilot). If FAIL, close
 the SC-HZ direction; the project continues with the 924 V/A paper and only
@@ -288,12 +359,17 @@ Before any sentinel run:
 
 | Test | Coverage |
 |---|---|
-| `test_prune_soundness` | 1000 deterministic quasi-grid / seeded samples `ξ` in `[-1, +1]^ng` on a toy ng=10 case; verify `(c + G ξ)` is contained in the pruned over-approx. This is a unit test, not a falsification method. |
+| `test_prune_soundness` | Deterministic quasi-grid / seeded samples `ξ` in `[-1, +1]^ng` on toy cases; verify `(c + G ξ)` is contained in the pruned over-approx. Include a regression proving that the single-column `r_tail[:, None]` construction is rejected/never emitted. This is a unit test, not a falsification method. |
+| `test_prune_soundness_under_adversarial_d` ⭐ | **Operationalizes I10.** Runs PRUNE 4 times on the same `(c, G)` with `d_L` chosen as (a) **all-zero**, (b) **random Gaussian**, (c) **sign-flipped relative to the true rival direction**, (d) **deliberately orthogonal to the column with largest column-norm** (worst case for relevance scoring). For each choice, verify the over-approx is still sound on 1000 sampled ξ. **If any of (a)-(d) produces a non-sound result, PRUNE has a bug — not d_L.** |
 | `test_direction_chain` | Synthetic 4-layer linear-only net; verify `d_0 = W_1^T W_2^T W_3^T d_3` matches a brute-force per-coord chain. |
 | `test_forward_parity` | When K is set to ng (no pruning), the pruned forward HZ at output is bit-identical to the baseline forward HZ (LP UB matches within 1e-9). |
 | `test_pruned_lp_ub_at_random_K` | At various K ∈ {64, 128, 256, 512}, the pruned LP UB is ≥ the unpruned LP UB (pruning is over-approximating, so LP UB can only loosen or stay same). |
+| `test_prune_loosens_when_d_is_wrong` | On a sentinel-shape `(c, G)`, run PRUNE with the TRUE rival direction vs. with the SIGN-FLIPPED direction. Verify (1) both LP UBs are ≥ the unpruned LP UB (soundness), AND (2) the true-direction LP UB ≤ the sign-flipped LP UB (signal — the heuristic must actually help when correct, hurt when wrong). If (2) does not hold consistently across 20 random sentinel shapes, the relevance score itself is dubious. |
+| `test_relevance_score_ablations` | Compare four keep-K orderings on the same toy/sentinel-shaped states: linear-only `d_L`, forward-stable-mask `d_L`, random keep-K, and norm keep-K. Soundness must hold for all four; signal is only credited if the selected SC-HZ score beats random/norm on LP UB without any no-lost violation. |
 
 These tests run with pytest and are independent of any production module.
+
+The adversarial-d test (row 2) is what makes the I10 invariant **observable** rather than just an assertion in this document. Per the advisor's principle decision, soundness must hold for **any** d_L, including incorrect or adversarial ones; row 2 is the test that catches a PRUNE implementation that secretly assumes d_L is correct.
 
 ---
 
@@ -320,6 +396,11 @@ if the GPU job is bounded and checkpointed. If this is too slow, batch rivals
 in groups of 5-10 before changing the mathematics.
 
 If Phase A PASSES, Phase B introduces GPU batching for production scale.
+The intended production strategy is: share ordinary affine forward work until
+per-rival PRUNE makes states diverge, pre-filter easy rivals with cheap
+interval bounds, compute `d_L @ G` as batched matrix products, and keep the
+interval tail as sparse metadata. A Phase A prototype may be slower, but it
+must measure these costs rather than hiding them.
 
 ### 8.3 Receipt format
 
@@ -372,7 +453,7 @@ iids that share the model.
 | Gate outcome | Next action |
 |---|---|
 | PASS | Phase B: 6-8 benchmark pilot with no-lost audit. Same K=256 + adaptive widening. |
-| FAIL (V/A = 0 AND median LP UB reduction < 10%) | Close SC-HZ. Paper remains at 924 V/A. Independent engineering cleanup can proceed separately. |
+| FAIL (positive V/A = 0 AND all positive benchmark median LP UB reductions < 10%) | Close SC-HZ. Paper remains at 924 V/A. Independent engineering cleanup can proceed separately. |
 | INCONCLUSIVE | Widen K=256→512 on the 10 worst sentinels; re-run those 10. If still inconclusive, advisor decides. |
 
 ---

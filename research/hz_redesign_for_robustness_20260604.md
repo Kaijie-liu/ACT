@@ -1,5 +1,20 @@
 # HZ Redesign for Robustness Verification — Spec-Conditioned HZ Toward Competitive Totals
 
+---
+
+> ## ⚠ Post-experiment correction (2026-06-04 night)
+>
+> **R1 (Spec-Conditioned Generator Budgeting / PRUNE) — EMPIRICALLY FALSIFIED.**
+> The K ablation on 40 acasxu+safenlp iids shows LP UB monotonically **grows** as K shrinks (40/40 iids monotone, 0 non-monotone). PRUNE is sound but provides **zero precision lift** on the tested benchmarks. The savings-gap analytical observation pinned in `tests/test_relevance_score_ablations.py` is empirically confirmed.
+>
+> **What actually produced 358 NEW A on safenlp_2024 (924 → 1282 V/A combined, 368/368 STRICT-PASS audit):** per-rival forward HZ + closed-form box-corner LP-maximizer + strict ORT replay. NOT R1's generator pruning. NOT R2-R5 either (those weren't tested).
+>
+> **The corrected framing**: "SC-HZ directional witness sidecar for wide-spec dense networks". This is a sidecar/supplementary-path contribution, **not a generic HZ tightening**. The R2-R5 mechanisms in this doc are pre-experimental hypotheses; treat them as untested.
+>
+> See [research/sc_hz_phase_b_results_20260604.md](sc_hz_phase_b_results_20260604.md) for the load-bearing results.
+
+---
+
 **Date**: 2026-06-04 night
 **Goal**: identify the structural HZ changes that could plausibly move ACT
 from 924 V/A toward tool-competitive totals, **while staying forward-only**.
@@ -145,7 +160,7 @@ Forward propagate the per-rival HZ:
     2. At each layer L:
         - Compute relevance score per generator j: s_j = |d_L^T G_L[:, j]|
         - Keep top-K by s_j (e.g. K = 256)
-        - Merge the remaining into a single "tail box" generator with row-sum mass
+        - Merge the remaining into an interval tail with row-sum mass
     3. ReLU triangle (or eq_lagr_v8 for tail) as normal
     4. At output: LP UB on (d_N^T y) directly  (1-D, very cheap)
 
@@ -160,7 +175,7 @@ Verdict aggregation:
   no autograd, and no optimization.
 - The forward pass uses `d_L` only as a SCORE for generator reduction.
 - The reduction is sound for **any** score ordering because dropped generators
-  are over-approximated by a tail box.
+  are over-approximated by an interval tail.
 - The LP solved at the end is on the same forward-propagated HZ; no bound at
   layer `L' > L` refines a bound at layer `L`.
 
@@ -184,13 +199,21 @@ strict reading, 2000+ is very unlikely.
   signal generalizes.
 - Long-horizon optimistic target with SC-HZ + selective exact-HZ ReLU +
   batching: `+500 .. +900`. This is what would make 1600+ plausible.
+- Important caveat: SC-HZ can only improve over **budgeted, query-blind
+  reduction** under the same memory cap. Compared with a full unpruned HZ, the
+  PRUNE step is an over-approximation and can only equal or loosen. CIFAR rows
+  where production is already unpruned are therefore negative controls, not
+  expected wins.
 
 The earlier `+675` single-mechanism estimate was too speculative and should
 not be cited as an expected result.
 
 **Open design questions**:
 1. What K? Pilot at K ∈ {128, 256, 512, 1024} per layer.
-2. How to merge low-relevance generators soundly? Probably row-sum bound (Girard-style) but applied to the pruned subset.
+2. How to merge low-relevance generators soundly? Use row-sum interval
+   remainder on the pruned subset. A single tail column is not sound; the
+   remainder needs independent per-coordinate degrees of freedom or an
+   equivalent BoxHZ representation.
 3. Does the per-rival forward parallelize on GPU? Probably yes; this is THE engineering win that makes R1 tractable.
 4. How does SC-HZ interact with eq_lagr_v8 at the tail? Probably the
    per-rival pre-pruning makes eq_lagr_v8 cheaper at the tail. Test
@@ -198,8 +221,11 @@ not be cited as an expected result.
 
 **Stop gate**:
 - 20 sentinels each on cifar / tinyimagenet / safenlp / acasxu.
-- PASS iff cumulative new V/A >= 5 OR median LP UB reduction >= 25%.
-- FAIL iff new V/A = 0 AND median LP UB reduction < 10%.
+- PASS iff the positive-signal group (tinyimagenet / safenlp / acasxu) has
+  new V/A >= 5 OR at least two of those three benchmarks have median LP UB
+  reduction >= 25%, while CIFAR remains a clean negative control.
+- FAIL iff positive-signal new V/A = 0 and all positive benchmark median LP UB
+  reductions < 10%, or CIFAR shows unexplained tightening/new V/A.
 
 ---
 
@@ -215,14 +241,17 @@ Per ReLU layer L with unstable neurons U_L:
            score_i = |d_L[i]| · μ_i
        where μ_i is the triangle aux magnitude and d_L is the rival direction.
     2. Select top-K_L exact neurons (K_L = 4-8 per layer).
-    3. For each exact neuron i: emit HZ binary
-           y_i = z_i · (1 + ξ_b^i) / 2
-       with ξ_b^i ∈ {-1, +1} and exact ReLU constraints
-           (Ac, Ab, b) extended per hz1 Prop. 4
+    3. For each exact neuron i: emit Bird-style HZ binary branch constraints
+       for exact ReLU in the integer semantics
     4. For the remaining U_L \ {top-K}: standard triangle.
 ```
 
-The LP solved at the end is on the **continuous relaxation** of the binary generators (ξ_b ∈ [-1, +1] instead of {-1, +1}). This is a STRICTLY TIGHTER LP than the all-triangle baseline, because the exact-ReLU encoding includes the bilinear constraint that triangle relaxes.
+The LP solved at the end is on the **continuous relaxation** of the binary
+generators (`ξ_b ∈ [-1, +1]` instead of `{−1, +1}`). This remains a continuous
+LP only if the emitted constraints are linear. It must not smuggle in bilinear
+terms or integer reasoning. Whether this relaxation is materially tighter than
+the all-triangle baseline is an empirical/theoretical question for the R2
+pilot, not an assumption.
 
 **Why this is forward-only**:
 - Per-layer, the selection is local. The score may reuse SC-HZ relevance
@@ -239,7 +268,12 @@ The LP solved at the end is on the **continuous relaxation** of the binary gener
 - P4: COMPLIANT
 - P5: COMPLIANT
 
-The "continuous relaxation of HZ binary" point is critical: hz1 Prop. 4's exact ReLU adds an integer variable, but the resulting LP relaxation is provably tighter than triangle because the exact constraint's relaxation hull includes the bilinear constraint. This is the "structured exact HZ" path that has NOT been tested before in our experiments.
+The "continuous relaxation of HZ binary" point is critical: hz1 Prop. 4's
+exact ReLU adds an integer variable in the exact semantics, but production is
+allowed to solve only its continuous LP relaxation. If the relaxed linear
+constraints collapse to the same triangle hull, R2 has no precision value and
+must close. If they add reusable correlation constraints that survive
+continuous relaxation, R2 becomes a valid forward-HZ precision lever.
 
 **Expected gains (hypotheses)**:
 - Phase after SC-HZ signal: `+50 .. +200` if a small number of exact-HZ ReLU
@@ -375,8 +409,11 @@ and the 2000+ long-horizon target becomes unrealistic under the current rules.
 - 80 sentinels total: 20 each on cifar100, tinyimagenet, safenlp, and acasxu.
 
 **Phase B — Phase-A gate evaluation** (1 day)
-- PASS iff cumulative new V/A >= 5 OR median LP UB reduction >= 25%.
-- FAIL iff new V/A = 0 AND median LP UB reduction < 10%.
+- PASS iff the positive-signal group (tinyimagenet / safenlp / acasxu) has
+  new V/A >= 5 OR at least two of those three benchmarks have median LP UB
+  reduction >= 25%, while CIFAR remains a clean negative control.
+- FAIL iff positive-signal new V/A = 0 and all positive benchmark median LP UB
+  reductions < 10%, or CIFAR shows unexplained tightening/new V/A.
 - Otherwise mark inconclusive, widen K on the worst sentinels once, and rerun
   only those sentinels.
 
