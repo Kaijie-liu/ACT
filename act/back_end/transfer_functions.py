@@ -132,7 +132,9 @@ def set_transfer_function_mode(mode: str = "interval") -> None:
     """Set transfer function implementation by mode name.
 
     Args:
-        mode: "interval" for IntervalTF, "hybridz" for HybridzTF.
+        mode: "interval" for IntervalTF, "hybridz" for HybridzTF,
+              "fchz" for FchzTF (strict P1-P5 forward HZ with tail_radius
+              and sparse-slack compression).
               "dual" is NOT a valid TF mode — dual is a Solver choice
               (``--solver dual``), not a forward-bound TF. See
               ``act.back_end.solver_mode.set_solver_mode``.
@@ -143,10 +145,17 @@ def set_transfer_function_mode(mode: str = "interval") -> None:
     elif mode == "hybridz":
         from act.back_end.hybridz_tf import HybridzTF
         set_transfer_function(HybridzTF())
+    elif mode == "fchz":
+        from act.back_end.fchz_tf import FchzTF
+        # Sparse-slack budget configurable via env var
+        import os
+        g_max = os.environ.get('HYZOR_FCHZ_G_MAX_COLS')
+        g_max = int(g_max) if g_max and g_max.isdigit() else None
+        set_transfer_function(FchzTF(G_max_cols=g_max))
     else:
         raise ValueError(
-            f"Unknown transfer function mode: {mode!r}. Use 'interval' or "
-            f"'hybridz'. ('dual' is a Solver choice — use --solver dual.)"
+            f"Unknown transfer function mode: {mode!r}. Use 'interval', "
+            f"'hybridz', or 'fchz'. ('dual' is a Solver choice — use --solver dual.)"
         )
 
 
