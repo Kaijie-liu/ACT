@@ -1102,7 +1102,15 @@ def tf_scale(L, bounds, tf):
 def tf_relu(L, bounds, tf):
     hz_in = tf._hz_cache.get(L.id)
     if hz_in is not None:
-        tf._hz_cache[L.id] = hz_reduce(hz_apply_relu(hz_in))
+        # P7e env-gated oracle (advisor 2026-06-08): when HYZOR_HYBRIDZ_USE_V8_RELU=1,
+        # dispatch to hz_apply_relu_v8 with eq_lagr_v8 cascade (intersect_box +
+        # bounds_tighten 3-tier UNC/dual/eq_elim LP + native eq_lagr + project_eq_elim).
+        # Diagnostic only — to determine if old cpu_base CERT path was through v8.
+        if os.environ.get("HYZOR_HYBRIDZ_USE_V8_RELU", "0").strip() == "1":
+            from act.back_end.hybridz_tf.hz_routing import hz_apply_relu_v8
+            tf._hz_cache[L.id] = hz_reduce(hz_apply_relu_v8(hz_in, method="eq_lagr_v8"))
+        else:
+            tf._hz_cache[L.id] = hz_reduce(hz_apply_relu(hz_in))
     fact = interval.tf_relu(L, bounds)
     if hz_in is not None:
         return _hz_fact(fact, tf._hz_cache[L.id])

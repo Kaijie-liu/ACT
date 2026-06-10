@@ -343,8 +343,33 @@ def forward_fchz(onnx_path: str, lb: np.ndarray, ub: np.ndarray,
                 states[node.output[0]] = new_state
                 if src in shapes: shapes[node.output[0]] = shapes[src]
             elif op == "Sub":
-                # Constant - state OR state - constant, with broadcasting.
+                # Constant - state OR state - constant OR state - state (residual).
                 in0, in1 = in_names[0], in_names[1]
+                # State - state case (residual subtraction)
+                if in0 in states and in1 in states:
+                    s0 = states[in0]; s1 = states[in1]
+                    if s0.c.shape != s1.c.shape:
+                        skipped_ops.append(f"Sub({node.name}): state-state shape mismatch")
+                        n_skipped += 1; continue
+                    K0 = s0.G.shape[1]; K1 = s1.G.shape[1]
+                    K_max = max(K0, K1)
+                    n = s0.c.shape[0]
+                    G0_pad = np.concatenate([s0.G, np.zeros((n, K_max - K0))], axis=1) if K0 < K_max else s0.G
+                    G1_pad = np.concatenate([s1.G, np.zeros((n, K_max - K1))], axis=1) if K1 < K_max else s1.G
+                    new_c = s0.c - s1.c
+                    new_G = G0_pad - G1_pad
+                    t0 = s0.tail_radius if s0.tail_radius is not None else 0.0
+                    t1 = s1.tail_radius if s1.tail_radius is not None else 0.0
+                    new_tail = (t0 + t1) if (s0.tail_radius is not None or s1.tail_radius is not None) else None
+                    if new_tail is not None and not isinstance(new_tail, np.ndarray):
+                        new_tail = np.full(n, float(new_tail))
+                    new_state = FCHZState(c=new_c, G=new_G, n_root=s0.n_root,
+                                              slack_records=list(s0.slack_records),
+                                              tail_radius=new_tail)
+                    states[node.output[0]] = new_state
+                    if in0 in shapes: shapes[node.output[0]] = shapes[in0]
+                    n_processed += 1
+                    continue
                 if in0 in states and in1 not in states:
                     src = in0; const_arr = get_const(in1)
                     state_left = True
@@ -438,6 +463,30 @@ def forward_fchz(onnx_path: str, lb: np.ndarray, ub: np.ndarray,
                 shapes[node.output[0]] = (out_n,)
             elif op == "Mul":
                 in0, in1 = in_names[0], in_names[1]
+                # State * state case: fallback to interval bound (nonlinear)
+                if in0 in states and in1 in states:
+                    s0 = states[in0]; s1 = states[in1]
+                    if s0.c.shape != s1.c.shape:
+                        skipped_ops.append(f"Mul({node.name}): state-state shape mismatch")
+                        n_skipped += 1; continue
+                    # Bound y = x0 * x1 via interval bounds at each row
+                    r0 = np.abs(s0.G).sum(axis=1) + (s0.tail_radius if s0.tail_radius is not None else 0)
+                    r1 = np.abs(s1.G).sum(axis=1) + (s1.tail_radius if s1.tail_radius is not None else 0)
+                    l0, u0 = s0.c - r0, s0.c + r0
+                    l1, u1 = s1.c - r1, s1.c + r1
+                    corners = np.stack([l0*l1, l0*u1, u0*l1, u0*u1], axis=0)
+                    lb_out = corners.min(axis=0)
+                    ub_out = corners.max(axis=0)
+                    n = s0.c.shape[0]
+                    new_c = (lb_out + ub_out) / 2.0
+                    new_tail = (ub_out - lb_out) / 2.0
+                    new_state = FCHZState(c=new_c, G=np.zeros((n, 0), dtype=np.float64),
+                                              n_root=s0.n_root, slack_records=s0.slack_records,
+                                              tail_radius=new_tail)
+                    states[node.output[0]] = new_state
+                    if in0 in shapes: shapes[node.output[0]] = shapes[in0]
+                    n_processed += 1
+                    continue
                 if in0 in states and in1 not in states:
                     src = in0; scale = get_const(in1)
                 elif in1 in states and in0 not in states:
@@ -627,6 +676,361 @@ def forward_fchz(onnx_path: str, lb: np.ndarray, ub: np.ndarray,
                 states[node.output[0]] = states[primary]
                 if primary in shapes:
                     shapes[node.output[0]] = shapes[primary]
+            elif op == "Shape":
+                # ONNX Shape returns shape tensor of input. We treat it as a
+                # constant int tensor. Downstream Reshape ops may consume this.
+                if primary is None:
+                    # If we have shapes recorded, return them as a constant
+                    in_name = in_names[0] if in_names else None
+                    if in_name in shapes:
+                        sh = shapes[in_name]
+                        # Output is 1D int64 tensor with shape values
+                        const_cache[node.output[0]] = np.asarray(sh, dtype=np.int64)
+                        n_processed += 1
+                        continue
+                    skipped_ops.append(f"Shape({node.name}): no state input")
+                    n_skipped += 1
+                    continue
+                # If state exists, get its shape and produce as constant
+                in_name = in_names[0]
+                if in_name in shapes:
+                    sh = shapes[in_name]
+                    const_cache[node.output[0]] = np.asarray(sh, dtype=np.int64)
+                else:
+                    # Use state c shape (flat)
+                    const_cache[node.output[0]] = np.asarray([states[primary].c.shape[0]], dtype=np.int64)
+            elif op == "Identity":
+                # Pure identity
+                if primary is None:
+                    skipped_ops.append(f"Identity({node.name}): no state input")
+                    n_skipped += 1
+                    continue
+                states[node.output[0]] = states[primary]
+                if primary in shapes:
+                    shapes[node.output[0]] = shapes[primary]
+            elif op == "Tanh":
+                # Same as Sigmoid: analytical chord relaxation
+                if primary is None:
+                    skipped_ops.append(f"Tanh({node.name}): no state input")
+                    n_skipped += 1
+                    continue
+                s = states[primary]
+                rad = np.abs(s.G).sum(axis=1)
+                if s.tail_radius is not None:
+                    rad = rad + s.tail_radius
+                l_arr = s.c - rad
+                u_arr = s.c + rad
+                fn = np.tanh
+                fl = fn(l_arr); fu = fn(u_arr)
+                den = np.maximum(u_arr - l_arr, 1e-12)
+                alpha = (fu - fl) / den
+                alpha = np.where(u_arr - l_arr < 1e-12, 0.0, alpha)
+                beta = fl - alpha * l_arr
+                max_slope = 1.0
+                alpha_safe = np.minimum(alpha, max_slope - 1e-12)
+                disc = np.sqrt(np.maximum(1.0 - alpha_safe, 0.0))
+                valid = (alpha > 1e-15) & (alpha < max_slope)
+                dev_max_row = np.zeros_like(l_arr)
+                dev_min_row = np.zeros_like(l_arr)
+                for sign in [+1.0, -1.0]:
+                    s_val = sign * disc
+                    s_safe = np.clip(s_val, -1.0 + 1e-15, 1.0 - 1e-15)
+                    x_star = 0.5 * np.log((1.0 + s_safe) / (1.0 - s_safe))
+                    in_range = valid & (x_star > l_arr) & (x_star < u_arr)
+                    dev_star = fn(x_star) - (alpha * x_star + beta)
+                    dev_max_row = np.where(in_range, np.maximum(dev_max_row, dev_star), dev_max_row)
+                    dev_min_row = np.where(in_range, np.minimum(dev_min_row, dev_star), dev_min_row)
+                mid_dev = (dev_max_row + dev_min_row) / 2.0
+                radius = (dev_max_row - dev_min_row) / 2.0
+                beta = beta + mid_dev
+                new_c = alpha * s.c + beta
+                new_G = s.G * alpha[:, None]
+                new_tail = None
+                if s.tail_radius is not None:
+                    new_tail = np.abs(alpha) * s.tail_radius
+                if np.any(radius > 0):
+                    new_tail = (new_tail + radius) if new_tail is not None else radius
+                new_state = FCHZState(c=new_c, G=new_G, n_root=s.n_root,
+                                              slack_records=s.slack_records,
+                                              tail_radius=new_tail)
+                states[node.output[0]] = new_state
+                if primary in shapes:
+                    shapes[node.output[0]] = shapes[primary]
+            elif op == "Sign":
+                # sign(x) is non-smooth: -1 if x<0, 0 if x==0, +1 if x>0.
+                # Sound box relaxation: each row interval [-1, 1] → bound with l<=0<u → [-1,1]
+                # Otherwise (all positive or all negative): point value.
+                if primary is None:
+                    skipped_ops.append(f"Sign({node.name}): no state input")
+                    n_skipped += 1
+                    continue
+                s = states[primary]
+                rad = np.abs(s.G).sum(axis=1)
+                if s.tail_radius is not None:
+                    rad = rad + s.tail_radius
+                l_arr = s.c - rad
+                u_arr = s.c + rad
+                is_pos = l_arr > 0  # output = +1
+                is_neg = u_arr < 0  # output = -1
+                # Otherwise interval [-1, 1]: use box [c_new=0, tail=1]
+                new_c = np.where(is_pos, 1.0, np.where(is_neg, -1.0, 0.0))
+                new_G = np.zeros((s.c.shape[0], 0), dtype=s.G.dtype)
+                # Sound radius: 0 for stable rows, 1 for uncertain rows
+                new_tail = np.where(is_pos | is_neg, 0.0, 1.0)
+                new_state = FCHZState(c=new_c, G=new_G, n_root=s.n_root,
+                                              slack_records=s.slack_records,
+                                              tail_radius=new_tail)
+                states[node.output[0]] = new_state
+                if primary in shapes:
+                    shapes[node.output[0]] = shapes[primary]
+            elif op == "AveragePool":
+                # Window-average pool (CNN). Treat as Conv with 1/window weight.
+                if primary is None:
+                    skipped_ops.append(f"AveragePool({node.name}): no state input")
+                    n_skipped += 1
+                    continue
+                s = states[primary]
+                in_shape = shapes.get(primary)
+                if in_shape is None or len(in_shape) != 3:
+                    skipped_ops.append(f"AveragePool({node.name}): need 3D shape")
+                    n_skipped += 1
+                    continue
+                attrs = {a.name: a for a in node.attribute}
+                ks = list(attrs["kernel_shape"].ints) if "kernel_shape" in attrs else [2, 2]
+                strides = list(attrs["strides"].ints) if "strides" in attrs else ks
+                pads = list(attrs["pads"].ints) if "pads" in attrs else [0, 0, 0, 0]
+                Ci, Hi, Wi = in_shape
+                kH, kW = ks[0], ks[1]
+                sH, sW = strides[0], strides[1]
+                pH = pads[0]; pW = pads[1] if len(pads) > 1 else pH
+                Ho = (Hi + 2*pH - kH) // sH + 1
+                Wo = (Wi + 2*pW - kW) // sW + 1
+                # Average pool = Conv with weight = 1/(kH*kW) over each channel
+                weight = np.zeros((Ci, 1, kH, kW), dtype=s.c.dtype)
+                weight[:, 0, :, :] = 1.0 / (kH * kW)
+                # Build a depthwise conv input shape
+                try:
+                    import torch
+                    import torch.nn.functional as F
+                    c_in = torch.from_numpy(s.c.reshape(1, Ci, Hi, Wi))
+                    w_t = torch.from_numpy(weight)
+                    c_out = F.conv2d(c_in, w_t, None, stride=(sH, sW), padding=(pH, pW), groups=Ci)
+                    new_c = c_out.numpy().reshape(-1)
+                    K = s.G.shape[1]
+                    new_G = np.zeros((Ci*Ho*Wo, K), dtype=s.G.dtype)
+                    if K > 0:
+                        for k in range(K):
+                            g_in = torch.from_numpy(s.G[:, k].reshape(1, Ci, Hi, Wi))
+                            g_out = F.conv2d(g_in, w_t, None, stride=(sH, sW), padding=(pH, pW), groups=Ci)
+                            new_G[:, k] = g_out.numpy().reshape(-1)
+                    new_tail = None
+                    if s.tail_radius is not None:
+                        tail_in = torch.from_numpy(np.abs(s.tail_radius).reshape(1, Ci, Hi, Wi))
+                        w_abs = torch.from_numpy(np.abs(weight))
+                        tail_out = F.conv2d(tail_in, w_abs, None, stride=(sH, sW), padding=(pH, pW), groups=Ci)
+                        new_tail = tail_out.numpy().reshape(-1)
+                    new_state = FCHZState(c=new_c, G=new_G, n_root=s.n_root,
+                                                  slack_records=s.slack_records,
+                                                  tail_radius=new_tail)
+                    states[node.output[0]] = new_state
+                    shapes[node.output[0]] = (Ci, Ho, Wo)
+                except Exception as e:
+                    skipped_ops.append(f"AveragePool({node.name}): {type(e).__name__}: {str(e)[:60]}")
+                    n_skipped += 1
+                    continue
+            elif op == "Expand":
+                # Broadcast state to target shape (replicate values).
+                if primary is None:
+                    skipped_ops.append(f"Expand({node.name}): no state input")
+                    n_skipped += 1; continue
+                target_shape = None
+                if len(in_names) > 1 and in_names[1] in const_cache:
+                    target_shape = const_cache[in_names[1]].astype(np.int64).reshape(-1)
+                elif len(in_names) > 1:
+                    target_shape = get_const(in_names[1])
+                    if target_shape is not None: target_shape = target_shape.astype(np.int64).reshape(-1)
+                if target_shape is None:
+                    skipped_ops.append(f"Expand({node.name}): no shape")
+                    n_skipped += 1; continue
+                s = states[primary]
+                # Strip batch
+                ts = tuple(int(x) for x in target_shape)
+                if ts[0] == 1 and len(ts) > 1:
+                    ts_nb = ts[1:]
+                else:
+                    ts_nb = ts
+                in_sh = shapes.get(primary, (s.c.shape[0],))
+                try:
+                    n_out = int(np.prod(ts_nb))
+                    # If input is scalar (n=1), replicate
+                    if s.c.shape[0] == 1 and n_out > 1:
+                        new_c = np.full(n_out, float(s.c[0]))
+                        K = s.G.shape[1]
+                        new_G = np.tile(s.G, (n_out, 1)) if K > 0 else np.zeros((n_out, 0))
+                        new_tail = None
+                        if s.tail_radius is not None:
+                            new_tail = np.full(n_out, float(s.tail_radius[0]))
+                        new_state = FCHZState(c=new_c, G=new_G, n_root=s.n_root,
+                                                      slack_records=s.slack_records,
+                                                      tail_radius=new_tail)
+                        states[node.output[0]] = new_state
+                        shapes[node.output[0]] = ts_nb
+                    else:
+                        # Try broadcast via numpy reshape + broadcast
+                        c_in = s.c.reshape(in_sh)
+                        c_out = np.broadcast_to(c_in, ts_nb).copy().reshape(-1)
+                        K = s.G.shape[1]
+                        if K > 0:
+                            G_in = s.G.reshape(in_sh + (K,))
+                            G_out = np.broadcast_to(G_in, ts_nb + (K,)).copy().reshape(-1, K)
+                        else:
+                            G_out = np.zeros((n_out, 0), dtype=s.G.dtype)
+                        new_tail = None
+                        if s.tail_radius is not None:
+                            tail_in = s.tail_radius.reshape(in_sh)
+                            new_tail = np.broadcast_to(tail_in, ts_nb).copy().reshape(-1)
+                        new_state = FCHZState(c=c_out, G=G_out, n_root=s.n_root,
+                                                      slack_records=s.slack_records,
+                                                      tail_radius=new_tail)
+                        states[node.output[0]] = new_state
+                        shapes[node.output[0]] = ts_nb
+                except Exception as e:
+                    skipped_ops.append(f"Expand({node.name}): {type(e).__name__}")
+                    n_skipped += 1
+                    continue
+            elif op == "ConstantOfShape":
+                # Produces a constant tensor with given shape. Shape from input.
+                shape_arr = get_const(in_names[0]) if in_names else None
+                if shape_arr is None and in_names[0] in const_cache:
+                    shape_arr = const_cache[in_names[0]]
+                if shape_arr is None:
+                    skipped_ops.append(f"ConstantOfShape({node.name}): no shape input")
+                    n_skipped += 1
+                    continue
+                attrs = {a.name: a for a in node.attribute}
+                val = 0.0
+                if "value" in attrs:
+                    val_tensor = onnx.numpy_helper.to_array(attrs["value"].t)
+                    val = float(val_tensor.flat[0])
+                n_out = int(np.prod(shape_arr))
+                c = np.full(n_out, val, dtype=np.float64)
+                new_state = FCHZState(c=c, G=np.zeros((n_out, 0), dtype=np.float64),
+                                              n_root=0, slack_records=[], tail_radius=None)
+                states[node.output[0]] = new_state
+                shapes[node.output[0]] = tuple(int(x) for x in shape_arr)
+            elif op == "Pow":
+                # x ** y where y is constant scalar (or per-element).
+                # For state input x with bounds [l, u] (assuming x >= 0 for sound bound),
+                # and integer y: monotone, so [l^y, u^y].
+                # Fall back to interval bound (sound box).
+                if primary is None:
+                    skipped_ops.append(f"Pow({node.name}): no state input")
+                    n_skipped += 1; continue
+                exp_arr = get_const(in_names[1]) if len(in_names) > 1 else None
+                if exp_arr is None:
+                    skipped_ops.append(f"Pow({node.name}): non-const exponent")
+                    n_skipped += 1; continue
+                exp_val = float(exp_arr.flat[0]) if exp_arr.size > 0 else 1.0
+                s = states[primary]
+                rad = np.abs(s.G).sum(axis=1) + (s.tail_radius if s.tail_radius is not None else 0)
+                l = s.c - rad; u = s.c + rad
+                # For sound bound: if exp is even or x >= 0, use [l^p, u^p].
+                # Compute pointwise; if l < 0 and exp not int, use 0 lower bound.
+                try:
+                    if abs(exp_val - round(exp_val)) < 1e-9:
+                        # Integer exponent
+                        e_int = int(round(exp_val))
+                        if e_int % 2 == 0:
+                            # Even: parabola → min at 0 if range crosses
+                            lb_out = np.where((l <= 0) & (u >= 0), 0.0,
+                                                   np.minimum(np.power(l, e_int), np.power(u, e_int)))
+                            ub_out = np.maximum(np.power(l, e_int), np.power(u, e_int))
+                        else:
+                            # Odd: monotone
+                            lb_out = np.power(l, e_int)
+                            ub_out = np.power(u, e_int)
+                    else:
+                        # Non-integer: assume input non-negative
+                        l_safe = np.maximum(l, 1e-12)
+                        u_safe = np.maximum(u, 1e-12)
+                        lb_out = np.power(l_safe, exp_val)
+                        ub_out = np.power(u_safe, exp_val)
+                    # Box state
+                    n = s.c.shape[0]
+                    new_c = (lb_out + ub_out) / 2.0
+                    new_tail = (ub_out - lb_out) / 2.0
+                    new_state = FCHZState(c=new_c, G=np.zeros((n, 0), dtype=np.float64),
+                                                  n_root=s.n_root, slack_records=s.slack_records,
+                                                  tail_radius=new_tail)
+                    states[node.output[0]] = new_state
+                    if primary in shapes:
+                        shapes[node.output[0]] = shapes[primary]
+                except Exception as e:
+                    skipped_ops.append(f"Pow({node.name}): {type(e).__name__}")
+                    n_skipped += 1
+                    continue
+            elif op == "Upsample" or op == "Resize":
+                # Upsample by integer scale via nearest neighbor.
+                # Sound (perfectly correlated state across replicated positions).
+                if primary is None:
+                    skipped_ops.append(f"{op}({node.name}): no state input")
+                    n_skipped += 1; continue
+                s = states[primary]
+                in_shape = shapes.get(primary)
+                if in_shape is None or len(in_shape) != 3:
+                    skipped_ops.append(f"{op}({node.name}): need 3D shape, got {in_shape}")
+                    n_skipped += 1; continue
+                # Get scales from inputs or attributes
+                scales_arr = None
+                for i in range(1, len(in_names)):
+                    if in_names[i] in const_cache:
+                        scales_arr = const_cache[in_names[i]]; break
+                    sc = get_const(in_names[i])
+                    if sc is not None:
+                        scales_arr = sc; break
+                if scales_arr is None:
+                    attrs = {a.name: a for a in node.attribute}
+                    if "scales" in attrs:
+                        scales_arr = np.array(attrs["scales"].floats)
+                if scales_arr is None:
+                    skipped_ops.append(f"{op}({node.name}): no scales")
+                    n_skipped += 1; continue
+                scales = np.asarray(scales_arr).flatten()
+                if len(scales) == 4:
+                    s_H, s_W = float(scales[2]), float(scales[3])
+                elif len(scales) == 2:
+                    s_H, s_W = float(scales[0]), float(scales[1])
+                else:
+                    skipped_ops.append(f"{op}({node.name}): bad scales {scales}")
+                    n_skipped += 1; continue
+                Ci, Hi, Wi = in_shape
+                Ho = int(Hi * s_H); Wo = int(Wi * s_W)
+                # Nearest neighbor: replicate via np.repeat
+                try:
+                    c_nd = s.c.reshape(Ci, Hi, Wi)
+                    c_up = np.repeat(np.repeat(c_nd, int(s_H), axis=1), int(s_W), axis=2)
+                    new_c = c_up[:, :Ho, :Wo].reshape(-1).copy()
+                    K = s.G.shape[1]
+                    if K > 0:
+                        G_nd = s.G.reshape(Ci, Hi, Wi, K)
+                        G_up = np.repeat(np.repeat(G_nd, int(s_H), axis=1), int(s_W), axis=2)
+                        new_G = G_up[:, :Ho, :Wo, :].reshape(-1, K).copy()
+                    else:
+                        new_G = np.zeros((Ci*Ho*Wo, 0), dtype=s.G.dtype)
+                    new_tail = None
+                    if s.tail_radius is not None:
+                        tail_nd = s.tail_radius.reshape(Ci, Hi, Wi)
+                        tail_up = np.repeat(np.repeat(tail_nd, int(s_H), axis=1), int(s_W), axis=2)
+                        new_tail = tail_up[:, :Ho, :Wo].reshape(-1).copy()
+                    new_state = FCHZState(c=new_c, G=new_G, n_root=s.n_root,
+                                                  slack_records=s.slack_records,
+                                                  tail_radius=new_tail)
+                    states[node.output[0]] = new_state
+                    shapes[node.output[0]] = (Ci, Ho, Wo)
+                except Exception as e:
+                    skipped_ops.append(f"{op}({node.name}): {type(e).__name__}")
+                    n_skipped += 1
+                    continue
             elif op == "Dropout":
                 # Inference: identity
                 if primary is None:
@@ -818,9 +1222,15 @@ def forward_fchz(onnx_path: str, lb: np.ndarray, ub: np.ndarray,
                 if mode != "constant":
                     skipped_ops.append(f"Pad({node.name}): mode {mode} unsupported")
                     n_skipped += 1; continue
-                try:
-                    pads = get_const(in_names[1]).astype(np.int64).reshape(-1)
-                except Exception:
+                pads = None
+                if in_names[1] in const_cache:
+                    pads = const_cache[in_names[1]].astype(np.int64).reshape(-1)
+                else:
+                    try:
+                        pads = get_const(in_names[1]).astype(np.int64).reshape(-1)
+                    except Exception:
+                        pads = None
+                if pads is None:
                     skipped_ops.append(f"Pad({node.name}): non-const pads")
                     n_skipped += 1; continue
                 pad_val = 0.0

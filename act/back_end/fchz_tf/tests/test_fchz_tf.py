@@ -157,10 +157,11 @@ class TestFchzTFInterface(unittest.TestCase):
         for L in net.layers:
             in_b = input_bounds if L.id == 0 else after[net.preds[L.id][0]].bounds
             after[L.id] = tf.apply(L, in_b, net, before, after)
-        # After DENSE: bounds should be [c - r, c + r] for c=0, r=1.6 (e.g. row 0 sum |W| = 1.5 + bias 0.1)
+        # After DENSE: bounds have shape (1, 2) (batch dim), row 0 = [-1.4, 1.6]
         d_bounds = after[2].bounds
-        self.assertAlmostEqual(d_bounds.lb[0].item(), -1.4, places=10)
-        self.assertAlmostEqual(d_bounds.ub[0].item(), 1.6, places=10)
+        self.assertEqual(d_bounds.lb.shape, (1, 2))
+        self.assertAlmostEqual(d_bounds.lb[0, 0].item(), -1.4, places=10)
+        self.assertAlmostEqual(d_bounds.ub[0, 0].item(), 1.6, places=10)
 
 
 class TestFchzTFParityVsRawWalker(unittest.TestCase):
@@ -232,8 +233,9 @@ class TestFchzTFParityVsRawWalker(unittest.TestCase):
         for L in net.layers:
             in_b = input_bounds if L.id == 0 else after[net.preds[L.id][0]].bounds
             after[L.id] = tf.apply(L, in_b, net, before, after)
-        new_lb = after[4].bounds.lb.numpy()
-        new_ub = after[4].bounds.ub.numpy()
+        # Bounds now have batch dim (1, n_out); squeeze for comparison
+        new_lb = after[4].bounds.lb.squeeze(0).numpy()
+        new_ub = after[4].bounds.ub.squeeze(0).numpy()
         np.testing.assert_allclose(new_lb, old_lb, atol=1e-12)
         np.testing.assert_allclose(new_ub, old_ub_v, atol=1e-12)
 

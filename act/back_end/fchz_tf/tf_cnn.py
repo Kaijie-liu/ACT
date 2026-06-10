@@ -80,32 +80,29 @@ def apply_conv2d(state: FCHZState, W: np.ndarray, b: Optional[np.ndarray],
     new_c = c_out.detach().cpu().numpy().reshape(-1)
     _, Co_p, Ho_p, Wo_p = c_out.shape
 
-    # G in chunks
+    # G in chunks — use float64 for parity with raw walker (advisor M1-fix)
     K_st = state.G.shape[1]
     n_out = Co_p * Ho_p * Wo_p
-    new_G = np.zeros((n_out, K_st), dtype=np.float32)
+    new_G = np.zeros((n_out, K_st), dtype=np.float64)
     if K_st > 0:
-        bytes_per_col = n_out * 4
-        chunk_max = max(64, min(K_st, int(2.5e8 // max(bytes_per_col, 1))))
-        W_t_f32 = W_t.to(torch.float32)
-        G_T = state.G.T.astype(np.float32, copy=False)
+        bytes_per_col = n_out * 8  # float64
+        chunk_max = max(32, min(K_st, int(2.5e8 // max(bytes_per_col, 1))))
+        G_T = state.G.T.astype(np.float64, copy=False)
         for start in range(0, K_st, chunk_max):
             end = min(K_st, start + chunk_max)
             chunk = G_T[start:end].reshape(end - start, Ci, Hi, Wi)
-            G_chunk_t = torch.from_numpy(chunk).to(dev)
-            G_out_chunk = F.conv2d(G_chunk_t, W_t_f32, None,
+            G_chunk_t = torch.from_numpy(chunk).to(torch.float64).to(dev)
+            G_out_chunk = F.conv2d(G_chunk_t, W_t, None,
                                               stride=(sh, sw), padding=(ph, pw), groups=groups)
             new_G[:, start:end] = G_out_chunk.detach().cpu().numpy().reshape(end - start, -1).T
             del G_chunk_t, G_out_chunk
         del G_T
-    new_G = new_G.astype(np.float64)
 
-    # Tail
+    # Tail — also float64 (advisor M1-fix)
     new_tail = None
     if state.tail_radius is not None:
-        W_t_f32 = W_t.to(torch.float32)
-        abs_W_t = torch.abs(W_t_f32)
-        tail_in = torch.from_numpy(state.tail_radius.astype(np.float32).reshape(1, Ci, Hi, Wi)).to(dev)
+        abs_W_t = torch.abs(W_t)  # W_t already float64
+        tail_in = torch.from_numpy(state.tail_radius.astype(np.float64).reshape(1, Ci, Hi, Wi)).to(dev)
         tail_out = F.conv2d(tail_in, abs_W_t, None,
                                   stride=(sh, sw), padding=(ph, pw), groups=groups)
         new_tail = tail_out.detach().cpu().numpy().reshape(-1).astype(np.float64)

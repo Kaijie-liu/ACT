@@ -476,6 +476,15 @@ def main() -> int:
     ap.add_argument("--python-exe",
                     default="/data1/Kane/miniconda3/envs/act-py312/bin/python")
     ap.add_argument(
+        "--raw-verdicts", action="store_true",
+        help="Do not enable ACT_FAL_RECEIPT_FORMAL in the child process. "
+             "Use this for GPU/CPU parity or throughput sweeps where the "
+             "requested output is the verifier's raw CLI verdicts. The child "
+             "still writes per_instance JSON via ACT_FORMAL_RESULTS_DIR; "
+             "FALSIFIED rows should be audited separately before paper-grade "
+             "sound SAT accounting.",
+    )
+    ap.add_argument(
         "--strict-bounded-failure", action="store_true",
         help="Treat any watchdog termination (including UNKNOWN_TIMEOUT / "
              "UNKNOWN_RESOURCE_LIMIT) as a non-zero exit. Default: bounded "
@@ -498,6 +507,7 @@ def main() -> int:
             benchmark=args.benchmark, instance_id=iid, config=config,
             out_dir=args.out_dir, canonical_root=args.canonical_root,
             python_exe=args.python_exe, device=args.device, dtype=args.dtype,
+            formal_mode=(not args.raw_verdicts),
             strict_bounded_failure=args.strict_bounded_failure,
         )
         results.append(r)
@@ -507,6 +517,8 @@ def main() -> int:
     args.out_dir.mkdir(parents=True, exist_ok=True)
     summary_doc = {
         "schema_version": 2,
+        "formal_mode": not bool(args.raw_verdicts),
+        "raw_verdicts": bool(args.raw_verdicts),
         "strict_bounded_failure": bool(args.strict_bounded_failure),
         "counts": {
             "OK": sum(1 for r in results if r.status == "OK"),
