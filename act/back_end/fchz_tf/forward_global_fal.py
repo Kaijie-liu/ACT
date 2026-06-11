@@ -20,7 +20,7 @@
 # ===---------------------------------------------------------------------===#
 """Forward LP-witness Falsification detection."""
 import numpy as np
-from typing import Optional, Dict, Tuple
+from typing import Optional, Dict, Tuple, Any
 
 try:
     from scipy.optimize import milp, LinearConstraint, Bounds as LPBounds
@@ -45,18 +45,51 @@ def solve_lp_or_milp_for_witness(lp_data: Dict, output_layer_id: int, C_row: np.
                                                        use_milp: bool = True) -> Tuple[Optional[float], Optional[np.ndarray]]:
     """Solve: minimize C_row @ y subject to LP/MILP constraints.
 
-    For UNSAFE_LINEAR spec (C @ y <= t is unsafe):
-      - If min C@y <= t, then there's a point in LP feasible region in unsafe polytope
-      - The solution's x* is a candidate counterexample
-
-    Returns (min_obj_value, x_star_input). Both None if infeasible/error.
+    Legacy wrapper preserved for back-compatibility. New callers requiring
+    audit-grade receipts should use solve_lp_or_milp_for_witness_with_receipt.
     """
-    if not HAS_MILP: return None, None
+    opt, x, _ = solve_lp_or_milp_for_witness_with_receipt(
+        lp_data, output_layer_id, C_row, t_val, time_limit_s, use_milp)
+    return opt, x
+
+
+def solve_lp_or_milp_for_witness_with_receipt(
+        lp_data: Dict, output_layer_id: int, C_row: np.ndarray,
+        t_val: float, time_limit_s: float = 8.0,
+        use_milp: bool = True
+        ) -> Tuple[Optional[float], Optional[np.ndarray], Dict[str, Any]]:
+    """Solve minimize C_row @ y for FAL witness search and return solver receipt.
+
+    Receipt fields mirror solve_forward_milp_lb_with_receipt: solver, status,
+    success, message, var_count, n_binary, n_ub_rows, n_eq_rows, plus on success
+    objective + optional mip_gap / mip_dual_bound / mip_node_count. Additionally
+    captures the solver_kind in use ('milp' or 'linprog') so the FAL receipt can
+    distinguish HiGHS LP from HiGHS MILP.
+    """
+    receipt: Dict[str, Any] = {
+        'solver': 'scipy.optimize.milp (HiGHS)' if use_milp else 'scipy.optimize.linprog (HiGHS)',
+        'time_limit_s': float(time_limit_s),
+        'var_count': int(lp_data.get('var_count', 0)),
+        'n_binary': int(lp_data.get('integrality', np.zeros(0)).sum()) if 'integrality' in lp_data else 0,
+        'n_ub_rows': int(lp_data['A_ub'].shape[0]) if lp_data.get('A_ub') is not None else 0,
+        'n_eq_rows': int(lp_data['A_eq'].shape[0]) if lp_data.get('A_eq') is not None else 0,
+        'success': False,
+        'status': 'not_attempted',
+        'message': '',
+        'solver_kind': None,
+    }
+    if not HAS_MILP:
+        receipt['status'] = 'milp_unavailable'
+        return None, None, receipt
     output_idx = lp_data['layer_var_idx'].get(output_layer_id)
-    if output_idx is None: return None, None
+    if output_idx is None:
+        receipt['status'] = 'unknown_output_layer'
+        return None, None, receipt
     out_start, out_dim = output_idx
     n_total = lp_data['var_count']
-    if C_row.shape[0] != out_dim: return None, None
+    if C_row.shape[0] != out_dim:
+        receipt['status'] = 'C_row_shape_mismatch'
+        return None, None, receipt
 
     obj = np.zeros(n_total)
     obj[out_start:out_start + out_dim] = C_row.astype(np.float64)
@@ -73,6 +106,7 @@ def solve_lp_or_milp_for_witness(lp_data: Dict, output_layer_id: int, C_row: np.
 
     try:
         if use_milp and 'integrality' in lp_data and lp_data['integrality'].sum() > 0:
+            receipt['solver_kind'] = 'milp'
             result = milp(
                 c=obj,
                 constraints=constraints if constraints else None,
@@ -80,18 +114,32 @@ def solve_lp_or_milp_for_witness(lp_data: Dict, output_layer_id: int, C_row: np.
                 bounds=bounds_obj,
                 options={'time_limit': time_limit_s, 'disp': False})
         else:
-            # Fall back to plain LP
-            integrality = lp_data.get('integrality', np.zeros(n_total))
+            # Fall back to plain LP (no binaries → MILP == LP)
+            receipt['solver_kind'] = 'linprog'
             result = linprog(
                 c=obj, A_ub=lp_data.get('A_ub'), b_ub=lp_data.get('b_ub'),
                 A_eq=lp_data.get('A_eq'), b_eq=lp_data.get('b_eq'),
                 bounds=lp_data['var_bounds'], method='highs',
                 options={'presolve': True, 'time_limit': time_limit_s})
+        receipt['success'] = bool(result.success)
+        receipt['message'] = str(getattr(result, 'message', ''))[:200]
+        receipt['status'] = 'optimal' if result.success else (
+            'time_limit_reached' if 'time' in receipt['message'].lower() else 'infeasible_or_error')
         if result.success:
-            return float(result.fun), result.x
-        return None, None
-    except Exception:
-        return None, None
+            receipt['objective'] = float(result.fun)
+            mip_dual = getattr(result, 'mip_dual_bound', None)
+            if mip_dual is not None:
+                receipt['mip_dual_bound'] = float(mip_dual)
+                receipt['mip_gap'] = float(abs(mip_dual - result.fun) / max(1.0, abs(result.fun)))
+            mip_node_count = getattr(result, 'mip_node_count', None)
+            if mip_node_count is not None:
+                receipt['mip_node_count'] = int(mip_node_count)
+            return float(result.fun), result.x, receipt
+        return None, None, receipt
+    except Exception as e:
+        receipt['status'] = f'exception:{type(e).__name__}'
+        receipt['message'] = str(e)[:200]
+        return None, None, receipt
 
 
 def try_lp_witness_fal(net, lb_in: np.ndarray, ub_in: np.ndarray,
@@ -167,8 +215,12 @@ def try_lp_witness_fal(net, lb_in: np.ndarray, ub_in: np.ndarray,
 
     for cand in candidates:
         x_star = np.asarray(cand['x_star'], dtype=np.float32)
-        # Clip to input box (numerical safety)
-        x_star = np.clip(x_star, lb_in.astype(np.float32), ub_in.astype(np.float32))
+        # Strict witness discipline: never clip a solver-returned candidate into
+        # the input box. Clipping can turn an infeasible solver artifact into a
+        # different concrete point. Reject box-violating candidates instead.
+        if not ((x_star >= lb_in.astype(np.float32) - 1e-7).all() and
+                (x_star <= ub_in.astype(np.float32) + 1e-7).all()):
+            continue
         # Reshape to ONNX input shape
         try:
             x_reshape = x_star.reshape((1,) + tuple(in_shape[1:])) if len(in_shape) > 1 else x_star.reshape(1, -1)

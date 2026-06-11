@@ -283,9 +283,29 @@ class FchzTF(TransferFunction):
         n = s_in.c.shape[0]
         K = s_in.G.shape[1]
 
-        # Match raw walker apply_relu_triangle_with_record: use G-ONLY for bounds.
-        # The slack columns then capture the unstable behavior precisely.
+        # SOUNDNESS NOTE (2026-06-11 fix):
+        #   The bounds (l, u) used to classify neurons as stable-active /
+        #   stable-inactive / unstable and to compute the triangle slope
+        #   (lam) / intercept (mu) MUST be a sound box-hull of the pre-
+        #   activation z = s_in.c + s_in.G @ xi (+ s_in.tail @ tail_noise).
+        #
+        #   The previous implementation used G ONLY (`G_rad = sum|G|`),
+        #   which was correct under the design assumption that no tail
+        #   was active. But sparse-slack mode (`HYZOR_FCHZ_G_MAX_COLS`)
+        #   compresses dropped G columns into `tail_radius`; ignoring tail
+        #   here gave artificially tight (l, u) bounds, causing some
+        #   unstable neurons to be misclassified as stable-active. The
+        #   downstream MILP then encoded `y = z` for those neurons, which
+        #   is wrong when z can actually be negative — and produced unsound
+        #   CERTs on benchmarks that triggered compression (tllverifybench,
+        #   cersyve, etc.).
+        #
+        #   Fix: include the tail_radius in the per-neuron bound. This
+        #   restores the sound box-hull and matches the bound returned by
+        #   _fchz_to_bounds().
         G_rad = np.abs(s_in.G).sum(axis=1)
+        if s_in.tail_radius is not None:
+            G_rad = G_rad + s_in.tail_radius
         l = s_in.c - G_rad
         u = s_in.c + G_rad
 
@@ -668,14 +688,39 @@ class FchzTF(TransferFunction):
                        cons=ConSet())
 
     def _tf_add(self, L: Layer, input_bounds: Bounds) -> Fact:
-        """ADD: residual connection. Two paths from SAME input root.
+        """ADD: residual connection. Two paths sharing the same INPUT ROOT.
 
-        Mathematical: when s_a and s_b share noise variables (same xi),
-        their sum has G = G_a + G_b ELEMENT-WISE (after padding to same K).
-        NOT concat — that would treat correlated noise as independent and
-        double-count the radius.
+        SOUNDNESS NOTE (2026-06-11 fix):
+            The previous element-wise sum assumed that columns at the same
+            index in s_a.G and s_b.G correspond to the SAME noise variable
+            xi. This is true for the FIRST n_root columns (the input-box
+            xi shared by both branches), and it is also true in the
+            ResNet skip-pattern where one branch is a pure identity and
+            therefore contributes no post-ReLU xi at all. But when BOTH
+            branches have introduced their own post-ReLU xi (e.g., the
+            cersyve pendulum_pretrain_inv model), the element-wise sum
+            of column i for i >= n_root treats two INDEPENDENT xi as if
+            they were the same variable, which is UNSOUND — the resulting
+            G can produce ranges that artificially cancel (an actual
+            counterexample falls outside the computed bound).
 
-        This matches raw walker (research/sc_hz/fchz_walker.py L271-309).
+            The corrected handler:
+              * Sums the first n_root columns element-wise (these are
+                the shared input-box xi, genuinely correlated).
+              * Concatenates the remaining columns horizontally (each
+                branch's post-ReLU xi is treated as independent of the
+                other branch's, which is sound — adding independent
+                xi increases the zonotope's extent rather than canceling
+                it).
+
+            Behavior is UNCHANGED for the ResNet skip-pattern (one branch
+            has only root xi, K == n_root). The change matters only when
+            both branches have introduced new post-ReLU xi, in which case
+            the new behavior is the sound interpretation.
+
+            Matches raw walker (research/sc_hz/fchz_walker.py L271-309)
+            only for the shared-root case; the multi-branch case is a
+            soundness correction beyond what the raw walker handles.
         """
         if self._net is None or L.id not in self._net.preds:
             return Fact(bounds=input_bounds, cons=ConSet())
@@ -690,20 +735,31 @@ class FchzTF(TransferFunction):
             return Fact(bounds=input_bounds, cons=ConSet())
 
         new_c = s_a.c + s_b.c
-        # Pad G to same K, then ELEMENT-WISE add (preserves shared noise correlation)
+        n = new_c.shape[0]
+        # n_root must agree between branches (both started from the same
+        # InputSpec). If they disagree, take the minimum and treat the
+        # remainder as independent — the conservative choice.
+        n_root_a = int(getattr(s_a, 'n_root', 0) or 0)
+        n_root_b = int(getattr(s_b, 'n_root', 0) or 0)
+        n_root = min(n_root_a, n_root_b)
         K_a = s_a.G.shape[1]
         K_b = s_b.G.shape[1]
-        K_max = max(K_a, K_b)
-        n = new_c.shape[0]
-        if K_a < K_max:
-            G_a_pad = np.concatenate([s_a.G, np.zeros((n, K_max - K_a), dtype=s_a.G.dtype)], axis=1)
+
+        # Shared root columns: sum element-wise. Both branches' first
+        # n_root columns are coefficients on the SAME input-box xi, so
+        # element-wise sum is sound and tight.
+        K_shared = min(n_root, K_a, K_b)
+        if K_shared > 0:
+            G_root_sum = s_a.G[:, :K_shared] + s_b.G[:, :K_shared]
         else:
-            G_a_pad = s_a.G
-        if K_b < K_max:
-            G_b_pad = np.concatenate([s_b.G, np.zeros((n, K_max - K_b), dtype=s_b.G.dtype)], axis=1)
-        else:
-            G_b_pad = s_b.G
-        new_G = G_a_pad + G_b_pad
+            G_root_sum = np.zeros((n, 0), dtype=s_a.G.dtype)
+
+        # Independent post-root columns: concatenate (each branch's
+        # post-ReLU xi is a fresh independent variable in the other
+        # branch's frame).
+        G_a_indep = s_a.G[:, K_shared:] if K_a > K_shared else np.zeros((n, 0), dtype=s_a.G.dtype)
+        G_b_indep = s_b.G[:, K_shared:] if K_b > K_shared else np.zeros((n, 0), dtype=s_b.G.dtype)
+        new_G = np.concatenate([G_root_sum, G_a_indep, G_b_indep], axis=1)
 
         # Tail radii: sum (independent box error sources)
         ta = s_a.tail_radius if s_a.tail_radius is not None else 0.0
@@ -712,14 +768,11 @@ class FchzTF(TransferFunction):
         if new_tail is not None and not isinstance(new_tail, np.ndarray):
             new_tail = np.full(n, float(new_tail))
 
-        # Slack records: merge by layer_index (preserve all branches' slacks)
-        merged_records = list(s_a.slack_records)
-        existing_layers = {rec.layer_index for rec in s_a.slack_records}
-        for rec in s_b.slack_records:
-            if rec.layer_index not in existing_layers:
-                merged_records.append(rec)
+        # Slack records: union (each branch's records correspond to its
+        # own post-ReLU xi, which are now distinct columns in new_G).
+        merged_records = list(s_a.slack_records) + list(s_b.slack_records)
 
-        s_out = FCHZState(c=new_c, G=new_G, n_root=s_a.n_root,
+        s_out = FCHZState(c=new_c, G=new_G, n_root=n_root,
                                 slack_records=merged_records,
                                 tail_radius=new_tail)
         self._store_state(L.id, s_out)
@@ -731,9 +784,12 @@ class FchzTF(TransferFunction):
                        cons=ConSet())
 
     def _tf_sub(self, L: Layer, input_bounds: Bounds) -> Fact:
-        """SUB: x - y where both are FCHZStates with shared input root.
+        """SUB: x - y where both are FCHZStates.
 
-        Same as ADD but with sign flip on second operand.
+        SOUNDNESS NOTE (2026-06-11 fix): mirrors the ADD correction — only
+        the first n_root columns (shared input-box xi) are subtracted
+        element-wise; each branch's post-ReLU xi are kept independent
+        (concat with appropriate sign).
         """
         if self._net is None or L.id not in self._net.preds:
             return Fact(bounds=input_bounds, cons=ConSet())
@@ -748,11 +804,20 @@ class FchzTF(TransferFunction):
             return Fact(bounds=input_bounds, cons=ConSet())
 
         new_c = s_a.c - s_b.c
+        n = new_c.shape[0]
+        n_root_a = int(getattr(s_a, 'n_root', 0) or 0)
+        n_root_b = int(getattr(s_b, 'n_root', 0) or 0)
+        n_root = min(n_root_a, n_root_b)
         K_a = s_a.G.shape[1]; K_b = s_b.G.shape[1]
-        K_max = max(K_a, K_b); n = new_c.shape[0]
-        G_a_pad = np.concatenate([s_a.G, np.zeros((n, K_max - K_a), dtype=s_a.G.dtype)], axis=1) if K_a < K_max else s_a.G
-        G_b_pad = np.concatenate([s_b.G, np.zeros((n, K_max - K_b), dtype=s_b.G.dtype)], axis=1) if K_b < K_max else s_b.G
-        new_G = G_a_pad - G_b_pad
+        K_shared = min(n_root, K_a, K_b)
+        if K_shared > 0:
+            G_root_diff = s_a.G[:, :K_shared] - s_b.G[:, :K_shared]
+        else:
+            G_root_diff = np.zeros((n, 0), dtype=s_a.G.dtype)
+        G_a_indep = s_a.G[:, K_shared:] if K_a > K_shared else np.zeros((n, 0), dtype=s_a.G.dtype)
+        # The s_b independent columns get a sign flip because we're subtracting.
+        G_b_indep_neg = (-s_b.G[:, K_shared:]) if K_b > K_shared else np.zeros((n, 0), dtype=s_b.G.dtype)
+        new_G = np.concatenate([G_root_diff, G_a_indep, G_b_indep_neg], axis=1)
 
         ta = s_a.tail_radius if s_a.tail_radius is not None else 0.0
         tb = s_b.tail_radius if s_b.tail_radius is not None else 0.0
@@ -760,8 +825,9 @@ class FchzTF(TransferFunction):
         if new_tail is not None and not isinstance(new_tail, np.ndarray):
             new_tail = np.full(n, float(new_tail))
 
-        s_out = FCHZState(c=new_c, G=new_G, n_root=s_a.n_root,
-                                slack_records=list(s_a.slack_records),
+        merged_records = list(s_a.slack_records) + list(s_b.slack_records)
+        s_out = FCHZState(c=new_c, G=new_G, n_root=n_root,
+                                slack_records=merged_records,
                                 tail_radius=new_tail)
         self._store_state(L.id, s_out)
         return Fact(bounds=_fchz_to_bounds(s_out, dev=input_bounds.lb.device,

@@ -22,7 +22,7 @@
 """Forward MILP refinement on top-K unstable ReLUs (Tjeng encoding, HiGHS solver)."""
 import os
 import numpy as np
-from typing import Optional, Dict, Tuple, List
+from typing import Optional, Dict, Tuple, List, Any
 
 try:
     from scipy.optimize import milp, LinearConstraint, Bounds as LPBounds
@@ -45,8 +45,11 @@ def build_forward_milp(net, lb_in: np.ndarray, ub_in: np.ndarray,
       lb_in, ub_in: input bounds
       pre_bounds: per-layer (lb, ub) from FCHZ propagation
       K_per_layer: max binary variables per ReLU layer (default for non-last layers)
-      d_objective: spec objective vector (for top-K selection by |d_eff|)
-      output_layer_id: which layer is the output (for d_eff back-propagation)
+      d_objective: optional spec objective vector, used only when
+                      ACT_HZ_TOPK_SELECT=d_eff_legacy for replay/ablation.
+                      The production default top-K selector is forward-only
+                      interval width and ignores this argument.
+      output_layer_id: output layer id for d_eff_legacy replay/ablation.
       eq_layers: concentrate K_eq_last binary on LAST N ReLU layers (eq_lagr_v8 spirit).
                       If None, all layers use K_per_layer uniformly.
       K_eq_last: K for last N ReLU layers (used when eq_layers != None). Default K_per_layer*5.
@@ -93,17 +96,37 @@ def build_forward_milp(net, lb_in: np.ndarray, ub_in: np.ndarray,
     def var_idx_of(L_id): return layer_var_idx.get(L_id)
     next_var = n_in
 
-    # First pass: compute |d_eff| per neuron per ReLU layer for top-K selection
-    # We approximate d_eff backward via |W| accumulation through subsequent layers.
+    # ─── Top-K importance scoring policy ────────────────────────────────────
+    # Environment variable ACT_HZ_TOPK_SELECT picks the per-neuron importance
+    # function used to choose which unstable ReLUs receive binary indicators:
+    #
+    #   'width'        (DEFAULT, forward-only): importance = (ub - lb).
+    #                  Pure forward — no backward weight propagation.
+    #                  Satisfies the strict no-backward-of-any-kind principle.
+    #
+    #   'looseness'    (forward-only): importance = ub * (-lb) / (ub - lb).
+    #                  Maximum LP-relaxation gap at the Tjeng triangle (the
+    #                  area between the triangle and ReLU graph). Closed-form,
+    #                  computed only from the layer's own (lb, ub).
+    #
+    #   'd_eff_legacy' (DEPRECATED, opt-in): the old |W^T| backward walk.
+    #                  Retained ONLY for reproducing the original 2195 V+A
+    #                  cascade result (cf. audit_results/fchz_adaptive_
+    #                  cascade_20260610/). NOT recommended for new runs:
+    #                  it does not compute bounds (so soundness is unaffected),
+    #                  but it does propagate spec direction backward via
+    #                  abs(W)^T, which conflicts with the strict forward-only
+    #                  principle even though it only drives a selection
+    #                  heuristic.
+    #
+    # All three policies leave soundness untouched — selection only decides
+    # *which* unstable neurons get exact binary encoding versus triangle
+    # relaxation; the soundness of either encoding is independent of choice.
+    topk_select = os.environ.get('ACT_HZ_TOPK_SELECT', 'width').lower()
     d_eff_per_relu: Dict[int, np.ndarray] = {}
-    if d_objective is not None:
-        # Walk backward from output layer collecting per-ReLU d_eff
-        relus = [L for L in net.layers if L.kind == 'RELU']
+    if topk_select == 'd_eff_legacy' and d_objective is not None:
+        # Legacy backward-walk path — preserved bit-for-bit for replay.
         d_curr = np.abs(d_objective.reshape(-1))
-        # For each subsequent affine after the ReLU, multiply by |W|.T
-        # We process layers in reverse order tracking d_curr
-        # Build layer-id → next layers map
-        # Simple approach: iterate net.layers reverse from output to input
         layer_order = list(net.layers)
         out_idx = None
         if output_layer_id is not None:
@@ -178,14 +201,28 @@ def build_forward_milp(net, lb_in: np.ndarray, ub_in: np.ndarray,
             else:
                 K_this = K_per_layer
 
-            # Select top-K unstable for binary indicators (K_this depends on eq_layers)
+            # Select top-K unstable for binary indicators (K_this depends on eq_layers).
+            # Importance score selected by ACT_HZ_TOPK_SELECT (see header):
+            #   'width'         → ub - lb                     (forward-only, default)
+            #   'looseness'     → ub * (-lb) / (ub - lb)      (forward-only, Tjeng triangle gap)
+            #   'd_eff_legacy'  → |W^T|-propagated d * width  (DEPRECATED, opt-in)
             unstable_idx = [j for j in range(n_out) if lb_pred[j] < 0 < ub_pred[j]]
-            if d_eff_per_relu.get(L.id) is not None:
-                d_eff_layer = d_eff_per_relu[L.id]
-                importance = np.abs(d_eff_layer[unstable_idx]) * (ub_pred[unstable_idx] - lb_pred[unstable_idx])
-                order = np.argsort(-importance)[:K_this]
+            if not unstable_idx:
+                order = np.array([], dtype=np.int64)
             else:
-                order = np.arange(min(len(unstable_idx), K_this))
+                ub_unst = ub_pred[unstable_idx].astype(np.float64)
+                lb_unst = lb_pred[unstable_idx].astype(np.float64)
+                width_unst = ub_unst - lb_unst
+                if topk_select == 'd_eff_legacy' and d_eff_per_relu.get(L.id) is not None:
+                    d_eff_layer = d_eff_per_relu[L.id]
+                    importance = np.abs(d_eff_layer[unstable_idx]) * width_unst
+                elif topk_select == 'looseness':
+                    # Triangle relaxation area = ub * (-lb) / (ub - lb)
+                    importance = ub_unst * (-lb_unst) / np.maximum(width_unst, 1e-12)
+                else:
+                    # 'width' (default) — pure forward, no backward information used
+                    importance = width_unst
+                order = np.argsort(-importance)[:K_this]
             binary_for = set(unstable_idx[i] for i in order if i < len(unstable_idx))
 
             # Allocate binary vars for selected unstable
@@ -336,7 +373,18 @@ def build_forward_milp(net, lb_in: np.ndarray, ub_in: np.ndarray,
                 next_var += n_out + n_binary_added
                 continue
 
-            # K=1 chord (chord_mode == '1')
+            # K=1 chord (chord_mode == '1'): use ANALYTICAL chord_params
+            # (from sigmoid_chord.py) instead of sampling. This gives a
+            # TIGHTER and PROVABLY SOUND chord constraint using the
+            # critical-point method: σ'(x*) = α has closed-form solutions
+            # via logit (Sigmoid) or atanh (Tanh). Tighter than 51-point
+            # sample with no extra constraints. Uniform improvement on
+            # all Sigmoid/Tanh layers.
+            from act.back_end.fchz_tf.sigmoid_chord import chord_params
+            lb_arr = lb_pred.astype(np.float64)
+            ub_arr = ub_pred.astype(np.float64)
+            alpha_arr, beta_arr, radius_arr = chord_params(lb_arr, ub_arr, kind_name)
+
             n_total = next_var + n_out
             for j in range(n_out):
                 l_pre = float(lb_pred[j]); u_pre = float(ub_pred[j])
@@ -348,22 +396,85 @@ def build_forward_milp(net, lb_in: np.ndarray, ub_in: np.ndarray,
                     A_eq_rows.append((row, n_total))
                     b_eq_rows.append(float(func(l_pre)))
                 else:
-                    fl = float(func(l_pre)); fu = float(func(u_pre))
-                    slope = (fu - fl) / (u_pre - l_pre)
-                    intercept = fl - slope * l_pre
-                    sample_pts = np.linspace(l_pre, u_pre, 51)
-                    chord_y = slope * sample_pts + intercept
-                    true_y = func(sample_pts)
-                    max_res = float(np.abs(true_y - chord_y).max()) + 1e-12
+                    # Analytical chord: y ≈ alpha * z + beta (recentered)
+                    # Sound bound: |y - (alpha*z + beta)| ≤ radius
+                    alpha = float(alpha_arr[j])
+                    beta = float(beta_arr[j])
+                    radius = float(radius_arr[j]) + 1e-12   # numerical safety
                     row = np.zeros(n_total)
-                    row[v_out] = 1.0; row[v_pre] = -slope
+                    row[v_out] = 1.0; row[v_pre] = -alpha
                     A_ub_rows.append((row, n_total))
-                    b_ub_rows.append(intercept + max_res)
+                    b_ub_rows.append(beta + radius)
                     row = np.zeros(n_total)
-                    row[v_out] = -1.0; row[v_pre] = slope
+                    row[v_out] = -1.0; row[v_pre] = alpha
                     A_ub_rows.append((row, n_total))
-                    b_ub_rows.append(-(intercept - max_res))
+                    b_ub_rows.append(-(beta - radius))
             next_var += n_out
+        elif L.kind == 'BN':
+            # BatchNorm: y_i = A_i * x_i + c_i (per-channel affine after ACT preprocess).
+            # For 1D input, A and c are vectors of length pred_dim.
+            # For multi-D input (e.g., CHW), A and c are per-channel (length C) and
+            # need broadcast to the full pred_dim. We handle both cases.
+            A_param = L.params.get('A')
+            c_param = L.params.get('c')
+            if A_param is None or c_param is None:
+                # Unhandled — pass through with FCHZ bounds
+                lb_o, ub_o = pre_bounds.get(L.id, (None, None))
+                if lb_o is None: return None
+                n_out = lb_o.shape[0]
+                layer_var_idx[L.id] = (next_var, n_out)
+                for j in range(n_out):
+                    var_bounds.append((float(lb_o[j]), float(ub_o[j])))
+                    integrality.append(0)
+                next_var += n_out
+                continue
+            A_np = (A_param.detach().cpu().numpy() if hasattr(A_param, 'detach')
+                       else np.asarray(A_param)).astype(np.float64).reshape(-1)
+            c_np = (c_param.detach().cpu().numpy() if hasattr(c_param, 'detach')
+                       else np.asarray(c_param)).astype(np.float64).reshape(-1)
+            # Broadcast per-channel to full pred_dim if needed
+            if A_np.shape[0] != pred_dim:
+                # Try per-channel broadcast: pred_dim = C * H * W (or C * spatial)
+                if pred_dim % A_np.shape[0] == 0:
+                    spatial = pred_dim // A_np.shape[0]
+                    A_full = np.repeat(A_np, spatial)
+                    c_full = np.repeat(c_np, spatial)
+                else:
+                    # Cannot broadcast cleanly — fall back to loose box
+                    lb_o, ub_o = pre_bounds.get(L.id, (None, None))
+                    if lb_o is None: return None
+                    n_out = lb_o.shape[0]
+                    layer_var_idx[L.id] = (next_var, n_out)
+                    for j in range(n_out):
+                        var_bounds.append((float(lb_o[j]), float(ub_o[j])))
+                        integrality.append(0)
+                    next_var += n_out
+                    continue
+            else:
+                A_full = A_np
+                c_full = c_np
+            n_out = pred_dim
+            layer_var_idx[L.id] = (next_var, n_out)
+            lb_o, ub_o = pre_bounds.get(L.id, (None, None))
+            if lb_o is None or lb_o.shape[0] != n_out:
+                # Compute from input bounds if missing
+                lb_pred_local = lb_pred; ub_pred_local = ub_pred
+                lb_o_local = np.where(A_full >= 0, A_full * lb_pred_local, A_full * ub_pred_local) + c_full
+                ub_o_local = np.where(A_full >= 0, A_full * ub_pred_local, A_full * lb_pred_local) + c_full
+            else:
+                lb_o_local, ub_o_local = lb_o, ub_o
+            for j in range(n_out):
+                var_bounds.append((float(lb_o_local[j]), float(ub_o_local[j])))
+                integrality.append(0)
+            n_total = next_var + n_out
+            for j in range(n_out):
+                row = np.zeros(n_total)
+                row[next_var + j] = 1.0
+                row[pred_start + j] = -float(A_full[j])
+                A_eq_rows.append((row, n_total))
+                b_eq_rows.append(float(c_full[j]))
+            next_var += n_out
+
         elif L.kind == 'SCALE':
             # Element-wise y_j = a_j * x_j
             a = L.params.get('a')
@@ -652,13 +763,63 @@ def build_forward_milp(net, lb_in: np.ndarray, ub_in: np.ndarray,
 
 def solve_forward_milp_lb(milp_data: Dict, output_layer_id: int, d: np.ndarray,
                                           time_limit_s: float = 30.0) -> Optional[float]:
-    """Solve MILP for minimize d @ y. Returns LB or None on failure."""
-    if not HAS_MILP: return None
+    """Solve MILP for minimize d @ y. Returns LB or None on failure.
+
+    Legacy wrapper preserved for back-compatibility. New callers requiring
+    audit-grade receipts should use solve_forward_milp_lb_with_receipt.
+    """
+    opt, _ = solve_forward_milp_lb_with_receipt(milp_data, output_layer_id, d, time_limit_s)
+    return opt
+
+
+def solve_forward_milp_lb_with_receipt(milp_data: Dict, output_layer_id: int,
+                                                                       d: np.ndarray, time_limit_s: float = 30.0
+                                                                       ) -> Tuple[Optional[float], Dict[str, Any]]:
+    """Solve MILP for minimize d @ y and return (objective, solver receipt).
+
+    Receipt fields (always populated):
+      solver           : 'scipy.optimize.milp (HiGHS)'
+      time_limit_s     : float, wall budget passed to HiGHS
+      var_count        : int, # decision variables
+      n_binary         : int, # binary variables
+      n_ub_rows        : int, # inequality constraint rows
+      n_eq_rows        : int, # equality constraint rows
+      out_start,out_dim: int, output-variable block
+      status           : str, 'optimal' / 'time_limit_reached' / 'infeasible' /
+                              'error' / 'exception:<TypeName>'
+      success          : bool
+      message          : str, raw solver message (may be empty)
+
+    Receipt fields populated only on success:
+      objective        : float, optimal value
+      mip_gap          : float, |mip_dual_bound - objective| / max(1, |obj|)
+      mip_dual_bound   : float, the dual bound HiGHS reports (if available)
+      mip_node_count   : int, # branch-and-bound nodes (if available)
+    """
+    receipt: Dict[str, Any] = {
+        'solver': 'scipy.optimize.milp (HiGHS)',
+        'time_limit_s': float(time_limit_s),
+        'var_count': int(milp_data.get('var_count', 0)),
+        'n_binary': int(milp_data.get('n_binary', 0)),
+        'n_ub_rows': int(milp_data['A_ub'].shape[0]) if milp_data.get('A_ub') is not None else 0,
+        'n_eq_rows': int(milp_data['A_eq'].shape[0]) if milp_data.get('A_eq') is not None else 0,
+        'success': False,
+        'status': 'not_attempted',
+        'message': '',
+    }
+    if not HAS_MILP:
+        receipt['status'] = 'milp_unavailable'
+        return None, receipt
     output_idx = milp_data['layer_var_idx'].get(output_layer_id)
-    if output_idx is None: return None
+    if output_idx is None:
+        receipt['status'] = 'unknown_output_layer'
+        return None, receipt
     out_start, out_dim = output_idx
+    receipt['out_start'] = int(out_start); receipt['out_dim'] = int(out_dim)
     n_total = milp_data['var_count']
-    if d.shape[0] != out_dim: return None
+    if d.shape[0] != out_dim:
+        receipt['status'] = 'd_shape_mismatch'
+        return None, receipt
 
     obj = np.zeros(n_total)
     obj[out_start:out_start + out_dim] = d.astype(np.float64)
@@ -680,8 +841,22 @@ def solve_forward_milp_lb(milp_data: Dict, output_layer_id: int, d: np.ndarray,
             integrality=milp_data['integrality'],
             bounds=bounds_obj,
             options={'time_limit': time_limit_s, 'disp': False})
+        receipt['success'] = bool(result.success)
+        receipt['message'] = str(getattr(result, 'message', ''))[:200]
+        receipt['status'] = 'optimal' if result.success else (
+            'time_limit_reached' if 'time' in receipt['message'].lower() else 'infeasible_or_error')
         if result.success:
-            return float(result.fun)
-        return None
-    except Exception:
-        return None
+            receipt['objective'] = float(result.fun)
+            mip_dual = getattr(result, 'mip_dual_bound', None)
+            if mip_dual is not None:
+                receipt['mip_dual_bound'] = float(mip_dual)
+                receipt['mip_gap'] = float(abs(mip_dual - result.fun) / max(1.0, abs(result.fun)))
+            mip_node_count = getattr(result, 'mip_node_count', None)
+            if mip_node_count is not None:
+                receipt['mip_node_count'] = int(mip_node_count)
+            return float(result.fun), receipt
+        return None, receipt
+    except Exception as e:
+        receipt['status'] = f'exception:{type(e).__name__}'
+        receipt['message'] = str(e)[:200]
+        return None, receipt

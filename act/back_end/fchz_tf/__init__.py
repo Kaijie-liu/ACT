@@ -11,7 +11,7 @@
 #   Strict P1-P5 forward HZ propagation:
 #     P1: Forward only (no backward, no CROWN)
 #     P2: No gradient (no PGD, no autograd)
-#     P3: Continuous LP only (HiGHS, no MILP)
+#     P3: Open-source LP/MILP only (HiGHS/scipy or equivalent; no Gurobi)
 #     P4: No input split (no BaB)
 #     P5: No random certify (deterministic walker; ORT post-audit only)
 #

@@ -114,6 +114,32 @@ def _interval_forward(net, lb_in: np.ndarray, ub_in: np.ndarray) -> Dict[int, Tu
                     bounds[L.id] = (lb_pred.copy(), ub_pred.copy())
             else:
                 bounds[L.id] = (lb_pred.copy(), ub_pred.copy())
+        elif L.kind == 'BN':
+            # BatchNorm: y_i = A_i * x_i + c_i (after ACT precompute)
+            A_param = L.params.get('A')
+            c_param = L.params.get('c')
+            if A_param is None or c_param is None:
+                bounds[L.id] = (lb_pred.copy(), ub_pred.copy())
+            else:
+                A_np = (A_param.detach().cpu().numpy() if hasattr(A_param, 'detach')
+                           else np.asarray(A_param)).astype(np.float64).reshape(-1)
+                c_np = (c_param.detach().cpu().numpy() if hasattr(c_param, 'detach')
+                           else np.asarray(c_param)).astype(np.float64).reshape(-1)
+                if A_np.shape[0] != lb_pred.shape[0]:
+                    # Per-channel broadcast
+                    if lb_pred.shape[0] % A_np.shape[0] == 0:
+                        spatial = lb_pred.shape[0] // A_np.shape[0]
+                        A_full = np.repeat(A_np, spatial)
+                        c_full = np.repeat(c_np, spatial)
+                    else:
+                        bounds[L.id] = (lb_pred.copy(), ub_pred.copy())
+                        continue
+                else:
+                    A_full = A_np; c_full = c_np
+                a_pos = np.maximum(A_full, 0); a_neg = np.minimum(A_full, 0)
+                new_lb = a_pos * lb_pred + a_neg * ub_pred + c_full
+                new_ub = a_pos * ub_pred + a_neg * lb_pred + c_full
+                bounds[L.id] = (new_lb, new_ub)
         elif L.kind == 'CONV2D':
             # IBP for conv: compute via torch nn.functional
             try:
@@ -143,6 +169,38 @@ def _interval_forward(net, lb_in: np.ndarray, ub_in: np.ndarray) -> Dict[int, Tu
                 bounds[L.id] = (lb_pred, ub_pred)
         elif L.kind in ('ASSERT', 'CONSTANT', 'INPUT'):
             bounds[L.id] = (lb_pred, ub_pred)
+        elif L.kind == 'ADD':
+            # Sound interval ADD: y = x_a + x_b → lb = lb_a + lb_b, ub = ub_a + ub_b.
+            # SOUNDNESS NOTE (2026-06-11): previously this fell through to the
+            # generic `else: passthrough` clause, which returned only preds[0]'s
+            # bound. That artificially tightened the bound when one branch
+            # produced zero on a coordinate by network design (e.g., cersyve
+            # pendulum_pretrain_inv layer 7 has W_row1 = 0 + b_1 = 0, so
+            # interval said y_1 ∈ [0, 0]) while the other branch contributed
+            # a non-zero range. The intersection with FCHZ in fchz_pre_bounds
+            # then picked the wrong [0, 0] bound and the MILP unsoundly CERT'd.
+            preds_lst = net.preds.get(L.id, [])
+            if len(preds_lst) != 2:
+                bounds[L.id] = (lb_pred.copy(), ub_pred.copy())
+            else:
+                lb_a, ub_a = bounds.get(preds_lst[0], (lb_in.copy(), ub_in.copy()))
+                lb_b, ub_b = bounds.get(preds_lst[1], (lb_in.copy(), ub_in.copy()))
+                if lb_a.shape == lb_b.shape:
+                    bounds[L.id] = (lb_a + lb_b, ub_a + ub_b)
+                else:
+                    # Shape mismatch — fall back to conservatively wide bound
+                    bounds[L.id] = (lb_pred.copy(), ub_pred.copy())
+        elif L.kind == 'SUB':
+            preds_lst = net.preds.get(L.id, [])
+            if len(preds_lst) != 2:
+                bounds[L.id] = (lb_pred.copy(), ub_pred.copy())
+            else:
+                lb_a, ub_a = bounds.get(preds_lst[0], (lb_in.copy(), ub_in.copy()))
+                lb_b, ub_b = bounds.get(preds_lst[1], (lb_in.copy(), ub_in.copy()))
+                if lb_a.shape == lb_b.shape:
+                    bounds[L.id] = (lb_a - ub_b, ub_a - lb_b)
+                else:
+                    bounds[L.id] = (lb_pred.copy(), ub_pred.copy())
         else:
             # Unsupported — passthrough (sound conservative)
             bounds[L.id] = (lb_pred, ub_pred)
@@ -379,6 +437,41 @@ def build_forward_lp(net, lb_in: np.ndarray, ub_in: np.ndarray,
             for j in range(n_out):
                 var_bounds.append((float(lb_o[j]), float(ub_o[j])))
             next_var += n_out
+        elif L.kind == 'BN':
+            # BatchNorm: y_i = A_i * x_i + c_i (per-channel affine).
+            A_param = L.params.get('A')
+            c_param = L.params.get('c')
+            if A_param is None or c_param is None:
+                layer_var_idx[L.id] = (pred_start, pred_dim)
+            else:
+                A_np = (A_param.detach().cpu().numpy() if hasattr(A_param, 'detach')
+                           else np.asarray(A_param)).astype(np.float64).reshape(-1)
+                c_np = (c_param.detach().cpu().numpy() if hasattr(c_param, 'detach')
+                           else np.asarray(c_param)).astype(np.float64).reshape(-1)
+                if A_np.shape[0] != pred_dim:
+                    if pred_dim % A_np.shape[0] == 0:
+                        spatial = pred_dim // A_np.shape[0]
+                        A_full = np.repeat(A_np, spatial)
+                        c_full = np.repeat(c_np, spatial)
+                    else:
+                        layer_var_idx[L.id] = (pred_start, pred_dim)
+                        continue
+                else:
+                    A_full = A_np; c_full = c_np
+                n_out = pred_dim
+                layer_var_idx[L.id] = (next_var, n_out)
+                lb_o, ub_o = pre_bounds[L.id]
+                for j in range(n_out):
+                    var_bounds.append((float(lb_o[j]), float(ub_o[j])))
+                n_total = next_var + n_out
+                for j in range(n_out):
+                    row = np.zeros(n_total)
+                    row[next_var + j] = 1.0
+                    row[pred_start + j] = -float(A_full[j])
+                    A_eq_rows.append((row, n_total))
+                    b_eq_rows.append(float(c_full[j]))
+                next_var += n_out
+
         elif L.kind == 'SCALE':
             # Element-wise: y_j = a_j * x_j. Add equality y_j - a_j * x_j = 0.
             a = L.params.get('a')

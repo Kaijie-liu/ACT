@@ -7,7 +7,8 @@ strict P1-P5 forward neural network verification.
 
 - **P1**: Forward propagation only — no backward, no CROWN
 - **P2**: No gradient — no PGD, no autograd, no helper attacks
-- **P3**: Continuous LP only — HiGHS solver, no MILP, no Gurobi
+- **P3**: Open-source LP/MILP only — HiGHS/scipy or equivalent open solver;
+  no Gurobi or commercial MILP solver
 - **P4**: No input split — no Branch-and-Bound on input
 - **P5**: No random certify — deterministic walker; ORT only for post-hoc audit
 
