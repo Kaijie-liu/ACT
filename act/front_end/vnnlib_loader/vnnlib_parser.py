@@ -739,14 +739,16 @@ def _try_promote_to_top1(
 
     Structural requirements:
       - All queries share identical input BOX bounds.
-      - Every query has exactly ONE output inequality of the form
-        ``Y_other - Y_true <= 0`` (coefficients +1 / -1, RHS = 0).
+      - Every query has exactly ONE output inequality with coefficients +1 / -1,
+        RHS = 0, involving ``Y_true`` and one ``Y_other``.
       - The set of ``other`` indices covers every class except ``true_label``.
 
-    Orientation (CRITICAL): VNNLIB uses BOTH ``(>= Y_j Y_true)`` and
-    ``(<= Y_true Y_j)``; after canonicalisation both yield the same <= form
-    but with opposite coefficient placement. Missing either orientation
-    regresses CIFAR-100 to ~99 queries/image. Both branches accepted below.
+    Orientation (CRITICAL): only ``Y_true - Y_other <= 0`` (= ``Y_other >= Y_true``,
+    ``pos==t_idx``) is the standard top-1 violation and may collapse to TOP1_ROBUST
+    (Y_true MAXIMAL); CIFAR/standard classification uses this. The opposite
+    ``Y_other - Y_true <= 0`` (``neg==t_idx``) means "Y_true MINIMAL" -- collapsing it
+    would FLIP the spec (a false-ADV bug on acasxu COC-minimal props, e.g. prop_10),
+    so it is left as N UNSAFE_LINEAR disjuncts (which encode the OR-of-``<=`` exactly).
     """
     if not queries:
         return None
@@ -790,10 +792,8 @@ def _try_promote_to_top1(
             return None
         if pos[0] == t_idx:
             covered.add(neg[0])
-        elif neg[0] == t_idx:
-            covered.add(pos[0])
         else:
-            return None
+            return None   # neg==t_idx (Y_true MINIMAL) flips TOP1_ROBUST -- see docstring
     if covered != expected:
         return None
     y_true = _coerce_label_to_tensor(true_label)

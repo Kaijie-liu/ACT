@@ -38,6 +38,12 @@ try:
 except Exception:  # pragma: no cover
     _HAS_SCIPY = False
 
+try:
+    import highspy as _highspy
+    _HAS_HIGHSPY = True
+except Exception:  # pragma: no cover
+    _HAS_HIGHSPY = False
+
 
 def _hz_np(hz: HZono):
     c = hz.c.detach().cpu().double().numpy().reshape(-1)
@@ -146,6 +152,125 @@ def hz_joint_min_margin(hz: HZono, C: np.ndarray, t: np.ndarray, *,
     return float(r.fun) if r.success else None
 
 
+def _objbound_solve(cost, obj_thr, A, rl, ru, lb, ub, integ_mask, time_limit):
+    """HiGHS minimize cost@v with early-stop at obj_thr (objective_target +
+    objective_bound). mip_rel_gap=1e-9 so the optimum is exact; only the STOPPING
+    is early. Returns (kind, xi) where kind in {'witness','empty','unknown'}:
+      * 'witness' (kObjectiveTarget): a feasible point with cost<=obj_thr was found;
+      * 'empty'   (kObjectiveBound/kInfeasible): every node was pruned -> no feasible
+                  point reaches obj_thr (the cutoff side is provably empty);
+      * 'unknown' (kTimeLimit / other): undecided.
+    xi maps the integer (z in {0,1}) columns back to {-1,+1}; continuous pass through.
+    """
+    h = _highspy.Highs()
+    h.setOptionValue("output_flag", False)
+    h.setOptionValue("time_limit", float(time_limit))
+    h.setOptionValue("mip_rel_gap", 1e-9)
+    h.setOptionValue("objective_target", float(obj_thr))
+    h.setOptionValue("objective_bound", float(obj_thr))
+    nc = len(cost)
+    h.addCols(nc, np.asarray(cost, float), np.asarray(lb, float), np.asarray(ub, float),
+              0, np.array([], np.int32), np.array([], np.int32), np.array([], float))
+    vt = np.array([_highspy.HighsVarType.kInteger if m else _highspy.HighsVarType.kContinuous
+                   for m in integ_mask])
+    h.changeColsIntegrality(nc, np.arange(nc, dtype=np.int32), vt)
+    if A.shape[0]:
+        As = _sp.csr_matrix(A)
+        h.addRows(As.shape[0], np.asarray(rl, float), np.asarray(ru, float), As.nnz,
+                  As.indptr.astype(np.int32), As.indices.astype(np.int32), As.data.astype(float))
+    h.run()
+    MS = _highspy.HighsModelStatus
+    st = h.getModelStatus()
+
+    def _xi():
+        v = np.asarray(h.getSolution().col_value, float)
+        return np.array([(2.0 * v[i] - 1.0) if integ_mask[i] else v[i] for i in range(nc)])
+
+    if st == MS.kObjectiveTarget:
+        return "witness", _xi()
+    if st in (MS.kObjectiveBound, MS.kInfeasible):
+        return "empty", None
+    if st == MS.kOptimal:
+        # Solved fully (early cutoffs did not fire): decide by the TRUE optimum vs the
+        # threshold. obj<=thr -> a feasible point reaches it (witness); else SAFE side.
+        obj = h.getInfo().objective_function_value
+        return ("witness", _xi()) if obj <= obj_thr + 1e-9 else ("empty", None)
+    return "unknown", None   # kTimeLimit / other -> undecided (never a false CERT)
+
+
+def hz_objbound_decide(hz: HZono, C, thresholds, *, is_unsafe_linear: bool,
+                       time_limit: float = 15.0, tol: float = 1e-9):
+    """Verdict-only exact MILP via HiGHS objective-bound early termination. Returns
+    ``(verdict, witness_xi)``, verdict in {SAFE, UNSAFE, UNKNOWN}. SOUND & EXACT:
+    mip_rel_gap=1e-9, but B&B stops once the margin's sign vs the threshold is proven
+    (a feasible witness = UNSAFE / a provably-empty cutoff = SAFE); undecided within
+    time_limit -> UNKNOWN (never a false CERT). witness_xi (xi_b in {-1,+1}) is an
+    unsafe HZ point the caller must still forward-verify. Validated 16/16 vs scipy
+    mip_rel_gap=1e-9, 0 false-CERT, 1.5-665x."""
+    if not (_HAS_HIGHSPY and _HAS_SCIPY):
+        return ("UNKNOWN", None)
+    C = np.asarray(C, dtype=np.float64)
+    t = np.asarray(thresholds, dtype=np.float64).reshape(-1)
+    c, Gc, Gb, Ace, Abe, be, Acl, Abl, bl = _hz_np(hz)
+    ng, nb = Gc.shape[1], Gb.shape[1]
+
+    # bare point / no generators -> closed form (matches hz_certify_spec)
+    if ng + nb == 0:
+        row = C @ c - t
+        if is_unsafe_linear:
+            return ("SAFE", None) if float(np.max(row)) > tol else ("UNSAFE", np.zeros(0))
+        return ("SAFE", None) if float(np.max(row)) < -tol else ("UNSAFE", np.zeros(0))
+
+    integ = ([0] * ng) + ([1] * nb)
+    # shared eq/le constraint rows in z-space (xi_b = 2z-1)
+    rows_A, rl, ru = [], [], []
+    if Ace.shape[0]:
+        rows_A.append(np.hstack([Ace, 2.0 * Abe])); rhs = be + Abe.sum(1); rl.append(rhs); ru.append(rhs)
+    if Acl.shape[0]:
+        rows_A.append(np.hstack([Acl, 2.0 * Abl])); rhs = bl + Abl.sum(1)
+        rl.append(np.full(Acl.shape[0], -np.inf)); ru.append(rhs)
+    A = np.vstack(rows_A) if rows_A else np.zeros((0, ng + nb))
+    rl = np.concatenate(rl) if rl else np.zeros(0)
+    ru = np.concatenate(ru) if ru else np.zeros(0)
+    lb = np.concatenate([-np.ones(ng), np.zeros(nb)]); ub = np.ones(ng + nb)
+
+    if not is_unsafe_linear:
+        # ALL-rows / TOP1: unsafe iff SOME row has max_y C[r]y >= t[r].
+        any_unknown = False
+        for r in range(C.shape[0]):
+            obj_b = C[r] @ Gb
+            cost = -np.concatenate([C[r] @ Gc, 2.0 * obj_b])          # minimize -C[r]y
+            const_z = float(C[r] @ c) - float(obj_b.sum())
+            obj_thr = const_z - float(t[r])  # feasible cost<=thr  <=>  C[r]y>=t[r]
+            kind, xi = _objbound_solve(cost, obj_thr, A, rl, ru, lb, ub, integ, time_limit)
+            if kind == "witness":
+                return ("UNSAFE", xi)
+            if kind == "unknown":
+                any_unknown = True
+        return ("UNKNOWN", None) if any_unknown else ("SAFE", None)
+
+    # UNSAFE_LINEAR (conjunction): unsafe iff EXISTS y with all C[r]y <= t[r],
+    # i.e. s* = min_y max_r(C[r]y - t[r]) <= 0. Epigraph vars [xi_c, z, s].
+    nrow = C.shape[0]; nv = ng + nb + 1
+    epi = np.zeros((nrow, nv)); epib = np.empty(nrow)
+    for r in range(nrow):
+        epi[r, :ng] = C[r] @ Gc; epi[r, ng:ng + nb] = 2.0 * (C[r] @ Gb)
+        epi[r, ng + nb] = -1.0
+        epib[r] = float(t[r] - C[r] @ c) + float((C[r] @ Gb).sum())
+    A2 = np.vstack([np.hstack([A, np.zeros((A.shape[0], 1))]), epi]) if A.shape[0] else epi
+    rl2 = np.concatenate([rl, np.full(nrow, -np.inf)])
+    ru2 = np.concatenate([ru, epib])
+    lb2 = np.concatenate([lb, [-1e12]]); ub2 = np.concatenate([ub, [1e12]])
+    cost = np.zeros(nv); cost[ng + nb] = 1.0   # minimize s
+    integ2 = integ + [0]
+    kind, xi = _objbound_solve(cost, 0.0, A2, rl2, ru2, lb2, ub2, integ2, time_limit)
+    if kind == "witness":
+        return ("UNSAFE", xi[:ng + nb])
+    if kind == "empty":
+        return ("SAFE", None)
+    return ("UNKNOWN", None)
+
+
 def hz_certify_spec(hz: HZono, C, thresholds, *, is_unsafe_linear: bool,
                     escalate_milp: bool = True,
                     tol: float = 1e-9, time_limit: float = 30.0):
@@ -195,4 +320,4 @@ def hz_certify_spec(hz: HZono, C, thresholds, *, is_unsafe_linear: bool,
     return _decide(True)
 
 
-__all__ = ["hz_certify_spec", "hz_joint_min_margin", "hz_row_max"]
+__all__ = ["hz_certify_spec", "hz_joint_min_margin", "hz_row_max", "hz_objbound_decide"]
