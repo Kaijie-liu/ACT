@@ -34,13 +34,14 @@ def _hz_fact(fact: Fact, hz: HZono) -> Fact:
     after refining the HZ cache.
     """
     hb = hz_compute_bounds(hz)
-    return Fact(
-        bounds=Bounds(
-            lb=hb.lb.reshape_as(fact.bounds.lb),
-            ub=hb.ub.reshape_as(fact.bounds.ub),
-        ),
-        cons=fact.cons,
-    )
+    # Intersect the HZ box with interval's box (Bird Prop 3.2.10: intersect with
+    # the interval hull). Both are sound, so the tighter of the two is sound --
+    # this guarantees the HZ fast bound is NEVER worse than interval (e.g. the
+    # maxpool fold over-approximates the per-output bound while still tracking
+    # correlation in the cached HZ for the verdict).
+    lb = torch.maximum(hb.lb.reshape_as(fact.bounds.lb), fact.bounds.lb)
+    ub = torch.minimum(hb.ub.reshape_as(fact.bounds.ub), fact.bounds.ub)
+    return Fact(bounds=Bounds(lb=lb, ub=ub), cons=fact.cons)
 
 
 # ============================================================================
@@ -109,6 +110,9 @@ def _hz_scale_per_channel(hz: HZono, a: torch.Tensor, B: int) -> HZono:
         Gc=a_col * hz.Gc,
         Gb=a_col * hz.Gb,
         Ac=hz.Ac.clone(), Ab=hz.Ab.clone(), b=hz.b.clone(),
+        eq_mask=None if hz.eq_mask is None else hz.eq_mask.clone(),
+        col_ids=None if hz.col_ids is None else hz.col_ids.clone(),
+        bcol_ids=None if hz.bcol_ids is None else hz.bcol_ids.clone(),
     )
 
 
@@ -168,7 +172,13 @@ def tf_scale(L, bounds, tf):
 def tf_relu(L, bounds, tf):
     hz_in = tf._hz_cache.get(L.id)
     if hz_in is not None:
-        tf._hz_cache[L.id] = hz_reduce(hz_apply_relu(hz_in))
+        # Precision knobs (default = original fast/exact behaviour): a per-layer
+        # binary budget and the LP-tight pre-activation [alpha,beta]. The verdict
+        # path raises these; the fast path leaves them off.
+        budget = getattr(tf, "_relu_binary_budget", None)
+        tight = getattr(tf, "_relu_tight_bounds", False)
+        tf._hz_cache[L.id] = hz_reduce(
+            hz_apply_relu(hz_in, binary_budget=budget, tight_bounds=tight))
     fact = interval.tf_relu(L, bounds)
     if hz_in is not None:
         return _hz_fact(fact, tf._hz_cache[L.id])
@@ -229,15 +239,19 @@ def tf_abs(L, bounds, tf):
 
 
 def tf_bn(L, bounds, tf):
-    # BN's HZ refinement built a per-sample diag(A) of shape (n, n) and tried
-    # to multiply with hz_in.c of shape (B*n, 1). That only works for B=1;
-    # at B>1 it raises "mat1 and mat2 shapes cannot be multiplied" because
-    # the HZ row layout flattens batch×feature into a single leading dim.
-    # A batch-aware fix would require block-diag(A) replicated B times, which
-    # is the same scope as a proper HZ batchify rewrite. Until that lands,
-    # fall back to interval (sound, works at any B).
-    tf._hz_cache[L.id] = None
-    return interval.tf_bn(L, bounds)
+    # BatchNorm is the per-channel affine map y = A*x + c (A,c per channel).
+    # The per-channel HZ helpers already handle B>1 via repeat, so this is an
+    # EXACT HZ transfer — no interval fallback needed (was a spurious fallback).
+    hz_in = tf._hz_cache.get(L.id)
+    if hz_in is not None:
+        A, c = L.params["A"], L.params["c"]
+        B = hz_in.c.shape[0] // A.numel()
+        tf._hz_cache[L.id] = _hz_add_per_channel(
+            _hz_scale_per_channel(hz_in, A, B), c, B)
+    fact = interval.tf_bn(L, bounds)
+    if hz_in is not None:
+        return _hz_fact(fact, tf._hz_cache[L.id])
+    return fact
 
 
 def tf_add(L, bounds, tf):
@@ -246,7 +260,12 @@ def tf_add(L, bounds, tf):
         preds = tf._net.preds.get(L.id, [])
         hz2 = tf._hz_cache.get(preds[1]) if len(preds) > 1 else None
         if hz2 is not None:
-            tf._hz_cache[L.id] = hz_minkowski_sum(hz_in, hz2)
+            # Share-merge generators by factor id when both branches descend
+            # from a common ancestor (residual y = x + f(x)); avoids ng-doubling
+            # AND the correlation loss of independent Minkowski. Falls back to
+            # Minkowski when ids are untracked. Sound either way.
+            from act.back_end.hybridz_tf.algorithms.sgm import hz_sgm_add
+            tf._hz_cache[L.id] = hz_sgm_add(hz_in, hz2)
         else:
             hz_in = None
     fact = interval.tf_add(
@@ -377,10 +396,12 @@ def tf_concat(L, bounds, tf):
         preds = tf._net.preds.get(L.id, [])
         parts = [tf._hz_cache.get(pid) for pid in preds]
         if all(p is not None for p in parts):
-            result = parts[0]
-            for p in parts[1:]:
-                result = hz_minkowski_sum(result, p)
-            tf._hz_cache[L.id] = result
+            # Concat = stack output rows (NOT minkowski_sum, which sums in one
+            # coordinate space => wrong output dimension + crashes on unequal
+            # branch dims). hz_concat row-stacks with col_id alignment so the
+            # cross-branch correlation is preserved exactly.
+            from act.back_end.hybridz_tf.algorithms.sgm import hz_concat
+            tf._hz_cache[L.id] = hz_concat(parts)
         else:
             hz_in = None
     fact = interval.tf_concat(
@@ -391,16 +412,220 @@ def tf_concat(L, bounds, tf):
     return fact
 
 
+def tf_sub(L, bounds, tf):
+    hz_in = tf._hz_cache.get(L.id)
+    if hz_in is not None:
+        preds = tf._net.preds.get(L.id, [])
+        hz2 = tf._hz_cache.get(preds[1]) if len(preds) > 1 else None
+        if hz2 is not None:
+            # x1 - x2 with share-merged subtraction (correlated => exact).
+            from act.back_end.hybridz_tf.algorithms.sgm import hz_sub as _hz_sub
+            tf._hz_cache[L.id] = _hz_sub(hz_in, hz2)
+        else:
+            hz_in = None
+    fact = interval.tf_sub(
+        L,
+        tf._net.get_predecessor_bounds(L.id, tf._after, tf._before, 0),
+        tf._net.get_predecessor_bounds(L.id, tf._after, tf._before, 1),
+    )
+    if hz_in is not None:
+        return _hz_fact(fact, tf._hz_cache[L.id])
+    return fact
+
+
+def tf_flatten(L, bounds, tf):
+    # Flatten/Reshape only reorder the value layout; the HZ row order is already
+    # the flattened layout, so this is a literal pass-through (exact). Keeping the
+    # inherited HZ in the cache stops apply()'s box re-seed from destroying it.
+    fact = interval_cnn.tf_flatten(L, bounds)
+    hz_in = tf._hz_cache.get(L.id)
+    if hz_in is not None:
+        tf._hz_cache[L.id] = _hz_rebind(hz_in)
+        return _hz_fact(fact, tf._hz_cache[L.id])
+    return fact
+
+
+def tf_reshape(L, bounds, tf):
+    fact = interval.tf_reshape(L, bounds)
+    hz_in = tf._hz_cache.get(L.id)
+    if hz_in is not None:
+        tf._hz_cache[L.id] = _hz_rebind(hz_in)
+        return _hz_fact(fact, tf._hz_cache[L.id])
+    return fact
+
+
+def _hz_rebind(hz: HZono) -> HZono:
+    """Return a NEW HZono wrapping the same tensors. Flatten/Reshape are layout
+    no-ops for the HZ (rows already stored flattened), but the handler must hand
+    back a *distinct* object so apply()'s identity-based box re-seed does not fire."""
+    return HZono(c=hz.c, Gc=hz.Gc, Gb=hz.Gb, Ac=hz.Ac, Ab=hz.Ab, b=hz.b,
+                 eq_mask=hz.eq_mask, col_ids=hz.col_ids, bcol_ids=hz.bcol_ids)
+
+
+def _hz_gather_rows(hz: HZono, row_idx: torch.Tensor) -> HZono:
+    """Select / permute / repeat HZ output ROWS by ``row_idx`` (n_out,). The
+    constraint block (Ac/Ab/b) and ``col_ids`` reference generator COLUMNS, so
+    they are unchanged -- a structural op only remaps which output coordinate
+    reads which latent row. Exact (the output is an exact gather of inputs)."""
+    ri = row_idx.to(device=hz.c.device, dtype=torch.long)
+    return HZono(c=hz.c[ri], Gc=hz.Gc[ri], Gb=hz.Gb[ri],
+                 Ac=hz.Ac, Ab=hz.Ab, b=hz.b, eq_mask=hz.eq_mask,
+                 col_ids=hz.col_ids, bcol_ids=hz.bcol_ids)
+
+
+def tf_squeeze(L, bounds, tf):
+    # Squeeze/Unsqueeze/Transpose only change tensor SHAPE; the framework's
+    # interval handler returns identity bounds (the permutation is tracked in
+    # the layer's EQ constraint), so the flattened HZ row order is unchanged ->
+    # pass-through, consistent with interval.
+    fact = interval.tf_squeeze(L, bounds)
+    hz_in = tf._hz_cache.get(L.id)
+    if hz_in is not None:
+        tf._hz_cache[L.id] = _hz_rebind(hz_in)
+        return _hz_fact(fact, tf._hz_cache[L.id])
+    return fact
+
+
+def tf_unsqueeze(L, bounds, tf):
+    fact = interval.tf_unsqueeze(L, bounds)
+    hz_in = tf._hz_cache.get(L.id)
+    if hz_in is not None:
+        tf._hz_cache[L.id] = _hz_rebind(hz_in)
+        return _hz_fact(fact, tf._hz_cache[L.id])
+    return fact
+
+
+def tf_transpose(L, bounds, tf):
+    fact = interval.tf_transpose(L, bounds)
+    hz_in = tf._hz_cache.get(L.id)
+    if hz_in is not None:
+        tf._hz_cache[L.id] = _hz_rebind(hz_in)
+        return _hz_fact(fact, tf._hz_cache[L.id])
+    return fact
+
+
+def _slice_row_idx(L, n):
+    """Output->input row map for a Slice, mirroring interval.tf_slice exactly."""
+    if "input_shape" not in L.params:
+        return None
+    inp_shape = tuple(int(d) for d in L.params["input_shape"])
+    per = 1
+    for d in inp_shape:
+        per *= d
+    if per == 0 or n % per != 0:
+        return None
+    B = n // per
+    idx = torch.arange(n).view(B, *inp_shape)
+    starts = L.params.get("starts", [])
+    ends = L.params.get("ends", [])
+    axes = L.params.get("axes", list(range(len(inp_shape))))
+    steps = L.params.get("steps", [1] * len(axes))
+    slices = [slice(None)] * (len(inp_shape) + 1)
+    for i, axis in enumerate(axes):
+        axis = int(axis)
+        e = ends[i]
+        if e > inp_shape[axis]:
+            e = inp_shape[axis]
+        slices[axis + 1] = slice(starts[i], e, steps[i])
+    return idx[tuple(slices)].reshape(-1)
+
+
+def tf_slice(L, bounds, tf):
+    fact = interval.tf_slice(L, bounds)
+    hz_in = tf._hz_cache.get(L.id)
+    if hz_in is not None:
+        ri = _slice_row_idx(L, hz_in.c.shape[0])
+        if ri is not None and ri.numel() == fact.bounds.lb.shape[-1]:
+            tf._hz_cache[L.id] = _hz_gather_rows(hz_in, ri)
+            return _hz_fact(fact, tf._hz_cache[L.id])
+    return fact
+
+
+def _expand_row_idx(L, n):
+    """Output->input row map for an Expand/broadcast (repeated rows)."""
+    in_shape = L.params.get("input_shape")
+    out_shape = L.params.get("output_shape") or L.params.get("shape")
+    if in_shape is None or out_shape is None:
+        return None
+    in_shape = tuple(int(d) for d in in_shape)
+    out_shape = tuple(int(d) for d in out_shape)
+    per = 1
+    for d in in_shape:
+        per *= d
+    if per == 0 or n % per != 0:
+        return None
+    B = n // per
+    try:
+        return torch.arange(n).view(B, *in_shape).broadcast_to(B, *out_shape).reshape(-1)
+    except RuntimeError:
+        return None
+
+
+def tf_expand(L, bounds, tf):
+    fact = interval.tf_expand(L, bounds)
+    hz_in = tf._hz_cache.get(L.id)
+    if hz_in is not None:
+        ri = _expand_row_idx(L, hz_in.c.shape[0])
+        if ri is not None and ri.numel() == fact.bounds.lb.shape[-1]:
+            tf._hz_cache[L.id] = _hz_gather_rows(hz_in, ri)
+            return _hz_fact(fact, tf._hz_cache[L.id])
+    return fact
+
+
 # --- HZ activation encodings (zonotope domain) ---
 
 
-def hz_apply_relu(hz: HZono) -> HZono:
-    """Exact ReLU via equality constraints + linking equality.
+_RELU_TIGHT_MAX_DIM = 4096  # LP-tight does 2n scipy solves; above this (wide conv
+                            # feature maps) it's thousands of LPs -> use fast box.
 
-    Per unstable neuron i with bounds [alpha, beta] (alpha < 0 < beta):
-      ng += 4 (xi1, xi2, xi3, xi4)
-      nb += 1 (z)
-      nc += 3 equalities
+
+def _relu_preact_bounds(hz: HZono, tight: bool):
+    """Pre-activation [alpha,beta] for ReLU classification. Fast |Gc|+|Gb| box by
+    default; the CONSTRAINED LP-relaxation (scipy convex hull, sound, Gurobi-free
+    per P3) when ``tight`` and constraints exist AND the layer isn't too wide.
+    Both enclose the true range; LP-relax is tighter, so it feeds a tighter ReLU
+    encoding -- but on a 28k-wide conv it would cost ~56k LPs (timeout), and such
+    wide-conv nets don't certify anyway, so fall back to the fast box there."""
+    if not tight or hz.Ac.shape[0] == 0 or hz.c.shape[0] > _RELU_TIGHT_MAX_DIM:
+        return hz_compute_bounds(hz)
+    try:
+        from act.back_end.solver.solver_hz import _hz_compute_bounds_scipy
+        tb = _hz_compute_bounds_scipy(hz)
+        fb = hz_compute_bounds(hz)
+        # Both sound -> take the tighter (intersection). Numerically robust.
+        return Bounds(lb=torch.maximum(tb.lb, fb.lb),
+                      ub=torch.minimum(tb.ub, fb.ub))
+    except Exception:
+        return hz_compute_bounds(hz)
+
+
+def hz_apply_relu(hz: HZono, binary_budget=None, scores=None,
+                  tight_bounds=False) -> HZono:
+    """ReLU with a selectable per-neuron encoding (hybrid binary budget).
+
+    Each unstable neuron i (alpha<0<beta) is encoded one of two ways:
+      * EXACT eq_lagr graph (binary): ng+=4, nb+=1, nc+=3 -- exact, the HZ
+        thesis form. This is what makes the domain non-convex/exact.
+      * CONVEX triangle (DeepZ, no binary): ng+=1, nb+=0, nc+=0 -- the tightest
+        convex (constrained-zonotope) over-approximation y in [lam*x, lam*(x-alpha)],
+        lam=beta/(beta-alpha). This is hz2 Thm-2's convex hull as a single gen.
+
+    ``binary_budget`` (int) caps the number of EXACT (binary) neurons; the rest
+    are triangle-relaxed. None or >= #unstable => all exact (the original
+    behaviour, exact reachability). The exact set is chosen as the top-budget
+    unstable neurons by ``scores`` (default = triangle-area -alpha*beta/2, the
+    looseness-of-relaxation heuristic of Zhang&Xu 2026; callers may pass a
+    query-aware score, e.g. spec-margin sensitivity). Sound for any budget
+    (triangle is a sound over-approx); size shrinks + tightness->exact as
+    budget grows.
+
+    ``tight_bounds`` (precision mode): compute the per-neuron [alpha,beta] from
+    the CONSTRAINED LP-relaxation bound (scipy, convex hull, sound) instead of
+    the fast |Gc|+|Gb| box. Toy validation showed the fast box is the dominant
+    looseness source (1.93x vs the HZ structure's 1.2x); the LP-tight box
+    encloses the true pre-activation range (sound) but is much tighter, so the
+    eq_lagr/triangle relaxation it feeds is tighter too. Costs an LP per
+    dimension -- use on the verdict/precision path, not the fast path.
     """
     dtype, device = hz.c.dtype, hz.c.device
     n = hz.c.shape[0]
@@ -408,7 +633,7 @@ def hz_apply_relu(hz: HZono) -> HZono:
     nb = hz.Gb.shape[1]
     nc = hz.Ac.shape[0]
 
-    bounds = hz_compute_bounds(hz)
+    bounds = _relu_preact_bounds(hz, tight_bounds)
     lb = bounds.lb.flatten()
     ub = bounds.ub.flatten()
 
@@ -418,81 +643,149 @@ def hz_apply_relu(hz: HZono) -> HZono:
     unstable_idx = torch.where(unstable)[0]
     k = len(unstable_idx)
 
-    out_Gc = hz.c.new_zeros(n, ng + 4 * k)
-    out_Gb = hz.c.new_zeros(n, nb + k)
-    out_c = hz.c.new_zeros(n, 1)
+    if k == 0:
+        out_Gc = hz.c.new_zeros(n, ng)
+        out_Gb = hz.c.new_zeros(n, nb)
+        out_c = hz.c.new_zeros(n, 1)
+        if active.any():
+            out_c[active] = hz.c[active]
+            out_Gc[active, :ng] = hz.Gc[active]
+            out_Gb[active, :nb] = hz.Gb[active]
+        return HZono(
+            c=out_c, Gc=out_Gc, Gb=out_Gb,
+            Ac=hz.Ac.clone(), Ab=hz.Ab.clone(), b=hz.b.clone(),
+            col_ids=None if hz.col_ids is None else hz.col_ids.clone(),
+            bcol_ids=None if hz.bcol_ids is None else hz.bcol_ids.clone(),
+        )
 
+    a_uns = lb[unstable_idx]
+    b_uns = ub[unstable_idx]
+    # Partition unstable -> exact (binary) vs triangle (convex).
+    if binary_budget is None or binary_budget >= k:
+        exact_sel = unstable_idx
+        tri_sel = unstable_idx[:0]
+    elif binary_budget <= 0:
+        exact_sel = unstable_idx[:0]
+        tri_sel = unstable_idx
+    else:
+        sc = scores if scores is not None else (-a_uns * b_uns / 2.0)
+        sc = sc.to(device=device).reshape(-1)
+        order = torch.argsort(sc, descending=True)
+        exact_sel = unstable_idx[order[:binary_budget]]
+        tri_sel = unstable_idx[order[binary_budget:]]
+    ke = int(exact_sel.shape[0])
+    kt = int(tri_sel.shape[0])
+
+    ng_new = ng + 4 * ke + kt
+    nb_new = nb + ke
+    out_Gc = hz.c.new_zeros(n, ng_new)
+    out_Gb = hz.c.new_zeros(n, nb_new)
+    out_c = hz.c.new_zeros(n, 1)
     if active.any():
         out_c[active] = hz.c[active]
         out_Gc[active, :ng] = hz.Gc[active]
         out_Gb[active, :nb] = hz.Gb[active]
 
-    if k == 0:
-        return HZono(
-            c=out_c,
-            Gc=out_Gc[:, :ng],
-            Gb=out_Gb[:, :nb],
-            Ac=hz.Ac.clone(),
-            Ab=hz.Ab.clone(),
-            b=hz.b.clone(),
-        )
+    # --- EXACT eq_lagr block on exact_sel (ke neurons) ---
+    if ke > 0:
+        a_e = lb[exact_sel]
+        b_e = ub[exact_sel]
+        te = torch.arange(ke, device=device)
+        col_xi1 = ng + te
+        col_xi2 = ng + ke + te
+        col_xi3 = ng + 2 * ke + te
+        col_xi4 = ng + 3 * ke + te
+        col_z = nb + te
+        out_c[exact_sel, 0] = b_e / 2.0
+        out_Gc[exact_sel, col_xi2] = -b_e / 2.0
+        eq_Ac = hz.c.new_zeros(3 * ke, ng_new)
+        eq_Ab = hz.c.new_zeros(3 * ke, nb_new)
+        eq_b = hz.c.new_zeros(3 * ke, 1)
+        r1 = 3 * te
+        r2 = 3 * te + 1
+        r3 = 3 * te + 2
+        eq_Ac[r1, col_xi1] = 1.0
+        eq_Ac[r1, col_xi3] = 1.0
+        eq_Ab[r1, col_z] = 1.0
+        eq_b[r1, 0] = 1.0
+        eq_Ac[r2, col_xi2] = 1.0
+        eq_Ac[r2, col_xi4] = 1.0
+        eq_Ab[r2, col_z] = -1.0
+        eq_b[r2, 0] = 1.0
+        eq_Ac[r3, col_xi1] = a_e / 2.0
+        eq_Ac[r3, col_xi2] = -b_e / 2.0
+        eq_Ac[r3, :ng] = -hz.Gc[exact_sel]
+        eq_Ab[r3, :nb] = -hz.Gb[exact_sel]
+        eq_Ab[r3, col_z] = a_e / 2.0
+        eq_b[r3, 0] = hz.c[exact_sel, 0] - b_e / 2.0
+    else:
+        eq_Ac = hz.c.new_zeros(0, ng_new)
+        eq_Ab = hz.c.new_zeros(0, nb_new)
+        eq_b = hz.c.new_zeros(0, 1)
 
-    alpha = lb[unstable_idx]
-    beta = ub[unstable_idx]
-    t = torch.arange(k, device=device)
+    # --- TRIANGLE (DeepZ) block on tri_sel (kt neurons): 1 free gen each ---
+    if kt > 0:
+        a_t = lb[tri_sel]
+        b_t = ub[tri_sel]
+        tt = torch.arange(kt, device=device)
+        lam = b_t / (b_t - a_t)            # slope of upper chord, in (0,1)
+        half_gap = 0.5 * lam * (-a_t)      # half the vertical gap (>=0)
+        tri_col = ng + 4 * ke + tt
+        out_c[tri_sel, 0] = lam * hz.c[tri_sel, 0] + half_gap
+        out_Gc[tri_sel, :ng] = lam.unsqueeze(1) * hz.Gc[tri_sel]
+        out_Gc[tri_sel, tri_col] = half_gap
+        if nb:
+            out_Gb[tri_sel, :nb] = lam.unsqueeze(1) * hz.Gb[tri_sel]
 
-    col_xi1 = ng + t
-    col_xi2 = ng + k + t
-    col_xi3 = ng + 2 * k + t
-    col_xi4 = ng + 3 * k + t
-    col_z = nb + t
+    old_Ac_ext = torch.cat([hz.Ac, hz.c.new_zeros(nc, 4 * ke + kt)], dim=1)
+    old_Ab_ext = torch.cat([hz.Ab, hz.c.new_zeros(nc, ke)], dim=1)
+    Ac_out = torch.cat([old_Ac_ext, eq_Ac], dim=0)
+    Ab_out = torch.cat([old_Ab_ext, eq_Ab], dim=0)
+    b_out = torch.cat([hz.b, eq_b], dim=0)
+    # eq_mask: original senses + 3*ke equality rows (True). None stays None
+    # since the eq_lagr rows are equalities (all-equality semantics preserved).
+    if hz.eq_mask is None:
+        eq_mask_out = None
+    else:
+        eq_mask_out = torch.cat(
+            [hz.eq_mask.to(device),
+             torch.ones(3 * ke, dtype=torch.bool, device=device)])
 
-    out_c[unstable_idx, 0] = beta / 2.0
-    out_Gc[unstable_idx, col_xi2] = -beta / 2.0
-
-    ng_new = ng + 4 * k
-    nb_new = nb + k
-
-    eq_Ac = hz.c.new_zeros(3 * k, ng_new)
-    eq_Ab = hz.c.new_zeros(3 * k, nb_new)
-    eq_b = hz.c.new_zeros(3 * k, 1)
-
-    r1 = 3 * t
-    r2 = 3 * t + 1
-
-    eq_Ac[r1, col_xi1] = 1.0
-    eq_Ac[r1, col_xi3] = 1.0
-    eq_Ab[r1, col_z] = 1.0
-    eq_b[r1, 0] = 1.0
-
-    eq_Ac[r2, col_xi2] = 1.0
-    eq_Ac[r2, col_xi4] = 1.0
-    eq_Ab[r2, col_z] = -1.0
-    eq_b[r2, 0] = 1.0
-
-    r3 = 3 * t + 2
-    eq_Ac[r3, col_xi1] = alpha / 2.0
-    eq_Ac[r3, col_xi2] = -beta / 2.0
-    eq_Ac[r3, :ng] = -hz.Gc[unstable_idx]
-    eq_Ab[r3, :nb] = -hz.Gb[unstable_idx]
-    eq_Ab[r3, col_z] = alpha / 2.0
-    eq_b[r3, 0] = hz.c[unstable_idx, 0] - beta / 2.0
-
-    old_Ac_ext = torch.cat(
-        [hz.Ac, hz.c.new_zeros(nc, 4 * k)], dim=1
-    )
-    old_Ab_ext = torch.cat(
-        [hz.Ab, hz.c.new_zeros(nc, k)], dim=1
-    )
-
+    new_col_ids, new_bcol_ids = _relu_extend_ids_hybrid(hz, ke, kt)
     return HZono(
-        c=out_c,
-        Gc=out_Gc,
-        Gb=out_Gb,
-        Ac=torch.cat([old_Ac_ext, eq_Ac], dim=0),
-        Ab=torch.cat([old_Ab_ext, eq_Ab], dim=0),
-        b=torch.cat([hz.b, eq_b], dim=0),
+        c=out_c, Gc=out_Gc, Gb=out_Gb,
+        Ac=Ac_out, Ab=Ab_out, b=b_out,
+        eq_mask=eq_mask_out,
+        col_ids=new_col_ids, bcol_ids=new_bcol_ids,
     )
+
+
+def _relu_extend_ids_hybrid(hz: HZono, ke: int, kt: int):
+    """Fresh ids for the 4*ke exact + kt triangle continuous gens and ke binaries."""
+    if hz.col_ids is None:
+        return None, None
+    from act.back_end.solver.solver_hz import _fresh_col_ids
+    dev = hz.col_ids.device
+    new_col = torch.cat([hz.col_ids, _fresh_col_ids(4 * ke + kt, device=dev)])
+    base_b = (hz.bcol_ids if hz.bcol_ids is not None
+              else torch.zeros(0, dtype=torch.long, device=dev))
+    new_bcol = torch.cat([base_b, _fresh_col_ids(ke, device=dev)])
+    return new_col, new_bcol
+
+
+def _relu_extend_ids(hz: HZono, k: int):
+    """Extend factor ids for the ReLU encoding: the original ng/nb columns keep
+    their ids; the 4k new continuous (xi1..xi4) and k new binary (z) columns get
+    FRESH ids (they are brand-new latent factors, shared with nothing)."""
+    if hz.col_ids is None:
+        return None, None
+    from act.back_end.solver.solver_hz import _fresh_col_ids
+    dev = hz.col_ids.device
+    new_col = torch.cat([hz.col_ids, _fresh_col_ids(4 * k, device=dev)])
+    base_b = (hz.bcol_ids if hz.bcol_ids is not None
+              else torch.zeros(0, dtype=torch.long, device=dev))
+    new_bcol = torch.cat([base_b, _fresh_col_ids(k, device=dev)])
+    return new_col, new_bcol
 
 
 def hz_apply_leaky_relu(hz: HZono, alpha_arg: float) -> HZono:
@@ -545,6 +838,7 @@ def hz_apply_leaky_relu(hz: HZono, alpha_arg: float) -> HZono:
         out_Gb[inactive, :nb] = s * hz.Gb[inactive]
 
     if k == 0:
+        # No unstable neurons: columns unchanged -> factor ids carry through.
         return HZono(
             c=out_c,
             Gc=out_Gc[:, :ng],
@@ -552,6 +846,8 @@ def hz_apply_leaky_relu(hz: HZono, alpha_arg: float) -> HZono:
             Ac=hz.Ac.clone(),
             Ab=hz.Ab.clone(),
             b=hz.b.clone(),
+            col_ids=None if hz.col_ids is None else hz.col_ids.clone(),
+            bcol_ids=None if hz.bcol_ids is None else hz.bcol_ids.clone(),
         )
 
     alpha = lb[unstable_idx]
@@ -609,6 +905,7 @@ def hz_apply_leaky_relu(hz: HZono, alpha_arg: float) -> HZono:
         [hz.Ab, hz.c.new_zeros(nc, k)], dim=1
     )
 
+    new_col_ids, new_bcol_ids = _relu_extend_ids(hz, k)
     return HZono(
         c=out_c,
         Gc=out_Gc,
@@ -616,11 +913,21 @@ def hz_apply_leaky_relu(hz: HZono, alpha_arg: float) -> HZono:
         Ac=torch.cat([old_Ac_ext, eq_Ac], dim=0),
         Ab=torch.cat([old_Ab_ext, eq_Ab], dim=0),
         b=torch.cat([hz.b, eq_b], dim=0),
+        col_ids=new_col_ids,
+        bcol_ids=new_bcol_ids,
     )
 
 
-def hz_apply_piecewise(hz: HZono, func, dfunc, K: int = 2) -> HZono:
-    """Piecewise linear approximation for monotone activations (tangent parallelogram)."""
+def hz_apply_piecewise(hz: HZono, func, dfunc, K: int = 2, inflection=None) -> HZono:
+    """Piecewise linear approximation for monotone activations (tangent parallelogram).
+
+    ``inflection`` (e.g. 0.0 for sigmoid/tanh): force the inflection point to be a
+    SEGMENT BOUNDARY. The tangent parallelogram assumes the function is convex OR
+    concave on each segment; a segment straddling the inflection violates that, so
+    the soundness slack inflates and tightness becomes ERRATIC in K (toy: K=3/8
+    loosen). Splitting K segments on each side of the inflection (=> 2K segments,
+    inflection always a boundary) keeps every segment convex/concave so tightness
+    is MONOTONE in K."""
     dtype, device = hz.c.dtype, hz.c.device
     n = hz.c.shape[0]
     ng = hz.Gc.shape[1]
@@ -654,10 +961,25 @@ def hz_apply_piecewise(hz: HZono, func, dfunc, K: int = 2) -> HZono:
         )
 
     lb_w, ub_w = lb[wide_idx], ub[wide_idx]
-    segment_ids = torch.arange(K, dtype=dtype, device=device).unsqueeze(1)
-    segment_width = (ub_w - lb_w).unsqueeze(0) / K
-    a = lb_w.unsqueeze(0) + segment_ids * segment_width
-    b_seg = a + segment_width
+    if inflection is not None:
+        # Inflection-aware: K segments on each side of the (per-neuron clamped)
+        # inflection point so none straddles it. -> 2K segments; K reassigned to
+        # the actual segment count so all downstream code is unchanged.
+        p = torch.maximum(
+            torch.minimum(torch.full_like(lb_w, float(inflection)), ub_w), lb_w)
+        sid = torch.arange(K, dtype=dtype, device=device).unsqueeze(1)
+        wL = (p - lb_w).unsqueeze(0) / K
+        wR = (ub_w - p).unsqueeze(0) / K
+        aL = lb_w.unsqueeze(0) + sid * wL
+        aR = p.unsqueeze(0) + sid * wR
+        a = torch.cat([aL, aR], dim=0)
+        b_seg = torch.cat([aL + wL, aR + wR], dim=0)
+        K = 2 * K
+    else:
+        segment_ids = torch.arange(K, dtype=dtype, device=device).unsqueeze(1)
+        segment_width = (ub_w - lb_w).unsqueeze(0) / K
+        a = lb_w.unsqueeze(0) + segment_ids * segment_width
+        b_seg = a + segment_width
     fa, fb = func(a), func(b_seg)
     la, lb_slope = dfunc(a), dfunc(b_seg)
     centers_x = (a + b_seg) / 2.0
@@ -798,22 +1120,46 @@ def hz_apply_piecewise(hz: HZono, func, dfunc, K: int = 2) -> HZono:
 
 
 def hz_apply_sigmoid(hz: HZono, K: int = 2) -> HZono:
-    """Piecewise linear sigmoid via tangent parallelogram encoding."""
+    """Piecewise linear sigmoid via tangent parallelogram encoding. Sigmoid has
+    its inflection at 0 -> split segments there for monotone-in-K tightness."""
     return hz_apply_piecewise(
-        hz, torch.sigmoid, lambda x: torch.sigmoid(x) * (1 - torch.sigmoid(x)), K
+        hz, torch.sigmoid, lambda x: torch.sigmoid(x) * (1 - torch.sigmoid(x)), K,
+        inflection=0.0
     )
 
 
 def hz_apply_tanh(hz: HZono, K: int = 2) -> HZono:
-    """Piecewise linear tanh via tangent parallelogram encoding."""
-    return hz_apply_piecewise(hz, torch.tanh, lambda x: 1 - torch.tanh(x) ** 2, K)
+    """Piecewise linear tanh via tangent parallelogram encoding. Tanh inflection
+    at 0 -> split segments there for monotone-in-K tightness."""
+    return hz_apply_piecewise(hz, torch.tanh, lambda x: 1 - torch.tanh(x) ** 2, K,
+                              inflection=0.0)
 
 
 # --- HZ order reduction ---
 
 
+# Absolute size caps above which the LOSSY reduction steps are allowed to fire.
+# Toy validation (2026-06-14) showed the lossy steps (binary-relax + Girard) cost
+# 80-215% exact-width inflation for only a ~20% generator cut on moderate nets,
+# while the EXACT Step-0 redundancy removal is free AND gives a 1.4-2.9x LP
+# speedup. So below these caps reduce = Step-0 only (keep precision + the
+# speedup); the lossy steps engage only when the HZ is genuinely too large for
+# the open-source LP/MILP solver (tractability emergency).
+_HZ_REDUCE_NB_CAP = 2048   # relax binaries to continuous only above this
+_HZ_REDUCE_NG_CAP = 16384  # Girard-reduce continuous generators only above this
+
+
 def hz_reduce(hz: HZono, max_order: float = 3.0) -> HZono:
-    """Reduce HZ complexity via Girard's method (sound over-approximation)."""
+    """Reduce HZ complexity (sound over-approximation), Bird PhD 2022 Ch.6.
+
+    Step 0 (always) is the EXACT redundancy removal (Bird 6.1) -- free, and on
+    constrained/residual HZ it cuts nc 57-84% with a 1.4-2.9x LP speedup and
+    ZERO precision loss. Step 1 (binary relax, Bird 6.2.4) and Step 2 (lifted
+    Girard, Bird 6.2.3) are LOSSY and engage only above absolute size caps,
+    because per the toy validation they otherwise just throw away precision on
+    moderate nets. All steps carry ``col_ids`` / ``eq_mask`` so downstream
+    share-merge (sgm) and constraint senses survive.
+    """
     n = hz.c.shape[0]
     ng = hz.Gc.shape[1]
     nb = hz.Gb.shape[1]
@@ -822,10 +1168,27 @@ def hz_reduce(hz: HZono, max_order: float = 3.0) -> HZono:
     if n == 0:
         return hz
 
-    max_ng = max(int(max_order * n), n + 1)
-    max_nb = max(2 * n, 1)
+    # Step 0: EXACT redundancy removal (Bird 6.1 / zonopy). Free -- shrinks
+    # ng/nc/nb with ZERO over-approximation, so always worth doing first.
+    from act.back_end.hybridz_tf.algorithms.order_reduce import hz_remove_redundancy
+    hz = hz_remove_redundancy(hz)
+    ng = hz.Gc.shape[1]
+    nb = hz.Gb.shape[1]
+    nc = hz.Ac.shape[0]
 
-    # Step 1: Relax excess binary generators to continuous
+    # The lossy steps only engage when genuinely huge. Girard's target stays
+    # ABOVE the lifted-box floor (n+nc) so it retains real generators rather than
+    # collapsing to a pure box (which is the counterproductive case).
+    # nc-AWARE: the lossy steps are exact-free at nc==0 but LOOSEN a constrained
+    # HZ (toy: Girard +46%, binary-relax +8% on the true set at nc>0), and the
+    # scipy engine is blind to the binary-relax loss. So at nc>0 raise the
+    # emergency cap -> lossy reduction becomes a genuine last resort there.
+    nc_guard = 2 if nc > 0 else 1
+    max_nb = max(2 * n, _HZ_REDUCE_NB_CAP * nc_guard)
+    max_ng = max(int(max_order * n), n + nc + n, _HZ_REDUCE_NG_CAP * nc_guard)
+
+    # Step 1: Relax excess binary generators to continuous (Bird 6.2.4). The
+    # relaxed binary's columns move Gb->Gc and Ab->Ac; ids move with them.
     if nb > max_nb:
         col_norms = hz.Gb.abs().sum(dim=0)
         _, sorted_idx = col_norms.sort()
@@ -834,10 +1197,13 @@ def hz_reduce(hz: HZono, max_order: float = 3.0) -> HZono:
         keep_idx = sorted_idx[n_relax:]
         extra_Gc = hz.Gb[:, relax_idx]
         extra_Ac = (
-            hz.Ab[:, relax_idx]
-            if nc > 0
-            else hz.c.new_zeros(0, n_relax)
+            hz.Ab[:, relax_idx] if nc > 0 else hz.c.new_zeros(0, n_relax)
         )
+        new_col_ids = None
+        new_bcol_ids = None
+        if hz.col_ids is not None and hz.bcol_ids is not None:
+            new_col_ids = torch.cat([hz.col_ids, hz.bcol_ids[relax_idx.to(hz.bcol_ids.device)]])
+            new_bcol_ids = hz.bcol_ids[keep_idx.to(hz.bcol_ids.device)]
         hz = HZono(
             c=hz.c,
             Gc=torch.cat([hz.Gc, extra_Gc], dim=1),
@@ -849,44 +1215,17 @@ def hz_reduce(hz: HZono, max_order: float = 3.0) -> HZono:
             if nc > 0
             else hz.c.new_zeros(0, max_nb),
             b=hz.b.clone(),
+            eq_mask=None if hz.eq_mask is None else hz.eq_mask.clone(),
+            col_ids=new_col_ids,
+            bcol_ids=new_bcol_ids,
         )
         ng = hz.Gc.shape[1]
         nb = hz.Gb.shape[1]
 
-    # Step 2: Reduce continuous generators
+    # Step 2: Reduce continuous generators via lifted Girard (constraint- and
+    # id-preserving). Replaces the old destructive row-dropping reduction.
     if ng > max_ng:
-        col_norms = hz.Gc.abs().sum(dim=0)
-        _, sorted_idx = col_norms.sort(descending=True)
-        keep_idx = sorted_idx[: max_ng - n]
-        drop_idx = sorted_idx[max_ng - n :]
-        Gc_keep = hz.Gc[:, keep_idx]
-        new_Gc = torch.cat(
-            [Gc_keep, torch.diag(hz.Gc[:, drop_idx].abs().sum(dim=1))], dim=1
-        )
-
-        if nc > 0:
-            has_dropped = hz.Ac[:, drop_idx].abs().max(dim=1).values > 1e-15
-            keep_mask = ~has_dropped
-            krt = torch.where(keep_mask)[0]
-            if krt.numel() > 0:
-                new_Ac = torch.cat(
-                    [
-                        hz.Ac[krt][:, keep_idx],
-                        hz.c.new_zeros(krt.numel(), n),
-                    ],
-                    dim=1,
-                )
-                new_Ab = hz.Ab[krt]
-                new_b = hz.b[krt]
-            else:
-                new_Ac = hz.c.new_zeros(0, new_Gc.shape[1])
-                new_Ab = hz.c.new_zeros(0, nb)
-                new_b = hz.c.new_zeros(0, 1)
-        else:
-            new_Ac = hz.c.new_zeros(0, new_Gc.shape[1])
-            new_Ab = hz.c.new_zeros(0, nb)
-            new_b = hz.c.new_zeros(0, 1)
-
-        hz = HZono(c=hz.c, Gc=new_Gc, Gb=hz.Gb, Ac=new_Ac, Ab=new_Ab, b=new_b)
+        from act.back_end.hybridz_tf.algorithms.order_reduce import hz_girard_reduce
+        hz = hz_girard_reduce(hz, max_ng)
 
     return hz

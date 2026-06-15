@@ -39,6 +39,21 @@ class HybridzTF(TransferFunction):
         self._cache_net_id: Optional[int] = None
         self._tanh_K: int = 1
         self._sigmoid_K: int = 1
+        # Canonical input factor ids + box, for share-merging residual roots.
+        self._input_ids: Optional[torch.Tensor] = None
+        self._input_box: Optional[tuple] = None
+
+    def _input_box_matches(self, bounds: Bounds) -> bool:
+        """True iff ``bounds`` equals the remembered network-input box, i.e. a
+        floating layer is reading the same input (so it may reuse input ids)."""
+        if self._input_box is None:
+            return False
+        lb, ub = bounds.lb.flatten(), bounds.ub.flatten()
+        ilb, iub = self._input_box
+        if lb.shape != ilb.shape:
+            return False
+        return bool(torch.allclose(lb, ilb.to(lb.device))
+                    and torch.allclose(ub, iub.to(ub.device)))
 
     _LAYER_REGISTRY = {
         # Identity / spec
@@ -58,11 +73,7 @@ class HybridzTF(TransferFunction):
         # Multi-input: HZ + interval
         LayerKind.ADD.value: lambda L, b, tf: hz_mlp.tf_add(L, b, tf),
         LayerKind.MUL.value: lambda L, b, tf: hz_mlp.tf_mul(L, b, tf),
-        LayerKind.SUB.value: lambda L, b, tf: interval_mlp.tf_sub(
-            L,
-            tf._net.get_predecessor_bounds(L.id, tf._after, tf._before, 0),
-            tf._net.get_predecessor_bounds(L.id, tf._after, tf._before, 1),
-        ),
+        LayerKind.SUB.value: lambda L, b, tf: hz_mlp.tf_sub(L, b, tf),
         LayerKind.DIV.value: lambda L, b, tf: interval_mlp.tf_div(
             L,
             tf._net.get_predecessor_bounds(L.id, tf._after, tf._before, 0),
@@ -101,22 +112,20 @@ class HybridzTF(TransferFunction):
         ),
         # CNN: interval-only
         LayerKind.AVGPOOL1D.value: lambda L, b, tf: interval_cnn.tf_avgpool1d(L, b),
-        LayerKind.AVGPOOL2D.value: lambda L, b, tf: interval_cnn.tf_avgpool2d(L, b),
+        LayerKind.AVGPOOL2D.value: lambda L, b, tf: hz_cnn.tf_avgpool2d(L, b, tf),
         LayerKind.MAXPOOL3D.value: lambda L, b, tf: interval_cnn.tf_maxpool3d(L, b),
         LayerKind.PAD.value:      lambda L, b, tf: interval_cnn.tf_pad(L, b),
         LayerKind.CONV1D.value: lambda L, b, tf: interval_cnn.tf_conv1d(L, b),
         LayerKind.CONV3D.value: lambda L, b, tf: interval_cnn.tf_conv3d(L, b),
-        LayerKind.CONVTRANSPOSE2D.value: lambda L, b, tf: (
-            interval_cnn.tf_convtranspose2d(L, b)
-        ),
-        LayerKind.FLATTEN.value: lambda L, b, tf: interval_cnn.tf_flatten(L, b),
-        # Shape ops: interval-only
-        LayerKind.RESHAPE.value: lambda L, b, tf: interval_mlp.tf_reshape(L, b),
-        LayerKind.TRANSPOSE.value: lambda L, b, tf: interval_mlp.tf_transpose(L, b),
-        LayerKind.SQUEEZE.value: lambda L, b, tf: interval_mlp.tf_squeeze(L, b),
-        LayerKind.UNSQUEEZE.value: lambda L, b, tf: interval_mlp.tf_unsqueeze(L, b),
-        LayerKind.EXPAND.value: lambda L, b, tf: interval_mlp.tf_expand(L, b),
-        LayerKind.SLICE.value: lambda L, b, tf: interval_mlp.tf_slice(L, b),
+        LayerKind.CONVTRANSPOSE2D.value: lambda L, b, tf: hz_cnn.tf_convtranspose2d(L, b, tf),
+        LayerKind.FLATTEN.value: lambda L, b, tf: hz_mlp.tf_flatten(L, b, tf),
+        # Shape ops: structural pass-through (HZ row order = flattened layout)
+        LayerKind.RESHAPE.value: lambda L, b, tf: hz_mlp.tf_reshape(L, b, tf),
+        LayerKind.TRANSPOSE.value: lambda L, b, tf: hz_mlp.tf_transpose(L, b, tf),
+        LayerKind.SQUEEZE.value: lambda L, b, tf: hz_mlp.tf_squeeze(L, b, tf),
+        LayerKind.UNSQUEEZE.value: lambda L, b, tf: hz_mlp.tf_unsqueeze(L, b, tf),
+        LayerKind.EXPAND.value: lambda L, b, tf: hz_mlp.tf_expand(L, b, tf),
+        LayerKind.SLICE.value: lambda L, b, tf: hz_mlp.tf_slice(L, b, tf),
         LayerKind.GATHER.value: lambda L, b, tf: interval_mlp.tf_gather(L, b),
         # RNN
         LayerKind.LSTM.value: lambda L, b, tf: hz_rnn.tf_lstm(L, b, tf),
@@ -144,21 +153,72 @@ class HybridzTF(TransferFunction):
         return layer_kind.upper() in self._LAYER_REGISTRY
 
     _HZ_MAX_INPUT_DIM = 1024
+    # A net whose every layer is a strictly-linear, generator-preserving HZ op
+    # (no ReLU/sigmoid/etc., no column growth) can carry its EXACT input
+    # zonotope at much higher dim safely: ng stays == input_dim, no binaries,
+    # cost is one matmul per layer. The cap then only needs to bound the
+    # one-time diagonal seed memory (n*n*dtype). 8192 => <=537MB fp64 / 268MB
+    # fp32. Nets with ANY nonlinearity keep the protective _HZ_MAX_INPUT_DIM
+    # (the cap exists to bound ReLU generator blow-up on wide feature maps).
+    _HZ_MAX_AFFINE_DIM = 8192
+    # Memory-based drop budget: keep the layer's HZ while n_out*(ng+nb) <= this
+    # many cells (~ fp32 bytes/4). 100M cells ~= 400MB, comfortably keeps narrow
+    # nets + malbeware's 16M-cell affine HZ + any point query (ng=0 -> 0 cells),
+    # while still dropping a genuinely exploding wide-perturbation conv stack.
+    _hz_cell_budget = 100_000_000
+    # Strictly-linear, generator-count-preserving kinds with a real HZ handler.
+    # Deliberately EXCLUDES ADD/SUB/CONCAT (multi-input, can grow columns) and
+    # any interval-only op (would drop the HZ anyway) -- conservative on purpose.
+    _HZ_AFFINE_KINDS = frozenset({
+        LayerKind.INPUT.value, LayerKind.INPUT_SPEC.value, LayerKind.ASSERT.value,
+        LayerKind.DENSE.value, LayerKind.BIAS.value, LayerKind.SCALE.value,
+        LayerKind.BN.value, LayerKind.CONV2D.value, LayerKind.CONVTRANSPOSE2D.value,
+        LayerKind.AVGPOOL2D.value, LayerKind.FLATTEN.value, LayerKind.RESHAPE.value,
+        LayerKind.TRANSPOSE.value, LayerKind.SQUEEZE.value, LayerKind.UNSQUEEZE.value,
+        LayerKind.EXPAND.value, LayerKind.SLICE.value, LayerKind.REDUCE_SUM.value,
+        LayerKind.CONSTANT.value, LayerKind.UPSAMPLE.value,
+    })
 
-    def _hz_from_bounds(self, bounds: Bounds) -> Optional[HZono]:
+    def _net_is_pure_affine(self, net: Net) -> bool:
+        """True iff every layer kind is a strictly-linear generator-preserving
+        HZ op -> the exact zonotope can be carried at high dim with no blow-up."""
+        return all(L.kind.upper() in self._HZ_AFFINE_KINDS for L in net.layers)
+
+    def _hz_from_bounds(self, bounds: Bounds, *, track_ids: bool = False,
+                        reuse_ids: Optional[torch.Tensor] = None) -> Optional[HZono]:
         lb, ub = bounds.lb.flatten(), bounds.ub.flatten()
         n = lb.shape[0]
-        if n > self._HZ_MAX_INPUT_DIM:
-            return None
-        c = ((lb + ub) / 2.0).view(-1, 1)
         rad = (ub - lb) / 2.0
+        # Only ACTUALLY-perturbed dims get a generator column. A zero-radius dim
+        # contributes an all-zero generator (redundant). So a POINT query (all
+        # rad==0, e.g. metaroom) gets ng=0 -> propagates EXACTLY and costs nothing
+        # even at huge n_out. The cap is then on the GENERATOR count (the real
+        # memory driver, n_out*ng), NOT the raw input dimension.
+        nz = rad > 0
+        ng = int(nz.sum().item())
+        if ng > getattr(self, "_effective_max_dim", self._HZ_MAX_INPUT_DIM):
+            return None
+        from act.back_end.solver.solver_hz import _fresh_col_ids
+        ids = None
+        if reuse_ids is not None and reuse_ids.numel() == n:
+            ids = reuse_ids.to(device=lb.device)
+        elif track_ids:
+            ids = _fresh_col_ids(n, device=lb.device)
+        c = ((lb + ub) / 2.0).view(-1, 1)
+        idx = torch.where(nz)[0]
+        Gc = lb.new_zeros(n, ng)
+        if ng > 0:
+            Gc[idx, torch.arange(ng, device=lb.device)] = rad[idx]
         return HZono(
             c=c,
-            Gc=torch.diag(rad),
+            Gc=Gc,
             Gb=lb.new_zeros(n, 0),
-            Ac=lb.new_zeros(0, n),
+            Ac=lb.new_zeros(0, ng),
             Ab=lb.new_zeros(0, 0),
             b=lb.new_zeros(0, 1),
+            col_ids=(ids[idx] if ids is not None else None),
+            bcol_ids=(torch.zeros(0, dtype=torch.long, device=lb.device)
+                      if ids is not None else None),
         )
 
     def apply(
@@ -177,22 +237,64 @@ class HybridzTF(TransferFunction):
         if self._cache_net_id != net_id:
             self._hz_cache.clear()
             self._cache_net_id = net_id
+            self._input_ids = None
+            self._input_box = None
+            # Pure-affine nets carry the exact zonotope at high dim (no ReLU
+            # blow-up); everything else keeps the protective 1024 cap.
+            self._effective_max_dim = (
+                self._HZ_MAX_AFFINE_DIM if self._net_is_pure_affine(net)
+                else self._HZ_MAX_INPUT_DIM)
 
         self._net = net
         self._before = before
         self._after = after
 
         if k in ("INPUT", "INPUT_SPEC"):
-            hz_init = self._hz_from_bounds(input_bounds)
+            # Seed with FRESH factor ids so residual branches can later be
+            # share-merged (hz_sgm_add). Remember the input HZ + box so a
+            # floating root reading the same input can reuse these ids.
+            reuse = self._input_ids if self._input_box_matches(input_bounds) else None
+            hz_init = self._hz_from_bounds(
+                input_bounds, track_ids=(reuse is None), reuse_ids=reuse)
             if hz_init is not None:
                 self._hz_cache[L.id] = hz_init
+                if self._input_ids is None:
+                    self._input_ids = hz_init.col_ids
+                    self._input_box = (
+                        input_bounds.lb.flatten().clone(),
+                        input_bounds.ub.flatten().clone(),
+                    )
         elif k != "ASSERT":
             preds = net.preds.get(L.id, [])
             if preds and preds[0] in self._hz_cache:
                 self._hz_cache[L.id] = self._hz_cache[preds[0]]
+            elif not preds:
+                # Floating root: a non-INPUT layer with no predecessors reads
+                # the network input directly (e.g. the entry DENSE of a residual
+                # block). Without seeding, its whole branch silently degrades to
+                # interval and any downstream ADD collapses the zonotope to a box
+                # (observed on cersyve residual nets). Seed from the layer's own
+                # input bounds so the branch carries an HZ. If its box matches
+                # the network input, REUSE the input factor ids so the residual
+                # ADD share-merges correctly (sound: same input => same factor);
+                # otherwise fresh ids (treated as independent — still sound).
+                reuse = self._input_ids if self._input_box_matches(input_bounds) else None
+                hz_init = self._hz_from_bounds(
+                    input_bounds, track_ids=(reuse is None), reuse_ids=reuse)
+                if hz_init is not None:
+                    self._hz_cache[L.id] = hz_init
 
         n_out = len(L.out_vars)
-        if n_out >= self._HZ_MAX_INPUT_DIM and k not in (
+        # Memory-based drop: the output HZ's Gc is ~ n_out * (ng+nb) cells; that
+        # product (not the raw n_out) is what risks OOM. A point query carries
+        # ng=nb=0, so n_out*0 = 0 -> never dropped, even through a 57k-dim conv
+        # (metaroom). A genuinely wide perturbation (large ng) still drops to the
+        # sound interval fallback. Budget defaults to cap^2 cells.
+        hz_carried = self._hz_cache.get(L.id)
+        ngnb = (hz_carried.Gc.shape[1] + hz_carried.Gb.shape[1]) if hz_carried is not None else 0
+        cell_budget = getattr(self, "_hz_cell_budget",
+                              self._HZ_MAX_INPUT_DIM * self._HZ_MAX_INPUT_DIM)
+        if ngnb > 0 and n_out * ngnb > cell_budget and k not in (
             "INPUT",
             "INPUT_SPEC",
             "ASSERT",
@@ -202,7 +304,15 @@ class HybridzTF(TransferFunction):
         hz_before = self._hz_cache.get(L.id)
         result = self._LAYER_REGISTRY[k](L, input_bounds, self)
 
-        if hz_before is not None and self._hz_cache.get(L.id) is hz_before:
+        # A handler that computed bounds but did NOT claim the cache leaves the
+        # predecessor's (now stale) HZ in place; rebuild a sound box HZ from the
+        # real result bounds. EXCEPT INPUT/INPUT_SPEC: their handlers never claim
+        # the cache, but the seed above already installed the canonical input HZ
+        # WITH col_ids (bounds-identical to result.bounds) -- reseeding here would
+        # strip those ids and silently defeat residual share-merge (hz_sgm_add ->
+        # minkowski) on every skip connection rooted at the input.
+        if (hz_before is not None and self._hz_cache.get(L.id) is hz_before
+                and k not in ("INPUT", "INPUT_SPEC")):
             self._hz_cache[L.id] = hz_from_bounds(
                 result.bounds, result.bounds.lb.dtype, result.bounds.lb.device
             )

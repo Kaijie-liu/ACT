@@ -690,6 +690,11 @@ def _convert_OnnxGather(self, mod: nn.Module, node: fx.Node) -> None:
     axis = int(getattr(mod, '_axis', 0))
     args = [a for a in node.args if isinstance(a, fx.Node)]
     idx = self._resolve_constant_tensor(args[1].name) if len(args) >= 2 else None
+    if idx is None and len(args) >= 2:
+        # Indices may be produced by a Constant op (a call_module, not a
+        # get_attr initializer) -> fall back to constant-subgraph evaluation
+        # (nn4sys pensieve emits this).
+        idx = self._evaluate_constant_subgraph(args[1].name)
     if idx is None:
         raise ValueError(f"OnnxGather: cannot resolve indices at {node.name}")
     indices = idx.detach().clone().to(torch.int64)

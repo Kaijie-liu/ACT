@@ -61,7 +61,9 @@ def tf_relu(L: Layer, Bin: Bounds) -> Fact:
     C.add_box(L.id,L.out_vars,B); return Fact(B,C)
 
 def tf_lrelu(L: Layer, Bin: Bounds) -> Fact:
-    a=float(L.params["alpha"]); l,u=Bin.lb,Bin.ub; on=l>=0; off=u<=0; amb=~(on|off)
+    # converter stores the slope as 'negative_slope'; accept legacy 'alpha' too
+    a=float(L.params.get("negative_slope", L.params.get("alpha", 0.01)))
+    l,u=Bin.lb,Bin.ub; on=l>=0; off=u<=0; amb=~(on|off)
     z=torch.zeros_like(l)
     lb=torch.minimum(a*torch.minimum(l,z), torch.maximum(l,z))
     ub=torch.maximum(a*torch.maximum(u,z), torch.maximum(u,z))
@@ -102,7 +104,11 @@ def tf_add(L: Layer, Bx: Bounds, By: Bounds) -> Fact:
     C.add_box(L.id,L.out_vars,B); return Fact(B,C)
     
 def tf_sub(L: Layer, Bx: Bounds, By: Bounds) -> Fact:
-    B = Bounds(Bx.lb - By.lb, Bx.ub - By.ub)
+    # y = x1 - x2: the sound interval is [x1_lb - x2_ub, x1_ub - x2_lb] (subtract
+    # the OPPOSITE bound of x2). The previous [x1_lb - x2_lb, x1_ub - x2_ub] did
+    # NOT enclose the true range (P0 soundness bug; e.g. x1=[0,2],x2=[1,3] gave
+    # [-1,-1] instead of [-3,1]).
+    B = Bounds(Bx.lb - By.ub, Bx.ub - By.lb)
     C = ConSet()
     C.replace(Con("EQ", tuple(L.out_vars + L.params["x_vars"] + L.params["y_vars"]), {"tag": f"sub:{L.id}"}))
     C.add_box(L.id, L.out_vars, B)

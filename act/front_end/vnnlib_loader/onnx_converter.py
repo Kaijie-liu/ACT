@@ -181,15 +181,36 @@ def get_onnx_input_shape(onnx_path: Path) -> Tuple[int, ...]:
     """
     try:
         import onnx
-        
-        onnx_model = onnx.load(str(onnx_path))
+
+        # Honour .gz fallback when the .onnx symlink is broken (nn4sys mscn_2048d_*).
+        actual = onnx_path
+        if not actual.exists():
+            gz_sibling = onnx_path.parent / f"{onnx_path.name}.gz"
+            if gz_sibling.exists():
+                actual = gz_sibling
+        if str(actual).endswith(".onnx.gz"):
+            import gzip, io
+            with gzip.open(str(actual), "rb") as f:
+                onnx_model = onnx.load(io.BytesIO(f.read()))
+        else:
+            onnx_model = onnx.load(str(actual))
         graph = onnx_model.graph
-        
+
         if not graph.input:
             raise ONNXConversionError("ONNX model has no inputs")
-        
-        # Get first input tensor
-        input_tensor = graph.input[0]
+
+        # Filter out initializers — older exporters list weights/biases in
+        # graph.input alongside the actual model placeholders, so naively
+        # taking graph.input[0] can return e.g. conv_1_W instead of the
+        # imageinput. collins_rul_cnn_2022 NN_rul_full_window_40 hits this.
+        initializer_names = {init.name for init in graph.initializer}
+        model_inputs = [t for t in graph.input if t.name not in initializer_names]
+        if not model_inputs:
+            raise ONNXConversionError(
+                "ONNX model has no non-initializer inputs (all graph.input "
+                "entries are weights/biases)"
+            )
+        input_tensor = model_inputs[0]
         shape = _extract_shape_from_tensor(input_tensor)
         
         # Handle batch dimension - keep original, but normalize dynamic batch

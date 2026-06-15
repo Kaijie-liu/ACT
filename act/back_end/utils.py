@@ -53,8 +53,13 @@ def affine_bounds(W_pos, W_neg, b, Bin: Bounds) -> Bounds:
         Bounds with lb/ub shape [B, out_features].
     """
     assert Bin.lb.dim() == 2, f"affine_bounds expects 2D [B, n_in] bounds, got shape {tuple(Bin.lb.shape)}"
-    lb = Bin.lb @ W_pos.T + Bin.ub @ W_neg.T + b
-    ub = Bin.ub @ W_pos.T + Bin.lb @ W_neg.T + b
+    # Unify dtype to the weights' (the model's intended precision): some ONNX
+    # graphs carry a float64 constant that promotes a downstream bound to double
+    # while the weights stay float32 (linearizenn). A no-op when they already
+    # match, so zero effect on the common single-dtype path.
+    lo = Bin.lb.to(W_pos.dtype); hi = Bin.ub.to(W_pos.dtype)
+    lb = lo @ W_pos.T + hi @ W_neg.T + b
+    ub = hi @ W_pos.T + lo @ W_neg.T + b
     return Bounds(lb, ub)
 
 def pwl_meta(l: torch.Tensor, u: torch.Tensor, K: int) -> Dict[str, Any]:

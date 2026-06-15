@@ -135,6 +135,23 @@ class _LayerGraphBuilder:
         # from baking sample-local bounds into a globally-quantified ACT Net.
         self._compile_time_values: Dict[str, torch.Tensor] = {}
 
+        # Explicit predecessor overrides for layers whose correct dataflow the
+        # FX-based pred reconstruction cannot recover (e.g. a BatchNorm's BIAS
+        # whose FX node maps past its paired SCALE; helper EXPAND/MUL layers).
+        # Applied as the LAST step of _build_preds_succs.
+        self._explicit_preds: Dict[int, List[int]] = {}
+        # Map each produced var id -> the layer that produced it.
+        self._var_to_producer_layer: Dict[int, int] = {}
+
+    def _set_explicit_preds(self, layer_id: int, preds: List[int]) -> None:
+        """Record an explicit predecessor list for a layer that FX-based pred
+        reconstruction gets wrong. Duplicates are PRESERVED (tf_mul/tf_div use
+        positional indexing into preds, so Mul(x,x) needs the id twice).
+        Negative/None/self entries are filtered (negatives = placeholder pred,
+        handled by the INPUT_SPEC connect-all pass)."""
+        cleaned = [p for p in preds if p is not None and p >= 0 and p != layer_id]
+        self._explicit_preds[layer_id] = cleaned
+
     # -------------------------------------------------------------------------
     # Public API
     # -------------------------------------------------------------------------
@@ -189,6 +206,8 @@ class _LayerGraphBuilder:
             out_vars=out_vars,
         )
         self.layers.append(layer)
+        for v in out_vars:
+            self._var_to_producer_layer[v] = layer.id
         return layer.id
     
     def _register_node(self, name: str, layer_id: Optional[int] = None) -> None:
@@ -373,9 +392,20 @@ class _LayerGraphBuilder:
         """Build graph edge dictionary from torch.fx graph."""
         if self.fx_graph is None:
             return
+
+        def _node_names(arg):
+            # Recurse into list/tuple args: torch.cat([y1,y2,y3]) carries its
+            # branch inputs inside a list, so a flat ``isinstance(arg, fx.Node)``
+            # filter drops every branch but the first and mis-wires the CONCAT.
+            if isinstance(arg, fx.Node):
+                return [arg.name]
+            if isinstance(arg, (list, tuple)):
+                return [n for a in arg for n in _node_names(a)]
+            return []
+
         for node in self.fx_graph.nodes:
             self.graph_edges[node.name] = [
-                arg.name for arg in node.args if isinstance(arg, fx.Node)
+                n for arg in node.args for n in _node_names(arg)
             ]
     
     # -------------------------------------------------------------------------
@@ -545,7 +575,15 @@ class _LayerGraphBuilder:
                 # -> connect to previous layer (internal layer within multi-layer conversion)
                 preds[i] = [i - 1]
             # else: Mapped layer with FX predecessors OR takes network input - keep as-is
-        
+
+        # Apply explicit predecessor overrides registered by handlers that the
+        # FX walk cannot get right (e.g. BatchNorm's BIAS must follow its paired
+        # SCALE, not bypass it -> otherwise the layer computes x+c instead of
+        # a*x+c, an UNSOUND bound). Overrides REPLACE the FX-derived list.
+        for lid, override in self._explicit_preds.items():
+            if 0 <= lid < n_layers:
+                preds[lid] = [p for p in override if 0 <= p < n_layers]
+
         # Build succs from preds
         for i in range(n_layers):
             for pred_id in preds[i]:
@@ -705,6 +743,9 @@ class _LayerGraphBuilder:
 
         params = {
             "weight": weight,
+            "in_channels": in_c,
+            "out_channels": out_c,
+            "kernel_size": mod.kernel_size,
             "stride": st, "padding": pad, "dilation": dil, "groups": mod.groups,
             "output_padding": op,
             "input_shape": self.shape, "output_shape": output_shape,
@@ -816,9 +857,9 @@ class _LayerGraphBuilder:
                                  "affine": mod.affine, "track_running_stats": mod.track_running_stats},
             "batchnorm_state": batchnorm_state
         }
-        self._add_layer("SCALE", scale_params, self.prev_out, out_scale)
+        scale_layer_id = self._add_layer("SCALE", scale_params, self.prev_out, out_scale)
         self.prev_out = out_scale
-        
+
         # BIAS layer - marked as paired with SCALE
         out_bias = self._same_size_forward()
         bias_params = {
@@ -827,8 +868,13 @@ class _LayerGraphBuilder:
             "is_batchnorm_decomposition": True,
             "paired_with_scale": True
         }
-        self._add_layer("BIAS", bias_params, self.prev_out, out_bias)
+        bias_layer_id = self._add_layer("BIAS", bias_params, self.prev_out, out_bias)
         self.prev_out = out_bias
+        # SOUNDNESS: pin BIAS's predecessor to its paired SCALE. The BatchNorm FX
+        # node maps to BIAS (the last layer), so the FX pred walk would give BIAS
+        # the BatchNorm's input and BYPASS SCALE -> BIAS would compute x+c instead
+        # of a*x+c, a non-enclosing (unsound) bound.
+        self._set_explicit_preds(bias_layer_id, [scale_layer_id])
     
     def _convert_rnn_family(self, mod: Union[nn.RNN, nn.LSTM, nn.GRU], kind: LayerKind) -> None:
         """Convert single-layer nn.RNN / nn.LSTM / nn.GRU.
@@ -1265,7 +1311,34 @@ class TorchToACT:
                 preds[assert_id].append(last_wrapper)
             if assert_id not in succs[last_wrapper]:
                 succs[last_wrapper].append(assert_id)
-        
+
+        # Wire the network input as a direct operand for BINARY ops (x_vars/
+        # y_vars) that read input vars but lost the placeholder edge -- e.g. a
+        # Lyapunov f(x)-x where one operand IS the network input (lsnc_relu).
+        # Only fires when an operand is genuinely MISSING (len<2), so feed-forward
+        # nets are untouched. Operand order from x_vars(=op0)/y_vars(=op1) so SUB
+        # stays x - input, not input - x.
+        inspec_id = next((L.id for L in self.layers
+                          if L.kind.upper() == "INPUT_SPEC"), None)
+        if inspec_id is not None:
+            in_vars = set(self.layers[inspec_id].out_vars or [])
+            for L in self.layers:
+                xv = L.params.get("x_vars"); yv = L.params.get("y_vars")
+                if xv is None or yv is None or len(preds[L.id]) >= 2:
+                    continue
+                x_in = bool(in_vars) and set(xv) <= in_vars
+                y_in = bool(in_vars) and set(yv) <= in_vars
+                if not (x_in or y_in):
+                    continue
+                ex = preds[L.id]
+                op0 = inspec_id if x_in else (ex[0] if ex else None)
+                op1 = inspec_id if y_in else (ex[-1] if ex else None)
+                if op0 is not None and op1 is not None:
+                    preds[L.id] = [op0, op1]
+                    for opx in (op0, op1):
+                        if L.id not in succs[opx]:
+                            succs[opx].append(L.id)
+
         return preds, succs
 
 
