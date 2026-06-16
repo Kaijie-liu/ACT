@@ -293,26 +293,35 @@ def _hz_compute_bounds_scipy(hz: HZono) -> Bounds:
 
     LB = np.empty((n,), dtype=np.float64)
     UB = np.empty((n,), dtype=np.float64)
-    for i in range(n):
+
+    def _solve_dim(i):
+        # Per-dim min/max over the (shared, read-only) HZ constraints. Independent
+        # across i, so safe to run concurrently; HiGHS releases the GIL during solve.
         obj = np.concatenate([Gc_np[i], Gb_np[i]], axis=0)
-        res_min = linprog(
-            c=obj, A_eq=A_eq, b_eq=b_eq, A_ub=A_ub, b_ub=b_ub,
-            bounds=var_bounds, method="highs"
-        )
+        res_min = linprog(c=obj, A_eq=A_eq, b_eq=b_eq, A_ub=A_ub, b_ub=b_ub,
+                          bounds=var_bounds, method="highs")
         if not res_min.success:
-            raise RuntimeError(
-                f"[linprog] MIN infeasible at dim {i}: {res_min.message}"
-            )
-        LB[i] = c_np[i] + res_min.fun
-        res_max = linprog(
-            c=-obj, A_eq=A_eq, b_eq=b_eq, A_ub=A_ub, b_ub=b_ub,
-            bounds=var_bounds, method="highs"
-        )
+            raise RuntimeError(f"[linprog] MIN infeasible at dim {i}: {res_min.message}")
+        res_max = linprog(c=-obj, A_eq=A_eq, b_eq=b_eq, A_ub=A_ub, b_ub=b_ub,
+                          bounds=var_bounds, method="highs")
         if not res_max.success:
-            raise RuntimeError(
-                f"[linprog] MAX infeasible at dim {i}: {res_max.message}"
-            )
-        UB[i] = c_np[i] - res_max.fun
+            raise RuntimeError(f"[linprog] MAX infeasible at dim {i}: {res_max.message}")
+        return i, c_np[i] + res_min.fun, c_np[i] - res_max.fun
+
+    # The 2n LP solves are independent -> parallelize the wide ones (the tight-bounds
+    # bottleneck on wide nets). IDENTICAL result to serial (same LPs); threads give a
+    # real speedup because HiGHS runs in C and releases the GIL. Gated by env
+    # HZ_TIGHT_THREADS (default 1 = serial), and only when n is wide enough to amortize.
+    import os
+    _nthr = int(os.environ.get("HZ_TIGHT_THREADS", "1"))
+    if _nthr > 1 and n >= 16:
+        from concurrent.futures import ThreadPoolExecutor
+        with ThreadPoolExecutor(max_workers=_nthr) as _ex:
+            for i, lb_i, ub_i in _ex.map(_solve_dim, range(n)):
+                LB[i] = lb_i; UB[i] = ub_i
+    else:
+        for i in range(n):
+            _, LB[i], UB[i] = _solve_dim(i)
 
     dtype, device = hz.c.dtype, hz.c.device
     return Bounds(

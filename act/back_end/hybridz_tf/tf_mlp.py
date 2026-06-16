@@ -172,13 +172,11 @@ def tf_scale(L, bounds, tf):
 def tf_relu(L, bounds, tf):
     hz_in = tf._hz_cache.get(L.id)
     if hz_in is not None:
-        # Precision knobs (default = original fast/exact behaviour): a per-layer
-        # binary budget and the LP-tight pre-activation [alpha,beta]. The verdict
-        # path raises these; the fast path leaves them off.
-        budget = getattr(tf, "_relu_binary_budget", None)
+        # Precision knob: LP-tight pre-activation [alpha,beta]. ReLU is always
+        # encoded EXACTLY (eq_lagr binary) -- no triangle/convex relaxation exists.
         tight = getattr(tf, "_relu_tight_bounds", False)
         tf._hz_cache[L.id] = hz_reduce(
-            hz_apply_relu(hz_in, binary_budget=budget, tight_bounds=tight))
+            hz_apply_relu(hz_in, tight_bounds=tight))
     fact = interval.tf_relu(L, bounds)
     if hz_in is not None:
         return _hz_fact(fact, tf._hz_cache[L.id])
@@ -599,25 +597,16 @@ def _relu_preact_bounds(hz: HZono, tight: bool):
         return hz_compute_bounds(hz)
 
 
-def hz_apply_relu(hz: HZono, binary_budget=None, scores=None,
-                  tight_bounds=False) -> HZono:
-    """ReLU with a selectable per-neuron encoding (hybrid binary budget).
+def hz_apply_relu(hz: HZono, tight_bounds=False) -> HZono:
+    """ReLU encoded EXACTLY for every unstable neuron (no convex relaxation).
 
-    Each unstable neuron i (alpha<0<beta) is encoded one of two ways:
-      * EXACT eq_lagr graph (binary): ng+=4, nb+=1, nc+=3 -- exact, the HZ
-        thesis form. This is what makes the domain non-convex/exact.
-      * CONVEX triangle (DeepZ, no binary): ng+=1, nb+=0, nc+=0 -- the tightest
-        convex (constrained-zonotope) over-approximation y in [lam*x, lam*(x-alpha)],
-        lam=beta/(beta-alpha). This is hz2 Thm-2's convex hull as a single gen.
-
-    ``binary_budget`` (int) caps the number of EXACT (binary) neurons; the rest
-    are triangle-relaxed. None or >= #unstable => all exact (the original
-    behaviour, exact reachability). The exact set is chosen as the top-budget
-    unstable neurons by ``scores`` (default = triangle-area -alpha*beta/2, the
-    looseness-of-relaxation heuristic of Zhang&Xu 2026; callers may pass a
-    query-aware score, e.g. spec-margin sensitivity). Sound for any budget
-    (triangle is a sound over-approx); size shrinks + tightness->exact as
-    budget grows.
+    Each unstable neuron i (alpha<0<beta) gets the EXACT eq_lagr graph (binary):
+    ng+=4, nb+=1, nc+=3 -- the HZ thesis form that makes the domain non-convex/
+    exact. There is intentionally NO triangle/DeepZ convex fallback: the HZ domain
+    represents ReLU exactly via its binary generators, and a convex relaxation
+    would only inject (sound but loose) over-approximation. If the resulting exact
+    MILP is intractable, the verdict is honestly UNKNOWN -- we never silently fall
+    back to a looser convex encoding.
 
     ``tight_bounds`` (precision mode): compute the per-neuron [alpha,beta] from
     the CONSTRAINED LP-relaxation bound (scipy, convex hull, sound) instead of
@@ -658,25 +647,12 @@ def hz_apply_relu(hz: HZono, binary_budget=None, scores=None,
             bcol_ids=None if hz.bcol_ids is None else hz.bcol_ids.clone(),
         )
 
-    a_uns = lb[unstable_idx]
-    b_uns = ub[unstable_idx]
-    # Partition unstable -> exact (binary) vs triangle (convex).
-    if binary_budget is None or binary_budget >= k:
-        exact_sel = unstable_idx
-        tri_sel = unstable_idx[:0]
-    elif binary_budget <= 0:
-        exact_sel = unstable_idx[:0]
-        tri_sel = unstable_idx
-    else:
-        sc = scores if scores is not None else (-a_uns * b_uns / 2.0)
-        sc = sc.to(device=device).reshape(-1)
-        order = torch.argsort(sc, descending=True)
-        exact_sel = unstable_idx[order[:binary_budget]]
-        tri_sel = unstable_idx[order[binary_budget:]]
+    # Exact-only: EVERY unstable neuron gets the exact eq_lagr binary graph.
+    # No triangle/convex partition -- the HZ domain is exact by construction.
+    exact_sel = unstable_idx
     ke = int(exact_sel.shape[0])
-    kt = int(tri_sel.shape[0])
 
-    ng_new = ng + 4 * ke + kt
+    ng_new = ng + 4 * ke
     nb_new = nb + ke
     out_Gc = hz.c.new_zeros(n, ng_new)
     out_Gb = hz.c.new_zeros(n, nb_new)
@@ -723,21 +699,7 @@ def hz_apply_relu(hz: HZono, binary_budget=None, scores=None,
         eq_Ab = hz.c.new_zeros(0, nb_new)
         eq_b = hz.c.new_zeros(0, 1)
 
-    # --- TRIANGLE (DeepZ) block on tri_sel (kt neurons): 1 free gen each ---
-    if kt > 0:
-        a_t = lb[tri_sel]
-        b_t = ub[tri_sel]
-        tt = torch.arange(kt, device=device)
-        lam = b_t / (b_t - a_t)            # slope of upper chord, in (0,1)
-        half_gap = 0.5 * lam * (-a_t)      # half the vertical gap (>=0)
-        tri_col = ng + 4 * ke + tt
-        out_c[tri_sel, 0] = lam * hz.c[tri_sel, 0] + half_gap
-        out_Gc[tri_sel, :ng] = lam.unsqueeze(1) * hz.Gc[tri_sel]
-        out_Gc[tri_sel, tri_col] = half_gap
-        if nb:
-            out_Gb[tri_sel, :nb] = lam.unsqueeze(1) * hz.Gb[tri_sel]
-
-    old_Ac_ext = torch.cat([hz.Ac, hz.c.new_zeros(nc, 4 * ke + kt)], dim=1)
+    old_Ac_ext = torch.cat([hz.Ac, hz.c.new_zeros(nc, 4 * ke)], dim=1)
     old_Ab_ext = torch.cat([hz.Ab, hz.c.new_zeros(nc, ke)], dim=1)
     Ac_out = torch.cat([old_Ac_ext, eq_Ac], dim=0)
     Ab_out = torch.cat([old_Ab_ext, eq_Ab], dim=0)
@@ -751,7 +713,7 @@ def hz_apply_relu(hz: HZono, binary_budget=None, scores=None,
             [hz.eq_mask.to(device),
              torch.ones(3 * ke, dtype=torch.bool, device=device)])
 
-    new_col_ids, new_bcol_ids = _relu_extend_ids_hybrid(hz, ke, kt)
+    new_col_ids, new_bcol_ids = _relu_extend_ids(hz, ke)
     return HZono(
         c=out_c, Gc=out_Gc, Gb=out_Gb,
         Ac=Ac_out, Ab=Ab_out, b=b_out,
@@ -760,17 +722,62 @@ def hz_apply_relu(hz: HZono, binary_budget=None, scores=None,
     )
 
 
-def _relu_extend_ids_hybrid(hz: HZono, ke: int, kt: int):
-    """Fresh ids for the 4*ke exact + kt triangle continuous gens and ke binaries."""
-    if hz.col_ids is None:
-        return None, None
-    from act.back_end.solver.solver_hz import _fresh_col_ids
-    dev = hz.col_ids.device
-    new_col = torch.cat([hz.col_ids, _fresh_col_ids(4 * ke + kt, device=dev)])
-    base_b = (hz.bcol_ids if hz.bcol_ids is not None
-              else torch.zeros(0, dtype=torch.long, device=dev))
-    new_bcol = torch.cat([base_b, _fresh_col_ids(ke, device=dev)])
-    return new_col, new_bcol
+def hz_apply_relu_convex(hz: HZono) -> HZono:
+    """Convex (DeepZ/triangle) ReLU over-approximation -- NOT the activation path.
+
+    Used ONLY as the convex max-relaxation inside MaxPool (max(a,b) = b + relu(a-b)),
+    where the exact binary encoding explodes the MILP (a 2x2 pool already needs
+    ~50 binaries per tiny tile). Each unstable neuron gets ONE fresh generator
+    (ng+=1, nb+=0, nc+=0): y in [lam*x, lam*(x-alpha)], lam=beta/(beta-alpha) -- the
+    hz2 Thm-2 convex hull, sound over-approximation. The ReLU *activation*
+    (``hz_apply_relu``) remains exact-only; this convex form exists solely so the
+    structural MaxPool operator stays tractable, and is never used for activations.
+    """
+    n = hz.c.shape[0]
+    ng = hz.Gc.shape[1]
+    nb = hz.Gb.shape[1]
+    nc = hz.Ac.shape[0]
+    bounds = _relu_preact_bounds(hz, tight=False)
+    lb = bounds.lb.flatten()
+    ub = bounds.ub.flatten()
+    active = lb >= 0
+    inactive = ub <= 0
+    unstable = ~active & ~inactive
+    uidx = torch.where(unstable)[0]
+    kt = int(uidx.shape[0])
+
+    ng_new = ng + kt
+    out_Gc = hz.c.new_zeros(n, ng_new)
+    out_Gb = hz.c.new_zeros(n, nb)
+    out_c = hz.c.new_zeros(n, 1)
+    if active.any():
+        out_c[active] = hz.c[active]
+        out_Gc[active, :ng] = hz.Gc[active]
+        out_Gb[active, :nb] = hz.Gb[active]
+    if kt > 0:
+        a_t = lb[uidx]
+        b_t = ub[uidx]
+        tt = torch.arange(kt, device=hz.c.device)
+        lam = b_t / (b_t - a_t)            # upper-chord slope in (0,1)
+        half_gap = 0.5 * lam * (-a_t)      # half the vertical gap (>=0)
+        out_c[uidx, 0] = lam * hz.c[uidx, 0] + half_gap
+        out_Gc[uidx, :ng] = lam.unsqueeze(1) * hz.Gc[uidx]
+        out_Gc[uidx, ng + tt] = half_gap
+        if nb:
+            out_Gb[uidx, :nb] = lam.unsqueeze(1) * hz.Gb[uidx]
+    Ac_out = torch.cat([hz.Ac, hz.c.new_zeros(nc, kt)], dim=1)
+    new_col_ids = None
+    if hz.col_ids is not None:
+        from act.back_end.solver.solver_hz import _fresh_col_ids
+        new_col_ids = torch.cat(
+            [hz.col_ids, _fresh_col_ids(kt, device=hz.col_ids.device)])
+    return HZono(
+        c=out_c, Gc=out_Gc, Gb=out_Gb,
+        Ac=Ac_out, Ab=hz.Ab.clone(), b=hz.b.clone(),
+        eq_mask=None if hz.eq_mask is None else hz.eq_mask.clone(),
+        col_ids=new_col_ids,
+        bcol_ids=None if hz.bcol_ids is None else hz.bcol_ids.clone(),
+    )
 
 
 def _relu_extend_ids(hz: HZono, k: int):

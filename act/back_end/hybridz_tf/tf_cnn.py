@@ -45,18 +45,18 @@ def _pair(x):
     return (int(x), int(x)) if isinstance(x, int) else (int(x[0]), int(x[1]))
 
 
-def hz_maxpool2d(hz: HZono, kernel_size, stride, padding, dilation, input_shape,
-                 binary_budget: int = 0) -> HZono:
+def hz_maxpool2d(hz: HZono, kernel_size, stride, padding, dilation, input_shape) -> HZono:
     """MaxPool2d as a fold of pairwise maxima: max(a,b) = b + relu(a - b).
 
     The K*K window candidates of each output are gathered as HZ row-subsets
-    (sharing the input factors via col_ids) and folded with hz_sub / hz_apply_relu
-    / hz_sgm_add. Padding is handled by padding the HZ with a constant below the
-    real range (it can never win a max -> sound). ``binary_budget`` controls the
-    per-max encoding: 0 (default) = convex DeepZ relaxation (no binaries, cheap,
-    still correlation-preserving -> tighter than interval); None = exact binary.
+    (sharing the input factors via col_ids) and folded with hz_sub /
+    hz_apply_relu_convex / hz_sgm_add. Padding is handled by padding the HZ with a
+    constant below the real range (it can never win a max -> sound). Each pairwise
+    max uses the CONVEX (DeepZ) ReLU relaxation -- the exact binary encoding would
+    explode the MILP for a structural pooling op. This is independent of the ReLU
+    *activation*, which is always exact-only.
     """
-    from act.back_end.hybridz_tf.tf_mlp import hz_apply_relu, _hz_gather_rows
+    from act.back_end.hybridz_tf.tf_mlp import hz_apply_relu_convex, _hz_gather_rows
     from act.back_end.hybridz_tf.algorithms.sgm import hz_sub, hz_sgm_add
     from act.back_end.solver.solver_hz import hz_compute_bounds
 
@@ -103,7 +103,7 @@ def hz_maxpool2d(hz: HZono, kernel_size, stride, padding, dilation, input_shape,
     m = _hz_gather_rows(work, cands[0])
     for ri in cands[1:]:
         cand = _hz_gather_rows(work, ri)
-        m = hz_sgm_add(m, hz_apply_relu(hz_sub(cand, m), binary_budget=binary_budget))
+        m = hz_sgm_add(m, hz_apply_relu_convex(hz_sub(cand, m)))
     return m
 
 
@@ -112,11 +112,10 @@ def tf_maxpool2d(L, bounds, tf):
     if hz_in is not None:
         ishape = L.params.get("input_shape")
         if ishape is not None:
-            budget = getattr(tf, "_maxpool_binary_budget", 0)
             tf._hz_cache[L.id] = hz_maxpool2d(
                 hz_in, L.params["kernel_size"], L.params.get("stride"),
                 L.params.get("padding", 0), L.params.get("dilation", 1),
-                ishape, binary_budget=budget)
+                ishape)
         else:
             hz_in = None
     fact = interval.tf_maxpool2d(L, bounds)
