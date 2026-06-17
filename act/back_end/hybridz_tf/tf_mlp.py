@@ -82,6 +82,9 @@ def _hz_apply_per_batch_linear(hz: HZono, W: torch.Tensor, B: int) -> HZono:
     return HZono(
         c=new_c, Gc=new_Gc, Gb=new_Gb,
         Ac=hz.Ac.clone(), Ab=hz.Ab.clone(), b=hz.b.clone(),
+        eq_mask=None if hz.eq_mask is None else hz.eq_mask.clone(),
+        col_ids=None if hz.col_ids is None else hz.col_ids.clone(),
+        bcol_ids=None if hz.bcol_ids is None else hz.bcol_ids.clone(),
     )
 
 
@@ -175,8 +178,9 @@ def tf_relu(L, bounds, tf):
         # Precision knob: LP-tight pre-activation [alpha,beta]. ReLU is always
         # encoded EXACTLY (eq_lagr binary) -- no triangle/convex relaxation exists.
         tight = getattr(tf, "_relu_tight_bounds", False)
+        cuts = getattr(tf, "_relu_valid_cuts", False)
         tf._hz_cache[L.id] = hz_reduce(
-            hz_apply_relu(hz_in, tight_bounds=tight))
+            hz_apply_relu(hz_in, tight_bounds=tight, valid_cuts=cuts))
     fact = interval.tf_relu(L, bounds)
     if hz_in is not None:
         return _hz_fact(fact, tf._hz_cache[L.id])
@@ -597,7 +601,7 @@ def _relu_preact_bounds(hz: HZono, tight: bool):
         return hz_compute_bounds(hz)
 
 
-def hz_apply_relu(hz: HZono, tight_bounds=False) -> HZono:
+def hz_apply_relu(hz: HZono, tight_bounds=False, valid_cuts=False) -> HZono:
     """ReLU encoded EXACTLY for every unstable neuron (no convex relaxation).
 
     Each unstable neuron i (alpha<0<beta) gets the EXACT eq_lagr graph (binary):
@@ -615,6 +619,11 @@ def hz_apply_relu(hz: HZono, tight_bounds=False) -> HZono:
     encloses the true pre-activation range (sound) but is much tighter, so the
     eq_lagr/triangle relaxation it feeds is tighter too. Costs an LP per
     dimension -- use on the verdict/precision path, not the fast path.
+
+    ``valid_cuts`` optionally appends two redundant ReLU graph facets
+    (``x - y <= 0`` and ``y - s*x <= -s*alpha``) as inequality rows on top
+    of the exact binary encoding. These cuts are solver-only tightening; they
+    do not replace eq_lagr and do not propagate as a triangle relaxation.
     """
     dtype, device = hz.c.dtype, hz.c.device
     n = hz.c.shape[0]
@@ -643,6 +652,7 @@ def hz_apply_relu(hz: HZono, tight_bounds=False) -> HZono:
         return HZono(
             c=out_c, Gc=out_Gc, Gb=out_Gb,
             Ac=hz.Ac.clone(), Ab=hz.Ab.clone(), b=hz.b.clone(),
+            eq_mask=None if hz.eq_mask is None else hz.eq_mask.clone(),
             col_ids=None if hz.col_ids is None else hz.col_ids.clone(),
             bcol_ids=None if hz.bcol_ids is None else hz.bcol_ids.clone(),
         )
@@ -701,17 +711,49 @@ def hz_apply_relu(hz: HZono, tight_bounds=False) -> HZono:
 
     old_Ac_ext = torch.cat([hz.Ac, hz.c.new_zeros(nc, 4 * ke)], dim=1)
     old_Ab_ext = torch.cat([hz.Ab, hz.c.new_zeros(nc, ke)], dim=1)
-    Ac_out = torch.cat([old_Ac_ext, eq_Ac], dim=0)
-    Ab_out = torch.cat([old_Ab_ext, eq_Ab], dim=0)
-    b_out = torch.cat([hz.b, eq_b], dim=0)
+    Ac_blocks = [old_Ac_ext, eq_Ac]
+    Ab_blocks = [old_Ab_ext, eq_Ab]
+    b_blocks = [hz.b, eq_b]
+
+    if valid_cuts and ke > 0:
+        cut_Ac = hz.c.new_zeros(2 * ke, ng_new)
+        cut_Ab = hz.c.new_zeros(2 * ke, nb_new)
+        cut_b = hz.c.new_zeros(2 * ke, 1)
+        cr1 = te
+        cr2 = ke + te
+        slope = b_e / (b_e - a_e).clamp_min(1e-12)
+
+        # Redundant exact facets: x - y <= 0.
+        cut_Ac[cr1, :ng] = hz.Gc[exact_sel]
+        cut_Ab[cr1, :nb] = hz.Gb[exact_sel]
+        cut_Ac[cr1, col_xi2] = b_e / 2.0
+        cut_b[cr1, 0] = b_e / 2.0 - hz.c[exact_sel, 0]
+
+        # Redundant exact facets: y - s*x <= -s*alpha.
+        cut_Ac[cr2, :ng] = -slope.unsqueeze(1) * hz.Gc[exact_sel]
+        cut_Ab[cr2, :nb] = -slope.unsqueeze(1) * hz.Gb[exact_sel]
+        cut_Ac[cr2, col_xi2] = -b_e / 2.0
+        cut_b[cr2, 0] = -slope * a_e - b_e / 2.0 + slope * hz.c[exact_sel, 0]
+
+        Ac_blocks.append(cut_Ac)
+        Ab_blocks.append(cut_Ab)
+        b_blocks.append(cut_b)
+
+    Ac_out = torch.cat(Ac_blocks, dim=0)
+    Ab_out = torch.cat(Ab_blocks, dim=0)
+    b_out = torch.cat(b_blocks, dim=0)
     # eq_mask: original senses + 3*ke equality rows (True). None stays None
     # since the eq_lagr rows are equalities (all-equality semantics preserved).
-    if hz.eq_mask is None:
+    if hz.eq_mask is None and not (valid_cuts and ke > 0):
         eq_mask_out = None
     else:
+        old_mask = (hz.eq_mask.to(device) if hz.eq_mask is not None
+                    else torch.ones(nc, dtype=torch.bool, device=device))
+        cut_mask = (torch.zeros(2 * ke, dtype=torch.bool, device=device)
+                    if valid_cuts and ke > 0
+                    else torch.zeros(0, dtype=torch.bool, device=device))
         eq_mask_out = torch.cat(
-            [hz.eq_mask.to(device),
-             torch.ones(3 * ke, dtype=torch.bool, device=device)])
+            [old_mask, torch.ones(3 * ke, dtype=torch.bool, device=device), cut_mask])
 
     new_col_ids, new_bcol_ids = _relu_extend_ids(hz, ke)
     return HZono(
@@ -853,6 +895,7 @@ def hz_apply_leaky_relu(hz: HZono, alpha_arg: float) -> HZono:
             Ac=hz.Ac.clone(),
             Ab=hz.Ab.clone(),
             b=hz.b.clone(),
+            eq_mask=None if hz.eq_mask is None else hz.eq_mask.clone(),
             col_ids=None if hz.col_ids is None else hz.col_ids.clone(),
             bcol_ids=None if hz.bcol_ids is None else hz.bcol_ids.clone(),
         )
@@ -920,6 +963,8 @@ def hz_apply_leaky_relu(hz: HZono, alpha_arg: float) -> HZono:
         Ac=torch.cat([old_Ac_ext, eq_Ac], dim=0),
         Ab=torch.cat([old_Ab_ext, eq_Ab], dim=0),
         b=torch.cat([hz.b, eq_b], dim=0),
+        eq_mask=(None if hz.eq_mask is None else torch.cat(
+            [hz.eq_mask.to(device), torch.ones(3 * k, dtype=torch.bool, device=device)])),
         col_ids=new_col_ids,
         bcol_ids=new_bcol_ids,
     )
@@ -965,6 +1010,9 @@ def hz_apply_piecewise(hz: HZono, func, dfunc, K: int = 2, inflection=None) -> H
             Ac=hz.Ac.clone(),
             Ab=hz.Ab.clone(),
             b=hz.b.clone(),
+            eq_mask=None if hz.eq_mask is None else hz.eq_mask.clone(),
+            col_ids=None if hz.col_ids is None else hz.col_ids.clone(),
+            bcol_ids=None if hz.bcol_ids is None else hz.bcol_ids.clone(),
         )
 
     lb_w, ub_w = lb[wide_idx], ub[wide_idx]
@@ -1123,6 +1171,8 @@ def hz_apply_piecewise(hz: HZono, func, dfunc, K: int = 2, inflection=None) -> H
         Ac=torch.cat([old_Ac_ext, eq_Ac], dim=0),
         Ab=torch.cat([old_Ab_ext, eq_Ab], dim=0),
         b=torch.cat([hz.b, eq_b], dim=0),
+        eq_mask=(None if hz.eq_mask is None else torch.cat(
+            [hz.eq_mask.to(device), torch.ones(n_eq_total, dtype=torch.bool, device=device)])),
     )
 
 

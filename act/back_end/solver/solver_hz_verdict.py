@@ -57,12 +57,21 @@ def _hz_np(hz: HZono):
             bl.detach().cpu().double().numpy().reshape(-1))
 
 
+def _spec_np(C, thresholds, out_dim: int):
+    C = np.asarray(C, dtype=np.float64).reshape(-1, out_dim)
+    t = np.asarray(thresholds, dtype=np.float64).reshape(-1)
+    if t.size == 1 and C.shape[0] != 1:
+        t = np.repeat(t, C.shape[0])
+    return C, t
+
+
 def hz_row_max(hz: HZono, c_row: np.ndarray, *, integer: bool = False,
                time_limit: float = 20.0) -> Optional[float]:
     """max_y (c_row . y) over the HZ. LP relaxation (convex hull) or MILP."""
     if not _HAS_SCIPY:
         return None
     c, Gc, Gb, Ace, Abe, be, Acl, Abl, bl = _hz_np(hz)
+    c_row = np.asarray(c_row, dtype=np.float64).reshape(-1)
     ng, nb = Gc.shape[1], Gb.shape[1]
     obj = np.concatenate([c_row @ Gc, c_row @ Gb])  # maximize -> minimize -obj
     const = float(c_row @ c)
@@ -102,6 +111,7 @@ def hz_joint_min_margin(hz: HZono, C: np.ndarray, t: np.ndarray, *,
     if not _HAS_SCIPY:
         return None
     c, Gc, Gb, Ace, Abe, be, Acl, Abl, bl = _hz_np(hz)
+    C, t = _spec_np(C, t, c.size)
     ng, nb = Gc.shape[1], Gb.shape[1]
     nrow = C.shape[0]
     v_s = ng + nb
@@ -209,9 +219,8 @@ def hz_objbound_decide(hz: HZono, C, thresholds, *, is_unsafe_linear: bool,
     mip_rel_gap=1e-9, 0 false-CERT, 1.5-665x."""
     if not (_HAS_HIGHSPY and _HAS_SCIPY):
         return ("UNKNOWN", None)
-    C = np.asarray(C, dtype=np.float64)
-    t = np.asarray(thresholds, dtype=np.float64).reshape(-1)
     c, Gc, Gb, Ace, Abe, be, Acl, Abl, bl = _hz_np(hz)
+    C, t = _spec_np(C, thresholds, c.size)
     ng, nb = Gc.shape[1], Gb.shape[1]
 
     # bare point / no generators -> closed form (matches hz_certify_spec)
@@ -282,8 +291,7 @@ def hz_certify_spec(hz: HZono, C, thresholds, *, is_unsafe_linear: bool,
     """
     if not _HAS_SCIPY:
         return False, None
-    C = np.asarray(C, dtype=np.float64)
-    t = np.asarray(thresholds, dtype=np.float64).reshape(-1)
+    C, t = _spec_np(C, thresholds, int(hz.c.numel()))
 
     # An unconstrained zonotope (Ac.shape[0]==0) is a perfectly valid HZ: the
     # joint-margin LP recovers its TRUE support (exact for a zonotope -- there
