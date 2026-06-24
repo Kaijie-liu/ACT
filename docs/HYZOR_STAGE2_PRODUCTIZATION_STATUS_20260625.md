@@ -26,14 +26,14 @@ metaroom row is now `94 CERT / 1 ADV / 5 TIMEOUT = 95 V+A`; it remains rank
 | Frontend benchmark smoke | `python -m act.pipeline --verify hybridz-benchmark --category acasxu_2023 --max-instances 1 --hybridz-workers 1 --hybridz-timeout-cap 5` wrote detail/summary/ICSE CSVs and manifest under `/tmp/act_hybridz_stage2_commit_boundary_smoke` with `P0=0`, `ERROR=0` | done as smoke |
 | Focused regression checks | see test log below | done |
 | Full frozen frontend reproduction | no clean full `--verify hybridz-benchmark --category frozen --hybridz-require-frozen-match` rerun after the soundfix in this pass | not yet proven |
-| Git-tracked productization state | 49 product/doc files are now staged explicitly; `scripts/` remains untracked and absent from the staged diff | staged, not committed |
-| Relative-to-upstream minimal diff audit | tracked diff has been measured, but untracked product files still need to be added or explicitly retired before final diff review is meaningful | partial |
+| Git-tracked productization state | product/doc boundary committed in `4ed5712e4` (`Productize HybridZ stage II path`); `scripts/` remains untracked and absent from the commit | committed |
+| Relative-to-upstream minimal diff audit | tracked diff has been measured after the product boundary commit; final audit still needs a full frozen frontend rerun | partial |
 
-## Product Files Still Untracked
+## Product Files Committed
 
 These files are part of the current product path or its documentation and must
-not remain accidental local-only state at final handoff.  They are staged in the
-current worktree, but not committed yet:
+not remain accidental local-only state at final handoff.  They were committed in
+`4ed5712e4`:
 
 - `FULLRUN_HANDOFF.md`
 - `act/back_end/hybridz_config.py`
@@ -87,6 +87,11 @@ sha256sum -c /tmp/act_hybridz_stage2_commit_boundary_smoke/_MANIFEST.sha256
   --hybridz-timeout-cap 5 \
   --hybridz-results-dir /tmp/act_hybridz_stage2_staged_smoke
 sha256sum -c /tmp/act_hybridz_stage2_staged_smoke/_MANIFEST.sha256
+/usr/bin/timeout 180 python -m act.pipeline --verify hybridz-benchmark \
+  --category acasxu_2023 --max-instances 1 --hybridz-workers 1 \
+  --hybridz-timeout-cap 5 \
+  --hybridz-results-dir /tmp/act_hybridz_stage2_postcommit_smoke
+sha256sum -c /tmp/act_hybridz_stage2_postcommit_smoke/_MANIFEST.sha256
 ```
 
 Observed result:
@@ -110,11 +115,13 @@ Observed result:
 - frontend smoke manifest clean
 - staged-state frontend smoke under `/tmp/act_hybridz_stage2_staged_smoke`
   completed with `N=1, UNKNOWN=1, P0=0, ERROR=0` and clean manifest
+- post-commit frontend smoke under `/tmp/act_hybridz_stage2_postcommit_smoke`
+  completed with `N=1, UNKNOWN=1, P0=0, ERROR=0` and clean manifest
 
 ## Remaining DoD Gaps
 
-1. Commit the staged productization boundary after final review.  The current
-   staged diff intentionally excludes `scripts/`.
+1. Final commit status is recorded in `4ed5712e4`; if further edits are made,
+   keep `scripts/` excluded and rerun the focused checks.
 2. Run one clean full frontend frozen reproduction through:
 
    ```bash

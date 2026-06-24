@@ -108,6 +108,11 @@ sha256sum -c /tmp/act_hybridz_stage2_commit_boundary_smoke/_MANIFEST.sha256
   --hybridz-timeout-cap 5 \
   --hybridz-results-dir /tmp/act_hybridz_stage2_staged_smoke
 sha256sum -c /tmp/act_hybridz_stage2_staged_smoke/_MANIFEST.sha256
+/usr/bin/timeout 180 python -m act.pipeline --verify hybridz-benchmark \
+  --category acasxu_2023 --max-instances 1 --hybridz-workers 1 \
+  --hybridz-timeout-cap 5 \
+  --hybridz-results-dir /tmp/act_hybridz_stage2_postcommit_smoke
+sha256sum -c /tmp/act_hybridz_stage2_postcommit_smoke/_MANIFEST.sha256
 ```
 
 All passed in the current worktree.
@@ -115,9 +120,12 @@ The frontend smoke emitted detail/summary/ICSE CSVs, JSON summary, and manifest
 files with `P0=0` and `ERROR=0`.
 The `act/` legacy-script scan only hits a self-test assertion that generated
 commands must not contain `hz_full_worker` or `hz_sparse_worker`.
-The current staged diff contains 49 product/doc files and no `scripts/` paths.
+The productization boundary was committed in `4ed5712e4` with 49 product/doc
+files and no `scripts/` paths.
+The post-commit smoke completed with `N=1, UNKNOWN=1, P0=0, ERROR=0` and a
+clean manifest.
 
-## Required Before Final Commit
+## Required After Further Edits
 
 1. Re-run the focused self-tests above after any further edit.
 2. Confirm `git status --short` shows no accidental `scripts/` additions.
