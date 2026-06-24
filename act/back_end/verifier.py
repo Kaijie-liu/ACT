@@ -46,8 +46,11 @@
 from __future__ import annotations
 from typing import Optional, List, Callable, Dict, Any, TYPE_CHECKING, cast
 
+from contextlib import contextmanager
 import torch
 import copy
+import os
+import numpy as np
 
 # ACT backend imports
 from act.back_end.core import Bounds, Con, ConSet, Fact, Net
@@ -413,12 +416,9 @@ def verify_lp_batched(
 # -----------------------------------------------------------------------------
 
 
-def _get_output_layer_bounds(net, after: Dict[int, Fact]) -> Bounds:
-    """Return the Bounds tensor produced by the network's output layer.
+def _get_output_layer_id(net) -> int:
+    """Return the unique predecessor layer id of the ASSERT layer."""
 
-    The output layer is the unique predecessor of the ASSERT layer; the
-    returned Bounds is shaped ``[B, n_out]``.
-    """
     assert_layer = get_assert_layer(net)
     pred_ids = net.preds.get(assert_layer.id, [])
     if len(pred_ids) != 1:
@@ -426,7 +426,319 @@ def _get_output_layer_bounds(net, after: Dict[int, Fact]) -> Bounds:
             f"ASSERT layer {assert_layer.id} must have exactly one "
             f"predecessor (the network output), got predecessors={pred_ids}"
         )
-    return after[pred_ids[0]].bounds
+    return int(pred_ids[0])
+
+
+def _get_output_layer_bounds(net, after: Dict[int, Fact]) -> Bounds:
+    """Return the Bounds tensor produced by the network's output layer.
+
+    The output layer is the unique predecessor of the ASSERT layer; the
+    returned Bounds is shaped ``[B, n_out]``.
+    """
+    return after[_get_output_layer_id(net)].bounds
+
+
+def _hybridz_sparse_witness_input(
+    hz: Any,
+    witness: np.ndarray,
+    seed_bounds: Bounds,
+) -> tuple[Optional[torch.Tensor], str]:
+    center = getattr(hz, "input_center", None)
+    radius = getattr(hz, "input_radius", None)
+    indices = getattr(hz, "input_indices", None)
+    if center is None or radius is None or indices is None:
+        return None, "missing_sparse_input_metadata"
+    center = np.asarray(center, dtype=np.float64).reshape(-1)
+    radius = np.asarray(radius, dtype=np.float64).reshape(-1)
+    indices = np.asarray(indices, dtype=np.int64).reshape(-1)
+    if witness.size < indices.size:
+        return None, "short_sparse_witness"
+    if center.size != radius.size:
+        return None, "bad_sparse_input_metadata"
+    x = center.copy()
+    vals = np.clip(np.asarray(witness[:indices.size], dtype=np.float64), -1.0, 1.0)
+    x[indices] = center[indices] + radius[indices] * vals
+    shape = getattr(hz, "input_shape", None) or tuple(int(d) for d in seed_bounds.lb.shape)
+    try:
+        x_t = torch.as_tensor(x.reshape(shape), dtype=seed_bounds.lb.dtype, device=seed_bounds.lb.device)
+    except Exception:
+        return None, "bad_sparse_input_shape"
+    return x_t, "sparse_input_metadata"
+
+
+def _hybridz_dense_witness_input(
+    hz: Any,
+    witness: np.ndarray,
+    seed_bounds: Bounds,
+    active_tf: Any,
+) -> tuple[Optional[torch.Tensor], str]:
+    col_ids = getattr(hz, "col_ids", None)
+    input_ids = getattr(active_tf, "_input_ids", None)
+    if col_ids is None or input_ids is None:
+        return None, "missing_dense_col_ids"
+    if hasattr(col_ids, "detach"):
+        col_ids_np = col_ids.detach().cpu().numpy().reshape(-1)
+    else:
+        col_ids_np = np.asarray(col_ids, dtype=np.int64).reshape(-1)
+    if hasattr(input_ids, "detach"):
+        input_ids_np = input_ids.detach().cpu().numpy().reshape(-1)
+    else:
+        input_ids_np = np.asarray(input_ids, dtype=np.int64).reshape(-1)
+    if witness.size < col_ids_np.size:
+        return None, "short_dense_witness"
+
+    lb = seed_bounds.lb.detach().cpu().double().numpy().reshape(-1)
+    ub = seed_bounds.ub.detach().cpu().double().numpy().reshape(-1)
+    center = 0.5 * (lb + ub)
+    radius = 0.5 * (ub - lb)
+    if input_ids_np.size != center.size:
+        return None, "dense_input_id_shape_mismatch"
+
+    col_by_id = {int(gid): j for j, gid in enumerate(col_ids_np.tolist())}
+    x = center.copy()
+    for input_dim in np.nonzero(np.abs(radius) > 1e-12)[0]:
+        pos = col_by_id.get(int(input_ids_np[input_dim]))
+        if pos is None:
+            return None, "dense_input_generator_missing"
+        xi = float(np.clip(witness[pos], -1.0, 1.0))
+        x[input_dim] = center[input_dim] + radius[input_dim] * xi
+    x_t = torch.as_tensor(
+        x.reshape(tuple(int(d) for d in seed_bounds.lb.shape)),
+        dtype=seed_bounds.lb.dtype,
+        device=seed_bounds.lb.device,
+    )
+    return x_t, "dense_col_ids"
+
+
+def _hybridz_witness_input(
+    hz: Any,
+    witness: Optional[np.ndarray],
+    seed_bounds: Bounds,
+    active_tf: Any,
+) -> tuple[Optional[torch.Tensor], str]:
+    if witness is None:
+        return None, "missing_witness"
+    witness = np.asarray(witness, dtype=np.float64).reshape(-1)
+    if getattr(hz, "input_center", None) is not None:
+        return _hybridz_sparse_witness_input(hz, witness, seed_bounds)
+    return _hybridz_dense_witness_input(hz, witness, seed_bounds, active_tf)
+
+
+def _hybridz_replay_witness(
+    *,
+    hz: Any,
+    witness: Optional[np.ndarray],
+    seed_bounds: Bounds,
+    active_tf: Any,
+    model_fn: Optional[Callable[[torch.Tensor], torch.Tensor]],
+    C: torch.Tensor,
+    thresholds: torch.Tensor,
+    M: int,
+    n_out: int,
+    is_unsafe_linear: bool,
+) -> tuple[bool, Optional[torch.Tensor], str]:
+    if model_fn is None:
+        return False, None, "missing_model_fn"
+
+    x_batch, source = _hybridz_witness_input(hz, witness, seed_bounds, active_tf)
+    if x_batch is None:
+        return False, None, source
+    if x_batch.dim() < 1 or int(x_batch.shape[0]) != 1:
+        return False, None, "witness_input_not_batched_b1"
+
+    try:
+        y = model_fn(x_batch)
+        if isinstance(y, dict):
+            y = y.get("output")
+        if not isinstance(y, torch.Tensor):
+            return False, None, "model_fn_no_tensor_output"
+        y = y.detach()
+        if y.dim() == 1:
+            y = y.view(1, -1)
+        else:
+            y = y.reshape(y.shape[0], -1)
+        if tuple(y.shape) != (1, n_out):
+            return False, None, f"model_fn_output_shape:{tuple(y.shape)}"
+        y = y.to(device=C.device, dtype=C.dtype)
+    except Exception as exc:
+        return False, None, f"model_fn_replay_failed:{type(exc).__name__}"
+
+    C0 = C.view(1, M, n_out)[0]
+    t0 = thresholds.view(1, M)[0]
+    scores = C0.matmul(y[0])
+    if is_unsafe_linear:
+        unsafe = bool(torch.all(scores <= t0 + 1e-8).item())
+    else:
+        unsafe = bool(torch.any(scores >= t0 - 1e-8).item())
+    if not unsafe:
+        return False, x_batch.detach().cpu()[0].clone(), "model_fn_replay_not_unsafe"
+    return True, x_batch.detach().cpu()[0].clone(), f"model_fn_replay_unsafe:{source}"
+
+
+_MISSING_ATTR = object()
+
+
+def _hybridz_profile_from_cfg(hz_cfg: Optional[Any]) -> Optional[Any]:
+    if hz_cfg is None:
+        return None
+    if not getattr(hz_cfg, "use_profile", True):
+        return None
+    bench = getattr(hz_cfg, "bench", None)
+    if not bench:
+        return None
+    from act.back_end.hybridz_config import get_bench_profile
+
+    return get_bench_profile(str(bench))
+
+
+def _apply_hybridz_tf_profile(
+    active_tf: Any,
+    profile: Optional[Any],
+    hz_cfg: Optional[Any] = None,
+) -> list[tuple[str, Any]]:
+    """Apply benchmark-wide forward HZ profile knobs to one TF instance."""
+
+    if profile is None and hz_cfg is None:
+        return []
+    updates: Dict[str, Any] = {
+        "_relu_compressed": bool(getattr(profile, "compressed_relu", False)) if profile is not None else False,
+        "_relu_valid_cuts": bool(getattr(profile, "relu_valid_cuts", False)) if profile is not None else False,
+    }
+    sigmoid_k = getattr(profile, "sigmoid_k", None) if profile is not None else None
+    if sigmoid_k is not None:
+        updates["_sigmoid_K"] = max(1, int(sigmoid_k))
+    cell_budget = getattr(profile, "cell_budget", None) if profile is not None else None
+    if cell_budget is not None:
+        updates["_hz_cell_budget"] = int(cell_budget)
+    if hz_cfg is not None:
+        override_map = {
+            "compressed_relu": "_relu_compressed",
+            "relu_valid_cuts": "_relu_valid_cuts",
+            "sigmoid_k": "_sigmoid_K",
+            "tanh_k": "_tanh_K",
+            "scurve_domain_cuts": "_scurve_domain_cuts",
+            "scurve_graph_cuts": "_scurve_graph_cuts",
+            "cell_budget": "_hz_cell_budget",
+        }
+        for cfg_name, attr_name in override_map.items():
+            val = getattr(hz_cfg, cfg_name, None)
+            if val is None:
+                continue
+            if cfg_name in {"sigmoid_k", "tanh_k"}:
+                val = max(1, int(val))
+            elif cfg_name == "cell_budget":
+                val = int(val)
+            elif cfg_name in {
+                "compressed_relu",
+                "relu_valid_cuts",
+                "scurve_domain_cuts",
+                "scurve_graph_cuts",
+            }:
+                val = bool(val)
+            updates[attr_name] = val
+
+    old_values: list[tuple[str, Any]] = []
+    for name, value in updates.items():
+        old_values.append((name, getattr(active_tf, "__dict__", {}).get(name, _MISSING_ATTR)))
+        setattr(active_tf, name, value)
+    return old_values
+
+
+def _restore_hybridz_tf_profile(active_tf: Any, old_values: list[tuple[str, Any]]) -> None:
+    for name, old in reversed(old_values):
+        if old is _MISSING_ATTR:
+            try:
+                delattr(active_tf, name)
+            except AttributeError:
+                pass
+        else:
+            setattr(active_tf, name, old)
+
+
+@contextmanager
+def _hybridz_solver_profile_env(profile: Optional[Any]):
+    """Temporarily apply benchmark-wide open-source MILP profile env knobs."""
+
+    updates: Dict[str, str] = {}
+    if profile is not None:
+        milp_env = getattr(profile, "milp_env", None) or {}
+        updates.update({str(k): str(v) for k, v in milp_env.items()})
+        if getattr(profile, "cutoff_row", False):
+            updates["HZ_MILP_CUTOFF_ROW"] = "1"
+        milp_threads = getattr(profile, "milp_threads", None)
+        if milp_threads is not None:
+            updates["HZ_MILP_THREADS"] = str(int(milp_threads))
+        query_workers = getattr(profile, "query_workers", None)
+        if query_workers is not None:
+            updates["HZ_QUERY_WORKERS"] = str(int(query_workers))
+
+    old_env = {key: os.environ.get(key) for key in updates}
+    try:
+        for key, value in updates.items():
+            os.environ[key] = value
+        yield
+    finally:
+        for key, old in old_env.items():
+            if old is None:
+                os.environ.pop(key, None)
+            else:
+                os.environ[key] = old
+
+
+def _hybridz_profiled_timeout(hz_cfg: Optional[Any], fallback_timeout: Optional[float]) -> float:
+    if hz_cfg is not None and hasattr(hz_cfg, "verdict_timeout"):
+        timeout = float(hz_cfg.verdict_timeout(fallback_timeout=fallback_timeout))
+    elif fallback_timeout is not None:
+        timeout = float(fallback_timeout)
+    else:
+        timeout = 30.0
+
+    profile = _hybridz_profile_from_cfg(hz_cfg)
+    if profile is not None and getattr(hz_cfg, "timeout", None) is None:
+        fraction = getattr(profile, "milp_fraction", None)
+        if fraction is not None:
+            timeout *= float(fraction)
+        cap = getattr(profile, "milp_timeout_cap", None)
+        if cap is not None:
+            timeout = min(timeout, float(cap))
+    return timeout
+
+
+def _hybridz_profile_metadata(profile: Optional[Any]) -> Dict[str, Any]:
+    if profile is None:
+        return {}
+    return {
+        "profile_wall_timeout_s": getattr(profile, "wall_timeout_s", None),
+        "profile_milp_fraction": getattr(profile, "milp_fraction", None),
+        "profile_milp_timeout_cap": getattr(profile, "milp_timeout_cap", None),
+        "profile_sigmoid_k": getattr(profile, "sigmoid_k", None),
+        "profile_cell_budget": getattr(profile, "cell_budget", None),
+        "profile_compressed_relu": bool(getattr(profile, "compressed_relu", False)),
+        "profile_relu_valid_cuts": bool(getattr(profile, "relu_valid_cuts", False)),
+        "profile_cutoff_row": bool(getattr(profile, "cutoff_row", False)),
+        "profile_milp_threads": getattr(profile, "milp_threads", None),
+        "profile_query_workers": getattr(profile, "query_workers", None),
+        "profile_milp_env": dict(getattr(profile, "milp_env", None) or {}),
+    }
+
+
+def _hybridz_config_metadata(hz_cfg: Optional[Any]) -> Dict[str, Any]:
+    if hz_cfg is None:
+        return {}
+    keys = (
+        "sigmoid_k",
+        "tanh_k",
+        "scurve_domain_cuts",
+        "scurve_graph_cuts",
+        "compressed_relu",
+        "relu_valid_cuts",
+        "cell_budget",
+    )
+    return {
+        f"cfg_{key}": getattr(hz_cfg, key, None)
+        for key in keys
+        if getattr(hz_cfg, key, None) is not None
+    }
 
 
 @torch.no_grad()
@@ -434,6 +746,7 @@ def verify_once(
     net,
     *,
     model_fn: Optional[Callable[[torch.Tensor], torch.Tensor]] = None,
+    backend_cfg: Optional[Any] = None,
 ) -> List[VerifyResult]:
     """Single-shot, pure-tensor batched verifier.
 
@@ -460,6 +773,8 @@ def verify_once(
         model_fn: optional callable mapping ``x: [B, *input_shape] ->
             [B, n_out]`` for concrete falsification. If omitted, the
             FALSIFIED status is never produced (FALSIFIED requires evidence).
+        backend_cfg: optional ``BackendConfig``. The strict HybridZ solver path
+            reads its ``hybridz`` sub-config when present.
 
     Returns:
         ``List[VerifyResult]`` of length ``B`` (one per input lane). Each
@@ -493,8 +808,22 @@ def verify_once(
     # path remains authoritative for the LP-feeding TFs (interval/hybridz).
     # ``ensure_active_tf`` still self-heals the TF default for interval/hybridz
     # callers; ``is_dual_solver_active`` reads the orthogonal solver-mode global.
-    from act.back_end.transfer_functions import ensure_active_tf, is_dual_solver_active
-    active_tf = ensure_active_tf("interval")
+    from act.back_end.transfer_functions import (
+        ensure_active_tf,
+        is_dual_solver_active,
+        is_hybridz_solver_active,
+        set_transfer_function_mode,
+    )
+    hybridz_solver = is_hybridz_solver_active()
+    if hybridz_solver:
+        set_transfer_function_mode("hybridz")
+    active_tf = ensure_active_tf("hybridz" if hybridz_solver else "interval")
+    hz_cfg = getattr(backend_cfg, "hybridz", None) if hybridz_solver else None
+    hz_profile = _hybridz_profile_from_cfg(hz_cfg) if hybridz_solver else None
+    hz_engine = getattr(hz_cfg, "engine", "dense_hz_objbound") if hybridz_solver else None
+    sparse_hz_engine = hz_engine in {"sparse_hz", "sparse_hz_objbound"}
+    if hybridz_solver and hasattr(active_tf, "enable_sparse_hz"):
+        active_tf.enable_sparse_hz(bool(sparse_hz_engine and B == 1))
 
     if is_dual_solver_active():
         from act.back_end.solver.solver_dual import DualSolver
@@ -527,7 +856,15 @@ def verify_once(
     # 2. Build entry_fact (with all INPUT_SPEC constraints) and analyze.
     entry_fact = Fact(bounds=seed_bounds, cons=ConSet())
     add_all_input_specs(entry_fact.cons, input_ids, spec_layers)
-    _before, after, _globalC = analyze(net, entry_id, entry_fact)
+    profile_old_values = (
+        _apply_hybridz_tf_profile(active_tf, hz_profile, hz_cfg)
+        if hybridz_solver else []
+    )
+    try:
+        _before, after, _globalC = analyze(net, entry_id, entry_fact)
+    finally:
+        if profile_old_values:
+            _restore_hybridz_tf_profile(active_tf, profile_old_values)
 
     # 3. Pull output bounds (pre-ASSERT layer's Fact).
     output_bounds = _get_output_layer_bounds(net, after)
@@ -565,6 +902,167 @@ def verify_once(
         f"verify_once: ASSERT params['thresholds'].shape="
         f"{tuple(thresholds.shape)} expected ({B}, {M})"
     )
+
+    if hybridz_solver:
+        meta: Dict[str, Any] = {
+            "solver": "hybridz",
+            "B": B,
+            "M": M,
+            "engine": hz_engine,
+        }
+        meta.update(_hybridz_profile_metadata(hz_profile))
+        meta.update(_hybridz_config_metadata(hz_cfg))
+        if getattr(hz_cfg, "bench", None):
+            meta["bench"] = hz_cfg.bench
+        if B != 1:
+            return [
+                VerifyResult(
+                    VerifyStatus.UNKNOWN,
+                    metadata={**meta, "lane": i, "reason": "hybridz_batched_not_supported"},
+                )
+                for i in range(B)
+            ]
+        output_layer_id = _get_output_layer_id(net)
+        hz = None
+        sparse_drop_reason = None
+        if sparse_hz_engine and hasattr(active_tf, "get_sparse_hz"):
+            hz = active_tf.get_sparse_hz(output_layer_id)
+            if hz is not None:
+                meta.update({
+                    "engine": "sparse_hz_objbound",
+                    "sparse_source": "propagated",
+                    "sparse_value_nnz": getattr(hz, "value_nnz", None),
+                    "sparse_constraint_nnz": getattr(hz, "constraint_nnz", None),
+                })
+            if hz is None and hasattr(active_tf, "sparse_drop_reason"):
+                sparse_drop_reason = active_tf.sparse_drop_reason(output_layer_id)
+        dense_hz = active_tf.get_hz(output_layer_id) if hasattr(active_tf, "get_hz") else None
+        if hz is None:
+            hz = dense_hz
+        if hz is None:
+            reason = "hybridz_representation_drop"
+            if sparse_hz_engine and sparse_drop_reason:
+                reason = f"hybridz_sparse_drop:{sparse_drop_reason}"
+            return [
+                VerifyResult(
+                    VerifyStatus.UNKNOWN,
+                    metadata={**meta, "lane": 0, "reason": reason},
+                )
+            ]
+        if sparse_hz_engine and hz is dense_hz:
+            from act.back_end.solver.sparse_hz import SparseHZono
+
+            hz = SparseHZono.from_dense_hz(hz)
+            meta.update({
+                "engine": "sparse_hz_objbound",
+                "sparse_source": "dense_conversion",
+                "sparse_drop_reason": sparse_drop_reason,
+            })
+        from act.back_end.solver.solver_hz_verdict import hz_base_feasibility, hz_objbound_decide
+
+        env_timeout: Optional[float] = None
+        try:
+            if os.environ.get("HZ_VERIFY_TIMEOUT"):
+                env_timeout = float(os.environ["HZ_VERIFY_TIMEOUT"])
+        except ValueError:
+            env_timeout = None
+        fallback_timeout = env_timeout
+        if fallback_timeout is None and backend_cfg is not None:
+            fallback_timeout = getattr(backend_cfg, "timeout", None)
+        hz_timeout = _hybridz_profiled_timeout(hz_cfg, fallback_timeout)
+        with _hybridz_solver_profile_env(hz_profile):
+            base_status, base_msg = hz_base_feasibility(hz, time_limit=min(float(hz_timeout), 10.0))
+        meta.update({
+            "hz_base_feasible": base_status,
+            "hz_base_feas_msg": base_msg,
+        })
+        if base_status != "FEASIBLE":
+            meta["reason"] = "hybridz_base_hz_not_feasible"
+            return [VerifyResult(VerifyStatus.UNKNOWN, metadata=meta)]
+        with _hybridz_solver_profile_env(hz_profile):
+            verdict, witness = hz_objbound_decide(
+                hz,
+                C.detach().cpu().numpy(),
+                thresholds.detach().cpu().numpy(),
+                is_unsafe_linear=is_unsafe_linear,
+                time_limit=hz_timeout,
+            )
+        meta.update({
+            "lane": 0,
+            "hz_verdict": verdict,
+            "hz_timeout_s": hz_timeout,
+            "hz_has_witness": witness is not None,
+            "hz_witness_source": getattr(hz, "_solver_last_witness_source", None),
+        })
+        if verdict == "SAFE":
+            return [VerifyResult(VerifyStatus.CERTIFIED, metadata=meta)]
+        if verdict == "UNSAFE":
+            replay_ok, counterexample, replay_reason = _hybridz_replay_witness(
+                hz=hz,
+                witness=witness,
+                seed_bounds=seed_bounds,
+                active_tf=active_tf,
+                model_fn=model_fn,
+                C=C,
+                thresholds=thresholds,
+                M=M,
+                n_out=n_out,
+                is_unsafe_linear=is_unsafe_linear,
+            )
+            meta["witness_replay"] = replay_reason
+            if replay_ok:
+                return [
+                    VerifyResult(
+                        VerifyStatus.FALSIFIED,
+                        counterexample=counterexample,
+                        metadata=meta,
+                    )
+                ]
+            if (
+                meta.get("hz_witness_source") == "base_hz_witness"
+                and model_fn is not None
+            ):
+                with _hybridz_solver_profile_env(hz_profile):
+                    fallback_verdict, fallback_witness = hz_objbound_decide(
+                        hz,
+                        C.detach().cpu().numpy(),
+                        thresholds.detach().cpu().numpy(),
+                        is_unsafe_linear=is_unsafe_linear,
+                        time_limit=hz_timeout,
+                        base_witness_precheck=False,
+                    )
+                meta.update({
+                    "hz_base_witness_replay_failed": replay_reason,
+                    "hz_fallback_verdict": fallback_verdict,
+                    "hz_fallback_witness_source": getattr(hz, "_solver_last_witness_source", None),
+                    "hz_has_fallback_witness": fallback_witness is not None,
+                })
+                if fallback_verdict == "UNSAFE":
+                    replay_ok, counterexample, replay_reason = _hybridz_replay_witness(
+                        hz=hz,
+                        witness=fallback_witness,
+                        seed_bounds=seed_bounds,
+                        active_tf=active_tf,
+                        model_fn=model_fn,
+                        C=C,
+                        thresholds=thresholds,
+                        M=M,
+                        n_out=n_out,
+                        is_unsafe_linear=is_unsafe_linear,
+                    )
+                    meta["witness_replay"] = replay_reason
+                    if replay_ok:
+                        return [
+                            VerifyResult(
+                                VerifyStatus.FALSIFIED,
+                                counterexample=counterexample,
+                                metadata=meta,
+                            )
+                        ]
+            meta["reason"] = "hybridz_unsafe_witness_not_replayed"
+        else:
+            meta["reason"] = "hybridz_verdict_unknown"
+        return [VerifyResult(VerifyStatus.UNKNOWN, metadata=meta)]
 
     C_pos = C.clamp(min=0)
     C_neg = C.clamp(max=0)
@@ -847,6 +1345,128 @@ def _make_dense_net_box_test(  # pragma: no cover
     return Net(layers=layers, preds=preds, succs=succs)
 
 
+def _make_zero_indegree_source_add_net(  # pragma: no cover
+    *,
+    dtype: torch.dtype,
+    device: torch.device,
+) -> Net:
+    """Small graph with a model source branch that reads the network input.
+
+    ONNX conversion can produce this topology for residual/branched models:
+    one branch is rooted at ``INPUT_SPEC`` while another model layer has no ACT
+    predecessor but still semantically consumes the original input tensor.
+    """
+    from act.back_end.core import Layer, Net
+    from act.front_end.specs import OutputSpec
+
+    B, n_in = 1, 2
+    in_v = [0, 1]
+    main_v = [2]
+    source_v = [3]
+    add_v = [4]
+    weight = torch.tensor([[1.0, 0.0]], device=device, dtype=dtype)
+    bias = torch.zeros(1, device=device, dtype=dtype)
+    lb = torch.tensor([[0.0, -1.0]], device=device, dtype=dtype)
+    ub = torch.tensor([[1.0, 1.0]], device=device, dtype=dtype)
+    encoded = OutputSpec(
+        kind=OutKind.LINEAR_LE,
+        c=torch.ones(1, device=device, dtype=dtype),
+        d=torch.tensor(3.0, device=device, dtype=dtype),
+    ).encode_linear(B=B, n_out=1, device=device, dtype=dtype)
+
+    def dense_layer(layer_id: int, out_vars: list[int]) -> Layer:
+        return Layer(
+            id=layer_id,
+            kind=LayerKind.DENSE.value,
+            params={
+                "weight": weight,
+                "in_features": n_in,
+                "out_features": 1,
+                "weight_pos": weight.clamp(min=0),
+                "weight_neg": weight.clamp(max=0),
+                "bias": bias,
+                "input_shape": (n_in,),
+                "output_shape": (1,),
+            },
+            in_vars=in_v,
+            out_vars=out_vars,
+        )
+
+    layers = [
+        Layer(
+            id=0,
+            kind=LayerKind.INPUT.value,
+            params={"shape": (B, n_in), "dtype": str(dtype)},
+            in_vars=[],
+            out_vars=in_v,
+        ),
+        Layer(
+            id=1,
+            kind=LayerKind.INPUT_SPEC.value,
+            params={"kind": "BOX", "lb": lb, "ub": ub},
+            in_vars=in_v,
+            out_vars=in_v,
+        ),
+        dense_layer(2, main_v),
+        dense_layer(3, source_v),
+        Layer(
+            id=4,
+            kind=LayerKind.ADD.value,
+            params={
+                "x_vars": main_v,
+                "y_vars": source_v,
+                "input_shape": (1,),
+                "output_shape": (1,),
+            },
+            in_vars=main_v + source_v,
+            out_vars=add_v,
+        ),
+        Layer(
+            id=5,
+            kind=LayerKind.ASSERT.value,
+            params=encoded,
+            in_vars=add_v,
+            out_vars=add_v,
+        ),
+    ]
+    preds = {0: [], 1: [0], 2: [1], 3: [], 4: [2, 3], 5: [4]}
+    succs = {0: [1], 1: [2], 2: [4], 3: [4], 4: [5], 5: []}
+    return Net(layers=layers, preds=preds, succs=succs)
+
+
+def _test_hybridz_zero_indegree_source_uses_entry_fact() -> None:  # pragma: no cover
+    from act.back_end.analyze import analyze
+    from act.back_end.transfer_functions import set_transfer_function_mode
+    from act.util.device_manager import get_default_device, get_default_dtype
+
+    device = get_default_device()
+    dtype = get_default_dtype()
+    net = _make_zero_indegree_source_add_net(dtype=dtype, device=device)
+    spec_layer = net.by_id[1]
+    entry_fact = Fact(
+        bounds=Bounds(
+            spec_layer.params["lb"].clone(),
+            spec_layer.params["ub"].clone(),
+        ),
+        cons=ConSet(),
+    )
+    add_all_input_specs(entry_fact.cons, get_input_ids(net), [spec_layer])
+
+    set_transfer_function_mode("hybridz")
+    try:
+        _before, after, _globalC = analyze(net, 0, entry_fact)
+    finally:
+        set_transfer_function_mode("interval")
+
+    source_bounds = after[3].bounds
+    add_bounds = after[4].bounds
+    assert tuple(source_bounds.lb.shape) == (1, 1)
+    assert torch.allclose(source_bounds.lb, torch.zeros_like(source_bounds.lb))
+    assert torch.allclose(source_bounds.ub, torch.ones_like(source_bounds.ub))
+    assert torch.allclose(add_bounds.lb, torch.zeros_like(add_bounds.lb))
+    assert torch.allclose(add_bounds.ub, torch.full_like(add_bounds.ub, 2.0))
+
+
 
 def _test_setup_and_solve_batch_b1_smoke() -> None:  # pragma: no cover
     from act.back_end.solver.solver_torchlp import TorchLPSolver
@@ -1026,15 +1646,120 @@ def _test_verify_once_b8_mixed_outcomes() -> None:  # pragma: no cover
     )
 
 
+def _test_hybridz_witness_replay_gate() -> None:  # pragma: no cover
+    from act.back_end.config import BackendConfig
+    from act.back_end.solver.solver_hz import hz_from_bounds
+    from act.back_end.solver.sparse_hz import SparseHZono
+    from act.back_end.solver.solver_hz_verdict import _HAS_HIGHSPY, _HAS_SCIPY
+    from act.back_end.transfer_functions import (
+        get_solver_mode,
+        get_transfer_function,
+        set_solver_mode,
+    )
+    from act.util.stats import VerifyStatus
+
+    if not (_HAS_HIGHSPY and _HAS_SCIPY):
+        return
+
+    old_solver = get_solver_mode()
+    try:
+        set_solver_mode("hybridz")
+        device = torch.device("cpu")
+        dtype = torch.float64
+        net = _make_dense_net_box_test(
+            B=1,
+            n_in=1,
+            n_out=1,
+            weight=torch.ones(1, 1, device=device, dtype=dtype),
+            bias=torch.zeros(1, device=device, dtype=dtype),
+            lb_in=torch.tensor([[-1.0]], device=device, dtype=dtype),
+            ub_in=torch.tensor([[1.0]], device=device, dtype=dtype),
+            assert_params={
+                "kind": OutKind.LINEAR_LE,
+                "c": torch.ones(1, device=device, dtype=dtype),
+                "d": torch.tensor(0.0, device=device, dtype=dtype),
+            },
+        )
+        for engine in ("dense_hz_objbound", "sparse_hz_objbound"):
+            cfg = BackendConfig.from_yaml(
+                solver="hybridz",
+                hybridz_timeout=5.0,
+                hybridz_engine=engine,
+            )
+
+            no_replay = verify_once(net, backend_cfg=cfg)[0]
+            assert no_replay.status == VerifyStatus.UNKNOWN, (
+                f"{engine}: HZ-unsafe without replay must remain UNKNOWN, "
+                f"got {no_replay.status}"
+            )
+            assert no_replay.metadata.get("hz_verdict") == "UNSAFE"
+
+            with_replay = verify_once(net, model_fn=lambda x: x, backend_cfg=cfg)[0]
+            assert with_replay.status == VerifyStatus.FALSIFIED, (
+                f"{engine}: expected replayed HZ witness to be FALSIFIED, "
+                f"got {with_replay.status} meta={with_replay.metadata}"
+            )
+            assert with_replay.counterexample is not None
+            assert float(with_replay.counterexample.reshape(-1)[0]) >= 0.0
+            assert with_replay.metadata.get("hz_witness_source") == "base_hz_witness"
+            replay_reason = with_replay.metadata.get("witness_replay", "")
+            assert "model_fn_replay_unsafe" in replay_reason
+            expected_replay_source = (
+                "sparse_input_metadata"
+                if engine == "sparse_hz_objbound"
+                else "dense_col_ids"
+            )
+            assert expected_replay_source in replay_reason, (
+                f"{engine}: expected replay source {expected_replay_source}, "
+                f"got {replay_reason}"
+            )
+
+        seed = Bounds(
+            lb=torch.tensor([[-1.0]], device=device, dtype=dtype),
+            ub=torch.tensor([[1.0]], device=device, dtype=dtype),
+        )
+        dense_hz = hz_from_bounds(seed, dtype, device, track_ids=True)
+        sparse_from_dense = SparseHZono.from_dense_hz(dense_hz)
+        assert sparse_from_dense.col_ids is not None
+        replay_x, replay_source = _hybridz_witness_input(
+            sparse_from_dense,
+            np.array([1.0], dtype=np.float64),
+            seed,
+            type("_FakeHybridZTF", (), {"_input_ids": dense_hz.col_ids})(),
+        )
+        assert replay_source == "dense_col_ids"
+        assert replay_x is not None
+        assert float(replay_x.reshape(-1)[0]) == 1.0
+
+        old_cutoff = os.environ.pop("HZ_MILP_CUTOFF_ROW", None)
+        try:
+            cfg = BackendConfig.from_yaml(
+                solver="hybridz",
+                hybridz_bench="sat_relu",
+                hybridz_timeout=5.0,
+                hybridz_engine="dense_hz_objbound",
+            )
+            profiled = verify_once(net, model_fn=lambda x: x, backend_cfg=cfg)[0]
+            assert profiled.metadata.get("bench") == "sat_relu"
+            assert profiled.metadata.get("profile_cutoff_row") is True
+            assert os.environ.get("HZ_MILP_CUTOFF_ROW") is None
+            assert not hasattr(get_transfer_function(), "_relu_compressed")
+        finally:
+            if old_cutoff is not None:
+                os.environ["HZ_MILP_CUTOFF_ROW"] = old_cutoff
+    finally:
+        set_solver_mode(old_solver)
+
+
 def _test_verify_lp_batched_multi_b1() -> None:  # pragma: no cover
     from act.back_end.serialization.serialization import load_net_from_file
     from act.back_end.solver.solver_torchlp import TorchLPSolver
     from act.util.stats import VerifyStatus
 
-    net = load_net_from_file(
-        "act/back_end/examples/nets/layer_testing_top1_robust.json",
-        target_device="cpu",
-    )
+    fixture = "act/back_end/examples/nets/layer_testing_top1_robust.json"
+    if not os.path.exists(fixture):
+        return
+    net = load_net_from_file(fixture, target_device="cpu")
     results = verify_lp_batched(net, TorchLPSolver, timelimit=1.0)
     valid = {VerifyStatus.CERTIFIED, VerifyStatus.FALSIFIED, VerifyStatus.UNKNOWN}
     assert len(results) == 1, f"expected one result, got {len(results)}"
@@ -1078,8 +1803,10 @@ _TESTS = [  # pragma: no cover
     _test_interval_margin_certification_shape,
     _test_setup_and_solve_batch_b1_smoke,
     _test_setup_and_solve_batch_b_greater_than_1,
+    _test_hybridz_zero_indegree_source_uses_entry_fact,
     _test_verify_once_b3_all_certified,
     _test_verify_once_b8_mixed_outcomes,
+    _test_hybridz_witness_replay_gate,
     _test_verify_lp_batched_multi_b1,
     _test_verify_lp_batched_batch_b4,
 ]

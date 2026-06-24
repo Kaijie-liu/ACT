@@ -14,9 +14,11 @@ import argparse
 from contextlib import contextmanager
 from copy import deepcopy
 import logging
+import os
 from pathlib import Path
 from typing import Any, List, Optional
 import sys
+import time
 import torch
 
 from act.util.cli_utils import add_device_args, initialize_from_args
@@ -50,6 +52,94 @@ def print_header():
     print(f"ACT: Abstract Constraint Transformer")
     print(f"Inference-based whitebox fuzzing for neural network verification")
     print(f"{'=' * 80}\n")
+
+
+def _apply_hybridz_rlimit_from_env() -> None:
+    """Apply per-worker memory cap for HybridZ benchmark subprocesses.
+
+    The mainline HybridZ benchmark runner sets ACT_HYBRIDZ_RLIMIT_AS_GB from
+    the benchmark-wide profile.  Applying the cap inside the child process keeps
+    the runner thread-safe while preserving the old scripts' per-instance memory
+    isolation behavior.
+    """
+
+    raw = os.environ.get("ACT_HYBRIDZ_RLIMIT_AS_GB")
+    if not raw:
+        return
+    try:
+        mem_gb = float(raw)
+    except ValueError as exc:
+        raise ValueError(f"invalid ACT_HYBRIDZ_RLIMIT_AS_GB={raw!r}") from exc
+    if mem_gb <= 0:
+        return
+    try:
+        import resource
+    except ImportError:
+        logger.debug("resource module unavailable; skipping HybridZ RLIMIT_AS")
+        return
+    cap = int(mem_gb * 1024**3)
+    _, hard = resource.getrlimit(resource.RLIMIT_AS)
+    if hard not in (-1, getattr(resource, "RLIM_INFINITY", -1)):
+        cap = min(cap, int(hard))
+    resource.setrlimit(resource.RLIMIT_AS, (cap, cap))
+
+
+def _hybridz_replay_model_fn(vm):
+    """Return the raw network forward used to audit HybridZ witnesses."""
+
+    model = vm.model
+
+    def _torch_fn(x: torch.Tensor) -> torch.Tensor:
+        ref = next(model.parameters(), None)
+        if ref is None:
+            ref = next(model.buffers(), None)
+        if ref is not None:
+            x = x.to(device=ref.device, dtype=ref.dtype)
+        return model(x)
+
+    onnx_path = getattr(vm, "_act_onnx_path", None)
+    if onnx_path:
+        session_box = {"sess": None, "input_name": None, "input_dtype": None}
+
+        def _ort_dtype(typ: str):
+            import numpy as np
+
+            if "double" in typ:
+                return np.float64
+            if "float16" in typ:
+                return np.float16
+            if "float" in typ:
+                return np.float32
+            return np.float32
+
+        def _onnx_fn(x: torch.Tensor) -> torch.Tensor:
+            import numpy as np
+            import onnxruntime as ort
+
+            if session_box["sess"] is None:
+                sess = ort.InferenceSession(
+                    str(onnx_path),
+                    providers=["CPUExecutionProvider"],
+                )
+                inp = sess.get_inputs()[0]
+                session_box.update({
+                    "sess": sess,
+                    "input_name": inp.name,
+                    "input_dtype": _ort_dtype(str(inp.type)),
+                })
+            x_np = x.detach().cpu().numpy().astype(session_box["input_dtype"], copy=False)
+            out = session_box["sess"].run(None, {session_box["input_name"]: x_np})[0]
+            return torch.as_tensor(np.asarray(out), device=x.device)
+
+        def _fn(x: torch.Tensor) -> torch.Tensor:
+            try:
+                return _onnx_fn(x)
+            except Exception:
+                return _torch_fn(x)
+
+        return _fn
+
+    return _torch_fn
 
 
 # ============================================================================
@@ -543,6 +633,41 @@ def _print_soundness_summary(summary: dict[str, Any]) -> None:
     )
 
 
+def _hybridz_cli_overrides(args, bench: str) -> dict[str, object]:
+    """Collect strict HybridZ CLI knobs for ``BackendConfig.from_yaml``."""
+
+    overrides: dict[str, object] = {"solver": "hybridz", "hybridz_bench": bench}
+    scalar_flags = (
+        ("hybridz_timeout", "hybridz_timeout"),
+        ("hybridz_engine", "hybridz_engine"),
+        ("hybridz_sigmoid_k", "hybridz_sigmoid_k"),
+        ("hybridz_tanh_k", "hybridz_tanh_k"),
+        ("hybridz_cell_budget", "hybridz_cell_budget"),
+    )
+    for attr, key in scalar_flags:
+        val = getattr(args, attr, None)
+        if val is not None:
+            overrides[key] = val
+
+    bool_flags = (
+        ("hybridz_scurve_domain_cuts", "hybridz_scurve_domain_cuts"),
+        ("hybridz_scurve_graph_cuts", "hybridz_scurve_graph_cuts"),
+        ("hybridz_compressed_relu", "hybridz_compressed_relu"),
+        ("hybridz_relu_valid_cuts", "hybridz_relu_valid_cuts"),
+    )
+    for attr, key in bool_flags:
+        if getattr(args, attr, False):
+            overrides[key] = True
+    return overrides
+
+
+def _hybridz_explicit_max_instances_arg(argv: Optional[List[str]] = None) -> bool:
+    """Return whether the user explicitly passed ``--max-instances``."""
+
+    tokens = sys.argv[1:] if argv is None else argv
+    return any(arg == "--max-instances" or arg.startswith("--max-instances=") for arg in tokens)
+
+
 def _run_vnnlib_verify(args) -> bool:
     """Drive ``verify_once`` over a VNNLIB benchmark end-to-end.
 
@@ -574,12 +699,30 @@ def _run_vnnlib_verify(args) -> bool:
 
     set_solver_mode(solver)
     if solver != "dual":
+        if solver == "hybridz":
+            tf_mode = "hybridz"
         set_transfer_function_mode(tf_mode)
     label = solver if solver == "dual" else f"{tf_mode}/{solver}"
     print(f"[vnnlib] category={args.category} max_instances={args.max_instances} mode={label}")
+    backend_cfg = None
+    hybridz_recorder = None
+    if solver == "hybridz":
+        from act.back_end.config import BackendConfig
+        from act.pipeline.hybridz_results import HybridZRunRecorder
 
+        backend_cfg = BackendConfig.from_yaml(
+            **_hybridz_cli_overrides(args, args.category)
+        )
+        if getattr(args, "hybridz_results_dir", None):
+            hybridz_recorder = HybridZRunRecorder(args.category)
+
+    instance_indices = None
+    if getattr(args, "instance_index", None) is not None:
+        instance_indices = [int(args.instance_index)]
     spec_results = VNNLibSpecCreator().create_specs_for_data_model_pairs(
-        categories=[args.category], max_instances=args.max_instances,
+        categories=[args.category],
+        max_instances=args.max_instances,
+        instance_indices=instance_indices,
     )
     if not spec_results:
         raise RuntimeError(f"VNNLibSpecCreator produced no spec_results for category={args.category!r}")
@@ -601,7 +744,12 @@ def _run_vnnlib_verify(args) -> bool:
             label = f"BaB[{args.bab_solver_tier}]"
             print(f"  {tag}: {label} → {status}")
         else:
-            results = verify_once(net)
+            model_fn = _hybridz_replay_model_fn(vm) if solver == "hybridz" else None
+            t_verify = time.time()
+            results = verify_once(net, model_fn=model_fn, backend_cfg=backend_cfg)
+            verify_wall_s = time.time() - t_verify
+            if hybridz_recorder is not None:
+                hybridz_recorder.add_results(tag, results, wall_s=verify_wall_s)
             statuses = [r.status.name for r in results]
             print(f"  {tag}: {statuses}")
             if args.validate_soundness:
@@ -609,6 +757,11 @@ def _run_vnnlib_verify(args) -> bool:
                 soundness_summary = _run_soundness_check(
                     tag, vm, net, results, validator, solver
                 )
+
+    if hybridz_recorder is not None:
+        detail_path, summary_path = hybridz_recorder.write(args.hybridz_results_dir)
+        print(f"[hybridz] wrote detail CSV: {detail_path}")
+        print(f"[hybridz] wrote summary CSV: {summary_path}")
 
     if args.validate_soundness:
         assert validator is not None and soundness_summary is not None
@@ -775,6 +928,8 @@ def _run_torchvision_verify(args) -> bool:
 
     set_solver_mode(solver)
     if solver != "dual":
+        if solver == "hybridz":
+            tf_mode = "hybridz"
         set_transfer_function_mode(tf_mode)
     label = solver if solver == "dual" else f"{tf_mode}/{solver}"
     model_label = args.model or "<all>"
@@ -782,6 +937,17 @@ def _run_torchvision_verify(args) -> bool:
         f"[torchvision] dataset={args.dataset} model={model_label} "
         f"num_samples={args.num_samples} mode={label}"
     )
+    backend_cfg = None
+    hybridz_recorder = None
+    if solver == "hybridz":
+        from act.back_end.config import BackendConfig
+        from act.pipeline.hybridz_results import HybridZRunRecorder
+
+        backend_cfg = BackendConfig.from_yaml(
+            **_hybridz_cli_overrides(args, args.dataset)
+        )
+        if getattr(args, "hybridz_results_dir", None):
+            hybridz_recorder = HybridZRunRecorder(args.dataset)
 
     spec_results = TorchVisionSpecCreator().create_specs_for_data_model_pairs(
         dataset_names=[args.dataset],
@@ -820,7 +986,12 @@ def _run_torchvision_verify(args) -> bool:
     for mid, vm in wrapped.items():
         tag = "/".join(str(p) for p in mid)
         net = TorchToACT(vm).run()
-        results = verify_once(net)
+        model_fn = _hybridz_replay_model_fn(vm) if solver == "hybridz" else None
+        t_verify = time.time()
+        results = verify_once(net, model_fn=model_fn, backend_cfg=backend_cfg)
+        verify_wall_s = time.time() - t_verify
+        if hybridz_recorder is not None:
+            hybridz_recorder.add_results(tag, results, wall_s=verify_wall_s)
         statuses = [r.status.name for r in results]
         print(f"  {tag}: {statuses}")
         if args.validate_soundness:
@@ -828,6 +999,11 @@ def _run_torchvision_verify(args) -> bool:
             soundness_summary = _run_soundness_check(
                 tag, vm, net, results, validator, solver
             )
+
+    if hybridz_recorder is not None:
+        detail_path, summary_path = hybridz_recorder.write(args.hybridz_results_dir)
+        print(f"[hybridz] wrote detail CSV: {detail_path}")
+        print(f"[hybridz] wrote summary CSV: {summary_path}")
 
     if args.validate_soundness:
         assert validator is not None and soundness_summary is not None
@@ -885,6 +1061,74 @@ def cmd_verify(target: str, args):
             try:
                 soundness_failed = _run_vnnlib_verify(args)
                 results[test_name] = "FAILED" if soundness_failed else "PASSED"
+            except Exception as e:
+                print(f"\n❌ Test failed: {e}")
+                import traceback
+
+                traceback.print_exc()
+                results[test_name] = "FAILED"
+
+        elif test_name == "hybridz-benchmark":
+            print(f"VERIFICATION TEST: HybridZ benchmark runner")
+            print(f"{'=' * 80}\n")
+            try:
+                if not args.category:
+                    raise ValueError("--verify hybridz-benchmark requires --category")
+                from act.pipeline.hybridz_benchmark_runner import (
+                    HybridZBenchmarkConfig,
+                    HybridZBenchmarkSuiteConfig,
+                    resolve_hybridz_benchmark_categories,
+                    run_hybridz_benchmark,
+                    run_hybridz_benchmark_suite,
+                )
+
+                out_dir = Path(
+                    args.hybridz_results_dir
+                    or f"hybridz_results/{args.category}"
+                )
+                benches = resolve_hybridz_benchmark_categories(args.category)
+                if args.hybridz_require_frozen_match and _hybridz_explicit_max_instances_arg():
+                    raise ValueError(
+                        "--hybridz-require-frozen-match requires a full frozen suite; "
+                        "do not pass --max-instances"
+                    )
+                if len(benches) == 1:
+                    if args.hybridz_require_frozen_match:
+                        raise ValueError(
+                            "--hybridz-require-frozen-match requires --category frozen"
+                        )
+                    cfg = HybridZBenchmarkConfig(
+                        bench=benches[0],
+                        out_dir=out_dir,
+                        max_instances=args.max_instances,
+                        workers=args.hybridz_workers,
+                        timeout_cap_s=args.hybridz_timeout_cap,
+                        device=args.device,
+                        dtype=args.dtype,
+                    )
+                    detail_path, summary_path, run_rows = run_hybridz_benchmark(cfg)
+                else:
+                    suite_max_instances = (
+                        None if args.hybridz_require_frozen_match else args.max_instances
+                    )
+                    cfg = HybridZBenchmarkSuiteConfig(
+                        benches=benches,
+                        out_dir=out_dir,
+                        max_instances=suite_max_instances,
+                        workers=args.hybridz_workers,
+                        timeout_cap_s=args.hybridz_timeout_cap,
+                        device=args.device,
+                        dtype=args.dtype,
+                        require_frozen_match=args.hybridz_require_frozen_match,
+                    )
+                    detail_path, summary_path, run_rows = run_hybridz_benchmark_suite(cfg)
+                print(
+                    f"[hybridz-benchmark] completed {len(run_rows)} instance(s) "
+                    f"across {len(benches)} benchmark(s)"
+                )
+                print(f"[hybridz-benchmark] detail CSV: {detail_path}")
+                print(f"[hybridz-benchmark] summary CSV: {summary_path}")
+                results[test_name] = "PASSED"
             except Exception as e:
                 print(f"\n❌ Test failed: {e}")
                 import traceback
@@ -1064,12 +1308,12 @@ Examples:
   # Run verifier on a VNNLIB benchmark end-to-end (load → ACT → verify_once).
   # Single (tf, solver) per invocation; matrix sweeps by repeated calls.
   python -m act.pipeline --verify vnnlib --category acasxu_2023 --max-instances 3 --tf-modes interval --solvers torchlp
-  python -m act.pipeline --verify vnnlib --category acasxu_2023 --max-instances 3 --tf-modes hybridz --solvers torchlp
+  python -m act.pipeline --verify vnnlib --category acasxu_2023 --max-instances 3 --solvers hybridz
   python -m act.pipeline --verify vnnlib --category acasxu_2023 --max-instances 3                          --solvers dual
 
   # Run verifier on a TorchVision dataset-model pair end-to-end.
   python -m act.pipeline --verify torchvision --dataset MNIST --model simple_cnn --num-samples 2 --tf-modes interval --solvers torchlp
-  python -m act.pipeline --verify torchvision --dataset MNIST --model simple_cnn --num-samples 2 --tf-modes hybridz  --solvers torchlp
+  python -m act.pipeline --verify torchvision --dataset MNIST --model simple_cnn --num-samples 2                     --solvers hybridz
   python -m act.pipeline --verify torchvision --dataset MNIST --model simple_cnn --num-samples 2                     --solvers dual
   
   # Run verifier validation (comprehensive by default)
@@ -1108,9 +1352,9 @@ Examples:
         "--verify",
         type=str,
         metavar="TARGET",
-        choices=["act2torch", "torch2act", "vnnlib", "torchvision", "all"],
+        choices=["act2torch", "torch2act", "vnnlib", "torchvision", "hybridz-benchmark", "all"],
         help="Run verification tests: act2torch, torch2act, vnnlib, torchvision, "
-        "or all. The 'vnnlib' target runs the verifier on a VNNLIB benchmark "
+        "hybridz-benchmark, or all. The 'vnnlib' target runs the verifier on a VNNLIB benchmark "
         "end-to-end (requires --category); 'torchvision' does the same for a "
         "TorchVision dataset-model pair (requires --dataset, optionally --model). "
         "Both read the FIRST element of --tf-modes / --solvers (single mode per "
@@ -1342,13 +1586,96 @@ Examples:
         "--solvers",
         nargs="+",
         default=["gurobi", "torchlp"],
-        help="Solvers for Level 1 validation (default: gurobi torchlp)",
+        help=(
+            "Solvers for Level 1 validation / verifier runs "
+            "(default: gurobi torchlp; hybridz selects the strict HybridZ verdict path)"
+        ),
     )
     validation_group.add_argument(
         "--tf-modes",
         nargs="+",
         default=["interval"],
         help="Transfer function modes for Level 2 bounds validation: interval, hybridz, dual (default: interval)",
+    )
+    validation_group.add_argument(
+        "--hybridz-timeout",
+        type=float,
+        default=None,
+        help="Override the strict HybridZ verdict timeout for --solvers hybridz.",
+    )
+    validation_group.add_argument(
+        "--hybridz-engine",
+        type=str,
+        choices=["dense_hz_objbound", "sparse_hz_objbound"],
+        default=None,
+        help="Strict HybridZ verdict engine for --solvers hybridz.",
+    )
+    validation_group.add_argument(
+        "--hybridz-sigmoid-k",
+        type=int,
+        default=None,
+        help="Override sparse/dense HybridZ sigmoid segments per side.",
+    )
+    validation_group.add_argument(
+        "--hybridz-tanh-k",
+        type=int,
+        default=None,
+        help="Override sparse/dense HybridZ tanh segments per side.",
+    )
+    validation_group.add_argument(
+        "--hybridz-scurve-domain-cuts",
+        action="store_true",
+        help="Enable default-off exact-valid S-curve domain/range cuts.",
+    )
+    validation_group.add_argument(
+        "--hybridz-scurve-graph-cuts",
+        action="store_true",
+        help="Enable default-off exact-valid S-curve graph cuts.",
+    )
+    validation_group.add_argument(
+        "--hybridz-compressed-relu",
+        action="store_true",
+        help="Enable exact compressed/projected ReLU construction.",
+    )
+    validation_group.add_argument(
+        "--hybridz-relu-valid-cuts",
+        action="store_true",
+        help="Enable exact-valid ReLU cuts when the HZ profile allows their cost.",
+    )
+    validation_group.add_argument(
+        "--hybridz-cell-budget",
+        type=int,
+        default=None,
+        help="Override the HybridZ dense-cell carry budget before UNKNOWN/drop guards.",
+    )
+    validation_group.add_argument(
+        "--hybridz-results-dir",
+        type=str,
+        default=None,
+        help=(
+            "Optional directory for strict HybridZ frontend detail/summary CSVs "
+            "when running --verify vnnlib/torchvision --solvers hybridz."
+        ),
+    )
+    validation_group.add_argument(
+        "--hybridz-workers",
+        type=int,
+        default=None,
+        help="Worker count for --verify hybridz-benchmark. Defaults to the HybridZ bench profile.",
+    )
+    validation_group.add_argument(
+        "--hybridz-timeout-cap",
+        type=float,
+        default=900.0,
+        help="Maximum per-instance official wall used by --verify hybridz-benchmark.",
+    )
+    validation_group.add_argument(
+        "--hybridz-require-frozen-match",
+        action="store_true",
+        help=(
+            "For --verify hybridz-benchmark --category frozen, fail the command "
+            "unless the produced summary exactly matches the frozen HybridZ table."
+        ),
     )
     validation_group.add_argument(
         "--input-samples",
@@ -1391,11 +1718,22 @@ Examples:
         action="store_true",
         help="After --verify vnnlib/torchvision, run concrete-counterexample soundness validation on the same instances",
     )
+    verify_group.add_argument(
+        "--instance-index",
+        type=int,
+        default=None,
+        help=(
+            "For --verify vnnlib, run only the zero-based instances.csv row. "
+            "This supports per-instance HybridZ wall-clock scheduling."
+        ),
+    )
 
     # Add standard device/dtype arguments (shared across all ACT CLIs)
     add_device_args(parser)
 
     args = parser.parse_args()
+
+    _apply_hybridz_rlimit_from_env()
 
     # Initialize device manager from CLI arguments
     initialize_from_args(args)

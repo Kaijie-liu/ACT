@@ -30,6 +30,7 @@ import logging
 
 from act.back_end.core import Net, Layer
 from act.back_end.layer_schema import LayerKind, REGISTRY
+from act.pipeline.verification.utils import _onnx_resize_torch_mode
 from act.util.device_manager import get_default_dtype, get_default_device
 
 logger = logging.getLogger(__name__)
@@ -326,6 +327,16 @@ class ActGraphModule(nn.Module):
             mode = str(layer.params.get("mode", "nearest")).lower()
             scale_factor = layer.params.get("scale_factor")
             size = layer.params.get("size")
+            spatial_rank = max(0, inputs[0].dim() - 2)
+            if size is not None and isinstance(size, (list, tuple)):
+                size = tuple(int(s) for s in size)
+                if len(size) > spatial_rank:
+                    size = size[-spatial_rank:]
+            if scale_factor is not None and isinstance(scale_factor, (list, tuple)):
+                scale_factor = tuple(float(s) for s in scale_factor)
+                if len(scale_factor) > spatial_rank:
+                    scale_factor = scale_factor[-spatial_rank:]
+            mode = _onnx_resize_torch_mode(mode, spatial_rank)
             kwargs = {"mode": mode}
             if mode != "nearest" and layer.params.get("align_corners") is not None:
                 kwargs["align_corners"] = bool(layer.params["align_corners"])
@@ -1033,3 +1044,29 @@ class ACTToTorch:
               for k, v in params.items() if isinstance(v, torch.Tensor)}
         rnn.load_state_dict(sd, strict=True)
         return rnn
+
+
+def _test_act_graph_upsample_replay_onnx_compat() -> None:
+    """UPSAMPLE replay accepts ONNX-style full-rank size and linear mode."""
+    import torch.nn.functional as F
+
+    layer = Layer(
+        id=0,
+        kind=LayerKind.UPSAMPLE.value,
+        params={
+            "mode": "linear",
+            "align_corners": False,
+            "size": (1, 3, 6, 8),
+            "input_shape": (1, 3, 3, 4),
+            "output_shape": (1, 3, 6, 8),
+        },
+        in_vars=list(range(36)),
+        out_vars=list(range(144)),
+    )
+    x = torch.arange(36, dtype=torch.float32).reshape(1, 3, 3, 4)
+    module = object.__new__(ActGraphModule)
+    got = ActGraphModule._apply_functional(module, layer, [x])
+    expected = F.interpolate(
+        x, size=(6, 8), mode="bilinear", align_corners=False,
+    )
+    assert torch.allclose(got, expected)

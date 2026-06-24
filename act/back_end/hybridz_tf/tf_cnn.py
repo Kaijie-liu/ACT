@@ -45,20 +45,27 @@ def _pair(x):
     return (int(x), int(x)) if isinstance(x, int) else (int(x[0]), int(x[1]))
 
 
-def hz_maxpool2d(hz: HZono, kernel_size, stride, padding, dilation, input_shape) -> HZono:
+def hz_maxpool2d(hz: HZono, kernel_size, stride, padding, dilation, input_shape,
+                 *, exact: bool = True, cell_budget: int | None = None) -> HZono | None:
     """MaxPool2d as a fold of pairwise maxima: max(a,b) = b + relu(a - b).
 
     The K*K window candidates of each output are gathered as HZ row-subsets
     (sharing the input factors via col_ids) and folded with hz_sub /
-    hz_apply_relu_convex / hz_sgm_add. Padding is handled by padding the HZ with a
-    constant below the real range (it can never win a max -> sound). Each pairwise
-    max uses the CONVEX (DeepZ) ReLU relaxation -- the exact binary encoding would
-    explode the MILP for a structural pooling op. This is independent of the ReLU
-    *activation*, which is always exact-only.
+    ReLU / hz_sgm_add. Padding is handled by padding the HZ with a constant below
+    the real range (it can never win a max -> sound). The backend path is
+    exact-only: pairwise max uses the same exact binary ReLU encoding as
+    activations. ``exact=False`` is accepted only for legacy call-site
+    compatibility and returns ``None`` so strict HybridZ treats the layer as an
+    unsupported representation rather than using a triangle relaxation.
     """
-    from act.back_end.hybridz_tf.tf_mlp import hz_apply_relu_convex, _hz_gather_rows
+    from act.back_end.hybridz_tf.tf_mlp import (
+        hz_apply_relu, hz_reduce, _hz_gather_rows,
+    )
     from act.back_end.hybridz_tf.algorithms.sgm import hz_sub, hz_sgm_add
     from act.back_end.solver.solver_hz import hz_compute_bounds
+
+    if not exact:
+        return None
 
     ishape = [int(d) for d in input_shape]
     if len(ishape) == 4:
@@ -103,7 +110,11 @@ def hz_maxpool2d(hz: HZono, kernel_size, stride, padding, dilation, input_shape)
     m = _hz_gather_rows(work, cands[0])
     for ri in cands[1:]:
         cand = _hz_gather_rows(work, ri)
-        m = hz_sgm_add(m, hz_apply_relu_convex(hz_sub(cand, m)))
+        diff = hz_sub(cand, m)
+        relu = hz_apply_relu(diff, cell_budget=cell_budget)
+        if relu is None:
+            return None
+        m = hz_reduce(hz_sgm_add(m, relu))
     return m
 
 
@@ -112,14 +123,18 @@ def tf_maxpool2d(L, bounds, tf):
     if hz_in is not None:
         ishape = L.params.get("input_shape")
         if ishape is not None:
-            tf._hz_cache[L.id] = hz_maxpool2d(
+            out = hz_maxpool2d(
                 hz_in, L.params["kernel_size"], L.params.get("stride"),
                 L.params.get("padding", 0), L.params.get("dilation", 1),
-                ishape)
+                ishape, cell_budget=getattr(tf, "_hz_cell_budget", 100_000_000))
+            if out is None:
+                tf._hz_cache.pop(L.id, None)
+            else:
+                tf._hz_cache[L.id] = out
         else:
             hz_in = None
     fact = interval.tf_maxpool2d(L, bounds)
-    if hz_in is not None:
+    if hz_in is not None and L.id in tf._hz_cache:
         return _hz_fact(fact, tf._hz_cache[L.id])
     return fact
 
@@ -308,3 +323,35 @@ def tf_convtranspose2d(L, bounds, tf):
     if hz_in is not None:
         return _hz_fact(fact, tf._hz_cache[L.id])
     return fact
+
+
+def _test_hz_cnn_exact_maxpool_only() -> None:  # pragma: no cover
+    from act.back_end.solver.solver_hz import hz_from_bounds
+
+    dtype = torch.float64
+    x = torch.tensor([[1.0, -2.0, 3.5, 0.25]], dtype=dtype)
+    hz = hz_from_bounds(Bounds(lb=x, ub=x), dtype, torch.device("cpu"), track_ids=True)
+    out = hz_maxpool2d(
+        hz,
+        kernel_size=2,
+        stride=2,
+        padding=0,
+        dilation=1,
+        input_shape=(1, 1, 2, 2),
+    )
+    if out is None:
+        raise AssertionError("exact MaxPool2D unexpectedly dropped")
+    got = float(out.c.reshape(-1)[0].item())
+    if abs(got - 3.5) > 1e-12:
+        raise AssertionError(f"exact MaxPool2D point mismatch: got {got}")
+    dropped = hz_maxpool2d(
+        hz,
+        kernel_size=2,
+        stride=2,
+        padding=0,
+        dilation=1,
+        input_shape=(1, 1, 2, 2),
+        exact=False,
+    )
+    if dropped is not None:
+        raise AssertionError("non-exact MaxPool2D must not produce a triangle-relaxed HZ")

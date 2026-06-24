@@ -73,7 +73,6 @@ from act.pipeline.verification.utils import (
 from act.util.model_inference import model_inference
 from act.front_end.model_synthesis import model_synthesis
 from act.back_end.solver.solver_torchlp import TorchLPSolver
-from act.back_end.solver.solver_gurobi import GurobiSolver
 from act.util.options import PerformanceOptions
 
 
@@ -1393,6 +1392,8 @@ def main():
     torch_solver = None
     
     try:
+        from act.back_end.solver.solver_gurobi import GurobiSolver
+
         gurobi_solver = GurobiSolver()
         print("  Gurobi solver available")
     except Exception as e:

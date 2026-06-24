@@ -1,42 +1,58 @@
 """
-ACT Pipeline Verification Module
+ACT pipeline verification helpers.
 
-This module contains verification utilities for the ACT framework:
-- torch2act.py: Automatic PyTorch→ACT Net conversion
-- act2torch.py: ACT Net→PyTorch conversion utilities
-- validate_verifier.py: Unified verifier validation (counterexample and bounds checking)
-- model_factory.py: ACT Net factory for test networks
-- utils.py: Shared utilities and performance profiling
-- llm_probe.py: LLM-based verification probing and analysis
+Keep this package initializer lightweight.  Heavy modules such as verifier
+validation, LLM probes, and optional commercial-solver diagnostics are imported
+only when their symbols are requested.
 """
 
-from .torch2act import *
-from .act2torch import *
-from .validate_verifier import VerificationValidator
-from .model_factory import *
-from .utils import *
-try:
-    from .llm_probe import *
-except ImportError:
-    pass
+from importlib import import_module
+from typing import Any
 
-__all__ = [
-    # torch2act exports
-    'torch2act',
-    
-    # act2torch exports
-    'act2torch',
-    
-    # validate_verifier exports
-    'VerificationValidator',
-    'validate_verifier',
-    
-    # model_factory exports
-    'model_factory',
-    
-    # utils exports
-    'utils',
-    
-    # llm_probe exports
-    'llm_probe',
-]
+_SUBMODULES = {
+    "torch2act",
+    "act2torch",
+    "validate_verifier",
+    "model_factory",
+    "utils",
+    "llm_probe",
+}
+
+_SYMBOL_TO_MODULE = {
+    "TorchToACT": "torch2act",
+    "build_act": "torch2act",
+    "ACTToTorch": "act2torch",
+    "ActGraphModule": "act2torch",
+    "VerificationValidator": "validate_verifier",
+    "ModelFactory": "model_factory",
+    "PerformanceMetrics": "utils",
+    "ParallelResult": "utils",
+    "PerformanceProfiler": "utils",
+    "ParallelExecutor": "utils",
+    "ProgressTracker": "utils",
+    "print_memory_usage": "utils",
+    "clear_torch_cache": "utils",
+    "setup_logging": "utils",
+    "retry_on_failure": "utils",
+    "timeout_handler": "utils",
+}
+
+__all__ = sorted(_SUBMODULES | set(_SYMBOL_TO_MODULE))
+
+
+def __getattr__(name: str) -> Any:
+    if name in _SUBMODULES:
+        module = import_module(f"{__name__}.{name}")
+        globals()[name] = module
+        return module
+    module_name = _SYMBOL_TO_MODULE.get(name)
+    if module_name is not None:
+        module = import_module(f"{__name__}.{module_name}")
+        value = getattr(module, name)
+        globals()[name] = value
+        return value
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+
+def __dir__() -> list[str]:
+    return sorted(set(globals()) | set(__all__))

@@ -46,23 +46,31 @@ def tf_conv2d(L: Layer, Bin: Bounds) -> Fact:
     out_channels, in_channels_per_group, kernel_h, kernel_w = weight.shape
     in_channels = in_channels_per_group * groups
     
-    # Get ACTUAL input size from bounds (not metadata - metadata may be wrong!)
     B_in = Bin.lb.shape[0]
     actual_input_size = Bin.lb[0].numel()
-    
-    # Infer spatial dimensions from actual input size
-    spatial_size = actual_input_size // in_channels
-    in_h = in_w = int(spatial_size ** 0.5)  # Assume square initially
-    
-    # Verify and adjust if needed
-    if in_h * in_w * in_channels != actual_input_size:
-        # Try to find correct rectangular dimensions
-        for h in range(int(spatial_size ** 0.5) + 10, 0, -1):
-            if spatial_size % h == 0:
-                in_h = h
-                in_w = spatial_size // h
-                if in_h * in_w * in_channels == actual_input_size:
-                    break
+
+    in_h = in_w = None
+    meta_shape = L.params.get("input_shape", None)
+    if meta_shape is not None:
+        meta_shape = tuple(int(dim) for dim in meta_shape)
+        if len(meta_shape) == 4:
+            _, meta_channels, meta_h, meta_w = meta_shape
+            if meta_channels == in_channels and meta_channels * meta_h * meta_w == actual_input_size:
+                in_h, in_w = meta_h, meta_w
+
+    if in_h is None or in_w is None:
+        # Metadata is occasionally absent or stale, so keep the old inference as
+        # a fallback.  Prefer factor pairs closest to square, but never override
+        # valid metadata for rectangular feature maps such as 16x28.
+        spatial_size = actual_input_size // in_channels
+        in_h = in_w = int(spatial_size ** 0.5)
+        if in_h * in_w * in_channels != actual_input_size:
+            for h in range(int(spatial_size ** 0.5) + 10, 0, -1):
+                if spatial_size % h == 0:
+                    cand_w = spatial_size // h
+                    if h * cand_w * in_channels == actual_input_size:
+                        in_h, in_w = h, cand_w
+                        break
     
     input_shape = (B_in, in_channels, in_h, in_w)
     
@@ -287,11 +295,17 @@ def tf_flatten(L: Layer, Bin: Bounds) -> Fact:
         f"flatten out_vars length {len(L.out_vars)} != output elements {lb_flat.shape[1]}"
     )
     if "output_shape" in L.params:
-        expected = 1
+        full_expected = 1
+        for dim in output_shape:
+            full_expected *= int(dim)
+        tail_expected = 1
         dims = output_shape[1:] if len(output_shape) > 1 else output_shape
         for dim in dims:
-            expected *= int(dim)
-        assert lb_flat.shape[1] == expected, f"flatten output numel {lb_flat.shape[1]} != expected {expected}"
+            tail_expected *= int(dim)
+        assert lb_flat.shape[1] in (full_expected, tail_expected), (
+            f"flatten output numel {lb_flat.shape[1]} != expected "
+            f"{full_expected} (full shape) or {tail_expected} (batch-stripped)"
+        )
     B_out = Bounds(lb_flat, ub_flat)
     # Note: bounds validity is checked in analyze.py with detailed debug info
 
@@ -346,21 +360,28 @@ def tf_avgpool2d(L: Layer, Bin: Bounds) -> Fact:
     )
     B_output = Bounds(output_lb.reshape(B_in, -1), output_ub.reshape(B_in, -1))
 
-    W_equiv = _avgpool2d_to_linear_matrix(
-        input_shape, output_shape, kernel_size, stride, padding
-    )
+    input_flat_size = int(channels * in_h * in_w)
+    output_flat_size = int(channels * out_h * out_w)
+    matrix_cells = input_flat_size * output_flat_size
+    W_equiv = None
+    if matrix_cells <= 25_000_000:
+        W_equiv = _avgpool2d_to_linear_matrix(
+            input_shape, output_shape, kernel_size, stride, padding
+        )
     
     # Create constraints
     C = ConSet()
-    C.replace(Con("EQ", tuple(L.out_vars + L.in_vars), {
+    params = {
         "tag": f"avgpool2d:{L.id}",
-        "W": W_equiv,
         "kernel_size": kernel_size,
         "stride": stride,
         "padding": padding,
         "input_shape": input_shape,
         "output_shape": output_shape
-    }))
+    }
+    if W_equiv is not None:
+        params["W"] = W_equiv
+    C.replace(Con("EQ", tuple(L.out_vars + L.in_vars), params))
     
     C.add_box(L.id, L.out_vars, B_output)
     return Fact(B_output, C)
@@ -629,7 +650,24 @@ def tf_upsample(L: Layer, Bin: Bounds) -> Fact:
     align_corners = bool(L.params.get("align_corners", False))
     assert size is not None or scale_factor is not None, "upsample requires size or scale_factor"
 
-    # F.interpolate scale_factor must be float or tuple of float
+    spatial_rank = max(0, len(in_shape) - 2)
+    if size is not None and isinstance(size, (list, tuple)):
+        size = tuple(int(s) for s in size)
+        if len(size) > spatial_rank:
+            size = size[-spatial_rank:]
+    if scale_factor is not None and isinstance(scale_factor, (list, tuple)):
+        scale_factor = tuple(float(s) for s in scale_factor)
+        if len(scale_factor) > spatial_rank:
+            scale_factor = scale_factor[-spatial_rank:]
+    mode = str(mode).lower()
+    if mode == "linear" and spatial_rank == 2:
+        mode = "bilinear"
+    elif mode == "linear" and spatial_rank == 3:
+        mode = "trilinear"
+    elif mode == "cubic" and spatial_rank == 2:
+        mode = "bicubic"
+
+    # F.interpolate scale_factor must be float or tuple of float.
     y_lb = F.interpolate(
         x_lb,
         size=size,
@@ -867,3 +905,113 @@ def _convtranspose2d_to_linear_matrix(
     W_equiv.index_put_((out_idx, in_idx), scatter_vals, accumulate=True)
 
     return W_equiv
+
+
+def _op_constraint(fact: Fact, tag_prefix: str) -> Con:
+    for con in fact.cons:
+        if str(con.meta.get("tag", "")).startswith(tag_prefix):
+            return con
+    raise AssertionError(f"missing constraint with tag prefix {tag_prefix!r}")
+
+
+def _test_interval_cnn_shape_compat() -> None:  # pragma: no cover
+    lb = torch.arange(16 * 28, dtype=torch.float64).reshape(1, -1)
+    ub = lb + 1.0
+    layer = Layer(
+        id=1,
+        kind="CONV2D",
+        params={
+            "weight": torch.ones(1, 1, 1, 1, dtype=torch.float64),
+            "bias": torch.zeros(1, dtype=torch.float64),
+            "in_channels": 1,
+            "out_channels": 1,
+            "kernel_size": (1, 1),
+            "input_shape": (1, 1, 16, 28),
+            "stride": 1,
+            "padding": 0,
+            "dilation": 1,
+            "groups": 1,
+        },
+        in_vars=list(range(16 * 28)),
+        out_vars=list(range(1000, 1000 + 16 * 28)),
+    )
+    fact = tf_conv2d(layer, Bounds(lb, ub))
+    con = _op_constraint(fact, "conv2d:")
+    assert con.meta["input_shape"] == (1, 1, 16, 28)
+    assert con.meta["output_shape"] == (1, 1, 16, 28)
+    assert tuple(fact.bounds.lb.shape) == (1, 16 * 28)
+
+
+def _test_interval_flatten_batch_stripped_shape() -> None:  # pragma: no cover
+    lb = torch.zeros(2, 12, dtype=torch.float64)
+    ub = torch.ones(2, 12, dtype=torch.float64)
+    layer = Layer(
+        id=2,
+        kind="FLATTEN",
+        params={"input_shape": (2, 3, 4), "output_shape": (2, 12)},
+        in_vars=list(range(12)),
+        out_vars=list(range(2000, 2012)),
+    )
+    fact = tf_flatten(layer, Bounds(lb, ub))
+    assert tuple(fact.bounds.lb.shape) == (2, 12)
+    assert _op_constraint(fact, "flatten:").meta["output_shape"] == (2, 12)
+
+
+def _test_interval_avgpool_skips_huge_linear_matrix() -> None:  # pragma: no cover
+    h = w = 160
+    n = h * w
+    lb = torch.zeros(1, n, dtype=torch.float64)
+    ub = torch.ones(1, n, dtype=torch.float64)
+    layer = Layer(
+        id=3,
+        kind="AVGPOOL2D",
+        params={
+            "kernel_size": 1,
+            "stride": 1,
+            "padding": 0,
+            "input_shape": (1, 1, h, w),
+            "output_shape": (1, 1, h, w),
+        },
+        in_vars=list(range(n)),
+        out_vars=list(range(3000, 3000 + n)),
+    )
+    fact = tf_avgpool2d(layer, Bounds(lb, ub))
+    con = _op_constraint(fact, "avgpool2d:")
+    assert "W" not in con.meta
+    assert con.meta["input_shape"] == (1, 1, h, w)
+    assert tuple(fact.bounds.lb.shape) == (1, n)
+
+
+def _test_interval_upsample_onnx_mode_normalization() -> None:  # pragma: no cover
+    lb = torch.zeros(1, 6, dtype=torch.float64)
+    ub = torch.ones(1, 6, dtype=torch.float64)
+    layer = Layer(
+        id=4,
+        kind="UPSAMPLE",
+        params={
+            "input_shape": (1, 1, 2, 3),
+            "output_shape": (1, 1, 4, 6),
+            "size": (1, 1, 4, 6),
+            "mode": "linear",
+            "align_corners": False,
+        },
+        in_vars=list(range(6)),
+        out_vars=list(range(4000, 4000 + 24)),
+    )
+    fact = tf_upsample(layer, Bounds(lb, ub))
+    con = _op_constraint(fact, "upsample:")
+    assert con.meta["mode"] == "bilinear"
+    assert con.meta["size"] == [4, 6]
+    assert tuple(fact.bounds.lb.shape) == (1, 24)
+
+
+def _test_interval_tf_cnn_compat() -> None:  # pragma: no cover
+    _test_interval_cnn_shape_compat()
+    _test_interval_flatten_batch_stripped_shape()
+    _test_interval_avgpool_skips_huge_linear_matrix()
+    _test_interval_upsample_onnx_mode_normalization()
+
+
+if __name__ == "__main__":  # pragma: no cover
+    _test_interval_tf_cnn_compat()
+    print("PASS _test_interval_tf_cnn_compat")

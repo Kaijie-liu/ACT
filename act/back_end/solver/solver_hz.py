@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import os
 
 import torch
 from dataclasses import dataclass
@@ -12,13 +13,6 @@ if TYPE_CHECKING:
     from act.back_end.solver.solver_base import BatchLPProblem, BatchLPSolution
 
 logger = logging.getLogger(__name__)
-
-try:
-    from act.back_end.solver.solver_gurobi import GurobiSolver, is_gurobi_available
-
-    _HAS_GUROBI = is_gurobi_available()
-except ImportError:
-    _HAS_GUROBI = False
 
 try:
     import numpy as np
@@ -261,13 +255,43 @@ def _hz_bounds_unconstrained(hz: HZono) -> Bounds:
 
 
 def _hz_compute_bounds_gurobi(hz: HZono) -> Bounds:
+    from act.back_end.solver.solver_gurobi import GurobiSolver, is_gurobi_available
+
+    if not is_gurobi_available():
+        raise RuntimeError("gurobipy is not available")
     return GurobiSolver.compute_bounds(hz)
 
 
-def _hz_compute_bounds_scipy(hz: HZono) -> Bounds:
+def _hz_compute_bounds_scipy(
+    hz: HZono,
+    rows=None,
+    *,
+    base_lb=None,
+    base_ub=None,
+    relu_stability: bool = False,
+) -> Bounds:
     n = int(hz.c.shape[0])
     p = int(hz.Gc.shape[1])
     q = int(hz.Gb.shape[1])
+    if rows is None:
+        row_idx = np.arange(n, dtype=np.int64)
+    else:
+        row_idx = np.asarray(rows, dtype=np.int64).reshape(-1)
+        if row_idx.size and ((row_idx < 0).any() or (row_idx >= n).any()):
+            raise IndexError("HZ bound row index out of range")
+    base_lb_np = None if base_lb is None else np.asarray(base_lb, dtype=np.float64).reshape(-1)
+    base_ub_np = None if base_ub is None else np.asarray(base_ub, dtype=np.float64).reshape(-1)
+    if relu_stability and (base_lb_np is None or base_ub_np is None):
+        relu_stability = False
+    if relu_stability and (base_lb_np.size != row_idx.size or base_ub_np.size != row_idx.size):
+        raise ValueError("base ReLU bounds must match requested row count")
+    lp_time_limit = 0.0
+    if relu_stability:
+        try:
+            lp_time_limit = max(0.0, float(os.environ.get("HZ_RELU_TIGHT_LP_TIMEOUT", "0") or 0.0))
+        except Exception:
+            lp_time_limit = 0.0
+    lp_options = {"time_limit": lp_time_limit} if lp_time_limit > 0.0 else None
     c_np = hz.c.detach().cpu().numpy().astype("float64").reshape(-1)
     Gc_np = hz.Gc.detach().cpu().numpy().astype("float64")
     Gb_np = hz.Gb.detach().cpu().numpy().astype("float64")
@@ -291,37 +315,62 @@ def _hz_compute_bounds_scipy(hz: HZono) -> Bounds:
         A_ub = b_ub = None
     var_bounds = [(-1.0, 1.0)] * (p + q)
 
-    LB = np.empty((n,), dtype=np.float64)
-    UB = np.empty((n,), dtype=np.float64)
+    work_n = int(row_idx.size)
+    LB = np.empty((work_n,), dtype=np.float64)
+    UB = np.empty((work_n,), dtype=np.float64)
 
-    def _solve_dim(i):
+    def _solve_dim(pos):
         # Per-dim min/max over the (shared, read-only) HZ constraints. Independent
         # across i, so safe to run concurrently; HiGHS releases the GIL during solve.
+        i = int(row_idx[pos])
         obj = np.concatenate([Gc_np[i], Gb_np[i]], axis=0)
-        res_min = linprog(c=obj, A_eq=A_eq, b_eq=b_eq, A_ub=A_ub, b_ub=b_ub,
-                          bounds=var_bounds, method="highs")
-        if not res_min.success:
-            raise RuntimeError(f"[linprog] MIN infeasible at dim {i}: {res_min.message}")
-        res_max = linprog(c=-obj, A_eq=A_eq, b_eq=b_eq, A_ub=A_ub, b_ub=b_ub,
-                          bounds=var_bounds, method="highs")
-        if not res_max.success:
-            raise RuntimeError(f"[linprog] MAX infeasible at dim {i}: {res_max.message}")
-        return i, c_np[i] + res_min.fun, c_np[i] - res_max.fun
+
+        def _min():
+            res = linprog(c=obj, A_eq=A_eq, b_eq=b_eq, A_ub=A_ub, b_ub=b_ub,
+                          bounds=var_bounds, method="highs", options=lp_options)
+            if not res.success:
+                if relu_stability and base_lb_np is not None:
+                    return float(base_lb_np[pos])
+                raise RuntimeError(f"[linprog] MIN infeasible at dim {i}: {res.message}")
+            return c_np[i] + res.fun
+
+        def _max():
+            res = linprog(c=-obj, A_eq=A_eq, b_eq=b_eq, A_ub=A_ub, b_ub=b_ub,
+                          bounds=var_bounds, method="highs", options=lp_options)
+            if not res.success:
+                if relu_stability and base_ub_np is not None:
+                    return float(base_ub_np[pos])
+                raise RuntimeError(f"[linprog] MAX infeasible at dim {i}: {res.message}")
+            return c_np[i] - res.fun
+
+        if relu_stability:
+            bl = float(base_lb_np[pos])
+            bu = float(base_ub_np[pos])
+            if abs(bl) <= abs(bu):
+                lb_i = _min()
+                if lb_i >= 0.0:
+                    return pos, lb_i, bu
+                return pos, lb_i, _max()
+            ub_i = _max()
+            if ub_i <= 0.0:
+                return pos, bl, ub_i
+            return pos, _min(), ub_i
+
+        return pos, _min(), _max()
 
     # The 2n LP solves are independent -> parallelize the wide ones (the tight-bounds
     # bottleneck on wide nets). IDENTICAL result to serial (same LPs); threads give a
     # real speedup because HiGHS runs in C and releases the GIL. Gated by env
     # HZ_TIGHT_THREADS (default 1 = serial), and only when n is wide enough to amortize.
-    import os
     _nthr = int(os.environ.get("HZ_TIGHT_THREADS", "1"))
-    if _nthr > 1 and n >= 16:
+    if _nthr > 1 and work_n >= 16:
         from concurrent.futures import ThreadPoolExecutor
         with ThreadPoolExecutor(max_workers=_nthr) as _ex:
-            for i, lb_i, ub_i in _ex.map(_solve_dim, range(n)):
-                LB[i] = lb_i; UB[i] = ub_i
+            for pos, lb_i, ub_i in _ex.map(_solve_dim, range(work_n)):
+                LB[pos] = lb_i; UB[pos] = ub_i
     else:
-        for i in range(n):
-            _, LB[i], UB[i] = _solve_dim(i)
+        for pos in range(work_n):
+            _, LB[pos], UB[pos] = _solve_dim(pos)
 
     dtype, device = hz.c.dtype, hz.c.device
     return Bounds(
@@ -337,30 +386,43 @@ def hz_compute_bounds(hz: HZono, *, exact: bool = False) -> Bounds:
         hz: The hybrid zonotope.
         exact: If False (default), always use the fast unconstrained
             over-approximation (|Gc| + |Gb| radius). This is sound but
-            may be wider than necessary.  If True, solve per-dimension
-            LP/MILP to obtain tight bounds when equality constraints
-            exist.  Use ``exact=True`` only at the final output layer
+            may be wider than necessary.  If True, solve per-dimension LPs
+            with the open-source scipy/HiGHS backend to obtain tight bounds
+            when equality constraints exist.  Gurobi remains available only
+            as an explicit diagnostic oracle via ``HZ_BOUNDS_BACKEND=gurobi``
+            or ``HZ_BOUNDS_GUROBI=1``.  Use ``exact=True`` only at the final
+            output layer
             where tight bounds matter for verification; intermediate
             layers benefit from the 1000×+ speed-up of the fast path
             with negligible precision loss (the full zonotope structure
             is still propagated via ``_hz_cache``).
     """
-    if _hz_is_unconstrained(hz):
-        return _hz_bounds_unconstrained(hz)
     if not exact:
         return _hz_bounds_unconstrained(hz)
-    # The Gurobi path treats every constraint row as an equality; if this HZ
-    # carries inequality (le) rows (eq_mask with any False entry, e.g. a
-    # post-PEE box-encoded zonotope) it would mis-solve. Route those to scipy,
-    # which splits eq/le by eq_mask.
+    if _hz_is_unconstrained(hz):
+        return _hz_bounds_unconstrained(hz)
+    prefer_gurobi = (
+        os.environ.get("HZ_BOUNDS_BACKEND", "").strip().lower() == "gurobi"
+        or os.environ.get("HZ_BOUNDS_GUROBI", "").strip().lower()
+        in {"1", "true", "yes", "on"}
+    )
+    if _HAS_SCIPY and not prefer_gurobi:
+        try:
+            return _hz_compute_bounds_scipy(hz)
+        except Exception as e:
+            # Intentional: scipy linprog failures fall back to the unconstrained bounds estimate.
+            logger.debug("suppressed: %s", e)
+    # The optional Gurobi diagnostic path treats every constraint row as an
+    # equality; if this HZ carries inequality rows (eq_mask with any False
+    # entry) it would mis-solve. Route those to scipy/open-source instead.
     _has_le = hz.eq_mask is not None and bool((~hz.eq_mask).any().item())
-    if _HAS_GUROBI and not _has_le:
+    if prefer_gurobi and not _has_le:
         try:
             return _hz_compute_bounds_gurobi(hz)
         except Exception as e:
             # Intentional: Gurobi failures (license/timeout/numerical) fall back to scipy/unconstrained.
             logger.debug("suppressed: %s", e)
-    if _HAS_SCIPY:
+    if _HAS_SCIPY and prefer_gurobi:
         try:
             return _hz_compute_bounds_scipy(hz)
         except Exception as e:
@@ -378,7 +440,9 @@ class HZSolver(Solver):
     """Hybrid Zonotope bounds solver.
 
     Precision hierarchy:
-      GurobiSolver (MILP, exact) > HZSolver (HZ, tight) > TorchLPSolver (box, fast)
+      HZSolver exact bounds (scipy/HiGHS LP, tight) > HZSolver fast box >
+      TorchLPSolver box.  Gurobi is an opt-in diagnostic bounds oracle only,
+      not a counted HybridZ proof dependency.
     """
 
     def __init__(self):
@@ -400,7 +464,8 @@ class HZSolver(Solver):
 
         HZSolver operates on HZono (hybrid zonotope) domains via
         compute_bounds(), not on LP/CSP batch problems.  Callers that
-        need batch LP solving should use TorchLPSolver or GurobiSolver.
+        need batch LP solving should use TorchLPSolver or another BatchLP
+        implementation.
         """
         raise NotImplementedError(
             "HZSolver does not solve CSPs; use compute_bounds() for HZ domain analysis."

@@ -57,8 +57,10 @@ def hz_remove_redundancy(hz: HZono, *, tol: float = 1e-9,
 
     # --- A: drop zero generators (zero in BOTH value and constraints) ---
     if ng > 0:
-        Mc = torch.cat([Gc, Ac], dim=0) if nc > 0 else Gc
-        keep = Mc.abs().sum(dim=0) > tol
+        mass = Gc.abs().sum(dim=0)
+        if nc > 0:
+            mass = mass + Ac.abs().sum(dim=0)
+        keep = mass > tol
         if not bool(keep.all()):
             Gc = Gc[:, keep]
             # Filter Ac columns too, ALWAYS (even nc==0): Ac is [nc, ng] and must
@@ -69,8 +71,10 @@ def hz_remove_redundancy(hz: HZono, *, tol: float = 1e-9,
             col_ids = col_ids[keep] if col_ids is not None else None
             ng = int(Gc.shape[1])
     if nb > 0:
-        Mb = torch.cat([Gb, Ab], dim=0) if nc > 0 else Gb
-        keep = Mb.abs().sum(dim=0) > tol
+        mass = Gb.abs().sum(dim=0)
+        if nc > 0:
+            mass = mass + Ab.abs().sum(dim=0)
+        keep = mass > tol
         if not bool(keep.all()):
             Gb = Gb[:, keep]
             Ab = Ab[:, keep]
@@ -79,7 +83,8 @@ def hz_remove_redundancy(hz: HZono, *, tol: float = 1e-9,
 
     # --- B: merge parallel continuous generators in lifted [Gc; Ac] ---
     # Hash-based grouping (O(ng) keys), so it scales to large nets.
-    if parallel and ng > 1 and ng <= _PARALLEL_MAX:
+    if (parallel and ng > 1 and ng <= _PARALLEL_MAX
+            and _fits_parallel_merge(n + nc, ng)):
         Mc = torch.cat([Gc, Ac], dim=0) if nc > 0 else Gc
         norms = Mc.norm(dim=0)
         nz = norms > tol
@@ -114,7 +119,8 @@ def hz_remove_redundancy(hz: HZono, *, tol: float = 1e-9,
                 col_ids = torch.tensor(ids, dtype=torch.long, device=device)
 
     # --- C: drop zero + duplicate constraint rows (hash-based, O(nc)) ---
-    if nc > 0 and nc <= _PARALLEL_MAX:
+    if (nc > 0 and nc <= _PARALLEL_MAX
+            and _fits_parallel_merge(nc, Ac.shape[1] + Ab.shape[1] + 1)):
         A_full = torch.cat([Ac, Ab, b], dim=1)
         rnorm = A_full.norm(dim=1)
         coeff_norm = (Ac.abs().sum(1) + Ab.abs().sum(1))
@@ -144,6 +150,11 @@ def hz_remove_redundancy(hz: HZono, *, tol: float = 1e-9,
 
 
 _PARALLEL_MAX = 20000  # skip the (still O(ncols)) dedup passes above this size
+_PARALLEL_CELL_MAX = 25_000_000  # avoid multi-GB canonicalization tensors
+
+
+def _fits_parallel_merge(nrow: int, ncol: int) -> bool:
+    return int(nrow) * int(ncol) <= _PARALLEL_CELL_MAX
 
 
 def _canonical_keys(M, norms, tol):

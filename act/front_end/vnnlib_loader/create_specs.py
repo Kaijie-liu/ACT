@@ -69,6 +69,7 @@ class VNNLibSpecCreator(BaseSpecCreator):
         self,
         categories: Optional[List[str]] = None,
         max_instances: Optional[int] = None,
+        instance_indices: Optional[List[int]] = None,
         validate_shapes: bool = True
     ) -> List[Tuple[str, str, nn.Module, List[LabeledInputTensor], List[Tuple[InputSpec, OutputSpec]]]]:
         """
@@ -86,6 +87,9 @@ class VNNLibSpecCreator(BaseSpecCreator):
         Args:
             categories: List of benchmark categories (None = all downloaded)
             max_instances: Maximum instances per category (None = all)
+            instance_indices: Optional zero-based instances.csv row indices to
+                keep within each selected category.  Useful for benchmark
+                runners that need per-instance wall-clock isolation.
             validate_shapes: Whether to validate specs against model
             
         Returns:
@@ -105,7 +109,7 @@ class VNNLibSpecCreator(BaseSpecCreator):
         """
         logger.info(
             f"Creating VNNLIB specs: categories={categories}, "
-            f"max_instances={max_instances}"
+            f"max_instances={max_instances}, instance_indices={instance_indices}"
         )
         
         # Get all downloaded instances
@@ -126,6 +130,16 @@ class VNNLibSpecCreator(BaseSpecCreator):
         if not all_instances:
             logger.warning("No instances match the specified categories")
             return []
+
+        if instance_indices is not None:
+            keep = {int(i) for i in instance_indices}
+            all_instances = [
+                inst for inst in all_instances
+                if int(inst.get("index", -1)) in keep
+            ]
+            if not all_instances:
+                logger.warning("No instances match the specified instance_indices")
+                return []
         
         # Limit instances per category if specified
         if max_instances is not None:
@@ -155,6 +169,8 @@ class VNNLibSpecCreator(BaseSpecCreator):
             category = instance_info['category']
             onnx_model = instance_info['onnx_model']
             vnnlib_spec = instance_info['vnnlib_spec']
+            instance_index = int(instance_info.get("index", -1))
+            root_dir = instance_info.get("root_dir")
             
             # Create instance identifier
             instance_id = f"{Path(onnx_model).stem}_{Path(vnnlib_spec).stem}"
@@ -166,11 +182,12 @@ class VNNLibSpecCreator(BaseSpecCreator):
                     category=category,
                     onnx_model=onnx_model,
                     vnnlib_spec=vnnlib_spec,
+                    root_dir=root_dir,
                     auto_download=False  # Already filtered to downloaded
                 )
                 
                 # Reuse cached model if same ONNX file was already converted
-                cache_key = (category, onnx_model)
+                cache_key = (str(root_dir or ""), category, onnx_model)
                 if cache_key in _model_cache:
                     instance_data['model'] = _model_cache[cache_key]
                 else:
@@ -180,6 +197,7 @@ class VNNLibSpecCreator(BaseSpecCreator):
                 result = self._create_specs_for_single_instance(
                     category=category,
                     instance_id=instance_id,
+                    instance_index=instance_index,
                     instance_data=instance_data,
                     validate_shapes=validate_shapes
                 )
@@ -205,6 +223,7 @@ class VNNLibSpecCreator(BaseSpecCreator):
         self,
         category: str,
         instance_id: str,
+        instance_index: int,
         instance_data: Dict,
         validate_shapes: bool
     ) -> Optional[Tuple[str, str, nn.Module, List[LabeledInputTensor], List[Tuple[InputSpec, OutputSpec]]]]:
@@ -215,7 +234,10 @@ class VNNLibSpecCreator(BaseSpecCreator):
             Tuple of (category, instance_id, pytorch_model, labeled_tensors, spec_pairs)
             or None if failed
         """
-        logger.info(f"Generating specs for {category}/{instance_id}")
+        if instance_index >= 0:
+            logger.info(f"Generating specs for {category}/{instance_id} (iid={instance_index})")
+        else:
+            logger.info(f"Generating specs for {category}/{instance_id}")
         
         pytorch_model = instance_data['model']
         labeled_tensor = instance_data['labeled_tensor']
@@ -342,3 +364,68 @@ def create_vnnlib_specs(
         categories=categories,
         max_instances=max_instances
     )
+
+
+def _test_instance_indices_filtering() -> None:  # pragma: no cover
+    original_list = globals()["list_downloaded_pairs"]
+    original_load = globals()["load_vnnlib_pair"]
+    original_create = VNNLibSpecCreator._create_specs_for_single_instance
+    seen_indices: List[int] = []
+    seen_roots: List[Optional[str]] = []
+
+    def fake_list_downloaded_pairs():
+        return [
+            {
+                "category": "toy",
+                "index": 0,
+                "onnx_model": "m.onnx",
+                "vnnlib_spec": "s0.vnnlib",
+                "root_dir": "/tmp/root-a",
+            },
+            {
+                "category": "toy",
+                "index": 1,
+                "onnx_model": "m.onnx",
+                "vnnlib_spec": "s1.vnnlib",
+                "root_dir": "/tmp/root-a",
+            },
+            {
+                "category": "toy",
+                "index": 2,
+                "onnx_model": "m.onnx",
+                "vnnlib_spec": "s2.vnnlib",
+                "root_dir": "/tmp/root-a",
+            },
+            {"category": "other", "index": 1, "onnx_model": "x.onnx", "vnnlib_spec": "x.vnnlib"},
+        ]
+
+    def fake_load_vnnlib_pair(**kwargs):
+        seen_roots.append(kwargs.get("root_dir"))
+        return {"model": nn.Identity(), "labeled_tensor": None, "vnnlib_path": kwargs["vnnlib_spec"]}
+
+    def fake_create(self, category, instance_id, instance_index, instance_data, validate_shapes):
+        seen_indices.append(int(instance_index))
+        return (category, instance_id, instance_data["model"], [], [])
+
+    try:
+        globals()["list_downloaded_pairs"] = fake_list_downloaded_pairs
+        globals()["load_vnnlib_pair"] = fake_load_vnnlib_pair
+        VNNLibSpecCreator._create_specs_for_single_instance = fake_create
+        creator = VNNLibSpecCreator()
+        results = creator.create_specs_for_data_model_pairs(
+            categories=["toy"],
+            instance_indices=[2, 0],
+            validate_shapes=False,
+        )
+        assert seen_indices == [0, 2]
+        assert seen_roots == ["/tmp/root-a", "/tmp/root-a"]
+        assert [name for _, name, _, _, _ in results] == ["m_s0", "m_s2"]
+    finally:
+        globals()["list_downloaded_pairs"] = original_list
+        globals()["load_vnnlib_pair"] = original_load
+        VNNLibSpecCreator._create_specs_for_single_instance = original_create
+
+
+if __name__ == "__main__":  # pragma: no cover
+    _test_instance_indices_filtering()
+    print("PASS _test_instance_indices_filtering")

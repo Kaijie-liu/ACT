@@ -224,6 +224,9 @@ def _build_batched_model(
         model=pytorch_model,
         output_spec=OutputSpecLayer(spec=batched_out),
     )
+    for attr in ("_act_onnx_path", "_act_onnx_model", "_act_onnx_input_shape"):
+        if hasattr(pytorch_model, attr):
+            setattr(vm, attr, getattr(pytorch_model, attr))
     # Parameterless ONNX-converted models (e.g. some VNN-COMP graphs that inline
     # constants) have an empty .parameters() iterator — fall back to CPU.
     try:
@@ -233,6 +236,29 @@ def _build_batched_model(
     vm = vm.to(model_device)
     
     return vm
+
+
+def _test_preserves_act_onnx_metadata() -> None:
+    """Smoke-test ONNX metadata propagation used by HybridZ witness replay."""
+    x = torch.zeros(1, 1, 2, 2)
+    labeled = LabeledInputTensor(tensor=x, label=torch.tensor([0], dtype=torch.int64))
+    in_spec = InputSpec(kind=InKind.BOX, lb=torch.zeros_like(x), ub=torch.ones_like(x))
+    out_spec = OutputSpec(kind=OutKind.TOP1_ROBUST, y_true=torch.tensor([0], dtype=torch.int64))
+    model = nn.Sequential(nn.Flatten(), nn.Linear(4, 2, bias=False))
+
+    model._act_onnx_path = "/tmp/act_hybridz_replay.onnx"
+    model._act_onnx_model = "act_hybridz_replay.onnx"
+    model._act_onnx_input_shape = tuple(x.shape)
+
+    vm = _build_batched_model(
+        ("toy", "toy_model", InKind.BOX, OutKind.TOP1_ROBUST),
+        [(labeled, in_spec, out_spec, "toy:s0")],
+        model,
+    )
+
+    assert vm._act_onnx_path == model._act_onnx_path
+    assert vm._act_onnx_model == model._act_onnx_model
+    assert vm._act_onnx_input_shape == model._act_onnx_input_shape
 
 
 def synthesize_models_from_specs(

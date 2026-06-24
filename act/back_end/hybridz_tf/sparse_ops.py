@@ -1,0 +1,2294 @@
+# ===- act/back_end/hybridz_tf/sparse_ops.py - Sparse HZ operators -------===#
+# ACT: Abstract Constraint Transformer
+# Copyright (C) 2025- ACT Team
+#
+# Licensed under the GNU Affero General Public License v3.0 or later (AGPLv3+).
+# Distributed without any warranty; see <http://www.gnu.org/licenses/>.
+# ===---------------------------------------------------------------------===#
+"""Sparse exact-HZ affine and structural operators.
+
+These are the production-safe, benchmark-independent primitives extracted from
+the local sparse-HZ prototype.  They operate on a single global variable frame:
+if two branches share a generator, they must use the same column index.  This is
+the sparse counterpart of dense HZ shared-generator carrying and is required
+for residual/concat structures without dense materialization.
+"""
+
+from __future__ import annotations
+
+from typing import Iterable, List, Optional, Sequence, Tuple
+
+import numpy as np
+import scipy.sparse as sp
+import torch
+
+from act.back_end.core import Bounds
+from act.back_end.solver.sparse_hz import SparseHZono
+
+
+def _pair(x) -> Tuple[int, int]:
+    if isinstance(x, int):
+        return int(x), int(x)
+    return int(x[0]), int(x[1])
+
+
+def _shape4(shape) -> Tuple[int, int, int, int]:
+    dims = tuple(int(d) for d in shape)
+    if len(dims) == 4:
+        return dims
+    if len(dims) == 3:
+        c, h, w = dims
+        return 1, c, h, w
+    raise ValueError(f"expected 3D or 4D NCHW shape, got {shape!r}")
+
+
+def _prod(shape) -> int:
+    out = 1
+    for d in shape:
+        out *= int(d)
+    return int(out)
+
+
+def _to_numpy(value) -> np.ndarray:
+    if isinstance(value, torch.Tensor):
+        return value.detach().cpu().double().numpy()
+    return np.asarray(value, dtype=np.float64)
+
+
+def sparse_empty(rows: int, cols: int) -> sp.csr_matrix:
+    return sp.csr_matrix((int(rows), int(cols)), dtype=np.float64)
+
+
+def sparse_pad_cols(mat: sp.csr_matrix, cols: int) -> sp.csr_matrix:
+    mat = mat.tocsr()
+    cols = int(cols)
+    if mat.shape[1] == cols:
+        return mat
+    if mat.shape[1] > cols:
+        raise ValueError(f"cannot shrink sparse matrix from {mat.shape[1]} to {cols}")
+    return sp.hstack([mat, sparse_empty(mat.shape[0], cols - mat.shape[1])], format="csr")
+
+
+def _input_metadata_kwargs(hz: SparseHZono) -> dict[str, object]:
+    out: dict[str, object] = {}
+    if (
+        hz.input_center is not None
+        and hz.input_radius is not None
+        and hz.input_indices is not None
+    ):
+        out.update({
+            "input_center": hz.input_center.copy(),
+            "input_radius": hz.input_radius.copy(),
+            "input_indices": hz.input_indices.copy(),
+            "input_shape": None if hz.input_shape is None else tuple(hz.input_shape),
+        })
+    if hz.col_ids is not None:
+        out["col_ids"] = hz.col_ids.copy()
+    if hz.bcol_ids is not None:
+        out["bcol_ids"] = hz.bcol_ids.copy()
+    return out
+
+
+def _shared_input_metadata_kwargs(parts: Sequence[SparseHZono]) -> dict[str, object]:
+    if not parts:
+        return {}
+    base = _input_metadata_kwargs(parts[0])
+    if not base:
+        return {}
+    for part in parts[1:]:
+        cur = _input_metadata_kwargs(part)
+        if not cur:
+            return {}
+        if set(base) != set(cur):
+            return {}
+        for key, value in base.items():
+            if key == "input_shape":
+                if value != cur[key]:
+                    return {}
+            elif not np.array_equal(value, cur[key]):
+                return {}
+    return base
+
+
+def sparse_hz_pad_frame(hz: SparseHZono, n_cont: int, n_bin: int) -> SparseHZono:
+    Auc = None if hz.Auc is None else sparse_pad_cols(hz.Auc, n_cont)
+    Aub = None if hz.Aub is None else sparse_pad_cols(hz.Aub, n_bin)
+    return SparseHZono(
+        c=hz.c,
+        Gc=sparse_pad_cols(hz.Gc, n_cont),
+        Gb=sparse_pad_cols(hz.Gb, n_bin),
+        Ac=sparse_pad_cols(hz.Ac, n_cont),
+        Ab=sparse_pad_cols(hz.Ab, n_bin),
+        b=hz.b,
+        Auc=Auc,
+        Aub=Aub,
+        ub=hz.ub,
+        **_input_metadata_kwargs(hz),
+    )
+
+
+def sparse_hz_from_bounds(bounds: Bounds, *, drop_zero_radius: bool = True) -> SparseHZono:
+    """Create a sparse HZ box from ACT ``Bounds``.
+
+    By default, zero-radius dimensions do not allocate useless generator
+    columns.  The represented set is identical to the dense ``hz_from_bounds``
+    set, just with structurally-zero columns removed.
+    """
+
+    lb = bounds.lb.detach().cpu().double().numpy().reshape(-1)
+    ub = bounds.ub.detach().cpu().double().numpy().reshape(-1)
+    center = (lb + ub) * 0.5
+    rad = (ub - lb) * 0.5
+    if drop_zero_radius:
+        rows = np.nonzero(np.abs(rad) > 1e-12)[0].astype(np.int32)
+    else:
+        rows = np.arange(rad.size, dtype=np.int32)
+    cols = np.arange(rows.size, dtype=np.int32)
+    Gc = sp.csr_matrix((rad[rows], (rows, cols)), shape=(rad.size, rows.size), dtype=np.float64)
+    return SparseHZono(
+        c=center,
+        Gc=Gc,
+        Gb=sparse_empty(rad.size, 0),
+        Ac=sparse_empty(0, rows.size),
+        Ab=sparse_empty(0, 0),
+        b=np.zeros(0, dtype=np.float64),
+        Auc=sparse_empty(0, rows.size),
+        Aub=sparse_empty(0, 0),
+        ub=np.zeros(0, dtype=np.float64),
+        input_center=center.copy(),
+        input_radius=rad.copy(),
+        input_indices=rows.astype(np.int64, copy=True),
+        input_shape=tuple(int(d) for d in bounds.lb.shape),
+    )
+
+
+def sparse_hz_linear(hz: SparseHZono, W, bias: Optional[Sequence[float]] = None) -> SparseHZono:
+    """Apply an exact affine map ``W @ z + bias``."""
+
+    Wsp = W.tocsr().astype(np.float64) if sp.issparse(W) else sp.csr_matrix(np.asarray(W, dtype=np.float64))
+    if Wsp.shape[1] != hz.n_out:
+        raise ValueError(f"linear shape mismatch: W={Wsp.shape}, hz.n_out={hz.n_out}")
+    b = (
+        np.zeros(Wsp.shape[0], dtype=np.float64)
+        if bias is None
+        else np.asarray(bias, dtype=np.float64).reshape(-1)
+    )
+    if b.size != Wsp.shape[0]:
+        raise ValueError(f"bias shape mismatch: bias={b.size}, rows={Wsp.shape[0]}")
+    Gc = (Wsp @ hz.Gc).tocsr()
+    Gb = (Wsp @ hz.Gb).tocsr() if hz.n_bin else sparse_empty(Wsp.shape[0], 0)
+    Gc.eliminate_zeros()
+    Gb.eliminate_zeros()
+    return SparseHZono(
+        c=np.asarray(Wsp @ hz.c).reshape(-1) + b,
+        Gc=Gc,
+        Gb=Gb,
+        Ac=hz.Ac,
+        Ab=hz.Ab,
+        b=hz.b,
+        Auc=hz.Auc,
+        Aub=hz.Aub,
+        ub=hz.ub,
+        **_input_metadata_kwargs(hz),
+    )
+
+
+def sparse_dense_matrix_from_layer(layer) -> Tuple[sp.csr_matrix, np.ndarray]:
+    """Return exact sparse matrix/bias for an ACT DENSE layer."""
+
+    W = _to_numpy(layer.params["weight"]).astype(np.float64, copy=False)
+    bias = layer.params.get("bias")
+    b = (
+        np.zeros(W.shape[0], dtype=np.float64)
+        if bias is None
+        else _to_numpy(bias).astype(np.float64, copy=False).reshape(-1)
+    )
+    mat = sp.csr_matrix(W)
+    mat.eliminate_zeros()
+    return mat, b
+
+
+def sparse_hz_apply_dense_layer(hz: SparseHZono, layer) -> SparseHZono:
+    W, b = sparse_dense_matrix_from_layer(layer)
+    return sparse_hz_linear(hz, W, b)
+
+
+def sparse_hz_is_point(hz: SparseHZono) -> bool:
+    return hz.n_cont == 0 and hz.n_bin == 0 and hz.n_eq == 0 and hz.n_ub == 0
+
+
+def sparse_matmul_const_matrix_from_layer(
+    layer,
+    const,
+    *,
+    variable_is_left: bool,
+) -> sp.csr_matrix:
+    """Exact linear matrix for MATMUL when one operand is a point tensor."""
+
+    x_shape = tuple(int(d) for d in layer.params["x_shape"])
+    y_shape = tuple(int(d) for d in layer.params["y_shape"])
+    in_shape = x_shape if variable_is_left else y_shape
+    in_dim = _prod(in_shape)
+    if in_dim <= 0:
+        raise ValueError("MATMUL variable operand has empty shape")
+    const_shape = y_shape if variable_is_left else x_shape
+    W = np.asarray(const, dtype=np.float64).reshape(const_shape)
+    eye = np.eye(in_dim, dtype=np.float64).reshape((in_dim, *in_shape))
+    out = np.matmul(eye, W) if variable_is_left else np.matmul(W, eye)
+    mat = sp.csr_matrix(out.reshape(in_dim, -1).T)
+    mat.eliminate_zeros()
+    return mat
+
+
+def sparse_hz_apply_per_batch_linear(hz: SparseHZono, W: sp.csr_matrix) -> SparseHZono:
+    W = W.tocsr()
+    in_dim = int(W.shape[1])
+    if in_dim <= 0 or hz.n_out % in_dim:
+        raise ValueError(f"per-batch linear mismatch: hz.n_out={hz.n_out}, W={W.shape}")
+    B = hz.n_out // in_dim
+    if B == 1:
+        big = W
+    else:
+        big = sp.kron(sp.eye(B, format="csr", dtype=np.float64), W, format="csr")
+    return sparse_hz_linear(hz, big, np.zeros(big.shape[0], dtype=np.float64))
+
+
+def sparse_hz_apply_matmul_const_layer(
+    variable_hz: SparseHZono,
+    const_hz: SparseHZono,
+    layer,
+    *,
+    variable_is_left: bool,
+) -> SparseHZono:
+    if not sparse_hz_is_point(const_hz):
+        raise ValueError("constant-side MATMUL requires a point SparseHZono")
+    W = sparse_matmul_const_matrix_from_layer(
+        layer,
+        const_hz.c,
+        variable_is_left=variable_is_left,
+    )
+    return sparse_hz_apply_per_batch_linear(variable_hz, W)
+
+
+def sparse_conv2d_matrix_from_layer(layer) -> Tuple[sp.csr_matrix, np.ndarray]:
+    """Build the exact NCHW sparse affine matrix for an ACT CONV2D layer."""
+
+    weight = _to_numpy(layer.params["weight"]).astype(np.float64, copy=False)
+    bias = layer.params.get("bias")
+    bias_np = None if bias is None else _to_numpy(bias).astype(np.float64, copy=False).reshape(-1)
+    out_ch, in_ch_per_group, kh, kw = [int(v) for v in weight.shape]
+    groups = int(layer.params.get("groups", 1))
+    stride = _pair(layer.params.get("stride", 1))
+    padding = _pair(layer.params.get("padding", 0))
+    dilation = _pair(layer.params.get("dilation", 1))
+    bsz, in_ch, in_h, in_w = _shape4(layer.params["input_shape"])
+    out_bsz, out_ch_shape, out_h, out_w = _shape4(layer.params["output_shape"])
+    if bsz != out_bsz or out_ch != out_ch_shape:
+        raise ValueError(f"conv2d shape mismatch at layer {getattr(layer, 'id', '?')}")
+    if in_ch_per_group * groups != in_ch:
+        raise ValueError(f"conv2d group/input mismatch at layer {getattr(layer, 'id', '?')}")
+
+    rows: List[np.ndarray] = []
+    cols: List[np.ndarray] = []
+    data: List[np.ndarray] = []
+    out_ch_per_group = out_ch // groups
+    for n in range(bsz):
+        for co in range(out_ch):
+            group = co // out_ch_per_group
+            ci_base = group * in_ch_per_group
+            for oh in range(out_h):
+                ih0 = oh * stride[0] - padding[0]
+                for ow in range(out_w):
+                    iw0 = ow * stride[1] - padding[1]
+                    out_idx = ((n * out_ch + co) * out_h + oh) * out_w + ow
+                    cur_cols: List[int] = []
+                    cur_vals: List[float] = []
+                    for ci_local in range(in_ch_per_group):
+                        ci = ci_base + ci_local
+                        for rr in range(kh):
+                            ih = ih0 + rr * dilation[0]
+                            if ih < 0 or ih >= in_h:
+                                continue
+                            for cc in range(kw):
+                                iw = iw0 + cc * dilation[1]
+                                if iw < 0 or iw >= in_w:
+                                    continue
+                                val = float(weight[co, ci_local, rr, cc])
+                                if val == 0.0:
+                                    continue
+                                cur_cols.append(((n * in_ch + ci) * in_h + ih) * in_w + iw)
+                                cur_vals.append(val)
+                    if cur_cols:
+                        arr_c = np.asarray(cur_cols, dtype=np.int32)
+                        rows.append(np.full(arr_c.size, out_idx, dtype=np.int32))
+                        cols.append(arr_c)
+                        data.append(np.asarray(cur_vals, dtype=np.float64))
+
+    if rows:
+        rr = np.concatenate(rows)
+        cc = np.concatenate(cols)
+        dd = np.concatenate(data)
+    else:
+        rr = cc = np.empty(0, dtype=np.int32)
+        dd = np.empty(0, dtype=np.float64)
+    mat = sp.csr_matrix(
+        (dd, (rr, cc)),
+        shape=(bsz * out_ch * out_h * out_w, bsz * in_ch * in_h * in_w),
+        dtype=np.float64,
+    )
+    mat.eliminate_zeros()
+    if bias_np is None:
+        bvec = np.zeros(mat.shape[0], dtype=np.float64)
+    else:
+        bvec = np.tile(np.repeat(bias_np, out_h * out_w), bsz)
+    return mat, bvec
+
+
+def sparse_hz_apply_conv2d_layer(hz: SparseHZono, layer) -> SparseHZono:
+    W, b = sparse_conv2d_matrix_from_layer(layer)
+    return sparse_hz_linear(hz, W, b)
+
+
+def sparse_convtranspose2d_matrix_from_layer(layer) -> Tuple[sp.csr_matrix, np.ndarray]:
+    """Build the exact NCHW sparse affine matrix for ACT CONVTRANSPOSE2D."""
+
+    weight = _to_numpy(layer.params["weight"]).astype(np.float64, copy=False)
+    bias = layer.params.get("bias")
+    bias_np = None if bias is None else _to_numpy(bias).astype(np.float64, copy=False).reshape(-1)
+    in_ch, out_ch_per_group, kh, kw = [int(v) for v in weight.shape]
+    groups = int(layer.params.get("groups", 1))
+    stride = _pair(layer.params.get("stride", 1))
+    padding = _pair(layer.params.get("padding", 0))
+    dilation = _pair(layer.params.get("dilation", 1))
+    bsz, in_ch_shape, in_h, in_w = _shape4(layer.params["input_shape"])
+    out_bsz, out_ch, out_h, out_w = _shape4(layer.params["output_shape"])
+    if bsz != out_bsz or in_ch != in_ch_shape:
+        raise ValueError(f"convtranspose2d shape mismatch at layer {getattr(layer, 'id', '?')}")
+    if out_ch != out_ch_per_group * groups:
+        raise ValueError(f"convtranspose2d group/output mismatch at layer {getattr(layer, 'id', '?')}")
+
+    rows: List[np.ndarray] = []
+    cols: List[np.ndarray] = []
+    data: List[np.ndarray] = []
+    in_ch_per_group = in_ch // groups
+    for n in range(bsz):
+        for ci in range(in_ch):
+            group = ci // in_ch_per_group
+            co_base = group * out_ch_per_group
+            for ih in range(in_h):
+                oh0 = ih * stride[0] - padding[0]
+                for iw in range(in_w):
+                    ow0 = iw * stride[1] - padding[1]
+                    in_idx = ((n * in_ch + ci) * in_h + ih) * in_w + iw
+                    cur_rows: List[int] = []
+                    cur_vals: List[float] = []
+                    for co_local in range(out_ch_per_group):
+                        co = co_base + co_local
+                        for rr in range(kh):
+                            oh = oh0 + rr * dilation[0]
+                            if oh < 0 or oh >= out_h:
+                                continue
+                            for cc in range(kw):
+                                ow = ow0 + cc * dilation[1]
+                                if ow < 0 or ow >= out_w:
+                                    continue
+                                val = float(weight[ci, co_local, rr, cc])
+                                if val == 0.0:
+                                    continue
+                                cur_rows.append(((n * out_ch + co) * out_h + oh) * out_w + ow)
+                                cur_vals.append(val)
+                    if cur_rows:
+                        arr_r = np.asarray(cur_rows, dtype=np.int32)
+                        rows.append(arr_r)
+                        cols.append(np.full(arr_r.size, in_idx, dtype=np.int32))
+                        data.append(np.asarray(cur_vals, dtype=np.float64))
+
+    if rows:
+        rr = np.concatenate(rows)
+        cc = np.concatenate(cols)
+        dd = np.concatenate(data)
+    else:
+        rr = cc = np.empty(0, dtype=np.int32)
+        dd = np.empty(0, dtype=np.float64)
+    mat = sp.csr_matrix(
+        (dd, (rr, cc)),
+        shape=(bsz * out_ch * out_h * out_w, bsz * in_ch * in_h * in_w),
+        dtype=np.float64,
+    )
+    mat.eliminate_zeros()
+    if bias_np is None:
+        bvec = np.zeros(mat.shape[0], dtype=np.float64)
+    else:
+        bvec = np.tile(np.repeat(bias_np, out_h * out_w), bsz)
+    return mat, bvec
+
+
+def sparse_hz_apply_convtranspose2d_layer(hz: SparseHZono, layer) -> SparseHZono:
+    W, b = sparse_convtranspose2d_matrix_from_layer(layer)
+    return sparse_hz_linear(hz, W, b)
+
+
+def sparse_avgpool2d_matrix_from_layer(layer) -> Tuple[sp.csr_matrix, np.ndarray]:
+    """Build the exact NCHW sparse affine matrix for ACT AVGPOOL2D."""
+
+    bsz, ch, in_h, in_w = _shape4(layer.params["input_shape"])
+    out_bsz, out_ch, out_h, out_w = _shape4(layer.params["output_shape"])
+    if bsz != out_bsz or ch != out_ch:
+        raise ValueError(f"avgpool2d shape mismatch at layer {getattr(layer, 'id', '?')}")
+    kh, kw = _pair(layer.params["kernel_size"])
+    stride = layer.params.get("stride", layer.params["kernel_size"])
+    sh, sw = _pair(stride)
+    ph, pw = _pair(layer.params.get("padding", 0))
+    denom = float(kh * kw)
+
+    rows: List[np.ndarray] = []
+    cols: List[np.ndarray] = []
+    for n in range(bsz):
+        for c in range(ch):
+            for oh in range(out_h):
+                ih0 = oh * sh - ph
+                for ow in range(out_w):
+                    iw0 = ow * sw - pw
+                    out_idx = ((n * ch + c) * out_h + oh) * out_w + ow
+                    cur_cols: List[int] = []
+                    for ki in range(kh):
+                        ih = ih0 + ki
+                        if ih < 0 or ih >= in_h:
+                            continue
+                        for kj in range(kw):
+                            iw = iw0 + kj
+                            if iw < 0 or iw >= in_w:
+                                continue
+                            cur_cols.append(((n * ch + c) * in_h + ih) * in_w + iw)
+                    if cur_cols:
+                        rows.append(np.full(len(cur_cols), out_idx, dtype=np.int32))
+                        cols.append(np.asarray(cur_cols, dtype=np.int32))
+    rr = np.concatenate(rows) if rows else np.empty(0, dtype=np.int32)
+    cc = np.concatenate(cols) if cols else np.empty(0, dtype=np.int32)
+    dd = np.full(rr.size, 1.0 / denom, dtype=np.float64)
+    mat = sp.csr_matrix(
+        (dd, (rr, cc)),
+        shape=(bsz * ch * out_h * out_w, bsz * ch * in_h * in_w),
+        dtype=np.float64,
+    )
+    mat.eliminate_zeros()
+    return mat, np.zeros(mat.shape[0], dtype=np.float64)
+
+
+def sparse_hz_apply_avgpool2d_layer(hz: SparseHZono, layer) -> SparseHZono:
+    W, b = sparse_avgpool2d_matrix_from_layer(layer)
+    return sparse_hz_linear(hz, W, b)
+
+
+def sparse_maxpool2d_candidate_rows(layer) -> List[np.ndarray]:
+    """Return one output-to-input row map per MaxPool2D window candidate.
+
+    Invalid padding locations are encoded as ``-1``.  The exact MaxPool fold
+    replaces those with a constant below the input lower bound, so padding
+    locations cannot win a maximum.
+    """
+
+    bsz, ch, in_h, in_w = _shape4(layer.params["input_shape"])
+    kh, kw = _pair(layer.params["kernel_size"])
+    stride = layer.params.get("stride", layer.params["kernel_size"])
+    sh, sw = _pair(stride)
+    ph, pw = _pair(layer.params.get("padding", 0))
+    dh, dw = _pair(layer.params.get("dilation", 1))
+    output_shape = layer.params.get("output_shape")
+    if output_shape is None:
+        out_bsz, out_ch = bsz, ch
+        out_h = (in_h + 2 * ph - dh * (kh - 1) - 1) // sh + 1
+        out_w = (in_w + 2 * pw - dw * (kw - 1) - 1) // sw + 1
+    else:
+        out_bsz, out_ch, out_h, out_w = _shape4(output_shape)
+    if bsz != out_bsz or ch != out_ch:
+        raise ValueError(f"maxpool2d shape mismatch at layer {getattr(layer, 'id', '?')}")
+
+    n_out = bsz * ch * out_h * out_w
+    candidates: List[np.ndarray] = []
+    for ki in range(kh):
+        for kj in range(kw):
+            rows = np.full(n_out, -1, dtype=np.int64)
+            for n in range(bsz):
+                for c in range(ch):
+                    for oh in range(out_h):
+                        ih = oh * sh - ph + ki * dh
+                        for ow in range(out_w):
+                            iw = ow * sw - pw + kj * dw
+                            out_idx = ((n * ch + c) * out_h + oh) * out_w + ow
+                            if 0 <= ih < in_h and 0 <= iw < in_w:
+                                rows[out_idx] = ((n * ch + c) * in_h + ih) * in_w + iw
+            candidates.append(rows)
+    return candidates
+
+
+def sparse_hz_gather_rows_like(
+    base: SparseHZono,
+    rows: Sequence[int],
+    *,
+    fill_value: float,
+    template: Optional[SparseHZono] = None,
+) -> SparseHZono:
+    """Gather rows from ``base`` while using ``template``'s variable frame."""
+
+    row_idx = np.asarray(rows, dtype=np.int64).reshape(-1)
+    tmpl = template if template is not None else base
+    n = int(row_idx.size)
+    valid = row_idx >= 0
+    c = np.full(n, float(fill_value), dtype=np.float64)
+    if np.any(valid):
+        pos = np.nonzero(valid)[0].astype(np.int32)
+        src = row_idx[valid].astype(np.int64)
+        c[pos] = base.c[src]
+        sub_c = sparse_pad_cols(base.Gc[src].tocsr(), tmpl.n_cont).tocoo()
+        Gc = sp.coo_matrix(
+            (sub_c.data, (pos[sub_c.row], sub_c.col)),
+            shape=(n, tmpl.n_cont),
+            dtype=np.float64,
+        ).tocsr()
+        if tmpl.n_bin:
+            sub_b = sparse_pad_cols(base.Gb[src].tocsr(), tmpl.n_bin).tocoo()
+            Gb = sp.coo_matrix(
+                (sub_b.data, (pos[sub_b.row], sub_b.col)),
+                shape=(n, tmpl.n_bin),
+                dtype=np.float64,
+            ).tocsr()
+        else:
+            Gb = sparse_empty(n, 0)
+    else:
+        Gc = sparse_empty(n, tmpl.n_cont)
+        Gb = sparse_empty(n, tmpl.n_bin)
+    Gc.eliminate_zeros()
+    Gb.eliminate_zeros()
+    return SparseHZono(
+        c=c,
+        Gc=Gc,
+        Gb=Gb,
+        Ac=tmpl.Ac,
+        Ab=tmpl.Ab,
+        b=tmpl.b,
+        Auc=tmpl.Auc,
+        Aub=tmpl.Aub,
+        ub=tmpl.ub,
+        **_input_metadata_kwargs(tmpl),
+    )
+
+
+def sparse_hz_apply_maxpool2d_layer(
+    hz: SparseHZono,
+    layer,
+    input_bounds: Bounds,
+    *,
+    compressed_relu: bool = False,
+    valid_cuts: bool = False,
+) -> SparseHZono:
+    """Exact sparse MaxPool2D as a fold of ``max(a,b)=b+ReLU(a-b)``."""
+
+    candidates = sparse_maxpool2d_candidate_rows(layer)
+    if not candidates:
+        raise ValueError(f"maxpool2d layer {getattr(layer, 'id', '?')} has no candidates")
+    in_lb = input_bounds.lb.detach().cpu().double().numpy().reshape(-1)
+    in_ub = input_bounds.ub.detach().cpu().double().numpy().reshape(-1)
+    fill_value = float(np.min(in_lb) - 1.0) if in_lb.size else -1.0
+
+    def gather_bounds(rows: Sequence[int]) -> Tuple[np.ndarray, np.ndarray]:
+        row_idx = np.asarray(rows, dtype=np.int64).reshape(-1)
+        valid = row_idx >= 0
+        lb = np.full(row_idx.size, fill_value, dtype=np.float64)
+        ub = np.full(row_idx.size, fill_value, dtype=np.float64)
+        if np.any(valid):
+            lb[valid] = in_lb[row_idx[valid]]
+            ub[valid] = in_ub[row_idx[valid]]
+        return lb, ub
+
+    out = sparse_hz_gather_rows_like(hz, candidates[0], fill_value=fill_value)
+    cur_lb, cur_ub = gather_bounds(candidates[0])
+    for rows in candidates[1:]:
+        nxt = sparse_hz_gather_rows_like(hz, rows, fill_value=fill_value, template=out)
+        nxt_lb, nxt_ub = gather_bounds(rows)
+        diff = sparse_hz_sub_same_frame(out, nxt)
+        pre_bounds = Bounds(
+            lb=torch.from_numpy(cur_lb - nxt_ub).reshape(1, -1).double(),
+            ub=torch.from_numpy(cur_ub - nxt_lb).reshape(1, -1).double(),
+        )
+        relu = sparse_hz_apply_relu_exact(
+            diff,
+            pre_bounds=pre_bounds,
+            compressed=compressed_relu,
+            valid_cuts=valid_cuts,
+        )
+        out = sparse_hz_add_same_frame(nxt, relu)
+        cur_lb = np.maximum(cur_lb, nxt_lb)
+        cur_ub = np.maximum(cur_ub, nxt_ub)
+    return out
+
+
+def sparse_hz_fast_bounds(hz: SparseHZono) -> Bounds:
+    """Sound unconstrained box bounds for a sparse HZ."""
+
+    rad_c = np.asarray(np.abs(hz.Gc).sum(axis=1)).reshape(-1)
+    rad_b = np.asarray(np.abs(hz.Gb).sum(axis=1)).reshape(-1) if hz.n_bin else 0.0
+    rad = rad_c + rad_b
+    lb = torch.from_numpy(hz.c - rad).reshape(1, -1).double()
+    ub = torch.from_numpy(hz.c + rad).reshape(1, -1).double()
+    return Bounds(lb=lb, ub=ub)
+
+
+def _bounds_arrays(bounds: Bounds, n: int) -> Tuple[np.ndarray, np.ndarray]:
+    lb = bounds.lb.detach().cpu().double().numpy().reshape(-1)
+    ub = bounds.ub.detach().cpu().double().numpy().reshape(-1)
+    if lb.size != n or ub.size != n:
+        raise ValueError(f"bounds shape mismatch: bounds={lb.size}/{ub.size}, hz.n_out={n}")
+    return lb.astype(np.float64, copy=False), ub.astype(np.float64, copy=False)
+
+
+def _coo_matrix_from_parts(
+    rows: List[np.ndarray],
+    cols: List[np.ndarray],
+    data: List[np.ndarray],
+    shape: Tuple[int, int],
+) -> sp.csr_matrix:
+    if not rows:
+        return sparse_empty(*shape)
+    return sp.coo_matrix(
+        (np.concatenate(data), (np.concatenate(rows), np.concatenate(cols))),
+        shape=shape,
+        dtype=np.float64,
+    ).tocsr()
+
+
+def sparse_hz_apply_relu_exact(
+    hz: SparseHZono,
+    pre_bounds: Optional[Bounds] = None,
+    *,
+    compressed: bool = False,
+    valid_cuts: bool = False,
+) -> SparseHZono:
+    """Exact sparse eq_lagr ReLU.
+
+    Every unstable neuron gets the exact binary HZ graph.  ``compressed`` keeps
+    the same exact graph after projecting the two slack equalities into two
+    upper-inequality rows.  ``valid_cuts`` appends redundant graph facets for
+    solver tightening; it never replaces the exact binary construction.
+    """
+
+    if pre_bounds is None:
+        pre_bounds = sparse_hz_fast_bounds(hz)
+    lb, ub = _bounds_arrays(pre_bounds, hz.n_out)
+    active = lb >= 0.0
+    inactive = ub <= 0.0
+    unstable = ~(active | inactive)
+    active_idx = np.nonzero(active)[0].astype(np.int32)
+    unstable_idx = np.nonzero(unstable)[0].astype(np.int32)
+    k = int(unstable_idx.size)
+
+    n = hz.n_out
+    ng = hz.n_cont
+    nb = hz.n_bin
+    ng_new = ng + (2 * k if compressed else 4 * k)
+    nb_new = nb + k
+
+    out_c = np.zeros(n, dtype=np.float64)
+    blocks_c: List[sp.csr_matrix] = []
+    blocks_b: List[sp.csr_matrix] = []
+    if active_idx.size:
+        out_c[active_idx] = hz.c[active_idx]
+        act_c = hz.Gc[active_idx].tocoo()
+        blocks_c.append(
+            sp.coo_matrix(
+                (act_c.data, (active_idx[act_c.row], act_c.col)),
+                shape=(n, ng_new),
+                dtype=np.float64,
+            ).tocsr()
+        )
+        if nb:
+            act_b = hz.Gb[active_idx].tocoo()
+            blocks_b.append(
+                sp.coo_matrix(
+                    (act_b.data, (active_idx[act_b.row], act_b.col)),
+                    shape=(n, nb_new),
+                    dtype=np.float64,
+                ).tocsr()
+            )
+    if k:
+        beta = ub[unstable_idx]
+        out_c[unstable_idx] = beta / 2.0
+        xi2_cols = ng + k + np.arange(k, dtype=np.int32)
+        blocks_c.append(
+            sp.csr_matrix(
+                (-beta / 2.0, (unstable_idx, xi2_cols)),
+                shape=(n, ng_new),
+                dtype=np.float64,
+            )
+        )
+
+    out_Gc = sum(blocks_c[1:], blocks_c[0]).tocsr() if blocks_c else sparse_empty(n, ng_new)
+    out_Gb = sum(blocks_b[1:], blocks_b[0]).tocsr() if blocks_b else sparse_empty(n, nb_new)
+    out_Gc.eliminate_zeros()
+    out_Gb.eliminate_zeros()
+
+    old_Ac = sparse_pad_cols(hz.Ac, ng_new)
+    old_Ab = sparse_pad_cols(hz.Ab, nb_new)
+    if k:
+        alpha = lb[unstable_idx]
+        beta = ub[unstable_idx]
+        te = np.arange(k, dtype=np.int32)
+        col_xi1 = ng + te
+        col_xi2 = ng + k + te
+        col_z = nb + te
+
+        rr_c: List[np.ndarray] = []
+        cc_c: List[np.ndarray] = []
+        dd_c: List[np.ndarray] = []
+        rr_b: List[np.ndarray] = []
+        cc_b: List[np.ndarray] = []
+        dd_b: List[np.ndarray] = []
+
+        def add_c(rows, cols, data) -> None:
+            rows = np.asarray(rows, dtype=np.int32)
+            if rows.size:
+                rr_c.append(rows)
+                cc_c.append(np.asarray(cols, dtype=np.int32))
+                dd_c.append(np.asarray(data, dtype=np.float64))
+
+        def add_b(rows, cols, data) -> None:
+            rows = np.asarray(rows, dtype=np.int32)
+            if rows.size:
+                rr_b.append(rows)
+                cc_b.append(np.asarray(cols, dtype=np.int32))
+                dd_b.append(np.asarray(data, dtype=np.float64))
+
+        if compressed:
+            r3 = te
+            n_relu_eq = k
+        else:
+            col_xi3 = ng + 2 * k + te
+            col_xi4 = ng + 3 * k + te
+            r1 = 3 * te
+            r2 = r1 + 1
+            r3 = r1 + 2
+            add_c(r1, col_xi1, np.ones(k))
+            add_c(r1, col_xi3, np.ones(k))
+            add_c(r2, col_xi2, np.ones(k))
+            add_c(r2, col_xi4, np.ones(k))
+            add_b(r1, col_z, np.ones(k))
+            add_b(r2, col_z, -np.ones(k))
+            n_relu_eq = 3 * k
+
+        add_c(r3, col_xi1, alpha / 2.0)
+        add_c(r3, col_xi2, -beta / 2.0)
+        add_b(r3, col_z, alpha / 2.0)
+
+        pre_gc = hz.Gc[unstable_idx].tocoo()
+        if pre_gc.nnz:
+            add_c(r3[pre_gc.row], pre_gc.col, -pre_gc.data)
+        if nb:
+            pre_gb = hz.Gb[unstable_idx].tocoo()
+            if pre_gb.nnz:
+                add_b(r3[pre_gb.row], pre_gb.col, -pre_gb.data)
+
+        eq_Ac = _coo_matrix_from_parts(rr_c, cc_c, dd_c, (n_relu_eq, ng_new))
+        eq_Ab = _coo_matrix_from_parts(rr_b, cc_b, dd_b, (n_relu_eq, nb_new))
+        eq_b = np.zeros(n_relu_eq, dtype=np.float64)
+        if not compressed:
+            eq_b[r1] = 1.0
+            eq_b[r2] = 1.0
+        eq_b[r3] = hz.c[unstable_idx] - beta / 2.0
+    else:
+        eq_Ac = sparse_empty(0, ng_new)
+        eq_Ab = sparse_empty(0, nb_new)
+        eq_b = np.zeros(0, dtype=np.float64)
+
+    Ac = sp.vstack([old_Ac, eq_Ac], format="csr")
+    Ab = sp.vstack([old_Ab, eq_Ab], format="csr")
+    b = np.concatenate([hz.b, eq_b])
+    Ac.eliminate_zeros()
+    Ab.eliminate_zeros()
+
+    Auc_base = sparse_pad_cols(hz.Auc if hz.Auc is not None else sparse_empty(0, hz.n_cont), ng_new)
+    Aub_base = sparse_pad_cols(hz.Aub if hz.Aub is not None else sparse_empty(0, hz.n_bin), nb_new)
+    ub_base = hz.ub if hz.ub is not None else np.zeros(0, dtype=np.float64)
+    upper_blocks_c = [Auc_base]
+    upper_blocks_b = [Aub_base]
+    upper_rhs = [ub_base]
+
+    if compressed and k:
+        rows = np.arange(k, dtype=np.int32)
+        proj_Ac = sp.coo_matrix(
+            (
+                np.concatenate([-np.ones(k), -np.ones(k)]),
+                (
+                    np.concatenate([rows, k + rows]),
+                    np.concatenate([ng + rows, ng + k + rows]),
+                ),
+            ),
+            shape=(2 * k, ng_new),
+            dtype=np.float64,
+        ).tocsr()
+        proj_Ab = sp.coo_matrix(
+            (
+                np.concatenate([-np.ones(k), np.ones(k)]),
+                (
+                    np.concatenate([rows, k + rows]),
+                    np.concatenate([nb + rows, nb + rows]),
+                ),
+            ),
+            shape=(2 * k, nb_new),
+            dtype=np.float64,
+        ).tocsr()
+        upper_blocks_c.append(proj_Ac)
+        upper_blocks_b.append(proj_Ab)
+        upper_rhs.append(np.zeros(2 * k, dtype=np.float64))
+
+    if valid_cuts and k:
+        rr_c = []
+        cc_c = []
+        dd_c = []
+        rr_b = []
+        cc_b = []
+        dd_b = []
+        rhs = np.zeros(2 * k, dtype=np.float64)
+
+        def add_cut_c(rows, cols, data) -> None:
+            rows = np.asarray(rows, dtype=np.int32)
+            if rows.size:
+                rr_c.append(rows)
+                cc_c.append(np.asarray(cols, dtype=np.int32))
+                dd_c.append(np.asarray(data, dtype=np.float64))
+
+        def add_cut_b(rows, cols, data) -> None:
+            rows = np.asarray(rows, dtype=np.int32)
+            if rows.size:
+                rr_b.append(rows)
+                cc_b.append(np.asarray(cols, dtype=np.int32))
+                dd_b.append(np.asarray(data, dtype=np.float64))
+
+        row1 = np.arange(k, dtype=np.int32)
+        row2 = k + row1
+        alpha = lb[unstable_idx]
+        beta = ub[unstable_idx]
+        slope = beta / np.maximum(beta - alpha, 1e-12)
+        xi2_cols = ng + k + np.arange(k, dtype=np.int32)
+        pre_gc = hz.Gc[unstable_idx].tocoo()
+        if pre_gc.nnz:
+            add_cut_c(pre_gc.row, pre_gc.col, pre_gc.data)
+            add_cut_c(k + pre_gc.row, pre_gc.col, -slope[pre_gc.row] * pre_gc.data)
+        if nb:
+            pre_gb = hz.Gb[unstable_idx].tocoo()
+            if pre_gb.nnz:
+                add_cut_b(pre_gb.row, pre_gb.col, pre_gb.data)
+                add_cut_b(k + pre_gb.row, pre_gb.col, -slope[pre_gb.row] * pre_gb.data)
+        add_cut_c(row1, xi2_cols, beta / 2.0)
+        add_cut_c(row2, xi2_cols, -beta / 2.0)
+        rhs[row1] = beta / 2.0 - hz.c[unstable_idx]
+        rhs[row2] = -slope * alpha - beta / 2.0 + slope * hz.c[unstable_idx]
+        upper_blocks_c.append(_coo_matrix_from_parts(rr_c, cc_c, dd_c, (2 * k, ng_new)))
+        upper_blocks_b.append(_coo_matrix_from_parts(rr_b, cc_b, dd_b, (2 * k, nb_new)))
+        upper_rhs.append(rhs)
+
+    Auc = sp.vstack(upper_blocks_c, format="csr")
+    Aub = sp.vstack(upper_blocks_b, format="csr")
+    ub_rhs = np.concatenate(upper_rhs)
+    Auc.eliminate_zeros()
+    Aub.eliminate_zeros()
+    return SparseHZono(
+        out_c, out_Gc, out_Gb, Ac, Ab, b, Auc, Aub, ub_rhs,
+        **_input_metadata_kwargs(hz),
+    )
+
+
+def _sigmoid_np(x: np.ndarray) -> np.ndarray:
+    z = np.clip(np.asarray(x, dtype=np.float64), -60.0, 60.0)
+    return 1.0 / (1.0 + np.exp(-z))
+
+
+def _sigmoid_deriv_np(x: np.ndarray) -> np.ndarray:
+    y = _sigmoid_np(x)
+    return y * (1.0 - y)
+
+
+def _tanh_np(x: np.ndarray) -> np.ndarray:
+    return np.tanh(np.clip(np.asarray(x, dtype=np.float64), -30.0, 30.0))
+
+
+def _tanh_deriv_np(x: np.ndarray) -> np.ndarray:
+    y = _tanh_np(x)
+    return 1.0 - y * y
+
+
+def _scurve_domain_cut_matrices(
+    hz: SparseHZono,
+    wide_idx: np.ndarray,
+    seg_a: np.ndarray,
+    seg_b: np.ndarray,
+    owner: np.ndarray,
+    z_cols: np.ndarray,
+    n_cont: int,
+    n_bin: int,
+    lb_w: np.ndarray,
+    ub_w: np.ndarray,
+) -> Tuple[sp.csr_matrix, sp.csr_matrix, np.ndarray]:
+    """Exact-valid cuts tying selected S-curve segments to their x-domain."""
+
+    owner = np.asarray(owner, dtype=np.int32).reshape(-1)
+    r = int(owner.size)
+    if r == 0:
+        return sparse_empty(0, n_cont), sparse_empty(0, n_bin), np.zeros(0, dtype=np.float64)
+    seg_a = np.asarray(seg_a, dtype=np.float64).reshape(-1)
+    seg_b = np.asarray(seg_b, dtype=np.float64).reshape(-1)
+    z_cols = np.asarray(z_cols, dtype=np.int32).reshape(-1)
+    if not (seg_a.size == seg_b.size == z_cols.size == r):
+        raise ValueError("S-curve domain cut metadata size mismatch")
+
+    rr_c: List[np.ndarray] = []
+    cc_c: List[np.ndarray] = []
+    dd_c: List[np.ndarray] = []
+    rr_b: List[np.ndarray] = []
+    cc_b: List[np.ndarray] = []
+    dd_b: List[np.ndarray] = []
+
+    def add_c(rows, cols, data) -> None:
+        arr = np.asarray(data, dtype=np.float64).reshape(-1)
+        if arr.size:
+            rr_c.append(np.asarray(rows, dtype=np.int32).reshape(-1))
+            cc_c.append(np.asarray(cols, dtype=np.int32).reshape(-1))
+            dd_c.append(arr)
+
+    def add_b(rows, cols, data) -> None:
+        arr = np.asarray(data, dtype=np.float64).reshape(-1)
+        if arr.size:
+            rr_b.append(np.asarray(rows, dtype=np.int32).reshape(-1))
+            cc_b.append(np.asarray(cols, dtype=np.int32).reshape(-1))
+            dd_b.append(arr)
+
+    upper_rows = np.arange(r, dtype=np.int32)
+    lower_rows = r + upper_rows
+    g_lo = np.asarray(lb_w, dtype=np.float64).reshape(-1)[owner]
+    g_hi = np.asarray(ub_w, dtype=np.float64).reshape(-1)[owner]
+    x_center = hz.c[np.asarray(wide_idx, dtype=np.int64)[owner]]
+    rhs = np.empty(2 * r, dtype=np.float64)
+    rhs[upper_rows] = (g_hi + seg_b) / 2.0 - x_center
+    rhs[lower_rows] = -(g_lo + seg_a) / 2.0 + x_center
+
+    add_b(upper_rows, z_cols, -(g_hi - seg_b) / 2.0)
+    add_b(lower_rows, z_cols, -(seg_a - g_lo) / 2.0)
+
+    pre_gc = hz.Gc[np.asarray(wide_idx, dtype=np.int64)].tocsr()
+    pre_gb = hz.Gb[np.asarray(wide_idx, dtype=np.int64)].tocsr() if hz.n_bin else sparse_empty(len(wide_idx), 0)
+    for j in range(len(wide_idx)):
+        flats = np.nonzero(owner == j)[0].astype(np.int32)
+        if flats.size == 0:
+            continue
+        c0, c1 = pre_gc.indptr[j], pre_gc.indptr[j + 1]
+        if c1 > c0:
+            cols = pre_gc.indices[c0:c1].astype(np.int32)
+            data = pre_gc.data[c0:c1].astype(np.float64)
+            rows = np.repeat(flats, cols.size)
+            add_c(rows, np.tile(cols, flats.size), np.tile(data, flats.size))
+            add_c(r + rows, np.tile(cols, flats.size), -np.tile(data, flats.size))
+        if hz.n_bin:
+            b0, b1 = pre_gb.indptr[j], pre_gb.indptr[j + 1]
+            if b1 > b0:
+                cols = pre_gb.indices[b0:b1].astype(np.int32)
+                data = pre_gb.data[b0:b1].astype(np.float64)
+                rows = np.repeat(flats, cols.size)
+                add_b(rows, np.tile(cols, flats.size), np.tile(data, flats.size))
+                add_b(r + rows, np.tile(cols, flats.size), -np.tile(data, flats.size))
+
+    Auc = _coo_matrix_from_parts(rr_c, cc_c, dd_c, (2 * r, n_cont))
+    Aub = _coo_matrix_from_parts(rr_b, cc_b, dd_b, (2 * r, n_bin))
+    Auc.eliminate_zeros()
+    Aub.eliminate_zeros()
+    return Auc, Aub, rhs
+
+
+def _scurve_range_cut_matrices(
+    out_c: np.ndarray,
+    out_Gc: sp.csr_matrix,
+    out_Gb: sp.csr_matrix,
+    wide_idx: np.ndarray,
+    seg_y_lo: np.ndarray,
+    seg_y_hi: np.ndarray,
+    owner: np.ndarray,
+    z_cols: np.ndarray,
+    n_cont: int,
+    n_bin: int,
+    y_lo_w: np.ndarray,
+    y_hi_w: np.ndarray,
+) -> Tuple[sp.csr_matrix, sp.csr_matrix, np.ndarray]:
+    """Exact-valid cuts tying selected S-curve segments to their y-range."""
+
+    owner = np.asarray(owner, dtype=np.int32).reshape(-1)
+    r = int(owner.size)
+    if r == 0:
+        return sparse_empty(0, n_cont), sparse_empty(0, n_bin), np.zeros(0, dtype=np.float64)
+    seg_y_lo = np.asarray(seg_y_lo, dtype=np.float64).reshape(-1)
+    seg_y_hi = np.asarray(seg_y_hi, dtype=np.float64).reshape(-1)
+    z_cols = np.asarray(z_cols, dtype=np.int32).reshape(-1)
+    if not (seg_y_lo.size == seg_y_hi.size == z_cols.size == r):
+        raise ValueError("S-curve range cut metadata size mismatch")
+
+    rr_c: List[np.ndarray] = []
+    cc_c: List[np.ndarray] = []
+    dd_c: List[np.ndarray] = []
+    rr_b: List[np.ndarray] = []
+    cc_b: List[np.ndarray] = []
+    dd_b: List[np.ndarray] = []
+
+    def add_c(rows, cols, data) -> None:
+        arr = np.asarray(data, dtype=np.float64).reshape(-1)
+        if arr.size:
+            rr_c.append(np.asarray(rows, dtype=np.int32).reshape(-1))
+            cc_c.append(np.asarray(cols, dtype=np.int32).reshape(-1))
+            dd_c.append(arr)
+
+    def add_b(rows, cols, data) -> None:
+        arr = np.asarray(data, dtype=np.float64).reshape(-1)
+        if arr.size:
+            rr_b.append(np.asarray(rows, dtype=np.int32).reshape(-1))
+            cc_b.append(np.asarray(cols, dtype=np.int32).reshape(-1))
+            dd_b.append(arr)
+
+    upper_rows = np.arange(r, dtype=np.int32)
+    lower_rows = r + upper_rows
+    g_lo = np.asarray(y_lo_w, dtype=np.float64).reshape(-1)[owner]
+    g_hi = np.asarray(y_hi_w, dtype=np.float64).reshape(-1)[owner]
+    y_center = out_c[np.asarray(wide_idx, dtype=np.int64)[owner]]
+    rhs = np.empty(2 * r, dtype=np.float64)
+    rhs[upper_rows] = (g_hi + seg_y_hi) / 2.0 - y_center
+    rhs[lower_rows] = -(g_lo + seg_y_lo) / 2.0 + y_center
+
+    add_b(upper_rows, z_cols, -(g_hi - seg_y_hi) / 2.0)
+    add_b(lower_rows, z_cols, -(seg_y_lo - g_lo) / 2.0)
+
+    y_gc = out_Gc[np.asarray(wide_idx, dtype=np.int64)].tocsr()
+    y_gb = out_Gb[np.asarray(wide_idx, dtype=np.int64)].tocsr()
+    for j in range(len(wide_idx)):
+        flats = np.nonzero(owner == j)[0].astype(np.int32)
+        if flats.size == 0:
+            continue
+        c0, c1 = y_gc.indptr[j], y_gc.indptr[j + 1]
+        if c1 > c0:
+            cols = y_gc.indices[c0:c1].astype(np.int32)
+            data = y_gc.data[c0:c1].astype(np.float64)
+            rows = np.repeat(flats, cols.size)
+            add_c(rows, np.tile(cols, flats.size), np.tile(data, flats.size))
+            add_c(r + rows, np.tile(cols, flats.size), -np.tile(data, flats.size))
+        b0, b1 = y_gb.indptr[j], y_gb.indptr[j + 1]
+        if b1 > b0:
+            cols = y_gb.indices[b0:b1].astype(np.int32)
+            data = y_gb.data[b0:b1].astype(np.float64)
+            rows = np.repeat(flats, cols.size)
+            add_b(rows, np.tile(cols, flats.size), np.tile(data, flats.size))
+            add_b(r + rows, np.tile(cols, flats.size), -np.tile(data, flats.size))
+
+    Auc = _coo_matrix_from_parts(rr_c, cc_c, dd_c, (2 * r, n_cont))
+    Aub = _coo_matrix_from_parts(rr_b, cc_b, dd_b, (2 * r, n_bin))
+    Auc.eliminate_zeros()
+    Aub.eliminate_zeros()
+    return Auc, Aub, rhs
+
+
+def _scurve_graph_cut_matrices(
+    hz: SparseHZono,
+    out_c: np.ndarray,
+    out_Gc: sp.csr_matrix,
+    out_Gb: sp.csr_matrix,
+    wide_idx: np.ndarray,
+    seg_a: np.ndarray,
+    seg_b: np.ndarray,
+    owner: np.ndarray,
+    z_cols: np.ndarray,
+    n_cont: int,
+    n_bin: int,
+    lb_w: np.ndarray,
+    ub_w: np.ndarray,
+    *,
+    func,
+    dfunc,
+) -> Tuple[sp.csr_matrix, sp.csr_matrix, np.ndarray]:
+    """Conditional convex/concave graph cuts for S-curve segments."""
+
+    owner = np.asarray(owner, dtype=np.int32).reshape(-1)
+    r = int(owner.size)
+    if r == 0:
+        return sparse_empty(0, n_cont), sparse_empty(0, n_bin), np.zeros(0, dtype=np.float64)
+    seg_a = np.asarray(seg_a, dtype=np.float64).reshape(-1)
+    seg_b = np.asarray(seg_b, dtype=np.float64).reshape(-1)
+    z_cols = np.asarray(z_cols, dtype=np.int32).reshape(-1)
+    if not (seg_a.size == seg_b.size == z_cols.size == r):
+        raise ValueError("S-curve graph cut metadata size mismatch")
+
+    rr_c: List[np.ndarray] = []
+    cc_c: List[np.ndarray] = []
+    dd_c: List[np.ndarray] = []
+    rr_b: List[np.ndarray] = []
+    cc_b: List[np.ndarray] = []
+    dd_b: List[np.ndarray] = []
+    rhs_vals: List[float] = []
+
+    pre_gc = hz.Gc[np.asarray(wide_idx, dtype=np.int64)].tocsr()
+    pre_gb = hz.Gb[np.asarray(wide_idx, dtype=np.int64)].tocsr() if hz.n_bin else sparse_empty(len(wide_idx), 0)
+    y_gc = out_Gc[np.asarray(wide_idx, dtype=np.int64)].tocsr()
+    y_gb = out_Gb[np.asarray(wide_idx, dtype=np.int64)].tocsr()
+    x_center = hz.c[np.asarray(wide_idx, dtype=np.int64)]
+    y_center = out_c[np.asarray(wide_idx, dtype=np.int64)]
+    x_lo = np.asarray(lb_w, dtype=np.float64).reshape(-1)
+    x_hi = np.asarray(ub_w, dtype=np.float64).reshape(-1)
+    y_lo = func(x_lo)
+    y_hi = func(x_hi)
+
+    def add_c(row: int, cols: np.ndarray, data: np.ndarray, scale: float) -> None:
+        if cols.size and abs(scale) > 0.0:
+            rr_c.append(np.full(cols.size, int(row), dtype=np.int32))
+            cc_c.append(cols.astype(np.int32, copy=False))
+            dd_c.append((float(scale) * data).astype(np.float64, copy=False))
+
+    def add_b(row: int, cols: np.ndarray, data: np.ndarray, scale: float) -> None:
+        if cols.size and abs(scale) > 0.0:
+            rr_b.append(np.full(cols.size, int(row), dtype=np.int32))
+            cc_b.append(cols.astype(np.int32, copy=False))
+            dd_b.append((float(scale) * data).astype(np.float64, copy=False))
+
+    def append_linear_cut(seg_i: int, ax: float, ay: float, c0: float) -> None:
+        seg_owner = int(owner[seg_i])
+        max_g = (
+            ax * (x_hi[seg_owner] if ax >= 0.0 else x_lo[seg_owner])
+            + ay * (y_hi[seg_owner] if ay >= 0.0 else y_lo[seg_owner])
+            + c0
+        )
+        M = max(0.0, float(max_g))
+        row = len(rhs_vals)
+        rhs_vals.append(
+            M / 2.0 - ax * float(x_center[seg_owner]) - ay * float(y_center[seg_owner]) - c0
+        )
+
+        c0p, c1p = pre_gc.indptr[seg_owner], pre_gc.indptr[seg_owner + 1]
+        add_c(row, pre_gc.indices[c0p:c1p], pre_gc.data[c0p:c1p], ax)
+        b0p, b1p = pre_gb.indptr[seg_owner], pre_gb.indptr[seg_owner + 1]
+        add_b(row, pre_gb.indices[b0p:b1p], pre_gb.data[b0p:b1p], ax)
+        c0y, c1y = y_gc.indptr[seg_owner], y_gc.indptr[seg_owner + 1]
+        add_c(row, y_gc.indices[c0y:c1y], y_gc.data[c0y:c1y], ay)
+        b0y, b1y = y_gb.indptr[seg_owner], y_gb.indptr[seg_owner + 1]
+        add_b(row, y_gb.indices[b0y:b1y], y_gb.data[b0y:b1y], ay)
+        rr_b.append(np.array([row], dtype=np.int32))
+        cc_b.append(np.array([int(z_cols[seg_i])], dtype=np.int32))
+        dd_b.append(np.array([-M / 2.0], dtype=np.float64))
+
+    fa = func(seg_a)
+    fb = func(seg_b)
+    da = dfunc(seg_a)
+    db = dfunc(seg_b)
+    for s in range(r):
+        a = float(seg_a[s])
+        b = float(seg_b[s])
+        if b - a <= 1e-12:
+            continue
+        if a < -1e-12 and b > 1e-12:
+            continue
+        sec_slope = float((fb[s] - fa[s]) / (b - a))
+        sec_inter = float(fa[s] - sec_slope * a)
+        tan_x = np.array([a, b], dtype=np.float64)
+        tan_y = func(tan_x)
+        tan_slope = dfunc(tan_x)
+        tan_inter = tan_y - tan_slope * tan_x
+        convex = b <= 1e-12
+        if convex:
+            append_linear_cut(s, -sec_slope, 1.0, -sec_inter)
+            for slope_i, inter_i in zip(tan_slope, tan_inter):
+                append_linear_cut(s, float(slope_i), -1.0, float(inter_i))
+        else:
+            append_linear_cut(s, sec_slope, -1.0, sec_inter)
+            for slope_i, inter_i in zip(tan_slope, tan_inter):
+                append_linear_cut(s, -float(slope_i), 1.0, -float(inter_i))
+
+    n_rows = len(rhs_vals)
+    if n_rows == 0:
+        return sparse_empty(0, n_cont), sparse_empty(0, n_bin), np.zeros(0, dtype=np.float64)
+    Auc = _coo_matrix_from_parts(rr_c, cc_c, dd_c, (n_rows, n_cont))
+    Aub = _coo_matrix_from_parts(rr_b, cc_b, dd_b, (n_rows, n_bin))
+    Auc.eliminate_zeros()
+    Aub.eliminate_zeros()
+    return Auc, Aub, np.asarray(rhs_vals, dtype=np.float64)
+
+
+def sparse_hz_apply_scurve_piecewise(
+    hz: SparseHZono,
+    pre_bounds: Optional[Bounds] = None,
+    *,
+    K: int = 2,
+    func=_sigmoid_np,
+    dfunc=_sigmoid_deriv_np,
+    inflection: float = 0.0,
+    torch_func=None,
+    torch_dfunc=None,
+    domain_cuts: bool = False,
+    graph_cuts: bool = False,
+) -> SparseHZono:
+    """Compressed sparse HZ S-curve encoding with pruned zero-width segments.
+
+    This mirrors the dense ``hz_apply_piecewise(..., compressed=True,
+    inflection=0)`` path: each nondegenerate segment gets two continuous local
+    generators and one binary selector; the local generator box is represented
+    by exact inequality rows rather than four slack equality columns.
+    """
+
+    if pre_bounds is None:
+        pre_bounds = sparse_hz_fast_bounds(hz)
+    lb, ub = _bounds_arrays(pre_bounds, hz.n_out)
+    wide = (ub - lb) > 1e-12
+    wide_idx = np.nonzero(wide)[0].astype(np.int32)
+    narrow_idx = np.nonzero(~wide)[0].astype(np.int32)
+    m = int(wide_idx.size)
+    n = hz.n_out
+    ng = hz.n_cont
+    nb = hz.n_bin
+
+    out_c = np.zeros(n, dtype=np.float64)
+    if narrow_idx.size:
+        out_c[narrow_idx] = func(hz.c[narrow_idx])
+    if m == 0:
+        return SparseHZono(
+            c=out_c,
+            Gc=sparse_empty(n, ng),
+            Gb=sparse_empty(n, nb),
+            Ac=hz.Ac,
+            Ab=hz.Ab,
+            b=hz.b,
+            Auc=hz.Auc,
+            Aub=hz.Aub,
+            ub=hz.ub,
+            **_input_metadata_kwargs(hz),
+        )
+
+    K_side = max(1, int(K))
+    lb_w = lb[wide_idx]
+    ub_w = ub[wide_idx]
+    pivot = np.maximum(np.minimum(float(inflection), ub_w), lb_w)
+    sid = np.arange(K_side, dtype=np.float64).reshape(-1, 1)
+    w_left = (pivot - lb_w).reshape(1, -1) / K_side
+    w_right = (ub_w - pivot).reshape(1, -1) / K_side
+    a_left = lb_w.reshape(1, -1) + sid * w_left
+    a_right = pivot.reshape(1, -1) + sid * w_right
+    a_grid = np.vstack([a_left, a_right])
+    b_grid = np.vstack([a_left + w_left, a_right + w_right])
+    owner_grid = np.broadcast_to(
+        np.arange(m, dtype=np.int32).reshape(1, -1),
+        (2 * K_side, m),
+    )
+    nondeg = (b_grid - a_grid) > 1e-12
+    a = a_grid[nondeg].astype(np.float64, copy=False)
+    b_seg = b_grid[nondeg].astype(np.float64, copy=False)
+    owner = owner_grid[nondeg].astype(np.int32, copy=False)
+    r = int(a.size)
+    if r == 0:
+        raise ValueError("wide S-curve neuron produced no nondegenerate segment")
+
+    if torch_func is not None and torch_dfunc is not None:
+        at = torch.from_numpy(a).double()
+        bt = torch.from_numpy(b_seg).double()
+        fa_t = torch_func(at)
+        fb_t = torch_func(bt)
+        la_t = torch_dfunc(at)
+        lb_slope_t = torch_dfunc(bt)
+        centers_x_t = (at + bt) / 2.0
+        centers_y_t = (fa_t + fb_t) / 2.0
+        nearly_linear_t = (la_t - lb_slope_t).abs() < 1e-10
+
+        denom_t = lb_slope_t - la_t
+        safe_denom_t = torch.where(nearly_linear_t, torch.ones_like(denom_t), denom_t)
+        p1_t = (fb_t - fa_t + lb_slope_t * at - la_t * bt) / safe_denom_t
+        p2_t = at + bt - p1_t
+        g1x_tang_t = (p1_t - at) / 2.0
+        g1y_tang_t = lb_slope_t * (p1_t - at) / 2.0
+        g2x_tang_t = (p2_t - at) / 2.0
+        g2y_tang_t = la_t * (p2_t - at) / 2.0
+
+        half_width_t = (bt - at) / 2.0
+        slope_t = (fb_t - fa_t) / (bt - at + 1e-30)
+        t_pts = torch.linspace(0.0, 1.0, 50, dtype=torch.float64).view(50, 1)
+        pts_t = at.unsqueeze(0) + t_pts * (bt - at).unsqueeze(0)
+        f_pts_t = torch_func(pts_t)
+        resid_t = f_pts_t - (slope_t.unsqueeze(0) * pts_t + (fa_t - slope_t * at).unsqueeze(0))
+        max_err_t = resid_t.abs().max(dim=0).values
+        g1x_lin_t = half_width_t
+        g1y_lin_t = slope_t * half_width_t
+        g2x_lin_t = torch.zeros_like(half_width_t)
+        g2y_lin_t = max_err_t
+
+        g1_x_t = torch.where(nearly_linear_t, g1x_lin_t, g1x_tang_t)
+        g1_y_t = torch.where(nearly_linear_t, g1y_lin_t, g1y_tang_t)
+        g2_x_t = torch.where(nearly_linear_t, g2x_lin_t, g2x_tang_t)
+        g2_y_t = torch.where(nearly_linear_t, g2y_lin_t, g2y_tang_t)
+
+        dx_t = pts_t - centers_x_t.unsqueeze(0)
+        dy_t = f_pts_t - centers_y_t.unsqueeze(0)
+        det_t = g1_y_t * g2_x_t - g1_x_t * g2_y_t
+        safe_det_t = torch.where(det_t.abs() < 1e-30, torch.ones_like(det_t), det_t)
+        xi1_t = (dy_t * g2_x_t.unsqueeze(0) - dx_t * g2_y_t.unsqueeze(0)) / safe_det_t.unsqueeze(0)
+        xi2_t = (dy_t * g1_x_t.unsqueeze(0) - dx_t * g1_y_t.unsqueeze(0)) / (-safe_det_t.unsqueeze(0))
+        max_xi_t = torch.maximum(xi1_t.abs().amax(dim=0), xi2_t.abs().amax(dim=0))
+        scale_factor_t = torch.where(max_xi_t > 1.0, max_xi_t * 1.01, torch.ones_like(max_xi_t))
+        scale_factor_t = torch.where(det_t.abs() < 1e-30, torch.ones_like(scale_factor_t), scale_factor_t)
+        g1_x = (g1_x_t * scale_factor_t).numpy()
+        g1_y = (g1_y_t * scale_factor_t).numpy()
+        g2_x = (g2_x_t * scale_factor_t).numpy()
+        g2_y = (g2_y_t * scale_factor_t).numpy()
+        centers_x = centers_x_t.numpy()
+        centers_y = centers_y_t.numpy()
+        fa = fa_t.numpy()
+        fb = fb_t.numpy()
+    else:
+        fa = func(a)
+        fb = func(b_seg)
+        la = dfunc(a)
+        lb_slope = dfunc(b_seg)
+        centers_x = (a + b_seg) / 2.0
+        centers_y = (fa + fb) / 2.0
+        nearly_linear = np.abs(la - lb_slope) < 1e-10
+
+        denom = lb_slope - la
+        safe_denom = np.where(nearly_linear, 1.0, denom)
+        p1 = (fb - fa + lb_slope * a - la * b_seg) / safe_denom
+        p2 = a + b_seg - p1
+        g1x_tang = (p1 - a) / 2.0
+        g1y_tang = lb_slope * (p1 - a) / 2.0
+        g2x_tang = (p2 - a) / 2.0
+        g2y_tang = la * (p2 - a) / 2.0
+
+        half_width = (b_seg - a) / 2.0
+        slope = (fb - fa) / (b_seg - a + 1e-30)
+        t_pts = np.linspace(0.0, 1.0, 50, dtype=np.float64).reshape(50, 1)
+        pts = a.reshape(1, r) + t_pts * (b_seg - a).reshape(1, r)
+        f_pts = func(pts)
+        resid = f_pts - (slope.reshape(1, r) * pts + (fa - slope * a).reshape(1, r))
+        max_err = np.max(np.abs(resid), axis=0)
+        g1x_lin = half_width
+        g1y_lin = slope * half_width
+        g2x_lin = np.zeros_like(half_width)
+        g2y_lin = max_err
+
+        g1_x = np.where(nearly_linear, g1x_lin, g1x_tang)
+        g1_y = np.where(nearly_linear, g1y_lin, g1y_tang)
+        g2_x = np.where(nearly_linear, g2x_lin, g2x_tang)
+        g2_y = np.where(nearly_linear, g2y_lin, g2y_tang)
+
+        dx = pts - centers_x.reshape(1, r)
+        dy = f_pts - centers_y.reshape(1, r)
+        det = g1_y * g2_x - g1_x * g2_y
+        safe_det = np.where(np.abs(det) < 1e-30, 1.0, det)
+        xi1 = (dy * g2_x.reshape(1, r) - dx * g2_y.reshape(1, r)) / safe_det.reshape(1, r)
+        xi2 = (dy * g1_x.reshape(1, r) - dx * g1_y.reshape(1, r)) / (-safe_det.reshape(1, r))
+        max_xi = np.maximum(np.max(np.abs(xi1), axis=0), np.max(np.abs(xi2), axis=0))
+        scale_factor = np.where(max_xi > 1.0, max_xi * 1.01, 1.0)
+        scale_factor = np.where(np.abs(det) < 1e-30, 1.0, scale_factor)
+        g1_x *= scale_factor
+        g1_y *= scale_factor
+        g2_x *= scale_factor
+        g2_y *= scale_factor
+
+    out_c[wide_idx] = np.bincount(owner, weights=centers_y, minlength=m) / 2.0
+    seg_count = np.bincount(owner, minlength=m).astype(np.float64)
+    center_x_sum = np.bincount(owner, weights=centers_x, minlength=m)
+
+    ng_total = ng + 2 * r
+    nb_total = nb + r
+    g1_cols = ng + np.arange(r, dtype=np.int32)
+    g2_cols = ng + r + np.arange(r, dtype=np.int32)
+    z_cols = nb + np.arange(r, dtype=np.int32)
+    wide_rows = wide_idx[owner]
+    out_Gc = sp.coo_matrix(
+        (
+            np.concatenate([g1_y, g2_y]),
+            (
+                np.concatenate([wide_rows, wide_rows]),
+                np.concatenate([g1_cols, g2_cols]),
+            ),
+        ),
+        shape=(n, ng_total),
+        dtype=np.float64,
+    ).tocsr()
+    out_Gb = sp.coo_matrix(
+        (-centers_y / 2.0, (wide_rows, z_cols)),
+        shape=(n, nb_total),
+        dtype=np.float64,
+    ).tocsr()
+    out_Gc.eliminate_zeros()
+    out_Gb.eliminate_zeros()
+
+    n_eq_new = 2 * m
+    rr_c: List[np.ndarray] = []
+    cc_c: List[np.ndarray] = []
+    dd_c: List[np.ndarray] = []
+    rr_b: List[np.ndarray] = []
+    cc_b: List[np.ndarray] = []
+    dd_b: List[np.ndarray] = []
+
+    def add_c(rows, cols, data) -> None:
+        arr = np.asarray(data, dtype=np.float64).reshape(-1)
+        if arr.size:
+            rr_c.append(np.asarray(rows, dtype=np.int32).reshape(-1))
+            cc_c.append(np.asarray(cols, dtype=np.int32).reshape(-1))
+            dd_c.append(arr)
+
+    def add_b(rows, cols, data) -> None:
+        arr = np.asarray(data, dtype=np.float64).reshape(-1)
+        if arr.size:
+            rr_b.append(np.asarray(rows, dtype=np.int32).reshape(-1))
+            cc_b.append(np.asarray(cols, dtype=np.int32).reshape(-1))
+            dd_b.append(arr)
+
+    link_rows = np.arange(m, dtype=np.int32)
+    sum_rows = m + link_rows
+    add_c(link_rows[owner], g1_cols, -g1_x)
+    add_c(link_rows[owner], g2_cols, -g2_x)
+    add_b(link_rows[owner], z_cols, centers_x / 2.0)
+    pre_gc = hz.Gc[wide_idx].tocoo()
+    if pre_gc.nnz:
+        add_c(link_rows[pre_gc.row], pre_gc.col, pre_gc.data)
+    if nb:
+        pre_gb = hz.Gb[wide_idx].tocoo()
+        if pre_gb.nnz:
+            add_b(link_rows[pre_gb.row], pre_gb.col, pre_gb.data)
+    add_b(sum_rows[owner], z_cols, np.ones(r, dtype=np.float64))
+
+    eq_Ac = _coo_matrix_from_parts(rr_c, cc_c, dd_c, (n_eq_new, ng_total))
+    eq_Ab = _coo_matrix_from_parts(rr_b, cc_b, dd_b, (n_eq_new, nb_total))
+    eq_b = np.zeros(n_eq_new, dtype=np.float64)
+    eq_b[link_rows] = center_x_sum / 2.0 - hz.c[wide_idx]
+    eq_b[sum_rows] = seg_count - 2.0
+
+    Ac = sp.vstack([sparse_pad_cols(hz.Ac, ng_total), eq_Ac], format="csr")
+    Ab = sp.vstack([sparse_pad_cols(hz.Ab, nb_total), eq_Ab], format="csr")
+    Ac.eliminate_zeros()
+    Ab.eliminate_zeros()
+    b = np.concatenate([hz.b, eq_b])
+
+    base_Auc = sparse_pad_cols(
+        hz.Auc if hz.Auc is not None else sparse_empty(0, hz.n_cont),
+        ng_total,
+    )
+    base_Aub = sparse_pad_cols(
+        hz.Aub if hz.Aub is not None else sparse_empty(0, hz.n_bin),
+        nb_total,
+    )
+    base_ub = hz.ub if hz.ub is not None else np.zeros(0, dtype=np.float64)
+    box_rows = 4 * np.arange(r, dtype=np.int32)
+    box_Auc = sp.coo_matrix(
+        (
+            np.concatenate([np.ones(r), -np.ones(r), np.ones(r), -np.ones(r)]),
+            (
+                np.concatenate([box_rows, box_rows + 1, box_rows + 2, box_rows + 3]),
+                np.concatenate([g1_cols, g1_cols, g2_cols, g2_cols]),
+            ),
+        ),
+        shape=(4 * r, ng_total),
+        dtype=np.float64,
+    ).tocsr()
+    box_Aub = sp.coo_matrix(
+        (
+            0.5 * np.ones(4 * r, dtype=np.float64),
+            (
+                np.concatenate([box_rows, box_rows + 1, box_rows + 2, box_rows + 3]),
+                np.concatenate([z_cols, z_cols, z_cols, z_cols]),
+            ),
+        ),
+        shape=(4 * r, nb_total),
+        dtype=np.float64,
+    ).tocsr()
+    Auc = sp.vstack([base_Auc, box_Auc], format="csr")
+    Aub = sp.vstack([base_Aub, box_Aub], format="csr")
+    ub_rhs = np.concatenate([base_ub, 0.5 * np.ones(4 * r, dtype=np.float64)])
+
+    if domain_cuts:
+        dom_Auc, dom_Aub, dom_rhs = _scurve_domain_cut_matrices(
+            hz,
+            wide_idx,
+            a,
+            b_seg,
+            owner,
+            z_cols,
+            ng_total,
+            nb_total,
+            lb_w,
+            ub_w,
+        )
+        rng_Auc, rng_Aub, rng_rhs = _scurve_range_cut_matrices(
+            out_c,
+            out_Gc,
+            out_Gb,
+            wide_idx,
+            fa,
+            fb,
+            owner,
+            z_cols,
+            ng_total,
+            nb_total,
+            func(lb_w),
+            func(ub_w),
+        )
+        Auc = sp.vstack([Auc, dom_Auc, rng_Auc], format="csr")
+        Aub = sp.vstack([Aub, dom_Aub, rng_Aub], format="csr")
+        ub_rhs = np.concatenate([ub_rhs, dom_rhs, rng_rhs])
+
+    if graph_cuts:
+        graph_Auc, graph_Aub, graph_rhs = _scurve_graph_cut_matrices(
+            hz,
+            out_c,
+            out_Gc,
+            out_Gb,
+            wide_idx,
+            a,
+            b_seg,
+            owner,
+            z_cols,
+            ng_total,
+            nb_total,
+            lb_w,
+            ub_w,
+            func=func,
+            dfunc=dfunc,
+        )
+        Auc = sp.vstack([Auc, graph_Auc], format="csr")
+        Aub = sp.vstack([Aub, graph_Aub], format="csr")
+        ub_rhs = np.concatenate([ub_rhs, graph_rhs])
+
+    Auc.eliminate_zeros()
+    Aub.eliminate_zeros()
+
+    return SparseHZono(
+        out_c, out_Gc, out_Gb, Ac, Ab, b, Auc, Aub, ub_rhs,
+        **_input_metadata_kwargs(hz),
+    )
+
+
+def sparse_hz_apply_sigmoid_piecewise(
+    hz: SparseHZono,
+    pre_bounds: Optional[Bounds] = None,
+    *,
+    K: int = 2,
+    domain_cuts: bool = False,
+    graph_cuts: bool = False,
+) -> SparseHZono:
+    return sparse_hz_apply_scurve_piecewise(
+        hz,
+        pre_bounds,
+        K=K,
+        func=_sigmoid_np,
+        dfunc=_sigmoid_deriv_np,
+        inflection=0.0,
+        torch_func=torch.sigmoid,
+        torch_dfunc=lambda x: torch.sigmoid(x) * (1.0 - torch.sigmoid(x)),
+        domain_cuts=domain_cuts,
+        graph_cuts=graph_cuts,
+    )
+
+
+def sparse_hz_apply_tanh_piecewise(
+    hz: SparseHZono,
+    pre_bounds: Optional[Bounds] = None,
+    *,
+    K: int = 1,
+    domain_cuts: bool = False,
+    graph_cuts: bool = False,
+) -> SparseHZono:
+    return sparse_hz_apply_scurve_piecewise(
+        hz,
+        pre_bounds,
+        K=K,
+        func=_tanh_np,
+        dfunc=_tanh_deriv_np,
+        inflection=0.0,
+        torch_func=torch.tanh,
+        torch_dfunc=lambda x: 1.0 - torch.tanh(x) ** 2,
+        domain_cuts=domain_cuts,
+        graph_cuts=graph_cuts,
+    )
+
+
+def _broadcast_param(value, n: int) -> np.ndarray:
+    if isinstance(value, torch.Tensor):
+        arr = value.detach().cpu().double().numpy().reshape(-1)
+    else:
+        arr = np.asarray(value, dtype=np.float64).reshape(-1)
+    if arr.size == n:
+        return arr
+    if arr.size == 1:
+        return np.full(n, float(arr[0]), dtype=np.float64)
+    if n % arr.size == 0:
+        return np.tile(arr, n // arr.size)
+    raise ValueError(f"cannot broadcast parameter of size {arr.size} to {n}")
+
+
+def sparse_hz_add_const(hz: SparseHZono, bias) -> SparseHZono:
+    return SparseHZono(
+        c=hz.c + _broadcast_param(bias, hz.n_out),
+        Gc=hz.Gc,
+        Gb=hz.Gb,
+        Ac=hz.Ac,
+        Ab=hz.Ab,
+        b=hz.b,
+        Auc=hz.Auc,
+        Aub=hz.Aub,
+        ub=hz.ub,
+        **_input_metadata_kwargs(hz),
+    )
+
+
+def sparse_hz_scale(hz: SparseHZono, scale) -> SparseHZono:
+    a = _broadcast_param(scale, hz.n_out)
+    D = sp.diags(a, format="csr")
+    return sparse_hz_linear(hz, D, None)
+
+
+def sparse_hz_gather_rows(hz: SparseHZono, rows: Sequence[int]) -> SparseHZono:
+    row_idx = np.asarray(rows, dtype=np.int64).reshape(-1)
+    return SparseHZono(
+        c=hz.c[row_idx].copy(),
+        Gc=hz.Gc[row_idx].tocsr(),
+        Gb=hz.Gb[row_idx].tocsr(),
+        Ac=hz.Ac,
+        Ab=hz.Ab,
+        b=hz.b,
+        Auc=hz.Auc,
+        Aub=hz.Aub,
+        ub=hz.ub,
+        **_input_metadata_kwargs(hz),
+    )
+
+
+def _csr_equal(a: sp.csr_matrix, b: sp.csr_matrix, *, atol: float = 0.0) -> bool:
+    if a.shape != b.shape:
+        return False
+    d = (a - b).tocsr()
+    d.eliminate_zeros()
+    if d.nnz == 0:
+        return True
+    return bool(np.max(np.abs(d.data)) <= atol)
+
+
+def _constraints_start_with(
+    Ac_big: sp.csr_matrix,
+    Ab_big: sp.csr_matrix,
+    b_big: np.ndarray,
+    Ac_small: sp.csr_matrix,
+    Ab_small: sp.csr_matrix,
+    b_small: np.ndarray,
+) -> bool:
+    n = int(Ac_small.shape[0])
+    if n > Ac_big.shape[0] or n != Ab_small.shape[0] or n > Ab_big.shape[0]:
+        return False
+    return (
+        _csr_equal(Ac_big[:n], Ac_small)
+        and _csr_equal(Ab_big[:n], Ab_small)
+        and np.array_equal(b_big[:n], b_small)
+    )
+
+
+def _merge_equalities(parts: List[SparseHZono], n_cont: int, n_bin: int):
+    Ac = sparse_empty(0, n_cont)
+    Ab = sparse_empty(0, n_bin)
+    b = np.zeros(0, dtype=np.float64)
+    for part in parts:
+        pAc = sparse_pad_cols(part.Ac, n_cont)
+        pAb = sparse_pad_cols(part.Ab, n_bin)
+        if _constraints_start_with(pAc, pAb, part.b, Ac, Ab, b):
+            Ac, Ab, b = pAc, pAb, part.b
+        elif _constraints_start_with(Ac, Ab, b, pAc, pAb, part.b):
+            continue
+        elif pAc.shape[0]:
+            Ac = sp.vstack([Ac, pAc], format="csr")
+            Ab = sp.vstack([Ab, pAb], format="csr")
+            b = np.concatenate([b, part.b])
+    return Ac, Ab, b
+
+
+def _merge_uppers(parts: List[SparseHZono], n_cont: int, n_bin: int):
+    Auc = sparse_empty(0, n_cont)
+    Aub = sparse_empty(0, n_bin)
+    ub = np.zeros(0, dtype=np.float64)
+    for part in parts:
+        pAuc = sparse_pad_cols(part.Auc if part.Auc is not None else sparse_empty(0, part.n_cont), n_cont)
+        pAub = sparse_pad_cols(part.Aub if part.Aub is not None else sparse_empty(0, part.n_bin), n_bin)
+        pub = part.ub if part.ub is not None else np.zeros(0, dtype=np.float64)
+        if _constraints_start_with(pAuc, pAub, pub, Auc, Aub, ub):
+            Auc, Aub, ub = pAuc, pAub, pub
+        elif _constraints_start_with(Auc, Aub, ub, pAuc, pAub, pub):
+            continue
+        elif pAuc.shape[0]:
+            Auc = sp.vstack([Auc, pAuc], format="csr")
+            Aub = sp.vstack([Aub, pAub], format="csr")
+            ub = np.concatenate([ub, pub])
+    return Auc, Aub, ub
+
+
+def sparse_hz_concat(parts: Iterable[SparseHZono]) -> SparseHZono:
+    parts = list(parts)
+    if not parts:
+        raise ValueError("sparse_hz_concat requires at least one part")
+    n_cont = max(p.n_cont for p in parts)
+    n_bin = max(p.n_bin for p in parts)
+    padded = [sparse_hz_pad_frame(p, n_cont, n_bin) for p in parts]
+    Ac, Ab, b = _merge_equalities(padded, n_cont, n_bin)
+    Auc, Aub, ub = _merge_uppers(padded, n_cont, n_bin)
+    Gc = sp.vstack([p.Gc for p in padded], format="csr")
+    Gb = sp.vstack([p.Gb for p in padded], format="csr")
+    Gc.eliminate_zeros()
+    Gb.eliminate_zeros()
+    return SparseHZono(
+        c=np.concatenate([p.c for p in padded]),
+        Gc=Gc,
+        Gb=Gb,
+        Ac=Ac,
+        Ab=Ab,
+        b=b,
+        Auc=Auc,
+        Aub=Aub,
+        ub=ub,
+        **_shared_input_metadata_kwargs(padded),
+    )
+
+
+def sparse_hz_add_same_frame(x: SparseHZono, y: SparseHZono) -> SparseHZono:
+    """Exact sum when both HZs use the same global generator frame."""
+
+    n_cont = max(x.n_cont, y.n_cont)
+    n_bin = max(x.n_bin, y.n_bin)
+    xp = sparse_hz_pad_frame(x, n_cont, n_bin)
+    yp = sparse_hz_pad_frame(y, n_cont, n_bin)
+    if xp.n_out != yp.n_out:
+        raise ValueError(f"add shape mismatch: {xp.n_out} vs {yp.n_out}")
+    Ac, Ab, b = _merge_equalities([xp, yp], n_cont, n_bin)
+    Auc, Aub, ub = _merge_uppers([xp, yp], n_cont, n_bin)
+    Gc = (xp.Gc + yp.Gc).tocsr()
+    Gb = (xp.Gb + yp.Gb).tocsr()
+    Gc.eliminate_zeros()
+    Gb.eliminate_zeros()
+    return SparseHZono(
+        c=xp.c + yp.c,
+        Gc=Gc,
+        Gb=Gb,
+        Ac=Ac,
+        Ab=Ab,
+        b=b,
+        Auc=Auc,
+        Aub=Aub,
+        ub=ub,
+        **_shared_input_metadata_kwargs([xp, yp]),
+    )
+
+
+def sparse_hz_sub_same_frame(x: SparseHZono, y: SparseHZono) -> SparseHZono:
+    return sparse_hz_add_same_frame(x, sparse_hz_scale(y, -1.0))
+
+
+__all__ = [
+    "sparse_empty",
+    "sparse_matmul_const_matrix_from_layer",
+    "sparse_avgpool2d_matrix_from_layer",
+    "sparse_conv2d_matrix_from_layer",
+    "sparse_convtranspose2d_matrix_from_layer",
+    "sparse_dense_matrix_from_layer",
+    "sparse_hz_add_const",
+    "sparse_hz_add_same_frame",
+    "sparse_hz_apply_avgpool2d_layer",
+    "sparse_hz_apply_conv2d_layer",
+    "sparse_hz_apply_convtranspose2d_layer",
+    "sparse_hz_apply_dense_layer",
+    "sparse_hz_apply_matmul_const_layer",
+    "sparse_hz_apply_maxpool2d_layer",
+    "sparse_hz_apply_relu_exact",
+    "sparse_hz_apply_scurve_piecewise",
+    "sparse_hz_apply_sigmoid_piecewise",
+    "sparse_hz_apply_tanh_piecewise",
+    "sparse_hz_concat",
+    "sparse_hz_fast_bounds",
+    "sparse_hz_from_bounds",
+    "sparse_hz_gather_rows",
+    "sparse_hz_gather_rows_like",
+    "sparse_hz_is_point",
+    "sparse_hz_linear",
+    "sparse_hz_apply_per_batch_linear",
+    "sparse_hz_pad_frame",
+    "sparse_hz_scale",
+    "sparse_hz_sub_same_frame",
+    "sparse_maxpool2d_candidate_rows",
+    "sparse_pad_cols",
+]
+
+
+def _assert_close(a: float, b: float, *, tol: float = 1e-10) -> None:
+    if abs(float(a) - float(b)) > tol:
+        raise AssertionError(f"{a} != {b}")
+
+
+def _assert_vec_close(a, b, *, tol: float = 1e-10) -> None:
+    aa = np.asarray(a, dtype=np.float64).reshape(-1)
+    bb = np.asarray(b, dtype=np.float64).reshape(-1)
+    if aa.shape != bb.shape:
+        raise AssertionError(f"shape mismatch: {aa.shape} != {bb.shape}")
+    err = float(np.max(np.abs(aa - bb))) if aa.size else 0.0
+    if err > tol:
+        raise AssertionError(f"max abs error {err} > {tol}")
+
+
+def _test_sparse_affine_structural_ops() -> None:  # pragma: no cover
+    from types import SimpleNamespace
+
+    import torch.nn.functional as F
+
+    from act.back_end.solver.solver_hz import hz_add_const, hz_from_bounds, hz_multiply
+    from act.back_end.solver.solver_hz_verdict import hz_base_feasibility, hz_row_max
+    from act.back_end.hybridz_tf.tf_cnn import (
+        hz_avgpool2d,
+        hz_conv2d,
+        hz_convtranspose2d,
+    )
+    from act.back_end.hybridz_tf.tf_mlp import hz_apply_relu, hz_apply_sigmoid, hz_apply_tanh
+
+    dtype = torch.float64
+    bounds = Bounds(
+        lb=torch.tensor([[-1.0, 2.0, 0.5]], dtype=dtype),
+        ub=torch.tensor([[3.0, 2.0, 1.5]], dtype=dtype),
+    )
+    dense = hz_from_bounds(bounds, dtype, torch.device("cpu"))
+    sparse = sparse_hz_from_bounds(bounds)
+    assert sparse.input_center is not None
+    assert sparse.input_radius is not None
+    assert sparse.input_indices is not None
+
+    row = np.array([0.25, -1.0, 2.0], dtype=np.float64)
+    _assert_close(hz_row_max(dense, row), hz_row_max(sparse, row))
+
+    W = torch.tensor([[1.0, 2.0, 0.0], [-0.5, 0.0, 1.5]], dtype=dtype)
+    b = torch.tensor([0.25, -0.75], dtype=dtype)
+    dense_aff = hz_add_const(hz_multiply(dense, W), b)
+    sparse_aff = sparse_hz_linear(sparse, W.detach().numpy(), b.detach().numpy())
+    assert np.array_equal(sparse_aff.input_center, sparse.input_center)
+    assert np.array_equal(sparse_aff.input_radius, sparse.input_radius)
+    assert np.array_equal(sparse_aff.input_indices, sparse.input_indices)
+    for r in (np.array([1.0, 0.0]), np.array([-2.0, 0.5]), np.array([0.25, -1.0])):
+        _assert_close(hz_row_max(dense_aff, r), hz_row_max(sparse_aff, r))
+    batch_point = Bounds(
+        lb=torch.tensor([[1.0, -2.0, 0.5, 0.25, 3.0, -1.5]], dtype=dtype),
+        ub=torch.tensor([[1.0, -2.0, 0.5, 0.25, 3.0, -1.5]], dtype=dtype),
+    )
+    per_batch_W = sp.csr_matrix(
+        np.array([[1.0, -0.5, 2.0], [0.25, 1.5, -1.0]], dtype=np.float64)
+    )
+    sparse_batch_linear = sparse_hz_apply_per_batch_linear(
+        sparse_hz_from_bounds(batch_point), per_batch_W
+    )
+    expected_batch_linear = (
+        batch_point.lb.detach().cpu().numpy().reshape(2, 3)
+        @ per_batch_W.toarray().T
+    )
+    _assert_vec_close(sparse_batch_linear.c, expected_batch_linear)
+
+    mat_layer = SimpleNamespace(
+        id=2,
+        params={
+            "x_shape": (2, 3),
+            "y_shape": (3, 2),
+            "input_shape": (2, 3),
+            "output_shape": (2, 2),
+        },
+    )
+    x_bounds = Bounds(
+        lb=torch.tensor([[-1.0, 0.0, 2.0, -0.5, 1.0, 3.0]], dtype=dtype),
+        ub=torch.tensor([[0.5, 1.0, 2.5, 0.5, 2.0, 4.0]], dtype=dtype),
+    )
+    const_right = sparse_hz_from_bounds(Bounds(
+        lb=torch.tensor([[1.0, 2.0, 0.0, -1.0, 3.0, 0.5]], dtype=dtype),
+        ub=torch.tensor([[1.0, 2.0, 0.0, -1.0, 3.0, 0.5]], dtype=dtype),
+    ))
+    dense_x = hz_from_bounds(x_bounds, dtype, torch.device("cpu"))
+    sparse_x = sparse_hz_from_bounds(x_bounds)
+    W_right = sparse_matmul_const_matrix_from_layer(
+        mat_layer, const_right.c, variable_is_left=True,
+    )
+    dense_matmul_right = hz_multiply(dense_x, torch.tensor(W_right.toarray(), dtype=dtype))
+    sparse_matmul_right = sparse_hz_apply_matmul_const_layer(
+        sparse_x, const_right, mat_layer, variable_is_left=True,
+    )
+    for r in (np.array([1.0, 0.0, -1.0, 0.25]), np.array([0.5, -2.0, 0.0, 1.0])):
+        _assert_close(hz_row_max(dense_matmul_right, r), hz_row_max(sparse_matmul_right, r))
+    point_x = Bounds(
+        lb=torch.tensor([[0.5, -1.0, 2.0, 0.25, 1.5, -0.75]], dtype=dtype),
+        ub=torch.tensor([[0.5, -1.0, 2.0, 0.25, 1.5, -0.75]], dtype=dtype),
+    )
+    sparse_point_matmul_right = sparse_hz_apply_matmul_const_layer(
+        sparse_hz_from_bounds(point_x), const_right, mat_layer, variable_is_left=True
+    )
+    expected_matmul_right = np.matmul(
+        point_x.lb.detach().cpu().numpy().reshape(mat_layer.params["x_shape"]),
+        const_right.c.reshape(mat_layer.params["y_shape"]),
+    )
+    _assert_vec_close(sparse_point_matmul_right.c, expected_matmul_right)
+
+    const_left = sparse_hz_from_bounds(Bounds(
+        lb=torch.tensor([[1.0, 0.0, -1.0, 2.0, 0.5, 3.0]], dtype=dtype),
+        ub=torch.tensor([[1.0, 0.0, -1.0, 2.0, 0.5, 3.0]], dtype=dtype),
+    ))
+    y_bounds = Bounds(
+        lb=torch.tensor([[-0.5, 1.0, 0.0, 2.0, -1.0, 3.0]], dtype=dtype),
+        ub=torch.tensor([[0.5, 2.0, 1.0, 3.0, 0.0, 4.0]], dtype=dtype),
+    )
+    dense_y = hz_from_bounds(y_bounds, dtype, torch.device("cpu"))
+    sparse_y = sparse_hz_from_bounds(y_bounds)
+    W_left = sparse_matmul_const_matrix_from_layer(
+        mat_layer, const_left.c, variable_is_left=False,
+    )
+    dense_matmul_left = hz_multiply(dense_y, torch.tensor(W_left.toarray(), dtype=dtype))
+    sparse_matmul_left = sparse_hz_apply_matmul_const_layer(
+        sparse_y, const_left, mat_layer, variable_is_left=False,
+    )
+    for r in (np.array([1.0, 0.0, -1.0, 0.25]), np.array([0.5, -2.0, 0.0, 1.0])):
+        _assert_close(hz_row_max(dense_matmul_left, r), hz_row_max(sparse_matmul_left, r))
+    point_y = Bounds(
+        lb=torch.tensor([[1.25, -0.5, 0.0, 2.0, -1.0, 0.75]], dtype=dtype),
+        ub=torch.tensor([[1.25, -0.5, 0.0, 2.0, -1.0, 0.75]], dtype=dtype),
+    )
+    sparse_point_matmul_left = sparse_hz_apply_matmul_const_layer(
+        sparse_hz_from_bounds(point_y), const_left, mat_layer, variable_is_left=False
+    )
+    expected_matmul_left = np.matmul(
+        const_left.c.reshape(mat_layer.params["x_shape"]),
+        point_y.lb.detach().cpu().numpy().reshape(mat_layer.params["y_shape"]),
+    )
+    _assert_vec_close(sparse_point_matmul_left.c, expected_matmul_left)
+
+    dense_gather = hz_from_bounds(
+        Bounds(lb=bounds.lb[:, [2, 0]], ub=bounds.ub[:, [2, 0]]),
+        dtype,
+        torch.device("cpu"),
+    )
+    sparse_gather = sparse_hz_gather_rows(sparse, [2, 0])
+    _assert_vec_close(sparse_gather.c, sparse.c[[2, 0]])
+    for r in (np.array([1.0, 1.0]), np.array([-1.0, 2.0])):
+        _assert_close(hz_row_max(dense_gather, r), hz_row_max(sparse_gather, r))
+
+    sparse_sum = sparse_hz_add_same_frame(sparse, sparse_hz_scale(sparse, 2.0))
+    dense_sum = hz_multiply(dense, 3.0 * torch.eye(3, dtype=dtype))
+    _assert_vec_close(sparse_hz_scale(sparse, 2.0).c, 2.0 * sparse.c)
+    _assert_vec_close(sparse_sum.c, 3.0 * sparse.c)
+    _assert_close(hz_row_max(dense_sum, row), hz_row_max(sparse_sum, row))
+
+    sparse_cat = sparse_hz_concat([sparse_gather, sparse_gather])
+    _assert_vec_close(sparse_cat.c, np.concatenate([sparse_gather.c, sparse_gather.c]))
+    cat_row = np.array([1.0, 0.0, -0.5, 2.0], dtype=np.float64)
+    # concat keeps the duplicated rows correlated with the original generators:
+    # [x2, x0, x2, x0] @ cat_row == 0.5*x2 + 2*x0.
+    dense_correlated_row = np.array([2.0, 0.0, 0.5], dtype=np.float64)
+    _assert_close(hz_row_max(dense, dense_correlated_row), hz_row_max(sparse_cat, cat_row))
+
+    img_bounds = Bounds(
+        lb=torch.arange(9, dtype=dtype).reshape(1, 1, 3, 3) / 10.0 - 0.2,
+        ub=torch.arange(9, dtype=dtype).reshape(1, 1, 3, 3) / 10.0 + 0.3,
+    )
+    dense_img = hz_from_bounds(img_bounds, dtype, torch.device("cpu"))
+    sparse_img = sparse_hz_from_bounds(img_bounds)
+    conv_layer = SimpleNamespace(
+        id=1,
+        params={
+            "weight": torch.tensor([[[[1.0, -0.5], [0.25, 2.0]]]], dtype=dtype),
+            "bias": torch.tensor([0.1], dtype=dtype),
+            "stride": (1, 1),
+            "padding": (0, 0),
+            "dilation": (1, 1),
+            "groups": 1,
+            "input_shape": (1, 1, 3, 3),
+            "output_shape": (1, 1, 2, 2),
+        },
+    )
+    dense_conv = hz_conv2d(
+        dense_img,
+        conv_layer.params["weight"],
+        conv_layer.params["bias"],
+        conv_layer.params["stride"],
+        conv_layer.params["padding"],
+        conv_layer.params["dilation"],
+        conv_layer.params["groups"],
+        conv_layer.params["input_shape"],
+    )
+    sparse_conv = sparse_hz_apply_conv2d_layer(sparse_img, conv_layer)
+    for r in (
+        np.array([1.0, 0.0, -1.0, 0.5], dtype=np.float64),
+        np.array([-0.25, 2.0, 0.0, 1.0], dtype=np.float64),
+    ):
+        _assert_close(hz_row_max(dense_conv, r), hz_row_max(sparse_conv, r))
+    point_img = Bounds(
+        lb=torch.arange(9, dtype=dtype).reshape(1, 1, 3, 3) / 7.0 - 0.4,
+        ub=torch.arange(9, dtype=dtype).reshape(1, 1, 3, 3) / 7.0 - 0.4,
+    )
+    sparse_point_conv = sparse_hz_apply_conv2d_layer(
+        sparse_hz_from_bounds(point_img), conv_layer
+    )
+    torch_point_conv = F.conv2d(
+        point_img.lb,
+        conv_layer.params["weight"],
+        bias=conv_layer.params["bias"],
+        stride=conv_layer.params["stride"],
+        padding=conv_layer.params["padding"],
+        dilation=conv_layer.params["dilation"],
+        groups=conv_layer.params["groups"],
+    )
+    _assert_vec_close(sparse_point_conv.c, torch_point_conv.detach().cpu().numpy())
+
+    avg_layer = SimpleNamespace(
+        id=2,
+        params={
+            "kernel_size": (2, 2),
+            "stride": (1, 1),
+            "padding": (0, 0),
+            "input_shape": (1, 1, 3, 3),
+            "output_shape": (1, 1, 2, 2),
+        },
+    )
+    dense_avg = hz_avgpool2d(
+        dense_img,
+        avg_layer.params["kernel_size"],
+        avg_layer.params["stride"],
+        avg_layer.params["padding"],
+        avg_layer.params["input_shape"],
+    )
+    sparse_avg = sparse_hz_apply_avgpool2d_layer(sparse_img, avg_layer)
+    for r in (
+        np.array([1.0, -1.0, 0.5, 0.0], dtype=np.float64),
+        np.array([0.0, 0.25, 1.0, -2.0], dtype=np.float64),
+    ):
+        _assert_close(hz_row_max(dense_avg, r), hz_row_max(sparse_avg, r))
+    sparse_point_avg = sparse_hz_apply_avgpool2d_layer(
+        sparse_hz_from_bounds(point_img), avg_layer
+    )
+    torch_point_avg = F.avg_pool2d(
+        point_img.lb,
+        kernel_size=avg_layer.params["kernel_size"],
+        stride=avg_layer.params["stride"],
+        padding=avg_layer.params["padding"],
+    )
+    _assert_vec_close(sparse_point_avg.c, torch_point_avg.detach().cpu().numpy())
+
+    max_layer = SimpleNamespace(
+        id=4,
+        params={
+            "kernel_size": (2, 2),
+            "stride": (1, 1),
+            "padding": (0, 0),
+            "dilation": (1, 1),
+            "input_shape": (1, 1, 3, 3),
+            "output_shape": (1, 1, 2, 2),
+        },
+    )
+    sparse_max = sparse_hz_apply_maxpool2d_layer(sparse_img, max_layer, img_bounds)
+    max_candidates = sparse_maxpool2d_candidate_rows(max_layer)
+    max_lb = img_bounds.lb.detach().cpu().double().numpy().reshape(-1)
+    max_ub = img_bounds.ub.detach().cpu().double().numpy().reshape(-1)
+    for i in range(sparse_max.n_out):
+        valid = [int(rows[i]) for rows in max_candidates if rows[i] >= 0]
+        row = np.zeros(sparse_max.n_out, dtype=np.float64)
+        row[i] = 1.0
+        _assert_close(hz_row_max(sparse_max, row, integer=True), max(max_ub[valid]))
+        row[i] = -1.0
+        _assert_close(
+            hz_row_max(sparse_max, row, integer=True),
+            -max(max_lb[valid]),
+        )
+    sparse_point_max = sparse_hz_apply_maxpool2d_layer(
+        sparse_hz_from_bounds(point_img), max_layer, point_img
+    )
+    torch_point_max = F.max_pool2d(
+        point_img.lb,
+        kernel_size=max_layer.params["kernel_size"],
+        stride=max_layer.params["stride"],
+        padding=max_layer.params["padding"],
+        dilation=max_layer.params["dilation"],
+    )
+    _assert_vec_close(sparse_point_max.c, torch_point_max.detach().cpu().numpy())
+
+    deconv_layer = SimpleNamespace(
+        id=3,
+        params={
+            "weight": torch.tensor([[[[1.0, -0.25], [0.5, 1.5]]]], dtype=dtype),
+            "bias": torch.tensor([-0.2], dtype=dtype),
+            "stride": (1, 1),
+            "padding": (0, 0),
+            "output_padding": (0, 0),
+            "dilation": (1, 1),
+            "groups": 1,
+            "input_shape": (1, 1, 2, 2),
+            "output_shape": (1, 1, 3, 3),
+        },
+    )
+    small_bounds = Bounds(
+        lb=torch.tensor([[[[-0.5, 0.0], [0.25, -1.0]]]], dtype=dtype),
+        ub=torch.tensor([[[[0.5, 1.0], [1.25, 0.5]]]], dtype=dtype),
+    )
+    dense_small = hz_from_bounds(small_bounds, dtype, torch.device("cpu"))
+    sparse_small = sparse_hz_from_bounds(small_bounds)
+    dense_deconv = hz_convtranspose2d(
+        dense_small,
+        deconv_layer.params["weight"],
+        deconv_layer.params["bias"],
+        deconv_layer.params["stride"],
+        deconv_layer.params["padding"],
+        deconv_layer.params["output_padding"],
+        deconv_layer.params["dilation"],
+        deconv_layer.params["groups"],
+        deconv_layer.params["input_shape"],
+    )
+    sparse_deconv = sparse_hz_apply_convtranspose2d_layer(sparse_small, deconv_layer)
+    for r in (
+        np.array([1.0, 0.0, -0.5, 0.25, 0.0, 1.5, -1.0, 0.0, 0.75], dtype=np.float64),
+        np.array([0.0, -1.0, 0.5, 0.0, 2.0, -0.25, 0.0, 1.0, -0.5], dtype=np.float64),
+    ):
+        _assert_close(hz_row_max(dense_deconv, r), hz_row_max(sparse_deconv, r))
+    point_small = Bounds(
+        lb=torch.tensor([[[[0.5, -1.0], [0.25, 1.5]]]], dtype=dtype),
+        ub=torch.tensor([[[[0.5, -1.0], [0.25, 1.5]]]], dtype=dtype),
+    )
+    sparse_point_deconv = sparse_hz_apply_convtranspose2d_layer(
+        sparse_hz_from_bounds(point_small), deconv_layer
+    )
+    torch_point_deconv = F.conv_transpose2d(
+        point_small.lb,
+        deconv_layer.params["weight"],
+        bias=deconv_layer.params["bias"],
+        stride=deconv_layer.params["stride"],
+        padding=deconv_layer.params["padding"],
+        output_padding=deconv_layer.params["output_padding"],
+        dilation=deconv_layer.params["dilation"],
+        groups=deconv_layer.params["groups"],
+    )
+    _assert_vec_close(sparse_point_deconv.c, torch_point_deconv.detach().cpu().numpy())
+
+    relu_bounds = Bounds(
+        lb=torch.tensor([[-1.0, 0.25, -3.0, -0.5]], dtype=dtype),
+        ub=torch.tensor([[2.0, 1.25, -0.25, 0.75]], dtype=dtype),
+    )
+    dense_relu_in = hz_from_bounds(relu_bounds, dtype, torch.device("cpu"))
+    sparse_relu_in = sparse_hz_from_bounds(relu_bounds)
+    rows = (
+        np.array([1.0, -0.25, 0.5, 2.0], dtype=np.float64),
+        np.array([-1.5, 0.0, 0.25, 1.0], dtype=np.float64),
+    )
+    for compressed in (False, True):
+        dense_relu = hz_apply_relu(dense_relu_in, compressed=compressed)
+        sparse_relu = sparse_hz_apply_relu_exact(sparse_relu_in, compressed=compressed)
+        assert dense_relu is not None
+        for r in rows:
+            _assert_close(
+                hz_row_max(dense_relu, r, integer=True),
+                hz_row_max(sparse_relu, r, integer=True),
+                tol=1e-8,
+            )
+    relu_point = Bounds(
+        lb=torch.tensor([[-1.5, 0.0, 2.25]], dtype=dtype),
+        ub=torch.tensor([[-1.5, 0.0, 2.25]], dtype=dtype),
+    )
+    for compressed in (False, True):
+        sparse_relu_point = sparse_hz_apply_relu_exact(
+            sparse_hz_from_bounds(relu_point), compressed=compressed
+        )
+        _assert_vec_close(
+            sparse_relu_point.c,
+            torch.relu(relu_point.lb).detach().cpu().numpy(),
+        )
+    sparse_relu_plain = sparse_hz_apply_relu_exact(sparse_relu_in, compressed=True)
+    sparse_relu_cuts = sparse_hz_apply_relu_exact(
+        sparse_relu_in, compressed=True, valid_cuts=True
+    )
+    for r in rows:
+        _assert_close(
+            hz_row_max(sparse_relu_plain, r, integer=True),
+            hz_row_max(sparse_relu_cuts, r, integer=True),
+            tol=1e-8,
+        )
+    sparse_relu_sum = sparse_hz_add_same_frame(sparse_relu_plain, sparse_relu_plain)
+    sparse_relu_cat = sparse_hz_concat([sparse_relu_plain, sparse_relu_plain])
+    for hzm in (sparse_relu_plain, sparse_relu_cuts, sparse_relu_sum, sparse_relu_cat):
+        assert np.array_equal(hzm.input_center, sparse_relu_in.input_center)
+        assert np.array_equal(hzm.input_radius, sparse_relu_in.input_radius)
+        assert np.array_equal(hzm.input_indices, sparse_relu_in.input_indices)
+
+    scurve_bounds = Bounds(
+        lb=torch.tensor([[-2.0, -0.5, 0.25]], dtype=dtype),
+        ub=torch.tensor([[0.75, 1.5, 2.0]], dtype=dtype),
+    )
+    dense_scurve_in = hz_from_bounds(scurve_bounds, dtype, torch.device("cpu"))
+    sparse_scurve_in = sparse_hz_from_bounds(scurve_bounds)
+    scurve_rows = (
+        np.array([1.0, -0.5, 0.25], dtype=np.float64),
+        np.array([-0.25, 1.0, 1.5], dtype=np.float64),
+    )
+    dense_sigmoid = hz_apply_sigmoid(dense_scurve_in, K=2)
+    sparse_sigmoid = sparse_hz_apply_sigmoid_piecewise(sparse_scurve_in, K=2)
+    assert dense_sigmoid is not None
+    for r in scurve_rows:
+        _assert_close(
+            hz_row_max(dense_sigmoid, r, integer=True),
+            hz_row_max(sparse_sigmoid, r, integer=True),
+            tol=1e-8,
+        )
+    dense_tanh = hz_apply_tanh(dense_scurve_in, K=1)
+    sparse_tanh = sparse_hz_apply_tanh_piecewise(sparse_scurve_in, K=1)
+    assert dense_tanh is not None
+    for r in scurve_rows:
+        _assert_close(
+            hz_row_max(dense_tanh, r, integer=True),
+            hz_row_max(sparse_tanh, r, integer=True),
+            tol=1e-8,
+        )
+    for hzm in (sparse_sigmoid, sparse_tanh):
+        assert np.array_equal(hzm.input_center, sparse_scurve_in.input_center)
+        assert np.array_equal(hzm.input_radius, sparse_scurve_in.input_radius)
+        assert np.array_equal(hzm.input_indices, sparse_scurve_in.input_indices)
+    scurve_point = Bounds(
+        lb=torch.tensor([[-2.0, -0.25, 0.0, 1.25]], dtype=dtype),
+        ub=torch.tensor([[-2.0, -0.25, 0.0, 1.25]], dtype=dtype),
+    )
+    sparse_sigmoid_point = sparse_hz_apply_sigmoid_piecewise(
+        sparse_hz_from_bounds(scurve_point), K=2
+    )
+    sparse_tanh_point = sparse_hz_apply_tanh_piecewise(
+        sparse_hz_from_bounds(scurve_point), K=1
+    )
+    _assert_vec_close(
+        sparse_sigmoid_point.c,
+        torch.sigmoid(scurve_point.lb).detach().cpu().numpy(),
+        tol=1e-8,
+    )
+    _assert_vec_close(
+        sparse_tanh_point.c,
+        torch.tanh(scurve_point.lb).detach().cpu().numpy(),
+        tol=1e-8,
+    )
+
+    cut_sigmoid = sparse_hz_apply_sigmoid_piecewise(
+        sparse_scurve_in,
+        K=2,
+        domain_cuts=True,
+        graph_cuts=True,
+    )
+    cut_tanh = sparse_hz_apply_tanh_piecewise(
+        sparse_scurve_in,
+        K=1,
+        domain_cuts=True,
+        graph_cuts=True,
+    )
+    for plain, cut in ((sparse_sigmoid, cut_sigmoid), (sparse_tanh, cut_tanh)):
+        assert hz_base_feasibility(cut)[0] == "FEASIBLE"
+        assert cut.Auc.shape[0] > plain.Auc.shape[0]
+        for r in scurve_rows:
+            if hz_row_max(cut, r, integer=True) > hz_row_max(plain, r, integer=True) + 1e-8:
+                raise AssertionError("S-curve cuts expanded sparse-HZ support")
+
+
+if __name__ == "__main__":  # pragma: no cover
+    tests = [_test_sparse_affine_structural_ops]
+    passed = 0
+    for fn in tests:
+        fn()
+        print(f"PASS {fn.__name__}")
+        passed += 1
+    print(f"{passed}/{len(tests)} passed")

@@ -166,7 +166,6 @@ from act.back_end.verifier import (
     find_entry_layer_id,
 )
 from act.util.stats import VerifyStatus
-from act.back_end.solver.solver_gurobi import is_gurobi_available
 from act.util.options import PerformanceOptions
 from act.front_end.specs import OutKind
 
@@ -600,9 +599,12 @@ class VerificationValidator:
             tf_modes = ["interval"]
 
         solvers = list(solvers)
-        if "gurobi" in solvers and not is_gurobi_available():
-            logger.warning("Skipping gurobi solver: gurobipy is not available.")
-            solvers = [s for s in solvers if s != "gurobi"]
+        if "gurobi" in solvers:
+            from act.back_end.solver.solver_gurobi import is_gurobi_available
+
+            if not is_gurobi_available():
+                logger.warning("Skipping gurobi solver: gurobipy is not available.")
+                solvers = [s for s in solvers if s != "gurobi"]
             if not solvers:
                 logger.warning("No available solvers for counterexample validation.")
 

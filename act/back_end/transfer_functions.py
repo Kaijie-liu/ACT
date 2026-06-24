@@ -171,6 +171,10 @@ def is_dual_solver_active() -> bool:
     return _current_solver_mode == "dual"
 
 
+def is_hybridz_solver_active() -> bool:
+    return _current_solver_mode == "hybridz"
+
+
 
 @torch.no_grad()
 def dispatch_tf(L: Layer, before: Dict[int, Fact], after: Dict[int, Fact], net: Net) -> Fact:

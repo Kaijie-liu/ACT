@@ -7,14 +7,13 @@
 #===---------------------------------------------------------------------===#
 #
 # Purpose:
-#   Solvers for constraint satisfaction. Provides various solver implementations
-#   including Gurobi and PyTorch-based solvers.
+#   Solvers for constraint satisfaction. Provides open-source solvers by
+#   default; the Gurobi backend is loaded lazily only when requested.
 #
 #===---------------------------------------------------------------------===#
 
 from .solver_base import Solver, SolverCaps, SolveStatus
 from .solver_torchlp import TorchLPSolver
-from .solver_gurobi import GurobiSolver
 from .solver_hz import HZSolver, HZono, hz_compute_bounds
 from .solver_dual import DualSolver, expand_bounds_dict
 
@@ -24,3 +23,11 @@ __all__ = [
     'HZSolver', 'HZono', 'hz_compute_bounds',
     'DualSolver', 'expand_bounds_dict',
 ]
+
+
+def __getattr__(name):
+    if name == "GurobiSolver":
+        from .solver_gurobi import GurobiSolver
+
+        return GurobiSolver
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

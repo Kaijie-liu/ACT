@@ -84,6 +84,12 @@ def analyze(
         # torch2act for ONNX initializers). Without this, source-layer bounds stay
         # at +/-inf forever because the worklist starts at entry_id and CONSTANTs
         # have no predecessor that would ever push them on. (Oracle finding #5.)
+        #
+        # Some ONNX-to-ACT graphs also contain non-CONSTANT zero-indegree model
+        # layers for branches that read the network input directly.  Those
+        # layers must receive the entry input fact, not their default
+        # output-shaped +/-inf box; otherwise the first affine op sees the wrong
+        # input dimension.
         seeds = [entry_id]
         for layer in net.layers:
             if layer.id == entry_id or net.preds.get(layer.id):
@@ -101,7 +107,8 @@ def analyze(
                 )
                 val_b = val.unsqueeze(0).expand(B_size, -1).contiguous()  # [B, numel]
                 before[layer.id] = Fact(bounds=Bounds(val_b.clone(), val_b.clone()), cons=ConSet())
-            # Other zero-indegree kinds (none today) would be seeded similarly.
+            else:
+                before[layer.id] = entry_fact
             seeds.append(layer.id)
     else:
         before = cache.before
@@ -109,6 +116,13 @@ def analyze(
         globalC = cache.globalC
         before[entry_id] = entry_fact
         seeds = [entry_id]
+        for layer in net.layers:
+            if layer.id == entry_id or net.preds.get(layer.id):
+                continue
+            if layer.kind == LayerKind.CONSTANT.value:
+                continue
+            before[layer.id] = entry_fact
+            seeds.append(layer.id)
 
     WL = deque(seeds)
     while WL:
