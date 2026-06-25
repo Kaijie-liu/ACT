@@ -24,6 +24,8 @@ from act.back_end.solver.solver_hz import (
     hz_minkowski_sum,
     hz_from_bounds,
     hz_compute_bounds,
+    hz_inherit_known_nonempty,
+    hz_mark_known_nonempty,
 )
 import act.back_end.interval_tf.tf_mlp as interval
 import act.back_end.interval_tf.tf_cnn as interval_cnn
@@ -81,13 +83,13 @@ def _hz_apply_per_batch_linear(hz: HZono, W: torch.Tensor, B: int) -> HZono:
         new_Gb = (W @ hz.Gb.view(B, in_dim, nb)).reshape(B * out_dim, nb)
     else:
         new_Gb = hz.Gb.new_zeros(B * out_dim, 0)
-    return HZono(
+    return hz_inherit_known_nonempty(HZono(
         c=new_c, Gc=new_Gc, Gb=new_Gb,
         Ac=hz.Ac.clone(), Ab=hz.Ab.clone(), b=hz.b.clone(),
         eq_mask=None if hz.eq_mask is None else hz.eq_mask.clone(),
         col_ids=None if hz.col_ids is None else hz.col_ids.clone(),
         bcol_ids=None if hz.bcol_ids is None else hz.bcol_ids.clone(),
-    )
+    ), hz, reason="affine")
 
 
 def _hz_add_per_channel(hz: HZono, v: torch.Tensor, B: int) -> HZono:
@@ -110,7 +112,7 @@ def _hz_scale_per_channel(hz: HZono, a: torch.Tensor, B: int) -> HZono:
     if B > 1:
         a = a.repeat(B)
     a_col = a.view(-1, 1)
-    return HZono(
+    return hz_inherit_known_nonempty(HZono(
         c=a_col * hz.c,
         Gc=a_col * hz.Gc,
         Gb=a_col * hz.Gb,
@@ -118,7 +120,7 @@ def _hz_scale_per_channel(hz: HZono, a: torch.Tensor, B: int) -> HZono:
         eq_mask=None if hz.eq_mask is None else hz.eq_mask.clone(),
         col_ids=None if hz.col_ids is None else hz.col_ids.clone(),
         bcol_ids=None if hz.bcol_ids is None else hz.bcol_ids.clone(),
-    )
+    ), hz, reason="affine")
 
 
 def _hz_is_point(hz: HZono) -> bool:
@@ -142,7 +144,7 @@ def _hz_scale_elementwise(hz: HZono, a: torch.Tensor) -> HZono:
     """Exact elementwise scale by a point tensor."""
     a = _broadcast_flat(a.to(dtype=hz.c.dtype, device=hz.c.device), hz.c.shape[0])
     acol = a.view(-1, 1)
-    return HZono(
+    return hz_inherit_known_nonempty(HZono(
         c=acol * hz.c,
         Gc=acol * hz.Gc,
         Gb=acol * hz.Gb,
@@ -150,7 +152,7 @@ def _hz_scale_elementwise(hz: HZono, a: torch.Tensor) -> HZono:
         eq_mask=None if hz.eq_mask is None else hz.eq_mask.clone(),
         col_ids=None if hz.col_ids is None else hz.col_ids.clone(),
         bcol_ids=None if hz.bcol_ids is None else hz.bcol_ids.clone(),
-    )
+    ), hz, reason="affine")
 
 
 def _prod(shape) -> int:
@@ -419,14 +421,14 @@ def tf_constant(L, bounds, tf):
             if B > 1:
                 val = val.repeat(B)
                 n = val.numel()
-    tf._hz_cache[L.id] = HZono(
+    tf._hz_cache[L.id] = hz_mark_known_nonempty(HZono(
         c=val.view(-1, 1),
         Gc=val.new_zeros(n, 0),
         Gb=val.new_zeros(n, 0),
         Ac=val.new_zeros(0, 0),
         Ab=val.new_zeros(0, 0),
         b=val.new_zeros(0, 1),
-    )
+    ), "constant")
     return interval.tf_constant(L, bounds)
 
 
@@ -520,11 +522,12 @@ def tf_reduce_sum(L, bounds, tf):
                 Gc.index_add_(0, ri, hz_in.Gc)
             if hz_in.Gb.shape[1]:
                 Gb.index_add_(0, ri, hz_in.Gb)
-            tf._hz_cache[L.id] = HZono(
+            tf._hz_cache[L.id] = hz_inherit_known_nonempty(HZono(
                 c=c, Gc=Gc, Gb=Gb,
                 Ac=hz_in.Ac, Ab=hz_in.Ab, b=hz_in.b,
                 eq_mask=hz_in.eq_mask,
-                col_ids=hz_in.col_ids, bcol_ids=hz_in.bcol_ids)
+                col_ids=hz_in.col_ids, bcol_ids=hz_in.bcol_ids),
+                hz_in, reason="reduce_sum")
         else:
             tf._hz_cache[L.id] = hz_from_bounds(
                 fact.bounds, fact.bounds.lb.dtype, fact.bounds.lb.device)
@@ -599,8 +602,12 @@ def _hz_rebind(hz: HZono) -> HZono:
     """Return a NEW HZono wrapping the same tensors. Flatten/Reshape are layout
     no-ops for the HZ (rows already stored flattened), but the handler must hand
     back a *distinct* object so apply()'s identity-based box re-seed does not fire."""
-    return HZono(c=hz.c, Gc=hz.Gc, Gb=hz.Gb, Ac=hz.Ac, Ab=hz.Ab, b=hz.b,
-                 eq_mask=hz.eq_mask, col_ids=hz.col_ids, bcol_ids=hz.bcol_ids)
+    return hz_inherit_known_nonempty(
+        HZono(c=hz.c, Gc=hz.Gc, Gb=hz.Gb, Ac=hz.Ac, Ab=hz.Ab, b=hz.b,
+              eq_mask=hz.eq_mask, col_ids=hz.col_ids, bcol_ids=hz.bcol_ids),
+        hz,
+        reason="rebind",
+    )
 
 
 def _hz_gather_rows(hz: HZono, row_idx: torch.Tensor) -> HZono:
@@ -609,9 +616,13 @@ def _hz_gather_rows(hz: HZono, row_idx: torch.Tensor) -> HZono:
     they are unchanged -- a structural op only remaps which output coordinate
     reads which latent row. Exact (the output is an exact gather of inputs)."""
     ri = row_idx.to(device=hz.c.device, dtype=torch.long)
-    return HZono(c=hz.c[ri], Gc=hz.Gc[ri], Gb=hz.Gb[ri],
-                 Ac=hz.Ac, Ab=hz.Ab, b=hz.b, eq_mask=hz.eq_mask,
-                 col_ids=hz.col_ids, bcol_ids=hz.bcol_ids)
+    return hz_inherit_known_nonempty(
+        HZono(c=hz.c[ri], Gc=hz.Gc[ri], Gb=hz.Gb[ri],
+              Ac=hz.Ac, Ab=hz.Ab, b=hz.b, eq_mask=hz.eq_mask,
+              col_ids=hz.col_ids, bcol_ids=hz.bcol_ids),
+        hz,
+        reason="gather_rows",
+    )
 
 
 def _upsample_nearest_row_idx(
@@ -937,13 +948,13 @@ def hz_apply_relu(
             out_c[active] = hz.c[active]
             out_Gc[active, :ng] = hz.Gc[active]
             out_Gb[active, :nb] = hz.Gb[active]
-        return HZono(
+        return hz_inherit_known_nonempty(HZono(
             c=out_c, Gc=out_Gc, Gb=out_Gb,
             Ac=hz.Ac.clone(), Ab=hz.Ab.clone(), b=hz.b.clone(),
             eq_mask=None if hz.eq_mask is None else hz.eq_mask.clone(),
             col_ids=None if hz.col_ids is None else hz.col_ids.clone(),
             bcol_ids=None if hz.bcol_ids is None else hz.bcol_ids.clone(),
-        )
+        ), hz, reason="relu")
 
     # Exact-only: EVERY unstable neuron gets the exact eq_lagr binary graph.
     # No triangle/convex partition -- the HZ domain is exact by construction.
@@ -1064,12 +1075,12 @@ def hz_apply_relu(
              proj_mask, cut_mask])
 
     new_col_ids, new_bcol_ids = _relu_extend_ids(hz, ke, compressed=compressed)
-    return HZono(
+    return hz_inherit_known_nonempty(HZono(
         c=out_c, Gc=out_Gc, Gb=out_Gb,
         Ac=Ac_out, Ab=Ab_out, b=b_out,
         eq_mask=eq_mask_out,
         col_ids=new_col_ids, bcol_ids=new_bcol_ids,
-    )
+    ), hz, reason="relu")
 
 
 def _relu_extend_ids(hz: HZono, k: int, *, compressed: bool = False):
@@ -1144,7 +1155,7 @@ def hz_apply_leaky_relu(hz: HZono, alpha_arg: float) -> HZono:
 
     if k == 0:
         # No unstable neurons: columns unchanged -> factor ids carry through.
-        return HZono(
+        return hz_inherit_known_nonempty(HZono(
             c=out_c,
             Gc=out_Gc[:, :ng],
             Gb=out_Gb[:, :nb],
@@ -1154,7 +1165,7 @@ def hz_apply_leaky_relu(hz: HZono, alpha_arg: float) -> HZono:
             eq_mask=None if hz.eq_mask is None else hz.eq_mask.clone(),
             col_ids=None if hz.col_ids is None else hz.col_ids.clone(),
             bcol_ids=None if hz.bcol_ids is None else hz.bcol_ids.clone(),
-        )
+        ), hz, reason="leaky_relu")
 
     alpha = lb[unstable_idx]
     beta = ub[unstable_idx]
@@ -1212,7 +1223,7 @@ def hz_apply_leaky_relu(hz: HZono, alpha_arg: float) -> HZono:
     )
 
     new_col_ids, new_bcol_ids = _relu_extend_ids(hz, k)
-    return HZono(
+    return hz_inherit_known_nonempty(HZono(
         c=out_c,
         Gc=out_Gc,
         Gb=out_Gb,
@@ -1223,7 +1234,7 @@ def hz_apply_leaky_relu(hz: HZono, alpha_arg: float) -> HZono:
             [hz.eq_mask.to(device), torch.ones(3 * k, dtype=torch.bool, device=device)])),
         col_ids=new_col_ids,
         bcol_ids=new_bcol_ids,
-    )
+    ), hz, reason="leaky_relu")
 
 
 def _hz_apply_piecewise_compressed_pruned(
@@ -1264,7 +1275,7 @@ def _hz_apply_piecewise_compressed_pruned(
     new_Gb_base[narrow] = 0.0
 
     if m == 0:
-        return HZono(
+        return hz_inherit_known_nonempty(HZono(
             c=new_c,
             Gc=new_Gc_base,
             Gb=new_Gb_base,
@@ -1274,7 +1285,7 @@ def _hz_apply_piecewise_compressed_pruned(
             eq_mask=None if hz.eq_mask is None else hz.eq_mask.clone(),
             col_ids=None if hz.col_ids is None else hz.col_ids.clone(),
             bcol_ids=None if hz.bcol_ids is None else hz.bcol_ids.clone(),
-        )
+        ), hz, reason="piecewise")
 
     lb_w, ub_w = lb[wide_idx], ub[wide_idx]
     p = torch.maximum(
@@ -1427,7 +1438,7 @@ def _hz_apply_piecewise_compressed_pruned(
     )
     if hasattr(hz, "full_col_ids"):
         out.full_col_ids = hz.full_col_ids
-    return out
+    return hz_inherit_known_nonempty(out, hz, reason="piecewise")
 
 
 def hz_apply_piecewise(
@@ -1482,7 +1493,7 @@ def hz_apply_piecewise(
     new_Gb_base[narrow] = 0.0
 
     if m == 0:
-        return HZono(
+        return hz_inherit_known_nonempty(HZono(
             c=new_c,
             Gc=new_Gc_base,
             Gb=new_Gb_base,
@@ -1492,7 +1503,7 @@ def hz_apply_piecewise(
             eq_mask=None if hz.eq_mask is None else hz.eq_mask.clone(),
             col_ids=None if hz.col_ids is None else hz.col_ids.clone(),
             bcol_ids=None if hz.bcol_ids is None else hz.bcol_ids.clone(),
-        )
+        ), hz, reason="piecewise")
 
     lb_w, ub_w = lb[wide_idx], ub[wide_idx]
     if inflection is not None:
@@ -1709,7 +1720,7 @@ def hz_apply_piecewise(
     )
     if hasattr(hz, "full_col_ids"):
         out.full_col_ids = hz.full_col_ids
-    return out
+    return hz_inherit_known_nonempty(out, hz, reason="piecewise")
 
 
 def hz_apply_sigmoid(

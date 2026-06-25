@@ -31,7 +31,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import os
 import numpy as np
 
-from act.back_end.solver.solver_hz import HZono, _split_eq_le
+from act.back_end.solver.solver_hz import HZono, _split_eq_le, hz_known_nonempty
 from act.back_end.solver.sparse_hz import SparseHZono
 
 try:
@@ -1061,6 +1061,9 @@ def hz_base_feasibility(hz, *, time_limit: float = 10.0):
     cached = getattr(hz, "_solver_base_feas_cache", None)
     if cached is not None:
         return cached
+    if hz_known_nonempty(hz):
+        reason = getattr(hz, "_solver_known_nonempty_reason", "constructed")
+        return ("FEASIBLE", f"known_nonempty:{reason}")
 
     def _finish(out):
         if out[0] != "UNKNOWN":

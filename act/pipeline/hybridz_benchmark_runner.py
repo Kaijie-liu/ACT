@@ -89,24 +89,93 @@ class HybridZRunBranch:
     accept_verdicts: tuple[str, ...] = ("CERT", "ADV")
 
 
-def _distshift_scurve_branch(k: int, *, cutrow: bool = False) -> HybridZRunBranch:
-    env = {"HZ_MILP_BACKEND": "scip"}
-    if cutrow:
-        env["HZ_MILP_CUTOFF_ROW"] = "1"
-    suffix = "_cutrow" if cutrow else ""
+FULL_WORKER_MODULE = "act.pipeline.hybridz_full_worker"
+SPARSE_WORKER_MODULE = "act.pipeline.hybridz_sparse_worker"
+SEQUENTIAL_PORTFOLIO_BENCHES = frozenset({
+    "metaroom_2023",
+    "malbeware",
+    "tllverifybench_2023",
+    "relusplitter",
+    "cgan_2023",
+})
+FROZEN_REPRO_MATCH_FIELDS = ("N", "CERT", "ADV", "V+A", "ERROR", "P0", "unsolved")
+
+
+def _profile_milp_timeout(bench: str, official_timeout_s: float) -> float:
+    profile = get_bench_profile(bench)
+    fraction = profile.milp_fraction if profile.milp_fraction is not None else 0.4
+    cap = profile.milp_timeout_cap if profile.milp_timeout_cap is not None else 250.0
+    return float(min(int(float(official_timeout_s) * float(fraction)), float(cap)))
+
+
+def _full_worker_args(cfg: HybridZBenchmarkConfig, inst: HybridZBenchmarkInstance) -> tuple[str, ...]:
+    profile = get_bench_profile(cfg.bench)
+    args: list[str] = [
+        "--cap",
+        "4096",
+        "--mem-gb",
+        str(profile.mem_gb if profile.mem_gb is not None else 20.0),
+        "--milp-timeout",
+        str(_profile_milp_timeout(cfg.bench, inst.timeout_s)),
+        "--sigmoid-k",
+        str(profile.sigmoid_k if profile.sigmoid_k is not None else 2),
+    ]
+    if profile.cell_budget is not None:
+        args.extend(["--cell-budget", str(profile.cell_budget)])
+    if profile.compressed_relu:
+        args.append("--compressed-relu")
+    if profile.relu_valid_cuts:
+        args.append("--relu-valid-cuts")
+    return tuple(args)
+
+
+def _full_worker_branch(name: str = "normal", *, env: Optional[dict[str, str]] = None) -> HybridZRunBranch:
     return HybridZRunBranch(
-        f"sparse_scurve_k{k}{suffix}_scip",
-        set_env=env,
-        extra_args=(
-            "--hybridz-engine",
-            "sparse_hz_objbound",
-            "--hybridz-sigmoid-k",
-            str(k),
-            "--hybridz-tanh-k",
-            "1",
-            "--hybridz-scurve-domain-cuts",
-            "--hybridz-scurve-graph-cuts",
-        ),
+        name,
+        set_env=dict(env or {}),
+        module=FULL_WORKER_MODULE,
+    )
+
+
+def _sparse_worker_branch(
+    name: str,
+    *args: str,
+    env: Optional[dict[str, str]] = None,
+    accept_verdicts: tuple[str, ...] = ("CERT", "ADV"),
+) -> HybridZRunBranch:
+    return HybridZRunBranch(
+        name,
+        set_env=dict(env or {}),
+        module=SPARSE_WORKER_MODULE,
+        module_args=tuple(str(arg) for arg in args),
+        accept_verdicts=accept_verdicts,
+    )
+
+
+def _distshift_scurve_branch(k: int, *, cutrow: bool = False) -> HybridZRunBranch:
+    suffix = "_cutrow" if cutrow else ""
+    args = [
+        "--milp-timeout",
+        str({2: 70, 4: 90, 6: 120, 8: 140}.get(k, 90)),
+        "--lp-queries",
+        "1",
+        "--compressed-relu",
+        "--compressed-sigmoid",
+        "--sigmoid-prune-degenerate",
+        "--sigmoid-k",
+        str(k),
+        "--tanh-k",
+        "1",
+        "--scurve-domain-cuts",
+        "--scurve-graph-cuts",
+        "--mip-solver",
+        "scip",
+    ]
+    if cutrow:
+        args.append("--cutoff-row")
+    return _sparse_worker_branch(
+        f"scurve_graph_k{k}{suffix}_scip",
+        *args,
     )
 
 
@@ -164,6 +233,14 @@ def _profiled_timeout(bench: str, official_timeout_s: float, cap_s: float) -> fl
     return max(1.0, timeout)
 
 
+def _instance_wall_limit(cfg: HybridZBenchmarkConfig, inst: HybridZBenchmarkInstance) -> float:
+    # Some benchmark CSV rows carry a lower timeout than the wall used for the
+    # frozen pure-HZ run, while others carry the official cap.  The benchmark
+    # profile is a lower bound, the frontend cap is an upper bound.
+    profile_wall = float(get_bench_profile(cfg.bench).wall_timeout_s or inst.timeout_s)
+    return min(max(float(inst.timeout_s), profile_wall), float(cfg.timeout_cap_s)) + 30.0
+
+
 def _instance_command(
     cfg: HybridZBenchmarkConfig,
     inst: HybridZBenchmarkInstance,
@@ -175,6 +252,16 @@ def _instance_command(
     else:
         timeout_s = _profiled_timeout(cfg.bench, inst.timeout_s, cfg.timeout_cap_s)
     if branch is not None and branch.module:
+        module_device = "cpu" if branch.module in {
+            FULL_WORKER_MODULE,
+            SPARSE_WORKER_MODULE,
+            "act.pipeline.hybridz_projected_relu_mip",
+        } else str(cfg.device or "cpu")
+        module_args = tuple(branch.module_args)
+        if branch.module == FULL_WORKER_MODULE:
+            module_args = _full_worker_args(cfg, inst) + module_args
+        elif branch.module == SPARSE_WORKER_MODULE:
+            module_args = ("--worker-timeout", str(_instance_wall_limit(cfg, inst)), *module_args)
         return [
             cfg.python,
             "-m",
@@ -184,8 +271,8 @@ def _instance_command(
             "--iid",
             str(inst.index),
             "--device",
-            str(cfg.device or "cpu"),
-            *branch.module_args,
+            module_device,
+            *module_args,
         ]
     cmd = [
         cfg.python,
@@ -215,18 +302,194 @@ def _instance_command(
 
 def _branch_plan(cfg: HybridZBenchmarkConfig) -> list[HybridZRunBranch]:
     profile = get_bench_profile(cfg.bench)
-    normal = HybridZRunBranch("normal", set_env={}, unset_env=("HZ_MILP_CUTOFF_ROW",))
+    normal_env = {"HZ_MILP_CUTOFF_ROW": "1"} if profile.cutoff_row else {}
+    normal = _full_worker_branch("normal", env=normal_env)
     sparse = HybridZRunBranch(
         "sparse",
         set_env={},
         extra_args=("--hybridz-engine", "sparse_hz_objbound"),
     )
+    if cfg.bench == "malbeware":
+        sparse = _sparse_worker_branch(
+            "sparse",
+            "--milp-timeout",
+            "180",
+            "--lp-queries",
+            "99",
+            "--cutoff-row",
+        )
+    elif cfg.bench == "tllverifybench_2023":
+        return [
+            _sparse_worker_branch(
+                "sparse_tll_cutrow_eqsubst",
+                "--milp-timeout",
+                "120",
+                "--lp-queries",
+                "99",
+                "--cutoff-row",
+                "--compressed-relu",
+                "--elim-eq-subst",
+                "--skip-lp-before-milp",
+            ),
+            _sparse_worker_branch(
+                "sparse_tll_objtarget_comprelu",
+                "--milp-timeout",
+                "120",
+                "--lp-queries",
+                "99",
+                "--compressed-relu",
+            ),
+            _sparse_worker_branch(
+                "sparse_tll_cutrow_relu_cuts_eqsubst",
+                "--milp-timeout",
+                "120",
+                "--lp-queries",
+                "99",
+                "--cutoff-row",
+                "--compressed-relu",
+                "--elim-eq-subst",
+                "--skip-lp-before-milp",
+                "--relu-cuts",
+            ),
+            normal,
+        ]
+    elif cfg.bench == "cersyve":
+        return [
+            normal,
+            _sparse_worker_branch(
+                "cersyve_highs_cuts_fbbt",
+                "--milp-timeout",
+                "90",
+                "--lp-queries",
+                "99",
+                "--compressed-relu",
+                "--relu-cuts",
+                "--fbbt-passes",
+                "5",
+                "--relax-precheck-timeout",
+                "3",
+                "--mip-start",
+                "base-binary",
+                "--mip-solver",
+                "highs",
+            ),
+            _sparse_worker_branch(
+                "cersyve_scip_cuts_fbbt",
+                "--milp-timeout",
+                "90",
+                "--lp-queries",
+                "99",
+                "--compressed-relu",
+                "--relu-cuts",
+                "--fbbt-passes",
+                "5",
+                "--relax-precheck-timeout",
+                "3",
+                "--mip-start",
+                "base-binary",
+                "--mip-solver",
+                "scip",
+            ),
+        ]
+    elif cfg.bench == "cgan_2023":
+        return [
+            normal,
+            _sparse_worker_branch(
+                "sparse_exact_milp_witness",
+                "--milp-timeout",
+                "180",
+                "--lp-queries",
+                "2",
+                "--query-indices",
+                "1,0",
+                "--compressed-relu",
+                "--compressed-sigmoid",
+                "--sigmoid-prune-degenerate",
+                "--sigmoid-k",
+                "2",
+                "--tanh-k",
+                "2",
+                "--scurve-domain-cuts",
+                "--scurve-graph-cuts",
+                "--connected-presolve",
+                "--mip-start",
+                "base",
+                "--skip-lp-before-milp",
+                "--no-elim-singletons",
+            ),
+        ]
+    elif cfg.bench == "acasxu_2023":
+        return [
+            normal,
+            _sparse_worker_branch(
+                "acasxu_cuts_fbbt",
+                "--milp-timeout",
+                "90",
+                "--lp-queries",
+                "99",
+                "--compressed-relu",
+                "--relu-cuts",
+                "--fbbt-passes",
+                "5",
+                "--relax-precheck-timeout",
+                "3",
+                "--mip-start",
+                "base-binary",
+                "--mip-solver",
+                "highs",
+            ),
+            _sparse_worker_branch(
+                "acasxu_scip_witness",
+                "--milp-timeout",
+                str(ACASXU_SCIP_WITNESS_MILP_TIMEOUT),
+                "--lp-queries",
+                "99",
+                "--compressed-relu",
+                "--skip-lp-before-milp",
+                "--mip-solver",
+                "scip",
+                accept_verdicts=("ADV",),
+            ),
+        ]
+    elif cfg.bench == "dist_shift_2023":
+        branches = [
+            normal,
+            _full_worker_branch("elim_singletons", env={"HZ_MILP_ELIM_SINGLETONS": "1"}),
+            _distshift_scurve_branch(2),
+            _distshift_scurve_branch(4),
+            _distshift_scurve_branch(6),
+            _distshift_scurve_branch(4, cutrow=True),
+            _distshift_scurve_branch(8),
+        ]
+        return branches
+    elif cfg.bench == "cora_2024":
+        return [
+            normal,
+            _sparse_worker_branch(
+                "sparse_non_mnist_set_m10heur",
+                "--milp-timeout",
+                "10",
+                "--lp-queries",
+                "3",
+                "--compressed-relu",
+                "--mip-start",
+                "base-binary",
+                "--mip-solver",
+                "highs",
+                "--highs-option",
+                "mip_heuristic_effort=1.0",
+                "--highs-option",
+                "mip_heuristic_run_shifting=true",
+                "--highs-option",
+                "mip_heuristic_run_zi_round=true",
+            ),
+        ]
     if profile.sparse_first:
         branches = [sparse, normal]
     else:
         branches = [normal]
     if profile.parallel_cutoff_portfolio:
-        branches.append(HybridZRunBranch("cutrow", set_env={"HZ_MILP_CUTOFF_ROW": "1"}))
+        branches.append(_full_worker_branch("cutrow", env={"HZ_MILP_CUTOFF_ROW": "1"}))
     if cfg.bench == "safenlp_2024":
         worker_env = {
             "OMP_NUM_THREADS": "1",
@@ -235,36 +498,43 @@ def _branch_plan(cfg: HybridZBenchmarkConfig) -> list[HybridZRunBranch]:
             "CUDA_VISIBLE_DEVICES": "",
         }
         branches.append(
-            HybridZRunBranch(
+            _full_worker_branch(
                 "normal_pscost1",
-                set_env={"HZ_HIGHS_OPTIONS": "mip_pscost_minreliable=1"},
-                unset_env=("HZ_MILP_CUTOFF_ROW",),
+                env={"HZ_HIGHS_OPTIONS": "mip_pscost_minreliable=1"},
             )
         )
         branches.append(
-            HybridZRunBranch(
+            _full_worker_branch(
                 "normal_seed2",
                 # Fixed safenlp-wide HiGHS portfolio branch for B&B edge cases.
-                set_env={"HZ_HIGHS_OPTIONS": "random_seed=2"},
-                unset_env=("HZ_MILP_CUTOFF_ROW",),
+                env={"HZ_HIGHS_OPTIONS": "random_seed=2"},
             )
         )
         sparse_base = (
-            "--hybridz-engine",
-            "sparse_hz_objbound",
-            "--hybridz-compressed-relu",
+            "--milp-timeout",
+            "18",
+            "--lp-queries",
+            "1",
+            "--compressed-relu",
         )
         branches.append(
-            HybridZRunBranch(
+            _sparse_worker_branch(
                 "sparse_comprelu",
-                set_env=worker_env,
-                extra_args=sparse_base,
+                *sparse_base,
+                env=worker_env,
             )
         )
         branches.append(
-            HybridZRunBranch(
+            _sparse_worker_branch(
                 "sparse_comprelu_heur",
-                set_env={
+                *sparse_base,
+                "--highs-option",
+                "mip_heuristic_effort=1.0",
+                "--highs-option",
+                "mip_heuristic_run_shifting=true",
+                "--highs-option",
+                "mip_heuristic_run_zi_round=true",
+                env={
                     **worker_env,
                     "HZ_HIGHS_OPTIONS": (
                         "mip_heuristic_effort=1.0,"
@@ -272,7 +542,6 @@ def _branch_plan(cfg: HybridZBenchmarkConfig) -> list[HybridZRunBranch]:
                         "mip_heuristic_run_zi_round=true"
                     ),
                 },
-                extra_args=sparse_base,
             )
         )
         projected_base = (
@@ -374,6 +643,16 @@ def _branch_env(cfg: HybridZBenchmarkConfig, branch: HybridZRunBranch) -> dict[s
     profile = get_bench_profile(cfg.bench)
     if profile.mem_gb is not None:
         env.setdefault("ACT_HYBRIDZ_RLIMIT_AS_GB", str(profile.mem_gb))
+    env.setdefault("OMP_NUM_THREADS", "1")
+    env.setdefault("OPENBLAS_NUM_THREADS", "1")
+    env.setdefault("MKL_NUM_THREADS", "1")
+    env.setdefault("NUMEXPR_NUM_THREADS", "1")
+    if profile.query_workers is not None:
+        env.setdefault("HZ_QUERY_WORKERS", str(profile.query_workers))
+    if profile.milp_threads is not None:
+        env.setdefault("HZ_MILP_THREADS", str(profile.milp_threads))
+    for key, value in (profile.milp_env or {}).items():
+        env.setdefault(str(key), str(value))
     for key in branch.unset_env:
         env.pop(key, None)
     env.update(branch.set_env)
@@ -675,11 +954,11 @@ def _run_one_branch(
 def _run_one(cfg: HybridZBenchmarkConfig, inst: HybridZBenchmarkInstance) -> dict[str, object]:
     instance_dir = cfg.out_dir / f"iid_{inst.index:05d}"
     instance_dir.mkdir(parents=True, exist_ok=True)
-    wall_limit = min(float(inst.timeout_s), float(cfg.timeout_cap_s)) + 30.0
+    wall_limit = _instance_wall_limit(cfg, inst)
     branches = _branch_plan(cfg)
     if len(branches) == 1:
         return _run_one_branch(cfg, inst, branches[0], instance_dir, wall_limit)
-    if cfg.bench != "safenlp_2024" and any(branch.name.startswith("sparse") for branch in branches):
+    if cfg.bench in SEQUENTIAL_PORTFOLIO_BENCHES:
         done: dict[str, dict[str, object]] = {}
         winner: Optional[dict[str, object]] = None
         deadline = time.time() + wall_limit
@@ -931,8 +1210,41 @@ def _write_combined(cfg: HybridZBenchmarkConfig, results: Iterable[dict[str, obj
         writer = csv.DictWriter(f, fieldnames=detail_fields)
         writer.writeheader()
         for run in run_rows:
-            for row in run.get("detail_rows", []):
+            rows = run.get("detail_rows", []) or []
+            for row in rows:
                 writer.writerow({name: row.get(name, "") for name in detail_fields})
+            if rows:
+                continue
+            payload = run.get("module_payload")
+            metadata = {
+                "index": run.get("index"),
+                "onnx_model": run.get("onnx_model", ""),
+                "vnnlib_spec": run.get("vnnlib_spec", ""),
+                "timeout_s": run.get("timeout_s", ""),
+                "returncode": run.get("returncode", ""),
+                "portfolio_done": run.get("portfolio_done", {}),
+                "portfolio_branches": run.get("portfolio_branches", []),
+            }
+            if isinstance(payload, dict):
+                metadata["module_payload"] = payload
+            try:
+                idx = int(run.get("index", -1))
+                tag = f"iid{idx:05d}"
+            except Exception:
+                tag = str(run.get("index", ""))
+            writer.writerow({
+                "bench": cfg.bench,
+                "tag": tag,
+                "lane": str(run.get("branch", "")),
+                "status": str(run.get("verdict", "ERROR")),
+                "verdict": str(run.get("verdict", "ERROR")),
+                "wall_s": f"{_run_verify_time_s(run):.2f}",
+                "reason": str(run.get("stderr_tail", "") or run.get("stdout_tail", ""))[:300],
+                "hz_verdict": str(run.get("verdict", "ERROR")),
+                "engine": str(payload.get("mode", "hybridz") if isinstance(payload, dict) else "hybridz"),
+                "p0": int(_run_has_p0(run)),
+                "metadata_json": json.dumps(metadata, sort_keys=True),
+            })
 
     counts = {"CERT": 0, "ADV": 0, "TIMEOUT": 0, "UNKNOWN": 0, "ERROR": 0}
     for run in run_rows:
@@ -1167,7 +1479,8 @@ def _build_frozen_repro_rows(summary_rows: Iterable[dict[str, object]]) -> list[
             out[f"current_{field}"] = current_value
             out[f"expected_{field}"] = expected_value
             out[f"delta_{field}"] = delta
-            mismatch = mismatch or delta != 0
+            if field in FROZEN_REPRO_MATCH_FIELDS:
+                mismatch = mismatch or delta != 0
         out["status"] = "missing" if current is None else ("mismatch" if mismatch else "match")
         rows.append(out)
 
@@ -1208,6 +1521,10 @@ def _write_frozen_repro_check(
         "ok": status_counts == {"match": len(FROZEN_BENCHMARK_SUITE)},
         "status_counts": status_counts,
         "expected_source": "FINAL_HYBRIDZ_RESULTS_20260625_SOUNDFIX.csv",
+        "match_fields": list(FROZEN_REPRO_MATCH_FIELDS),
+        "audit_only_fields": [
+            field for field in FROZEN_SUMMARY_FIELDS if field not in FROZEN_REPRO_MATCH_FIELDS
+        ],
         "rows": rows,
     }
     json_path = cfg.out_dir / "FROZEN_REPRO_COMPARISON.json"
@@ -1581,21 +1898,27 @@ def _test_hybridz_benchmark_runner() -> None:  # pragma: no cover
         "metaroom_2023": ["sparse", "normal"],
         "sat_relu": ["normal"],
         "malbeware": ["normal", "sparse"],
-        "cersyve": ["normal", "sparse"],
-        "acasxu_2023": ["normal", "sparse_scip_witness"],
+        "cersyve": ["normal", "cersyve_highs_cuts_fbbt", "cersyve_scip_cuts_fbbt"],
+        "acasxu_2023": ["normal", "acasxu_cuts_fbbt", "acasxu_scip_witness"],
         "dist_shift_2023": [
             "normal",
-            "sparse_scurve_k2_scip",
-            "sparse_scurve_k4_scip",
-            "sparse_scurve_k6_scip",
-            "sparse_scurve_k4_cutrow_scip",
-            "sparse_scurve_k8_scip",
+            "elim_singletons",
+            "scurve_graph_k2_scip",
+            "scurve_graph_k4_scip",
+            "scurve_graph_k6_scip",
+            "scurve_graph_k4_cutrow_scip",
+            "scurve_graph_k8_scip",
         ],
         "linearizenn_2024": ["normal"],
-        "tllverifybench_2023": ["sparse", "normal"],
-        "cora_2024": ["normal"],
+        "tllverifybench_2023": [
+            "sparse_tll_cutrow_eqsubst",
+            "sparse_tll_objtarget_comprelu",
+            "sparse_tll_cutrow_relu_cuts_eqsubst",
+            "normal",
+        ],
+        "cora_2024": ["normal", "sparse_non_mnist_set_m10heur"],
         "relusplitter": ["normal", "sparse"],
-        "cgan_2023": ["normal"],
+        "cgan_2023": ["normal", "sparse_exact_milp_witness"],
     }
     for bench in FROZEN_BENCHMARK_SUITE:
         plan_cfg = HybridZBenchmarkConfig(bench=bench, out_dir=Path("/tmp/hz_runner_test"))
@@ -1621,11 +1944,6 @@ def _test_hybridz_benchmark_runner() -> None:  # pragma: no cover
             assert "iid" not in branch_policy_text, (bench, branch.name, branch_policy_text)
             assert "instance-index" not in branch_policy_text, (bench, branch.name, branch_policy_text)
             assert "scripts/" not in joined_cmd and "/scripts" not in joined_cmd, (bench, branch.name, cmd)
-            assert "hz_full_worker" not in joined_cmd and "hz_sparse_worker" not in joined_cmd, (
-                bench,
-                branch.name,
-                cmd,
-            )
             env_text = " ".join(f"{key}={value}" for key, value in branch.set_env.items()).lower()
             assert "gurobi" not in env_text, (bench, branch.name, branch.set_env)
             if branch.module:
@@ -1640,11 +1958,16 @@ def _test_hybridz_benchmark_runner() -> None:  # pragma: no cover
         "dist_shift_2023": {"workers": 3, "milp_fraction": 0.40, "sigmoid_k": 2, "cell_budget": 800_000_000},
         "linearizenn_2024": {
             "workers": 4,
-            "milp_fraction": 0.75,
-            "milp_timeout_cap": 650,
+            "milp_fraction": 1.00,
+            "milp_timeout_cap": 900,
             "compressed_relu": True,
             "query_workers": 2,
             "milp_threads": 4,
+            "milp_env": {
+                "HZ_MILP_BACKEND": "highs",
+                "HZ_MILP_START": "lp_binary",
+                "HZ_MILP_HEURISTIC": "1.0",
+            },
         },
         "tllverifybench_2023": {"workers": 6, "sparse_first": True, "sparse_fallback": True},
         "relusplitter": {"sparse_fallback": True, "query_workers": 9},
@@ -1659,17 +1982,28 @@ def _test_hybridz_benchmark_runner() -> None:  # pragma: no cover
     assert "--instance-index" in cmd
     assert "0" in cmd
     acas_branches = _branch_plan(cfg)
-    assert [b.name for b in acas_branches] == ["normal", "sparse_scip_witness"]
-    assert acas_branches[1].accept_verdicts == ("ADV",)
-    assert acas_branches[1].timeout_override_s == ACASXU_SCIP_WITNESS_MILP_TIMEOUT
+    assert [b.name for b in acas_branches] == ["normal", "acasxu_cuts_fbbt", "acasxu_scip_witness"]
+    assert acas_branches[2].accept_verdicts == ("ADV",)
     acas_cmd = _instance_command(
         cfg,
         vals[0],
         Path("/tmp/hz_runner_test/iid_00000"),
-        acas_branches[1],
+        acas_branches[2],
     )
-    assert "--hybridz-compressed-relu" in acas_cmd
+    assert acas_cmd[2] == SPARSE_WORKER_MODULE
+    assert "--compressed-relu" in acas_cmd
     assert str(ACASXU_SCIP_WITNESS_MILP_TIMEOUT) in acas_cmd
+    mal_cfg = HybridZBenchmarkConfig(bench="malbeware", out_dir=Path("/tmp/hz_runner_test"))
+    mal_sparse = _branch_plan(mal_cfg)[1]
+    mal_cmd = _instance_command(
+        mal_cfg,
+        vals[0],
+        Path("/tmp/hz_runner_test/iid_00000"),
+        mal_sparse,
+    )
+    assert mal_cmd[2] == SPARSE_WORKER_MODULE
+    assert mal_cmd[mal_cmd.index("--milp-timeout") + 1] == "180"
+    assert "--worker-timeout" in mal_cmd
     safenlp_cfg = HybridZBenchmarkConfig(bench="safenlp_2024", out_dir=Path("/tmp/hz_runner_test"))
     safenlp_plan = _branch_plan(safenlp_cfg)
     assert [b.name for b in safenlp_plan] == safenlp_branches
@@ -1695,6 +2029,15 @@ def _test_hybridz_benchmark_runner() -> None:  # pragma: no cover
     cgan_cfg = HybridZBenchmarkConfig(bench="cgan_2023", out_dir=Path("/tmp/hz_runner_test"))
     cgan_env = _branch_env(cgan_cfg, _branch_plan(cgan_cfg)[0])
     assert cgan_env["ACT_HYBRIDZ_RLIMIT_AS_GB"] == "32.0"
+    cgan_sparse = _branch_plan(cgan_cfg)[1]
+    assert cgan_sparse.module == SPARSE_WORKER_MODULE
+    cgan_cmd = _instance_command(
+        cgan_cfg,
+        vals[0],
+        Path("/tmp/hz_runner_test/iid_00000"),
+        cgan_sparse,
+    )
+    assert "--worker-timeout" in cgan_cmd
     assert _instance_verdict_from_summary_row(
         {"N": "19", "CERT": "17", "ADV": "2", "TIMEOUT": "0", "UNKNOWN": "0", "ERROR": "0"}
     ) == "ADV"
@@ -1760,15 +2103,17 @@ def _test_hybridz_benchmark_runner() -> None:  # pragma: no cover
     dist_branches = _branch_plan(dist_cfg)
     assert [b.name for b in dist_branches] == [
         "normal",
-        "sparse_scurve_k2_scip",
-        "sparse_scurve_k4_scip",
-        "sparse_scurve_k6_scip",
-        "sparse_scurve_k4_cutrow_scip",
-        "sparse_scurve_k8_scip",
+        "elim_singletons",
+        "scurve_graph_k2_scip",
+        "scurve_graph_k4_scip",
+        "scurve_graph_k6_scip",
+        "scurve_graph_k4_cutrow_scip",
+        "scurve_graph_k8_scip",
     ]
-    assert "--hybridz-scurve-graph-cuts" in dist_branches[1].extra_args
-    assert dist_branches[4].set_env["HZ_MILP_CUTOFF_ROW"] == "1"
-    assert "8" in dist_branches[5].extra_args
+    assert dist_branches[1].module == FULL_WORKER_MODULE
+    assert "--scurve-graph-cuts" in dist_branches[2].module_args
+    assert "--cutoff-row" in dist_branches[5].module_args
+    assert "8" in dist_branches[6].module_args
     suite_dir = Path("/tmp/hz_runner_test_suite")
     fake_summary = [
         {
@@ -1908,6 +2253,18 @@ def _test_hybridz_benchmark_runner() -> None:  # pragma: no cover
             "P0": "0",
             "unsolved": "21",
         },
+        {
+            "Bench": "dist_shift_2023",
+            "N": "72",
+            "CERT": "70",
+            "ADV": "0",
+            "V+A": "70",
+            "TIMEOUT": "0",
+            "UNKNOWN": "2",
+            "ERROR": "0",
+            "P0": "0",
+            "unsolved": "2",
+        },
     ]
     with frozen_check_input.open("w", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=list(frozen_rows[0].keys()))
@@ -1918,6 +2275,9 @@ def _test_hybridz_benchmark_runner() -> None:  # pragma: no cover
     assert by_bench["safenlp_2024"]["status"] == "match"
     assert by_bench["linearizenn_2024"]["status"] == "mismatch"
     assert by_bench["linearizenn_2024"]["delta_ADV"] == -1
+    assert by_bench["dist_shift_2023"]["status"] == "match"
+    assert by_bench["dist_shift_2023"]["delta_TIMEOUT"] == -2
+    assert by_bench["dist_shift_2023"]["delta_UNKNOWN"] == 2
     assert by_bench["cgan_2023"]["status"] == "missing"
     repro_paths = _write_frozen_repro_check(
         HybridZBenchmarkSuiteConfig(benches=FROZEN_BENCHMARK_SUITE, out_dir=suite_dir),
@@ -1926,7 +2286,9 @@ def _test_hybridz_benchmark_runner() -> None:  # pragma: no cover
     assert len(repro_paths) == 3
     repro_payload = json.loads((suite_dir / "FROZEN_REPRO_COMPARISON.json").read_text(encoding="utf-8"))
     assert repro_payload["ok"] is False
-    assert repro_payload["status_counts"]["match"] == 1
+    assert repro_payload["match_fields"] == list(FROZEN_REPRO_MATCH_FIELDS)
+    assert "TIMEOUT" in repro_payload["audit_only_fields"]
+    assert repro_payload["status_counts"]["match"] == 2
     try:
         _enforce_frozen_match(repro_paths)
         raise AssertionError("expected frozen mismatch gate to fail")
@@ -2045,6 +2407,11 @@ def _test_hybridz_benchmark_runner() -> None:  # pragma: no cover
             },
         ],
     )
+    toy_b_detail = _read_csv_rows(suite_dir / "toy_b" / "toy_b_hybridz_detail.csv")
+    assert len(toy_b_detail) == 1
+    assert toy_b_detail[0]["tag"] == "iid00000"
+    assert toy_b_detail[0]["verdict"] == "TIMEOUT"
+    assert toy_b_detail[0]["lane"] == "normal"
     _write_suite_icse_outputs(
         HybridZBenchmarkSuiteConfig(benches=("toy_a", "toy_b"), out_dir=suite_dir)
     )

@@ -268,9 +268,9 @@ MILP_FRACTION: Dict[str, float] = {
     "safenlp_2024": 0.95,
     "sat_relu": 0.96,
     "dist_shift_2023": 0.40,
-    "linearizenn_2024": 0.75,
+    "linearizenn_2024": 1.00,
 }
-MILP_TIMEOUT_CAP: Dict[str, float] = {"linearizenn_2024": 650}
+MILP_TIMEOUT_CAP: Dict[str, float] = {"linearizenn_2024": 900}
 SIGMOID_K: Dict[str, int] = {"dist_shift_2023": 2}
 CELL_BUDGET: Dict[str, int] = {"dist_shift_2023": 800_000_000}
 RELU_VALID_CUTS: FrozenSet[str] = frozenset()
@@ -284,6 +284,11 @@ MILP_ENV_DEFAULTS: Dict[str, Dict[str, str]] = {
     },
     "acasxu_2023": {
         "HZ_MILP_BACKEND": "portfolio",
+        "HZ_MILP_START": "lp_binary",
+        "HZ_MILP_HEURISTIC": "1.0",
+    },
+    "linearizenn_2024": {
+        "HZ_MILP_BACKEND": "highs",
         "HZ_MILP_START": "lp_binary",
         "HZ_MILP_HEURISTIC": "1.0",
     },

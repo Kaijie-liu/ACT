@@ -16,7 +16,7 @@
 import torch
 import torch.nn.functional as F
 from act.back_end.core import Bounds, Fact
-from act.back_end.solver.solver_hz import HZono
+from act.back_end.solver.solver_hz import HZono, hz_inherit_known_nonempty
 from act.back_end.hybridz_tf.tf_mlp import _hz_fact
 import act.back_end.interval_tf.tf_cnn as interval
 
@@ -97,8 +97,12 @@ def hz_maxpool2d(hz: HZono, kernel_size, stride, padding, dilation, input_shape,
         c_new[valid] = hz.c[pad_flat[valid]]
         Gc_new[valid] = hz.Gc[pad_flat[valid]]
         Gb_new[valid] = hz.Gb[pad_flat[valid]]
-        work = HZono(c=c_new, Gc=Gc_new, Gb=Gb_new, Ac=hz.Ac, Ab=hz.Ab, b=hz.b,
-                     eq_mask=hz.eq_mask, col_ids=hz.col_ids, bcol_ids=hz.bcol_ids)
+        work = hz_inherit_known_nonempty(
+            HZono(c=c_new, Gc=Gc_new, Gb=Gb_new, Ac=hz.Ac, Ab=hz.Ab, b=hz.b,
+                  eq_mask=hz.eq_mask, col_ids=hz.col_ids, bcol_ids=hz.bcol_ids),
+            hz,
+            reason="maxpool_padding",
+        )
 
     idx = torch.arange(B * C * Hpad * Wpad).view(B, C, Hpad, Wpad)
     cands = []
@@ -213,7 +217,7 @@ def hz_conv2d(
         hz.Gb, weight, B, C, H, W, stride, padding, dilation, groups, n_out_per_sample
     )
 
-    return HZono(
+    return hz_inherit_known_nonempty(HZono(
         c=new_c,
         Gc=new_Gc,
         Gb=new_Gb,
@@ -225,7 +229,7 @@ def hz_conv2d(
         # the factor ids carry through unchanged.
         col_ids=None if hz.col_ids is None else hz.col_ids.clone(),
         bcol_ids=None if hz.bcol_ids is None else hz.bcol_ids.clone(),
-    )
+    ), hz, reason="conv2d")
 
 
 def _spatial_op_generators(G, op_fn, B, C, H, W, n_out_per_sample):
@@ -263,13 +267,13 @@ def _hz_spatial_affine(hz: HZono, op_fn, input_shape, bias=None) -> HZono:
     n_out = Cp * Hp * Wp
     new_Gc = _spatial_op_generators(hz.Gc, op_fn, B, C, H, W, n_out)
     new_Gb = _spatial_op_generators(hz.Gb, op_fn, B, C, H, W, n_out)
-    return HZono(
+    return hz_inherit_known_nonempty(HZono(
         c=new_c, Gc=new_Gc, Gb=new_Gb,
         Ac=hz.Ac.clone(), Ab=hz.Ab.clone(), b=hz.b.clone(),
         eq_mask=None if hz.eq_mask is None else hz.eq_mask.clone(),
         col_ids=None if hz.col_ids is None else hz.col_ids.clone(),
         bcol_ids=None if hz.bcol_ids is None else hz.bcol_ids.clone(),
-    )
+    ), hz, reason="spatial_affine")
 
 
 def hz_avgpool2d(hz, kernel_size, stride, padding, input_shape) -> HZono:

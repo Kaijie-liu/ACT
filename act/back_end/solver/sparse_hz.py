@@ -203,7 +203,7 @@ class SparseHZono:
         """Convert a dense torch-backed ``HZono`` to CSR form."""
 
         (Ace, Abe, be), (Acl, Abl, bl) = _split_eq_le(hz)
-        return cls(
+        out = cls(
             c=_torch_to_np(hz.c),
             Gc=_torch_to_csr(hz.Gc),
             Gb=_torch_to_csr(hz.Gb),
@@ -216,6 +216,14 @@ class SparseHZono:
             col_ids=_id_array(hz.col_ids) if hz.col_ids is not None else None,
             bcol_ids=_id_array(hz.bcol_ids) if hz.bcol_ids is not None else None,
         )
+        if getattr(hz, "_solver_known_nonempty", False):
+            setattr(out, "_solver_known_nonempty", True)
+            setattr(
+                out,
+                "_solver_known_nonempty_reason",
+                getattr(hz, "_solver_known_nonempty_reason", "dense_conversion"),
+            )
+        return out
 
     @property
     def n_out(self) -> int:

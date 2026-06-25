@@ -27,7 +27,11 @@ to the sound ``hz_minkowski_sum``.
 from __future__ import annotations
 import torch
 
-from act.back_end.solver.solver_hz import HZono, hz_minkowski_sum
+from act.back_end.solver.solver_hz import (
+    HZono,
+    hz_inherit_known_nonempty,
+    hz_minkowski_sum,
+)
 
 
 def _align(ids_x: torch.Tensor, ids_y: torch.Tensor,
@@ -115,22 +119,22 @@ def hz_sgm_add(hz_x: HZono, hz_y: HZono) -> HZono:
               else torch.ones(nc_y, dtype=torch.bool, device=device))
         new_eq_mask = torch.cat([mx.to(device), my.to(device)], dim=0)
 
-    return HZono(
+    return hz_inherit_known_nonempty(HZono(
         c=hz_x.c + hz_y.c.to(dtype=dtype, device=device),
         Gc=Gc, Gb=Gb, Ac=new_Ac, Ab=new_Ab, b=new_b,
         eq_mask=new_eq_mask, col_ids=cids, bcol_ids=bids,
-    )
+    ), hz_x, hz_y, reason="sgm_add")
 
 
 def hz_negate(hz: HZono) -> HZono:
     """-hz: flip the center + generators (constraints unchanged, ids preserved)."""
-    return HZono(
+    return hz_inherit_known_nonempty(HZono(
         c=-hz.c, Gc=-hz.Gc, Gb=-hz.Gb,
         Ac=hz.Ac.clone(), Ab=hz.Ab.clone(), b=hz.b.clone(),
         eq_mask=None if hz.eq_mask is None else hz.eq_mask.clone(),
         col_ids=None if hz.col_ids is None else hz.col_ids.clone(),
         bcol_ids=None if hz.bcol_ids is None else hz.bcol_ids.clone(),
-    )
+    ), hz, reason="negate")
 
 
 def hz_sub(hz_x: HZono, hz_y: HZono) -> HZono:
@@ -199,13 +203,13 @@ def hz_concat(parts) -> "HZono | None":
         eqs.append(p.eq_mask if p.eq_mask is not None
                    else torch.ones(nc_p, dtype=torch.bool, device=device))
     eq_mask = torch.cat(eqs) if any(e is not None for e in eqs) else None
-    return HZono(
+    return hz_inherit_known_nonempty(HZono(
         c=torch.cat(cs, 0), Gc=torch.cat(Gcs, 0), Gb=torch.cat(Gbs, 0),
         Ac=torch.cat(Acs, 0), Ab=torch.cat(Abs_, 0), b=torch.cat(bs, 0),
         eq_mask=eq_mask,
         col_ids=torch.tensor(cids, dtype=torch.long, device=device),
         bcol_ids=torch.tensor(bids, dtype=torch.long, device=device),
-    )
+    ), *parts, reason="concat")
 
 
 def _hz_concat_independent(parts) -> HZono:
@@ -237,8 +241,12 @@ def _hz_concat_independent(parts) -> HZono:
         goff += ng_p; boff += nb_p; roff += nc_p
     b = torch.cat(bs, 0) if bs else torch.zeros(0, 1, dtype=dtype, device=device)
     eq_mask = torch.cat(eqs) if eqs else None
-    return HZono(c=torch.cat(cs, 0), Gc=torch.cat(Gcs, 0), Gb=torch.cat(Gbs, 0),
-                 Ac=Ac, Ab=Ab, b=b, eq_mask=eq_mask)
+    return hz_inherit_known_nonempty(
+        HZono(c=torch.cat(cs, 0), Gc=torch.cat(Gcs, 0), Gb=torch.cat(Gbs, 0),
+              Ac=Ac, Ab=Ab, b=b, eq_mask=eq_mask),
+        *parts,
+        reason="concat_independent",
+    )
 
 
 __all__ = ["hz_sgm_add", "hz_sub", "hz_negate", "hz_concat"]

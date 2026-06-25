@@ -1092,6 +1092,9 @@ def cmd_verify(target: str, args):
                         "--hybridz-require-frozen-match requires a full frozen suite; "
                         "do not pass --max-instances"
                     )
+                hybridz_max_instances = (
+                    args.max_instances if _hybridz_explicit_max_instances_arg() else None
+                )
                 if len(benches) == 1:
                     if args.hybridz_require_frozen_match:
                         raise ValueError(
@@ -1100,7 +1103,7 @@ def cmd_verify(target: str, args):
                     cfg = HybridZBenchmarkConfig(
                         bench=benches[0],
                         out_dir=out_dir,
-                        max_instances=args.max_instances,
+                        max_instances=hybridz_max_instances,
                         workers=args.hybridz_workers,
                         timeout_cap_s=args.hybridz_timeout_cap,
                         device=args.device,
@@ -1109,7 +1112,7 @@ def cmd_verify(target: str, args):
                     detail_path, summary_path, run_rows = run_hybridz_benchmark(cfg)
                 else:
                     suite_max_instances = (
-                        None if args.hybridz_require_frozen_match else args.max_instances
+                        None if args.hybridz_require_frozen_match else hybridz_max_instances
                     )
                     cfg = HybridZBenchmarkSuiteConfig(
                         benches=benches,

@@ -244,7 +244,7 @@ class HybridzTF(TransferFunction):
         ng = int(nz.sum().item())
         if ng > getattr(self, "_effective_max_dim", self._HZ_MAX_INPUT_DIM):
             return None
-        from act.back_end.solver.solver_hz import _fresh_col_ids
+        from act.back_end.solver.solver_hz import _fresh_col_ids, hz_mark_known_nonempty
         ids = None
         if reuse_ids is not None and reuse_ids.numel() == n:
             ids = reuse_ids.to(device=lb.device)
@@ -271,6 +271,8 @@ class HybridzTF(TransferFunction):
             # only stores nonzero-radius generator columns, but replay must
             # reconstruct all input dimensions, including constant ones.
             hz.full_col_ids = ids
+        if bool(torch.all(lb <= ub).item()):
+            hz_mark_known_nonempty(hz, "input_box")
         return hz
 
     def _sparse_from_bounds(self, bounds: Bounds) -> SparseHZono:

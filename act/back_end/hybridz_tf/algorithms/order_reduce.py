@@ -27,7 +27,7 @@ fresh factors.
 from __future__ import annotations
 import torch
 
-from act.back_end.solver.solver_hz import HZono
+from act.back_end.solver.solver_hz import HZono, hz_inherit_known_nonempty
 
 
 def hz_remove_redundancy(hz: HZono, *, tol: float = 1e-9,
@@ -145,8 +145,12 @@ def hz_remove_redundancy(hz: HZono, *, tol: float = 1e-9,
             eq_mask = eq_mask[idx] if eq_mask is not None else None
             nc = int(Ac.shape[0])
 
-    return HZono(c=hz.c, Gc=Gc, Gb=Gb, Ac=Ac, Ab=Ab, b=b,
-                 eq_mask=eq_mask, col_ids=col_ids, bcol_ids=bcol_ids)
+    return hz_inherit_known_nonempty(
+        HZono(c=hz.c, Gc=Gc, Gb=Gb, Ac=Ac, Ab=Ab, b=b,
+              eq_mask=eq_mask, col_ids=col_ids, bcol_ids=bcol_ids),
+        hz,
+        reason="remove_redundancy",
+    )
 
 
 _PARALLEL_MAX = 20000  # skip the (still O(ncols)) dedup passes above this size
@@ -212,12 +216,12 @@ def hz_girard_reduce(hz: HZono, target_ng: int) -> HZono:
             [hz.col_ids[keep_idx.to(hz.col_ids.device)],
              _fresh_col_ids(nl, device=device)])
 
-    return HZono(
+    return hz_inherit_known_nonempty(HZono(
         c=hz.c, Gc=new_Gc, Gb=hz.Gb, Ac=new_Ac, Ab=hz.Ab, b=hz.b,
         eq_mask=None if hz.eq_mask is None else hz.eq_mask.clone(),
         col_ids=new_col_ids,
         bcol_ids=None if hz.bcol_ids is None else hz.bcol_ids.clone(),
-    )
+    ), hz, reason="girard_reduce")
 
 
 __all__ = ["hz_remove_redundancy", "hz_girard_reduce"]

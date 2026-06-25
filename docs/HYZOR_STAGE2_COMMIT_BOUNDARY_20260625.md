@@ -129,6 +129,14 @@ clean manifest.
 
 1. Re-run the focused self-tests above after any further edit.
 2. Confirm `git status --short` shows no accidental `scripts/` additions.
-3. If time permits, run the full frozen frontend reproduction with
+3. The current runner now imports four package worker/probe modules that were
+   created after the boundary commit:
+   `act/pipeline/hybridz_full_worker.py`,
+   `act/pipeline/hybridz_sparse_worker.py`,
+   `act/pipeline/hybridz_sparse_exact_probe.py`, and
+   `act/pipeline/hybridz_sparse_census.py`.  If this packaged-worker design is
+   kept, these files belong in the next productization commit; they are not
+   local `scripts/` files.
+4. If time permits, run the full frozen frontend reproduction with
    `--hybridz-require-frozen-match`; otherwise leave the goal active and record
    that the full reproduction remains unproven.

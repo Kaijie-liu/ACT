@@ -84,11 +84,34 @@ def _clone_ids(t: Optional[torch.Tensor]) -> Optional[torch.Tensor]:
     return None if t is None else t.clone()
 
 
+def hz_mark_known_nonempty(hz: HZono, reason: str = "constructed") -> HZono:
+    """Attach a lightweight non-emptiness certificate to a constructed HZ.
+
+    Exact transfer functions in this backend preserve non-emptiness from a
+    non-empty input box. The verdict layer still has a MILP fallback for objects
+    without this construction evidence, but it should not spend a second hard
+    MIP just to rediscover that an exactly-propagated HZ is non-empty.
+    """
+    setattr(hz, "_solver_known_nonempty", True)
+    setattr(hz, "_solver_known_nonempty_reason", str(reason))
+    return hz
+
+
+def hz_known_nonempty(hz) -> bool:
+    return bool(getattr(hz, "_solver_known_nonempty", False))
+
+
+def hz_inherit_known_nonempty(out: HZono, *sources, reason: str = "inherited") -> HZono:
+    if sources and all(hz_known_nonempty(src) for src in sources):
+        return hz_mark_known_nonempty(out, reason)
+    return out
+
+
 def hz_multiply(hz: HZono, R: torch.Tensor) -> HZono:
     # Left-multiply mixes ROWS (output dims), not generator COLUMNS, so each
     # generator factor xi is preserved -> col ids carry through unchanged.
     R = R.to(dtype=hz.c.dtype, device=hz.c.device)
-    return HZono(
+    return hz_inherit_known_nonempty(HZono(
         c=R @ hz.c,
         Gc=R @ hz.Gc,
         Gb=R @ hz.Gb,
@@ -98,14 +121,14 @@ def hz_multiply(hz: HZono, R: torch.Tensor) -> HZono:
         eq_mask=None if hz.eq_mask is None else hz.eq_mask.clone(),
         col_ids=_clone_ids(hz.col_ids),
         bcol_ids=_clone_ids(hz.bcol_ids),
-    )
+    ), hz, reason="affine")
 
 
 def hz_add_const(hz: HZono, v: torch.Tensor) -> HZono:
     v = v.to(dtype=hz.c.dtype, device=hz.c.device)
     if v.ndim == 1:
         v = v.view(-1, 1)
-    return HZono(
+    return hz_inherit_known_nonempty(HZono(
         c=hz.c + v,
         Gc=hz.Gc.clone(),
         Gb=hz.Gb.clone(),
@@ -115,7 +138,7 @@ def hz_add_const(hz: HZono, v: torch.Tensor) -> HZono:
         eq_mask=None if hz.eq_mask is None else hz.eq_mask.clone(),
         col_ids=_clone_ids(hz.col_ids),
         bcol_ids=_clone_ids(hz.bcol_ids),
-    )
+    ), hz, reason="affine")
 
 
 def hz_minkowski_sum(hz1: HZono, hz2: HZono) -> HZono:
@@ -173,8 +196,13 @@ def hz_minkowski_sum(hz1: HZono, hz2: HZono) -> HZono:
         new_bcol_ids = torch.cat([hz1.bcol_ids.to(device), hz2.bcol_ids.to(device)])
     else:
         new_bcol_ids = None
-    return HZono(c=new_c, Gc=new_Gc, Gb=new_Gb, Ac=new_Ac, Ab=new_Ab, b=new_b,
-                 eq_mask=new_eq_mask, col_ids=new_col_ids, bcol_ids=new_bcol_ids)
+    return hz_inherit_known_nonempty(
+        HZono(c=new_c, Gc=new_Gc, Gb=new_Gb, Ac=new_Ac, Ab=new_Ab, b=new_b,
+              eq_mask=new_eq_mask, col_ids=new_col_ids, bcol_ids=new_bcol_ids),
+        hz1,
+        hz2,
+        reason="minkowski_sum",
+    )
 
 
 def _split_eq_le(hz: HZono):
@@ -210,7 +238,7 @@ def hz_from_bounds(bounds: Bounds, dtype, device, *, track_ids: bool = False,
         ids = col_ids.to(device=device)
     elif track_ids:
         ids = _fresh_col_ids(n, device=device)
-    return HZono(
+    hz = HZono(
         c=c,
         Gc=torch.diag(rad),
         Gb=torch.zeros((n, 0), dtype=dtype, device=device),
@@ -221,6 +249,9 @@ def hz_from_bounds(bounds: Bounds, dtype, device, *, track_ids: bool = False,
         bcol_ids=(torch.zeros(0, dtype=torch.long, device=device)
                   if ids is not None else None),
     )
+    if bool(torch.all(lb <= ub).item()):
+        hz_mark_known_nonempty(hz, "input_box")
+    return hz
 
 
 # ============================================================================
