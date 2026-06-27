@@ -11,7 +11,8 @@ consolidation, solver-helper consolidation, and sparse MILP cutoff-engine
 consolidation, S-curve backend consolidation, and sparse structural row-map
 helper consolidation, full S-curve backend consolidation, and constructive
 center witness backend consolidation, and tight-ReLU apply-helper backend
-consolidation, public sparse solver-helper exposure, and stale-import cleanup,
+consolidation, public sparse solver-helper exposure, stale-import cleanup, and
+sparse census helper API cleanup,
 plus local untracked `scripts/`.
 The local `scripts/` directory is not tracked and is not part of this diff.
 
@@ -19,15 +20,15 @@ The local `scripts/` directory is not tracked and is not part of this diff.
 
 Current upstream diff after `git fetch upstream` on 2026-06-27:
 
-`63 files changed, 24590 insertions(+), 676 deletions(-)`
+`63 files changed, 24576 insertions(+), 676 deletions(-)`
 
 Directory-level split:
 
 | Area | Files | Added | Deleted | Status |
 |---|---:|---:|---:|---|
-| `act/pipeline` | 17 | 7426 | 141 | largest remaining consolidation target |
+| `act/pipeline` | 17 | 7410 | 141 | largest remaining consolidation target |
 | `act/back_end/hybridz_tf` | 9 | 6556 | 297 | core HZ operator/product path |
-| `docs` | 16 | 4207 | 0 | audit/provenance/future-work docs |
+| `docs` | 16 | 4209 | 0 | audit/provenance/future-work docs |
 | `act/back_end/solver` | 4 | 4094 | 54 | verdict/sparse HZ solver path |
 | `act/back_end/other` | 11 | 1649 | 83 | frontend/backend integration hooks |
 | `act/front_end` | 5 | 458 | 101 | benchmark/data loading integration |

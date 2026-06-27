@@ -1,21 +1,27 @@
 # HybridZ Future Work After 2026-06-25 Soundfix
 
-Canonical soundfix artifact:
+Canonical frozen artifact:
 
-`/data1/Kane/ICSE/act_hybridz_soundfix_20260625`
+`/data1/Kane/ICSE/act_hybridz_soundfix_20260625/frontend_frozen_gate_20260627_pscost25`
 
-Sound headline:
+Frozen headline:
 
-`1763/2213 = 977 CERT + 786 ADV`, `P0=0`.
+`1780/2213 = 980 CERT + 800 ADV`, `P0=0`, `ERROR=0`.
 
-The preserved 2026-06-24 artifact copy is historical provenance:
+The root artifact directory also contains copied final CSVs with the
+`*_20260627_FINAL` suffix.  The frontend gate directory above is the strict
+reproduction source and contains `FROZEN_REPRO_COMPARISON.json` with
+`ok=true`.
+
+The preserved 2026-06-24 artifact copy and the intermediate 2026-06-25
+soundfix table are historical provenance:
 
 `/data1/Kane/ICSE/act_hybridz_clean_20260624_cora25/FUTURE_WORK_HYBRIDZ_20260624.md`
 
-Soundfix note: the old metaroom `100 CERT / 0 ADV` row is superseded by
-`94 CERT / 1 ADV / 5 TIMEOUT`. The package runner now applies the correct
-split-disjunct rule: any disjunct `ADV` makes the instance `ADV`, and `CERT`
-requires every split disjunct to be certified.
+Soundfix note: the old metaroom `100 CERT / 0 ADV` row is superseded in the
+frozen table by `94 CERT / 1 ADV / 5 TIMEOUT`. The package runner now applies
+the correct split-disjunct rule: any disjunct `ADV` makes the instance `ADV`,
+and `CERT` requires every split disjunct to be certified.
 
 This local copy records the same research direction in a more actionable
 roadmap.  These are future directions only.  They are not part of the frozen
@@ -49,8 +55,8 @@ wall time is audit time, not HybridZ verifier time.
 | `linearizenn_2024` | 60 | 39 | 1 | 40 | 20 | #5 | 20 |
 | `dist_shift_2023` | 72 | 70 | 0 | 70 | 2 | #1 | 0 |
 | `tllverifybench_2023` | 32 | 5 | 12 | 17 | 15 | #3 | 13 |
-| `cora_2024` | 180 | 19 | 6 | 25 | 155 | #1 | 0 |
-| `relusplitter` | 220 | 41 | 2 | 43 | 177 | #3 | 70 |
+| `cora_2024` | 180 | 20 | 20 | 40 | 140 | #1 | 0 |
+| `relusplitter` | 220 | 43 | 2 | 45 | 175 | #3 | 68 |
 | `cgan_2023` | 21 | 5 | 8 | 13 | 8 | #2 | 6 |
 
 The most attractive future work is therefore not the same for every benchmark.
@@ -229,13 +235,10 @@ details.  Future cleanup should make the normal ACT entrypoints enough:
 
 ## Benchmark-Specific Backlog
 
-- `safenlp_2024`: frozen artifact has one remaining UNKNOWN (`iid454`).
-  The earlier frontend/productization drift on `iid844` has been recovered in a
-  2026-06-24 package-frontend recheck: benchmark-wide `normal_pscost1` proves
-  `CERT` with `hz_timeout_s=19.0` and `wall_s=16.53s`.  Future work here is
-  engineering acceptance, not a new algorithm: run a clean complete frozen-suite
-  `--hybridz-require-frozen-match` pass and keep the profile/env metadata
-  stable.
+- `safenlp_2024`: frozen artifact has one remaining UNKNOWN.  The earlier
+  frontend/productization drift has been recovered by benchmark-wide open-source
+  portfolio branches.  Future work here is engineering stability, not a new
+  algorithm: keep profile/env metadata stable and avoid iid-specific tuning.
 - `cersyve`: one remaining UNKNOWN.  Useful small test for open solver
   portfolio and exact cut scheduling.
 - `dist_shift_2023`: highest-return operator-tightness target; remaining

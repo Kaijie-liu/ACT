@@ -4,7 +4,11 @@ Date: 2026-06-25
 
 Current authoritative result artifact:
 
-`/data1/Kane/ICSE/act_hybridz_soundfix_20260625`
+`/data1/Kane/ICSE/act_hybridz_soundfix_20260625/frontend_frozen_gate_20260627_pscost25`
+
+Root-level final copies are also stored under
+`/data1/Kane/ICSE/act_hybridz_soundfix_20260625` with the
+`*_20260627_FINAL` suffix.
 
 Current headline:
 
@@ -18,7 +22,7 @@ The older 2026-06-24 `1768/2213` headline and the 2026-06-25
 
 | Requirement axis | Current evidence | Status |
 |---|---|---|
-| Frozen results saved in ICSE-style CSVs | final reporting table: `FINAL_HYBRIDZ_RESULTS_20260627_FINAL.csv`, `FINAL_CROSS_TOOL_RANKING_20260627_FINAL.csv`, `_CROSS_TOOL_SUMMARY_20260627_FINAL.csv`, `FROZEN_REPRO_COMPARISON_20260627_FINAL.csv/json`, `_FINAL_20260627_MANIFEST.sha256` under `/data1/Kane/ICSE/act_hybridz_soundfix_20260625`; previous 2026-06-25 soundfix tables are retained as historical provenance | done |
+| Frozen results saved in ICSE-style CSVs | strict frontend-gate source: `FINAL_HYBRIDZ_RESULTS.csv`, `FINAL_CROSS_TOOL_RANKING.csv`, `FROZEN_REPRO_COMPARISON.csv/json`, `_MANIFEST.sha256` under `/data1/Kane/ICSE/act_hybridz_soundfix_20260625/frontend_frozen_gate_20260627_pscost25`; root-level copied final tables use the `*_20260627_FINAL` suffix; previous 2026-06-25 soundfix tables are retained as historical provenance | done |
 | Soundness aggregation bug fixed | `act/pipeline/hybridz_benchmark_runner.py` collapses split VNNLIB summaries as: any ADV -> ADV; CERT only if all emitted queries CERT; otherwise unresolved | done |
 | P0 propagation in productized reporting | `act/pipeline/hybridz_results.py` and `act/pipeline/hybridz_benchmark_runner.py` now propagate explicit `p0/P0` flags into summary, ICSE detail, and taxonomy outputs instead of writing hard-coded zeros | done |
 | Product path no longer imports `scripts/` | migration matrix scan records no production `act/` imports from `scripts/`; remaining references are docs/comments/local debug helpers | done for import dependency |
@@ -27,8 +31,8 @@ The older 2026-06-24 `1768/2213` headline and the 2026-06-25
 | Focused regression checks | see test log below | done |
 | Full frozen frontend reproduction | clean full `--verify hybridz-benchmark --category frozen --hybridz-require-frozen-match` gate completed under `/data1/Kane/ICSE/act_hybridz_soundfix_20260625/frontend_frozen_gate_20260627_pscost25`; `FROZEN_REPRO_COMPARISON.json` reports `ok: true`, 12/12 benchmark rows `match`, `P0=0`, and `ERROR=0` | done |
 | Linearizenn packaged frontend rerun | after adding the benchmark-wide `linear_portfolio_m360` branch, full packaged rerun under `/data1/Kane/ICSE/act_hybridz_soundfix_20260625/linearizenn_productized_m360_20260627` produced `39 CERT + 1 ADV = 40/60`, `P0=0`, `ERROR=0`; `iid13/41/46/51/52` are recovered by `linear_portfolio_m360`, while `iid34` is recovered by `normal` | frozen-green for bench |
-| Git-tracked productization state | product/doc boundary committed in `4ed5712e4` (`Productize HybridZ stage II path`), post-status commit `78ab54b66`, packaged worker modules committed in `8738f50f6` (`Productize HybridZ packaged workers`), and subsequent hardening commits through `998edabf5` expose public HybridZ helper APIs; `scripts/` remains local/untracked and absent from commits | done for current product path |
-| Relative-to-upstream minimal diff audit | tracked diff has been measured after the product boundary commit and refreshed after helper-publication cleanup; remaining work is explanatory minimization, not result reproduction | partial |
+| Git-tracked productization state | product/doc boundary committed in `4ed5712e4` (`Productize HybridZ stage II path`), post-status commit `78ab54b66`, packaged worker modules committed in `8738f50f6` (`Productize HybridZ packaged workers`), and subsequent hardening commits through `978d39597` expose public HybridZ helper APIs and remove stale probe shims; `scripts/` remains local/untracked and absent from commits | done for current product path |
+| Relative-to-upstream minimal diff audit | tracked diff has been measured after the product boundary commit and refreshed after helper-publication cleanup; remaining large diff is explained as HybridZ product path, sparse backend, runner/reporting, data plumbing, and audit docs | done for freeze handoff |
 
 ## Product Files Committed
 
@@ -71,7 +75,7 @@ The current migration matrix classifies script families as follows:
 
 | Family | Status |
 |---|---|
-| full-run scheduling/export/result ledger | migrated into `hybridz_config.py`, `hybridz_benchmark_runner.py`, and `hybridz_results.py`; legacy scripts kept as provenance until full frontend frozen rerun |
+| full-run scheduling/export/result ledger | migrated into `hybridz_config.py`, `hybridz_benchmark_runner.py`, and `hybridz_results.py`; legacy scripts kept only as local provenance after the full frontend frozen rerun |
 | dense/sparse exact-HZ verdict and replay guard | migrated into `solver_hz_verdict.py`, `sparse_hz.py`, `sparse_ops.py`, and `verifier.py` |
 | selected safenlp projected one-hidden-ReLU branch | migrated into `act/pipeline/hybridz_projected_relu_mip.py` as a benchmark-wide portfolio branch |
 | guided LP-witness rescue / ORT promotion | intentionally excluded |
@@ -167,16 +171,15 @@ Observed result:
   `TIMEOUT/UNKNOWN` split was `0/15` instead of the frozen table's `14/1`,
   audit-only for the current reproduction gate
 
-## Remaining DoD Gaps
+## Remaining Cleanup / Future-Work Items
 
-1. After final result freeze, re-run the diff-boundary audit against `upstream/main`,
-   including newly tracked product files, and remove or document any unrelated
-   ACT-wide changes.
-2. Continue the function-level audit of `scripts/cifar_sparse_exact_probe.py`
-   against `sparse_ops.py` and `solver_hz_verdict.py` before deleting legacy
-   sparse scripts.
+1. Keep `scripts/` local/untracked unless a later change deliberately migrates
+   one script's pure-HZ behavior into `act/` with tests.
+2. Do not delete local legacy sparse scripts until their remaining research
+   value is either migrated into backend tests or explicitly archived as
+   provenance.
 3. Keep future-work directions separate from the counted artifact: tighter
    sound S-curve, sparse Schur/block presolve, OBBT-lite, lazy exact-HZ,
-   open-source solver portfolio improvements, and memory-governed
+   open-source solver portfolio improvements, memory-governed
    benchmark-level worker profiles for serial tail benches such as `acasxu`,
    `cora`, and `relusplitter`.
