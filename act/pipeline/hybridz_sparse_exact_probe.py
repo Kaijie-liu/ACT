@@ -36,6 +36,7 @@ from act.back_end.hybridz_tf.sparse_ops import (  # noqa: E402
     sparse_hz_concat,
     sparse_hz_gather_rows as _gather_hz_rows,
     sparse_hz_gather_rows_like as _gather_hz_rows_like,
+    sparse_hz_from_bounds,
     sparse_hz_linear as _linear_apply,
     sparse_hz_pad_frame as _pad_hz,
     sparse_hz_scale as _scale_apply,
@@ -143,24 +144,10 @@ def _gather_row_idx_np(L, n: int) -> Optional[np.ndarray]:
 
 
 def _input_spec_hz(inspec, n_in: int) -> SparseHZ:
-    lb = inspec.lb.detach().cpu().numpy().reshape(-1).astype(np.float64)
-    ub = inspec.ub.detach().cpu().numpy().reshape(-1).astype(np.float64)
-    c = (lb + ub) * 0.5
-    rad = (ub - lb) * 0.5
-    idx = np.nonzero(np.abs(rad) > 1e-12)[0].astype(np.int32)
-    cols = np.arange(idx.size, dtype=np.int32)
-    Gc = sp.csr_matrix((rad[idx], (idx, cols)), shape=(n_in, idx.size), dtype=np.float64)
-    return SparseHZ(
-        c=c,
-        Gc=Gc,
-        Gb=_empty(n_in, 0),
-        Ac=_empty(0, idx.size),
-        Ab=_empty(0, 0),
-        b=np.zeros(0, dtype=np.float64),
-        Auc=_empty(0, idx.size),
-        Aub=_empty(0, 0),
-        ub=np.zeros(0, dtype=np.float64),
-    )
+    hz = sparse_hz_from_bounds(inspec)
+    if hz.n_out != int(n_in):
+        raise ValueError(f"input spec size mismatch: hz={hz.n_out}, layer={n_in}")
+    return hz
 
 
 def _upsample_nearest_matrix(L) -> Tuple[sp.csr_matrix, np.ndarray]:
