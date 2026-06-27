@@ -11,42 +11,41 @@ consolidation, solver-helper consolidation, and sparse MILP cutoff-engine
 consolidation, S-curve backend consolidation, and sparse structural row-map
 helper consolidation, full S-curve backend consolidation, and constructive
 center witness backend consolidation, and tight-ReLU apply-helper backend
-consolidation, plus local untracked `scripts/`.
+consolidation, public sparse solver-helper exposure, and stale-import cleanup,
+plus local untracked `scripts/`.
 The local `scripts/` directory is not tracked and is not part of this diff.
 
 ## Summary
 
 Current upstream diff after `git fetch upstream` on 2026-06-27:
 
-`80 files changed, 24652 insertions(+), 2217 deletions(-)`
+`63 files changed, 24535 insertions(+), 673 deletions(-)`
 
 Directory-level split:
 
 | Area | Files | Added | Deleted | Status |
 |---|---:|---:|---:|---|
-| `act/pipeline` | 19 | 7424 | 159 | largest remaining consolidation target |
-| `act/back_end/hybridz_tf` | 8 | 6592 | 292 | core HZ operator/product path |
-| `act/back_end/solver` | 5 | 4102 | 423 | verdict/sparse HZ solver path |
-| `docs` | 16 | 4123 | 0 | audit/provenance/future-work docs |
-| `act/back_end/other` | 17 | 1696 | 986 | frontend/backend integration hooks |
-| `act/front_end` | 7 | 508 | 334 | benchmark/data loading integration |
+| `act/pipeline` | 17 | 7415 | 141 | largest remaining consolidation target |
+| `act/back_end/hybridz_tf` | 9 | 6556 | 297 | core HZ operator/product path |
+| `act/back_end/solver` | 4 | 4062 | 51 | verdict/sparse HZ solver path |
+| `docs` | 16 | 4198 | 0 | audit/provenance/future-work docs |
+| `act/back_end/other` | 11 | 1646 | 83 | frontend/backend integration hooks |
+| `act/front_end` | 5 | 458 | 101 | benchmark/data loading integration |
 | `FULLRUN_HANDOFF.md` | 1 | 200 | 0 | run handoff/provenance |
-| other | 7 | 7 | 23 | package metadata / small compatibility files |
 
 Largest files by changed lines:
 
 | File | Added | Deleted | Interpretation |
 |---|---:|---:|---|
-| `act/back_end/hybridz_tf/sparse_ops.py` | 4104 | 0 | sparse exact-HZ propagation core; SOFTMAX, var-var MATMUL, exact ReLU graph construction, exact ReLU tight-LP bound tightening/apply helper, S-curve return metadata, uniform/curvature pruned S-curve support, full S-curve construction, constructive center witness helpers, and structural row-map helpers moved here from the probe |
-| `act/back_end/solver/solver_hz_verdict.py` | 3488 | 0 | exact verdict MILP, open-source solver portfolio, reusable sparse MILP presolve / relaxation helpers, LP min-margin prefilter, and sparse HiGHS/SCIP cutoff engines |
+| `act/back_end/hybridz_tf/sparse_ops.py` | 4200 | 0 | sparse exact-HZ propagation core; SOFTMAX, var-var MATMUL, exact ReLU graph construction, exact ReLU tight-LP bound tightening/apply helper, S-curve return metadata, uniform/curvature pruned S-curve support, full S-curve construction, constructive center witness helpers, and structural row-map helpers moved here from the probe |
+| `act/back_end/solver/solver_hz_verdict.py` | 3497 | 0 | exact verdict MILP, open-source solver portfolio, reusable sparse MILP presolve / relaxation helpers, LP min-margin prefilter, and sparse HiGHS/SCIP cutoff engines |
 | `act/pipeline/hybridz_benchmark_runner.py` | 1783 | 0 | product runner and branch portfolio; reporting helpers are now in `hybridz_results.py` |
-| `act/pipeline/hybridz_sparse_exact_probe.py` | 1135 | 0 | remaining package-level prototype; sparse cutoff engines, tight-ReLU application, S-curve construction, constructive witness helpers, structural row maps, and most reusable solver helpers have moved into backend layers |
-| `act/back_end/hybridz_tf/tf_mlp.py` | 1253 | 246 | dense exact ReLU/compressed ReLU and nonlinear operators |
 | `act/pipeline/hybridz_results.py` | 1227 | 0 | benchmark/suite CSV and JSON exports, frozen comparison, cross-tool ranking, failure taxonomy, and P0 reporting helpers |
+| `act/pipeline/hybridz_sparse_exact_probe.py` | 1131 | 0 | remaining package-level prototype; sparse cutoff engines, tight-ReLU application, S-curve construction, constructive witness helpers, structural row maps, and most reusable solver helpers have moved into backend layers |
+| `act/back_end/hybridz_tf/tf_mlp.py` | 1116 | 248 | dense exact ReLU/compressed ReLU and nonlinear operators |
 | `act/pipeline/hybridz_projected_relu_mip.py` | 744 | 0 | safenlp projected exact-ReLU branch; still pure-HZ but specialized |
 | `act/back_end/verifier.py` | 740 | 13 | frontend solver integration and metadata/soundness guards |
 | `act/pipeline/hybridz_sparse_census.py` | 660 | 0 | diagnostic/census path; not needed for frozen one-command verification |
-| `act/pipeline/hybridz_sparse_worker.py` | 452 | 0 | sparse worker wrapper; common probe options deduplicated |
 | `act/back_end/hybridz_config.py` | 509 | 0 | frozen oracle and benchmark profiles |
 
 ## Product Boundary Assessment
@@ -365,10 +364,27 @@ packaged modules, but too much sparse exact-HZ probe logic still lives in
 	   smoke, and a direct `hybridz_full_worker --bench sat_relu --iid 0`
 	   smoke returning `ADV/P0=false`.
 
+	   Subsequent hygiene passes removed stale imports from
+	   `hybridz_tf.py`, `tf_cnn.py`, `tf_transformer.py`, and the packaged
+	   sparse probe without changing any solver/operator behavior.  Regression
+	   evidence: `py_compile`, `python -m act.back_end.hybridz_tf`, `python -m
+	   act.back_end.solver.solver_hz_verdict`, `python -m
+	   act.back_end.hybridz_tf.sparse_ops`, `python -m
+	   act.pipeline.hybridz_sparse_exact_probe --self-test`, the `sat_relu`
+	   sparse-worker smoke returning `ADV/P0=false/ort_verified=true`, the
+	   standard `--verify vnnlib --solvers hybridz` smoke returning
+	   `FALSIFIED`, `python -m act.pipeline.hybridz_benchmark_runner`, and the
+	   frozen manifest check.
+
 1. Audit `act/pipeline/hybridz_sparse_exact_probe.py` function families.
    Move reusable exact-HZ propagation and MILP export helpers into backend
    modules, and delete diagnostic branches that are not counted in the pure-HZ
    frozen table.
+   Current scan shows the packaged probe now has only four top-level function
+   families (`_relu_exact`, `_sigmoid_piecewise`, `_propagate_sparse`, and
+   `main/_self_test`); reusable sparse operators and solver exports already
+   point to backend modules.  Further shrinking should target orchestration
+   boundaries, not duplicate numerical kernels.
 
 2. Continue shrinking only if scheduling logic exposes more pure helpers.
    The main reporting/cross-tool/frozen/taxonomy output logic has moved to
@@ -386,8 +402,9 @@ packaged modules, but too much sparse exact-HZ probe logic still lives in
 
 ## Pure-HybridZ Boundary Recheck
 
-Latest cleanup scan after the tight-ReLU helper migration found no counted
-result promotion outside the HybridZ engine:
+Latest cleanup scan after the tight-ReLU helper migration, public sparse solver
+API exposure, and stale-import cleanup found no counted result promotion outside
+the HybridZ engine:
 
 - `act/pipeline/hybridz_full_worker.py` still has an ORT sampling guard, but it
   is downgrade-only: it can turn an engine `CERT` into `UNKNOWN_P0DOWNGRADE`
