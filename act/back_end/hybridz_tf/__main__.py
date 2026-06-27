@@ -9,7 +9,7 @@ from .hybridz_tf import _test_sparse_matmul_const_propagation
 from .tf_cnn import _test_hz_cnn_exact_maxpool_only
 from .tf_mlp import (
     _test_hz_mul_exact_point_and_var_drop,
-    _test_upsample_nearest_row_idx_3d4d,
+    _test_sparse_upsample_nearest_row_indices_3d4d,
 )
 
 
@@ -18,7 +18,7 @@ def main() -> None:
         _test_sparse_matmul_const_propagation,
         _test_hz_cnn_exact_maxpool_only,
         _test_hz_mul_exact_point_and_var_drop,
-        _test_upsample_nearest_row_idx_3d4d,
+        _test_sparse_upsample_nearest_row_indices_3d4d,
     ]
     passed = 0
     for fn in tests:

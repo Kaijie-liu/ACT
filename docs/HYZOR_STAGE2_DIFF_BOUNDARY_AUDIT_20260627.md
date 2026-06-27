@@ -270,12 +270,13 @@ packaged modules, but too much sparse exact-HZ probe logic still lives in
 	   producing `N=1, ADV=1, P0=0`, and the frozen manifest check.
 
 	   The sparse structural row-map helpers for nearest-neighbor UPSAMPLE,
-	   SLICE, and GATHER were also moved into
+	   SLICE, GATHER, and later EXPAND were also moved into
 	   `act/back_end/hybridz_tf/sparse_ops.py`.  The sparse probe now calls
 	   backend `sparse_upsample_nearest_row_indices`,
-	   `sparse_slice_row_indices`, and `sparse_gather_row_indices`, and no longer
-	   imports dense `tf_mlp` private helper functions.  The probe dropped from
-	   1720 to 1710 lines.  Regression evidence: `py_compile` for touched files,
+	   `sparse_slice_row_indices`, `sparse_gather_row_indices`, and
+	   `sparse_expand_row_indices`, and no longer imports dense `tf_mlp` private
+	   helper functions.  The probe dropped from 1720 to 1710 lines.  Regression
+	   evidence: `py_compile` for touched files,
 	   `python -m act.back_end.hybridz_tf.sparse_ops` with explicit row-map toy
 	   checks, `python -m act.pipeline.hybridz_sparse_exact_probe --self-test`,
 	   the `sat_relu` sparse-worker smoke returning `ADV/P0=false`, both
@@ -329,10 +330,11 @@ packaged modules, but too much sparse exact-HZ probe logic still lives in
 
 	   Structural row-map helpers are now centralized in
 	   `act/back_end/hybridz_tf/sparse_ops.py` for both dense and sparse HZ
-	   paths.  `tf_mlp.py` keeps thin compatibility wrappers for Slice, Gather,
-	   Expand, and nearest-neighbor Upsample; `HybridzTF` sparse-carry calls the
-	   backend helpers directly.  This removes the dense/sparse duplicate
-	   implementations while keeping the same exact row-selection semantics.
+	   paths.  `tf_mlp.py` now calls the backend helpers directly for Slice,
+	   Gather, Expand, and nearest-neighbor Upsample; `HybridzTF` sparse-carry
+	   also calls the same backend helpers.  This removes the dense/sparse
+	   duplicate implementations and the intermediate thin wrappers while
+	   keeping the same exact row-selection semantics.
 	   Regression evidence: `py_compile` for `tf_mlp.py`, `hybridz_tf.py`,
 	   `sparse_ops.py`, and the sparse probe; `python -m
 	   act.back_end.hybridz_tf.sparse_ops`; `python -m act.back_end.hybridz_tf`;

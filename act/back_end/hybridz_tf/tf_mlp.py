@@ -492,11 +492,11 @@ def tf_upsample(L, bounds, tf):
     hz_in = tf._hz_cache.get(L.id)
     if hz_in is None:
         return fact
-    row_idx = _upsample_nearest_row_idx(
-        L, hz_in.c.shape[0], len(L.out_vars), hz_in.c.device)
-    if row_idx is None:
+    rows = sparse_upsample_nearest_row_indices(L, hz_in.c.shape[0], len(L.out_vars))
+    if rows is None:
         tf._hz_cache.pop(L.id, None)
         return fact
+    row_idx = torch.as_tensor(rows, dtype=torch.long, device=hz_in.c.device)
     tf._hz_cache[L.id] = _hz_gather_rows(hz_in, row_idx)
     return _hz_fact(fact, tf._hz_cache[L.id])
 
@@ -630,17 +630,6 @@ def _hz_gather_rows(hz: HZono, row_idx: torch.Tensor) -> HZono:
     )
 
 
-def _upsample_nearest_row_idx(
-    L, n_in: int, n_out: int, device: torch.device
-) -> torch.Tensor | None:
-    """Row map for nearest-neighbor upsample. This is exact: each output row is
-    a copy of one input row."""
-    rows = sparse_upsample_nearest_row_indices(L, n_in, n_out)
-    if rows is None:
-        return None
-    return torch.as_tensor(rows, dtype=torch.long, device=device)
-
-
 def _reduce_sum_row_map(L, n_in: int, n_out: int) -> torch.Tensor | None:
     in_shape = L.params.get("input_shape")
     if in_shape is None:
@@ -701,57 +690,37 @@ def tf_transpose(L, bounds, tf):
     return fact
 
 
-def _slice_row_idx(L, n):
-    """Output->input row map for a Slice, mirroring interval.tf_slice exactly."""
-    rows = sparse_slice_row_indices(L, n)
-    if rows is None:
-        return None
-    return torch.as_tensor(rows, dtype=torch.long)
-
-
 def tf_slice(L, bounds, tf):
     fact = interval.tf_slice(L, bounds)
     hz_in = tf._hz_cache.get(L.id)
     if hz_in is not None:
-        ri = _slice_row_idx(L, hz_in.c.shape[0])
-        if ri is not None and ri.numel() == fact.bounds.lb.shape[-1]:
+        rows = sparse_slice_row_indices(L, hz_in.c.shape[0])
+        if rows is not None and rows.size == fact.bounds.lb.shape[-1]:
+            ri = torch.as_tensor(rows, dtype=torch.long, device=hz_in.c.device)
             tf._hz_cache[L.id] = _hz_gather_rows(hz_in, ri)
             return _hz_fact(fact, tf._hz_cache[L.id])
     return fact
-
-
-def _gather_row_idx(L, n):
-    rows = sparse_gather_row_indices(L, n)
-    if rows is None:
-        return None
-    return torch.as_tensor(rows, dtype=torch.long)
 
 
 def tf_gather(L, bounds, tf):
     fact = interval.tf_gather(L, bounds)
     hz_in = tf._hz_cache.get(L.id)
     if hz_in is not None:
-        ri = _gather_row_idx(L, hz_in.c.shape[0])
-        if ri is not None and ri.numel() == fact.bounds.lb.numel():
+        rows = sparse_gather_row_indices(L, hz_in.c.shape[0])
+        if rows is not None and rows.size == fact.bounds.lb.numel():
+            ri = torch.as_tensor(rows, dtype=torch.long, device=hz_in.c.device)
             tf._hz_cache[L.id] = _hz_gather_rows(hz_in, ri)
             return _hz_fact(fact, tf._hz_cache[L.id])
     return fact
-
-
-def _expand_row_idx(L, n):
-    """Output->input row map for an Expand/broadcast (repeated rows)."""
-    rows = sparse_expand_row_indices(L, n)
-    if rows is None:
-        return None
-    return torch.as_tensor(rows, dtype=torch.long)
 
 
 def tf_expand(L, bounds, tf):
     fact = interval.tf_expand(L, bounds)
     hz_in = tf._hz_cache.get(L.id)
     if hz_in is not None:
-        ri = _expand_row_idx(L, hz_in.c.shape[0])
-        if ri is not None and ri.numel() == fact.bounds.lb.shape[-1]:
+        rows = sparse_expand_row_indices(L, hz_in.c.shape[0])
+        if rows is not None and rows.size == fact.bounds.lb.shape[-1]:
+            ri = torch.as_tensor(rows, dtype=torch.long, device=hz_in.c.device)
             tf._hz_cache[L.id] = _hz_gather_rows(hz_in, ri)
             return _hz_fact(fact, tf._hz_cache[L.id])
     return fact
@@ -1774,7 +1743,7 @@ def _test_hz_mul_exact_point_and_var_drop() -> None:  # pragma: no cover
         raise AssertionError("var-var multiply must drop strict exact-HZ state")
 
 
-def _test_upsample_nearest_row_idx_3d4d() -> None:  # pragma: no cover
+def _test_sparse_upsample_nearest_row_indices_3d4d() -> None:  # pragma: no cover
     """Nearest upsample row maps must match NCHW row-copy semantics."""
 
     from types import SimpleNamespace
@@ -1807,14 +1776,13 @@ def _test_upsample_nearest_row_idx_3d4d() -> None:  # pragma: no cover
             "input_shape": in_shape,
             "output_shape": out_shape,
         })
-        rows = _upsample_nearest_row_idx(
+        rows = sparse_upsample_nearest_row_indices(
             layer,
             int(_prod(in_shape)),
             int(_prod(out_shape)),
-            torch.device("cpu"),
         )
-        expected = manual_rows(in_shape, out_shape)
-        if rows is None or not torch.equal(rows.cpu(), expected):
+        expected = manual_rows(in_shape, out_shape).numpy()
+        if rows is None or not (rows == expected).all():
             raise AssertionError(
                 f"nearest upsample row-map mismatch: "
                 f"in={in_shape}, out={out_shape}, rows={None if rows is None else rows[:8]}, "
