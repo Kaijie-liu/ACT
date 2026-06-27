@@ -986,7 +986,7 @@ def sparse_lp_min_margin(
 sp = _sp if _HAS_SCIPY else None
 
 
-def _milp_cutoff_highs(
+def sparse_milp_cutoff_highs(
     hz: SparseHZono,
     C: np.ndarray,
     t: np.ndarray,
@@ -1433,7 +1433,7 @@ def _milp_cutoff_highs(
                 "fbbt": fbbt_stats,
                 "fbbt_fixed_subst": fixed_subst_stats,
             }
-            _milp_cutoff_highs.last_stats = stats
+            sparse_milp_cutoff_highs.last_stats = stats
             return "EMPTY:fbbt_infeasible", None, None
         if mip_start_values is not None:
             mip_start_values = np.clip(mip_start_values, lb, ub)
@@ -1526,7 +1526,7 @@ def _milp_cutoff_highs(
                         "fbbt": fbbt_stats,
                         "fbbt_fixed_subst": fixed_subst_stats,
                     }
-                    _milp_cutoff_highs.last_stats = stats
+                    sparse_milp_cutoff_highs.last_stats = stats
                     print(
                         "  fbbt_fixed_subst "
                         f"fixed_cols={fixed_pos.size} cols={before_cols}->{A.shape[1]} "
@@ -1582,7 +1582,7 @@ def _milp_cutoff_highs(
             "fbbt_fixed_subst": fixed_subst_stats,
             "row_bound_infeasible": rb_stats,
         }
-        _milp_cutoff_highs.last_stats = stats
+        sparse_milp_cutoff_highs.last_stats = stats
         print(
             "  row_bound_infeasible "
             f"bad_row={rb_stats.get('bad_row')} "
@@ -1640,7 +1640,7 @@ def _milp_cutoff_highs(
                 "fbbt_fixed_subst": fixed_subst_stats,
                 "relax_precheck": relax_stats,
             }
-            _milp_cutoff_highs.last_stats = stats
+            sparse_milp_cutoff_highs.last_stats = stats
             return relax_status, relax_margin, None
     h = highspy.Highs()
     h.setOptionValue("output_flag", False)
@@ -1752,7 +1752,7 @@ def _milp_cutoff_highs(
         "fbbt_fixed_subst": fixed_subst_stats,
         "relax_precheck": relax_stats,
     }
-    _milp_cutoff_highs.last_stats = stats
+    sparse_milp_cutoff_highs.last_stats = stats
     print(
         "  highs_stats "
         f"status={status} nodes={stats['nodes']} "
@@ -1927,7 +1927,7 @@ def _milp_cutoff_highs(
     return status, None, None
 
 
-def _milp_cutoff_scip(
+def sparse_milp_cutoff_scip(
     hz: SparseHZono,
     C: np.ndarray,
     t: np.ndarray,
@@ -2081,7 +2081,7 @@ def _milp_cutoff_scip(
             flush=True,
         )
         if fbbt_empty:
-            _milp_cutoff_scip.last_stats = {
+            sparse_milp_cutoff_scip.last_stats = {
                 "status": "fbbt_infeasible",
                 "nodes": 0,
                 "dual_bound": None,
@@ -2150,7 +2150,7 @@ def _milp_cutoff_scip(
                             "ru": float(ru[r0]) if np.isfinite(ru[r0]) else None,
                         },
                     }
-                    _milp_cutoff_scip.last_stats = {
+                    sparse_milp_cutoff_scip.last_stats = {
                         "status": "fbbt_fixed_zero_row_infeasible",
                         "nodes": 0,
                         "dual_bound": None,
@@ -2195,7 +2195,7 @@ def _milp_cutoff_scip(
 
     rb_empty, rb_stats = sparse_row_bound_infeasible(A, rl, ru, lb, ub)
     if rb_empty:
-        _milp_cutoff_scip.last_stats = {
+        sparse_milp_cutoff_scip.last_stats = {
             "status": "row_bound_infeasible",
             "nodes": 0,
             "dual_bound": None,
@@ -2278,7 +2278,7 @@ def _milp_cutoff_scip(
             if rhs_finite:
                 model.addCons(expr <= rhs_v)
     if infeas_const:
-        _milp_cutoff_scip.last_stats = {
+        sparse_milp_cutoff_scip.last_stats = {
             "status": "constant_infeasible",
             "nodes": 0,
             "dual_bound": None,
@@ -2384,7 +2384,7 @@ def _milp_cutoff_scip(
         stats["max_bound_vio"] = max(lb_vio, ub_vio)
         stats["max_row_vio"] = row_vio
         stats["max_row_vio_scaled"] = row_vio_scaled
-    _milp_cutoff_scip.last_stats = stats
+    sparse_milp_cutoff_scip.last_stats = stats
     print(
         "  scip_stats "
         f"status={status} nodes={stats['nodes']} "
@@ -2419,8 +2419,8 @@ def _milp_cutoff_scip(
     return status, val, xi if val is not None else None
 
 
-sparse_milp_cutoff_highs = _milp_cutoff_highs
-sparse_milp_cutoff_scip = _milp_cutoff_scip
+_milp_cutoff_highs = sparse_milp_cutoff_highs
+_milp_cutoff_scip = sparse_milp_cutoff_scip
 
 
 def _spec_np(C, thresholds, out_dim: int):
