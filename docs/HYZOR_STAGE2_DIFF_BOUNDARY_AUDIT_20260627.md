@@ -7,34 +7,36 @@ Baseline: `upstream/main` after `git fetch upstream`.
 Current branch: `hz-cam-1` after sparse-probe consolidation passes, frozen-gate
 productization, sparse-worker option deduplication, package-local HybridZ
 CLI option/spec helper consolidation, benchmark reporting helper
-consolidation, and solver-helper consolidation, plus local untracked `scripts/`.
+consolidation, solver-helper consolidation, and sparse MILP cutoff-engine
+consolidation, plus local untracked `scripts/`.
 The local `scripts/` directory is not tracked and is not part of this diff.
 
 ## Summary
 
 Current upstream diff after `git fetch upstream` on 2026-06-27:
 
-`80 files changed, 24370 insertions(+), 2217 deletions(-)`
+`80 files changed, 24383 insertions(+), 2217 deletions(-)`
 
 Directory-level split:
 
 | Area | Files | Added | Deleted | Status |
 |---|---:|---:|---:|---|
-| `act/pipeline` | 19 | 9792 | 159 | largest remaining consolidation target |
+| `act/pipeline` | 19 | 8361 | 159 | largest remaining consolidation target |
 | `act/back_end/hybridz_tf` | 8 | 5543 | 292 | core HZ operator/product path |
+| `act/back_end/solver` | 5 | 4102 | 423 | verdict/sparse HZ solver path |
 | `docs` | 16 | 3966 | 0 | audit/provenance/future-work docs |
-| `act/back_end/solver` | 5 | 2658 | 423 | verdict/sparse HZ solver path |
 | `act/back_end/other` | 17 | 1696 | 986 | frontend/backend integration hooks |
 | `act/front_end` | 7 | 508 | 334 | benchmark/data loading integration |
 | `FULLRUN_HANDOFF.md` | 1 | 200 | 0 | run handoff/provenance |
+| other | 7 | 7 | 23 | package metadata / small compatibility files |
 
 Largest files by changed lines:
 
 | File | Added | Deleted | Interpretation |
 |---|---:|---:|---|
-| `act/pipeline/hybridz_sparse_exact_probe.py` | 3503 | 0 | biggest remaining package-level prototype; first post-freeze consolidation target is partially reduced |
+| `act/back_end/solver/solver_hz_verdict.py` | 3488 | 0 | exact verdict MILP, open-source solver portfolio, reusable sparse MILP presolve / relaxation helpers, LP min-margin prefilter, and sparse HiGHS/SCIP cutoff engines |
 | `act/back_end/hybridz_tf/sparse_ops.py` | 3055 | 0 | sparse exact-HZ propagation core; SOFTMAX, var-var MATMUL, exact ReLU graph construction, exact ReLU tight-LP bound tightening, and S-curve return metadata support moved here from the probe |
-| `act/back_end/solver/solver_hz_verdict.py` | 2044 | 0 | exact verdict MILP, open-source solver portfolio, and reusable sparse MILP presolve / relaxation helpers |
+| `act/pipeline/hybridz_sparse_exact_probe.py` | 2072 | 0 | major remaining package-level prototype; sparse cutoff engines and most reusable solver helpers have moved to the backend solver layer |
 | `act/pipeline/hybridz_benchmark_runner.py` | 1783 | 0 | product runner and branch portfolio; reporting helpers are now in `hybridz_results.py` |
 | `act/back_end/hybridz_tf/tf_mlp.py` | 1253 | 246 | dense exact ReLU/compressed ReLU and nonlinear operators |
 | `act/pipeline/hybridz_results.py` | 1227 | 0 | benchmark/suite CSV and JSON exports, frozen comparison, cross-tool ranking, failure taxonomy, and P0 reporting helpers |
@@ -234,6 +236,20 @@ packaged modules, but too much sparse exact-HZ probe logic still lives in
 	   S-curve smoke returned `UNKNOWN/P0=false` without construction errors, both
 	   frontend smokes produced `N=1, ADV=1, P0=0`, and the frozen manifest check
 	   remained clean.
+
+	   The sparse HiGHS and SCIP MILP cutoff engines were then moved from
+	   `hybridz_sparse_exact_probe.py` into
+	   `act/back_end/solver/solver_hz_verdict.py`.  The probe now imports these
+	   solver-layer engines and keeps only branch policy / frontend orchestration.
+	   The probe dropped from 3437 to 2072 lines.  Regression evidence:
+	   `py_compile` for the touched solver/probe files, `python -m
+	   act.back_end.solver.solver_hz_verdict`, `python -m
+	   act.pipeline.hybridz_sparse_exact_probe --self-test`, `python -m
+	   act.pipeline.hybridz_sparse_worker --bench sat_relu --iid 0 --lp-queries 1
+	   --milp-timeout 5 --worker-timeout 45`, the compressed `dist_shift_2023`
+	   S-curve sparse-worker smoke, the packaged `--verify hybridz-benchmark`
+	   smoke, the standard `--verify vnnlib --solvers hybridz` smoke, and
+	   `cd "$OUT" && sha256sum -c _MANIFEST.sha256`.
 
 1. Audit `act/pipeline/hybridz_sparse_exact_probe.py` function families.
    Move reusable exact-HZ propagation and MILP export helpers into backend
