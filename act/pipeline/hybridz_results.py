@@ -89,6 +89,204 @@ def int_field(row: Mapping[str, object], key: str) -> int:
         return 0
 
 
+def run_verify_time_s(run: Mapping[str, object]) -> float:
+    """Extract the verification wall time from a runner result row."""
+
+    for row in run.get("detail_rows", []) or []:
+        if not isinstance(row, Mapping):
+            continue
+        try:
+            return float(row.get("wall_s") or run.get("wall_s") or 0.0)
+        except Exception:
+            break
+    try:
+        return float(run.get("wall_s") or 0.0)
+    except Exception:
+        return 0.0
+
+
+def truthy_flag(value: object) -> bool:
+    """Parse bool-like CSV/JSON fields used by reporting checks."""
+
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, (int, float)):
+        return value != 0
+    if isinstance(value, str):
+        text = value.strip().lower()
+        if not text:
+            return False
+        try:
+            return float(text) != 0.0
+        except ValueError:
+            return text in {"true", "yes", "y"}
+    return False
+
+
+def row_has_p0(row: Mapping[str, object]) -> bool:
+    """Return whether a detail/summary CSV row reports a P0 flag."""
+
+    if truthy_flag(row.get("p0")) or truthy_flag(row.get("P0")):
+        return True
+    raw_meta = row.get("metadata_json")
+    if not raw_meta:
+        return False
+    try:
+        meta = json.loads(str(raw_meta))
+    except Exception:
+        return False
+    if not isinstance(meta, Mapping):
+        return False
+    return truthy_flag(meta.get("p0")) or truthy_flag(meta.get("P0"))
+
+
+def run_has_p0(run: Mapping[str, object]) -> bool:
+    """Return whether a runner result or any attached CSV row reports P0."""
+
+    if truthy_flag(run.get("p0")):
+        return True
+    payload = run.get("module_payload")
+    if isinstance(payload, Mapping) and (
+        truthy_flag(payload.get("p0")) or truthy_flag(payload.get("P0"))
+    ):
+        return True
+    for key in ("summary_rows", "detail_rows"):
+        for row in run.get(key, []) or []:
+            if isinstance(row, Mapping) and row_has_p0(row):
+                return True
+    return False
+
+
+def _json_field(value: object) -> str:
+    return json.dumps(value if value is not None else {}, sort_keys=True, default=str)
+
+
+def _detail_reason(run: Mapping[str, object]) -> str:
+    for row in run.get("detail_rows", []) or []:
+        if not isinstance(row, Mapping):
+            continue
+        reason = str(row.get("reason", "")).strip()
+        if reason:
+            return reason[:300]
+    return ""
+
+
+def _tail_text(run: Mapping[str, object]) -> str:
+    return (str(run.get("stderr_tail", "")) or str(run.get("stdout_tail", "")))[:300]
+
+
+def taxonomy_class(run: Mapping[str, object]) -> tuple[str, str]:
+    """Classify unresolved strict-HybridZ runner results for audit CSVs."""
+
+    verdict = str(run.get("verdict", "ERROR"))
+    portfolio_done = run.get("portfolio_done") or {}
+    branches = [str(x) for x in run.get("portfolio_branches", []) or []]
+    err = _tail_text(run)
+    reason = _detail_reason(run)
+    text = f"{reason}\n{err}".lower()
+
+    if verdict in {"CERT", "ADV"}:
+        return "verified", "pure exact-HZ solver verdict"
+    if verdict == "TIMEOUT":
+        return "official_wall_timeout", "official per-instance wall exhausted"
+    if "unsupported" in text:
+        return "unsupported_operator", (reason or err or "unsupported operator")[:300]
+    if verdict == "UNKNOWN":
+        if any(str(v) == "TIMEOUT" for v in getattr(portfolio_done, "values", lambda: [])()):
+            if any(name.startswith("sparse") for name in branches):
+                return "sparse_portfolio_wall", "sparse pure fallback exhausted its portfolio"
+            return "portfolio_wall", "pure-HZ formulation portfolio exhausted its wall"
+        if "drop" in text or "dropped" in text:
+            return "representation_wall", "HZ representation dropped before a counted proof"
+        return "engine_unknown", reason or "pure HZ engine returned UNKNOWN"
+    if verdict == "ERROR":
+        if str(run.get("branch", "")) == "missing_downloaded_vnnlib_instances":
+            return "missing_downloaded_data", err or reason or "downloaded VNNLIB instances missing"
+        if "no downloaded vnnlib instances found" in text:
+            return "missing_downloaded_data", err or reason
+        return "engine_error", err
+    return "other", f"unhandled verdict {verdict}"
+
+
+def write_suite_failure_taxonomy(
+    out_dir: str | Path,
+    run_rows: Iterable[Mapping[str, object]],
+) -> tuple[Path, Path]:
+    """Write per-instance failure taxonomy and per-benchmark summary CSVs."""
+
+    out = Path(out_dir)
+    out.mkdir(parents=True, exist_ok=True)
+    rows = []
+    for run in run_rows:
+        result_class, note = taxonomy_class(run)
+        rows.append(
+            {
+                "bench": str(run.get("bench", "")),
+                "iid": int(run.get("index", -1)),
+                "verdict": str(run.get("verdict", "ERROR")),
+                "result_class": result_class,
+                "branch": str(run.get("branch", "")),
+                "portfolio_done": _json_field(run.get("portfolio_done", {})),
+                "portfolio_branches": ";".join(str(x) for x in run.get("portfolio_branches", []) or []),
+                "time_s": f"{run_verify_time_s(run):.2f}",
+                "returncode": str(run.get("returncode", "")),
+                "p0": int(run_has_p0(run)),
+                "reason": _detail_reason(run),
+                "err": _tail_text(run),
+                "note": note,
+            }
+        )
+    rows.sort(key=lambda row: (row["bench"], int(row["iid"])))
+
+    detail_path = out / "failure_taxonomy_detail.csv"
+    detail_fields = [
+        "bench",
+        "iid",
+        "verdict",
+        "result_class",
+        "branch",
+        "portfolio_done",
+        "portfolio_branches",
+        "time_s",
+        "returncode",
+        "p0",
+        "reason",
+        "err",
+        "note",
+    ]
+    with detail_path.open("w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=detail_fields)
+        writer.writeheader()
+        writer.writerows({name: row.get(name, "") for name in detail_fields} for row in rows)
+
+    counts_by_bench: dict[str, dict[str, int]] = {}
+    for row in rows:
+        bench = str(row["bench"])
+        counts = counts_by_bench.setdefault(bench, {"N": 0, "V+A": 0, "P0": 0})
+        counts["N"] += 1
+        if row["verdict"] in {"CERT", "ADV"} and row["result_class"] == "verified":
+            counts["V+A"] += 1
+        if truthy_flag(row.get("p0")):
+            counts["P0"] += 1
+        counts[str(row["result_class"])] = counts.get(str(row["result_class"]), 0) + 1
+
+    classes = sorted({
+        key
+        for counts in counts_by_bench.values()
+        for key in counts
+        if key not in {"N", "V+A", "P0"}
+    })
+    summary_path = out / "failure_taxonomy_summary.csv"
+    summary_fields = ["bench", "N", "V+A", "P0", *classes]
+    with summary_path.open("w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=summary_fields)
+        writer.writeheader()
+        for bench in sorted(counts_by_bench):
+            counts = counts_by_bench[bench]
+            writer.writerow({field: bench if field == "bench" else counts.get(field, 0) for field in summary_fields})
+    return detail_path, summary_path
+
+
 @dataclass
 class HybridZRunRow:
     bench: str
