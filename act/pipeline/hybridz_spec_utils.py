@@ -96,8 +96,20 @@ def interval_hard_rivals_from_specs(
     return hard, lows
 
 
+def input_center_radius_indices(inspec) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Flatten an input box into center, radius, and nonzero-radius indices."""
+
+    lb = inspec.lb.detach().cpu().numpy().reshape(-1).astype(np.float64)
+    ub = inspec.ub.detach().cpu().numpy().reshape(-1).astype(np.float64)
+    center = (lb + ub) * 0.5
+    radius = (ub - lb) * 0.5
+    indices = np.nonzero(np.abs(radius) > 1e-12)[0].astype(np.int32)
+    return center, radius, indices
+
+
 __all__ = [
     "check_real_unsafe",
     "flatten_query_specs",
+    "input_center_radius_indices",
     "interval_hard_rivals_from_specs",
 ]

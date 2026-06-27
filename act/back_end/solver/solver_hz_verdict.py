@@ -888,6 +888,91 @@ def sparse_highs_relaxation_empty_precheck(
     return status, margin, stats
 
 
+def sparse_lp_min_margin(
+    hz,
+    C: np.ndarray,
+    t: np.ndarray,
+    time_limit: float,
+) -> Tuple[Optional[float], str]:
+    """LP-relaxed min unsafe margin over a sparse HZ.
+
+    For multi-row ``UNSAFE_LINEAR`` specs this solves
+    ``min max_i(C_i y - t_i)``.  Positive margins prove the unsafe polytope is
+    unreachable by the LP relaxation; non-positive margins are diagnostics only.
+    """
+
+    if not _HAS_SCIPY:
+        return None, "no_scipy"
+    Cmat = np.asarray(C, dtype=np.float64).reshape(C.shape[0], -1)
+    tvec = np.asarray(t, dtype=np.float64).reshape(-1)
+    if Cmat.shape[0] != tvec.size:
+        raise ValueError(f"C/t row mismatch: {Cmat.shape} vs {tvec.shape}")
+    n_base = hz.n_cont + hz.n_bin
+    if n_base == 0:
+        if hz.n_eq and np.max(np.abs(hz.b)) > 1e-8:
+            return None, "fixed_hz_infeasible_eq"
+        if hz.n_ub and np.min(hz.ub) < -1e-8:
+            return None, "fixed_hz_infeasible_ub"
+        vals = np.asarray(Cmat @ hz.c - tvec, dtype=np.float64).reshape(-1)
+        margin = float(np.max(vals) if vals.size > 1 else vals[0])
+        return margin, "fixed"
+    if Cmat.shape[0] > 1:
+        Csp = _sp.csr_matrix(Cmat)
+        CGc = Csp @ hz.Gc
+        CGb = Csp @ hz.Gb if hz.n_bin else _sp.csr_matrix((Cmat.shape[0], 0), dtype=np.float64)
+        epi = _sp.hstack([CGc, CGb, -_sp.csr_matrix(np.ones((Cmat.shape[0], 1)))], format="csr")
+        epi_b = tvec - Cmat @ hz.c
+        Aeq = None
+        if hz.n_eq:
+            Aeq = _sp.hstack([hz.Ac, hz.Ab, _sp.csr_matrix((hz.n_eq, 1))], format="csr")
+        Aub_rows = [epi]
+        bub_rows = [epi_b]
+        if hz.n_ub:
+            Aub_rows.append(_sp.hstack([hz.Auc, hz.Aub, _sp.csr_matrix((hz.n_ub, 1))], format="csr"))
+            bub_rows.append(hz.ub)
+        bounds = [(-1.0, 1.0)] * n_base + [(-1e12, 1e12)]
+        obj = np.zeros(n_base + 1, dtype=np.float64)
+        obj[-1] = 1.0
+        opts = {"time_limit": float(time_limit)} if time_limit > 0 else None
+        r = _linprog(
+            obj,
+            A_eq=Aeq,
+            b_eq=hz.b if hz.n_eq else None,
+            A_ub=_sp.vstack(Aub_rows, format="csr"),
+            b_ub=np.concatenate(bub_rows),
+            bounds=bounds,
+            method="highs",
+            options=opts,
+        )
+        if not r.success:
+            return None, str(r.message)
+        return float(r.fun), "ok"
+
+    c_row = Cmat[0]
+    obj_c = np.asarray(c_row @ hz.Gc).reshape(-1)
+    obj_b = np.asarray(c_row @ hz.Gb).reshape(-1) if hz.n_bin else np.zeros(0)
+    const = float(c_row @ hz.c - tvec[0])
+    obj = np.concatenate([obj_c, obj_b])
+    Aeq = _sp.hstack([hz.Ac, hz.Ab], format="csr") if hz.n_eq else None
+    Aub = _sp.hstack([hz.Auc, hz.Aub], format="csr") if hz.n_ub else None
+    bub = hz.ub if hz.n_ub else None
+    bounds = [(-1.0, 1.0)] * (hz.n_cont + hz.n_bin)
+    opts = {"time_limit": float(time_limit)} if time_limit > 0 else None
+    r = _linprog(
+        obj,
+        A_eq=Aeq,
+        b_eq=hz.b if hz.n_eq else None,
+        A_ub=Aub,
+        b_ub=bub,
+        bounds=bounds,
+        method="highs",
+        options=opts,
+    )
+    if not r.success:
+        return None, str(r.message)
+    return const + float(r.fun), "ok"
+
+
 def _spec_np(C, thresholds, out_dim: int):
     C = np.asarray(C, dtype=np.float64).reshape(-1, out_dim)
     t = np.asarray(thresholds, dtype=np.float64).reshape(-1)
@@ -1784,6 +1869,20 @@ def _test_sparse_hz_verdict_parity() -> None:  # pragma: no cover
     sparse_cert = hz_certify_spec(shz, C_safe, t_safe, is_unsafe_linear=False)
     assert dense_cert[0] == sparse_cert[0]
     assert abs(float(dense_cert[1]) - float(sparse_cert[1])) <= 1e-12
+    lp_margin, lp_msg = sparse_lp_min_margin(
+        shz,
+        np.array([[1.0, 0.0]], dtype=np.float64),
+        np.array([-2.0], dtype=np.float64),
+        2.0,
+    )
+    assert lp_msg == "ok" and lp_margin is not None and abs(lp_margin - 1.0) <= 1e-12
+    lp_margin, lp_msg = sparse_lp_min_margin(
+        shz,
+        np.array([[-1.0, 0.0], [0.0, -1.0]], dtype=np.float64),
+        np.array([-2.0, -2.0], dtype=np.float64),
+        2.0,
+    )
+    assert lp_msg == "ok" and lp_margin is not None and abs(lp_margin - 1.5) <= 1e-12
     assert hz_base_feasibility(hz, time_limit=2.0)[0] == "FEASIBLE"
     base_xi, base_msg = hz_base_witness(hz, time_limit=2.0)
     assert base_xi is not None, base_msg
@@ -1929,6 +2028,7 @@ __all__ = [
     "hz_objbound_decide",
     "sparse_highs_relaxation_empty_precheck",
     "sparse_fbbt_tighten_bounds",
+    "sparse_lp_min_margin",
     "sparse_row_bound_infeasible",
     "sparse_solver_start_from_xi",
 ]

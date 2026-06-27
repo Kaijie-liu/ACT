@@ -14,13 +14,13 @@ from typing import Dict, List, Optional, Tuple
 
 import numpy as np
 import scipy.sparse as sp
-from scipy.optimize import linprog
 
 from act.back_end.solver.sparse_hz import SparseHZono as SparseHZ  # noqa: E402
 from act.back_end.solver.solver_hz_verdict import (  # noqa: E402
     hz_base_feasibility as _solver_hz_base_feasibility,
     sparse_highs_relaxation_empty_precheck as _highs_relaxation_empty_precheck,
     sparse_fbbt_tighten_bounds as _fbbt_tighten_bounds,
+    sparse_lp_min_margin as _lp_min_margin,
     sparse_row_bound_infeasible as _row_bound_infeasible,
     sparse_solver_start_from_xi as _solver_start_from_xi,
 )
@@ -28,6 +28,7 @@ from act.pipeline.hybridz_option_utils import parse_key_value_options  # noqa: E
 from act.pipeline.hybridz_spec_utils import (  # noqa: E402
     check_real_unsafe as _check_real_unsafe,
     flatten_query_specs as _flatten_query_specs,
+    input_center_radius_indices as _input_center_rad,
     interval_hard_rivals_from_specs as _interval_hard_rivals_from_specs,
 )
 import act.back_end.hybridz_tf.tf_mlp as hz_mlp  # noqa: E402
@@ -1504,93 +1505,6 @@ def _propagate_sparse(
         "xi": np.concatenate([xi_c, xi_b]) if witness_ok else None,
     }
     return final
-
-
-def _lp_min_margin(
-    hz: SparseHZ,
-    C: np.ndarray,
-    t: np.ndarray,
-    time_limit: float,
-) -> Tuple[Optional[float], str]:
-    Cmat = C.reshape(C.shape[0], -1)
-    tvec = t.reshape(-1)
-    if Cmat.shape[0] != tvec.size:
-        raise ValueError(f"C/t row mismatch: {Cmat.shape} vs {tvec.shape}")
-    n_base = hz.n_cont + hz.n_bin
-    if n_base == 0:
-        if hz.n_eq and np.max(np.abs(hz.b)) > 1e-8:
-            return None, "fixed_hz_infeasible_eq"
-        if hz.n_ub and np.min(hz.ub) < -1e-8:
-            return None, "fixed_hz_infeasible_ub"
-        vals = np.asarray(Cmat @ hz.c - tvec, dtype=np.float64).reshape(-1)
-        margin = float(np.max(vals) if vals.size > 1 else vals[0])
-        return margin, "fixed"
-    if Cmat.shape[0] > 1:
-        # UNSAFE_LINEAR is an AND polytope C y <= t.  The LP relaxation proves
-        # safety only if min max_i(C_i y - t_i) > 0.
-        Csp = sp.csr_matrix(Cmat)
-        CGc = Csp @ hz.Gc
-        CGb = Csp @ hz.Gb if hz.n_bin else sp.csr_matrix((Cmat.shape[0], 0), dtype=np.float64)
-        epi = sp.hstack([CGc, CGb, -sp.csr_matrix(np.ones((Cmat.shape[0], 1)))], format="csr")
-        epi_b = tvec - Cmat @ hz.c
-        Aeq = None
-        if hz.n_eq:
-            Aeq = sp.hstack([hz.Ac, hz.Ab, sp.csr_matrix((hz.n_eq, 1))], format="csr")
-        Aub_rows = [epi]
-        bub_rows = [epi_b]
-        if hz.n_ub:
-            Aub_rows.append(sp.hstack([hz.Auc, hz.Aub, sp.csr_matrix((hz.n_ub, 1))], format="csr"))
-            bub_rows.append(hz.ub)
-        bounds = [(-1.0, 1.0)] * n_base + [(-1e12, 1e12)]
-        obj = np.zeros(n_base + 1, dtype=np.float64)
-        obj[-1] = 1.0
-        opts = {"time_limit": float(time_limit)} if time_limit > 0 else None
-        r = linprog(
-            obj,
-            A_eq=Aeq,
-            b_eq=hz.b if hz.n_eq else None,
-            A_ub=sp.vstack(Aub_rows, format="csr"),
-            b_ub=np.concatenate(bub_rows),
-            bounds=bounds,
-            method="highs",
-            options=opts,
-        )
-        if not r.success:
-            return None, str(r.message)
-        return float(r.fun), "ok"
-
-    c_row = Cmat[0]
-    obj_c = np.asarray(c_row @ hz.Gc).reshape(-1)
-    obj_b = np.asarray(c_row @ hz.Gb).reshape(-1) if hz.n_bin else np.zeros(0)
-    const = float(c_row @ hz.c - tvec[0])
-    obj = np.concatenate([obj_c, obj_b])
-    Aeq = sp.hstack([hz.Ac, hz.Ab], format="csr") if hz.n_eq else None
-    Aub = sp.hstack([hz.Auc, hz.Aub], format="csr") if hz.n_ub else None
-    bub = hz.ub if hz.n_ub else None
-    bounds = [(-1.0, 1.0)] * (hz.n_cont + hz.n_bin)
-    opts = {"time_limit": float(time_limit)} if time_limit > 0 else None
-    r = linprog(
-        obj,
-        A_eq=Aeq,
-        b_eq=hz.b if hz.n_eq else None,
-        A_ub=Aub,
-        b_ub=bub,
-        bounds=bounds,
-        method="highs",
-        options=opts,
-    )
-    if not r.success:
-        return None, str(r.message)
-    return const + float(r.fun), "ok"
-
-
-def _input_center_rad(inspec) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
-    lb = inspec.lb.detach().cpu().numpy().reshape(-1).astype(np.float64)
-    ub = inspec.ub.detach().cpu().numpy().reshape(-1).astype(np.float64)
-    center = (lb + ub) * 0.5
-    rad = (ub - lb) * 0.5
-    idx = np.nonzero(np.abs(rad) > 1e-12)[0].astype(np.int32)
-    return center, rad, idx
 
 
 def _milp_cutoff_highs(
