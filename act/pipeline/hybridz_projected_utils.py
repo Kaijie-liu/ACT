@@ -12,9 +12,12 @@ from __future__ import annotations
 
 import time
 from pathlib import Path
-from typing import List, Tuple
 
-import numpy as np
+from act.pipeline.hybridz_spec_utils import (
+    check_real_unsafe,
+    flatten_query_specs,
+    interval_hard_rivals_from_specs,
+)
 
 
 def _resolve_downloaded_instance(bench: str, iid: int) -> tuple[Path, Path]:
@@ -105,77 +108,6 @@ def build_net_and_interval(bench: str, iid: int, device: str):
         before[layer.id] = inb
         after[layer.id] = tf.apply(layer, inb, net, before, after)
     return onnx_path, vnnlib_path, input_shape, queries, net, before, after, time.time() - started
-
-
-def check_real_unsafe(
-    onnx_path: Path,
-    input_shape,
-    x: np.ndarray,
-    C: np.ndarray,
-    t: np.ndarray,
-) -> Tuple[bool, np.ndarray]:
-    import onnxruntime as ort
-
-    sess = ort.InferenceSession(str(onnx_path), providers=["CPUExecutionProvider"])
-    input_name = sess.get_inputs()[0].name
-    y = sess.run(None, {input_name: x.reshape(input_shape).astype(np.float32)})[0]
-    y = y.reshape(-1).astype(np.float64)
-    cy = C.reshape(C.shape[0], -1) @ y
-    return bool((cy <= t.reshape(-1) + 1e-9).all()), cy
-
-
-def flatten_query_specs(queries, n_out: int) -> List[Tuple[np.ndarray, np.ndarray, str]]:
-    """Return unsafe specs in the common form ``C y <= t``."""
-
-    flat: List[Tuple[np.ndarray, np.ndarray, str]] = []
-    for _, spec in queries:
-        kind = str(getattr(spec, "kind", ""))
-        if "UNSAFE_LINEAR" in kind:
-            if not (hasattr(spec, "c") and spec.c is not None and spec.d is not None):
-                raise ValueError(f"unsupported UNSAFE_LINEAR spec layout: {kind}")
-            C = spec.c.detach().cpu().numpy().astype(np.float64)
-            t = spec.d.detach().cpu().numpy().astype(np.float64).reshape(-1)
-            C = C.reshape(-1, C.shape[-1])
-            if C.shape[0] != t.size:
-                raise ValueError(f"UNSAFE_LINEAR row/threshold mismatch: {C.shape} vs {t.shape}")
-            flat.append((C, t, kind))
-            continue
-
-        import torch
-
-        encoded = spec.encode_linear(
-            B=1,
-            n_out=int(n_out),
-            device=torch.device("cpu"),
-            dtype=torch.float64,
-        )
-        C = encoded["C"].detach().cpu().numpy().astype(np.float64).reshape(-1, int(n_out))
-        thresholds = encoded["thresholds"].detach().cpu().numpy().astype(np.float64).reshape(-1)
-        if C.shape[0] != thresholds.size:
-            raise ValueError(f"encoded spec row/threshold mismatch: {C.shape} vs {thresholds.shape}")
-        for i in range(C.shape[0]):
-            flat.append((-C[i:i + 1], -thresholds[i:i + 1], f"{kind}_ROW_AS_UNSAFE_LINEAR"))
-    if not flat:
-        raise ValueError("no output specs to verify")
-    return flat
-
-
-def interval_hard_rivals_from_specs(
-    flat_specs: List[Tuple[np.ndarray, np.ndarray, str]],
-    final_bounds,
-) -> Tuple[int, List[float]]:
-    lb = final_bounds.lb.detach().cpu().numpy().reshape(-1).astype(np.float64)
-    ub = final_bounds.ub.detach().cpu().numpy().reshape(-1).astype(np.float64)
-    hard = 0
-    lows: List[float] = []
-    for C, t, _ in flat_specs:
-        c = C.reshape(C.shape[0], -1)
-        lo = c.clip(min=0) @ lb + c.clip(max=0) @ ub - t
-        margin = float(np.min(lo))
-        lows.append(margin)
-        if margin <= 0.0:
-            hard += 1
-    return hard, lows
 
 
 __all__ = [

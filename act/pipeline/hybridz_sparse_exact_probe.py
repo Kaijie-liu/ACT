@@ -21,6 +21,11 @@ from act.back_end.solver.solver_hz_verdict import (  # noqa: E402
     hz_base_feasibility as _solver_hz_base_feasibility,
 )
 from act.pipeline.hybridz_option_utils import parse_key_value_options  # noqa: E402
+from act.pipeline.hybridz_spec_utils import (  # noqa: E402
+    check_real_unsafe as _check_real_unsafe,
+    flatten_query_specs as _flatten_query_specs,
+    interval_hard_rivals_from_specs as _interval_hard_rivals_from_specs,
+)
 import act.back_end.hybridz_tf.tf_mlp as hz_mlp  # noqa: E402
 from act.back_end.hybridz_tf.sparse_ops import (  # noqa: E402
     _merge_equalities as _merge_linear_constraints,
@@ -2354,77 +2359,6 @@ def _input_center_rad(inspec) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     rad = (ub - lb) * 0.5
     idx = np.nonzero(np.abs(rad) > 1e-12)[0].astype(np.int32)
     return center, rad, idx
-
-
-def _check_real_unsafe(onnx_path: Path, input_shape, x: np.ndarray, C: np.ndarray, t: np.ndarray) -> Tuple[bool, np.ndarray]:
-    import onnxruntime as ort
-
-    sess = ort.InferenceSession(str(onnx_path), providers=["CPUExecutionProvider"])
-    iname = sess.get_inputs()[0].name
-    y = sess.run(None, {iname: x.reshape(input_shape).astype(np.float32)})[0].reshape(-1).astype(np.float64)
-    cy = C.reshape(C.shape[0], -1) @ y
-    return bool((cy <= t.reshape(-1) + 1e-9).all()), cy
-
-
-def _flatten_query_specs(queries, n_out: int) -> List[Tuple[np.ndarray, np.ndarray, str]]:
-    """Return unsafe specs in the common form ``C y <= t``.
-
-    ``UNSAFE_LINEAR`` specs from the VNNLIB parser already use that unsafe
-    direction and may contain multiple conjunctive rows.  Those rows must be
-    checked together as one unsafe polytope.  Other OutputSpec kinds encode
-    violation rows as ``C y >= t`` via ``OutputSpec.encode_linear``; negating
-    each row converts them to the same one-row unsafe form without changing the
-    set being checked.
-    """
-    flat: List[Tuple[np.ndarray, np.ndarray, str]] = []
-    for _, spec in queries:
-        kind = str(getattr(spec, "kind", ""))
-        if "UNSAFE_LINEAR" in kind:
-            if not (hasattr(spec, "c") and spec.c is not None and spec.d is not None):
-                raise ValueError(f"unsupported UNSAFE_LINEAR spec layout: {kind}")
-            C = spec.c.detach().cpu().numpy().astype(np.float64)
-            t = spec.d.detach().cpu().numpy().astype(np.float64).reshape(-1)
-            C = C.reshape(-1, C.shape[-1])
-            if C.shape[0] != t.size:
-                raise ValueError(f"UNSAFE_LINEAR row/threshold mismatch: {C.shape} vs {t.shape}")
-            flat.append((C, t, kind))
-            continue
-
-        import torch
-
-        encoded = spec.encode_linear(
-            B=1,
-            n_out=int(n_out),
-            device=torch.device("cpu"),
-            dtype=torch.float64,
-        )
-        C = encoded["C"].detach().cpu().numpy().astype(np.float64).reshape(-1, int(n_out))
-        thresholds = encoded["thresholds"].detach().cpu().numpy().astype(np.float64).reshape(-1)
-        if C.shape[0] != thresholds.size:
-            raise ValueError(f"encoded spec row/threshold mismatch: {C.shape} vs {thresholds.shape}")
-        for i in range(C.shape[0]):
-            flat.append((-C[i:i + 1], -thresholds[i:i + 1], f"{kind}_ROW_AS_UNSAFE_LINEAR"))
-    if not flat:
-        raise ValueError("no output specs to verify")
-    return flat
-
-
-def _interval_hard_rivals_from_specs(
-    flat_specs: List[Tuple[np.ndarray, np.ndarray, str]],
-    final_bounds,
-) -> Tuple[int, List[float]]:
-    lb = final_bounds.lb.detach().cpu().numpy().reshape(-1).astype(np.float64)
-    ub = final_bounds.ub.detach().cpu().numpy().reshape(-1).astype(np.float64)
-    hard = 0
-    lows: List[float] = []
-    for C, t, _ in flat_specs:
-        c = C.reshape(C.shape[0], -1)
-        lo = c.clip(min=0) @ lb + c.clip(max=0) @ ub - t
-        m = float(np.min(lo))
-        lows.append(m)
-        if m <= 0.0:
-            hard += 1
-    return hard, lows
 
 
 def _milp_cutoff_highs(

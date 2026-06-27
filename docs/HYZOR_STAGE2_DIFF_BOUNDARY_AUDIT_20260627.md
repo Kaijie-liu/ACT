@@ -6,22 +6,22 @@ Baseline: `upstream/main` after `git fetch upstream`.
 
 Current branch: `hz-cam-1` after sparse-probe consolidation passes, frozen-gate
 productization, sparse-worker option deduplication, and package-local HybridZ
-CLI option parser consolidation, plus local untracked `scripts/`.
+CLI option/spec helper consolidation, plus local untracked `scripts/`.
 The local `scripts/` directory is not tracked and is not part of this diff.
 
 ## Summary
 
 Current upstream diff after `git fetch upstream` on 2026-06-27:
 
-`79 files changed, 23902 insertions(+), 2188 deletions(-)`
+`80 files changed, 23876 insertions(+), 2188 deletions(-)`
 
 Directory-level split:
 
 | Area | Files | Added | Deleted | Status |
 |---|---:|---:|---:|---|
-| `act/pipeline` | 18 | 10681 | 159 | largest remaining consolidation target |
+| `act/pipeline` | 19 | 10650 | 159 | largest remaining consolidation target |
 | `act/back_end/hybridz_tf` | 8 | 4782 | 292 | core HZ operator/product path |
-| `docs` | 16 | 3856 | 0 | audit/provenance/future-work docs |
+| `docs` | 16 | 3861 | 0 | audit/provenance/future-work docs |
 | `act/back_end/solver` | 5 | 2177 | 423 | verdict/sparse HZ solver path |
 | `act/back_end/other` | 17 | 1691 | 957 | frontend/backend integration hooks |
 | `act/front_end` | 7 | 508 | 334 | benchmark/data loading integration |
@@ -31,7 +31,7 @@ Largest files by changed lines:
 
 | File | Added | Deleted | Interpretation |
 |---|---:|---:|---|
-| `act/pipeline/hybridz_sparse_exact_probe.py` | 4688 | 0 | biggest remaining package-level prototype; first post-freeze consolidation target is partially reduced |
+| `act/pipeline/hybridz_sparse_exact_probe.py` | 4622 | 0 | biggest remaining package-level prototype; first post-freeze consolidation target is partially reduced |
 | `act/pipeline/hybridz_benchmark_runner.py` | 2562 | 0 | product runner, branch portfolio, frozen comparison, ICSE export |
 | `act/back_end/hybridz_tf/sparse_ops.py` | 2294 | 0 | sparse exact-HZ propagation core |
 | `act/back_end/solver/solver_hz_verdict.py` | 1563 | 0 | exact verdict MILP and open-source solver portfolio |
@@ -123,18 +123,23 @@ packaged modules, but too much sparse exact-HZ probe logic still lives in
 
    Follow-up cleanup on 2026-06-27 also deduplicated repeated HiGHS heuristic
    option tuples in `hybridz_benchmark_runner.py`, common sparse probe keyword
-   arguments in `hybridz_sparse_worker.py`, and repeated CLI `name=value`
-   solver-option parsing in the sparse and projected pipeline entry points.
-   The sparse worker wrapper dropped from 517 to 452 lines, the sparse probe
-   dropped from 4707 to 4688 lines, and the projected one-ReLU branch dropped
-   from 788 to 744 lines.  Regression evidence:
+   arguments in `hybridz_sparse_worker.py`, repeated CLI `name=value`
+   solver-option parsing in the sparse and projected pipeline entry points,
+   and repeated VNNLIB spec/witness helper functions in the sparse and
+   projected pipeline entry points.  The sparse worker wrapper dropped from
+   517 to 452 lines, the sparse probe dropped from 4707 to 4622 lines, the
+   projected one-ReLU branch dropped from 788 to 744 lines, and
+   `hybridz_projected_utils.py` dropped from 186 to 118 lines.  Regression
+   evidence:
    `python -m act.pipeline.hybridz_benchmark_runner`,
    `python -m act.pipeline.hybridz_sparse_exact_probe --self-test`, and
    `python -m act.pipeline.hybridz_sparse_worker --bench sat_relu --iid 0
    --lp-queries 1 --milp-timeout 5 --worker-timeout 45`, which returned
    `ADV`, `p0=false`, `ort_verified=true`.  CLI option parsing was also
    checked through `py_compile`, `--help`, and invalid-option smoke tests for
-   both sparse and projected entry points.
+   both sparse and projected entry points.  The projected helper path was
+   checked with `python -m act.pipeline.hybridz_projected_relu_mip --bench
+   safenlp_2024 --iid 0 --lp-queries 1 --milp-timeout 5 --mip-start none`.
 
 1. Audit `act/pipeline/hybridz_sparse_exact_probe.py` function families.
    Move reusable exact-HZ propagation and MILP export helpers into backend
