@@ -721,10 +721,10 @@ def _relu_preact_bounds(hz: HZono, tight: bool):
     if ambiguous.numel() == 0:
         return fb
     try:
-        from act.back_end.solver.solver_hz import _hz_compute_bounds_scipy
+        from act.back_end.solver.solver_hz import hz_compute_lp_bounds
         if os.environ.get("HZ_RELU_TIGHT_ALL_ROWS", "").strip().lower() in {
             "1", "true", "yes", "on"}:
-            tb = _hz_compute_bounds_scipy(hz)
+            tb = hz_compute_lp_bounds(hz)
             return Bounds(lb=torch.maximum(tb.lb, fb.lb),
                           ub=torch.minimum(tb.ub, fb.ub))
         try:
@@ -740,7 +740,7 @@ def _relu_preact_bounds(hz: HZono, tight: bool):
             ambiguous = ambiguous[keep]
         idx = ambiguous.to(device=flat_lb.device)
         amb_np = ambiguous.detach().cpu().numpy()
-        tb = _hz_compute_bounds_scipy(
+        tb = hz_compute_lp_bounds(
             hz,
             rows=amb_np,
             base_lb=flat_lb[idx].detach().cpu().numpy(),

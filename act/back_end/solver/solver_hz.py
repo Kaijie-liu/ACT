@@ -299,7 +299,7 @@ def _hz_compute_bounds_gurobi(hz: HZono) -> Bounds:
     return GurobiSolver.compute_bounds(hz)
 
 
-def _hz_compute_bounds_scipy(
+def hz_compute_lp_bounds(
     hz: HZono,
     rows=None,
     *,
@@ -416,6 +416,9 @@ def _hz_compute_bounds_scipy(
     )
 
 
+_hz_compute_bounds_scipy = hz_compute_lp_bounds
+
+
 def hz_compute_bounds(hz: HZono, *, exact: bool = False) -> Bounds:
     """Compute box bounds from a hybrid zonotope.
 
@@ -445,7 +448,7 @@ def hz_compute_bounds(hz: HZono, *, exact: bool = False) -> Bounds:
     )
     if _HAS_SCIPY and not prefer_gurobi:
         try:
-            return _hz_compute_bounds_scipy(hz)
+            return hz_compute_lp_bounds(hz)
         except Exception as e:
             # Intentional: scipy linprog failures fall back to the unconstrained bounds estimate.
             logger.debug("suppressed: %s", e)
@@ -461,7 +464,7 @@ def hz_compute_bounds(hz: HZono, *, exact: bool = False) -> Bounds:
             logger.debug("suppressed: %s", e)
     if _HAS_SCIPY and prefer_gurobi:
         try:
-            return _hz_compute_bounds_scipy(hz)
+            return hz_compute_lp_bounds(hz)
         except Exception as e:
             # Intentional: scipy linprog failures fall back to the unconstrained bounds estimate.
             logger.debug("suppressed: %s", e)

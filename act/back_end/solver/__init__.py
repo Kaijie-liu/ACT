@@ -14,13 +14,21 @@
 
 from .solver_base import Solver, SolverCaps, SolveStatus
 from .solver_torchlp import TorchLPSolver
-from .solver_hz import HZSolver, HZono, hz_compute_bounds
+from .solver_hz import (
+    HZSolver,
+    HZono,
+    hz_compute_bounds,
+    hz_compute_lp_bounds,
+    hz_fresh_col_ids,
+    hz_split_constraints,
+)
 from .solver_dual import DualSolver, expand_bounds_dict
 
 __all__ = [
     'Solver', 'SolverCaps', 'SolveStatus',
     'TorchLPSolver', 'GurobiSolver',
-    'HZSolver', 'HZono', 'hz_compute_bounds',
+    'HZSolver', 'HZono', 'hz_compute_bounds', 'hz_compute_lp_bounds',
+    'hz_fresh_col_ids', 'hz_split_constraints',
     'DualSolver', 'expand_bounds_dict',
 ]
 
