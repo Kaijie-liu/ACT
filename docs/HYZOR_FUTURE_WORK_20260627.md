@@ -51,3 +51,18 @@ Authoritative CSVs are under:
 - `FINAL_CROSS_TOOL_RANKING_20260627_FINAL.csv`
 - `_CROSS_TOOL_SUMMARY_20260627_FINAL.csv`
 - `_FINAL_20260627_MANIFEST.sha256`
+
+The frozen frontend gate source directory is:
+
+`/data1/Kane/ICSE/act_hybridz_soundfix_20260625/frontend_frozen_gate_20260627_pscost25`
+
+- `FINAL_HYBRIDZ_RESULTS.csv`
+- `FINAL_CROSS_TOOL_RANKING.csv`
+- `FROZEN_REPRO_COMPARISON.csv`
+- `FROZEN_REPRO_COMPARISON.json`
+- `_MANIFEST.sha256`
+
+These files are result artifacts only.  ORT/model replay and any local script
+diagnostics remain audit mechanisms; they are not counted as future HybridZ
+verification improvements unless the HybridZ engine itself returns the
+corresponding result.

@@ -346,6 +346,24 @@ packaged modules, but too much sparse exact-HZ probe logic still lives in
    Current state satisfies "no product dependency on scripts", but not yet
    "all useful script logic is minimized into backend layers".
 
+## Pure-HybridZ Boundary Recheck
+
+Latest cleanup scan after the tight-ReLU helper migration found no counted
+result promotion outside the HybridZ engine:
+
+- `act/pipeline/hybridz_full_worker.py` still has an ORT sampling guard, but it
+  is downgrade-only: it can turn an engine `CERT` into `UNKNOWN_P0DOWNGRADE`
+  when a real sampled counterexample is found.  It does not promote
+  `UNKNOWN`/`ADV` into a verified result, and its audit time is excluded from
+  `verify_s`.
+- `act/pipeline/hybridz_projected_relu_mip.py` uses LP/repair warm starts only
+  to seed the same exact projected ReLU MILP.  The returned `CERT`/`ADV`
+  status is still determined by the open-source exact MILP backend and real
+  witness replay; warm-start repair is not a post-HZ rescue path.
+- Local `scripts/` remains untracked by request.  The production `act/` path
+  does not import `scripts/`; remaining script references are documentation,
+  provenance, diagnostics, or future-work scaffolding.
+
 ## Current Frozen Baseline
 
 Final accepted pure-HybridZ table:
