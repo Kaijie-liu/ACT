@@ -270,6 +270,241 @@ def sparse_hz_apply_matmul_const_layer(
     return sparse_hz_apply_per_batch_linear(variable_hz, W)
 
 
+def _prod_interval_bounds(xl: float, xu: float, yl: float, yu: float) -> Tuple[float, float]:
+    vals = (xl * yl, xl * yu, xu * yl, xu * yu)
+    return float(min(vals)), float(max(vals))
+
+
+def sparse_hz_apply_matmul_product_interval_layer(
+    x: SparseHZono,
+    y: SparseHZono,
+    layer,
+    x_lb: np.ndarray,
+    x_ub: np.ndarray,
+    y_lb: np.ndarray,
+    y_ub: np.ndarray,
+    xi_c: np.ndarray,
+    xi_b: np.ndarray,
+) -> Tuple[SparseHZono, np.ndarray]:
+    """Sound product-interval HZ lift for var-var MATMUL."""
+
+    x_shape = tuple(int(v) for v in layer.params["x_shape"])
+    y_shape = tuple(int(v) for v in layer.params["y_shape"])
+    if len(x_shape) == 2:
+        bsz, m, k = 1, x_shape[0], x_shape[1]
+        y_bsz, k2, n = 1, y_shape[0], y_shape[1]
+
+        def x_index(_b: int, i: int, kk: int) -> int:
+            return i * k + kk
+
+        def y_index(_b: int, kk: int, j: int) -> int:
+            return kk * n + j
+
+        def out_index(_b: int, i: int, j: int) -> int:
+            return i * n + j
+
+    elif len(x_shape) == 3:
+        bsz, m, k = x_shape
+        y_bsz, k2, n = y_shape
+        if y_bsz not in (1, bsz):
+            raise NotImplementedError(f"unsupported batched MATMUL shapes {x_shape} @ {y_shape}")
+
+        def x_index(b: int, i: int, kk: int) -> int:
+            return (b * m + i) * k + kk
+
+        def y_index(b: int, kk: int, j: int) -> int:
+            yy_b = 0 if y_bsz == 1 else b
+            return (yy_b * k + kk) * n + j
+
+        def out_index(b: int, i: int, j: int) -> int:
+            return (b * m + i) * n + j
+
+    else:
+        raise NotImplementedError(f"unsupported MATMUL rank {x_shape} @ {y_shape}")
+    if k != k2:
+        raise ValueError(f"MATMUL inner mismatch {x_shape} @ {y_shape}")
+
+    n_out = bsz * m * n
+    old_c = x.n_cont
+    if y.n_cont != old_c or x.n_bin != y.n_bin:
+        raise ValueError("MATMUL operands must be in the same variable frame")
+    n_bin = x.n_bin
+    prod_cols: List[int] = []
+    prod_rows: List[int] = []
+    prod_data: List[float] = []
+    cut_rr_c: List[np.ndarray] = []
+    cut_cc_c: List[np.ndarray] = []
+    cut_dd_c: List[np.ndarray] = []
+    cut_rr_b: List[np.ndarray] = []
+    cut_cc_b: List[np.ndarray] = []
+    cut_dd_b: List[np.ndarray] = []
+    cut_ub: List[float] = []
+    carry_x_constraints = False
+    carry_y_constraints = False
+    c_out = np.zeros(n_out, dtype=np.float64)
+    xi_extra: List[float] = []
+    x_nnz = np.diff(x.Gc.indptr) + (np.diff(x.Gb.indptr) if n_bin else 0)
+    y_nnz = np.diff(y.Gc.indptr) + (np.diff(y.Gb.indptr) if n_bin else 0)
+
+    def add_cut_c(row: int, cols: np.ndarray, data: np.ndarray) -> None:
+        if cols.size:
+            cut_rr_c.append(np.full(cols.size, int(row), dtype=np.int32))
+            cut_cc_c.append(cols.astype(np.int32, copy=False))
+            cut_dd_c.append(data.astype(np.float64, copy=False))
+
+    def add_cut_b(row: int, cols: np.ndarray, data: np.ndarray) -> None:
+        if cols.size:
+            cut_rr_b.append(np.full(cols.size, int(row), dtype=np.int32))
+            cut_cc_b.append(cols.astype(np.int32, copy=False))
+            cut_dd_b.append(data.astype(np.float64, copy=False))
+
+    def add_nonnegative_product_cuts(
+        *,
+        prod_col: int,
+        rad: float,
+        center: float,
+        w_hz: SparseHZono,
+        w_row: int,
+        other_lo: float,
+        other_hi: float,
+    ) -> None:
+        """Add ``other_lo*w <= p <= other_hi*w`` for non-negative ``w``."""
+
+        upper = len(cut_ub)
+        lower = upper + 1
+        cut_ub.extend([
+            float(other_hi * w_hz.c[w_row] - center),
+            float(center - other_lo * w_hz.c[w_row]),
+        ])
+
+        add_cut_c(upper, np.asarray([prod_col], dtype=np.int32), np.asarray([rad], dtype=np.float64))
+        c0, c1 = w_hz.Gc.indptr[w_row], w_hz.Gc.indptr[w_row + 1]
+        if c1 > c0:
+            add_cut_c(upper, w_hz.Gc.indices[c0:c1], -other_hi * w_hz.Gc.data[c0:c1])
+        if n_bin:
+            b0, b1 = w_hz.Gb.indptr[w_row], w_hz.Gb.indptr[w_row + 1]
+            if b1 > b0:
+                add_cut_b(upper, w_hz.Gb.indices[b0:b1], -other_hi * w_hz.Gb.data[b0:b1])
+
+        add_cut_c(lower, np.asarray([prod_col], dtype=np.int32), np.asarray([-rad], dtype=np.float64))
+        if c1 > c0:
+            add_cut_c(lower, w_hz.Gc.indices[c0:c1], other_lo * w_hz.Gc.data[c0:c1])
+        if n_bin:
+            b0, b1 = w_hz.Gb.indptr[w_row], w_hz.Gb.indptr[w_row + 1]
+            if b1 > b0:
+                add_cut_b(lower, w_hz.Gb.indices[b0:b1], other_lo * w_hz.Gb.data[b0:b1])
+
+    x_val = x.c + np.asarray(x.Gc @ xi_c[:old_c]).reshape(-1)
+    y_val = y.c + np.asarray(y.Gc @ xi_c[:old_c]).reshape(-1)
+    if n_bin:
+        x_val = x_val + np.asarray(x.Gb @ xi_b[:n_bin]).reshape(-1)
+        y_val = y_val + np.asarray(y.Gb @ xi_b[:n_bin]).reshape(-1)
+
+    for b in range(bsz):
+        for i in range(m):
+            for j in range(n):
+                oi = out_index(b, i, j)
+                for kk in range(k):
+                    xi = x_index(b, i, kk)
+                    yi = y_index(b, kk, j)
+                    lo, hi = _prod_interval_bounds(x_lb[xi], x_ub[xi], y_lb[yi], y_ub[yi])
+                    center = 0.5 * (lo + hi)
+                    rad = 0.5 * (hi - lo)
+                    c_out[oi] += center
+                    if rad > 1e-12:
+                        col = old_c + len(xi_extra)
+                        prod_rows.append(oi)
+                        prod_cols.append(col)
+                        prod_data.append(rad)
+                        actual = float(x_val[xi] * y_val[yi])
+                        xi_extra.append(float(np.clip((actual - center) / rad, -1.0, 1.0)))
+                        x_nonneg = bool(x_lb[xi] >= -1e-12)
+                        y_nonneg = bool(y_lb[yi] >= -1e-12)
+                        if x_nonneg and (not y_nonneg or x_nnz[xi] <= y_nnz[yi]):
+                            add_nonnegative_product_cuts(
+                                prod_col=col,
+                                rad=rad,
+                                center=center,
+                                w_hz=x,
+                                w_row=xi,
+                                other_lo=float(y_lb[yi]),
+                                other_hi=float(y_ub[yi]),
+                            )
+                            carry_x_constraints = True
+                        elif y_nonneg:
+                            add_nonnegative_product_cuts(
+                                prod_col=col,
+                                rad=rad,
+                                center=center,
+                                w_hz=y,
+                                w_row=yi,
+                                other_lo=float(x_lb[xi]),
+                                other_hi=float(x_ub[xi]),
+                            )
+                            carry_y_constraints = True
+
+    n_total = old_c + len(xi_extra)
+    Gc = sp.csr_matrix(
+        (
+            np.asarray(prod_data, dtype=np.float64),
+            (np.asarray(prod_rows, dtype=np.int32), np.asarray(prod_cols, dtype=np.int32)),
+        ),
+        shape=(n_out, n_total),
+    )
+    Gc.eliminate_zeros()
+    parts = []
+    if carry_x_constraints:
+        parts.append(sparse_hz_pad_frame(x, n_total, n_bin))
+    if carry_y_constraints:
+        parts.append(sparse_hz_pad_frame(y, n_total, n_bin))
+    if parts:
+        Ac, Ab, bvec = _merge_equalities(parts, n_total, n_bin)
+        Auc, Aub, ubvec = _merge_uppers(parts, n_total, n_bin)
+    else:
+        Ac = sparse_empty(0, n_total)
+        Ab = sparse_empty(0, n_bin)
+        bvec = np.zeros(0, dtype=np.float64)
+        Auc = sparse_empty(0, n_total)
+        Aub = sparse_empty(0, n_bin)
+        ubvec = np.zeros(0, dtype=np.float64)
+    if cut_ub:
+        n_cuts = len(cut_ub)
+        cut_Auc = (
+            sp.coo_matrix(
+                (np.concatenate(cut_dd_c), (np.concatenate(cut_rr_c), np.concatenate(cut_cc_c))),
+                shape=(n_cuts, n_total),
+            ).tocsr()
+            if cut_rr_c
+            else sparse_empty(n_cuts, n_total)
+        )
+        cut_Aub = (
+            sp.coo_matrix(
+                (np.concatenate(cut_dd_b), (np.concatenate(cut_rr_b), np.concatenate(cut_cc_b))),
+                shape=(n_cuts, n_bin),
+            ).tocsr()
+            if cut_rr_b
+            else sparse_empty(n_cuts, n_bin)
+        )
+        cut_Auc.eliminate_zeros()
+        cut_Aub.eliminate_zeros()
+        Auc = sp.vstack([Auc, cut_Auc], format="csr") if Auc.shape[0] else cut_Auc
+        Aub = sp.vstack([Aub, cut_Aub], format="csr") if Aub.shape[0] else cut_Aub
+        ubvec = np.concatenate([ubvec, np.asarray(cut_ub, dtype=np.float64)])
+
+    hz = SparseHZono(
+        c=c_out,
+        Gc=Gc,
+        Gb=sparse_empty(n_out, n_bin),
+        Ac=Ac,
+        Ab=Ab,
+        b=bvec,
+        Auc=Auc,
+        Aub=Aub,
+        ub=ubvec,
+    )
+    return hz, np.asarray(xi_extra, dtype=np.float64)
+
+
 def _exp_sum_stable(diffs: np.ndarray) -> float:
     if diffs.size == 0:
         return 0.0
@@ -1972,6 +2207,7 @@ __all__ = [
     "sparse_hz_apply_convtranspose2d_layer",
     "sparse_hz_apply_dense_layer",
     "sparse_hz_apply_matmul_const_layer",
+    "sparse_hz_apply_matmul_product_interval_layer",
     "sparse_hz_apply_maxpool2d_layer",
     "sparse_hz_apply_relu_exact",
     "sparse_hz_apply_softmax_simplex_layer",
@@ -2134,6 +2370,65 @@ def _test_sparse_affine_structural_ops() -> None:  # pragma: no cover
         point_y.lb.detach().cpu().numpy().reshape(mat_layer.params["y_shape"]),
     )
     _assert_vec_close(sparse_point_matmul_left.c, expected_matmul_left)
+
+    prod_layer = SimpleNamespace(
+        id=6,
+        params={"x_shape": (1, 2), "y_shape": (2, 1)},
+    )
+    x_lb_np = np.array([0.5, 1.0], dtype=np.float64)
+    x_ub_np = np.array([1.5, 2.0], dtype=np.float64)
+    y_lb_np = np.array([-1.0, 0.2], dtype=np.float64)
+    y_ub_np = np.array([0.0, 1.0], dtype=np.float64)
+    x_center = 0.5 * (x_lb_np + x_ub_np)
+    y_center = 0.5 * (y_lb_np + y_ub_np)
+    x_rad = 0.5 * (x_ub_np - x_lb_np)
+    y_rad = 0.5 * (y_ub_np - y_lb_np)
+    x_hz = SparseHZono(
+        c=x_center,
+        Gc=sp.csr_matrix(
+            (x_rad, (np.arange(2, dtype=np.int32), np.arange(2, dtype=np.int32))),
+            shape=(2, 4),
+        ),
+        Gb=sparse_empty(2, 0),
+        Ac=sparse_empty(0, 4),
+        Ab=sparse_empty(0, 0),
+        b=np.zeros(0, dtype=np.float64),
+        Auc=sparse_empty(0, 4),
+        Aub=sparse_empty(0, 0),
+        ub=np.zeros(0, dtype=np.float64),
+    )
+    y_hz = SparseHZono(
+        c=y_center,
+        Gc=sp.csr_matrix(
+            (y_rad, (np.arange(2, dtype=np.int32), 2 + np.arange(2, dtype=np.int32))),
+            shape=(2, 4),
+        ),
+        Gb=sparse_empty(2, 0),
+        Ac=sparse_empty(0, 4),
+        Ab=sparse_empty(0, 0),
+        b=np.zeros(0, dtype=np.float64),
+        Auc=sparse_empty(0, 4),
+        Aub=sparse_empty(0, 0),
+        ub=np.zeros(0, dtype=np.float64),
+    )
+    prod_hz, prod_extra = sparse_hz_apply_matmul_product_interval_layer(
+        x_hz,
+        y_hz,
+        prod_layer,
+        x_lb_np,
+        x_ub_np,
+        y_lb_np,
+        y_ub_np,
+        np.zeros(4, dtype=np.float64),
+        np.zeros(0, dtype=np.float64),
+    )
+    assert prod_hz.n_out == 1
+    assert prod_extra.size == 2
+    assert prod_hz.n_ub > 0
+    prod_xi = np.concatenate([np.zeros(4, dtype=np.float64), prod_extra])
+    prod_val = prod_hz.c + np.asarray(prod_hz.Gc @ prod_xi).reshape(-1)
+    expected_prod_val = np.matmul(x_center.reshape(1, 2), y_center.reshape(2, 1)).reshape(-1)
+    _assert_vec_close(prod_val, expected_prod_val)
 
     softmax_bounds = Bounds(
         lb=torch.tensor([[-1.0, 0.0, 0.5, -0.25, 1.0, 2.0]], dtype=dtype),
