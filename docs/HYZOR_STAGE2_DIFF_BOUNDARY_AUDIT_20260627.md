@@ -13,15 +13,15 @@ The local `scripts/` directory is not tracked and is not part of this diff.
 
 Current upstream diff after `git fetch upstream` on 2026-06-27:
 
-`80 files changed, 23876 insertions(+), 2188 deletions(-)`
+`80 files changed, 23915 insertions(+), 2188 deletions(-)`
 
 Directory-level split:
 
 | Area | Files | Added | Deleted | Status |
 |---|---:|---:|---:|---|
-| `act/pipeline` | 19 | 10650 | 159 | largest remaining consolidation target |
-| `act/back_end/hybridz_tf` | 8 | 4782 | 292 | core HZ operator/product path |
-| `docs` | 16 | 3861 | 0 | audit/provenance/future-work docs |
+| `act/pipeline` | 19 | 10476 | 159 | largest remaining consolidation target |
+| `act/back_end/hybridz_tf` | 8 | 4988 | 292 | core HZ operator/product path |
+| `docs` | 16 | 3868 | 0 | audit/provenance/future-work docs |
 | `act/back_end/solver` | 5 | 2177 | 423 | verdict/sparse HZ solver path |
 | `act/back_end/other` | 17 | 1691 | 957 | frontend/backend integration hooks |
 | `act/front_end` | 7 | 508 | 334 | benchmark/data loading integration |
@@ -31,9 +31,9 @@ Largest files by changed lines:
 
 | File | Added | Deleted | Interpretation |
 |---|---:|---:|---|
-| `act/pipeline/hybridz_sparse_exact_probe.py` | 4622 | 0 | biggest remaining package-level prototype; first post-freeze consolidation target is partially reduced |
+| `act/pipeline/hybridz_sparse_exact_probe.py` | 4448 | 0 | biggest remaining package-level prototype; first post-freeze consolidation target is partially reduced |
 | `act/pipeline/hybridz_benchmark_runner.py` | 2562 | 0 | product runner, branch portfolio, frozen comparison, ICSE export |
-| `act/back_end/hybridz_tf/sparse_ops.py` | 2294 | 0 | sparse exact-HZ propagation core |
+| `act/back_end/hybridz_tf/sparse_ops.py` | 2500 | 0 | sparse exact-HZ propagation core; SOFTMAX simplex operator moved here from the probe |
 | `act/back_end/solver/solver_hz_verdict.py` | 1563 | 0 | exact verdict MILP and open-source solver portfolio |
 | `act/back_end/hybridz_tf/tf_mlp.py` | 1253 | 246 | dense exact ReLU/compressed ReLU and nonlinear operators |
 | `act/pipeline/hybridz_projected_relu_mip.py` | 744 | 0 | safenlp projected exact-ReLU branch; still pure-HZ but specialized |
@@ -140,6 +140,13 @@ packaged modules, but too much sparse exact-HZ probe logic still lives in
    both sparse and projected entry points.  The projected helper path was
    checked with `python -m act.pipeline.hybridz_projected_relu_mip --bench
    safenlp_2024 --iid 0 --lp-queries 1 --milp-timeout 5 --mip-start none`.
+   The sparse SOFTMAX simplex relaxation has also been moved from the packaged
+   probe into `act/back_end/hybridz_tf/sparse_ops.py`, with a backend structural
+   self-test covering the simplex equality and center witness construction.
+   Regression evidence: `python -m act.back_end.hybridz_tf.sparse_ops`,
+   `python -m act.pipeline.hybridz_sparse_exact_probe --self-test`,
+   `python -m act.pipeline.hybridz_benchmark_runner`, and the same `sat_relu`
+   sparse-worker smoke above.
 
 1. Audit `act/pipeline/hybridz_sparse_exact_probe.py` function families.
    Move reusable exact-HZ propagation and MILP export helpers into backend

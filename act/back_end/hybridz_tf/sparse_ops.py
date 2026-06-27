@@ -270,6 +270,182 @@ def sparse_hz_apply_matmul_const_layer(
     return sparse_hz_apply_per_batch_linear(variable_hz, W)
 
 
+def _exp_sum_stable(diffs: np.ndarray) -> float:
+    if diffs.size == 0:
+        return 0.0
+    if float(np.max(diffs)) > 700.0:
+        return float("inf")
+    return float(np.exp(diffs).sum())
+
+
+def sparse_softmax_interval_bounds(
+    lb: np.ndarray,
+    ub: np.ndarray,
+    shape: Tuple[int, ...],
+    axis: int,
+) -> Tuple[np.ndarray, np.ndarray]:
+    """Sound interval bounds for softmax outputs."""
+
+    if not shape:
+        return np.ones_like(lb, dtype=np.float64), np.ones_like(lb, dtype=np.float64)
+    axis = int(axis)
+    if axis < 0:
+        axis += len(shape)
+    if axis < 0 or axis >= len(shape):
+        raise ValueError(f"softmax axis {axis} incompatible with shape {shape}")
+    lb_arr = lb.reshape(shape)
+    ub_arr = ub.reshape(shape)
+    lb_last = np.moveaxis(lb_arr, axis, -1).reshape(-1, shape[axis])
+    ub_last = np.moveaxis(ub_arr, axis, -1).reshape(-1, shape[axis])
+    lo = np.zeros_like(lb_last, dtype=np.float64)
+    hi = np.zeros_like(ub_last, dtype=np.float64)
+    for g in range(lb_last.shape[0]):
+        for i in range(lb_last.shape[1]):
+            others = np.arange(lb_last.shape[1]) != i
+            lo_den = 1.0 + _exp_sum_stable(ub_last[g, others] - lb_last[g, i])
+            hi_den = 1.0 + _exp_sum_stable(lb_last[g, others] - ub_last[g, i])
+            lo[g, i] = 0.0 if np.isinf(lo_den) else 1.0 / lo_den
+            hi[g, i] = 1.0 if np.isinf(hi_den) else 1.0 / hi_den
+    lo = np.moveaxis(lo.reshape(np.moveaxis(lb_arr, axis, -1).shape), -1, axis).reshape(-1)
+    hi = np.moveaxis(hi.reshape(np.moveaxis(ub_arr, axis, -1).shape), -1, axis).reshape(-1)
+    hi = np.maximum(hi, lo)
+    return lo, hi
+
+
+def sparse_hz_apply_softmax_simplex_layer(
+    prev: SparseHZono,
+    layer,
+    input_shape: Tuple[int, ...],
+    lb: np.ndarray,
+    ub: np.ndarray,
+    xi_c: np.ndarray,
+    xi_b: np.ndarray,
+) -> Tuple[SparseHZono, np.ndarray]:
+    """Sound softmax HZ relaxation with simplex and ratio cuts."""
+
+    axis = int(layer.params.get("axis", -1))
+    lo, hi = sparse_softmax_interval_bounds(lb, ub, input_shape, axis)
+    n = int(lo.size)
+    old_c, n_bin = prev.n_cont, prev.n_bin
+    center = 0.5 * (lo + hi)
+    rad = 0.5 * (hi - lo)
+    active = np.nonzero(rad > 1e-12)[0].astype(np.int32)
+    n_total = old_c + int(active.size)
+    cols = old_c + np.arange(active.size, dtype=np.int32)
+    Gc = sp.csr_matrix((rad[active], (active, cols)), shape=(n, n_total), dtype=np.float64)
+    Gc.eliminate_zeros()
+
+    logits = prev.c + np.asarray(prev.Gc @ xi_c[:old_c]).reshape(-1)
+    if n_bin:
+        logits = logits + np.asarray(prev.Gb @ xi_b[:n_bin]).reshape(-1)
+    norm_axis = axis if axis >= 0 else axis + len(input_shape)
+    logits_arr = logits.reshape(input_shape)
+    logits_last = np.moveaxis(logits_arr, norm_axis, -1)
+    maxes = np.max(logits_last, axis=-1, keepdims=True)
+    probs_last = np.exp(logits_last - maxes)
+    probs_last = probs_last / np.sum(probs_last, axis=-1, keepdims=True)
+    probs = np.moveaxis(probs_last, -1, norm_axis).reshape(-1)
+    xi_extra = np.zeros(active.size, dtype=np.float64)
+    if active.size:
+        xi_extra = np.clip((probs[active] - center[active]) / rad[active], -1.0, 1.0)
+
+    moved_index = np.arange(n, dtype=np.int64).reshape(input_shape)
+    groups = np.moveaxis(moved_index, norm_axis, -1).reshape(-1, input_shape[norm_axis])
+    eq_rows: List[np.ndarray] = []
+    eq_cols: List[np.ndarray] = []
+    eq_data: List[np.ndarray] = []
+    eq_b = np.zeros(groups.shape[0], dtype=np.float64)
+    active_to_col = {int(row): int(col) for row, col in zip(active, cols)}
+    for g, rows in enumerate(groups):
+        eq_b[g] = 1.0 - float(center[rows].sum())
+        active_rows = [int(r) for r in rows if int(r) in active_to_col]
+        cc = [active_to_col[r] for r in active_rows]
+        if cc:
+            eq_rows.append(np.full(len(cc), g, dtype=np.int32))
+            eq_cols.append(np.asarray(cc, dtype=np.int32))
+            eq_data.append(rad[active_rows].astype(np.float64))
+    if eq_rows:
+        Ac = sp.csr_matrix(
+            (np.concatenate(eq_data), (np.concatenate(eq_rows), np.concatenate(eq_cols))),
+            shape=(groups.shape[0], n_total),
+        )
+    else:
+        Ac = sparse_empty(groups.shape[0], n_total)
+    Ac.eliminate_zeros()
+
+    cut_rows: List[np.ndarray] = []
+    cut_cols: List[np.ndarray] = []
+    cut_data: List[np.ndarray] = []
+    cut_ub: List[float] = []
+    ratio_hi_cap = 1e6
+    ratio_lo_floor = 1e-6
+    for rows in groups:
+        rows = np.asarray(rows, dtype=np.int64)
+        for ii in rows:
+            i = int(ii)
+            for jj in rows:
+                j = int(jj)
+                if i == j:
+                    continue
+                diff_hi = float(ub[i] - lb[j])
+                if diff_hi < np.log(ratio_hi_cap):
+                    ratio_hi = float(np.exp(diff_hi))
+                    row = len(cut_ub)
+                    cc: List[int] = []
+                    dd: List[float] = []
+                    if i in active_to_col:
+                        cc.append(active_to_col[i])
+                        dd.append(float(rad[i]))
+                    if j in active_to_col:
+                        cc.append(active_to_col[j])
+                        dd.append(float(-ratio_hi * rad[j]))
+                    if cc:
+                        cut_rows.append(np.full(len(cc), row, dtype=np.int32))
+                        cut_cols.append(np.asarray(cc, dtype=np.int32))
+                        cut_data.append(np.asarray(dd, dtype=np.float64))
+                        cut_ub.append(float(ratio_hi * center[j] - center[i]))
+                diff_lo = float(lb[i] - ub[j])
+                if diff_lo > np.log(ratio_lo_floor):
+                    ratio_lo = float(np.exp(diff_lo))
+                    row = len(cut_ub)
+                    cc = []
+                    dd = []
+                    if j in active_to_col:
+                        cc.append(active_to_col[j])
+                        dd.append(float(ratio_lo * rad[j]))
+                    if i in active_to_col:
+                        cc.append(active_to_col[i])
+                        dd.append(float(-rad[i]))
+                    if cc:
+                        cut_rows.append(np.full(len(cc), row, dtype=np.int32))
+                        cut_cols.append(np.asarray(cc, dtype=np.int32))
+                        cut_data.append(np.asarray(dd, dtype=np.float64))
+                        cut_ub.append(float(center[i] - ratio_lo * center[j]))
+    if cut_rows:
+        Auc = sp.csr_matrix(
+            (np.concatenate(cut_data), (np.concatenate(cut_rows), np.concatenate(cut_cols))),
+            shape=(len(cut_ub), n_total),
+        )
+        Auc.eliminate_zeros()
+        ub_vec = np.asarray(cut_ub, dtype=np.float64)
+    else:
+        Auc = sparse_empty(0, n_total)
+        ub_vec = np.zeros(0, dtype=np.float64)
+
+    hz = SparseHZono(
+        c=center,
+        Gc=Gc,
+        Gb=sparse_empty(n, n_bin),
+        Ac=Ac,
+        Ab=sparse_empty(groups.shape[0], n_bin),
+        b=eq_b,
+        Auc=Auc,
+        Aub=sparse_empty(Auc.shape[0], n_bin),
+        ub=ub_vec,
+    )
+    return hz, xi_extra
+
+
 def sparse_conv2d_matrix_from_layer(layer) -> Tuple[sp.csr_matrix, np.ndarray]:
     """Build the exact NCHW sparse affine matrix for an ACT CONV2D layer."""
 
@@ -1798,6 +1974,7 @@ __all__ = [
     "sparse_hz_apply_matmul_const_layer",
     "sparse_hz_apply_maxpool2d_layer",
     "sparse_hz_apply_relu_exact",
+    "sparse_hz_apply_softmax_simplex_layer",
     "sparse_hz_apply_scurve_piecewise",
     "sparse_hz_apply_sigmoid_piecewise",
     "sparse_hz_apply_tanh_piecewise",
@@ -1957,6 +2134,35 @@ def _test_sparse_affine_structural_ops() -> None:  # pragma: no cover
         point_y.lb.detach().cpu().numpy().reshape(mat_layer.params["y_shape"]),
     )
     _assert_vec_close(sparse_point_matmul_left.c, expected_matmul_left)
+
+    softmax_bounds = Bounds(
+        lb=torch.tensor([[-1.0, 0.0, 0.5, -0.25, 1.0, 2.0]], dtype=dtype),
+        ub=torch.tensor([[0.0, 1.0, 1.5, 0.75, 2.0, 3.0]], dtype=dtype),
+    )
+    sparse_logits = sparse_hz_from_bounds(softmax_bounds)
+    softmax_layer = SimpleNamespace(id=5, params={"axis": -1})
+    lb_np = softmax_bounds.lb.detach().cpu().numpy().reshape(-1).astype(np.float64)
+    ub_np = softmax_bounds.ub.detach().cpu().numpy().reshape(-1).astype(np.float64)
+    sparse_softmax, softmax_extra = sparse_hz_apply_softmax_simplex_layer(
+        sparse_logits,
+        softmax_layer,
+        (2, 3),
+        lb_np,
+        ub_np,
+        np.zeros(sparse_logits.n_cont, dtype=np.float64),
+        np.zeros(sparse_logits.n_bin, dtype=np.float64),
+    )
+    assert sparse_softmax.n_eq == 2
+    assert sparse_softmax.n_ub > 0
+    softmax_xi = np.concatenate([
+        np.zeros(sparse_logits.n_cont, dtype=np.float64),
+        softmax_extra,
+    ])
+    _assert_vec_close(sparse_softmax.Ac @ softmax_xi, sparse_softmax.b)
+    softmax_center_y = sparse_softmax.c + np.asarray(sparse_softmax.Gc @ softmax_xi).reshape(-1)
+    _assert_vec_close(softmax_center_y.reshape(2, 3).sum(axis=1), np.ones(2))
+    assert float(softmax_center_y.min()) >= -1e-9
+    assert float(softmax_center_y.max()) <= 1.0 + 1e-9
 
     dense_gather = hz_from_bounds(
         Bounds(lb=bounds.lb[:, [2, 0]], ub=bounds.ub[:, [2, 0]]),
