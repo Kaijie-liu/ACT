@@ -88,7 +88,7 @@ def run_sparse(
     )
     cmd = [PY, "-m", PROBE_MODULE, "--bench", bench, "--iid", str(iid), "--device", "cpu",
            "--lp-queries", str(lp_queries), "--lp-timeout", "15",
-           "--milp-all", "--milp-cutoff", "--milp-timeout", str(milp_timeout),
+           "--milp-all", "--milp-timeout", str(milp_timeout),
            "--summary-json", str(summary_path)]
     if query_indices:
         cmd.extend(["--query-indices", str(query_indices)])

@@ -12,15 +12,15 @@ The local `scripts/` directory is not tracked and is not part of this diff.
 
 Current upstream diff:
 
-`60 files changed, 23904 insertions(+), 639 deletions(-)`
+`60 files changed, 23793 insertions(+), 639 deletions(-)`
 
 Directory-level split:
 
 | Area | Files | Added | Deleted | Status |
 |---|---:|---:|---:|---|
-| `act/pipeline` | 15 | 10900 | 141 | largest remaining consolidation target |
+| `act/pipeline` | 15 | 10776 | 141 | largest remaining consolidation target |
 | `act/back_end/hybridz_tf` | 8 | 4782 | 292 | core HZ operator/product path |
-| `docs` | 16 | 3801 | 0 | audit/provenance/future-work docs |
+| `docs` | 16 | 3814 | 0 | audit/provenance/future-work docs |
 | `act/back_end/solver` | 4 | 2128 | 51 | verdict/sparse HZ solver path |
 | `act/back_end/other` | 11 | 1635 | 54 | frontend/backend integration hooks |
 | `act/front_end` | 5 | 458 | 101 | benchmark/data loading integration |
@@ -30,7 +30,7 @@ Largest files by changed lines:
 
 | File | Added | Deleted | Interpretation |
 |---|---:|---:|---|
-| `act/pipeline/hybridz_sparse_exact_probe.py` | 4901 | 0 | biggest remaining package-level prototype; first post-freeze consolidation target is partially reduced |
+| `act/pipeline/hybridz_sparse_exact_probe.py` | 4777 | 0 | biggest remaining package-level prototype; first post-freeze consolidation target is partially reduced |
 | `act/pipeline/hybridz_benchmark_runner.py` | 2499 | 0 | product runner, branch portfolio, frozen comparison, ICSE export |
 | `act/back_end/hybridz_tf/sparse_ops.py` | 2294 | 0 | sparse exact-HZ propagation core |
 | `act/back_end/solver/solver_hz_verdict.py` | 1563 | 0 | exact verdict MILP and open-source solver portfolio |
@@ -82,10 +82,23 @@ packaged modules, but too much sparse exact-HZ probe logic still lives in
    backend S-curve cut matrix builders, and the save/load HZ debug bypass was
    removed from the packaged probe, max-layer partial propagation was removed
    from the packaged probe, and manual `--fix-binaries` / base-witness debug
-   entry points and the old fixed-phase bound override plumbing were removed.
-   The local duplicate probe code dropped from 5751 to 4901 lines
+   entry points and the old fixed-phase bound override plumbing were removed,
+   and sparse-probe MILP was collapsed to the cutoff formulation used by the
+   product worker.  The local duplicate probe code dropped from 5751 to 4777
+   lines
    while preserving the packaged probe self-test, sparse-ops structural
    self-test, and a backend UPSAMPLE 3D/4D row-map regression.
+
+   A direct sparse-worker smoke also now succeeds after fixing the probe
+   layer-index GC hook:
+
+   ```bash
+   python -m act.pipeline.hybridz_sparse_worker --bench sat_relu --iid 0 \
+     --lp-queries 1 --milp-timeout 5 --worker-timeout 40
+   ```
+
+   This returned `ADV` with `ort_verified=true`, `P0=false`, and
+   `milp_status=TARGET:Optimal`.
 
 1. Audit `act/pipeline/hybridz_sparse_exact_probe.py` function families.
    Move reusable exact-HZ propagation and MILP export helpers into backend

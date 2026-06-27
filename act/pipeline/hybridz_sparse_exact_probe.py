@@ -1939,7 +1939,7 @@ def _propagate_sparse(
             if use_count[lid] <= 0:
                 states.pop(lid, None)
 
-    for L in net.layers:
+    for idx, L in enumerate(net.layers):
         kind = str(L.kind).upper()
         t0 = time.time()
         if kind == "INPUT":
@@ -2436,90 +2436,6 @@ def _interval_hard_rivals_from_specs(
         if m <= 0.0:
             hard += 1
     return hard, lows
-
-
-def _milp_min_margin_highs(hz: SparseHZ, C: np.ndarray, t: np.ndarray, time_limit: float) -> Tuple[str, Optional[float], Optional[np.ndarray]]:
-    try:
-        import highspy
-    except Exception as exc:
-        return f"no_highspy:{exc}", None, None
-
-    c_row = C.reshape(C.shape[0], -1)[0]
-    obj_c = np.asarray(c_row @ hz.Gc).reshape(-1)
-    obj_b = np.asarray(c_row @ hz.Gb).reshape(-1) if hz.n_bin else np.zeros(0)
-    const = float(c_row @ hz.c - t.reshape(-1)[0])
-    cost = np.concatenate([obj_c, 2.0 * obj_b])
-    const_z = const - float(obj_b.sum())
-    if hz.n_eq:
-        A = sp.hstack([hz.Ac, 2.0 * hz.Ab], format="csr")
-        rhs = hz.b + np.asarray(hz.Ab.sum(axis=1)).reshape(-1)
-    else:
-        A = sp.csr_matrix((0, hz.n_cont + hz.n_bin), dtype=np.float64)
-        rhs = np.zeros(0, dtype=np.float64)
-    if hz.n_ub:
-        Ale = sp.hstack([hz.Auc, 2.0 * hz.Aub], format="csr")
-        ble = hz.ub + np.asarray(hz.Aub.sum(axis=1)).reshape(-1)
-    else:
-        Ale = sp.csr_matrix((0, hz.n_cont + hz.n_bin), dtype=np.float64)
-        ble = np.zeros(0, dtype=np.float64)
-    lb = np.concatenate([-np.ones(hz.n_cont), np.zeros(hz.n_bin)])
-    ub = np.ones(hz.n_cont + hz.n_bin)
-
-    h = highspy.Highs()
-    h.setOptionValue("output_flag", False)
-    h.setOptionValue("time_limit", float(time_limit))
-    h.setOptionValue("mip_rel_gap", 1e-9)
-    ncols = cost.size
-    h.addCols(
-        ncols,
-        cost.astype(float),
-        lb.astype(float),
-        ub.astype(float),
-        0,
-        np.array([], dtype=np.int32),
-        np.array([], dtype=np.int32),
-        np.array([], dtype=float),
-    )
-    if hz.n_bin:
-        idx = np.arange(hz.n_cont, hz.n_cont + hz.n_bin, dtype=np.int32)
-        types = np.array([highspy.HighsVarType.kInteger] * hz.n_bin)
-        h.changeColsIntegrality(hz.n_bin, idx, types)
-    if A.shape[0]:
-        h.addRows(
-            A.shape[0],
-            rhs.astype(float),
-            rhs.astype(float),
-            A.nnz,
-            A.indptr.astype(np.int32),
-            A.indices.astype(np.int32),
-            A.data.astype(float),
-        )
-    if Ale.shape[0]:
-        h.addRows(
-            Ale.shape[0],
-            np.full(Ale.shape[0], -1e30, dtype=np.float64),
-            ble.astype(float),
-            Ale.nnz,
-            Ale.indptr.astype(np.int32),
-            Ale.indices.astype(np.int32),
-            Ale.data.astype(float),
-        )
-    run_status = h.run()
-    status = h.modelStatusToString(h.getModelStatus())
-    info = h.getInfo()
-    obj = getattr(info, "objective_function_value", None)
-    if obj is None:
-        return status, None, None
-    xi = None
-    try:
-        v = np.asarray(h.getSolution().col_value, dtype=np.float64)
-        if v.size >= hz.n_cont + hz.n_bin:
-            xi = v[: hz.n_cont + hz.n_bin].copy()
-            if hz.n_bin:
-                xi[hz.n_cont:] = 2.0 * xi[hz.n_cont:] - 1.0
-    except Exception:
-        xi = None
-    return status, const_z + float(obj), xi
 
 
 def _milp_cutoff_highs(
@@ -4370,7 +4286,6 @@ def main() -> None:
                     help="with --check-witness, replay exact MILP witnesses only; ignore LP-relaxation candidates")
     ap.add_argument("--milp-one", action="store_true")
     ap.add_argument("--milp-all", action="store_true")
-    ap.add_argument("--milp-cutoff", action="store_true")
     ap.add_argument("--cutoff-as-row", action="store_true",
                     help="encode margin<=0 as an explicit exact feasibility row instead of objective-bound")
     ap.add_argument("--milp-timeout", type=float, default=30.0)
@@ -4688,149 +4603,110 @@ def main() -> None:
         run_milp = (args.milp_one and rank == 0) or args.milp_all
         if run_milp:
             ts = time.time()
-            if args.milp_cutoff:
-                # Packaged pure-HZ verification does not perform input/binary
-                # splitting; solve the exact sparse-HZ cutoff MILP directly.
-                if True:
-                    stop_after_query = False
-                    if args.mip_solver == "scip":
-                        status, mi, xi_mi = _milp_cutoff_scip(
-                            hz, C, t, args.milp_timeout,
-                            elim_singletons=args.elim_singletons,
-                            cutoff_as_row=args.cutoff_as_row,
-                            fbbt_passes=args.fbbt_passes,
-                            scip_threads=args.scip_threads,
-                            scip_options=extra_scip_options,
-                        )
-                        milp_stats = dict(getattr(_milp_cutoff_scip, "last_stats", {}))
-                        attempts = [{
-                            "profile": "scip",
-                            "status": status,
-                            "margin": None if mi is None else float(mi),
-                            "sec": time.time() - ts,
-                            "milp_stats": milp_stats,
-                        }]
-                    else:
-                        attempts = []
-                        status = ""
-                        mi = None
-                        xi_mi = None
-                        milp_stats = {}
-                        for profile_name, profile_options in highs_profiles:
-                            ats = time.time()
-                            status, mi, xi_mi = _milp_cutoff_highs(
-                                hz, C, t, args.milp_timeout,
-                                elim_singletons=args.elim_singletons,
-                                highs_threads=args.highs_threads,
-                                highs_parallel=args.highs_parallel,
-                                highs_heuristic_effort=args.highs_heuristic_effort,
-                                cutoff_as_row=args.cutoff_as_row,
-                                highs_options=profile_options,
-                                mip_start_xi=(
-                                    base_xi if args.mip_start.startswith("base")
-                                    else (xi if args.mip_start != "none" else None)
-                                ),
-                                mip_start_binary_only=(args.mip_start in {"lp-binary-round", "base-binary"}),
-                                connected_presolve=args.connected_presolve,
-                                base_xi=base_xi,
-                                elim_eq_subst=args.elim_eq_subst,
-                                fbbt_passes=args.fbbt_passes,
-                                relax_precheck_timeout=args.relax_precheck_timeout,
-                            )
-                            milp_stats = dict(getattr(_milp_cutoff_highs, "last_stats", {}))
-                            attempt = {
-                                "profile": profile_name,
-                                "status": status,
-                                "margin": None if mi is None else float(mi),
-                                "sec": time.time() - ats,
-                                "milp_stats": milp_stats,
-                            }
-                            attempts.append(attempt)
-                            print(
-                                f"  highs_profile profile={profile_name} status={status} "
-                                f"margin={mi} sec={attempt['sec']:.2f}",
-                                flush=True,
-                            )
-                            if status.startswith("TARGET") or (status.startswith("OPTIMAL") and mi is not None and mi <= 1e-9):
-                                break
-                            if status.startswith("EMPTY:") or (status.startswith("OPTIMAL") and mi is not None and mi > 1e-9):
-                                break
-                    milp_sec = time.time() - ts
-                    print(f"MILP-CUTOFF q={int(qidx)} status={status} margin={mi} sec={time.time() - ts:.2f}", flush=True)
-                    record.update({
-                        "milp_status": status,
-                        "milp_margin": None if mi is None else float(mi),
-                        "milp_sec": milp_sec,
-                        "milp_stats": milp_stats,
-                    })
-                    if args.mip_solver in {"highs", "scip"}:
-                        record["milp_attempts"] = attempts
-                    if status.startswith("TARGET") or (status.startswith("OPTIMAL") and mi is not None and mi <= 1e-9):
-                        print("  HZ_TARGET: exact-HZ unsafe feasible point found", flush=True)
-                        real_bad, cy = check_witness(xi_mi, C, t)
-                        if real_bad:
-                            real_adv_count += 1
-                            print(
-                                f"  REAL_ADV q={int(qidx)} source=milp cy={cy.tolist() if cy is not None else None}",
-                                flush=True,
-                            )
-                        hz_unsafe_count += 1
-                        record.update({
-                            "verdict": "adv" if real_bad else "hz_unsafe",
-                            "cert_source": "milp",
-                            "witness_checked": bool(args.check_witness and xi_mi is not None),
-                            "real_unsafe": bool(real_bad),
-                        })
-                        if args.stop_on_unsafe and (not args.check_witness or real_adv_count):
-                            print("  EARLY_STOP unsafe", flush=True)
-                            stop_after_query = True
-                    elif status.startswith("EMPTY:") or (status.startswith("OPTIMAL") and mi is not None and mi > 1e-9):
-                        cert_count += 1
-                        record.update({"verdict": "cert", "cert_source": "milp"})
-                    else:
-                        unknown_count += 1
-                        record.update({"verdict": "unknown", "cert_source": "milp"})
-                        if args.max_unknowns > 0 and unknown_count >= args.max_unknowns:
-                            print("  EARLY_STOP unknown_limit", flush=True)
-                            stop_after_query = True
-                    query_results.append(record)
-                    if stop_after_query:
-                        break
+            stop_after_query = False
+            if args.mip_solver == "scip":
+                status, mi, xi_mi = _milp_cutoff_scip(
+                    hz, C, t, args.milp_timeout,
+                    elim_singletons=args.elim_singletons,
+                    cutoff_as_row=args.cutoff_as_row,
+                    fbbt_passes=args.fbbt_passes,
+                    scip_threads=args.scip_threads,
+                    scip_options=extra_scip_options,
+                )
+                milp_stats = dict(getattr(_milp_cutoff_scip, "last_stats", {}))
+                attempts = [{
+                    "profile": "scip",
+                    "status": status,
+                    "margin": None if mi is None else float(mi),
+                    "sec": time.time() - ts,
+                    "milp_stats": milp_stats,
+                }]
             else:
-                stop_after_query = False
-                status, mi, xi_mi = _milp_min_margin_highs(hz, C, t, args.milp_timeout)
-                print(f"MILP q={int(qidx)} status={status} margin={mi} sec={time.time() - ts:.2f}", flush=True)
+                attempts = []
+                status = ""
+                mi = None
+                xi_mi = None
+                milp_stats = {}
+                for profile_name, profile_options in highs_profiles:
+                    ats = time.time()
+                    status, mi, xi_mi = _milp_cutoff_highs(
+                        hz, C, t, args.milp_timeout,
+                        elim_singletons=args.elim_singletons,
+                        highs_threads=args.highs_threads,
+                        highs_parallel=args.highs_parallel,
+                        highs_heuristic_effort=args.highs_heuristic_effort,
+                        cutoff_as_row=args.cutoff_as_row,
+                        highs_options=profile_options,
+                        mip_start_xi=(
+                            base_xi if args.mip_start.startswith("base")
+                            else (xi if args.mip_start != "none" else None)
+                        ),
+                        mip_start_binary_only=(args.mip_start in {"lp-binary-round", "base-binary"}),
+                        connected_presolve=args.connected_presolve,
+                        base_xi=base_xi,
+                        elim_eq_subst=args.elim_eq_subst,
+                        fbbt_passes=args.fbbt_passes,
+                        relax_precheck_timeout=args.relax_precheck_timeout,
+                    )
+                    milp_stats = dict(getattr(_milp_cutoff_highs, "last_stats", {}))
+                    attempt = {
+                        "profile": profile_name,
+                        "status": status,
+                        "margin": None if mi is None else float(mi),
+                        "sec": time.time() - ats,
+                        "milp_stats": milp_stats,
+                    }
+                    attempts.append(attempt)
+                    print(
+                        f"  highs_profile profile={profile_name} status={status} "
+                        f"margin={mi} sec={attempt['sec']:.2f}",
+                        flush=True,
+                    )
+                    if status.startswith("TARGET") or (status.startswith("OPTIMAL") and mi is not None and mi <= 1e-9):
+                        break
+                    if status.startswith("EMPTY:") or (status.startswith("OPTIMAL") and mi is not None and mi > 1e-9):
+                        break
+            milp_sec = time.time() - ts
+            print(f"MILP-CUTOFF q={int(qidx)} status={status} margin={mi} sec={time.time() - ts:.2f}", flush=True)
+            record.update({
+                "milp_status": status,
+                "milp_margin": None if mi is None else float(mi),
+                "milp_sec": milp_sec,
+                "milp_stats": milp_stats,
+            })
+            if args.mip_solver in {"highs", "scip"}:
+                record["milp_attempts"] = attempts
+            if status.startswith("TARGET") or (status.startswith("OPTIMAL") and mi is not None and mi <= 1e-9):
+                print("  HZ_TARGET: exact-HZ unsafe feasible point found", flush=True)
+                real_bad, cy = check_witness(xi_mi, C, t)
+                if real_bad:
+                    real_adv_count += 1
+                    print(
+                        f"  REAL_ADV q={int(qidx)} source=milp cy={cy.tolist() if cy is not None else None}",
+                        flush=True,
+                    )
+                hz_unsafe_count += 1
                 record.update({
-                    "cert_source": "milp_objective",
-                    "milp_status": status,
-                    "milp_margin": None if mi is None else float(mi),
-                    "milp_sec": time.time() - ts,
+                    "verdict": "adv" if real_bad else "hz_unsafe",
+                    "cert_source": "milp",
                     "witness_checked": bool(args.check_witness and xi_mi is not None),
+                    "real_unsafe": bool(real_bad),
                 })
-                if status == "Optimal" and mi is not None and mi > 1e-9:
-                    cert_count += 1
-                    record.update({"verdict": "cert"})
-                elif mi is not None and mi <= 0.0:
-                    real_bad = False
-                    if args.check_witness and xi_mi is not None:
-                        real_bad, cy = check_witness(xi_mi, C, t)
-                        if real_bad:
-                            real_adv_count += 1
-                            print(
-                                f"  REAL_ADV q={int(qidx)} source=milp_objective "
-                                f"cy={cy.tolist() if cy is not None else None}",
-                                flush=True,
-                            )
-                    hz_unsafe_count += 1
-                    record.update({"verdict": "adv" if real_bad else "hz_unsafe", "real_unsafe": bool(real_bad)})
-                    if args.stop_on_unsafe and (not args.check_witness or real_bad):
-                        stop_after_query = True
-                else:
-                    unknown_count += 1
-                    record.update({"verdict": "unknown"})
-                query_results.append(record)
-                if stop_after_query:
-                    break
+                if args.stop_on_unsafe and (not args.check_witness or real_adv_count):
+                    print("  EARLY_STOP unsafe", flush=True)
+                    stop_after_query = True
+            elif status.startswith("EMPTY:") or (status.startswith("OPTIMAL") and mi is not None and mi > 1e-9):
+                cert_count += 1
+                record.update({"verdict": "cert", "cert_source": "milp"})
+            else:
+                unknown_count += 1
+                record.update({"verdict": "unknown", "cert_source": "milp"})
+                if args.max_unknowns > 0 and unknown_count >= args.max_unknowns:
+                    print("  EARLY_STOP unknown_limit", flush=True)
+                    stop_after_query = True
+            query_results.append(record)
+            if stop_after_query:
+                break
         else:
             record.update({"verdict": "not_run", "cert_source": "lp_only"})
             query_results.append(record)
