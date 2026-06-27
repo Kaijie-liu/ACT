@@ -1034,6 +1034,26 @@ def sparse_gather_row_indices(layer, n: int) -> Optional[np.ndarray]:
     )
 
 
+def sparse_expand_row_indices(layer, n: int) -> Optional[np.ndarray]:
+    """Output-to-input row map for Expand/broadcast, mirroring interval.tf_expand."""
+
+    in_shape = layer.params.get("input_shape")
+    out_shape = layer.params.get("output_shape") or layer.params.get("shape")
+    if in_shape is None or out_shape is None:
+        return None
+    in_shape = tuple(int(d) for d in in_shape)
+    out_shape = tuple(int(d) for d in out_shape)
+    per = _prod(in_shape)
+    if per == 0 or int(n) % per != 0:
+        return None
+    batch = int(n) // per
+    try:
+        rows = torch.arange(int(n)).view(batch, *in_shape).broadcast_to(batch, *out_shape)
+    except RuntimeError:
+        return None
+    return rows.reshape(-1).detach().cpu().numpy().astype(np.int64)
+
+
 def sparse_hz_gather_rows_like(
     base: SparseHZono,
     rows: Sequence[int],
@@ -3383,6 +3403,7 @@ __all__ = [
     "sparse_hz_scale",
     "sparse_hz_sub_same_frame",
     "sparse_hz_tighten_relu_bounds",
+    "sparse_expand_row_indices",
     "sparse_gather_row_indices",
     "sparse_maxpool2d_candidate_rows",
     "sparse_pad_cols",
@@ -3636,11 +3657,15 @@ def _test_sparse_affine_structural_ops() -> None:  # pragma: no cover
     gather_layer = SimpleNamespace(
         params={"input_shape": (2, 3), "axis": 1, "indices": [2, 0]},
     )
+    expand_layer = SimpleNamespace(
+        params={"input_shape": (1, 3), "output_shape": (2, 3)},
+    )
     upsample_layer = SimpleNamespace(
         params={"input_shape": (1, 2, 2), "scale_factor": (2, 2), "mode": "nearest"},
     )
     assert np.array_equal(sparse_slice_row_indices(slice_layer, 6), np.array([1, 2, 4, 5]))
     assert np.array_equal(sparse_gather_row_indices(gather_layer, 6), np.array([2, 0, 5, 3]))
+    assert np.array_equal(sparse_expand_row_indices(expand_layer, 3), np.array([0, 1, 2, 0, 1, 2]))
     assert np.array_equal(
         sparse_upsample_nearest_row_indices(upsample_layer, 4, 16),
         np.array([0, 0, 1, 1, 0, 0, 1, 1, 2, 2, 3, 3, 2, 2, 3, 3]),

@@ -14,7 +14,6 @@
 
 import os
 import torch
-import torch.nn.functional as F
 from act.back_end.core import Bounds, Fact
 from act.back_end.solver.solver_hz import (
     HZono,
@@ -29,6 +28,12 @@ from act.back_end.solver.solver_hz import (
 )
 import act.back_end.interval_tf.tf_mlp as interval
 import act.back_end.interval_tf.tf_cnn as interval_cnn
+from act.back_end.hybridz_tf.sparse_ops import (
+    sparse_expand_row_indices,
+    sparse_gather_row_indices,
+    sparse_slice_row_indices,
+    sparse_upsample_nearest_row_indices,
+)
 
 
 def _hz_fact(fact: Fact, hz: HZono) -> Fact:
@@ -630,47 +635,10 @@ def _upsample_nearest_row_idx(
 ) -> torch.Tensor | None:
     """Row map for nearest-neighbor upsample. This is exact: each output row is
     a copy of one input row."""
-    mode = str(L.params.get("mode", "nearest")).lower()
-    if mode != "nearest":
+    rows = sparse_upsample_nearest_row_indices(L, n_in, n_out)
+    if rows is None:
         return None
-    in_shape = L.params.get("input_shape")
-    if in_shape is None:
-        return None
-    in_shape = tuple(int(d) for d in in_shape)
-    if _prod(in_shape) != int(n_in) or len(in_shape) < 3:
-        return None
-    view_shape = (1, *in_shape) if len(in_shape) == 3 else in_shape
-    spatial_rank = len(view_shape) - 2
-    size = L.params.get("size")
-    scale_factor = L.params.get("scale_factor")
-    if size is not None and isinstance(size, (list, tuple)):
-        size = tuple(int(s) for s in size)
-        if len(size) > spatial_rank:
-            size = size[-spatial_rank:]
-    if scale_factor is not None and isinstance(scale_factor, (list, tuple)):
-        scale_factor = tuple(float(s) for s in scale_factor)
-        if len(scale_factor) > spatial_rank:
-            scale_factor = scale_factor[-spatial_rank:]
-    if size is None and scale_factor is None:
-        out_shape = L.params.get("output_shape")
-        if out_shape is None:
-            return None
-        out_shape = tuple(int(d) for d in out_shape)
-        out_view_shape = (1, *out_shape) if len(out_shape) == 3 else out_shape
-        if len(out_view_shape) != len(view_shape):
-            return None
-        size = out_view_shape[2:]
-    base = torch.arange(n_in, dtype=torch.float64, device=device).view(*view_shape)
-    out = F.interpolate(
-        base,
-        size=size,
-        scale_factor=scale_factor,
-        mode="nearest",
-    )
-    idx = out.reshape(-1).to(dtype=torch.long)
-    if idx.numel() != int(n_out):
-        return None
-    return idx
+    return torch.as_tensor(rows, dtype=torch.long, device=device)
 
 
 def _reduce_sum_row_map(L, n_in: int, n_out: int) -> torch.Tensor | None:
@@ -735,28 +703,10 @@ def tf_transpose(L, bounds, tf):
 
 def _slice_row_idx(L, n):
     """Output->input row map for a Slice, mirroring interval.tf_slice exactly."""
-    if "input_shape" not in L.params:
+    rows = sparse_slice_row_indices(L, n)
+    if rows is None:
         return None
-    inp_shape = tuple(int(d) for d in L.params["input_shape"])
-    per = 1
-    for d in inp_shape:
-        per *= d
-    if per == 0 or n % per != 0:
-        return None
-    B = n // per
-    idx = torch.arange(n).view(B, *inp_shape)
-    starts = L.params.get("starts", [])
-    ends = L.params.get("ends", [])
-    axes = L.params.get("axes", list(range(len(inp_shape))))
-    steps = L.params.get("steps", [1] * len(axes))
-    slices = [slice(None)] * (len(inp_shape) + 1)
-    for i, axis in enumerate(axes):
-        axis = int(axis)
-        e = ends[i]
-        if e > inp_shape[axis]:
-            e = inp_shape[axis]
-        slices[axis + 1] = slice(starts[i], e, steps[i])
-    return idx[tuple(slices)].reshape(-1)
+    return torch.as_tensor(rows, dtype=torch.long)
 
 
 def tf_slice(L, bounds, tf):
@@ -771,25 +721,10 @@ def tf_slice(L, bounds, tf):
 
 
 def _gather_row_idx(L, n):
-    if "input_shape" not in L.params:
+    rows = sparse_gather_row_indices(L, n)
+    if rows is None:
         return None
-    inp_shape = tuple(int(d) for d in L.params["input_shape"])
-    per = _prod(inp_shape)
-    if per == 0 or n % per != 0:
-        return None
-    B = n // per
-    axis = int(L.params.get("axis", 0))
-    if axis < 0:
-        axis += len(inp_shape)
-    raw_idx = L.params["indices"]
-    if isinstance(raw_idx, (list, tuple)):
-        indices = torch.tensor(raw_idx, dtype=torch.long)
-    elif hasattr(raw_idx, "detach"):
-        indices = raw_idx.detach().cpu().long()
-    else:
-        indices = torch.as_tensor(raw_idx, dtype=torch.long)
-    idx = torch.arange(n).view(B, *inp_shape)
-    return torch.index_select(idx, dim=axis + 1, index=indices.reshape(-1)).reshape(-1)
+    return torch.as_tensor(rows, dtype=torch.long)
 
 
 def tf_gather(L, bounds, tf):
@@ -805,22 +740,10 @@ def tf_gather(L, bounds, tf):
 
 def _expand_row_idx(L, n):
     """Output->input row map for an Expand/broadcast (repeated rows)."""
-    in_shape = L.params.get("input_shape")
-    out_shape = L.params.get("output_shape") or L.params.get("shape")
-    if in_shape is None or out_shape is None:
+    rows = sparse_expand_row_indices(L, n)
+    if rows is None:
         return None
-    in_shape = tuple(int(d) for d in in_shape)
-    out_shape = tuple(int(d) for d in out_shape)
-    per = 1
-    for d in in_shape:
-        per *= d
-    if per == 0 or n % per != 0:
-        return None
-    B = n // per
-    try:
-        return torch.arange(n).view(B, *in_shape).broadcast_to(B, *out_shape).reshape(-1)
-    except RuntimeError:
-        return None
+    return torch.as_tensor(rows, dtype=torch.long)
 
 
 def tf_expand(L, bounds, tf):

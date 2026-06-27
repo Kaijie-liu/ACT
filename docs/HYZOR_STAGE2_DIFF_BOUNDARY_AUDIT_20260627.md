@@ -327,6 +327,22 @@ packaged modules, but too much sparse exact-HZ probe logic still lives in
 	   `UNKNOWN/P0=false`, both frontend smokes producing `N=1, ADV=1, P0=0`,
 	   and the frozen manifest check.
 
+	   Structural row-map helpers are now centralized in
+	   `act/back_end/hybridz_tf/sparse_ops.py` for both dense and sparse HZ
+	   paths.  `tf_mlp.py` keeps thin compatibility wrappers for Slice, Gather,
+	   Expand, and nearest-neighbor Upsample; `HybridzTF` sparse-carry calls the
+	   backend helpers directly.  This removes the dense/sparse duplicate
+	   implementations while keeping the same exact row-selection semantics.
+	   Regression evidence: `py_compile` for `tf_mlp.py`, `hybridz_tf.py`,
+	   `sparse_ops.py`, and the sparse probe; `python -m
+	   act.back_end.hybridz_tf.sparse_ops`; `python -m act.back_end.hybridz_tf`;
+	   `python -m act.pipeline.hybridz_sparse_exact_probe --self-test`; the
+	   `sat_relu` sparse-worker smoke returning
+	   `ADV/P0=false/ort_verified=true`; the standard `--verify vnnlib
+	   --solvers hybridz` smoke returning `FALSIFIED`; `python -m
+	   act.pipeline.hybridz_benchmark_runner`; the packaged
+	   `--verify hybridz-benchmark` smoke; and the frozen manifest check.
+
 1. Audit `act/pipeline/hybridz_sparse_exact_probe.py` function families.
    Move reusable exact-HZ propagation and MILP export helpers into backend
    modules, and delete diagnostic branches that are not counted in the pure-HZ

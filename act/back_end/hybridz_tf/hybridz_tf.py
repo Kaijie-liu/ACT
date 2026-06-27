@@ -338,10 +338,6 @@ class HybridzTF(TransferFunction):
                 return part
         return None
 
-    @staticmethod
-    def _rows_to_numpy(rows: torch.Tensor):
-        return rows.detach().cpu().numpy()
-
     def _propagate_sparse_hz(self, L: Layer, input_bounds: Bounds, result: Fact) -> None:
         if not self._enable_sparse_hz:
             return
@@ -445,30 +441,30 @@ class HybridzTF(TransferFunction):
             }:
                 out = hz
             elif k == LayerKind.SLICE.value:
-                rows = hz_mlp._slice_row_idx(L, hz.n_out)
-                if rows is None or rows.numel() != result.bounds.lb.numel():
+                rows = sparse_ops.sparse_slice_row_indices(L, hz.n_out)
+                if rows is None or rows.size != result.bounds.lb.numel():
                     self._drop_sparse_hz(L.id, "unsupported_slice_row_map")
                     return
-                out = sparse_ops.sparse_hz_gather_rows(hz, self._rows_to_numpy(rows))
+                out = sparse_ops.sparse_hz_gather_rows(hz, rows)
             elif k == LayerKind.GATHER.value:
-                rows = hz_mlp._gather_row_idx(L, hz.n_out)
-                if rows is None or rows.numel() != result.bounds.lb.numel():
+                rows = sparse_ops.sparse_gather_row_indices(L, hz.n_out)
+                if rows is None or rows.size != result.bounds.lb.numel():
                     self._drop_sparse_hz(L.id, "unsupported_gather_row_map")
                     return
-                out = sparse_ops.sparse_hz_gather_rows(hz, self._rows_to_numpy(rows))
+                out = sparse_ops.sparse_hz_gather_rows(hz, rows)
             elif k == LayerKind.EXPAND.value:
-                rows = hz_mlp._expand_row_idx(L, hz.n_out)
-                if rows is None or rows.numel() != result.bounds.lb.numel():
+                rows = sparse_ops.sparse_expand_row_indices(L, hz.n_out)
+                if rows is None or rows.size != result.bounds.lb.numel():
                     self._drop_sparse_hz(L.id, "unsupported_expand_row_map")
                     return
-                out = sparse_ops.sparse_hz_gather_rows(hz, self._rows_to_numpy(rows))
+                out = sparse_ops.sparse_hz_gather_rows(hz, rows)
             elif k == LayerKind.UPSAMPLE.value:
-                rows = hz_mlp._upsample_nearest_row_idx(
-                    L, hz.n_out, result.bounds.lb.numel(), input_bounds.lb.device)
+                rows = sparse_ops.sparse_upsample_nearest_row_indices(
+                    L, hz.n_out, result.bounds.lb.numel())
                 if rows is None:
                     self._drop_sparse_hz(L.id, "unsupported_upsample_row_map")
                     return
-                out = sparse_ops.sparse_hz_gather_rows(hz, self._rows_to_numpy(rows))
+                out = sparse_ops.sparse_hz_gather_rows(hz, rows)
             elif k == LayerKind.ADD.value:
                 preds = self._net.preds.get(L.id, [])
                 parts = [self._sparse_hz_cache.get(pid) for pid in preds[:2]]

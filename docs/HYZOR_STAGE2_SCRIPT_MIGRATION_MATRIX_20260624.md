@@ -203,7 +203,7 @@ were cleanly separable from the package probe:
 - compressed/pruned and full/non-pruned S-curve construction, including
   uniform and curvature segment grids plus domain/range/graph cut metadata, now
   lives in `sparse_ops.py`;
-- nearest-neighbor UPSAMPLE, SLICE, and GATHER row maps now live in
+- nearest-neighbor UPSAMPLE, SLICE, GATHER, and EXPAND row maps now live in
   `sparse_ops.py`;
 - exact ReLU and S-curve constructive center witness extension plus final
   residual checking now live in `sparse_ops.py`.
