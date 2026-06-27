@@ -26,7 +26,7 @@ reachable set, so a certified verdict here is sound. This module never produces
 a falsification verdict (it only promotes UNKNOWN -> CERTIFIED).
 """
 from __future__ import annotations
-from typing import Optional
+from typing import Dict, Optional, Tuple
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import os
 import numpy as np
@@ -556,6 +556,217 @@ def _scale_milp_objective(cost, obj_thr):
         return cost, float(obj_thr), 1.0
     scale = 1.0 / denom
     return cost * scale, float(obj_thr) * scale, scale
+
+
+def sparse_row_bound_infeasible(
+    A: "_sp.csr_matrix",
+    rl: np.ndarray,
+    ru: np.ndarray,
+    lb: np.ndarray,
+    ub: np.ndarray,
+    *,
+    tol: float = 1e-9,
+) -> Tuple[bool, Dict[str, object]]:
+    """Cheap exact row-range infeasibility check over variable bounds."""
+
+    if A.shape[0] == 0 or A.shape[1] == 0:
+        return False, {"rows": 0}
+    A = A.tocsr()
+    lb = np.asarray(lb, dtype=np.float64)
+    ub = np.asarray(ub, dtype=np.float64)
+    rl = np.asarray(rl, dtype=np.float64)
+    ru = np.asarray(ru, dtype=np.float64)
+    pos = A.maximum(0.0).tocsr()
+    neg = A.minimum(0.0).tocsr()
+    row_min = np.asarray(pos @ lb + neg @ ub).reshape(-1)
+    row_max = np.asarray(pos @ ub + neg @ lb).reshape(-1)
+    scale = np.maximum(1.0, np.maximum(np.abs(row_min), np.abs(row_max)))
+    hi_bad = np.isfinite(ru) & (row_min > ru + tol * scale)
+    lo_bad = np.isfinite(rl) & (row_max < rl - tol * scale)
+    bad = np.flatnonzero(hi_bad | lo_bad)
+    if bad.size == 0:
+        return False, {"rows": int(A.shape[0])}
+    r0 = int(bad[0])
+    return True, {
+        "rows": int(A.shape[0]),
+        "bad_row": r0,
+        "row_min": float(row_min[r0]),
+        "row_max": float(row_max[r0]),
+        "rl": float(rl[r0]) if np.isfinite(rl[r0]) else None,
+        "ru": float(ru[r0]) if np.isfinite(ru[r0]) else None,
+        "bad_count": int(bad.size),
+    }
+
+
+def sparse_fbbt_tighten_bounds(
+    A: "_sp.csr_matrix",
+    rl: np.ndarray,
+    ru: np.ndarray,
+    lb: np.ndarray,
+    ub: np.ndarray,
+    *,
+    integer_mask: Optional[np.ndarray] = None,
+    max_passes: int = 3,
+    tol: float = 1e-9,
+) -> Tuple[bool, np.ndarray, np.ndarray, Dict[str, object]]:
+    """Feasibility-based bound tightening for sparse linear rows.
+
+    This is a sound MILP presolve over exact HZ constraints.  It intersects the
+    current variable boxes with bounds implied by ``rl <= A x <= ru`` and can
+    prove EMPTY; it never proves a witness or replaces the exact MILP solve.
+    """
+
+    if A.shape[0] == 0 or A.shape[1] == 0 or max_passes <= 0:
+        return False, lb, ub, {"passes": 0, "tightened": 0, "fixed_int": 0}
+
+    A = A.tocsr(copy=True)
+    A.sum_duplicates()
+    A.eliminate_zeros()
+    rl = np.asarray(rl, dtype=np.float64)
+    ru = np.asarray(ru, dtype=np.float64)
+    lb = np.asarray(lb, dtype=np.float64).copy()
+    ub = np.asarray(ub, dtype=np.float64).copy()
+    if integer_mask is None:
+        integer_mask = np.zeros(A.shape[1], dtype=bool)
+    else:
+        integer_mask = np.asarray(integer_mask, dtype=bool)
+        if integer_mask.size != A.shape[1]:
+            raise ValueError(f"integer_mask size mismatch: {integer_mask.size} vs {A.shape[1]}")
+
+    pos = A.maximum(0.0).tocsr()
+    neg = A.minimum(0.0).tocsr()
+    total_tightened = 0
+    total_fixed_int = 0
+    max_width_delta = 0.0
+    passes_done = 0
+    bad_info: Optional[Dict[str, object]] = None
+
+    for pass_i in range(int(max_passes)):
+        passes_done = pass_i + 1
+        prev_lb = lb.copy()
+        prev_ub = ub.copy()
+        row_min = np.asarray(pos @ lb + neg @ ub).reshape(-1)
+        row_max = np.asarray(pos @ ub + neg @ lb).reshape(-1)
+        scale = np.maximum(1.0, np.maximum(np.abs(row_min), np.abs(row_max)))
+        hi_bad = np.isfinite(ru) & (row_min > ru + tol * scale)
+        lo_bad = np.isfinite(rl) & (row_max < rl - tol * scale)
+        bad = np.flatnonzero(hi_bad | lo_bad)
+        if bad.size:
+            r0 = int(bad[0])
+            bad_info = {
+                "bad_row": r0,
+                "row_min": float(row_min[r0]),
+                "row_max": float(row_max[r0]),
+                "rl": float(rl[r0]) if np.isfinite(rl[r0]) else None,
+                "ru": float(ru[r0]) if np.isfinite(ru[r0]) else None,
+                "bad_count": int(bad.size),
+            }
+            return True, lb, ub, {
+                "passes": passes_done,
+                "tightened": int(total_tightened),
+                "fixed_int": int(total_fixed_int),
+                "max_width_delta": float(max_width_delta),
+                "infeasible": bad_info,
+            }
+
+        for r in range(A.shape[0]):
+            start, end = A.indptr[r], A.indptr[r + 1]
+            if start == end:
+                continue
+            cols = A.indices[start:end]
+            vals = A.data[start:end]
+            nz = np.abs(vals) > tol
+            if not np.any(nz):
+                continue
+            cols = cols[nz]
+            vals = vals[nz]
+            col_lb = lb[cols]
+            col_ub = ub[cols]
+            positive = vals > 0.0
+
+            if np.isfinite(ru[r]) and ru[r] < 1e20:
+                min_contrib = np.where(positive, vals * col_lb, vals * col_ub)
+                rest_min = row_min[r] - min_contrib
+                cand = (ru[r] - rest_min) / vals
+                finite = np.isfinite(cand)
+                m = positive & finite
+                if np.any(m):
+                    idx = cols[m]
+                    ub[idx] = np.minimum(ub[idx], cand[m])
+                m = (~positive) & finite
+                if np.any(m):
+                    idx = cols[m]
+                    lb[idx] = np.maximum(lb[idx], cand[m])
+
+            if np.isfinite(rl[r]) and rl[r] > -1e20:
+                max_contrib = np.where(positive, vals * col_ub, vals * col_lb)
+                rest_max = row_max[r] - max_contrib
+                cand = (rl[r] - rest_max) / vals
+                finite = np.isfinite(cand)
+                m = positive & finite
+                if np.any(m):
+                    idx = cols[m]
+                    lb[idx] = np.maximum(lb[idx], cand[m])
+                m = (~positive) & finite
+                if np.any(m):
+                    idx = cols[m]
+                    ub[idx] = np.minimum(ub[idx], cand[m])
+
+        if np.any(integer_mask):
+            snap_hi = integer_mask & (lb > tol) & (ub >= 1.0 - tol)
+            snap_lo = integer_mask & (ub < 1.0 - tol) & (lb <= tol)
+            fixed_now = int(np.count_nonzero(snap_hi | snap_lo))
+            if fixed_now:
+                total_fixed_int += fixed_now
+                lb[snap_hi] = 1.0
+                ub[snap_hi] = 1.0
+                lb[snap_lo] = 0.0
+                ub[snap_lo] = 0.0
+
+        bad_cols = np.flatnonzero(lb > ub + 10.0 * tol)
+        if bad_cols.size:
+            j0 = int(bad_cols[0])
+            return True, lb, ub, {
+                "passes": passes_done,
+                "tightened": int(total_tightened),
+                "fixed_int": int(total_fixed_int),
+                "max_width_delta": float(max_width_delta),
+                "infeasible": {
+                    "bad_col": j0,
+                    "lb": float(lb[j0]),
+                    "ub": float(ub[j0]),
+                    "bad_count": int(bad_cols.size),
+                },
+            }
+
+        tightened = (lb > prev_lb + tol) | (ub < prev_ub - tol)
+        tightened_count = int(np.count_nonzero(tightened))
+        if tightened_count:
+            total_tightened += tightened_count
+            before_w = prev_ub - prev_lb
+            after_w = ub - lb
+            max_width_delta = max(max_width_delta, float(np.max(before_w[tightened] - after_w[tightened])))
+        else:
+            break
+
+    bad_cols = np.flatnonzero(lb > ub + 10.0 * tol)
+    if bad_cols.size:
+        j0 = int(bad_cols[0])
+        bad_info = {"bad_col": j0, "lb": float(lb[j0]), "ub": float(ub[j0]), "bad_count": int(bad_cols.size)}
+        return True, lb, ub, {
+            "passes": passes_done,
+            "tightened": int(total_tightened),
+            "fixed_int": int(total_fixed_int),
+            "max_width_delta": float(max_width_delta),
+            "infeasible": bad_info,
+        }
+
+    return False, lb, ub, {
+        "passes": passes_done,
+        "tightened": int(total_tightened),
+        "fixed_int": int(total_fixed_int),
+        "max_width_delta": float(max_width_delta),
+    }
 
 
 def _spec_np(C, thresholds, out_dim: int):
@@ -1458,6 +1669,28 @@ def _test_sparse_hz_verdict_parity() -> None:  # pragma: no cover
     base_xi, base_msg = hz_base_witness(hz, time_limit=2.0)
     assert base_xi is not None, base_msg
     assert np.allclose(base_xi, np.zeros(2, dtype=np.float64))
+    Apre = _sp.csr_matrix(np.array([[1.0, 1.0], [-1.0, 0.0]], dtype=np.float64))
+    lb0 = np.array([0.0, 0.0], dtype=np.float64)
+    ub0 = np.array([1.0, 1.0], dtype=np.float64)
+    infeas, info = sparse_row_bound_infeasible(
+        Apre,
+        np.array([3.0, -np.inf], dtype=np.float64),
+        np.array([np.inf, np.inf], dtype=np.float64),
+        lb0,
+        ub0,
+    )
+    assert infeas and info["bad_row"] == 0
+    infeas, tlb, tub, info = sparse_fbbt_tighten_bounds(
+        Apre[:1],
+        np.array([1.5], dtype=np.float64),
+        np.array([2.0], dtype=np.float64),
+        lb0,
+        ub0,
+        max_passes=2,
+    )
+    assert not infeas
+    assert info["tightened"] >= 2
+    assert tlb[0] >= 0.5 - 1e-12 and tlb[1] >= 0.5 - 1e-12
 
     empty_hz = HZono(
         c=torch.zeros(1, 1, dtype=dtype),
@@ -1550,6 +1783,8 @@ __all__ = [
     "hz_joint_min_margin",
     "hz_row_max",
     "hz_objbound_decide",
+    "sparse_fbbt_tighten_bounds",
+    "sparse_row_bound_infeasible",
 ]
 
 
