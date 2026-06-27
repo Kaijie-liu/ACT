@@ -312,8 +312,14 @@ DISTSHIFT_ELIM_PORTFOLIO: FrozenSet[str] = frozenset({"dist_shift_2023"})
 
 BENCH_WORKERS: Dict[str, int] = {
     "safenlp_2024": 1,
+    "metaroom_2023": 1,
+    "sat_relu": 4,
+    "malbeware": 4,
+    "cersyve": 2,
+    "acasxu_2023": 3,
     "dist_shift_2023": 3,
     "linearizenn_2024": 4,
+    "cora_2024": 2,
     "tllverifybench_2023": 6,
     "cgan_2023": 2,
 }

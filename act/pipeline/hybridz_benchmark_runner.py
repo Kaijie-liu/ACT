@@ -129,11 +129,17 @@ def _full_worker_args(cfg: HybridZBenchmarkConfig, inst: HybridZBenchmarkInstanc
     return tuple(args)
 
 
-def _full_worker_branch(name: str = "normal", *, env: Optional[dict[str, str]] = None) -> HybridZRunBranch:
+def _full_worker_branch(
+    name: str = "normal",
+    *,
+    env: Optional[dict[str, str]] = None,
+    module_args: tuple[str, ...] = (),
+) -> HybridZRunBranch:
     return HybridZRunBranch(
         name,
         set_env=dict(env or {}),
         module=FULL_WORKER_MODULE,
+        module_args=module_args,
     )
 
 
@@ -511,6 +517,7 @@ def _branch_plan(cfg: HybridZBenchmarkConfig) -> list[HybridZRunBranch]:
             _full_worker_branch(
                 "normal_pscost1",
                 env={"HZ_HIGHS_OPTIONS": "mip_pscost_minreliable=1"},
+                module_args=("--milp-timeout", "25"),
             )
         )
         branches.append(
@@ -1346,6 +1353,36 @@ def _int_field(row: dict[str, object], key: str) -> int:
         return 0
 
 
+def _reuse_frozen_benchmark_outputs(
+    cfg: HybridZBenchmarkConfig,
+) -> tuple[Path, Path, list[dict[str, object]]] | None:
+    """Reuse an already completed frozen bench only when its summary matches.
+
+    This is a resume guard for long frozen-suite runs.  It is deliberately
+    stricter than the public frozen comparison: every summary field must match
+    the frozen HybridZ oracle before the bench is skipped.
+    """
+
+    try:
+        expected = frozen_hybridz_expected_summary(cfg.bench)
+    except KeyError:
+        return None
+
+    detail_path = cfg.out_dir / f"{cfg.bench}_hybridz_detail.csv"
+    summary_path = cfg.out_dir / f"{cfg.bench}_hybridz_summary.csv"
+    if not detail_path.exists() or not summary_path.exists():
+        return None
+
+    rows = _read_csv_rows(summary_path)
+    if len(rows) != 1:
+        return None
+    row = rows[0]
+    for field in FROZEN_SUMMARY_FIELDS:
+        if _int_field(row, field) != int(expected[field]):
+            return None
+    return detail_path, summary_path, []
+
+
 def _ours_counts_from_summary(row: dict[str, object]) -> tuple[int, int, int, int, int]:
     return (
         _int_field(row, "CERT"),
@@ -1860,6 +1897,16 @@ def run_hybridz_benchmark_suite(
             dtype=cfg.dtype,
             python=cfg.python,
         )
+        reused = None
+        if cfg.max_instances is None and cfg.require_frozen_match:
+            reused = _reuse_frozen_benchmark_outputs(bench_cfg)
+        if reused is not None:
+            detail_path, summary_path, results = reused
+            detail_paths.append(detail_path)
+            rows = _read_csv_rows(summary_path)
+            if rows:
+                summaries.append(rows[0])
+            continue
         try:
             detail_path, summary_path, results = run_hybridz_benchmark(bench_cfg)
         except RuntimeError as exc:
@@ -2319,6 +2366,28 @@ def _test_hybridz_benchmark_runner() -> None:  # pragma: no cover
     )
     assert len(full_match_paths) == 3
     _enforce_frozen_match(full_match_paths)
+    reuse_dir = suite_dir / "reuse_check" / "safenlp_2024"
+    reuse_dir.mkdir(parents=True, exist_ok=True)
+    reuse_detail = reuse_dir / "safenlp_2024_hybridz_detail.csv"
+    reuse_detail.write_text("bench,tag,lane,status,verdict\n", encoding="utf-8")
+    reuse_summary = reuse_dir / "safenlp_2024_hybridz_summary.csv"
+    reuse_row = {"Bench": "safenlp_2024", **frozen_hybridz_expected_summary("safenlp_2024")}
+    with reuse_summary.open("w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=["Bench", *FROZEN_SUMMARY_FIELDS])
+        writer.writeheader()
+        writer.writerow(reuse_row)
+    reuse_cfg = HybridZBenchmarkConfig(bench="safenlp_2024", out_dir=reuse_dir)
+    reused = _reuse_frozen_benchmark_outputs(reuse_cfg)
+    assert reused is not None
+    assert reused[0] == reuse_detail
+    assert reused[1] == reuse_summary
+    bad_reuse_row = dict(reuse_row)
+    bad_reuse_row["ADV"] = 0
+    with reuse_summary.open("w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=["Bench", *FROZEN_SUMMARY_FIELDS])
+        writer.writeheader()
+        writer.writerow(bad_reuse_row)
+    assert _reuse_frozen_benchmark_outputs(reuse_cfg) is None
     try:
         _enforce_frozen_match(())
         raise AssertionError("expected missing frozen check to fail")
