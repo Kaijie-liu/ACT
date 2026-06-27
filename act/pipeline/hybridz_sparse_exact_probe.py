@@ -2284,8 +2284,6 @@ def _lp_min_margin(
     time_limit: float,
     *,
     return_xi: bool = False,
-    bin_xi_lb_override: Optional[Dict[int, float]] = None,
-    bin_xi_ub_override: Optional[Dict[int, float]] = None,
 ) -> Tuple[Optional[float], str, Optional[np.ndarray]]:
     Cmat = C.reshape(C.shape[0], -1)
     tvec = t.reshape(-1)
@@ -2318,14 +2316,6 @@ def _lp_min_margin(
             Aub_rows.append(sp.hstack([hz.Auc, hz.Aub, sp.csr_matrix((hz.n_ub, 1))], format="csr"))
             bub_rows.append(hz.ub)
         bounds = [(-1.0, 1.0)] * n_base + [(-1e12, 1e12)]
-        if bin_xi_lb_override:
-            for k, v in bin_xi_lb_override.items():
-                old_lb, old_ub = bounds[hz.n_cont + int(k)]
-                bounds[hz.n_cont + int(k)] = (max(old_lb, float(v)), old_ub)
-        if bin_xi_ub_override:
-            for k, v in bin_xi_ub_override.items():
-                old_lb, old_ub = bounds[hz.n_cont + int(k)]
-                bounds[hz.n_cont + int(k)] = (old_lb, min(old_ub, float(v)))
         obj = np.zeros(n_base + 1, dtype=np.float64)
         obj[-1] = 1.0
         opts = {"time_limit": float(time_limit)} if time_limit > 0 else None
@@ -2352,14 +2342,6 @@ def _lp_min_margin(
     Aub = sp.hstack([hz.Auc, hz.Aub], format="csr") if hz.n_ub else None
     bub = hz.ub if hz.n_ub else None
     bounds = [(-1.0, 1.0)] * (hz.n_cont + hz.n_bin)
-    if bin_xi_lb_override:
-        for k, v in bin_xi_lb_override.items():
-            old_lb, old_ub = bounds[hz.n_cont + int(k)]
-            bounds[hz.n_cont + int(k)] = (max(old_lb, float(v)), old_ub)
-    if bin_xi_ub_override:
-        for k, v in bin_xi_ub_override.items():
-            old_lb, old_ub = bounds[hz.n_cont + int(k)]
-            bounds[hz.n_cont + int(k)] = (old_lb, min(old_ub, float(v)))
     opts = {"time_limit": float(time_limit)} if time_limit > 0 else None
     r = linprog(
         obj,
@@ -2547,10 +2529,6 @@ def _milp_cutoff_highs(
     time_limit: float,
     *,
     cutoff: float = 0.0,
-    cont_lb_override: Optional[Dict[int, float]] = None,
-    cont_ub_override: Optional[Dict[int, float]] = None,
-    bin_lb_override: Optional[Dict[int, float]] = None,
-    bin_ub_override: Optional[Dict[int, float]] = None,
     elim_singletons: bool = False,
     highs_threads: int = 0,
     highs_parallel: str = "",
@@ -2632,18 +2610,6 @@ def _milp_cutoff_highs(
     if extra_epigraph_cols:
         lb = np.concatenate([lb, np.array([-1e12], dtype=np.float64)])
         ub = np.concatenate([ub, np.array([1e12], dtype=np.float64)])
-    if cont_lb_override:
-        for k, v in cont_lb_override.items():
-            lb[int(k)] = max(lb[int(k)], float(v))
-    if cont_ub_override:
-        for k, v in cont_ub_override.items():
-            ub[int(k)] = min(ub[int(k)], float(v))
-    if bin_lb_override:
-        for k, v in bin_lb_override.items():
-            lb[hz.n_cont + int(k)] = max(lb[hz.n_cont + int(k)], float(v))
-    if bin_ub_override:
-        for k, v in bin_ub_override.items():
-            ub[hz.n_cont + int(k)] = min(ub[hz.n_cont + int(k)], float(v))
 
     mip_start_values: Optional[np.ndarray] = None
     mip_start_indices: Optional[np.ndarray] = None
@@ -2689,10 +2655,6 @@ def _milp_cutoff_highs(
     eq_subst_count = 0
     fixed_subst_stats = None
     if elim_eq_subst and A.shape[0] and A.shape[1]:
-        protected = (
-            set(int(k) for k in (cont_lb_override or {}))
-            | set(int(k) for k in (cont_ub_override or {}))
-        )
         Aeq = A.tocsr()
         Aeq_csc = Aeq.tocsc()
         Ale_csr = Ale.tocsr()
@@ -2700,7 +2662,7 @@ def _milp_cutoff_highs(
         used_rows: set[int] = set()
         pivots: List[Tuple[int, int, float]] = []
         for j in range(hz.n_cont):
-            if j in protected or abs(float(cost[j])) > 1e-12:
+            if abs(float(cost[j])) > 1e-12:
                 continue
             es, ee = Aeq_csc.indptr[j], Aeq_csc.indptr[j + 1]
             if ee - es != 1:
@@ -2831,10 +2793,6 @@ def _milp_cutoff_highs(
         Acsc = A.tocsc()
         Alecsc = Ale.tocsc() if Ale.shape[0] else None
         removable = []
-        protected = (
-            set(int(k) for k in (cont_lb_override or {}))
-            | set(int(k) for k in (cont_ub_override or {}))
-        )
         current_orig_cols = (
             np.arange(A.shape[1], dtype=np.int64)
             if keep_cols is None
@@ -2842,8 +2800,7 @@ def _milp_cutoff_highs(
         )
         current_cont_positions = np.nonzero(current_orig_cols < hz.n_cont)[0]
         for j in current_cont_positions:
-            orig_j = int(current_orig_cols[int(j)])
-            if orig_j in protected or abs(cost[int(j)]) > 1e-12:
+            if abs(cost[int(j)]) > 1e-12:
                 continue
             if Alecsc is not None and Alecsc.indptr[int(j) + 1] > Alecsc.indptr[int(j)]:
                 continue
@@ -3844,10 +3801,6 @@ def _milp_cutoff_scip(
     time_limit: float,
     *,
     cutoff: float = 0.0,
-    cont_lb_override: Optional[Dict[int, float]] = None,
-    cont_ub_override: Optional[Dict[int, float]] = None,
-    bin_lb_override: Optional[Dict[int, float]] = None,
-    bin_ub_override: Optional[Dict[int, float]] = None,
     elim_singletons: bool = False,
     cutoff_as_row: bool = False,
     fbbt_passes: int = 0,
@@ -3917,18 +3870,6 @@ def _milp_cutoff_scip(
     if extra_epigraph_cols:
         lb = np.concatenate([lb, np.array([-1e12], dtype=np.float64)])
         ub = np.concatenate([ub, np.array([1e12], dtype=np.float64)])
-    if cont_lb_override:
-        for k, v in cont_lb_override.items():
-            lb[int(k)] = max(lb[int(k)], float(v))
-    if cont_ub_override:
-        for k, v in cont_ub_override.items():
-            ub[int(k)] = min(ub[int(k)], float(v))
-    if bin_lb_override:
-        for k, v in bin_lb_override.items():
-            lb[hz.n_cont + int(k)] = max(lb[hz.n_cont + int(k)], float(v))
-    if bin_ub_override:
-        for k, v in bin_ub_override.items():
-            ub[hz.n_cont + int(k)] = min(ub[hz.n_cont + int(k)], float(v))
 
     rl = rhs.astype(np.float64).copy()
     ru = rhs.astype(np.float64).copy()
@@ -3943,9 +3884,8 @@ def _milp_cutoff_scip(
         Acsc = A.tocsc()
         Alecsc = Ale.tocsc() if Ale.shape[0] else None
         removable = []
-        protected = set(int(k) for k in (cont_lb_override or {})) | set(int(k) for k in (cont_ub_override or {}))
         for j in range(hz.n_cont):
-            if j in protected or abs(cost[j]) > 1e-12:
+            if abs(cost[j]) > 1e-12:
                 continue
             if Alecsc is not None and Alecsc.indptr[j + 1] > Alecsc.indptr[j]:
                 continue
