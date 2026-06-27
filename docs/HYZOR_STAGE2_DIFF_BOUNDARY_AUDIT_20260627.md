@@ -12,7 +12,7 @@ The local `scripts/` directory is not tracked and is not part of this diff.
 
 Current upstream diff:
 
-`60 files changed, 24189 insertions(+), 639 deletions(-)`
+`60 files changed, 24190 insertions(+), 639 deletions(-)`
 
 Directory-level split:
 
@@ -20,7 +20,7 @@ Directory-level split:
 |---|---:|---:|---:|---|
 | `act/pipeline` | 15 | 11263 | 141 | largest remaining consolidation target |
 | `act/back_end/hybridz_tf` | 8 | 4723 | 292 | core HZ operator/product path |
-| `docs` | 16 | 3781 | 0 | audit/provenance/future-work docs |
+| `docs` | 16 | 3783 | 0 | audit/provenance/future-work docs |
 | `act/back_end/solver` | 4 | 2128 | 51 | verdict/sparse HZ solver path |
 | `act/back_end/other` | 11 | 1635 | 54 | frontend/backend integration hooks |
 | `act/front_end` | 5 | 458 | 101 | benchmark/data loading integration |
