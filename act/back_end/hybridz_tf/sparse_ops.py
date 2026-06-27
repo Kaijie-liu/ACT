@@ -1831,7 +1831,8 @@ def sparse_hz_apply_scurve_piecewise(
     torch_dfunc=None,
     domain_cuts: bool = False,
     graph_cuts: bool = False,
-) -> SparseHZono:
+    return_info: bool = False,
+):
     """Compressed sparse HZ S-curve encoding with pruned zero-width segments.
 
     This mirrors the dense ``hz_apply_piecewise(..., compressed=True,
@@ -1855,7 +1856,7 @@ def sparse_hz_apply_scurve_piecewise(
     if narrow_idx.size:
         out_c[narrow_idx] = func(hz.c[narrow_idx])
     if m == 0:
-        return SparseHZono(
+        out = SparseHZono(
             c=out_c,
             Gc=sparse_empty(n, ng),
             Gb=sparse_empty(n, nb),
@@ -1867,6 +1868,27 @@ def sparse_hz_apply_scurve_piecewise(
             ub=hz.ub,
             **_input_metadata_kwargs(hz),
         )
+        if return_info:
+            info = {
+                "wide_idx": wide_idx,
+                "m": 0,
+                "compressed": True,
+                "pruned": True,
+                "r": 0,
+                "owner_arr": np.zeros(0, dtype=np.int32),
+                "seg_count": np.zeros(0, dtype=np.int32),
+                "a": np.zeros(0, dtype=np.float64),
+                "b_seg": np.zeros(0, dtype=np.float64),
+                "centers_x": np.zeros(0, dtype=np.float64),
+                "centers_y": np.zeros(0, dtype=np.float64),
+                "g1_x": np.zeros(0, dtype=np.float64),
+                "g1_y": np.zeros(0, dtype=np.float64),
+                "g2_x": np.zeros(0, dtype=np.float64),
+                "g2_y": np.zeros(0, dtype=np.float64),
+                "grid": "uniform",
+            }
+            return out, (0, int(narrow_idx.size)), info
+        return out
 
     K_side = max(1, int(K))
     lb_w = lb[wide_idx]
@@ -2163,10 +2185,31 @@ def sparse_hz_apply_scurve_piecewise(
     Auc.eliminate_zeros()
     Aub.eliminate_zeros()
 
-    return SparseHZono(
+    out = SparseHZono(
         out_c, out_Gc, out_Gb, Ac, Ab, b, Auc, Aub, ub_rhs,
         **_input_metadata_kwargs(hz),
     )
+    if return_info:
+        info = {
+            "wide_idx": wide_idx,
+            "m": m,
+            "compressed": True,
+            "pruned": True,
+            "r": r,
+            "owner_arr": owner,
+            "seg_count": seg_count.astype(np.int32, copy=False),
+            "a": a,
+            "b_seg": b_seg,
+            "centers_x": centers_x,
+            "centers_y": centers_y,
+            "g1_x": g1_x,
+            "g1_y": g1_y,
+            "g2_x": g2_x,
+            "g2_y": g2_y,
+            "grid": "uniform",
+        }
+        return out, (m, int(narrow_idx.size)), info
+    return out
 
 
 def sparse_hz_apply_sigmoid_piecewise(
@@ -2931,7 +2974,17 @@ def _test_sparse_affine_structural_ops() -> None:  # pragma: no cover
     )
     dense_sigmoid = hz_apply_sigmoid(dense_scurve_in, K=2)
     sparse_sigmoid = sparse_hz_apply_sigmoid_piecewise(sparse_scurve_in, K=2)
+    sparse_sigmoid_info, sparse_sigmoid_counts, sparse_sigmoid_meta = sparse_hz_apply_scurve_piecewise(
+        sparse_scurve_in,
+        K=2,
+        return_info=True,
+    )
     assert dense_sigmoid is not None
+    assert sparse_sigmoid_counts == (3, 0)
+    assert sparse_sigmoid_meta["pruned"] is True
+    assert sparse_sigmoid_meta["owner_arr"].size == int(sparse_sigmoid_meta["r"])
+    assert sparse_sigmoid_info.n_cont == sparse_sigmoid.n_cont
+    assert sparse_sigmoid_info.n_bin == sparse_sigmoid.n_bin
     for r in scurve_rows:
         _assert_close(
             hz_row_max(dense_sigmoid, r, integer=True),

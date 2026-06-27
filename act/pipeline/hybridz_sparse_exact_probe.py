@@ -51,6 +51,7 @@ from act.back_end.hybridz_tf.sparse_ops import (  # noqa: E402
     sparse_hz_gather_rows as _gather_hz_rows,
     sparse_hz_gather_rows_like as _gather_hz_rows_like,
     sparse_hz_apply_relu_exact as _backend_relu_exact,
+    sparse_hz_apply_scurve_piecewise as _backend_scurve_piecewise,
     sparse_hz_apply_softmax_simplex_layer as _softmax_simplex_hz,
     sparse_hz_apply_matmul_product_interval_layer as _matmul_product_interval_hz,
     sparse_hz_from_bounds,
@@ -249,6 +250,20 @@ def _sigmoid_piecewise(
         if not compressed:
             raise ValueError("drop_degenerate sigmoid is currently implemented for compressed mode only")
         _sigmoid_piecewise.last_meta = {"wide_idx": wide_idx, "m": m, "compressed": compressed, "pruned": True}
+        if grid == "uniform":
+            out, counts, meta = _backend_scurve_piecewise(
+                hz,
+                pre_bounds,
+                K=K,
+                func=func,
+                dfunc=dfunc,
+                inflection=0.0,
+                domain_cuts=domain_cuts,
+                graph_cuts=graph_cuts,
+                return_info=True,
+            )
+            _sigmoid_piecewise.last_meta = meta
+            return out, counts
         return _sigmoid_piecewise_pruned(
             hz,
             pre_bounds,
@@ -3001,6 +3016,57 @@ def _self_test() -> None:
         1.0,
     )
     assert margin is None and msg == "fixed_hz_infeasible_ub"
+
+    import torch
+    from act.back_end.core import Bounds
+
+    scurve_bounds = Bounds(
+        lb=torch.tensor([[-2.0, -0.5, 0.25]], dtype=torch.float64),
+        ub=torch.tensor([[0.75, 1.5, 2.0]], dtype=torch.float64),
+    )
+    scurve_hz = sparse_hz_from_bounds(scurve_bounds)
+    backend_hz, backend_counts = _sigmoid_piecewise(
+        scurve_hz,
+        scurve_bounds,
+        K=2,
+        compressed=True,
+        drop_degenerate=True,
+        domain_cuts=True,
+        graph_cuts=True,
+    )
+    backend_meta = dict(getattr(_sigmoid_piecewise, "last_meta", {}))
+    fallback_hz, fallback_counts = _sigmoid_piecewise_pruned(
+        scurve_hz,
+        scurve_bounds,
+        K=2,
+        domain_cuts=True,
+        graph_cuts=True,
+    )
+    fallback_meta = dict(getattr(_sigmoid_piecewise, "last_meta", {}))
+    assert backend_counts == fallback_counts == (3, 0)
+    assert int(backend_meta["r"]) == int(fallback_meta["r"])
+    assert np.array_equal(np.asarray(backend_meta["wide_idx"]), np.asarray(fallback_meta["wide_idx"]))
+    assert np.array_equal(
+        np.bincount(np.asarray(backend_meta["owner_arr"], dtype=np.int64), minlength=3),
+        np.bincount(np.asarray(fallback_meta["owner_arr"], dtype=np.int64), minlength=3),
+    )
+    for meta in (backend_meta, fallback_meta):
+        assert np.asarray(meta["owner_arr"]).size == int(meta["r"])
+        assert np.asarray(meta["a"]).size == int(meta["r"])
+        assert np.asarray(meta["b_seg"]).size == int(meta["r"])
+    from act.back_end.solver.solver_hz_verdict import hz_base_feasibility, hz_row_max
+
+    assert hz_base_feasibility(backend_hz, time_limit=2.0)[0] == "FEASIBLE"
+    assert hz_base_feasibility(fallback_hz, time_limit=2.0)[0] == "FEASIBLE"
+    for row in (
+        np.array([1.0, -0.5, 0.25], dtype=np.float64),
+        np.array([-0.25, 1.0, 1.5], dtype=np.float64),
+        np.array([0.3, 0.7, -1.0], dtype=np.float64),
+    ):
+        bmx = hz_row_max(backend_hz, row, integer=True, time_limit=2.0)
+        fmx = hz_row_max(fallback_hz, row, integer=True, time_limit=2.0)
+        assert bmx is not None and fmx is not None
+        assert abs(float(bmx) - float(fmx)) <= 1e-8
     print("PASS hybridz_sparse_exact_probe self-test")
 
 
