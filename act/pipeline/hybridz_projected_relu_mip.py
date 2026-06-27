@@ -21,8 +21,8 @@ from typing import Dict, List, Optional, Tuple
 
 import numpy as np
 
-from act.pipeline.hybridz_projected_utils import (
-    build_net_and_interval,
+from act.pipeline.hybridz_projected_utils import build_net_and_interval
+from act.pipeline.hybridz_spec_utils import (
     check_real_unsafe,
     flatten_query_specs,
     interval_hard_rivals_from_specs,

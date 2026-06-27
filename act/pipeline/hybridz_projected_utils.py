@@ -13,12 +13,6 @@ from __future__ import annotations
 import time
 from pathlib import Path
 
-from act.pipeline.hybridz_spec_utils import (
-    check_real_unsafe,
-    flatten_query_specs,
-    interval_hard_rivals_from_specs,
-)
-
 
 def _resolve_downloaded_instance(bench: str, iid: int) -> tuple[Path, Path]:
     from act.front_end.vnnlib_loader.data_model_loader import list_downloaded_pairs
@@ -112,7 +106,4 @@ def build_net_and_interval(bench: str, iid: int, device: str):
 
 __all__ = [
     "build_net_and_interval",
-    "check_real_unsafe",
-    "flatten_query_specs",
-    "interval_hard_rivals_from_specs",
 ]
