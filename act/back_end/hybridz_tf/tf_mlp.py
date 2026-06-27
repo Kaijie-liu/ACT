@@ -1849,3 +1849,51 @@ def _test_hz_mul_exact_point_and_var_drop() -> None:  # pragma: no cover
     tf_mul(layer, None, tf)
     if 2 in tf._hz_cache:
         raise AssertionError("var-var multiply must drop strict exact-HZ state")
+
+
+def _test_upsample_nearest_row_idx_3d4d() -> None:  # pragma: no cover
+    """Nearest upsample row maps must match NCHW row-copy semantics."""
+
+    from types import SimpleNamespace
+
+    def manual_rows(in_shape, out_shape):
+        if len(in_shape) == 3:
+            bsz, ch, in_h, in_w = (1, *in_shape)
+            out_bsz, out_ch, out_h, out_w = (1, *out_shape)
+        else:
+            bsz, ch, in_h, in_w = in_shape
+            out_bsz, out_ch, out_h, out_w = out_shape
+        if (bsz, ch) != (out_bsz, out_ch):
+            raise AssertionError("manual upsample shape mismatch")
+        rows = []
+        for n in range(bsz):
+            for c in range(ch):
+                for oh in range(out_h):
+                    ih = min(int(oh * in_h // out_h), in_h - 1)
+                    for ow in range(out_w):
+                        iw = min(int(ow * in_w // out_w), in_w - 1)
+                        rows.append(((n * ch + c) * in_h + ih) * in_w + iw)
+        return torch.tensor(rows, dtype=torch.long, device=torch.device("cpu"))
+
+    for in_shape, out_shape in [
+        ((2, 3, 2, 2), (2, 3, 4, 6)),
+        ((3, 2, 2), (3, 4, 6)),
+    ]:
+        layer = SimpleNamespace(params={
+            "mode": "nearest",
+            "input_shape": in_shape,
+            "output_shape": out_shape,
+        })
+        rows = _upsample_nearest_row_idx(
+            layer,
+            int(_prod(in_shape)),
+            int(_prod(out_shape)),
+            torch.device("cpu"),
+        )
+        expected = manual_rows(in_shape, out_shape)
+        if rows is None or not torch.equal(rows.cpu(), expected):
+            raise AssertionError(
+                f"nearest upsample row-map mismatch: "
+                f"in={in_shape}, out={out_shape}, rows={None if rows is None else rows[:8]}, "
+                f"expected={expected[:8]}"
+            )
