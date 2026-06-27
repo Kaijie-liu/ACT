@@ -16,14 +16,14 @@ The local `scripts/` directory is not tracked and is not part of this diff.
 
 Current upstream diff after `git fetch upstream` on 2026-06-27:
 
-`80 files changed, 24272 insertions(+), 2217 deletions(-)`
+`80 files changed, 24277 insertions(+), 2217 deletions(-)`
 
 Directory-level split:
 
 | Area | Files | Added | Deleted | Status |
 |---|---:|---:|---:|---|
 | `act/pipeline` | 19 | 7999 | 159 | largest remaining consolidation target |
-| `act/back_end/hybridz_tf` | 8 | 5749 | 292 | core HZ operator/product path |
+| `act/back_end/hybridz_tf` | 8 | 5754 | 292 | core HZ operator/product path |
 | `act/back_end/solver` | 5 | 4102 | 423 | verdict/sparse HZ solver path |
 | `docs` | 16 | 4011 | 0 | audit/provenance/future-work docs |
 | `act/back_end/other` | 17 | 1696 | 986 | frontend/backend integration hooks |
@@ -36,7 +36,7 @@ Largest files by changed lines:
 | File | Added | Deleted | Interpretation |
 |---|---:|---:|---|
 | `act/back_end/solver/solver_hz_verdict.py` | 3488 | 0 | exact verdict MILP, open-source solver portfolio, reusable sparse MILP presolve / relaxation helpers, LP min-margin prefilter, and sparse HiGHS/SCIP cutoff engines |
-| `act/back_end/hybridz_tf/sparse_ops.py` | 3261 | 0 | sparse exact-HZ propagation core; SOFTMAX, var-var MATMUL, exact ReLU graph construction, exact ReLU tight-LP bound tightening, S-curve return metadata, uniform/curvature pruned S-curve support, and structural row-map helpers moved here from the probe |
+| `act/back_end/hybridz_tf/sparse_ops.py` | 3266 | 0 | sparse exact-HZ propagation core; SOFTMAX, var-var MATMUL, exact ReLU graph construction, exact ReLU tight-LP bound tightening, S-curve return metadata, uniform/curvature pruned S-curve support, and structural row-map helpers moved here from the probe |
 | `act/pipeline/hybridz_benchmark_runner.py` | 1783 | 0 | product runner and branch portfolio; reporting helpers are now in `hybridz_results.py` |
 | `act/pipeline/hybridz_sparse_exact_probe.py` | 1710 | 0 | remaining package-level prototype; sparse cutoff engines, S-curve pruned construction, structural row maps, and most reusable solver helpers have moved into backend layers |
 | `act/back_end/hybridz_tf/tf_mlp.py` | 1253 | 246 | dense exact ReLU/compressed ReLU and nonlinear operators |
