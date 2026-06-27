@@ -2273,9 +2273,7 @@ def _lp_min_margin(
     C: np.ndarray,
     t: np.ndarray,
     time_limit: float,
-    *,
-    return_xi: bool = False,
-) -> Tuple[Optional[float], str, Optional[np.ndarray]]:
+) -> Tuple[Optional[float], str]:
     Cmat = C.reshape(C.shape[0], -1)
     tvec = t.reshape(-1)
     if Cmat.shape[0] != tvec.size:
@@ -2283,13 +2281,12 @@ def _lp_min_margin(
     n_base = hz.n_cont + hz.n_bin
     if n_base == 0:
         if hz.n_eq and np.max(np.abs(hz.b)) > 1e-8:
-            return None, "fixed_hz_infeasible_eq", None
+            return None, "fixed_hz_infeasible_eq"
         if hz.n_ub and np.min(hz.ub) < -1e-8:
-            return None, "fixed_hz_infeasible_ub", None
+            return None, "fixed_hz_infeasible_ub"
         vals = np.asarray(Cmat @ hz.c - tvec, dtype=np.float64).reshape(-1)
         margin = float(np.max(vals) if vals.size > 1 else vals[0])
-        xi = np.zeros(0, dtype=np.float64) if return_xi else None
-        return margin, "fixed", xi
+        return margin, "fixed"
     if Cmat.shape[0] > 1:
         # UNSAFE_LINEAR is an AND polytope C y <= t.  The LP relaxation proves
         # safety only if min max_i(C_i y - t_i) > 0.
@@ -2321,8 +2318,8 @@ def _lp_min_margin(
             options=opts,
         )
         if not r.success:
-            return None, str(r.message), None
-        return float(r.fun), "ok", (np.asarray(r.x[:n_base], dtype=np.float64) if return_xi else None)
+            return None, str(r.message)
+        return float(r.fun), "ok"
 
     c_row = Cmat[0]
     obj_c = np.asarray(c_row @ hz.Gc).reshape(-1)
@@ -2345,8 +2342,8 @@ def _lp_min_margin(
         options=opts,
     )
     if not r.success:
-        return None, str(r.message), None
-    return const + float(r.fun), "ok", (np.asarray(r.x, dtype=np.float64) if return_xi else None)
+        return None, str(r.message)
+    return const + float(r.fun), "ok"
 
 
 def _input_center_rad(inspec) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
@@ -4202,24 +4199,22 @@ def _self_test() -> None:
         Ab=_empty(0, 0),
         b=np.zeros(0, dtype=np.float64),
     )
-    margin, msg, xi = _lp_min_margin(
+    margin, msg = _lp_min_margin(
         hz,
         np.asarray([[1.0, 0.0]], dtype=np.float64),
         np.asarray([1.5], dtype=np.float64),
         1.0,
-        return_xi=True,
     )
-    assert msg == "fixed" and xi is not None and xi.size == 0
+    assert msg == "fixed"
     assert abs(float(margin) - 0.5) <= 1e-12
 
-    margin, msg, xi = _lp_min_margin(
+    margin, msg = _lp_min_margin(
         hz,
         np.asarray([[1.0, 0.0], [0.0, 1.0]], dtype=np.float64),
         np.asarray([1.5, -2.5], dtype=np.float64),
         1.0,
-        return_xi=True,
     )
-    assert msg == "fixed" and xi is not None and xi.size == 0
+    assert msg == "fixed"
     assert abs(float(margin) - 1.5) <= 1e-12
 
     bad_eq = SparseHZ(
@@ -4230,14 +4225,13 @@ def _self_test() -> None:
         Ab=_empty(1, 0),
         b=np.ones(1, dtype=np.float64),
     )
-    margin, msg, xi = _lp_min_margin(
+    margin, msg = _lp_min_margin(
         bad_eq,
         np.asarray([[1.0]], dtype=np.float64),
         np.asarray([0.0], dtype=np.float64),
         1.0,
-        return_xi=True,
     )
-    assert margin is None and msg == "fixed_hz_infeasible_eq" and xi is None
+    assert margin is None and msg == "fixed_hz_infeasible_eq"
 
     bad_ub = SparseHZ(
         c=np.zeros(1, dtype=np.float64),
@@ -4250,14 +4244,13 @@ def _self_test() -> None:
         Aub=_empty(1, 0),
         ub=-np.ones(1, dtype=np.float64),
     )
-    margin, msg, xi = _lp_min_margin(
+    margin, msg = _lp_min_margin(
         bad_ub,
         np.asarray([[1.0]], dtype=np.float64),
         np.asarray([0.0], dtype=np.float64),
         1.0,
-        return_xi=True,
     )
-    assert margin is None and msg == "fixed_hz_infeasible_ub" and xi is None
+    assert margin is None and msg == "fixed_hz_infeasible_ub"
     print("PASS hybridz_sparse_exact_probe self-test")
 
 
@@ -4280,8 +4273,8 @@ def main() -> None:
     ap.add_argument("--stop-on-unsafe", action="store_true",
                     help="stop this instance once an exact-HZ unsafe feasible rival is found")
     ap.add_argument("--mip-solver", choices=["highs", "scip"], default="highs")
-    ap.add_argument("--mip-start", choices=["none", "lp-round", "lp-binary-round", "base", "base-binary"], default="none",
-                    help="give exact HiGHS MILP a rounded LP or constructive-base start; verdicts still require exact MILP status")
+    ap.add_argument("--mip-start", choices=["none", "base", "base-binary"], default="none",
+                    help="give exact HiGHS MILP a constructive-base start; verdicts still require exact MILP status")
     ap.add_argument("--elim-singletons", action="store_true",
                     help="exactly project objective-free singleton continuous columns from the MILP")
     ap.add_argument("--elim-eq-subst", action="store_true",
@@ -4524,15 +4517,11 @@ def main() -> None:
             "q": int(qidx),
         }
         ts = time.time()
-        need_xi = args.check_witness or args.mip_start != "none"
         if args.skip_lp_before_milp:
-            margin, msg, xi = None, "skipped", None
+            margin, msg = None, "skipped"
             lp_sec = 0.0
         else:
-            margin, msg, xi = _lp_min_margin(
-                hz, C, t, args.lp_timeout,
-                return_xi=need_xi,
-            )
+            margin, msg = _lp_min_margin(hz, C, t, args.lp_timeout)
             lp_sec = time.time() - ts
         record.update({
             "lp_margin": None if margin is None else float(margin),
@@ -4585,11 +4574,8 @@ def main() -> None:
                         highs_heuristic_effort=args.highs_heuristic_effort,
                         cutoff_as_row=args.cutoff_as_row,
                         highs_options=profile_options,
-                        mip_start_xi=(
-                            base_xi if args.mip_start.startswith("base")
-                            else (xi if args.mip_start != "none" else None)
-                        ),
-                        mip_start_binary_only=(args.mip_start in {"lp-binary-round", "base-binary"}),
+                        mip_start_xi=(base_xi if args.mip_start.startswith("base") else None),
+                        mip_start_binary_only=(args.mip_start == "base-binary"),
                         connected_presolve=args.connected_presolve,
                         base_xi=base_xi,
                         elim_eq_subst=args.elim_eq_subst,

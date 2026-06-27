@@ -275,7 +275,7 @@ def main():
                     help="fixed comma-separated query/disjunct order passed to the sparse probe")
     ap.add_argument("--connected-presolve", action="store_true",
                     help="keep only the MILP constraint component connected to the active margin")
-    ap.add_argument("--mip-start", choices=["none", "lp-round", "lp-binary-round", "base", "base-binary"], default="none",
+    ap.add_argument("--mip-start", choices=["none", "base", "base-binary"], default="none",
                     help="MILP start passed through to the sparse probe")
     ap.add_argument("--no-elim-singletons", action="store_true",
                     help="disable the sparse worker's default exact singleton projection")
