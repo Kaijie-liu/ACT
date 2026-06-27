@@ -206,11 +206,11 @@ class HybridzTF(TransferFunction):
     # (the cap exists to bound ReLU generator blow-up on wide feature maps).
     _HZ_MAX_AFFINE_DIM = 8192
     # Memory-based drop budget: keep the layer's HZ while n_out*(ng+nb) <= this
-    # many cells. 100M was too conservative -- it dropped malbeware iid64 (a provable
-    # HZ that builds in 6.5s at only 2.5GB peak) to UNKNOWN (gate-found regression
-    # 2026-06-18). 200M recovers iid64 while keeping wide-conv (cifar/tiny) safe:
-    # cifar100/0 peaks 7.9GB at 200M (vs 15GB at 500M), well under the 20GB worker
-    # RLIMIT_AS hard guard. Monotone vs 100M (>=, so no NEW drops -- only recoveries).
+    # many cells. The cap is deliberately expressed in representation cells,
+    # not benchmark names: it admits large generator-preserving affine cases
+    # while still dropping wide perturbed convolutional states before dense-HZ
+    # materialization dominates memory. Monotone vs lower caps: increasing it
+    # can only keep additional exact states; it cannot create new drops.
     _hz_cell_budget = 200_000_000
     # Strictly-linear, generator-count-preserving kinds with a real HZ handler.
     # Deliberately EXCLUDES ADD/SUB/CONCAT (multi-input, can grow columns) and
@@ -562,8 +562,8 @@ class HybridzTF(TransferFunction):
                 # Floating root: a non-INPUT layer with no predecessors reads
                 # the network input directly (e.g. the entry DENSE of a residual
                 # block). Without seeding, its whole branch silently degrades to
-                # interval and any downstream ADD collapses the zonotope to a box
-                # (observed on cersyve residual nets). Seed from the layer's own
+                # interval and any downstream ADD collapses the zonotope to a box.
+                # Seed from the layer's own
                 # input bounds so the branch carries an HZ. If its box matches
                 # the network input, REUSE the input factor ids so the residual
                 # ADD share-merges correctly (sound: same input => same factor);
@@ -602,8 +602,8 @@ class HybridzTF(TransferFunction):
         # real result bounds. EXCEPT INPUT/INPUT_SPEC: their handlers never claim
         # the cache, but the seed above already installed the canonical input HZ
         # WITH col_ids (bounds-identical to result.bounds) -- reseeding here would
-        # strip those ids and silently defeat residual share-merge (hz_sgm_add ->
-        # minkowski) on every skip connection rooted at the input.
+        # strip those ids and silently defeat residual share-merge
+        # (hz_sgm_add -> minkowski) on input-rooted skip connections.
         if (hz_before is not None and self._hz_cache.get(L.id) is hz_before
                 and k not in ("INPUT", "INPUT_SPEC")):
             self._hz_cache[L.id] = hz_from_bounds(

@@ -2889,8 +2889,7 @@ def _objbound_solve(cost, obj_thr, A, rl, ru, lb, ub, integ_mask, time_limit,
     return out
 
 
-def _base_milp_matrices(hz):
-    c, Gc, Gb, Ace, Abe, be, Acl, Abl, bl = hz_np_sparse(hz)
+def _base_milp_matrices_from_blocks(Gc, Gb, Ace, Abe, be, Acl, Abl, bl):
     ng, nb = int(Gc.shape[1]), int(Gb.shape[1])
     rows_A, rl, ru = [], [], []
     if Ace.shape[0]:
@@ -2911,6 +2910,11 @@ def _base_milp_matrices(hz):
     ub = np.ones(ng + nb, dtype=np.float64)
     integ = np.concatenate([np.zeros(ng), np.ones(nb)]).astype(int)
     return A, rl, ru, lb, ub, integ
+
+
+def _base_milp_matrices(hz):
+    _, Gc, Gb, Ace, Abe, be, Acl, Abl, bl = hz_np_sparse(hz)
+    return _base_milp_matrices_from_blocks(Gc, Gb, Ace, Abe, be, Acl, Abl, bl)
 
 
 def _base_solution_to_xi(sol, integ) -> np.ndarray:
@@ -3108,22 +3112,9 @@ def hz_objbound_decide(hz, C, thresholds, *, is_unsafe_linear: bool,
         setattr(hz, "_solver_last_witness_source", "bare_point")
         return ("UNSAFE", np.zeros(0))
 
-    integ = ([0] * ng) + ([1] * nb)
-    # shared eq/le constraint rows in z-space (xi_b = 2z-1)
-    rows_A, rl, ru = [], [], []
-    if Ace.shape[0]:
-        rows_A.append(_sp.hstack([Ace, 2.0 * Abe], format="csr"))
-        rhs = be + _csr_rowsum(Abe)
-        rl.append(rhs); ru.append(rhs)
-    if Acl.shape[0]:
-        rows_A.append(_sp.hstack([Acl, 2.0 * Abl], format="csr"))
-        rhs = bl + _csr_rowsum(Abl)
-        rl.append(np.full(Acl.shape[0], -np.inf)); ru.append(rhs)
-    A = (_sp.vstack(rows_A, format="csr") if rows_A
-         else _sp.csr_matrix((0, ng + nb), dtype=np.float64))
-    rl = np.concatenate(rl) if rl else np.zeros(0)
-    ru = np.concatenate(ru) if ru else np.zeros(0)
-    lb = np.concatenate([-np.ones(ng), np.zeros(nb)]); ub = np.ones(ng + nb)
+    A, rl, ru, lb, ub, integ = _base_milp_matrices_from_blocks(
+        Gc, Gb, Ace, Abe, be, Acl, Abl, bl
+    )
 
     if not is_unsafe_linear:
         # ALL-rows / TOP1: unsafe iff SOME row has max_y C[r]y >= t[r].
@@ -3181,7 +3172,7 @@ def hz_objbound_decide(hz, C, thresholds, *, is_unsafe_linear: bool,
     ru2 = np.concatenate([ru, epib])
     lb2 = np.concatenate([lb, [-1e12]]); ub2 = np.concatenate([ub, [1e12]])
     cost = np.zeros(nv); cost[ng + nb] = 1.0   # minimize s
-    integ2 = integ + [0]
+    integ2 = np.concatenate([np.asarray(integ, dtype=int), np.array([0], dtype=int)])
     kind, xi = _objbound_solve(cost, 0.0, A2, rl2, ru2, lb2, ub2, integ2, time_limit,
                                mip_start_xi=mip_start_xi)
     if kind == "witness":

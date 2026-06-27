@@ -1423,6 +1423,21 @@ def _coo_matrix_from_parts(
     ).tocsr()
 
 
+def _coo_appender(
+    rows: List[np.ndarray],
+    cols: List[np.ndarray],
+    data: List[np.ndarray],
+):
+    def append(row_idx, col_idx, values) -> None:
+        row_arr = np.asarray(row_idx, dtype=np.int32).reshape(-1)
+        if row_arr.size:
+            rows.append(row_arr)
+            cols.append(np.asarray(col_idx, dtype=np.int32).reshape(-1))
+            data.append(np.asarray(values, dtype=np.float64).reshape(-1))
+
+    return append
+
+
 def sparse_hz_apply_relu_exact(
     hz: SparseHZono,
     pre_bounds: Optional[Bounds] = None,
@@ -1518,20 +1533,8 @@ def sparse_hz_apply_relu_exact(
         rr_b: List[np.ndarray] = []
         cc_b: List[np.ndarray] = []
         dd_b: List[np.ndarray] = []
-
-        def add_c(rows, cols, data) -> None:
-            rows = np.asarray(rows, dtype=np.int32)
-            if rows.size:
-                rr_c.append(rows)
-                cc_c.append(np.asarray(cols, dtype=np.int32))
-                dd_c.append(np.asarray(data, dtype=np.float64))
-
-        def add_b(rows, cols, data) -> None:
-            rows = np.asarray(rows, dtype=np.int32)
-            if rows.size:
-                rr_b.append(rows)
-                cc_b.append(np.asarray(cols, dtype=np.int32))
-                dd_b.append(np.asarray(data, dtype=np.float64))
+        add_c = _coo_appender(rr_c, cc_c, dd_c)
+        add_b = _coo_appender(rr_b, cc_b, dd_b)
 
         if compressed:
             r3 = te
@@ -1623,20 +1626,8 @@ def sparse_hz_apply_relu_exact(
         cc_b = []
         dd_b = []
         rhs = np.zeros(2 * k, dtype=np.float64)
-
-        def add_cut_c(rows, cols, data) -> None:
-            rows = np.asarray(rows, dtype=np.int32)
-            if rows.size:
-                rr_c.append(rows)
-                cc_c.append(np.asarray(cols, dtype=np.int32))
-                dd_c.append(np.asarray(data, dtype=np.float64))
-
-        def add_cut_b(rows, cols, data) -> None:
-            rows = np.asarray(rows, dtype=np.int32)
-            if rows.size:
-                rr_b.append(rows)
-                cc_b.append(np.asarray(cols, dtype=np.int32))
-                dd_b.append(np.asarray(data, dtype=np.float64))
+        add_cut_c = _coo_appender(rr_c, cc_c, dd_c)
+        add_cut_b = _coo_appender(rr_b, cc_b, dd_b)
 
         row1 = np.arange(k, dtype=np.int32)
         row2 = k + row1
@@ -1825,20 +1816,8 @@ def _scurve_domain_cut_matrices(
     rr_b: List[np.ndarray] = []
     cc_b: List[np.ndarray] = []
     dd_b: List[np.ndarray] = []
-
-    def add_c(rows, cols, data) -> None:
-        arr = np.asarray(data, dtype=np.float64).reshape(-1)
-        if arr.size:
-            rr_c.append(np.asarray(rows, dtype=np.int32).reshape(-1))
-            cc_c.append(np.asarray(cols, dtype=np.int32).reshape(-1))
-            dd_c.append(arr)
-
-    def add_b(rows, cols, data) -> None:
-        arr = np.asarray(data, dtype=np.float64).reshape(-1)
-        if arr.size:
-            rr_b.append(np.asarray(rows, dtype=np.int32).reshape(-1))
-            cc_b.append(np.asarray(cols, dtype=np.int32).reshape(-1))
-            dd_b.append(arr)
+    add_c = _coo_appender(rr_c, cc_c, dd_c)
+    add_b = _coo_appender(rr_b, cc_b, dd_b)
 
     upper_rows = np.arange(r, dtype=np.int32)
     lower_rows = r + upper_rows
@@ -1913,20 +1892,8 @@ def _scurve_range_cut_matrices(
     rr_b: List[np.ndarray] = []
     cc_b: List[np.ndarray] = []
     dd_b: List[np.ndarray] = []
-
-    def add_c(rows, cols, data) -> None:
-        arr = np.asarray(data, dtype=np.float64).reshape(-1)
-        if arr.size:
-            rr_c.append(np.asarray(rows, dtype=np.int32).reshape(-1))
-            cc_c.append(np.asarray(cols, dtype=np.int32).reshape(-1))
-            dd_c.append(arr)
-
-    def add_b(rows, cols, data) -> None:
-        arr = np.asarray(data, dtype=np.float64).reshape(-1)
-        if arr.size:
-            rr_b.append(np.asarray(rows, dtype=np.int32).reshape(-1))
-            cc_b.append(np.asarray(cols, dtype=np.int32).reshape(-1))
-            dd_b.append(arr)
+    add_c = _coo_appender(rr_c, cc_c, dd_c)
+    add_b = _coo_appender(rr_b, cc_b, dd_b)
 
     upper_rows = np.arange(r, dtype=np.int32)
     lower_rows = r + upper_rows
@@ -2352,20 +2319,8 @@ def sparse_hz_apply_scurve_piecewise(
     rr_b: List[np.ndarray] = []
     cc_b: List[np.ndarray] = []
     dd_b: List[np.ndarray] = []
-
-    def add_c(rows, cols, data) -> None:
-        arr = np.asarray(data, dtype=np.float64).reshape(-1)
-        if arr.size:
-            rr_c.append(np.asarray(rows, dtype=np.int32).reshape(-1))
-            cc_c.append(np.asarray(cols, dtype=np.int32).reshape(-1))
-            dd_c.append(arr)
-
-    def add_b(rows, cols, data) -> None:
-        arr = np.asarray(data, dtype=np.float64).reshape(-1)
-        if arr.size:
-            rr_b.append(np.asarray(rows, dtype=np.int32).reshape(-1))
-            cc_b.append(np.asarray(cols, dtype=np.int32).reshape(-1))
-            dd_b.append(arr)
+    add_c = _coo_appender(rr_c, cc_c, dd_c)
+    add_b = _coo_appender(rr_b, cc_b, dd_b)
 
     link_rows = np.arange(m, dtype=np.int32)
     sum_rows = m + link_rows
@@ -2691,20 +2646,8 @@ def sparse_hz_apply_scurve_piecewise_full(
     rr_b: List[np.ndarray] = []
     cc_b: List[np.ndarray] = []
     dd_b: List[np.ndarray] = []
-
-    def add_c(rows, cols, data) -> None:
-        arr = np.asarray(data, dtype=np.float64).reshape(-1)
-        if arr.size:
-            rr_c.append(np.asarray(rows, dtype=np.int32).reshape(-1))
-            cc_c.append(np.asarray(cols, dtype=np.int32).reshape(-1))
-            dd_c.append(arr)
-
-    def add_b(rows, cols, data) -> None:
-        arr = np.asarray(data, dtype=np.float64).reshape(-1)
-        if arr.size:
-            rr_b.append(np.asarray(rows, dtype=np.int32).reshape(-1))
-            cc_b.append(np.asarray(cols, dtype=np.int32).reshape(-1))
-            dd_b.append(arr)
+    add_c = _coo_appender(rr_c, cc_c, dd_c)
+    add_b = _coo_appender(rr_b, cc_b, dd_b)
 
     flat_rows = np.zeros(0, dtype=np.int32)
     if not compressed:
