@@ -16,8 +16,8 @@ It stores the exact 6-tuple
     Ac xi_c + Ab xi_b == b
     Auc xi_c + Aub xi_b <= ub
 
-in scipy CSR form.  It deliberately contains no benchmark loader,
-sampling, ORT replay, Gurobi diagnostic path, or per-instance rescue logic.
+in scipy CSR form.  It deliberately contains no benchmark loader, sampling,
+commercial-solver diagnostic path, or per-instance rescue logic.
 """
 
 from __future__ import annotations
@@ -56,19 +56,6 @@ def _torch_to_np(t) -> np.ndarray:
     return t.detach().cpu().double().numpy().reshape(-1).astype(np.float64, copy=False)
 
 
-def _id_array(x) -> np.ndarray:
-    if hasattr(x, "detach"):
-        x = x.detach().cpu().numpy()
-    return np.asarray(x, dtype=np.int64).reshape(-1)
-
-
-def _shape_prod(shape: Tuple[int, ...]) -> int:
-    out = 1
-    for dim in shape:
-        out *= int(dim)
-    return int(out)
-
-
 @dataclass
 class SparseHZono:
     """Sparse CSR representation of the Hybrid Zonotope domain.
@@ -91,17 +78,6 @@ class SparseHZono:
     Auc: Optional[sp.csr_matrix] = None
     Aub: Optional[sp.csr_matrix] = None
     ub: Optional[np.ndarray] = None
-    # Optional replay metadata for exact-HZ UNSAFE witnesses.  These fields map
-    # the initial continuous generator prefix back to concrete input pixels.
-    # They are ignored by the solver tuple and do not affect the represented set.
-    input_center: Optional[np.ndarray] = None
-    input_radius: Optional[np.ndarray] = None
-    input_indices: Optional[np.ndarray] = None
-    input_shape: Optional[Tuple[int, ...]] = None
-    # Optional dense-HZ generator ids used only when a sparse object was
-    # converted from a dense HZono and no sparse input metadata is available.
-    col_ids: Optional[np.ndarray] = None
-    bcol_ids: Optional[np.ndarray] = None
 
     def __post_init__(self) -> None:
         self.c = np.asarray(self.c, dtype=np.float64).reshape(-1)
@@ -143,67 +119,6 @@ class SparseHZono:
                     f"Auc={self.Auc.shape}, Aub={self.Aub.shape}, ub={self.ub.size}"
                 )
 
-        has_input_meta = any(
-            x is not None
-            for x in (
-                self.input_center,
-                self.input_radius,
-                self.input_indices,
-                self.input_shape,
-            )
-        )
-        if has_input_meta:
-            if (
-                self.input_center is None
-                or self.input_radius is None
-                or self.input_indices is None
-            ):
-                raise ValueError(
-                    "SparseHZono input replay metadata requires "
-                    "input_center, input_radius, and input_indices together"
-                )
-            self.input_center = np.asarray(self.input_center, dtype=np.float64).reshape(-1)
-            self.input_radius = np.asarray(self.input_radius, dtype=np.float64).reshape(-1)
-            self.input_indices = np.asarray(self.input_indices, dtype=np.int64).reshape(-1)
-            if self.input_center.size != self.input_radius.size:
-                raise ValueError(
-                    "SparseHZono input replay metadata shape mismatch: "
-                    f"input_center={self.input_center.size}, "
-                    f"input_radius={self.input_radius.size}"
-                )
-            if self.input_indices.size > n_cont:
-                raise ValueError(
-                    "SparseHZono input replay metadata has more input factors "
-                    f"than continuous generators: input_indices={self.input_indices.size}, "
-                    f"n_cont={n_cont}"
-                )
-            if self.input_indices.size:
-                if np.any(self.input_indices < 0) or np.any(self.input_indices >= self.input_center.size):
-                    raise ValueError("SparseHZono input_indices out of input range")
-                if np.unique(self.input_indices).size != self.input_indices.size:
-                    raise ValueError("SparseHZono input_indices must be unique")
-            if self.input_shape is not None:
-                self.input_shape = tuple(int(x) for x in self.input_shape)
-                if _shape_prod(self.input_shape) != self.input_center.size:
-                    raise ValueError(
-                        "SparseHZono input_shape size mismatch: "
-                        f"shape={self.input_shape}, input_center={self.input_center.size}"
-                    )
-        if self.col_ids is not None:
-            self.col_ids = _id_array(self.col_ids)
-            if self.col_ids.size != n_cont:
-                raise ValueError(
-                    "SparseHZono col_ids length mismatch: "
-                    f"col_ids={self.col_ids.size}, n_cont={n_cont}"
-                )
-        if self.bcol_ids is not None:
-            self.bcol_ids = _id_array(self.bcol_ids)
-            if self.bcol_ids.size != n_bin:
-                raise ValueError(
-                    "SparseHZono bcol_ids length mismatch: "
-                    f"bcol_ids={self.bcol_ids.size}, n_bin={n_bin}"
-                )
-
     @classmethod
     def from_dense_hz(cls, hz: HZono) -> "SparseHZono":
         """Convert a dense torch-backed ``HZono`` to CSR form."""
@@ -219,8 +134,6 @@ class SparseHZono:
             Auc=_torch_to_csr(Acl),
             Aub=_torch_to_csr(Abl),
             ub=_torch_to_np(bl),
-            col_ids=_id_array(hz.col_ids) if hz.col_ids is not None else None,
-            bcol_ids=_id_array(hz.bcol_ids) if hz.bcol_ids is not None else None,
         )
         if getattr(hz, "_solver_known_nonempty", False):
             setattr(out, "_solver_known_nonempty", True)

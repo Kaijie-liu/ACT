@@ -3,26 +3,11 @@
 # Copyright (C) 2025- ACT Team
 # Licensed under the GNU Affero General Public License v3.0 or later (AGPLv3+).
 # ===---------------------------------------------------------------------===#
-"""Lifted Girard order reduction for HZono (Bird PhD 2022, Section 6.2.3).
+"""Exact redundancy removal for dense HZono representations.
 
-Standard Girard reduction on a CONSTRAINED zonotope is unsound if the dropped
-generators are simply deleted together with the constraint rows that reference
-them (that silently enlarges the set in an uncontrolled way and collapses the
-HZ toward its interval hull). Bird's fix is to LIFT the constraints into the
-generator matrix and reduce jointly:
-
-    M = [Gc; Ac]   (an (n+nc) x ng matrix: value rows stacked over constraint rows)
-
-The lowest-L1-norm columns of ``M`` are box-merged into an INDEPENDENT diagonal
-generator per lifted dimension. Because the merge happens in the lifted space,
-each dropped generator's contribution to the value AND to every constraint is
-over-approximated (the value/constraint contributions are decoupled into
-independent box factors) -- a sound over-approximation that KEEPS all
-constraints. Splitting ``M`` back gives the reduced ``Gc`` / ``Ac``.
-
-eq_mask (constraint senses) is untouched (rows are preserved, only re-expressed).
-col_ids: surviving generators keep their ids; the diagonal box generators are
-fresh factors.
+Strict HybridZ keeps the represented set unchanged. This module removes only
+zero/duplicate/parallel description artifacts; lossy Girard-style order
+reduction is intentionally absent from the production path.
 """
 from __future__ import annotations
 import torch
@@ -177,51 +162,4 @@ def _canonical_keys(M, norms, tol):
     return [tuple(r) for r in rounded], sign
 
 
-def hz_girard_reduce(hz: HZono, target_ng: int) -> HZono:
-    """Reduce continuous generators toward ``target_ng`` via lifted Girard.
-
-    Returns ``hz`` unchanged when reduction would not actually shrink ng (e.g.
-    when the constraint count makes the lifted box larger than the current ng);
-    keeping the exact set is sound and avoids growth.
-    """
-    n = int(hz.c.shape[0])
-    ng = int(hz.Gc.shape[1])
-    nc = int(hz.Ac.shape[0])
-    if ng == 0 or ng <= target_ng:
-        return hz
-    device = hz.c.device
-
-    # Lifted continuous generator matrix [Gc; Ac].
-    M = torch.cat([hz.Gc, hz.Ac], dim=0) if nc > 0 else hz.Gc
-    nl = M.shape[0]  # n + nc
-    keep_count = max(target_ng - nl, 0)
-    new_ng = keep_count + nl
-    if new_ng >= ng:
-        # Lifted box (nl cols) would not reduce ng -> keep exact (sound).
-        return hz
-
-    col_norms = M.abs().sum(dim=0)
-    order = torch.argsort(col_norms, descending=True)
-    keep_idx = order[:keep_count]
-    drop_idx = order[keep_count:]
-    box_widths = M[:, drop_idx].abs().sum(dim=1)  # (nl,)
-    M_new = torch.cat([M[:, keep_idx], torch.diag(box_widths)], dim=1)
-    new_Gc = M_new[:n]
-    new_Ac = M_new[n:] if nc > 0 else hz.c.new_zeros(0, M_new.shape[1])
-
-    new_col_ids = None
-    if hz.col_ids is not None:
-        from act.back_end.solver.solver_hz import hz_fresh_col_ids
-        new_col_ids = torch.cat(
-            [hz.col_ids[keep_idx.to(hz.col_ids.device)],
-             hz_fresh_col_ids(nl, device=device)])
-
-    return hz_inherit_known_nonempty(HZono(
-        c=hz.c, Gc=new_Gc, Gb=hz.Gb, Ac=new_Ac, Ab=hz.Ab, b=hz.b,
-        eq_mask=None if hz.eq_mask is None else hz.eq_mask.clone(),
-        col_ids=new_col_ids,
-        bcol_ids=None if hz.bcol_ids is None else hz.bcol_ids.clone(),
-    ), hz, reason="girard_reduce")
-
-
-__all__ = ["hz_remove_redundancy", "hz_girard_reduce"]
+__all__ = ["hz_remove_redundancy"]

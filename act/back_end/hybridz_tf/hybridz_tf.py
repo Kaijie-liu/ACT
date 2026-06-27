@@ -267,9 +267,9 @@ class HybridzTF(TransferFunction):
                       if ids is not None else None),
         )
         if ids is not None:
-            # Full input-dimension ids are needed for witness replay. ``col_ids``
-            # only stores nonzero-radius generator columns, but replay must
-            # reconstruct all input dimensions, including constant ones.
+            # Full input-dimension ids let floating input-root branches reuse
+            # the same generator frame. ``col_ids`` only stores nonzero-radius
+            # columns, but reuse needs one id per original input dimension.
             hz.full_col_ids = ids
         if bool(torch.all(lb <= ub).item()):
             hz_mark_known_nonempty(hz, "input_box")
@@ -311,33 +311,6 @@ class HybridzTF(TransferFunction):
         self._sparse_hz_cache.pop(lid, None)
         self._sparse_drop_reasons[lid] = reason
 
-    @staticmethod
-    def _copy_sparse_input_metadata(out: SparseHZono, src: Optional[SparseHZono]) -> None:
-        """Carry replay metadata through sparse exact-HZ operators.
-
-        The metadata is not part of the HZ set semantics; it only maps a solver
-        witness back to the original input box for audit.  Missing metadata
-        simply disables ADV promotion and leaves the verdict UNKNOWN.
-        """
-        if src is None:
-            return
-        for name in ("input_center", "input_radius", "input_indices", "input_shape"):
-            if getattr(out, name, None) is not None:
-                continue
-            val = getattr(src, name, None)
-            if val is None:
-                continue
-            if hasattr(val, "copy"):
-                val = val.copy()
-            setattr(out, name, val)
-
-    @staticmethod
-    def _first_sparse_with_input_metadata(parts):
-        for part in parts:
-            if part is not None and getattr(part, "input_center", None) is not None:
-                return part
-        return None
-
     def _propagate_sparse_hz(self, L: Layer, input_bounds: Bounds, result: Fact) -> None:
         if not self._enable_sparse_hz:
             return
@@ -348,7 +321,6 @@ class HybridzTF(TransferFunction):
         if hz is None:
             return
 
-        metadata_source = hz
         try:
             sparse_ops = _sparse_ops_module()
             if k == LayerKind.DENSE.value:
@@ -420,12 +392,10 @@ class HybridzTF(TransferFunction):
                     self._drop_sparse_hz(L.id, "missing_sparse_matmul_input")
                     return
                 if sparse_ops.sparse_hz_is_point(right):
-                    metadata_source = left
                     out = sparse_ops.sparse_hz_apply_matmul_const_layer(
                         left, right, L, variable_is_left=True,
                     )
                 elif sparse_ops.sparse_hz_is_point(left):
-                    metadata_source = right
                     out = sparse_ops.sparse_hz_apply_matmul_const_layer(
                         right, left, L, variable_is_left=False,
                     )
@@ -478,7 +448,6 @@ class HybridzTF(TransferFunction):
                 if len(parts) != 2 or any(part is None for part in parts):
                     self._drop_sparse_hz(L.id, "missing_sparse_add_input")
                     return
-                metadata_source = self._first_sparse_with_input_metadata(parts)
                 out = sparse_ops.sparse_hz_add_same_frame(parts[0], parts[1])
             elif k == LayerKind.SUB.value:
                 preds = self._net.preds.get(L.id, [])
@@ -486,7 +455,6 @@ class HybridzTF(TransferFunction):
                 if len(parts) != 2 or any(part is None for part in parts):
                     self._drop_sparse_hz(L.id, "missing_sparse_sub_input")
                     return
-                metadata_source = self._first_sparse_with_input_metadata(parts)
                 out = sparse_ops.sparse_hz_sub_same_frame(parts[0], parts[1])
             elif k == LayerKind.CONCAT.value:
                 preds = self._net.preds.get(L.id, [])
@@ -494,7 +462,6 @@ class HybridzTF(TransferFunction):
                 if not parts or any(part is None for part in parts):
                     self._drop_sparse_hz(L.id, "missing_sparse_concat_input")
                     return
-                metadata_source = self._first_sparse_with_input_metadata(parts)
                 out = sparse_ops.sparse_hz_concat(parts)
             elif k == LayerKind.CONSTANT.value:
                 out = self._sparse_from_bounds(result.bounds)
@@ -502,7 +469,6 @@ class HybridzTF(TransferFunction):
                 self._drop_sparse_hz(L.id, f"unsupported_sparse_op:{k}")
                 return
 
-            self._copy_sparse_input_metadata(out, metadata_source)
             self._sparse_hz_cache[L.id] = out
             self._sparse_drop_reasons.pop(L.id, None)
         except Exception as exc:

@@ -6,7 +6,5 @@
 """Self-contained HZono algebra algorithms.
 
 The strict product path uses exact shared-generator add (``sgm``) and exact
-redundancy removal.  Lossy helpers in ``order_reduce`` are explicit
-audit/ablation tools only; they are not called by strict HybridZ propagation.
-Import submodules directly.
+redundancy removal. Import submodules directly.
 """

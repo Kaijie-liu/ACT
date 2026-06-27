@@ -81,64 +81,6 @@ def _apply_hybridz_rlimit_from_env() -> None:
     resource.setrlimit(resource.RLIMIT_AS, (cap, cap))
 
 
-def _hybridz_replay_model_fn(vm):
-    """Return the raw network forward used to audit HybridZ witnesses."""
-
-    model = vm.model
-
-    def _torch_fn(x: torch.Tensor) -> torch.Tensor:
-        ref = next(model.parameters(), None)
-        if ref is None:
-            ref = next(model.buffers(), None)
-        if ref is not None:
-            x = x.to(device=ref.device, dtype=ref.dtype)
-        return model(x)
-
-    onnx_path = getattr(vm, "_act_onnx_path", None)
-    if onnx_path:
-        session_box = {"sess": None, "input_name": None, "input_dtype": None}
-
-        def _ort_dtype(typ: str):
-            import numpy as np
-
-            if "double" in typ:
-                return np.float64
-            if "float16" in typ:
-                return np.float16
-            if "float" in typ:
-                return np.float32
-            return np.float32
-
-        def _onnx_fn(x: torch.Tensor) -> torch.Tensor:
-            import numpy as np
-            import onnxruntime as ort
-
-            if session_box["sess"] is None:
-                sess = ort.InferenceSession(
-                    str(onnx_path),
-                    providers=["CPUExecutionProvider"],
-                )
-                inp = sess.get_inputs()[0]
-                session_box.update({
-                    "sess": sess,
-                    "input_name": inp.name,
-                    "input_dtype": _ort_dtype(str(inp.type)),
-                })
-            x_np = x.detach().cpu().numpy().astype(session_box["input_dtype"], copy=False)
-            out = session_box["sess"].run(None, {session_box["input_name"]: x_np})[0]
-            return torch.as_tensor(np.asarray(out), device=x.device)
-
-        def _fn(x: torch.Tensor) -> torch.Tensor:
-            try:
-                return _onnx_fn(x)
-            except Exception:
-                return _torch_fn(x)
-
-        return _fn
-
-    return _torch_fn
-
-
 # ============================================================================
 # Data-Model Pair Management Commands
 # ============================================================================
@@ -730,8 +672,7 @@ def _run_vnnlib_verify(args) -> bool:
             label = f"BaB[{args.bab_solver_tier}]"
             print(f"  {tag}: {label} → {status}")
         else:
-            model_fn = _hybridz_replay_model_fn(vm) if solver == "hybridz" else None
-            results = verify_once(net, model_fn=model_fn, backend_cfg=backend_cfg)
+            results = verify_once(net, backend_cfg=backend_cfg)
             statuses = [r.status.name for r in results]
             print(f"  {tag}: {statuses}")
             if args.validate_soundness:
@@ -959,8 +900,7 @@ def _run_torchvision_verify(args) -> bool:
     for mid, vm in wrapped.items():
         tag = "/".join(str(p) for p in mid)
         net = TorchToACT(vm).run()
-        model_fn = _hybridz_replay_model_fn(vm) if solver == "hybridz" else None
-        results = verify_once(net, model_fn=model_fn, backend_cfg=backend_cfg)
+        results = verify_once(net, backend_cfg=backend_cfg)
         statuses = [r.status.name for r in results]
         print(f"  {tag}: {statuses}")
         if args.validate_soundness:

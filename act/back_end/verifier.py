@@ -49,7 +49,6 @@ from typing import Optional, List, Callable, Dict, Any, TYPE_CHECKING, cast
 import torch
 import copy
 import os
-import numpy as np
 
 # ACT backend imports
 from act.back_end.core import Bounds, Con, ConSet, Fact, Net
@@ -60,8 +59,8 @@ from act.back_end.utils import validate_constraints
 if TYPE_CHECKING:
     from act.back_end.analyze import AnalyzeCache
 
-# Front-end enums (kinds)
-from act.front_end.specs import InKind, OutKind
+# Front-end enums/spec encoding
+from act.front_end.specs import InKind, OutKind, OutputSpec
 
 # Verification types (canonical location: act/util/stats.py)
 from act.util.stats import VerifyStatus, VerifyResult
@@ -437,143 +436,6 @@ def _get_output_layer_bounds(net, after: Dict[int, Fact]) -> Bounds:
     return after[_get_output_layer_id(net)].bounds
 
 
-def _hybridz_sparse_witness_input(
-    hz: Any,
-    witness: np.ndarray,
-    seed_bounds: Bounds,
-) -> tuple[Optional[torch.Tensor], str]:
-    center = getattr(hz, "input_center", None)
-    radius = getattr(hz, "input_radius", None)
-    indices = getattr(hz, "input_indices", None)
-    if center is None or radius is None or indices is None:
-        return None, "missing_sparse_input_metadata"
-    center = np.asarray(center, dtype=np.float64).reshape(-1)
-    radius = np.asarray(radius, dtype=np.float64).reshape(-1)
-    indices = np.asarray(indices, dtype=np.int64).reshape(-1)
-    if witness.size < indices.size:
-        return None, "short_sparse_witness"
-    if center.size != radius.size:
-        return None, "bad_sparse_input_metadata"
-    x = center.copy()
-    vals = np.clip(np.asarray(witness[:indices.size], dtype=np.float64), -1.0, 1.0)
-    x[indices] = center[indices] + radius[indices] * vals
-    shape = getattr(hz, "input_shape", None) or tuple(int(d) for d in seed_bounds.lb.shape)
-    try:
-        x_t = torch.as_tensor(x.reshape(shape), dtype=seed_bounds.lb.dtype, device=seed_bounds.lb.device)
-    except Exception:
-        return None, "bad_sparse_input_shape"
-    return x_t, "sparse_input_metadata"
-
-
-def _hybridz_dense_witness_input(
-    hz: Any,
-    witness: np.ndarray,
-    seed_bounds: Bounds,
-    active_tf: Any,
-) -> tuple[Optional[torch.Tensor], str]:
-    col_ids = getattr(hz, "col_ids", None)
-    input_ids = getattr(active_tf, "_input_ids", None)
-    if col_ids is None or input_ids is None:
-        return None, "missing_dense_col_ids"
-    if hasattr(col_ids, "detach"):
-        col_ids_np = col_ids.detach().cpu().numpy().reshape(-1)
-    else:
-        col_ids_np = np.asarray(col_ids, dtype=np.int64).reshape(-1)
-    if hasattr(input_ids, "detach"):
-        input_ids_np = input_ids.detach().cpu().numpy().reshape(-1)
-    else:
-        input_ids_np = np.asarray(input_ids, dtype=np.int64).reshape(-1)
-    if witness.size < col_ids_np.size:
-        return None, "short_dense_witness"
-
-    lb = seed_bounds.lb.detach().cpu().double().numpy().reshape(-1)
-    ub = seed_bounds.ub.detach().cpu().double().numpy().reshape(-1)
-    center = 0.5 * (lb + ub)
-    radius = 0.5 * (ub - lb)
-    if input_ids_np.size != center.size:
-        return None, "dense_input_id_shape_mismatch"
-
-    col_by_id = {int(gid): j for j, gid in enumerate(col_ids_np.tolist())}
-    x = center.copy()
-    for input_dim in np.nonzero(np.abs(radius) > 1e-12)[0]:
-        pos = col_by_id.get(int(input_ids_np[input_dim]))
-        if pos is None:
-            return None, "dense_input_generator_missing"
-        xi = float(np.clip(witness[pos], -1.0, 1.0))
-        x[input_dim] = center[input_dim] + radius[input_dim] * xi
-    x_t = torch.as_tensor(
-        x.reshape(tuple(int(d) for d in seed_bounds.lb.shape)),
-        dtype=seed_bounds.lb.dtype,
-        device=seed_bounds.lb.device,
-    )
-    return x_t, "dense_col_ids"
-
-
-def _hybridz_witness_input(
-    hz: Any,
-    witness: Optional[np.ndarray],
-    seed_bounds: Bounds,
-    active_tf: Any,
-) -> tuple[Optional[torch.Tensor], str]:
-    if witness is None:
-        return None, "missing_witness"
-    witness = np.asarray(witness, dtype=np.float64).reshape(-1)
-    if getattr(hz, "input_center", None) is not None:
-        return _hybridz_sparse_witness_input(hz, witness, seed_bounds)
-    return _hybridz_dense_witness_input(hz, witness, seed_bounds, active_tf)
-
-
-def _hybridz_replay_witness(
-    *,
-    hz: Any,
-    witness: Optional[np.ndarray],
-    seed_bounds: Bounds,
-    active_tf: Any,
-    model_fn: Optional[Callable[[torch.Tensor], torch.Tensor]],
-    C: torch.Tensor,
-    thresholds: torch.Tensor,
-    M: int,
-    n_out: int,
-    is_unsafe_linear: bool,
-) -> tuple[bool, Optional[torch.Tensor], str]:
-    if model_fn is None:
-        return False, None, "missing_model_fn"
-
-    x_batch, source = _hybridz_witness_input(hz, witness, seed_bounds, active_tf)
-    if x_batch is None:
-        return False, None, source
-    if x_batch.dim() < 1 or int(x_batch.shape[0]) != 1:
-        return False, None, "witness_input_not_batched_b1"
-
-    try:
-        y = model_fn(x_batch)
-        if isinstance(y, dict):
-            y = y.get("output")
-        if not isinstance(y, torch.Tensor):
-            return False, None, "model_fn_no_tensor_output"
-        y = y.detach()
-        if y.dim() == 1:
-            y = y.view(1, -1)
-        else:
-            y = y.reshape(y.shape[0], -1)
-        if tuple(y.shape) != (1, n_out):
-            return False, None, f"model_fn_output_shape:{tuple(y.shape)}"
-        y = y.to(device=C.device, dtype=C.dtype)
-    except Exception as exc:
-        return False, None, f"model_fn_replay_failed:{type(exc).__name__}"
-
-    C0 = C.view(1, M, n_out)[0]
-    t0 = thresholds.view(1, M)[0]
-    scores = C0.matmul(y[0])
-    if is_unsafe_linear:
-        unsafe = bool(torch.all(scores <= t0 + 1e-8).item())
-    else:
-        unsafe = bool(torch.any(scores >= t0 - 1e-8).item())
-    if not unsafe:
-        return False, x_batch.detach().cpu()[0].clone(), "model_fn_replay_not_unsafe"
-    return True, x_batch.detach().cpu()[0].clone(), f"model_fn_replay_unsafe:{source}"
-
-
 _MISSING_ATTR = object()
 
 
@@ -655,6 +517,58 @@ def _hybridz_config_metadata(hz_cfg: Optional[Any]) -> Dict[str, Any]:
         for key in keys
         if getattr(hz_cfg, key, None) is not None
     }
+
+
+def _first_batched_value(value: Any, B: int) -> Any:
+    """Return sample-0 high-level ASSERT value when a legacy net pre-batched it."""
+
+    if not isinstance(value, torch.Tensor) or B <= 1 or value.dim() < 2:
+        return value
+    if int(value.shape[0]) == int(B):
+        return value[0].contiguous()
+    return value
+
+
+def _ensure_assert_linear_encoding(
+    assert_layer: Any,
+    *,
+    B: int,
+    n_out: int,
+    device: torch.device,
+    dtype: torch.dtype,
+) -> None:
+    """Encode legacy high-level ASSERT params for ``verify_once``.
+
+    New front-end paths already store ``C`` / ``thresholds`` / ``M`` on ASSERT.
+    Some CI example nets still carry only high-level fields such as ``c``/``d``
+    or ``y_true``.  This compatibility shim uses the same ``OutputSpec`` encoder
+    rather than duplicating row semantics.
+    """
+
+    params = assert_layer.params
+    if all(k in params for k in ("C", "thresholds", "M")):
+        return
+
+    kind = params.get("kind")
+    kwargs: Dict[str, Any] = {}
+    if kind in (OutKind.LINEAR_LE, OutKind.RANGE, OutKind.UNSAFE_LINEAR):
+        for key in ("c", "d", "lb", "ub"):
+            if key in params:
+                kwargs[key] = _first_batched_value(params[key], B)
+    elif kind in (OutKind.TOP1_ROBUST, OutKind.MARGIN_ROBUST):
+        for key in ("y_true", "margin"):
+            if key in params:
+                kwargs[key] = params[key]
+    else:
+        raise ValueError(f"verify_once: unsupported ASSERT kind without C encoding: {kind!r}")
+
+    encoded = OutputSpec(kind=kind, **kwargs).encode_linear(
+        B=B,
+        n_out=n_out,
+        device=device,
+        dtype=dtype,
+    )
+    params.update(encoded)
 
 
 @torch.no_grad()
@@ -804,6 +718,13 @@ def verify_once(
     # at FE construction time). Dispatch on ``kind`` because UNSAFE_LINEAR
     # has EXISTS-row safety semantics while the four other kinds (LINEAR_LE,
     # TOP1_ROBUST, MARGIN_ROBUST, RANGE) share an ALL-rows form.
+    _ensure_assert_linear_encoding(
+        assert_layer,
+        B=B,
+        n_out=n_out,
+        device=device,
+        dtype=dtype,
+    )
     C = assert_layer.params["C"].to(device=device, dtype=dtype)
     thresholds = assert_layer.params["thresholds"].to(device=device, dtype=dtype)
     M = int(assert_layer.params["M"])
@@ -907,68 +828,7 @@ def verify_once(
         if verdict == "SAFE":
             return [VerifyResult(VerifyStatus.CERTIFIED, metadata=meta)]
         if verdict == "UNSAFE":
-            replay_ok, counterexample, replay_reason = _hybridz_replay_witness(
-                hz=hz,
-                witness=witness,
-                seed_bounds=seed_bounds,
-                active_tf=active_tf,
-                model_fn=model_fn,
-                C=C,
-                thresholds=thresholds,
-                M=M,
-                n_out=n_out,
-                is_unsafe_linear=is_unsafe_linear,
-            )
-            meta["witness_replay"] = replay_reason
-            if replay_ok:
-                return [
-                    VerifyResult(
-                        VerifyStatus.FALSIFIED,
-                        counterexample=counterexample,
-                        metadata=meta,
-                    )
-                ]
-            if (
-                meta.get("hz_witness_source") == "base_hz_witness"
-                and model_fn is not None
-            ):
-                fallback_verdict, fallback_witness = hz_objbound_decide(
-                    hz,
-                    C.detach().cpu().numpy(),
-                    thresholds.detach().cpu().numpy(),
-                    is_unsafe_linear=is_unsafe_linear,
-                    time_limit=hz_timeout,
-                    base_witness_precheck=False,
-                )
-                meta.update({
-                    "hz_base_witness_replay_failed": replay_reason,
-                    "hz_fallback_verdict": fallback_verdict,
-                    "hz_fallback_witness_source": getattr(hz, "_solver_last_witness_source", None),
-                    "hz_has_fallback_witness": fallback_witness is not None,
-                })
-                if fallback_verdict == "UNSAFE":
-                    replay_ok, counterexample, replay_reason = _hybridz_replay_witness(
-                        hz=hz,
-                        witness=fallback_witness,
-                        seed_bounds=seed_bounds,
-                        active_tf=active_tf,
-                        model_fn=model_fn,
-                        C=C,
-                        thresholds=thresholds,
-                        M=M,
-                        n_out=n_out,
-                        is_unsafe_linear=is_unsafe_linear,
-                    )
-                    meta["witness_replay"] = replay_reason
-                    if replay_ok:
-                        return [
-                            VerifyResult(
-                                VerifyStatus.FALSIFIED,
-                                counterexample=counterexample,
-                                metadata=meta,
-                            )
-                        ]
-            meta["reason"] = "hybridz_unsafe_witness_not_replayed"
+            return [VerifyResult(VerifyStatus.FALSIFIED, metadata=meta)]
         else:
             meta["reason"] = "hybridz_verdict_unknown"
         return [VerifyResult(VerifyStatus.UNKNOWN, metadata=meta)]

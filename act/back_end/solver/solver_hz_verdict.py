@@ -1790,8 +1790,8 @@ def sparse_milp_cutoff_highs(
             full = v.copy()
         else:
             # Exact singleton projection removes objective-free continuous slack
-            # columns only.  Re-expand the reduced solver vector so the input
-            # generator coordinates are still available for MILP witness replay.
+            # columns only.  Re-expand the reduced solver vector so result
+            # reporting still uses the original HZ variable frame.
             full = reconstruct_base.copy()
             full[np.asarray(keep_cols, dtype=np.int64)] = v
         xi = full[:base_ncols].copy()
@@ -3076,9 +3076,9 @@ def hz_objbound_decide(hz, C, thresholds, *, is_unsafe_linear: bool,
     ``(verdict, witness_xi)``, verdict in {SAFE, UNSAFE, UNKNOWN}. SOUND & EXACT:
     mip_rel_gap=1e-9, but B&B stops once the margin's sign vs the threshold is proven
     (a feasible witness = UNSAFE / a provably-empty cutoff = SAFE); undecided within
-    time_limit -> UNKNOWN (never a false CERT). witness_xi (xi_b in {-1,+1}) is an
-    unsafe HZ point the caller must still forward-verify. Validated 16/16 vs scipy
-    mip_rel_gap=1e-9, 0 false-CERT, 1.5-665x."""
+    time_limit -> UNKNOWN (never a false CERT). ``witness_xi`` (xi_b in {-1,+1})
+    is returned for solver diagnostics; the verifier consumes the verdict
+    directly, matching the other ACT solver backends."""
     if not (_HAS_HIGHSPY and _HAS_SCIPY):
         return ("UNKNOWN", None)
     setattr(hz, "_solver_last_witness_source", None)
