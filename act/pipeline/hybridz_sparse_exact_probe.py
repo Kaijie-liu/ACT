@@ -45,6 +45,7 @@ from act.back_end.hybridz_tf.sparse_ops import (  # noqa: E402
     sparse_hz_concat,
     sparse_hz_gather_rows as _gather_hz_rows,
     sparse_hz_gather_rows_like as _gather_hz_rows_like,
+    sparse_hz_apply_relu_exact as _backend_relu_exact,
     sparse_hz_apply_softmax_simplex_layer as _softmax_simplex_hz,
     sparse_hz_apply_matmul_product_interval_layer as _matmul_product_interval_hz,
     sparse_hz_from_bounds,
@@ -302,212 +303,22 @@ def _relu_exact(
         lb = base_lb
         ub = base_ub
         tight_stats = (0, 0, 0, 0)
-    active = lb >= 0.0
-    inactive = ub <= 0.0
-    unstable = ~(active | inactive)
-    active_idx = np.nonzero(active)[0].astype(np.int32)
-    unstable_idx = np.nonzero(unstable)[0].astype(np.int32)
-    _relu_exact.last_meta = {
-        "lb": lb.copy(),
-        "ub": ub.copy(),
-        "active": active.copy(),
-        "inactive": inactive.copy(),
-        "unstable_idx": unstable_idx.copy(),
-        "compressed": bool(compressed),
-    }
-    k = int(unstable_idx.size)
-    n = hz.n_out
-    ng = hz.n_cont
-    nb = hz.n_bin
-    nc = hz.n_eq
-    n_relu_cont = 2 * k if compressed else 4 * k
-    ng_new = ng + n_relu_cont
-    nb_new = nb + k
+    class ArrayBounds:
+        def __init__(self, lb_arr: np.ndarray, ub_arr: np.ndarray):
+            import torch
 
-    out_c = np.zeros(n, dtype=np.float64)
-    blocks_c: List[sp.csr_matrix] = []
-    blocks_b: List[sp.csr_matrix] = []
-    if active_idx.size:
-        out_c[active_idx] = hz.c[active_idx]
-        act_c = hz.Gc[active_idx].tocoo()
-        blocks_c.append(sp.coo_matrix((act_c.data, (active_idx[act_c.row], act_c.col)), shape=(n, ng_new)).tocsr())
-        if nb:
-            act_b = hz.Gb[active_idx].tocoo()
-            blocks_b.append(sp.coo_matrix((act_b.data, (active_idx[act_b.row], act_b.col)), shape=(n, nb_new)).tocsr())
-    if k:
-        beta = ub[unstable_idx]
-        out_c[unstable_idx] = beta / 2.0
-        xi2_cols = ng + k + np.arange(k, dtype=np.int32)
-        blocks_c.append(sp.csr_matrix((-beta / 2.0, (unstable_idx, xi2_cols)), shape=(n, ng_new)))
+            self.lb = torch.as_tensor(lb_arr, dtype=torch.float64)
+            self.ub = torch.as_tensor(ub_arr, dtype=torch.float64)
 
-    out_Gc = sum(blocks_c[1:], blocks_c[0]).tocsr() if blocks_c else _empty(n, ng_new)
-    out_Gb = sum(blocks_b[1:], blocks_b[0]).tocsr() if blocks_b else _empty(n, nb_new)
-    out_Gc.eliminate_zeros()
-    out_Gb.eliminate_zeros()
-
-    old_Ac = _pad_cols(hz.Ac, ng_new)
-    old_Ab = _pad_cols(hz.Ab, nb_new)
-    if k:
-        alpha = lb[unstable_idx]
-        beta = ub[unstable_idx]
-        te = np.arange(k, dtype=np.int32)
-        col_xi1 = ng + te
-        col_xi2 = ng + k + te
-        col_z = nb + te
-
-        rr: List[np.ndarray] = []
-        cc: List[np.ndarray] = []
-        dd: List[np.ndarray] = []
-
-        def add(rows, cols, data):
-            rr.append(np.asarray(rows, dtype=np.int32))
-            cc.append(np.asarray(cols, dtype=np.int32))
-            dd.append(np.asarray(data, dtype=np.float64))
-
-        if compressed:
-            r3 = te
-            n_eq_relu = k
-        else:
-            col_xi3 = ng + 2 * k + te
-            col_xi4 = ng + 3 * k + te
-            r1 = 3 * te
-            r2 = 3 * te + 1
-            r3 = 3 * te + 2
-            add(r1, col_xi1, np.ones(k))
-            add(r1, col_xi3, np.ones(k))
-            add(r2, col_xi2, np.ones(k))
-            add(r2, col_xi4, np.ones(k))
-            n_eq_relu = 3 * k
-        add(r3, col_xi1, alpha / 2.0)
-        add(r3, col_xi2, -beta / 2.0)
-        pre_gc = hz.Gc[unstable_idx].tocoo()
-        if pre_gc.nnz:
-            add(r3[pre_gc.row], pre_gc.col, -pre_gc.data)
-        eq_Ac = sp.coo_matrix((np.concatenate(dd), (np.concatenate(rr), np.concatenate(cc))), shape=(n_eq_relu, ng_new)).tocsr()
-
-        rr = []
-        cc = []
-        dd = []
-        add(r3, col_z, alpha / 2.0)
-        if not compressed:
-            add(r1, col_z, np.ones(k))
-            add(r2, col_z, -np.ones(k))
-        if nb:
-            pre_gb = hz.Gb[unstable_idx].tocoo()
-            if pre_gb.nnz:
-                add(r3[pre_gb.row], pre_gb.col, -pre_gb.data)
-        eq_Ab = sp.coo_matrix((np.concatenate(dd), (np.concatenate(rr), np.concatenate(cc))), shape=(n_eq_relu, nb_new)).tocsr()
-        eq_b = np.zeros(n_eq_relu, dtype=np.float64)
-        if not compressed:
-            eq_b[r1] = 1.0
-            eq_b[r2] = 1.0
-        eq_b[r3] = hz.c[unstable_idx] - beta / 2.0
-    else:
-        eq_Ac = _empty(0, ng_new)
-        eq_Ab = _empty(0, nb_new)
-        eq_b = np.zeros(0, dtype=np.float64)
-
-    Ac = sp.vstack([old_Ac, eq_Ac], format="csr")
-    Ab = sp.vstack([old_Ab, eq_Ab], format="csr")
-    b = np.concatenate([hz.b, eq_b])
-    Ac.eliminate_zeros()
-    Ab.eliminate_zeros()
-    Auc_base = _pad_cols(hz.Auc if hz.Auc is not None else _empty(0, hz.n_cont), ng_new)
-    Aub_base = _pad_cols(hz.Aub if hz.Aub is not None else _empty(0, hz.n_bin), nb_new)
-    ub_base = hz.ub if hz.ub is not None else np.zeros(0, dtype=np.float64)
-    proj_Ac = _empty(0, ng_new)
-    proj_Ab = _empty(0, nb_new)
-    proj_b = np.zeros(0, dtype=np.float64)
-    if compressed and k:
-        # Exact projection of the old xi3/xi4 slack equalities:
-        #   xi1 + xi3 + z = 1, xi3 in [-1,1]  ->  -xi1 - z <= 0
-        #   xi2 + xi4 - z = 1, xi4 in [-1,1]  ->  -xi2 + z <= 0
-        # The opposite sides are redundant with xi1,xi2,z in [-1,1].
-        rows = np.arange(k, dtype=np.int32)
-        proj_Ac = sp.coo_matrix(
-            (
-                np.concatenate([-np.ones(k), -np.ones(k)]),
-                (
-                    np.concatenate([rows, k + rows]),
-                    np.concatenate([ng + rows, ng + k + rows]),
-                ),
-            ),
-            shape=(2 * k, ng_new),
-        ).tocsr()
-        proj_Ab = sp.coo_matrix(
-            (
-                np.concatenate([-np.ones(k), np.ones(k)]),
-                (
-                    np.concatenate([rows, k + rows]),
-                    np.concatenate([nb + rows, nb + rows]),
-                ),
-            ),
-            shape=(2 * k, nb_new),
-        ).tocsr()
-        proj_b = np.zeros(2 * k, dtype=np.float64)
-    cut_Ac = _empty(0, ng_new)
-    cut_Ab = _empty(0, nb_new)
-    cut_b = np.zeros(0, dtype=np.float64)
-    if add_cuts and k:
-        rr_c: List[np.ndarray] = []
-        cc_c: List[np.ndarray] = []
-        dd_c: List[np.ndarray] = []
-        rr_b: List[np.ndarray] = []
-        cc_b: List[np.ndarray] = []
-        dd_b: List[np.ndarray] = []
-        rhs = np.zeros(2 * k, dtype=np.float64)
-
-        def add_c(rows, cols, data):
-            if len(data):
-                rr_c.append(np.asarray(rows, dtype=np.int32))
-                cc_c.append(np.asarray(cols, dtype=np.int32))
-                dd_c.append(np.asarray(data, dtype=np.float64))
-
-        def add_b(rows, cols, data):
-            if len(data):
-                rr_b.append(np.asarray(rows, dtype=np.int32))
-                cc_b.append(np.asarray(cols, dtype=np.int32))
-                dd_b.append(np.asarray(data, dtype=np.float64))
-
-        # Cut 1: x - y <= 0.
-        # Cut 2: y - s*x <= -s*alpha, s=beta/(beta-alpha).
-        pre_gc = hz.Gc[unstable_idx].tocoo()
-        pre_gb = hz.Gb[unstable_idx].tocoo() if hz.n_bin else _empty(k, 0).tocoo()
-        row1 = np.arange(k, dtype=np.int32)
-        row2 = k + row1
-        alpha = lb[unstable_idx]
-        beta = ub[unstable_idx]
-        slope = beta / np.maximum(beta - alpha, 1e-12)
-        xi2_cols = ng + k + np.arange(k, dtype=np.int32)
-        if pre_gc.nnz:
-            add_c(pre_gc.row, pre_gc.col, pre_gc.data)
-            add_c(k + pre_gc.row, pre_gc.col, -slope[pre_gc.row] * pre_gc.data)
-        if pre_gb.nnz:
-            add_b(pre_gb.row, pre_gb.col, pre_gb.data)
-            add_b(k + pre_gb.row, pre_gb.col, -slope[pre_gb.row] * pre_gb.data)
-        add_c(row1, xi2_cols, beta / 2.0)
-        add_c(row2, xi2_cols, -beta / 2.0)
-        rhs[row1] = beta / 2.0 - hz.c[unstable_idx]
-        rhs[row2] = -slope * alpha - beta / 2.0 + slope * hz.c[unstable_idx]
-        if rr_c:
-            cut_Ac = sp.coo_matrix(
-                (np.concatenate(dd_c), (np.concatenate(rr_c), np.concatenate(cc_c))),
-                shape=(2 * k, ng_new),
-            ).tocsr()
-        if rr_b:
-            cut_Ab = sp.coo_matrix(
-                (np.concatenate(dd_b), (np.concatenate(rr_b), np.concatenate(cc_b))),
-                shape=(2 * k, nb_new),
-            ).tocsr()
-        else:
-            cut_Ab = _empty(2 * k, nb_new)
-        cut_Ac.eliminate_zeros()
-        cut_Ab.eliminate_zeros()
-        cut_b = rhs
-    Auc = sp.vstack([Auc_base, proj_Ac, cut_Ac], format="csr")
-    Aub = sp.vstack([Aub_base, proj_Ab, cut_Ab], format="csr")
-    ub_rhs = np.concatenate([ub_base, proj_b, cut_b])
-    return SparseHZ(out_c, out_Gc, out_Gb, Ac, Ab, b, Auc, Aub, ub_rhs), (int(active.sum()), int(inactive.sum()), k), tight_stats
+    out, counts, meta = _backend_relu_exact(
+        hz,
+        ArrayBounds(lb, ub),
+        compressed=compressed,
+        valid_cuts=add_cuts,
+        return_info=True,
+    )
+    _relu_exact.last_meta = meta
+    return out, counts, tight_stats
 
 
 def _scurve_breakpoints(

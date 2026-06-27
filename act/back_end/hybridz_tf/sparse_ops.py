@@ -1074,7 +1074,8 @@ def sparse_hz_apply_relu_exact(
     *,
     compressed: bool = False,
     valid_cuts: bool = False,
-) -> SparseHZono:
+    return_info: bool = False,
+):
     """Exact sparse eq_lagr ReLU.
 
     Every unstable neuron gets the exact binary HZ graph.  ``compressed`` keeps
@@ -1092,6 +1093,14 @@ def sparse_hz_apply_relu_exact(
     active_idx = np.nonzero(active)[0].astype(np.int32)
     unstable_idx = np.nonzero(unstable)[0].astype(np.int32)
     k = int(unstable_idx.size)
+    info = {
+        "lb": lb.copy(),
+        "ub": ub.copy(),
+        "active": active.copy(),
+        "inactive": inactive.copy(),
+        "unstable_idx": unstable_idx.copy(),
+        "compressed": bool(compressed),
+    }
 
     n = hz.n_out
     ng = hz.n_cont
@@ -1302,10 +1311,13 @@ def sparse_hz_apply_relu_exact(
     ub_rhs = np.concatenate(upper_rhs)
     Auc.eliminate_zeros()
     Aub.eliminate_zeros()
-    return SparseHZono(
+    out = SparseHZono(
         out_c, out_Gc, out_Gb, Ac, Ab, b, Auc, Aub, ub_rhs,
         **_input_metadata_kwargs(hz),
     )
+    if return_info:
+        return out, (int(active.sum()), int(inactive.sum()), k), info
+    return out
 
 
 def _sigmoid_np(x: np.ndarray) -> np.ndarray:
