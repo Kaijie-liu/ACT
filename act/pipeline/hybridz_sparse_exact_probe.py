@@ -37,6 +37,7 @@ from act.back_end.hybridz_tf.sparse_ops import (  # noqa: E402
     sparse_dense_matrix_from_layer as _dense_matrix,
     sparse_empty as _empty,
     sparse_hz_add_const as _bias_apply,
+    sparse_hz_add_same_frame as _add_same_frame,
     sparse_hz_concat,
     sparse_hz_gather_rows as _gather_hz_rows,
     sparse_hz_gather_rows_like as _gather_hz_rows_like,
@@ -44,6 +45,7 @@ from act.back_end.hybridz_tf.sparse_ops import (  # noqa: E402
     sparse_hz_linear as _linear_apply,
     sparse_hz_pad_frame as _pad_hz,
     sparse_hz_scale as _scale_apply,
+    sparse_hz_sub_same_frame as _sub_same_frame,
     sparse_pad_cols as _pad_cols,
     sparse_maxpool2d_candidate_rows as _maxpool2d_candidate_rows,
 )
@@ -95,12 +97,6 @@ from act.pipeline.hybridz_sparse_census import (  # noqa: E402
     _format_big,
     _shape4,
 )
-
-
-def _csr_sum(a: sp.csr_matrix, b: sp.csr_matrix) -> sp.csr_matrix:
-    out = (a + b).tocsr()
-    out.eliminate_zeros()
-    return out
 
 
 def _concat_hz(parts: List[SparseHZ], n_cont: int, n_bin: int) -> SparseHZ:
@@ -2075,35 +2071,14 @@ def _propagate_sparse(
             for fold_i, rows in enumerate(cands[1:], start=1):
                 nxt = _gather_hz_rows_like(base, rows, fill_value=fill_value, template=hz)
                 nxt_lb, nxt_ub = gather_bounds(rows)
-                diff = SparseHZ(
-                    c=hz.c - nxt.c,
-                    Gc=_csr_sum(hz.Gc, -nxt.Gc),
-                    Gb=_csr_sum(hz.Gb, -nxt.Gb),
-                    Ac=hz.Ac,
-                    Ab=hz.Ab,
-                    b=hz.b,
-                    Auc=hz.Auc,
-                    Aub=hz.Aub,
-                    ub=hz.ub,
-                )
+                diff = _sub_same_frame(hz, nxt)
                 relu, counts, _ = _relu_exact(
                     diff,
                     ArrayBounds(cur_lb - nxt_ub, cur_ub - nxt_lb),
                     compressed=compressed_relu,
                 )
                 extend_relu_witness(diff, relu, getattr(_relu_exact, "last_meta", {}), int(L.id))
-                nxt_pad = _pad_hz(nxt, relu.n_cont, relu.n_bin)
-                hz = SparseHZ(
-                    c=nxt_pad.c + relu.c,
-                    Gc=_csr_sum(nxt_pad.Gc, relu.Gc),
-                    Gb=_csr_sum(nxt_pad.Gb, relu.Gb),
-                    Ac=relu.Ac,
-                    Ab=relu.Ab,
-                    b=relu.b,
-                    Auc=relu.Auc,
-                    Aub=relu.Aub,
-                    ub=relu.ub,
-                )
+                hz = _add_same_frame(nxt, relu)
                 cur_lb = np.maximum(cur_lb, nxt_lb)
                 cur_ub = np.maximum(cur_ub, nxt_ub)
                 global_c, global_b = hz.n_cont, hz.n_bin
@@ -2155,20 +2130,7 @@ def _propagate_sparse(
         elif kind in {"ADD", "SUB"}:
             a = _pad_hz(source_hz(L, 0), global_c, global_b)
             b = _pad_hz(source_hz(L, 1), global_c, global_b)
-            sign = -1.0 if kind == "SUB" else 1.0
-            Ac, Ab, eq_b = _merge_linear_constraints([a, b], global_c, global_b)
-            Auc, Aub, ub = _merge_upper_constraints([a, b], global_c, global_b)
-            hz = SparseHZ(
-                c=a.c + sign * b.c,
-                Gc=_csr_sum(a.Gc, sign * b.Gc),
-                Gb=_csr_sum(a.Gb, sign * b.Gb),
-                Ac=Ac,
-                Ab=Ab,
-                b=eq_b,
-                Auc=Auc,
-                Aub=Aub,
-                ub=ub,
-            )
+            hz = _add_same_frame(a, b) if kind == "ADD" else _sub_same_frame(a, b)
         elif kind == "RELU":
             prev = _pad_hz(source_hz(L), global_c, global_b)
             relu_limit = tight_relu_lp_limit
