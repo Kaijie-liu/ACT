@@ -7,7 +7,6 @@ import argparse
 import gc
 import json
 import os
-import sys
 import time
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
@@ -61,8 +60,6 @@ from act.back_end.hybridz_tf.sparse_ops import (  # noqa: E402
     sparse_upsample_nearest_row_indices as _upsample_nearest_row_idx,
 )
 
-
-REPO = Path(__file__).resolve().parents[2]
 
 SPARSE_SUPPORTED_KINDS = {
     "INPUT",
@@ -785,7 +782,6 @@ def main() -> None:
     highs_profiles: List[Tuple[str, Dict[str, object]]] = [("cli", dict(extra_highs_options))]
     for var in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"):
         os.environ.setdefault(var, "1")
-    sys.path.insert(0, str(REPO))
 
     t0 = time.time()
     onnx_path, vnnlib_path, input_shape, queries, net, before, after, interval_s = build_net_and_interval(

@@ -17,7 +17,6 @@ import argparse
 import gc
 import hashlib
 import os
-import sys
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -27,7 +26,6 @@ import numpy as np
 import scipy.sparse as sp
 
 
-REPO = Path(__file__).resolve().parents[2]
 BENCH_ROOT = Path(os.environ.get(
     "ACT_VNNCOMP_BENCH_ROOT",
     "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks",
@@ -603,7 +601,6 @@ def main() -> None:
         os.environ["CUDA_VISIBLE_DEVICES"] = ""
     for var in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"):
         os.environ.setdefault(var, "1")
-    sys.path.insert(0, str(REPO))
 
     t0 = time.time()
     onnx_path, vnnlib_path, input_shape, queries, net, before, after, interval_s = _build_net_and_interval(
