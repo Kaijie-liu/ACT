@@ -53,15 +53,6 @@ from act.back_end.hybridz_tf.sparse_ops import (  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[2]
 
-TUNED_HIGHS_OPTIONS = {
-    "mip_allow_restart": False,
-    "mip_detect_symmetry": False,
-    "mip_lp_age_limit": 0,
-    "mip_pool_age_limit": 0,
-    "mip_pool_soft_limit": 100,
-    "mip_pscost_minreliable": 0,
-}
-
 SPARSE_SUPPORTED_KINDS = {
     "INPUT",
     "INPUT_SPEC",
@@ -4288,8 +4279,6 @@ def main() -> None:
     ap.add_argument("--milp-timeout", type=float, default=30.0)
     ap.add_argument("--stop-on-unsafe", action="store_true",
                     help="stop this instance once an exact-HZ unsafe feasible rival is found")
-    ap.add_argument("--max-unknowns", type=int, default=0,
-                    help="stop after this many unknown rival cutoffs; 0 disables")
     ap.add_argument("--mip-solver", choices=["highs", "scip"], default="highs")
     ap.add_argument("--mip-start", choices=["none", "lp-round", "lp-binary-round", "base", "base-binary"], default="none",
                     help="give exact HiGHS MILP a rounded LP or constructive-base start; verdicts still require exact MILP status")
@@ -4308,8 +4297,6 @@ def main() -> None:
     ap.add_argument("--highs-heuristic-effort", type=float, default=None)
     ap.add_argument("--highs-option", action="append", default=[],
                     help="extra HiGHS option as name=value; may be repeated")
-    ap.add_argument("--highs-profile-sequence", default="",
-                    help="comma list of HiGHS profiles to retry per rival: default,tuned,cli")
     ap.add_argument("--scip-threads", type=int, default=0,
                     help="SCIP parallel/maxnthreads and LP threads for exact MILP runs")
     ap.add_argument("--scip-option", action="append", default=[],
@@ -4342,10 +4329,6 @@ def main() -> None:
     ap.add_argument("--scurve-grid", choices=["uniform", "curvature"], default="uniform",
                     help="S-curve segment grid; curvature keeps K fixed but allocates segments by |f''|")
     ap.add_argument("--summary-json", default="")
-    ap.add_argument("--max-final-bin", type=int, default=0,
-                    help="if positive, skip MILP and return UNKNOWN when final HZ binary count exceeds this")
-    ap.add_argument("--max-final-eq-nnz", type=int, default=0,
-                    help="if positive, skip MILP and return UNKNOWN when final HZ equality nnz exceeds this")
     ap.add_argument("--base-feas-timeout", type=float, default=10.0,
                     help="time limit for the mandatory base-HZ nonemptiness guard")
     args = ap.parse_args()
@@ -4384,22 +4367,7 @@ def main() -> None:
                 "it changes HiGHS-reported objective/bound semantics used by cutoff certificates"
             )
     extra_scip_options = parse_option_items(args.scip_option, "scip")
-    highs_profiles: List[Tuple[str, Dict[str, object]]] = []
-    if args.highs_profile_sequence.strip():
-        for raw_name in args.highs_profile_sequence.split(","):
-            name = raw_name.strip().lower()
-            if not name:
-                continue
-            if name == "default":
-                highs_profiles.append(("default", {}))
-            elif name == "tuned":
-                highs_profiles.append(("tuned", dict(TUNED_HIGHS_OPTIONS)))
-            elif name == "cli":
-                highs_profiles.append(("cli", dict(extra_highs_options)))
-            else:
-                raise SystemExit(f"unknown --highs-profile-sequence profile {raw_name!r}")
-    else:
-        highs_profiles.append(("cli", dict(extra_highs_options)))
+    highs_profiles: List[Tuple[str, Dict[str, object]]] = [("cli", dict(extra_highs_options))]
     for var in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"):
         os.environ.setdefault(var, "1")
     sys.path.insert(0, str(REPO))
@@ -4550,19 +4518,6 @@ def main() -> None:
         print(f"  EARLY_STOP base_hz_infeasible {base_hz_feas_msg[:160]}", flush=True)
         lp_n = 0
         unknown_count = 1
-    size_skip = (
-        (args.max_final_bin > 0 and hz.n_bin > args.max_final_bin)
-        or (args.max_final_eq_nnz > 0 and hz.eq_nnz > args.max_final_eq_nnz)
-    )
-    if size_skip:
-        print(
-            "  EARLY_STOP final_size "
-            f"n_bin={hz.n_bin} max_final_bin={args.max_final_bin} "
-            f"eq_nnz={hz.eq_nnz} max_final_eq_nnz={args.max_final_eq_nnz}",
-            flush=True,
-        )
-        lp_n = 0
-        unknown_count = 1
     for rank, qidx in enumerate(order[:lp_n]):
         checked_count += 1
         C, t, _ = flat_specs[int(qidx)]
@@ -4696,9 +4651,6 @@ def main() -> None:
             else:
                 unknown_count += 1
                 record.update({"verdict": "unknown", "cert_source": "milp"})
-                if args.max_unknowns > 0 and unknown_count >= args.max_unknowns:
-                    print("  EARLY_STOP unknown_limit", flush=True)
-                    stop_after_query = True
             query_results.append(record)
             if stop_after_query:
                 break
@@ -4747,7 +4699,6 @@ def main() -> None:
             "tight_schedule": args.tight_schedule,
             "tight_relu_fix_mode": args.tight_relu_fix_mode,
             "highs_options": args.highs_option,
-            "highs_profile_sequence": args.highs_profile_sequence,
             "fbbt_passes": int(args.fbbt_passes),
             "relax_precheck_timeout": float(args.relax_precheck_timeout),
             "exact_relu_valid_cuts": bool(args.relu_cuts or args.exact_relu_valid_cuts),
