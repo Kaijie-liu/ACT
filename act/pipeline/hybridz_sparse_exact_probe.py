@@ -98,10 +98,6 @@ from act.pipeline.hybridz_sparse_census import (  # noqa: E402
 )
 
 
-def _concat_hz(parts: List[SparseHZ], n_cont: int, n_bin: int) -> SparseHZ:
-    return sparse_hz_concat([_pad_hz(p, n_cont, n_bin) for p in parts])
-
-
 def _slice_row_idx_np(L, n: int) -> Optional[np.ndarray]:
     rows = hz_mlp._slice_row_idx(L, int(n))
     return None if rows is None else rows.detach().cpu().numpy().astype(np.int64).reshape(-1)
@@ -110,13 +106,6 @@ def _slice_row_idx_np(L, n: int) -> Optional[np.ndarray]:
 def _gather_row_idx_np(L, n: int) -> Optional[np.ndarray]:
     rows = hz_mlp._gather_row_idx(L, int(n))
     return None if rows is None else rows.detach().cpu().numpy().astype(np.int64).reshape(-1)
-
-
-def _input_spec_hz(inspec, n_in: int) -> SparseHZ:
-    hz = sparse_hz_from_bounds(inspec)
-    if hz.n_out != int(n_in):
-        raise ValueError(f"input spec size mismatch: hz={hz.n_out}, layer={n_in}")
-    return hz
 
 
 def _prod_interval_bounds(xl: float, xu: float, yl: float, yu: float) -> Tuple[float, float]:
@@ -1969,7 +1958,9 @@ def _propagate_sparse(
                 ub=np.zeros(0, dtype=np.float64),
             )
         elif kind == "INPUT_SPEC":
-            hz = _input_spec_hz(queries[0][0], len(L.out_vars))
+            hz = sparse_hz_from_bounds(queries[0][0])
+            if hz.n_out != len(L.out_vars):
+                raise ValueError(f"input spec size mismatch: hz={hz.n_out}, layer={len(L.out_vars)}")
             global_c, global_b = hz.n_cont, hz.n_bin
             xi_c = np.zeros(global_c, dtype=np.float64)
             xi_b = np.zeros(global_b, dtype=np.float64)
@@ -2099,7 +2090,7 @@ def _propagate_sparse(
                 preds = [net.layers[int(i)].id for i in pred_indices] if pred_indices else []
             if not preds:
                 raise NotImplementedError(f"unsupported sparse CONCAT routing at {L.id}")
-            hz = _concat_hz([states[p] for p in preds], global_c, global_b)
+            hz = sparse_hz_concat([_pad_hz(states[p], global_c, global_b) for p in preds])
         elif kind in {"ADD", "SUB"}:
             a = _pad_hz(source_hz(L, 0), global_c, global_b)
             b = _pad_hz(source_hz(L, 1), global_c, global_b)
@@ -4403,11 +4394,6 @@ def _load_hz(indir: Path) -> SparseHZ:
     )
 
 
-def _base_hz_feasibility(hz: SparseHZ, time_limit: float) -> Tuple[bool, str]:
-    status, msg = _solver_hz_base_feasibility(hz, time_limit=float(time_limit))
-    return status == "FEASIBLE", f"{status}:{msg}"
-
-
 def _self_test() -> None:
     hz = SparseHZ(
         c=np.asarray([2.0, -1.0], dtype=np.float64),
@@ -4744,9 +4730,11 @@ def main() -> None:
         base_hz_feas_msg = str(base_witness.get("msg", "constructive_center"))
         base_xi = base_witness.get("xi")
     else:
-        base_hz_feasible, base_hz_feas_msg = _base_hz_feasibility(
-            hz, time_limit=args.base_feas_timeout
+        base_status, base_msg = _solver_hz_base_feasibility(
+            hz, time_limit=float(args.base_feas_timeout)
         )
+        base_hz_feasible = base_status == "FEASIBLE"
+        base_hz_feas_msg = f"{base_status}:{base_msg}"
         base_xi = None
         if base_witness:
             base_hz_feas_msg = f"{base_hz_feas_msg}; witness={base_witness.get('msg')}"
