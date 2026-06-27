@@ -20,7 +20,6 @@ from act.back_end.solver.solver_hz import (
     _fresh_col_ids,
     hz_multiply,
     hz_add_const,
-    hz_minkowski_sum,
     hz_from_bounds,
     hz_compute_bounds,
     hz_inherit_known_nonempty,
@@ -963,7 +962,6 @@ def _relu_extend_ids(hz: HZono, k: int, *, compressed: bool = False):
     """
     if hz.col_ids is None:
         return None, None
-    from act.back_end.solver.solver_hz import _fresh_col_ids
     dev = hz.col_ids.device
     new_col = torch.cat([
         hz.col_ids,
