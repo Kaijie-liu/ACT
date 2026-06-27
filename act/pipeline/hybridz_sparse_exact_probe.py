@@ -12,21 +12,25 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 import numpy as np
-from act.back_end.solver.sparse_hz import SparseHZono as SparseHZ  # noqa: E402
-from act.back_end.solver.solver_hz_verdict import (  # noqa: E402
+from act.back_end.solver.sparse_hz import SparseHZono as SparseHZ
+from act.back_end.solver.solver_hz_verdict import (
     hz_base_feasibility,
     sparse_milp_cutoff_highs,
     sparse_milp_cutoff_scip,
     sparse_lp_min_margin,
 )
-from act.pipeline.hybridz_option_utils import parse_key_value_options  # noqa: E402
-from act.pipeline.hybridz_spec_utils import (  # noqa: E402
+from act.pipeline.hybridz_option_utils import parse_key_value_options
+from act.pipeline.hybridz_sparse_census import (
+    build_net_and_interval,
+    format_big,
+)
+from act.pipeline.hybridz_spec_utils import (
     check_real_unsafe,
     flatten_query_specs,
     input_center_radius_indices,
     interval_hard_rivals_from_specs,
 )
-from act.back_end.hybridz_tf.sparse_ops import (  # noqa: E402
+from act.back_end.hybridz_tf.sparse_ops import (
     _sigmoid_deriv_np,
     _sigmoid_np,
     _tanh_deriv_np,
@@ -90,11 +94,6 @@ SPARSE_SUPPORTED_KINDS = {
     "MATMUL",
     "SOFTMAX",
 }
-
-from act.pipeline.hybridz_sparse_census import (  # noqa: E402
-    build_net_and_interval,
-    format_big,
-)
 
 
 def _relu_exact(
