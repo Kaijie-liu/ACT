@@ -2,6 +2,11 @@
 
 Date: 2026-06-25
 
+Post-commit note: the boundary defined here was used for the initial Stage-II
+productization commits.  The packaged worker modules listed later in this file
+were subsequently committed in `8738f50f6` (`Productize HybridZ packaged
+workers`).  The local `scripts/` directory remains excluded.
+
 Purpose: define the productization commit boundary before staging or committing
 the current HybridZ work.  This avoids accidentally committing local experiment
 scripts while also preventing product-path files from remaining untracked.
@@ -130,12 +135,11 @@ clean manifest.
 1. Re-run the focused self-tests above after any further edit.
 2. Confirm `git status --short` shows no accidental `scripts/` additions.
 3. The current runner now imports four package worker/probe modules that were
-   created after the boundary commit:
+   created after the boundary commit and committed in `8738f50f6`:
    `act/pipeline/hybridz_full_worker.py`,
    `act/pipeline/hybridz_sparse_worker.py`,
    `act/pipeline/hybridz_sparse_exact_probe.py`, and
-   `act/pipeline/hybridz_sparse_census.py`.  If this packaged-worker design is
-   kept, these files belong in the next productization commit; they are not
+   `act/pipeline/hybridz_sparse_census.py`.  They are product-path modules, not
    local `scripts/` files.
 4. If time permits, run the full frozen frontend reproduction with
    `--hybridz-require-frozen-match`; otherwise leave the goal active and record

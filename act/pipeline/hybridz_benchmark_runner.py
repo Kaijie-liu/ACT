@@ -462,6 +462,16 @@ def _branch_plan(cfg: HybridZBenchmarkConfig) -> list[HybridZRunBranch]:
             _distshift_scurve_branch(8),
         ]
         return branches
+    elif cfg.bench == "linearizenn_2024":
+        return [
+            normal,
+            HybridZRunBranch(
+                "linear_portfolio_m360",
+                set_env={"HZ_MILP_BACKEND": "portfolio"},
+                module=FULL_WORKER_MODULE,
+                module_args=("--milp-timeout", "360"),
+            ),
+        ]
     elif cfg.bench == "cora_2024":
         return [
             normal,
@@ -1520,7 +1530,7 @@ def _write_frozen_repro_check(
     payload = {
         "ok": status_counts == {"match": len(FROZEN_BENCHMARK_SUITE)},
         "status_counts": status_counts,
-        "expected_source": "FINAL_HYBRIDZ_RESULTS_20260625_SOUNDFIX.csv",
+        "expected_source": "FINAL_HYBRIDZ_RESULTS_20260627_FINAL.csv",
         "match_fields": list(FROZEN_REPRO_MATCH_FIELDS),
         "audit_only_fields": [
             field for field in FROZEN_SUMMARY_FIELDS if field not in FROZEN_REPRO_MATCH_FIELDS
@@ -1909,7 +1919,7 @@ def _test_hybridz_benchmark_runner() -> None:  # pragma: no cover
             "scurve_graph_k4_cutrow_scip",
             "scurve_graph_k8_scip",
         ],
-        "linearizenn_2024": ["normal"],
+        "linearizenn_2024": ["normal", "linear_portfolio_m360"],
         "tllverifybench_2023": [
             "sparse_tll_cutrow_eqsubst",
             "sparse_tll_objtarget_comprelu",
@@ -2259,8 +2269,8 @@ def _test_hybridz_benchmark_runner() -> None:  # pragma: no cover
             "CERT": "70",
             "ADV": "0",
             "V+A": "70",
-            "TIMEOUT": "0",
-            "UNKNOWN": "2",
+            "TIMEOUT": "2",
+            "UNKNOWN": "0",
             "ERROR": "0",
             "P0": "0",
             "unsolved": "2",
@@ -2276,8 +2286,8 @@ def _test_hybridz_benchmark_runner() -> None:  # pragma: no cover
     assert by_bench["linearizenn_2024"]["status"] == "mismatch"
     assert by_bench["linearizenn_2024"]["delta_ADV"] == -1
     assert by_bench["dist_shift_2023"]["status"] == "match"
-    assert by_bench["dist_shift_2023"]["delta_TIMEOUT"] == -2
-    assert by_bench["dist_shift_2023"]["delta_UNKNOWN"] == 2
+    assert by_bench["dist_shift_2023"]["delta_TIMEOUT"] == 2
+    assert by_bench["dist_shift_2023"]["delta_UNKNOWN"] == -2
     assert by_bench["cgan_2023"]["status"] == "missing"
     repro_paths = _write_frozen_repro_check(
         HybridZBenchmarkSuiteConfig(benches=FROZEN_BENCHMARK_SUITE, out_dir=suite_dir),

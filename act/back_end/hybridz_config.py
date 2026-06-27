@@ -231,25 +231,25 @@ FROZEN_HYBRIDZ_EXPECTED_COUNTS: Dict[str, Tuple[int, int, int, int, int, int, in
     "sat_relu": (100, 50, 50, 100, 0, 0, 0, 0, 0),
     "malbeware": (150, 131, 19, 150, 0, 0, 0, 0, 0),
     "cersyve": (12, 5, 6, 11, 0, 1, 0, 0, 1),
-    "acasxu_2023": (186, 86, 34, 120, 6, 60, 0, 0, 66),
-    "linearizenn_2024": (60, 39, 1, 40, 20, 0, 0, 0, 20),
-    "dist_shift_2023": (72, 70, 0, 70, 2, 0, 0, 0, 2),
-    "tllverifybench_2023": (32, 5, 12, 17, 14, 1, 0, 0, 15),
-    "cora_2024": (180, 19, 6, 25, 154, 1, 0, 0, 155),
-    "relusplitter": (220, 41, 2, 43, 108, 69, 0, 0, 177),
+    "acasxu_2023": (186, 86, 34, 120, 4, 62, 0, 0, 66),
+    "linearizenn_2024": (60, 39, 1, 40, 2, 18, 0, 0, 20),
+    "dist_shift_2023": (72, 70, 0, 70, 0, 2, 0, 0, 2),
+    "tllverifybench_2023": (32, 5, 12, 17, 0, 15, 0, 0, 15),
+    "cora_2024": (180, 20, 20, 40, 131, 9, 0, 0, 140),
+    "relusplitter": (220, 43, 2, 45, 77, 98, 0, 0, 175),
     "cgan_2023": (21, 5, 8, 13, 0, 8, 0, 0, 8),
 }
 
 FROZEN_HYBRIDZ_TOTAL_COUNTS: Tuple[int, int, int, int, int, int, int, int, int] = (
     2213,
-    977,
-    786,
-    1763,
-    309,
-    141,
+    980,
+    800,
+    1780,
+    219,
+    214,
     0,
     0,
-    450,
+    433,
 )
 
 # Empty: LP-tight [alpha,beta] is now ON for every benchmark.
@@ -437,9 +437,9 @@ def _test_hybridz_config() -> None:  # pragma: no cover
     assert tuple(totals) == FROZEN_HYBRIDZ_TOTAL_COUNTS
     total_row = frozen_hybridz_total_summary()
     assert total_row["N"] == 2213
-    assert total_row["CERT"] == 977
-    assert total_row["ADV"] == 786
-    assert total_row["V+A"] == 1763
+    assert total_row["CERT"] == 980
+    assert total_row["ADV"] == 800
+    assert total_row["V+A"] == 1780
     assert total_row["P0"] == 0
     with TemporaryDirectory() as tmp:
         path = Path(tmp) / "frozen.csv"
