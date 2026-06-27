@@ -343,6 +343,19 @@ packaged modules, but too much sparse exact-HZ probe logic still lives in
 	   act.pipeline.hybridz_benchmark_runner`; the packaged
 	   `--verify hybridz-benchmark` smoke; and the frozen manifest check.
 
+	   The sparse MILP cutoff engines and LP-relaxation matrix helper now have
+	   public solver-layer names:
+	   `sparse_milp_cutoff_highs`, `sparse_milp_cutoff_scip`, and
+	   `hz_relax_np_sparse`.  Packaged pipeline modules import those public names
+	   instead of `_milp_cutoff_*` / `_hz_relax_np_sparse`; the private names
+	   remain only as internal implementation targets and local legacy-script
+	   compatibility aliases.  Regression evidence: `python -m
+	   act.back_end.solver.solver_hz_verdict`, `python -m
+	   act.pipeline.hybridz_sparse_exact_probe --self-test`, the `sat_relu`
+	   sparse-worker smoke, the standard `--verify vnnlib --solvers hybridz`
+	   smoke, and a direct `hybridz_full_worker --bench sat_relu --iid 0`
+	   smoke returning `ADV/P0=false`.
+
 1. Audit `act/pipeline/hybridz_sparse_exact_probe.py` function families.
    Move reusable exact-HZ propagation and MILP export helpers into backend
    modules, and delete diagnostic branches that are not counted in the pure-HZ

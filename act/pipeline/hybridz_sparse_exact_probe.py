@@ -15,9 +15,9 @@ from typing import Dict, List, Optional, Tuple
 import numpy as np
 from act.back_end.solver.sparse_hz import SparseHZono as SparseHZ  # noqa: E402
 from act.back_end.solver.solver_hz_verdict import (  # noqa: E402
-    _milp_cutoff_highs,
-    _milp_cutoff_scip,
     hz_base_feasibility as _solver_hz_base_feasibility,
+    sparse_milp_cutoff_highs,
+    sparse_milp_cutoff_scip,
     sparse_highs_relaxation_empty_precheck as _highs_relaxation_empty_precheck,
     sparse_fbbt_tighten_bounds as _fbbt_tighten_bounds,
     sparse_lp_min_margin as _lp_min_margin,
@@ -970,7 +970,7 @@ def main() -> None:
             ts = time.time()
             stop_after_query = False
             if args.mip_solver == "scip":
-                status, mi, xi_mi = _milp_cutoff_scip(
+                status, mi, xi_mi = sparse_milp_cutoff_scip(
                     hz, C, t, args.milp_timeout,
                     elim_singletons=args.elim_singletons,
                     cutoff_as_row=args.cutoff_as_row,
@@ -978,7 +978,7 @@ def main() -> None:
                     scip_threads=args.scip_threads,
                     scip_options=extra_scip_options,
                 )
-                milp_stats = dict(getattr(_milp_cutoff_scip, "last_stats", {}))
+                milp_stats = dict(getattr(sparse_milp_cutoff_scip, "last_stats", {}))
                 attempts = [{
                     "profile": "scip",
                     "status": status,
@@ -994,7 +994,7 @@ def main() -> None:
                 milp_stats = {}
                 for profile_name, profile_options in highs_profiles:
                     ats = time.time()
-                    status, mi, xi_mi = _milp_cutoff_highs(
+                    status, mi, xi_mi = sparse_milp_cutoff_highs(
                         hz, C, t, args.milp_timeout,
                         elim_singletons=args.elim_singletons,
                         highs_threads=args.highs_threads,
@@ -1010,7 +1010,7 @@ def main() -> None:
                         fbbt_passes=args.fbbt_passes,
                         relax_precheck_timeout=args.relax_precheck_timeout,
                     )
-                    milp_stats = dict(getattr(_milp_cutoff_highs, "last_stats", {}))
+                    milp_stats = dict(getattr(sparse_milp_cutoff_highs, "last_stats", {}))
                     attempt = {
                         "profile": profile_name,
                         "status": status,

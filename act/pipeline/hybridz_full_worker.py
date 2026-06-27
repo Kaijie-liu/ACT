@@ -32,13 +32,13 @@ def _hz_solve(hz, C, t, is_uns):
     import numpy as np
     from scipy import sparse as sp
     from scipy.optimize import linprog
-    from act.back_end.solver.solver_hz_verdict import _hz_relax_np_sparse
+    from act.back_end.solver.solver_hz_verdict import hz_relax_np_sparse
     out_dim = int(hz.c.numel())
     C = np.asarray(C, dtype=np.float64).reshape(-1, out_dim)
     t = np.asarray(t, dtype=np.float64).reshape(-1)
     if t.size == 1 and C.shape[0] != 1:
         t = np.repeat(t, C.shape[0])
-    c, Gc, Gb, A_eq_base, be, A_ub_base, bl = _hz_relax_np_sparse(hz)
+    c, Gc, Gb, A_eq_base, be, A_ub_base, bl = hz_relax_np_sparse(hz)
     ng, nb = Gc.shape[1], Gb.shape[1]
 
     if ng + nb == 0:

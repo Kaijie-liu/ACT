@@ -107,11 +107,11 @@ def _row_dot_gen(row, gen) -> np.ndarray:
 
 
 def _hz_relax_np_sparse(hz):
-    """Legacy sparse LP-relaxation matrices for local diagnostic scripts.
+    """Sparse LP-relaxation matrices for HybridZ LP prefilters/diagnostics.
 
     The production HybridZ verdict path below builds its own exact LP/MILP rows
-    through ``_objbound_solve``.  Keep this private helper only while legacy
-    local scripts still import it for excluded LP-witness diagnostics.
+    through ``_objbound_solve``.  The public alias below is kept for packaged
+    worker LP prefilters; local legacy scripts may still import the private name.
     """
     cached = getattr(hz, "_solver_relax_sparse_cache", None)
     if cached is not None:
@@ -122,6 +122,9 @@ def _hz_relax_np_sparse(hz):
     out = (c, Gc, Gb, Aeq, be, Aub, bl)
     setattr(hz, "_solver_relax_sparse_cache", out)
     return out
+
+
+hz_relax_np_sparse = _hz_relax_np_sparse
 
 
 def _csr_rowsum(A) -> np.ndarray:
@@ -2417,6 +2420,10 @@ def _milp_cutoff_scip(
     return status, val, xi if val is not None else None
 
 
+sparse_milp_cutoff_highs = _milp_cutoff_highs
+sparse_milp_cutoff_scip = _milp_cutoff_scip
+
+
 def _spec_np(C, thresholds, out_dim: int):
     C = np.asarray(C, dtype=np.float64).reshape(-1, out_dim)
     t = np.asarray(thresholds, dtype=np.float64).reshape(-1)
@@ -3235,6 +3242,10 @@ def hz_certify_spec(hz, C, thresholds, *, is_unsafe_linear: bool,
 def _test_sparse_hz_verdict_parity() -> None:  # pragma: no cover
     import torch
 
+    assert hz_relax_np_sparse is _hz_relax_np_sparse
+    assert sparse_milp_cutoff_highs is _milp_cutoff_highs
+    assert sparse_milp_cutoff_scip is _milp_cutoff_scip
+
     dtype = torch.float64
     hz = HZono(
         c=torch.zeros(2, 1, dtype=dtype),
@@ -3467,12 +3478,15 @@ __all__ = [
     "hz_base_feasibility",
     "hz_base_witness",
     "hz_certify_spec",
+    "hz_relax_np_sparse",
     "hz_joint_min_margin",
     "hz_row_max",
     "hz_objbound_decide",
     "sparse_highs_relaxation_empty_precheck",
     "sparse_fbbt_tighten_bounds",
     "sparse_lp_min_margin",
+    "sparse_milp_cutoff_highs",
+    "sparse_milp_cutoff_scip",
     "sparse_row_bound_infeasible",
     "sparse_solver_start_from_xi",
 ]

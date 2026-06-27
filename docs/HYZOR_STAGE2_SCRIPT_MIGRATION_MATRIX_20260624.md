@@ -292,3 +292,7 @@ local legacy scripts still import it:
 
 The production `act/` path does not import `scripts/`, and these private-helper
 imports are not part of `--solvers hybridz` or `--verify hybridz-benchmark`.
+Packaged modules now use the public solver-layer aliases
+`hz_relax_np_sparse`, `sparse_milp_cutoff_highs`, and
+`sparse_milp_cutoff_scip`; the private names remain only for implementation
+internals and local legacy-script compatibility.
