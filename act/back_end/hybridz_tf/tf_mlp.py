@@ -769,6 +769,8 @@ def tf_slice(L, bounds, tf):
 
 
 def _gather_row_idx(L, n):
+    if "input_shape" not in L.params:
+        return None
     inp_shape = tuple(int(d) for d in L.params["input_shape"])
     per = _prod(inp_shape)
     if per == 0 or n % per != 0:
@@ -778,11 +780,14 @@ def _gather_row_idx(L, n):
     if axis < 0:
         axis += len(inp_shape)
     raw_idx = L.params["indices"]
-    indices = (torch.tensor(raw_idx, dtype=torch.long)
-               if isinstance(raw_idx, (list, tuple))
-               else raw_idx.detach().cpu().long())
+    if isinstance(raw_idx, (list, tuple)):
+        indices = torch.tensor(raw_idx, dtype=torch.long)
+    elif hasattr(raw_idx, "detach"):
+        indices = raw_idx.detach().cpu().long()
+    else:
+        indices = torch.as_tensor(raw_idx, dtype=torch.long)
     idx = torch.arange(n).view(B, *inp_shape)
-    return torch.index_select(idx, dim=axis + 1, index=indices).reshape(-1)
+    return torch.index_select(idx, dim=axis + 1, index=indices.reshape(-1)).reshape(-1)
 
 
 def tf_gather(L, bounds, tf):

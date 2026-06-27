@@ -17,6 +17,7 @@ import scipy.sparse as sp
 from scipy.optimize import linprog
 
 from act.back_end.solver.sparse_hz import SparseHZono as SparseHZ  # noqa: E402
+import act.back_end.hybridz_tf.tf_mlp as hz_mlp  # noqa: E402
 from act.back_end.hybridz_tf.sparse_ops import (  # noqa: E402
     _merge_equalities as _merge_linear_constraints,
     _merge_uppers as _merge_upper_constraints,
@@ -104,43 +105,13 @@ def _concat_hz(parts: List[SparseHZ], n_cont: int, n_bin: int) -> SparseHZ:
 
 
 def _slice_row_idx_np(L, n: int) -> Optional[np.ndarray]:
-    if "input_shape" not in L.params:
-        return None
-    inp_shape = tuple(int(d) for d in L.params["input_shape"])
-    per = int(np.prod(inp_shape, dtype=np.int64))
-    if per == 0 or int(n) % per != 0:
-        return None
-    bsz = int(n) // per
-    idx = np.arange(int(n), dtype=np.int64).reshape((bsz,) + inp_shape)
-    starts = L.params.get("starts", [])
-    ends = L.params.get("ends", [])
-    axes = L.params.get("axes", list(range(len(inp_shape))))
-    steps = L.params.get("steps", [1] * len(axes))
-    slices = [slice(None)] * (len(inp_shape) + 1)
-    for i, axis in enumerate(axes):
-        axis = int(axis)
-        end = int(ends[i])
-        if end > inp_shape[axis]:
-            end = inp_shape[axis]
-        slices[axis + 1] = slice(int(starts[i]), end, int(steps[i]))
-    return idx[tuple(slices)].reshape(-1)
+    rows = hz_mlp._slice_row_idx(L, int(n))
+    return None if rows is None else rows.detach().cpu().numpy().astype(np.int64).reshape(-1)
 
 
 def _gather_row_idx_np(L, n: int) -> Optional[np.ndarray]:
-    if "input_shape" not in L.params:
-        return None
-    inp_shape = tuple(int(d) for d in L.params["input_shape"])
-    per = int(np.prod(inp_shape, dtype=np.int64))
-    if per == 0 or int(n) % per != 0:
-        return None
-    bsz = int(n) // per
-    axis = int(L.params.get("axis", 0))
-    if axis < 0:
-        axis += len(inp_shape)
-    raw = L.params["indices"]
-    indices = raw.detach().cpu().numpy().astype(np.int64) if hasattr(raw, "detach") else np.asarray(raw, dtype=np.int64)
-    idx = np.arange(int(n), dtype=np.int64).reshape((bsz,) + inp_shape)
-    return np.take(idx, indices, axis=axis + 1).reshape(-1)
+    rows = hz_mlp._gather_row_idx(L, int(n))
+    return None if rows is None else rows.detach().cpu().numpy().astype(np.int64).reshape(-1)
 
 
 def _input_spec_hz(inspec, n_in: int) -> SparseHZ:
