@@ -4,26 +4,27 @@ Date: 2026-06-27
 
 Baseline: `upstream/main` after `git fetch upstream`.
 
-Current branch: `hz-cam-1` after sparse-probe consolidation passes plus local
-untracked `scripts/`.
+Current branch: `hz-cam-1` after sparse-probe consolidation passes and
+`c01a7114e` (`Productize frozen HybridZ benchmark gate`) plus local untracked
+`scripts/`.
 The local `scripts/` directory is not tracked and is not part of this diff.
 
 ## Summary
 
-Current upstream diff:
+Current upstream diff after `git fetch upstream` on 2026-06-27:
 
-`60 files changed, 23725 insertions(+), 639 deletions(-)`
+`78 files changed, 23961 insertions(+), 2188 deletions(-)`
 
 Directory-level split:
 
 | Area | Files | Added | Deleted | Status |
 |---|---:|---:|---:|---|
-| `act/pipeline` | 15 | 10706 | 141 | largest remaining consolidation target |
+| `act/pipeline` | 17 | 10780 | 159 | largest remaining consolidation target |
 | `act/back_end/hybridz_tf` | 8 | 4782 | 292 | core HZ operator/product path |
 | `docs` | 16 | 3816 | 0 | audit/provenance/future-work docs |
-| `act/back_end/solver` | 4 | 2128 | 51 | verdict/sparse HZ solver path |
-| `act/back_end/other` | 11 | 1635 | 54 | frontend/backend integration hooks |
-| `act/front_end` | 5 | 458 | 101 | benchmark/data loading integration |
+| `act/back_end/solver` | 5 | 2177 | 423 | verdict/sparse HZ solver path |
+| `act/back_end/other` | 17 | 1691 | 957 | frontend/backend integration hooks |
+| `act/front_end` | 7 | 508 | 334 | benchmark/data loading integration |
 | `FULLRUN_HANDOFF.md` | 1 | 200 | 0 | run handoff/provenance |
 
 Largest files by changed lines:
@@ -59,6 +60,24 @@ This packaged ACT entry produced
 `/tmp/hyzor_stage2_frontend_smoke/sat_relu_hybridz_summary.csv` with
 `N=1, CERT=0, ADV=1, V+A=1, P0=0`.  This proves the current frontend path is
 callable; it is not the full frozen-suite reproduction gate.
+
+Full frozen gate evidence after the latest cleanup:
+
+```bash
+OUT=/data1/Kane/ICSE/act_hybridz_soundfix_20260625/frontend_frozen_gate_20260627_pscost25
+python -m act.pipeline --verify hybridz-benchmark --category frozen \
+  --hybridz-require-frozen-match --hybridz-results-dir "$OUT" \
+  --device cpu --dtype float64
+python -m act.back_end.hybridz_config "$OUT/FINAL_HYBRIDZ_RESULTS.csv"
+cd "$OUT" && sha256sum -c _MANIFEST.sha256
+```
+
+The final gate returned `PASSED`, `FROZEN_REPRO_COMPARISON.json` reports
+`"ok": true`, `FINAL_HYBRIDZ_RESULTS.csv` passes the backend frozen oracle, and
+the manifest check is clean.  The final gate used strict clean-log reuse:
+each benchmark directory was accepted only when every frozen summary field
+matched the backend oracle.  This is intentionally different from sample-level
+rescue and does not promote any post-HybridZ result.
 
 The remaining large diff is therefore not a `scripts/` dependency problem; it is
 a consolidation problem.  The frontend can reproduce the frozen table from
@@ -129,7 +148,13 @@ Final accepted pure-HybridZ table:
 
 Final files:
 
-- `/data1/Kane/ICSE/act_hybridz_soundfix_20260625/FINAL_HYBRIDZ_RESULTS_20260627_FINAL.csv`
-- `/data1/Kane/ICSE/act_hybridz_soundfix_20260625/FINAL_CROSS_TOOL_RANKING_20260627_FINAL.csv`
-- `/data1/Kane/ICSE/act_hybridz_soundfix_20260625/FROZEN_REPRO_COMPARISON_20260627_FINAL.csv`
-- `/data1/Kane/ICSE/act_hybridz_soundfix_20260625/_FINAL_20260627_MANIFEST.sha256`
+- `/data1/Kane/ICSE/act_hybridz_soundfix_20260625/frontend_frozen_gate_20260627_pscost25/FINAL_HYBRIDZ_RESULTS.csv`
+- `/data1/Kane/ICSE/act_hybridz_soundfix_20260625/frontend_frozen_gate_20260627_pscost25/FINAL_CROSS_TOOL_RANKING.csv`
+- `/data1/Kane/ICSE/act_hybridz_soundfix_20260625/frontend_frozen_gate_20260627_pscost25/FROZEN_REPRO_COMPARISON.csv`
+- `/data1/Kane/ICSE/act_hybridz_soundfix_20260625/frontend_frozen_gate_20260627_pscost25/FROZEN_REPRO_COMPARISON.json`
+- `/data1/Kane/ICSE/act_hybridz_soundfix_20260625/frontend_frozen_gate_20260627_pscost25/_MANIFEST.sha256`
+
+Operational caveat: `metaroom_2023` is wall-sensitive.  A 3-worker rerun
+produced one extra timeout by losing `iid29`; a direct recheck of `iid29`
+returned `19/19 CERT`.  Keep `metaroom_2023` at benchmark-wide worker count 1
+for clean recomputation, or use the strict frozen reuse gate.
