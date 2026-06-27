@@ -70,7 +70,7 @@ def _torch_csr(t):
     return _sp.csr_matrix(t.detach().cpu().numpy(), dtype=np.float64)
 
 
-def _hz_np_sparse(hz):
+def hz_np_sparse(hz):
     """Dense output rows + sparse constraint rows for solver construction.
 
     The final spec only touches the output dimension, so ``Gc/Gb`` stay dense and
@@ -97,6 +97,9 @@ def _hz_np_sparse(hz):
     return out
 
 
+_hz_np_sparse = hz_np_sparse
+
+
 def _mat_dot_gen(mat, gen) -> np.ndarray:
     """Return ``mat @ gen`` as a dense ndarray for solver objective rows."""
 
@@ -120,7 +123,7 @@ def hz_relax_np_sparse(hz):
     cached = getattr(hz, "_solver_relax_sparse_cache", None)
     if cached is not None:
         return cached
-    c, Gc, Gb, Ace, Abe, be, Acl, Abl, bl = _hz_np_sparse(hz)
+    c, Gc, Gb, Ace, Abe, be, Acl, Abl, bl = hz_np_sparse(hz)
     Aeq = _sp.hstack([Ace, Abe], format="csr") if Ace.shape[0] else None
     Aub = _sp.hstack([Acl, Abl], format="csr") if Acl.shape[0] else None
     out = (c, Gc, Gb, Aeq, be, Aub, bl)
@@ -2436,7 +2439,7 @@ def hz_row_max(hz, c_row: np.ndarray, *, integer: bool = False,
     """max_y (c_row . y) over the HZ. LP relaxation (convex hull) or MILP."""
     if not _HAS_SCIPY:
         return None
-    c, Gc, Gb, Ace, Abe, be, Acl, Abl, bl = _hz_np_sparse(hz)
+    c, Gc, Gb, Ace, Abe, be, Acl, Abl, bl = hz_np_sparse(hz)
     c_row = np.asarray(c_row, dtype=np.float64).reshape(-1)
     ng, nb = Gc.shape[1], Gb.shape[1]
     obj_c = _row_dot_gen(c_row, Gc)
@@ -2481,7 +2484,7 @@ def hz_joint_min_margin(hz, C: np.ndarray, t: np.ndarray, *,
     """s* = min_y max_r (C[r] y - t[r]) over the HZ (epigraph form)."""
     if not _HAS_SCIPY:
         return None
-    c, Gc, Gb, Ace, Abe, be, Acl, Abl, bl = _hz_np_sparse(hz)
+    c, Gc, Gb, Ace, Abe, be, Acl, Abl, bl = hz_np_sparse(hz)
     C, t = _spec_np(C, t, c.size)
     ng, nb = Gc.shape[1], Gb.shape[1]
     nrow = C.shape[0]
@@ -2883,7 +2886,7 @@ def _objbound_solve(cost, obj_thr, A, rl, ru, lb, ub, integ_mask, time_limit,
 
 
 def _base_milp_matrices(hz):
-    c, Gc, Gb, Ace, Abe, be, Acl, Abl, bl = _hz_np_sparse(hz)
+    c, Gc, Gb, Ace, Abe, be, Acl, Abl, bl = hz_np_sparse(hz)
     ng, nb = int(Gc.shape[1]), int(Gb.shape[1])
     rows_A, rl, ru = [], [], []
     if Ace.shape[0]:
@@ -3041,7 +3044,7 @@ def hz_base_witness(hz, *, time_limit: float = 10.0):
 
 def _hz_spec_unsafe_at_xi(hz, C, t, xi, *, is_unsafe_linear: bool,
                           tol: float = 1e-9) -> bool:
-    c, Gc, Gb, *_ = _hz_np_sparse(hz)
+    c, Gc, Gb, *_ = hz_np_sparse(hz)
     xi = np.asarray(xi, dtype=np.float64).reshape(-1)
     ng, nb = int(Gc.shape[1]), int(Gb.shape[1])
     if xi.size < ng + nb:
@@ -3071,7 +3074,7 @@ def hz_objbound_decide(hz, C, thresholds, *, is_unsafe_linear: bool,
     if not (_HAS_HIGHSPY and _HAS_SCIPY):
         return ("UNKNOWN", None)
     setattr(hz, "_solver_last_witness_source", None)
-    c, Gc, Gb, Ace, Abe, be, Acl, Abl, bl = _hz_np_sparse(hz)
+    c, Gc, Gb, Ace, Abe, be, Acl, Abl, bl = hz_np_sparse(hz)
     C, t = _spec_np(C, thresholds, c.size)
     ng, nb = Gc.shape[1], Gb.shape[1]
 
@@ -3197,7 +3200,7 @@ def hz_certify_spec(hz, C, thresholds, *, is_unsafe_linear: bool,
     """
     if not _HAS_SCIPY:
         return False, None
-    c0, Gc0, Gb0, *_ = _hz_np_sparse(hz)
+    c0, Gc0, Gb0, *_ = hz_np_sparse(hz)
     C, t = _spec_np(C, thresholds, int(c0.size))
     if require_base_feasible:
         base_status, _ = hz_base_feasibility(hz, time_limit=min(float(time_limit), 10.0))
@@ -3241,6 +3244,7 @@ def hz_certify_spec(hz, C, thresholds, *, is_unsafe_linear: bool,
 def _test_sparse_hz_verdict_parity() -> None:  # pragma: no cover
     import torch
 
+    assert hz_np_sparse is _hz_np_sparse
     assert hz_relax_np_sparse is _hz_relax_np_sparse
     assert sparse_milp_cutoff_highs is _milp_cutoff_highs
     assert sparse_milp_cutoff_scip is _milp_cutoff_scip
@@ -3480,6 +3484,7 @@ __all__ = [
     "hz_base_feasibility",
     "hz_base_witness",
     "hz_certify_spec",
+    "hz_np_sparse",
     "hz_relax_np_sparse",
     "hz_joint_min_margin",
     "hz_row_max",

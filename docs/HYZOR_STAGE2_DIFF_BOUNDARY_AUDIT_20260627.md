@@ -349,11 +349,12 @@ packaged modules, but too much sparse exact-HZ probe logic still lives in
 
 	   The sparse MILP cutoff engines and LP-relaxation matrix helper now have
 	   public solver-layer names:
-	   `sparse_milp_cutoff_highs`, `sparse_milp_cutoff_scip`, and
-	   `hz_relax_np_sparse`.  Packaged pipeline modules import those public names
-	   instead of `_milp_cutoff_*` / `_hz_relax_np_sparse`; the private names
-	   remain only as local legacy-script compatibility aliases.  The solver
-	   implementation itself now calls the
+	   `sparse_milp_cutoff_highs`, `sparse_milp_cutoff_scip`,
+	   `hz_np_sparse`, and `hz_relax_np_sparse`.  Packaged pipeline modules
+	   import those public names instead of `_milp_cutoff_*` /
+	   `_hz_np_sparse` / `_hz_relax_np_sparse`; the private names remain only
+	   as local legacy-script compatibility aliases.  The solver implementation
+	   itself now calls the
 	   public sparse helper names directly for sparse FBBT, row-bound
 	   infeasibility, solver-start reconstruction, and HiGHS relaxation EMPTY
 	   precheck; old private spellings remain as compatibility aliases only.  Regression

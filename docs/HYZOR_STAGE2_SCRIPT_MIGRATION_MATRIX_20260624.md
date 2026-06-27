@@ -287,12 +287,12 @@ as local legacy-script compatibility aliases:
 | Script | Private helper | Current use | Cleanup action |
 |---|---|---|---|
 | `scripts/hz_full_worker.py` | `solver_hz_verdict._hz_relax_np_sparse` | Compatibility alias for the public `hz_relax_np_sparse`; LP-relaxation witness/guided diagnostic code is explicitly excluded from counted pure-HZ results | Keep only as a short-term alias; productized package code imports `hz_relax_np_sparse` |
-| `scripts/hz_full_worker.py` | `solver_hz._split_eq_le` | Phase-fix/guided diagnostic helper logic | Same treatment: do not expose as product API |
-| `scripts/hz_query_trace.py` | `solver_hz_verdict._hz_np_sparse` | Query tracing/debug of solver matrices | Keep as debug-only script dependency until replaced by a proper trace API or deleted |
+| `scripts/hz_full_worker.py` | `solver_hz._split_eq_le` | Compatibility alias for the public `hz_split_constraints`; phase-fix/guided diagnostic logic is excluded from counted pure-HZ results | Keep only as a short-term alias; productized package code imports `hz_split_constraints` |
+| `scripts/hz_query_trace.py` | `solver_hz_verdict._hz_np_sparse` | Compatibility alias for the public `hz_np_sparse`; query tracing/debug of solver matrices | Keep only as a short-term alias; productized package code imports `hz_np_sparse` |
 
 The production `act/` path does not import `scripts/`, and these private-helper
 imports are not part of `--solvers hybridz` or `--verify hybridz-benchmark`.
 Packaged modules now use the public solver-layer aliases
-`hz_relax_np_sparse`, `sparse_milp_cutoff_highs`, and
-`sparse_milp_cutoff_scip`; the private names remain only as local
-legacy-script compatibility aliases.
+`hz_np_sparse`, `hz_relax_np_sparse`, `sparse_milp_cutoff_highs`, and
+`sparse_milp_cutoff_scip`; the private names remain only as local legacy-script
+compatibility aliases.
