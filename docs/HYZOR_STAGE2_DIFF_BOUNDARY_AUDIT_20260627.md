@@ -12,7 +12,7 @@ The local `scripts/` directory is not tracked and is not part of this diff.
 
 Current upstream diff:
 
-`60 files changed, 23951 insertions(+), 639 deletions(-)`
+`60 files changed, 23964 insertions(+), 639 deletions(-)`
 
 Directory-level split:
 
@@ -20,7 +20,7 @@ Directory-level split:
 |---|---:|---:|---:|---|
 | `act/pipeline` | 15 | 10960 | 141 | largest remaining consolidation target |
 | `act/back_end/hybridz_tf` | 8 | 4782 | 292 | core HZ operator/product path |
-| `docs` | 16 | 3788 | 0 | audit/provenance/future-work docs |
+| `docs` | 16 | 3801 | 0 | audit/provenance/future-work docs |
 | `act/back_end/solver` | 4 | 2128 | 51 | verdict/sparse HZ solver path |
 | `act/back_end/other` | 11 | 1635 | 54 | frontend/backend integration hooks |
 | `act/front_end` | 5 | 458 | 101 | benchmark/data loading integration |
@@ -46,6 +46,19 @@ Largest files by changed lines:
 The current product path no longer imports `scripts/`.  A scan over `act/`
 finds only the runner self-test assertion that generated commands must not
 contain `scripts/` paths.
+
+Frontend smoke evidence after the latest cleanup:
+
+```bash
+python -m act.pipeline --verify hybridz-benchmark --category sat_relu \
+  --max-instances 1 --hybridz-workers 1 --hybridz-timeout-cap 120 \
+  --hybridz-results-dir /tmp/hyzor_stage2_frontend_smoke
+```
+
+This packaged ACT entry produced
+`/tmp/hyzor_stage2_frontend_smoke/sat_relu_hybridz_summary.csv` with
+`N=1, CERT=0, ADV=1, V+A=1, P0=0`.  This proves the current frontend path is
+callable; it is not the full frozen-suite reproduction gate.
 
 The remaining large diff is therefore not a `scripts/` dependency problem; it is
 a consolidation problem.  The frontend can reproduce the frozen table from
