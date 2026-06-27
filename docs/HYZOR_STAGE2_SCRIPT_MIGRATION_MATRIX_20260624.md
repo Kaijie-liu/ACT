@@ -21,6 +21,15 @@ runner now applies the correct split-disjunct aggregation rule; metaroom is
 Current productization status and remaining Definition-of-Done gaps are tracked
 in `docs/HYZOR_STAGE2_PRODUCTIZATION_STATUS_20260625.md`.
 
+2026-06-27 current-state addendum: the active frozen artifact is now
+`/data1/Kane/ICSE/act_hybridz_soundfix_20260625/frontend_frozen_gate_20260627_pscost25`
+with `1780/2213 = 980 CERT + 800 ADV`, `P0=0`, `ERROR=0`.
+`python -m act.pipeline --verify vnnlib ... --solvers hybridz` is now a
+first-class frontend path, and `python -m act.pipeline --verify
+hybridz-benchmark --category frozen --hybridz-require-frozen-match` is the
+packaged frozen-suite gate.  Use the 2026-06-27 diff-boundary audit for the
+latest completion evidence.
+
 ## Rules Used For This Matrix
 
 - Productize only benchmark-wide pure-HybridZ behavior.
@@ -102,8 +111,8 @@ in `docs/HYZOR_STAGE2_PRODUCTIZATION_STATUS_20260625.md`.
 | Sparse CSR HZ data structure | `cifar_sparse_exact_probe.py` | `solver/sparse_hz.py` | migrated |
 | Sparse Conv2D/Dense affine | `cifar_sparse_exact_probe.py` | `sparse_ops.py` | migrated |
 | Sparse constant-side MatMul exact affine | dense path/probe audit | `sparse_ops.py`, `HybridzTF` sparse MATMUL branch | migrated for point-left/point-right operands |
-| Sparse var-var MatMul product relaxation | `cifar_sparse_exact_probe.py` | none selected | future work only; not exact-affine core |
-| Sparse Softmax/simplex relaxation | `cifar_sparse_exact_probe.py` | none selected | future work only; not counted exact-HZ core |
+| Sparse var-var MatMul product relaxation | `cifar_sparse_exact_probe.py` | `sparse_ops.py` | migrated as a sound sparse product-interval lift with backend structural self-test; not an exact-affine core operator |
+| Sparse Softmax/simplex relaxation | `cifar_sparse_exact_probe.py` | `sparse_ops.py` | migrated as a sound simplex/range sparse operator with backend structural self-test; keep its exactness boundary explicit |
 | Sparse ConvTranspose/AvgPool/MaxPool | `validate_sparse_ops.py`, probe | `sparse_ops.py` | migrated with toy self-test |
 | Sparse Add/Sub/Concat/Gather/Shape ops | probe | `sparse_ops.py`, `HybridzTF` sparse propagation | migrated for core paths |
 | Sparse Sigmoid/Tanh S-curve | probe/dist_shift census | `sparse_ops.py`, CLI/profile flags | migrated for current profile |
@@ -147,15 +156,17 @@ in `docs/HYZOR_STAGE2_PRODUCTIZATION_STATUS_20260625.md`.
 ## First Function-Level Probe Audit Result
 
 The first function-family audit of `cifar_sparse_exact_probe.py` found one
-clean exact-affine migration target and two research-only operator families:
+clean exact-affine migration target and two non-exact-affine sparse operators
+that need an explicit soundness boundary:
 
 - constant-side `MATMUL` is now represented as an exact sparse affine operator
   when either operand is a point HZ state;
-- var-var `MATMUL` product relaxations are not migrated into the counted core,
-  because they need a separate proof/audit boundary before being treated as a
-  pure-HybridZ operator;
-- `SOFTMAX` simplex/ratio relaxations remain future work and must not be used
-  as a counted exact-HZ verdict path.
+- var-var `MATMUL` product relaxation is now in `sparse_ops.py` with a backend
+  structural self-test, but it remains a sound overapproximation rather than an
+  exact affine HZ operator;
+- `SOFTMAX` simplex/range relaxation is now in `sparse_ops.py` with a backend
+  structural self-test, but it must remain outside any exact-only claim unless
+  the benchmark profile explicitly allows that sound relaxation.
 
 The next cleanup pass should continue auditing `cifar_sparse_exact_probe.py`
 against `sparse_ops.py` and `solver_hz_verdict.py` by function family:
