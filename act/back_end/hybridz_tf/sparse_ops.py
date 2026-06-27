@@ -2380,6 +2380,384 @@ def sparse_hz_apply_scurve_piecewise(
     return out
 
 
+def sparse_hz_apply_scurve_piecewise_full(
+    hz: SparseHZono,
+    pre_bounds: Optional[Bounds] = None,
+    *,
+    K: int = 2,
+    compressed: bool = False,
+    func=_sigmoid_np,
+    dfunc=_sigmoid_deriv_np,
+    inflection: float = 0.0,
+    domain_cuts: bool = False,
+    graph_cuts: bool = False,
+    grid: str = "uniform",
+    return_info: bool = False,
+):
+    """Full sparse HZ S-curve encoding, preserving zero-width side segments."""
+
+    if pre_bounds is None:
+        pre_bounds = sparse_hz_fast_bounds(hz)
+    grid = str(grid or "uniform")
+    lb, ub = _bounds_arrays(pre_bounds, hz.n_out)
+    wide = (ub - lb) > 1e-12
+    wide_idx = np.nonzero(wide)[0].astype(np.int32)
+    narrow_idx = np.nonzero(~wide)[0].astype(np.int32)
+    n = hz.n_out
+    ng = hz.n_cont
+    nb = hz.n_bin
+    m = int(wide_idx.size)
+
+    out_c = np.zeros(n, dtype=np.float64)
+    if narrow_idx.size:
+        out_c[narrow_idx] = func(hz.c[narrow_idx])
+    if m == 0:
+        out = SparseHZono(
+            out_c,
+            sparse_empty(n, ng),
+            sparse_empty(n, nb),
+            hz.Ac,
+            hz.Ab,
+            hz.b,
+            hz.Auc,
+            hz.Aub,
+            hz.ub,
+            **_input_metadata_kwargs(hz),
+        )
+        if return_info:
+            return out, (0, int(narrow_idx.size)), {
+                "wide_idx": wide_idx,
+                "m": 0,
+                "compressed": bool(compressed),
+                "grid": grid,
+            }
+        return out
+
+    K_side = max(1, int(K))
+    lb_w = lb[wide_idx]
+    ub_w = ub[wide_idx]
+    pivot = np.maximum(np.minimum(float(inflection), ub_w), lb_w)
+    if grid == "uniform":
+        sid = np.arange(K_side, dtype=np.float64).reshape(-1, 1)
+        w_left = (pivot - lb_w).reshape(1, -1) / K_side
+        w_right = (ub_w - pivot).reshape(1, -1) / K_side
+        a_left = lb_w.reshape(1, -1) + sid * w_left
+        a_right = pivot.reshape(1, -1) + sid * w_right
+        a = np.vstack([a_left, a_right])
+        b_seg = np.vstack([a_left + w_left, a_right + w_right])
+    else:
+        a = np.zeros((2 * K_side, m), dtype=np.float64)
+        b_seg = np.zeros((2 * K_side, m), dtype=np.float64)
+        for j in range(m):
+            br_l = _scurve_breakpoints(
+                lb_w[j],
+                pivot[j],
+                K_side,
+                grid=grid,
+                func=func,
+                dfunc=dfunc,
+            )
+            br_r = _scurve_breakpoints(
+                pivot[j],
+                ub_w[j],
+                K_side,
+                grid=grid,
+                func=func,
+                dfunc=dfunc,
+            )
+            a[:K_side, j] = br_l[:-1]
+            b_seg[:K_side, j] = br_l[1:]
+            a[K_side:, j] = br_r[:-1]
+            b_seg[K_side:, j] = br_r[1:]
+    S = int(2 * K_side)
+
+    fa = func(a)
+    fb = func(b_seg)
+    deriv_a = dfunc(a)
+    deriv_b = dfunc(b_seg)
+    centers_x = (a + b_seg) / 2.0
+    centers_y = (fa + fb) / 2.0
+    nearly_linear = np.abs(deriv_a - deriv_b) < 1e-10
+
+    denom = deriv_b - deriv_a
+    safe_denom = np.where(nearly_linear, 1.0, denom)
+    p1 = (fb - fa + deriv_b * a - deriv_a * b_seg) / safe_denom
+    p2 = a + b_seg - p1
+    g1x_tang = (p1 - a) / 2.0
+    g1y_tang = deriv_b * (p1 - a) / 2.0
+    g2x_tang = (p2 - a) / 2.0
+    g2y_tang = deriv_a * (p2 - a) / 2.0
+
+    half_width = (b_seg - a) / 2.0
+    slope = (fb - fa) / (b_seg - a + 1e-30)
+    t_pts = np.linspace(0.0, 1.0, 50, dtype=np.float64).reshape(50, 1, 1)
+    pts = a.reshape(1, S, m) + t_pts * (b_seg - a).reshape(1, S, m)
+    f_pts = func(pts)
+    resid = f_pts - (slope.reshape(1, S, m) * pts + (fa - slope * a).reshape(1, S, m))
+    max_err = np.max(np.abs(resid), axis=0)
+    g1x_lin = half_width
+    g1y_lin = slope * half_width
+    g2x_lin = np.zeros_like(half_width)
+    g2y_lin = max_err
+
+    g1_x = np.where(nearly_linear, g1x_lin, g1x_tang)
+    g1_y = np.where(nearly_linear, g1y_lin, g1y_tang)
+    g2_x = np.where(nearly_linear, g2x_lin, g2x_tang)
+    g2_y = np.where(nearly_linear, g2y_lin, g2y_tang)
+
+    dx = pts - centers_x.reshape(1, S, m)
+    dy = f_pts - centers_y.reshape(1, S, m)
+    det = g1_y * g2_x - g1_x * g2_y
+    safe_det = np.where(np.abs(det) < 1e-30, 1.0, det)
+    xi1 = (dy * g2_x.reshape(1, S, m) - dx * g2_y.reshape(1, S, m)) / safe_det.reshape(1, S, m)
+    xi2 = (dy * g1_x.reshape(1, S, m) - dx * g1_y.reshape(1, S, m)) / (-safe_det.reshape(1, S, m))
+    max_xi = np.maximum(np.max(np.abs(xi1), axis=0), np.max(np.abs(xi2), axis=0))
+    scale_factor = np.where(max_xi > 1.0, max_xi * 1.01, 1.0)
+    scale_factor = np.where(np.abs(det) < 1e-30, 1.0, scale_factor)
+    g1_x *= scale_factor
+    g1_y *= scale_factor
+    g2_x *= scale_factor
+    g2_y *= scale_factor
+
+    out_c[wide_idx] = np.sum(centers_y, axis=0) / 2.0
+    seg = np.arange(S * m, dtype=np.int32).reshape(S, m)
+    flat_seg = seg.reshape(-1)
+    wide_rows = np.broadcast_to(wide_idx.reshape(1, -1), (S, m)).reshape(-1)
+    n_real = 2 * S * m
+    n_slack = 0 if compressed else 4 * S * m
+    ng_total = ng + n_real + n_slack
+    nb_total = nb + S * m
+
+    g1_cols = ng + flat_seg
+    g2_cols = ng + S * m + flat_seg
+    z_cols = nb + flat_seg
+    owner = np.broadcast_to(np.arange(m, dtype=np.int32).reshape(1, -1), (S, m)).reshape(-1)
+    out_Gc = sp.coo_matrix(
+        (
+            np.concatenate([g1_y.reshape(-1), g2_y.reshape(-1)]),
+            (
+                np.concatenate([wide_rows, wide_rows]),
+                np.concatenate([g1_cols, g2_cols]),
+            ),
+        ),
+        shape=(n, ng_total),
+        dtype=np.float64,
+    ).tocsr()
+    out_Gb = sp.coo_matrix(
+        (-centers_y.reshape(-1) / 2.0, (wide_rows, z_cols)),
+        shape=(n, nb_total),
+        dtype=np.float64,
+    ).tocsr()
+    out_Gc.eliminate_zeros()
+    out_Gb.eliminate_zeros()
+
+    n_box = 0 if compressed else 4 * S * m
+    n_eq_new = n_box + m + m
+    rr_c: List[np.ndarray] = []
+    cc_c: List[np.ndarray] = []
+    dd_c: List[np.ndarray] = []
+    rr_b: List[np.ndarray] = []
+    cc_b: List[np.ndarray] = []
+    dd_b: List[np.ndarray] = []
+
+    def add_c(rows, cols, data) -> None:
+        arr = np.asarray(data, dtype=np.float64).reshape(-1)
+        if arr.size:
+            rr_c.append(np.asarray(rows, dtype=np.int32).reshape(-1))
+            cc_c.append(np.asarray(cols, dtype=np.int32).reshape(-1))
+            dd_c.append(arr)
+
+    def add_b(rows, cols, data) -> None:
+        arr = np.asarray(data, dtype=np.float64).reshape(-1)
+        if arr.size:
+            rr_b.append(np.asarray(rows, dtype=np.int32).reshape(-1))
+            cc_b.append(np.asarray(cols, dtype=np.int32).reshape(-1))
+            dd_b.append(arr)
+
+    flat_rows = np.zeros(0, dtype=np.int32)
+    if not compressed:
+        row_grid = 4 * seg
+        flat_rows = row_grid.reshape(-1)
+        slack_base = ng + n_real + 4 * flat_seg
+        add_c(flat_rows, g1_cols, np.ones(S * m))
+        add_c(flat_rows, slack_base, np.ones(S * m))
+        add_b(flat_rows, z_cols, -0.5 * np.ones(S * m))
+        add_c(flat_rows + 1, g1_cols, -np.ones(S * m))
+        add_c(flat_rows + 1, slack_base + 1, np.ones(S * m))
+        add_b(flat_rows + 1, z_cols, -0.5 * np.ones(S * m))
+        add_c(flat_rows + 2, g2_cols, np.ones(S * m))
+        add_c(flat_rows + 2, slack_base + 2, np.ones(S * m))
+        add_b(flat_rows + 2, z_cols, -0.5 * np.ones(S * m))
+        add_c(flat_rows + 3, g2_cols, -np.ones(S * m))
+        add_c(flat_rows + 3, slack_base + 3, np.ones(S * m))
+        add_b(flat_rows + 3, z_cols, -0.5 * np.ones(S * m))
+
+    link_rows = n_box + np.arange(m, dtype=np.int32)
+    link_grid = np.broadcast_to(link_rows.reshape(1, -1), (S, m)).reshape(-1)
+    add_c(link_grid, g1_cols, -g1_x.reshape(-1))
+    add_c(link_grid, g2_cols, -g2_x.reshape(-1))
+    add_b(link_grid, z_cols, centers_x.reshape(-1) / 2.0)
+    pre_gc = hz.Gc[wide_idx].tocoo()
+    if pre_gc.nnz:
+        add_c(link_rows[pre_gc.row], pre_gc.col, pre_gc.data)
+    if nb:
+        pre_gb = hz.Gb[wide_idx].tocoo()
+        if pre_gb.nnz:
+            add_b(link_rows[pre_gb.row], pre_gb.col, pre_gb.data)
+
+    sum_rows = n_box + m + np.arange(m, dtype=np.int32)
+    sum_grid = np.broadcast_to(sum_rows.reshape(1, -1), (S, m)).reshape(-1)
+    add_b(sum_grid, z_cols, np.ones(S * m))
+
+    eq_b = np.zeros(n_eq_new, dtype=np.float64)
+    if not compressed:
+        eq_b[flat_rows] = 0.5
+        eq_b[flat_rows + 1] = 0.5
+        eq_b[flat_rows + 2] = 0.5
+        eq_b[flat_rows + 3] = 0.5
+    eq_b[link_rows] = np.sum(centers_x, axis=0) / 2.0 - hz.c[wide_idx]
+    eq_b[sum_rows] = float(S - 2)
+
+    eq_Ac = _coo_matrix_from_parts(rr_c, cc_c, dd_c, (n_eq_new, ng_total))
+    eq_Ab = _coo_matrix_from_parts(rr_b, cc_b, dd_b, (n_eq_new, nb_total))
+    Ac = sp.vstack([sparse_pad_cols(hz.Ac, ng_total), eq_Ac], format="csr")
+    Ab = sp.vstack([sparse_pad_cols(hz.Ab, nb_total), eq_Ab], format="csr")
+    Ac.eliminate_zeros()
+    Ab.eliminate_zeros()
+
+    base_Auc = sparse_pad_cols(
+        hz.Auc if hz.Auc is not None else sparse_empty(0, hz.n_cont),
+        ng_total,
+    )
+    base_Aub = sparse_pad_cols(
+        hz.Aub if hz.Aub is not None else sparse_empty(0, hz.n_bin),
+        nb_total,
+    )
+    base_ub = hz.ub if hz.ub is not None else np.zeros(0, dtype=np.float64)
+    if compressed:
+        box_rows = 4 * np.arange(S * m, dtype=np.int32)
+        box_Auc = sp.coo_matrix(
+            (
+                np.concatenate([
+                    np.ones(S * m),
+                    -np.ones(S * m),
+                    np.ones(S * m),
+                    -np.ones(S * m),
+                ]),
+                (
+                    np.concatenate([box_rows, box_rows + 1, box_rows + 2, box_rows + 3]),
+                    np.concatenate([g1_cols, g1_cols, g2_cols, g2_cols]),
+                ),
+            ),
+            shape=(4 * S * m, ng_total),
+            dtype=np.float64,
+        ).tocsr()
+        box_Aub = sp.coo_matrix(
+            (
+                0.5 * np.ones(4 * S * m, dtype=np.float64),
+                (
+                    np.concatenate([box_rows, box_rows + 1, box_rows + 2, box_rows + 3]),
+                    np.concatenate([z_cols, z_cols, z_cols, z_cols]),
+                ),
+            ),
+            shape=(4 * S * m, nb_total),
+            dtype=np.float64,
+        ).tocsr()
+        Auc = sp.vstack([base_Auc, box_Auc], format="csr")
+        Aub = sp.vstack([base_Aub, box_Aub], format="csr")
+        ub_rhs = np.concatenate([base_ub, 0.5 * np.ones(4 * S * m, dtype=np.float64)])
+    else:
+        Auc = base_Auc
+        Aub = base_Aub
+        ub_rhs = base_ub
+
+    if domain_cuts:
+        dom_Auc, dom_Aub, dom_rhs = _scurve_domain_cut_matrices(
+            hz,
+            wide_idx,
+            a.reshape(-1),
+            b_seg.reshape(-1),
+            owner,
+            z_cols,
+            ng_total,
+            nb_total,
+            lb_w,
+            ub_w,
+        )
+        rng_Auc, rng_Aub, rng_rhs = _scurve_range_cut_matrices(
+            out_c,
+            out_Gc,
+            out_Gb,
+            wide_idx,
+            fa.reshape(-1),
+            fb.reshape(-1),
+            owner,
+            z_cols,
+            ng_total,
+            nb_total,
+            func(lb_w),
+            func(ub_w),
+        )
+        Auc = sp.vstack([Auc, dom_Auc, rng_Auc], format="csr")
+        Aub = sp.vstack([Aub, dom_Aub, rng_Aub], format="csr")
+        ub_rhs = np.concatenate([ub_rhs, dom_rhs, rng_rhs])
+
+    if graph_cuts:
+        graph_Auc, graph_Aub, graph_rhs = _scurve_graph_cut_matrices(
+            hz,
+            out_c,
+            out_Gc,
+            out_Gb,
+            wide_idx,
+            a.reshape(-1),
+            b_seg.reshape(-1),
+            owner,
+            z_cols,
+            ng_total,
+            nb_total,
+            lb_w,
+            ub_w,
+            func=func,
+            dfunc=dfunc,
+        )
+        Auc = sp.vstack([Auc, graph_Auc], format="csr")
+        Aub = sp.vstack([Aub, graph_Aub], format="csr")
+        ub_rhs = np.concatenate([ub_rhs, graph_rhs])
+
+    Auc.eliminate_zeros()
+    Aub.eliminate_zeros()
+
+    out = SparseHZono(
+        out_c,
+        out_Gc,
+        out_Gb,
+        Ac,
+        Ab,
+        np.concatenate([hz.b, eq_b]),
+        Auc,
+        Aub,
+        ub_rhs,
+        **_input_metadata_kwargs(hz),
+    )
+    if return_info:
+        return out, (m, int(narrow_idx.size)), {
+            "wide_idx": wide_idx,
+            "m": m,
+            "S": S,
+            "a": a,
+            "b_seg": b_seg,
+            "centers_x": centers_x,
+            "centers_y": centers_y,
+            "g1_x": g1_x,
+            "g1_y": g1_y,
+            "g2_x": g2_x,
+            "g2_y": g2_y,
+            "compressed": bool(compressed),
+            "grid": grid,
+        }
+    return out
+
+
 def sparse_hz_apply_sigmoid_piecewise(
     hz: SparseHZono,
     pre_bounds: Optional[Bounds] = None,
@@ -2623,6 +3001,7 @@ __all__ = [
     "sparse_hz_apply_relu_exact",
     "sparse_hz_apply_softmax_simplex_layer",
     "sparse_hz_apply_scurve_piecewise",
+    "sparse_hz_apply_scurve_piecewise_full",
     "sparse_hz_apply_sigmoid_piecewise",
     "sparse_hz_apply_tanh_piecewise",
     "sparse_hz_concat",
@@ -3165,6 +3544,19 @@ def _test_sparse_affine_structural_ops() -> None:  # pragma: no cover
     )
     dense_sigmoid = hz_apply_sigmoid(dense_scurve_in, K=2)
     sparse_sigmoid = sparse_hz_apply_sigmoid_piecewise(sparse_scurve_in, K=2)
+    sparse_sigmoid_full = sparse_hz_apply_scurve_piecewise_full(
+        sparse_scurve_in,
+        K=2,
+        compressed=False,
+    )
+    sparse_sigmoid_full_comp, sparse_sigmoid_full_counts, sparse_sigmoid_full_meta = (
+        sparse_hz_apply_scurve_piecewise_full(
+            sparse_scurve_in,
+            K=2,
+            compressed=True,
+            return_info=True,
+        )
+    )
     sparse_sigmoid_info, sparse_sigmoid_counts, sparse_sigmoid_meta = sparse_hz_apply_scurve_piecewise(
         sparse_scurve_in,
         K=2,
@@ -3177,6 +3569,9 @@ def _test_sparse_affine_structural_ops() -> None:  # pragma: no cover
         return_info=True,
     )
     assert dense_sigmoid is not None
+    assert sparse_sigmoid_full_counts == (3, 0)
+    assert sparse_sigmoid_full_meta["compressed"] is True
+    assert sparse_sigmoid_full_meta["S"] == 4
     assert sparse_sigmoid_counts == (3, 0)
     assert sparse_sigmoid_meta["pruned"] is True
     assert sparse_sigmoid_meta["owner_arr"].size == int(sparse_sigmoid_meta["r"])
@@ -3189,6 +3584,16 @@ def _test_sparse_affine_structural_ops() -> None:  # pragma: no cover
         _assert_close(
             hz_row_max(dense_sigmoid, r, integer=True),
             hz_row_max(sparse_sigmoid, r, integer=True),
+            tol=1e-8,
+        )
+        _assert_close(
+            hz_row_max(dense_sigmoid, r, integer=True),
+            hz_row_max(sparse_sigmoid_full, r, integer=True),
+            tol=1e-8,
+        )
+        _assert_close(
+            hz_row_max(dense_sigmoid, r, integer=True),
+            hz_row_max(sparse_sigmoid_full_comp, r, integer=True),
             tol=1e-8,
         )
     dense_tanh = hz_apply_tanh(dense_scurve_in, K=1)
