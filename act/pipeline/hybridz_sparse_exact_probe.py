@@ -4314,8 +4314,6 @@ def main() -> None:
                     help="K segments per side for sparse tanh piecewise encoding")
     ap.add_argument("--relu-cuts", action="store_true",
                     help="add redundant exact-valid ReLU graph cuts while keeping exact binary eq_lagr")
-    ap.add_argument("--exact-relu-valid-cuts", action="store_true",
-                    help="alias for --relu-cuts; these are redundant exact MILP cuts, not a ReLU relaxation replacement")
     ap.add_argument("--compressed-relu", action="store_true",
                     help="experiment: exact projection of eq_lagr xi3/xi4 slack variables into inequality rows")
     ap.add_argument("--compressed-sigmoid", action="store_true",
@@ -4423,7 +4421,7 @@ def main() -> None:
         tight_relu_lp_timeout=args.tight_relu_lp_timeout,
         tight_relu_fix_mode=args.tight_relu_fix_mode,
         tight_schedule=schedule,
-        relu_cuts=(args.relu_cuts or args.exact_relu_valid_cuts),
+        relu_cuts=args.relu_cuts,
         compressed_relu=args.compressed_relu,
         compressed_sigmoid=args.compressed_sigmoid,
         sigmoid_prune_degenerate=args.sigmoid_prune_degenerate,
@@ -4701,7 +4699,7 @@ def main() -> None:
             "highs_options": args.highs_option,
             "fbbt_passes": int(args.fbbt_passes),
             "relax_precheck_timeout": float(args.relax_precheck_timeout),
-            "exact_relu_valid_cuts": bool(args.relu_cuts or args.exact_relu_valid_cuts),
+            "relu_cuts": bool(args.relu_cuts),
             "compressed_relu": bool(args.compressed_relu),
             "compressed_sigmoid": bool(args.compressed_sigmoid),
             "scurve_domain_cuts": bool(args.scurve_domain_cuts),
