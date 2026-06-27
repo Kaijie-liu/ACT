@@ -14,30 +14,6 @@
 #===---------------------------------------------------------------------===#
 
 """
-for different layer types during the analysis phase.
-
-The interface supports multiple implementations:
-- IntervalTF: Interval-based bounds propagation  
-- HybridzTF: HybridZ zonotope-based analysis with enhanced precision
-"""
-
-import torch
-#===- act/back_end/transfer_functions.py - Transfer Function Interface --===#
-# ACT: Abstract Constraint Transformer
-# Copyright (C) 2025– ACT Team
-#
-# Licensed under the GNU Affero General Public License v3.0 or later (AGPLv3+).
-# Distributed without any warranty; see <http://www.gnu.org/licenses/>.
-#===---------------------------------------------------------------------===#
-#
-# Purpose:
-#   Transfer Function Interface. Defines the abstract interface for transfer
-#   function implementations in the ACT verification framework. Transfer
-#   functions compute bounds and constraints.
-#
-#===---------------------------------------------------------------------===#
-
-"""
 Transfer function dispatch interface used by the backend analysis.
 
 This module defines a small abstract interface for transfer function
@@ -47,7 +23,7 @@ implementations and a global registry to select between implementations
 
 import torch
 from abc import ABC, abstractmethod
-from typing import Dict, List
+from typing import Dict, Optional
 from act.back_end.core import Bounds, Fact, Layer, Net
 from act.util.options import PerformanceOptions
 
@@ -135,7 +111,7 @@ def set_transfer_function_mode(mode: str = "interval") -> None:
         mode: "interval" for IntervalTF, "hybridz" for HybridzTF.
               "dual" is NOT a valid TF mode — dual is a Solver choice
               (``--solver dual``), not a forward-bound TF. See
-              ``act.back_end.solver_mode.set_solver_mode``.
+              :func:`set_solver_mode`.
     """
     if mode == "interval":
         from act.back_end.interval_tf import IntervalTF
@@ -155,15 +131,15 @@ def set_transfer_function_mode(mode: str = "interval") -> None:
 # verifier.py / cli.py read ``is_dual_solver_active()`` to dispatch verify_once
 # through DualSolver.evaluate_spec instead of the LP cascade. Decoupled from
 # TF mode because dual is a backward-only solver, not a forward TF.
-_current_solver_mode: "Optional[str]" = None
+_current_solver_mode: Optional[str] = None
 
 
-def set_solver_mode(mode: "Optional[str]") -> None:
+def set_solver_mode(mode: Optional[str]) -> None:
     global _current_solver_mode
     _current_solver_mode = mode
 
 
-def get_solver_mode() -> "Optional[str]":
+def get_solver_mode() -> Optional[str]:
     return _current_solver_mode
 
 

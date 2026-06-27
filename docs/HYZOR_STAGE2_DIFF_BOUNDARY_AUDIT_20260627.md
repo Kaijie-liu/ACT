@@ -13,7 +13,7 @@ The local `scripts/` directory is not tracked and is not part of this diff.
 
 Current upstream diff after `git fetch upstream` on 2026-06-27:
 
-`80 files changed, 23796 insertions(+), 2188 deletions(-)`
+`80 files changed, 23818 insertions(+), 2217 deletions(-)`
 
 Directory-level split:
 
@@ -21,9 +21,9 @@ Directory-level split:
 |---|---:|---:|---:|---|
 | `act/pipeline` | 19 | 10045 | 159 | largest remaining consolidation target |
 | `act/back_end/hybridz_tf` | 8 | 5295 | 292 | core HZ operator/product path |
-| `docs` | 16 | 3873 | 0 | audit/provenance/future-work docs |
+| `docs` | 16 | 3890 | 0 | audit/provenance/future-work docs |
 | `act/back_end/solver` | 5 | 2177 | 423 | verdict/sparse HZ solver path |
-| `act/back_end/other` | 17 | 1691 | 957 | frontend/backend integration hooks |
+| `act/back_end/other` | 17 | 1696 | 986 | frontend/backend integration hooks |
 | `act/front_end` | 7 | 508 | 334 | benchmark/data loading integration |
 | `FULLRUN_HANDOFF.md` | 1 | 200 | 0 | run handoff/provenance |
 
@@ -60,6 +60,23 @@ This packaged ACT entry produced
 `/tmp/hyzor_stage2_frontend_smoke/sat_relu_hybridz_summary.csv` with
 `N=1, CERT=0, ADV=1, V+A=1, P0=0`.  This proves the current frontend path is
 callable; it is not the full frozen-suite reproduction gate.
+
+Standard VNNLIB frontend smoke evidence after the latest cleanup:
+
+```bash
+python -m act.pipeline --verify vnnlib --category sat_relu --max-instances 1 \
+  --solvers hybridz --device cpu --dtype float64 --hybridz-timeout 30 \
+  --hybridz-results-dir /tmp/hyzor_stage2_vnnlib_hybridz_smoke
+```
+
+This normal `--solvers hybridz` entry produced
+`/tmp/hyzor_stage2_vnnlib_hybridz_smoke/sat_relu_hybridz_summary.csv` with
+`N=1, CERT=0, ADV=1, V+A=1, P0=0`, and the detail CSV records
+`solver=hybridz`, `engine=dense_hz_objbound`, `hz_verdict=UNSAFE`,
+`hz_witness_source=milp_objective_bound`, and
+`witness_replay=model_fn_replay_unsafe:dense_col_ids`.  This is separate
+evidence that the first-class frontend solver mode is callable without using
+the benchmark-suite runner.
 
 Full frozen gate evidence after the latest cleanup:
 
