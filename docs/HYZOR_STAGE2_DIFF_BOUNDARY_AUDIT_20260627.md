@@ -19,17 +19,17 @@ The local `scripts/` directory is not tracked and is not part of this diff.
 
 Current upstream diff after `git fetch upstream` on 2026-06-27:
 
-`63 files changed, 24535 insertions(+), 673 deletions(-)`
+`63 files changed, 24590 insertions(+), 676 deletions(-)`
 
 Directory-level split:
 
 | Area | Files | Added | Deleted | Status |
 |---|---:|---:|---:|---|
-| `act/pipeline` | 17 | 7415 | 141 | largest remaining consolidation target |
+| `act/pipeline` | 17 | 7426 | 141 | largest remaining consolidation target |
 | `act/back_end/hybridz_tf` | 9 | 6556 | 297 | core HZ operator/product path |
-| `act/back_end/solver` | 4 | 4062 | 51 | verdict/sparse HZ solver path |
-| `docs` | 16 | 4198 | 0 | audit/provenance/future-work docs |
-| `act/back_end/other` | 11 | 1646 | 83 | frontend/backend integration hooks |
+| `docs` | 16 | 4207 | 0 | audit/provenance/future-work docs |
+| `act/back_end/solver` | 4 | 4094 | 54 | verdict/sparse HZ solver path |
+| `act/back_end/other` | 11 | 1649 | 83 | frontend/backend integration hooks |
 | `act/front_end` | 5 | 458 | 101 | benchmark/data loading integration |
 | `FULLRUN_HANDOFF.md` | 1 | 200 | 0 | run handoff/provenance |
 
@@ -38,13 +38,13 @@ Largest files by changed lines:
 | File | Added | Deleted | Interpretation |
 |---|---:|---:|---|
 | `act/back_end/hybridz_tf/sparse_ops.py` | 4200 | 0 | sparse exact-HZ propagation core; SOFTMAX, var-var MATMUL, exact ReLU graph construction, exact ReLU tight-LP bound tightening/apply helper, S-curve return metadata, uniform/curvature pruned S-curve support, full S-curve construction, constructive center witness helpers, and structural row-map helpers moved here from the probe |
-| `act/back_end/solver/solver_hz_verdict.py` | 3497 | 0 | exact verdict MILP, open-source solver portfolio, reusable sparse MILP presolve / relaxation helpers, LP min-margin prefilter, and sparse HiGHS/SCIP cutoff engines |
+| `act/back_end/solver/solver_hz_verdict.py` | 3509 | 0 | exact verdict MILP, open-source solver portfolio, reusable sparse MILP presolve / relaxation helpers, LP min-margin prefilter, public sparse matrix materialization helpers, and sparse HiGHS/SCIP cutoff engines |
 | `act/pipeline/hybridz_benchmark_runner.py` | 1783 | 0 | product runner and branch portfolio; reporting helpers are now in `hybridz_results.py` |
 | `act/pipeline/hybridz_results.py` | 1227 | 0 | benchmark/suite CSV and JSON exports, frozen comparison, cross-tool ranking, failure taxonomy, and P0 reporting helpers |
 | `act/pipeline/hybridz_sparse_exact_probe.py` | 1131 | 0 | remaining package-level prototype; sparse cutoff engines, tight-ReLU application, S-curve construction, constructive witness helpers, structural row maps, and most reusable solver helpers have moved into backend layers |
 | `act/back_end/hybridz_tf/tf_mlp.py` | 1116 | 248 | dense exact ReLU/compressed ReLU and nonlinear operators |
 | `act/pipeline/hybridz_projected_relu_mip.py` | 744 | 0 | safenlp projected exact-ReLU branch; still pure-HZ but specialized |
-| `act/back_end/verifier.py` | 740 | 13 | frontend solver integration and metadata/soundness guards |
+| `act/back_end/verifier.py` | 743 | 13 | frontend solver integration and metadata/soundness guards |
 | `act/pipeline/hybridz_sparse_census.py` | 660 | 0 | diagnostic/census path; not needed for frozen one-command verification |
 | `act/back_end/hybridz_config.py` | 509 | 0 | frozen oracle and benchmark profiles |
 
