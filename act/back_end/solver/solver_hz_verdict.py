@@ -55,6 +55,10 @@ try:
 except Exception:  # pragma: no cover
     _HAS_PYSCIPOPT = False
 
+HAS_SCIPY = _HAS_SCIPY
+HAS_HIGHSPY = _HAS_HIGHSPY
+HAS_PYSCIPOPT = _HAS_PYSCIPOPT
+
 
 def _torch_csr(t):
     """Torch tensor -> scipy CSR without materializing hstack/vstack dense copies."""
@@ -3470,6 +3474,9 @@ def _test_sparse_hz_verdict_parity() -> None:  # pragma: no cover
 
 
 __all__ = [
+    "HAS_HIGHSPY",
+    "HAS_PYSCIPOPT",
+    "HAS_SCIPY",
     "hz_base_feasibility",
     "hz_base_witness",
     "hz_certify_spec",

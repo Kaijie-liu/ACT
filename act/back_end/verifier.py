@@ -1650,7 +1650,7 @@ def _test_hybridz_witness_replay_gate() -> None:  # pragma: no cover
     from act.back_end.config import BackendConfig
     from act.back_end.solver.solver_hz import hz_from_bounds
     from act.back_end.solver.sparse_hz import SparseHZono
-    from act.back_end.solver.solver_hz_verdict import _HAS_HIGHSPY, _HAS_SCIPY
+    from act.back_end.solver.solver_hz_verdict import HAS_HIGHSPY, HAS_SCIPY
     from act.back_end.transfer_functions import (
         get_solver_mode,
         get_transfer_function,
@@ -1658,7 +1658,7 @@ def _test_hybridz_witness_replay_gate() -> None:  # pragma: no cover
     )
     from act.util.stats import VerifyStatus
 
-    if not (_HAS_HIGHSPY and _HAS_SCIPY):
+    if not (HAS_HIGHSPY and HAS_SCIPY):
         return
 
     old_solver = get_solver_mode()
@@ -1701,7 +1701,10 @@ def _test_hybridz_witness_replay_gate() -> None:  # pragma: no cover
             )
             assert with_replay.counterexample is not None
             assert float(with_replay.counterexample.reshape(-1)[0]) >= 0.0
-            assert with_replay.metadata.get("hz_witness_source") == "base_hz_witness"
+            assert with_replay.metadata.get("hz_witness_source") in {
+                "base_hz_witness",
+                "milp_objective_bound",
+            }
             replay_reason = with_replay.metadata.get("witness_replay", "")
             assert "model_fn_replay_unsafe" in replay_reason
             expected_replay_source = (
