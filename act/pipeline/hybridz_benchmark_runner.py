@@ -99,6 +99,19 @@ SEQUENTIAL_PORTFOLIO_BENCHES = frozenset({
     "cgan_2023",
 })
 FROZEN_REPRO_MATCH_FIELDS = ("N", "CERT", "ADV", "V+A", "ERROR", "P0", "unsolved")
+HIGHS_HEURISTIC_OPTIONS = (
+    "mip_heuristic_effort=1.0",
+    "mip_heuristic_run_shifting=true",
+    "mip_heuristic_run_zi_round=true",
+)
+HIGHS_HEURISTIC_ENV = ",".join(HIGHS_HEURISTIC_OPTIONS)
+
+
+def _highs_option_args(options: Iterable[str]) -> tuple[str, ...]:
+    args: list[str] = []
+    for option in options:
+        args.extend(["--highs-option", str(option)])
+    return tuple(args)
 
 
 def _profile_milp_timeout(bench: str, official_timeout_s: float) -> float:
@@ -492,12 +505,7 @@ def _branch_plan(cfg: HybridZBenchmarkConfig) -> list[HybridZRunBranch]:
                 "base-binary",
                 "--mip-solver",
                 "highs",
-                "--highs-option",
-                "mip_heuristic_effort=1.0",
-                "--highs-option",
-                "mip_heuristic_run_shifting=true",
-                "--highs-option",
-                "mip_heuristic_run_zi_round=true",
+                *_highs_option_args(HIGHS_HEURISTIC_OPTIONS),
             ),
         ]
     if profile.sparse_first:
@@ -545,19 +553,10 @@ def _branch_plan(cfg: HybridZBenchmarkConfig) -> list[HybridZRunBranch]:
             _sparse_worker_branch(
                 "sparse_comprelu_heur",
                 *sparse_base,
-                "--highs-option",
-                "mip_heuristic_effort=1.0",
-                "--highs-option",
-                "mip_heuristic_run_shifting=true",
-                "--highs-option",
-                "mip_heuristic_run_zi_round=true",
+                *_highs_option_args(HIGHS_HEURISTIC_OPTIONS),
                 env={
                     **worker_env,
-                    "HZ_HIGHS_OPTIONS": (
-                        "mip_heuristic_effort=1.0,"
-                        "mip_heuristic_run_shifting=true,"
-                        "mip_heuristic_run_zi_round=true"
-                    ),
+                    "HZ_HIGHS_OPTIONS": HIGHS_HEURISTIC_ENV,
                 },
             )
         )
@@ -566,12 +565,7 @@ def _branch_plan(cfg: HybridZBenchmarkConfig) -> list[HybridZRunBranch]:
             "1",
             "--milp-timeout",
             "18",
-            "--highs-option",
-            "mip_heuristic_effort=1.0",
-            "--highs-option",
-            "mip_heuristic_run_shifting=true",
-            "--highs-option",
-            "mip_heuristic_run_zi_round=true",
+            *_highs_option_args(HIGHS_HEURISTIC_OPTIONS),
             "--check-witness",
             "--stop-on-unsafe",
         )
