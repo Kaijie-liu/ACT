@@ -12,13 +12,13 @@ The local `scripts/` directory is not tracked and is not part of this diff.
 
 Current upstream diff:
 
-`60 files changed, 24079 insertions(+), 639 deletions(-)`
+`60 files changed, 24044 insertions(+), 639 deletions(-)`
 
 Directory-level split:
 
 | Area | Files | Added | Deleted | Status |
 |---|---:|---:|---:|---|
-| `act/pipeline` | 15 | 11091 | 141 | largest remaining consolidation target |
+| `act/pipeline` | 15 | 11055 | 141 | largest remaining consolidation target |
 | `act/back_end/hybridz_tf` | 8 | 4782 | 292 | core HZ operator/product path |
 | `docs` | 16 | 3785 | 0 | audit/provenance/future-work docs |
 | `act/back_end/solver` | 4 | 2128 | 51 | verdict/sparse HZ solver path |
@@ -30,7 +30,7 @@ Largest files by changed lines:
 
 | File | Added | Deleted | Interpretation |
 |---|---:|---:|---|
-| `act/pipeline/hybridz_sparse_exact_probe.py` | 5092 | 0 | biggest remaining package-level prototype; first post-freeze consolidation target is partially reduced |
+| `act/pipeline/hybridz_sparse_exact_probe.py` | 5056 | 0 | biggest remaining package-level prototype; first post-freeze consolidation target is partially reduced |
 | `act/pipeline/hybridz_benchmark_runner.py` | 2499 | 0 | product runner, branch portfolio, frozen comparison, ICSE export |
 | `act/back_end/hybridz_tf/sparse_ops.py` | 2294 | 0 | sparse exact-HZ propagation core |
 | `act/back_end/solver/solver_hz_verdict.py` | 1563 | 0 | exact verdict MILP and open-source solver portfolio |
@@ -66,8 +66,9 @@ packaged modules, but too much sparse exact-HZ probe logic still lives in
    Conv/Dense/AvgPool/MaxPool-candidate/scale/bias/linear helpers, backend
    same-frame add/sub helpers, backend UPSAMPLE row maps, backend
    sigmoid/tanh primitives, backend base-HZ feasibility checking, and the
-   backend S-curve cut matrix builders.  The local duplicate probe code
-   dropped from 5751 to 5092 lines
+   backend S-curve cut matrix builders, and the save/load HZ debug bypass was
+   removed from the packaged probe.  The local duplicate probe code dropped
+   from 5751 to 5056 lines
    while preserving the packaged probe self-test, sparse-ops structural
    self-test, and a backend UPSAMPLE 3D/4D row-map regression.
 

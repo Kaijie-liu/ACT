@@ -4368,32 +4368,6 @@ def _milp_cutoff_scip(
     return status, val, xi if val is not None else None
 
 
-def _save_hz(hz: SparseHZ, outdir: Path) -> None:
-    outdir.mkdir(parents=True, exist_ok=True)
-    np.savez_compressed(outdir / "arrays.npz", c=hz.c, b=hz.b, ub=np.zeros(0) if hz.ub is None else hz.ub)
-    sp.save_npz(outdir / "Gc.npz", hz.Gc)
-    sp.save_npz(outdir / "Gb.npz", hz.Gb)
-    sp.save_npz(outdir / "Ac.npz", hz.Ac)
-    sp.save_npz(outdir / "Ab.npz", hz.Ab)
-    sp.save_npz(outdir / "Auc.npz", hz.Auc if hz.Auc is not None else _empty(0, hz.n_cont))
-    sp.save_npz(outdir / "Aub.npz", hz.Aub if hz.Aub is not None else _empty(0, hz.n_bin))
-
-
-def _load_hz(indir: Path) -> SparseHZ:
-    arr = np.load(indir / "arrays.npz")
-    return SparseHZ(
-        c=arr["c"],
-        b=arr["b"],
-        Gc=sp.load_npz(indir / "Gc.npz").tocsr(),
-        Gb=sp.load_npz(indir / "Gb.npz").tocsr(),
-        Ac=sp.load_npz(indir / "Ac.npz").tocsr(),
-        Ab=sp.load_npz(indir / "Ab.npz").tocsr(),
-        Auc=(sp.load_npz(indir / "Auc.npz").tocsr() if (indir / "Auc.npz").exists() else _empty(0, sp.load_npz(indir / "Gc.npz").shape[1])),
-        Aub=(sp.load_npz(indir / "Aub.npz").tocsr() if (indir / "Aub.npz").exists() else _empty(0, sp.load_npz(indir / "Gb.npz").shape[1])),
-        ub=(arr["ub"] if "ub" in arr else np.zeros(0, dtype=np.float64)),
-    )
-
-
 def _self_test() -> None:
     hz = SparseHZ(
         c=np.asarray([2.0, -1.0], dtype=np.float64),
@@ -4540,8 +4514,6 @@ def main() -> None:
                     help="add exact-valid conditional secant/tangent graph cuts for sigmoid/tanh segments")
     ap.add_argument("--scurve-grid", choices=["uniform", "curvature"], default="uniform",
                     help="S-curve segment grid; curvature keeps K fixed but allocates segments by |f''|")
-    ap.add_argument("--save-hz-dir", default="")
-    ap.add_argument("--load-hz-dir", default="")
     ap.add_argument("--summary-json", default="")
     ap.add_argument("--max-final-bin", type=int, default=0,
                     help="if positive, skip MILP and return UNKNOWN when final HZ binary count exceeds this")
@@ -4633,7 +4605,7 @@ def main() -> None:
     )
     print(f"bench={args.bench} iid={args.iid} onnx={onnx_path.name} vnnlib={vnnlib_path.name}")
     print(f"input_shape={input_shape} queries={len(queries)} layers={len(net.layers)} interval_s={interval_s:.2f}")
-    if not args.load_hz_dir and not args.max_layers:
+    if not args.max_layers:
         unsupported = [
             (int(L.id), str(L.kind).upper())
             for L in net.layers
@@ -4670,34 +4642,26 @@ def main() -> None:
             k, v = item.split(":", 1)
             schedule[int(k)] = int(v)
 
-    if args.load_hz_dir:
-        hz = _load_hz(Path(args.load_hz_dir))
-        states = {}
-        print(f"loaded sparse HZ from {args.load_hz_dir}", flush=True)
-    else:
-        states, hz = _propagate_sparse(
-            net,
-            queries,
-            before,
-            after,
-            max_layers=(args.max_layers or None),
-            tight_relu_lp_limit=args.tight_relu_lp_limit,
-            tight_relu_lp_timeout=args.tight_relu_lp_timeout,
-            tight_relu_fix_mode=args.tight_relu_fix_mode,
-            tight_schedule=schedule,
-            relu_cuts=(args.relu_cuts or args.exact_relu_valid_cuts),
-            compressed_relu=args.compressed_relu,
-            compressed_sigmoid=args.compressed_sigmoid,
-            sigmoid_prune_degenerate=args.sigmoid_prune_degenerate,
-            scurve_domain_cuts=args.scurve_domain_cuts,
-            scurve_graph_cuts=args.scurve_graph_cuts,
-            sigmoid_k=args.sigmoid_k,
-            tanh_k=args.tanh_k,
-            scurve_grid=args.scurve_grid,
-        )
-        if args.save_hz_dir:
-            _save_hz(hz, Path(args.save_hz_dir))
-            print(f"saved sparse HZ to {args.save_hz_dir}", flush=True)
+    states, hz = _propagate_sparse(
+        net,
+        queries,
+        before,
+        after,
+        max_layers=(args.max_layers or None),
+        tight_relu_lp_limit=args.tight_relu_lp_limit,
+        tight_relu_lp_timeout=args.tight_relu_lp_timeout,
+        tight_relu_fix_mode=args.tight_relu_fix_mode,
+        tight_schedule=schedule,
+        relu_cuts=(args.relu_cuts or args.exact_relu_valid_cuts),
+        compressed_relu=args.compressed_relu,
+        compressed_sigmoid=args.compressed_sigmoid,
+        sigmoid_prune_degenerate=args.sigmoid_prune_degenerate,
+        scurve_domain_cuts=args.scurve_domain_cuts,
+        scurve_graph_cuts=args.scurve_graph_cuts,
+        sigmoid_k=args.sigmoid_k,
+        tanh_k=args.tanh_k,
+        scurve_grid=args.scurve_grid,
+    )
     final_layer = net.layers[-1]
     final_pred = net.preds.get(final_layer.id, [None])[0]
     final_bounds = after[final_pred].bounds if final_pred in after else after[final_layer.id].bounds
