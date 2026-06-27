@@ -979,12 +979,11 @@ def sparse_lp_min_margin(
 
 # Sparse exact-HZ MILP cutoff engines used by the packaged sparse probe.
 # Keep these in the solver layer; pipeline code only selects branch policy.
-SparseHZ = SparseHZono
 sp = _sp if _HAS_SCIPY else None
 
 
 def _milp_cutoff_highs(
-    hz: SparseHZ,
+    hz: SparseHZono,
     C: np.ndarray,
     t: np.ndarray,
     time_limit: float,
@@ -1925,7 +1924,7 @@ def _milp_cutoff_highs(
 
 
 def _milp_cutoff_scip(
-    hz: SparseHZ,
+    hz: SparseHZono,
     C: np.ndarray,
     t: np.ndarray,
     time_limit: float,
