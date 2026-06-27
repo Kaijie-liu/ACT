@@ -15,7 +15,7 @@
 
 import torch
 import torch.nn.functional as F
-from act.back_end.core import Bounds, Fact
+from act.back_end.core import Bounds
 from act.back_end.solver.solver_hz import HZono, hz_inherit_known_nonempty
 from act.back_end.hybridz_tf.tf_mlp import _hz_fact
 import act.back_end.interval_tf.tf_cnn as interval

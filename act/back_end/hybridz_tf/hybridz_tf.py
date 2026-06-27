@@ -24,7 +24,7 @@ from typing import Dict, Optional
 from act.back_end.core import Bounds, Fact, Layer, Net, ConSet
 from act.back_end.transfer_functions import TransferFunction
 from act.back_end.layer_schema import LayerKind
-from act.back_end.solver.solver_hz import HZono, hz_from_bounds, hz_compute_bounds
+from act.back_end.solver.solver_hz import HZono, hz_from_bounds
 from act.back_end.solver.sparse_hz import SparseHZono
 
 import act.back_end.hybridz_tf.tf_mlp as hz_mlp
