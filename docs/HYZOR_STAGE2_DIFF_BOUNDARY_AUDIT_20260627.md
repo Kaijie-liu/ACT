@@ -13,15 +13,15 @@ The local `scripts/` directory is not tracked and is not part of this diff.
 
 Current upstream diff after `git fetch upstream` on 2026-06-27:
 
-`80 files changed, 23818 insertions(+), 2217 deletions(-)`
+`80 files changed, 23885 insertions(+), 2217 deletions(-)`
 
 Directory-level split:
 
 | Area | Files | Added | Deleted | Status |
 |---|---:|---:|---:|---|
-| `act/pipeline` | 19 | 10045 | 159 | largest remaining consolidation target |
+| `act/pipeline` | 19 | 10092 | 159 | largest remaining consolidation target |
 | `act/back_end/hybridz_tf` | 8 | 5295 | 292 | core HZ operator/product path |
-| `docs` | 16 | 3890 | 0 | audit/provenance/future-work docs |
+| `docs` | 16 | 3910 | 0 | audit/provenance/future-work docs |
 | `act/back_end/solver` | 5 | 2177 | 423 | verdict/sparse HZ solver path |
 | `act/back_end/other` | 17 | 1696 | 986 | frontend/backend integration hooks |
 | `act/front_end` | 7 | 508 | 334 | benchmark/data loading integration |
@@ -32,7 +32,7 @@ Largest files by changed lines:
 | File | Added | Deleted | Interpretation |
 |---|---:|---:|---|
 | `act/pipeline/hybridz_sparse_exact_probe.py` | 4017 | 0 | biggest remaining package-level prototype; first post-freeze consolidation target is partially reduced |
-| `act/pipeline/hybridz_benchmark_runner.py` | 2562 | 0 | product runner, branch portfolio, frozen comparison, ICSE export |
+| `act/pipeline/hybridz_benchmark_runner.py` | 2411 | 0 | product runner and branch portfolio; pure reporting helpers are being moved out |
 | `act/back_end/hybridz_tf/sparse_ops.py` | 2807 | 0 | sparse exact-HZ propagation core; SOFTMAX, var-var MATMUL, and exact ReLU graph construction moved here from the probe |
 | `act/back_end/solver/solver_hz_verdict.py` | 1563 | 0 | exact verdict MILP and open-source solver portfolio |
 | `act/back_end/hybridz_tf/tf_mlp.py` | 1253 | 246 | dense exact ReLU/compressed ReLU and nonlinear operators |
@@ -169,6 +169,15 @@ packaged modules, but too much sparse exact-HZ probe logic still lives in
    `python -m act.pipeline.hybridz_sparse_exact_probe --self-test`,
    `python -m act.pipeline.hybridz_benchmark_runner`, and the same `sat_relu`
    sparse-worker smoke above.
+
+   The suite CSV reader, deterministic SHA256 manifest writer, and frozen
+   cross-tool ranking/export helpers have also been moved from
+   `hybridz_benchmark_runner.py` into `hybridz_results.py`.  This keeps the
+   benchmark runner focused on scheduling and portfolio execution.  The runner
+   dropped from 2562 to 2411 lines while preserving `python -m
+   act.pipeline.hybridz_results`, `python -m
+   act.pipeline.hybridz_benchmark_runner`, the standard `--verify vnnlib
+   --solvers hybridz` smoke, and the frozen oracle/manifest checks.
 
 1. Audit `act/pipeline/hybridz_sparse_exact_probe.py` function families.
    Move reusable exact-HZ propagation and MILP export helpers into backend

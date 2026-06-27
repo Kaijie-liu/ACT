@@ -20,7 +20,6 @@ package code.
 from __future__ import annotations
 
 import csv
-import hashlib
 import json
 import os
 import signal
@@ -34,14 +33,19 @@ from typing import Iterable, Optional
 
 from act.back_end.hybridz_config import (
     ACASXU_SCIP_WITNESS_MILP_TIMEOUT,
-    CROSS_TOOL_NAMES,
     FROZEN_BENCHMARK_SUITE,
-    FROZEN_COMPETITOR_COUNTS,
     FROZEN_SUMMARY_FIELDS,
     frozen_hybridz_expected_summary,
     get_bench_profile,
 )
 from act.front_end.vnnlib_loader.data_model_loader import list_downloaded_pairs
+from act.pipeline.hybridz_results import (
+    build_cross_tool_rows as _build_cross_tool_rows,
+    int_field as _int_field,
+    read_csv_rows as _read_csv_rows,
+    write_sha256_manifest as _write_sha256_manifest,
+    write_suite_cross_tool_outputs as _write_suite_cross_tool_outputs,
+)
 
 
 @dataclass(frozen=True)
@@ -622,31 +626,6 @@ def _branch_plan(cfg: HybridZBenchmarkConfig) -> list[HybridZRunBranch]:
             )
         )
     return branches
-
-
-def _read_csv_rows(path: Path) -> list[dict[str, str]]:
-    if not path.exists():
-        return []
-    with path.open(newline="") as f:
-        return list(csv.DictReader(f))
-
-
-def _write_sha256_manifest(root: Path, manifest_name: str = "_MANIFEST.sha256") -> Path:
-    """Write a deterministic SHA256 manifest for files under ``root``."""
-
-    root = Path(root)
-    manifest = root / manifest_name
-    rows = []
-    for path in sorted(p for p in root.rglob("*") if p.is_file()):
-        if path == manifest:
-            continue
-        h = hashlib.sha256()
-        with path.open("rb") as f:
-            for chunk in iter(lambda: f.read(1024 * 1024), b""):
-                h.update(chunk)
-        rows.append(f"{h.hexdigest()}  {path.relative_to(root).as_posix()}")
-    manifest.write_text("\n".join(rows) + ("\n" if rows else ""), encoding="utf-8")
-    return manifest
 
 
 def _branch_env(cfg: HybridZBenchmarkConfig, branch: HybridZRunBranch) -> dict[str, str]:
@@ -1340,13 +1319,6 @@ def _write_suite_combined(
     return detail_path, summary_path
 
 
-def _int_field(row: dict[str, object], key: str) -> int:
-    try:
-        return int(row.get(key, 0) or 0)
-    except Exception:
-        return 0
-
-
 def _reuse_frozen_benchmark_outputs(
     cfg: HybridZBenchmarkConfig,
 ) -> tuple[Path, Path, list[dict[str, object]]] | None:
@@ -1375,130 +1347,6 @@ def _reuse_frozen_benchmark_outputs(
         if _int_field(row, field) != int(expected[field]):
             return None
     return detail_path, summary_path, []
-
-
-def _ours_counts_from_summary(row: dict[str, object]) -> tuple[int, int, int, int, int]:
-    return (
-        _int_field(row, "CERT"),
-        _int_field(row, "ADV"),
-        _int_field(row, "TIMEOUT"),
-        _int_field(row, "UNKNOWN"),
-        _int_field(row, "ERROR"),
-    )
-
-
-def _va_count(counts: tuple[int, int, int, int, int]) -> int:
-    return int(counts[0]) + int(counts[1])
-
-
-def _build_cross_tool_rows(
-    summary_rows: Iterable[dict[str, object]],
-) -> tuple[list[dict[str, object]], list[dict[str, object]]]:
-    ranked_rows: list[dict[str, object]] = []
-    cross_rows: list[dict[str, object]] = []
-
-    for row in summary_rows:
-        bench = str(row.get("Bench", ""))
-        if bench == "TOTAL" or bench not in FROZEN_COMPETITOR_COUNTS:
-            continue
-        tool_counts = {"OURS": _ours_counts_from_summary(row)}
-        tool_counts.update(FROZEN_COMPETITOR_COUNTS[bench])
-        tool_va = {tool: _va_count(tool_counts[tool]) for tool in CROSS_TOOL_NAMES}
-        ours_va = tool_va["OURS"]
-        best_va = max(tool_va.values())
-        best_tools = [tool for tool in CROSS_TOOL_NAMES if tool_va[tool] == best_va]
-
-        ranked = {
-            "Bench": bench,
-            "N": _int_field(row, "N"),
-            "CERT": _int_field(row, "CERT"),
-            "ADV": _int_field(row, "ADV"),
-            "V+A": ours_va,
-            "TIMEOUT": _int_field(row, "TIMEOUT"),
-            "UNKNOWN": _int_field(row, "UNKNOWN"),
-            "ERROR": _int_field(row, "ERROR"),
-            "P0": _int_field(row, "P0"),
-            "unsolved": _int_field(row, "unsolved"),
-            "rank_competition": 1 + sum(1 for value in tool_va.values() if value > ours_va),
-            "rank_dense": 1 + len({value for value in tool_va.values() if value > ours_va}),
-            "best_V+A": best_va,
-            "best_tools": "+".join(best_tools),
-            "gap_to_best": best_va - ours_va,
-        }
-        ranked.update({tool: tool_va[tool] for tool in CROSS_TOOL_NAMES})
-        ranked_rows.append(ranked)
-
-        cross = {"Bench": bench, "N": _int_field(row, "N")}
-        for tool in CROSS_TOOL_NAMES:
-            unsat, sat, timeout, unknown, error = tool_counts[tool]
-            cross.update(
-                {
-                    tool: unsat + sat,
-                    f"{tool}_unsat": unsat,
-                    f"{tool}_sat": sat,
-                    f"{tool}_timeout": timeout,
-                    f"{tool}_unknown": unknown,
-                    f"{tool}_error": error,
-                }
-            )
-        cross_rows.append(cross)
-    return ranked_rows, cross_rows
-
-
-def _write_suite_cross_tool_outputs(
-    cfg: HybridZBenchmarkSuiteConfig,
-    suite_summary_path: Path,
-) -> tuple[Path, Path, Path] | tuple[()]:
-    if cfg.max_instances is not None:
-        return ()
-    ranked_rows, cross_rows = _build_cross_tool_rows(_read_csv_rows(suite_summary_path))
-    if not ranked_rows:
-        return ()
-
-    ranking_fields = [
-        "Bench",
-        "N",
-        "CERT",
-        "ADV",
-        "V+A",
-        "TIMEOUT",
-        "UNKNOWN",
-        "ERROR",
-        "P0",
-        "unsolved",
-        "rank_competition",
-        "rank_dense",
-        "best_V+A",
-        "best_tools",
-        "gap_to_best",
-        *CROSS_TOOL_NAMES,
-    ]
-    final_results = cfg.out_dir / "FINAL_HYBRIDZ_RESULTS.csv"
-    final_ranking = cfg.out_dir / "FINAL_CROSS_TOOL_RANKING.csv"
-    for path in (final_results, final_ranking):
-        with path.open("w", newline="") as f:
-            writer = csv.DictWriter(f, fieldnames=ranking_fields)
-            writer.writeheader()
-            writer.writerows({name: row.get(name, "") for name in ranking_fields} for row in ranked_rows)
-
-    cross_fields = ["Bench", "N"]
-    for tool in CROSS_TOOL_NAMES:
-        cross_fields.extend(
-            [
-                tool,
-                f"{tool}_unsat",
-                f"{tool}_sat",
-                f"{tool}_timeout",
-                f"{tool}_unknown",
-                f"{tool}_error",
-            ]
-        )
-    cross_path = cfg.out_dir / "_CROSS_TOOL_SUMMARY.csv"
-    with cross_path.open("w", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=cross_fields)
-        writer.writeheader()
-        writer.writerows({name: row.get(name, "") for name in cross_fields} for row in cross_rows)
-    return final_results, final_ranking, cross_path
 
 
 def _build_frozen_repro_rows(summary_rows: Iterable[dict[str, object]]) -> list[dict[str, object]]:
@@ -1916,7 +1764,11 @@ def run_hybridz_benchmark_suite(
         all_results.extend({**row, "bench": bench} for row in results)
     suite_detail, suite_summary = _write_suite_combined(cfg, summaries, detail_paths)
     _write_suite_icse_outputs(cfg)
-    _write_suite_cross_tool_outputs(cfg, suite_summary)
+    _write_suite_cross_tool_outputs(
+        cfg.out_dir,
+        suite_summary,
+        max_instances=cfg.max_instances,
+    )
     repro_check = _write_frozen_repro_check(cfg, suite_summary)
     _write_suite_failure_taxonomy(cfg, all_results)
     _write_suite_json_summary(cfg, suite_summary)
@@ -2269,10 +2121,7 @@ def _test_hybridz_benchmark_runner() -> None:  # pragma: no cover
         writer.writeheader()
         writer.writerows(ranking_input)
     ranking_paths = _write_suite_cross_tool_outputs(
-        HybridZBenchmarkSuiteConfig(
-            benches=("safenlp_2024", "linearizenn_2024"),
-            out_dir=suite_dir,
-        ),
+        suite_dir,
         ranking_summary,
     )
     assert len(ranking_paths) == 3

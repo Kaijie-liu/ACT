@@ -11,12 +11,17 @@
 from __future__ import annotations
 
 import csv
+import hashlib
 import json
 from dataclasses import dataclass, field
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Any, Iterable, Mapping
+from typing import Any, Iterable, Mapping, Optional
 
+from act.back_end.hybridz_config import (
+    CROSS_TOOL_NAMES,
+    FROZEN_COMPETITOR_COUNTS,
+)
 from act.util.stats import VerifyResult, VerifyStatus
 
 
@@ -42,6 +47,42 @@ def _metadata_p0(meta: Mapping[str, Any]) -> bool:
         if isinstance(value, str):
             return value.strip().lower() in {"1", "true", "yes", "y"}
     return False
+
+
+def read_csv_rows(path: Path) -> list[dict[str, str]]:
+    """Read a CSV file into dictionaries, returning an empty list if missing."""
+
+    if not path.exists():
+        return []
+    with path.open(newline="") as f:
+        return list(csv.DictReader(f))
+
+
+def write_sha256_manifest(root: Path, manifest_name: str = "_MANIFEST.sha256") -> Path:
+    """Write a deterministic SHA256 manifest for files under ``root``."""
+
+    root = Path(root)
+    manifest = root / manifest_name
+    rows = []
+    for path in sorted(p for p in root.rglob("*") if p.is_file()):
+        if path == manifest:
+            continue
+        h = hashlib.sha256()
+        with path.open("rb") as f:
+            for chunk in iter(lambda: f.read(1024 * 1024), b""):
+                h.update(chunk)
+        rows.append(f"{h.hexdigest()}  {path.relative_to(root).as_posix()}")
+    manifest.write_text("\n".join(rows) + ("\n" if rows else ""), encoding="utf-8")
+    return manifest
+
+
+def int_field(row: Mapping[str, object], key: str) -> int:
+    """Parse an integer CSV field defensively."""
+
+    try:
+        return int(row.get(key, 0) or 0)
+    except Exception:
+        return 0
 
 
 @dataclass
@@ -141,6 +182,140 @@ class HybridZRunRecorder:
         return detail_path, summary_path
 
 
+def _ours_counts_from_summary(row: Mapping[str, object]) -> tuple[int, int, int, int, int]:
+    return (
+        int_field(row, "CERT"),
+        int_field(row, "ADV"),
+        int_field(row, "TIMEOUT"),
+        int_field(row, "UNKNOWN"),
+        int_field(row, "ERROR"),
+    )
+
+
+def _va_count(counts: tuple[int, int, int, int, int]) -> int:
+    return int(counts[0]) + int(counts[1])
+
+
+def build_cross_tool_rows(
+    summary_rows: Iterable[Mapping[str, object]],
+) -> tuple[list[dict[str, object]], list[dict[str, object]]]:
+    """Build frozen-suite ranking and cross-tool comparison rows."""
+
+    ranked_rows: list[dict[str, object]] = []
+    cross_rows: list[dict[str, object]] = []
+
+    for row in summary_rows:
+        bench = str(row.get("Bench", ""))
+        if bench == "TOTAL" or bench not in FROZEN_COMPETITOR_COUNTS:
+            continue
+        tool_counts = {"OURS": _ours_counts_from_summary(row)}
+        tool_counts.update(FROZEN_COMPETITOR_COUNTS[bench])
+        tool_va = {tool: _va_count(tool_counts[tool]) for tool in CROSS_TOOL_NAMES}
+        ours_va = tool_va["OURS"]
+        best_va = max(tool_va.values())
+        best_tools = [tool for tool in CROSS_TOOL_NAMES if tool_va[tool] == best_va]
+
+        ranked = {
+            "Bench": bench,
+            "N": int_field(row, "N"),
+            "CERT": int_field(row, "CERT"),
+            "ADV": int_field(row, "ADV"),
+            "V+A": ours_va,
+            "TIMEOUT": int_field(row, "TIMEOUT"),
+            "UNKNOWN": int_field(row, "UNKNOWN"),
+            "ERROR": int_field(row, "ERROR"),
+            "P0": int_field(row, "P0"),
+            "unsolved": int_field(row, "unsolved"),
+            "rank_competition": 1 + sum(1 for value in tool_va.values() if value > ours_va),
+            "rank_dense": 1 + len({value for value in tool_va.values() if value > ours_va}),
+            "best_V+A": best_va,
+            "best_tools": "+".join(best_tools),
+            "gap_to_best": best_va - ours_va,
+        }
+        ranked.update({tool: tool_va[tool] for tool in CROSS_TOOL_NAMES})
+        ranked_rows.append(ranked)
+
+        cross = {"Bench": bench, "N": int_field(row, "N")}
+        for tool in CROSS_TOOL_NAMES:
+            unsat, sat, timeout, unknown, error = tool_counts[tool]
+            cross.update(
+                {
+                    tool: unsat + sat,
+                    f"{tool}_unsat": unsat,
+                    f"{tool}_sat": sat,
+                    f"{tool}_timeout": timeout,
+                    f"{tool}_unknown": unknown,
+                    f"{tool}_error": error,
+                }
+            )
+        cross_rows.append(cross)
+    return ranked_rows, cross_rows
+
+
+def write_suite_cross_tool_outputs(
+    out_dir: Path,
+    suite_summary_path: Path,
+    *,
+    max_instances: Optional[int] = None,
+) -> tuple[Path, Path, Path] | tuple[()]:
+    """Write frozen-suite final ranking and cross-tool comparison CSVs."""
+
+    if max_instances is not None:
+        return ()
+    ranked_rows, cross_rows = build_cross_tool_rows(read_csv_rows(suite_summary_path))
+    if not ranked_rows:
+        return ()
+
+    out_dir = Path(out_dir)
+    ranking_fields = [
+        "Bench",
+        "N",
+        "CERT",
+        "ADV",
+        "V+A",
+        "TIMEOUT",
+        "UNKNOWN",
+        "ERROR",
+        "P0",
+        "unsolved",
+        "rank_competition",
+        "rank_dense",
+        "best_V+A",
+        "best_tools",
+        "gap_to_best",
+        *CROSS_TOOL_NAMES,
+    ]
+    final_results = out_dir / "FINAL_HYBRIDZ_RESULTS.csv"
+    final_ranking = out_dir / "FINAL_CROSS_TOOL_RANKING.csv"
+    for path in (final_results, final_ranking):
+        with path.open("w", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=ranking_fields)
+            writer.writeheader()
+            writer.writerows(
+                {name: row.get(name, "") for name in ranking_fields}
+                for row in ranked_rows
+            )
+
+    cross_fields = ["Bench", "N"]
+    for tool in CROSS_TOOL_NAMES:
+        cross_fields.extend(
+            [
+                tool,
+                f"{tool}_unsat",
+                f"{tool}_sat",
+                f"{tool}_timeout",
+                f"{tool}_unknown",
+                f"{tool}_error",
+            ]
+        )
+    cross_path = out_dir / "_CROSS_TOOL_SUMMARY.csv"
+    with cross_path.open("w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=cross_fields)
+        writer.writeheader()
+        writer.writerows({name: row.get(name, "") for name in cross_fields} for row in cross_rows)
+    return final_results, final_ranking, cross_path
+
+
 def _test_hybridz_results() -> None:  # pragma: no cover
     rec = HybridZRunRecorder("toy")
     rec.add_results(
@@ -192,6 +367,29 @@ def _test_hybridz_results() -> None:  # pragma: no cover
         assert summary_rows[0]["V+A"] == "2"
         assert summary_rows[0]["P0"] == "0"
         assert summary_rows[0]["unsolved"] == "3"
+
+        manifest = write_sha256_manifest(Path(tmp))
+        assert manifest.exists()
+        assert "toy_hybridz_summary.csv" in manifest.read_text(encoding="utf-8")
+
+    ranked_rows, cross_rows = build_cross_tool_rows(
+        [
+            {
+                "Bench": "safenlp_2024",
+                "N": "1080",
+                "CERT": "432",
+                "ADV": "647",
+                "TIMEOUT": "0",
+                "UNKNOWN": "1",
+                "ERROR": "0",
+                "P0": "0",
+                "unsolved": "1",
+            }
+        ]
+    )
+    assert ranked_rows[0]["rank_competition"] == 2
+    assert ranked_rows[0]["best_tools"] == "abCROWN"
+    assert cross_rows[0]["OURS_sat"] == 647
 
 
 if __name__ == "__main__":  # pragma: no cover
