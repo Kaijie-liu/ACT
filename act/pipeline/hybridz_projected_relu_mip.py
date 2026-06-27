@@ -22,10 +22,10 @@ from typing import Dict, List, Optional, Tuple
 import numpy as np
 
 from act.pipeline.hybridz_projected_utils import (
-    build_net_and_interval as _build_net_and_interval,
-    check_real_unsafe as _check_real_unsafe,
-    flatten_query_specs as _flatten_query_specs,
-    interval_hard_rivals_from_specs as _interval_hard_rivals_from_specs,
+    build_net_and_interval,
+    check_real_unsafe,
+    flatten_query_specs,
+    interval_hard_rivals_from_specs,
 )
 from act.pipeline.hybridz_option_utils import parse_key_value_options
 
@@ -535,7 +535,7 @@ def main() -> None:
     highs_options = parse_key_value_options(args.highs_option, "highs-option")
     scip_params = parse_key_value_options(args.scip_param, "scip-param")
     t0 = time.time()
-    onnx_path, vnnlib_path, input_shape, queries, net, before, after, interval_s = _build_net_and_interval(
+    onnx_path, vnnlib_path, input_shape, queries, net, before, after, interval_s = build_net_and_interval(
         args.bench, args.iid, args.device
     )
     input_layer, dense1, relu_layer, dense2, assert_layer = _layers_one_relu_mlp(net)
@@ -550,9 +550,9 @@ def main() -> None:
     pre_lb = _as_np(after[2].bounds.lb).reshape(-1)
     pre_ub = _as_np(after[2].bounds.ub).reshape(-1)
 
-    flat_specs = _flatten_query_specs(queries, W2.shape[0])
+    flat_specs = flatten_query_specs(queries, W2.shape[0])
     final_bounds = after[4].bounds
-    hard, lows = _interval_hard_rivals_from_specs(flat_specs, final_bounds)
+    hard, lows = interval_hard_rivals_from_specs(flat_specs, final_bounds)
     if args.query_indices.strip():
         order = np.asarray([int(x) for x in args.query_indices.split(",") if x.strip()], dtype=int)
     else:
@@ -618,7 +618,7 @@ def main() -> None:
         if (status.startswith("Target") or (margin is not None and margin <= 1e-9)) and x is not None:
             hz_unsafe += 1
             if args.check_witness:
-                real_bad, cy = _check_real_unsafe(
+                real_bad, cy = check_real_unsafe(
                     onnx_path,
                     input_shape,
                     x.reshape(input_shape),
