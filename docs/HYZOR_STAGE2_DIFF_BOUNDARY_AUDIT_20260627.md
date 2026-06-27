@@ -8,24 +8,24 @@ Current branch: `hz-cam-1` after sparse-probe consolidation passes, frozen-gate
 productization, sparse-worker option deduplication, package-local HybridZ
 CLI option/spec helper consolidation, benchmark reporting helper
 consolidation, solver-helper consolidation, and sparse MILP cutoff-engine
-consolidation, plus S-curve backend consolidation, plus local untracked
-`scripts/`.
+consolidation, S-curve backend consolidation, and sparse structural row-map
+helper consolidation, plus local untracked `scripts/`.
 The local `scripts/` directory is not tracked and is not part of this diff.
 
 ## Summary
 
 Current upstream diff after `git fetch upstream` on 2026-06-27:
 
-`80 files changed, 24155 insertions(+), 2217 deletions(-)`
+`80 files changed, 24272 insertions(+), 2217 deletions(-)`
 
 Directory-level split:
 
 | Area | Files | Added | Deleted | Status |
 |---|---:|---:|---:|---|
-| `act/pipeline` | 19 | 8009 | 159 | largest remaining consolidation target |
-| `act/back_end/hybridz_tf` | 8 | 5635 | 292 | core HZ operator/product path |
+| `act/pipeline` | 19 | 7999 | 159 | largest remaining consolidation target |
+| `act/back_end/hybridz_tf` | 8 | 5749 | 292 | core HZ operator/product path |
 | `act/back_end/solver` | 5 | 4102 | 423 | verdict/sparse HZ solver path |
-| `docs` | 16 | 3998 | 0 | audit/provenance/future-work docs |
+| `docs` | 16 | 4011 | 0 | audit/provenance/future-work docs |
 | `act/back_end/other` | 17 | 1696 | 986 | frontend/backend integration hooks |
 | `act/front_end` | 7 | 508 | 334 | benchmark/data loading integration |
 | `FULLRUN_HANDOFF.md` | 1 | 200 | 0 | run handoff/provenance |
@@ -36,9 +36,9 @@ Largest files by changed lines:
 | File | Added | Deleted | Interpretation |
 |---|---:|---:|---|
 | `act/back_end/solver/solver_hz_verdict.py` | 3488 | 0 | exact verdict MILP, open-source solver portfolio, reusable sparse MILP presolve / relaxation helpers, LP min-margin prefilter, and sparse HiGHS/SCIP cutoff engines |
-| `act/back_end/hybridz_tf/sparse_ops.py` | 3147 | 0 | sparse exact-HZ propagation core; SOFTMAX, var-var MATMUL, exact ReLU graph construction, exact ReLU tight-LP bound tightening, S-curve return metadata, and uniform/curvature pruned S-curve support moved here from the probe |
+| `act/back_end/hybridz_tf/sparse_ops.py` | 3261 | 0 | sparse exact-HZ propagation core; SOFTMAX, var-var MATMUL, exact ReLU graph construction, exact ReLU tight-LP bound tightening, S-curve return metadata, uniform/curvature pruned S-curve support, and structural row-map helpers moved here from the probe |
 | `act/pipeline/hybridz_benchmark_runner.py` | 1783 | 0 | product runner and branch portfolio; reporting helpers are now in `hybridz_results.py` |
-| `act/pipeline/hybridz_sparse_exact_probe.py` | 1720 | 0 | remaining package-level prototype; sparse cutoff engines, S-curve pruned construction, and most reusable solver helpers have moved into backend layers |
+| `act/pipeline/hybridz_sparse_exact_probe.py` | 1710 | 0 | remaining package-level prototype; sparse cutoff engines, S-curve pruned construction, structural row maps, and most reusable solver helpers have moved into backend layers |
 | `act/back_end/hybridz_tf/tf_mlp.py` | 1253 | 246 | dense exact ReLU/compressed ReLU and nonlinear operators |
 | `act/pipeline/hybridz_results.py` | 1227 | 0 | benchmark/suite CSV and JSON exports, frozen comparison, cross-tool ranking, failure taxonomy, and P0 reporting helpers |
 | `act/pipeline/hybridz_projected_relu_mip.py` | 744 | 0 | safenlp projected exact-ReLU branch; still pure-HZ but specialized |
@@ -266,6 +266,19 @@ packaged modules, but too much sparse exact-HZ probe logic still lives in
 	   `dist_shift_2023` compressed S-curve sparse-worker smokes returning
 	   `UNKNOWN/P0=false` without construction errors, both frontend smokes
 	   producing `N=1, ADV=1, P0=0`, and the frozen manifest check.
+
+	   The sparse structural row-map helpers for nearest-neighbor UPSAMPLE,
+	   SLICE, and GATHER were also moved into
+	   `act/back_end/hybridz_tf/sparse_ops.py`.  The sparse probe now calls
+	   backend `sparse_upsample_nearest_row_indices`,
+	   `sparse_slice_row_indices`, and `sparse_gather_row_indices`, and no longer
+	   imports dense `tf_mlp` private helper functions.  The probe dropped from
+	   1720 to 1710 lines.  Regression evidence: `py_compile` for touched files,
+	   `python -m act.back_end.hybridz_tf.sparse_ops` with explicit row-map toy
+	   checks, `python -m act.pipeline.hybridz_sparse_exact_probe --self-test`,
+	   the `sat_relu` sparse-worker smoke returning `ADV/P0=false`, both
+	   frontend smokes producing `N=1, ADV=1, P0=0`, and the frozen manifest
+	   check.
 
 1. Audit `act/pipeline/hybridz_sparse_exact_probe.py` function families.
    Move reusable exact-HZ propagation and MILP export helpers into backend

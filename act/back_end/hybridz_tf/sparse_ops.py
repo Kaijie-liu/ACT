@@ -934,6 +934,106 @@ def sparse_maxpool2d_candidate_rows(layer) -> List[np.ndarray]:
     return candidates
 
 
+def sparse_upsample_nearest_row_indices(layer, n_in: int, n_out: int) -> Optional[np.ndarray]:
+    """Output-to-input row map for nearest-neighbor upsample."""
+
+    mode = str(layer.params.get("mode", "nearest")).lower()
+    if mode != "nearest":
+        return None
+    in_shape = layer.params.get("input_shape")
+    if in_shape is None:
+        return None
+    in_shape = tuple(int(d) for d in in_shape)
+    if _prod(in_shape) != int(n_in) or len(in_shape) < 3:
+        return None
+    view_shape = (1, *in_shape) if len(in_shape) == 3 else in_shape
+    spatial_rank = len(view_shape) - 2
+    size = layer.params.get("size")
+    scale_factor = layer.params.get("scale_factor")
+    if size is not None and isinstance(size, (list, tuple)):
+        size = tuple(int(s) for s in size)
+        if len(size) > spatial_rank:
+            size = size[-spatial_rank:]
+    if scale_factor is not None and isinstance(scale_factor, (list, tuple)):
+        scale_factor = tuple(float(s) for s in scale_factor)
+        if len(scale_factor) > spatial_rank:
+            scale_factor = scale_factor[-spatial_rank:]
+    if size is None and scale_factor is None:
+        out_shape = layer.params.get("output_shape")
+        if out_shape is None:
+            return None
+        out_shape = tuple(int(d) for d in out_shape)
+        out_view_shape = (1, *out_shape) if len(out_shape) == 3 else out_shape
+        if len(out_view_shape) != len(view_shape):
+            return None
+        size = out_view_shape[2:]
+    base = torch.arange(int(n_in), dtype=torch.float64).view(*view_shape)
+    out = torch.nn.functional.interpolate(
+        base,
+        size=size,
+        scale_factor=scale_factor,
+        mode="nearest",
+    )
+    idx = out.reshape(-1).detach().cpu().numpy().astype(np.int64)
+    if idx.size != int(n_out):
+        return None
+    return idx
+
+
+def sparse_slice_row_indices(layer, n: int) -> Optional[np.ndarray]:
+    """Output-to-input row map for Slice, mirroring interval.tf_slice."""
+
+    if "input_shape" not in layer.params:
+        return None
+    inp_shape = tuple(int(d) for d in layer.params["input_shape"])
+    per = _prod(inp_shape)
+    if per == 0 or int(n) % per != 0:
+        return None
+    batch = int(n) // per
+    idx = torch.arange(int(n)).view(batch, *inp_shape)
+    starts = layer.params.get("starts", [])
+    ends = layer.params.get("ends", [])
+    axes = layer.params.get("axes", list(range(len(inp_shape))))
+    steps = layer.params.get("steps", [1] * len(axes))
+    slices = [slice(None)] * (len(inp_shape) + 1)
+    for i, axis in enumerate(axes):
+        axis = int(axis)
+        end = ends[i]
+        if end > inp_shape[axis]:
+            end = inp_shape[axis]
+        slices[axis + 1] = slice(starts[i], end, steps[i])
+    return idx[tuple(slices)].reshape(-1).detach().cpu().numpy().astype(np.int64)
+
+
+def sparse_gather_row_indices(layer, n: int) -> Optional[np.ndarray]:
+    """Output-to-input row map for Gather, mirroring interval.tf_gather."""
+
+    if "input_shape" not in layer.params:
+        return None
+    inp_shape = tuple(int(d) for d in layer.params["input_shape"])
+    per = _prod(inp_shape)
+    if per == 0 or int(n) % per != 0:
+        return None
+    batch = int(n) // per
+    axis = int(layer.params.get("axis", 0))
+    if axis < 0:
+        axis += len(inp_shape)
+    raw_idx = layer.params["indices"]
+    if isinstance(raw_idx, (list, tuple)):
+        indices = torch.tensor(raw_idx, dtype=torch.long)
+    elif hasattr(raw_idx, "detach"):
+        indices = raw_idx.detach().cpu().long()
+    else:
+        indices = torch.as_tensor(raw_idx, dtype=torch.long)
+    idx = torch.arange(int(n)).view(batch, *inp_shape)
+    return (
+        torch.index_select(idx, dim=axis + 1, index=indices.reshape(-1))
+        .reshape(-1)
+        .numpy()
+        .astype(np.int64)
+    )
+
+
 def sparse_hz_gather_rows_like(
     base: SparseHZono,
     rows: Sequence[int],
@@ -2538,8 +2638,11 @@ __all__ = [
     "sparse_hz_scale",
     "sparse_hz_sub_same_frame",
     "sparse_hz_tighten_relu_bounds",
+    "sparse_gather_row_indices",
     "sparse_maxpool2d_candidate_rows",
     "sparse_pad_cols",
+    "sparse_slice_row_indices",
+    "sparse_upsample_nearest_row_indices",
 ]
 
 
@@ -2781,6 +2884,22 @@ def _test_sparse_affine_structural_ops() -> None:  # pragma: no cover
     _assert_vec_close(sparse_gather.c, sparse.c[[2, 0]])
     for r in (np.array([1.0, 1.0]), np.array([-1.0, 2.0])):
         _assert_close(hz_row_max(dense_gather, r), hz_row_max(sparse_gather, r))
+
+    slice_layer = SimpleNamespace(
+        params={"input_shape": (2, 3), "starts": [1], "ends": [3], "axes": [1], "steps": [1]},
+    )
+    gather_layer = SimpleNamespace(
+        params={"input_shape": (2, 3), "axis": 1, "indices": [2, 0]},
+    )
+    upsample_layer = SimpleNamespace(
+        params={"input_shape": (1, 2, 2), "scale_factor": (2, 2), "mode": "nearest"},
+    )
+    assert np.array_equal(sparse_slice_row_indices(slice_layer, 6), np.array([1, 2, 4, 5]))
+    assert np.array_equal(sparse_gather_row_indices(gather_layer, 6), np.array([2, 0, 5, 3]))
+    assert np.array_equal(
+        sparse_upsample_nearest_row_indices(upsample_layer, 4, 16),
+        np.array([0, 0, 1, 1, 0, 0, 1, 1, 2, 2, 3, 3, 2, 2, 3, 3]),
+    )
 
     sparse_sum = sparse_hz_add_same_frame(sparse, sparse_hz_scale(sparse, 2.0))
     dense_sum = hz_multiply(dense, 3.0 * torch.eye(3, dtype=dtype))

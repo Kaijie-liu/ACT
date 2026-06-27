@@ -33,7 +33,6 @@ from act.pipeline.hybridz_spec_utils import (  # noqa: E402
     input_center_radius_indices as _input_center_rad,
     interval_hard_rivals_from_specs as _interval_hard_rivals_from_specs,
 )
-import act.back_end.hybridz_tf.tf_mlp as hz_mlp  # noqa: E402
 from act.back_end.hybridz_tf.sparse_ops import (  # noqa: E402
     _scurve_breakpoints,
     _scurve_domain_cut_matrices,
@@ -53,6 +52,7 @@ from act.back_end.hybridz_tf.sparse_ops import (  # noqa: E402
     sparse_hz_concat,
     sparse_hz_gather_rows as _gather_hz_rows,
     sparse_hz_gather_rows_like as _gather_hz_rows_like,
+    sparse_gather_row_indices as _gather_row_idx,
     sparse_hz_apply_relu_exact as _backend_relu_exact,
     sparse_hz_apply_scurve_piecewise as _backend_scurve_piecewise,
     sparse_hz_apply_softmax_simplex_layer as _softmax_simplex_hz,
@@ -65,6 +65,8 @@ from act.back_end.hybridz_tf.sparse_ops import (  # noqa: E402
     sparse_pad_cols as _pad_cols,
     sparse_maxpool2d_candidate_rows as _maxpool2d_candidate_rows,
     sparse_hz_tighten_relu_bounds as _tighten_relu_bounds,
+    sparse_slice_row_indices as _slice_row_idx,
+    sparse_upsample_nearest_row_indices as _upsample_nearest_row_idx,
 )
 
 
@@ -104,16 +106,6 @@ from act.pipeline.hybridz_sparse_census import (  # noqa: E402
     _build_net_and_interval,
     _format_big,
 )
-
-
-def _slice_row_idx_np(L, n: int) -> Optional[np.ndarray]:
-    rows = hz_mlp._slice_row_idx(L, int(n))
-    return None if rows is None else rows.detach().cpu().numpy().astype(np.int64).reshape(-1)
-
-
-def _gather_row_idx_np(L, n: int) -> Optional[np.ndarray]:
-    rows = hz_mlp._gather_row_idx(L, int(n))
-    return None if rows is None else rows.detach().cpu().numpy().astype(np.int64).reshape(-1)
 
 
 def _relu_exact(
@@ -894,11 +886,9 @@ def _propagate_sparse(
             global_c = hz.n_cont
         elif kind == "UPSAMPLE":
             prev = _pad_hz(source_hz(L), global_c, global_b)
-            rows_t = hz_mlp._upsample_nearest_row_idx(
-                L, prev.n_out, len(L.out_vars), before[L.id].lb.device)
-            if rows_t is None:
+            rows = _upsample_nearest_row_idx(L, prev.n_out, len(L.out_vars))
+            if rows is None:
                 raise NotImplementedError(f"unsupported sparse UPSAMPLE shape at {L.id}")
-            rows = rows_t.detach().cpu().numpy().astype(np.int64).reshape(-1)
             hz = _gather_hz_rows(prev, rows)
         elif kind == "AVGPOOL2D":
             prev = _pad_hz(source_hz(L), global_c, global_b)
@@ -966,13 +956,13 @@ def _propagate_sparse(
             hz = _pad_hz(source_hz(L), global_c, global_b)
         elif kind == "SLICE":
             prev = _pad_hz(source_hz(L), global_c, global_b)
-            rows = _slice_row_idx_np(L, prev.n_out)
+            rows = _slice_row_idx(L, prev.n_out)
             if rows is None or rows.size != len(L.out_vars):
                 raise NotImplementedError(f"unsupported sparse SLICE shape at {L.id}")
             hz = _gather_hz_rows(prev, rows)
         elif kind == "GATHER":
             prev = _pad_hz(source_hz(L), global_c, global_b)
-            rows = _gather_row_idx_np(L, prev.n_out)
+            rows = _gather_row_idx(L, prev.n_out)
             if rows is None or rows.size != len(L.out_vars):
                 raise NotImplementedError(f"unsupported sparse GATHER shape at {L.id}")
             hz = _gather_hz_rows(prev, rows)
