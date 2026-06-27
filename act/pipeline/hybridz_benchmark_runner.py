@@ -48,11 +48,14 @@ from act.pipeline.hybridz_results import (
     read_csv_rows as _read_csv_rows,
     row_has_p0 as _row_has_p0,
     run_has_p0 as _run_has_p0,
-    run_verify_time_s as _run_verify_time_s,
     truthy_flag as _truthy_flag,
+    write_combined as _write_combined,
     write_frozen_repro_check as _write_frozen_repro_check,
     write_sha256_manifest as _write_sha256_manifest,
+    write_suite_combined as _write_suite_combined,
     write_suite_failure_taxonomy as _write_suite_failure_taxonomy,
+    write_suite_icse_outputs as _write_suite_icse_outputs,
+    write_suite_json_summary as _write_suite_json_summary,
     write_suite_cross_tool_outputs as _write_suite_cross_tool_outputs,
 )
 
@@ -700,18 +703,6 @@ def _branch_accepts(branch: HybridZRunBranch, result: dict[str, object]) -> bool
     return str(result.get("verdict")) in set(branch.accept_verdicts)
 
 
-def _verdict_to_icse_result(verdict: str) -> str:
-    if verdict == "CERT":
-        return "unsat"
-    if verdict == "ADV":
-        return "sat"
-    if verdict == "TIMEOUT":
-        return "timeout"
-    if verdict == "UNKNOWN":
-        return "unknown"
-    return "error"
-
-
 def _kill_process_group(proc: subprocess.Popen) -> None:
     if proc.poll() is not None:
         return
@@ -981,294 +972,6 @@ def _run_one(cfg: HybridZBenchmarkConfig, inst: HybridZBenchmarkInstance) -> dic
     return winner
 
 
-def _write_icse_benchmark_outputs(
-    cfg: HybridZBenchmarkConfig,
-    run_rows: Iterable[dict[str, object]],
-) -> tuple[Path, Path, Path]:
-    rows = list(run_rows)
-    bench_path = cfg.out_dir / f"{cfg.bench}.csv"
-    index_path = cfg.out_dir / f"{cfg.bench}_icse_index.csv"
-    detail_path = cfg.out_dir / f"{cfg.bench}_icse_detail.csv"
-
-    counts = {"unsat": 0, "sat": 0, "timeout": 0, "unknown": 0, "unsupported": 0, "error": 0}
-    total_time = 0.0
-    with bench_path.open("w", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=["onnx", "vnnlib", "result", "time_sec"])
-        writer.writeheader()
-        for run in rows:
-            result = _verdict_to_icse_result(str(run.get("verdict", "ERROR")))
-            time_s = _run_verify_time_s(run)
-            total_time += time_s
-            counts[result] = counts.get(result, 0) + 1
-            writer.writerow({
-                "onnx": str(run.get("onnx_model", "")),
-                "vnnlib": str(run.get("vnnlib_spec", "")),
-                "result": result,
-                "time_sec": f"{time_s:.2f}",
-            })
-
-    index_row = {
-        "benchmark": cfg.bench,
-        "N": len(rows),
-        "unsat": counts["unsat"],
-        "sat": counts["sat"],
-        "timeout": counts["timeout"],
-        "unknown": counts["unknown"],
-        "unsupported": counts["unsupported"],
-        "error": counts["error"],
-        "total_time_sec": f"{total_time:.1f}",
-    }
-    index_fields = [
-        "benchmark",
-        "N",
-        "unsat",
-        "sat",
-        "timeout",
-        "unknown",
-        "unsupported",
-        "error",
-        "total_time_sec",
-    ]
-    with index_path.open("w", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=index_fields)
-        writer.writeheader()
-        writer.writerow(index_row)
-
-    detail_fields = [
-        "benchmark",
-        "iid",
-        "onnx",
-        "vnnlib",
-        "csv_timeout",
-        "result",
-        "time_sec",
-        "raw_verdict",
-        "branch",
-        "portfolio_branches",
-        "portfolio_done",
-        "p0",
-        "err",
-    ]
-    with detail_path.open("w", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=detail_fields)
-        writer.writeheader()
-        for run in rows:
-            result = _verdict_to_icse_result(str(run.get("verdict", "ERROR")))
-            time_s = _run_verify_time_s(run)
-            err = run.get("stderr_tail", "") or run.get("stdout_tail", "")
-            writer.writerow({
-                "benchmark": cfg.bench,
-                "iid": int(run.get("index", -1)),
-                "onnx": str(run.get("onnx_model", "")),
-                "vnnlib": str(run.get("vnnlib_spec", "")),
-                "csv_timeout": run.get("timeout_s", ""),
-                "result": result,
-                "time_sec": f"{time_s:.2f}",
-                "raw_verdict": str(run.get("verdict", "ERROR")),
-                "branch": str(run.get("branch", "")),
-                "portfolio_branches": ";".join(str(x) for x in run.get("portfolio_branches", [])),
-                "portfolio_done": str(run.get("portfolio_done", "")),
-                "p0": int(_run_has_p0(run)),
-                "err": str(err)[:300],
-            })
-    return bench_path, index_path, detail_path
-
-
-def _profile_json(bench: str) -> dict[str, object]:
-    profile = get_bench_profile(bench)
-    return {
-        "workers": profile.workers,
-        "mem_gb": profile.mem_gb,
-        "mem_floor_gb": profile.mem_floor_gb,
-        "milp_fraction": profile.milp_fraction,
-        "milp_timeout_cap": profile.milp_timeout_cap,
-        "sigmoid_k": profile.sigmoid_k,
-        "cell_budget": profile.cell_budget,
-        "compressed_relu": profile.compressed_relu,
-        "relu_valid_cuts": profile.relu_valid_cuts,
-        "cutoff_row": profile.cutoff_row,
-        "sparse_first": profile.sparse_first,
-        "sparse_fallback": profile.sparse_fallback,
-        "parallel_cutoff_portfolio": profile.parallel_cutoff_portfolio,
-        "distshift_elim_portfolio": profile.distshift_elim_portfolio,
-        "acasxu_scip_witness_fallback": profile.acasxu_scip_witness_fallback,
-        "query_workers": profile.query_workers,
-        "milp_threads": profile.milp_threads,
-        "milp_env": dict(profile.milp_env or {}),
-    }
-
-
-def _write_benchmark_json_summary(
-    cfg: HybridZBenchmarkConfig,
-    summary: dict[str, object],
-    run_rows: Iterable[dict[str, object]],
-) -> Path:
-    rows = list(run_rows)
-    payload = {
-        "bench": cfg.bench,
-        "out_dir": str(cfg.out_dir),
-        "summary": summary,
-        "profile": _profile_json(cfg.bench),
-        "instances": [
-            {
-                "iid": int(row.get("index", -1)),
-                "verdict": str(row.get("verdict", "ERROR")),
-                "branch": str(row.get("branch", "")),
-                "onnx": str(row.get("onnx_model", "")),
-                "vnnlib": str(row.get("vnnlib_spec", "")),
-                "time_sec": _run_verify_time_s(row),
-                "portfolio_done": row.get("portfolio_done", {}),
-            }
-            for row in rows
-        ],
-    }
-    path = cfg.out_dir / f"{cfg.bench}_run_summary.json"
-    path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    return path
-
-
-def _write_combined(cfg: HybridZBenchmarkConfig, results: Iterable[dict[str, object]]) -> tuple[Path, Path]:
-    cfg.out_dir.mkdir(parents=True, exist_ok=True)
-    detail_path = cfg.out_dir / f"{cfg.bench}_hybridz_detail.csv"
-    summary_path = cfg.out_dir / f"{cfg.bench}_hybridz_summary.csv"
-    run_rows = list(results)
-
-    detail_fields = [
-        "bench",
-        "tag",
-        "lane",
-        "status",
-        "verdict",
-        "wall_s",
-        "reason",
-        "hz_verdict",
-        "engine",
-        "p0",
-        "metadata_json",
-    ]
-    with detail_path.open("w", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=detail_fields)
-        writer.writeheader()
-        for run in run_rows:
-            rows = run.get("detail_rows", []) or []
-            for row in rows:
-                writer.writerow({name: row.get(name, "") for name in detail_fields})
-            if rows:
-                continue
-            payload = run.get("module_payload")
-            metadata = {
-                "index": run.get("index"),
-                "onnx_model": run.get("onnx_model", ""),
-                "vnnlib_spec": run.get("vnnlib_spec", ""),
-                "timeout_s": run.get("timeout_s", ""),
-                "returncode": run.get("returncode", ""),
-                "portfolio_done": run.get("portfolio_done", {}),
-                "portfolio_branches": run.get("portfolio_branches", []),
-            }
-            if isinstance(payload, dict):
-                metadata["module_payload"] = payload
-            try:
-                idx = int(run.get("index", -1))
-                tag = f"iid{idx:05d}"
-            except Exception:
-                tag = str(run.get("index", ""))
-            writer.writerow({
-                "bench": cfg.bench,
-                "tag": tag,
-                "lane": str(run.get("branch", "")),
-                "status": str(run.get("verdict", "ERROR")),
-                "verdict": str(run.get("verdict", "ERROR")),
-                "wall_s": f"{_run_verify_time_s(run):.2f}",
-                "reason": str(run.get("stderr_tail", "") or run.get("stdout_tail", ""))[:300],
-                "hz_verdict": str(run.get("verdict", "ERROR")),
-                "engine": str(payload.get("mode", "hybridz") if isinstance(payload, dict) else "hybridz"),
-                "p0": int(_run_has_p0(run)),
-                "metadata_json": json.dumps(metadata, sort_keys=True),
-            })
-
-    counts = {"CERT": 0, "ADV": 0, "TIMEOUT": 0, "UNKNOWN": 0, "ERROR": 0}
-    for run in run_rows:
-        verdict = str(run.get("verdict", "ERROR"))
-        counts[verdict] = counts.get(verdict, 0) + 1
-    p0 = sum(1 for run in run_rows if _run_has_p0(run))
-    summary = {
-        "Bench": cfg.bench,
-        "N": len(run_rows),
-        "CERT": counts["CERT"],
-        "ADV": counts["ADV"],
-        "V+A": counts["CERT"] + counts["ADV"],
-        "TIMEOUT": counts["TIMEOUT"],
-        "UNKNOWN": counts["UNKNOWN"],
-        "ERROR": counts["ERROR"],
-        "P0": p0,
-        "unsolved": counts["TIMEOUT"] + counts["UNKNOWN"] + counts["ERROR"],
-    }
-    with summary_path.open("w", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=list(summary.keys()))
-        writer.writeheader()
-        writer.writerow(summary)
-    _write_icse_benchmark_outputs(cfg, run_rows)
-    _write_benchmark_json_summary(cfg, summary, run_rows)
-    _write_sha256_manifest(cfg.out_dir)
-    return detail_path, summary_path
-
-
-def _write_suite_combined(
-    cfg: HybridZBenchmarkSuiteConfig,
-    bench_summaries: Iterable[dict[str, object]],
-    detail_paths: Iterable[Path],
-) -> tuple[Path, Path]:
-    cfg.out_dir.mkdir(parents=True, exist_ok=True)
-    summaries = list(bench_summaries)
-    detail_path = cfg.out_dir / "hybridz_suite_detail.csv"
-    summary_path = cfg.out_dir / "hybridz_suite_summary.csv"
-
-    detail_fields = [
-        "bench",
-        "tag",
-        "lane",
-        "status",
-        "verdict",
-        "wall_s",
-        "reason",
-        "hz_verdict",
-        "engine",
-        "p0",
-        "metadata_json",
-    ]
-    with detail_path.open("w", newline="") as f_out:
-        writer = csv.DictWriter(f_out, fieldnames=detail_fields)
-        writer.writeheader()
-        for path in detail_paths:
-            for row in _read_csv_rows(path):
-                writer.writerow({name: row.get(name, "") for name in detail_fields})
-
-    fields = [
-        "Bench",
-        "N",
-        "CERT",
-        "ADV",
-        "V+A",
-        "TIMEOUT",
-        "UNKNOWN",
-        "ERROR",
-        "P0",
-        "unsolved",
-    ]
-    total = {key: 0 for key in fields if key != "Bench"}
-    with summary_path.open("w", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=fields)
-        writer.writeheader()
-        for row in summaries:
-            out = {key: row.get(key, 0 if key != "Bench" else "") for key in fields}
-            writer.writerow(out)
-            for key in total:
-                total[key] += int(out.get(key, 0) or 0)
-        if summaries:
-            writer.writerow({"Bench": "TOTAL", **total})
-    return detail_path, summary_path
-
-
 def _reuse_frozen_benchmark_outputs(
     cfg: HybridZBenchmarkConfig,
 ) -> tuple[Path, Path, list[dict[str, object]]] | None:
@@ -1297,100 +1000,6 @@ def _reuse_frozen_benchmark_outputs(
         if _int_field(row, field) != int(expected[field]):
             return None
     return detail_path, summary_path, []
-
-
-def _write_suite_icse_outputs(cfg: HybridZBenchmarkSuiteConfig) -> tuple[Path, Path]:
-    index_path = cfg.out_dir / "_INDEX.csv"
-    detail_path = cfg.out_dir / "_DETAIL.csv"
-    index_fields = [
-        "benchmark",
-        "N",
-        "unsat",
-        "sat",
-        "timeout",
-        "unknown",
-        "unsupported",
-        "error",
-        "total_time_sec",
-    ]
-    detail_fields = [
-        "benchmark",
-        "iid",
-        "onnx",
-        "vnnlib",
-        "csv_timeout",
-        "result",
-        "time_sec",
-        "raw_verdict",
-        "branch",
-        "portfolio_branches",
-        "portfolio_done",
-        "p0",
-        "err",
-    ]
-    index_rows: list[dict[str, str]] = []
-    detail_rows: list[dict[str, str]] = []
-    for bench in cfg.benches:
-        bench_dir = cfg.out_dir / bench
-        bench_csv = bench_dir / f"{bench}.csv"
-        if bench_csv.exists():
-            (cfg.out_dir / f"{bench}.csv").write_text(
-                bench_csv.read_text(encoding="utf-8"),
-                encoding="utf-8",
-            )
-        index_rows.extend(_read_csv_rows(bench_dir / f"{bench}_icse_index.csv"))
-        detail_rows.extend(_read_csv_rows(bench_dir / f"{bench}_icse_detail.csv"))
-
-    with index_path.open("w", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=index_fields)
-        writer.writeheader()
-        for row in index_rows:
-            writer.writerow({name: row.get(name, "") for name in index_fields})
-
-    with detail_path.open("w", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=detail_fields)
-        writer.writeheader()
-        for row in detail_rows:
-            writer.writerow({name: row.get(name, "") for name in detail_fields})
-
-    readme = cfg.out_dir / "README_REPRODUCIBILITY.md"
-    readme.write_text(
-        "# ACT HybridZ Benchmark Runner Export\n\n"
-        "Generated by `python -m act.pipeline --verify hybridz-benchmark`. "
-        "Per-benchmark CSVs use the ICSE/VNN-COMP style columns "
-        "`onnx,vnnlib,result,time_sec`; strict HybridZ result tokens map "
-        "`CERT -> unsat`, `ADV -> sat`, `TIMEOUT -> timeout`, "
-        "`UNKNOWN -> unknown`, and errors to `error`.\n",
-        encoding="utf-8",
-    )
-    return index_path, detail_path
-
-
-def _write_suite_json_summary(
-    cfg: HybridZBenchmarkSuiteConfig,
-    suite_summary_path: Path,
-) -> Path:
-    rows = _read_csv_rows(suite_summary_path)
-    bench_rows = [row for row in rows if row.get("Bench") != "TOTAL"]
-    total_rows = [row for row in rows if row.get("Bench") == "TOTAL"]
-    payload = {
-        "suite": "frozen" if cfg.benches == FROZEN_BENCHMARK_SUITE else "custom",
-        "out_dir": str(cfg.out_dir),
-        "benchmarks": bench_rows,
-        "total": total_rows[0] if total_rows else {},
-        "profiles": {bench: _profile_json(bench) for bench in cfg.benches},
-        "config": {
-            "benches": list(cfg.benches),
-            "max_instances": cfg.max_instances,
-            "workers": cfg.workers,
-            "timeout_cap_s": cfg.timeout_cap_s,
-            "device": cfg.device,
-            "dtype": cfg.dtype,
-        },
-    }
-    path = cfg.out_dir / "hybridz_suite_summary.json"
-    path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    return path
 
 
 def run_hybridz_benchmark(cfg: HybridZBenchmarkConfig) -> tuple[Path, Path, list[dict[str, object]]]:
@@ -1431,7 +1040,7 @@ def run_hybridz_benchmark(cfg: HybridZBenchmarkConfig) -> tuple[Path, Path, list
                 if not _submit_next():
                     break
     results.sort(key=lambda row: int(row["index"]))
-    detail_path, summary_path = _write_combined(cfg, results)
+    detail_path, summary_path = _write_combined(cfg.bench, cfg.out_dir, results)
     return detail_path, summary_path, results
 
 
@@ -1463,7 +1072,7 @@ def _missing_benchmark_results(cfg: HybridZBenchmarkConfig, reason: str) -> tupl
         "stdout_tail": "",
         "stderr_tail": reason,
     }
-    detail_path, summary_path = _write_combined(cfg, [row])
+    detail_path, summary_path = _write_combined(cfg.bench, cfg.out_dir, [row])
     return detail_path, summary_path, [row]
 
 
@@ -1512,8 +1121,8 @@ def run_hybridz_benchmark_suite(
         if rows:
             summaries.append(rows[0])
         all_results.extend({**row, "bench": bench} for row in results)
-    suite_detail, suite_summary = _write_suite_combined(cfg, summaries, detail_paths)
-    _write_suite_icse_outputs(cfg)
+    suite_detail, suite_summary = _write_suite_combined(cfg.out_dir, summaries, detail_paths)
+    _write_suite_icse_outputs(cfg.out_dir, cfg.benches)
     _write_suite_cross_tool_outputs(
         cfg.out_dir,
         suite_summary,
@@ -1526,7 +1135,16 @@ def run_hybridz_benchmark_suite(
         max_instances=cfg.max_instances,
     )
     _write_suite_failure_taxonomy(cfg.out_dir, all_results)
-    _write_suite_json_summary(cfg, suite_summary)
+    _write_suite_json_summary(
+        cfg.out_dir,
+        cfg.benches,
+        suite_summary,
+        max_instances=cfg.max_instances,
+        workers=cfg.workers,
+        timeout_cap_s=cfg.timeout_cap_s,
+        device=cfg.device,
+        dtype=cfg.dtype,
+    )
     _write_sha256_manifest(cfg.out_dir)
     if cfg.require_frozen_match:
         _enforce_frozen_match(repro_check)
@@ -1820,7 +1438,7 @@ def _test_hybridz_benchmark_runner() -> None:  # pragma: no cover
         writer.writeheader()
         writer.writerow({"bench": "toy_a", "tag": "iid0", "verdict": "CERT"})
     _, suite_summary = _write_suite_combined(
-        HybridZBenchmarkSuiteConfig(benches=("toy_a", "toy_b"), out_dir=suite_dir),
+        suite_dir,
         fake_summary,
         [fake_detail],
     )
@@ -1830,7 +1448,8 @@ def _test_hybridz_benchmark_runner() -> None:  # pragma: no cover
     assert rows[-1]["V+A"] == "2"
     assert rows[-1]["P0"] == "1"
     suite_json = _write_suite_json_summary(
-        HybridZBenchmarkSuiteConfig(benches=("toy_a", "toy_b"), out_dir=suite_dir),
+        suite_dir,
+        ("toy_a", "toy_b"),
         suite_summary,
     )
     suite_payload = json.loads(suite_json.read_text(encoding="utf-8"))
@@ -2033,7 +1652,8 @@ def _test_hybridz_benchmark_runner() -> None:  # pragma: no cover
     toy_a_cfg = HybridZBenchmarkConfig(bench="toy_a", out_dir=suite_dir / "toy_a")
     toy_b_cfg = HybridZBenchmarkConfig(bench="toy_b", out_dir=suite_dir / "toy_b")
     _, toy_a_summary = _write_combined(
-        toy_a_cfg,
+        toy_a_cfg.bench,
+        toy_a_cfg.out_dir,
         [
             {
                 "index": 0,
@@ -2068,7 +1688,8 @@ def _test_hybridz_benchmark_runner() -> None:  # pragma: no cover
     )
     assert _read_csv_rows(toy_a_summary)[0]["P0"] == "1"
     _write_combined(
-        toy_b_cfg,
+        toy_b_cfg.bench,
+        toy_b_cfg.out_dir,
         [
             {
                 "index": 0,
@@ -2087,9 +1708,7 @@ def _test_hybridz_benchmark_runner() -> None:  # pragma: no cover
     assert toy_b_detail[0]["tag"] == "iid00000"
     assert toy_b_detail[0]["verdict"] == "TIMEOUT"
     assert toy_b_detail[0]["lane"] == "normal"
-    _write_suite_icse_outputs(
-        HybridZBenchmarkSuiteConfig(benches=("toy_a", "toy_b"), out_dir=suite_dir)
-    )
+    _write_suite_icse_outputs(suite_dir, ("toy_a", "toy_b"))
     icse_rows = _read_csv_rows(suite_dir / "toy_a.csv")
     assert icse_rows[0]["result"] == "unsat"
     assert icse_rows[1]["result"] == "sat"
