@@ -17,6 +17,16 @@ import numpy as np
 import scipy.sparse as sp
 from scipy.optimize import linprog
 
+from act.back_end.hybridz_tf.sparse_ops import (  # noqa: E402
+    _broadcast_param,
+    _constraints_start_with,
+    _csr_equal,
+    _sigmoid_deriv_np,
+    _sigmoid_np,
+    _tanh_deriv_np,
+    _tanh_np,
+)
+
 
 REPO = Path(__file__).resolve().parents[2]
 
@@ -184,34 +194,6 @@ def _csr_sum(a: sp.csr_matrix, b: sp.csr_matrix) -> sp.csr_matrix:
     out = (a + b).tocsr()
     out.eliminate_zeros()
     return out
-
-
-def _csr_equal(a: sp.csr_matrix, b: sp.csr_matrix, *, atol: float = 0.0) -> bool:
-    if a.shape != b.shape:
-        return False
-    d = (a - b).tocsr()
-    d.eliminate_zeros()
-    if d.nnz == 0:
-        return True
-    return bool(np.max(np.abs(d.data)) <= atol)
-
-
-def _constraints_start_with(
-    Ac_big: sp.csr_matrix,
-    Ab_big: sp.csr_matrix,
-    b_big: np.ndarray,
-    Ac_small: sp.csr_matrix,
-    Ab_small: sp.csr_matrix,
-    b_small: np.ndarray,
-) -> bool:
-    n = int(Ac_small.shape[0])
-    if n > Ac_big.shape[0] or n != Ab_small.shape[0] or n > Ab_big.shape[0]:
-        return False
-    return (
-        _csr_equal(Ac_big[:n], Ac_small)
-        and _csr_equal(Ab_big[:n], Ab_small)
-        and np.array_equal(b_big[:n], b_small)
-    )
 
 
 def _merge_linear_constraints(parts: List[SparseHZ], n_cont: int, n_bin: int) -> Tuple[sp.csr_matrix, sp.csr_matrix, np.ndarray]:
@@ -539,17 +521,6 @@ def _dense_matrix(L) -> Tuple[sp.csr_matrix, np.ndarray]:
     mat = sp.csr_matrix(W)
     mat.eliminate_zeros()
     return mat, bvec
-
-
-def _broadcast_param(v, n: int) -> np.ndarray:
-    arr = v.detach().cpu().numpy().astype(np.float64).reshape(-1)
-    if arr.size == n:
-        return arr
-    if arr.size == 1:
-        return np.full(n, float(arr[0]), dtype=np.float64)
-    if n % arr.size == 0:
-        return np.tile(arr, n // arr.size)
-    raise ValueError(f"cannot broadcast parameter of size {arr.size} to {n}")
 
 
 def _scale_apply(hz: SparseHZ, scale) -> SparseHZ:
@@ -1511,26 +1482,6 @@ def _relu_exact(
     Aub = sp.vstack([Aub_base, proj_Ab, cut_Ab], format="csr")
     ub_rhs = np.concatenate([ub_base, proj_b, cut_b])
     return SparseHZ(out_c, out_Gc, out_Gb, Ac, Ab, b, Auc, Aub, ub_rhs), (int(active.sum()), int(inactive.sum()), k), tight_stats
-
-
-def _sigmoid_np(x: np.ndarray) -> np.ndarray:
-    x = np.asarray(x, dtype=np.float64)
-    z = np.clip(x, -60.0, 60.0)
-    return 1.0 / (1.0 + np.exp(-z))
-
-
-def _sigmoid_deriv_np(x: np.ndarray) -> np.ndarray:
-    y = _sigmoid_np(x)
-    return y * (1.0 - y)
-
-
-def _tanh_np(x: np.ndarray) -> np.ndarray:
-    return np.tanh(np.clip(np.asarray(x, dtype=np.float64), -30.0, 30.0))
-
-
-def _tanh_deriv_np(x: np.ndarray) -> np.ndarray:
-    y = _tanh_np(x)
-    return 1.0 - y * y
 
 
 def _scurve_breakpoints(

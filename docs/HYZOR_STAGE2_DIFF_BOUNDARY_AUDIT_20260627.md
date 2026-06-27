@@ -58,6 +58,15 @@ packaged modules, but too much sparse exact-HZ probe logic still lives in
 
 ## Required Follow-Up Before Calling Stage-II Fully Done
 
+0. First consolidation pass completed after this audit:
+   `act/pipeline/hybridz_sparse_exact_probe.py` now reuses backend
+   `sparse_ops.py` implementations for `_broadcast_param`,
+   `_constraints_start_with`, `_csr_equal`, `_sigmoid_np`,
+   `_sigmoid_deriv_np`, `_tanh_np`, and `_tanh_deriv_np`.  The remaining
+   duplicate probe/backend helpers are the three S-curve cut matrix builders;
+   a toy comparison showed domain/range/graph cut outputs match the backend
+   implementations exactly on the tested sparse HZ instance.
+
 1. Audit `act/pipeline/hybridz_sparse_exact_probe.py` function families.
    Move reusable exact-HZ propagation and MILP export helpers into backend
    modules, and delete diagnostic branches that are not counted in the pure-HZ
