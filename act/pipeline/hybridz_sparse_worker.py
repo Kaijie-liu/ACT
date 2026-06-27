@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """Opt-in SPARSE-HZ worker (runnable 'hybridz_sparse' mode).
 
-Wraps the sparse-CSR exact-HZ propagation (cifar_sparse_exact_probe) for the
+Wraps the packaged sparse-CSR exact-HZ propagation module for the
 *representation-drop* conv benches (malbeware/relusplitter/cgan) that the dense
 production path drops to UNKNOWN/ERROR. Sound by construction:
 
