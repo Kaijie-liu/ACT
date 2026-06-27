@@ -426,6 +426,10 @@ def _build_net_and_interval(bench: str, iid: int, device: str):
     return onnx_path, vnnlib_path, input_shape, queries, net, before, after, interval_s
 
 
+format_big = _format_big
+build_net_and_interval = _build_net_and_interval
+
+
 def _propagate_struct(net, queries, before, max_layers: Optional[int] = None) -> Tuple[Dict[int, StructState], List[LayerRow]]:
     states: Dict[int, StructState] = {}
     rows: List[LayerRow] = []
@@ -654,6 +658,14 @@ def main() -> None:
         print("  diagnosis=hard_rival_or_phase_fixing_needed")
     else:
         print("  diagnosis=interval_already_filters_all_rivals")
+
+
+__all__ = [
+    "StructState",
+    "LayerRow",
+    "build_net_and_interval",
+    "format_big",
+]
 
 
 if __name__ == "__main__":

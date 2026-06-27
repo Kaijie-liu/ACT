@@ -95,8 +95,8 @@ SPARSE_SUPPORTED_KINDS = {
 }
 
 from act.pipeline.hybridz_sparse_census import (  # noqa: E402
-    _build_net_and_interval,
-    _format_big,
+    build_net_and_interval as _build_net_and_interval,
+    format_big as _format_big,
 )
 
 
