@@ -4517,8 +4517,6 @@ def main() -> None:
                     help="if positive, skip MILP and return UNKNOWN when final HZ equality nnz exceeds this")
     ap.add_argument("--base-feas-timeout", type=float, default=10.0,
                     help="time limit for the mandatory base-HZ nonemptiness guard")
-    ap.add_argument("--fix-binaries", default="",
-                    help="comma list binary_id:z_value with z_value in {0,1}; fixes HZ binary phases")
     args = ap.parse_args()
     if args.self_test:
         _self_test()
@@ -4532,20 +4530,7 @@ def main() -> None:
     fixed_z_ub: Dict[int, float] = {}
     fixed_xi_lb: Dict[int, float] = {}
     fixed_xi_ub: Dict[int, float] = {}
-    if args.fix_binaries.strip():
-        for item in args.fix_binaries.split(","):
-            if not item.strip():
-                continue
-            k, v = item.split(":", 1)
-            bidx = int(k)
-            zval = float(v)
-            if zval not in (0.0, 1.0):
-                raise SystemExit(f"invalid --fix-binaries value {item}; expected z in {{0,1}}")
-            fixed_z_lb[bidx] = zval
-            fixed_z_ub[bidx] = zval
-            xival = 2.0 * zval - 1.0
-            fixed_xi_lb[bidx] = xival
-            fixed_xi_ub[bidx] = xival
+
     def parse_option_items(items, label: str) -> Dict[str, object]:
         out: Dict[str, object] = {}
         for item in items:
