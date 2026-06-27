@@ -1054,6 +1054,57 @@ def sparse_expand_row_indices(layer, n: int) -> Optional[np.ndarray]:
     return rows.reshape(-1).detach().cpu().numpy().astype(np.int64)
 
 
+def sparse_reduce_sum_row_indices(layer, n_in: int, n_out: int) -> Optional[np.ndarray]:
+    """Input-to-output row map for ReduceSum, mirroring interval.tf_reduce_sum."""
+
+    in_shape = layer.params.get("input_shape")
+    if in_shape is None:
+        return None
+    in_shape = tuple(int(d) for d in in_shape)
+    per = _prod(in_shape)
+    if per == 0 or int(n_in) % per != 0:
+        return None
+    batch = int(n_in) // per
+    axes = layer.params.get("axes")
+    axes = list(range(len(in_shape))) if not axes else [int(a) for a in axes]
+    axes = [(a + len(in_shape)) if a < 0 else a for a in axes]
+    keepdims = bool(layer.params.get("keepdims", 0))
+    out_shape: List[int] = []
+    for i, dim in enumerate(in_shape):
+        if i in axes:
+            if keepdims:
+                out_shape.append(1)
+        else:
+            out_shape.append(dim)
+    if _prod(out_shape) * batch != int(n_out):
+        return None
+    out_idx = np.arange(int(n_out), dtype=np.int64).reshape((batch, *out_shape))
+    view_shape = [batch]
+    for i, dim in enumerate(in_shape):
+        view_shape.append(1 if i in axes else dim)
+    return np.broadcast_to(out_idx.reshape(tuple(view_shape)), (batch, *in_shape)).reshape(-1)
+
+
+def sparse_hz_reduce_sum_rows(
+    hz: SparseHZono,
+    out_rows: Sequence[int],
+    n_out: int,
+) -> SparseHZono:
+    """Exact ReduceSum row aggregation using a sparse linear map."""
+
+    rows = np.asarray(out_rows, dtype=np.int64).reshape(-1)
+    if rows.size != hz.n_out:
+        raise ValueError(f"reduce-sum row map length {rows.size} != hz.n_out {hz.n_out}")
+    if rows.size and (int(rows.min()) < 0 or int(rows.max()) >= int(n_out)):
+        raise ValueError("reduce-sum row map contains output index outside n_out")
+    mat = sp.csr_matrix(
+        (np.ones(rows.size, dtype=np.float64), (rows, np.arange(rows.size, dtype=np.int64))),
+        shape=(int(n_out), hz.n_out),
+        dtype=np.float64,
+    )
+    return sparse_hz_linear(hz, mat, np.zeros(int(n_out), dtype=np.float64))
+
+
 def sparse_hz_gather_rows_like(
     base: SparseHZono,
     rows: Sequence[int],
@@ -3399,6 +3450,7 @@ __all__ = [
     "sparse_hz_linear",
     "sparse_hz_apply_per_batch_linear",
     "sparse_hz_pad_frame",
+    "sparse_hz_reduce_sum_rows",
     "sparse_hz_row_lp_bound",
     "sparse_hz_scale",
     "sparse_hz_sub_same_frame",
@@ -3407,6 +3459,7 @@ __all__ = [
     "sparse_gather_row_indices",
     "sparse_maxpool2d_candidate_rows",
     "sparse_pad_cols",
+    "sparse_reduce_sum_row_indices",
     "sparse_slice_row_indices",
     "sparse_upsample_nearest_row_indices",
 ]
@@ -3660,16 +3713,34 @@ def _test_sparse_affine_structural_ops() -> None:  # pragma: no cover
     expand_layer = SimpleNamespace(
         params={"input_shape": (1, 3), "output_shape": (2, 3)},
     )
+    reduce_sum_layer = SimpleNamespace(
+        params={"input_shape": (2, 3), "axes": [1], "keepdims": 0},
+    )
     upsample_layer = SimpleNamespace(
         params={"input_shape": (1, 2, 2), "scale_factor": (2, 2), "mode": "nearest"},
     )
     assert np.array_equal(sparse_slice_row_indices(slice_layer, 6), np.array([1, 2, 4, 5]))
     assert np.array_equal(sparse_gather_row_indices(gather_layer, 6), np.array([2, 0, 5, 3]))
     assert np.array_equal(sparse_expand_row_indices(expand_layer, 3), np.array([0, 1, 2, 0, 1, 2]))
+    reduce_rows = sparse_reduce_sum_row_indices(reduce_sum_layer, 6, 2)
+    assert np.array_equal(reduce_rows, np.array([0, 0, 0, 1, 1, 1]))
     assert np.array_equal(
         sparse_upsample_nearest_row_indices(upsample_layer, 4, 16),
         np.array([0, 0, 1, 1, 0, 0, 1, 1, 2, 2, 3, 3, 2, 2, 3, 3]),
     )
+    reduce_bounds = Bounds(
+        lb=torch.arange(6, dtype=dtype).reshape(1, 6),
+        ub=(torch.arange(6, dtype=dtype) + 1.0).reshape(1, 6),
+    )
+    dense_reduce = hz_multiply(
+        hz_from_bounds(reduce_bounds, dtype, torch.device("cpu")),
+        torch.tensor([[1.0, 1.0, 1.0, 0.0, 0.0, 0.0],
+                      [0.0, 0.0, 0.0, 1.0, 1.0, 1.0]], dtype=dtype),
+    )
+    sparse_reduce = sparse_hz_reduce_sum_rows(sparse_hz_from_bounds(reduce_bounds), reduce_rows, 2)
+    _assert_vec_close(sparse_reduce.c, np.array([4.5, 13.5]))
+    for r in (np.array([1.0, 0.0]), np.array([-0.25, 2.0])):
+        _assert_close(hz_row_max(dense_reduce, r), hz_row_max(sparse_reduce, r))
 
     sparse_sum = sparse_hz_add_same_frame(sparse, sparse_hz_scale(sparse, 2.0))
     dense_sum = hz_multiply(dense, 3.0 * torch.eye(3, dtype=dtype))

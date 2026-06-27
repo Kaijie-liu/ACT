@@ -458,6 +458,13 @@ class HybridzTF(TransferFunction):
                     self._drop_sparse_hz(L.id, "unsupported_expand_row_map")
                     return
                 out = sparse_ops.sparse_hz_gather_rows(hz, rows)
+            elif k == LayerKind.REDUCE_SUM.value:
+                rows = sparse_ops.sparse_reduce_sum_row_indices(
+                    L, hz.n_out, result.bounds.lb.numel())
+                if rows is None:
+                    self._drop_sparse_hz(L.id, "unsupported_reduce_sum_row_map")
+                    return
+                out = sparse_ops.sparse_hz_reduce_sum_rows(hz, rows, result.bounds.lb.numel())
             elif k == LayerKind.UPSAMPLE.value:
                 rows = sparse_ops.sparse_upsample_nearest_row_indices(
                     L, hz.n_out, result.bounds.lb.numel())

@@ -331,10 +331,13 @@ packaged modules, but too much sparse exact-HZ probe logic still lives in
 	   Structural row-map helpers are now centralized in
 	   `act/back_end/hybridz_tf/sparse_ops.py` for both dense and sparse HZ
 	   paths.  `tf_mlp.py` now calls the backend helpers directly for Slice,
-	   Gather, Expand, and nearest-neighbor Upsample; `HybridzTF` sparse-carry
-	   also calls the same backend helpers.  This removes the dense/sparse
-	   duplicate implementations and the intermediate thin wrappers while
-	   keeping the same exact row-selection semantics.
+	   Gather, Expand, ReduceSum, and nearest-neighbor Upsample; `HybridzTF`
+	   sparse-carry also calls the same backend helpers.  ReduceSum now uses a
+	   backend input-row to output-row aggregation map plus a sparse linear
+	   application, so sparse-carry no longer drops this exact affine structural
+	   op.  This removes the dense/sparse duplicate implementations and the
+	   intermediate thin wrappers while keeping the same exact row-selection /
+	   row-aggregation semantics.
 	   Regression evidence: `py_compile` for `tf_mlp.py`, `hybridz_tf.py`,
 	   `sparse_ops.py`, and the sparse probe; `python -m
 	   act.back_end.hybridz_tf.sparse_ops`; `python -m act.back_end.hybridz_tf`;

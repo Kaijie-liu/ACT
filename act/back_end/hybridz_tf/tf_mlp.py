@@ -31,6 +31,7 @@ import act.back_end.interval_tf.tf_cnn as interval_cnn
 from act.back_end.hybridz_tf.sparse_ops import (
     sparse_expand_row_indices,
     sparse_gather_row_indices,
+    sparse_reduce_sum_row_indices,
     sparse_slice_row_indices,
     sparse_upsample_nearest_row_indices,
 )
@@ -515,9 +516,9 @@ def tf_reduce_sum(L, bounds, tf):
     hz_in = tf._hz_cache.get(L.id)
     fact = interval.tf_reduce_sum(L, bounds)
     if hz_in is not None:
-        ri = _reduce_sum_row_map(L, hz_in.c.shape[0], fact.bounds.lb.numel())
-        if ri is not None:
-            ri = ri.to(device=hz_in.c.device, dtype=torch.long)
+        rows = sparse_reduce_sum_row_indices(L, hz_in.c.shape[0], fact.bounds.lb.numel())
+        if rows is not None:
+            ri = torch.as_tensor(rows, dtype=torch.long, device=hz_in.c.device)
             out_n = int(fact.bounds.lb.numel())
             c = hz_in.c.new_zeros(out_n, 1)
             Gc = hz_in.Gc.new_zeros(out_n, hz_in.Gc.shape[1])
@@ -628,35 +629,6 @@ def _hz_gather_rows(hz: HZono, row_idx: torch.Tensor) -> HZono:
         hz,
         reason="gather_rows",
     )
-
-
-def _reduce_sum_row_map(L, n_in: int, n_out: int) -> torch.Tensor | None:
-    in_shape = L.params.get("input_shape")
-    if in_shape is None:
-        return None
-    in_shape = tuple(int(d) for d in in_shape)
-    per = _prod(in_shape)
-    if per == 0 or n_in % per != 0:
-        return None
-    B = n_in // per
-    axes = L.params.get("axes")
-    axes = list(range(len(in_shape))) if not axes else [int(a) for a in axes]
-    axes = [(a + len(in_shape)) if a < 0 else a for a in axes]
-    keepdims = bool(L.params.get("keepdims", 0))
-    out_shape = []
-    for i, d in enumerate(in_shape):
-        if i in axes:
-            if keepdims:
-                out_shape.append(1)
-        else:
-            out_shape.append(d)
-    if _prod(out_shape) * B != n_out:
-        return None
-    out_idx = torch.arange(n_out).view(B, *out_shape)
-    view_shape = [B]
-    for i, d in enumerate(in_shape):
-        view_shape.append(1 if i in axes else d)
-    return out_idx.view(*view_shape).expand(B, *in_shape).reshape(-1)
 
 
 def tf_squeeze(L, bounds, tf):
