@@ -35,6 +35,7 @@ from act.pipeline.hybridz_spec_utils import (  # noqa: E402
 )
 import act.back_end.hybridz_tf.tf_mlp as hz_mlp  # noqa: E402
 from act.back_end.hybridz_tf.sparse_ops import (  # noqa: E402
+    _scurve_breakpoints,
     _scurve_domain_cut_matrices,
     _scurve_graph_cut_matrices,
     _scurve_range_cut_matrices,
@@ -162,52 +163,6 @@ def _relu_exact(
     return out, counts, tight_stats
 
 
-def _scurve_breakpoints(
-    lo: float,
-    hi: float,
-    K: int,
-    *,
-    grid: str,
-    func,
-    dfunc,
-) -> np.ndarray:
-    """Segment breakpoints for one convex/concave side of an S-curve.
-
-    ``uniform`` preserves the original equal-width grid. ``curvature`` keeps the
-    exact same number of segments but puts more cuts where |f''| is larger.  The
-    downstream HZ encoding remains the same sound per-segment overapproximation;
-    only the chosen segment endpoints change.
-    """
-    K = max(1, int(K))
-    lo = float(lo)
-    hi = float(hi)
-    if K == 1 or hi - lo <= 1e-12 or grid == "uniform":
-        return np.linspace(lo, hi, K + 1, dtype=np.float64)
-    if grid != "curvature":
-        raise ValueError(f"unknown S-curve grid {grid!r}")
-
-    xs = np.linspace(lo, hi, max(33, 32 * K + 1), dtype=np.float64)
-    h = 1e-4 * (1.0 + np.abs(xs))
-    with np.errstate(all="ignore"):
-        curv = np.abs((dfunc(xs + h) - dfunc(xs - h)) / (2.0 * h))
-    curv = np.where(np.isfinite(curv), curv, 0.0)
-    dens = np.sqrt(np.maximum(curv, 0.0)) + 1e-9
-    dx = np.diff(xs)
-    area = 0.5 * (dens[:-1] + dens[1:]) * dx
-    cum = np.concatenate([[0.0], np.cumsum(area)])
-    total = float(cum[-1])
-    if not np.isfinite(total) or total <= 1e-12:
-        return np.linspace(lo, hi, K + 1, dtype=np.float64)
-    cuts = np.interp(np.linspace(0.0, total, K + 1), cum, xs).astype(np.float64)
-    cuts[0] = lo
-    cuts[-1] = hi
-    # Guard against tiny interpolation inversions from flat curvature tails.
-    for i in range(1, cuts.size):
-        if cuts[i] < cuts[i - 1]:
-            cuts[i] = cuts[i - 1]
-    return cuts
-
-
 def _sigmoid_piecewise(
     hz: SparseHZ,
     pre_bounds,
@@ -252,30 +207,20 @@ def _sigmoid_piecewise(
         if not compressed:
             raise ValueError("drop_degenerate sigmoid is currently implemented for compressed mode only")
         _sigmoid_piecewise.last_meta = {"wide_idx": wide_idx, "m": m, "compressed": compressed, "pruned": True}
-        if grid == "uniform":
-            out, counts, meta = _backend_scurve_piecewise(
-                hz,
-                pre_bounds,
-                K=K,
-                func=func,
-                dfunc=dfunc,
-                inflection=0.0,
-                domain_cuts=domain_cuts,
-                graph_cuts=graph_cuts,
-                return_info=True,
-            )
-            _sigmoid_piecewise.last_meta = meta
-            return out, counts
-        return _sigmoid_piecewise_pruned(
+        out, counts, meta = _backend_scurve_piecewise(
             hz,
             pre_bounds,
             K=K,
+            func=func,
+            dfunc=dfunc,
+            inflection=0.0,
             domain_cuts=domain_cuts,
             graph_cuts=graph_cuts,
             grid=grid,
-            func=func,
-            dfunc=dfunc,
+            return_info=True,
         )
+        _sigmoid_piecewise.last_meta = meta
+        return out, counts
 
     K_side = max(1, int(K))
     lb_w = lb[wide_idx]
@@ -552,302 +497,6 @@ def _sigmoid_piecewise(
             nb_total,
             lb_w,
             ub_w,
-            func=func,
-            dfunc=dfunc,
-        )
-        Auc = sp.vstack([Auc, graph_Auc], format="csr")
-        Aub = sp.vstack([Aub, graph_Aub], format="csr")
-        ub_rhs = np.concatenate([ub_rhs, graph_rhs])
-    return SparseHZ(
-        out_c,
-        out_Gc,
-        out_Gb,
-        Ac,
-        Ab,
-        np.concatenate([hz.b, eq_b]),
-        Auc,
-        Aub,
-        ub_rhs,
-    ), (m, int(narrow_idx.size))
-
-
-def _sigmoid_piecewise_pruned(
-    hz: SparseHZ,
-    pre_bounds,
-    *,
-    K: int = 2,
-    domain_cuts: bool = False,
-    graph_cuts: bool = False,
-    grid: str = "uniform",
-    func=_sigmoid_np,
-    dfunc=_sigmoid_deriv_np,
-) -> Tuple[SparseHZ, Tuple[int, int]]:
-    """Compressed sigmoid encoding with exact removal of zero-width inflection-side segments."""
-    n = hz.n_out
-    ng = hz.n_cont
-    nb = hz.n_bin
-    lb = pre_bounds.lb.detach().cpu().numpy().reshape(-1).astype(np.float64)
-    ub = pre_bounds.ub.detach().cpu().numpy().reshape(-1).astype(np.float64)
-    wide = (ub - lb) > 1e-12
-    wide_idx = np.nonzero(wide)[0].astype(np.int32)
-    narrow_idx = np.nonzero(~wide)[0].astype(np.int32)
-    m = int(wide_idx.size)
-
-    out_c = np.zeros(n, dtype=np.float64)
-    if narrow_idx.size:
-        out_c[narrow_idx] = func(hz.c[narrow_idx])
-    if m == 0:
-        return SparseHZ(
-            out_c,
-            _empty(n, ng),
-            _empty(n, nb),
-            hz.Ac,
-            hz.Ab,
-            hz.b,
-            hz.Auc,
-            hz.Aub,
-            hz.ub,
-        ), (0, int(narrow_idx.size))
-
-    K_side = max(1, int(K))
-    seg_a: List[float] = []
-    seg_b: List[float] = []
-    owner: List[int] = []
-    seg_count = np.zeros(m, dtype=np.int32)
-    for j, idx in enumerate(wide_idx):
-        lo = float(lb[idx])
-        hi = float(ub[idx])
-        pivot = min(max(0.0, lo), hi)
-        start = len(owner)
-        if pivot - lo > 1e-12:
-            cuts = _scurve_breakpoints(lo, pivot, K_side, grid=grid, func=func, dfunc=dfunc)
-            for s in range(K_side):
-                seg_a.append(float(cuts[s]))
-                seg_b.append(float(cuts[s + 1]))
-                owner.append(j)
-        if hi - pivot > 1e-12:
-            cuts = _scurve_breakpoints(pivot, hi, K_side, grid=grid, func=func, dfunc=dfunc)
-            for s in range(K_side):
-                seg_a.append(float(cuts[s]))
-                seg_b.append(float(cuts[s + 1]))
-                owner.append(j)
-        seg_count[j] = len(owner) - start
-
-    a = np.asarray(seg_a, dtype=np.float64)
-    b_seg = np.asarray(seg_b, dtype=np.float64)
-    owner_arr = np.asarray(owner, dtype=np.int32)
-    r = int(a.size)
-    if r == 0:
-        raise ValueError("wide sigmoid neuron produced no nondegenerate segment")
-
-    fa = func(a)
-    fb = func(b_seg)
-    la = dfunc(a)
-    lb_slope = dfunc(b_seg)
-    centers_x = (a + b_seg) / 2.0
-    centers_y = (fa + fb) / 2.0
-    nearly_linear = np.abs(la - lb_slope) < 1e-10
-
-    denom = lb_slope - la
-    safe_denom = np.where(nearly_linear, 1.0, denom)
-    p1 = (fb - fa + lb_slope * a - la * b_seg) / safe_denom
-    p2 = a + b_seg - p1
-    g1x_tang = (p1 - a) / 2.0
-    g1y_tang = lb_slope * (p1 - a) / 2.0
-    g2x_tang = (p2 - a) / 2.0
-    g2y_tang = la * (p2 - a) / 2.0
-
-    hw = (b_seg - a) / 2.0
-    slope = (fb - fa) / (b_seg - a + 1e-30)
-    t_pts = np.linspace(0.0, 1.0, 50, dtype=np.float64).reshape(50, 1)
-    pts = a.reshape(1, r) + t_pts * (b_seg - a).reshape(1, r)
-    f_pts = func(pts)
-    resid = f_pts - (slope.reshape(1, r) * pts + (fa - slope * a).reshape(1, r))
-    max_err = np.max(np.abs(resid), axis=0)
-    g1x_lin = hw
-    g1y_lin = slope * hw
-    g2x_lin = np.zeros_like(hw)
-    g2y_lin = max_err
-
-    g1_x = np.where(nearly_linear, g1x_lin, g1x_tang)
-    g1_y = np.where(nearly_linear, g1y_lin, g1y_tang)
-    g2_x = np.where(nearly_linear, g2x_lin, g2x_tang)
-    g2_y = np.where(nearly_linear, g2y_lin, g2y_tang)
-
-    dx = pts - centers_x.reshape(1, r)
-    dy = f_pts - centers_y.reshape(1, r)
-    det = g1_y * g2_x - g1_x * g2_y
-    safe_det = np.where(np.abs(det) < 1e-30, 1.0, det)
-    xi1 = (dy * g2_x.reshape(1, r) - dx * g2_y.reshape(1, r)) / safe_det.reshape(1, r)
-    xi2 = (dy * g1_x.reshape(1, r) - dx * g1_y.reshape(1, r)) / (-safe_det.reshape(1, r))
-    max_xi = np.maximum(np.max(np.abs(xi1), axis=0), np.max(np.abs(xi2), axis=0))
-    scale_factor = np.where(max_xi > 1.0, max_xi * 1.01, 1.0)
-    scale_factor = np.where(np.abs(det) < 1e-30, 1.0, scale_factor)
-    g1_x *= scale_factor
-    g1_y *= scale_factor
-    g2_x *= scale_factor
-    g2_y *= scale_factor
-
-    _sigmoid_piecewise.last_meta = {
-        "wide_idx": wide_idx,
-        "m": m,
-        "compressed": True,
-        "pruned": True,
-        "r": r,
-        "owner_arr": owner_arr,
-        "seg_count": seg_count,
-        "a": a,
-        "b_seg": b_seg,
-        "centers_x": centers_x,
-        "centers_y": centers_y,
-        "g1_x": g1_x,
-        "g1_y": g1_y,
-        "g2_x": g2_x,
-        "g2_y": g2_y,
-        "grid": grid,
-    }
-
-    out_c[wide_idx] = np.bincount(owner_arr, weights=centers_y, minlength=m) / 2.0
-    n_real = 2 * r
-    ng_total = ng + n_real
-    nb_total = nb + r
-    g1_cols = ng + np.arange(r, dtype=np.int32)
-    g2_cols = ng + r + np.arange(r, dtype=np.int32)
-    z_cols = nb + np.arange(r, dtype=np.int32)
-    wide_rows = wide_idx[owner_arr]
-
-    out_Gc = sp.coo_matrix(
-        (
-            np.concatenate([g1_y, g2_y]),
-            (
-                np.concatenate([wide_rows, wide_rows]),
-                np.concatenate([g1_cols, g2_cols]),
-            ),
-        ),
-        shape=(n, ng_total),
-    ).tocsr()
-    out_Gb = sp.coo_matrix((-centers_y / 2.0, (wide_rows, z_cols)), shape=(n, nb_total)).tocsr()
-    out_Gc.eliminate_zeros()
-    out_Gb.eliminate_zeros()
-
-    n_eq_new = 2 * m
-    rr_c: List[np.ndarray] = []
-    cc_c: List[np.ndarray] = []
-    dd_c: List[np.ndarray] = []
-    rr_b: List[np.ndarray] = []
-    cc_b: List[np.ndarray] = []
-    dd_b: List[np.ndarray] = []
-
-    def add_c(rows, cols, data):
-        arr = np.asarray(data, dtype=np.float64).reshape(-1)
-        if arr.size:
-            rr_c.append(np.asarray(rows, dtype=np.int32).reshape(-1))
-            cc_c.append(np.asarray(cols, dtype=np.int32).reshape(-1))
-            dd_c.append(arr)
-
-    def add_b(rows, cols, data):
-        arr = np.asarray(data, dtype=np.float64).reshape(-1)
-        if arr.size:
-            rr_b.append(np.asarray(rows, dtype=np.int32).reshape(-1))
-            cc_b.append(np.asarray(cols, dtype=np.int32).reshape(-1))
-            dd_b.append(arr)
-
-    link_rows = np.arange(m, dtype=np.int32)
-    sum_rows = m + link_rows
-    add_c(link_rows[owner_arr], g1_cols, -g1_x)
-    add_c(link_rows[owner_arr], g2_cols, -g2_x)
-    add_b(link_rows[owner_arr], z_cols, centers_x / 2.0)
-    pre_gc = hz.Gc[wide_idx].tocoo()
-    if pre_gc.nnz:
-        add_c(link_rows[pre_gc.row], pre_gc.col, pre_gc.data)
-    if nb:
-        pre_gb = hz.Gb[wide_idx].tocoo()
-        if pre_gb.nnz:
-            add_b(link_rows[pre_gb.row], pre_gb.col, pre_gb.data)
-    add_b(sum_rows[owner_arr], z_cols, np.ones(r, dtype=np.float64))
-
-    eq_b = np.zeros(n_eq_new, dtype=np.float64)
-    eq_b[link_rows] = np.bincount(owner_arr, weights=centers_x, minlength=m) / 2.0 - hz.c[wide_idx]
-    eq_b[sum_rows] = seg_count.astype(np.float64) - 2.0
-    eq_Ac = sp.coo_matrix(
-        (np.concatenate(dd_c), (np.concatenate(rr_c), np.concatenate(cc_c))),
-        shape=(n_eq_new, ng_total),
-    ).tocsr()
-    eq_Ab = sp.coo_matrix(
-        (np.concatenate(dd_b), (np.concatenate(rr_b), np.concatenate(cc_b))),
-        shape=(n_eq_new, nb_total),
-    ).tocsr()
-
-    old_Ac = _pad_cols(hz.Ac, ng_total)
-    old_Ab = _pad_cols(hz.Ab, nb_total)
-    Ac = sp.vstack([old_Ac, eq_Ac], format="csr")
-    Ab = sp.vstack([old_Ab, eq_Ab], format="csr")
-    Ac.eliminate_zeros()
-    Ab.eliminate_zeros()
-
-    Auc_base = _pad_cols(hz.Auc if hz.Auc is not None else _empty(0, hz.n_cont), ng_total)
-    Aub_base = _pad_cols(hz.Aub if hz.Aub is not None else _empty(0, hz.n_bin), nb_total)
-    ub_base = hz.ub if hz.ub is not None else np.zeros(0, dtype=np.float64)
-    box_rows = 4 * np.arange(r, dtype=np.int32)
-    rr_uc = np.concatenate([box_rows, box_rows + 1, box_rows + 2, box_rows + 3])
-    cc_uc = np.concatenate([g1_cols, g1_cols, g2_cols, g2_cols])
-    dd_uc = np.concatenate([np.ones(r), -np.ones(r), np.ones(r), -np.ones(r)])
-    rr_ub = rr_uc.copy()
-    cc_ub = np.concatenate([z_cols, z_cols, z_cols, z_cols])
-    dd_ub = 0.5 * np.ones(4 * r, dtype=np.float64)
-    box_Auc = sp.coo_matrix((dd_uc, (rr_uc, cc_uc)), shape=(4 * r, ng_total)).tocsr()
-    box_Aub = sp.coo_matrix((dd_ub, (rr_ub, cc_ub)), shape=(4 * r, nb_total)).tocsr()
-    Auc = sp.vstack([Auc_base, box_Auc], format="csr")
-    Aub = sp.vstack([Aub_base, box_Aub], format="csr")
-    ub_rhs = np.concatenate([ub_base, 0.5 * np.ones(4 * r, dtype=np.float64)])
-    if domain_cuts:
-        dom_Auc, dom_Aub, dom_rhs = _scurve_domain_cut_matrices(
-            hz,
-            wide_idx,
-            a,
-            b_seg,
-            owner_arr,
-            z_cols,
-            ng_total,
-            nb_total,
-            lb[wide_idx],
-            ub[wide_idx],
-        )
-        rng_Auc, rng_Aub, rng_rhs = _scurve_range_cut_matrices(
-            out_c,
-            out_Gc,
-            out_Gb,
-            wide_idx,
-            fa,
-            fb,
-            owner_arr,
-            z_cols,
-            ng_total,
-            nb_total,
-            func(lb[wide_idx]),
-            func(ub[wide_idx]),
-        )
-        Auc = sp.vstack([Auc, dom_Auc], format="csr")
-        Aub = sp.vstack([Aub, dom_Aub], format="csr")
-        ub_rhs = np.concatenate([ub_rhs, dom_rhs])
-        Auc = sp.vstack([Auc, rng_Auc], format="csr")
-        Aub = sp.vstack([Aub, rng_Aub], format="csr")
-        ub_rhs = np.concatenate([ub_rhs, rng_rhs])
-    if graph_cuts:
-        graph_Auc, graph_Aub, graph_rhs = _scurve_graph_cut_matrices(
-            hz,
-            out_c,
-            out_Gc,
-            out_Gb,
-            wide_idx,
-            a,
-            b_seg,
-            owner_arr,
-            z_cols,
-            ng_total,
-            nb_total,
-            lb[wide_idx],
-            ub[wide_idx],
             func=func,
             dfunc=dfunc,
         )
@@ -1604,38 +1253,37 @@ def _self_test() -> None:
         graph_cuts=True,
     )
     backend_meta = dict(getattr(_sigmoid_piecewise, "last_meta", {}))
-    fallback_hz, fallback_counts = _sigmoid_piecewise_pruned(
+    curv_hz, curv_counts = _sigmoid_piecewise(
         scurve_hz,
         scurve_bounds,
-        K=2,
+        K=3,
+        compressed=True,
+        drop_degenerate=True,
         domain_cuts=True,
         graph_cuts=True,
+        grid="curvature",
     )
-    fallback_meta = dict(getattr(_sigmoid_piecewise, "last_meta", {}))
-    assert backend_counts == fallback_counts == (3, 0)
-    assert int(backend_meta["r"]) == int(fallback_meta["r"])
-    assert np.array_equal(np.asarray(backend_meta["wide_idx"]), np.asarray(fallback_meta["wide_idx"]))
-    assert np.array_equal(
-        np.bincount(np.asarray(backend_meta["owner_arr"], dtype=np.int64), minlength=3),
-        np.bincount(np.asarray(fallback_meta["owner_arr"], dtype=np.int64), minlength=3),
-    )
-    for meta in (backend_meta, fallback_meta):
+    curv_meta = dict(getattr(_sigmoid_piecewise, "last_meta", {}))
+    assert backend_counts == curv_counts == (3, 0)
+    assert backend_meta["grid"] == "uniform"
+    assert curv_meta["grid"] == "curvature"
+    assert np.array_equal(np.asarray(backend_meta["wide_idx"]), np.asarray(curv_meta["wide_idx"]))
+    for meta in (backend_meta, curv_meta):
         assert np.asarray(meta["owner_arr"]).size == int(meta["r"])
         assert np.asarray(meta["a"]).size == int(meta["r"])
         assert np.asarray(meta["b_seg"]).size == int(meta["r"])
     from act.back_end.solver.solver_hz_verdict import hz_base_feasibility, hz_row_max
 
     assert hz_base_feasibility(backend_hz, time_limit=2.0)[0] == "FEASIBLE"
-    assert hz_base_feasibility(fallback_hz, time_limit=2.0)[0] == "FEASIBLE"
+    assert hz_base_feasibility(curv_hz, time_limit=2.0)[0] == "FEASIBLE"
     for row in (
         np.array([1.0, -0.5, 0.25], dtype=np.float64),
         np.array([-0.25, 1.0, 1.5], dtype=np.float64),
         np.array([0.3, 0.7, -1.0], dtype=np.float64),
     ):
         bmx = hz_row_max(backend_hz, row, integer=True, time_limit=2.0)
-        fmx = hz_row_max(fallback_hz, row, integer=True, time_limit=2.0)
-        assert bmx is not None and fmx is not None
-        assert abs(float(bmx) - float(fmx)) <= 1e-8
+        cmx = hz_row_max(curv_hz, row, integer=True, time_limit=2.0)
+        assert bmx is not None and cmx is not None
     print("PASS hybridz_sparse_exact_probe self-test")
 
 

@@ -1523,6 +1523,46 @@ def _tanh_deriv_np(x: np.ndarray) -> np.ndarray:
     return 1.0 - y * y
 
 
+def _scurve_breakpoints(
+    lo: float,
+    hi: float,
+    K: int,
+    *,
+    grid: str,
+    func,
+    dfunc,
+) -> np.ndarray:
+    """Segment breakpoints for one convex/concave side of an S-curve."""
+
+    K = max(1, int(K))
+    lo = float(lo)
+    hi = float(hi)
+    if K == 1 or hi - lo <= 1e-12 or grid == "uniform":
+        return np.linspace(lo, hi, K + 1, dtype=np.float64)
+    if grid != "curvature":
+        raise ValueError(f"unknown S-curve grid {grid!r}")
+
+    xs = np.linspace(lo, hi, max(33, 32 * K + 1), dtype=np.float64)
+    h = 1e-4 * (1.0 + np.abs(xs))
+    with np.errstate(all="ignore"):
+        curv = np.abs((dfunc(xs + h) - dfunc(xs - h)) / (2.0 * h))
+    curv = np.where(np.isfinite(curv), curv, 0.0)
+    dens = np.sqrt(np.maximum(curv, 0.0)) + 1e-9
+    dx = np.diff(xs)
+    area = 0.5 * (dens[:-1] + dens[1:]) * dx
+    cum = np.concatenate([[0.0], np.cumsum(area)])
+    total = float(cum[-1])
+    if not np.isfinite(total) or total <= 1e-12:
+        return np.linspace(lo, hi, K + 1, dtype=np.float64)
+    cuts = np.interp(np.linspace(0.0, total, K + 1), cum, xs).astype(np.float64)
+    cuts[0] = lo
+    cuts[-1] = hi
+    for i in range(1, cuts.size):
+        if cuts[i] < cuts[i - 1]:
+            cuts[i] = cuts[i - 1]
+    return cuts
+
+
 def _scurve_domain_cut_matrices(
     hz: SparseHZono,
     wide_idx: np.ndarray,
@@ -1831,6 +1871,7 @@ def sparse_hz_apply_scurve_piecewise(
     torch_dfunc=None,
     domain_cuts: bool = False,
     graph_cuts: bool = False,
+    grid: str = "uniform",
     return_info: bool = False,
 ):
     """Compressed sparse HZ S-curve encoding with pruned zero-width segments.
@@ -1843,6 +1884,7 @@ def sparse_hz_apply_scurve_piecewise(
 
     if pre_bounds is None:
         pre_bounds = sparse_hz_fast_bounds(hz)
+    grid = str(grid or "uniform")
     lb, ub = _bounds_arrays(pre_bounds, hz.n_out)
     wide = (ub - lb) > 1e-12
     wide_idx = np.nonzero(wide)[0].astype(np.int32)
@@ -1885,7 +1927,7 @@ def sparse_hz_apply_scurve_piecewise(
                 "g1_y": np.zeros(0, dtype=np.float64),
                 "g2_x": np.zeros(0, dtype=np.float64),
                 "g2_y": np.zeros(0, dtype=np.float64),
-                "grid": "uniform",
+                "grid": grid,
             }
             return out, (0, int(narrow_idx.size)), info
         return out
@@ -1894,21 +1936,47 @@ def sparse_hz_apply_scurve_piecewise(
     lb_w = lb[wide_idx]
     ub_w = ub[wide_idx]
     pivot = np.maximum(np.minimum(float(inflection), ub_w), lb_w)
-    sid = np.arange(K_side, dtype=np.float64).reshape(-1, 1)
-    w_left = (pivot - lb_w).reshape(1, -1) / K_side
-    w_right = (ub_w - pivot).reshape(1, -1) / K_side
-    a_left = lb_w.reshape(1, -1) + sid * w_left
-    a_right = pivot.reshape(1, -1) + sid * w_right
-    a_grid = np.vstack([a_left, a_right])
-    b_grid = np.vstack([a_left + w_left, a_right + w_right])
-    owner_grid = np.broadcast_to(
-        np.arange(m, dtype=np.int32).reshape(1, -1),
-        (2 * K_side, m),
-    )
-    nondeg = (b_grid - a_grid) > 1e-12
-    a = a_grid[nondeg].astype(np.float64, copy=False)
-    b_seg = b_grid[nondeg].astype(np.float64, copy=False)
-    owner = owner_grid[nondeg].astype(np.int32, copy=False)
+    if grid == "uniform":
+        sid = np.arange(K_side, dtype=np.float64).reshape(-1, 1)
+        w_left = (pivot - lb_w).reshape(1, -1) / K_side
+        w_right = (ub_w - pivot).reshape(1, -1) / K_side
+        a_left = lb_w.reshape(1, -1) + sid * w_left
+        a_right = pivot.reshape(1, -1) + sid * w_right
+        a_grid = np.vstack([a_left, a_right])
+        b_grid = np.vstack([a_left + w_left, a_right + w_right])
+        owner_grid = np.broadcast_to(
+            np.arange(m, dtype=np.int32).reshape(1, -1),
+            (2 * K_side, m),
+        )
+        nondeg = (b_grid - a_grid) > 1e-12
+        a = a_grid[nondeg].astype(np.float64, copy=False)
+        b_seg = b_grid[nondeg].astype(np.float64, copy=False)
+        owner = owner_grid[nondeg].astype(np.int32, copy=False)
+    else:
+        seg_a: List[float] = []
+        seg_b: List[float] = []
+        seg_owner: List[int] = []
+        for j in range(m):
+            for lo, hi in ((lb_w[j], pivot[j]), (pivot[j], ub_w[j])):
+                if float(hi) - float(lo) <= 1e-12:
+                    continue
+                cuts = _scurve_breakpoints(
+                    float(lo),
+                    float(hi),
+                    K_side,
+                    grid=grid,
+                    func=func,
+                    dfunc=dfunc,
+                )
+                for s in range(K_side):
+                    if float(cuts[s + 1]) - float(cuts[s]) <= 1e-12:
+                        continue
+                    seg_a.append(float(cuts[s]))
+                    seg_b.append(float(cuts[s + 1]))
+                    seg_owner.append(j)
+        a = np.asarray(seg_a, dtype=np.float64)
+        b_seg = np.asarray(seg_b, dtype=np.float64)
+        owner = np.asarray(seg_owner, dtype=np.int32)
     r = int(a.size)
     if r == 0:
         raise ValueError("wide S-curve neuron produced no nondegenerate segment")
@@ -2206,7 +2274,7 @@ def sparse_hz_apply_scurve_piecewise(
             "g1_y": g1_y,
             "g2_x": g2_x,
             "g2_y": g2_y,
-            "grid": "uniform",
+            "grid": grid,
         }
         return out, (m, int(narrow_idx.size)), info
     return out
@@ -2219,6 +2287,7 @@ def sparse_hz_apply_sigmoid_piecewise(
     K: int = 2,
     domain_cuts: bool = False,
     graph_cuts: bool = False,
+    grid: str = "uniform",
 ) -> SparseHZono:
     return sparse_hz_apply_scurve_piecewise(
         hz,
@@ -2231,6 +2300,7 @@ def sparse_hz_apply_sigmoid_piecewise(
         torch_dfunc=lambda x: torch.sigmoid(x) * (1.0 - torch.sigmoid(x)),
         domain_cuts=domain_cuts,
         graph_cuts=graph_cuts,
+        grid=grid,
     )
 
 
@@ -2241,6 +2311,7 @@ def sparse_hz_apply_tanh_piecewise(
     K: int = 1,
     domain_cuts: bool = False,
     graph_cuts: bool = False,
+    grid: str = "uniform",
 ) -> SparseHZono:
     return sparse_hz_apply_scurve_piecewise(
         hz,
@@ -2253,6 +2324,7 @@ def sparse_hz_apply_tanh_piecewise(
         torch_dfunc=lambda x: 1.0 - torch.tanh(x) ** 2,
         domain_cuts=domain_cuts,
         graph_cuts=graph_cuts,
+        grid=grid,
     )
 
 
@@ -2979,12 +3051,21 @@ def _test_sparse_affine_structural_ops() -> None:  # pragma: no cover
         K=2,
         return_info=True,
     )
+    sparse_sigmoid_curv, sparse_sigmoid_curv_counts, sparse_sigmoid_curv_meta = sparse_hz_apply_scurve_piecewise(
+        sparse_scurve_in,
+        K=3,
+        grid="curvature",
+        return_info=True,
+    )
     assert dense_sigmoid is not None
     assert sparse_sigmoid_counts == (3, 0)
     assert sparse_sigmoid_meta["pruned"] is True
     assert sparse_sigmoid_meta["owner_arr"].size == int(sparse_sigmoid_meta["r"])
     assert sparse_sigmoid_info.n_cont == sparse_sigmoid.n_cont
     assert sparse_sigmoid_info.n_bin == sparse_sigmoid.n_bin
+    assert sparse_sigmoid_curv_counts == (3, 0)
+    assert sparse_sigmoid_curv_meta["grid"] == "curvature"
+    assert sparse_sigmoid_curv_meta["owner_arr"].size == int(sparse_sigmoid_curv_meta["r"])
     for r in scurve_rows:
         _assert_close(
             hz_row_max(dense_sigmoid, r, integer=True),
@@ -3037,7 +3118,18 @@ def _test_sparse_affine_structural_ops() -> None:  # pragma: no cover
         domain_cuts=True,
         graph_cuts=True,
     )
-    for plain, cut in ((sparse_sigmoid, cut_sigmoid), (sparse_tanh, cut_tanh)):
+    cut_sigmoid_curv = sparse_hz_apply_scurve_piecewise(
+        sparse_scurve_in,
+        K=3,
+        grid="curvature",
+        domain_cuts=True,
+        graph_cuts=True,
+    )
+    for plain, cut in (
+        (sparse_sigmoid, cut_sigmoid),
+        (sparse_tanh, cut_tanh),
+        (sparse_sigmoid_curv, cut_sigmoid_curv),
+    ):
         assert hz_base_feasibility(cut)[0] == "FEASIBLE"
         assert cut.Auc.shape[0] > plain.Auc.shape[0]
         for r in scurve_rows:
