@@ -142,9 +142,11 @@ latest completion evidence.
    probe diagnostics that still need either tests or explicit retirement.
 
 3. `hz_export_icse_csv.py`, `hz_failure_taxonomy.py`, and
-   `hz_merge_exact_portfolio.py` are likely retireable after one clean
+   `hz_merge_exact_portfolio.py` are retireable candidates now that the clean
    mainline `--verify hybridz-benchmark --category frozen
-   --hybridz-require-frozen-match` rerun.
+   --hybridz-require-frozen-match` gate is green.  Before deletion, confirm
+   that any remaining historical taxonomy fields are either emitted by
+   `hybridz_results.py` or explicitly kept as provenance-only.
 
 4. Guided falsification and LP-witness code is not a migration target.  It
    should stay under `_excluded_guided_falsification/` and remain absent from
@@ -275,9 +277,9 @@ Observed state:
 
 Consequence: `scripts/` should remain local/untracked by user request, but it
 is no longer a product-path import dependency for the normal HybridZ frontend
-entrypoint.  Deletion is still deferred until one full frozen frontend rerun
-matches the frozen table and any still-useful script-only diagnostics are
-either migrated into tests or explicitly retired.
+entrypoint.  Since the full frozen frontend gate now matches the frozen table,
+deletion is deferred only for still-useful script-only diagnostics that need
+tests, migration, or explicit provenance classification.
 
 ## Private Backend Helper Imports From Legacy Scripts
 

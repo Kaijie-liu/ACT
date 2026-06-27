@@ -736,9 +736,9 @@ Mainline HybridZ benchmark runner progress:
   - aggregates per-iid frontend CSVs into benchmark detail/summary CSVs.
 - Added `--verify hybridz-benchmark` plus `--hybridz-workers` and
   `--hybridz-timeout-cap` to `act.pipeline`.
-- This is the mainline replacement skeleton for `hz_full_driver.py`; it still
-  lacks the legacy script's sparse-first/fallback and specialized portfolio
-  branches, so frozen full-table reproduction is not yet complete.
+- This started as the mainline replacement skeleton for `hz_full_driver.py`.
+  The later packaged runner now carries the sparse-first/fallback and
+  specialized benchmark-wide portfolio branches needed by the frozen table.
 - Verified a frontend runner smoke command:
   - `python -m act.pipeline --verify hybridz-benchmark --category acasxu_2023
     --max-instances 1 --hybridz-workers 1 --hybridz-timeout-cap 5
@@ -802,11 +802,11 @@ Mainline exact-formulation portfolio progress:
   `normal_pscost1` as the winning branch and writes verifier detail
   `wall_s=16.815699100494385`; its outer portfolio wall is about `21.05s` and
   is audit/orchestration time, not the counted HybridZ verifier time.
-- Net status after this patch: the focused safenlp frontend parity checks now
-  cover the frozen row `432 CERT + 647 ADV = 1079`, with the expected single
-  unresolved row remaining `iid454`.  A full
-  `--hybridz-require-frozen-match` frozen-suite rerun is still pending before
-  declaring end-to-end acceptance.
+- Net status after the later frozen gate: focused safenlp frontend parity
+  checks cover the frozen row `432 CERT + 647 ADV = 1079`, with the expected
+  single unresolved row remaining `iid454`, and the full
+  `--hybridz-require-frozen-match` frozen-suite gate is now green under
+  `/data1/Kane/ICSE/act_hybridz_soundfix_20260625/frontend_frozen_gate_20260627_pscost25`.
 - Verified under `/data1/Kane/miniconda3/envs/act-py312/bin/python`:
   - `python -m py_compile act/pipeline/hybridz_benchmark_runner.py
     act/pipeline/cli.py act/pipeline/hybridz_projected_relu_mip.py
@@ -1076,8 +1076,8 @@ the non-HybridZ files that need explicit justification before commit.
 
 | Capability | Backend status | Script-only residue | Next action |
 |---|---|---|---|
-| Benchmark-wide strict-HZ profiles | `act/back_end/hybridz_config.py` is the source of truth; `verify_once` applies forward knobs, MILP env knobs, query-workers, and profile-derived timeout/fraction/cap; explicit CLI/config overrides cover S-curve K/cuts, exact ReLU/carry knobs, and cell budget; `hybridz-benchmark` applies official per-row wall/cap, normal/cutrow exact formulation portfolio, safenlp sparse/projected exact-HZ portfolio bridge through package code, sequential sparse-first/fallback branch order, dist_shift S-curve sparse branches (`k=2/4/6/8` plus `k=4` cutrow), ACASXu sparse-SCIP ADV-only fallback, per-instance `RLIMIT_AS` caps via `ACT_HYBRIDZ_RLIMIT_AS_GB`, host free-RAM launch pausing via `HybridZBenchProfile.mem_floor_gb` / `ACT_HYBRIDZ_MEM_FLOOR_GB`, and frozen-suite ordering | `hz_full_driver.py` remains a legacy reproduction runner; ACASXu cuts/FBBT remains script-only | Run a clean complete frozen-suite acceptance pass |
-| First-class frontend solver mode | `--solvers hybridz` routes through `verify_once`, exact HZ verdict, base-HZ guard, and ORT audit-only replay; `--hybridz-engine` selects dense or sparse exact-HZ verdict; S-curve/relu/cell-budget overrides are frontend-declarable; `--verify hybridz-benchmark` provides a mainline per-iid runner, exact normal/cutrow portfolio, safenlp sparse/projected bridge branches, sparse-first/fallback branches, dist_shift S-curve branches (`k=2/4/6/8` plus `k=4` cutrow), ACASXu sparse-SCIP ADV-only fallback, frozen-suite dispatch via `--category frozen`, aggregate CSVs, ICSE-style export files, and the opt-in `--hybridz-require-frozen-match` acceptance gate | Focused safenlp parity blocker `iid844` now passes through the package frontend; full frozen reproduction has not yet been rerun end to end | Keep frozen expected counts immutable; require a clean full rerun before declaring a new freeze |
+| Benchmark-wide strict-HZ profiles | `act/back_end/hybridz_config.py` is the source of truth; `verify_once` applies forward knobs, MILP env knobs, query-workers, and profile-derived timeout/fraction/cap; explicit CLI/config overrides cover S-curve K/cuts, exact ReLU/carry knobs, and cell budget; `hybridz-benchmark` applies official per-row wall/cap, normal/cutrow exact formulation portfolio, safenlp sparse/projected exact-HZ portfolio bridge through package code, sequential sparse-first/fallback branch order, dist_shift S-curve sparse branches (`k=2/4/6/8` plus `k=4` cutrow), ACASXu sparse-SCIP ADV-only fallback, per-instance `RLIMIT_AS` caps via `ACT_HYBRIDZ_RLIMIT_AS_GB`, host free-RAM launch pausing via `HybridZBenchProfile.mem_floor_gb` / `ACT_HYBRIDZ_MEM_FLOOR_GB`, and frozen-suite ordering | `hz_full_driver.py` remains a legacy reproduction runner; ACASXu cuts/FBBT remains script-only diagnostics | Freeze accepted; continue retiring script-only diagnostics that are not needed by the package runner |
+| First-class frontend solver mode | `--solvers hybridz` routes through `verify_once`, exact HZ verdict, base-HZ guard, and ORT audit-only replay; `--hybridz-engine` selects dense or sparse exact-HZ verdict; S-curve/relu/cell-budget overrides are frontend-declarable; `--verify hybridz-benchmark` provides a mainline per-iid runner, exact normal/cutrow portfolio, safenlp sparse/projected bridge branches, sparse-first/fallback branches, dist_shift S-curve branches (`k=2/4/6/8` plus `k=4` cutrow), ACASXu sparse-SCIP ADV-only fallback, frozen-suite dispatch via `--category frozen`, aggregate CSVs, ICSE-style export files, and the opt-in `--hybridz-require-frozen-match` acceptance gate | Focused safenlp parity blocker `iid844` now passes through the package frontend; full frozen reproduction is green in the 2026-06-27 gate | Keep frozen expected counts immutable; require a new clean full rerun only when changing counted behavior |
 | Sparse CSR exact-HZ representation | `SparseHZono` and core sparse ops live under `act/back_end/solver` and `act/back_end/hybridz_tf` | `cifar_sparse_exact_probe.py` still carries exploratory propagation code, extra diagnostics, FBBT/OBBT prototypes, save/load dumps, and CLI-specific branch logic | Keep backend production ops; retire or demote script code once frontend sparse-first parity is proven |
 | Sparse exact-HZ propagation | Backend supports input, affine/dense, constant-side MatMul, conv, convtranspose, avgpool, exact maxpool, ReLU, sigmoid/tanh, structural gather/concat/add/sub paths | Script probe still has wider experiment-only handling and large CLI surface, including var-var MatMul and Softmax relaxations that are not counted exact core | Add focused backend tests for any op still needed by frozen rows before deleting script copies |
 | S-curve tightening | Backend has default-off domain/range/graph cut hooks with toy regression | Script probes still contain broader S-curve census and pair-correlation experiments | Keep default off; use only benchmark-wide experiments with full P0/frozen rerun |
