@@ -21,6 +21,7 @@ from typing import Iterable, List, Optional, Sequence, Tuple
 import numpy as np
 import scipy.sparse as sp
 import torch
+from scipy.optimize import linprog
 
 from act.back_end.core import Bounds
 from act.back_end.solver.sparse_hz import SparseHZono
@@ -1051,6 +1052,189 @@ def _bounds_arrays(bounds: Bounds, n: int) -> Tuple[np.ndarray, np.ndarray]:
     if lb.size != n or ub.size != n:
         raise ValueError(f"bounds shape mismatch: bounds={lb.size}/{ub.size}, hz.n_out={n}")
     return lb.astype(np.float64, copy=False), ub.astype(np.float64, copy=False)
+
+
+def sparse_hz_row_lp_bound(
+    hz: SparseHZono,
+    row: int,
+    *,
+    maximize: bool,
+    time_limit: float,
+) -> Optional[float]:
+    """Tighten one sparse-HZ output row with a continuous LP relaxation."""
+
+    gc = hz.Gc.getrow(row)
+    gb = hz.Gb.getrow(row) if hz.n_bin else sparse_empty(1, 0)
+    if hz.n_eq == 0:
+        width = float(np.abs(gc.data).sum() + np.abs(gb.data).sum())
+        return float(hz.c[row] + (width if maximize else -width))
+    coeff = np.concatenate([
+        np.asarray(gc.toarray()).reshape(-1),
+        np.asarray(gb.toarray()).reshape(-1),
+    ])
+    obj = -coeff if maximize else coeff
+    Aeq = sp.hstack([hz.Ac, hz.Ab], format="csr")
+    Aub = None
+    bub = None
+    if hz.n_ub:
+        Aub = sp.hstack([hz.Auc, hz.Aub], format="csr")
+        bub = hz.ub
+    opts = {"time_limit": float(time_limit)} if time_limit > 0 else None
+    result = linprog(
+        obj,
+        A_eq=Aeq,
+        b_eq=hz.b,
+        A_ub=Aub,
+        b_ub=bub,
+        bounds=[(-1.0, 1.0)] * (hz.n_cont + hz.n_bin),
+        method="highs",
+        options=opts,
+    )
+    if not result.success:
+        return None
+    val = float(coeff @ result.x)
+    return float(hz.c[row] + val)
+
+
+def _sparse_hz_tighten_relu_bounds_highs(
+    hz: SparseHZono,
+    pre_bounds,
+    *,
+    time_limit: float,
+    rows: np.ndarray,
+) -> Tuple[np.ndarray, np.ndarray, Tuple[int, int, int, int]]:
+    import highspy
+
+    lb = pre_bounds.lb.detach().cpu().numpy().reshape(-1).astype(np.float64).copy()
+    ub = pre_bounds.ub.detach().cpu().numpy().reshape(-1).astype(np.float64).copy()
+    nvars = hz.n_cont + hz.n_bin
+    A = sp.hstack([hz.Ac, hz.Ab], format="csr")
+
+    h = highspy.Highs()
+    h.setOptionValue("output_flag", False)
+    h.setOptionValue("time_limit", float(time_limit))
+    # Reusing the same basis across objective changes is the point here.
+    h.setOptionValue("solver", "simplex")
+    h.addCols(
+        nvars,
+        np.zeros(nvars, dtype=np.float64),
+        -np.ones(nvars, dtype=np.float64),
+        np.ones(nvars, dtype=np.float64),
+        0,
+        np.array([], dtype=np.int32),
+        np.array([], dtype=np.int32),
+        np.array([], dtype=np.float64),
+    )
+    h.addRows(
+        A.shape[0],
+        hz.b.astype(np.float64),
+        hz.b.astype(np.float64),
+        A.nnz,
+        A.indptr.astype(np.int32),
+        A.indices.astype(np.int32),
+        A.data.astype(np.float64),
+    )
+    if hz.n_ub:
+        Aub = sp.hstack([hz.Auc, hz.Aub], format="csr")
+        h.addRows(
+            Aub.shape[0],
+            np.full(Aub.shape[0], -1e30, dtype=np.float64),
+            hz.ub.astype(np.float64),
+            Aub.nnz,
+            Aub.indptr.astype(np.int32),
+            Aub.indices.astype(np.int32),
+            Aub.data.astype(np.float64),
+        )
+
+    all_cols = np.arange(nvars, dtype=np.int32)
+    model_status = highspy.HighsModelStatus
+    improved = fixed_on = fixed_off = solved = 0
+
+    def coeff(row: int) -> np.ndarray:
+        out = np.zeros(nvars, dtype=np.float64)
+        gc = hz.Gc.getrow(row)
+        if gc.nnz:
+            out[gc.indices] = gc.data
+        if hz.n_bin:
+            gb = hz.Gb.getrow(row)
+            if gb.nnz:
+                out[hz.n_cont + gb.indices] = gb.data
+        return out
+
+    def solve(cost: np.ndarray) -> Optional[float]:
+        h.changeColsCost(nvars, all_cols, cost.astype(np.float64))
+        h.run()
+        if h.getModelStatus() != model_status.kOptimal:
+            return None
+        return float(h.getObjectiveValue())
+
+    for row in rows:
+        row = int(row)
+        cost = coeff(row)
+        lo_obj = solve(cost)
+        if lo_obj is None:
+            continue
+        hi_obj = solve(-cost)
+        if hi_obj is None:
+            continue
+        solved += 1
+        lo = float(hz.c[row] + lo_obj)
+        hi = float(hz.c[row] - hi_obj)
+        old = ub[row] - lb[row]
+        lb[row] = max(lb[row], lo)
+        ub[row] = min(ub[row], hi)
+        if (ub[row] - lb[row]) < old - 1e-9:
+            improved += 1
+        if lb[row] >= 0.0:
+            fixed_on += 1
+        elif ub[row] <= 0.0:
+            fixed_off += 1
+    return lb, ub, (solved, improved, fixed_on, fixed_off)
+
+
+def sparse_hz_tighten_relu_bounds(
+    hz: SparseHZono,
+    pre_bounds,
+    *,
+    limit: int,
+    time_limit: float,
+) -> Tuple[np.ndarray, np.ndarray, Tuple[int, int, int, int]]:
+    """Tighten interval-unstable ReLU preactivation bounds exactly by LP."""
+
+    lb = pre_bounds.lb.detach().cpu().numpy().reshape(-1).astype(np.float64).copy()
+    ub = pre_bounds.ub.detach().cpu().numpy().reshape(-1).astype(np.float64).copy()
+    rows = np.nonzero((lb < 0.0) & (ub > 0.0))[0]
+    if limit > 0:
+        widths = ub[rows] - lb[rows]
+        rows = rows[np.argsort(-widths)[:limit]]
+    if hz.n_eq:
+        try:
+            return _sparse_hz_tighten_relu_bounds_highs(
+                hz,
+                pre_bounds,
+                time_limit=time_limit,
+                rows=rows,
+            )
+        except Exception as exc:
+            print(f"  tightLP HiGHS fallback to scipy: {type(exc).__name__}:{exc}", flush=True)
+
+    improved = fixed_on = fixed_off = solved = 0
+    for row in rows:
+        lo = sparse_hz_row_lp_bound(hz, int(row), maximize=False, time_limit=time_limit)
+        hi = sparse_hz_row_lp_bound(hz, int(row), maximize=True, time_limit=time_limit)
+        if lo is None or hi is None:
+            continue
+        solved += 1
+        old = ub[row] - lb[row]
+        lb[row] = max(lb[row], lo)
+        ub[row] = min(ub[row], hi)
+        if (ub[row] - lb[row]) < old - 1e-9:
+            improved += 1
+        if lb[row] >= 0.0:
+            fixed_on += 1
+        elif ub[row] <= 0.0:
+            fixed_off += 1
+    return lb, ub, (solved, improved, fixed_on, fixed_off)
 
 
 def _coo_matrix_from_parts(
@@ -2235,8 +2419,10 @@ __all__ = [
     "sparse_hz_linear",
     "sparse_hz_apply_per_batch_linear",
     "sparse_hz_pad_frame",
+    "sparse_hz_row_lp_bound",
     "sparse_hz_scale",
     "sparse_hz_sub_same_frame",
+    "sparse_hz_tighten_relu_bounds",
     "sparse_maxpool2d_candidate_rows",
     "sparse_pad_cols",
 ]
@@ -2681,6 +2867,15 @@ def _test_sparse_affine_structural_ops() -> None:  # pragma: no cover
     )
     dense_relu_in = hz_from_bounds(relu_bounds, dtype, torch.device("cpu"))
     sparse_relu_in = sparse_hz_from_bounds(relu_bounds)
+    tight_lb, tight_ub, tight_stats = sparse_hz_tighten_relu_bounds(
+        sparse_relu_in,
+        relu_bounds,
+        limit=-1,
+        time_limit=1.0,
+    )
+    _assert_vec_close(tight_lb, relu_bounds.lb.detach().cpu().numpy(), tol=1e-12)
+    _assert_vec_close(tight_ub, relu_bounds.ub.detach().cpu().numpy(), tol=1e-12)
+    assert tight_stats == (2, 0, 0, 0)
     rows = (
         np.array([1.0, -0.25, 0.5, 2.0], dtype=np.float64),
         np.array([-1.5, 0.0, 0.25, 1.0], dtype=np.float64),
