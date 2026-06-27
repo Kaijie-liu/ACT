@@ -25,10 +25,10 @@ The older 2026-06-24 `1768/2213` headline and the 2026-06-25
 | Frontend entrypoints exist | `--solvers hybridz`, `--verify hybridz-benchmark`, `--hybridz-engine`, `--hybridz-require-frozen-match`, result-dir, worker/time controls are in `act/pipeline/cli.py` | present |
 | Frontend benchmark smoke | `python -m act.pipeline --verify hybridz-benchmark --category acasxu_2023 --max-instances 1 --hybridz-workers 1 --hybridz-timeout-cap 5` wrote detail/summary/ICSE CSVs and manifest under `/tmp/act_hybridz_stage2_commit_boundary_smoke` with `P0=0`, `ERROR=0` | done as smoke |
 | Focused regression checks | see test log below | done |
-| Full frozen frontend reproduction | clean full `--verify hybridz-benchmark --category frozen --hybridz-require-frozen-match` rerun completed under `/data1/Kane/ICSE/act_hybridz_soundfix_20260625/frontend_frozen_repro_20260626_pkgworkers`; it was run against the previous frozen oracle and therefore exited with the expected mismatch gate after finding `linearizenn_2024=35/60`, `cora_2024=40/180`, and `relusplitter=45/220`; cora/relusplitter positive deltas were audited as pure HybridZ, not ORT promotion | completed, old-oracle mismatch explained |
+| Full frozen frontend reproduction | clean full `--verify hybridz-benchmark --category frozen --hybridz-require-frozen-match` gate completed under `/data1/Kane/ICSE/act_hybridz_soundfix_20260625/frontend_frozen_gate_20260627_pscost25`; `FROZEN_REPRO_COMPARISON.json` reports `ok: true`, 12/12 benchmark rows `match`, `P0=0`, and `ERROR=0` | done |
 | Linearizenn packaged frontend rerun | after adding the benchmark-wide `linear_portfolio_m360` branch, full packaged rerun under `/data1/Kane/ICSE/act_hybridz_soundfix_20260625/linearizenn_productized_m360_20260627` produced `39 CERT + 1 ADV = 40/60`, `P0=0`, `ERROR=0`; `iid13/41/46/51/52` are recovered by `linear_portfolio_m360`, while `iid34` is recovered by `normal` | frozen-green for bench |
-| Git-tracked productization state | product/doc boundary committed in `4ed5712e4` (`Productize HybridZ stage II path`), post-status commit `78ab54b66`, and packaged worker modules committed in `8738f50f6` (`Productize HybridZ packaged workers`); `scripts/` remains local/untracked and absent from commits | done for current product path |
-| Relative-to-upstream minimal diff audit | tracked diff has been measured after the product boundary commit; final audit still needs a full frozen frontend rerun | partial |
+| Git-tracked productization state | product/doc boundary committed in `4ed5712e4` (`Productize HybridZ stage II path`), post-status commit `78ab54b66`, packaged worker modules committed in `8738f50f6` (`Productize HybridZ packaged workers`), and subsequent hardening commits through `998edabf5` expose public HybridZ helper APIs; `scripts/` remains local/untracked and absent from commits | done for current product path |
+| Relative-to-upstream minimal diff audit | tracked diff has been measured after the product boundary commit and refreshed after helper-publication cleanup; remaining work is explanatory minimization, not result reproduction | partial |
 
 ## Product Files Committed
 
@@ -143,10 +143,10 @@ Observed result:
 - frontend package-worker smoke on `acasxu_2023 --max-instances 1` completed
   under `/tmp/act_hybridz_stage2_worker_product_smoke_1782400731` with
   `P0=0`, `ERROR=0`, and a clean manifest
-- full frontend frozen reproduction completed under
-  `/data1/Kane/ICSE/act_hybridz_soundfix_20260625/frontend_frozen_repro_20260626_pkgworkers`;
-  it was run before the final oracle update and therefore records the old
-  productized `linearizenn_2024` gap at `34 CERT / 1 ADV / 35 V+A`
+- final full frontend frozen gate completed under
+  `/data1/Kane/ICSE/act_hybridz_soundfix_20260625/frontend_frozen_gate_20260627_pscost25`;
+  `FROZEN_REPRO_COMPARISON.json` reports `ok: true`, 12/12 rows `match`,
+  `P0=0`, and `ERROR=0`
 - subsequent full packaged `linearizenn_2024` rerun with the productized
   `linear_portfolio_m360` branch produced
   `39 CERT / 1 ADV / 40 V+A / 0 P0 / 0 ERROR / 20 unsolved`; recovered
@@ -169,25 +169,13 @@ Observed result:
 
 ## Remaining DoD Gaps
 
-1. Optional final polish: re-run one clean full frontend frozen reproduction
-   after the final oracle update:
-
-   ```bash
-   python -m act.pipeline --verify hybridz-benchmark --category frozen \
-     --hybridz-require-frozen-match --hybridz-results-dir <out>
-   ```
-
-   The current final table is already saved from the completed full frontend
-   rerun plus the focused post-fix linearizenn rerun; this command would only
-   make the exact `--hybridz-require-frozen-match` gate green against the new
-   oracle.
-2. After final result freeze, re-run the diff-boundary audit against `upstream/main`,
+1. After final result freeze, re-run the diff-boundary audit against `upstream/main`,
    including newly tracked product files, and remove or document any unrelated
    ACT-wide changes.
-3. Continue the function-level audit of `scripts/cifar_sparse_exact_probe.py`
+2. Continue the function-level audit of `scripts/cifar_sparse_exact_probe.py`
    against `sparse_ops.py` and `solver_hz_verdict.py` before deleting legacy
    sparse scripts.
-4. Keep future-work directions separate from the counted artifact: tighter
+3. Keep future-work directions separate from the counted artifact: tighter
    sound S-curve, sparse Schur/block presolve, OBBT-lite, lazy exact-HZ,
    open-source solver portfolio improvements, and memory-governed
    benchmark-level worker profiles for serial tail benches such as `acasxu`,

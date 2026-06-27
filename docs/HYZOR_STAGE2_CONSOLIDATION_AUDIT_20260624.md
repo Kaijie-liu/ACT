@@ -1405,8 +1405,9 @@ Current evidence:
   `model_fn_replay_unsafe:dense_col_ids`.
 
 This proves the frontend entrypoint and script-independence parts of the
-productization work at the lightweight-smoke level.  It does not by itself
-prove the full Stage-II DoD: the final acceptance gate is still a clean
+productization work at the lightweight-smoke level.  The later full frozen
+frontend gate is also now green: `/data1/Kane/ICSE/act_hybridz_soundfix_20260625/frontend_frozen_gate_20260627_pscost25/FROZEN_REPRO_COMPARISON.json`
+reports `ok: true`, 12/12 benchmark rows `match`, `P0=0`, and `ERROR=0` for
 
 ```bash
 /data1/Kane/miniconda3/envs/act-py312/bin/python -m act.pipeline \
@@ -1414,4 +1415,6 @@ prove the full Stage-II DoD: the final acceptance gate is still a clean
   --hybridz-require-frozen-match
 ```
 
-with `FROZEN_REPRO_COMPARISON.json` reporting `ok: true`.
+The remaining Stage-II work is therefore no longer result reproduction; it is
+diff-boundary minimization, final explanation of non-HybridZ ACT-wide changes,
+and function-level retirement or demotion of legacy sparse experiment scripts.
