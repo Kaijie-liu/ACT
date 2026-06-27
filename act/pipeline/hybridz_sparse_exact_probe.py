@@ -15,17 +15,17 @@ from typing import Dict, List, Optional, Tuple
 import numpy as np
 from act.back_end.solver.sparse_hz import SparseHZono as SparseHZ  # noqa: E402
 from act.back_end.solver.solver_hz_verdict import (  # noqa: E402
-    hz_base_feasibility as _solver_hz_base_feasibility,
+    hz_base_feasibility,
     sparse_milp_cutoff_highs,
     sparse_milp_cutoff_scip,
-    sparse_lp_min_margin as _lp_min_margin,
+    sparse_lp_min_margin,
 )
 from act.pipeline.hybridz_option_utils import parse_key_value_options  # noqa: E402
 from act.pipeline.hybridz_spec_utils import (  # noqa: E402
-    check_real_unsafe as _check_real_unsafe,
-    flatten_query_specs as _flatten_query_specs,
-    input_center_radius_indices as _input_center_rad,
-    interval_hard_rivals_from_specs as _interval_hard_rivals_from_specs,
+    check_real_unsafe,
+    flatten_query_specs,
+    input_center_radius_indices,
+    interval_hard_rivals_from_specs,
 )
 from act.back_end.hybridz_tf.sparse_ops import (  # noqa: E402
     _sigmoid_deriv_np,
@@ -95,8 +95,8 @@ SPARSE_SUPPORTED_KINDS = {
 }
 
 from act.pipeline.hybridz_sparse_census import (  # noqa: E402
-    build_net_and_interval as _build_net_and_interval,
-    format_big as _format_big,
+    build_net_and_interval,
+    format_big,
 )
 
 
@@ -383,10 +383,10 @@ def _propagate_sparse(
             print(
                 f"layer {L.id:>2} MAXPOOL2D folds={max(0, len(cands) - 1)} "
                 f"active/off/unstable={mp_active}/{mp_inactive}/{mp_unstable} "
-                f"vars={_format_big(hz.n_cont)}+{_format_big(hz.n_bin)} "
-                f"eq={_format_big(hz.n_eq)} val_nnz={_format_big(hz.value_nnz)} "
-                f"eq_nnz={_format_big(hz.eq_nnz)} ub={_format_big(hz.n_ub)} "
-                f"ub_nnz={_format_big(hz.ub_nnz)} sec={time.time() - t0:.2f}",
+                f"vars={format_big(hz.n_cont)}+{format_big(hz.n_bin)} "
+                f"eq={format_big(hz.n_eq)} val_nnz={format_big(hz.value_nnz)} "
+                f"eq_nnz={format_big(hz.eq_nnz)} ub={format_big(hz.n_ub)} "
+                f"ub_nnz={format_big(hz.ub_nnz)} sec={time.time() - t0:.2f}",
                 flush=True,
             )
             states[L.id] = hz
@@ -450,10 +450,10 @@ def _propagate_sparse(
                 )
             print(
                 f"layer {L.id:>2} RELU active/off/unstable={counts[0]}/{counts[1]}/{counts[2]} "
-                f"vars={_format_big(hz.n_cont)}+{_format_big(hz.n_bin)} "
-                f"eq={_format_big(hz.n_eq)} val_nnz={_format_big(hz.value_nnz)} "
-                f"eq_nnz={_format_big(hz.eq_nnz)} ub={_format_big(hz.n_ub)} "
-                f"ub_nnz={_format_big(hz.ub_nnz)} sec={time.time() - t0:.2f}{tnote}",
+                f"vars={format_big(hz.n_cont)}+{format_big(hz.n_bin)} "
+                f"eq={format_big(hz.n_eq)} val_nnz={format_big(hz.value_nnz)} "
+                f"eq_nnz={format_big(hz.eq_nnz)} ub={format_big(hz.n_ub)} "
+                f"ub_nnz={format_big(hz.ub_nnz)} sec={time.time() - t0:.2f}{tnote}",
                 flush=True,
             )
             states[L.id] = hz
@@ -480,10 +480,10 @@ def _propagate_sparse(
                 f"compressed={int(compressed_sigmoid)} pruned={int(sigmoid_prune_degenerate)} "
                 f"domain_cuts={int(scurve_domain_cuts)} graph_cuts={int(scurve_graph_cuts)} "
                 f"grid={scurve_grid} "
-                f"vars={_format_big(hz.n_cont)}+{_format_big(hz.n_bin)} "
-                f"eq={_format_big(hz.n_eq)} val_nnz={_format_big(hz.value_nnz)} "
-                f"eq_nnz={_format_big(hz.eq_nnz)} ub={_format_big(hz.n_ub)} "
-                f"ub_nnz={_format_big(hz.ub_nnz)} sec={time.time() - t0:.2f}",
+                f"vars={format_big(hz.n_cont)}+{format_big(hz.n_bin)} "
+                f"eq={format_big(hz.n_eq)} val_nnz={format_big(hz.value_nnz)} "
+                f"eq_nnz={format_big(hz.eq_nnz)} ub={format_big(hz.n_ub)} "
+                f"ub_nnz={format_big(hz.ub_nnz)} sec={time.time() - t0:.2f}",
                 flush=True,
             )
             states[L.id] = hz
@@ -511,10 +511,10 @@ def _propagate_sparse(
                 f"layer {L.id:>2} TANH wide/narrow={counts[0]}/{counts[1]} K={tanh_k} "
                 f"compressed={int(compressed_sigmoid)} domain_cuts={int(scurve_domain_cuts)} "
                 f"graph_cuts={int(scurve_graph_cuts)} grid={scurve_grid} "
-                f"vars={_format_big(hz.n_cont)}+{_format_big(hz.n_bin)} "
-                f"eq={_format_big(hz.n_eq)} val_nnz={_format_big(hz.value_nnz)} "
-                f"eq_nnz={_format_big(hz.eq_nnz)} ub={_format_big(hz.n_ub)} "
-                f"ub_nnz={_format_big(hz.ub_nnz)} sec={time.time() - t0:.2f}",
+                f"vars={format_big(hz.n_cont)}+{format_big(hz.n_bin)} "
+                f"eq={format_big(hz.n_eq)} val_nnz={format_big(hz.value_nnz)} "
+                f"eq_nnz={format_big(hz.eq_nnz)} ub={format_big(hz.n_ub)} "
+                f"ub_nnz={format_big(hz.ub_nnz)} sec={time.time() - t0:.2f}",
                 flush=True,
             )
             states[L.id] = hz
@@ -546,10 +546,10 @@ def _propagate_sparse(
             global_c = hz.n_cont
             print(
                 f"layer {L.id:>2} SOFTMAX simplex shape={input_shape} "
-                f"vars={_format_big(hz.n_cont)}+{_format_big(hz.n_bin)} "
-                f"eq={_format_big(hz.n_eq)} val_nnz={_format_big(hz.value_nnz)} "
-                f"eq_nnz={_format_big(hz.eq_nnz)} ub={_format_big(hz.n_ub)} "
-                f"ub_nnz={_format_big(hz.ub_nnz)} sec={time.time() - t0:.2f}",
+                f"vars={format_big(hz.n_cont)}+{format_big(hz.n_bin)} "
+                f"eq={format_big(hz.n_eq)} val_nnz={format_big(hz.value_nnz)} "
+                f"eq_nnz={format_big(hz.eq_nnz)} ub={format_big(hz.n_ub)} "
+                f"ub_nnz={format_big(hz.ub_nnz)} sec={time.time() - t0:.2f}",
                 flush=True,
             )
             states[L.id] = hz
@@ -565,10 +565,10 @@ def _propagate_sparse(
         final = hz
         release_sources(L)
         print(
-            f"layer {L.id:>2} {kind:<8} out={hz.n_out:>5} vars={_format_big(hz.n_cont)}+{_format_big(hz.n_bin)} "
-            f"eq={_format_big(hz.n_eq)} val_nnz={_format_big(hz.value_nnz)} "
-            f"eq_nnz={_format_big(hz.eq_nnz)} ub={_format_big(hz.n_ub)} "
-            f"ub_nnz={_format_big(hz.ub_nnz)} sec={time.time() - t0:.2f}",
+            f"layer {L.id:>2} {kind:<8} out={hz.n_out:>5} vars={format_big(hz.n_cont)}+{format_big(hz.n_bin)} "
+            f"eq={format_big(hz.n_eq)} val_nnz={format_big(hz.value_nnz)} "
+            f"eq_nnz={format_big(hz.eq_nnz)} ub={format_big(hz.n_ub)} "
+            f"ub_nnz={format_big(hz.ub_nnz)} sec={time.time() - t0:.2f}",
             flush=True,
         )
         if idx % 4 == 0:
@@ -593,7 +593,7 @@ def _self_test() -> None:
         Ab=_empty(0, 0),
         b=np.zeros(0, dtype=np.float64),
     )
-    margin, msg = _lp_min_margin(
+    margin, msg = sparse_lp_min_margin(
         hz,
         np.asarray([[1.0, 0.0]], dtype=np.float64),
         np.asarray([1.5], dtype=np.float64),
@@ -602,7 +602,7 @@ def _self_test() -> None:
     assert msg == "fixed"
     assert abs(float(margin) - 0.5) <= 1e-12
 
-    margin, msg = _lp_min_margin(
+    margin, msg = sparse_lp_min_margin(
         hz,
         np.asarray([[1.0, 0.0], [0.0, 1.0]], dtype=np.float64),
         np.asarray([1.5, -2.5], dtype=np.float64),
@@ -619,7 +619,7 @@ def _self_test() -> None:
         Ab=_empty(1, 0),
         b=np.ones(1, dtype=np.float64),
     )
-    margin, msg = _lp_min_margin(
+    margin, msg = sparse_lp_min_margin(
         bad_eq,
         np.asarray([[1.0]], dtype=np.float64),
         np.asarray([0.0], dtype=np.float64),
@@ -638,7 +638,7 @@ def _self_test() -> None:
         Aub=_empty(1, 0),
         ub=-np.ones(1, dtype=np.float64),
     )
-    margin, msg = _lp_min_margin(
+    margin, msg = sparse_lp_min_margin(
         bad_ub,
         np.asarray([[1.0]], dtype=np.float64),
         np.asarray([0.0], dtype=np.float64),
@@ -788,7 +788,7 @@ def main() -> None:
     sys.path.insert(0, str(REPO))
 
     t0 = time.time()
-    onnx_path, vnnlib_path, input_shape, queries, net, before, after, interval_s = _build_net_and_interval(
+    onnx_path, vnnlib_path, input_shape, queries, net, before, after, interval_s = build_net_and_interval(
         args.bench, args.iid, args.device
     )
     print(f"bench={args.bench} iid={args.iid} onnx={onnx_path.name} vnnlib={vnnlib_path.name}")
@@ -854,17 +854,17 @@ def main() -> None:
     unsupported_spec = ""
     flat_specs: List[Tuple[np.ndarray, np.ndarray, str]] = []
     try:
-        flat_specs = _flatten_query_specs(queries, hz.n_out)
-        hard, lows = _interval_hard_rivals_from_specs(flat_specs, final_bounds)
+        flat_specs = flatten_query_specs(queries, hz.n_out)
+        hard, lows = interval_hard_rivals_from_specs(flat_specs, final_bounds)
     except Exception as exc:
         hard, lows = 0, []
         unsupported_spec = str(exc)
     print(
         "final sparse HZ: "
-        f"n={hz.n_out} ng={_format_big(hz.n_cont)} nb={_format_big(hz.n_bin)} "
-        f"nc={_format_big(hz.n_eq)} value_nnz={_format_big(hz.value_nnz)} "
-        f"eq_nnz={_format_big(hz.eq_nnz)} ub={_format_big(hz.n_ub)} "
-        f"ub_nnz={_format_big(hz.ub_nnz)}"
+        f"n={hz.n_out} ng={format_big(hz.n_cont)} nb={format_big(hz.n_bin)} "
+        f"nc={format_big(hz.n_eq)} value_nnz={format_big(hz.value_nnz)} "
+        f"eq_nnz={format_big(hz.eq_nnz)} ub={format_big(hz.n_ub)} "
+        f"ub_nnz={format_big(hz.ub_nnz)}"
     )
     if unsupported_spec:
         print(f"interval_hard=unsupported_spec error={unsupported_spec}", flush=True)
@@ -880,7 +880,7 @@ def main() -> None:
         base_hz_feas_msg = str(base_witness.get("msg", "constructive_center"))
         base_xi = base_witness.get("xi")
     else:
-        base_status, base_msg = _solver_hz_base_feasibility(
+        base_status, base_msg = hz_base_feasibility(
             hz, time_limit=float(args.base_feas_timeout)
         )
         base_hz_feasible = base_status == "FEASIBLE"
@@ -898,7 +898,7 @@ def main() -> None:
     else:
         order = np.argsort(np.asarray(lows)) if lows else np.arange(len(queries))
     lp_n = min(args.lp_queries, len(order))
-    center, rad, input_idx = _input_center_rad(queries[0][0])
+    center, rad, input_idx = input_center_radius_indices(queries[0][0])
 
     def witness_input(xi: Optional[np.ndarray]) -> Optional[np.ndarray]:
         if xi is None:
@@ -917,7 +917,7 @@ def main() -> None:
         if x is None:
             return False, None
         try:
-            return _check_real_unsafe(onnx_path, input_shape, x, C, t)
+            return check_real_unsafe(onnx_path, input_shape, x, C, t)
         except Exception as exc:
             print(f"  WITNESS_CHECK_ERROR {type(exc).__name__}:{str(exc)[:120]}", flush=True)
             return False, None
@@ -945,7 +945,7 @@ def main() -> None:
             margin, msg = None, "skipped"
             lp_sec = 0.0
         else:
-            margin, msg = _lp_min_margin(hz, C, t, args.lp_timeout)
+            margin, msg = sparse_lp_min_margin(hz, C, t, args.lp_timeout)
             lp_sec = time.time() - ts
         record.update({
             "lp_margin": None if margin is None else float(margin),
