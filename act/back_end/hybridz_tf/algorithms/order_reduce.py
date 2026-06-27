@@ -94,7 +94,7 @@ def hz_remove_redundancy(hz: HZono, *, tol: float = 1e-9,
             if bool(nz[j]):
                 groups.setdefault(keys[j], []).append(j)
         if any(len(v) > 1 for v in groups.values()):
-            from act.back_end.solver.solver_hz import _fresh_col_ids
+            from act.back_end.solver.solver_hz import hz_fresh_col_ids
             units = Mc / norms.clamp_min(tol)
             new_cols, keep_id, n_fresh = [], [], 0
             for js in groups.values():
@@ -109,7 +109,7 @@ def hz_remove_redundancy(hz: HZono, *, tol: float = 1e-9,
             Ac = Mc_new[n:] if nc > 0 else hz.c.new_zeros(0, Mc_new.shape[1])
             ng = int(Gc.shape[1])
             if col_ids is not None:
-                fresh = _fresh_col_ids(n_fresh, device=device).tolist()
+                fresh = hz_fresh_col_ids(n_fresh, device=device).tolist()
                 fi = 0; ids = []
                 for v in keep_id:
                     if v is None:
@@ -211,10 +211,10 @@ def hz_girard_reduce(hz: HZono, target_ng: int) -> HZono:
 
     new_col_ids = None
     if hz.col_ids is not None:
-        from act.back_end.solver.solver_hz import _fresh_col_ids
+        from act.back_end.solver.solver_hz import hz_fresh_col_ids
         new_col_ids = torch.cat(
             [hz.col_ids[keep_idx.to(hz.col_ids.device)],
-             _fresh_col_ids(nl, device=device)])
+             hz_fresh_col_ids(nl, device=device)])
 
     return hz_inherit_known_nonempty(HZono(
         c=hz.c, Gc=new_Gc, Gb=hz.Gb, Ac=new_Ac, Ab=hz.Ab, b=hz.b,

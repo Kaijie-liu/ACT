@@ -26,7 +26,7 @@ from typing import Optional, Tuple
 import numpy as np
 import scipy.sparse as sp
 
-from act.back_end.solver.solver_hz import HZono, _split_eq_le
+from act.back_end.solver.solver_hz import HZono, hz_split_constraints
 
 
 def _as_csr(mat, *, shape: Optional[Tuple[int, int]] = None) -> sp.csr_matrix:
@@ -202,7 +202,7 @@ class SparseHZono:
     def from_dense_hz(cls, hz: HZono) -> "SparseHZono":
         """Convert a dense torch-backed ``HZono`` to CSR form."""
 
-        (Ace, Abe, be), (Acl, Abl, bl) = _split_eq_le(hz)
+        (Ace, Abe, be), (Acl, Abl, bl) = hz_split_constraints(hz)
         out = cls(
             c=_torch_to_np(hz.c),
             Gc=_torch_to_csr(hz.Gc),

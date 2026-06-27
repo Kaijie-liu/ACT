@@ -37,7 +37,7 @@ class HZono:
     equality (== b); False = inequality (<= b). Default None means ALL rows
     are equalities (backward-compatible with the original all-equality form).
     The inequality sense is the general HZono form (Ac xi <= b); the verdict
-    splits rows by sense via _split_eq_le."""
+    splits rows by sense via hz_split_constraints."""
 
     c: torch.Tensor  # (n, 1)
     Gc: torch.Tensor  # (n, ng)
@@ -49,7 +49,7 @@ class HZono:
     # Per-generator identity tags (optional). col_ids: (ng,) long, bcol_ids:
     # (nb,) long. Two columns with the SAME id across HZs are the SAME latent
     # factor xi (e.g. a shared input pixel surviving into two residual
-    # branches). ids are globally-unique-monotonic (see _fresh_col_ids), so
+    # branches). ids are globally-unique-monotonic (see hz_fresh_col_ids), so
     # distinct factors never collide -> shared-generator merge (hz_sgm_add) is
     # sound by construction. None = untracked (ops then fall back to the
     # independent-factor Minkowski sum, also sound but looser for residuals).
@@ -64,10 +64,13 @@ class HZono:
 _NEXT_COL_ID = [0]
 
 
-def _fresh_col_ids(k: int, device=None) -> torch.Tensor:
+def hz_fresh_col_ids(k: int, device=None) -> torch.Tensor:
     start = _NEXT_COL_ID[0]
     _NEXT_COL_ID[0] = start + k
     return torch.arange(start, start + k, dtype=torch.long, device=device)
+
+
+_fresh_col_ids = hz_fresh_col_ids
 
 
 def reset_col_ids() -> None:
@@ -205,7 +208,7 @@ def hz_minkowski_sum(hz1: HZono, hz2: HZono) -> HZono:
     )
 
 
-def _split_eq_le(hz: HZono):
+def hz_split_constraints(hz: HZono):
     """Split constraint rows by sense → ((Ac_eq, Ab_eq, b_eq), (Ac_le, Ab_le, b_le)).
 
     eq_mask True/None → equality (== b); False → inequality (<= b). Used by the
@@ -219,6 +222,9 @@ def _split_eq_le(hz: HZono):
     m = hz.eq_mask.to(torch.bool)
     return ((hz.Ac[m], hz.Ab[m], hz.b[m]),
             (hz.Ac[~m], hz.Ab[~m], hz.b[~m]))
+
+
+_split_eq_le = hz_split_constraints
 
 
 def hz_from_bounds(bounds: Bounds, dtype, device, *, track_ids: bool = False,
@@ -237,7 +243,7 @@ def hz_from_bounds(bounds: Bounds, dtype, device, *, track_ids: bool = False,
     if col_ids is not None:
         ids = col_ids.to(device=device)
     elif track_ids:
-        ids = _fresh_col_ids(n, device=device)
+        ids = hz_fresh_col_ids(n, device=device)
     hz = HZono(
         c=c,
         Gc=torch.diag(rad),

@@ -12,7 +12,7 @@ from the same input factors. That is a (sound) over-approximation.
 
 ``hz_sgm_add`` instead aligns generators by their factor ``col_ids``: a
 factor id present in BOTH operands is the SAME latent ``xi`` (ids are
-globally-unique-monotonic — see ``solver_hz._fresh_col_ids`` — so distinct
+globally-unique-monotonic — see ``solver_hz.hz_fresh_col_ids`` — so distinct
 factors can never collide), so its two generator columns are ADDED; factors
 present in only one operand are concatenated as independent. The result is
 the EXACT sum ``{x + y}`` for shared-ancestry zonotopes, not an

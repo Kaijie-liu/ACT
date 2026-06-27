@@ -17,11 +17,11 @@ import torch
 from act.back_end.core import Bounds, Fact
 from act.back_end.solver.solver_hz import (
     HZono,
-    _fresh_col_ids,
     hz_multiply,
     hz_add_const,
     hz_from_bounds,
     hz_compute_bounds,
+    hz_fresh_col_ids,
     hz_inherit_known_nonempty,
     hz_mark_known_nonempty,
 )
@@ -965,11 +965,11 @@ def _relu_extend_ids(hz: HZono, k: int, *, compressed: bool = False):
     dev = hz.col_ids.device
     new_col = torch.cat([
         hz.col_ids,
-        _fresh_col_ids((2 if compressed else 4) * k, device=dev),
+        hz_fresh_col_ids((2 if compressed else 4) * k, device=dev),
     ])
     base_b = (hz.bcol_ids if hz.bcol_ids is not None
               else torch.zeros(0, dtype=torch.long, device=dev))
-    new_bcol = torch.cat([base_b, _fresh_col_ids(k, device=dev)])
+    new_bcol = torch.cat([base_b, hz_fresh_col_ids(k, device=dev)])
     return new_col, new_bcol
 
 
@@ -1284,10 +1284,10 @@ def _hz_apply_piecewise_compressed_pruned(
     new_bcol_ids = None
     if hz.col_ids is not None:
         id_dev = hz.col_ids.device
-        new_col_ids = torch.cat([hz.col_ids, _fresh_col_ids(n_real, device=id_dev)])
+        new_col_ids = torch.cat([hz.col_ids, hz_fresh_col_ids(n_real, device=id_dev)])
         base_b = (hz.bcol_ids if hz.bcol_ids is not None
                   else torch.zeros(0, dtype=torch.long, device=id_dev))
-        new_bcol_ids = torch.cat([base_b.to(id_dev), _fresh_col_ids(r, device=id_dev)])
+        new_bcol_ids = torch.cat([base_b.to(id_dev), hz_fresh_col_ids(r, device=id_dev)])
 
     out = HZono(
         c=new_c,
@@ -1558,13 +1558,13 @@ def hz_apply_piecewise(
         id_dev = hz.col_ids.device
         new_col_ids = torch.cat([
             hz.col_ids,
-            _fresh_col_ids(n_real + n_slack, device=id_dev),
+            hz_fresh_col_ids(n_real + n_slack, device=id_dev),
         ])
         base_b = (hz.bcol_ids if hz.bcol_ids is not None
                   else torch.zeros(0, dtype=torch.long, device=id_dev))
         new_bcol_ids = torch.cat([
             base_b.to(id_dev),
-            _fresh_col_ids(K * m, device=id_dev),
+            hz_fresh_col_ids(K * m, device=id_dev),
         ])
 
     out = HZono(

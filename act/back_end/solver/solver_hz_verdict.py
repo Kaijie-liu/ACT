@@ -32,7 +32,7 @@ import os
 import time
 import numpy as np
 
-from act.back_end.solver.solver_hz import HZono, _split_eq_le, hz_known_nonempty
+from act.back_end.solver.solver_hz import HZono, hz_known_nonempty, hz_split_constraints
 from act.back_end.solver.sparse_hz import SparseHZono
 
 try:
@@ -87,7 +87,7 @@ def _hz_np_sparse(hz):
     c = hz.c.detach().cpu().double().numpy().reshape(-1)
     Gc = hz.Gc.detach().cpu().double().numpy()
     Gb = hz.Gb.detach().cpu().double().numpy()
-    (Ace, Abe, be), (Acl, Abl, bl) = _split_eq_le(hz)
+    (Ace, Abe, be), (Acl, Abl, bl) = hz_split_constraints(hz)
     out = (c, Gc, Gb,
            _torch_csr(Ace), _torch_csr(Abe),
            be.detach().cpu().double().numpy().reshape(-1),
