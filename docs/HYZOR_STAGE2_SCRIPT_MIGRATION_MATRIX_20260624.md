@@ -49,12 +49,13 @@ latest completion evidence.
 | Strict detail/summary CSV recorder | `act/pipeline/hybridz_results.py` | present |
 | Dense exact-HZ propagation | `act/back_end/hybridz_tf/*`, `act/back_end/solver/solver_hz.py` | present |
 | Sparse CSR HZ carrier | `act/back_end/solver/sparse_hz.py` | present |
-| Sparse exact-HZ operators | `act/back_end/hybridz_tf/sparse_ops.py` | present for core ops |
+| Sparse exact-HZ operators | `act/back_end/hybridz_tf/sparse_ops.py` | present for current frozen core ops, full/pruned S-curve paths, structural row maps, and constructive center witness helpers |
 | Safenlp projected one-ReLU exact-HZ branch | `act/pipeline/hybridz_projected_relu_mip.py`, `act/pipeline/hybridz_projected_utils.py` | present as a package module used only by the safenlp benchmark-wide portfolio |
 | Sparse propagation cache | `act/back_end/hybridz_tf/hybridz_tf.py` | present |
 | Exact HZ verdict MILP | `act/back_end/solver/solver_hz_verdict.py` | present |
 | HiGHS/SCIP/open-source verdict backend | `solver_hz_verdict.py` + `HZ_MILP_BACKEND` env | present |
 | Cutoff-row/objective-target formulations | `solver_hz_verdict.py`, `hybridz_benchmark_runner.py` | present |
+| Constructive base-HZ witness guard | `sparse_ops.py`, `solver_hz_verdict.py`, `hybridz_sparse_exact_probe.py` | present; backend builds/checks the center witness, probe/worker only consume it |
 | Exact witness replay gate | `act/back_end/verifier.py` | present |
 | ICSE-style CSV/ranking/frozen match | `hybridz_config.py` frozen/report metadata + `hybridz_benchmark_runner.py` export/check logic | present |
 
@@ -65,7 +66,7 @@ latest completion evidence.
 | `hz_full_driver.py` | Full benchmark orchestration, per-bench profiles, memory governor, branch scheduling | `hybridz_config.py` + `hybridz_benchmark_runner.py` | partially migrated; per-instance RLIMIT cap and host free-RAM launch pausing are now mainline, but specialized legacy branch experiments remain |
 | `hz_full_worker.py` | One-instance dense HybridZ worker, RLIMIT, ORT audit, optional guided flags | `verify_once(... solver=hybridz ...)` + `hybridz_results.py` + `ACT_HYBRIDZ_RLIMIT_AS_GB` | mostly migrated; guided flags remain excluded and must not enter mainline defaults |
 | `hz_sparse_worker.py` | Wrapper around `cifar_sparse_exact_probe.py` for sparse fallback branches | `sparse_hz.py`, `sparse_ops.py`, `HybridzTF` sparse cache, `sparse_hz_objbound` engine, `hybridz_benchmark_runner.py` sparse branches | product path migrated; keep script as historical debug wrapper until sparse-probe-only diagnostics are either tested or retired |
-| `cifar_sparse_exact_probe.py` | Large sparse CSR prototype, sparse propagation, sparse MILP, witness checks, diagnostics | split across `sparse_hz.py`, `sparse_ops.py`, `solver_hz_verdict.py`, `verifier.py` | core migrated; keep script only as regression/debug source until unsupported probe features are classified |
+| `cifar_sparse_exact_probe.py` | Large sparse CSR prototype, sparse propagation, sparse MILP, witness checks, diagnostics | split across `sparse_hz.py`, `sparse_ops.py`, `solver_hz_verdict.py`, `verifier.py`, and the packaged `act.pipeline.hybridz_sparse_exact_probe` wrapper | core migrated; keep local script only as regression/debug source until unsupported probe features are classified |
 | `hz_result_ledger.py` | Frozen provenance ledger and accepted/excluded result selection | `FINAL_*` frozen artifact files + runner frozen-match check | keep as provenance; not verifier code |
 | `hz_export_icse_csv.py` | Export ICSE-style per-benchmark CSVs | `hybridz_config.py` frozen/report metadata + `hybridz_benchmark_runner.py` export/check logic | migrated; script can be retired after one clean mainline full export rerun |
 | `hz_failure_taxonomy.py` | Post-run unresolved taxonomy | `hybridz_benchmark_runner.py` failure taxonomy export | migrated enough for frozen artifact; keep old script as provenance only |
@@ -115,15 +116,16 @@ latest completion evidence.
 | Sparse Softmax/simplex relaxation | `cifar_sparse_exact_probe.py` | `sparse_ops.py` | migrated as a sound simplex/range sparse operator with backend structural self-test; keep its exactness boundary explicit |
 | Sparse ConvTranspose/AvgPool/MaxPool | `validate_sparse_ops.py`, probe | `sparse_ops.py` | migrated with toy self-test |
 | Sparse Add/Sub/Concat/Gather/Shape ops | probe | `sparse_ops.py`, `HybridzTF` sparse propagation | migrated for core paths |
-| Sparse Sigmoid/Tanh S-curve | probe/dist_shift census | `sparse_ops.py`, CLI/profile flags | migrated for current profile |
+| Sparse Sigmoid/Tanh S-curve | probe/dist_shift census | `sparse_ops.py`, CLI/profile flags | migrated for current profile, including compressed/pruned and full/non-pruned construction plus uniform/curvature grids |
 | Base-HZ feasibility guard | probe/worker | `solver_hz_verdict.py`, `verifier.py` | migrated |
+| Constructive center witness extension | sparse probe | `sparse_ops.py` backend helpers; package probe only keeps witness state | migrated with backend ReLU/full-S-curve/pruned-S-curve checks |
 | Exact witness input reconstruction | worker/probe | `verifier.py` dense/sparse replay | migrated |
 | ORT replay audit | worker/probe | `verifier.py` | migrated; audit only |
-| HiGHS exact MILP | worker/probe | `solver_hz_verdict.py` | migrated |
+| HiGHS exact MILP | worker/probe | `solver_hz_verdict.py` | migrated, including sparse cutoff engine |
 | SCIP branch | projected/sparse scripts | `solver_hz_verdict.py` via `HZ_MILP_BACKEND=scip` | migrated for verdict layer |
 | HiGHS/SCIP portfolio | full driver/sparse scripts | `solver_hz_verdict.py` + runner branch profiles | partially migrated |
 | Query/disjunct parallelism | full driver/env | `solver_hz_verdict.py` `HZ_QUERY_WORKERS` | migrated |
-| Equality substitution / singleton presolve | sparse probe | `solver_hz_verdict.py` singleton projection; other sparse-presolve variants not fully migrated | partial |
+| Equality substitution / singleton presolve | sparse probe | `solver_hz_verdict.py` singleton projection, equality-substitution option, sparse FBBT, relaxation EMPTY precheck, LP min-margin prefilter, and solver start conversion | migrated for selected exact solver path; diagnostic variants remain local |
 | FBBT-lite / OBBT-like phase tightening | sparse/projection scripts | none selected | not migrated |
 | Connected-component sparse presolve | sparse probe | none selected | not migrated |
 | LP witness pool / guided ADV | excluded scripts | none by design | excluded |
@@ -153,6 +155,14 @@ latest completion evidence.
    safenlp one-hidden-ReLU projected exact-HZ branch is the exception and is
    already migrated as a package module.
 
+6. The packaged sparse probe has been reduced to a package-local orchestration
+   wrapper (`act/pipeline/hybridz_sparse_exact_probe.py`, 1159 lines as of
+   2026-06-27).  Its remaining large responsibilities are graph-state
+   propagation over ACT's analyzed layer graph, worker CLI option handling, and
+   per-query LP/MILP scheduling/logging.  Backend-independent operator and
+   solver kernels should continue to move out when they can be tested without
+   moving this whole orchestration function.
+
 ## First Function-Level Probe Audit Result
 
 The first function-family audit of `cifar_sparse_exact_probe.py` found one
@@ -176,6 +186,52 @@ against `sparse_ops.py` and `solver_hz_verdict.py` by function family:
 - mark functions that are diagnostics only;
 - add missing mainline tests for any migrated logic before deleting script
   copies.
+
+## Current Function-Level Probe Audit Result
+
+The 2026-06-27 cleanup passes moved the remaining solver/operator kernels that
+were cleanly separable from the package probe:
+
+- sparse HiGHS and SCIP cutoff MILP engines now live in
+  `solver_hz_verdict.py`;
+- sparse LP min-margin, row-range infeasibility, sparse FBBT, EMPTY-only
+  relaxation precheck, solver start conversion, and exact singleton/equality
+  presolve support are solver-layer helpers;
+- compressed/pruned and full/non-pruned S-curve construction, including
+  uniform and curvature segment grids plus domain/range/graph cut metadata, now
+  lives in `sparse_ops.py`;
+- nearest-neighbor UPSAMPLE, SLICE, and GATHER row maps now live in
+  `sparse_ops.py`;
+- exact ReLU and S-curve constructive center witness extension plus final
+  residual checking now live in `sparse_ops.py`.
+
+Regression evidence for the latest state:
+
+```bash
+python -m py_compile act/back_end/hybridz_tf/sparse_ops.py act/pipeline/hybridz_sparse_exact_probe.py
+python -m act.back_end.hybridz_tf.sparse_ops
+python -m act.pipeline.hybridz_sparse_exact_probe --self-test
+python -m act.pipeline.hybridz_sparse_worker --bench sat_relu --iid 0 \
+  --lp-queries 1 --milp-timeout 5 --worker-timeout 45
+python -m act.pipeline.hybridz_sparse_worker --bench dist_shift_2023 --iid 0 \
+  --lp-queries 1 --milp-timeout 5 --worker-timeout 60 \
+  --compressed-sigmoid --sigmoid-prune-degenerate --sigmoid-k 2 --tanh-k 1 \
+  --scurve-domain-cuts --scurve-graph-cuts
+```
+
+The `sat_relu` smoke returned `ADV`, `P0=false`, and `ort_verified=true`; the
+`dist_shift_2023` S-curve smoke returned `UNKNOWN`, `P0=false`, final HZ
+`n=10 ng=5.3k nb=2.6k nc=1.8k`, and constructive-center residual
+`max_eq=1.36e-12 max_ub=0`.  Both packaged frontend smokes and the frozen
+manifest check also remained clean.
+
+What remains in the package probe is no longer a standalone backend primitive:
+it is the product sparse-worker orchestration over analyzed ACT layer graphs
+plus query scheduling/reporting.  Moving it wholesale into `hybridz_tf` would
+increase coupling to pipeline-only data (`net`, `before`, `after`, benchmark
+queries, stdout JSON contract), so the next lower-risk cleanup target is either
+worker CLI/result reporting or deleting/archiving local scripts after a final
+full frozen frontend parity run.
 
 ## Current Product-Path Dependency Check
 
