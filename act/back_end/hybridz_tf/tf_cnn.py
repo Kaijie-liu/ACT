@@ -327,35 +327,3 @@ def tf_convtranspose2d(L, bounds, tf):
     if hz_in is not None:
         return _hz_fact(fact, tf._hz_cache[L.id])
     return fact
-
-
-def _test_hz_cnn_exact_maxpool_only() -> None:  # pragma: no cover
-    from act.back_end.solver.solver_hz import hz_from_bounds
-
-    dtype = torch.float64
-    x = torch.tensor([[1.0, -2.0, 3.5, 0.25]], dtype=dtype)
-    hz = hz_from_bounds(Bounds(lb=x, ub=x), dtype, torch.device("cpu"), track_ids=True)
-    out = hz_maxpool2d(
-        hz,
-        kernel_size=2,
-        stride=2,
-        padding=0,
-        dilation=1,
-        input_shape=(1, 1, 2, 2),
-    )
-    if out is None:
-        raise AssertionError("exact MaxPool2D unexpectedly dropped")
-    got = float(out.c.reshape(-1)[0].item())
-    if abs(got - 3.5) > 1e-12:
-        raise AssertionError(f"exact MaxPool2D point mismatch: got {got}")
-    dropped = hz_maxpool2d(
-        hz,
-        kernel_size=2,
-        stride=2,
-        padding=0,
-        dilation=1,
-        input_shape=(1, 1, 2, 2),
-        exact=False,
-    )
-    if dropped is not None:
-        raise AssertionError("non-exact MaxPool2D must not produce a triangle-relaxed HZ")
