@@ -281,12 +281,12 @@ either migrated into tests or explicitly retired.
 
 ## Private Backend Helper Imports From Legacy Scripts
 
-Latest cleanup scan found one backend-private helper retained only because
-local legacy scripts still import it:
+Latest cleanup scan found backend-private helper names that are retained only
+as local legacy-script compatibility aliases:
 
 | Script | Private helper | Current use | Cleanup action |
 |---|---|---|---|
-| `scripts/hz_full_worker.py` | `solver_hz_verdict._hz_relax_np_sparse` | LP-relaxation witness/guided diagnostic code, explicitly excluded from counted pure-HZ results | Keep until full frontend frozen parity is proven; then either move the helper into the local script or retire the diagnostic branch |
+| `scripts/hz_full_worker.py` | `solver_hz_verdict._hz_relax_np_sparse` | Compatibility alias for the public `hz_relax_np_sparse`; LP-relaxation witness/guided diagnostic code is explicitly excluded from counted pure-HZ results | Keep only as a short-term alias; productized package code imports `hz_relax_np_sparse` |
 | `scripts/hz_full_worker.py` | `solver_hz._split_eq_le` | Phase-fix/guided diagnostic helper logic | Same treatment: do not expose as product API |
 | `scripts/hz_query_trace.py` | `solver_hz_verdict._hz_np_sparse` | Query tracing/debug of solver matrices | Keep as debug-only script dependency until replaced by a proper trace API or deleted |
 

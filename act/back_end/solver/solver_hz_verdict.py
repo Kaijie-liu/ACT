@@ -110,12 +110,12 @@ def _row_dot_gen(row, gen) -> np.ndarray:
     return _mat_dot_gen(np.asarray(row, dtype=np.float64).reshape(1, -1), gen).reshape(-1)
 
 
-def _hz_relax_np_sparse(hz):
+def hz_relax_np_sparse(hz):
     """Sparse LP-relaxation matrices for HybridZ LP prefilters/diagnostics.
 
     The production HybridZ verdict path below builds its own exact LP/MILP rows
-    through ``_objbound_solve``.  The public alias below is kept for packaged
-    worker LP prefilters; local legacy scripts may still import the private name.
+    through ``_objbound_solve``.  Packaged HybridZ workers use this public helper
+    for lightweight LP prefilters and diagnostics.
     """
     cached = getattr(hz, "_solver_relax_sparse_cache", None)
     if cached is not None:
@@ -128,7 +128,7 @@ def _hz_relax_np_sparse(hz):
     return out
 
 
-hz_relax_np_sparse = _hz_relax_np_sparse
+_hz_relax_np_sparse = hz_relax_np_sparse
 
 
 def _csr_rowsum(A) -> np.ndarray:
