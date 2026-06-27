@@ -35,6 +35,10 @@ import numpy as np
 from act.back_end.solver.solver_hz import HZono, hz_known_nonempty, hz_split_constraints
 from act.back_end.solver.sparse_hz import SparseHZono
 
+# The verdict layer lowers either dense ``HZono`` or sparse ``SparseHZono`` into
+# the same LP/MILP spec-margin problem.  SparseHZono is a representation backend
+# for the same Hybrid Zonotope domain, not a separate verifier/domain.
+
 try:
     import scipy.sparse as _sp
     from scipy.optimize import linprog as _linprog, milp as _milp

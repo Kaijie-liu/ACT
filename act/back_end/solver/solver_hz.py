@@ -1,3 +1,18 @@
+"""Hybrid Zonotope domain and dense torch representation.
+
+ACT uses one Hybrid Zonotope abstract domain:
+
+    z = c + Gc xi_c + Gb xi_b
+    Ac xi_c + Ab xi_b == b
+    Auc xi_c + Aub xi_b <= ub
+
+This module contains ``HZono``, the dense torch representation and propagation
+carrier for that domain.  The same domain also has a sparse CSR representation,
+``SparseHZono`` in :mod:`act.back_end.solver.sparse_hz`, for large low-density
+models.  These are two concrete representations of one abstract domain, not
+two different domains.
+"""
+
 from __future__ import annotations
 
 import logging
@@ -30,7 +45,12 @@ except ImportError:
 
 @dataclass
 class HZono:
-    """Z = {c + Gc @ xi_c + Gb @ xi_b | (Ac @ xi_c + Ab @ xi_b) [op] b,
+    """Dense torch representation of the Hybrid Zonotope domain.
+
+    For the sparse CSR representation of the same domain, see
+    ``act.back_end.solver.sparse_hz.SparseHZono``.
+
+    Z = {c + Gc @ xi_c + Gb @ xi_b | (Ac @ xi_c + Ab @ xi_b) [op] b,
     xi_c in [-1,1]^ng, xi_b in {-1,1}^nb}
 
     eq_mask (optional, (nc,) bool): per-row constraint sense. True/None =

@@ -5,16 +5,18 @@
 # Licensed under the GNU Affero General Public License v3.0 or later (AGPLv3+).
 # Distributed without any warranty; see <http://www.gnu.org/licenses/>.
 # ===---------------------------------------------------------------------===#
-"""Sparse exact-HZ carrier used by the HybridZ verdict layer.
+"""Sparse CSR representation backend for the Hybrid Zonotope domain.
 
-This is the backend version of the production-safe part of the sparse-HZ
-prototype: the exact 6-tuple
+``SparseHZono`` is an independent concrete representation and propagation
+carrier for the same Hybrid Zonotope abstract domain represented densely by
+``act.back_end.solver.solver_hz.HZono``.  It is not a separate abstract domain.
+It stores the exact 6-tuple
 
     z = c + Gc xi_c + Gb xi_b
     Ac xi_c + Ab xi_b == b
     Auc xi_c + Aub xi_b <= ub
 
-stored in scipy CSR form.  It deliberately contains no benchmark loader,
+in scipy CSR form.  It deliberately contains no benchmark loader,
 sampling, ORT replay, Gurobi diagnostic path, or per-instance rescue logic.
 """
 
@@ -69,7 +71,11 @@ def _shape_prod(shape: Tuple[int, ...]) -> int:
 
 @dataclass
 class SparseHZono:
-    """CSR-backed exact Hybrid Zonotope.
+    """Sparse CSR representation of the Hybrid Zonotope domain.
+
+    This is a native sparse propagation backend, not a view of ``HZono`` and
+    not a second abstract domain.  The dense ``HZono`` and sparse
+    ``SparseHZono`` representations lower to the same verdict layer.
 
     Continuous variables use ``xi_c in [-1, 1]``.  Binary variables use
     ``xi_b in {-1, 1}``.  Inequality rows are optional; absent rows are exposed
