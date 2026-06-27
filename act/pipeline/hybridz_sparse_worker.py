@@ -229,6 +229,30 @@ def is_full_cert(s):
     )
 
 
+def _common_sparse_kwargs(a):
+    return {
+        "compressed_relu": a.compressed_relu,
+        "relu_cuts": a.relu_cuts,
+        "highs_options": a.highs_option,
+        "elim_eq_subst": a.elim_eq_subst,
+        "skip_lp_before_milp": a.skip_lp_before_milp,
+        "fbbt_passes": a.fbbt_passes,
+        "relax_precheck_timeout": a.relax_precheck_timeout,
+        "mip_solver": a.mip_solver,
+        "compressed_sigmoid": a.compressed_sigmoid,
+        "sigmoid_prune_degenerate": a.sigmoid_prune_degenerate,
+        "sigmoid_k": a.sigmoid_k,
+        "tanh_k": a.tanh_k,
+        "scurve_domain_cuts": a.scurve_domain_cuts,
+        "scurve_graph_cuts": a.scurve_graph_cuts,
+        "scurve_grid": a.scurve_grid,
+        "query_indices": a.query_indices,
+        "connected_presolve": a.connected_presolve,
+        "mip_start": a.mip_start,
+        "elim_singletons": not a.no_elim_singletons,
+    }
+
+
 def main():
     import argparse
     ap = argparse.ArgumentParser()
@@ -298,6 +322,7 @@ def main():
 
         def call_sparse(*args, **kwargs):
             return run_sparse(*args, **kwargs, worker_deadline=worker_deadline)
+        common_sparse_kwargs = _common_sparse_kwargs(a)
 
         witness_cutoff_row = a.cutoff_row
         if a.bench in {"malbeware", "relusplitter", "metaroom_2023"}:
@@ -320,25 +345,7 @@ def main():
                 a.lp_queries,
                 a.cutoff_row,
                 check_witness=False,
-                compressed_relu=a.compressed_relu,
-                relu_cuts=a.relu_cuts,
-                highs_options=a.highs_option,
-                elim_eq_subst=a.elim_eq_subst,
-                skip_lp_before_milp=a.skip_lp_before_milp,
-                fbbt_passes=a.fbbt_passes,
-                relax_precheck_timeout=a.relax_precheck_timeout,
-                mip_solver=a.mip_solver,
-                compressed_sigmoid=a.compressed_sigmoid,
-                sigmoid_prune_degenerate=a.sigmoid_prune_degenerate,
-                sigmoid_k=a.sigmoid_k,
-                tanh_k=a.tanh_k,
-                scurve_domain_cuts=a.scurve_domain_cuts,
-                scurve_graph_cuts=a.scurve_graph_cuts,
-                scurve_grid=a.scurve_grid,
-                query_indices=a.query_indices,
-                connected_presolve=a.connected_presolve,
-                mip_start=a.mip_start,
-                elim_singletons=not a.no_elim_singletons,
+                **common_sparse_kwargs,
             )
             if is_full_cert(s):
                 res.update({"verdict": "CERT", "hz": s["hz"], "sparse": s,
@@ -354,25 +361,7 @@ def main():
                     a.lp_queries,
                     cutoff_row=False,
                     check_witness=True,
-                    compressed_relu=a.compressed_relu,
-                    relu_cuts=a.relu_cuts,
-                    highs_options=a.highs_option,
-                    elim_eq_subst=a.elim_eq_subst,
-                    skip_lp_before_milp=a.skip_lp_before_milp,
-                    fbbt_passes=a.fbbt_passes,
-                    relax_precheck_timeout=a.relax_precheck_timeout,
-                    mip_solver=a.mip_solver,
-                    compressed_sigmoid=a.compressed_sigmoid,
-                    sigmoid_prune_degenerate=a.sigmoid_prune_degenerate,
-                    sigmoid_k=a.sigmoid_k,
-                    tanh_k=a.tanh_k,
-                    scurve_domain_cuts=a.scurve_domain_cuts,
-                    scurve_graph_cuts=a.scurve_graph_cuts,
-                    scurve_grid=a.scurve_grid,
-                    query_indices=a.query_indices,
-                    connected_presolve=a.connected_presolve,
-                    mip_start=a.mip_start,
-                    elim_singletons=not a.no_elim_singletons,
+                    **common_sparse_kwargs,
                 )
                 if sw_tail is not None and sw_tail.get("real_adv", 0) > 0:
                     res.update({"verdict": "ADV", "gt_cex": True,
@@ -392,25 +381,7 @@ def main():
             a.lp_queries,
             witness_cutoff_row,
             check_witness=True,
-            compressed_relu=a.compressed_relu,
-            relu_cuts=a.relu_cuts,
-            highs_options=a.highs_option,
-            elim_eq_subst=a.elim_eq_subst,
-            skip_lp_before_milp=a.skip_lp_before_milp,
-            fbbt_passes=a.fbbt_passes,
-            relax_precheck_timeout=a.relax_precheck_timeout,
-            mip_solver=a.mip_solver,
-            compressed_sigmoid=a.compressed_sigmoid,
-            sigmoid_prune_degenerate=a.sigmoid_prune_degenerate,
-            sigmoid_k=a.sigmoid_k,
-            tanh_k=a.tanh_k,
-            scurve_domain_cuts=a.scurve_domain_cuts,
-            scurve_graph_cuts=a.scurve_graph_cuts,
-            scurve_grid=a.scurve_grid,
-            query_indices=a.query_indices,
-            connected_presolve=a.connected_presolve,
-            mip_start=a.mip_start,
-            elim_singletons=not a.no_elim_singletons,
+            **common_sparse_kwargs,
         )
         if sw is not None and sw.get("real_adv", 0) > 0:
             res.update({"verdict": "ADV", "gt_cex": True, "ort_verified": True,
@@ -433,25 +404,7 @@ def main():
             sw_obj = call_sparse(
                 a.bench, a.iid, max(float(a.milp_timeout), 120.0), a.lp_queries,
                 cutoff_row=False, check_witness=True,
-                compressed_relu=a.compressed_relu,
-                relu_cuts=a.relu_cuts,
-                highs_options=a.highs_option,
-                elim_eq_subst=a.elim_eq_subst,
-                skip_lp_before_milp=a.skip_lp_before_milp,
-                fbbt_passes=a.fbbt_passes,
-                relax_precheck_timeout=a.relax_precheck_timeout,
-                mip_solver=a.mip_solver,
-                compressed_sigmoid=a.compressed_sigmoid,
-                sigmoid_prune_degenerate=a.sigmoid_prune_degenerate,
-                sigmoid_k=a.sigmoid_k,
-                tanh_k=a.tanh_k,
-                scurve_domain_cuts=a.scurve_domain_cuts,
-                scurve_graph_cuts=a.scurve_graph_cuts,
-                scurve_grid=a.scurve_grid,
-                query_indices=a.query_indices,
-                connected_presolve=a.connected_presolve,
-                mip_start=a.mip_start,
-                elim_singletons=not a.no_elim_singletons,
+                **common_sparse_kwargs,
             )
             if sw_obj is not None and sw_obj.get("real_adv", 0) > 0:
                 res.update({"verdict": "ADV", "gt_cex": True, "ort_verified": True,
@@ -470,25 +423,7 @@ def main():
             a.lp_queries,
             a.cutoff_row,
             check_witness=False,
-            compressed_relu=a.compressed_relu,
-            relu_cuts=a.relu_cuts,
-            highs_options=a.highs_option,
-            elim_eq_subst=a.elim_eq_subst,
-            skip_lp_before_milp=a.skip_lp_before_milp,
-            fbbt_passes=a.fbbt_passes,
-            relax_precheck_timeout=a.relax_precheck_timeout,
-            mip_solver=a.mip_solver,
-            compressed_sigmoid=a.compressed_sigmoid,
-            sigmoid_prune_degenerate=a.sigmoid_prune_degenerate,
-            sigmoid_k=a.sigmoid_k,
-            tanh_k=a.tanh_k,
-            scurve_domain_cuts=a.scurve_domain_cuts,
-            scurve_graph_cuts=a.scurve_graph_cuts,
-            scurve_grid=a.scurve_grid,
-            query_indices=a.query_indices,
-            connected_presolve=a.connected_presolve,
-            mip_start=a.mip_start,
-            elim_singletons=not a.no_elim_singletons,
+            **common_sparse_kwargs,
         )
         if s is None:
             res["err"] = "sparse-noparse"
