@@ -343,7 +343,7 @@ def _record(L, st: StructState, active=0, inactive=0, unstable=0, wall_s=0.0, no
     )
 
 
-def _format_big(x: int) -> str:
+def format_big(x: int) -> str:
     if abs(x) >= 1_000_000_000:
         return f"{x / 1_000_000_000:.2f}B"
     if abs(x) >= 1_000_000:
@@ -365,16 +365,16 @@ def _print_table(rows: List[LayerRow], max_rows: Optional[int] = None) -> None:
         relu = f"{r.active}/{r.inactive}/{r.unstable}" if r.kind == "RELU" else "-"
         print(
             f"{r.lid:>3} {r.kind:<9} {r.n_out:>7} {relu:>15} "
-            f"{_format_big(r.n_cont):>8} {_format_big(r.n_bin):>7} "
-            f"{_format_big(r.eq_rows):>8} {_format_big(r.value_nnz):>8} "
-            f"{_format_big(r.eq_nnz):>8} {_format_big(r.dense_value_cells):>9} "
-            f"{_format_big(r.dense_eq_cells):>8} {r.wall_s:>5.2f} {r.note}"
+            f"{format_big(r.n_cont):>8} {format_big(r.n_bin):>7} "
+            f"{format_big(r.eq_rows):>8} {format_big(r.value_nnz):>8} "
+            f"{format_big(r.eq_nnz):>8} {format_big(r.dense_value_cells):>9} "
+            f"{format_big(r.dense_eq_cells):>8} {r.wall_s:>5.2f} {r.note}"
         )
     if max_rows is not None and len(rows) > max_rows:
         print(f"... {len(rows) - max_rows} more layer rows omitted")
 
 
-def _build_net_and_interval(bench: str, iid: int, device: str):
+def build_net_and_interval(bench: str, iid: int, device: str):
     import torch
 
     from act.back_end.core import Bounds as ABounds
@@ -424,8 +424,8 @@ def _build_net_and_interval(bench: str, iid: int, device: str):
     return onnx_path, vnnlib_path, input_shape, queries, net, before, after, interval_s
 
 
-format_big = _format_big
-build_net_and_interval = _build_net_and_interval
+_format_big = format_big
+_build_net_and_interval = build_net_and_interval
 
 
 def _propagate_struct(net, queries, before, max_layers: Optional[int] = None) -> Tuple[Dict[int, StructState], List[LayerRow]]:
@@ -485,7 +485,7 @@ def _propagate_struct(net, queries, before, max_layers: Optional[int] = None) ->
                 eq_rows=global_eq_rows,
                 eq_nnz=global_eq_nnz,
             )
-            note = f"Pnnz={_format_big(pat.nnz)}"
+            note = f"Pnnz={format_big(pat.nnz)}"
 
         elif kind == "DENSE":
             prev = _pad_state(_state_for_pred(states, net, L.id), global_c, global_b)
@@ -500,7 +500,7 @@ def _propagate_struct(net, queries, before, max_layers: Optional[int] = None) ->
                 eq_rows=global_eq_rows,
                 eq_nnz=global_eq_nnz,
             )
-            note = f"Pnnz={_format_big(pat.nnz)}"
+            note = f"Pnnz={format_big(pat.nnz)}"
 
         elif kind == "ADD":
             a = _pad_state(_state_for_pred(states, net, L.id, 0), global_c, global_b)
@@ -603,7 +603,7 @@ def main() -> None:
         os.environ.setdefault(var, "1")
 
     t0 = time.time()
-    onnx_path, vnnlib_path, input_shape, queries, net, before, after, interval_s = _build_net_and_interval(
+    onnx_path, vnnlib_path, input_shape, queries, net, before, after, interval_s = build_net_and_interval(
         args.bench, args.iid, args.device
     )
     max_layers = args.max_layers or None
@@ -631,21 +631,21 @@ def main() -> None:
     peak_dense_eq = max((r.dense_eq_cells for r in rows), default=0)
     print()
     print("summary")
-    print(f"  relu_layers={len(relu_rows)} unstable_total={_format_big(unstable_total)}")
-    print(f"  final_n_cont={_format_big(last.n_cont)} final_n_bin={_format_big(last.n_bin)} final_eq_rows={_format_big(last.eq_rows)}")
-    print(f"  final_value_nnz={_format_big(last.value_nnz)} final_eq_nnz={_format_big(last.eq_nnz)}")
-    print(f"  peak_value_nnz={_format_big(peak_value_nnz)}")
-    print(f"  peak_dense_value_cells_if_materialized={_format_big(peak_dense_value)}")
-    print(f"  peak_dense_eq_cells_if_materialized={_format_big(peak_dense_eq)}")
+    print(f"  relu_layers={len(relu_rows)} unstable_total={format_big(unstable_total)}")
+    print(f"  final_n_cont={format_big(last.n_cont)} final_n_bin={format_big(last.n_bin)} final_eq_rows={format_big(last.eq_rows)}")
+    print(f"  final_value_nnz={format_big(last.value_nnz)} final_eq_nnz={format_big(last.eq_nnz)}")
+    print(f"  peak_value_nnz={format_big(peak_value_nnz)}")
+    print(f"  peak_dense_value_cells_if_materialized={format_big(peak_dense_value)}")
+    print(f"  peak_dense_eq_cells_if_materialized={format_big(peak_dense_eq)}")
     print(f"  interval_hard_rivals={hard}/{len(queries)}")
     if low_margins:
         arr = np.asarray(low_margins)
         print(f"  interval_margin_lower_min/median/max={arr.min():.6g}/{np.median(arr):.6g}/{arr.max():.6g}")
     print(
         "  row_only_margin_support_nnz_min/median/max="
-        f"{_format_big(int(margin_stats['min']))}/"
-        f"{_format_big(int(margin_stats['median']))}/"
-        f"{_format_big(int(margin_stats['max']))}"
+        f"{format_big(int(margin_stats['min']))}/"
+        f"{format_big(int(margin_stats['median']))}/"
+        f"{format_big(int(margin_stats['max']))}"
     )
     print(f"  total_wall_s={time.time() - t0:.2f}")
 
