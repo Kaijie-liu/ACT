@@ -4282,9 +4282,6 @@ def main() -> None:
     ap.add_argument("--skip-lp-before-milp", action="store_true",
                     help="experiment: for each selected query, skip the LP precheck and run the exact MILP directly")
     ap.add_argument("--check-witness", action="store_true")
-    ap.add_argument("--check-milp-witness-only", action="store_true",
-                    help="with --check-witness, replay exact MILP witnesses only; ignore LP-relaxation candidates")
-    ap.add_argument("--milp-one", action="store_true")
     ap.add_argument("--milp-all", action="store_true")
     ap.add_argument("--cutoff-as-row", action="store_true",
                     help="encode margin<=0 as an explicit exact feasibility row instead of objective-bound")
@@ -4355,8 +4352,6 @@ def main() -> None:
     if args.self_test:
         _self_test()
         return
-    if args.check_witness and not args.check_milp_witness_only:
-        ap.error("LP-relaxation witness replay is disabled; use --check-milp-witness-only for exact sparse-HZ ADV")
 
     if args.device == "cpu":
         os.environ["CUDA_VISIBLE_DEVICES"] = ""
@@ -4600,7 +4595,7 @@ def main() -> None:
             query_results.append(record)
             continue
         real_bad = False
-        run_milp = (args.milp_one and rank == 0) or args.milp_all
+        run_milp = args.milp_all
         if run_milp:
             ts = time.time()
             stop_after_query = False
@@ -4711,7 +4706,7 @@ def main() -> None:
             record.update({"verdict": "not_run", "cert_source": "lp_only"})
             query_results.append(record)
 
-    if args.milp_all or args.milp_one:
+    if args.milp_all:
         print(
             f"verdict_summary checked={checked_count} cert={cert_count} "
             f"hz_unsafe={hz_unsafe_count} unknown={unknown_count} real_adv={real_adv_count}",

@@ -101,7 +101,7 @@ def run_sparse(
     if mip_start and str(mip_start) != "none":
         cmd.extend(["--mip-start", str(mip_start)])
     if check_witness:
-        cmd.extend(["--check-witness", "--check-milp-witness-only", "--stop-on-unsafe"])
+        cmd.extend(["--check-witness", "--stop-on-unsafe"])
     if cutoff_row:
         cmd.append("--cutoff-as-row")
     if compressed_relu:
