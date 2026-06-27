@@ -2806,6 +2806,307 @@ def sparse_hz_apply_tanh_piecewise(
     )
 
 
+def _sparse_hz_witness_prefix(layer_id: Optional[int]) -> str:
+    return "" if layer_id is None else f"layer {int(layer_id)}: "
+
+
+def _sparse_hz_witness_value(hz: SparseHZono, xi_c: np.ndarray, xi_b: np.ndarray) -> np.ndarray:
+    value = hz.c + np.asarray(hz.Gc @ xi_c).reshape(-1)
+    if hz.n_bin:
+        value = value + np.asarray(hz.Gb @ xi_b).reshape(-1)
+    return value
+
+
+def sparse_hz_extend_relu_center_witness(
+    prev: SparseHZono,
+    out: SparseHZono,
+    xi_c: np.ndarray,
+    xi_b: np.ndarray,
+    meta: dict,
+    *,
+    layer_id: Optional[int] = None,
+) -> Tuple[np.ndarray, np.ndarray, Optional[str]]:
+    """Extend a constructive center witness through backend exact ReLU metadata."""
+
+    prefix = _sparse_hz_witness_prefix(layer_id)
+    xi_c = np.asarray(xi_c, dtype=np.float64).reshape(-1)
+    xi_b = np.asarray(xi_b, dtype=np.float64).reshape(-1)
+    if xi_c.size != prev.n_cont or xi_b.size != prev.n_bin:
+        return (
+            xi_c,
+            xi_b,
+            f"{prefix}witness size mismatch {xi_c.size}+{xi_b.size} vs {prev.n_cont}+{prev.n_bin}",
+        )
+    unstable_idx = np.asarray(meta.get("unstable_idx", []), dtype=np.int64)
+    k = int(unstable_idx.size)
+    if k == 0:
+        return xi_c, xi_b, None
+    lb = np.asarray(meta["lb"], dtype=np.float64)
+    ub = np.asarray(meta["ub"], dtype=np.float64)
+    compressed = bool(meta.get("compressed", False))
+    pre = _sparse_hz_witness_value(prev, xi_c, xi_b)
+    add_c = np.zeros((2 if compressed else 4) * k, dtype=np.float64)
+    add_b = np.zeros(k, dtype=np.float64)
+    tol = 1e-4
+    for j, row in enumerate(unstable_idx):
+        alpha = float(lb[row])
+        beta = float(ub[row])
+        x = float(pre[row])
+        if x < alpha - tol or x > beta + tol:
+            return (
+                xi_c,
+                xi_b,
+                f"{prefix}center preactivation outside ReLU bounds "
+                f"row={int(row)} x={x:.8g} lb={alpha:.8g} ub={beta:.8g}",
+            )
+        x = min(max(x, alpha), beta)
+        if x <= 0.0:
+            xi1 = -1.0 if abs(alpha) < 1e-12 else 2.0 * x / alpha - 1.0
+            xi2 = 1.0
+            xi3 = -xi1
+            xi4 = 1.0
+            z = 1.0
+        else:
+            xi2 = 1.0 if abs(beta) < 1e-12 else 1.0 - 2.0 * x / beta
+            xi1 = 1.0
+            xi3 = 1.0
+            xi4 = -xi2
+            z = -1.0
+        vals = np.array([xi1, xi2, xi3, xi4, z], dtype=np.float64)
+        if np.max(np.abs(vals)) > 1.0 + 1e-5:
+            return (
+                xi_c,
+                xi_b,
+                f"{prefix}ReLU witness variable out of box row={int(row)} vals={vals.tolist()}",
+            )
+        add_c[j] = np.clip(xi1, -1.0, 1.0)
+        add_c[k + j] = np.clip(xi2, -1.0, 1.0)
+        if not compressed:
+            add_c[2 * k + j] = np.clip(xi3, -1.0, 1.0)
+            add_c[3 * k + j] = np.clip(xi4, -1.0, 1.0)
+        add_b[j] = z
+    new_xi_c = np.concatenate([xi_c, add_c])
+    new_xi_b = np.concatenate([xi_b, add_b])
+    if new_xi_c.size != out.n_cont or new_xi_b.size != out.n_bin:
+        return (
+            new_xi_c,
+            new_xi_b,
+            f"{prefix}extended witness size mismatch "
+            f"{new_xi_c.size}+{new_xi_b.size} vs {out.n_cont}+{out.n_bin}",
+        )
+    return new_xi_c, new_xi_b, None
+
+
+def sparse_hz_extend_scurve_center_witness(
+    prev: SparseHZono,
+    out: SparseHZono,
+    xi_c: np.ndarray,
+    xi_b: np.ndarray,
+    meta: dict,
+    func,
+    *,
+    layer_id: Optional[int] = None,
+) -> Tuple[np.ndarray, np.ndarray, Optional[str]]:
+    """Extend a constructive center witness through backend S-curve metadata."""
+
+    prefix = _sparse_hz_witness_prefix(layer_id)
+    xi_c = np.asarray(xi_c, dtype=np.float64).reshape(-1)
+    xi_b = np.asarray(xi_b, dtype=np.float64).reshape(-1)
+    if xi_c.size != prev.n_cont or xi_b.size != prev.n_bin:
+        return (
+            xi_c,
+            xi_b,
+            f"{prefix}witness size mismatch {xi_c.size}+{xi_b.size} vs {prev.n_cont}+{prev.n_bin}",
+        )
+    wide_idx = np.asarray(meta.get("wide_idx", []), dtype=np.int64)
+    m = int(wide_idx.size)
+    if m == 0:
+        return xi_c, xi_b, None
+    if meta.get("pruned"):
+        a_seg = np.asarray(meta.get("a", []), dtype=np.float64)
+        b_seg = np.asarray(meta.get("b_seg", []), dtype=np.float64)
+        centers_x = np.asarray(meta.get("centers_x", []), dtype=np.float64)
+        centers_y = np.asarray(meta.get("centers_y", []), dtype=np.float64)
+        g1_x = np.asarray(meta.get("g1_x", []), dtype=np.float64)
+        g1_y = np.asarray(meta.get("g1_y", []), dtype=np.float64)
+        g2_x = np.asarray(meta.get("g2_x", []), dtype=np.float64)
+        g2_y = np.asarray(meta.get("g2_y", []), dtype=np.float64)
+        owner_arr = np.asarray(meta.get("owner_arr", []), dtype=np.int64)
+        r = int(meta.get("r", owner_arr.size))
+        if any(
+            arr.size != r
+            for arr in (a_seg, b_seg, centers_x, centers_y, g1_x, g1_y, g2_x, g2_y, owner_arr)
+        ):
+            return xi_c, xi_b, f"{prefix}pruned S-curve witness metadata size mismatch"
+        pre = _sparse_hz_witness_value(prev, xi_c, xi_b)
+        add_c = np.zeros(2 * r, dtype=np.float64)
+        add_b = np.ones(r, dtype=np.float64)
+        tol = 1e-7
+        for j, row in enumerate(wide_idx):
+            owned = np.nonzero(owner_arr == j)[0]
+            if owned.size == 0:
+                return xi_c, xi_b, f"{prefix}pruned S-curve row={int(row)} has no segment"
+            x = float(pre[int(row)])
+            lo = float(np.min(a_seg[owned]))
+            hi = float(np.max(b_seg[owned]))
+            if x < lo - 1e-5 or x > hi + 1e-5:
+                return (
+                    xi_c,
+                    xi_b,
+                    f"{prefix}center preactivation outside pruned S-curve bounds "
+                    f"row={int(row)} x={x:.8g} lb={lo:.8g} ub={hi:.8g}",
+                )
+            x = min(max(x, lo), hi)
+            widths = b_seg[owned] - a_seg[owned]
+            ok_local = np.where(
+                (widths > 1e-12) & (x >= a_seg[owned] - tol) & (x <= b_seg[owned] + tol)
+            )[0]
+            if ok_local.size == 0:
+                ok_local = np.where((x >= a_seg[owned] - tol) & (x <= b_seg[owned] + tol))[0]
+            if ok_local.size == 0:
+                return (
+                    xi_c,
+                    xi_b,
+                    f"{prefix}no pruned S-curve segment contains row={int(row)} x={x:.8g}",
+                )
+            flat = int(owned[int(ok_local[0])])
+            y = float(func(np.asarray([x], dtype=np.float64))[0])
+            dx = x - float(centers_x[flat])
+            dy = y - float(centers_y[flat])
+            det = float(g1_y[flat] * g2_x[flat] - g1_x[flat] * g2_y[flat])
+            if abs(det) < 1e-30:
+                xi1 = 0.0
+                xi2 = 0.0
+            else:
+                xi1 = (dy * float(g2_x[flat]) - dx * float(g2_y[flat])) / det
+                xi2 = (dy * float(g1_x[flat]) - dx * float(g1_y[flat])) / (-det)
+            if max(abs(xi1), abs(xi2)) > 1.0 + 1e-5:
+                return (
+                    xi_c,
+                    xi_b,
+                    f"{prefix}pruned S-curve witness variable out of box "
+                    f"row={int(row)} xi1={xi1:.8g} xi2={xi2:.8g}",
+                )
+            add_c[flat] = float(np.clip(xi1, -1.0, 1.0))
+            add_c[r + flat] = float(np.clip(xi2, -1.0, 1.0))
+            add_b[flat] = -1.0
+        new_xi_c = np.concatenate([xi_c, add_c])
+        new_xi_b = np.concatenate([xi_b, add_b])
+        if new_xi_c.size != out.n_cont or new_xi_b.size != out.n_bin:
+            return (
+                new_xi_c,
+                new_xi_b,
+                f"{prefix}extended pruned S-curve witness size mismatch "
+                f"{new_xi_c.size}+{new_xi_b.size} vs {out.n_cont}+{out.n_bin}",
+            )
+        return new_xi_c, new_xi_b, None
+
+    S = int(meta["S"])
+    compressed = bool(meta.get("compressed", False))
+    a_seg = np.asarray(meta["a"], dtype=np.float64)
+    b_seg = np.asarray(meta["b_seg"], dtype=np.float64)
+    centers_x = np.asarray(meta["centers_x"], dtype=np.float64)
+    centers_y = np.asarray(meta["centers_y"], dtype=np.float64)
+    g1_x = np.asarray(meta["g1_x"], dtype=np.float64)
+    g1_y = np.asarray(meta["g1_y"], dtype=np.float64)
+    g2_x = np.asarray(meta["g2_x"], dtype=np.float64)
+    g2_y = np.asarray(meta["g2_y"], dtype=np.float64)
+
+    pre = _sparse_hz_witness_value(prev, xi_c, xi_b)
+    n_real = 2 * S * m
+    n_slack = 0 if compressed else 4 * S * m
+    add_c = np.zeros(n_real + n_slack, dtype=np.float64)
+    add_b = np.ones(S * m, dtype=np.float64)
+    if not compressed:
+        add_c[n_real:] = 1.0
+    tol = 1e-7
+    for j, row in enumerate(wide_idx):
+        x = float(pre[int(row)])
+        lo = float(np.min(a_seg[:, j]))
+        hi = float(np.max(b_seg[:, j]))
+        if x < lo - 1e-5 or x > hi + 1e-5:
+            return (
+                xi_c,
+                xi_b,
+                f"{prefix}center preactivation outside S-curve bounds "
+                f"row={int(row)} x={x:.8g} lb={lo:.8g} ub={hi:.8g}",
+            )
+        x = min(max(x, lo), hi)
+        widths = b_seg[:, j] - a_seg[:, j]
+        ok = np.where((widths > 1e-12) & (x >= a_seg[:, j] - tol) & (x <= b_seg[:, j] + tol))[0]
+        if ok.size == 0:
+            ok = np.where((x >= a_seg[:, j] - tol) & (x <= b_seg[:, j] + tol))[0]
+        if ok.size == 0:
+            return xi_c, xi_b, f"{prefix}no S-curve segment contains row={int(row)} x={x:.8g}"
+        s = int(ok[0])
+        flat = s * m + j
+        y = float(func(np.asarray([x], dtype=np.float64))[0])
+        dx = x - float(centers_x[s, j])
+        dy = y - float(centers_y[s, j])
+        det = float(g1_y[s, j] * g2_x[s, j] - g1_x[s, j] * g2_y[s, j])
+        if abs(det) < 1e-30:
+            xi1 = 0.0
+            xi2 = 0.0
+        else:
+            xi1 = (dy * float(g2_x[s, j]) - dx * float(g2_y[s, j])) / det
+            xi2 = (dy * float(g1_x[s, j]) - dx * float(g1_y[s, j])) / (-det)
+        if max(abs(xi1), abs(xi2)) > 1.0 + 1e-5:
+            return (
+                xi_c,
+                xi_b,
+                f"{prefix}S-curve witness variable out of box "
+                f"row={int(row)} xi1={xi1:.8g} xi2={xi2:.8g}",
+            )
+        xi1 = float(np.clip(xi1, -1.0, 1.0))
+        xi2 = float(np.clip(xi2, -1.0, 1.0))
+        add_c[flat] = xi1
+        add_c[S * m + flat] = xi2
+        add_b[flat] = -1.0
+        if not compressed:
+            slack = n_real + 4 * flat
+            add_c[slack] = -xi1
+            add_c[slack + 1] = xi1
+            add_c[slack + 2] = -xi2
+            add_c[slack + 3] = xi2
+    new_xi_c = np.concatenate([xi_c, add_c])
+    new_xi_b = np.concatenate([xi_b, add_b])
+    if new_xi_c.size != out.n_cont or new_xi_b.size != out.n_bin:
+        return (
+            new_xi_c,
+            new_xi_b,
+            f"{prefix}extended S-curve witness size mismatch "
+            f"{new_xi_c.size}+{new_xi_b.size} vs {out.n_cont}+{out.n_bin}",
+        )
+    return new_xi_c, new_xi_b, None
+
+
+def sparse_hz_check_center_witness(
+    hz: SparseHZono,
+    xi_c: np.ndarray,
+    xi_b: np.ndarray,
+    *,
+    tol: float = 1e-4,
+) -> Tuple[bool, str]:
+    """Check equality and inequality residuals for a constructive center witness."""
+
+    xi_c = np.asarray(xi_c, dtype=np.float64).reshape(-1)
+    xi_b = np.asarray(xi_b, dtype=np.float64).reshape(-1)
+    if xi_c.size != hz.n_cont or xi_b.size != hz.n_bin:
+        return False, f"final witness size mismatch {xi_c.size}+{xi_b.size} vs {hz.n_cont}+{hz.n_bin}"
+    if hz.n_eq:
+        eq_resid = np.asarray(hz.Ac @ xi_c).reshape(-1) + np.asarray(hz.Ab @ xi_b).reshape(-1) - hz.b
+        max_eq = float(np.max(np.abs(eq_resid)))
+    else:
+        max_eq = 0.0
+    if hz.n_ub:
+        ub_resid = np.asarray(hz.Auc @ xi_c).reshape(-1) + np.asarray(hz.Aub @ xi_b).reshape(-1) - hz.ub
+        max_ub = float(np.max(ub_resid))
+    else:
+        max_ub = -np.inf
+    msg = f"constructive_center max_eq={max_eq:.3g} max_ub={max_ub:.3g}"
+    return bool(max_eq <= tol and max_ub <= tol), msg
+
+
 def _broadcast_param(value, n: int) -> np.ndarray:
     if isinstance(value, torch.Tensor):
         arr = value.detach().cpu().double().numpy().reshape(-1)
@@ -3004,7 +3305,10 @@ __all__ = [
     "sparse_hz_apply_scurve_piecewise_full",
     "sparse_hz_apply_sigmoid_piecewise",
     "sparse_hz_apply_tanh_piecewise",
+    "sparse_hz_check_center_witness",
     "sparse_hz_concat",
+    "sparse_hz_extend_relu_center_witness",
+    "sparse_hz_extend_scurve_center_witness",
     "sparse_hz_fast_bounds",
     "sparse_hz_from_bounds",
     "sparse_hz_gather_rows",
@@ -3519,6 +3823,24 @@ def _test_sparse_affine_structural_ops() -> None:  # pragma: no cover
     sparse_relu_cuts = sparse_hz_apply_relu_exact(
         sparse_relu_in, compressed=True, valid_cuts=True
     )
+    sparse_relu_witness, _, sparse_relu_meta = sparse_hz_apply_relu_exact(
+        sparse_relu_in, compressed=True, return_info=True
+    )
+    relu_xi_c, relu_xi_b, relu_err = sparse_hz_extend_relu_center_witness(
+        sparse_relu_in,
+        sparse_relu_witness,
+        np.zeros(sparse_relu_in.n_cont, dtype=np.float64),
+        np.zeros(sparse_relu_in.n_bin, dtype=np.float64),
+        sparse_relu_meta,
+        layer_id=7,
+    )
+    assert relu_err is None
+    relu_witness_ok, relu_witness_msg = sparse_hz_check_center_witness(
+        sparse_relu_witness,
+        relu_xi_c,
+        relu_xi_b,
+    )
+    assert relu_witness_ok, relu_witness_msg
     for r in rows:
         _assert_close(
             hz_row_max(sparse_relu_plain, r, integer=True),
@@ -3580,6 +3902,38 @@ def _test_sparse_affine_structural_ops() -> None:  # pragma: no cover
     assert sparse_sigmoid_curv_counts == (3, 0)
     assert sparse_sigmoid_curv_meta["grid"] == "curvature"
     assert sparse_sigmoid_curv_meta["owner_arr"].size == int(sparse_sigmoid_curv_meta["r"])
+    full_xi_c, full_xi_b, full_err = sparse_hz_extend_scurve_center_witness(
+        sparse_scurve_in,
+        sparse_sigmoid_full_comp,
+        np.zeros(sparse_scurve_in.n_cont, dtype=np.float64),
+        np.zeros(sparse_scurve_in.n_bin, dtype=np.float64),
+        sparse_sigmoid_full_meta,
+        _sigmoid_np,
+        layer_id=8,
+    )
+    assert full_err is None
+    full_witness_ok, full_witness_msg = sparse_hz_check_center_witness(
+        sparse_sigmoid_full_comp,
+        full_xi_c,
+        full_xi_b,
+    )
+    assert full_witness_ok, full_witness_msg
+    pruned_xi_c, pruned_xi_b, pruned_err = sparse_hz_extend_scurve_center_witness(
+        sparse_scurve_in,
+        sparse_sigmoid_info,
+        np.zeros(sparse_scurve_in.n_cont, dtype=np.float64),
+        np.zeros(sparse_scurve_in.n_bin, dtype=np.float64),
+        sparse_sigmoid_meta,
+        _sigmoid_np,
+        layer_id=9,
+    )
+    assert pruned_err is None
+    pruned_witness_ok, pruned_witness_msg = sparse_hz_check_center_witness(
+        sparse_sigmoid_info,
+        pruned_xi_c,
+        pruned_xi_b,
+    )
+    assert pruned_witness_ok, pruned_witness_msg
     for r in scurve_rows:
         _assert_close(
             hz_row_max(dense_sigmoid, r, integer=True),

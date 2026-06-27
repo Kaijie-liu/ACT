@@ -52,6 +52,9 @@ from act.back_end.hybridz_tf.sparse_ops import (  # noqa: E402
     sparse_hz_apply_scurve_piecewise_full as _backend_scurve_piecewise_full,
     sparse_hz_apply_softmax_simplex_layer as _softmax_simplex_hz,
     sparse_hz_apply_matmul_product_interval_layer as _matmul_product_interval_hz,
+    sparse_hz_check_center_witness as _check_center_witness,
+    sparse_hz_extend_relu_center_witness as _extend_relu_center_witness,
+    sparse_hz_extend_scurve_center_witness as _extend_scurve_center_witness,
     sparse_hz_from_bounds,
     sparse_hz_linear as _linear_apply,
     sparse_hz_pad_frame as _pad_hz,
@@ -258,235 +261,21 @@ def _propagate_sparse(
         nonlocal xi_c, xi_b
         if not witness_ok:
             return
-        if xi_c.size != prev.n_cont or xi_b.size != prev.n_bin:
-            mark_witness_bad(
-                f"layer {layer_id}: witness size mismatch "
-                f"{xi_c.size}+{xi_b.size} vs {prev.n_cont}+{prev.n_bin}"
-            )
-            return
-        unstable_idx = np.asarray(meta.get("unstable_idx", []), dtype=np.int64)
-        k = int(unstable_idx.size)
-        if k == 0:
-            return
-        lb = np.asarray(meta["lb"], dtype=np.float64)
-        ub = np.asarray(meta["ub"], dtype=np.float64)
-        compressed = bool(meta.get("compressed", False))
-        pre = prev.c + np.asarray(prev.Gc @ xi_c).reshape(-1)
-        if prev.n_bin:
-            pre = pre + np.asarray(prev.Gb @ xi_b).reshape(-1)
-        add_c = np.zeros((2 if compressed else 4) * k, dtype=np.float64)
-        add_b = np.zeros(k, dtype=np.float64)
-        tol = 1e-4
-        for j, row in enumerate(unstable_idx):
-            alpha = float(lb[row])
-            beta = float(ub[row])
-            x = float(pre[row])
-            if x < alpha - tol or x > beta + tol:
-                mark_witness_bad(
-                    f"layer {layer_id}: center preactivation outside ReLU bounds "
-                    f"row={int(row)} x={x:.8g} lb={alpha:.8g} ub={beta:.8g}"
-                )
-                return
-            x = min(max(x, alpha), beta)
-            if x <= 0.0:
-                xi1 = -1.0 if abs(alpha) < 1e-12 else 2.0 * x / alpha - 1.0
-                xi2 = 1.0
-                xi3 = -xi1
-                xi4 = 1.0
-                z = 1.0
-            else:
-                xi2 = 1.0 if abs(beta) < 1e-12 else 1.0 - 2.0 * x / beta
-                xi1 = 1.0
-                xi3 = 1.0
-                xi4 = -xi2
-                z = -1.0
-            vals = np.array([xi1, xi2, xi3, xi4, z], dtype=np.float64)
-            if np.max(np.abs(vals)) > 1.0 + 1e-5:
-                mark_witness_bad(
-                    f"layer {layer_id}: ReLU witness variable out of box "
-                    f"row={int(row)} vals={vals.tolist()}"
-                )
-                return
-            add_c[j] = np.clip(xi1, -1.0, 1.0)
-            add_c[k + j] = np.clip(xi2, -1.0, 1.0)
-            if not compressed:
-                add_c[2 * k + j] = np.clip(xi3, -1.0, 1.0)
-                add_c[3 * k + j] = np.clip(xi4, -1.0, 1.0)
-            add_b[j] = z
-        xi_c = np.concatenate([xi_c, add_c])
-        xi_b = np.concatenate([xi_b, add_b])
-        if xi_c.size != out.n_cont or xi_b.size != out.n_bin:
-            mark_witness_bad(
-                f"layer {layer_id}: extended witness size mismatch "
-                f"{xi_c.size}+{xi_b.size} vs {out.n_cont}+{out.n_bin}"
-            )
+        xi_c, xi_b, err = _extend_relu_center_witness(
+            prev, out, xi_c, xi_b, meta, layer_id=layer_id
+        )
+        if err is not None:
+            mark_witness_bad(err)
 
     def extend_scurve_witness(prev: SparseHZ, out: SparseHZ, meta: dict, layer_id: int, func) -> None:
         nonlocal xi_c, xi_b
         if not witness_ok:
             return
-        if xi_c.size != prev.n_cont or xi_b.size != prev.n_bin:
-            mark_witness_bad(
-                f"layer {layer_id}: witness size mismatch "
-                f"{xi_c.size}+{xi_b.size} vs {prev.n_cont}+{prev.n_bin}"
-            )
-            return
-        wide_idx = np.asarray(meta.get("wide_idx", []), dtype=np.int64)
-        m = int(wide_idx.size)
-        if m == 0:
-            return
-        if meta.get("pruned"):
-            a_seg = np.asarray(meta.get("a", []), dtype=np.float64)
-            b_seg = np.asarray(meta.get("b_seg", []), dtype=np.float64)
-            centers_x = np.asarray(meta.get("centers_x", []), dtype=np.float64)
-            centers_y = np.asarray(meta.get("centers_y", []), dtype=np.float64)
-            g1_x = np.asarray(meta.get("g1_x", []), dtype=np.float64)
-            g1_y = np.asarray(meta.get("g1_y", []), dtype=np.float64)
-            g2_x = np.asarray(meta.get("g2_x", []), dtype=np.float64)
-            g2_y = np.asarray(meta.get("g2_y", []), dtype=np.float64)
-            owner_arr = np.asarray(meta.get("owner_arr", []), dtype=np.int64)
-            r = int(meta.get("r", owner_arr.size))
-            if any(arr.size != r for arr in (a_seg, b_seg, centers_x, centers_y, g1_x, g1_y, g2_x, g2_y, owner_arr)):
-                mark_witness_bad(f"layer {layer_id}: pruned S-curve witness metadata size mismatch")
-                return
-            pre = prev.c + np.asarray(prev.Gc @ xi_c).reshape(-1)
-            if prev.n_bin:
-                pre = pre + np.asarray(prev.Gb @ xi_b).reshape(-1)
-            add_c = np.zeros(2 * r, dtype=np.float64)
-            add_b = np.ones(r, dtype=np.float64)
-            tol = 1e-7
-            for j, row in enumerate(wide_idx):
-                owned = np.nonzero(owner_arr == j)[0]
-                if owned.size == 0:
-                    mark_witness_bad(f"layer {layer_id}: pruned S-curve row={int(row)} has no segment")
-                    return
-                x = float(pre[int(row)])
-                lo = float(np.min(a_seg[owned]))
-                hi = float(np.max(b_seg[owned]))
-                if x < lo - 1e-5 or x > hi + 1e-5:
-                    mark_witness_bad(
-                        f"layer {layer_id}: center preactivation outside pruned S-curve bounds "
-                        f"row={int(row)} x={x:.8g} lb={lo:.8g} ub={hi:.8g}"
-                    )
-                    return
-                x = min(max(x, lo), hi)
-                widths = b_seg[owned] - a_seg[owned]
-                ok_local = np.where(
-                    (widths > 1e-12) & (x >= a_seg[owned] - tol) & (x <= b_seg[owned] + tol)
-                )[0]
-                if ok_local.size == 0:
-                    ok_local = np.where((x >= a_seg[owned] - tol) & (x <= b_seg[owned] + tol))[0]
-                if ok_local.size == 0:
-                    mark_witness_bad(
-                        f"layer {layer_id}: no pruned S-curve segment contains row={int(row)} x={x:.8g}"
-                    )
-                    return
-                flat = int(owned[int(ok_local[0])])
-                y = float(func(np.asarray([x], dtype=np.float64))[0])
-                dx = x - float(centers_x[flat])
-                dy = y - float(centers_y[flat])
-                det = float(g1_y[flat] * g2_x[flat] - g1_x[flat] * g2_y[flat])
-                if abs(det) < 1e-30:
-                    xi1 = 0.0
-                    xi2 = 0.0
-                else:
-                    xi1 = (dy * float(g2_x[flat]) - dx * float(g2_y[flat])) / det
-                    xi2 = (dy * float(g1_x[flat]) - dx * float(g1_y[flat])) / (-det)
-                if max(abs(xi1), abs(xi2)) > 1.0 + 1e-5:
-                    mark_witness_bad(
-                        f"layer {layer_id}: pruned S-curve witness variable out of box "
-                        f"row={int(row)} xi1={xi1:.8g} xi2={xi2:.8g}"
-                    )
-                    return
-                add_c[flat] = float(np.clip(xi1, -1.0, 1.0))
-                add_c[r + flat] = float(np.clip(xi2, -1.0, 1.0))
-                add_b[flat] = -1.0
-            xi_c = np.concatenate([xi_c, add_c])
-            xi_b = np.concatenate([xi_b, add_b])
-            if xi_c.size != out.n_cont or xi_b.size != out.n_bin:
-                mark_witness_bad(
-                    f"layer {layer_id}: extended pruned S-curve witness size mismatch "
-                    f"{xi_c.size}+{xi_b.size} vs {out.n_cont}+{out.n_bin}"
-                )
-            return
-        S = int(meta["S"])
-        compressed = bool(meta.get("compressed", False))
-        a_seg = np.asarray(meta["a"], dtype=np.float64)
-        b_seg = np.asarray(meta["b_seg"], dtype=np.float64)
-        centers_x = np.asarray(meta["centers_x"], dtype=np.float64)
-        centers_y = np.asarray(meta["centers_y"], dtype=np.float64)
-        g1_x = np.asarray(meta["g1_x"], dtype=np.float64)
-        g1_y = np.asarray(meta["g1_y"], dtype=np.float64)
-        g2_x = np.asarray(meta["g2_x"], dtype=np.float64)
-        g2_y = np.asarray(meta["g2_y"], dtype=np.float64)
-
-        pre = prev.c + np.asarray(prev.Gc @ xi_c).reshape(-1)
-        if prev.n_bin:
-            pre = pre + np.asarray(prev.Gb @ xi_b).reshape(-1)
-        n_real = 2 * S * m
-        n_slack = 0 if compressed else 4 * S * m
-        add_c = np.zeros(n_real + n_slack, dtype=np.float64)
-        add_b = np.ones(S * m, dtype=np.float64)
-        if not compressed:
-            # Unselected segments have z=+1 and g1=g2=0. Their four box
-            # equalities are s - 0.5*z = 0.5, hence each slack must be +1.
-            # The selected segment's slacks are overwritten below.
-            add_c[n_real:] = 1.0
-        tol = 1e-7
-        for j, row in enumerate(wide_idx):
-            x = float(pre[int(row)])
-            lo = float(np.min(a_seg[:, j]))
-            hi = float(np.max(b_seg[:, j]))
-            if x < lo - 1e-5 or x > hi + 1e-5:
-                mark_witness_bad(
-                    f"layer {layer_id}: center preactivation outside S-curve bounds "
-                    f"row={int(row)} x={x:.8g} lb={lo:.8g} ub={hi:.8g}"
-                )
-                return
-            x = min(max(x, lo), hi)
-            widths = b_seg[:, j] - a_seg[:, j]
-            ok = np.where((widths > 1e-12) & (x >= a_seg[:, j] - tol) & (x <= b_seg[:, j] + tol))[0]
-            if ok.size == 0:
-                ok = np.where((x >= a_seg[:, j] - tol) & (x <= b_seg[:, j] + tol))[0]
-            if ok.size == 0:
-                mark_witness_bad(f"layer {layer_id}: no S-curve segment contains row={int(row)} x={x:.8g}")
-                return
-            s = int(ok[0])
-            flat = s * m + j
-            y = float(func(np.asarray([x], dtype=np.float64))[0])
-            dx = x - float(centers_x[s, j])
-            dy = y - float(centers_y[s, j])
-            det = float(g1_y[s, j] * g2_x[s, j] - g1_x[s, j] * g2_y[s, j])
-            if abs(det) < 1e-30:
-                xi1 = 0.0
-                xi2 = 0.0
-            else:
-                xi1 = (dy * float(g2_x[s, j]) - dx * float(g2_y[s, j])) / det
-                xi2 = (dy * float(g1_x[s, j]) - dx * float(g1_y[s, j])) / (-det)
-            if max(abs(xi1), abs(xi2)) > 1.0 + 1e-5:
-                mark_witness_bad(
-                    f"layer {layer_id}: S-curve witness variable out of box "
-                    f"row={int(row)} xi1={xi1:.8g} xi2={xi2:.8g}"
-                )
-                return
-            xi1 = float(np.clip(xi1, -1.0, 1.0))
-            xi2 = float(np.clip(xi2, -1.0, 1.0))
-            add_c[flat] = xi1
-            add_c[S * m + flat] = xi2
-            add_b[flat] = -1.0
-            if not compressed:
-                slack = n_real + 4 * flat
-                add_c[slack] = -xi1
-                add_c[slack + 1] = xi1
-                add_c[slack + 2] = -xi2
-                add_c[slack + 3] = xi2
-        xi_c = np.concatenate([xi_c, add_c])
-        xi_b = np.concatenate([xi_b, add_b])
-        if xi_c.size != out.n_cont or xi_b.size != out.n_bin:
-            mark_witness_bad(
-                f"layer {layer_id}: extended S-curve witness size mismatch "
-                f"{xi_c.size}+{xi_b.size} vs {out.n_cont}+{out.n_bin}"
-            )
+        xi_c, xi_b, err = _extend_scurve_center_witness(
+            prev, out, xi_c, xi_b, meta, func, layer_id=layer_id
+        )
+        if err is not None:
+            mark_witness_bad(err)
 
     def mark_owner(L) -> None:
         for row, var in enumerate(getattr(L, "out_vars", []) or []):
@@ -814,34 +603,7 @@ def _propagate_sparse(
             gc.collect()
     assert final is not None
     if witness_ok:
-        if xi_c.size != final.n_cont or xi_b.size != final.n_bin:
-            witness_ok = False
-            witness_msg = (
-                f"final witness size mismatch {xi_c.size}+{xi_b.size} "
-                f"vs {final.n_cont}+{final.n_bin}"
-            )
-        else:
-            if final.n_eq:
-                eq_resid = (
-                    np.asarray(final.Ac @ xi_c).reshape(-1)
-                    + np.asarray(final.Ab @ xi_b).reshape(-1)
-                    - final.b
-                )
-                max_eq = float(np.max(np.abs(eq_resid)))
-            else:
-                max_eq = 0.0
-            if final.n_ub:
-                ub_resid = (
-                    np.asarray(final.Auc @ xi_c).reshape(-1)
-                    + np.asarray(final.Aub @ xi_b).reshape(-1)
-                    - final.ub
-                )
-                max_ub = float(np.max(ub_resid))
-            else:
-                max_ub = -np.inf
-            witness_msg = f"constructive_center max_eq={max_eq:.3g} max_ub={max_ub:.3g}"
-            if max_eq > 1e-4 or max_ub > 1e-4:
-                witness_ok = False
+        witness_ok, witness_msg = _check_center_witness(final, xi_c, xi_b)
     _propagate_sparse.last_base_witness = {
         "ok": bool(witness_ok),
         "msg": witness_msg,
