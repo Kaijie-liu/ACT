@@ -18,11 +18,7 @@ from act.back_end.solver.solver_hz_verdict import (  # noqa: E402
     hz_base_feasibility as _solver_hz_base_feasibility,
     sparse_milp_cutoff_highs,
     sparse_milp_cutoff_scip,
-    sparse_highs_relaxation_empty_precheck as _highs_relaxation_empty_precheck,
-    sparse_fbbt_tighten_bounds as _fbbt_tighten_bounds,
     sparse_lp_min_margin as _lp_min_margin,
-    sparse_row_bound_infeasible as _row_bound_infeasible,
-    sparse_solver_start_from_xi as _solver_start_from_xi,
 )
 from act.pipeline.hybridz_option_utils import parse_key_value_options  # noqa: E402
 from act.pipeline.hybridz_spec_utils import (  # noqa: E402

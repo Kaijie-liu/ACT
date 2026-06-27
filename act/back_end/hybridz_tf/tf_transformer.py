@@ -12,7 +12,6 @@
 #
 #===---------------------------------------------------------------------===#
 
-from act.back_end.core import Bounds, Fact
 import act.back_end.interval_tf.tf_transformer as interval
 
 
