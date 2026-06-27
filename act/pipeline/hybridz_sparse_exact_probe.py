@@ -20,6 +20,7 @@ from act.back_end.solver.sparse_hz import SparseHZono as SparseHZ  # noqa: E402
 from act.back_end.solver.solver_hz_verdict import (  # noqa: E402
     hz_base_feasibility as _solver_hz_base_feasibility,
 )
+from act.pipeline.hybridz_option_utils import parse_key_value_options  # noqa: E402
 import act.back_end.hybridz_tf.tf_mlp as hz_mlp  # noqa: E402
 from act.back_end.hybridz_tf.sparse_ops import (  # noqa: E402
     _merge_equalities as _merge_linear_constraints,
@@ -4329,35 +4330,15 @@ def main() -> None:
 
     if args.device == "cpu":
         os.environ["CUDA_VISIBLE_DEVICES"] = ""
-    def parse_option_items(items, label: str) -> Dict[str, object]:
-        out: Dict[str, object] = {}
-        for item in items:
-            if "=" not in item:
-                raise SystemExit(f"invalid --{label}-option {item!r}; expected name=value")
-            key, raw = item.split("=", 1)
-            val: object
-            low = raw.lower()
-            if low in {"true", "false"}:
-                val = low == "true"
-            else:
-                try:
-                    val = int(raw)
-                except ValueError:
-                    try:
-                        val = float(raw)
-                    except ValueError:
-                        val = raw
-            out[key] = val
-        return out
 
-    extra_highs_options = parse_option_items(args.highs_option, "highs")
+    extra_highs_options = parse_key_value_options(args.highs_option, "highs-option")
     for key in extra_highs_options:
         if key in {"user_objective_scale", "user_bound_scale"}:
             raise SystemExit(
                 f"--highs-option {key}=... is disabled for exact-HZ proof runs; "
                 "it changes HiGHS-reported objective/bound semantics used by cutoff certificates"
             )
-    extra_scip_options = parse_option_items(args.scip_option, "scip")
+    extra_scip_options = parse_key_value_options(args.scip_option, "scip-option")
     highs_profiles: List[Tuple[str, Dict[str, object]]] = [("cli", dict(extra_highs_options))]
     for var in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"):
         os.environ.setdefault(var, "1")

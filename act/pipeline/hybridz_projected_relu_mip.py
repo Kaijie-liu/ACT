@@ -27,57 +27,13 @@ from act.pipeline.hybridz_projected_utils import (
     flatten_query_specs as _flatten_query_specs,
     interval_hard_rivals_from_specs as _interval_hard_rivals_from_specs,
 )
+from act.pipeline.hybridz_option_utils import parse_key_value_options
 
 
 def _as_np(x) -> np.ndarray:
     if hasattr(x, "detach"):
         return x.detach().cpu().numpy().astype(np.float64)
     return np.asarray(x, dtype=np.float64)
-
-
-def _parse_highs_options(items: List[str]) -> Dict[str, object]:
-    opts: Dict[str, object] = {}
-    for item in items:
-        if "=" not in item:
-            raise SystemExit(f"invalid --highs-option {item!r}; expected name=value")
-        key, raw = item.split("=", 1)
-        low = raw.lower()
-        if low in {"true", "false"}:
-            val: object = low == "true"
-        else:
-            try:
-                val = int(raw)
-            except ValueError:
-                try:
-                    val = float(raw)
-                except ValueError:
-                    val = raw
-        opts[key] = val
-    return opts
-
-
-def _parse_scip_param_value(raw: str) -> object:
-    low = raw.lower()
-    if low in {"true", "false"}:
-        return low == "true"
-    try:
-        return int(raw)
-    except ValueError:
-        pass
-    try:
-        return float(raw)
-    except ValueError:
-        return raw
-
-
-def _parse_scip_params(items: List[str]) -> Dict[str, object]:
-    opts: Dict[str, object] = {}
-    for item in items:
-        if "=" not in item:
-            raise SystemExit(f"invalid --scip-param {item!r}; expected name=value")
-        key, raw = item.split("=", 1)
-        opts[key] = _parse_scip_param_value(raw)
-    return opts
 
 
 def _layers_one_relu_mlp(net):
@@ -576,8 +532,8 @@ def main() -> None:
     if args.device == "cpu":
         os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
-    highs_options = _parse_highs_options(args.highs_option)
-    scip_params = _parse_scip_params(args.scip_param)
+    highs_options = parse_key_value_options(args.highs_option, "highs-option")
+    scip_params = parse_key_value_options(args.scip_param, "scip-param")
     t0 = time.time()
     onnx_path, vnnlib_path, input_shape, queries, net, before, after, interval_s = _build_net_and_interval(
         args.bench, args.iid, args.device
