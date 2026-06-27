@@ -9,7 +9,6 @@ import json
 import os
 import sys
 import time
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
@@ -17,10 +16,10 @@ import numpy as np
 import scipy.sparse as sp
 from scipy.optimize import linprog
 
+from act.back_end.solver.sparse_hz import SparseHZono as SparseHZ  # noqa: E402
 from act.back_end.hybridz_tf.sparse_ops import (  # noqa: E402
-    _broadcast_param,
-    _constraints_start_with,
-    _csr_equal,
+    _merge_equalities as _merge_linear_constraints,
+    _merge_uppers as _merge_upper_constraints,
     _scurve_domain_cut_matrices,
     _scurve_graph_cut_matrices,
     _scurve_range_cut_matrices,
@@ -28,6 +27,20 @@ from act.back_end.hybridz_tf.sparse_ops import (  # noqa: E402
     _sigmoid_np,
     _tanh_deriv_np,
     _tanh_np,
+    sparse_avgpool2d_matrix_from_layer as _avgpool2d_matrix,
+    sparse_conv2d_matrix_from_layer as _conv2d_matrix,
+    sparse_convtranspose2d_matrix_from_layer as _convtranspose2d_matrix,
+    sparse_dense_matrix_from_layer as _dense_matrix,
+    sparse_empty as _empty,
+    sparse_hz_add_const as _bias_apply,
+    sparse_hz_concat,
+    sparse_hz_gather_rows as _gather_hz_rows,
+    sparse_hz_gather_rows_like as _gather_hz_rows_like,
+    sparse_hz_linear as _linear_apply,
+    sparse_hz_pad_frame as _pad_hz,
+    sparse_hz_scale as _scale_apply,
+    sparse_pad_cols as _pad_cols,
+    sparse_maxpool2d_candidate_rows as _maxpool2d_candidate_rows,
 )
 
 
@@ -75,122 +88,8 @@ SPARSE_SUPPORTED_KINDS = {
 from act.pipeline.hybridz_sparse_census import (  # noqa: E402
     _build_net_and_interval,
     _format_big,
-    _pair,
     _shape4,
 )
-
-
-@dataclass
-class SparseHZ:
-    c: np.ndarray
-    Gc: sp.csr_matrix
-    Gb: sp.csr_matrix
-    Ac: sp.csr_matrix
-    Ab: sp.csr_matrix
-    b: np.ndarray
-    Auc: Optional[sp.csr_matrix] = None
-    Aub: Optional[sp.csr_matrix] = None
-    ub: Optional[np.ndarray] = None
-
-    def __post_init__(self) -> None:
-        self.c = np.asarray(self.c, dtype=np.float64).reshape(-1)
-        self.b = np.asarray(self.b, dtype=np.float64).reshape(-1)
-        if self.ub is not None:
-            self.ub = np.asarray(self.ub, dtype=np.float64).reshape(-1)
-
-        n_out = int(self.c.size)
-        n_cont = int(self.Gc.shape[1])
-        n_bin = int(self.Gb.shape[1])
-        if self.Gc.shape[0] != n_out or self.Gb.shape[0] != n_out:
-            raise ValueError(
-                "SparseHZ value shape mismatch: "
-                f"c={n_out}, Gc={self.Gc.shape}, Gb={self.Gb.shape}"
-            )
-        if self.Ac.shape[1] != n_cont or self.Ab.shape[1] != n_bin:
-            raise ValueError(
-                "SparseHZ equality column mismatch: "
-                f"Gc_cols={n_cont}, Gb_cols={n_bin}, Ac={self.Ac.shape}, Ab={self.Ab.shape}"
-            )
-        if self.Ac.shape[0] != self.Ab.shape[0] or self.Ac.shape[0] != self.b.size:
-            raise ValueError(
-                "SparseHZ equality row mismatch: "
-                f"Ac={self.Ac.shape}, Ab={self.Ab.shape}, b={self.b.size}"
-            )
-        if (self.Auc is None) != (self.Aub is None) or (self.Auc is None) != (self.ub is None):
-            raise ValueError("SparseHZ upper constraints must provide Auc, Aub, and ub together")
-        if self.Auc is not None and self.Aub is not None and self.ub is not None:
-            if self.Auc.shape[1] != n_cont or self.Aub.shape[1] != n_bin:
-                raise ValueError(
-                    "SparseHZ upper-constraint column mismatch: "
-                    f"Gc_cols={n_cont}, Gb_cols={n_bin}, Auc={self.Auc.shape}, Aub={self.Aub.shape}"
-                )
-            if self.Auc.shape[0] != self.Aub.shape[0] or self.Auc.shape[0] != self.ub.size:
-                raise ValueError(
-                    "SparseHZ upper-constraint row mismatch: "
-                    f"Auc={self.Auc.shape}, Aub={self.Aub.shape}, ub={self.ub.size}"
-                )
-
-    @property
-    def n_out(self) -> int:
-        return int(self.c.size)
-
-    @property
-    def n_cont(self) -> int:
-        return int(self.Gc.shape[1])
-
-    @property
-    def n_bin(self) -> int:
-        return int(self.Gb.shape[1])
-
-    @property
-    def n_eq(self) -> int:
-        return int(self.Ac.shape[0])
-
-    @property
-    def value_nnz(self) -> int:
-        return int(self.Gc.nnz + self.Gb.nnz)
-
-    @property
-    def eq_nnz(self) -> int:
-        return int(self.Ac.nnz + self.Ab.nnz)
-
-    @property
-    def n_ub(self) -> int:
-        return 0 if self.Auc is None else int(self.Auc.shape[0])
-
-    @property
-    def ub_nnz(self) -> int:
-        if self.Auc is None or self.Aub is None:
-            return 0
-        return int(self.Auc.nnz + self.Aub.nnz)
-
-
-def _empty(rows: int, cols: int) -> sp.csr_matrix:
-    return sp.csr_matrix((int(rows), int(cols)), dtype=np.float64)
-
-
-def _pad_cols(mat: sp.csr_matrix, cols: int) -> sp.csr_matrix:
-    if mat.shape[1] == cols:
-        return mat
-    if mat.shape[1] > cols:
-        raise ValueError(f"cannot shrink from {mat.shape[1]} to {cols}")
-    return sp.hstack([mat, _empty(mat.shape[0], cols - mat.shape[1])], format="csr")
-
-
-def _pad_hz(hz: SparseHZ, n_cont: int, n_bin: int) -> SparseHZ:
-    Auc = None if hz.Auc is None else _pad_cols(hz.Auc, n_cont)
-    Aub = None if hz.Aub is None else _pad_cols(hz.Aub, n_bin)
-    return SparseHZ(
-        c=hz.c,
-        Gc=_pad_cols(hz.Gc, n_cont),
-        Gb=_pad_cols(hz.Gb, n_bin),
-        Ac=_pad_cols(hz.Ac, n_cont),
-        Ab=_pad_cols(hz.Ab, n_bin),
-        b=hz.b,
-        Auc=Auc,
-        Aub=Aub,
-        ub=None if hz.ub is None else hz.ub,
-    )
 
 
 def _csr_sum(a: sp.csr_matrix, b: sp.csr_matrix) -> sp.csr_matrix:
@@ -199,122 +98,8 @@ def _csr_sum(a: sp.csr_matrix, b: sp.csr_matrix) -> sp.csr_matrix:
     return out
 
 
-def _merge_linear_constraints(parts: List[SparseHZ], n_cont: int, n_bin: int) -> Tuple[sp.csr_matrix, sp.csr_matrix, np.ndarray]:
-    Ac = _empty(0, n_cont)
-    Ab = _empty(0, n_bin)
-    b = np.zeros(0, dtype=np.float64)
-    for part in parts:
-        pAc = _pad_cols(part.Ac, n_cont)
-        pAb = _pad_cols(part.Ab, n_bin)
-        pb = part.b
-        if _constraints_start_with(pAc, pAb, pb, Ac, Ab, b):
-            Ac, Ab, b = pAc, pAb, pb
-        elif _constraints_start_with(Ac, Ab, b, pAc, pAb, pb):
-            continue
-        elif pAc.shape[0]:
-            Ac = sp.vstack([Ac, pAc], format="csr")
-            Ab = sp.vstack([Ab, pAb], format="csr")
-            b = np.concatenate([b, pb])
-    return Ac, Ab, b
-
-
-def _merge_upper_constraints(parts: List[SparseHZ], n_cont: int, n_bin: int) -> Tuple[sp.csr_matrix, sp.csr_matrix, np.ndarray]:
-    Auc = _empty(0, n_cont)
-    Aub = _empty(0, n_bin)
-    ub = np.zeros(0, dtype=np.float64)
-    for part in parts:
-        pAuc = _pad_cols(part.Auc if part.Auc is not None else _empty(0, part.n_cont), n_cont)
-        pAub = _pad_cols(part.Aub if part.Aub is not None else _empty(0, part.n_bin), n_bin)
-        pub = part.ub if part.ub is not None else np.zeros(0, dtype=np.float64)
-        if _constraints_start_with(pAuc, pAub, pub, Auc, Aub, ub):
-            Auc, Aub, ub = pAuc, pAub, pub
-        elif _constraints_start_with(Auc, Aub, ub, pAuc, pAub, pub):
-            continue
-        elif pAuc.shape[0]:
-            Auc = sp.vstack([Auc, pAuc], format="csr")
-            Aub = sp.vstack([Aub, pAub], format="csr")
-            ub = np.concatenate([ub, pub])
-    return Auc, Aub, ub
-
-
-def _gather_hz_rows(hz: SparseHZ, rows: np.ndarray) -> SparseHZ:
-    rows = np.asarray(rows, dtype=np.int64).reshape(-1)
-    return SparseHZ(
-        c=hz.c[rows].copy(),
-        Gc=hz.Gc[rows].tocsr(),
-        Gb=hz.Gb[rows].tocsr(),
-        Ac=hz.Ac,
-        Ab=hz.Ab,
-        b=hz.b,
-        Auc=hz.Auc,
-        Aub=hz.Aub,
-        ub=hz.ub,
-    )
-
-
-def _gather_hz_rows_like(
-    base: SparseHZ,
-    rows: np.ndarray,
-    *,
-    fill_value: float,
-    template: Optional[SparseHZ] = None,
-) -> SparseHZ:
-    """Gather rows from ``base`` and attach ``template`` constraints.
-
-    MaxPool folding compares a newly gathered input row against the current
-    folded max, whose HZ may already contain extra ReLU phase variables and
-    constraints. The gathered row must live in that same variable frame, but it
-    has zero coefficients for the fold-created variables.
-    """
-    rows = np.asarray(rows, dtype=np.int64).reshape(-1)
-    tmpl = template if template is not None else base
-    n = int(rows.size)
-    valid = rows >= 0
-    c = np.full(n, float(fill_value), dtype=np.float64)
-    n_cont, n_bin = tmpl.n_cont, tmpl.n_bin
-    if np.any(valid):
-        pos = np.nonzero(valid)[0].astype(np.int32)
-        src = rows[valid].astype(np.int64)
-        c[pos] = base.c[src]
-        sub_c = _pad_cols(base.Gc[src].tocsr(), n_cont).tocoo()
-        Gc = sp.coo_matrix(
-            (sub_c.data, (pos[sub_c.row], sub_c.col)),
-            shape=(n, n_cont),
-        ).tocsr()
-        if n_bin:
-            sub_b = _pad_cols(base.Gb[src].tocsr(), n_bin).tocoo()
-            Gb = sp.coo_matrix(
-                (sub_b.data, (pos[sub_b.row], sub_b.col)),
-                shape=(n, n_bin),
-            ).tocsr()
-        else:
-            Gb = _empty(n, 0)
-    else:
-        Gc = _empty(n, n_cont)
-        Gb = _empty(n, n_bin)
-    Gc.eliminate_zeros()
-    Gb.eliminate_zeros()
-    return SparseHZ(c, Gc, Gb, tmpl.Ac, tmpl.Ab, tmpl.b, tmpl.Auc, tmpl.Aub, tmpl.ub)
-
-
 def _concat_hz(parts: List[SparseHZ], n_cont: int, n_bin: int) -> SparseHZ:
-    padded = [_pad_hz(p, n_cont, n_bin) for p in parts]
-    Ac, Ab, b = _merge_linear_constraints(padded, n_cont, n_bin)
-    Auc, Aub, ub = _merge_upper_constraints(padded, n_cont, n_bin)
-    out = SparseHZ(
-        c=np.concatenate([p.c for p in padded]),
-        Gc=sp.vstack([p.Gc for p in padded], format="csr"),
-        Gb=sp.vstack([p.Gb for p in padded], format="csr"),
-        Ac=Ac,
-        Ab=Ab,
-        b=b,
-        Auc=Auc,
-        Aub=Aub,
-        ub=ub,
-    )
-    out.Gc.eliminate_zeros()
-    out.Gb.eliminate_zeros()
-    return out
+    return sparse_hz_concat([_pad_hz(p, n_cont, n_bin) for p in parts])
 
 
 def _slice_row_idx_np(L, n: int) -> Optional[np.ndarray]:
@@ -378,175 +163,6 @@ def _input_spec_hz(inspec, n_in: int) -> SparseHZ:
     )
 
 
-def _conv2d_matrix(L) -> Tuple[sp.csr_matrix, np.ndarray]:
-    weight = L.params["weight"].detach().cpu().numpy().astype(np.float64)
-    bias = L.params.get("bias", None)
-    bias_np = None if bias is None else bias.detach().cpu().numpy().astype(np.float64).reshape(-1)
-    out_ch, in_ch_per_group, kh, kw = [int(v) for v in weight.shape]
-    groups = int(L.params.get("groups", 1))
-    stride = _pair(L.params.get("stride", 1))
-    padding = _pair(L.params.get("padding", 0))
-    dilation = _pair(L.params.get("dilation", 1))
-    input_shape = _shape4(L.params["input_shape"])
-    output_shape = _shape4(L.params["output_shape"])
-    bsz, in_ch, in_h, in_w = input_shape
-    out_bsz, out_ch_shape, out_h, out_w = output_shape
-    if bsz != out_bsz or out_ch != out_ch_shape:
-        raise ValueError(f"conv shape mismatch at layer {L.id}")
-
-    rows: List[np.ndarray] = []
-    cols: List[np.ndarray] = []
-    data: List[np.ndarray] = []
-    out_ch_per_group = out_ch // groups
-    for n in range(bsz):
-        for co in range(out_ch):
-            g = co // out_ch_per_group
-            ci_base = g * in_ch_per_group
-            for oh in range(out_h):
-                ih0 = oh * stride[0] - padding[0]
-                for ow in range(out_w):
-                    iw0 = ow * stride[1] - padding[1]
-                    out_idx = ((n * out_ch + co) * out_h + oh) * out_w + ow
-                    cc: List[int] = []
-                    vv: List[float] = []
-                    for ci_local in range(in_ch_per_group):
-                        ci = ci_base + ci_local
-                        for r in range(kh):
-                            ih = ih0 + r * dilation[0]
-                            if ih < 0 or ih >= in_h:
-                                continue
-                            for q in range(kw):
-                                iw = iw0 + q * dilation[1]
-                                if iw < 0 or iw >= in_w:
-                                    continue
-                                val = float(weight[co, ci_local, r, q])
-                                if val == 0.0:
-                                    continue
-                                cc.append(((n * in_ch + ci) * in_h + ih) * in_w + iw)
-                                vv.append(val)
-                    if cc:
-                        arr_c = np.asarray(cc, dtype=np.int32)
-                        rows.append(np.full(arr_c.size, out_idx, dtype=np.int32))
-                        cols.append(arr_c)
-                        data.append(np.asarray(vv, dtype=np.float64))
-
-    if rows:
-        rr = np.concatenate(rows)
-        cc = np.concatenate(cols)
-        dd = np.concatenate(data)
-    else:
-        rr = cc = np.empty(0, dtype=np.int32)
-        dd = np.empty(0, dtype=np.float64)
-    mat = sp.csr_matrix((dd, (rr, cc)), shape=(bsz * out_ch * out_h * out_w, bsz * in_ch * in_h * in_w))
-    mat.eliminate_zeros()
-    if bias_np is None:
-        bvec = np.zeros(mat.shape[0], dtype=np.float64)
-    else:
-        bvec = np.repeat(bias_np, out_h * out_w)
-    return mat, bvec
-
-
-def _convtranspose2d_matrix(L) -> Tuple[sp.csr_matrix, np.ndarray]:
-    """Sparse exact affine matrix for torch conv_transpose2d in NCHW order."""
-    weight = L.params["weight"].detach().cpu().numpy().astype(np.float64)
-    bias = L.params.get("bias", None)
-    bias_np = None if bias is None else bias.detach().cpu().numpy().astype(np.float64).reshape(-1)
-    in_ch, out_ch_per_group, kh, kw = [int(v) for v in weight.shape]
-    groups = int(L.params.get("groups", 1))
-    stride = _pair(L.params.get("stride", 1))
-    padding = _pair(L.params.get("padding", 0))
-    dilation = _pair(L.params.get("dilation", 1))
-    input_shape = _shape4(L.params["input_shape"])
-    output_shape = _shape4(L.params["output_shape"])
-    bsz, in_ch_shape, in_h, in_w = input_shape
-    out_bsz, out_ch, out_h, out_w = output_shape
-    if bsz != out_bsz or in_ch != in_ch_shape:
-        raise ValueError(f"convtranspose shape mismatch at layer {L.id}")
-    if out_ch != out_ch_per_group * groups:
-        raise ValueError(f"convtranspose group mismatch at layer {L.id}")
-
-    rows: List[np.ndarray] = []
-    cols: List[np.ndarray] = []
-    data: List[np.ndarray] = []
-    in_ch_per_group = in_ch // groups
-    for n in range(bsz):
-        for ci in range(in_ch):
-            g = ci // in_ch_per_group
-            co_base = g * out_ch_per_group
-            for ih in range(in_h):
-                oh0 = ih * stride[0] - padding[0]
-                for iw in range(in_w):
-                    iw_in = ((n * in_ch + ci) * in_h + ih) * in_w + iw
-                    ow0 = iw * stride[1] - padding[1]
-                    rr: List[int] = []
-                    vv: List[float] = []
-                    for co_local in range(out_ch_per_group):
-                        co = co_base + co_local
-                        for r in range(kh):
-                            oh = oh0 + r * dilation[0]
-                            if oh < 0 or oh >= out_h:
-                                continue
-                            for q in range(kw):
-                                ow = ow0 + q * dilation[1]
-                                if ow < 0 or ow >= out_w:
-                                    continue
-                                val = float(weight[ci, co_local, r, q])
-                                if val == 0.0:
-                                    continue
-                                rr.append(((n * out_ch + co) * out_h + oh) * out_w + ow)
-                                vv.append(val)
-                    if rr:
-                        arr_r = np.asarray(rr, dtype=np.int32)
-                        rows.append(arr_r)
-                        cols.append(np.full(arr_r.size, iw_in, dtype=np.int32))
-                        data.append(np.asarray(vv, dtype=np.float64))
-
-    if rows:
-        rr = np.concatenate(rows)
-        cc = np.concatenate(cols)
-        dd = np.concatenate(data)
-    else:
-        rr = cc = np.empty(0, dtype=np.int32)
-        dd = np.empty(0, dtype=np.float64)
-    mat = sp.csr_matrix((dd, (rr, cc)), shape=(bsz * out_ch * out_h * out_w, bsz * in_ch * in_h * in_w))
-    mat.eliminate_zeros()
-    if bias_np is None:
-        bvec = np.zeros(mat.shape[0], dtype=np.float64)
-    else:
-        bvec = np.tile(np.repeat(bias_np, out_h * out_w), bsz)
-    return mat, bvec
-
-
-def _dense_matrix(L) -> Tuple[sp.csr_matrix, np.ndarray]:
-    W = L.params["weight"].detach().cpu().numpy().astype(np.float64)
-    b = L.params.get("bias", None)
-    bvec = np.zeros(W.shape[0], dtype=np.float64) if b is None else b.detach().cpu().numpy().astype(np.float64).reshape(-1)
-    mat = sp.csr_matrix(W)
-    mat.eliminate_zeros()
-    return mat, bvec
-
-
-def _scale_apply(hz: SparseHZ, scale) -> SparseHZ:
-    a = _broadcast_param(scale, hz.n_out)
-    D = sp.diags(a, format="csr")
-    return SparseHZ(
-        c=a * hz.c,
-        Gc=(D @ hz.Gc).tocsr(),
-        Gb=(D @ hz.Gb).tocsr() if hz.n_bin else _empty(hz.n_out, 0),
-        Ac=hz.Ac,
-        Ab=hz.Ab,
-        b=hz.b,
-        Auc=hz.Auc,
-        Aub=hz.Aub,
-        ub=hz.ub,
-    )
-
-
-def _bias_apply(hz: SparseHZ, bias) -> SparseHZ:
-    c = hz.c + _broadcast_param(bias, hz.n_out)
-    return SparseHZ(c, hz.Gc, hz.Gb, hz.Ac, hz.Ab, hz.b, hz.Auc, hz.Aub, hz.ub)
-
-
 def _upsample_nearest_matrix(L) -> Tuple[sp.csr_matrix, np.ndarray]:
     mode = str(L.params.get("mode", "nearest")).lower()
     if mode != "nearest":
@@ -574,96 +190,6 @@ def _upsample_nearest_matrix(L) -> Tuple[sp.csr_matrix, np.ndarray]:
     dd = np.ones(rr.size, dtype=np.float64)
     mat = sp.csr_matrix((dd, (rr, cc)), shape=(bsz * ch * out_h * out_w, bsz * ch * in_h * in_w))
     return mat, np.zeros(mat.shape[0], dtype=np.float64)
-
-
-def _avgpool2d_matrix(L) -> Tuple[sp.csr_matrix, np.ndarray]:
-    input_shape = _shape4(L.params["input_shape"])
-    output_shape = _shape4(L.params["output_shape"])
-    bsz, ch, in_h, in_w = input_shape
-    out_bsz, out_ch, out_h, out_w = output_shape
-    if bsz != out_bsz or ch != out_ch:
-        raise ValueError(f"avgpool shape mismatch at layer {L.id}")
-    kh, kw = _pair(L.params["kernel_size"])
-    stride = L.params.get("stride", L.params["kernel_size"])
-    sh, sw = _pair(stride)
-    ph, pw = _pair(L.params.get("padding", 0))
-    denom = float(kh * kw)
-    rows: List[np.ndarray] = []
-    cols: List[np.ndarray] = []
-    for n in range(bsz):
-        for c in range(ch):
-            for oh in range(out_h):
-                ih0 = oh * sh - ph
-                for ow in range(out_w):
-                    iw0 = ow * sw - pw
-                    out_idx = ((n * ch + c) * out_h + oh) * out_w + ow
-                    cur_cols = []
-                    for ki in range(kh):
-                        ih = ih0 + ki
-                        if ih < 0 or ih >= in_h:
-                            continue
-                        for kj in range(kw):
-                            iw = iw0 + kj
-                            if iw < 0 or iw >= in_w:
-                                continue
-                            cur_cols.append(((n * ch + c) * in_h + ih) * in_w + iw)
-                    if cur_cols:
-                        rows.append(np.full(len(cur_cols), out_idx, dtype=np.int32))
-                        cols.append(np.asarray(cur_cols, dtype=np.int32))
-    rr = np.concatenate(rows) if rows else np.empty(0, dtype=np.int32)
-    cc = np.concatenate(cols) if cols else np.empty(0, dtype=np.int32)
-    dd = np.full(rr.size, 1.0 / denom, dtype=np.float64)
-    mat = sp.csr_matrix((dd, (rr, cc)), shape=(bsz * ch * out_h * out_w, bsz * ch * in_h * in_w))
-    mat.eliminate_zeros()
-    return mat, np.zeros(mat.shape[0], dtype=np.float64)
-
-
-def _maxpool2d_candidate_rows(L) -> List[np.ndarray]:
-    input_shape = _shape4(L.params["input_shape"])
-    output_shape = _shape4(L.params["output_shape"])
-    bsz, ch, in_h, in_w = input_shape
-    out_bsz, out_ch, out_h, out_w = output_shape
-    if bsz != out_bsz or ch != out_ch:
-        raise ValueError(f"maxpool shape mismatch at layer {L.id}")
-    kh, kw = _pair(L.params["kernel_size"])
-    stride = L.params.get("stride", L.params["kernel_size"])
-    sh, sw = _pair(stride)
-    ph, pw = _pair(L.params.get("padding", 0))
-    dh, dw = _pair(L.params.get("dilation", 1))
-    n_out = bsz * ch * out_h * out_w
-    cands: List[np.ndarray] = []
-    for ki in range(kh):
-        for kj in range(kw):
-            rows = np.full(n_out, -1, dtype=np.int64)
-            for n in range(bsz):
-                for c in range(ch):
-                    for oh in range(out_h):
-                        ih = oh * sh - ph + ki * dh
-                        for ow in range(out_w):
-                            iw = ow * sw - pw + kj * dw
-                            out_idx = ((n * ch + c) * out_h + oh) * out_w + ow
-                            if 0 <= ih < in_h and 0 <= iw < in_w:
-                                rows[out_idx] = ((n * ch + c) * in_h + ih) * in_w + iw
-            cands.append(rows)
-    return cands
-
-
-def _linear_apply(hz: SparseHZ, W: sp.csr_matrix, b: np.ndarray) -> SparseHZ:
-    Gc = (W @ hz.Gc).tocsr()
-    Gb = (W @ hz.Gb).tocsr() if hz.n_bin else _empty(W.shape[0], 0)
-    Gc.eliminate_zeros()
-    Gb.eliminate_zeros()
-    return SparseHZ(
-        c=np.asarray(W @ hz.c).reshape(-1) + b,
-        Gc=Gc,
-        Gb=Gb,
-        Ac=hz.Ac,
-        Ab=hz.Ab,
-        b=hz.b,
-        Auc=hz.Auc,
-        Aub=hz.Aub,
-        ub=hz.ub,
-    )
 
 
 def _prod_interval_bounds(xl: float, xu: float, yl: float, yu: float) -> Tuple[float, float]:

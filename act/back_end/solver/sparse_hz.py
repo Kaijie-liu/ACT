@@ -250,11 +250,18 @@ class SparseHZono:
         return int(self.Gc.nnz + self.Gb.nnz)
 
     @property
+    def eq_nnz(self) -> int:
+        return int(self.Ac.nnz + self.Ab.nnz)
+
+    @property
+    def ub_nnz(self) -> int:
+        if self.Auc is None or self.Aub is None:
+            return 0
+        return int(self.Auc.nnz + self.Aub.nnz)
+
+    @property
     def constraint_nnz(self) -> int:
-        upper = 0
-        if self.Auc is not None and self.Aub is not None:
-            upper = int(self.Auc.nnz + self.Aub.nnz)
-        return int(self.Ac.nnz + self.Ab.nnz + upper)
+        return int(self.eq_nnz + self.ub_nnz)
 
     def solver_tuple(self):
         """Return arrays in the layout consumed by ``solver_hz_verdict``."""

@@ -4,23 +4,24 @@ Date: 2026-06-27
 
 Baseline: `upstream/main` after `git fetch upstream`.
 
-Current branch: `hz-cam-1` at `fe7709d9e` plus local untracked `scripts/`.
+Current branch: `hz-cam-1` after sparse-probe consolidation passes plus local
+untracked `scripts/`.
 The local `scripts/` directory is not tracked and is not part of this diff.
 
 ## Summary
 
 Current upstream diff:
 
-`59 files changed, 24958 insertions(+), 639 deletions(-)`
+`60 files changed, 24202 insertions(+), 639 deletions(-)`
 
 Directory-level split:
 
 | Area | Files | Added | Deleted | Status |
 |---|---:|---:|---:|---|
-| `act/pipeline` | 15 | 12140 | 141 | largest remaining consolidation target |
+| `act/pipeline` | 15 | 11276 | 141 | largest remaining consolidation target |
 | `act/back_end/hybridz_tf` | 8 | 4723 | 292 | core HZ operator/product path |
-| `docs` | 15 | 3681 | 0 | audit/provenance/future-work docs |
-| `act/back_end/solver` | 4 | 2121 | 51 | verdict/sparse HZ solver path |
+| `docs` | 16 | 3781 | 0 | audit/provenance/future-work docs |
+| `act/back_end/solver` | 4 | 2128 | 51 | verdict/sparse HZ solver path |
 | `act/back_end/other` | 11 | 1635 | 54 | frontend/backend integration hooks |
 | `act/front_end` | 5 | 458 | 101 | benchmark/data loading integration |
 | `FULLRUN_HANDOFF.md` | 1 | 200 | 0 | run handoff/provenance |
@@ -29,7 +30,7 @@ Largest files by changed lines:
 
 | File | Added | Deleted | Interpretation |
 |---|---:|---:|---|
-| `act/pipeline/hybridz_sparse_exact_probe.py` | 6141 | 0 | biggest remaining package-level prototype; should be the first post-freeze consolidation target |
+| `act/pipeline/hybridz_sparse_exact_probe.py` | 5277 | 0 | biggest remaining package-level prototype; first post-freeze consolidation target is partially reduced |
 | `act/pipeline/hybridz_benchmark_runner.py` | 2499 | 0 | product runner, branch portfolio, frozen comparison, ICSE export |
 | `act/back_end/hybridz_tf/sparse_ops.py` | 2294 | 0 | sparse exact-HZ propagation core |
 | `act/back_end/solver/solver_hz_verdict.py` | 1563 | 0 | exact verdict MILP and open-source solver portfolio |
@@ -60,12 +61,12 @@ packaged modules, but too much sparse exact-HZ probe logic still lives in
 
 0. First consolidation passes completed after this audit:
    `act/pipeline/hybridz_sparse_exact_probe.py` now reuses backend
-   `sparse_ops.py` implementations for `_broadcast_param`,
-   `_constraints_start_with`, `_csr_equal`, `_sigmoid_np`,
-   `_sigmoid_deriv_np`, `_tanh_np`, `_tanh_deriv_np`, and the three S-curve
-   cut matrix builders.  A toy S-curve run with compressed segments,
-   domain cuts, and graph cuts now exercises the backend cut helpers through
-   the packaged probe.
+   `SparseHZono` as its carrier, backend sparse frame/gather/merge helpers,
+   backend Conv/Dense/AvgPool/MaxPool-candidate/scale/bias/linear helpers,
+   backend sigmoid/tanh primitives, and the backend S-curve cut matrix
+   builders.  The local duplicate probe code dropped from 5751 to 5277 lines
+   while preserving the packaged probe self-test and sparse-ops structural
+   self-test.
 
 1. Audit `act/pipeline/hybridz_sparse_exact_probe.py` function families.
    Move reusable exact-HZ propagation and MILP export helpers into backend
