@@ -2385,25 +2385,6 @@ def _input_center_rad(inspec) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     return center, rad, idx
 
 
-def _hz_margin_at_xi(hz: SparseHZ, C: np.ndarray, t: np.ndarray, xi: Optional[np.ndarray]) -> Optional[float]:
-    if xi is None:
-        return None
-    raw = np.asarray(xi, dtype=np.float64).reshape(-1)
-    need = hz.n_cont + hz.n_bin
-    if raw.size < need:
-        return None
-    xi_c = np.clip(raw[:hz.n_cont], -1.0, 1.0)
-    y = hz.c + np.asarray(hz.Gc @ xi_c).reshape(-1)
-    if hz.n_bin:
-        xi_b = np.where(raw[hz.n_cont:need] >= 0.0, 1.0, -1.0)
-        y = y + np.asarray(hz.Gb @ xi_b).reshape(-1)
-    Cmat = np.asarray(C, dtype=np.float64)
-    if Cmat.ndim == 1:
-        Cmat = Cmat.reshape(1, -1)
-    tvec = np.asarray(t, dtype=np.float64).reshape(-1)
-    return float(np.max(Cmat @ y - tvec))
-
-
 def _check_real_unsafe(onnx_path: Path, input_shape, x: np.ndarray, C: np.ndarray, t: np.ndarray) -> Tuple[bool, np.ndarray]:
     import onnxruntime as ort
 
@@ -4447,8 +4428,6 @@ def main() -> None:
     ap.add_argument("--check-witness", action="store_true")
     ap.add_argument("--check-milp-witness-only", action="store_true",
                     help="with --check-witness, replay exact MILP witnesses only; ignore LP-relaxation candidates")
-    ap.add_argument("--check-base-witness", action="store_true",
-                    help="before LP/MILP, test the deterministic constructive base-HZ point as an exact HZ witness")
     ap.add_argument("--milp-one", action="store_true")
     ap.add_argument("--milp-all", action="store_true")
     ap.add_argument("--milp-cutoff", action="store_true")
@@ -4526,11 +4505,6 @@ def main() -> None:
 
     if args.device == "cpu":
         os.environ["CUDA_VISIBLE_DEVICES"] = ""
-    fixed_z_lb: Dict[int, float] = {}
-    fixed_z_ub: Dict[int, float] = {}
-    fixed_xi_lb: Dict[int, float] = {}
-    fixed_xi_ub: Dict[int, float] = {}
-
     def parse_option_items(items, label: str) -> Dict[str, object]:
         out: Dict[str, object] = {}
         for item in items:
@@ -4746,47 +4720,6 @@ def main() -> None:
             "rank": int(rank),
             "q": int(qidx),
         }
-        if args.check_base_witness and base_xi is not None:
-            base_margin = _hz_margin_at_xi(hz, C, t, base_xi)
-            record["base_hz_margin"] = None if base_margin is None else float(base_margin)
-            print(f"BASE-HZ q={int(qidx)} margin={base_margin}", flush=True)
-            if base_margin is not None and base_margin <= 1e-9:
-                real_bad, cy = check_witness(base_xi, C, t)
-                record.update({
-                    "base_witness_checked": bool(args.check_witness),
-                    "base_real_unsafe": bool(real_bad),
-                })
-                if real_bad:
-                    real_adv_count += 1
-                    print(
-                        f"  REAL_ADV q={int(qidx)} source=base_hz "
-                        f"cy={cy.tolist() if cy is not None else None}",
-                        flush=True,
-                    )
-                    record.update({
-                        "verdict": "adv",
-                        "cert_source": "base_hz_witness",
-                        "witness_checked": True,
-                        "real_unsafe": True,
-                    })
-                    query_results.append(record)
-                    if args.stop_on_unsafe:
-                        print("  EARLY_STOP base_real_adv", flush=True)
-                        break
-                    continue
-                if not args.check_witness:
-                    hz_unsafe_count += 1
-                    record.update({
-                        "verdict": "hz_unsafe",
-                        "cert_source": "base_hz_witness",
-                        "witness_checked": False,
-                        "real_unsafe": False,
-                    })
-                    query_results.append(record)
-                    if args.stop_on_unsafe:
-                        print("  EARLY_STOP base_hz_unsafe", flush=True)
-                        break
-                    continue
         ts = time.time()
         need_xi = args.check_witness or args.mip_start != "none"
         if args.skip_lp_before_milp:
@@ -4796,8 +4729,6 @@ def main() -> None:
             margin, msg, xi = _lp_min_margin(
                 hz, C, t, args.lp_timeout,
                 return_xi=need_xi,
-                bin_xi_lb_override=fixed_xi_lb,
-                bin_xi_ub_override=fixed_xi_ub,
             )
             lp_sec = time.time() - ts
         record.update({
@@ -4825,8 +4756,6 @@ def main() -> None:
                     if args.mip_solver == "scip":
                         status, mi, xi_mi = _milp_cutoff_scip(
                             hz, C, t, args.milp_timeout,
-                            bin_lb_override=fixed_z_lb,
-                            bin_ub_override=fixed_z_ub,
                             elim_singletons=args.elim_singletons,
                             cutoff_as_row=args.cutoff_as_row,
                             fbbt_passes=args.fbbt_passes,
@@ -4851,8 +4780,6 @@ def main() -> None:
                             ats = time.time()
                             status, mi, xi_mi = _milp_cutoff_highs(
                                 hz, C, t, args.milp_timeout,
-                                bin_lb_override=fixed_z_lb,
-                                bin_ub_override=fixed_z_ub,
                                 elim_singletons=args.elim_singletons,
                                 highs_threads=args.highs_threads,
                                 highs_parallel=args.highs_parallel,
@@ -5012,7 +4939,6 @@ def main() -> None:
             "highs_profile_sequence": args.highs_profile_sequence,
             "fbbt_passes": int(args.fbbt_passes),
             "relax_precheck_timeout": float(args.relax_precheck_timeout),
-            "check_base_witness": bool(args.check_base_witness),
             "exact_relu_valid_cuts": bool(args.relu_cuts or args.exact_relu_valid_cuts),
             "compressed_relu": bool(args.compressed_relu),
             "compressed_sigmoid": bool(args.compressed_sigmoid),
