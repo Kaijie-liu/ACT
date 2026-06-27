@@ -981,10 +981,6 @@ def sparse_lp_min_margin(
 # Keep these in the solver layer; pipeline code only selects branch policy.
 SparseHZ = SparseHZono
 sp = _sp if _HAS_SCIPY else None
-_fbbt_tighten_bounds = sparse_fbbt_tighten_bounds
-_row_bound_infeasible = sparse_row_bound_infeasible
-_solver_start_from_xi = sparse_solver_start_from_xi
-_highs_relaxation_empty_precheck = sparse_highs_relaxation_empty_precheck
 
 
 def _milp_cutoff_highs(
@@ -1114,7 +1110,7 @@ def _milp_cutoff_highs(
     original_ncols = int(cost.size)
     original_margin_cost = cost.copy()
     original_const_z = float(const_z)
-    reconstruct_base = _solver_start_from_xi(base_xi, original_ncols, hz.n_cont, hz.n_bin)
+    reconstruct_base = sparse_solver_start_from_xi(base_xi, original_ncols, hz.n_cont, hz.n_bin)
     solve_obj_offset = 0.0
     elim_count = 0
     eq_subst_count = 0
@@ -1400,7 +1396,7 @@ def _milp_cutoff_highs(
         int_mask = (col_orig >= hz.n_cont) & (col_orig < hz.n_cont + hz.n_bin)
     fbbt_stats = None
     if int(fbbt_passes) > 0 and A.shape[0] and A.shape[1]:
-        fbbt_empty, lb, ub, fbbt_stats = _fbbt_tighten_bounds(
+        fbbt_empty, lb, ub, fbbt_stats = sparse_fbbt_tighten_bounds(
             A, rl, ru, lb, ub,
             integer_mask=int_mask,
             max_passes=int(fbbt_passes),
@@ -1561,7 +1557,7 @@ def _milp_cutoff_highs(
                 flush=True,
             )
 
-    rb_empty, rb_stats = _row_bound_infeasible(A, rl, ru, lb, ub)
+    rb_empty, rb_stats = sparse_row_bound_infeasible(A, rl, ru, lb, ub)
     if rb_empty:
         stats = {
             "status": "row_bound_infeasible",
@@ -1597,7 +1593,7 @@ def _milp_cutoff_highs(
 
     relax_stats = None
     if float(relax_precheck_timeout) > 0.0 and A.shape[0] and A.shape[1]:
-        relax_status, relax_margin, relax_stats = _highs_relaxation_empty_precheck(
+        relax_status, relax_margin, relax_stats = sparse_highs_relaxation_empty_precheck(
             highspy,
             A,
             rl,
@@ -2067,7 +2063,7 @@ def _milp_cutoff_scip(
         else:
             col_orig = np.asarray(keep_cols, dtype=np.int64)
         int_mask = (col_orig >= hz.n_cont) & (col_orig < hz.n_cont + hz.n_bin)
-        fbbt_empty, lb, ub, fbbt_stats = _fbbt_tighten_bounds(
+        fbbt_empty, lb, ub, fbbt_stats = sparse_fbbt_tighten_bounds(
             A, rl, ru, lb, ub,
             integer_mask=int_mask,
             max_passes=int(fbbt_passes),
@@ -2194,7 +2190,7 @@ def _milp_cutoff_scip(
                 flush=True,
             )
 
-    rb_empty, rb_stats = _row_bound_infeasible(A, rl, ru, lb, ub)
+    rb_empty, rb_stats = sparse_row_bound_infeasible(A, rl, ru, lb, ub)
     if rb_empty:
         _milp_cutoff_scip.last_stats = {
             "status": "row_bound_infeasible",

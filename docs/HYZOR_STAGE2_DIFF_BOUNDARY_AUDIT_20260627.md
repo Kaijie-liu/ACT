@@ -349,7 +349,11 @@ packaged modules, but too much sparse exact-HZ probe logic still lives in
 	   `hz_relax_np_sparse`.  Packaged pipeline modules import those public names
 	   instead of `_milp_cutoff_*` / `_hz_relax_np_sparse`; the private names
 	   remain only as internal implementation targets and local legacy-script
-	   compatibility aliases.  Regression evidence: `python -m
+	   compatibility aliases.  The solver implementation itself now calls the
+	   public sparse helper names directly for sparse FBBT, row-bound
+	   infeasibility, solver-start reconstruction, and HiGHS relaxation EMPTY
+	   precheck, so the old internal private aliases were removed.  Regression
+	   evidence: `python -m
 	   act.back_end.solver.solver_hz_verdict`, `python -m
 	   act.pipeline.hybridz_sparse_exact_probe --self-test`, the `sat_relu`
 	   sparse-worker smoke, the standard `--verify vnnlib --solvers hybridz`
