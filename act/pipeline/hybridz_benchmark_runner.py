@@ -40,9 +40,13 @@ from act.back_end.hybridz_config import (
 )
 from act.front_end.vnnlib_loader.data_model_loader import list_downloaded_pairs
 from act.pipeline.hybridz_results import (
+    FROZEN_REPRO_MATCH_FIELDS,
     build_cross_tool_rows as _build_cross_tool_rows,
+    build_frozen_repro_rows as _build_frozen_repro_rows,
+    enforce_frozen_match as _enforce_frozen_match,
     int_field as _int_field,
     read_csv_rows as _read_csv_rows,
+    write_frozen_repro_check as _write_frozen_repro_check,
     write_sha256_manifest as _write_sha256_manifest,
     write_suite_cross_tool_outputs as _write_suite_cross_tool_outputs,
 )
@@ -102,7 +106,6 @@ SEQUENTIAL_PORTFOLIO_BENCHES = frozenset({
     "relusplitter",
     "cgan_2023",
 })
-FROZEN_REPRO_MATCH_FIELDS = ("N", "CERT", "ADV", "V+A", "ERROR", "P0", "unsolved")
 HIGHS_HEURISTIC_OPTIONS = (
     "mip_heuristic_effort=1.0",
     "mip_heuristic_run_shifting=true",
@@ -1349,89 +1352,6 @@ def _reuse_frozen_benchmark_outputs(
     return detail_path, summary_path, []
 
 
-def _build_frozen_repro_rows(summary_rows: Iterable[dict[str, object]]) -> list[dict[str, object]]:
-    current_by_bench = {
-        str(row.get("Bench", "")): row
-        for row in summary_rows
-        if row.get("Bench") and row.get("Bench") != "TOTAL"
-    }
-    rows: list[dict[str, object]] = []
-    for bench in FROZEN_BENCHMARK_SUITE:
-        expected = frozen_hybridz_expected_summary(bench)
-        current = current_by_bench.get(bench)
-        out: dict[str, object] = {"Bench": bench}
-        mismatch = current is None
-        for field in FROZEN_SUMMARY_FIELDS:
-            current_value = 0 if current is None else _int_field(current, field)
-            expected_value = int(expected[field])
-            delta = current_value - expected_value
-            out[f"current_{field}"] = current_value
-            out[f"expected_{field}"] = expected_value
-            out[f"delta_{field}"] = delta
-            if field in FROZEN_REPRO_MATCH_FIELDS:
-                mismatch = mismatch or delta != 0
-        out["status"] = "missing" if current is None else ("mismatch" if mismatch else "match")
-        rows.append(out)
-
-    for bench in sorted(set(current_by_bench) - set(FROZEN_BENCHMARK_SUITE)):
-        current = current_by_bench[bench]
-        out = {"Bench": bench, "status": "unexpected"}
-        for field in FROZEN_SUMMARY_FIELDS:
-            out[f"current_{field}"] = _int_field(current, field)
-            out[f"expected_{field}"] = ""
-            out[f"delta_{field}"] = ""
-        rows.append(out)
-    return rows
-
-
-def _write_frozen_repro_check(
-    cfg: HybridZBenchmarkSuiteConfig,
-    suite_summary_path: Path,
-) -> tuple[Path, Path, bool] | tuple[()]:
-    if cfg.max_instances is not None or cfg.benches != FROZEN_BENCHMARK_SUITE:
-        return ()
-
-    rows = _build_frozen_repro_rows(_read_csv_rows(suite_summary_path))
-    fields = ["Bench", "status"]
-    for field in FROZEN_SUMMARY_FIELDS:
-        fields.extend([f"current_{field}", f"expected_{field}", f"delta_{field}"])
-
-    csv_path = cfg.out_dir / "FROZEN_REPRO_COMPARISON.csv"
-    with csv_path.open("w", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=fields)
-        writer.writeheader()
-        writer.writerows({name: row.get(name, "") for name in fields} for row in rows)
-
-    status_counts: dict[str, int] = {}
-    for row in rows:
-        status = str(row.get("status", ""))
-        status_counts[status] = status_counts.get(status, 0) + 1
-    payload = {
-        "ok": status_counts == {"match": len(FROZEN_BENCHMARK_SUITE)},
-        "status_counts": status_counts,
-        "expected_source": "FINAL_HYBRIDZ_RESULTS_20260627_FINAL.csv",
-        "match_fields": list(FROZEN_REPRO_MATCH_FIELDS),
-        "audit_only_fields": [
-            field for field in FROZEN_SUMMARY_FIELDS if field not in FROZEN_REPRO_MATCH_FIELDS
-        ],
-        "rows": rows,
-    }
-    json_path = cfg.out_dir / "FROZEN_REPRO_COMPARISON.json"
-    json_path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    return csv_path, json_path, bool(payload["ok"])
-
-
-def _enforce_frozen_match(repro_check: tuple[Path, Path, bool] | tuple[()]) -> None:
-    if not repro_check:
-        raise RuntimeError(
-            "--hybridz-require-frozen-match requires a full frozen suite "
-            "without --max-instances"
-        )
-    _, repro_json, repro_ok = repro_check
-    if not repro_ok:
-        raise RuntimeError(f"frozen HybridZ reproduction mismatch; see {repro_json}")
-
-
 def _json_field(value: object) -> str:
     return json.dumps(value if value is not None else {}, sort_keys=True, default=str)
 
@@ -1769,7 +1689,12 @@ def run_hybridz_benchmark_suite(
         suite_summary,
         max_instances=cfg.max_instances,
     )
-    repro_check = _write_frozen_repro_check(cfg, suite_summary)
+    repro_check = _write_frozen_repro_check(
+        cfg.out_dir,
+        suite_summary,
+        benches=cfg.benches,
+        max_instances=cfg.max_instances,
+    )
     _write_suite_failure_taxonomy(cfg, all_results)
     _write_suite_json_summary(cfg, suite_summary)
     _write_sha256_manifest(cfg.out_dir)
@@ -2180,8 +2105,9 @@ def _test_hybridz_benchmark_runner() -> None:  # pragma: no cover
     assert by_bench["dist_shift_2023"]["delta_UNKNOWN"] == -2
     assert by_bench["cgan_2023"]["status"] == "missing"
     repro_paths = _write_frozen_repro_check(
-        HybridZBenchmarkSuiteConfig(benches=FROZEN_BENCHMARK_SUITE, out_dir=suite_dir),
+        suite_dir,
         frozen_check_input,
+        benches=FROZEN_BENCHMARK_SUITE,
     )
     assert len(repro_paths) == 3
     repro_payload = json.loads((suite_dir / "FROZEN_REPRO_COMPARISON.json").read_text(encoding="utf-8"))
@@ -2204,8 +2130,9 @@ def _test_hybridz_benchmark_runner() -> None:  # pragma: no cover
         writer.writeheader()
         writer.writerows(full_match_rows)
     full_match_paths = _write_frozen_repro_check(
-        HybridZBenchmarkSuiteConfig(benches=FROZEN_BENCHMARK_SUITE, out_dir=suite_dir),
+        suite_dir,
         full_match_summary,
+        benches=FROZEN_BENCHMARK_SUITE,
     )
     assert len(full_match_paths) == 3
     _enforce_frozen_match(full_match_paths)
