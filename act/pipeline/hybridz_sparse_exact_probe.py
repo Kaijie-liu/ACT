@@ -19,8 +19,10 @@ from scipy.optimize import linprog
 from act.back_end.solver.sparse_hz import SparseHZono as SparseHZ  # noqa: E402
 from act.back_end.solver.solver_hz_verdict import (  # noqa: E402
     hz_base_feasibility as _solver_hz_base_feasibility,
+    sparse_highs_relaxation_empty_precheck as _highs_relaxation_empty_precheck,
     sparse_fbbt_tighten_bounds as _fbbt_tighten_bounds,
     sparse_row_bound_infeasible as _row_bound_infeasible,
+    sparse_solver_start_from_xi as _solver_start_from_xi,
 )
 from act.pipeline.hybridz_option_utils import parse_key_value_options  # noqa: E402
 from act.pipeline.hybridz_spec_utils import (  # noqa: E402
@@ -2530,121 +2532,6 @@ def _milp_cutoff_highs(
         val, xi = incumbent
         return f"TARGET:{status}:incumbent", val, xi
     return status, None, None
-
-
-def _solver_start_from_xi(
-    base_xi: Optional[np.ndarray],
-    ncols: int,
-    n_cont: int,
-    n_bin: int,
-) -> np.ndarray:
-    full = np.zeros(int(ncols), dtype=np.float64)
-    if base_xi is None:
-        return full
-    raw = np.asarray(base_xi, dtype=np.float64).reshape(-1)
-    ncopy = min(raw.size, n_cont + n_bin, full.size)
-    if ncopy <= 0:
-        return full
-    n_cont_copy = min(n_cont, ncopy)
-    if n_cont_copy:
-        full[:n_cont_copy] = np.clip(raw[:n_cont_copy], -1.0, 1.0)
-    if ncopy > n_cont:
-        b_end = min(n_cont + n_bin, ncopy)
-        full[n_cont:b_end] = (np.clip(raw[n_cont:b_end], -1.0, 1.0) + 1.0) / 2.0
-    return full
-
-
-def _highs_relaxation_empty_precheck(
-    highspy_module,
-    A: sp.csr_matrix,
-    rl: np.ndarray,
-    ru: np.ndarray,
-    lb: np.ndarray,
-    ub: np.ndarray,
-    cost: np.ndarray,
-    *,
-    cutoff: float,
-    const_z: float,
-    time_limit: float,
-    cutoff_as_row: bool,
-    multirow_feas: bool,
-    highs_threads: int = 0,
-    highs_parallel: str = "",
-    highs_options: Optional[Dict[str, object]] = None,
-) -> Tuple[str, Optional[float], Dict[str, object]]:
-    """Continuous relaxation precheck for EMPTY only.
-
-    If a relaxation of the exact HZ MILP is infeasible, then the integer HZ
-    problem is infeasible.  For objective formulations, an optimal relaxation
-    lower bound above the cutoff also proves EMPTY.  Feasible/timeout statuses
-    are diagnostics only and are never used as ADV evidence.
-    """
-    ts = time.time()
-    h = highspy_module.Highs()
-    h.setOptionValue("output_flag", False)
-    h.setOptionValue("time_limit", float(time_limit))
-    h.setOptionValue("presolve", "on")
-    if highs_threads > 0:
-        h.setOptionValue("threads", int(highs_threads))
-    if highs_parallel:
-        h.setOptionValue("parallel", highs_parallel)
-    if highs_options:
-        for key, value in highs_options.items():
-            h.setOptionValue(str(key), value)
-    ncols = int(cost.size)
-    h.addCols(
-        ncols,
-        np.asarray(cost, dtype=np.float64),
-        np.asarray(lb, dtype=np.float64),
-        np.asarray(ub, dtype=np.float64),
-        0,
-        np.array([], dtype=np.int32),
-        np.array([], dtype=np.int32),
-        np.array([], dtype=float),
-    )
-    A = A.tocsr()
-    if A.shape[0]:
-        h.addRows(
-            A.shape[0],
-            np.asarray(rl, dtype=np.float64),
-            np.asarray(ru, dtype=np.float64),
-            A.nnz,
-            A.indptr.astype(np.int32),
-            A.indices.astype(np.int32),
-            A.data.astype(float),
-        )
-    h.run()
-    st = h.getModelStatus()
-    status = h.modelStatusToString(st)
-    info = h.getInfo()
-
-    def stat_float(name: str) -> Optional[float]:
-        val = getattr(info, name, None)
-        if val is None:
-            return None
-        try:
-            return float(val)
-        except (TypeError, ValueError):
-            return None
-
-    obj_value = stat_float("objective_function_value")
-    margin = None if obj_value is None else const_z + float(obj_value)
-    stats = {
-        "status": status,
-        "obj": obj_value,
-        "margin": margin,
-        "dual_bound": stat_float("mip_dual_bound"),
-        "margin_dual_bound": None,
-        "sec": round(time.time() - ts, 3),
-        "nodes": None,
-    }
-    MS = highspy_module.HighsModelStatus
-    if st == MS.kInfeasible:
-        return "EMPTY:relax_infeasible", None, stats
-    if st == MS.kOptimal and (not cutoff_as_row or multirow_feas):
-        if margin is not None and margin > float(cutoff) + 1e-7:
-            return "EMPTY:relax_bound", margin, stats
-    return status, margin, stats
 
 
 def _milp_cutoff_scip(
