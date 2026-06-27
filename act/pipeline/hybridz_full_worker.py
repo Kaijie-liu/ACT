@@ -146,7 +146,6 @@ def main():
             # it. 800M carries the K=2 HZ on the official instances under the
             # normal per-worker memory guard.
             HZTF.HybridzTF._hz_cell_budget = 800_000_000
-        from pathlib import Path
         from act.front_end.vnnlib_loader.onnx_converter import convert_onnx_to_pytorch, get_onnx_input_shape
         from act.front_end.vnnlib_loader.vnnlib_parser import parse_vnnlib_queries
         from act.front_end.verifiable_model import VerifiableModel, InputLayer, InputSpecLayer, OutputSpecLayer
