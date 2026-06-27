@@ -12,13 +12,13 @@ The local `scripts/` directory is not tracked and is not part of this diff.
 
 Current upstream diff:
 
-`60 files changed, 24166 insertions(+), 639 deletions(-)`
+`60 files changed, 24101 insertions(+), 639 deletions(-)`
 
 Directory-level split:
 
 | Area | Files | Added | Deleted | Status |
 |---|---:|---:|---:|---|
-| `act/pipeline` | 15 | 11234 | 141 | largest remaining consolidation target |
+| `act/pipeline` | 15 | 11168 | 141 | largest remaining consolidation target |
 | `act/back_end/hybridz_tf` | 8 | 4728 | 292 | core HZ operator/product path |
 | `docs` | 16 | 3783 | 0 | audit/provenance/future-work docs |
 | `act/back_end/solver` | 4 | 2128 | 51 | verdict/sparse HZ solver path |
@@ -30,7 +30,7 @@ Largest files by changed lines:
 
 | File | Added | Deleted | Interpretation |
 |---|---:|---:|---|
-| `act/pipeline/hybridz_sparse_exact_probe.py` | 5235 | 0 | biggest remaining package-level prototype; first post-freeze consolidation target is partially reduced |
+| `act/pipeline/hybridz_sparse_exact_probe.py` | 5169 | 0 | biggest remaining package-level prototype; first post-freeze consolidation target is partially reduced |
 | `act/pipeline/hybridz_benchmark_runner.py` | 2499 | 0 | product runner, branch portfolio, frozen comparison, ICSE export |
 | `act/back_end/hybridz_tf/sparse_ops.py` | 2294 | 0 | sparse exact-HZ propagation core |
 | `act/back_end/solver/solver_hz_verdict.py` | 1563 | 0 | exact verdict MILP and open-source solver portfolio |
@@ -64,8 +64,9 @@ packaged modules, but too much sparse exact-HZ probe logic still lives in
    `SparseHZono` as its carrier, backend sparse frame/gather/merge helpers,
    backend input-spec construction, backend
    Conv/Dense/AvgPool/MaxPool-candidate/scale/bias/linear helpers, backend
-   sigmoid/tanh primitives, and the backend S-curve cut matrix builders.  The
-   local duplicate probe code dropped from 5751 to 5235 lines
+   sigmoid/tanh primitives, backend base-HZ feasibility checking, and the
+   backend S-curve cut matrix builders.  The local duplicate probe code
+   dropped from 5751 to 5169 lines
    while preserving the packaged probe self-test and sparse-ops structural
    self-test.
 

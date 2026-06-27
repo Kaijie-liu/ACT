@@ -17,6 +17,9 @@ import scipy.sparse as sp
 from scipy.optimize import linprog
 
 from act.back_end.solver.sparse_hz import SparseHZono as SparseHZ  # noqa: E402
+from act.back_end.solver.solver_hz_verdict import (  # noqa: E402
+    hz_base_feasibility as _solver_hz_base_feasibility,
+)
 import act.back_end.hybridz_tf.tf_mlp as hz_mlp  # noqa: E402
 from act.back_end.hybridz_tf.sparse_ops import (  # noqa: E402
     _merge_equalities as _merge_linear_constraints,
@@ -4466,77 +4469,8 @@ def _load_hz(indir: Path) -> SparseHZ:
 
 
 def _base_hz_feasibility(hz: SparseHZ, time_limit: float) -> Tuple[bool, str]:
-    """Check that the propagated HZ state itself is nonempty.
-
-    A spec query can be certified by proving ``HZ ∩ unsafe = empty`` only when
-    the base HZ is feasible. If the base constraints are already infeasible,
-    every unsafe query is trivially infeasible and must be treated as UNKNOWN.
-    """
-    nvars = hz.n_cont + hz.n_bin
-    if nvars == 0:
-        return True, "bare_point"
-    Aeq = sp.hstack([hz.Ac, hz.Ab], format="csr") if hz.n_eq else None
-    Aub = sp.hstack([hz.Auc, hz.Aub], format="csr") if hz.n_ub else None
-    try:
-        import highspy
-
-        h = highspy.Highs()
-        h.setOptionValue("output_flag", False)
-        h.setOptionValue("time_limit", float(time_limit))
-        h.setOptionValue("presolve", "on")
-        h.addCols(
-            nvars,
-            np.zeros(nvars, dtype=np.float64),
-            -np.ones(nvars, dtype=np.float64),
-            np.ones(nvars, dtype=np.float64),
-            0,
-            np.array([], dtype=np.int32),
-            np.array([], dtype=np.int32),
-            np.array([], dtype=np.float64),
-        )
-        if hz.n_eq:
-            h.addRows(
-                hz.n_eq,
-                hz.b.astype(np.float64),
-                hz.b.astype(np.float64),
-                Aeq.nnz,
-                Aeq.indptr.astype(np.int32),
-                Aeq.indices.astype(np.int32),
-                Aeq.data.astype(np.float64),
-            )
-        if hz.n_ub:
-            h.addRows(
-                hz.n_ub,
-                np.full(hz.n_ub, -1e30, dtype=np.float64),
-                hz.ub.astype(np.float64),
-                Aub.nnz,
-                Aub.indptr.astype(np.int32),
-                Aub.indices.astype(np.int32),
-                Aub.data.astype(np.float64),
-            )
-        h.run()
-        status = h.getModelStatus()
-        msg = h.modelStatusToString(status)
-        if status == highspy.HighsModelStatus.kOptimal:
-            return True, msg
-        if status == highspy.HighsModelStatus.kInfeasible:
-            return False, msg
-        return False, msg
-    except Exception as exc:
-        highs_msg = f"highspy_unavailable:{type(exc).__name__}:{exc}"
-
-    opts = {"time_limit": float(time_limit)} if time_limit > 0 else None
-    r = linprog(
-        np.zeros(nvars, dtype=np.float64),
-        A_eq=Aeq,
-        b_eq=hz.b if hz.n_eq else None,
-        A_ub=Aub,
-        b_ub=hz.ub if hz.n_ub else None,
-        bounds=[(-1.0, 1.0)] * nvars,
-        method="highs",
-        options=opts,
-    )
-    return bool(r.success), f"{highs_msg}; scipy:{r.message}"
+    status, msg = _solver_hz_base_feasibility(hz, time_limit=float(time_limit))
+    return status == "FEASIBLE", f"{status}:{msg}"
 
 
 def _self_test() -> None:
