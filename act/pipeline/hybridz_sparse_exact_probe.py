@@ -1625,7 +1625,6 @@ def _propagate_sparse(
     queries,
     before,
     after,
-    max_layers: Optional[int] = None,
     *,
     tight_relu_lp_limit: int = 0,
     tight_relu_lp_timeout: float = 0.0,
@@ -1640,7 +1639,7 @@ def _propagate_sparse(
     sigmoid_k: int = 2,
     tanh_k: int = 1,
     scurve_grid: str = "uniform",
-) -> Tuple[Dict[int, SparseHZ], SparseHZ]:
+) -> SparseHZ:
     states: Dict[int, SparseHZ] = {}
     var_owner: Dict[int, Tuple[int, int]] = {}
     global_c = 0
@@ -1940,9 +1939,7 @@ def _propagate_sparse(
             if use_count[lid] <= 0:
                 states.pop(lid, None)
 
-    for idx, L in enumerate(net.layers):
-        if max_layers is not None and idx >= max_layers:
-            break
+    for L in net.layers:
         kind = str(L.kind).upper()
         t0 = time.time()
         if kind == "INPUT":
@@ -2277,7 +2274,7 @@ def _propagate_sparse(
         "msg": witness_msg,
         "xi": np.concatenate([xi_c, xi_b]) if witness_ok else None,
     }
-    return states, final
+    return final
 
 
 def _lp_min_margin(
@@ -4442,7 +4439,6 @@ def main() -> None:
     ap.add_argument("--bench", default="cifar100_2024")
     ap.add_argument("--iid", type=int, default=0)
     ap.add_argument("--device", default="cpu", choices=["cpu", "cuda"])
-    ap.add_argument("--max-layers", type=int, default=0)
     ap.add_argument("--lp-queries", type=int, default=5)
     ap.add_argument("--query-indices", default="")
     ap.add_argument("--lp-timeout", type=float, default=20.0)
@@ -4605,34 +4601,33 @@ def main() -> None:
     )
     print(f"bench={args.bench} iid={args.iid} onnx={onnx_path.name} vnnlib={vnnlib_path.name}")
     print(f"input_shape={input_shape} queries={len(queries)} layers={len(net.layers)} interval_s={interval_s:.2f}")
-    if not args.max_layers:
-        unsupported = [
-            (int(L.id), str(L.kind).upper())
-            for L in net.layers
-            if str(L.kind).upper() not in SPARSE_SUPPORTED_KINDS
-        ]
-        if unsupported:
-            lid, kind = unsupported[0]
-            msg = f"unsupported layer kind {kind} at {lid}"
-            print(f"EARLY_STOP unsupported_layer {msg}", flush=True)
-            print("verdict_summary checked=0 cert=0 hz_unsafe=0 unknown=1 real_adv=0", flush=True)
-            print(f"total_wall_s={time.time() - t0:.2f}", flush=True)
-            if args.summary_json:
-                Path(args.summary_json).parent.mkdir(parents=True, exist_ok=True)
-                with open(args.summary_json, "w") as f:
-                    json.dump({
-                        "bench": args.bench,
-                        "iid": args.iid,
-                        "unsupported_layer": {"id": lid, "kind": kind},
-                        "verdict_summary": {
-                            "checked": 0,
-                            "cert": 0,
-                            "hz_unsafe": 0,
-                            "unknown": 1,
-                            "real_adv": 0,
-                        },
-                    }, f, indent=2, sort_keys=True)
-            return
+    unsupported = [
+        (int(L.id), str(L.kind).upper())
+        for L in net.layers
+        if str(L.kind).upper() not in SPARSE_SUPPORTED_KINDS
+    ]
+    if unsupported:
+        lid, kind = unsupported[0]
+        msg = f"unsupported layer kind {kind} at {lid}"
+        print(f"EARLY_STOP unsupported_layer {msg}", flush=True)
+        print("verdict_summary checked=0 cert=0 hz_unsafe=0 unknown=1 real_adv=0", flush=True)
+        print(f"total_wall_s={time.time() - t0:.2f}", flush=True)
+        if args.summary_json:
+            Path(args.summary_json).parent.mkdir(parents=True, exist_ok=True)
+            with open(args.summary_json, "w") as f:
+                json.dump({
+                    "bench": args.bench,
+                    "iid": args.iid,
+                    "unsupported_layer": {"id": lid, "kind": kind},
+                    "verdict_summary": {
+                        "checked": 0,
+                        "cert": 0,
+                        "hz_unsafe": 0,
+                        "unknown": 1,
+                        "real_adv": 0,
+                    },
+                }, f, indent=2, sort_keys=True)
+        return
     schedule = None
     if args.tight_schedule.strip():
         schedule = {}
@@ -4642,12 +4637,11 @@ def main() -> None:
             k, v = item.split(":", 1)
             schedule[int(k)] = int(v)
 
-    states, hz = _propagate_sparse(
+    hz = _propagate_sparse(
         net,
         queries,
         before,
         after,
-        max_layers=(args.max_layers or None),
         tight_relu_lp_limit=args.tight_relu_lp_limit,
         tight_relu_lp_timeout=args.tight_relu_lp_timeout,
         tight_relu_fix_mode=args.tight_relu_fix_mode,
