@@ -95,7 +95,6 @@ SPARSE_SUPPORTED_KINDS = {
 from act.pipeline.hybridz_sparse_census import (  # noqa: E402
     _build_net_and_interval,
     _format_big,
-    _shape4,
 )
 
 
@@ -118,35 +117,6 @@ def _input_spec_hz(inspec, n_in: int) -> SparseHZ:
     if hz.n_out != int(n_in):
         raise ValueError(f"input spec size mismatch: hz={hz.n_out}, layer={n_in}")
     return hz
-
-
-def _upsample_nearest_matrix(L) -> Tuple[sp.csr_matrix, np.ndarray]:
-    mode = str(L.params.get("mode", "nearest")).lower()
-    if mode != "nearest":
-        raise NotImplementedError(f"unsupported sparse UPSAMPLE mode {mode}")
-    input_shape = _shape4(L.params["input_shape"])
-    output_shape = _shape4(L.params["output_shape"])
-    bsz, ch, in_h, in_w = input_shape
-    out_bsz, out_ch, out_h, out_w = output_shape
-    if bsz != out_bsz or ch != out_ch:
-        raise ValueError(f"upsample shape mismatch at layer {L.id}")
-    rows: List[np.ndarray] = []
-    cols: List[np.ndarray] = []
-    for n in range(bsz):
-        for c in range(ch):
-            for oh in range(out_h):
-                ih = min(int(np.floor(oh * in_h / out_h)), in_h - 1)
-                for ow in range(out_w):
-                    iw = min(int(np.floor(ow * in_w / out_w)), in_w - 1)
-                    out_idx = ((n * ch + c) * out_h + oh) * out_w + ow
-                    in_idx = ((n * ch + c) * in_h + ih) * in_w + iw
-                    rows.append(np.asarray([out_idx], dtype=np.int32))
-                    cols.append(np.asarray([in_idx], dtype=np.int32))
-    rr = np.concatenate(rows) if rows else np.empty(0, dtype=np.int32)
-    cc = np.concatenate(cols) if cols else np.empty(0, dtype=np.int32)
-    dd = np.ones(rr.size, dtype=np.float64)
-    mat = sp.csr_matrix((dd, (rr, cc)), shape=(bsz * ch * out_h * out_w, bsz * ch * in_h * in_w))
-    return mat, np.zeros(mat.shape[0], dtype=np.float64)
 
 
 def _prod_interval_bounds(xl: float, xu: float, yl: float, yu: float) -> Tuple[float, float]:
@@ -2040,9 +2010,12 @@ def _propagate_sparse(
             global_c = hz.n_cont
         elif kind == "UPSAMPLE":
             prev = _pad_hz(source_hz(L), global_c, global_b)
-            W, bvec = _upsample_nearest_matrix(L)
-            hz = _linear_apply(prev, W, bvec)
-            del W
+            rows_t = hz_mlp._upsample_nearest_row_idx(
+                L, prev.n_out, len(L.out_vars), before[L.id].lb.device)
+            if rows_t is None:
+                raise NotImplementedError(f"unsupported sparse UPSAMPLE shape at {L.id}")
+            rows = rows_t.detach().cpu().numpy().astype(np.int64).reshape(-1)
+            hz = _gather_hz_rows(prev, rows)
         elif kind == "AVGPOOL2D":
             prev = _pad_hz(source_hz(L), global_c, global_b)
             W, bvec = _avgpool2d_matrix(L)

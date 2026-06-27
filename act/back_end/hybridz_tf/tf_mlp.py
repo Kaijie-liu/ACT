@@ -639,7 +639,8 @@ def _upsample_nearest_row_idx(
     in_shape = tuple(int(d) for d in in_shape)
     if _prod(in_shape) != int(n_in) or len(in_shape) < 3:
         return None
-    spatial_rank = len(in_shape) - 2
+    view_shape = (1, *in_shape) if len(in_shape) == 3 else in_shape
+    spatial_rank = len(view_shape) - 2
     size = L.params.get("size")
     scale_factor = L.params.get("scale_factor")
     if size is not None and isinstance(size, (list, tuple)):
@@ -655,10 +656,11 @@ def _upsample_nearest_row_idx(
         if out_shape is None:
             return None
         out_shape = tuple(int(d) for d in out_shape)
-        if len(out_shape) != len(in_shape):
+        out_view_shape = (1, *out_shape) if len(out_shape) == 3 else out_shape
+        if len(out_view_shape) != len(view_shape):
             return None
-        size = out_shape[2:]
-    base = torch.arange(n_in, dtype=torch.float64, device=device).view(*in_shape)
+        size = out_view_shape[2:]
+    base = torch.arange(n_in, dtype=torch.float64, device=device).view(*view_shape)
     out = F.interpolate(
         base,
         size=size,
