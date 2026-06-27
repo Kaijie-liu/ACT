@@ -256,10 +256,11 @@ def _propagate_sparse(
         in_vars = list(getattr(L, "in_vars", []) or [])
         if in_vars:
             owners = [var_owner.get(int(v)) for v in in_vars]
-            if all(o is not None for o in owners):
-                lid = owners[0][0]  # type: ignore[index]
-                if all(o[0] == lid for o in owners):  # type: ignore[index]
-                    rows = np.asarray([o[1] for o in owners], dtype=np.int64)  # type: ignore[index]
+            owner_pairs = [o for o in owners if o is not None]
+            if len(owner_pairs) == len(owners):
+                lid = owner_pairs[0][0]
+                if all(o[0] == lid for o in owner_pairs):
+                    rows = np.asarray([o[1] for o in owner_pairs], dtype=np.int64)
                     return _gather_hz_rows(states[lid], rows)
         raise KeyError(f"cannot find sparse source for layer {L.id} ({L.kind})")
 
