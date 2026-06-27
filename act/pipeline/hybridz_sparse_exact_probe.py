@@ -47,7 +47,7 @@ from act.back_end.hybridz_tf.sparse_ops import (  # noqa: E402
     sparse_hz_gather_rows as _gather_hz_rows,
     sparse_hz_gather_rows_like as _gather_hz_rows_like,
     sparse_gather_row_indices as _gather_row_idx,
-    sparse_hz_apply_relu_exact as _backend_relu_exact,
+    sparse_hz_apply_relu_exact_tightened as _backend_relu_exact_tightened,
     sparse_hz_apply_scurve_piecewise as _backend_scurve_piecewise,
     sparse_hz_apply_scurve_piecewise_full as _backend_scurve_piecewise_full,
     sparse_hz_apply_softmax_simplex_layer as _softmax_simplex_hz,
@@ -61,7 +61,6 @@ from act.back_end.hybridz_tf.sparse_ops import (  # noqa: E402
     sparse_hz_scale as _scale_apply,
     sparse_hz_sub_same_frame as _sub_same_frame,
     sparse_maxpool2d_candidate_rows as _maxpool2d_candidate_rows,
-    sparse_hz_tighten_relu_bounds as _tighten_relu_bounds,
     sparse_slice_row_indices as _slice_row_idx,
     sparse_upsample_nearest_row_indices as _upsample_nearest_row_idx,
 )
@@ -115,35 +114,12 @@ def _relu_exact(
     add_cuts: bool = False,
     compressed: bool = False,
 ) -> Tuple[SparseHZ, Tuple[int, int, int], Tuple[int, int, int, int]]:
-    base_lb = pre_bounds.lb.detach().cpu().numpy().reshape(-1).astype(np.float64)
-    base_ub = pre_bounds.ub.detach().cpu().numpy().reshape(-1).astype(np.float64)
-    if tight_lp_limit != 0:
-        lb, ub, tight_stats = _tighten_relu_bounds(
-            hz, pre_bounds, limit=tight_lp_limit, time_limit=tight_lp_timeout
-        )
-        if tight_fix_mode == "off-only":
-            was_unstable = (base_lb < 0.0) & (base_ub > 0.0)
-            active_by_tight = was_unstable & (lb >= 0.0) & (ub > 0.0)
-            if np.any(active_by_tight):
-                # Active ReLUs copy the full sparse preactivation row forward.
-                # For sparse exact-HZ this can densify later affine layers; keep
-                # those phases exact-unstable unless the interval pass already
-                # proved them active. Inactive fixes remain sparsity-reducing.
-                lb[active_by_tight] = base_lb[active_by_tight]
-    else:
-        lb = base_lb
-        ub = base_ub
-        tight_stats = (0, 0, 0, 0)
-    class ArrayBounds:
-        def __init__(self, lb_arr: np.ndarray, ub_arr: np.ndarray):
-            import torch
-
-            self.lb = torch.as_tensor(lb_arr, dtype=torch.float64)
-            self.ub = torch.as_tensor(ub_arr, dtype=torch.float64)
-
-    out, counts, meta = _backend_relu_exact(
+    out, counts, tight_stats, meta = _backend_relu_exact_tightened(
         hz,
-        ArrayBounds(lb, ub),
+        pre_bounds,
+        tight_lp_limit=tight_lp_limit,
+        tight_lp_timeout=tight_lp_timeout,
+        tight_fix_mode=tight_fix_mode,
         compressed=compressed,
         valid_cuts=add_cuts,
         return_info=True,

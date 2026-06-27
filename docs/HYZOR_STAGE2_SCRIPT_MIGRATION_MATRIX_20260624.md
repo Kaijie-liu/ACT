@@ -108,6 +108,7 @@ latest completion evidence.
 | Frozen match gate | scripts/manual artifact checks | `--hybridz-require-frozen-match` | migrated |
 | Dense exact ReLU eq_lagr | dense backend/scripts | `tf_mlp.hz_apply_relu` | migrated |
 | Compressed exact ReLU | scripts/probe + dense path | `tf_mlp.py`, `sparse_ops.py` | migrated |
+| Sparse tight-ReLU apply policy | sparse probe | `sparse_ops.py` `sparse_hz_apply_relu_exact_tightened`; package probe only keeps logging wrapper | migrated with tight-LP/off-only policy preserved |
 | ReLU valid cuts | scripts/probe | `tf_mlp.py`, `sparse_ops.py` | migrated but must stay selective |
 | Sparse CSR HZ data structure | `cifar_sparse_exact_probe.py` | `solver/sparse_hz.py` | migrated |
 | Sparse Conv2D/Dense affine | `cifar_sparse_exact_probe.py` | `sparse_ops.py` | migrated |
@@ -197,6 +198,8 @@ were cleanly separable from the package probe:
 - sparse LP min-margin, row-range infeasibility, sparse FBBT, EMPTY-only
   relaxation precheck, solver start conversion, and exact singleton/equality
   presolve support are solver-layer helpers;
+- sparse exact-ReLU application after optional LP bound tightening, including
+  the `off-only` active-phase preservation policy, now lives in `sparse_ops.py`;
 - compressed/pruned and full/non-pruned S-curve construction, including
   uniform and curvature segment grids plus domain/range/graph cut metadata, now
   lives in `sparse_ops.py`;
@@ -211,6 +214,10 @@ Regression evidence for the latest state:
 python -m py_compile act/back_end/hybridz_tf/sparse_ops.py act/pipeline/hybridz_sparse_exact_probe.py
 python -m act.back_end.hybridz_tf.sparse_ops
 python -m act.pipeline.hybridz_sparse_exact_probe --self-test
+python -m act.pipeline.hybridz_sparse_exact_probe --bench sat_relu --iid 0 \
+  --lp-queries 1 --milp-all --milp-timeout 5 \
+  --tight-relu-lp-limit -1 --tight-relu-lp-timeout 1.0 \
+  --tight-relu-fix-mode off-only --check-witness
 python -m act.pipeline.hybridz_sparse_worker --bench sat_relu --iid 0 \
   --lp-queries 1 --milp-timeout 5 --worker-timeout 45
 python -m act.pipeline.hybridz_sparse_worker --bench dist_shift_2023 --iid 0 \
@@ -219,7 +226,9 @@ python -m act.pipeline.hybridz_sparse_worker --bench dist_shift_2023 --iid 0 \
   --scurve-domain-cuts --scurve-graph-cuts
 ```
 
-The `sat_relu` smoke returned `ADV`, `P0=false`, and `ort_verified=true`; the
+The tight-ReLU `sat_relu` probe returned `ADV`, `P0=false`, real witness replay,
+and `tightLP solved/improved/fix_on/fix_off=68/0/0/0`.  The standard `sat_relu`
+worker smoke returned `ADV`, `P0=false`, and `ort_verified=true`; the
 `dist_shift_2023` S-curve smoke returned `UNKNOWN`, `P0=false`, final HZ
 `n=10 ng=5.3k nb=2.6k nc=1.8k`, and constructive-center residual
 `max_eq=1.36e-12 max_ub=0`.  Both packaged frontend smokes and the frozen

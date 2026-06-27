@@ -1604,6 +1604,67 @@ def sparse_hz_apply_relu_exact(
     return out
 
 
+def sparse_hz_apply_relu_exact_tightened(
+    hz: SparseHZono,
+    pre_bounds: Optional[Bounds] = None,
+    *,
+    tight_lp_limit: int = 0,
+    tight_lp_timeout: float = 0.0,
+    tight_fix_mode: str = "both",
+    compressed: bool = False,
+    valid_cuts: bool = False,
+    return_info: bool = False,
+):
+    """Apply exact ReLU after optional exact LP bound tightening.
+
+    ``tight_fix_mode="off-only"`` preserves active interval-unstable phases as
+    unstable even when the LP proves them active.  That keeps sparse rows from
+    expanding in later affine layers while still taking inactive fixes, which
+    are sparsity-reducing and exact.
+    """
+
+    if pre_bounds is None:
+        pre_bounds = sparse_hz_fast_bounds(hz)
+    base_lb, base_ub = _bounds_arrays(pre_bounds, hz.n_out)
+    if tight_lp_limit != 0:
+        lb, ub, tight_stats = sparse_hz_tighten_relu_bounds(
+            hz,
+            pre_bounds,
+            limit=tight_lp_limit,
+            time_limit=tight_lp_timeout,
+        )
+        if tight_fix_mode == "off-only":
+            was_unstable = (base_lb < 0.0) & (base_ub > 0.0)
+            active_by_tight = was_unstable & (lb >= 0.0) & (ub > 0.0)
+            if np.any(active_by_tight):
+                lb = lb.copy()
+                lb[active_by_tight] = base_lb[active_by_tight]
+    else:
+        lb = base_lb
+        ub = base_ub
+        tight_stats = (0, 0, 0, 0)
+
+    tightened_bounds = Bounds(
+        lb=torch.as_tensor(lb, dtype=torch.float64),
+        ub=torch.as_tensor(ub, dtype=torch.float64),
+    )
+    if return_info:
+        out, counts, info = sparse_hz_apply_relu_exact(
+            hz,
+            tightened_bounds,
+            compressed=compressed,
+            valid_cuts=valid_cuts,
+            return_info=True,
+        )
+        return out, counts, tight_stats, info
+    return sparse_hz_apply_relu_exact(
+        hz,
+        tightened_bounds,
+        compressed=compressed,
+        valid_cuts=valid_cuts,
+    )
+
+
 def _sigmoid_np(x: np.ndarray) -> np.ndarray:
     z = np.clip(np.asarray(x, dtype=np.float64), -60.0, 60.0)
     return 1.0 / (1.0 + np.exp(-z))
@@ -3300,6 +3361,7 @@ __all__ = [
     "sparse_hz_apply_matmul_product_interval_layer",
     "sparse_hz_apply_maxpool2d_layer",
     "sparse_hz_apply_relu_exact",
+    "sparse_hz_apply_relu_exact_tightened",
     "sparse_hz_apply_softmax_simplex_layer",
     "sparse_hz_apply_scurve_piecewise",
     "sparse_hz_apply_scurve_piecewise_full",
@@ -3823,6 +3885,18 @@ def _test_sparse_affine_structural_ops() -> None:  # pragma: no cover
     sparse_relu_cuts = sparse_hz_apply_relu_exact(
         sparse_relu_in, compressed=True, valid_cuts=True
     )
+    sparse_relu_tight, tight_counts2, tight_stats2, tight_meta2 = sparse_hz_apply_relu_exact_tightened(
+        sparse_relu_in,
+        relu_bounds,
+        tight_lp_limit=-1,
+        tight_lp_timeout=1.0,
+        tight_fix_mode="off-only",
+        compressed=True,
+        return_info=True,
+    )
+    assert tight_counts2 == (1, 1, 2)
+    assert tight_stats2 == (2, 0, 0, 0)
+    assert tight_meta2["compressed"] is True
     sparse_relu_witness, _, sparse_relu_meta = sparse_hz_apply_relu_exact(
         sparse_relu_in, compressed=True, return_info=True
     )
@@ -3845,6 +3919,11 @@ def _test_sparse_affine_structural_ops() -> None:  # pragma: no cover
         _assert_close(
             hz_row_max(sparse_relu_plain, r, integer=True),
             hz_row_max(sparse_relu_cuts, r, integer=True),
+            tol=1e-8,
+        )
+        _assert_close(
+            hz_row_max(sparse_relu_plain, r, integer=True),
+            hz_row_max(sparse_relu_tight, r, integer=True),
             tol=1e-8,
         )
     sparse_relu_sum = sparse_hz_add_same_frame(sparse_relu_plain, sparse_relu_plain)
