@@ -32,20 +32,11 @@ backend:
   verbose: false
 
   # -- Strict HybridZ verifier path -----------------------------------------
-  # Used when solver is "hybridz".  The benchmark profile is benchmark-wide:
-  # no per-instance rescue, no CROWN/input split/Gurobi/sampling/LP-witness.
+  # Used when solver is "hybridz". These are generic formulation and resource
+  # knobs; benchmark-specific profiles are kept outside the ACT package.
   hybridz:
-    # Optional benchmark key, e.g. "safenlp_2024" or "dist_shift_2023".
-    # When set with use_profile=true, act.back_end.hybridz_config supplies
-    # the default wall time and formulation/scheduling profile.
-    bench: null
-
-    # Optional explicit verdict timeout.  If null, the HybridZ bench profile
-    # wall is used when bench is set; otherwise backend.timeout is used.
+    # Optional explicit verdict timeout. If null, backend.timeout is used.
     timeout: null
-
-    # Use the benchmark-wide profile from act.back_end.hybridz_config.
-    use_profile: true
 
     # Current mainline engine.  "sparse_hz_objbound" converts a carried dense
     # HZ into the backend CSR carrier before the verdict solve. Full sparse

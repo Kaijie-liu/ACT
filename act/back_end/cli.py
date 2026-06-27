@@ -898,16 +898,6 @@ Examples:
         ),
     )
     verify_group.add_argument(
-        "--hybridz-bench",
-        type=str,
-        default=None,
-        dest="hybridz_bench",
-        help=(
-            "Benchmark profile key for --solver hybridz, e.g. safenlp_2024. "
-            "Profiles are benchmark-wide scheduling/formulation settings."
-        ),
-    )
-    verify_group.add_argument(
         "--hybridz-timeout",
         type=float,
         default=None,
@@ -1164,7 +1154,6 @@ _BACKEND_OVERRIDE_SPEC: list[tuple[str, str, Optional[str], Any, str]] = [
     ("gen_name_prefix",      "name_prefix",         None,             None, "not_none"),
     ("gen_tf_targets",       "tf_targets",          None,             None, "not_none"),
     ("gen_registry_mode",    "registry_mode",       None,             None, "user_set"),
-    ("hybridz_bench",        "hybridz_bench",       "ACT_HYBRIDZ_BENCH", None, "not_none"),
     ("hybridz_timeout",      "hybridz_timeout",     "ACT_HYBRIDZ_TIMEOUT", float, "not_none"),
     ("hybridz_engine",       "hybridz_engine",      "ACT_HYBRIDZ_ENGINE", None, "not_none"),
     ("hybridz_sigmoid_k",    "hybridz_sigmoid_k",   "ACT_HYBRIDZ_SIGMOID_K", int, "not_none"),

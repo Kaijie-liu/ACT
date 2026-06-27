@@ -1333,7 +1333,7 @@ def hz_apply_piecewise(
     ``compressed`` projects the per-segment slack-box equalities exactly into
     two inequality rows per local generator. The represented HZ approximation is
     unchanged, but the dense state drops four continuous slack columns per
-    segment, which is the dominant sigmoid/tanh memory cost on dist_shift/cGAN.
+    segment, which is the dominant memory cost in wide sigmoid/tanh networks.
     """
     if compressed and inflection is not None:
         return _hz_apply_piecewise_compressed_pruned(

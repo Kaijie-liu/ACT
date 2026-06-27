@@ -46,7 +46,6 @@
 from __future__ import annotations
 from typing import Optional, List, Callable, Dict, Any, TYPE_CHECKING, cast
 
-from contextlib import contextmanager
 import torch
 import copy
 import os
@@ -578,64 +577,40 @@ def _hybridz_replay_witness(
 _MISSING_ATTR = object()
 
 
-def _hybridz_profile_from_cfg(hz_cfg: Optional[Any]) -> Optional[Any]:
-    if hz_cfg is None:
-        return None
-    if not getattr(hz_cfg, "use_profile", True):
-        return None
-    bench = getattr(hz_cfg, "bench", None)
-    if not bench:
-        return None
-    from act.back_end.hybridz_config import get_bench_profile
-
-    return get_bench_profile(str(bench))
-
-
-def _apply_hybridz_tf_profile(
+def _apply_hybridz_tf_config(
     active_tf: Any,
-    profile: Optional[Any],
     hz_cfg: Optional[Any] = None,
 ) -> list[tuple[str, Any]]:
-    """Apply benchmark-wide forward HZ profile knobs to one TF instance."""
+    """Apply explicit HybridZ forward knobs to one TF instance."""
 
-    if profile is None and hz_cfg is None:
+    if hz_cfg is None:
         return []
-    updates: Dict[str, Any] = {
-        "_relu_compressed": bool(getattr(profile, "compressed_relu", False)) if profile is not None else False,
-        "_relu_valid_cuts": bool(getattr(profile, "relu_valid_cuts", False)) if profile is not None else False,
+    updates: Dict[str, Any] = {}
+    override_map = {
+        "compressed_relu": "_relu_compressed",
+        "relu_valid_cuts": "_relu_valid_cuts",
+        "sigmoid_k": "_sigmoid_K",
+        "tanh_k": "_tanh_K",
+        "scurve_domain_cuts": "_scurve_domain_cuts",
+        "scurve_graph_cuts": "_scurve_graph_cuts",
+        "cell_budget": "_hz_cell_budget",
     }
-    sigmoid_k = getattr(profile, "sigmoid_k", None) if profile is not None else None
-    if sigmoid_k is not None:
-        updates["_sigmoid_K"] = max(1, int(sigmoid_k))
-    cell_budget = getattr(profile, "cell_budget", None) if profile is not None else None
-    if cell_budget is not None:
-        updates["_hz_cell_budget"] = int(cell_budget)
-    if hz_cfg is not None:
-        override_map = {
-            "compressed_relu": "_relu_compressed",
-            "relu_valid_cuts": "_relu_valid_cuts",
-            "sigmoid_k": "_sigmoid_K",
-            "tanh_k": "_tanh_K",
-            "scurve_domain_cuts": "_scurve_domain_cuts",
-            "scurve_graph_cuts": "_scurve_graph_cuts",
-            "cell_budget": "_hz_cell_budget",
-        }
-        for cfg_name, attr_name in override_map.items():
-            val = getattr(hz_cfg, cfg_name, None)
-            if val is None:
-                continue
-            if cfg_name in {"sigmoid_k", "tanh_k"}:
-                val = max(1, int(val))
-            elif cfg_name == "cell_budget":
-                val = int(val)
-            elif cfg_name in {
-                "compressed_relu",
-                "relu_valid_cuts",
-                "scurve_domain_cuts",
-                "scurve_graph_cuts",
-            }:
-                val = bool(val)
-            updates[attr_name] = val
+    for cfg_name, attr_name in override_map.items():
+        val = getattr(hz_cfg, cfg_name, None)
+        if val is None:
+            continue
+        if cfg_name in {"sigmoid_k", "tanh_k"}:
+            val = max(1, int(val))
+        elif cfg_name == "cell_budget":
+            val = int(val)
+        elif cfg_name in {
+            "compressed_relu",
+            "relu_valid_cuts",
+            "scurve_domain_cuts",
+            "scurve_graph_cuts",
+        }:
+            val = bool(val)
+        updates[attr_name] = val
 
     old_values: list[tuple[str, Any]] = []
     for name, value in updates.items():
@@ -655,71 +630,12 @@ def _restore_hybridz_tf_profile(active_tf: Any, old_values: list[tuple[str, Any]
             setattr(active_tf, name, old)
 
 
-@contextmanager
-def _hybridz_solver_profile_env(profile: Optional[Any]):
-    """Temporarily apply benchmark-wide open-source MILP profile env knobs."""
-
-    updates: Dict[str, str] = {}
-    if profile is not None:
-        milp_env = getattr(profile, "milp_env", None) or {}
-        updates.update({str(k): str(v) for k, v in milp_env.items()})
-        if getattr(profile, "cutoff_row", False):
-            updates["HZ_MILP_CUTOFF_ROW"] = "1"
-        milp_threads = getattr(profile, "milp_threads", None)
-        if milp_threads is not None:
-            updates["HZ_MILP_THREADS"] = str(int(milp_threads))
-        query_workers = getattr(profile, "query_workers", None)
-        if query_workers is not None:
-            updates["HZ_QUERY_WORKERS"] = str(int(query_workers))
-
-    old_env = {key: os.environ.get(key) for key in updates}
-    try:
-        for key, value in updates.items():
-            os.environ[key] = value
-        yield
-    finally:
-        for key, old in old_env.items():
-            if old is None:
-                os.environ.pop(key, None)
-            else:
-                os.environ[key] = old
-
-
-def _hybridz_profiled_timeout(hz_cfg: Optional[Any], fallback_timeout: Optional[float]) -> float:
+def _hybridz_timeout(hz_cfg: Optional[Any], fallback_timeout: Optional[float]) -> float:
     if hz_cfg is not None and hasattr(hz_cfg, "verdict_timeout"):
-        timeout = float(hz_cfg.verdict_timeout(fallback_timeout=fallback_timeout))
-    elif fallback_timeout is not None:
-        timeout = float(fallback_timeout)
-    else:
-        timeout = 30.0
-
-    profile = _hybridz_profile_from_cfg(hz_cfg)
-    if profile is not None and getattr(hz_cfg, "timeout", None) is None:
-        fraction = getattr(profile, "milp_fraction", None)
-        if fraction is not None:
-            timeout *= float(fraction)
-        cap = getattr(profile, "milp_timeout_cap", None)
-        if cap is not None:
-            timeout = min(timeout, float(cap))
-    return timeout
-
-
-def _hybridz_profile_metadata(profile: Optional[Any]) -> Dict[str, Any]:
-    if profile is None:
-        return {}
-    return {
-        "profile_wall_timeout_s": getattr(profile, "wall_timeout_s", None),
-        "profile_milp_fraction": getattr(profile, "milp_fraction", None),
-        "profile_milp_timeout_cap": getattr(profile, "milp_timeout_cap", None),
-        "profile_sigmoid_k": getattr(profile, "sigmoid_k", None),
-        "profile_cell_budget": getattr(profile, "cell_budget", None),
-        "profile_compressed_relu": bool(getattr(profile, "compressed_relu", False)),
-        "profile_relu_valid_cuts": bool(getattr(profile, "relu_valid_cuts", False)),
-        "profile_cutoff_row": bool(getattr(profile, "cutoff_row", False)),
-        "profile_milp_threads": getattr(profile, "milp_threads", None),
-        "profile_query_workers": getattr(profile, "query_workers", None),
-        "profile_milp_env": dict(getattr(profile, "milp_env", None) or {}),
-    }
+        return float(hz_cfg.verdict_timeout(fallback_timeout=fallback_timeout))
+    if fallback_timeout is not None:
+        return float(fallback_timeout)
+    return 30.0
 
 
 def _hybridz_config_metadata(hz_cfg: Optional[Any]) -> Dict[str, Any]:
@@ -819,7 +735,6 @@ def verify_once(
         set_transfer_function_mode("hybridz")
     active_tf = ensure_active_tf("hybridz" if hybridz_solver else "interval")
     hz_cfg = getattr(backend_cfg, "hybridz", None) if hybridz_solver else None
-    hz_profile = _hybridz_profile_from_cfg(hz_cfg) if hybridz_solver else None
     hz_engine = getattr(hz_cfg, "engine", "dense_hz_objbound") if hybridz_solver else None
     sparse_hz_engine = hz_engine in {"sparse_hz", "sparse_hz_objbound"}
     if hybridz_solver and hasattr(active_tf, "enable_sparse_hz"):
@@ -856,15 +771,15 @@ def verify_once(
     # 2. Build entry_fact (with all INPUT_SPEC constraints) and analyze.
     entry_fact = Fact(bounds=seed_bounds, cons=ConSet())
     add_all_input_specs(entry_fact.cons, input_ids, spec_layers)
-    profile_old_values = (
-        _apply_hybridz_tf_profile(active_tf, hz_profile, hz_cfg)
+    config_old_values = (
+        _apply_hybridz_tf_config(active_tf, hz_cfg)
         if hybridz_solver else []
     )
     try:
         _before, after, _globalC = analyze(net, entry_id, entry_fact)
     finally:
-        if profile_old_values:
-            _restore_hybridz_tf_profile(active_tf, profile_old_values)
+        if config_old_values:
+            _restore_hybridz_tf_profile(active_tf, config_old_values)
 
     # 3. Pull output bounds (pre-ASSERT layer's Fact).
     output_bounds = _get_output_layer_bounds(net, after)
@@ -910,10 +825,7 @@ def verify_once(
             "M": M,
             "engine": hz_engine,
         }
-        meta.update(_hybridz_profile_metadata(hz_profile))
         meta.update(_hybridz_config_metadata(hz_cfg))
-        if getattr(hz_cfg, "bench", None):
-            meta["bench"] = hz_cfg.bench
         if B != 1:
             return [
                 VerifyResult(
@@ -969,9 +881,8 @@ def verify_once(
         fallback_timeout = env_timeout
         if fallback_timeout is None and backend_cfg is not None:
             fallback_timeout = getattr(backend_cfg, "timeout", None)
-        hz_timeout = _hybridz_profiled_timeout(hz_cfg, fallback_timeout)
-        with _hybridz_solver_profile_env(hz_profile):
-            base_status, base_msg = hz_base_feasibility(hz, time_limit=min(float(hz_timeout), 10.0))
+        hz_timeout = _hybridz_timeout(hz_cfg, fallback_timeout)
+        base_status, base_msg = hz_base_feasibility(hz, time_limit=min(float(hz_timeout), 10.0))
         meta.update({
             "hz_base_feasible": base_status,
             "hz_base_feas_msg": base_msg,
@@ -979,14 +890,13 @@ def verify_once(
         if base_status != "FEASIBLE":
             meta["reason"] = "hybridz_base_hz_not_feasible"
             return [VerifyResult(VerifyStatus.UNKNOWN, metadata=meta)]
-        with _hybridz_solver_profile_env(hz_profile):
-            verdict, witness = hz_objbound_decide(
-                hz,
-                C.detach().cpu().numpy(),
-                thresholds.detach().cpu().numpy(),
-                is_unsafe_linear=is_unsafe_linear,
-                time_limit=hz_timeout,
-            )
+        verdict, witness = hz_objbound_decide(
+            hz,
+            C.detach().cpu().numpy(),
+            thresholds.detach().cpu().numpy(),
+            is_unsafe_linear=is_unsafe_linear,
+            time_limit=hz_timeout,
+        )
         meta.update({
             "lane": 0,
             "hz_verdict": verdict,
@@ -1022,15 +932,14 @@ def verify_once(
                 meta.get("hz_witness_source") == "base_hz_witness"
                 and model_fn is not None
             ):
-                with _hybridz_solver_profile_env(hz_profile):
-                    fallback_verdict, fallback_witness = hz_objbound_decide(
-                        hz,
-                        C.detach().cpu().numpy(),
-                        thresholds.detach().cpu().numpy(),
-                        is_unsafe_linear=is_unsafe_linear,
-                        time_limit=hz_timeout,
-                        base_witness_precheck=False,
-                    )
+                fallback_verdict, fallback_witness = hz_objbound_decide(
+                    hz,
+                    C.detach().cpu().numpy(),
+                    thresholds.detach().cpu().numpy(),
+                    is_unsafe_linear=is_unsafe_linear,
+                    time_limit=hz_timeout,
+                    base_witness_precheck=False,
+                )
                 meta.update({
                     "hz_base_witness_replay_failed": replay_reason,
                     "hz_fallback_verdict": fallback_verdict,
@@ -1734,22 +1643,17 @@ def _test_hybridz_witness_replay_gate() -> None:  # pragma: no cover
         assert replay_x is not None
         assert float(replay_x.reshape(-1)[0]) == 1.0
 
-        old_cutoff = os.environ.pop("HZ_MILP_CUTOFF_ROW", None)
-        try:
-            cfg = BackendConfig.from_yaml(
-                solver="hybridz",
-                hybridz_bench="sat_relu",
-                hybridz_timeout=5.0,
-                hybridz_engine="dense_hz_objbound",
-            )
-            profiled = verify_once(net, model_fn=lambda x: x, backend_cfg=cfg)[0]
-            assert profiled.metadata.get("bench") == "sat_relu"
-            assert profiled.metadata.get("profile_cutoff_row") is True
-            assert os.environ.get("HZ_MILP_CUTOFF_ROW") is None
-            assert not hasattr(get_transfer_function(), "_relu_compressed")
-        finally:
-            if old_cutoff is not None:
-                os.environ["HZ_MILP_CUTOFF_ROW"] = old_cutoff
+        cfg = BackendConfig.from_yaml(
+            solver="hybridz",
+            hybridz_timeout=5.0,
+            hybridz_engine="dense_hz_objbound",
+            hybridz_compressed_relu=True,
+            hybridz_relu_valid_cuts=True,
+        )
+        configured = verify_once(net, model_fn=lambda x: x, backend_cfg=cfg)[0]
+        assert configured.metadata.get("cfg_compressed_relu") is True
+        assert configured.metadata.get("cfg_relu_valid_cuts") is True
+        assert not hasattr(get_transfer_function(), "_relu_compressed")
     finally:
         set_solver_mode(old_solver)
 

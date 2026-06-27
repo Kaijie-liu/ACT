@@ -244,14 +244,12 @@ class GenerationConfig:
 class HybridZConfig:
     """Configuration for the strict pure-HybridZ verifier path.
 
-    ``bench`` selects a benchmark-wide profile from
-    :mod:`act.back_end.hybridz_config`.  The profile is a scheduling/formulation
-    profile, not a per-instance rescue table.
+    These are generic formulation and resource knobs for the HybridZ backend.
+    Benchmark-specific profiles and frozen result tables intentionally live
+    outside the ACT package.
     """
 
-    bench: Optional[str] = None
     timeout: Optional[float] = None
-    use_profile: bool = True
     engine: str = "dense_hz_objbound"
     sigmoid_k: Optional[int] = None
     tanh_k: Optional[int] = None
@@ -266,10 +264,6 @@ class HybridZConfig:
 
         if self.timeout is not None:
             return float(self.timeout)
-        if self.use_profile and self.bench:
-            from act.back_end.hybridz_config import get_bench_profile
-
-            return float(get_bench_profile(self.bench).wall_timeout_s)
         if fallback_timeout is not None:
             return float(fallback_timeout)
         return 30.0

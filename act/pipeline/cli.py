@@ -18,7 +18,6 @@ import os
 from pathlib import Path
 from typing import Any, List, Optional
 import sys
-import time
 import torch
 
 from act.util.cli_utils import add_device_args, initialize_from_args
@@ -55,12 +54,10 @@ def print_header():
 
 
 def _apply_hybridz_rlimit_from_env() -> None:
-    """Apply per-worker memory cap for HybridZ benchmark subprocesses.
+    """Apply an optional memory cap for HybridZ subprocesses.
 
-    The mainline HybridZ benchmark runner sets ACT_HYBRIDZ_RLIMIT_AS_GB from
-    the benchmark-wide profile.  Applying the cap inside the child process keeps
-    the runner thread-safe while preserving the old scripts' per-instance memory
-    isolation behavior.
+    Local experiment scripts may set ACT_HYBRIDZ_RLIMIT_AS_GB to keep solver
+    runs isolated. The ACT package itself does not ship benchmark profiles.
     """
 
     raw = os.environ.get("ACT_HYBRIDZ_RLIMIT_AS_GB")
@@ -633,10 +630,10 @@ def _print_soundness_summary(summary: dict[str, Any]) -> None:
     )
 
 
-def _hybridz_cli_overrides(args, bench: str) -> dict[str, object]:
+def _hybridz_cli_overrides(args) -> dict[str, object]:
     """Collect strict HybridZ CLI knobs for ``BackendConfig.from_yaml``."""
 
-    overrides: dict[str, object] = {"solver": "hybridz", "hybridz_bench": bench}
+    overrides: dict[str, object] = {"solver": "hybridz"}
     scalar_flags = (
         ("hybridz_timeout", "hybridz_timeout"),
         ("hybridz_engine", "hybridz_engine"),
@@ -659,13 +656,6 @@ def _hybridz_cli_overrides(args, bench: str) -> dict[str, object]:
         if getattr(args, attr, False):
             overrides[key] = True
     return overrides
-
-
-def _hybridz_explicit_max_instances_arg(argv: Optional[List[str]] = None) -> bool:
-    """Return whether the user explicitly passed ``--max-instances``."""
-
-    tokens = sys.argv[1:] if argv is None else argv
-    return any(arg == "--max-instances" or arg.startswith("--max-instances=") for arg in tokens)
 
 
 def _run_vnnlib_verify(args) -> bool:
@@ -705,16 +695,12 @@ def _run_vnnlib_verify(args) -> bool:
     label = solver if solver == "dual" else f"{tf_mode}/{solver}"
     print(f"[vnnlib] category={args.category} max_instances={args.max_instances} mode={label}")
     backend_cfg = None
-    hybridz_recorder = None
     if solver == "hybridz":
         from act.back_end.config import BackendConfig
-        from act.pipeline.hybridz_results import HybridZRunRecorder
 
         backend_cfg = BackendConfig.from_yaml(
-            **_hybridz_cli_overrides(args, args.category)
+            **_hybridz_cli_overrides(args)
         )
-        if getattr(args, "hybridz_results_dir", None):
-            hybridz_recorder = HybridZRunRecorder(args.category)
 
     instance_indices = None
     if getattr(args, "instance_index", None) is not None:
@@ -745,11 +731,7 @@ def _run_vnnlib_verify(args) -> bool:
             print(f"  {tag}: {label} → {status}")
         else:
             model_fn = _hybridz_replay_model_fn(vm) if solver == "hybridz" else None
-            t_verify = time.time()
             results = verify_once(net, model_fn=model_fn, backend_cfg=backend_cfg)
-            verify_wall_s = time.time() - t_verify
-            if hybridz_recorder is not None:
-                hybridz_recorder.add_results(tag, results, wall_s=verify_wall_s)
             statuses = [r.status.name for r in results]
             print(f"  {tag}: {statuses}")
             if args.validate_soundness:
@@ -757,11 +739,6 @@ def _run_vnnlib_verify(args) -> bool:
                 soundness_summary = _run_soundness_check(
                     tag, vm, net, results, validator, solver
                 )
-
-    if hybridz_recorder is not None:
-        detail_path, summary_path = hybridz_recorder.write(args.hybridz_results_dir)
-        print(f"[hybridz] wrote detail CSV: {detail_path}")
-        print(f"[hybridz] wrote summary CSV: {summary_path}")
 
     if args.validate_soundness:
         assert validator is not None and soundness_summary is not None
@@ -938,16 +915,12 @@ def _run_torchvision_verify(args) -> bool:
         f"num_samples={args.num_samples} mode={label}"
     )
     backend_cfg = None
-    hybridz_recorder = None
     if solver == "hybridz":
         from act.back_end.config import BackendConfig
-        from act.pipeline.hybridz_results import HybridZRunRecorder
 
         backend_cfg = BackendConfig.from_yaml(
-            **_hybridz_cli_overrides(args, args.dataset)
+            **_hybridz_cli_overrides(args)
         )
-        if getattr(args, "hybridz_results_dir", None):
-            hybridz_recorder = HybridZRunRecorder(args.dataset)
 
     spec_results = TorchVisionSpecCreator().create_specs_for_data_model_pairs(
         dataset_names=[args.dataset],
@@ -987,11 +960,7 @@ def _run_torchvision_verify(args) -> bool:
         tag = "/".join(str(p) for p in mid)
         net = TorchToACT(vm).run()
         model_fn = _hybridz_replay_model_fn(vm) if solver == "hybridz" else None
-        t_verify = time.time()
         results = verify_once(net, model_fn=model_fn, backend_cfg=backend_cfg)
-        verify_wall_s = time.time() - t_verify
-        if hybridz_recorder is not None:
-            hybridz_recorder.add_results(tag, results, wall_s=verify_wall_s)
         statuses = [r.status.name for r in results]
         print(f"  {tag}: {statuses}")
         if args.validate_soundness:
@@ -999,11 +968,6 @@ def _run_torchvision_verify(args) -> bool:
             soundness_summary = _run_soundness_check(
                 tag, vm, net, results, validator, solver
             )
-
-    if hybridz_recorder is not None:
-        detail_path, summary_path = hybridz_recorder.write(args.hybridz_results_dir)
-        print(f"[hybridz] wrote detail CSV: {detail_path}")
-        print(f"[hybridz] wrote summary CSV: {summary_path}")
 
     if args.validate_soundness:
         assert validator is not None and soundness_summary is not None
@@ -1061,77 +1025,6 @@ def cmd_verify(target: str, args):
             try:
                 soundness_failed = _run_vnnlib_verify(args)
                 results[test_name] = "FAILED" if soundness_failed else "PASSED"
-            except Exception as e:
-                print(f"\n❌ Test failed: {e}")
-                import traceback
-
-                traceback.print_exc()
-                results[test_name] = "FAILED"
-
-        elif test_name == "hybridz-benchmark":
-            print(f"VERIFICATION TEST: HybridZ benchmark runner")
-            print(f"{'=' * 80}\n")
-            try:
-                if not args.category:
-                    raise ValueError("--verify hybridz-benchmark requires --category")
-                from act.pipeline.hybridz_benchmark_runner import (
-                    HybridZBenchmarkConfig,
-                    HybridZBenchmarkSuiteConfig,
-                    resolve_hybridz_benchmark_categories,
-                    run_hybridz_benchmark,
-                    run_hybridz_benchmark_suite,
-                )
-
-                out_dir = Path(
-                    args.hybridz_results_dir
-                    or f"hybridz_results/{args.category}"
-                )
-                benches = resolve_hybridz_benchmark_categories(args.category)
-                if args.hybridz_require_frozen_match and _hybridz_explicit_max_instances_arg():
-                    raise ValueError(
-                        "--hybridz-require-frozen-match requires a full frozen suite; "
-                        "do not pass --max-instances"
-                    )
-                hybridz_max_instances = (
-                    args.max_instances if _hybridz_explicit_max_instances_arg() else None
-                )
-                if len(benches) == 1:
-                    if args.hybridz_require_frozen_match:
-                        raise ValueError(
-                            "--hybridz-require-frozen-match requires --category frozen"
-                        )
-                    cfg = HybridZBenchmarkConfig(
-                        bench=benches[0],
-                        out_dir=out_dir,
-                        max_instances=hybridz_max_instances,
-                        workers=args.hybridz_workers,
-                        timeout_cap_s=args.hybridz_timeout_cap,
-                        device=args.device,
-                        dtype=args.dtype,
-                    )
-                    detail_path, summary_path, run_rows = run_hybridz_benchmark(cfg)
-                else:
-                    suite_max_instances = (
-                        None if args.hybridz_require_frozen_match else hybridz_max_instances
-                    )
-                    cfg = HybridZBenchmarkSuiteConfig(
-                        benches=benches,
-                        out_dir=out_dir,
-                        max_instances=suite_max_instances,
-                        workers=args.hybridz_workers,
-                        timeout_cap_s=args.hybridz_timeout_cap,
-                        device=args.device,
-                        dtype=args.dtype,
-                        require_frozen_match=args.hybridz_require_frozen_match,
-                    )
-                    detail_path, summary_path, run_rows = run_hybridz_benchmark_suite(cfg)
-                print(
-                    f"[hybridz-benchmark] completed {len(run_rows)} instance(s) "
-                    f"across {len(benches)} benchmark(s)"
-                )
-                print(f"[hybridz-benchmark] detail CSV: {detail_path}")
-                print(f"[hybridz-benchmark] summary CSV: {summary_path}")
-                results[test_name] = "PASSED"
             except Exception as e:
                 print(f"\n❌ Test failed: {e}")
                 import traceback
@@ -1355,9 +1248,9 @@ Examples:
         "--verify",
         type=str,
         metavar="TARGET",
-        choices=["act2torch", "torch2act", "vnnlib", "torchvision", "hybridz-benchmark", "all"],
+        choices=["act2torch", "torch2act", "vnnlib", "torchvision", "all"],
         help="Run verification tests: act2torch, torch2act, vnnlib, torchvision, "
-        "hybridz-benchmark, or all. The 'vnnlib' target runs the verifier on a VNNLIB benchmark "
+        "or all. The 'vnnlib' target runs the verifier on a VNNLIB benchmark "
         "end-to-end (requires --category); 'torchvision' does the same for a "
         "TorchVision dataset-model pair (requires --dataset, optionally --model). "
         "Both read the FIRST element of --tf-modes / --solvers (single mode per "
@@ -1643,42 +1536,13 @@ Examples:
     validation_group.add_argument(
         "--hybridz-relu-valid-cuts",
         action="store_true",
-        help="Enable exact-valid ReLU cuts when the HZ profile allows their cost.",
+        help="Enable exact-valid ReLU cuts.",
     )
     validation_group.add_argument(
         "--hybridz-cell-budget",
         type=int,
         default=None,
         help="Override the HybridZ dense-cell carry budget before UNKNOWN/drop guards.",
-    )
-    validation_group.add_argument(
-        "--hybridz-results-dir",
-        type=str,
-        default=None,
-        help=(
-            "Optional directory for strict HybridZ frontend detail/summary CSVs "
-            "when running --verify vnnlib/torchvision --solvers hybridz."
-        ),
-    )
-    validation_group.add_argument(
-        "--hybridz-workers",
-        type=int,
-        default=None,
-        help="Worker count for --verify hybridz-benchmark. Defaults to the HybridZ bench profile.",
-    )
-    validation_group.add_argument(
-        "--hybridz-timeout-cap",
-        type=float,
-        default=900.0,
-        help="Maximum per-instance official wall used by --verify hybridz-benchmark.",
-    )
-    validation_group.add_argument(
-        "--hybridz-require-frozen-match",
-        action="store_true",
-        help=(
-            "For --verify hybridz-benchmark --category frozen, fail the command "
-            "unless the produced summary exactly matches the frozen HybridZ table."
-        ),
     )
     validation_group.add_argument(
         "--input-samples",
@@ -1727,7 +1591,7 @@ Examples:
         default=None,
         help=(
             "For --verify vnnlib, run only the zero-based instances.csv row. "
-            "This supports per-instance HybridZ wall-clock scheduling."
+            "Useful for local debugging and reproducibility checks."
         ),
     )
 

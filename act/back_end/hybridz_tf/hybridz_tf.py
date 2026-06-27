@@ -237,8 +237,8 @@ class HybridzTF(TransferFunction):
         rad = (ub - lb) / 2.0
         # Only ACTUALLY-perturbed dims get a generator column. A zero-radius dim
         # contributes an all-zero generator (redundant). So a POINT query (all
-        # rad==0, e.g. metaroom) gets ng=0 -> propagates EXACTLY and costs nothing
-        # even at huge n_out. The cap is then on the GENERATOR count (the real
+        # rad==0) gets ng=0 -> propagates EXACTLY and costs nothing even at huge
+        # n_out. The cap is then on the GENERATOR count (the real
         # memory driver, n_out*ng), NOT the raw input dimension.
         nz = rad > 0
         ng = int(nz.sum().item())
@@ -580,7 +580,7 @@ class HybridzTF(TransferFunction):
         # Memory-based drop: the output HZ's Gc is ~ n_out * (ng+nb) cells; that
         # product (not the raw n_out) is what risks OOM. A point query carries
         # ng=nb=0, so n_out*0 = 0 -> never dropped, even through a 57k-dim conv
-        # (metaroom). A genuinely wide perturbation (large ng) still drops to the
+        # layer. A genuinely wide perturbation (large ng) still drops to the
         # sound interval fallback. Budget defaults to cap^2 cells.
         hz_carried = self._hz_cache.get(L.id)
         ngnb = (hz_carried.Gc.shape[1] + hz_carried.Gb.shape[1]) if hz_carried is not None else 0
