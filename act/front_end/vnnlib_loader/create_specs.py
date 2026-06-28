@@ -69,6 +69,7 @@ class VNNLibSpecCreator(BaseSpecCreator):
         self,
         categories: Optional[List[str]] = None,
         max_instances: Optional[int] = None,
+        instance_indices: Optional[List[int]] = None,
         validate_shapes: bool = True
     ) -> List[Tuple[str, str, nn.Module, List[LabeledInputTensor], List[Tuple[InputSpec, OutputSpec]]]]:
         """
@@ -86,6 +87,8 @@ class VNNLibSpecCreator(BaseSpecCreator):
         Args:
             categories: List of benchmark categories (None = all downloaded)
             max_instances: Maximum instances per category (None = all)
+            instance_indices: Optional zero-based instances.csv row indices to
+                keep within each selected category.
             validate_shapes: Whether to validate specs against model
             
         Returns:
@@ -105,7 +108,7 @@ class VNNLibSpecCreator(BaseSpecCreator):
         """
         logger.info(
             f"Creating VNNLIB specs: categories={categories}, "
-            f"max_instances={max_instances}"
+            f"max_instances={max_instances}, instance_indices={instance_indices}"
         )
         
         # Get all downloaded instances
@@ -126,6 +129,16 @@ class VNNLibSpecCreator(BaseSpecCreator):
         if not all_instances:
             logger.warning("No instances match the specified categories")
             return []
+
+        if instance_indices is not None:
+            keep = {int(i) for i in instance_indices}
+            all_instances = [
+                inst for inst in all_instances
+                if int(inst.get("index", -1)) in keep
+            ]
+            if not all_instances:
+                logger.warning("No instances match the specified instance_indices")
+                return []
         
         # Limit instances per category if specified
         if max_instances is not None:
@@ -155,6 +168,8 @@ class VNNLibSpecCreator(BaseSpecCreator):
             category = instance_info['category']
             onnx_model = instance_info['onnx_model']
             vnnlib_spec = instance_info['vnnlib_spec']
+            instance_index = int(instance_info.get("index", -1))
+            root_dir = instance_info.get("root_dir")
             
             # Create instance identifier
             instance_id = f"{Path(onnx_model).stem}_{Path(vnnlib_spec).stem}"
@@ -166,11 +181,12 @@ class VNNLibSpecCreator(BaseSpecCreator):
                     category=category,
                     onnx_model=onnx_model,
                     vnnlib_spec=vnnlib_spec,
+                    root_dir=root_dir,
                     auto_download=False  # Already filtered to downloaded
                 )
                 
                 # Reuse cached model if same ONNX file was already converted
-                cache_key = (category, onnx_model)
+                cache_key = (str(root_dir or ""), category, onnx_model)
                 if cache_key in _model_cache:
                     instance_data['model'] = _model_cache[cache_key]
                 else:
@@ -180,6 +196,7 @@ class VNNLibSpecCreator(BaseSpecCreator):
                 result = self._create_specs_for_single_instance(
                     category=category,
                     instance_id=instance_id,
+                    instance_index=instance_index,
                     instance_data=instance_data,
                     validate_shapes=validate_shapes
                 )
@@ -205,6 +222,7 @@ class VNNLibSpecCreator(BaseSpecCreator):
         self,
         category: str,
         instance_id: str,
+        instance_index: int,
         instance_data: Dict,
         validate_shapes: bool
     ) -> Optional[Tuple[str, str, nn.Module, List[LabeledInputTensor], List[Tuple[InputSpec, OutputSpec]]]]:
@@ -215,7 +233,10 @@ class VNNLibSpecCreator(BaseSpecCreator):
             Tuple of (category, instance_id, pytorch_model, labeled_tensors, spec_pairs)
             or None if failed
         """
-        logger.info(f"Generating specs for {category}/{instance_id}")
+        if instance_index >= 0:
+            logger.info(f"Generating specs for {category}/{instance_id} (iid={instance_index})")
+        else:
+            logger.info(f"Generating specs for {category}/{instance_id}")
         
         pytorch_model = instance_data['model']
         labeled_tensor = instance_data['labeled_tensor']

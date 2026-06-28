@@ -46,23 +46,31 @@ def tf_conv2d(L: Layer, Bin: Bounds) -> Fact:
     out_channels, in_channels_per_group, kernel_h, kernel_w = weight.shape
     in_channels = in_channels_per_group * groups
     
-    # Get ACTUAL input size from bounds (not metadata - metadata may be wrong!)
     B_in = Bin.lb.shape[0]
     actual_input_size = Bin.lb[0].numel()
-    
-    # Infer spatial dimensions from actual input size
-    spatial_size = actual_input_size // in_channels
-    in_h = in_w = int(spatial_size ** 0.5)  # Assume square initially
-    
-    # Verify and adjust if needed
-    if in_h * in_w * in_channels != actual_input_size:
-        # Try to find correct rectangular dimensions
-        for h in range(int(spatial_size ** 0.5) + 10, 0, -1):
-            if spatial_size % h == 0:
-                in_h = h
-                in_w = spatial_size // h
-                if in_h * in_w * in_channels == actual_input_size:
-                    break
+
+    in_h = in_w = None
+    meta_shape = L.params.get("input_shape", None)
+    if meta_shape is not None:
+        meta_shape = tuple(int(dim) for dim in meta_shape)
+        if len(meta_shape) == 4:
+            _, meta_channels, meta_h, meta_w = meta_shape
+            if meta_channels == in_channels and meta_channels * meta_h * meta_w == actual_input_size:
+                in_h, in_w = meta_h, meta_w
+
+    if in_h is None or in_w is None:
+        # Metadata is occasionally absent or stale, so keep the old inference as
+        # a fallback.  Prefer factor pairs closest to square, but never override
+        # valid metadata for rectangular feature maps such as 16x28.
+        spatial_size = actual_input_size // in_channels
+        in_h = in_w = int(spatial_size ** 0.5)
+        if in_h * in_w * in_channels != actual_input_size:
+            for h in range(int(spatial_size ** 0.5) + 10, 0, -1):
+                if spatial_size % h == 0:
+                    cand_w = spatial_size // h
+                    if h * cand_w * in_channels == actual_input_size:
+                        in_h, in_w = h, cand_w
+                        break
     
     input_shape = (B_in, in_channels, in_h, in_w)
     
@@ -287,11 +295,17 @@ def tf_flatten(L: Layer, Bin: Bounds) -> Fact:
         f"flatten out_vars length {len(L.out_vars)} != output elements {lb_flat.shape[1]}"
     )
     if "output_shape" in L.params:
-        expected = 1
+        full_expected = 1
+        for dim in output_shape:
+            full_expected *= int(dim)
+        tail_expected = 1
         dims = output_shape[1:] if len(output_shape) > 1 else output_shape
         for dim in dims:
-            expected *= int(dim)
-        assert lb_flat.shape[1] == expected, f"flatten output numel {lb_flat.shape[1]} != expected {expected}"
+            tail_expected *= int(dim)
+        assert lb_flat.shape[1] in (full_expected, tail_expected), (
+            f"flatten output numel {lb_flat.shape[1]} != expected "
+            f"{full_expected} (full shape) or {tail_expected} (batch-stripped)"
+        )
     B_out = Bounds(lb_flat, ub_flat)
     # Note: bounds validity is checked in analyze.py with detailed debug info
 
@@ -346,21 +360,28 @@ def tf_avgpool2d(L: Layer, Bin: Bounds) -> Fact:
     )
     B_output = Bounds(output_lb.reshape(B_in, -1), output_ub.reshape(B_in, -1))
 
-    W_equiv = _avgpool2d_to_linear_matrix(
-        input_shape, output_shape, kernel_size, stride, padding
-    )
+    input_flat_size = int(channels * in_h * in_w)
+    output_flat_size = int(channels * out_h * out_w)
+    matrix_cells = input_flat_size * output_flat_size
+    W_equiv = None
+    if matrix_cells <= 25_000_000:
+        W_equiv = _avgpool2d_to_linear_matrix(
+            input_shape, output_shape, kernel_size, stride, padding
+        )
     
     # Create constraints
     C = ConSet()
-    C.replace(Con("EQ", tuple(L.out_vars + L.in_vars), {
+    params = {
         "tag": f"avgpool2d:{L.id}",
-        "W": W_equiv,
         "kernel_size": kernel_size,
         "stride": stride,
         "padding": padding,
         "input_shape": input_shape,
         "output_shape": output_shape
-    }))
+    }
+    if W_equiv is not None:
+        params["W"] = W_equiv
+    C.replace(Con("EQ", tuple(L.out_vars + L.in_vars), params))
     
     C.add_box(L.id, L.out_vars, B_output)
     return Fact(B_output, C)
@@ -629,7 +650,24 @@ def tf_upsample(L: Layer, Bin: Bounds) -> Fact:
     align_corners = bool(L.params.get("align_corners", False))
     assert size is not None or scale_factor is not None, "upsample requires size or scale_factor"
 
-    # F.interpolate scale_factor must be float or tuple of float
+    spatial_rank = max(0, len(in_shape) - 2)
+    if size is not None and isinstance(size, (list, tuple)):
+        size = tuple(int(s) for s in size)
+        if len(size) > spatial_rank:
+            size = size[-spatial_rank:]
+    if scale_factor is not None and isinstance(scale_factor, (list, tuple)):
+        scale_factor = tuple(float(s) for s in scale_factor)
+        if len(scale_factor) > spatial_rank:
+            scale_factor = scale_factor[-spatial_rank:]
+    mode = str(mode).lower()
+    if mode == "linear" and spatial_rank == 2:
+        mode = "bilinear"
+    elif mode == "linear" and spatial_rank == 3:
+        mode = "trilinear"
+    elif mode == "cubic" and spatial_rank == 2:
+        mode = "bicubic"
+
+    # F.interpolate scale_factor must be float or tuple of float.
     y_lb = F.interpolate(
         x_lb,
         size=size,

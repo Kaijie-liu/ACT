@@ -543,6 +543,34 @@ def _print_soundness_summary(summary: dict[str, Any]) -> None:
     )
 
 
+def _hybridz_cli_overrides(args) -> dict[str, object]:
+    """Collect strict HybridZ CLI knobs for ``BackendConfig.from_yaml``."""
+
+    overrides: dict[str, object] = {"solver": "hybridz"}
+    scalar_flags = (
+        ("hybridz_timeout", "hybridz_timeout"),
+        ("hybridz_engine", "hybridz_engine"),
+        ("hybridz_sigmoid_k", "hybridz_sigmoid_k"),
+        ("hybridz_tanh_k", "hybridz_tanh_k"),
+        ("hybridz_cell_budget", "hybridz_cell_budget"),
+    )
+    for attr, key in scalar_flags:
+        val = getattr(args, attr, None)
+        if val is not None:
+            overrides[key] = val
+
+    bool_flags = (
+        ("hybridz_scurve_domain_cuts", "hybridz_scurve_domain_cuts"),
+        ("hybridz_scurve_graph_cuts", "hybridz_scurve_graph_cuts"),
+        ("hybridz_compressed_relu", "hybridz_compressed_relu"),
+        ("hybridz_relu_valid_cuts", "hybridz_relu_valid_cuts"),
+    )
+    for attr, key in bool_flags:
+        if getattr(args, attr, False):
+            overrides[key] = True
+    return overrides
+
+
 def _run_vnnlib_verify(args) -> bool:
     """Drive ``verify_once`` over a VNNLIB benchmark end-to-end.
 
@@ -574,12 +602,26 @@ def _run_vnnlib_verify(args) -> bool:
 
     set_solver_mode(solver)
     if solver != "dual":
+        if solver == "hybridz":
+            tf_mode = "hybridz"
         set_transfer_function_mode(tf_mode)
     label = solver if solver == "dual" else f"{tf_mode}/{solver}"
     print(f"[vnnlib] category={args.category} max_instances={args.max_instances} mode={label}")
+    backend_cfg = None
+    if solver == "hybridz":
+        from act.back_end.config import BackendConfig
 
+        backend_cfg = BackendConfig.from_yaml(
+            **_hybridz_cli_overrides(args)
+        )
+
+    instance_indices = None
+    if getattr(args, "instance_index", None) is not None:
+        instance_indices = [int(args.instance_index)]
     spec_results = VNNLibSpecCreator().create_specs_for_data_model_pairs(
-        categories=[args.category], max_instances=args.max_instances,
+        categories=[args.category],
+        max_instances=args.max_instances,
+        instance_indices=instance_indices,
     )
     if not spec_results:
         raise RuntimeError(f"VNNLibSpecCreator produced no spec_results for category={args.category!r}")
@@ -601,7 +643,7 @@ def _run_vnnlib_verify(args) -> bool:
             label = f"BaB[{args.bab_solver_tier}]"
             print(f"  {tag}: {label} → {status}")
         else:
-            results = verify_once(net)
+            results = verify_once(net, backend_cfg=backend_cfg)
             statuses = [r.status.name for r in results]
             print(f"  {tag}: {statuses}")
             if args.validate_soundness:
@@ -775,6 +817,8 @@ def _run_torchvision_verify(args) -> bool:
 
     set_solver_mode(solver)
     if solver != "dual":
+        if solver == "hybridz":
+            tf_mode = "hybridz"
         set_transfer_function_mode(tf_mode)
     label = solver if solver == "dual" else f"{tf_mode}/{solver}"
     model_label = args.model or "<all>"
@@ -782,6 +826,13 @@ def _run_torchvision_verify(args) -> bool:
         f"[torchvision] dataset={args.dataset} model={model_label} "
         f"num_samples={args.num_samples} mode={label}"
     )
+    backend_cfg = None
+    if solver == "hybridz":
+        from act.back_end.config import BackendConfig
+
+        backend_cfg = BackendConfig.from_yaml(
+            **_hybridz_cli_overrides(args)
+        )
 
     spec_results = TorchVisionSpecCreator().create_specs_for_data_model_pairs(
         dataset_names=[args.dataset],
@@ -820,7 +871,7 @@ def _run_torchvision_verify(args) -> bool:
     for mid, vm in wrapped.items():
         tag = "/".join(str(p) for p in mid)
         net = TorchToACT(vm).run()
-        results = verify_once(net)
+        results = verify_once(net, backend_cfg=backend_cfg)
         statuses = [r.status.name for r in results]
         print(f"  {tag}: {statuses}")
         if args.validate_soundness:
@@ -1064,12 +1115,12 @@ Examples:
   # Run verifier on a VNNLIB benchmark end-to-end (load → ACT → verify_once).
   # Single (tf, solver) per invocation; matrix sweeps by repeated calls.
   python -m act.pipeline --verify vnnlib --category acasxu_2023 --max-instances 3 --tf-modes interval --solvers torchlp
-  python -m act.pipeline --verify vnnlib --category acasxu_2023 --max-instances 3 --tf-modes hybridz --solvers torchlp
+  python -m act.pipeline --verify vnnlib --category acasxu_2023 --max-instances 3 --solvers hybridz
   python -m act.pipeline --verify vnnlib --category acasxu_2023 --max-instances 3                          --solvers dual
 
   # Run verifier on a TorchVision dataset-model pair end-to-end.
   python -m act.pipeline --verify torchvision --dataset MNIST --model simple_cnn --num-samples 2 --tf-modes interval --solvers torchlp
-  python -m act.pipeline --verify torchvision --dataset MNIST --model simple_cnn --num-samples 2 --tf-modes hybridz  --solvers torchlp
+  python -m act.pipeline --verify torchvision --dataset MNIST --model simple_cnn --num-samples 2                     --solvers hybridz
   python -m act.pipeline --verify torchvision --dataset MNIST --model simple_cnn --num-samples 2                     --solvers dual
   
   # Run verifier validation (comprehensive by default)
@@ -1342,13 +1393,67 @@ Examples:
         "--solvers",
         nargs="+",
         default=["gurobi", "torchlp"],
-        help="Solvers for Level 1 validation (default: gurobi torchlp)",
+        help=(
+            "Solvers for Level 1 validation / verifier runs "
+            "(default: gurobi torchlp; hybridz selects the strict HybridZ verdict path)"
+        ),
     )
     validation_group.add_argument(
         "--tf-modes",
         nargs="+",
         default=["interval"],
         help="Transfer function modes for Level 2 bounds validation: interval, hybridz, dual (default: interval)",
+    )
+    validation_group.add_argument(
+        "--hybridz-timeout",
+        type=float,
+        default=None,
+        help="Override the strict HybridZ verdict timeout for --solvers hybridz.",
+    )
+    validation_group.add_argument(
+        "--hybridz-engine",
+        type=str,
+        choices=["dense_hz_objbound", "sparse_hz_objbound"],
+        default=None,
+        help="Strict HybridZ verdict engine for --solvers hybridz.",
+    )
+    validation_group.add_argument(
+        "--hybridz-sigmoid-k",
+        type=int,
+        default=None,
+        help="Override sparse/dense HybridZ sigmoid segments per side.",
+    )
+    validation_group.add_argument(
+        "--hybridz-tanh-k",
+        type=int,
+        default=None,
+        help="Override sparse/dense HybridZ tanh segments per side.",
+    )
+    validation_group.add_argument(
+        "--hybridz-scurve-domain-cuts",
+        action="store_true",
+        help="Enable default-off exact-valid S-curve domain/range cuts.",
+    )
+    validation_group.add_argument(
+        "--hybridz-scurve-graph-cuts",
+        action="store_true",
+        help="Enable default-off exact-valid S-curve graph cuts.",
+    )
+    validation_group.add_argument(
+        "--hybridz-compressed-relu",
+        action="store_true",
+        help="Enable exact compressed/projected ReLU construction.",
+    )
+    validation_group.add_argument(
+        "--hybridz-relu-valid-cuts",
+        action="store_true",
+        help="Enable exact-valid ReLU cuts.",
+    )
+    validation_group.add_argument(
+        "--hybridz-cell-budget",
+        type=int,
+        default=None,
+        help="Override the HybridZ dense-cell carry budget before UNKNOWN/drop guards.",
     )
     validation_group.add_argument(
         "--input-samples",
@@ -1390,6 +1495,14 @@ Examples:
         "--validate-soundness",
         action="store_true",
         help="After --verify vnnlib/torchvision, run concrete-counterexample soundness validation on the same instances",
+    )
+    verify_group.add_argument(
+        "--instance-index",
+        type=int,
+        default=None,
+        help=(
+            "For --verify vnnlib, run only the selected zero-based instances.csv row."
+        ),
     )
 
     # Add standard device/dtype arguments (shared across all ACT CLIs)

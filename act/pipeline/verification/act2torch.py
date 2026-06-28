@@ -30,6 +30,7 @@ import logging
 
 from act.back_end.core import Net, Layer
 from act.back_end.layer_schema import LayerKind, REGISTRY
+from act.pipeline.verification.utils import _onnx_resize_torch_mode
 from act.util.device_manager import get_default_dtype, get_default_device
 
 logger = logging.getLogger(__name__)
@@ -326,6 +327,16 @@ class ActGraphModule(nn.Module):
             mode = str(layer.params.get("mode", "nearest")).lower()
             scale_factor = layer.params.get("scale_factor")
             size = layer.params.get("size")
+            spatial_rank = max(0, inputs[0].dim() - 2)
+            if size is not None and isinstance(size, (list, tuple)):
+                size = tuple(int(s) for s in size)
+                if len(size) > spatial_rank:
+                    size = size[-spatial_rank:]
+            if scale_factor is not None and isinstance(scale_factor, (list, tuple)):
+                scale_factor = tuple(float(s) for s in scale_factor)
+                if len(scale_factor) > spatial_rank:
+                    scale_factor = scale_factor[-spatial_rank:]
+            mode = _onnx_resize_torch_mode(mode, spatial_rank)
             kwargs = {"mode": mode}
             if mode != "nearest" and layer.params.get("align_corners") is not None:
                 kwargs["align_corners"] = bool(layer.params["align_corners"])

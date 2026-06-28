@@ -19,7 +19,11 @@ from typing import Dict, Optional, Tuple, cast
 from act.back_end.core import Bounds, Fact, Net, ConSet
 from act.back_end.layer_schema import LayerKind
 from act.back_end.utils import box_join, changed_or_maskdiff, update_cache
-from act.back_end.transfer_functions import dispatch_tf, set_transfer_function_mode
+from act.back_end.transfer_functions import (
+    dispatch_tf,
+    get_transfer_function,
+    set_transfer_function_mode,
+)
 
 # Initialize default transfer function mode
 def initialize_tf_mode(mode: str = "interval"):
@@ -101,7 +105,8 @@ def analyze(
                 )
                 val_b = val.unsqueeze(0).expand(B_size, -1).contiguous()  # [B, numel]
                 before[layer.id] = Fact(bounds=Bounds(val_b.clone(), val_b.clone()), cons=ConSet())
-            # Other zero-indegree kinds (none today) would be seeded similarly.
+            else:
+                before[layer.id] = entry_fact
             seeds.append(layer.id)
     else:
         before = cache.before
@@ -109,6 +114,13 @@ def analyze(
         globalC = cache.globalC
         before[entry_id] = entry_fact
         seeds = [entry_id]
+        for layer in net.layers:
+            if layer.id == entry_id or net.preds.get(layer.id):
+                continue
+            if layer.kind == LayerKind.CONSTANT.value:
+                continue
+            before[layer.id] = entry_fact
+            seeds.append(layer.id)
 
     WL = deque(seeds)
     while WL:
@@ -135,10 +147,13 @@ def analyze(
             before[lid] = Fact(Bjoin, Cjoin)
 
         out_fact = dispatch_tf(layer, before, after, net)
+        side_sig = get_transfer_function().side_state_signature(layer.id)
+        side_changed = layer.cache.get("prev_tf_side_state") != side_sig
 
-        if changed_or_maskdiff(layer, out_fact.bounds, None, eps):
+        if changed_or_maskdiff(layer, out_fact.bounds, None, eps) or side_changed:
             after[lid] = out_fact
             update_cache(layer, out_fact.bounds, None)
+            layer.cache["prev_tf_side_state"] = side_sig
             for con in out_fact.cons: globalC.replace(con)
             for sid in net.succs.get(lid, []): WL.append(sid)
 

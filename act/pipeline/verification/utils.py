@@ -51,11 +51,31 @@ def _normalize_tuple(val: Any, default: Tuple[int, int] = (1, 1)) -> Tuple[int, 
     return (val, val) if val is not None else default
 
 
+def _onnx_resize_torch_mode(onnx_mode: str, spatial_rank: int) -> str:
+    """Map ONNX Resize modes to the mode names accepted by F.interpolate."""
+    mode = str(onnx_mode).lower()
+    mapping = {
+        ("nearest", 1): "nearest",
+        ("nearest", 2): "nearest",
+        ("nearest", 3): "nearest",
+        ("linear", 1): "linear",
+        ("linear", 2): "bilinear",
+        ("linear", 3): "trilinear",
+        ("cubic", 2): "bicubic",
+    }
+    out = mapping.get((mode, int(spatial_rank)))
+    if out is None:
+        raise NotImplementedError(
+            f"OnnxResize: unsupported mode={onnx_mode!r} for spatial rank {spatial_rank}"
+        )
+    return out
+
+
 def _assert_dag(preds: Dict[int, List[int]], succs: Dict[int, List[int]], n_layers: int) -> None:
     """Kahn's algorithm cycle check. Raises ValueError listing the cycle nodes."""
     if n_layers == 0:
         return
-    in_degree = {i: len(preds.get(i, [])) for i in range(n_layers)}
+    in_degree = {i: len(set(preds.get(i, []))) for i in range(n_layers)}
     queue = [i for i in range(n_layers) if in_degree[i] == 0]
     visited = 0
     while queue:
@@ -690,6 +710,8 @@ def _convert_OnnxGather(self, mod: nn.Module, node: fx.Node) -> None:
     axis = int(getattr(mod, '_axis', 0))
     args = [a for a in node.args if isinstance(a, fx.Node)]
     idx = self._resolve_constant_tensor(args[1].name) if len(args) >= 2 else None
+    if idx is None and len(args) >= 2:
+        idx = self._evaluate_constant_subgraph(args[1].name)
     if idx is None:
         raise ValueError(f"OnnxGather: cannot resolve indices at {node.name}")
     indices = idx.detach().clone().to(torch.int64)
@@ -945,6 +967,8 @@ def _convert_OnnxPow(self, mod: nn.Module, node: fx.Node) -> None:
          "input_shape": self.shape, "output_shape": self.shape},
         var_vars + var_vars, out_vars,
     )
+    self._set_explicit_preds(
+        layer_id, [self.node_to_layer_id.get(args[0].name, -1)] * 2)
     self.prev_out = out_vars
     self._register_node(node.name, layer_id)
 
@@ -963,6 +987,7 @@ def _convert_OnnxSplit13(self, mod: nn.Module, node: fx.Node) -> None:
         raise NotImplementedError(
             f"OnnxSplit13 at {node.name}: equal-axis split (no sizes input) not supported"
         )
+    input_layer_id = self.node_to_layer_id.get(args[0].name, -1)
     split_t = self._resolve_constant_tensor(args[1].name)
     if split_t is None:
         raise ValueError(f"OnnxSplit13 at {node.name}: cannot resolve split sizes")
@@ -999,6 +1024,7 @@ def _convert_OnnxSplit13(self, mod: nn.Module, node: fx.Node) -> None:
              "input_shape": var_shape, "output_shape": chunk_shape_t},
             var_vars, chunk_vars,
         )
+        self._set_explicit_preds(layer_id, [input_layer_id])
         if i in getitem_children:
             git_node = getitem_children[i]
             self.node_outputs[git_node.name] = chunk_vars
@@ -1028,27 +1054,65 @@ def _convert_OnnxResize(self, mod: nn.Module, node: fx.Node) -> None:
     args = [a for a in node.args if isinstance(a, fx.Node)]
     scales_t: Optional[torch.Tensor] = None
     sizes_t: Optional[torch.Tensor] = None
-    for a in args[1:]:
-        t = self._resolve_constant_tensor(a.name)
-        if t is None or t.numel() == 0:
-            continue
-        if t.dtype.is_floating_point and scales_t is None:
-            scales_t = t
-        elif not t.dtype.is_floating_point and sizes_t is None:
-            sizes_t = t
-    if scales_t is not None and scales_t.numel() == len(self.shape):
-        output_shape = tuple(int(round(s * sc))
-                             for s, sc in zip(self.shape, scales_t.tolist()))
-        scale_factor = tuple(float(x) for x in scales_t.tolist())
+    def _resolve_static_tensor(arg_node: fx.Node) -> Optional[torch.Tensor]:
+        val = self._resolve_constant_tensor(arg_node.name)
+        if val is not None:
+            return val
+        if arg_node.name in self.node_to_layer_id:
+            layer_id = self.node_to_layer_id[arg_node.name]
+            if 0 <= layer_id < len(self.layers):
+                layer = self.layers[layer_id]
+                value = layer.params.get("shape_value", layer.params.get("value"))
+                if isinstance(value, torch.Tensor):
+                    return value.detach().clone()
+        return self._evaluate_constant_subgraph(arg_node.name)
+    if len(args) >= 4:
+        scales_t = _resolve_static_tensor(args[2])
+        sizes_t = _resolve_static_tensor(args[3])
+    elif len(args) >= 3:
+        scales_t = _resolve_static_tensor(args[2])
+    elif len(args) >= 2:
+        scales_t = _resolve_static_tensor(args[1])
+    if scales_t is not None and scales_t.numel() == 0:
+        scales_t = None
+    if sizes_t is not None and sizes_t.numel() == 0:
+        sizes_t = None
+    rank = len(self.shape)
+    spatial_rank = max(0, rank - 2)
+    if scales_t is not None and scales_t.numel() in (rank, spatial_rank):
+        scales = [float(x) for x in scales_t.reshape(-1).tolist()]
+        if len(scales) == rank:
+            if any(abs(sc - 1.0) > 1e-6 for sc in scales[:2]):
+                raise NotImplementedError(
+                    f"OnnxResize at {node.name}: batch/channel scaling is unsupported ({scales[:2]})"
+                )
+            spatial_scales = scales[2:]
+        else:
+            spatial_scales = scales
+        output_shape = tuple(self.shape[:2]) + tuple(
+            int(round(s * sc)) for s, sc in zip(self.shape[2:], spatial_scales)
+        )
+        scale_factor = tuple(float(x) for x in spatial_scales)
         size_param = None
-    elif sizes_t is not None and sizes_t.numel() == len(self.shape):
-        output_shape = tuple(int(x) for x in sizes_t.tolist())
+    elif sizes_t is not None and sizes_t.numel() in (rank, spatial_rank):
+        sizes = [int(x) for x in sizes_t.reshape(-1).tolist()]
+        if len(sizes) == rank:
+            if not bool(getattr(mod, "ignore_bs_ch_size", False)) and tuple(sizes[:2]) != tuple(self.shape[:2]):
+                raise NotImplementedError(
+                    f"OnnxResize at {node.name}: batch/channel resize is unsupported "
+                    f"({tuple(self.shape[:2])} -> {tuple(sizes[:2])})"
+                )
+            output_shape = tuple(sizes)
+            spatial_sizes = sizes[2:]
+        else:
+            output_shape = tuple(self.shape[:2]) + tuple(sizes)
+            spatial_sizes = sizes
         scale_factor = None
-        size_param = tuple(int(x) for x in sizes_t.tolist())
+        size_param = tuple(int(x) for x in spatial_sizes)
     else:
         raise ValueError(f"OnnxResize at {node.name}: cannot resolve scales or sizes")
     params: Dict[str, Any] = {
-        "mode": str(getattr(mod, 'onnx_mode', 'nearest')),
+        "mode": _onnx_resize_torch_mode(str(getattr(mod, 'onnx_mode', 'nearest')), spatial_rank),
         "input_shape": self.shape,
         "output_shape": output_shape,
     }
@@ -1094,6 +1158,11 @@ def _convert_OnnxBinaryMathOperation(self, mod: nn.Module, node: fx.Node) -> Non
             {"x_vars": xv, "y_vars": yv,
              "input_shape": xs, "output_shape": out_shape},
             xv + yv, out_vars,
+        )
+        self._set_explicit_preds(
+            layer_id,
+            [self.node_to_layer_id.get(x.name, -1),
+             self.node_to_layer_id.get(y.name, -1)],
         )
         self.prev_out = out_vars
         self.shape = out_shape

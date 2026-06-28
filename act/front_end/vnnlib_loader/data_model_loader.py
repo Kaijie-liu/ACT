@@ -18,6 +18,7 @@ from typing import List, Dict, Optional, Tuple
 import logging
 import json
 import csv
+import os
 import urllib.request
 import shutil
 import gzip
@@ -48,6 +49,115 @@ VNNCOMP_REPO_URLS = [
     "https://raw.githubusercontent.com/ChristopherBrix/vnncomp2024_benchmarks/main/benchmarks",
     "https://raw.githubusercontent.com/ChristopherBrix/vnncomp_benchmarks/main",
 ]
+
+
+def _dedupe_paths(paths: List[Path]) -> List[Path]:
+    """Return paths in order, dropping duplicates after absolute resolution."""
+
+    out: List[Path] = []
+    seen = set()
+    for path in paths:
+        try:
+            key = str(path.expanduser().resolve(strict=False))
+        except Exception:
+            key = str(path)
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(Path(key))
+    return out
+
+
+def _normalise_benchmark_root(path: Path) -> Path:
+    """Accept either a benchmark root or a parent containing ``benchmarks/``."""
+
+    path = path.expanduser()
+    if (path / "benchmarks").is_dir() and not (path / "instances.csv").exists():
+        return path / "benchmarks"
+    return path
+
+
+def _vnnlib_root_candidates(root_dir: Optional[str] = None) -> List[Path]:
+    """Return VNNLIB roots searched by the loader.
+
+    ``root_dir`` preserves the old single-root behavior.  With the default
+    ``None`` value, ACT first checks optional environment roots, then the
+    repository-local download cache.  Machine-local benchmark checkouts should
+    be configured through ``ACT_VNNLIB_ROOTS`` or ``ACT_VNNCOMP_BENCHMARK_ROOTS``.
+    """
+
+    if root_dir is not None:
+        return [_normalise_benchmark_root(Path(root_dir))]
+
+    roots: List[Path] = []
+    for env_name in ("ACT_VNNLIB_ROOTS", "ACT_VNNCOMP_BENCHMARK_ROOTS"):
+        raw = os.environ.get(env_name, "")
+        for part in raw.split(os.pathsep):
+            part = part.strip()
+            if part:
+                roots.append(_normalise_benchmark_root(Path(part)))
+
+    roots.append(Path(get_vnnlib_data_root()))
+    return _dedupe_paths(roots)
+
+
+def _instance_file_candidates(category_dir: Path, instance_path: str, kind: str) -> List[Path]:
+    """Candidate locations for an ONNX/VNNLIB path from ``instances.csv``."""
+
+    raw_text = str(instance_path).strip()
+    if not raw_text:
+        return []
+
+    raw = Path(raw_text)
+    if raw.is_absolute():
+        return [raw]
+
+    candidates = [category_dir / raw]
+    if not raw.parts or raw.parts[0] != kind:
+        candidates.append(category_dir / kind / raw)
+    candidates.append(category_dir / kind / raw.name)
+    return _dedupe_paths(candidates)
+
+
+def _default_instance_file_path(category_dir: Path, instance_path: str, kind: str) -> Path:
+    """Canonical local path for downloading a row file."""
+
+    raw = Path(str(instance_path).strip())
+    if raw.is_absolute():
+        return raw
+    if raw.parts and raw.parts[0] == kind:
+        return category_dir / raw
+    return category_dir / kind / raw
+
+
+def _resolve_instance_file(category_dir: Path, instance_path: str, kind: str) -> Optional[Path]:
+    """Resolve a row path without losing subdirectories from VNN-COMP rows."""
+
+    for candidate in _instance_file_candidates(category_dir, instance_path, kind):
+        if candidate.exists():
+            return candidate
+    return None
+
+
+def _is_instances_data_row(row: List[str]) -> bool:
+    if len(row) < 3:
+        return False
+    try:
+        float(row[2])
+        return True
+    except Exception:
+        return False
+
+
+def _read_instance_rows(instances_file: Path) -> List[List[str]]:
+    with instances_file.open("r", newline="") as f:
+        reader = csv.reader(f)
+        first = next(reader, None)
+        rows: List[List[str]] = []
+        if first is not None and _is_instances_data_row(first):
+            rows.append(first)
+        rows.extend(reader)
+    return rows
 
 
 def download_vnnlib_category(
@@ -165,7 +275,8 @@ def download_vnnlib_category(
             onnx_file = instance['onnx']
             if onnx_file not in downloaded_onnx:
                 # Try both .onnx and .onnx.gz (gzipped files)
-                onnx_path = onnx_dir / Path(onnx_file).name
+                onnx_path = _default_instance_file_path(category_dir, onnx_file, "onnx")
+                onnx_path.parent.mkdir(parents=True, exist_ok=True)
                 
                 # Try .onnx.gz first (compressed), then .onnx
                 tried_urls = []
@@ -208,7 +319,8 @@ def download_vnnlib_category(
             # Download VNNLIB spec
             vnnlib_file = instance['vnnlib']
             if vnnlib_file not in downloaded_vnnlib:
-                vnnlib_path = vnnlib_dir / Path(vnnlib_file).name
+                vnnlib_path = _default_instance_file_path(category_dir, vnnlib_file, "vnnlib")
+                vnnlib_path.parent.mkdir(parents=True, exist_ok=True)
                 
                 # Try both .vnnlib and .vnnlib.gz
                 tried_urls = []
@@ -311,50 +423,55 @@ def list_downloaded_pairs(root_dir: Optional[str] = None) -> List[Dict[str, any]
         >>> for pair in pairs:
         ...     print(f"{pair['category']}: {pair['onnx_model']}")
     """
-    if root_dir is None:
-        root_dir = get_vnnlib_data_root()
-    
-    root_path = Path(root_dir)
-    if not root_path.exists():
-        return []
-    
     all_instances = []
-    
-    for category_dir in root_path.iterdir():
-        if not category_dir.is_dir():
+    seen_instances = set()
+
+    for root_path in _vnnlib_root_candidates(root_dir):
+        if not root_path.exists():
             continue
-        
-        instances_file = category_dir / "instances.csv"
-        if not instances_file.exists():
-            continue
-        
-        try:
-            with open(instances_file, 'r') as f:
-                reader = csv.reader(f)
-                header = next(reader, None)  # Skip header
-                
-                for row in reader:
-                    if len(row) >= 3:
-                        onnx_file, vnnlib_file, timeout = row[0], row[1], row[2]
-                        
-                        onnx_path = category_dir / "onnx" / Path(onnx_file).name
-                        vnnlib_path = category_dir / "vnnlib" / Path(vnnlib_file).name
-                        
-                        # Only include if files exist
-                        if onnx_path.exists() and vnnlib_path.exists():
-                            all_instances.append({
-                                'category': category_dir.name,
-                                'onnx_model': onnx_file,
-                                'vnnlib_spec': vnnlib_file,
-                                'timeout': float(timeout) if timeout else None,
-                                'paths': {
-                                    'onnx': str(onnx_path),
-                                    'vnnlib': str(vnnlib_path)
-                                }
-                            })
-        
-        except Exception as e:
-            logger.warning(f"Failed to read instances from {category_dir.name}: {e}")
+
+        for category_dir in sorted(root_path.iterdir(), key=lambda p: p.name):
+            if not category_dir.is_dir():
+                continue
+
+            instances_file = category_dir / "instances.csv"
+            if not instances_file.exists():
+                continue
+
+            try:
+                for data_idx, row in enumerate(_read_instance_rows(instances_file)):
+                    if len(row) < 3:
+                        continue
+                    onnx_file, vnnlib_file, timeout = row[0], row[1], row[2]
+                    onnx_path = _resolve_instance_file(category_dir, onnx_file, "onnx")
+                    vnnlib_path = _resolve_instance_file(category_dir, vnnlib_file, "vnnlib")
+
+                    # Only include if files exist.  If the same category/iid is
+                    # present in multiple roots, the earlier root wins.
+                    key = (category_dir.name, data_idx)
+                    if key in seen_instances or onnx_path is None or vnnlib_path is None:
+                        continue
+                    try:
+                        timeout_value = float(timeout) if timeout else None
+                    except Exception:
+                        continue
+                    seen_instances.add(key)
+                    all_instances.append({
+                        'category': category_dir.name,
+                        'index': data_idx,
+                        'onnx_model': onnx_file,
+                        'vnnlib_spec': vnnlib_file,
+                        'timeout': timeout_value,
+                        'root_dir': str(root_path),
+                        'category_dir': str(category_dir),
+                        'paths': {
+                            'onnx': str(onnx_path),
+                            'vnnlib': str(vnnlib_path)
+                        }
+                    })
+
+            except Exception as e:
+                logger.warning(f"Failed to read instances from {category_dir.name}: {e}")
     
     return all_instances
 
@@ -459,19 +576,32 @@ def load_vnnlib_pair(
         >>> tensor, label = labeled_tensor
         >>> output = model(tensor.unsqueeze(0))
     """
-    if root_dir is None:
-        root_dir = get_vnnlib_data_root()
-    
-    category_dir = Path(root_dir) / category
-    onnx_path = category_dir / "onnx" / Path(onnx_model).name
-    vnnlib_path = category_dir / "vnnlib" / Path(vnnlib_spec).name
+    roots = _vnnlib_root_candidates(root_dir)
+
+    category_dir: Optional[Path] = None
+    onnx_path: Optional[Path] = None
+    vnnlib_path: Optional[Path] = None
+    for root_path in roots:
+        candidate_category_dir = root_path / category
+        candidate_onnx_path = _resolve_instance_file(candidate_category_dir, onnx_model, "onnx")
+        candidate_vnnlib_path = _resolve_instance_file(candidate_category_dir, vnnlib_spec, "vnnlib")
+        if (
+            candidate_category_dir.exists()
+            and candidate_onnx_path is not None
+            and candidate_vnnlib_path is not None
+        ):
+            category_dir = candidate_category_dir
+            onnx_path = candidate_onnx_path
+            vnnlib_path = candidate_vnnlib_path
+            break
     
     # Auto-download if not found
-    if not category_dir.exists() or not onnx_path.exists() or not vnnlib_path.exists():
+    if category_dir is None or onnx_path is None or vnnlib_path is None:
         if auto_download:
             logger.info(f"Category '{category}' not found locally. Downloading...")
-            
-            download_result = download_vnnlib_category(category, root_dir)
+
+            download_root = root_dir if root_dir is not None else get_vnnlib_data_root()
+            download_result = download_vnnlib_category(category, download_root)
             
             if download_result['status'] != 'success':
                 raise RuntimeError(
@@ -480,16 +610,21 @@ def load_vnnlib_pair(
                 )
             
             logger.info("Download completed. Proceeding to load...")
+            category_dir = Path(download_root) / category
+            onnx_path = _resolve_instance_file(category_dir, onnx_model, "onnx")
+            vnnlib_path = _resolve_instance_file(category_dir, vnnlib_spec, "vnnlib")
         else:
+            searched = ", ".join(str(path) for path in roots)
             raise FileNotFoundError(
                 f"VNNLIB instance not found: {category}/{onnx_model}\n"
+                f"Searched roots: {searched}\n"
                 f"Set auto_download=True to download automatically."
             )
     
     # Check if files exist after potential download
-    if not onnx_path.exists():
+    if onnx_path is None or not onnx_path.exists():
         raise FileNotFoundError(f"ONNX model not found: {onnx_path}")
-    if not vnnlib_path.exists():
+    if vnnlib_path is None or not vnnlib_path.exists():
         raise FileNotFoundError(f"VNNLIB spec not found: {vnnlib_path}")
     
     logger.info(f"Loading VNNLIB instance: {category}/{onnx_model}")
@@ -684,18 +819,14 @@ def list_local_categories(root_dir: Optional[str] = None) -> List[str]:
     Returns:
         List of category names that have been downloaded
     """
-    if root_dir is None:
-        root_dir = get_vnnlib_data_root()
-    
-    root_path = Path(root_dir)
-    if not root_path.exists():
-        return []
-    
-    categories = []
-    for item in root_path.iterdir():
-        if item.is_dir() and (item / "instances.csv").exists():
-            categories.append(item.name)
-    
+    categories = set()
+    for root_path in _vnnlib_root_candidates(root_dir):
+        if not root_path.exists():
+            continue
+        for item in root_path.iterdir():
+            if item.is_dir() and (item / "instances.csv").exists():
+                categories.add(item.name)
+
     return sorted(categories)
 
 
@@ -710,21 +841,20 @@ def get_category_info(category: str, root_dir: Optional[str] = None) -> Optional
     Returns:
         Dict with category metadata, or None if not found
     """
-    if root_dir is None:
-        root_dir = get_vnnlib_data_root()
-    
-    category_dir = Path(root_dir) / category
-    info_path = category_dir / "info.json"
-    
-    if not info_path.exists():
-        return None
-    
-    try:
-        with open(info_path, 'r') as f:
-            return json.load(f)
-    except Exception as e:
-        logger.error(f"Failed to read category info: {e}")
-        return None
+    for root_path in _vnnlib_root_candidates(root_dir):
+        category_dir = root_path / category
+        info_path = category_dir / "info.json"
+
+        if not info_path.exists():
+            continue
+
+        try:
+            with open(info_path, 'r') as f:
+                return json.load(f)
+        except Exception as e:
+            logger.error(f"Failed to read category info: {e}")
+            return None
+    return None
 
 
 def _format_size(size_bytes: int) -> str:

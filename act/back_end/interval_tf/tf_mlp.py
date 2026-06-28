@@ -61,7 +61,8 @@ def tf_relu(L: Layer, Bin: Bounds) -> Fact:
     C.add_box(L.id,L.out_vars,B); return Fact(B,C)
 
 def tf_lrelu(L: Layer, Bin: Bounds) -> Fact:
-    a=float(L.params["alpha"]); l,u=Bin.lb,Bin.ub; on=l>=0; off=u<=0; amb=~(on|off)
+    a=float(L.params.get("negative_slope", L.params.get("alpha", 0.01)))
+    l,u=Bin.lb,Bin.ub; on=l>=0; off=u<=0; amb=~(on|off)
     z=torch.zeros_like(l)
     lb=torch.minimum(a*torch.minimum(l,z), torch.maximum(l,z))
     ub=torch.maximum(a*torch.maximum(u,z), torch.maximum(u,z))
@@ -102,7 +103,7 @@ def tf_add(L: Layer, Bx: Bounds, By: Bounds) -> Fact:
     C.add_box(L.id,L.out_vars,B); return Fact(B,C)
     
 def tf_sub(L: Layer, Bx: Bounds, By: Bounds) -> Fact:
-    B = Bounds(Bx.lb - By.lb, Bx.ub - By.ub)
+    B = Bounds(Bx.lb - By.ub, Bx.ub - By.lb)
     C = ConSet()
     C.replace(Con("EQ", tuple(L.out_vars + L.params["x_vars"] + L.params["y_vars"]), {"tag": f"sub:{L.id}"}))
     C.add_box(L.id, L.out_vars, B)

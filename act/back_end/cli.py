@@ -90,7 +90,12 @@ def _verify_one_net(
     """
     from act.back_end.bab.bab import clear_violation_check_module_cache
     from act.back_end.serialization.serialization import load_net_from_file
-    from act.back_end.transfer_functions import ensure_active_tf, is_dual_solver_active
+    from act.back_end.transfer_functions import (
+        ensure_active_tf,
+        is_dual_solver_active,
+        is_hybridz_solver_active,
+        set_transfer_function_mode,
+    )
     from act.back_end.verifier import verify_once, verify_lp_batched
     from act.util.stats import VerifyStatus
 
@@ -100,7 +105,10 @@ def _verify_one_net(
         net = load_net_from_file(net_path, target_device=backend_cfg.device)
         n_layers = len(net.layers)
 
-        active_tf = ensure_active_tf("interval")
+        is_hybridz = is_hybridz_solver_active()
+        if is_hybridz:
+            set_transfer_function_mode("hybridz")
+        active_tf = ensure_active_tf("hybridz" if is_hybridz else "interval")
         is_dual = is_dual_solver_active()
 
         # Pre-filter helper: DualTF is the registry holder for dual backward
@@ -136,7 +144,7 @@ def _verify_one_net(
         if blocking:
             return [], _SkipUnsupported(tf_name=authority_name, kinds=blocking), n_layers
 
-        results: List[Any] = list(verify_once(net=net))
+        results: List[Any] = list(verify_once(net=net, backend_cfg=backend_cfg))
 
         any_unknown = any(r.status == VerifyStatus.UNKNOWN for r in results)
 
@@ -146,7 +154,7 @@ def _verify_one_net(
         # ConSet entries; the forward analyze() pipeline is bypassed) and emit
         # spurious FALSIFIED. Do not remove this gate without first switching
         # back to an LP-feeding forward TF (interval / hybridz).
-        if any_unknown and backend_cfg.lp_enabled and not is_dual:
+        if any_unknown and backend_cfg.lp_enabled and not is_dual and not is_hybridz:
             try:
                 lp_results = verify_lp_batched(
                     net,
@@ -169,7 +177,7 @@ def _verify_one_net(
                 if "export_to_batch_problem" not in str(e):
                     raise
 
-        if any_unknown and backend_cfg.bab_enabled:
+        if any_unknown and backend_cfg.bab_enabled and not is_hybridz:
             # verify_bab_batched operates on a single-instance (B=1) net and
             # returns one VerifyResult. For multi-sample nets we slice per-lane
             # and dispatch one BaB call per still-UNKNOWN sample.
@@ -859,7 +867,9 @@ Examples:
             "  'gurobi'  — commercial MILP/LP (license required).  LP cascade.\n"
             "  'torchlp' — PyTorch-tensor LP (Adam + penalty + box projection,\n"
             "              GPU-capable).  LP cascade.\n"
-                "  'dual'    — DualSolver, linear-relaxation dual certified bounds via\n"
+            "  'hybridz' — pure HybridZ verdict path over the propagated HZ;\n"
+            "              UNKNOWN on HZ drop or undecided exact MILP.\n"
+            "  'dual'    — DualSolver, linear-relaxation dual certified bounds via\n"
             "              backward propagation.  No LP cascade (DualSolver is\n"
             "              its own verification pipeline).\n"
             "  'auto'    — try gurobi, fall back to torchlp.\n"
@@ -886,6 +896,70 @@ Examples:
             "'interval').  For dual certified bounds, use --solver dual instead "
             "(dual is a solver, not a TF — see --solver help)."
         ),
+    )
+    verify_group.add_argument(
+        "--hybridz-timeout",
+        type=float,
+        default=None,
+        dest="hybridz_timeout",
+        help="Override the HybridZ verdict timeout in seconds.",
+    )
+    verify_group.add_argument(
+        "--hybridz-engine",
+        type=str,
+        choices=["dense_hz_objbound", "sparse_hz_objbound"],
+        default=None,
+        dest="hybridz_engine",
+        help="Strict HybridZ verdict engine for --solver hybridz.",
+    )
+    verify_group.add_argument(
+        "--hybridz-sigmoid-k",
+        type=int,
+        default=None,
+        dest="hybridz_sigmoid_k",
+        help="Override HybridZ sigmoid segments per side.",
+    )
+    verify_group.add_argument(
+        "--hybridz-tanh-k",
+        type=int,
+        default=None,
+        dest="hybridz_tanh_k",
+        help="Override HybridZ tanh segments per side.",
+    )
+    verify_group.add_argument(
+        "--hybridz-scurve-domain-cuts",
+        action="store_true",
+        default=None,
+        dest="hybridz_scurve_domain_cuts",
+        help="Enable default-off exact-valid S-curve domain/range cuts.",
+    )
+    verify_group.add_argument(
+        "--hybridz-scurve-graph-cuts",
+        action="store_true",
+        default=None,
+        dest="hybridz_scurve_graph_cuts",
+        help="Enable default-off exact-valid S-curve graph cuts.",
+    )
+    verify_group.add_argument(
+        "--hybridz-compressed-relu",
+        action="store_true",
+        default=None,
+        dest="hybridz_compressed_relu",
+        help="Enable exact compressed/projected ReLU construction.",
+    )
+    verify_group.add_argument(
+        "--hybridz-relu-valid-cuts",
+        action="store_true",
+        default=None,
+        dest="hybridz_relu_valid_cuts",
+        help="Enable exact-valid ReLU cuts.",
+    )
+    verify_group.add_argument(
+        "--hybridz-cell-budget",
+        type=int,
+        default=None,
+        dest="hybridz_cell_budget",
+        help="Override the HybridZ dense-cell carry budget before UNKNOWN/drop guards.",
     )
 
     # BaB mode: --bab enables, --no-bab disables, absent = from config.yaml
@@ -1055,6 +1129,10 @@ Examples:
 
 # (override_key, args_attr, env_var, env_cast, cli_check)
 # cli_check="user_set" for flags with non-None defaults (--device/--dtype/--registry-mode)
+def _env_bool(value: str) -> bool:
+    return value.strip().lower() in {"1", "true", "yes", "on"}
+
+
 _BACKEND_OVERRIDE_SPEC: list[tuple[str, str, Optional[str], Any, str]] = [
     ("solver",               "solver",              "ACT_SOLVER",     None, "not_none"),
     ("device",               "device",              "ACT_DEVICE",     None, "user_set"),
@@ -1076,6 +1154,15 @@ _BACKEND_OVERRIDE_SPEC: list[tuple[str, str, Optional[str], Any, str]] = [
     ("gen_name_prefix",      "name_prefix",         None,             None, "not_none"),
     ("gen_tf_targets",       "tf_targets",          None,             None, "not_none"),
     ("gen_registry_mode",    "registry_mode",       None,             None, "user_set"),
+    ("hybridz_timeout",      "hybridz_timeout",     "ACT_HYBRIDZ_TIMEOUT", float, "not_none"),
+    ("hybridz_engine",       "hybridz_engine",      "ACT_HYBRIDZ_ENGINE", None, "not_none"),
+    ("hybridz_sigmoid_k",    "hybridz_sigmoid_k",   "ACT_HYBRIDZ_SIGMOID_K", int, "not_none"),
+    ("hybridz_tanh_k",       "hybridz_tanh_k",      "ACT_HYBRIDZ_TANH_K", int, "not_none"),
+    ("hybridz_scurve_domain_cuts", "hybridz_scurve_domain_cuts", "ACT_HYBRIDZ_SCURVE_DOMAIN_CUTS", _env_bool, "not_none"),
+    ("hybridz_scurve_graph_cuts", "hybridz_scurve_graph_cuts", "ACT_HYBRIDZ_SCURVE_GRAPH_CUTS", _env_bool, "not_none"),
+    ("hybridz_compressed_relu", "hybridz_compressed_relu", "ACT_HYBRIDZ_COMPRESSED_RELU", _env_bool, "not_none"),
+    ("hybridz_relu_valid_cuts", "hybridz_relu_valid_cuts", "ACT_HYBRIDZ_RELU_VALID_CUTS", _env_bool, "not_none"),
+    ("hybridz_cell_budget",  "hybridz_cell_budget", "ACT_HYBRIDZ_CELL_BUDGET", int, "not_none"),
 ]
 
 
