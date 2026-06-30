@@ -69,7 +69,7 @@ def sparse_hz_apply_layer(L, hz: SparseHZono, input_bounds: Bounds, result: Fact
     if k == LayerKind.TANH.value:
         return True, sparse_hz_apply_tanh_piecewise(
             hz,
-            K=getattr(tf, "_tanh_K", 1),
+            K=getattr(tf, "_tanh_K", 2),
             domain_cuts=getattr(tf, "_scurve_domain_cuts", False),
             graph_cuts=getattr(tf, "_scurve_graph_cuts", False),
         ), None
@@ -3138,7 +3138,7 @@ def sparse_hz_apply_sigmoid_piecewise(
 def sparse_hz_apply_tanh_piecewise(
     hz: SparseHZono,
     pre_bounds: Optional[Bounds] = None,
-    K: int = 1,
+    K: int = 2,
     domain_cuts: bool = False,
     graph_cuts: bool = False,
     grid: str = "uniform",

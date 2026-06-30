@@ -38,7 +38,7 @@ class HybridzTF(TransferFunction):
         self._sparse_hz_cache: Dict[int, SparseHZono] = {}
         self._sparse_drop_reasons: Dict[int, str] = {}
         self._cache_net_id: Optional[int] = None
-        self._tanh_K: int = 1
+        self._tanh_K: int = 2
         self._sigmoid_K: int = 2
         self._scurve_domain_cuts: bool = False
         self._scurve_graph_cuts: bool = False
