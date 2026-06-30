@@ -69,7 +69,6 @@ class VNNLibSpecCreator(BaseSpecCreator):
         self,
         categories: Optional[List[str]] = None,
         max_instances: Optional[int] = None,
-        instance_indices: Optional[List[int]] = None,
         validate_shapes: bool = True
     ) -> List[Tuple[str, str, nn.Module, List[LabeledInputTensor], List[Tuple[InputSpec, OutputSpec]]]]:
         """
@@ -87,8 +86,6 @@ class VNNLibSpecCreator(BaseSpecCreator):
         Args:
             categories: List of benchmark categories (None = all downloaded)
             max_instances: Maximum instances per category (None = all)
-            instance_indices: Optional zero-based instances.csv row indices to
-                keep within each selected category.
             validate_shapes: Whether to validate specs against model
             
         Returns:
@@ -108,7 +105,7 @@ class VNNLibSpecCreator(BaseSpecCreator):
         """
         logger.info(
             f"Creating VNNLIB specs: categories={categories}, "
-            f"max_instances={max_instances}, instance_indices={instance_indices}"
+            f"max_instances={max_instances}"
         )
         
         # Get all downloaded instances
@@ -130,16 +127,6 @@ class VNNLibSpecCreator(BaseSpecCreator):
             logger.warning("No instances match the specified categories")
             return []
 
-        if instance_indices is not None:
-            keep = {int(i) for i in instance_indices}
-            all_instances = [
-                inst for inst in all_instances
-                if int(inst.get("index", -1)) in keep
-            ]
-            if not all_instances:
-                logger.warning("No instances match the specified instance_indices")
-                return []
-        
         # Limit instances per category if specified
         if max_instances is not None:
             # Group by category and limit each
@@ -168,7 +155,6 @@ class VNNLibSpecCreator(BaseSpecCreator):
             category = instance_info['category']
             onnx_model = instance_info['onnx_model']
             vnnlib_spec = instance_info['vnnlib_spec']
-            instance_index = int(instance_info.get("index", -1))
             root_dir = instance_info.get("root_dir")
             
             # Create instance identifier
@@ -196,7 +182,6 @@ class VNNLibSpecCreator(BaseSpecCreator):
                 result = self._create_specs_for_single_instance(
                     category=category,
                     instance_id=instance_id,
-                    instance_index=instance_index,
                     instance_data=instance_data,
                     validate_shapes=validate_shapes
                 )
@@ -222,7 +207,6 @@ class VNNLibSpecCreator(BaseSpecCreator):
         self,
         category: str,
         instance_id: str,
-        instance_index: int,
         instance_data: Dict,
         validate_shapes: bool
     ) -> Optional[Tuple[str, str, nn.Module, List[LabeledInputTensor], List[Tuple[InputSpec, OutputSpec]]]]:
@@ -233,10 +217,7 @@ class VNNLibSpecCreator(BaseSpecCreator):
             Tuple of (category, instance_id, pytorch_model, labeled_tensors, spec_pairs)
             or None if failed
         """
-        if instance_index >= 0:
-            logger.info(f"Generating specs for {category}/{instance_id} (iid={instance_index})")
-        else:
-            logger.info(f"Generating specs for {category}/{instance_id}")
+        logger.info(f"Generating specs for {category}/{instance_id}")
         
         pytorch_model = instance_data['model']
         labeled_tensor = instance_data['labeled_tensor']

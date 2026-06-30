@@ -615,13 +615,9 @@ def _run_vnnlib_verify(args) -> bool:
             **_hybridz_cli_overrides(args)
         )
 
-    instance_indices = None
-    if getattr(args, "instance_index", None) is not None:
-        instance_indices = [int(args.instance_index)]
     spec_results = VNNLibSpecCreator().create_specs_for_data_model_pairs(
         categories=[args.category],
         max_instances=args.max_instances,
-        instance_indices=instance_indices,
     )
     if not spec_results:
         raise RuntimeError(f"VNNLibSpecCreator produced no spec_results for category={args.category!r}")
@@ -1496,15 +1492,6 @@ Examples:
         action="store_true",
         help="After --verify vnnlib/torchvision, run concrete-counterexample soundness validation on the same instances",
     )
-    verify_group.add_argument(
-        "--instance-index",
-        type=int,
-        default=None,
-        help=(
-            "For --verify vnnlib, run only the selected zero-based instances.csv row."
-        ),
-    )
-
     # Add standard device/dtype arguments (shared across all ACT CLIs)
     add_device_args(parser)
 

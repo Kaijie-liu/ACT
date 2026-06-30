@@ -60,6 +60,7 @@ from .analyze import dispatch_tf, analyze
 
 # Solver interfaces
 from .solver.solver_base import Solver, SolverCaps, SolveStatus
+from .solver.solver_gurobi import GurobiSolver
 
 # Verification types (canonical location: act/util/stats.py)
 from act.util.stats import VerifyStatus, VerifyResult
@@ -131,11 +132,3 @@ __all__ = [
     "BranchingStrategy",
     "Scheduler",
 ]
-
-
-def __getattr__(name):
-    if name == "GurobiSolver":
-        from .solver.solver_gurobi import GurobiSolver
-
-        return GurobiSolver
-    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

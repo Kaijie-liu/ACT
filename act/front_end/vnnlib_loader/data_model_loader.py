@@ -18,7 +18,6 @@ from typing import List, Dict, Optional, Tuple
 import logging
 import json
 import csv
-import os
 import urllib.request
 import shutil
 import gzip
@@ -81,24 +80,13 @@ def _vnnlib_root_candidates(root_dir: Optional[str] = None) -> List[Path]:
     """Return VNNLIB roots searched by the loader.
 
     ``root_dir`` preserves the old single-root behavior.  With the default
-    ``None`` value, ACT first checks optional environment roots, then the
-    repository-local download cache.  Machine-local benchmark checkouts should
-    be configured through ``ACT_VNNLIB_ROOTS`` or ``ACT_VNNCOMP_BENCHMARK_ROOTS``.
+    ``None`` value, ACT searches only the repository-local download cache.
     """
 
     if root_dir is not None:
         return [_normalise_benchmark_root(Path(root_dir))]
 
-    roots: List[Path] = []
-    for env_name in ("ACT_VNNLIB_ROOTS", "ACT_VNNCOMP_BENCHMARK_ROOTS"):
-        raw = os.environ.get(env_name, "")
-        for part in raw.split(os.pathsep):
-            part = part.strip()
-            if part:
-                roots.append(_normalise_benchmark_root(Path(part)))
-
-    roots.append(Path(get_vnnlib_data_root()))
-    return _dedupe_paths(roots)
+    return [Path(get_vnnlib_data_root())]
 
 
 def _instance_file_candidates(category_dir: Path, instance_path: str, kind: str) -> List[Path]:
