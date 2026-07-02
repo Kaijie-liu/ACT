@@ -2728,6 +2728,7 @@ def sparse_hz_apply_scurve_piecewise(
     by exact inequality rows rather than four slack equality columns.
     """
 
+    graph_cuts = False
     if pre_bounds is None:
         pre_bounds = sparse_hz_fast_bounds(hz)
     grid = str(grid or "uniform")
