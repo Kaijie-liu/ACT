@@ -826,6 +826,25 @@ def _scatter_cols(A: torch.Tensor, col_map: torch.Tensor, n_merged: int) -> torc
     return out
 
 
+def _shared_constraint_prefix(Ac_x: torch.Tensor, Ac_y: torch.Tensor,
+                              Ab_x: torch.Tensor, Ab_y: torch.Tensor,
+                              b_x: torch.Tensor, b_y: torch.Tensor,
+                              eq_x: "torch.Tensor | None",
+                              eq_y: "torch.Tensor | None") -> int:
+    m = min(int(Ac_x.shape[0]), int(Ac_y.shape[0]))
+    if m == 0:
+        return 0
+    same = (Ac_x[:m] == Ac_y[:m]).all(dim=1)
+    if Ab_x.shape[1]:
+        same &= (Ab_x[:m] == Ab_y[:m]).all(dim=1)
+    same &= (b_x[:m] == b_y[:m]).reshape(m, -1).all(dim=1)
+    if eq_x is not None or eq_y is not None:
+        ex = eq_x if eq_x is not None else torch.ones(int(Ac_x.shape[0]), dtype=torch.bool, device=Ac_x.device)
+        ey = eq_y if eq_y is not None else torch.ones(int(Ac_y.shape[0]), dtype=torch.bool, device=Ac_y.device)
+        same &= ex[:m].to(Ac_x.device) == ey[:m].to(Ac_x.device)
+    return m if bool(same.all()) else int((~same).nonzero()[0, 0])
+
+
 def hz_sgm_add(hz_x: HZono, hz_y: HZono) -> HZono:
     """Exact sum of two HZs that may share generator factors (by ``col_ids``)."""
     if hz_x.col_ids is None or hz_y.col_ids is None:
@@ -850,9 +869,13 @@ def hz_sgm_add(hz_x: HZono, hz_y: HZono) -> HZono:
     Ab_x = _scatter_cols(hz_x.Ab, xb_map, nbm)
     Ab_y = _scatter_cols(hz_y.Ab.to(dtype=dtype, device=device), yb_map, nbm)
 
-    new_Ac = torch.cat([Ac_x, Ac_y], dim=0)
-    new_Ab = torch.cat([Ab_x, Ab_y], dim=0)
-    new_b = torch.cat([hz_x.b, hz_y.b.to(dtype=dtype, device=device)], dim=0)
+    b_x = hz_x.b.to(dtype=dtype, device=device)
+    b_y = hz_y.b.to(dtype=dtype, device=device)
+    k = _shared_constraint_prefix(Ac_x, Ac_y, Ab_x, Ab_y, b_x, b_y,
+                                  hz_x.eq_mask, hz_y.eq_mask)
+    new_Ac = torch.cat([Ac_x, Ac_y[k:]], dim=0)
+    new_Ab = torch.cat([Ab_x, Ab_y[k:]], dim=0)
+    new_b = torch.cat([b_x, b_y[k:]], dim=0)
 
     nc_x = int(hz_x.Ac.shape[0])
     nc_y = int(hz_y.Ac.shape[0])
@@ -863,7 +886,7 @@ def hz_sgm_add(hz_x: HZono, hz_y: HZono) -> HZono:
               else torch.ones(nc_x, dtype=torch.bool, device=device))
         my = (hz_y.eq_mask if hz_y.eq_mask is not None
               else torch.ones(nc_y, dtype=torch.bool, device=device))
-        new_eq_mask = torch.cat([mx.to(device), my.to(device)], dim=0)
+        new_eq_mask = torch.cat([mx.to(device), my.to(device)[k:]], dim=0)
 
     return hz_inherit_known_nonempty(HZono(
         c=hz_x.c + hz_y.c.to(dtype=dtype, device=device),
