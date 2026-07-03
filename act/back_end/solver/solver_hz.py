@@ -826,8 +826,73 @@ def _scatter_cols(A: torch.Tensor, col_map: torch.Tensor, n_merged: int) -> torc
     return out
 
 
+def _hz_strip_ids(hz: HZono) -> HZono:
+    """ABLATION helper (reviewer round-7 P2): drop generator identities so joins
+    treat operands as independent (sound over-approximation; fresh-ids world)."""
+    return HZono(c=hz.c, Gc=hz.Gc, Gb=hz.Gb, Ac=hz.Ac, Ab=hz.Ab, b=hz.b,
+                 eq_mask=hz.eq_mask, col_ids=None, bcol_ids=None)
+
+
+def _shared_row_prefix(Ac_x: torch.Tensor, Ac_y: torch.Tensor,
+                       Ab_x: torch.Tensor, Ab_y: torch.Tensor,
+                       b_x: torch.Tensor, b_y: torch.Tensor,
+                       eq_x: "torch.Tensor | None", eq_y: "torch.Tensor | None") -> int:
+    """Length of the common constraint-row prefix of two operands whose rows are
+    already scattered into the SAME merged generator frame.
+
+    Two branches of a residual/concat join carry the full constraint system of
+    their common ancestor state: affine transformers never touch (Ac, Ab, b) and
+    nonlinear transformers only APPEND rows, so the ancestor block survives as a
+    bitwise-identical prefix in both operands. Stacking both copies (the previous
+    behaviour) doubles nc at every join -- 2^depth rows on residual chains -- while
+    adding only literally-duplicate constraints. Dropping the duplicate copy of an
+    identical row (same coefficients on identically-indexed merged columns, same
+    rhs, same eq/ineq type) never changes the feasible set, so this dedup is
+    unconditionally sound and exact; if the prefix assumption fails (e.g. a branch
+    reordered rows) the detected prefix is simply shorter and we fall back to
+    stacking. Kill-switch: ACT_HZ_NO_JOIN_ROW_DEDUP=1 restores the old stacking.
+    """
+    if os.environ.get("ACT_HZ_NO_JOIN_ROW_DEDUP") == "1":
+        return 0
+    m = min(int(Ac_x.shape[0]), int(Ac_y.shape[0]))
+    if m == 0:
+        return 0
+    same = (Ac_x[:m] == Ac_y[:m]).all(dim=1)
+    same &= (b_x[:m] == b_y[:m]).reshape(m, -1).all(dim=1)
+    if Ab_x.shape[1] or Ab_y.shape[1]:
+        same &= (Ab_x[:m] == Ab_y[:m]).all(dim=1)
+    if eq_x is not None or eq_y is not None:
+        ex = eq_x if eq_x is not None else torch.ones(int(Ac_x.shape[0]), dtype=torch.bool,
+                                                      device=Ac_x.device)
+        ey = eq_y if eq_y is not None else torch.ones(int(Ac_y.shape[0]), dtype=torch.bool,
+                                                      device=Ac_y.device)
+        same &= ex[:m].to(Ac_x.device) == ey[:m].to(Ac_x.device)
+    k = m if bool(same.all()) else int((~same).nonzero()[0, 0])
+    if os.environ.get("ACT_HZ_JOIN_DEBUG") == "1":
+        rss = "?"
+        try:
+            with open("/proc/self/status") as f:
+                for ln in f:
+                    if ln.startswith("VmRSS"):
+                        rss = ln.split()[1] + "kB"; break
+        except OSError:
+            pass
+        print(f"[join-dedup] nc_x={int(Ac_x.shape[0])} nc_y={int(Ac_y.shape[0])} "
+              f"ng={int(Ac_x.shape[1])} prefix_k={k} rss={rss}", flush=True)
+    return k
+
+
+def _fresh_join_ids() -> bool:
+    """ACT_HZ_FRESH_JOIN_IDS=1 disables generator-frame alignment at joins
+    (Add/Sub/Concat): operands are treated as independent. Sound; used ONLY for
+    the frames on/off ablation, never in the counted configuration."""
+    return os.environ.get("ACT_HZ_FRESH_JOIN_IDS") == "1"
+
+
 def hz_sgm_add(hz_x: HZono, hz_y: HZono) -> HZono:
     """Exact sum of two HZs that may share generator factors (by ``col_ids``)."""
+    if _fresh_join_ids():
+        return hz_minkowski_sum(_hz_strip_ids(hz_x), _hz_strip_ids(hz_y))
     if hz_x.col_ids is None or hz_y.col_ids is None:
         return hz_minkowski_sum(hz_x, hz_y)
     n = int(hz_x.c.shape[0])
@@ -850,9 +915,12 @@ def hz_sgm_add(hz_x: HZono, hz_y: HZono) -> HZono:
     Ab_x = _scatter_cols(hz_x.Ab, xb_map, nbm)
     Ab_y = _scatter_cols(hz_y.Ab.to(dtype=dtype, device=device), yb_map, nbm)
 
-    new_Ac = torch.cat([Ac_x, Ac_y], dim=0)
-    new_Ab = torch.cat([Ab_x, Ab_y], dim=0)
-    new_b = torch.cat([hz_x.b, hz_y.b.to(dtype=dtype, device=device)], dim=0)
+    b_y = hz_y.b.to(dtype=dtype, device=device)
+    k = _shared_row_prefix(Ac_x, Ac_y, Ab_x, Ab_y, hz_x.b, b_y,
+                           hz_x.eq_mask, hz_y.eq_mask)
+    new_Ac = torch.cat([Ac_x, Ac_y[k:]], dim=0)
+    new_Ab = torch.cat([Ab_x, Ab_y[k:]], dim=0)
+    new_b = torch.cat([hz_x.b, b_y[k:]], dim=0)
 
     nc_x = int(hz_x.Ac.shape[0])
     nc_y = int(hz_y.Ac.shape[0])
@@ -863,7 +931,7 @@ def hz_sgm_add(hz_x: HZono, hz_y: HZono) -> HZono:
               else torch.ones(nc_x, dtype=torch.bool, device=device))
         my = (hz_y.eq_mask if hz_y.eq_mask is not None
               else torch.ones(nc_y, dtype=torch.bool, device=device))
-        new_eq_mask = torch.cat([mx.to(device), my.to(device)], dim=0)
+        new_eq_mask = torch.cat([mx.to(device), my.to(device)[k:]], dim=0)
 
     return hz_inherit_known_nonempty(HZono(
         c=hz_x.c + hz_y.c.to(dtype=dtype, device=device),
@@ -903,6 +971,8 @@ def hz_concat(parts) -> "HZono | None":
     if len(parts) == 1:
         return parts[0]
     dtype, device = parts[0].c.dtype, parts[0].c.device
+    if _fresh_join_ids():
+        return _hz_concat_independent([_hz_strip_ids(p) for p in parts])
     if any(p.col_ids is None for p in parts):
         return _hz_concat_independent(parts)
 
@@ -947,6 +1017,14 @@ def hz_concat(parts) -> "HZono | None":
         bs.append(p.b.to(dtype=dtype, device=device))
         eqs.append(p.eq_mask if p.eq_mask is not None
                    else torch.ones(nc_p, dtype=torch.bool, device=device))
+    # Drop the shared ancestor constraint prefix duplicated across sibling parts
+    # (same dedup as hz_sgm_add; identical rows are redundant, so this is exact).
+    for i in range(1, len(parts)):
+        k = _shared_row_prefix(Acs[0], Acs[i], Abs_[0], Abs_[i], bs[0], bs[i],
+                               eqs[0], eqs[i])
+        if k:
+            Acs[i] = Acs[i][k:]; Abs_[i] = Abs_[i][k:]
+            bs[i] = bs[i][k:]; eqs[i] = eqs[i][k:]
     eq_mask = torch.cat(eqs) if any(e is not None for e in eqs) else None
     return hz_inherit_known_nonempty(HZono(
         c=torch.cat(cs, 0), Gc=torch.cat(Gcs, 0), Gb=torch.cat(Gbs, 0),

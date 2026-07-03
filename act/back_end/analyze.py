@@ -39,6 +39,20 @@ class AnalyzeCache:
     globalC: ConSet
 
 
+_RSS_DEBUG = __import__("os").environ.get("ACT_ANALYZE_RSS_DEBUG") == "1"
+
+
+def _rss_kb() -> int:
+    try:
+        with open("/proc/self/status") as f:
+            for ln in f:
+                if ln.startswith("VmRSS"):
+                    return int(ln.split()[1])
+    except OSError:
+        pass
+    return -1
+
+
 @torch.no_grad()
 def analyze(
     net: Net,
@@ -122,9 +136,33 @@ def analyze(
             before[layer.id] = entry_fact
             seeds.append(layer.id)
 
-    WL = deque(seeds)
+    # Process in topological order. The plain FIFO worklist re-dispatches deep
+    # layers O(depth) times on residual DAGs (each BFS wave settles one more
+    # block, and every join fires as soon as ANY predecessor updates), which
+    # multiplies the cost of expensive abstract-domain side states; with a
+    # topo-ranked priority queue plus queued-entry dedup, every DAG node is
+    # dispatched exactly once, after all its predecessors have settled. The
+    # convergence criterion is unchanged, so graphs with cycles (or genuinely
+    # re-fired nodes) degrade gracefully to the old re-push behaviour.
+    topo_rank: Dict[int, int] = {}
+    _indeg = {l.id: len(net.preds.get(l.id, [])) for l in net.layers}
+    _tq = deque([l.id for l in net.layers if _indeg[l.id] == 0])
+    _r = 0
+    while _tq:
+        _nid = _tq.popleft(); topo_rank[_nid] = _r; _r += 1
+        for _sid in net.succs.get(_nid, []):
+            _indeg[_sid] -= 1
+            if _indeg[_sid] == 0:
+                _tq.append(_sid)
+    for l in net.layers:
+        topo_rank.setdefault(l.id, _r)  # cycle members: after all DAG nodes
+
+    import heapq
+    WL = [(topo_rank.get(s, 0), s) for s in seeds]
+    heapq.heapify(WL)
+    _queued = set(seeds)
     while WL:
-        lid = WL.popleft(); layer = net.by_id[lid]
+        _, lid = heapq.heappop(WL); _queued.discard(lid); layer = net.by_id[lid]
 
         # merge predecessors into before[lid]
         if net.preds.get(lid):
@@ -146,7 +184,15 @@ def analyze(
                 for con in after[pid].cons: Cjoin.replace(con)
             before[lid] = Fact(Bjoin, Cjoin)
 
+        if _RSS_DEBUG:
+            _r0 = _rss_kb()
         out_fact = dispatch_tf(layer, before, after, net)
+        if _RSS_DEBUG:
+            _r1 = _rss_kb()
+            if _r1 - _r0 > 100_000:  # only report layers allocating >100 MB
+                print(f"[rss] layer={lid} kind={layer.kind} "
+                      f"{_r0/1e6:.2f}->{_r1/1e6:.2f} GB (+{(_r1-_r0)/1e6:.2f})",
+                      flush=True)
         side_sig = get_transfer_function().side_state_signature(layer.id)
         side_changed = layer.cache.get("prev_tf_side_state") != side_sig
 
@@ -155,6 +201,9 @@ def analyze(
             update_cache(layer, out_fact.bounds, None)
             layer.cache["prev_tf_side_state"] = side_sig
             for con in out_fact.cons: globalC.replace(con)
-            for sid in net.succs.get(lid, []): WL.append(sid)
+            for sid in net.succs.get(lid, []):
+                if sid not in _queued:
+                    heapq.heappush(WL, (topo_rank.get(sid, 0), sid))
+                    _queued.add(sid)
 
     return before, after, globalC
