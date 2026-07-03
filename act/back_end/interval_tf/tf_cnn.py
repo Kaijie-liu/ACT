@@ -295,16 +295,15 @@ def tf_flatten(L: Layer, Bin: Bounds) -> Fact:
         f"flatten out_vars length {len(L.out_vars)} != output elements {lb_flat.shape[1]}"
     )
     if "output_shape" in L.params:
-        full_expected = 1
+        prod_all = 1
         for dim in output_shape:
-            full_expected *= int(dim)
-        tail_expected = 1
-        dims = output_shape[1:] if len(output_shape) > 1 else output_shape
-        for dim in dims:
-            tail_expected *= int(dim)
-        assert lb_flat.shape[1] in (full_expected, tail_expected), (
-            f"flatten output numel {lb_flat.shape[1]} != expected "
-            f"{full_expected} (full shape) or {tail_expected} (batch-stripped)"
+            prod_all *= int(dim)
+        prod_strip = 1
+        for dim in output_shape[1:]:
+            prod_strip *= int(dim)
+        assert lb_flat.shape[1] in (prod_all, prod_strip), (
+            f"flatten output numel {lb_flat.shape[1]} matches neither "
+            f"prod(output_shape)={prod_all} nor prod(output_shape[1:])={prod_strip}"
         )
     B_out = Bounds(lb_flat, ub_flat)
     # Note: bounds validity is checked in analyze.py with detailed debug info
