@@ -80,12 +80,6 @@ def hz_fresh_col_ids(k: int, device=None) -> torch.Tensor:
     return torch.arange(start, start + k, dtype=torch.long, device=device)
 
 
-_fresh_col_ids = hz_fresh_col_ids
-
-
-def reset_col_ids() -> None:
-    """Reset the id counter (optional; call at the start of a propagation)."""
-    _NEXT_COL_ID[0] = 0
 
 
 # ============================================================================
@@ -98,13 +92,7 @@ def _clone_ids(t: Optional[torch.Tensor]) -> Optional[torch.Tensor]:
 
 
 def hz_mark_known_nonempty(hz: HZono, reason: str = "constructed") -> HZono:
-    """Attach a lightweight non-emptiness certificate to a constructed HZ.
-
-    Exact transfer functions in this backend preserve non-emptiness from a
-    non-empty input box. The verdict layer still has a MILP fallback for objects
-    without this construction evidence, but it should not spend a second hard
-    MIP just to rediscover that an exactly-propagated HZ is non-empty.
-    """
+    """Mark an HZ produced by exact transfer functions as non-empty."""
     setattr(hz, "_solver_known_nonempty", True)
     setattr(hz, "_solver_known_nonempty_reason", str(reason))
     return hz
@@ -229,7 +217,6 @@ def hz_split_constraints(hz: HZono):
             (hz.Ac[~m], hz.Ab[~m], hz.b[~m]))
 
 
-_split_eq_le = hz_split_constraints
 
 
 def hz_from_bounds(bounds: Bounds, dtype, device, *, track_ids: bool = False,
@@ -405,7 +392,6 @@ def hz_compute_lp_bounds(
     )
 
 
-_hz_compute_bounds_scipy = hz_compute_lp_bounds
 
 
 def hz_compute_bounds(hz: HZono, *, exact: bool = False) -> Bounds:
@@ -1035,9 +1021,6 @@ try:
 except Exception:  # pragma: no cover
     _HAS_PYSCIPOPT = False
 
-HAS_SCIPY = _HAS_SCIPY
-HAS_HIGHSPY = _HAS_HIGHSPY
-HAS_PYSCIPOPT = _HAS_PYSCIPOPT
 
 
 def _torch_csr(t):
@@ -1077,7 +1060,6 @@ def hz_np_sparse(hz):
     return out
 
 
-_hz_np_sparse = hz_np_sparse
 
 
 def _mat_dot_gen(mat, gen) -> np.ndarray:
@@ -1111,7 +1093,6 @@ def hz_relax_np_sparse(hz):
     return out
 
 
-_hz_relax_np_sparse = hz_relax_np_sparse
 
 
 def _csr_rowsum(A) -> np.ndarray:
@@ -1148,11 +1129,7 @@ def _parse_highs_value(raw: str):
 
 
 def _apply_highs_env_options(h):
-    """Apply comma/semicolon separated HiGHS options from HZ_HIGHS_OPTIONS.
-
-    This is a solver-strategy hook only: it cannot relax integrality or change
-    the exact HZ constraints. Invalid options are ignored unless debug is on.
-    """
+    """Apply comma/semicolon separated HiGHS options from HZ_HIGHS_OPTIONS."""
     raw = os.environ.get("HZ_HIGHS_OPTIONS", "").strip()
     if not raw:
         return
@@ -1166,9 +1143,8 @@ def _apply_highs_env_options(h):
             continue
         try:
             h.setOptionValue(key, _parse_highs_value(val))
-        except Exception as exc:
-            if _env_flag("HZ_MILP_DEBUG"):
-                logger.debug("[HZ_MILP] ignored HiGHS option %s=%r: %s", key, val, exc)
+        except Exception:
+            pass
 
 
 def _project_singleton_continuous_rows(A, rl, ru, cost, lb, ub, integ_mask):
@@ -3334,8 +3310,6 @@ def sparse_milp_cutoff_scip(
     return status, val, xi if val is not None else None
 
 
-_milp_cutoff_highs = sparse_milp_cutoff_highs
-_milp_cutoff_scip = sparse_milp_cutoff_scip
 
 
 def _spec_np(C, thresholds, out_dim: int):
@@ -3479,13 +3453,6 @@ def _objbound_solve_highs(cost, obj_thr, A, rl, ru, lb, ub, integ_mask, time_lim
         if eq_meta is not None:
             current_integ_mask = current_integ_mask[np.asarray(eq_meta["keep_cols"], dtype=np.int64)]
             elim_metas.append(eq_meta)
-            if _env_flag("HZ_MILP_DEBUG"):
-                logger.debug(
-                    "[HZ_MILP] eq_subst removed=%s kept=%s rows=%s",
-                    int(eq_meta["original_ncols"] - len(eq_meta["keep_cols"])),
-                    len(eq_meta["keep_cols"]),
-                    A.shape[0],
-                )
 
     if _env_flag("HZ_MILP_ELIM_SINGLETONS"):
         A, rl, ru, cost, lb, ub, singleton_meta = _project_singleton_continuous_rows(
@@ -3494,13 +3461,6 @@ def _objbound_solve_highs(cost, obj_thr, A, rl, ru, lb, ub, integ_mask, time_lim
         if singleton_meta is not None:
             current_integ_mask = current_integ_mask[np.asarray(singleton_meta["keep_cols"], dtype=np.int64)]
             elim_metas.append(singleton_meta)
-            if _env_flag("HZ_MILP_DEBUG"):
-                logger.debug(
-                    "[HZ_MILP] elim_singletons removed=%s kept=%s rows=%s",
-                    int(singleton_meta["original_ncols"] - len(singleton_meta["keep_cols"])),
-                    len(singleton_meta["keep_cols"]),
-                    A.shape[0],
-                )
     elim_meta = _chain_elim_meta(*elim_metas)
     integ_mask = current_integ_mask
 
@@ -3511,15 +3471,6 @@ def _objbound_solve_highs(cost, obj_thr, A, rl, ru, lb, ub, integ_mask, time_lim
         if not cutoff_row:
             cost, obj_thr, obj_scale = _scale_milp_objective(cost, obj_thr)
             solve_cost = cost
-        if _env_flag("HZ_MILP_DEBUG"):
-            if row_scale is None or row_scale.size == 0:
-                row_msg = "none"
-            else:
-                row_msg = (
-                    f"min={float(np.min(row_scale)):.3g} "
-                    f"max={float(np.max(row_scale)):.3g}"
-                )
-            logger.debug("[HZ_MILP] scale rows=%s obj_scale=%.3g", row_msg, obj_scale)
 
     h = _highspy.Highs()
     h.setOptionValue("output_flag", False)
@@ -3555,24 +3506,13 @@ def _objbound_solve_highs(cost, obj_thr, A, rl, ru, lb, ub, integ_mask, time_lim
             start = _project_solution_to_reduced(start_full, elim_meta)
             int_idx = np.flatnonzero(np.asarray(integ_mask, dtype=bool)).astype(np.int32)
             if int_idx.size:
-                ret = h.setSolution(
+                h.setSolution(
                     int_idx.size,
                     int_idx,
                     np.clip(start[int_idx], lb[int_idx], ub[int_idx]).astype(np.float64),
                 )
-                if _env_flag("HZ_MILP_DEBUG"):
-                    logger.debug(
-                        "[HZ_MILP] mip_start entries=%s status=%s",
-                        int(int_idx.size),
-                        ret,
-                    )
-        except Exception as exc:
-            if _env_flag("HZ_MILP_DEBUG"):
-                logger.debug(
-                    "[HZ_MILP] mip_start error=%s:%s",
-                    type(exc).__name__,
-                    str(exc)[:100],
-                )
+        except Exception:
+            pass
     run_status = h.run()
     MS = _highspy.HighsModelStatus
     st = h.getModelStatus()
@@ -3629,13 +3569,6 @@ def _objbound_solve_highs(cost, obj_thr, A, rl, ru, lb, ub, integ_mask, time_lim
         obj_val = float(np.asarray(cost, dtype=np.float64) @ v)
         if (not np.isfinite(obj_val)) or obj_val > float(obj_thr) + 1e-7:
             return None
-        if _env_flag("HZ_MILP_DEBUG"):
-            logger.debug(
-                "[HZ_MILP] accepted target incumbent status=%s obj=%.12g thr=%.12g",
-                h.modelStatusToString(st),
-                obj_val,
-                float(obj_thr),
-            )
         return _xi_from_reduced(v)
 
     if st == MS.kObjectiveTarget:
@@ -3657,13 +3590,6 @@ def _objbound_solve_highs(cost, obj_thr, A, rl, ru, lb, ub, integ_mask, time_lim
         except Exception:
             dual_bound = float("nan")
         if np.isfinite(dual_bound) and dual_bound > float(obj_thr) + 1e-7:
-            if _env_flag("HZ_MILP_DEBUG"):
-                logger.debug(
-                    "[HZ_MILP] dual bound proves empty status=%s dual=%.12g thr=%.12g",
-                    h.modelStatusToString(st),
-                    dual_bound,
-                    float(obj_thr),
-                )
             return "empty", None
     xi_inc = _target_incumbent_from_nonterminal()
     if xi_inc is not None:
@@ -3753,18 +3679,6 @@ def _objbound_solve_scip(cost, obj_thr, A, rl, ru, lb, ub, integ_mask, time_limi
         has_sol = int(m.getNSols()) > 0
     except Exception:
         has_sol = False
-    if os.environ.get("HZ_SCIP_DEBUG", "").strip().lower() in {"1", "true", "yes", "on"}:
-        try:
-            logger.debug(
-                "[HZ_SCIP] status=%s nsol=%s vars=%s rows=%s time_limit=%.3g",
-                status,
-                int(m.getNSols()),
-                n,
-                A.shape[0] + 1,
-                float(time_limit),
-            )
-        except Exception:
-            pass
     if status in {"optimal", "feasible", "bestsollimit"} or has_sol:
         vals = np.asarray([float(m.getVal(v)) for v in V], dtype=np.float64)
         return "witness", np.array([(2.0 * vals[i] - 1.0) if integ_mask[i] else vals[i]
@@ -4144,7 +4058,6 @@ __all__ = [
     "hz_sgm_add",
     "hz_split_constraints",
     "hz_sub",
-    "reset_col_ids",
     "sparse_fbbt_tighten_bounds",
     "sparse_highs_relaxation_empty_precheck",
     "sparse_milp_cutoff_highs",

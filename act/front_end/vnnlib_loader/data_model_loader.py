@@ -429,8 +429,6 @@ def list_downloaded_pairs(root_dir: Optional[str] = None) -> List[Dict[str, Any]
                         onnx_paths.append(resolved)
                     vnnlib_path = _resolve_instance_file(category_dir, vnnlib_rel, "vnnlib")
 
-                    # Only include if files exist.  If the same category/iid is
-                    # present in multiple roots, the earlier root wins.
                     key = (category_dir.name, data_idx)
                     if key in seen_instances or not onnx_paths or vnnlib_path is None:
                         continue

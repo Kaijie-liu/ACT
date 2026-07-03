@@ -104,9 +104,9 @@ def convert_onnx_to_pytorch(
                 logger.warning(f"ONNX simplification failed: {e}, using original model")
 
         # Propagate types/shapes through the graph after any earlier rewrites.
-        # Some ONNX files leave intermediate values with ValueType.UNKNOWN or
-        # lose annotations during onnxsim simplification; without this step
-        # onnx2torch raises "Got unexpected input value type".
+        # VNN-COMP ONNX files can leave intermediate values with ValueType.UNKNOWN
+        # (nn4sys) or lose annotations during onnxsim simplification; without this
+        # step onnx2torch raises "Got unexpected input value type".
         try:
             from onnx import shape_inference
             onnx_model = shape_inference.infer_shapes(onnx_model)
@@ -114,8 +114,8 @@ def convert_onnx_to_pytorch(
             logger.warning(f"ONNX shape inference failed ({e}); proceeding without it")
 
         # Convert to PyTorch. Simplification occasionally leaves intermediate
-        # values with ValueType.UNKNOWN; only retry without simplification for
-        # that upstream conversion error so unrelated conversion bugs
+        # values with ValueType.UNKNOWN (nn4sys); only retry-without-simplify
+        # for that specific upstream error so unrelated conversion bugs
         # (unsupported ops, shape errors) still surface normally.
         logger.info("Converting ONNX to PyTorch")
         try:
@@ -198,9 +198,6 @@ def get_onnx_input_shape(onnx_path: Path) -> Tuple[int, ...]:
         if not graph.input:
             raise ONNXConversionError("ONNX model has no inputs")
 
-        # Filter out initializers: older exporters list weights/biases in
-        # graph.input alongside actual model placeholders, so graph.input[0]
-        # is not necessarily the runtime input tensor.
         initializer_names = {init.name for init in graph.initializer}
         model_inputs = [t for t in graph.input if t.name not in initializer_names]
         if not model_inputs:

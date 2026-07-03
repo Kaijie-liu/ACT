@@ -124,7 +124,6 @@ class HybridzTF(TransferFunction):
         LayerKind.CONV3D.value: lambda L, b, tf: interval_cnn.tf_conv3d(L, b),
         LayerKind.CONVTRANSPOSE2D.value: lambda L, b, tf: hz_cnn.tf_convtranspose2d(L, b, tf),
         LayerKind.FLATTEN.value: lambda L, b, tf: hz_mlp.tf_flatten(L, b, tf),
-        # Shape ops: structural pass-through (HZ row order = flattened layout)
         LayerKind.RESHAPE.value: lambda L, b, tf: hz_mlp.tf_reshape(L, b, tf),
         LayerKind.TRANSPOSE.value: lambda L, b, tf: hz_mlp.tf_transpose(L, b, tf),
         LayerKind.SQUEEZE.value: lambda L, b, tf: hz_mlp.tf_squeeze(L, b, tf),

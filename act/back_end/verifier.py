@@ -60,7 +60,7 @@ from act.back_end.utils import validate_constraints
 if TYPE_CHECKING:
     from act.back_end.analyze import AnalyzeCache
 
-# Front-end enums/spec encoding
+# Front-end enums (kinds)
 from act.front_end.specs import InKind, OutKind, OutputSpec
 
 # Verification types (canonical location: act/util/stats.py)
@@ -875,15 +875,7 @@ def verify_once(
             })
         from act.back_end.solver.solver_hz import hz_objbound_decide
 
-        env_timeout: Optional[float] = None
-        try:
-            if os.environ.get("HZ_VERIFY_TIMEOUT"):
-                env_timeout = float(os.environ["HZ_VERIFY_TIMEOUT"])
-        except ValueError:
-            env_timeout = None
-        fallback_timeout = env_timeout
-        if fallback_timeout is None and backend_cfg is not None:
-            fallback_timeout = getattr(backend_cfg, "timeout", None)
+        fallback_timeout = getattr(backend_cfg, "timeout", None) if backend_cfg is not None else None
         hz_timeout = _hybridz_timeout(hz_cfg, fallback_timeout)
         verdict, witness = hz_objbound_decide(
             hz,

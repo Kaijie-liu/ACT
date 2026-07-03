@@ -458,9 +458,6 @@ def tf_abs(L, bounds, tf):
 
 
 def tf_bn(L, bounds, tf):
-    # BatchNorm is the per-channel affine map y = A*x + c (A,c per channel).
-    # The per-channel HZ helpers already handle B>1 via repeat, so this is an
-    # EXACT HZ transfer — no interval fallback needed (was a spurious fallback).
     hz_in = tf._hz_cache.get(L.id)
     if hz_in is not None:
         A, c = L.params["A"], L.params["c"]
@@ -684,7 +681,6 @@ def tf_sub(L, bounds, tf):
         preds = tf._net.preds.get(L.id, [])
         hz2 = tf._hz_cache.get(preds[1]) if len(preds) > 1 else None
         if hz2 is not None:
-            # x1 - x2 with share-merged subtraction (correlated => exact).
             from act.back_end.solver.solver_hz import hz_sub as _hz_sub
             tf._hz_cache[L.id] = _hz_sub(hz_in, hz2)
         else:
@@ -700,9 +696,6 @@ def tf_sub(L, bounds, tf):
 
 
 def tf_flatten(L, bounds, tf):
-    # Flatten/Reshape only reorder the value layout; the HZ row order is already
-    # the flattened layout, so this is a literal pass-through (exact). Keeping the
-    # inherited HZ in the cache stops apply()'s box re-seed from destroying it.
     fact = interval_cnn.tf_flatten(L, bounds)
     hz_in = tf._hz_cache.get(L.id)
     if hz_in is not None:
@@ -748,10 +741,6 @@ def _hz_gather_rows(hz: HZono, row_idx: torch.Tensor) -> HZono:
 
 
 def tf_squeeze(L, bounds, tf):
-    # Squeeze/Unsqueeze/Transpose only change tensor SHAPE; the framework's
-    # interval handler returns identity bounds (the permutation is tracked in
-    # the layer's EQ constraint), so the flattened HZ row order is unchanged ->
-    # pass-through, consistent with interval.
     fact = interval.tf_squeeze(L, bounds)
     hz_in = tf._hz_cache.get(L.id)
     if hz_in is not None:
@@ -813,10 +802,7 @@ def tf_expand(L, bounds, tf):
             return _hz_fact(fact, tf._hz_cache[L.id])
     return fact
 
-
-
-
-_RELU_TIGHT_MAX_DIM = 4096  # LP-tight does 2n scipy solves; above this (wide conv
+_RELU_TIGHT_MAX_DIM = 4096
 
 
 def _relu_preact_bounds(hz: HZono, tight: bool):

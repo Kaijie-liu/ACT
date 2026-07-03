@@ -59,9 +59,6 @@ def tf_conv2d(L: Layer, Bin: Bounds) -> Fact:
                 in_h, in_w = meta_h, meta_w
 
     if in_h is None or in_w is None:
-        # Metadata is occasionally absent or stale, so keep the old inference as
-        # a fallback.  Prefer factor pairs closest to square, but never override
-        # valid metadata for rectangular feature maps such as 16x28.
         spatial_size = actual_input_size // in_channels
         in_h = in_w = int(spatial_size ** 0.5)
         if in_h * in_w * in_channels != actual_input_size:
@@ -666,7 +663,6 @@ def tf_upsample(L: Layer, Bin: Bounds) -> Fact:
     elif mode == "cubic" and spatial_rank == 2:
         mode = "bicubic"
 
-    # F.interpolate scale_factor must be float or tuple of float.
     y_lb = F.interpolate(
         x_lb,
         size=size,
