@@ -81,7 +81,6 @@ class TransferFunction(ABC):
         """
         return None
 
-
 # Global transfer function management
 _current_tf: TransferFunction = None
 
@@ -159,7 +158,6 @@ def is_dual_solver_active() -> bool:
 
 def is_hybridz_solver_active() -> bool:
     return _current_solver_mode == "hybridz"
-
 
 
 @torch.no_grad()

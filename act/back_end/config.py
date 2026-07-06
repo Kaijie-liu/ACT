@@ -330,6 +330,10 @@ class GenerationConfig:
                 f"expected one of {_VALID_COVERAGE_MODES}"
             )
 
+@dataclass
+class HybridZConfig:
+    timeout: Optional[float] = None
+    engine: str = "dense_hz_objbound"
 
 # ---------------------------------------------------------------------------
 # BackendConfig — unified back-end configuration
@@ -536,6 +540,10 @@ class BackendConfig:
         gen_merged = {k: v for k, v in gen_raw.items() if k in gen_fields}
         gen_merged.update(gen_overrides)
         gen_config = GenerationConfig(**gen_merged)
+        
+        hz_merged = {k: v for k, v in hz_raw.items() if k in hz_fields}
+        hz_merged.update(hz_overrides)
+        hz_config = HybridZConfig(**hz_merged)
 
         hz_merged = {k: v for k, v in hz_raw.items() if k in hz_fields}
         hz_merged.update(hz_overrides)
