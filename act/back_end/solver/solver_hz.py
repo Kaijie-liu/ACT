@@ -21,7 +21,7 @@ try:
     import numpy as np
     import scipy.sparse as sp
     from scipy.optimize import Bounds as SciPyBounds
-    from scipy.optimize import LinearConstraint, milp
+    from scipy.optimize import LinearConstraint, linprog, milp
 
     _HAS_SCIPY = True
 except ImportError:
@@ -29,6 +29,10 @@ except ImportError:
     sp = None
     _HAS_SCIPY = False
 
+try:
+    import highspy
+except ImportError:
+    highspy = None
 
 # ============================================================================
 # 1. HZono dataclass
@@ -63,6 +67,7 @@ class SparseHZono:
     Aub: Optional["sp.csr_matrix"] = None
     ub: Optional["np.ndarray"] = None
     frame_id: Optional[int] = None
+    exact: bool = True
 
     def __post_init__(self) -> None:
         _require_sparse()
@@ -127,6 +132,26 @@ class SparseHZono:
     @property
     def n_ineq(self) -> int:
         return int(self.Auc.shape[0])
+
+
+def hz_tighten_bounds(base: Bounds, candidate: Bounds) -> Bounds:
+    candidate_lb = candidate.lb.reshape_as(base.lb).to(base.lb)
+    candidate_ub = candidate.ub.reshape_as(base.ub).to(base.ub)
+    lb = torch.maximum(base.lb, candidate_lb)
+    ub = torch.minimum(base.ub, candidate_ub)
+    conflict = lb > ub
+    if bool(conflict.any()):
+        scale = torch.maximum(
+            torch.maximum(lb.abs(), ub.abs()),
+            torch.ones((), dtype=lb.dtype, device=lb.device),
+        )
+        tolerance = 128 * torch.finfo(lb.dtype).eps * scale
+        if bool(((lb - ub > tolerance) & conflict).any()):
+            raise ValueError("HZ and interval bounds have a non-numerical conflict")
+    return Bounds(
+        lb=torch.where(conflict, base.lb, lb),
+        ub=torch.where(conflict, base.ub, ub),
+    )
 
 
 _NEXT_COL_ID = [-1]
@@ -292,6 +317,102 @@ def hz_from_bounds(
     return hz
 
 
+def hz_lift_bounds(
+    hz: HZono,
+    bounds: Bounds,
+    *,
+    output_equalities: Optional[torch.Tensor] = None,
+    equality_rhs: Optional[torch.Tensor] = None,
+    output_inequalities: Optional[torch.Tensor] = None,
+    inequality_rhs: Optional[torch.Tensor] = None,
+) -> HZono:
+    """Lift finite output bounds into the existing dense generator frame."""
+    dtype, device = hz.c.dtype, hz.c.device
+    lb = bounds.lb.flatten().to(dtype=dtype, device=device)
+    ub = bounds.ub.flatten().to(dtype=dtype, device=device)
+    if not bool(torch.isfinite(lb).all() and torch.isfinite(ub).all()):
+        raise ValueError("cannot lift non-finite bounds into a dense HZ")
+    if not bool((lb <= ub).all()):
+        raise ValueError("cannot lift inconsistent bounds into a dense HZ")
+
+    center = (lb + ub) * 0.5
+    radius = (ub - lb) * 0.5
+    n_out = int(center.numel())
+    old_cont = int(hz.Gc.shape[1])
+    old_bin = int(hz.Gb.shape[1])
+    Gc = torch.zeros((n_out, old_cont + n_out), dtype=dtype, device=device)
+    if n_out:
+        rows = torch.arange(n_out, device=device)
+        Gc[rows, old_cont + rows] = radius
+    Gb = torch.zeros((n_out, old_bin), dtype=dtype, device=device)
+    Ac = torch.cat(
+        [hz.Ac, torch.zeros((hz.Ac.shape[0], n_out), dtype=dtype, device=device)],
+        dim=1,
+    )
+    Ab = hz.Ab.clone()
+    b = hz.b.clone()
+    old_mask = _constraint_mask(hz)
+
+    if output_equalities is not None:
+        E = output_equalities.to(dtype=dtype, device=device)
+        if E.ndim != 2 or E.shape[1] != n_out:
+            raise ValueError(f"output equality shape mismatch: {tuple(E.shape)} vs {n_out}")
+        rhs = (
+            torch.zeros(E.shape[0], dtype=dtype, device=device)
+            if equality_rhs is None
+            else equality_rhs.to(dtype=dtype, device=device).reshape(-1)
+        )
+        if rhs.numel() != E.shape[0]:
+            raise ValueError("output equality rhs shape mismatch")
+        Ac = torch.cat([Ac, E @ Gc], dim=0)
+        Ab = torch.cat(
+            [Ab, torch.zeros((E.shape[0], old_bin), dtype=dtype, device=device)],
+            dim=0,
+        )
+        b = torch.cat([b, (rhs - E @ center).view(-1, 1)], dim=0)
+        old_mask = torch.cat(
+            [old_mask, torch.ones(E.shape[0], dtype=torch.bool, device=device)]
+        )
+
+    if output_inequalities is not None:
+        A = output_inequalities.to(dtype=dtype, device=device)
+        if A.ndim != 2 or A.shape[1] != n_out:
+            raise ValueError(f"output inequality shape mismatch: {tuple(A.shape)} vs {n_out}")
+        rhs = (
+            torch.zeros(A.shape[0], dtype=dtype, device=device)
+            if inequality_rhs is None
+            else inequality_rhs.to(dtype=dtype, device=device).reshape(-1)
+        )
+        if rhs.numel() != A.shape[0]:
+            raise ValueError("output inequality rhs shape mismatch")
+        Ac = torch.cat([Ac, A @ Gc], dim=0)
+        Ab = torch.cat(
+            [Ab, torch.zeros((A.shape[0], old_bin), dtype=dtype, device=device)],
+            dim=0,
+        )
+        b = torch.cat([b, (rhs - A @ center).view(-1, 1)], dim=0)
+        old_mask = torch.cat(
+            [old_mask, torch.zeros(A.shape[0], dtype=torch.bool, device=device)]
+        )
+
+    col_ids = None
+    if hz.col_ids is not None:
+        col_ids = torch.cat(
+            [hz.col_ids.to(device), hz_fresh_col_ids(n_out, device=device)]
+        )
+    return HZono(
+        c=center.view(-1, 1),
+        Gc=Gc,
+        Gb=Gb,
+        Ac=Ac,
+        Ab=Ab,
+        b=b,
+        eq_mask=old_mask,
+        col_ids=col_ids,
+        bcol_ids=_clone_ids(hz.bcol_ids),
+    )
+
+
 def _require_sparse() -> None:
     if not _HAS_SCIPY:
         raise RuntimeError("Sparse HybridZ requires scipy")
@@ -344,6 +465,7 @@ def sparse_hz_pad_frame(hz: SparseHZono, n_cont: int, n_bin: int) -> SparseHZono
         Aub=sparse_pad_cols(hz.Aub, n_bin),
         ub=hz.ub,
         frame_id=hz.frame_id,
+        exact=hz.exact,
     )
 
 
@@ -359,7 +481,7 @@ def sparse_hz_from_bounds(
     center = (lb + ub) * 0.5
     rad = (ub - lb) * 0.5
     rows = (
-        np.nonzero(np.abs(rad) > 1e-12)[0].astype(np.int32)
+        np.nonzero(rad != 0.0)[0].astype(np.int32)
         if drop_zero_radius
         else np.arange(rad.size, dtype=np.int32)
     )
@@ -380,6 +502,111 @@ def sparse_hz_from_bounds(
         Aub=sparse_empty(0, 0),
         ub=np.zeros(0, dtype=np.float64),
         frame_id=frame_id,
+        exact=True,
+    )
+
+
+def sparse_hz_lift_bounds(
+    hz: SparseHZono,
+    bounds: Bounds,
+    slots,
+    n_cont: int,
+    *,
+    output_equalities=None,
+    equality_rhs=None,
+    output_inequalities=None,
+    inequality_rhs=None,
+) -> SparseHZono:
+    """Lift finite output bounds into reserved columns of a sparse frame."""
+    lb = bounds.lb.detach().cpu().double().numpy().reshape(-1)
+    ub = bounds.ub.detach().cpu().double().numpy().reshape(-1)
+    if not np.isfinite(lb).all() or not np.isfinite(ub).all():
+        raise ValueError("cannot lift non-finite bounds into a sparse HZ")
+    if np.any(lb > ub):
+        raise ValueError("cannot lift inconsistent bounds into a sparse HZ")
+    slots = np.asarray(slots, dtype=np.int64).reshape(-1)
+    if slots.size != lb.size:
+        raise ValueError(f"sparse lift slot mismatch: {slots.size} vs {lb.size}")
+
+    rows = np.arange(lb.size, dtype=np.int64)
+    center = (lb + ub) * 0.5
+    radius = (ub - lb) * 0.5
+    nonzero = radius != 0.0
+    Gc = sp.csr_matrix(
+        (radius[nonzero], (rows[nonzero], slots[nonzero])),
+        shape=(lb.size, int(n_cont)),
+        dtype=np.float64,
+    )
+    Gb = sparse_empty(lb.size, hz.n_bin)
+    Ac = sparse_empty(0, int(n_cont))
+    Ab = sparse_empty(0, hz.n_bin)
+    b = np.zeros(0, dtype=np.float64)
+    Auc = sparse_empty(0, int(n_cont))
+    Aub = sparse_empty(0, hz.n_bin)
+    ub_rhs = np.zeros(0, dtype=np.float64)
+
+    if output_equalities is not None:
+        E = _as_csr(output_equalities)
+        if E.shape[1] != lb.size:
+            raise ValueError(f"sparse output equality shape mismatch: {E.shape} vs {lb.size}")
+        rhs = (
+            np.zeros(E.shape[0], dtype=np.float64)
+            if equality_rhs is None
+            else np.asarray(equality_rhs, dtype=np.float64).reshape(-1)
+        )
+        if rhs.size != E.shape[0]:
+            raise ValueError("sparse output equality rhs shape mismatch")
+        Ac = sp.vstack([Ac, E @ Gc], format="csr")
+        Ab = sp.vstack([Ab, sparse_empty(E.shape[0], hz.n_bin)], format="csr")
+        b = np.concatenate([b, rhs - np.asarray(E @ center).reshape(-1)])
+
+    if output_inequalities is not None:
+        A = _as_csr(output_inequalities)
+        if A.shape[1] != lb.size:
+            raise ValueError(f"sparse output inequality shape mismatch: {A.shape} vs {lb.size}")
+        rhs = (
+            np.zeros(A.shape[0], dtype=np.float64)
+            if inequality_rhs is None
+            else np.asarray(inequality_rhs, dtype=np.float64).reshape(-1)
+        )
+        if rhs.size != A.shape[0]:
+            raise ValueError("sparse output inequality rhs shape mismatch")
+        Auc = sp.vstack([Auc, A @ Gc], format="csr")
+        Aub = sp.vstack([Aub, sparse_empty(A.shape[0], hz.n_bin)], format="csr")
+        ub_rhs = np.concatenate([ub_rhs, rhs - np.asarray(A @ center).reshape(-1)])
+
+    out = SparseHZono(
+        c=center,
+        Gc=Gc,
+        Gb=Gb,
+        Ac=Ac,
+        Ab=Ab,
+        b=b,
+        Auc=Auc,
+        Aub=Aub,
+        ub=ub_rhs,
+        frame_id=hz.frame_id,
+        exact=False,
+    )
+    return out
+
+
+def sparse_hz_reframe_point(hz: SparseHZono, target: SparseHZono) -> SparseHZono:
+    """Embed an unconstrained point value into another sparse generator frame."""
+    if not sparse_hz_is_point(hz) or hz.n_eq or hz.n_ineq:
+        raise ValueError("only unconstrained point HZs can be reframed")
+    return SparseHZono(
+        c=hz.c,
+        Gc=sparse_empty(hz.n_out, target.n_cont),
+        Gb=sparse_empty(hz.n_out, target.n_bin),
+        Ac=sparse_empty(0, target.n_cont),
+        Ab=sparse_empty(0, target.n_bin),
+        b=np.zeros(0, dtype=np.float64),
+        Auc=sparse_empty(0, target.n_cont),
+        Aub=sparse_empty(0, target.n_bin),
+        ub=np.zeros(0, dtype=np.float64),
+        frame_id=target.frame_id,
+        exact=hz.exact and target.exact,
     )
 
 
@@ -409,6 +636,40 @@ def sparse_hz_linear(hz: SparseHZono, W, bias=None) -> SparseHZono:
         Aub=hz.Aub,
         ub=hz.ub,
         frame_id=hz.frame_id,
+        exact=hz.exact,
+    )
+
+
+def sparse_hz_intersect_bounds(hz: SparseHZono, bounds: Bounds) -> SparseHZono:
+    lb = bounds.lb.detach().cpu().double().numpy().reshape(-1)
+    ub = bounds.ub.detach().cpu().double().numpy().reshape(-1)
+    if lb.size != hz.n_out or not np.isfinite(lb).all() or not np.isfinite(ub).all():
+        raise ValueError("sparse HZ box intersection requires finite matching bounds")
+    if np.any(lb > ub):
+        raise ValueError("sparse HZ box intersection received inconsistent bounds")
+    radius = np.asarray(np.abs(hz.Gc).sum(axis=1)).reshape(-1)
+    if hz.n_bin:
+        radius += np.asarray(np.abs(hz.Gb).sum(axis=1)).reshape(-1)
+    upper_rows = np.flatnonzero(ub < hz.c + radius)
+    lower_rows = np.flatnonzero(lb > hz.c - radius)
+    return SparseHZono(
+        c=hz.c,
+        Gc=hz.Gc,
+        Gb=hz.Gb,
+        Ac=hz.Ac,
+        Ab=hz.Ab,
+        b=hz.b,
+        Auc=sp.vstack(
+            [hz.Auc, hz.Gc[upper_rows], -hz.Gc[lower_rows]], format="csr"
+        ),
+        Aub=sp.vstack(
+            [hz.Aub, hz.Gb[upper_rows], -hz.Gb[lower_rows]], format="csr"
+        ),
+        ub=np.concatenate(
+            [hz.ub, ub[upper_rows] - hz.c[upper_rows], hz.c[lower_rows] - lb[lower_rows]]
+        ),
+        frame_id=hz.frame_id,
+        exact=False,
     )
 
 
@@ -432,6 +693,7 @@ def sparse_hz_add_const(hz: SparseHZono, bias) -> SparseHZono:
         Aub=hz.Aub,
         ub=hz.ub,
         frame_id=hz.frame_id,
+        exact=hz.exact,
     )
 
 
@@ -461,6 +723,7 @@ def sparse_hz_gather_rows(hz: SparseHZono, rows) -> SparseHZono:
         Aub=hz.Aub,
         ub=hz.ub,
         frame_id=hz.frame_id,
+        exact=hz.exact,
     )
 
 
@@ -491,6 +754,1208 @@ def _sparse_concat_arrays(arrs):
     return np.concatenate(arrs) if arrs else np.zeros(0, dtype=np.float64)
 
 
+def _sparse_constraint_prefix(Ac_x, Ab_x, b_x, Ac_y, Ab_y, b_y) -> int:
+    m = min(int(Ac_x.shape[0]), int(Ac_y.shape[0]))
+    if m == 0:
+        return 0
+    dc = (Ac_x[:m] - Ac_y[:m]).tocsr()
+    db = (Ab_x[:m] - Ab_y[:m]).tocsr()
+    dc.eliminate_zeros()
+    db.eliminate_zeros()
+    same = (
+        (np.asarray(dc.getnnz(axis=1)).reshape(-1) == 0)
+        & (np.asarray(db.getnnz(axis=1)).reshape(-1) == 0)
+        & (np.asarray(b_x[:m]) == np.asarray(b_y[:m]))
+    )
+    different = np.flatnonzero(~same)
+    return int(different[0]) if different.size else m
+
+
+def _sparse_merge_constraints(parts, c_name, b_name, rhs_name, n_cont, n_bin):
+    base_idx = max(range(len(parts)), key=lambda i: getattr(parts[i], c_name).shape[0])
+    base = parts[base_idx]
+    Ac_base = sparse_pad_cols(getattr(base, c_name), n_cont)
+    Ab_base = sparse_pad_cols(getattr(base, b_name), n_bin)
+    rhs_base = np.asarray(getattr(base, rhs_name), dtype=np.float64).reshape(-1)
+    Ac_parts, Ab_parts, rhs_parts = [Ac_base], [Ab_base], [rhs_base]
+    for i, part in enumerate(parts):
+        if i == base_idx:
+            continue
+        Ac = sparse_pad_cols(getattr(part, c_name), n_cont)
+        Ab = sparse_pad_cols(getattr(part, b_name), n_bin)
+        rhs = np.asarray(getattr(part, rhs_name), dtype=np.float64).reshape(-1)
+        k = _sparse_constraint_prefix(Ac_base, Ab_base, rhs_base, Ac, Ab, rhs)
+        Ac_parts.append(Ac[k:])
+        Ab_parts.append(Ab[k:])
+        rhs_parts.append(rhs[k:])
+    return (
+        _sparse_vstack(Ac_parts, n_cont),
+        _sparse_vstack(Ab_parts, n_bin),
+        _sparse_concat_arrays(rhs_parts),
+    )
+
+
+def _sparse_truncate_rows(matrix, max_terms: int):
+    matrix = matrix.tocsr()
+    omitted_radius = np.zeros(matrix.shape[0], dtype=np.float64)
+    if max_terms <= 0 or np.diff(matrix.indptr).max(initial=0) <= max_terms:
+        return matrix, omitted_radius
+    rows, cols, data = [], [], []
+    for row in range(matrix.shape[0]):
+        start, stop = matrix.indptr[row], matrix.indptr[row + 1]
+        row_data = matrix.data[start:stop]
+        row_cols = matrix.indices[start:stop]
+        if row_data.size > max_terms:
+            selected = np.argpartition(np.abs(row_data), -max_terms)[-max_terms:]
+            omitted = np.ones(row_data.size, dtype=bool)
+            omitted[selected] = False
+            omitted_radius[row] = np.abs(row_data[omitted]).sum()
+            row_data, row_cols = row_data[selected], row_cols[selected]
+        rows.extend([row] * row_data.size)
+        cols.extend(row_cols.tolist())
+        data.extend(row_data.tolist())
+    return sp.csr_matrix(
+        (data, (rows, cols)), shape=matrix.shape, dtype=np.float64
+    ), omitted_radius
+
+
+def _sparse_truncate_columns(matrix, max_columns: int):
+    matrix = matrix.tocsr()
+    if max_columns <= 0 or matrix.nnz == 0:
+        return matrix, np.zeros(matrix.shape[0], dtype=np.float64)
+    used = np.unique(matrix.indices)
+    if used.size <= max_columns:
+        return matrix, np.zeros(matrix.shape[0], dtype=np.float64)
+    coo = matrix.tocoo()
+    column_l1 = np.bincount(
+        coo.col, weights=np.abs(coo.data), minlength=matrix.shape[1]
+    )
+    column_linf = np.zeros(matrix.shape[1], dtype=np.float64)
+    np.maximum.at(column_linf, coo.col, np.abs(coo.data))
+    importance = column_l1 - column_linf
+    selected = np.argpartition(importance, -max_columns)[-max_columns:]
+    selected_mask = np.zeros(matrix.shape[1], dtype=bool)
+    selected_mask[selected] = True
+    keep = selected_mask[coo.col]
+    omitted_radius = np.bincount(
+        coo.row[~keep], weights=np.abs(coo.data[~keep]), minlength=matrix.shape[0]
+    )
+    kept = sp.csr_matrix(
+        (coo.data[keep], (coo.row[keep], coo.col[keep])), shape=matrix.shape
+    )
+    return kept, omitted_radius
+
+
+def sparse_hz_matmul_relaxation(
+    x: SparseHZono,
+    y: SparseHZono,
+    x_bounds: Bounds,
+    y_bounds: Bounds,
+    output_bounds: Bounds,
+    x_rows,
+    y_rows,
+    slots,
+    n_cont: int,
+    *,
+    add_cuts: bool = True,
+) -> SparseHZono:
+    """McCormick relaxation for a variable-variable matrix product."""
+    if not _sparse_same_frame([x, y]):
+        raise ValueError("sparse variable MatMul requires one shared frame")
+    x_rows = np.asarray(x_rows, dtype=np.int64)
+    y_rows = np.asarray(y_rows, dtype=np.int64)
+    if x_rows.ndim != 2 or x_rows.shape != y_rows.shape:
+        raise ValueError("MatMul term rows must have matching [output, reduction] shapes")
+
+    lbx = x_bounds.lb.detach().cpu().double().numpy().reshape(-1)
+    ubx = x_bounds.ub.detach().cpu().double().numpy().reshape(-1)
+    lby = y_bounds.lb.detach().cpu().double().numpy().reshape(-1)
+    uby = y_bounds.ub.detach().cpu().double().numpy().reshape(-1)
+    out_lb = output_bounds.lb.detach().cpu().double().numpy().reshape(-1)
+    out_ub = output_bounds.ub.detach().cpu().double().numpy().reshape(-1)
+    slots = np.asarray(slots, dtype=np.int64).reshape(-1)
+    n_out, reduction = x_rows.shape
+    if n_out != out_lb.size or slots.size != n_out:
+        raise ValueError("MatMul output rows, bounds, and slots do not match")
+    if x_rows.size and (x_rows.min() < 0 or x_rows.max() >= x.n_out):
+        raise ValueError("MatMul left term row is out of range")
+    if y_rows.size and (y_rows.min() < 0 or y_rows.max() >= y.n_out):
+        raise ValueError("MatMul right term row is out of range")
+
+    n_bin = max(x.n_bin, y.n_bin)
+    xp = sparse_hz_pad_frame(x, int(n_cont), n_bin)
+    yp = sparse_hz_pad_frame(y, int(n_cont), n_bin)
+    out_idx = np.arange(n_out, dtype=np.int64)
+    Ac, Ab, b = _sparse_merge_constraints(
+        [xp, yp], "Ac", "Ab", "b", int(n_cont), n_bin
+    )
+    Auc, Aub, ub = _sparse_merge_constraints(
+        [xp, yp], "Auc", "Aub", "ub", int(n_cont), n_bin
+    )
+
+    lx, ux = lbx[x_rows], ubx[x_rows]
+    ly, uy = lby[y_rows], uby[y_rows]
+    cx, cy = (lx + ux) * 0.5, (ly + uy) * 0.5
+    cut_rows = np.repeat(out_idx, reduction)
+    x_cols, y_cols = x_rows.reshape(-1), y_rows.reshape(-1)
+    X0 = sp.csr_matrix(
+        (cy.reshape(-1), (cut_rows, x_cols)), shape=(n_out, x.n_out)
+    )
+    Y0 = sp.csr_matrix(
+        (cx.reshape(-1), (cut_rows, y_cols)), shape=(n_out, y.n_out)
+    )
+    center = (
+        np.asarray(X0 @ xp.c).reshape(-1)
+        + np.asarray(Y0 @ yp.c).reshape(-1)
+        - np.sum(cx * cy, axis=1)
+    )
+    Gc = (X0 @ xp.Gc + Y0 @ yp.Gc).tocsr()
+    Gc, omitted = _sparse_truncate_rows(Gc, 256)
+    radius = np.sum((ux - lx) * (uy - ly), axis=1) * 0.25 + omitted
+    nonzero = radius != 0.0
+    Gc = (
+        Gc
+        + sp.csr_matrix(
+            (radius[nonzero], (out_idx[nonzero], slots[nonzero])),
+            shape=(n_out, int(n_cont)),
+        )
+    ).tocsr()
+    Gb = (
+        (X0 @ xp.Gb + Y0 @ yp.Gb).tocsr()
+        if n_bin else sparse_empty(n_out, 0)
+    )
+    if not add_cuts:
+        return sparse_hz_intersect_bounds(
+            SparseHZono(
+                c=center,
+                Gc=Gc,
+                Gb=Gb,
+                Ac=Ac,
+                Ab=Ab,
+                b=b,
+                Auc=Auc,
+                Aub=Aub,
+                ub=ub,
+                frame_id=x.frame_id,
+                exact=False,
+            ),
+            output_bounds,
+        )
+    lower_first = lx * cy + ly * cx - lx * ly >= ux * cy + uy * cx - ux * uy
+    upper_first = ux * cy + ly * cx - ux * ly <= lx * cy + uy * cx - lx * uy
+    planes = [
+        (
+            -1.0,
+            np.where(lower_first, ly, uy),
+            np.where(lower_first, lx, ux),
+            np.sum(np.where(lower_first, lx * ly, ux * uy), axis=1),
+        ),
+        (
+            -1.0,
+            np.where(lower_first, uy, ly),
+            np.where(lower_first, ux, lx),
+            np.sum(np.where(lower_first, ux * uy, lx * ly), axis=1),
+        ),
+        (
+            1.0,
+            np.where(upper_first, -ly, -uy),
+            np.where(upper_first, -ux, -lx),
+            np.sum(np.where(upper_first, -ux * ly, -lx * uy), axis=1),
+        ),
+        (
+            1.0,
+            np.where(upper_first, -uy, -ly),
+            np.where(upper_first, -lx, -ux),
+            np.sum(np.where(upper_first, -lx * uy, -ux * ly), axis=1),
+        ),
+    ]
+
+    cut_c, cut_b, cut_rhs = [], [], []
+    for output_coeff, x_coeff, y_coeff, rhs in planes:
+        X = sp.csr_matrix(
+            (x_coeff.reshape(-1), (cut_rows, x_cols)),
+            shape=(n_out, x.n_out),
+        )
+        Y = sp.csr_matrix(
+            (y_coeff.reshape(-1), (cut_rows, y_cols)),
+            shape=(n_out, y.n_out),
+        )
+        C = output_coeff * Gc + X @ xp.Gc + Y @ yp.Gc
+        B = output_coeff * Gb + X @ xp.Gb + Y @ yp.Gb
+        cut_c.append(C.tocsr())
+        cut_b.append(B.tocsr())
+        cut_rhs.append(
+            np.asarray(rhs, dtype=np.float64)
+            - output_coeff * center
+            - np.asarray(X @ xp.c).reshape(-1)
+            - np.asarray(Y @ yp.c).reshape(-1)
+        )
+    Auc = sp.vstack([Auc, *cut_c], format="csr")
+    Aub = sp.vstack([Aub, *cut_b], format="csr")
+    ub = np.concatenate([ub, *cut_rhs])
+    Auc.eliminate_zeros()
+    Aub.eliminate_zeros()
+    out = SparseHZono(
+        c=center,
+        Gc=Gc,
+        Gb=Gb,
+        Ac=Ac,
+        Ab=Ab,
+        b=b,
+        Auc=Auc,
+        Aub=Aub,
+        ub=ub,
+        frame_id=x.frame_id,
+        exact=False,
+    )
+    return sparse_hz_intersect_bounds(out, output_bounds)
+
+
+def softmax_ratio_weighted_extreme(
+    values,
+    probability_lower,
+    probability_upper,
+    groups,
+    score_differences,
+    minimize: bool,
+    score_lower=None,
+    score_upper=None,
+):
+    order = np.argsort(values, axis=1)
+    if not minimize:
+        order = order[:, ::-1]
+    ordered_values = np.take_along_axis(values, order, axis=1)
+    ordered_lower = np.take_along_axis(probability_lower, order, axis=1)
+    ordered_upper = np.take_along_axis(probability_upper, order, axis=1)
+    selected = ordered_lower.copy()
+    remaining = np.maximum(0.0, 1.0 - selected.sum(axis=1))
+    for column in range(values.shape[1]):
+        added = np.minimum(
+            remaining, ordered_upper[:, column] - ordered_lower[:, column]
+        )
+        selected[:, column] += added
+        remaining -= added
+    fallback = np.sum(selected * ordered_values, axis=1)
+    extrema = np.min(values, axis=1) if minimize else np.max(values, axis=1)
+    fallback = np.where(remaining <= 1e-10, fallback, extrema)
+    fallback = np.nextafter(fallback, -np.inf if minimize else np.inf)
+    result = fallback.copy()
+    if score_lower is not None and score_upper is not None:
+        score_lower = np.asarray(score_lower, dtype=np.float64)
+        score_upper = np.asarray(score_upper, dtype=np.float64)
+        if score_lower.shape == values.shape and score_upper.shape == values.shape:
+            objective = values if minimize else -values
+            order = np.argsort(objective, axis=1)
+            ordered_objective = np.take_along_axis(objective, order, axis=1).astype(
+                np.longdouble
+            )
+            ordered_lower = np.take_along_axis(score_lower, order, axis=1).astype(
+                np.longdouble
+            )
+            ordered_upper = np.take_along_axis(score_upper, order, axis=1).astype(
+                np.longdouble
+            )
+            shift = np.max(ordered_upper, axis=1, keepdims=True)
+            exp_lower = np.exp(ordered_lower - shift)
+            exp_upper = np.exp(ordered_upper - shift)
+            prefix_num = np.concatenate(
+                [
+                    np.zeros((values.shape[0], 1), dtype=np.longdouble),
+                    np.cumsum(ordered_objective * exp_upper, axis=1),
+                ],
+                axis=1,
+            )
+            prefix_den = np.concatenate(
+                [
+                    np.zeros((values.shape[0], 1), dtype=np.longdouble),
+                    np.cumsum(exp_upper, axis=1),
+                ],
+                axis=1,
+            )
+            lower_num = np.concatenate(
+                [
+                    np.zeros((values.shape[0], 1), dtype=np.longdouble),
+                    np.cumsum(ordered_objective * exp_lower, axis=1),
+                ],
+                axis=1,
+            )
+            lower_den = np.concatenate(
+                [
+                    np.zeros((values.shape[0], 1), dtype=np.longdouble),
+                    np.cumsum(exp_lower, axis=1),
+                ],
+                axis=1,
+            )
+            candidates = (
+                prefix_num + lower_num[:, -1:] - lower_num
+            ) / (
+                prefix_den + lower_den[:, -1:] - lower_den
+            )
+            vertex = np.asarray(np.min(candidates, axis=1), dtype=np.float64)
+            vertex -= 32.0 * np.finfo(np.float64).eps * (1.0 + np.abs(vertex))
+            if minimize:
+                result = np.maximum(result, vertex)
+            else:
+                result = np.minimum(result, -vertex)
+    if highspy is None or score_differences is None:
+        return result
+
+    diff_lb, diff_ub = (
+        np.asarray(part, dtype=np.float64) for part in score_differences
+    )
+    groups = np.asarray(groups, dtype=np.int64).reshape(-1)
+    rowsize = values.shape[1]
+    constraints = {}
+    columns = np.arange(rowsize, dtype=np.int32)
+    for row, group in enumerate(groups):
+        group = int(group)
+        if group < 0 or group >= diff_lb.shape[0]:
+            continue
+        key = (
+            group,
+            probability_lower[row].tobytes(),
+            probability_upper[row].tobytes(),
+        )
+        solver = constraints.get(key)
+        if solver is None:
+            matrix = []
+            for i in range(rowsize):
+                for j in range(i + 1, rowsize):
+                    lower_delta = -diff_ub[group, i, j]
+                    upper_delta = -diff_lb[group, i, j]
+                    if upper_delta <= np.log(1e12):
+                        upper = (
+                            np.exp(upper_delta) if upper_delta > -745.0 else 0.0
+                        )
+                        plane = np.zeros(rowsize, dtype=np.float64)
+                        plane[i], plane[j] = 1.0, -upper
+                        matrix.append(plane)
+                    if -745.0 < lower_delta <= np.log(1e12):
+                        lower = np.exp(lower_delta)
+                        plane = np.zeros(rowsize, dtype=np.float64)
+                        plane[i], plane[j] = -1.0, lower
+                        matrix.append(plane)
+            A = np.asarray(matrix, dtype=np.float64).reshape(-1, rowsize)
+            rows = sp.vstack(
+                [sp.csr_matrix(A), sp.csr_matrix(np.ones((1, rowsize)))],
+                format="csr",
+            )
+            solver = highspy.Highs()
+            solver.setOptionValue("output_flag", False)
+            solver.setOptionValue("solver", "simplex")
+            solver.setOptionValue("threads", 1)
+            solver.addVars(
+                rowsize,
+                probability_lower[row],
+                probability_upper[row],
+            )
+            solver.addRows(
+                rows.shape[0],
+                np.concatenate([np.full(A.shape[0], -np.inf), [1.0]]),
+                np.concatenate([np.zeros(A.shape[0]), [1.0]]),
+                rows.nnz,
+                rows.indptr.astype(np.int32, copy=False),
+                rows.indices.astype(np.int32, copy=False),
+                rows.data,
+            )
+            constraints[key] = solver
+        objective = values[row] if minimize else -values[row]
+        solver.changeColsCost(rowsize, columns, objective)
+        solver.run()
+        if solver.getModelStatus() != highspy.HighsModelStatus.kOptimal:
+            continue
+        value = float(solver.getObjectiveValue())
+        value = value if minimize else -value
+        guard = 1e-9 * (1.0 + abs(value))
+        if minimize:
+            result[row] = max(result[row], value - guard)
+        else:
+            result[row] = min(result[row], value + guard)
+    return result
+
+
+def _softmax_taylor_coefficients(
+    score_bounds: Bounds,
+    score_rows,
+    groups,
+    weights,
+    score_differences,
+    probability_lower,
+    probability_upper,
+):
+    score_rows = np.asarray(score_rows, dtype=np.int64)
+    groups = np.asarray(groups, dtype=np.int64).reshape(-1)
+    weights = np.asarray(weights, dtype=np.float64)
+    n_out, reduction = score_rows.shape
+    score_lb = score_bounds.lb.detach().cpu().double().numpy().reshape(-1)[
+        score_rows
+    ]
+    score_ub = score_bounds.ub.detach().cpu().double().numpy().reshape(-1)[
+        score_rows
+    ]
+    score_center = 0.5 * (score_lb + score_ub)
+    reference = np.argmax(score_center, axis=1)
+    rows = np.arange(n_out, dtype=np.int64)
+    difference_center = score_center - score_center[rows, reference, None]
+    difference_lb = score_lb - score_ub[rows, reference, None]
+    difference_ub = score_ub - score_lb[rows, reference, None]
+    if score_differences is not None:
+        diff_lb, diff_ub = (
+            np.asarray(part, dtype=np.float64) for part in score_differences
+        )
+        if (
+            diff_lb.ndim == 3
+            and diff_lb.shape == diff_ub.shape
+            and diff_lb.shape[0] > int(groups.max(initial=-1))
+            and diff_lb.shape[1:] == (reduction, reduction)
+        ):
+            tight_lb = diff_lb[groups, reference]
+            tight_ub = diff_ub[groups, reference]
+            difference_lb = np.maximum(difference_lb, tight_lb)
+            difference_ub = np.minimum(difference_ub, tight_ub)
+    difference_center = 0.5 * (difference_lb + difference_ub)
+    difference_center[rows, reference] = 0.0
+    score_center = difference_center
+    difference_radius = np.maximum(
+        difference_center - np.minimum(difference_lb, difference_center),
+        np.maximum(difference_ub, difference_center) - difference_center,
+    )
+    difference_radius[rows, reference] = 0.0
+
+    shifted = difference_center - np.max(difference_center, axis=1, keepdims=True)
+    probability_center = np.exp(shifted)
+    probability_center /= probability_center.sum(axis=1, keepdims=True)
+    weighted_center = np.sum(probability_center * weights, axis=1)
+    affine = probability_center * (weights - weighted_center[:, None])
+    intercept = weighted_center - np.sum(affine * score_center, axis=1)
+
+    upper_shift = score_ub[:, None, :] - score_lb[:, :, None]
+    lower_shift = score_lb[:, None, :] - score_ub[:, :, None]
+    diagonal = np.arange(reduction)
+    upper_shift[:, diagonal, diagonal] = 0.0
+    lower_shift[:, diagonal, diagonal] = 0.0
+
+    def _inverse_exp_sum(shifts):
+        maximum = np.max(shifts, axis=2, keepdims=True)
+        log_denominator = maximum[:, :, 0] + np.log(
+            np.exp(shifts - maximum).sum(axis=2)
+        )
+        return np.exp(-log_denominator)
+
+    raw_probability_lower = np.nextafter(
+        _inverse_exp_sum(upper_shift), 0.0
+    )
+    raw_probability_upper = np.nextafter(
+        _inverse_exp_sum(lower_shift), np.inf
+    )
+    probability_lower = np.asarray(probability_lower, dtype=np.float64)
+    probability_upper = np.asarray(probability_upper, dtype=np.float64)
+    tightened_lower = np.maximum(raw_probability_lower, probability_lower)
+    tightened_upper = np.minimum(raw_probability_upper, probability_upper)
+    consistent = tightened_lower <= tightened_upper
+    raw_probability_lower = np.where(
+        consistent, tightened_lower, raw_probability_lower
+    )
+    raw_probability_upper = np.where(
+        consistent, tightened_upper, raw_probability_upper
+    )
+
+    def _weighted_extreme(weights, lower, upper, minimize):
+        return softmax_ratio_weighted_extreme(
+            weights,
+            lower,
+            upper,
+            groups,
+            score_differences,
+            minimize,
+            score_lb,
+            score_ub,
+        )
+
+    weighted_lower = _weighted_extreme(
+        weights, raw_probability_lower, raw_probability_upper, True
+    )
+    weighted_upper = _weighted_extreme(
+        weights, raw_probability_lower, raw_probability_upper, False
+    )
+    candidates = np.stack(
+        [
+            raw_probability_lower,
+            raw_probability_upper,
+            np.clip(0.25, raw_probability_lower, raw_probability_upper),
+            np.clip(0.5, raw_probability_lower, raw_probability_upper),
+        ],
+        axis=0,
+    )
+    diagonal_factor = np.max(candidates * np.abs(1.0 - 2.0 * candidates), axis=0)
+    weight_pair = weights[:, :, None] + weights[:, None, :]
+    hessian = (
+        raw_probability_upper[:, :, None]
+        * raw_probability_upper[:, None, :]
+        * np.maximum(
+            np.abs(weight_pair - 2.0 * weighted_lower[:, None, None]),
+            np.abs(weight_pair - 2.0 * weighted_upper[:, None, None]),
+        )
+    )
+    diagonal_bound = diagonal_factor * np.maximum(
+        np.abs(weights - weighted_lower[:, None]),
+        np.abs(weights - weighted_upper[:, None]),
+    )
+    hessian[:, diagonal, diagonal] = diagonal_bound
+    taylor_radius = 0.5 * np.einsum(
+        "nij,ni,nj->n", hessian, difference_radius, difference_radius
+    )
+    delta_lower = difference_lb - difference_center
+    delta_upper = difference_ub - difference_center
+    delta_span = np.max(delta_upper, axis=1) - np.min(delta_lower, axis=1)
+    weight_span = np.max(weights, axis=1) - np.min(weights, axis=1)
+    directional_radius = np.nextafter(
+        0.125 * weight_span * np.square(delta_span), np.inf
+    )
+    taylor_radius = np.minimum(taylor_radius, directional_radius)
+
+    valid_log = (
+        np.all(raw_probability_lower > 0.0, axis=1)
+        & np.all(raw_probability_upper >= raw_probability_lower, axis=1)
+    )
+    log_lower = np.log(np.maximum(raw_probability_lower, np.finfo(float).tiny))
+    log_upper = np.log(np.maximum(raw_probability_upper, np.finfo(float).tiny))
+    probability_width = raw_probability_upper - raw_probability_lower
+    secant_slope = np.divide(
+        log_upper - log_lower,
+        probability_width,
+        out=1.0 / np.maximum(raw_probability_lower, np.finfo(float).tiny),
+        where=probability_width > 1e-12,
+    )
+    secant_intercept = log_lower - secant_slope * raw_probability_lower
+    tangent_point = np.clip(
+        probability_center, raw_probability_lower, raw_probability_upper
+    )
+    tangent_slope = 1.0 / tangent_point
+    tangent_intercept = np.log(tangent_point) - 1.0
+    log_coefficient = -affine
+
+    upper_uses_tangent = log_coefficient >= 0.0
+    upper_slope = np.where(
+        upper_uses_tangent, tangent_slope, secant_slope
+    )
+    upper_intercept = np.where(
+        upper_uses_tangent, tangent_intercept, secant_intercept
+    )
+    lower_slope = np.where(
+        upper_uses_tangent, secant_slope, tangent_slope
+    )
+    lower_intercept = np.where(
+        upper_uses_tangent, secant_intercept, tangent_intercept
+    )
+    upper_coefficients = weights + log_coefficient * upper_slope
+    lower_coefficients = weights + log_coefficient * lower_slope
+    upper_linear = _weighted_extreme(
+        upper_coefficients,
+        raw_probability_lower,
+        raw_probability_upper,
+        False,
+    )
+    lower_linear = _weighted_extreme(
+        lower_coefficients,
+        raw_probability_lower,
+        raw_probability_upper,
+        True,
+    )
+    residual_upper = (
+        np.sum(log_coefficient * upper_intercept, axis=1)
+        + upper_linear
+        - intercept
+    )
+    residual_lower = (
+        np.sum(log_coefficient * lower_intercept, axis=1)
+        + lower_linear
+        - intercept
+    )
+    guard = 1e-10 * (
+        1.0 + np.maximum(np.abs(residual_lower), np.abs(residual_upper))
+    )
+    residual_lower -= guard
+    residual_upper += guard
+    error_lower = np.maximum(-taylor_radius, residual_lower)
+    error_upper = np.minimum(taylor_radius, residual_upper)
+    consistent = valid_log & (error_lower <= error_upper)
+    error_lower = np.where(consistent, error_lower, -taylor_radius)
+    error_upper = np.where(consistent, error_upper, taylor_radius)
+    return affine, intercept, error_lower, error_upper
+
+
+def _attention_score_affine(
+    context,
+    affine,
+    probability_rows,
+    n_cont: int,
+    n_bin: int,
+):
+    if not isinstance(context, dict):
+        return None
+    q = context.get("q_hz")
+    k = context.get("k_hz")
+    if not isinstance(q, SparseHZono) or not isinstance(k, SparseHZono):
+        return None
+    if not _sparse_same_frame([q, k]):
+        return None
+
+    probability_rows = np.asarray(probability_rows, dtype=np.int64)
+    affine = np.asarray(affine, dtype=np.float64)
+    q_rows = np.asarray(context.get("q_rows"), dtype=np.int64)
+    k_rows = np.asarray(context.get("k_rows"), dtype=np.int64)
+    scale = np.asarray(context.get("scale"), dtype=np.float64).reshape(-1)
+    shift = np.asarray(context.get("shift"), dtype=np.float64).reshape(-1)
+    if (
+        probability_rows.ndim != 2
+        or affine.shape != probability_rows.shape
+        or q_rows.ndim != 2
+        or q_rows.shape != k_rows.shape
+        or q_rows.shape[0] != scale.size
+        or shift.size != scale.size
+        or probability_rows.size == 0
+        or probability_rows.min() < 0
+        or probability_rows.max() >= q_rows.shape[0]
+    ):
+        return None
+
+    selected_q = q_rows[probability_rows]
+    selected_k = k_rows[probability_rows]
+    if not np.all(selected_q == selected_q[:, :1, :]):
+        return None
+    n_out, width = probability_rows.shape
+    reduction = q_rows.shape[1]
+    coefficients = affine * scale[probability_rows]
+    q_term_rows = selected_q[:, 0, :]
+
+    mixed_rows = np.broadcast_to(
+        np.arange(n_out * reduction, dtype=np.int64).reshape(n_out, 1, reduction),
+        (n_out, width, reduction),
+    )
+    mixed_coefficients = np.broadcast_to(
+        coefficients[:, :, None], (n_out, width, reduction)
+    )
+    key_operator = sp.csr_matrix(
+        (
+            mixed_coefficients.reshape(-1),
+            (mixed_rows.reshape(-1), selected_k.reshape(-1)),
+        ),
+        shape=(n_out * reduction, k.n_out),
+    )
+
+    kp = sparse_hz_pad_frame(k, int(n_cont), n_bin)
+    qp = sparse_hz_pad_frame(q, int(n_cont), n_bin)
+    mixed_center = np.asarray(key_operator @ kp.c).reshape(n_out, reduction)
+    mixed_Gc = (key_operator @ kp.Gc).tocsr()
+    mixed_Gb = (
+        (key_operator @ kp.Gb).tocsr()
+        if n_bin else sparse_empty(n_out * reduction, 0)
+    )
+
+    k_bounds = context.get("k_bounds")
+    q_bounds = context.get("q_bounds")
+    if not isinstance(k_bounds, Bounds) or not isinstance(q_bounds, Bounds):
+        return None
+    k_lb = k_bounds.lb.detach().cpu().double().numpy().reshape(-1)[selected_k]
+    k_ub = k_bounds.ub.detach().cpu().double().numpy().reshape(-1)[selected_k]
+    positive = coefficients[:, :, None] >= 0.0
+    interval_lower = np.sum(
+        mixed_coefficients * np.where(positive, k_lb, k_ub), axis=1
+    )
+    interval_upper = np.sum(
+        mixed_coefficients * np.where(positive, k_ub, k_lb), axis=1
+    )
+    mixed_radius = np.asarray(abs(mixed_Gc).sum(axis=1)).reshape(n_out, reduction)
+    if n_bin:
+        mixed_radius += np.asarray(abs(mixed_Gb).sum(axis=1)).reshape(
+            n_out, reduction
+        )
+    mixed_lower = np.maximum(interval_lower, mixed_center - mixed_radius)
+    mixed_upper = np.minimum(interval_upper, mixed_center + mixed_radius)
+    consistent = mixed_lower <= mixed_upper
+    mixed_lower = np.where(consistent, mixed_lower, interval_lower)
+    mixed_upper = np.where(consistent, mixed_upper, interval_upper)
+
+    q_lb = q_bounds.lb.detach().cpu().double().numpy().reshape(-1)[q_term_rows]
+    q_ub = q_bounds.ub.detach().cpu().double().numpy().reshape(-1)[q_term_rows]
+    q_center = qp.c[q_term_rows]
+    q_row_radius = np.asarray(abs(qp.Gc).sum(axis=1)).reshape(-1)
+    q_radius = q_row_radius[q_term_rows]
+    if n_bin:
+        q_binary_radius = np.asarray(abs(qp.Gb).sum(axis=1)).reshape(-1)
+        q_radius += q_binary_radius[q_term_rows]
+    q_lower = np.maximum(q_lb, q_center - q_radius)
+    q_upper = np.minimum(q_ub, q_center + q_radius)
+    consistent = q_lower <= q_upper
+    q_lower = np.where(consistent, q_lower, q_lb)
+    q_upper = np.where(consistent, q_upper, q_ub)
+
+    q_mid = 0.5 * (q_lower + q_upper)
+    k_mid = 0.5 * (mixed_lower + mixed_upper)
+    product_error = np.nextafter(
+        np.sum(
+            0.25 * (q_upper - q_lower) * (mixed_upper - mixed_lower),
+            axis=1,
+        ),
+        np.inf,
+    )
+    output_rows = np.repeat(np.arange(n_out, dtype=np.int64), reduction)
+    q_operator = sp.csr_matrix(
+        (k_mid.reshape(-1), (output_rows, q_term_rows.reshape(-1))),
+        shape=(n_out, q.n_out),
+    )
+    key_output_rows = np.broadcast_to(
+        np.arange(n_out, dtype=np.int64)[:, None, None], selected_k.shape
+    )
+    key_operator = sp.csr_matrix(
+        (
+            (mixed_coefficients * q_mid[:, None, :]).reshape(-1),
+            (key_output_rows.reshape(-1), selected_k.reshape(-1)),
+        ),
+        shape=(n_out, k.n_out),
+    )
+    key_center = np.asarray(key_operator @ kp.c).reshape(-1)
+    key_Gc = (key_operator @ kp.Gc).tocsr()
+    key_Gb = (
+        (key_operator @ kp.Gb).tocsr()
+        if n_bin else sparse_empty(n_out, 0)
+    )
+    center = (
+        np.asarray(q_operator @ qp.c).reshape(-1)
+        + key_center
+        - np.sum(q_mid * k_mid, axis=1)
+        + np.sum(affine * shift[probability_rows], axis=1)
+    )
+    Gc = (q_operator @ qp.Gc + key_Gc).tocsr()
+    Gb = (
+        (q_operator @ qp.Gb + key_Gb).tocsr()
+        if n_bin else sparse_empty(n_out, 0)
+    )
+    return center, Gc, Gb, product_error, (qp, kp)
+
+
+def _sparse_hz_softmax_value_fused(
+    scores: SparseHZono,
+    values: SparseHZono,
+    score_bounds: Bounds,
+    probability_rows,
+    value_rows,
+    slots,
+    n_cont: int,
+    p0,
+    probability_lower,
+    probability_upper,
+    mid,
+    cross_radius,
+    score_differences,
+    score_context,
+    max_affine_terms: int,
+) -> SparseHZono:
+    probability_rows = np.asarray(probability_rows, dtype=np.int64)
+    value_rows = np.asarray(value_rows, dtype=np.int64)
+    n_out, reduction = probability_rows.shape
+    groups = probability_rows[:, 0] // reduction
+    affine, intercept, error_lower, error_upper = _softmax_taylor_coefficients(
+        score_bounds,
+        probability_rows,
+        groups,
+        mid,
+        score_differences,
+        probability_lower,
+        probability_upper,
+    )
+
+    error_lower -= cross_radius
+    error_upper += cross_radius
+    error_center = 0.5 * (error_lower + error_upper)
+    error_radius = np.nextafter(0.5 * (error_upper - error_lower), np.inf)
+
+    n_bin = max(scores.n_bin, values.n_bin)
+    value_padded = sparse_hz_pad_frame(values, int(n_cont), n_bin)
+    direct_score = _attention_score_affine(
+        score_context, affine, probability_rows, int(n_cont), n_bin
+    )
+    output_rows = np.repeat(np.arange(n_out, dtype=np.int64), reduction)
+    if direct_score is None:
+        score_padded = sparse_hz_pad_frame(scores, int(n_cont), n_bin)
+        score_operator = sp.csr_matrix(
+            (affine.reshape(-1), (output_rows, probability_rows.reshape(-1))),
+            shape=(n_out, scores.n_out),
+        )
+        score_center = np.asarray(score_operator @ score_padded.c).reshape(-1)
+        score_Gc = (score_operator @ score_padded.Gc).tocsr()
+        score_Gb = (
+            (score_operator @ score_padded.Gb).tocsr()
+            if n_bin else sparse_empty(n_out, 0)
+        )
+        score_error = np.zeros(n_out, dtype=np.float64)
+        constraint_parts = [score_padded, value_padded]
+    else:
+        score_center, score_Gc, score_Gb, score_error, score_parts = direct_score
+        constraint_parts = [*score_parts, value_padded]
+    value_operator = sp.csr_matrix(
+        (p0.reshape(-1), (output_rows, value_rows.reshape(-1))),
+        shape=(n_out, values.n_out),
+    )
+    error_radius = np.nextafter(error_radius + score_error, np.inf)
+    center = (
+        score_center
+        + np.asarray(value_operator @ value_padded.c).reshape(-1)
+        + intercept
+        - np.sum(p0 * mid, axis=1)
+        + error_center
+    )
+    Gc = (score_Gc + value_operator @ value_padded.Gc).tocsr()
+    if max_affine_terms > 0:
+        Gc, omitted = _sparse_truncate_columns(Gc, max_affine_terms)
+        error_radius += omitted
+    slots = np.asarray(slots, dtype=np.int64).reshape(-1)
+    nonzero = error_radius != 0.0
+    Gc = (
+        Gc
+        + sp.csr_matrix(
+            (
+                error_radius[nonzero],
+                (np.flatnonzero(nonzero), slots[nonzero]),
+            ),
+            shape=(n_out, int(n_cont)),
+        )
+    ).tocsr()
+    Gb = (
+        score_Gb + value_operator @ value_padded.Gb
+    ).tocsr() if n_bin else sparse_empty(n_out, 0)
+
+    Ac, Ab, b = _sparse_merge_constraints(
+        constraint_parts, "Ac", "Ab", "b", int(n_cont), n_bin
+    )
+    Auc, Aub, ub = _sparse_merge_constraints(
+        constraint_parts, "Auc", "Aub", "ub", int(n_cont), n_bin
+    )
+    return SparseHZono(
+        c=center,
+        Gc=Gc,
+        Gb=Gb,
+        Ac=Ac,
+        Ab=Ab,
+        b=b,
+        Auc=Auc,
+        Aub=Aub,
+        ub=ub,
+        frame_id=value_padded.frame_id,
+        exact=False,
+    )
+
+
+def _softmax_value_cross_radius(
+    p_lb,
+    p_ub,
+    p0,
+    value_radius,
+    score_lower=None,
+    score_upper=None,
+    score_differences=None,
+    groups=None,
+):
+    width = int(p_lb.shape[1])
+    if width > 8:
+        positive = np.maximum(p_ub - p0, 0.0)
+        negative = np.maximum(p0 - p_lb, 0.0)
+        mass = np.minimum(positive.sum(axis=1), negative.sum(axis=1))
+
+        def _radius(weights):
+            independent = np.sum(
+                np.maximum(np.abs(p_lb - p0), np.abs(p_ub - p0)) * weights,
+                axis=1,
+            )
+            order = np.argsort(-weights, axis=1)
+            sorted_weights = np.take_along_axis(weights, order, axis=1)
+            sorted_positive = np.take_along_axis(positive, order, axis=1)
+            sorted_negative = np.take_along_axis(negative, order, axis=1)
+
+            def _weighted_mass(capacity, target):
+                before = np.cumsum(capacity, axis=1) - capacity
+                used = np.clip(target[:, None] - before, 0.0, capacity)
+                return np.sum(used * sorted_weights, axis=1)
+
+            relaxed = np.nextafter(
+                _weighted_mass(sorted_positive, mass)
+                + _weighted_mass(sorted_negative, mass),
+                np.inf,
+            )
+            capacity = positive + negative
+            switches = np.divide(
+                weights * (positive - negative),
+                capacity,
+                out=np.zeros_like(weights),
+                where=capacity > 0.0,
+            )
+            max_weight = np.max(weights, axis=1, keepdims=True)
+            multipliers = np.concatenate(
+                [-max_weight, switches, max_weight], axis=1
+            )
+            lower_side = negative[:, None, :] * (
+                weights[:, None, :] + multipliers[:, :, None]
+            )
+            upper_side = positive[:, None, :] * (
+                weights[:, None, :] - multipliers[:, :, None]
+            )
+            lagrangian = np.nextafter(
+                np.min(
+                    np.sum(np.maximum(lower_side, upper_side), axis=2),
+                    axis=1,
+                ),
+                np.inf,
+            )
+            depth = min(width, 8)
+            disjoint = np.full(weights.shape[0], -np.inf, dtype=np.float64)
+            for assignment in range(1 << depth):
+                positive_capacity = sorted_positive.copy()
+                negative_capacity = sorted_negative.copy()
+                positive_side = (
+                    (assignment >> np.arange(depth, dtype=np.int64)) & 1
+                ).astype(bool)
+                positive_capacity[:, np.flatnonzero(~positive_side)] = 0.0
+                negative_capacity[:, np.flatnonzero(positive_side)] = 0.0
+                branch_mass = np.minimum(
+                    positive_capacity.sum(axis=1),
+                    negative_capacity.sum(axis=1),
+                )
+                branch = _weighted_mass(
+                    positive_capacity, branch_mass
+                ) + _weighted_mass(negative_capacity, branch_mass)
+                disjoint = np.maximum(disjoint, branch)
+            disjoint = np.nextafter(disjoint, np.inf)
+            return np.minimum(
+                independent, np.minimum(relaxed, np.minimum(disjoint, lagrangian))
+            )
+
+        return p0, _radius(value_radius)
+    signs = 2.0 * (
+        (np.arange(1 << width, dtype=np.uint64)[:, None]
+         >> np.arange(width, dtype=np.uint64))
+        & 1
+    ).astype(np.float64) - 1.0
+    weights = (value_radius[:, None, :] * signs[None, :, :]).reshape(-1, width)
+    lower = np.repeat(p_lb, signs.shape[0], axis=0)
+    upper = np.repeat(p_ub, signs.shape[0], axis=0)
+    reference = np.repeat(p0, signs.shape[0], axis=0)
+    repeated_score_lower = (
+        None
+        if score_lower is None
+        else np.repeat(score_lower, signs.shape[0], axis=0)
+    )
+    repeated_score_upper = (
+        None
+        if score_upper is None
+        else np.repeat(score_upper, signs.shape[0], axis=0)
+    )
+    extrema = softmax_ratio_weighted_extreme(
+        weights,
+        lower,
+        upper,
+        np.repeat(
+            np.asarray(groups, dtype=np.int64), signs.shape[0]
+        ) if groups is not None else np.zeros(weights.shape[0], dtype=np.int64),
+        score_differences,
+        False,
+        repeated_score_lower,
+        repeated_score_upper,
+    )
+    extrema = extrema.reshape(p_lb.shape[0], -1)
+    signed_weights = weights.reshape(p_lb.shape[0], -1, width)
+    optimized = p0.copy()
+    objective = np.zeros(width + 1, dtype=np.float64)
+    objective[-1] = 1.0
+    equality = np.zeros((1, width + 1), dtype=np.float64)
+    equality[0, :width] = 1.0
+    for row in range(p_lb.shape[0]):
+        inequalities = np.empty((signs.shape[0], width + 1), dtype=np.float64)
+        inequalities[:, :width] = -signed_weights[row]
+        inequalities[:, -1] = -1.0
+        result = linprog(
+            objective,
+            A_ub=inequalities,
+            b_ub=-extrema[row],
+            A_eq=equality,
+            b_eq=np.ones(1, dtype=np.float64),
+            bounds=[*(zip(p_lb[row], p_ub[row])), (0.0, None)],
+            method="highs-ds",
+        )
+        if result.success:
+            optimized[row] = result.x[:width]
+    radius = (
+        extrema - np.einsum("nsi,ni->ns", signed_weights, optimized)
+    ).max(axis=1)
+    radius = np.nextafter(np.maximum(radius, 0.0), np.inf)
+    independent = np.sum(
+        np.maximum(np.abs(p_lb - optimized), np.abs(p_ub - optimized))
+        * value_radius,
+        axis=1,
+    )
+    return optimized, np.minimum(independent, radius)
+
+
+def sparse_hz_softmax_value_relaxation(
+    probabilities: SparseHZono,
+    values: SparseHZono,
+    probability_bounds: Bounds,
+    value_bounds: Bounds,
+    probability_rows,
+    value_rows,
+    slots,
+    n_cont: int,
+    max_affine_terms: int = 64,
+    *,
+    scores: Optional[SparseHZono] = None,
+    score_bounds: Optional[Bounds] = None,
+    score_differences=None,
+    score_context=None,
+) -> SparseHZono:
+    """Sparse first-order enclosure of a Softmax-weighted value sum."""
+    if not _sparse_same_frame([probabilities, values]):
+        raise ValueError("Softmax-value operands require one shared frame")
+    probability_rows = np.asarray(probability_rows, dtype=np.int64)
+    value_rows = np.asarray(value_rows, dtype=np.int64)
+    if probability_rows.ndim != 2 or probability_rows.shape != value_rows.shape:
+        raise ValueError("Softmax-value term rows must have matching shapes")
+    n_out, reduction = probability_rows.shape
+    slots = np.asarray(slots, dtype=np.int64).reshape(-1)
+    if slots.size != n_out:
+        raise ValueError("Softmax-value output rows and slots do not match")
+    if probability_rows.size and (
+        probability_rows.min() < 0 or probability_rows.max() >= probabilities.n_out
+    ):
+        raise ValueError("Softmax probability row is out of range")
+
+    probability_lb = probability_bounds.lb.detach().cpu().double().numpy().reshape(-1)
+    probability_ub = probability_bounds.ub.detach().cpu().double().numpy().reshape(-1)
+    value_lb = value_bounds.lb.detach().cpu().double().numpy().reshape(-1)
+    value_ub = value_bounds.ub.detach().cpu().double().numpy().reshape(-1)
+    if value_rows.size and (value_rows.min() < 0 or value_rows.max() >= value_lb.size):
+        raise ValueError("Softmax value row is out of range")
+    if probability_rows.size and probability_rows.max() >= probability_lb.size:
+        raise ValueError("Softmax probability bound row is out of range")
+    mid = (value_lb[value_rows] + value_ub[value_rows]) * 0.5
+    value_radius = (value_ub[value_rows] - value_lb[value_rows]) * 0.5
+    p_lb = probability_lb[probability_rows]
+    p_ub = probability_ub[probability_rows]
+    p_mid = (p_lb + p_ub) * 0.5
+    delta = 1.0 - p_mid.sum(axis=1)
+    capacity = np.where(
+        delta[:, None] >= 0.0, p_ub - p_mid, p_mid - p_lb
+    )
+    order = np.argsort(value_radius, axis=1)
+    ordered_capacity = np.take_along_axis(capacity, order, axis=1)
+    before = np.cumsum(ordered_capacity, axis=1) - ordered_capacity
+    selected = np.clip(
+        np.abs(delta)[:, None] - before, 0.0, ordered_capacity
+    )
+    adjustment = np.zeros_like(p_mid)
+    np.put_along_axis(adjustment, order, selected, axis=1)
+    p0 = p_mid + np.sign(delta)[:, None] * adjustment
+    score_lb = score_ub = None
+    if score_bounds is not None:
+        score_lb = (
+            score_bounds.lb.detach().cpu().double().numpy().reshape(-1)[
+                probability_rows
+            ]
+        )
+        score_ub = (
+            score_bounds.ub.detach().cpu().double().numpy().reshape(-1)[
+                probability_rows
+            ]
+        )
+    groups = probability_rows[:, 0] // reduction
+    p0, residual = _softmax_value_cross_radius(
+        p_lb,
+        p_ub,
+        p0,
+        value_radius,
+        score_lb,
+        score_ub,
+        score_differences,
+        groups,
+    )
+    if scores is not None and score_bounds is not None:
+        if not _sparse_same_frame([scores, values]):
+            raise ValueError("Softmax scores and values require one shared frame")
+        return _sparse_hz_softmax_value_fused(
+            scores,
+            values,
+            score_bounds,
+            probability_rows,
+            value_rows,
+            slots,
+            n_cont,
+            p0,
+            p_lb,
+            p_ub,
+            mid,
+            residual,
+            score_differences,
+            score_context,
+            max_affine_terms,
+        )
+
+    n_bin = max(probabilities.n_bin, values.n_bin)
+    padded = sparse_hz_pad_frame(probabilities, int(n_cont), n_bin)
+    value_padded = sparse_hz_pad_frame(values, int(n_cont), n_bin)
+    output_rows = np.repeat(np.arange(n_out, dtype=np.int64), reduction)
+    probability_weights = sp.csr_matrix(
+        (mid.reshape(-1), (output_rows, probability_rows.reshape(-1))),
+        shape=(n_out, probabilities.n_out),
+    )
+    value_weights = sp.csr_matrix(
+        (p0.reshape(-1), (output_rows, value_rows.reshape(-1))),
+        shape=(n_out, values.n_out),
+    )
+    center = (
+        np.asarray(probability_weights @ padded.c).reshape(-1)
+        + np.asarray(value_weights @ value_padded.c).reshape(-1)
+        - np.sum(p0 * mid, axis=1)
+    )
+    Gc = (
+        probability_weights @ padded.Gc + value_weights @ value_padded.Gc
+    ).tocsr()
+    Gb = (
+        probability_weights @ padded.Gb + value_weights @ value_padded.Gb
+    ).tocsr() if n_bin else sparse_empty(n_out, 0)
+    if max_affine_terms > 0:
+        Gc, omitted = _sparse_truncate_rows(Gc, max_affine_terms)
+        residual += omitted
+    nonzero = residual != 0.0
+    error = sp.csr_matrix(
+        (
+            residual[nonzero],
+            (np.flatnonzero(nonzero), slots[nonzero]),
+        ),
+        shape=(n_out, int(n_cont)),
+    )
+    Gc = (Gc + error).tocsr()
+    Gc.eliminate_zeros()
+    Gb.eliminate_zeros()
+    Ac, Ab, b = _sparse_merge_constraints(
+        [padded, value_padded], "Ac", "Ab", "b", int(n_cont), n_bin
+    )
+    Auc, Aub, ub = _sparse_merge_constraints(
+        [padded, value_padded], "Auc", "Aub", "ub", int(n_cont), n_bin
+    )
+    return SparseHZono(
+        c=center,
+        Gc=Gc,
+        Gb=Gb,
+        Ac=Ac,
+        Ab=Ab,
+        b=b,
+        Auc=Auc,
+        Aub=Aub,
+        ub=ub,
+        frame_id=padded.frame_id,
+        exact=False,
+    )
+
+
 def sparse_hz_concat(parts) -> SparseHZono:
     parts = list(parts)
     if not parts:
@@ -500,17 +1965,24 @@ def sparse_hz_concat(parts) -> SparseHZono:
     n_cont = max(p.n_cont for p in parts)
     n_bin = max(p.n_bin for p in parts)
     padded = [sparse_hz_pad_frame(p, n_cont, n_bin) for p in parts]
+    Ac, Ab, b = _sparse_merge_constraints(
+        padded, "Ac", "Ab", "b", n_cont, n_bin
+    )
+    Auc, Aub, ub = _sparse_merge_constraints(
+        padded, "Auc", "Aub", "ub", n_cont, n_bin
+    )
     return SparseHZono(
         c=np.concatenate([p.c for p in padded]),
         Gc=sp.vstack([p.Gc for p in padded], format="csr"),
         Gb=sp.vstack([p.Gb for p in padded], format="csr"),
-        Ac=_sparse_vstack([p.Ac for p in padded], n_cont),
-        Ab=_sparse_vstack([p.Ab for p in padded], n_bin),
-        b=_sparse_concat_arrays([p.b for p in padded]),
-        Auc=_sparse_vstack([p.Auc for p in padded], n_cont),
-        Aub=_sparse_vstack([p.Aub for p in padded], n_bin),
-        ub=_sparse_concat_arrays([p.ub for p in padded]),
+        Ac=Ac,
+        Ab=Ab,
+        b=b,
+        Auc=Auc,
+        Aub=Aub,
+        ub=ub,
         frame_id=padded[0].frame_id,
+        exact=all(p.exact for p in padded),
     )
 
 
@@ -527,17 +1999,24 @@ def sparse_hz_add_same_frame(x: SparseHZono, y: SparseHZono) -> SparseHZono:
     Gb = (xp.Gb + yp.Gb).tocsr()
     Gc.eliminate_zeros()
     Gb.eliminate_zeros()
+    Ac, Ab, b = _sparse_merge_constraints(
+        [xp, yp], "Ac", "Ab", "b", n_cont, n_bin
+    )
+    Auc, Aub, ub = _sparse_merge_constraints(
+        [xp, yp], "Auc", "Aub", "ub", n_cont, n_bin
+    )
     return SparseHZono(
         c=xp.c + yp.c,
         Gc=Gc,
         Gb=Gb,
-        Ac=_sparse_vstack([xp.Ac, yp.Ac], n_cont),
-        Ab=_sparse_vstack([xp.Ab, yp.Ab], n_bin),
-        b=_sparse_concat_arrays([xp.b, yp.b]),
-        Auc=_sparse_vstack([xp.Auc, yp.Auc], n_cont),
-        Aub=_sparse_vstack([xp.Aub, yp.Aub], n_bin),
-        ub=_sparse_concat_arrays([xp.ub, yp.ub]),
+        Ac=Ac,
+        Ab=Ab,
+        b=b,
+        Auc=Auc,
+        Aub=Aub,
+        ub=ub,
         frame_id=xp.frame_id,
+        exact=xp.exact and yp.exact,
     )
 
 
@@ -926,6 +2405,8 @@ class _HZMILP:
     integrality: "np.ndarray"
     n_cont: int
     n_bin: int
+    cont_source: "np.ndarray"
+    bin_source: "np.ndarray"
 
     @property
     def n_var(self) -> int:
@@ -937,10 +2418,65 @@ class _MILPResult:
     status: str
     x: Optional["np.ndarray"]
     nodes: int = 0
+    raw_status: str = ""
+    primal_infeasibility: float = 0.0
+
+
+@dataclass(frozen=True)
+class _ObjectiveResult:
+    upper_bound: Optional[float]
+
+
+@dataclass(frozen=True)
+class _MIPObjectiveResult:
+    upper_bound: Optional[float]
+    x: Optional["np.ndarray"]
+    nodes: int = 0
+    raw_status: str = ""
+    primal_infeasibility: float = 0.0
 
 
 def _row_sum(mat) -> "np.ndarray":
     return np.asarray(mat.sum(axis=1), dtype=np.float64).reshape(-1)
+
+
+def _coalesce_antiparallel_rows(A, row_lb, row_ub):
+    A = A.tocsr()
+    A.sum_duplicates()
+    A.eliminate_zeros()
+    A.sort_indices()
+    row_lb = np.asarray(row_lb, dtype=np.float64).copy()
+    row_ub = np.asarray(row_ub, dtype=np.float64).copy()
+    representatives = {}
+    keep = []
+    lower = []
+    upper = []
+    for row in range(A.shape[0]):
+        start, stop = A.indptr[row], A.indptr[row + 1]
+        indices = A.indices[start:stop]
+        values = A.data[start:stop]
+        key = (indices.tobytes(), values.tobytes())
+        negated = (indices.tobytes(), (-values).tobytes())
+        if key in representatives:
+            target = representatives[key]
+            lower[target] = max(lower[target], row_lb[row])
+            upper[target] = min(upper[target], row_ub[row])
+        elif negated in representatives:
+            target = representatives[negated]
+            lower[target] = max(lower[target], -row_ub[row])
+            upper[target] = min(upper[target], -row_lb[row])
+        else:
+            representatives[key] = len(keep)
+            keep.append(row)
+            lower.append(row_lb[row])
+            upper.append(row_ub[row])
+    if len(keep) == A.shape[0]:
+        return A, row_lb, row_ub
+    return (
+        A[np.asarray(keep, dtype=np.int64)],
+        np.asarray(lower, dtype=np.float64),
+        np.asarray(upper, dtype=np.float64),
+    )
 
 
 def _lower_hz_milp(hz: "HZono | SparseHZono") -> _HZMILP:
@@ -968,6 +2504,21 @@ def _lower_hz_milp(hz: "HZono | SparseHZono") -> _HZMILP:
     else:
         raise TypeError(f"unsupported HZ representation: {type(hz).__name__}")
 
+    used_cont = np.asarray(Gc.getnnz(axis=0)).reshape(-1) != 0
+    used_bin = np.asarray(Gb.getnnz(axis=0)).reshape(-1) != 0
+    if eq_Ac.shape[0]:
+        used_cont |= np.asarray(eq_Ac.getnnz(axis=0)).reshape(-1) != 0
+        used_bin |= np.asarray(eq_Ab.getnnz(axis=0)).reshape(-1) != 0
+    if le_Ac.shape[0]:
+        used_cont |= np.asarray(le_Ac.getnnz(axis=0)).reshape(-1) != 0
+        used_bin |= np.asarray(le_Ab.getnnz(axis=0)).reshape(-1) != 0
+    cont_source = np.flatnonzero(used_cont).astype(np.int64, copy=False)
+    bin_source = np.flatnonzero(used_bin).astype(np.int64, copy=False)
+    Gc, Gb = Gc[:, cont_source], Gb[:, bin_source]
+    eq_Ac, eq_Ab = eq_Ac[:, cont_source], eq_Ab[:, bin_source]
+    le_Ac, le_Ab = le_Ac[:, cont_source], le_Ab[:, bin_source]
+    n_cont, n_bin = cont_source.size, bin_source.size
+
     value_center = np.asarray(c, dtype=np.float64).reshape(-1) - _row_sum(Gb)
     value_matrix = sp.hstack([Gc, 2.0 * Gb], format="csr")
     blocks, lowers, uppers = [], [], []
@@ -984,6 +2535,7 @@ def _lower_hz_milp(hz: "HZono | SparseHZono") -> _HZMILP:
     A = sp.vstack(blocks, format="csr") if blocks else sparse_empty(0, n_cont + n_bin)
     row_lb = np.concatenate(lowers) if lowers else np.zeros(0, dtype=np.float64)
     row_ub = np.concatenate(uppers) if uppers else np.zeros(0, dtype=np.float64)
+    A, row_lb, row_ub = _coalesce_antiparallel_rows(A, row_lb, row_ub)
     return _HZMILP(
         value_center=value_center,
         value_matrix=value_matrix,
@@ -1001,6 +2553,8 @@ def _lower_hz_milp(hz: "HZono | SparseHZono") -> _HZMILP:
         ]),
         n_cont=n_cont,
         n_bin=n_bin,
+        cont_source=cont_source,
+        bin_source=bin_source,
     )
 
 
@@ -1091,6 +2645,360 @@ def _solve_hz_feasibility(
     return _MILPResult("unknown", None, nodes)
 
 
+def _linprog_form(model: _HZMILP):
+    equal = np.isfinite(model.row_lb) & np.isfinite(model.row_ub)
+    equal &= model.row_lb == model.row_ub
+    upper = np.isfinite(model.row_ub) & ~equal
+    lower = np.isfinite(model.row_lb) & ~equal
+    A_ub = sp.vstack([model.A[upper], -model.A[lower]], format="csr")
+    b_ub = np.concatenate([model.row_ub[upper], -model.row_lb[lower]])
+    return (
+        A_ub,
+        b_ub,
+        model.A[equal],
+        model.row_lb[equal],
+        list(zip(model.var_lb.tolist(), model.var_ub.tolist())),
+    )
+
+
+class _HighsLPRelaxation:
+    def __init__(self, model: _HZMILP):
+        if highspy is None:
+            raise RuntimeError("highspy is unavailable")
+        self.model = model
+        self.solver = highspy.Highs()
+        self.solver.setOptionValue("output_flag", False)
+        self.solver.setOptionValue("solver", "simplex")
+        self.solver.setOptionValue("presolve", "on")
+        self.solver.setOptionValue("simplex_strategy", 1)
+        self.solver.setOptionValue("threads", 1)
+        self.solver.setOptionValue("primal_feasibility_tolerance", 1e-8)
+        self.solver.setOptionValue("dual_feasibility_tolerance", 1e-8)
+        self.solver.setOptionValue("mip_feasibility_tolerance", 1e-8)
+        A = model.A.tocsr()
+        lp = highspy.HighsLp()
+        lp.num_col_ = model.n_var
+        lp.num_row_ = A.shape[0]
+        lp.col_cost_ = np.zeros(model.n_var, dtype=np.float64)
+        lp.col_lower_ = model.var_lb
+        lp.col_upper_ = model.var_ub
+        lp.row_lower_ = model.row_lb
+        lp.row_upper_ = model.row_ub
+        lp.a_matrix_.format_ = highspy.MatrixFormat.kRowwise
+        lp.a_matrix_.start_ = A.indptr.astype(np.int32, copy=False)
+        lp.a_matrix_.index_ = A.indices.astype(np.int32, copy=False)
+        lp.a_matrix_.value_ = A.data
+        self.solver.passModel(lp)
+        self.solver.changeObjectiveSense(highspy.ObjSense.kMaximize)
+        self.indices = np.arange(model.n_var, dtype=np.int32)
+        self.costs = np.zeros(model.n_var, dtype=np.float64)
+        self.base_rows = int(model.A.shape[0])
+
+    def maximize(self, coeff, offset: float, deadline: float) -> _ObjectiveResult:
+        coeff = coeff.tocsr()
+        if coeff.nnz == 0:
+            return _ObjectiveResult(float(offset))
+        remaining = deadline - time.monotonic()
+        if remaining <= 0.0:
+            return _ObjectiveResult(None)
+        self.costs.fill(0.0)
+        self.costs[coeff.indices] = coeff.data
+        self.solver.changeColsCost(self.model.n_var, self.indices, self.costs)
+        self.solver.setOptionValue("time_limit", remaining)
+        self.solver.run()
+        if self.solver.getModelStatus() != highspy.HighsModelStatus.kOptimal:
+            return _ObjectiveResult(None)
+        value = float(offset + self.solver.getObjectiveValue())
+        return _ObjectiveResult(value + 1e-7 * (1.0 + abs(value)))
+
+    def solve_mip(
+        self,
+        deadline: float,
+        *,
+        extra_A=None,
+        extra_lb=None,
+        extra_ub=None,
+        feasibility_tol: float,
+    ) -> _MILPResult:
+        current_rows = int(self.solver.getNumRow())
+        if current_rows > self.base_rows:
+            delete = np.arange(self.base_rows, current_rows, dtype=np.int32)
+            self.solver.deleteRows(delete.size, delete)
+        if extra_A is not None and extra_A.shape[0]:
+            extra = extra_A.tocsr()
+            self.solver.addRows(
+                extra.shape[0],
+                np.asarray(extra_lb, dtype=np.float64),
+                np.asarray(extra_ub, dtype=np.float64),
+                extra.nnz,
+                extra.indptr.astype(np.int32, copy=False),
+                extra.indices.astype(np.int32, copy=False),
+                extra.data,
+            )
+        remaining = deadline - time.monotonic()
+        if remaining <= 0.0:
+            return _MILPResult("unknown", None)
+        self.costs.fill(0.0)
+        self.solver.changeColsCost(self.model.n_var, self.indices, self.costs)
+        if self.model.n_bin:
+            binary = np.arange(
+                self.model.n_cont, self.model.n_var, dtype=np.int32
+            )
+            types = np.full(
+                self.model.n_bin,
+                highspy.HighsVarType.kInteger,
+                dtype=object,
+            )
+            self.solver.changeColsIntegrality(self.model.n_bin, binary, types)
+        self.solver.setOptionValue("solver", "choose")
+        self.solver.setOptionValue("presolve", "on")
+        self.solver.setOptionValue("time_limit", remaining)
+        self.solver.run()
+        status = self.solver.getModelStatus()
+        info = self.solver.getInfo()
+        nodes = max(0, int(getattr(info, "mip_node_count", 0) or 0))
+        raw_status = str(status).rsplit(".", 1)[-1]
+        primal_infeasibility = float(
+            getattr(info, "max_primal_infeasibility", 0.0) or 0.0
+        )
+        if status == highspy.HighsModelStatus.kInfeasible:
+            return _MILPResult(
+                "infeasible", None, nodes, raw_status, primal_infeasibility
+            )
+        solution = self.solver.getSolution()
+        x = np.asarray(solution.col_value, dtype=np.float64)
+        A, row_lb, row_ub = _combined_constraints(
+            self.model, extra_A, extra_lb, extra_ub
+        )
+        if bool(solution.value_valid) and _valid_milp_point(
+            self.model, x, A, row_lb, row_ub, feasibility_tol
+        ):
+            return _MILPResult(
+                "feasible", x, nodes, raw_status, primal_infeasibility
+            )
+        return _MILPResult(
+            "unknown", None, nodes, raw_status, primal_infeasibility
+        )
+
+    def maximize_mip(
+        self,
+        coeff,
+        offset: float,
+        deadline: float,
+        *,
+        cutoff: Optional[float] = None,
+        feasibility_tol: float,
+    ) -> _MIPObjectiveResult:
+        remaining = deadline - time.monotonic()
+        if remaining <= 0.0:
+            return _MIPObjectiveResult(None, None)
+        coeff = coeff.tocsr()
+        costs = np.zeros(self.model.n_var, dtype=np.float64)
+        costs[coeff.indices] = -coeff.data if cutoff is not None else coeff.data
+        solver = highspy.Highs()
+        solver.setOptionValue("output_flag", False)
+        solver.setOptionValue("threads", 1)
+        solver.setOptionValue("presolve", "on")
+        solver.setOptionValue("time_limit", remaining)
+        solver.setOptionValue("mip_rel_gap", 0.0)
+        solver.setOptionValue("mip_heuristic_effort", 0.0)
+        solver.setOptionValue("mip_lp_solver", "ipm")
+        solver.addVars(self.model.n_var, self.model.var_lb, self.model.var_ub)
+        if self.model.A.shape[0]:
+            A = self.model.A.tocsr()
+            solver.addRows(
+                A.shape[0],
+                self.model.row_lb,
+                self.model.row_ub,
+                A.nnz,
+                A.indptr.astype(np.int32, copy=False),
+                A.indices.astype(np.int32, copy=False),
+                A.data,
+            )
+        solver.changeColsCost(self.model.n_var, self.indices, costs)
+        if self.model.n_bin:
+            binary = np.arange(
+                self.model.n_cont, self.model.n_var, dtype=np.int32
+            )
+            types = np.full(
+                self.model.n_bin,
+                highspy.HighsVarType.kInteger,
+                dtype=object,
+            )
+            solver.changeColsIntegrality(self.model.n_bin, binary, types)
+        if cutoff is None:
+            solver.changeObjectiveSense(highspy.ObjSense.kMaximize)
+        else:
+            guard = 2e-7 * (1.0 + abs(cutoff))
+            solver.changeObjectiveSense(highspy.ObjSense.kMinimize)
+            solver.setOptionValue("objective_bound", offset - cutoff + guard)
+            solver.setOptionValue(
+                "objective_target",
+                offset - cutoff - 2.0 * feasibility_tol,
+            )
+        solver.run()
+        status = solver.getModelStatus()
+        info = solver.getInfo()
+        nodes = max(0, int(getattr(info, "mip_node_count", 0) or 0))
+        raw_status = str(status).rsplit(".", 1)[-1]
+        primal_infeasibility = float(
+            getattr(info, "max_primal_infeasibility", 0.0) or 0.0
+        )
+        safe_statuses = {
+            highspy.HighsModelStatus.kInfeasible,
+            highspy.HighsModelStatus.kObjectiveBound,
+        }
+        if cutoff is not None and status in safe_statuses:
+            return _MIPObjectiveResult(
+                np.nextafter(cutoff, -np.inf),
+                None,
+                nodes,
+                raw_status,
+                primal_infeasibility,
+            )
+        bound_statuses = safe_statuses | {
+            highspy.HighsModelStatus.kOptimal,
+            highspy.HighsModelStatus.kTimeLimit,
+            highspy.HighsModelStatus.kObjectiveTarget,
+        }
+        dual = (
+            float(getattr(info, "mip_dual_bound", np.inf))
+            if status in bound_statuses
+            else np.inf
+        )
+        upper = None
+        if np.isfinite(dual):
+            value = float(offset - dual if cutoff is not None else offset + dual)
+            upper = value + 1e-7 * (1.0 + abs(value))
+        solution = solver.getSolution()
+        x = None
+        if bool(solution.value_valid):
+            candidate = np.asarray(solution.col_value, dtype=np.float64)
+            if _valid_milp_point(
+                self.model,
+                candidate,
+                self.model.A,
+                self.model.row_lb,
+                self.model.row_ub,
+                feasibility_tol,
+            ):
+                x = candidate
+        return _MIPObjectiveResult(
+            upper, x, nodes, raw_status, primal_infeasibility
+        )
+
+
+def sparse_hz_obbt_bounds(
+    hz: SparseHZono,
+    lb,
+    ub,
+    rows,
+    *,
+    time_limit: float,
+):
+    lb = np.asarray(lb, dtype=np.float64).reshape(-1).copy()
+    ub = np.asarray(ub, dtype=np.float64).reshape(-1).copy()
+    rows = np.asarray(rows, dtype=np.int64).reshape(-1)
+    if highspy is None or rows.size == 0 or time_limit <= 0.0:
+        return lb, ub
+    model = _lower_hz_milp(hz)
+    if model.value_center.size != lb.size or ub.size != lb.size:
+        raise ValueError("sparse OBBT bounds do not match HZ outputs")
+    if model.n_var == 0:
+        return np.maximum(lb, model.value_center), np.minimum(ub, model.value_center)
+
+    solver = highspy.Highs()
+    solver.setOptionValue("output_flag", False)
+    solver.setOptionValue("solver", "simplex")
+    solver.setOptionValue("presolve", "off")
+    solver.setOptionValue("threads", 1)
+    solver.addVars(model.n_var, model.var_lb, model.var_ub)
+    if model.A.shape[0]:
+        A = model.A.tocsr()
+        solver.addRows(
+            A.shape[0],
+            model.row_lb,
+            model.row_ub,
+            A.nnz,
+            A.indptr.astype(np.int32, copy=False),
+            A.indices.astype(np.int32, copy=False),
+            A.data,
+        )
+
+    indices = np.arange(model.n_var, dtype=np.int32)
+    costs = np.zeros(model.n_var, dtype=np.float64)
+    deadline = time.monotonic() + float(time_limit)
+    priority = rows[np.argsort(np.minimum(-lb[rows], ub[rows]))]
+    primary = {
+        int(row): (-1.0 if ub[row] <= -lb[row] else 1.0)
+        for row in priority
+    }
+    for opposite in (False, True):
+        for row in priority:
+            if lb[row] >= 0.0 or ub[row] <= 0.0:
+                continue
+            remaining = deadline - time.monotonic()
+            if remaining <= 0.0:
+                return lb, ub
+            coeff = model.value_matrix.getrow(int(row))
+            costs.fill(0.0)
+            costs[coeff.indices] = coeff.data
+            sense = primary[int(row)] * (-1.0 if opposite else 1.0)
+            solver.setOptionValue("time_limit", remaining)
+            solver.changeColsCost(model.n_var, indices, sense * costs)
+            solver.run()
+            if solver.getModelStatus() != highspy.HighsModelStatus.kOptimal:
+                return lb, ub
+            objective = float(solver.getInfo().objective_function_value)
+            value = model.value_center[row] + sense * objective
+            guard = 1e-7 * (1.0 + abs(value))
+            if sense > 0.0:
+                lb[row] = max(lb[row], value - guard)
+            else:
+                ub[row] = min(ub[row], value + guard)
+    return lb, ub
+
+
+def _solve_hz_lp_maximum(
+    model: _HZMILP,
+    coeff,
+    offset: float,
+    deadline: float,
+    lp_form,
+    warm_solver: Optional[_HighsLPRelaxation] = None,
+) -> _ObjectiveResult:
+    if warm_solver is not None:
+        return warm_solver.maximize(coeff, offset, deadline)
+    objective = np.asarray(coeff.toarray(), dtype=np.float64).reshape(-1)
+    if objective.size == 0 or not np.any(objective):
+        return _ObjectiveResult(float(offset))
+    remaining = deadline - time.monotonic()
+    if remaining <= 0.0:
+        return _ObjectiveResult(None)
+    scale = max(1.0, float(np.max(np.abs(objective))))
+    A_ub, b_ub, A_eq, b_eq, bounds = lp_form
+    try:
+        result = linprog(
+            -objective / scale,
+            A_ub=A_ub,
+            b_ub=b_ub,
+            A_eq=A_eq,
+            b_eq=b_eq,
+            bounds=bounds,
+            method="highs",
+            options={"presolve": True, "time_limit": max(1e-3, remaining)},
+        )
+    except Exception as exc:
+        logger.debug("HybridZ LP objective failed: %s", exc)
+        return _ObjectiveResult(None)
+    if int(getattr(result, "status", -1)) == 2:
+        return _ObjectiveResult(-np.inf)
+    if not result.success or result.fun is None:
+        return _ObjectiveResult(None)
+    upper_bound = float(offset - scale * result.fun)
+    return _ObjectiveResult(upper_bound)
+
+
 class HZSolver(Solver):
     """Open-source Hybrid Zonotope bounds and verdict solver."""
 
@@ -1126,11 +3034,13 @@ class HZSolver(Solver):
     ) -> Optional[torch.Tensor]:
         if input_hz is None or input_hz.n_out != int(np.prod(input_shape)):
             return None
-        if input_hz.n_cont > model.n_cont or input_hz.n_bin > model.n_bin:
-            return None
-        xi_c = x[:model.n_cont][:input_hz.n_cont]
-        z = x[model.n_cont:model.n_cont + model.n_bin][:input_hz.n_bin]
-        xi_b = 2.0 * z - 1.0
+        xi_c = np.zeros(input_hz.n_cont, dtype=np.float64)
+        input_cont = model.cont_source < input_hz.n_cont
+        xi_c[model.cont_source[input_cont]] = x[:model.n_cont][input_cont]
+        xi_b = -np.ones(input_hz.n_bin, dtype=np.float64)
+        input_bin = model.bin_source < input_hz.n_bin
+        z = x[model.n_cont:]
+        xi_b[model.bin_source[input_bin]] = 2.0 * z[input_bin] - 1.0
         value = input_hz.c.copy()
         if input_hz.n_cont:
             value += np.asarray(input_hz.Gc @ xi_c).reshape(-1)
@@ -1174,33 +3084,103 @@ class HZSolver(Solver):
         M = int(encoded["M"])
         is_unsafe_linear = encoded["kind"] == OutKind.UNSAFE_LINEAR
         started = time.monotonic()
-        deadline = started + float(
-            self.time_limit if timelimit is None else timelimit
-        )
+        budget = float(self.time_limit if timelimit is None else timelimit)
+        deadline = started + budget
+        lp_deadline = min(deadline, started + max(1.0, 0.2 * budget))
         solves = 0
         nodes = 0
+        lp_solves = 0
+        mip_solves = 0
+        mip_statuses: dict[str, int] = {}
+        mip_raw_statuses: dict[str, int] = {}
+        max_primal_infeasibility = 0.0
+        abstract_violation_slacks = []
+        lp_upper_bounds = []
+        mip_upper_bounds = []
+        support_safe = 0
+        lp_form = None
+        warm_lp = None
+        if not is_unsafe_linear and highspy is not None:
+            try:
+                warm_lp = _HighsLPRelaxation(model)
+            except Exception as exc:
+                logger.debug("HybridZ warm LP setup failed: %s", exc)
+        if not is_unsafe_linear and warm_lp is None:
+            lp_form = _linprog_form(model)
 
         def solve(extra_A=None, extra_lb=None, extra_ub=None) -> _MILPResult:
-            nonlocal solves, nodes
-            result = _solve_hz_feasibility(
-                model,
-                deadline,
-                extra_A=extra_A,
-                extra_lb=extra_lb,
-                extra_ub=extra_ub,
-                feasibility_tol=max(self.tolerance, 1e-7),
-            )
+            nonlocal solves, nodes, mip_solves, max_primal_infeasibility
+            if warm_lp is not None:
+                result = warm_lp.solve_mip(
+                    deadline,
+                    extra_A=extra_A,
+                    extra_lb=extra_lb,
+                    extra_ub=extra_ub,
+                    feasibility_tol=max(self.tolerance, 1e-7),
+                )
+            else:
+                result = _solve_hz_feasibility(
+                    model,
+                    deadline,
+                    extra_A=extra_A,
+                    extra_lb=extra_lb,
+                    extra_ub=extra_ub,
+                    feasibility_tol=max(self.tolerance, 1e-7),
+                )
             solves += 1
+            mip_solves += 1
+            mip_statuses[result.status] = mip_statuses.get(result.status, 0) + 1
+            if result.raw_status:
+                mip_raw_statuses[result.raw_status] = (
+                    mip_raw_statuses.get(result.raw_status, 0) + 1
+                )
+            max_primal_infeasibility = max(
+                max_primal_infeasibility, result.primal_infeasibility
+            )
             nodes += result.nodes
             return result
 
-        base = solve()
-        if base.status != "feasible":
-            reason = "empty_hz" if base.status == "infeasible" else "base_unknown"
-            return self._unknown_results(B, reason)
+        def maximize_lp(coeff, offset: float) -> _ObjectiveResult:
+            nonlocal solves, lp_solves
+            result = _solve_hz_lp_maximum(
+                model, coeff, offset, lp_deadline, lp_form, warm_lp
+            )
+            solves += 1
+            lp_solves += 1
+            return result
+
+        def maximize_mip(
+            coeff, offset: float, cutoff: float
+        ) -> _MIPObjectiveResult:
+            nonlocal solves, nodes, mip_solves, max_primal_infeasibility
+            if warm_lp is None:
+                return _MIPObjectiveResult(None, None)
+            result = warm_lp.maximize_mip(
+                coeff,
+                offset,
+                deadline,
+                cutoff=cutoff,
+                feasibility_tol=max(self.tolerance, 1e-7),
+            )
+            solves += 1
+            mip_solves += 1
+            status = "bounded" if result.upper_bound is not None else (
+                "feasible" if result.x is not None else "unknown"
+            )
+            mip_statuses[status] = mip_statuses.get(status, 0) + 1
+            if result.raw_status:
+                mip_raw_statuses[result.raw_status] = (
+                    mip_raw_statuses.get(result.raw_status, 0) + 1
+                )
+            max_primal_infeasibility = max(
+                max_primal_infeasibility, result.primal_infeasibility
+            )
+            nodes += result.nodes
+            return result
 
         exact_witness = (
             isinstance(output_hz, SparseHZono)
+            and output_hz.exact
             and input_hz is not None
             and output_hz.frame_id is not None
             and output_hz.frame_id == input_hz.frame_id
@@ -1266,34 +3246,107 @@ class HZSolver(Solver):
                         metadata=metadata(lane, "unsafe_region_undecided"),
                     )
             else:
-                undecided = False
+                hard_rows = []
+                continuous_upper = np.asarray(
+                    abs(coeff[:, :model.n_cont]).sum(axis=1)
+                ).reshape(-1)
+                binary_upper = (
+                    np.asarray(coeff[:, model.n_cont:].maximum(0.0).sum(axis=1)).reshape(-1)
+                    if model.n_bin else np.zeros(M, dtype=np.float64)
+                )
+                box_upper = const + continuous_upper + binary_upper
                 for row in range(M):
+                    cutoff = float(t_lane[row] - self.tolerance)
+                    if box_upper[row] < cutoff:
+                        support_safe += 1
+                        continue
+                    relaxed = (
+                        _ObjectiveResult(None)
+                        if model.n_bin >= 512
+                        else maximize_lp(coeff[row], float(const[row]))
+                    )
+                    if relaxed.upper_bound is not None:
+                        lp_upper_bounds.append(float(relaxed.upper_bound))
+                    if (
+                        relaxed.upper_bound is not None
+                        and relaxed.upper_bound < cutoff
+                    ):
+                        continue
+                    hard_rows.append((
+                        row,
+                        float(box_upper[row])
+                        if relaxed.upper_bound is None
+                        else relaxed.upper_bound,
+                    ))
+                    if time.monotonic() >= deadline:
+                        break
+
+                undecided = len(hard_rows) > 0 or len(hard_rows) < M and time.monotonic() >= deadline
+                hard_rows.sort(
+                    key=lambda item: (
+                        np.inf if item[1] is None else float(item[1])
+                    ),
+                    reverse=True,
+                )
+                for row, _ in hard_rows:
+                    cutoff = float(t_lane[row] - self.tolerance)
+                    if warm_lp is not None:
+                        optimized = maximize_mip(
+                            coeff[row], float(const[row]), cutoff
+                        )
+                        if optimized.upper_bound is not None:
+                            mip_upper_bounds.append(float(optimized.upper_bound))
+                        if (
+                            optimized.upper_bound is not None
+                            and optimized.upper_bound < cutoff
+                        ):
+                            undecided = False
+                            continue
+                        witness = optimized.x
+                        if witness is not None and exact_witness:
+                            value = const[row] + float(
+                                (coeff[row] @ witness).item()
+                            )
+                            if value >= t_lane[row] + self.tolerance:
+                                counterexample = self._recover_input(
+                                    model, witness, input_hz, input_shape, lane
+                                )
+                                if counterexample is not None:
+                                    lane_result = VerifyResult(
+                                        VerifyStatus.FALSIFIED,
+                                        counterexample=counterexample,
+                                        metadata=metadata(
+                                            lane, "exact_violation_witness"
+                                        ),
+                                    )
+                        if lane_result is not None:
+                            break
+                        undecided = True
+                        break
                     expanded = solve(
                         coeff[row],
-                        np.array([t_lane[row] - self.tolerance - const[row]]),
+                        np.array([cutoff - const[row]]),
                         np.array([np.inf]),
                     )
                     if expanded.status == "infeasible":
+                        undecided = False
                         continue
-                    if not exact_witness:
-                        undecided = True
-                        break
                     witness = None
                     if expanded.status == "feasible":
                         value = const[row] + float((coeff[row] @ expanded.x).item())
-                        if value >= t_lane[row] + self.tolerance:
-                            witness = expanded.x
-                        else:
-                            contracted = solve(
-                                coeff[row],
-                                np.array([t_lane[row] + self.tolerance - const[row]]),
-                                np.array([np.inf]),
-                            )
-                            if contracted.status == "feasible":
-                                value = const[row] + float(
-                                    (coeff[row] @ contracted.x).item()
+                        abstract_violation_slacks.append(value - t_lane[row])
+                        if exact_witness:
+                            if value >= t_lane[row] + self.tolerance:
+                                witness = expanded.x
+                            else:
+                                contracted = solve(
+                                    coeff[row],
+                                    np.array([
+                                        t_lane[row] + self.tolerance - const[row]
+                                    ]),
+                                    np.array([np.inf]),
                                 )
-                                if value >= t_lane[row] + self.tolerance:
+                                if contracted.status == "feasible":
                                     witness = contracted.x
                     if witness is not None:
                         counterexample = self._recover_input(
@@ -1307,15 +3360,14 @@ class HZSolver(Solver):
                             )
                             break
                     undecided = True
-                    if time.monotonic() >= deadline:
-                        break
+                    break
                 if lane_result is None:
                     lane_result = VerifyResult(
                         VerifyStatus.UNKNOWN if undecided else VerifyStatus.CERTIFIED,
                         metadata=metadata(
                             lane,
-                            "violation_region_undecided" if undecided
-                            else "expanded_violations_infeasible",
+                            "objective_bound_undecided" if undecided
+                            else "objective_bounds_safe",
                         ),
                     )
             results.append(lane_result)
@@ -1323,6 +3375,22 @@ class HZSolver(Solver):
         self.last_stats = {
             "elapsed": time.monotonic() - started,
             "solves": solves,
+            "lp_solves": lp_solves,
+            "mip_solves": mip_solves,
+            "mip_statuses": mip_statuses,
+            "mip_raw_statuses": mip_raw_statuses,
+            "max_primal_infeasibility": max_primal_infeasibility,
+            "max_abstract_violation_slack": (
+                max(abstract_violation_slacks)
+                if abstract_violation_slacks else None
+            ),
+            "max_lp_upper_bound": (
+                max(lp_upper_bounds) if lp_upper_bounds else None
+            ),
+            "max_mip_upper_bound": (
+                max(mip_upper_bounds) if mip_upper_bounds else None
+            ),
+            "support_safe": support_safe,
             "nodes": nodes,
             "n_cont": model.n_cont,
             "n_bin": model.n_bin,

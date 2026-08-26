@@ -1616,7 +1616,7 @@ class _LayerGraphBuilder:
                                  "affine": mod.affine, "track_running_stats": mod.track_running_stats},
             "batchnorm_state": batchnorm_state
         }
-        self._add_layer("SCALE", scale_params, self.prev_out, out_scale)
+        scale_id = self._add_layer("SCALE", scale_params, self.prev_out, out_scale)
         self.prev_out = out_scale
         
         # BIAS layer - marked as paired with SCALE
@@ -1627,7 +1627,8 @@ class _LayerGraphBuilder:
             "is_batchnorm_decomposition": True,
             "paired_with_scale": True
         }
-        self._add_layer("BIAS", bias_params, self.prev_out, out_bias)
+        bias_id = self._add_layer("BIAS", bias_params, self.prev_out, out_bias)
+        self._fx_pred_override[bias_id] = [scale_id]
         self.prev_out = out_bias
     
     def _convert_rnn_family(self, mod: Union[nn.RNN, nn.LSTM, nn.GRU], kind: LayerKind) -> None:
@@ -1688,7 +1689,12 @@ class _LayerGraphBuilder:
         axis = getattr(mod, 'dim', None)
         if axis is None:
             axis = -1
-        self._add_layer(LayerKind.SOFTMAX.value, {"axis": int(axis)}, self.prev_out, out_vars)
+        self._add_layer(
+            LayerKind.SOFTMAX.value,
+            {"axis": int(axis), "input_shape": self.shape, "output_shape": self.shape},
+            self.prev_out,
+            out_vars,
+        )
         self.prev_out = out_vars
 
     # -------------------------------------------------------------------------
