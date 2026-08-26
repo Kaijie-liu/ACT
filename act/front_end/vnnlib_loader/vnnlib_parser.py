@@ -86,11 +86,8 @@ def parse_vnnlib_to_tensors(
                 num_outputs = _numel(out_shape)
                 content = _rewrite_vnnlib_2_bracket_vars(content, in_name, in_shape, out_name, out_shape)
         else:
-            raise UnsupportedSpecError(
-                f"{vnnlib_path.name}: VNNLIB 1.0 flat format is no longer supported "
-                f"(ACT is VNNLIB 2.0-only); provide a 2.0 file declaring "
-                f"(vnnlib-version)/(declare-network)."
-            )
+            num_inputs = _extract_num_inputs(content)
+            num_outputs = _extract_num_outputs(content)
 
         # Extract input bounds from top-level simple X-bound asserts only.
         # Constraints inside (or ...) branches must not be intersected here —
@@ -162,13 +159,11 @@ def parse_vnnlib_queries(
     labeled_tensor: Optional['LabeledInputTensor'] = None
 ) -> List[Tuple[InputSpec, OutputSpec]]:
     """
-    Parse a VNNLIB 2.0 file into a list of verification queries.
+    Parse a VNNLIB 1.0 or 2.0 file into a list of verification queries.
 
-    ACT is VNNLIB 2.0-only: the file must declare ``(vnnlib-version ...)`` /
-    ``(declare-network ...)``. Legacy flat 1.0 files (bare ``declare-const X_0``)
-    are rejected. Parsing is delegated to :func:`parse_vnnlib_2_0`, which
-    ravel-rewrites bracket vars ``X[i,..]``/``Y[j,..]`` to flat ``X_n``/``Y_n``
-    before the shared query-assembly core.
+    VNNLIB 1.0 flat variables enter the shared query-assembly core directly.
+    VNNLIB 2.0 bracket variables are first ravel-rewritten to the same internal
+    ``X_n``/``Y_n`` representation.
 
     Semantics:
       - Multiple top-level ``(assert ...)`` forms are conjunctive (implicit AND).
@@ -181,7 +176,6 @@ def parse_vnnlib_queries(
         result collapses to a single TOP1_ROBUST OutputSpec.
 
     Raises:
-        UnsupportedSpecError: If the file is legacy VNNLIB 1.0 flat format.
         VNNLibParseError: If the file is missing or unparseable.
     """
     if not vnnlib_path.exists():
@@ -195,10 +189,21 @@ def parse_vnnlib_queries(
     if "(vnnlib-version" in content or "(declare-network" in content:
         return parse_vnnlib_2_0(vnnlib_path, labeled_tensor=labeled_tensor)
 
-    raise UnsupportedSpecError(
-        f"{vnnlib_path.name}: VNNLIB 1.0 flat format is no longer supported "
-        f"(ACT is VNNLIB 2.0-only); provide a 2.0 file declaring "
-        f"(vnnlib-version)/(declare-network)."
+    num_inputs = _extract_num_inputs(content)
+    num_outputs = _extract_num_outputs(content)
+    tensor_shape = (
+        tuple(labeled_tensor.tensor.shape)
+        if labeled_tensor is not None
+        else (num_inputs,)
+    )
+    if _numel(tensor_shape) != num_inputs:
+        raise VNNLibParseError(
+            f"VNNLIB 1.0 declares {num_inputs} input elements, but model/sample "
+            f"input shape {tensor_shape} has {_numel(tensor_shape)}"
+        )
+    true_label = labeled_tensor.label if labeled_tensor is not None else None
+    return _queries_from_rewritten(
+        content, num_inputs, num_outputs, tensor_shape, true_label, vnnlib_path.name
     )
 
 
@@ -268,8 +273,23 @@ _Ineq = Tuple[List[float], List[float], float]
 _Query = List[_Ineq]
 
 
+def _extract_num_inputs(content: str) -> int:
+    x_vars = {int(index) for index in _X_RE.findall(content)}
+    if not x_vars:
+        raise VNNLibParseError("No input variables (X_i) found")
+    return max(x_vars) + 1
+
+
+def _extract_num_outputs(content: str) -> int:
+    y_vars = {int(index) for index in _Y_RE.findall(content)}
+    if not y_vars:
+        logger.warning("No output variables (Y_i) found in VNNLIB")
+        return 0
+    return max(y_vars) + 1
+
+
 # -------------------------------------------------------------------------
-# VNNLIB 2.0 parsing and legacy-token rewrite
+# VNNLIB 2.0 parsing and shared flat-token query construction
 # -------------------------------------------------------------------------
 
 
@@ -324,8 +344,7 @@ def _queries_from_rewritten(
     true_label,
     name: str,
 ) -> List[Tuple[InputSpec, OutputSpec]]:
-    """Shared core: turn a flat-name-rewritten 2.0 body into (InputSpec, OutputSpec)
-    queries. Used by both single-network and isomorphic dual-network 2.0 parsing."""
+    """Turn a flat-name VNNLIB body into ``(InputSpec, OutputSpec)`` queries."""
     try:
         forms = _parse_all_forms(rewritten)
     except VNNLibParseError:
@@ -346,7 +365,7 @@ def _queries_from_rewritten(
 
     if not complex_assert_bodies:
         out_spec = _build_trivial_output_spec(num_outputs, true_label)
-        logger.info(f"Parsed {name}: 1 query(ies) [vnnlib 2.0 input-only]")
+        logger.info(f"Parsed {name}: 1 query(ies) [input-only]")
         return [(base_in_spec, out_spec)]
 
     per_assert: List[List[_Query]] = []
@@ -393,7 +412,7 @@ def _queries_from_rewritten(
         if promoted is not None:
             results = [promoted]
 
-    logger.info(f"Parsed {name}: {len(results)} query(ies) [vnnlib 2.0]")
+    logger.info(f"Parsed {name}: {len(results)} query(ies)")
     return results
 
 
