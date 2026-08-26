@@ -443,6 +443,17 @@ def sparse_empty(rows: int, cols: int):
     return sp.csr_matrix((int(rows), int(cols)), dtype=np.float64)
 
 
+def sparse_abs_row_sum(mat):
+    _require_sparse()
+    mat = mat if sp.isspmatrix_csr(mat) else sp.csr_matrix(mat)
+    mat.sum_duplicates()
+    result = np.zeros(mat.shape[0], dtype=np.float64)
+    rows = np.flatnonzero(np.diff(mat.indptr))
+    if rows.size:
+        result[rows] = np.add.reduceat(np.abs(mat.data), mat.indptr[rows])
+    return result
+
+
 def sparse_pad_cols(mat, cols: int):
     mat = _as_csr(mat)
     cols = int(cols)
@@ -647,9 +658,9 @@ def sparse_hz_intersect_bounds(hz: SparseHZono, bounds: Bounds) -> SparseHZono:
         raise ValueError("sparse HZ box intersection requires finite matching bounds")
     if np.any(lb > ub):
         raise ValueError("sparse HZ box intersection received inconsistent bounds")
-    radius = np.asarray(np.abs(hz.Gc).sum(axis=1)).reshape(-1)
+    radius = sparse_abs_row_sum(hz.Gc)
     if hz.n_bin:
-        radius += np.asarray(np.abs(hz.Gb).sum(axis=1)).reshape(-1)
+        radius += sparse_abs_row_sum(hz.Gb)
     upper_rows = np.flatnonzero(ub < hz.c + radius)
     lower_rows = np.flatnonzero(lb > hz.c - radius)
     return SparseHZono(
@@ -1466,9 +1477,9 @@ def _attention_score_affine(
     interval_upper = np.sum(
         mixed_coefficients * np.where(positive, k_ub, k_lb), axis=1
     )
-    mixed_radius = np.asarray(abs(mixed_Gc).sum(axis=1)).reshape(n_out, reduction)
+    mixed_radius = sparse_abs_row_sum(mixed_Gc).reshape(n_out, reduction)
     if n_bin:
-        mixed_radius += np.asarray(abs(mixed_Gb).sum(axis=1)).reshape(
+        mixed_radius += sparse_abs_row_sum(mixed_Gb).reshape(
             n_out, reduction
         )
     mixed_lower = np.maximum(interval_lower, mixed_center - mixed_radius)
@@ -1480,10 +1491,10 @@ def _attention_score_affine(
     q_lb = q_bounds.lb.detach().cpu().double().numpy().reshape(-1)[q_term_rows]
     q_ub = q_bounds.ub.detach().cpu().double().numpy().reshape(-1)[q_term_rows]
     q_center = qp.c[q_term_rows]
-    q_row_radius = np.asarray(abs(qp.Gc).sum(axis=1)).reshape(-1)
+    q_row_radius = sparse_abs_row_sum(qp.Gc)
     q_radius = q_row_radius[q_term_rows]
     if n_bin:
-        q_binary_radius = np.asarray(abs(qp.Gb).sum(axis=1)).reshape(-1)
+        q_binary_radius = sparse_abs_row_sum(qp.Gb)
         q_radius += q_binary_radius[q_term_rows]
     q_lower = np.maximum(q_lb, q_center - q_radius)
     q_upper = np.minimum(q_ub, q_center + q_radius)
@@ -2032,8 +2043,8 @@ def sparse_hz_is_point(hz: SparseHZono, tol: float = 1e-12) -> bool:
 
 
 def sparse_hz_fast_bounds(hz: SparseHZono) -> Bounds:
-    abs_gc = np.asarray(np.abs(hz.Gc).sum(axis=1)).reshape(-1)
-    abs_gb = np.asarray(np.abs(hz.Gb).sum(axis=1)).reshape(-1) if hz.n_bin else 0.0
+    abs_gc = sparse_abs_row_sum(hz.Gc)
+    abs_gb = sparse_abs_row_sum(hz.Gb) if hz.n_bin else 0.0
     rad = abs_gc + abs_gb
     return Bounds(
         lb=torch.from_numpy(hz.c - rad).reshape(1, -1),
@@ -2799,7 +2810,6 @@ class _HighsLPRelaxation:
         solver.setOptionValue("output_flag", False)
         solver.setOptionValue("threads", 1)
         solver.setOptionValue("presolve", "on")
-        solver.setOptionValue("time_limit", remaining)
         solver.setOptionValue("mip_rel_gap", 0.0)
         solver.setOptionValue("mip_heuristic_effort", 0.0)
         solver.setOptionValue("mip_lp_solver", "ipm")
@@ -2836,6 +2846,10 @@ class _HighsLPRelaxation:
                 "objective_target",
                 offset - cutoff - 2.0 * feasibility_tol,
             )
+        remaining = deadline - time.monotonic()
+        if remaining <= 0.0:
+            return _MIPObjectiveResult(None, None)
+        solver.setOptionValue("time_limit", remaining)
         solver.run()
         status = solver.getModelStatus()
         info = solver.getInfo()
@@ -3247,9 +3261,9 @@ class HZSolver(Solver):
                     )
             else:
                 hard_rows = []
-                continuous_upper = np.asarray(
-                    abs(coeff[:, :model.n_cont]).sum(axis=1)
-                ).reshape(-1)
+                continuous_upper = sparse_abs_row_sum(
+                    coeff[:, :model.n_cont]
+                )
                 binary_upper = (
                     np.asarray(coeff[:, model.n_cont:].maximum(0.0).sum(axis=1)).reshape(-1)
                     if model.n_bin else np.zeros(M, dtype=np.float64)

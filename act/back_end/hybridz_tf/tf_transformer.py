@@ -30,6 +30,7 @@ from act.back_end.solver.solver_hz import (
     hz_lift_bounds,
     hz_multiply,
     hz_tighten_bounds,
+    sparse_abs_row_sum,
     sparse_hz_add_const,
     sparse_hz_concat,
     sparse_hz_lift_bounds,
@@ -274,7 +275,7 @@ def _attention_score_differences(L, bounds: Bounds, rowsize: int, tf):
                 sp.diags(left_scale) @ k_hz.Gc[left]
                 - sp.diags(right_scale) @ k_hz.Gc[right]
             ).tocsr()
-            radius = np.asarray(abs(DGc).sum(axis=1)).reshape(
+            radius = sparse_abs_row_sum(DGc).reshape(
                 rowsize, rowsize, reduction
             )
             if k_hz.n_bin:
@@ -282,7 +283,7 @@ def _attention_score_differences(L, bounds: Bounds, rowsize: int, tf):
                     sp.diags(left_scale) @ k_hz.Gb[left]
                     - sp.diags(right_scale) @ k_hz.Gb[right]
                 ).tocsr()
-                radius += np.asarray(abs(DGb).sum(axis=1)).reshape(
+                radius += sparse_abs_row_sum(DGb).reshape(
                     rowsize, rowsize, reduction
                 )
             else:
@@ -314,14 +315,14 @@ def _attention_score_differences(L, bounds: Bounds, rowsize: int, tf):
         affine_Gc = (
             q_operator @ q_hz.Gc + delta_operator @ DGc
         ).tocsr()
-        affine_radius = np.asarray(abs(affine_Gc).sum(axis=1)).reshape(
+        affine_radius = sparse_abs_row_sum(affine_Gc).reshape(
             rowsize, rowsize
         )
         if q_hz.n_bin:
             affine_Gb = (
                 q_operator @ q_hz.Gb + delta_operator @ DGb
             ).tocsr()
-            affine_radius += np.asarray(abs(affine_Gb).sum(axis=1)).reshape(
+            affine_radius += sparse_abs_row_sum(affine_Gb).reshape(
                 rowsize, rowsize
             )
         affine_radius += (
