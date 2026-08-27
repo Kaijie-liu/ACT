@@ -27,6 +27,7 @@ from act.back_end.layer_schema import LayerKind
 from act.back_end.solver.solver_hz import (
     HZono,
     SparseHZono,
+    hz_bounds_are_liftable,
     hz_from_bounds,
     hz_lift_bounds,
     hz_tighten_bounds,
@@ -375,7 +376,7 @@ class HybridzTF(RegistryTF):
                 f"sparse auxiliary slot count changed for layer {layer_id}: "
                 f"{len(slots)} vs {count}"
             )
-        return slots, max(n_cont, (slots[-1] + 1) if slots else n_cont)
+        return slots, n_cont
 
     @staticmethod
     def _sparse_fact(fact: Fact, hz: SparseHZono) -> Fact:
@@ -439,10 +440,7 @@ class HybridzTF(RegistryTF):
                 return self._sparse_fact(result, out)
             self._drop_sparse_hz(L.id, f"unsupported_sparse_op:{k}")
         except Exception as exc:
-            self._drop_sparse_hz(
-                L.id,
-                f"sparse_op_failed:{k}:{type(exc).__name__}:{exc}",
-            )
+            self._drop_sparse_hz(L.id, f"sparse_op_failed:{k}:{type(exc).__name__}")
         return result
 
     def apply(
@@ -520,12 +518,10 @@ class HybridzTF(RegistryTF):
             and self._hz_cache.get(L.id) is hz_before
             and k not in ("INPUT", "INPUT_SPEC")
         ):
-            finite = bool(
-                torch.isfinite(result.bounds.lb).all()
-                and torch.isfinite(result.bounds.ub).all()
-                and (result.bounds.lb <= result.bounds.ub).all()
-            )
-            if finite and result.bounds.lb.numel() <= self._HZ_MAX_INPUT_DIM:
+            if (
+                hz_bounds_are_liftable(result.bounds)
+                and result.bounds.lb.numel() <= self._HZ_MAX_INPUT_DIM
+            ):
                 self._hz_cache[L.id] = hz_lift_bounds(hz_before, result.bounds)
             else:
                 self._hz_cache.pop(L.id, None)

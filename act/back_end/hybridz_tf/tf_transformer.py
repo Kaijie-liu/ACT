@@ -21,10 +21,11 @@ except ImportError:
     sp = None
 
 import act.back_end.interval_tf.tf_transformer as interval
-from act.back_end.hybridz_tf.tf_mlp import _matmul_term_rows
+from act.back_end.hybridz_tf.tf_mlp import _broadcast_flat, _matmul_term_rows
 from act.back_end.core import Bounds, Fact
 from act.back_end.utils import scale_interval
 from act.back_end.solver.solver_hz import (
+    hz_bounds_are_liftable,
     hz_add_const,
     hz_concat,
     hz_lift_bounds,
@@ -38,23 +39,6 @@ from act.back_end.solver.solver_hz import (
 )
 
 
-def _broadcast_flat(value, n_out: int):
-    value = value.flatten()
-    if value.numel() == n_out:
-        return value
-    if value.numel() and n_out % value.numel() == 0:
-        return value.repeat(n_out // value.numel())
-    raise ValueError(f"cannot broadcast {value.numel()} values to {n_out} HZ rows")
-
-
-def _liftable(bounds: Bounds) -> bool:
-    return bool(
-        torch.isfinite(bounds.lb).all()
-        and torch.isfinite(bounds.ub).all()
-        and (bounds.lb <= bounds.ub).all()
-    )
-
-
 def _dense_lift(
     L,
     fact,
@@ -65,7 +49,7 @@ def _dense_lift(
     inequality_rhs=None,
 ):
     hz = tf._hz_cache.get(L.id)
-    if hz is None or not _liftable(fact.bounds):
+    if hz is None or not hz_bounds_are_liftable(fact.bounds):
         tf._hz_cache.pop(L.id, None)
         return fact
     out = hz_lift_bounds(
@@ -81,30 +65,6 @@ def _dense_lift(
     else:
         tf._hz_cache[L.id] = out
     return fact
-
-
-def _softmax_rowsize(L, bounds):
-    shape = L.params.get("input_shape")
-    axis = int(L.params.get("axis", -1))
-    if shape is not None:
-        shape = tuple(int(d) for d in shape)
-        axis = axis if axis >= 0 else len(shape) + axis
-        if axis == len(shape) - 1:
-            rowsize = shape[axis]
-            if rowsize > 0 and bounds.lb.numel() % rowsize == 0:
-                return int(rowsize)
-        return None
-    return int(bounds.lb.shape[-1])
-
-
-def _dense_simplex(rowsize: int, n_out: int, dtype, device):
-    if rowsize <= 0 or n_out % rowsize:
-        return None, None
-    groups = n_out // rowsize
-    E = torch.zeros((groups, n_out), dtype=dtype, device=device)
-    cols = torch.arange(n_out, device=device).view(groups, rowsize)
-    E.scatter_(1, cols, 1.0)
-    return E, torch.ones(groups, dtype=dtype, device=device)
 
 
 def _sparse_simplex(rowsize: int, n_out: int):
@@ -195,26 +155,19 @@ def _attention_score_differences(L, bounds: Bounds, rowsize: int, tf):
         if kind in {"RESHAPE", "FLATTEN", "SQUEEZE", "UNSQUEEZE"}:
             current = layer_preds[0]
             continue
-        if kind == "SCALE":
-            value = score_layer.params["a"].detach().cpu().double().numpy().reshape(-1)
-            if value.size == 1:
-                value = np.full(n_scores, value.item(), dtype=np.float64)
-            elif n_scores % value.size == 0:
-                value = np.tile(value, n_scores // value.size)
-            else:
+        if kind in {"SCALE", "BIAS"}:
+            key = "a" if kind == "SCALE" else "c"
+            try:
+                value = (
+                    _broadcast_flat(score_layer.params[key], n_scores)
+                    .detach().cpu().double().numpy()
+                )
+            except ValueError:
                 return None
-            scale *= value
-            current = layer_preds[0]
-            continue
-        if kind == "BIAS":
-            value = score_layer.params["c"].detach().cpu().double().numpy().reshape(-1)
-            if value.size == 1:
-                value = np.full(n_scores, value.item(), dtype=np.float64)
-            elif n_scores % value.size == 0:
-                value = np.tile(value, n_scores // value.size)
+            if kind == "SCALE":
+                scale *= value
             else:
-                return None
-            shift += scale * value
+                shift += scale * value
             current = layer_preds[0]
             continue
         return None
@@ -374,7 +327,7 @@ def _sparse_lift(
     output_inequalities=None,
     inequality_rhs=None,
 ):
-    if not _liftable(fact.bounds):
+    if not hz_bounds_are_liftable(fact.bounds):
         return None, "nonfinite_sparse_transformer_bounds"
     reservation = tf._sparse_cont_slots_for(hz, L.id, fact.bounds.lb.numel())
     if reservation is None:
@@ -406,7 +359,7 @@ def _sparse_lift(
 
 
 def _softmax_box(bounds: Bounds, rowsize) -> Bounds:
-    if rowsize is None or not _liftable(bounds):
+    if rowsize is None or not hz_bounds_are_liftable(bounds):
         return Bounds(torch.zeros_like(bounds.lb), torch.ones_like(bounds.ub))
     lb = bounds.lb.reshape(-1, rowsize)
     ub = bounds.ub.reshape(-1, rowsize)
@@ -546,7 +499,7 @@ def tf_att_scores(L, bounds, tf):
 
 def tf_softmax(L, bounds, tf):
     fact = interval.tf_softmax(L, bounds)
-    rowsize = _softmax_rowsize(L, bounds)
+    rowsize = interval.softmax_rowsize(L, bounds)
     softmax_bounds = _softmax_box(bounds, rowsize)
     differences = (
         _attention_score_differences(L, bounds, rowsize, tf)
@@ -563,12 +516,10 @@ def tf_softmax(L, bounds, tf):
     E = rhs = A = arhs = None
     if hz is not None:
         if rowsize is not None:
-            E, rhs = _dense_simplex(
-                rowsize,
-                fact.bounds.lb.numel(),
-                hz.c.dtype,
-                hz.c.device,
-            )
+            Esp, rhs_np = _sparse_simplex(rowsize, fact.bounds.lb.numel())
+            if Esp is not None:
+                E = torch.from_numpy(Esp.toarray()).to(hz.c)
+                rhs = torch.from_numpy(rhs_np).to(hz.c)
             Asp, arhs_np = _softmax_ratio_inequalities(bounds, rowsize, differences)
             if Asp is not None:
                 A = torch.from_numpy(Asp.toarray()).to(hz.c)
@@ -624,13 +575,10 @@ def tf_mask_add(L, bounds, tf):
 
 def sparse_hz_apply_layer(L, hz, input_bounds, result, tf):
     kind = L.kind.upper()
-    if kind == "POSENC":
+    if kind in {"POSENC", "MASK_ADD"}:
+        key = "pos_vec" if kind == "POSENC" else "M"
         return True, sparse_hz_add_const(
-            hz, _broadcast_flat(L.params["pos_vec"], hz.n_out)
-        ), None
-    if kind == "MASK_ADD":
-        return True, sparse_hz_add_const(
-            hz, _broadcast_flat(L.params["M"], hz.n_out)
+            hz, _broadcast_flat(L.params[key], hz.n_out)
         ), None
     if kind == "MHA_JOIN":
         parts = [tf._sparse_hz_cache.get(pid) for pid in tf._net.preds.get(L.id, [])]
@@ -640,7 +588,7 @@ def sparse_hz_apply_layer(L, hz, input_bounds, result, tf):
             else (True, None, "missing_sparse_mha_join_input")
         )
     if kind == "SOFTMAX":
-        rowsize = _softmax_rowsize(L, input_bounds)
+        rowsize = interval.softmax_rowsize(L, input_bounds)
         differences = tf._softmax_differences.get(L.id)
         A, arhs = (
             _softmax_ratio_inequalities(input_bounds, rowsize, differences)
