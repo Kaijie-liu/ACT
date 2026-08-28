@@ -5,6 +5,10 @@ verification on top of ACT/HyZor. It deliberately keeps the router and experts a
 separate ACT `Net` objects so the solver never instantiates every expert's unstable
 ReLU binaries in one monolithic model.
 
+The restricted selected-softmax top-2 fallback has a separate frozen soundness
+contract in
+[`../../pipeline/moe/docs/weighted_top2_fallback.md`](../../pipeline/moe/docs/weighted_top2_fallback.md).
+
 ## Implemented scope
 
 - hard top-1, selected-softmax top-k, normalized-sigmoid top-k, and Switch-style

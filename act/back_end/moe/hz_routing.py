@@ -84,6 +84,15 @@ class TopKSetReport:
     exact: bool
 
 
+@dataclass(frozen=True)
+class TopKSetDomain:
+    """An exact tie-inclusive guard for one unordered top-k route set."""
+
+    hz: HZ
+    route_set: tuple[int, ...]
+    top_k: int
+
+
 def _output_width(hz: HZ) -> int:
     return hz.n_out if isinstance(hz, SparseHZono) else int(hz.c.shape[0])
 
@@ -127,7 +136,11 @@ def condition_topk_membership(
     ``binomial(E, k)`` route sets.  ``M[j,i]`` is obtained from a
     correlation-preserving HZ support bound on ``r_j-r_i``.
     """
-    rows = tuple(range(_output_width(hz))) if score_rows is None else tuple(score_rows)
+    rows = (
+        tuple(range(_output_width(hz)))
+        if score_rows is None
+        else tuple(score_rows)
+    )
     experts = len(rows)
     if not 0 <= int(expert) < experts:
         raise IndexError("expert index out of range")
@@ -214,6 +227,68 @@ def guarded_input_domain(
     )
 
 
+def condition_topk_set(
+    hz: HZ,
+    route_set: Sequence[int],
+    *,
+    score_rows: Sequence[int] | None = None,
+) -> TopKSetDomain:
+    """Intersect ``hz`` with one legal unordered, tie-inclusive top-k set."""
+    rows = (
+        tuple(range(_output_width(hz)))
+        if score_rows is None
+        else tuple(score_rows)
+    )
+    experts = len(rows)
+    selected = tuple(sorted(int(value) for value in route_set))
+    if not selected or len(set(selected)) != len(selected):
+        raise ValueError("route_set must contain distinct expert indices")
+    if any(value < 0 or value >= experts for value in selected):
+        raise IndexError("route_set expert index out of range")
+    outside = tuple(value for value in range(experts) if value not in selected)
+    comparisons = len(selected) * len(outside)
+    if comparisons:
+        A = torch.zeros((comparisons, _output_width(hz)), dtype=torch.float64)
+        row = 0
+        for chosen in selected:
+            for other in outside:
+                A[row, rows[other]] = 1.0
+                A[row, rows[chosen]] = -1.0
+                row += 1
+        conditioned = hz_add_output_inequalities(
+            hz,
+            A,
+            torch.zeros(comparisons, dtype=torch.float64),
+        )
+    else:
+        conditioned = hz
+    return TopKSetDomain(conditioned, selected, len(selected))
+
+
+def guarded_input_topk_set(
+    input_hz: HZ,
+    router_hz: HZ,
+    route_set: Sequence[int],
+) -> TopKSetDomain:
+    """Attach an exact unordered set guard, then retain only input outputs."""
+    if isinstance(input_hz, SparseHZono) != isinstance(router_hz, SparseHZono):
+        raise TypeError("input and router HZ representations must match")
+    n_input = _output_width(input_hz)
+    if isinstance(input_hz, SparseHZono):
+        joint = sparse_hz_concat([input_hz, router_hz])
+    else:
+        joint = hz_concat([input_hz, router_hz])
+    if joint is None:
+        raise ValueError("cannot construct an empty joint input/router HZ")
+    score_rows = range(n_input, n_input + _output_width(router_hz))
+    guarded = condition_topk_set(joint, route_set, score_rows=score_rows)
+    return TopKSetDomain(
+        hz_select_rows(guarded.hz, range(n_input)),
+        guarded.route_set,
+        guarded.top_k,
+    )
+
+
 def analyze_candidates(
     router_hz: HZ,
     top_k: int,
@@ -284,23 +359,7 @@ def analyze_topk_sets(
     branches: list[TopKSetBranch] = []
     for selected_values in combinations(range(experts), int(top_k)):
         selected = tuple(int(value) for value in selected_values)
-        outside = tuple(value for value in range(experts) if value not in selected)
-        comparisons = len(selected) * len(outside)
-        if comparisons:
-            A = torch.zeros((comparisons, experts), dtype=torch.float64)
-            row = 0
-            for chosen in selected:
-                for other in outside:
-                    A[row, other] = 1.0
-                    A[row, chosen] = -1.0
-                    row += 1
-            conditioned = hz_add_output_inequalities(
-                router_hz,
-                A,
-                torch.zeros(comparisons, dtype=torch.float64),
-            )
-        else:
-            conditioned = router_hz
+        conditioned = condition_topk_set(router_hz, selected).hz
         result = hz_check_feasibility(
             conditioned,
             time_limit=float(time_limit_per_set),

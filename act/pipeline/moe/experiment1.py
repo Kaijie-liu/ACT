@@ -44,6 +44,7 @@ from act.back_end.moe import (
     analyze_topk_sets,
     build_act_moe_program,
     load_output_moe_checkpoint,
+    shared_input_pair_hz,
 )
 from act.back_end.moe.route_a import _component_output_hz
 from act.back_end.moe.routing import interval_candidate_mask
@@ -146,6 +147,13 @@ class Propagation:
     @property
     def binary_width(self) -> int:
         return int(getattr(self.output_hz, "n_bin", 0))
+
+
+@dataclass
+class SharedPairPropagation:
+    expert_a: Propagation
+    expert_b: Propagation
+    joint: Any
 
 
 def _inside(path: Path, root: Path) -> Path:
@@ -341,6 +349,38 @@ def _propagate_component(net, *, entry_hz=None, hybridz_config=None) -> Propagat
         set_solver_mode(previous_solver)
         if previous_tf is not None:
             set_transfer_function(previous_tf)
+
+
+def shared_input_pair_propagation(
+    net_a,
+    net_b,
+    *,
+    entry_hz,
+    hybridz_config=None,
+) -> SharedPairPropagation:
+    """Propagate two experts from one guard, then separate private HZ factors."""
+    if not isinstance(entry_hz, SparseHZono):
+        raise TypeError("shared-input pair propagation requires a sparse entry HZ")
+    expert_a = _propagate_component(
+        net_a,
+        entry_hz=entry_hz,
+        hybridz_config=hybridz_config,
+    )
+    expert_b = _propagate_component(
+        net_b,
+        entry_hz=entry_hz,
+        hybridz_config=hybridz_config,
+    )
+    if not isinstance(expert_a.output_hz, SparseHZono) or not isinstance(
+        expert_b.output_hz, SparseHZono
+    ):
+        raise RuntimeError("paired expert propagation lost its exact sparse HZ")
+    joint = shared_input_pair_hz(
+        entry_hz,
+        expert_a.output_hz,
+        expert_b.output_hz,
+    )
+    return SharedPairPropagation(expert_a, expert_b, joint)
 
 
 def _solve_output(

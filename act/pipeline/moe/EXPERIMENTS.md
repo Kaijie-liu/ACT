@@ -191,6 +191,26 @@ cost 107.8 seconds in aggregate. This supports guard-aware binary elimination as
 secondary structural result, but no end-to-end runtime benefit is claimed without
 a matched no-support solve.
 
+The guard accounting uses two different measurement universes and is therefore
+reported with the following explicit identity:
+
+```text
+actual expert binary elimination       = 1550 - 1159 = 391
+direct LP support elimination           = 158
+direct MILP support elimination         = 175
+propagation-or-structural residual       =  58
+                                         ----
+total                                   = 391
+```
+
+The `fast_unstable=1433` count covers only preactivations in the support
+statistics, whereas `1550` is the actual expert ReLU-binary count over all 126
+branches before guarded propagation. The residual 58 is defined as the accounting
+difference and is not attributed to LP or MILP support. Until a layer-matched
+decomposition is available, the paper wording is limited to: constraint-aware
+support eliminated binaries on 74 of 126 branches. It must not attribute the full
+25.2% reduction directly to support optimization.
+
 The runner summary's `support_after_milp_unstable` field is three too high because
 layers fully stabilized by LP retained the pre-LP display value. Actual binary
 allocation and certificates are unaffected. The independent audit reconstructs
@@ -215,3 +235,30 @@ and is saved with the raw results. Frozen result hashes are:
 | `summary.json` | `ee42d732d66af35eb87e2ed0388270cd037f30875e0ebf064bf6bc489ecaa6fa` |
 | `experiment1c.log` | `6172e116639f67eaf76bd3e05237f881755a82a620321b2542e639c1a773e9fa` |
 | `independent_audit.json` | `0be4d4eb9875bad7753229ef23ae1740069786507050afd034dff845d9b69af0` |
+
+## Experiment 1F0 restricted weighted fallback protocol
+
+Experiment 1C left 38 of 40 unresolved rows in semantic-incompleteness classes:
+34 `UNKNOWN_GATE_SUFFICIENCY` and four
+`UNKNOWN_EXPERT_WITNESS_NOT_LIFTED`. This triggers the restricted weighted top-2
+fallback; longer solver timeouts alone are not the next action.
+
+The F0 implementation and soundness contract are frozen in
+`act/pipeline/moe/docs/weighted_top2_fallback.md`. Its tracked configuration is
+`act/pipeline/moe/configs/experiment1f0_bal010.json`. The diagnostic is restricted
+to those 38 parent rows and verifies the frozen parent JSONL SHA-256
+`1daa8ef2ceb06b248fb92b38fbeead6445b2fd97a81ec00d96302be93ec2f4bc`.
+Every new row is linked by parent artifact hash, source line number, source-row
+hash, and a derived row ID. Raw F0 results use a new directory and cannot modify
+`experiment1c_bal010_r2`.
+
+F0 uses a numeric sigmoid range followed by a property-directed McCormick hull.
+The encoded optimization problem contains no exponential, division, sigmoid
+segment, or sigmoid binary. A negative relaxation optimum remains `UNKNOWN`; only
+a saved and independently replayed full-model witness can be `UNSAFE`.
+
+The preregistered F0 threshold is at least 10 resolved parent rows or at least two
+new non-repeated unique `SAFE` samples. Below that threshold, F0 remains a formal
+ablation and the next code stage is the preregistered F1 two-segment fallback.
+Baseline reproduction, new training, and confirmatory ranks 100--199 remain
+paused.

@@ -2566,6 +2566,13 @@ def hz_support_bounds(
     status_name = "lp_optimal" if relax_binaries else "milp_optimal"
     for position, row in enumerate(selected):
         objective = model.value_matrix.getrow(row).toarray().reshape(-1)
+        if not np.any(objective):
+            lower[position] = model.value_center[row]
+            upper[position] = model.value_center[row]
+            lower_status[position] = "constant_exact"
+            upper_status[position] = "constant_exact"
+            gaps[position] = 0.0
+            continue
         minimum = optimize(objective)
         maximum = optimize(-objective)
         if minimum is not None:
@@ -2866,3 +2873,178 @@ class HZSolver(Solver):
         raise NotImplementedError(
             "HZSolver does not accept BatchLPProblem; use evaluate_spec()."
         )
+
+
+@dataclass(frozen=True)
+class HZMinimumResult:
+    """Minimum of one HZ output row, with an optional recoverable input point."""
+
+    status: str
+    minimum: float | None
+    candidate_objective: float | None
+    candidate_input: torch.Tensor | None
+    solver_status: int | None
+    solver_gap: float | None
+    elapsed: float
+    reason: str
+
+
+def hz_minimize_output(
+    hz: "HZono | SparseHZono",
+    row: int,
+    *,
+    input_hz: SparseHZono | None,
+    input_shape: tuple[int, ...] | None,
+    time_limit: float,
+) -> HZMinimumResult:
+    """Minimize one represented output row and recover a concrete input.
+
+    The returned input is only a candidate when ``hz`` is a relaxation.  A
+    caller must evaluate the concrete model before treating it as an unsafe
+    witness.  Only an optimal ``minimum`` is suitable for certification.
+    """
+    started = time.monotonic()
+    if not _HAS_SCIPY:
+        return HZMinimumResult(
+            "unknown", None, None, None, None, None, 0.0, "scipy_unavailable"
+        )
+    try:
+        model = _lower_hz_milp(hz)
+    except Exception as exc:
+        return HZMinimumResult(
+            "unknown",
+            None,
+            None,
+            None,
+            None,
+            None,
+            time.monotonic() - started,
+            f"lowering_failed:{type(exc).__name__}",
+        )
+    row = int(row)
+    if row < 0 or row >= model.value_center.size:
+        raise IndexError("HZ minimum output row is out of range")
+    objective = model.value_matrix.getrow(row).toarray().reshape(-1)
+    if model.n_var == 0:
+        point = np.zeros(0, dtype=np.float64)
+        if not _valid_milp_point(
+            model,
+            point,
+            model.A,
+            model.row_lb,
+            model.row_ub,
+            1e-8,
+        ):
+            return HZMinimumResult(
+                "infeasible",
+                None,
+                None,
+                None,
+                2,
+                None,
+                time.monotonic() - started,
+                "empty_hz",
+            )
+        candidate = (
+            HZSolver._recover_input(model, point, input_hz, input_shape, 0)
+            if input_hz is not None and input_shape is not None
+            else None
+        )
+        value = float(model.value_center[row])
+        return HZMinimumResult(
+            "optimal",
+            value,
+            value,
+            candidate,
+            0,
+            0.0,
+            time.monotonic() - started,
+            "point_optimal",
+        )
+    constraints = (
+        LinearConstraint(model.A, model.row_lb, model.row_ub)
+        if model.A.shape[0]
+        else None
+    )
+    try:
+        result = milp(
+            c=objective,
+            integrality=model.integrality,
+            bounds=SciPyBounds(model.var_lb, model.var_ub),
+            constraints=constraints,
+            options={
+                "presolve": True,
+                "time_limit": max(1e-3, float(time_limit)),
+                "mip_rel_gap": 0.0,
+            },
+        )
+    except Exception as exc:
+        return HZMinimumResult(
+            "unknown",
+            None,
+            None,
+            None,
+            None,
+            None,
+            time.monotonic() - started,
+            f"solver_failed:{type(exc).__name__}",
+        )
+    solver_status = int(getattr(result, "status", -1))
+    gap_value = getattr(result, "mip_gap", None)
+    gap = (
+        float(gap_value)
+        if gap_value is not None and np.isfinite(gap_value)
+        else None
+    )
+    point = getattr(result, "x", None)
+    valid_point = point is not None and _valid_milp_point(
+        model,
+        point,
+        model.A,
+        model.row_lb,
+        model.row_ub,
+        1e-7,
+    )
+    candidate = None
+    candidate_objective = None
+    if valid_point:
+        point = np.asarray(point, dtype=np.float64)
+        candidate_objective = float(
+            model.value_center[row] + objective @ point
+        )
+        if input_hz is not None and input_shape is not None:
+            candidate = HZSolver._recover_input(
+                model,
+                point,
+                input_hz,
+                input_shape,
+                0,
+            )
+    if bool(getattr(result, "success", False)) and valid_point:
+        minimum = float(model.value_center[row] + result.fun - 1e-9)
+        return HZMinimumResult(
+            "optimal",
+            minimum,
+            candidate_objective,
+            candidate,
+            solver_status,
+            gap,
+            time.monotonic() - started,
+            "optimal",
+        )
+    if solver_status == 2:
+        status, reason = "infeasible", "empty_hz"
+    elif solver_status == 1:
+        status, reason = "timeout", "solver_limit"
+    else:
+        status, reason = "unknown", "solver_undecided"
+    return HZMinimumResult(
+        status,
+        None,
+        candidate_objective,
+        candidate,
+        solver_status,
+        gap,
+        time.monotonic() - started,
+        reason,
+    )

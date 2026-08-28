@@ -1,0 +1,29 @@
+{
+  "experiment": "experiment1f0_weighted_range_bal010",
+  "checkpoint": "/data1/Kane/MOE/ACT/data/moe/checkpoints/cifar10_top2_e8_seed0_bal010.pt",
+  "parent_diagnostics_jsonl": "/data1/Kane/MOE/ACT/data/moe/results/experiment1c_bal010_r2/diagnostics.jsonl",
+  "parent_diagnostics_sha256": "1daa8ef2ceb06b248fb92b38fbeead6445b2fd97a81ec00d96302be93ec2f4bc",
+  "output_dir": "/data1/Kane/MOE/ACT/data/moe/results/experiment1f0_bal010",
+  "expected_rows": 38,
+  "eligible_parent_reasons": [
+    "UNKNOWN_GATE_SUFFICIENCY",
+    "UNKNOWN_EXPERT_WITNESS_NOT_LIFTED"
+  ],
+  "candidate_query_timeout": 10.0,
+  "support": {
+    "lp_neurons": 32,
+    "milp_neurons": 4,
+    "lp_time_limit": 2.0,
+    "milp_time_limit": 5.0
+  },
+  "solver": {
+    "margin_support_seconds": 5.0,
+    "difference_support_seconds": 5.0,
+    "property_seconds": 10.0,
+    "safety_tolerance": 1e-7
+  },
+  "preregistered_thresholds": {
+    "resolved_rows": 10,
+    "new_unique_safe_samples": 2
+  }
+}
