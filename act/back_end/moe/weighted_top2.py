@@ -18,6 +18,7 @@ import scipy.sparse as sp
 import torch
 
 from act.back_end.solver.solver_hz import (
+    HZ_NUMERICAL_POLICY,
     HZMinimumResult,
     HZSupportBoundsResult,
     SparseHZono,
@@ -91,6 +92,8 @@ class WeightedTop2F0Decision:
     solver_status: int | None
     solver_gap: float | None
     elapsed: float
+    solver_certified_lower_bound: float | None = None
+    solver_bound_kind: str | None = None
 
 
 def _remap_columns(matrix, mapping: np.ndarray, width: int):
@@ -498,7 +501,7 @@ def solve_weighted_top2_f0(
     *,
     input_shape: tuple[int, ...],
     time_limit: float,
-    tolerance: float = 1e-7,
+    tolerance: float = HZ_NUMERICAL_POLICY.safe_positive_margin,
 ) -> WeightedTop2F0Decision:
     """Solve F0 without ever treating a relaxation witness as unsafe."""
     result: HZMinimumResult = hz_minimize_output(
@@ -529,4 +532,6 @@ def solve_weighted_top2_f0(
         solver_status=result.solver_status,
         solver_gap=result.solver_gap,
         elapsed=result.elapsed,
+        solver_certified_lower_bound=result.solver_certified_lower_bound,
+        solver_bound_kind=result.solver_bound_kind,
     )

@@ -329,3 +329,51 @@ hashes are:
 | `summary.json` | `3585df86bc9e692b15b95966c00f3b02de520d37c5b883cbefb474d79332effa` |
 | `experiment1f0.log` | `0d3c085e0b0071e0b4b853ec35ced3b56d776889059a8a36cd1354877d696bfe` |
 | `independent_audit.json` | `84cdc1879a38b593192c0b06cf459dfe587968228e7c6febb488a9ceead9b619` |
+
+## Experiment 1 confirmatory preregistration
+
+F0 is frozen after resolving 31/38 (81.6%) semantic-incompleteness rows without
+encoding exponentiation, division, or sigmoid segmentation. F1 is not triggered.
+The unseen deterministic clean-correct ranks 100--199 are preregistered as the
+confirmatory cohort. Official baseline reproduction, new training, and balance
+sweeps remain paused until this cohort is independently audited.
+
+The protocol is split into two non-overwriting stages. The fixed-radius census
+records 100 samples at `{0.25,0.5,1,2}/255` and performs router candidates,
+exact feasible unordered top-2 sets, structural width, and guarded support only;
+it does not solve the output property. The route-boundary stage uses one primary
+radius per sample, `1.05 * certified route-unstable upper endpoint`, and runs
+gate elimination followed by F0 only for frozen semantic-incompleteness reasons.
+It never enters F1 automatically. The tracked protocol is
+`act/pipeline/moe/docs/experiment1_confirmatory.md`, the config is
+`act/pipeline/moe/configs/experiment1_confirmatory_bal010.json`, and the
+machine-readable preregistration is
+`act/pipeline/moe/configs/experiment1_confirmatory_protocol_manifest.json`.
+
+Future guard accounting now enforces the branch-level invariant
+
+```text
+binaries_before - binaries_after
+  = lp_support_eliminated
+  + milp_support_eliminated
+  + structural_or_propagation_eliminated.
+```
+
+This closes the development aggregate as `391 = 158 + 175 + 58` without
+misattributing the 58 structural/propagation residual to support solves.
+`fast_unstable=1433` counts only preactivations entering the direct support
+statistics, while `binaries_before=1550` counts actual expert ReLU variables over
+all guarded branches, so those totals intentionally have different universes.
+
+The numerical SAFE policy is frozen in code and config: successful status-0
+solves only, finite `mip_dual_bound` for MILP, a status-0 optimum for pure LP,
+zero requested relative MIP gap, `1e-7` feasibility/integrality tolerances,
+absolute-plus-relative `1e-9` outward correction followed by `nextafter`, and a
+strict corrected SAFE margin above `1e-7`. A non-optimal primal incumbent can
+never certify SAFE. Every concrete `UNSAFE` must still be replayed against the
+full selected-softmax model.
+
+Before scientific launch, a single rank-100 engineering probe at `0.25/255`
+reproduced the frozen development prefix, completed exact candidate and route-set
+analysis, and closed every guard identity. It produced no confirmatory artifact
+and is not included in any endpoint.

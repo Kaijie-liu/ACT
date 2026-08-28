@@ -45,6 +45,7 @@ from act.pipeline.moe.experiment1 import (
     _solve_output,
     _write_json,
 )
+from act.pipeline.moe.accounting import guard_binary_accounting
 from act.pipeline.moe.train import _device, _load_dataset
 from act.util.stats import VerifyResult, VerifyStatus
 
@@ -525,6 +526,30 @@ def diagnose_radius(
         )
         tightening_seconds += time.monotonic() - tighten_started
         support = _support_summary(guarded.guarded_support)
+        accounting = guard_binary_accounting(
+            unguarded.unstable_total,
+            max(0, guarded.binary_width - branch.guarded_input.n_bin),
+            support,
+        )
+        matched_result = None
+        matched_stages: list[dict[str, Any]] = []
+        matched_solve_seconds = 0.0
+        if bool(config.get("matched_no_support_solve", False)):
+            matched = _propagate_component(
+                program.experts[expert],
+                entry_hz=branch.guarded_input,
+            )
+            matched_started = time.monotonic()
+            matched_result, matched_stages = _solve_staged(
+                matched,
+                output_spec,
+                input_shape=tuple(x.shape),
+                low_budget=float(config["solver"]["low_budget_per_branch"]),
+                escalation_budget=float(
+                    config["solver"]["escalation_budget_per_branch"]
+                ),
+            )
+            matched_solve_seconds = time.monotonic() - matched_started
         solve_started = time.monotonic()
         result, stages = _solve_staged(
             guarded,
@@ -552,6 +577,8 @@ def diagnose_radius(
         )
         if validated["valid"]:
             full_witness = validated
+            if bool(config.get("return_witness_tensor", False)):
+                full_witness["_input"] = result.counterexample.detach().cpu()
         route_sets_for_expert = [
             list(values) for values in route_sets.feasible if expert in values
         ]
@@ -584,6 +611,12 @@ def diagnose_radius(
                 "clean_expert_prediction": clean_expert_prediction,
                 "unknown_reason": reason,
                 "support": support,
+                "guard_accounting": accounting.as_dict(),
+                "matched_no_support_status": (
+                    matched_result.status.value if matched_result is not None else None
+                ),
+                "matched_no_support_solve_seconds": matched_solve_seconds,
+                "matched_no_support_stages": matched_stages,
                 "candidate_time": candidate_seconds,
                 "tightening_time": guarded.elapsed,
                 "solve_time": sum(
@@ -624,6 +657,11 @@ def diagnose_radius(
         "full_model_witness_valid": full_witness is not None,
         "counterexample_prediction": full_witness["prediction"] if full_witness else None,
         "counterexample_topk_set": full_witness["topk_set"] if full_witness else None,
+        **(
+            {"_counterexample_input": full_witness["_input"]}
+            if full_witness is not None and "_input" in full_witness
+            else {}
+        ),
         "branches": branch_rows,
         "candidate_seconds": candidate_seconds,
         "tightening_seconds": tightening_seconds,

@@ -445,6 +445,10 @@ def _run_parent_row(
                         "candidate_objective": decision.candidate_objective,
                         "solver_status": decision.solver_status,
                         "solver_gap": decision.solver_gap,
+                        "solver_certified_lower_bound": (
+                            decision.solver_certified_lower_bound
+                        ),
+                        "solver_bound_kind": decision.solver_bound_kind,
                         "solver_seconds": decision.elapsed,
                         "property_seconds": property_elapsed,
                         "margin_bounds": list(encoding.margin_bounds),

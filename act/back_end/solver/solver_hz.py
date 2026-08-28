@@ -17,6 +17,56 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+
+@dataclass(frozen=True)
+class HZNumericalSafetyPolicy:
+    """Frozen numerical conditions for support bounds and SAFE verdicts."""
+
+    require_solver_success: bool = True
+    require_optimal_status: int = 0
+    require_finite_dual_bound: bool = True
+    mip_relative_gap: float = 0.0
+    feasibility_tolerance: float = 1e-7
+    integrality_tolerance: float = 1e-7
+    outward_absolute: float = 1e-9
+    outward_relative: float = 1e-9
+    safe_positive_margin: float = 1e-7
+
+
+HZ_NUMERICAL_POLICY = HZNumericalSafetyPolicy()
+
+
+def hz_outward_slack(*values: float) -> float:
+    """Return the frozen absolute-plus-relative outward correction."""
+    scale = max((abs(float(value)) for value in values), default=0.0)
+    return float(
+        HZ_NUMERICAL_POLICY.outward_absolute
+        + HZ_NUMERICAL_POLICY.outward_relative * scale
+    )
+
+
+def hz_numerical_policy_manifest() -> dict[str, object]:
+    """Machine-readable SAFE policy recorded by experiment manifests."""
+    return {
+        "solver": "scipy.optimize.milp/HiGHS",
+        "require_solver_success": HZ_NUMERICAL_POLICY.require_solver_success,
+        "require_optimal_status": HZ_NUMERICAL_POLICY.require_optimal_status,
+        "require_finite_dual_bound": (
+            HZ_NUMERICAL_POLICY.require_finite_dual_bound
+        ),
+        "mip_relative_gap": HZ_NUMERICAL_POLICY.mip_relative_gap,
+        "feasibility_tolerance": HZ_NUMERICAL_POLICY.feasibility_tolerance,
+        "integrality_tolerance": HZ_NUMERICAL_POLICY.integrality_tolerance,
+        "outward_rounding": "nextafter after absolute-plus-relative correction",
+        "outward_absolute": HZ_NUMERICAL_POLICY.outward_absolute,
+        "outward_relative": HZ_NUMERICAL_POLICY.outward_relative,
+        "safe_positive_margin": HZ_NUMERICAL_POLICY.safe_positive_margin,
+        "certifying_objective": (
+            "finite mip_dual_bound for MILP; status-0 optimum for pure LP; "
+            "never a non-optimal primal incumbent"
+        ),
+    }
+
 try:
     import numpy as np
     import scipy.sparse as sp
@@ -28,6 +78,26 @@ except ImportError:
     np = None
     sp = None
     _HAS_SCIPY = False
+
+
+def _certified_solver_lower_bound(result, integrality) -> tuple[float, str] | None:
+    """Return a solver-certified lower objective bound, never an incumbent."""
+    if (
+        not bool(getattr(result, "success", False))
+        or int(getattr(result, "status", -1))
+        != HZ_NUMERICAL_POLICY.require_optimal_status
+    ):
+        return None
+    has_integer = bool(np.any(np.asarray(integrality, dtype=np.int32)))
+    if has_integer:
+        value = getattr(result, "mip_dual_bound", None)
+        kind = "mip_dual_bound"
+    else:
+        value = getattr(result, "fun", None)
+        kind = "lp_status0_optimum"
+    if value is None or not np.isfinite(value):
+        return None
+    return float(value), kind
 
 
 # ============================================================================
@@ -2377,7 +2447,11 @@ def _valid_milp_point(
     row_lb,
     row_ub,
     tol: float,
+    integrality_tol: float | None = None,
 ) -> bool:
+    integer_tolerance = (
+        float(tol) if integrality_tol is None else float(integrality_tol)
+    )
     x = np.asarray(x, dtype=np.float64).reshape(-1)
     if x.size != model.n_var or not np.all(np.isfinite(x)):
         return False
@@ -2385,7 +2459,7 @@ def _valid_milp_point(
         return False
     if model.n_bin:
         z = x[model.n_cont:]
-        if np.any(np.abs(z - np.rint(z)) > tol):
+        if np.any(np.abs(z - np.rint(z)) > integer_tolerance):
             return False
     if A.shape[0]:
         values = np.asarray(A @ x, dtype=np.float64).reshape(-1)
@@ -2429,7 +2503,7 @@ def _solve_hz_feasibility(
             options={
                 "presolve": True,
                 "time_limit": max(1e-3, remaining),
-                "mip_rel_gap": 0.0,
+                "mip_rel_gap": HZ_NUMERICAL_POLICY.mip_relative_gap,
             },
         )
     except Exception as exc:
@@ -2466,7 +2540,9 @@ def hz_check_feasibility(
         result = _solve_hz_feasibility(
             model,
             started + max(0.0, float(time_limit)),
-            feasibility_tol=max(float(tolerance), 1e-9),
+            feasibility_tol=max(
+                float(tolerance), HZ_NUMERICAL_POLICY.feasibility_tolerance
+            ),
         )
     except Exception as exc:
         logger.debug("HZ feasibility query failed: %s", exc)
@@ -2555,13 +2631,14 @@ def hz_support_bounds(
                 options={
                     "presolve": True,
                     "time_limit": max(1e-3, remaining),
-                    "mip_rel_gap": 0.0,
+                    "mip_rel_gap": HZ_NUMERICAL_POLICY.mip_relative_gap,
                 },
             )
         except Exception as exc:
             logger.debug("HybridZ support optimization failed: %s", exc)
             return None
-        return result if bool(getattr(result, "success", False)) else None
+        certified = _certified_solver_lower_bound(result, integrality)
+        return (result, certified[0]) if certified is not None else None
 
     status_name = "lp_optimal" if relax_binaries else "milp_optimal"
     for position, row in enumerate(selected):
@@ -2576,15 +2653,21 @@ def hz_support_bounds(
         minimum = optimize(objective)
         maximum = optimize(-objective)
         if minimum is not None:
-            lower[position] = (
-                model.value_center[row] + float(minimum.fun) - 1e-9
+            minimum_result, dual = minimum
+            raw_lower = model.value_center[row] + dual
+            lower[position] = np.nextafter(
+                raw_lower - hz_outward_slack(model.value_center[row], dual),
+                -np.inf,
             )
             lower_status[position] = status_name
         else:
             complete = False
         if maximum is not None:
-            upper[position] = (
-                model.value_center[row] - float(maximum.fun) + 1e-9
+            maximum_result, dual = maximum
+            raw_upper = model.value_center[row] - dual
+            upper[position] = np.nextafter(
+                raw_upper + hz_outward_slack(model.value_center[row], dual),
+                np.inf,
             )
             upper_status[position] = status_name
         else:
@@ -2592,8 +2675,16 @@ def hz_support_bounds(
         available_gaps = [
             float(value)
             for value in (
-                getattr(minimum, "mip_gap", None) if minimum is not None else None,
-                getattr(maximum, "mip_gap", None) if maximum is not None else None,
+                (
+                    getattr(minimum_result, "mip_gap", None)
+                    if minimum is not None
+                    else None
+                ),
+                (
+                    getattr(maximum_result, "mip_gap", None)
+                    if maximum is not None
+                    else None
+                ),
             )
             if value is not None and np.isfinite(value)
         ]
@@ -2887,6 +2978,8 @@ class HZMinimumResult:
     solver_gap: float | None
     elapsed: float
     reason: str
+    solver_certified_lower_bound: float | None = None
+    solver_bound_kind: str | None = None
 
 
 def hz_minimize_output(
@@ -2975,7 +3068,7 @@ def hz_minimize_output(
             options={
                 "presolve": True,
                 "time_limit": max(1e-3, float(time_limit)),
-                "mip_rel_gap": 0.0,
+                "mip_rel_gap": HZ_NUMERICAL_POLICY.mip_relative_gap,
             },
         )
     except Exception as exc:
@@ -3003,7 +3096,8 @@ def hz_minimize_output(
         model.A,
         model.row_lb,
         model.row_ub,
-        1e-7,
+        HZ_NUMERICAL_POLICY.feasibility_tolerance,
+        HZ_NUMERICAL_POLICY.integrality_tolerance,
     )
     candidate = None
     candidate_objective = None
@@ -3020,8 +3114,19 @@ def hz_minimize_output(
                 input_shape,
                 0,
             )
-    if bool(getattr(result, "success", False)) and valid_point:
-        minimum = float(model.value_center[row] + result.fun - 1e-9)
+    certified = _certified_solver_lower_bound(result, model.integrality)
+    if certified is not None:
+        solver_bound, solver_bound_kind = certified
+        raw_lower = model.value_center[row] + solver_bound
+        minimum = float(
+            np.nextafter(
+                raw_lower
+                - hz_outward_slack(
+                    model.value_center[row], solver_bound
+                ),
+                -np.inf,
+            )
+        )
         return HZMinimumResult(
             "optimal",
             minimum,
@@ -3030,7 +3135,9 @@ def hz_minimize_output(
             solver_status,
             gap,
             time.monotonic() - started,
-            "optimal",
+            f"optimal_{solver_bound_kind}",
+            solver_bound,
+            solver_bound_kind,
         )
     if solver_status == 2:
         status, reason = "infeasible", "empty_hz"

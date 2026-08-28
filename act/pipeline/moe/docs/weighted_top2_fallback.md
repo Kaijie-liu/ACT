@@ -75,10 +75,18 @@ w <= lambda_lower*d + d_upper*lambda - lambda_lower*d_upper.
 The checked scalar is `y=u+w`. The McCormick HZ is marked as a relaxation even
 when all preceding router and expert HZs are exact.
 
-An optimal strictly positive lower bound proves the property row. A non-positive
-relaxation optimum is never an unsafe verdict. Its optimizer is only a candidate
-input and must violate the concrete full selected-softmax model inside the input
-box before the result may be labeled `UNSAFE`.
+Only a solver-certified, outward-corrected, strictly positive lower bound proves
+the property row. For an MILP, the certificate uses a finite HiGHS
+`mip_dual_bound` from a successful status-0 solve; for a pure LP, it uses the
+status-0 optimum. It never uses a non-optimal primal incumbent as a lower-bound
+certificate. The raw lower bound is corrected outward by
+`1e-9 + 1e-9 * scale` and `nextafter` toward negative infinity, and F0 requires
+the resulting bound to exceed `1e-7`. Feasibility and integrality checks both use
+the frozen `1e-7` tolerances.
+
+A non-positive relaxation lower bound is never an unsafe verdict. Its optimizer
+is only a candidate input and must violate the concrete full selected-softmax
+model inside the input box before the result may be labeled `UNSAFE`.
 
 ## Status contract
 
