@@ -361,6 +361,11 @@ class HybridZConfig:
     max_input_dim: int = 1024
     sigmoid_segments: int = 2
     fuse_sigmoid_affine: bool = False
+    guarded_support_enabled: bool = False
+    guarded_support_lp_neurons: int = 0
+    guarded_support_milp_neurons: int = 0
+    guarded_support_lp_time_limit: float = 0.0
+    guarded_support_milp_time_limit: float = 0.0
 
 
 @dataclass

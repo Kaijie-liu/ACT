@@ -6,6 +6,8 @@ import torch
 import torch.nn as nn
 
 from act.back_end.core import Bounds
+from act.back_end.hybridz_tf import HybridzTF
+from act.back_end.hybridz_tf.tf_mlp import _sparse_apply_relu
 from act.back_end.moe.factory import (
     OutputMoEFactoryConfig,
     build_act_moe_program,
@@ -27,13 +29,16 @@ from act.back_end.moe.schema import GateKind, OutputLevelMoESpec
 from act.back_end.moe.verifier import verify_output_gate_elimination
 from act.back_end.solver.solver_hz import (
     hz_add_const,
+    hz_add_output_inequalities,
     hz_compute_bounds,
     hz_from_bounds,
     hz_multiply,
+    hz_support_bounds,
     sparse_hz_from_bounds,
     sparse_hz_linear,
     sparse_hz_to_dense,
 )
+from act.config.config import HybridZConfig
 from act.front_end.specs import OutKind, OutputSpec
 from act.util.stats import VerifyResult, VerifyStatus
 
@@ -169,6 +174,59 @@ class HZRoutingTests(unittest.TestCase):
         self.assertTrue(guarded.hz.exact)
         exact_bounds = hz_compute_bounds(sparse_hz_to_dense(guarded.hz), exact=True)
         self.assertGreaterEqual(float(exact_bounds.lb.item()), -1e-7)
+
+    def test_constraint_aware_support_uses_sparse_guard(self):
+        domain = sparse_hz_from_bounds(
+            Bounds(torch.tensor([[-1.0]]), torch.tensor([[1.0]])),
+            frame_id=19,
+        )
+        guarded = hz_add_output_inequalities(
+            domain,
+            torch.tensor([[-1.0]], dtype=torch.float64),
+            torch.tensor([-0.5], dtype=torch.float64),
+        )
+        fast = hz_compute_bounds(sparse_hz_to_dense(guarded), exact=False)
+        self.assertLess(float(fast.lb.item()), 0.0)
+        support = hz_support_bounds(
+            guarded,
+            [0],
+            time_limit=5.0,
+            relax_binaries=True,
+        )
+        self.assertGreater(float(support.bounds.lb.item()), 0.49)
+        self.assertLessEqual(float(support.bounds.ub.item()), 1.00000001)
+
+    def test_guarded_support_precedes_relu_binary_allocation(self):
+        domain = sparse_hz_from_bounds(
+            Bounds(torch.tensor([[-1.0]]), torch.tensor([[1.0]])),
+            frame_id=23,
+        )
+        guarded = hz_add_output_inequalities(
+            domain,
+            torch.tensor([[-1.0]], dtype=torch.float64),
+            torch.tensor([-0.5], dtype=torch.float64),
+        )
+        tf = HybridzTF(
+            config=HybridZConfig(
+                guarded_support_enabled=True,
+                guarded_support_lp_neurons=1,
+                guarded_support_lp_time_limit=5.0,
+            )
+        )
+        tf.set_entry_hz(guarded)
+        tf._sparse_frame_widths[23] = (guarded.n_cont, guarded.n_bin)
+        layer = type("Layer", (), {"id": 101})()
+        output, reason = _sparse_apply_relu(
+            layer,
+            guarded,
+            Bounds(torch.tensor([[-1.0]]), torch.tensor([[1.0]])),
+            tf,
+        )
+        self.assertIsNone(reason)
+        self.assertEqual(output.n_bin, guarded.n_bin)
+        stats = tf.guarded_support_stats()[0]
+        self.assertEqual(stats["fast_unstable"], 1)
+        self.assertEqual(stats["after_lp_unstable"], 0)
 
 
 class SchedulerTests(unittest.TestCase):

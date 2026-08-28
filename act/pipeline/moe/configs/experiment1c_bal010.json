@@ -1,0 +1,30 @@
+{
+  "experiment": "experiment1c_closure_bal010",
+  "checkpoint": "/data1/Kane/MOE/ACT/data/moe/checkpoints/cifar10_top2_e8_seed0_bal010.pt",
+  "development_results_csv": "/data1/Kane/MOE/ACT/data/moe/results/experiment1_bal010/results.csv",
+  "development_sample_indices": "/data1/Kane/MOE/ACT/data/moe/results/experiment1_bal010/sample_indices.json",
+  "output_dir": "/data1/Kane/MOE/ACT/data/moe/results/experiment1c_bal010",
+  "diagnostic_samples": 20,
+  "seed": 0,
+  "device": "cuda",
+  "candidate_query_timeout": 10.0,
+  "route_radius": {
+    "bisection_steps": 10,
+    "query_timeout": 5.0,
+    "multipliers": [1.01, 1.05, 1.10]
+  },
+  "support": {
+    "lp_neurons": 32,
+    "milp_neurons": 4,
+    "lp_time_limit": 2.0,
+    "milp_time_limit": 5.0
+  },
+  "attack": {
+    "steps": 10,
+    "restarts": 2
+  },
+  "solver": {
+    "low_budget_per_branch": 5.0,
+    "escalation_budget_per_branch": 25.0
+  }
+}

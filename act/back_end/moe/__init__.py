@@ -3,6 +3,7 @@
 from act.back_end.moe.factory import (
     OutputMoEFactoryConfig,
     build_act_moe_program,
+    build_act_router_program,
     build_output_moe,
     load_output_moe_checkpoint,
 )
@@ -50,6 +51,7 @@ __all__ = [
     "analyze_candidates",
     "analyze_topk_sets",
     "build_act_moe_program",
+    "build_act_router_program",
     "build_output_moe",
     "condition_topk_membership",
     "guarded_input_domain",

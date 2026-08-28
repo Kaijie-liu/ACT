@@ -172,3 +172,49 @@ def build_act_moe_program(
         experts=experts,
         shared_expert=None,
     )
+
+
+def build_act_router_program(
+    model: OutputLevelMoE,
+    *,
+    center: torch.Tensor,
+    lower: torch.Tensor,
+    upper: torch.Tensor,
+):
+    """Convert only the router for repeated exact route-feasibility queries."""
+    from act.front_end.spec_creator_base import LabeledInputTensor
+    from act.front_end.specs import InputSpec, InKind, OutKind, OutputSpec
+    from act.front_end.verifiable_model import (
+        InputLayer,
+        InputSpecLayer,
+        OutputSpecLayer,
+        VerifiableModel,
+    )
+    from act.pipeline.verification.torch2act import TorchToACT
+
+    if center.shape != lower.shape or center.shape != upper.shape:
+        raise ValueError("center/lower/upper shapes must match")
+    if center.ndim < 2 or center.shape[0] != 1:
+        raise ValueError("router conversion currently requires batch size 1")
+    labeled = LabeledInputTensor(center.detach().clone(), label=None)
+    input_spec = InputSpec(
+        kind=InKind.BOX,
+        lb=lower.detach().clone(),
+        ub=upper.detach().clone(),
+    )
+    output_spec = OutputSpec(
+        kind=OutKind.LINEAR_LE,
+        c=torch.zeros(1, model.spec.num_experts, dtype=center.dtype),
+        d=torch.zeros(1, dtype=center.dtype),
+    )
+    wrapper = VerifiableModel(
+        input_layer=InputLayer(
+            labeled,
+            shape=tuple(center.shape),
+            dtype=center.dtype,
+        ),
+        input_spec=InputSpecLayer(input_spec),
+        model=model.router,
+        output_spec=OutputSpecLayer(output_spec),
+    )
+    return TorchToACT(wrapper, sample_input=center).run()

@@ -34,6 +34,7 @@ from act.back_end.solver.solver_hz import (
     hz_lift_bounds,
     hz_sgm_add,
     hz_sub,
+    hz_support_bounds,
     hz_tighten_bounds,
     sparse_hz_add_const,
     sparse_hz_add_same_frame,
@@ -399,7 +400,7 @@ def _sparse_triplets(parts, shape):
     ).tocsr()
 
 
-def _sparse_relu_bounds(hz: SparseHZono, input_bounds: Bounds):
+def _sparse_relu_bounds(hz: SparseHZono, input_bounds: Bounds, L, tf):
     hb = sparse_hz_fast_bounds(hz)
     fact_lb = _to_numpy(input_bounds.lb).reshape(-1)
     fact_ub = _to_numpy(input_bounds.ub).reshape(-1)
@@ -411,6 +412,96 @@ def _sparse_relu_bounds(hz: SparseHZono, input_bounds: Bounds):
     ub = np.minimum(fact_ub, hz_ub)
     if np.any(lb > ub):
         raise ValueError("sparse ReLU received inconsistent bounds")
+    fast_unstable = np.flatnonzero((lb < 0.0) & (ub > 0.0)).astype(np.int64)
+    stats = {
+        "layer_id": int(L.id),
+        "fast_unstable": int(fast_unstable.size),
+        "lp_selected": 0,
+        "milp_selected": 0,
+        "after_lp_unstable": int(fast_unstable.size),
+        "after_milp_unstable": int(fast_unstable.size),
+        "lp_eliminated": 0,
+        "milp_eliminated": 0,
+        "lp_seconds": 0.0,
+        "milp_seconds": 0.0,
+        "lp_solves": 0,
+        "milp_solves": 0,
+        "lp_fallback_sides": 0,
+        "milp_fallback_sides": 0,
+        "solver_gap": [],
+        "lp_statuses": [],
+        "milp_statuses": [],
+        "milp_exact": False,
+    }
+    guarded = (
+        tf._guarded_support_enabled
+        and tf._entry_sparse_hz_override is not None
+        and (hz.n_eq > 0 or hz.n_ineq > 0)
+        and fast_unstable.size > 0
+    )
+
+    def closest(indices):
+        if not len(indices):
+            return np.zeros(0, dtype=np.int64)
+        distance = np.minimum(-lb[indices], ub[indices])
+        return indices[np.argsort(distance, kind="stable")]
+
+    if guarded and tf._guarded_support_lp_neurons > 0:
+        selected = closest(fast_unstable)[: tf._guarded_support_lp_neurons]
+        support = hz_support_bounds(
+            hz,
+            selected,
+            time_limit=tf._guarded_support_lp_time_limit,
+            relax_binaries=True,
+        )
+        support_lb = support.bounds.lb.reshape(-1).numpy()
+        support_ub = support.bounds.ub.reshape(-1).numpy()
+        lb[selected] = np.maximum(lb[selected], support_lb)
+        ub[selected] = np.minimum(ub[selected], support_ub)
+        after_lp = np.flatnonzero((lb < 0.0) & (ub > 0.0)).astype(np.int64)
+        stats.update(
+            lp_selected=int(len(selected)),
+            after_lp_unstable=int(after_lp.size),
+            lp_eliminated=int(fast_unstable.size - after_lp.size),
+            lp_seconds=float(support.elapsed),
+            lp_solves=int(support.solves),
+            lp_fallback_sides=sum(
+                status == "fast_fallback"
+                for status in (*support.lower_status, *support.upper_status)
+            ),
+            lp_statuses=list((*support.lower_status, *support.upper_status)),
+        )
+    else:
+        after_lp = fast_unstable
+    if guarded and tf._guarded_support_milp_neurons > 0 and after_lp.size > 0:
+        selected = closest(after_lp)[: tf._guarded_support_milp_neurons]
+        support = hz_support_bounds(
+            hz,
+            selected,
+            time_limit=tf._guarded_support_milp_time_limit,
+            relax_binaries=False,
+        )
+        support_lb = support.bounds.lb.reshape(-1).numpy()
+        support_ub = support.bounds.ub.reshape(-1).numpy()
+        lb[selected] = np.maximum(lb[selected], support_lb)
+        ub[selected] = np.minimum(ub[selected], support_ub)
+        after_milp = np.flatnonzero((lb < 0.0) & (ub > 0.0)).astype(np.int64)
+        stats.update(
+            milp_selected=int(len(selected)),
+            after_milp_unstable=int(after_milp.size),
+            milp_eliminated=int(after_lp.size - after_milp.size),
+            milp_seconds=float(support.elapsed),
+            milp_solves=int(support.solves),
+            milp_fallback_sides=sum(
+                status == "fast_fallback"
+                for status in (*support.lower_status, *support.upper_status)
+            ),
+            solver_gap=[value for value in support.solver_gap if value is not None],
+            milp_statuses=list((*support.lower_status, *support.upper_status)),
+            milp_exact=bool(support.exact),
+        )
+    if guarded:
+        tf._guarded_support_stats.append(stats)
     return lb, ub
 
 
@@ -512,7 +603,7 @@ def sparse_hz_apply_relu_exact(
 
 
 def _sparse_apply_relu(L, hz: SparseHZono, input_bounds: Bounds, tf):
-    lb, ub = _sparse_relu_bounds(hz, input_bounds)
+    lb, ub = _sparse_relu_bounds(hz, input_bounds, L, tf)
     unstable_idx = np.flatnonzero((lb < 0.0) & (ub > 0.0)).astype(np.int64)
     reservation = tf._sparse_relu_slots_for(hz, L.id, unstable_idx)
     if reservation is None:

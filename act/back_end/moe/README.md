@@ -98,6 +98,15 @@ Run the regression suite with:
 python -m unittest act.back_end.moe.test_moe
 ```
 
+## Reproducible experiments
+
+Experiment protocols, frozen artifact hashes, result schemas, and cohort rules are
+documented with the pipeline code. See
+[`act/pipeline/moe/EXPERIMENTS.md`](../../pipeline/moe/EXPERIMENTS.md) before
+running or interpreting the Route A studies. In particular, Experiment 1C keeps
+the original ranks 0--99 as a development cohort and leaves ranks 100--199
+untouched for the later confirmatory run.
+
 ## Current boundaries
 
 - one verification lane per Route A engine invocation;

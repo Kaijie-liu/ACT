@@ -2280,6 +2280,20 @@ class HZFeasibilityResult:
     elapsed: float
 
 
+@dataclass(frozen=True)
+class HZSupportBoundsResult:
+    """Constraint-aware support bounds for selected HZ output coordinates."""
+
+    rows: tuple[int, ...]
+    bounds: Bounds
+    lower_status: tuple[str, ...]
+    upper_status: tuple[str, ...]
+    solver_gap: tuple[float | None, ...]
+    elapsed: float
+    solves: int
+    exact: bool
+
+
 def _row_sum(mat) -> "np.ndarray":
     return np.asarray(mat.sum(axis=1), dtype=np.float64).reshape(-1)
 
@@ -2461,6 +2475,137 @@ def hz_check_feasibility(
         result.status,
         result.nodes,
         time.monotonic() - started,
+    )
+
+
+def hz_support_bounds(
+    hz: "HZono | SparseHZono",
+    rows,
+    *,
+    time_limit: float,
+    relax_binaries: bool,
+) -> HZSupportBoundsResult:
+    """Optimize selected HZ coordinates under all retained constraints.
+
+    ``relax_binaries=True`` solves an LP outer relaxation and therefore still
+    returns sound bounds.  ``False`` keeps every HZ binary integral.  A failed
+    or timed-out side falls back to the unconstrained generator bound rather
+    than using an uncertified incumbent.
+    """
+    selected = tuple(int(row) for row in rows)
+    output_width = (
+        hz.n_out if isinstance(hz, SparseHZono) else int(hz.c.shape[0])
+    )
+    if any(row < 0 or row >= output_width for row in selected):
+        raise IndexError("HZ support row is out of range")
+    if isinstance(hz, SparseHZono):
+        fast = sparse_hz_fast_bounds(hz)
+    else:
+        fast = _hz_bounds_unconstrained(hz)
+    fast_lb = fast.lb.reshape(-1).detach().cpu().double().numpy()
+    fast_ub = fast.ub.reshape(-1).detach().cpu().double().numpy()
+    lower = np.asarray([fast_lb[row] for row in selected], dtype=np.float64)
+    upper = np.asarray([fast_ub[row] for row in selected], dtype=np.float64)
+    lower_status = ["fast_fallback"] * len(selected)
+    upper_status = ["fast_fallback"] * len(selected)
+    gaps: list[float | None] = [None] * len(selected)
+    started = time.monotonic()
+    deadline = started + max(0.0, float(time_limit))
+    solves = 0
+    if not selected or not _HAS_SCIPY or time_limit <= 0.0:
+        return HZSupportBoundsResult(
+            selected,
+            Bounds(
+                torch.from_numpy(lower).reshape(1, -1),
+                torch.from_numpy(upper).reshape(1, -1),
+            ),
+            tuple(lower_status),
+            tuple(upper_status),
+            tuple(gaps),
+            time.monotonic() - started,
+            solves,
+            False,
+        )
+    model = _lower_hz_milp(hz)
+    constraints = (
+        LinearConstraint(model.A, model.row_lb, model.row_ub)
+        if model.A.shape[0]
+        else None
+    )
+    bounds = SciPyBounds(model.var_lb, model.var_ub)
+    integrality = (
+        np.zeros(model.n_var, dtype=np.int32)
+        if relax_binaries
+        else model.integrality
+    )
+    complete = True
+
+    def optimize(objective):
+        nonlocal solves
+        remaining = deadline - time.monotonic()
+        if remaining <= 0.0:
+            return None
+        solves += 1
+        try:
+            result = milp(
+                c=objective,
+                integrality=integrality,
+                bounds=bounds,
+                constraints=constraints,
+                options={
+                    "presolve": True,
+                    "time_limit": max(1e-3, remaining),
+                    "mip_rel_gap": 0.0,
+                },
+            )
+        except Exception as exc:
+            logger.debug("HybridZ support optimization failed: %s", exc)
+            return None
+        return result if bool(getattr(result, "success", False)) else None
+
+    status_name = "lp_optimal" if relax_binaries else "milp_optimal"
+    for position, row in enumerate(selected):
+        objective = model.value_matrix.getrow(row).toarray().reshape(-1)
+        minimum = optimize(objective)
+        maximum = optimize(-objective)
+        if minimum is not None:
+            lower[position] = (
+                model.value_center[row] + float(minimum.fun) - 1e-9
+            )
+            lower_status[position] = status_name
+        else:
+            complete = False
+        if maximum is not None:
+            upper[position] = (
+                model.value_center[row] - float(maximum.fun) + 1e-9
+            )
+            upper_status[position] = status_name
+        else:
+            complete = False
+        available_gaps = [
+            float(value)
+            for value in (
+                getattr(minimum, "mip_gap", None) if minimum is not None else None,
+                getattr(maximum, "mip_gap", None) if maximum is not None else None,
+            )
+            if value is not None and np.isfinite(value)
+        ]
+        gaps[position] = max(available_gaps) if available_gaps else None
+        if time.monotonic() >= deadline:
+            complete = False
+            break
+    return HZSupportBoundsResult(
+        selected,
+        Bounds(
+            torch.from_numpy(lower).reshape(1, -1),
+            torch.from_numpy(upper).reshape(1, -1),
+        ),
+        tuple(lower_status),
+        tuple(upper_status),
+        tuple(gaps),
+        time.monotonic() - started,
+        solves,
+        bool(complete and not relax_binaries and getattr(hz, "exact", True)),
     )
 
 

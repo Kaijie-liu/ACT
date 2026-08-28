@@ -134,7 +134,9 @@ RESULT_FIELDS = (
 class Propagation:
     output_hz: Any
     input_hz: Any
+    output_bounds: Bounds
     unstable_per_relu: tuple[int, ...]
+    guarded_support: tuple[dict[str, object], ...]
     elapsed: float
 
     @property
@@ -289,13 +291,15 @@ def _component_input_hz(net, tf: HybridzTF, output_hz):
     raise RuntimeError("component HZ has no correlated input state")
 
 
-def _propagate_component(net, *, entry_hz=None) -> Propagation:
+def _propagate_component(net, *, entry_hz=None, hybridz_config=None) -> Propagation:
     previous_solver = get_solver_mode()
     try:
         previous_tf = get_transfer_function()
     except RuntimeError:
         previous_tf = None
-    tf = HybridzTF(config=HybridZConfig(max_input_dim=1024))
+    tf = HybridzTF(
+        config=hybridz_config or HybridZConfig(max_input_dim=1024)
+    )
     set_transfer_function(tf)
     set_solver_mode("hybridz")
     if entry_hz is not None:
@@ -310,6 +314,11 @@ def _propagate_component(net, *, entry_hz=None) -> Propagation:
         elapsed = time.monotonic() - started
         output_hz = _component_output_hz(net, tf)
         input_hz = _component_input_hz(net, tf, output_hz)
+        assertion = next(layer for layer in net.layers if layer.kind == LayerKind.ASSERT.value)
+        output_ids = net.preds.get(assertion.id, [])
+        if len(output_ids) != 1:
+            raise ValueError("component ASSERT must have exactly one predecessor")
+        output_bounds = after[output_ids[0]].bounds
         unstable: list[int] = []
         for layer in net.layers:
             if layer.kind != LayerKind.RELU.value:
@@ -319,7 +328,14 @@ def _propagate_component(net, *, entry_hz=None) -> Propagation:
                 raise ValueError("ReLU must have exactly one predecessor")
             bounds = after[predecessors[0]].bounds
             unstable.append(int(((bounds.lb < 0) & (bounds.ub > 0)).sum().item()))
-        return Propagation(output_hz, input_hz, tuple(unstable), elapsed)
+        return Propagation(
+            output_hz,
+            input_hz,
+            output_bounds,
+            tuple(unstable),
+            tf.guarded_support_stats(),
+            elapsed,
+        )
     finally:
         tf.clear_entry_hz()
         set_solver_mode(previous_solver)

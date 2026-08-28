@@ -71,6 +71,12 @@ class HybridzTF(RegistryTF):
         self._sparse_aux_slots: Dict[tuple[int, int], tuple[int, ...]] = {}
         self._entry_hz_override: Optional[HZono] = None
         self._entry_sparse_hz_override: Optional[SparseHZono] = None
+        self._guarded_support_enabled = bool(cfg.guarded_support_enabled)
+        self._guarded_support_lp_neurons = max(0, int(cfg.guarded_support_lp_neurons))
+        self._guarded_support_milp_neurons = max(0, int(cfg.guarded_support_milp_neurons))
+        self._guarded_support_lp_time_limit = max(0.0, float(cfg.guarded_support_lp_time_limit))
+        self._guarded_support_milp_time_limit = max(0.0, float(cfg.guarded_support_milp_time_limit))
+        self._guarded_support_stats: list[dict[str, object]] = []
 
     def set_entry_hz(self, hz: "HZono | SparseHZono | None") -> None:
         """Override the input HZ for the next route-conditioned analysis.
@@ -85,6 +91,9 @@ class HybridzTF(RegistryTF):
     def clear_entry_hz(self) -> None:
         self._entry_hz_override = None
         self._entry_sparse_hz_override = None
+
+    def guarded_support_stats(self) -> tuple[dict[str, object], ...]:
+        return tuple(dict(item) for item in self._guarded_support_stats)
 
     @staticmethod
     def _net_var_id_stride(net: Net) -> int:
@@ -497,6 +506,7 @@ class HybridzTF(RegistryTF):
             self._sparse_frame_widths.clear()
             self._sparse_relu_slots.clear()
             self._sparse_aux_slots.clear()
+            self._guarded_support_stats.clear()
             self._cache_net_id = net_id
             self._var_id_stride = self._net_var_id_stride(net)
             self._sparse_next_frame_id = 0
