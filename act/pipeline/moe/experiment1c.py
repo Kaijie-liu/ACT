@@ -223,6 +223,7 @@ def exact_route_change_bracket(
     *,
     steps: int,
     query_timeout: float,
+    retry_timeout: float | None = None,
 ) -> dict[str, Any]:
     """Return a certified stable/unstable bracket for top-k set change."""
     clean = tuple(sorted(int(value) for value in clean_set))
@@ -261,6 +262,8 @@ def exact_route_change_bracket(
         {"epsilon": lower, **lower_report},
         {"epsilon": upper, **upper_report},
     ]
+    completed_steps = 0
+    termination = "requested_precision"
     for _ in range(int(steps)):
         middle = (lower + upper) / 2.0
         report = _router_route_change(
@@ -268,17 +271,37 @@ def exact_route_change_bracket(
         )
         history.append({"epsilon": middle, **report})
         if report["status"] == "unknown":
-            raise RuntimeError("route-radius feasibility bisection was undecided")
+            retry_budget = (
+                float(retry_timeout)
+                if retry_timeout is not None
+                else float(query_timeout)
+            )
+            retry = _router_route_change(
+                model,
+                x,
+                clean,
+                middle,
+                query_timeout=retry_budget,
+            )
+            history.append({"epsilon": middle, "retry": True, **retry})
+            if retry["status"] == "unknown":
+                termination = "unknown_midpoint"
+                break
+            report = retry
         if report["status"] == "unstable":
             upper, upper_report = middle, report
         else:
             lower, lower_report = middle, report
+        completed_steps += 1
     return {
         "lower": lower,
         "upper": upper,
         "lower_status": "stable",
         "upper_status": "unstable",
         "steps": int(steps),
+        "completed_steps": completed_steps,
+        "bisection_complete": completed_steps == int(steps),
+        "termination": termination,
         "queries": len(history),
         "seconds": sum(float(item["elapsed"]) for item in history),
         "upper_entering_experts": upper_report["entering_experts"],
@@ -760,6 +783,7 @@ def run(args) -> dict[str, Any]:
                 selection["first_exact_unstable_epsilon"],
                 steps=int(config["route_radius"]["bisection_steps"]),
                 query_timeout=float(config["route_radius"]["query_timeout"]),
+                retry_timeout=float(config["route_radius"]["retry_timeout"]),
             )
             multipliers = [float(value) for value in config["route_radius"]["multipliers"]]
             radii = {value: value * bracket["upper"] for value in multipliers}

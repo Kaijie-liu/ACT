@@ -61,6 +61,12 @@ preserved in `data/moe/results/experiment1c_bal010`. The bracket now certifies t
 zero-radius endpoint from the strict concrete router margin and uses exact sparse
 HZ feasibility only at positive radii. The corrected run writes to
 `data/moe/results/experiment1c_bal010_r1`; it does not overwrite the failed launch.
+That run preserved 15 rows from five samples before a numerically undecided
+midpoint stopped the process. These partial artifacts are also retained. The
+runner now retries an undecided midpoint with the configured higher budget. If it
+remains undecided, it keeps the last formally stable/unstable endpoints, records
+`bisection_complete=false`, and continues without claiming the requested bracket
+precision. The next clean run writes to `data/moe/results/experiment1c_bal010_r2`.
 
 ### Deterministic diagnostic cohort
 

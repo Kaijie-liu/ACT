@@ -1,4 +1,5 @@
 import unittest
+from unittest.mock import patch
 
 import torch
 
@@ -84,6 +85,53 @@ class Experiment1CTests(unittest.TestCase):
         )
         self.assertEqual(bracket["lower_status"], "stable")
         self.assertEqual(bracket["upper_status"], "unstable")
+
+    def test_unknown_midpoint_preserves_strict_bracket(self):
+        model = build_output_moe(
+            OutputMoEFactoryConfig(
+                input_shape=(1,),
+                num_classes=2,
+                num_experts=2,
+                top_k=1,
+                gate=GateKind.HARD_TOP1,
+                router_hidden=(),
+                expert_hidden=(),
+                seed=0,
+            )
+        ).double()
+        with torch.no_grad():
+            linear = model.router[1]
+            linear.weight.copy_(torch.tensor([[1.0], [0.0]], dtype=torch.float64))
+            linear.bias.copy_(torch.tensor([-0.25, 0.0], dtype=torch.float64))
+        unstable = {
+            "status": "unstable",
+            "entering_experts": [0],
+            "branch_statuses": {0: "feasible"},
+            "elapsed": 0.01,
+        }
+        unknown = {
+            "status": "unknown",
+            "entering_experts": [],
+            "branch_statuses": {0: "unknown"},
+            "elapsed": 0.01,
+        }
+        with patch(
+            "act.pipeline.moe.experiment1c._router_route_change",
+            side_effect=[unstable, unknown, unknown],
+        ):
+            bracket = exact_route_change_bracket(
+                model,
+                torch.zeros(1, 1, dtype=torch.float64),
+                [1],
+                0.5,
+                steps=7,
+                query_timeout=2.0,
+                retry_timeout=5.0,
+            )
+        self.assertEqual(bracket["lower"], 0.0)
+        self.assertEqual(bracket["upper"], 0.5)
+        self.assertFalse(bracket["bisection_complete"])
+        self.assertEqual(bracket["termination"], "unknown_midpoint")
 
     def test_safe_monotonic_inference_points_to_source_radius(self):
         source = {
