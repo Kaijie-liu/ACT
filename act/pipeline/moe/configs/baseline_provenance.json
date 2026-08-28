@@ -1,0 +1,94 @@
+{
+  "audit_date": "2026-08-28",
+  "policy": {
+    "official_repositories_only": true,
+    "third_party_checkpoints_allowed": false,
+    "baseline_dependencies_installed": false,
+    "baseline_training_started": false,
+    "external_source_copy_into_act": false
+  },
+  "repositories": [
+    {
+      "name": "Robust-MoE-Dual-Model",
+      "paper": "Robust Mixture-of-Experts: A New Frontier in Adversarial Robustness",
+      "venue": "ICML 2025",
+      "url": "https://github.com/TIML-Group/Robust-MoE-Dual-Model",
+      "local_audit_path": "/data1/Kane/MOE/baselines/Robust-MoE-Dual-Model",
+      "branch": "main",
+      "commit": "30ef94d77b5451595b82e739aa8938e1f4c4521f",
+      "license": "Apache-2.0",
+      "datasets": ["CIFAR-10", "Tiny ImageNet"],
+      "router": {
+        "scope": "output-level",
+        "architecture": "single linear layer over flattened input",
+        "selection": "hard argmax",
+        "top_k": 1
+      },
+      "experts": {
+        "cifar10": "four ResNet-18 classifiers",
+        "tiny_imagenet": "four ViT-small classifiers"
+      },
+      "checkpoint": {
+        "files_in_repository": false,
+        "github_release_count": 0,
+        "published_elsewhere_in_official_readme": false,
+        "classification": "official-code reproduction required"
+      },
+      "intended_use": "public hard-top-1 architecture and analytic/Lipschitz certificate baseline"
+    },
+    {
+      "name": "robust-moe-cnn",
+      "paper": "Robust Mixture-of-Expert Training for Convolutional Neural Networks",
+      "venue": "ICCV 2023",
+      "url": "https://github.com/optml-group/robust-moe-cnn",
+      "local_audit_path": "/data1/Kane/MOE/baselines/robust-moe-cnn",
+      "branch": "master",
+      "commit": "c50796fb8284512b6f6ad8e843f95182cec527cf",
+      "license": "NOT FOUND",
+      "datasets": ["CIFAR-10", "CIFAR-100", "Tiny ImageNet", "ImageNet"],
+      "router": {
+        "scope": "shared convolutional routing signal",
+        "architecture": "ResNet-like convolutional router",
+        "selection": "hard argmax",
+        "top_k": 1
+      },
+      "experts": {
+        "architectures": ["ResNet", "VGG", "WideResNet", "DenseNet"],
+        "semantics": "MoE convolutional channel experts; not output-level weighted top-k"
+      },
+      "checkpoint": {
+        "files_in_repository": false,
+        "github_release_count": 0,
+        "published_elsewhere_in_official_readme": false
+      },
+      "source_reuse_policy": "Do not copy source into ACT unless licensing is clarified",
+      "intended_use": "independently run public hard-routing CNN training baseline"
+    },
+    {
+      "name": "vmoe",
+      "paper": "Scaling Vision with Sparse Mixture of Experts",
+      "url": "https://github.com/google-research/vmoe",
+      "local_audit_path": "/data1/Kane/MOE/baselines/vmoe",
+      "branch": "main",
+      "commit": "c07681241f81ba11421ba98e523e1499b2738a79",
+      "license": "Apache-2.0",
+      "datasets": ["ImageNet", "ImageNet-21k", "CIFAR-10 fine-tuning config"],
+      "router": {
+        "scope": "token-level sparse MoE inside Vision Transformer",
+        "architecture": "NoisyTopExpertsPerItemRouter",
+        "selection": "configurable sparse top-k",
+        "top_k": "configurable; official published configurations include sparse multi-expert routing"
+      },
+      "experts": {
+        "architecture": "Transformer MLP experts"
+      },
+      "checkpoint": {
+        "files_in_repository": false,
+        "github_release_count": 0,
+        "official_cloud_checkpoints": true,
+        "official_location_scheme": "gs://vmoe_checkpoints/..."
+      },
+      "intended_use": "external route-statistics and sparse-MoE relevance only; no promised end-to-end exact verification"
+    }
+  ]
+}

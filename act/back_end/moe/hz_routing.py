@@ -9,6 +9,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from itertools import combinations
 from typing import Mapping, Sequence
 
 import torch
@@ -56,6 +57,31 @@ class CandidateReport:
     unresolved: tuple[int, ...]
     branches: tuple[RouteBranch, ...]
     minimal: bool
+
+
+@dataclass(frozen=True)
+class TopKSetBranch:
+    route_set: tuple[int, ...]
+    feasibility: str
+    nodes: int
+    elapsed: float
+
+
+@dataclass(frozen=True)
+class TopKSetReport:
+    """Feasibility report for legal unordered top-k route sets.
+
+    Ties are deliberately inclusive: a set is legal when every selected score
+    can be greater than or equal to every unselected score.  ``exact`` is true
+    only when the incoming router HZ is exact and every feasibility query was
+    decided.
+    """
+
+    feasible: tuple[tuple[int, ...], ...]
+    infeasible: tuple[tuple[int, ...], ...]
+    unresolved: tuple[tuple[int, ...], ...]
+    branches: tuple[TopKSetBranch, ...]
+    exact: bool
 
 
 def _output_width(hz: HZ) -> int:
@@ -233,4 +259,70 @@ def analyze_candidates(
         unresolved=tuple(unresolved),
         branches=tuple(branches),
         minimal=bool(router_exact and not unresolved),
+    )
+
+
+def analyze_topk_sets(
+    router_hz: HZ,
+    top_k: int,
+    *,
+    time_limit_per_set: float = 30.0,
+    router_exact: bool = True,
+) -> TopKSetReport:
+    """Enumerate all feasible unordered top-k sets for a small router.
+
+    For a proposed set ``S``, legality is encoded without selector binaries as
+    ``r_j - r_i <= 0`` for every ``i in S`` and ``j not in S``.  The inclusive
+    inequality implements the repository's any-legal-top-k tie policy.
+    """
+    experts = _output_width(router_hz)
+    if not 1 <= int(top_k) <= experts:
+        raise ValueError("top_k must lie in [1, num_experts]")
+    feasible: list[tuple[int, ...]] = []
+    infeasible: list[tuple[int, ...]] = []
+    unresolved: list[tuple[int, ...]] = []
+    branches: list[TopKSetBranch] = []
+    for selected_values in combinations(range(experts), int(top_k)):
+        selected = tuple(int(value) for value in selected_values)
+        outside = tuple(value for value in range(experts) if value not in selected)
+        comparisons = len(selected) * len(outside)
+        if comparisons:
+            A = torch.zeros((comparisons, experts), dtype=torch.float64)
+            row = 0
+            for chosen in selected:
+                for other in outside:
+                    A[row, other] = 1.0
+                    A[row, chosen] = -1.0
+                    row += 1
+            conditioned = hz_add_output_inequalities(
+                router_hz,
+                A,
+                torch.zeros(comparisons, dtype=torch.float64),
+            )
+        else:
+            conditioned = router_hz
+        result = hz_check_feasibility(
+            conditioned,
+            time_limit=float(time_limit_per_set),
+        )
+        branches.append(
+            TopKSetBranch(
+                route_set=selected,
+                feasibility=result.status,
+                nodes=result.nodes,
+                elapsed=result.elapsed,
+            )
+        )
+        if result.status == "feasible":
+            feasible.append(selected)
+        elif result.status == "infeasible":
+            infeasible.append(selected)
+        else:
+            unresolved.append(selected)
+    return TopKSetReport(
+        feasible=tuple(feasible),
+        infeasible=tuple(infeasible),
+        unresolved=tuple(unresolved),
+        branches=tuple(branches),
+        exact=bool(router_exact and not unresolved),
     )

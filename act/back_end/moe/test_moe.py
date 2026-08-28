@@ -13,6 +13,7 @@ from act.back_end.moe.factory import (
 )
 from act.back_end.moe.hz_routing import (
     analyze_candidates,
+    analyze_topk_sets,
     condition_topk_membership,
     guarded_input_domain,
 )
@@ -128,6 +129,12 @@ class HZRoutingTests(unittest.TestCase):
         self.assertEqual(report.candidates, (0, 1))
         self.assertEqual(report.infeasible, (2,))
         self.assertTrue(report.minimal)
+
+    def test_exact_unordered_top2_sets_use_inclusive_legality(self):
+        _input_hz, router = self._correlated_dense_router()
+        report = analyze_topk_sets(router, 2, time_limit_per_set=5.0)
+        self.assertEqual(report.feasible, ((0, 1),))
+        self.assertTrue(report.exact)
 
     def test_guard_is_transferred_to_input(self):
         input_hz, router = self._correlated_dense_router()
