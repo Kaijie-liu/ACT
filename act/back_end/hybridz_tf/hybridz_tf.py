@@ -32,6 +32,7 @@ from act.back_end.solver.solver_hz import (
     hz_lift_bounds,
     sparse_hz_fast_bounds,
     sparse_hz_from_bounds,
+    sparse_hz_to_dense,
 )
 
 import act.back_end.hybridz_tf.tf_mlp as hz_mlp
@@ -65,6 +66,22 @@ class HybridzTF(RegistryTF):
         self._sparse_frame_widths: Dict[int, tuple[int, int]] = {}
         self._sparse_relu_slots: Dict[tuple[int, int, int], tuple[int, int, int]] = {}
         self._sparse_aux_slots: Dict[tuple[int, int], tuple[int, ...]] = {}
+        self._entry_hz_override: Optional[HZono] = None
+        self._entry_sparse_hz_override: Optional[SparseHZono] = None
+
+    def set_entry_hz(self, hz: "HZono | SparseHZono | None") -> None:
+        """Override the input HZ for the next route-conditioned analysis.
+
+        The override is persistent until :meth:`clear_entry_hz` is called so
+        that INPUT followed by one or more INPUT_SPEC layers all see the same
+        guarded domain.  Callers should clear it in a ``finally`` block.
+        """
+        self._entry_hz_override = hz if isinstance(hz, HZono) else None
+        self._entry_sparse_hz_override = hz if isinstance(hz, SparseHZono) else None
+
+    def clear_entry_hz(self) -> None:
+        self._entry_hz_override = None
+        self._entry_sparse_hz_override = None
 
     @staticmethod
     def _net_var_id_stride(net: Net) -> int:
@@ -392,8 +409,24 @@ class HybridzTF(RegistryTF):
         k = L.kind.upper()
         try:
             if k in ("INPUT", "INPUT_SPEC"):
-                self._sparse_hz_cache[L.id] = self._sparse_from_bounds(input_bounds)
-                self._sparse_drop_reasons.pop(L.id, None)
+                if self._entry_sparse_hz_override is not None:
+                    override = self._entry_sparse_hz_override
+                    if override.n_out != input_bounds.lb.numel():
+                        raise ValueError(
+                            "guarded sparse HZ input width does not match entry bounds"
+                        )
+                    self._sparse_hz_cache[L.id] = override
+                    if override.frame_id is not None:
+                        self._sparse_frame_widths[int(override.frame_id)] = (
+                            override.n_cont,
+                            override.n_bin,
+                        )
+                    self._sparse_drop_reasons.pop(L.id, None)
+                elif self._entry_hz_override is not None:
+                    self._drop_sparse_hz(L.id, "dense_guarded_entry")
+                else:
+                    self._sparse_hz_cache[L.id] = self._sparse_from_bounds(input_bounds)
+                    self._sparse_drop_reasons.pop(L.id, None)
             elif k != "ASSERT":
                 preds = self._net.preds.get(L.id, [])
                 if preds and preds[0] in self._sparse_hz_cache:
@@ -477,10 +510,20 @@ class HybridzTF(RegistryTF):
         self._seed_sparse_cache(L, input_bounds)
 
         if k in ("INPUT", "INPUT_SPEC"):
-            hz_init = self._hz_from_bounds(
-                input_bounds,
-                col_ids=self._col_ids_from_vars(input_bounds, L.out_vars),
-            )
+            hz_init = self._entry_hz_override
+            if hz_init is None and self._entry_sparse_hz_override is not None:
+                hz_init = sparse_hz_to_dense(
+                    self._entry_sparse_hz_override,
+                    dtype=input_bounds.lb.dtype,
+                    device=input_bounds.lb.device,
+                )
+            if hz_init is None:
+                hz_init = self._hz_from_bounds(
+                    input_bounds,
+                    col_ids=self._col_ids_from_vars(input_bounds, L.out_vars),
+                )
+            elif hz_init.c.shape[0] != input_bounds.lb.numel():
+                raise ValueError("guarded dense HZ input width does not match entry bounds")
             if hz_init is not None:
                 self._hz_cache[L.id] = hz_init
         elif k != "ASSERT":

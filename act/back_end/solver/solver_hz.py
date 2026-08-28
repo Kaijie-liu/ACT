@@ -764,6 +764,157 @@ def sparse_hz_fast_bounds(hz: SparseHZono) -> Bounds:
     )
 
 
+def sparse_hz_to_dense(
+    hz: SparseHZono,
+    *,
+    dtype: torch.dtype = torch.float64,
+    device: Optional[torch.device] = None,
+) -> HZono:
+    """Convert a sparse HZ to the dense representation without relaxation.
+
+    The sparse representation stores equalities and upper inequalities in
+    separate matrices, while :class:`HZono` stores them in one matrix with an
+    ``eq_mask``.  This helper is primarily useful when a guarded sparse input
+    domain must be passed to an operator that only has a dense HZ fallback.
+    """
+    target = torch.device("cpu") if device is None else torch.device(device)
+    eq_rows = hz.n_eq
+    ineq_rows = hz.n_ineq
+    Ac_np = sp.vstack([hz.Ac, hz.Auc], format="csr")
+    Ab_np = sp.vstack([hz.Ab, hz.Aub], format="csr")
+    rhs_np = np.concatenate([hz.b, hz.ub])
+    return HZono(
+        c=torch.as_tensor(hz.c, dtype=dtype, device=target).reshape(-1, 1),
+        Gc=torch.as_tensor(hz.Gc.toarray(), dtype=dtype, device=target),
+        Gb=torch.as_tensor(hz.Gb.toarray(), dtype=dtype, device=target),
+        Ac=torch.as_tensor(Ac_np.toarray(), dtype=dtype, device=target),
+        Ab=torch.as_tensor(Ab_np.toarray(), dtype=dtype, device=target),
+        b=torch.as_tensor(rhs_np, dtype=dtype, device=target).reshape(-1, 1),
+        eq_mask=torch.cat(
+            [
+                torch.ones(eq_rows, dtype=torch.bool, device=target),
+                torch.zeros(ineq_rows, dtype=torch.bool, device=target),
+            ]
+        ),
+    )
+
+
+def hz_select_rows(hz: "HZono | SparseHZono", rows) -> "HZono | SparseHZono":
+    """Select output coordinates while retaining all HZ constraints."""
+    if isinstance(hz, SparseHZono):
+        return sparse_hz_gather_rows(hz, rows)
+    row_ids = torch.as_tensor(rows, dtype=torch.long, device=hz.c.device).reshape(-1)
+    R = hz.c.new_zeros((row_ids.numel(), hz.c.shape[0]))
+    if row_ids.numel():
+        R[torch.arange(row_ids.numel(), device=hz.c.device), row_ids] = 1.0
+    return hz_multiply(hz, R)
+
+
+def hz_add_output_inequalities(
+    hz: "HZono | SparseHZono",
+    A,
+    rhs,
+    *,
+    new_binary_coefficients=None,
+) -> "HZono | SparseHZono":
+    """Intersect an HZ with ``A @ y + B @ beta <= rhs`` exactly.
+
+    ``beta`` denotes *new* binary factors in ``{-1, 1}``.  Passing a matrix
+    ``new_binary_coefficients`` with ``q`` columns appends exactly ``q`` binary
+    factors whose value generators are zero; the factors therefore exist only
+    to encode disjunctive guards such as top-k membership.  With no binary
+    coefficient matrix this is an ordinary linear output-space intersection.
+    """
+    if isinstance(hz, SparseHZono):
+        A_sp = _as_csr(A)
+        if A_sp.shape[1] != hz.n_out:
+            raise ValueError(
+                f"output inequality shape mismatch: A={A_sp.shape}, n_out={hz.n_out}"
+            )
+        rhs_np = np.asarray(rhs, dtype=np.float64).reshape(-1)
+        if rhs_np.size != A_sp.shape[0]:
+            raise ValueError("output inequality rhs shape mismatch")
+        if new_binary_coefficients is None:
+            B_new = sparse_empty(A_sp.shape[0], 0)
+        else:
+            B_new = _as_csr(new_binary_coefficients)
+            if B_new.shape[0] != A_sp.shape[0]:
+                raise ValueError("new binary coefficient row mismatch")
+        q = int(B_new.shape[1])
+        n_bin = hz.n_bin + q
+        return SparseHZono(
+            c=hz.c.copy(),
+            Gc=hz.Gc.copy(),
+            Gb=sparse_pad_cols(hz.Gb, n_bin),
+            Ac=hz.Ac.copy(),
+            Ab=sparse_pad_cols(hz.Ab, n_bin),
+            b=hz.b.copy(),
+            Auc=_sparse_vstack(
+                [
+                    sparse_pad_cols(hz.Auc, hz.n_cont),
+                    (A_sp @ hz.Gc).tocsr(),
+                ],
+                hz.n_cont,
+            ),
+            Aub=_sparse_vstack(
+                [
+                    sparse_pad_cols(hz.Aub, n_bin),
+                    sp.hstack([(A_sp @ hz.Gb).tocsr(), B_new], format="csr"),
+                ],
+                n_bin,
+            ),
+            ub=np.concatenate([hz.ub, rhs_np - np.asarray(A_sp @ hz.c).reshape(-1)]),
+            frame_id=hz.frame_id,
+            exact=hz.exact,
+        )
+
+    A_t = torch.as_tensor(A, dtype=hz.c.dtype, device=hz.c.device)
+    if A_t.ndim != 2 or A_t.shape[1] != hz.c.shape[0]:
+        raise ValueError(
+            f"output inequality shape mismatch: A={tuple(A_t.shape)}, n_out={hz.c.shape[0]}"
+        )
+    rhs_t = torch.as_tensor(rhs, dtype=hz.c.dtype, device=hz.c.device).reshape(-1)
+    if rhs_t.numel() != A_t.shape[0]:
+        raise ValueError("output inequality rhs shape mismatch")
+    if new_binary_coefficients is None:
+        B_new_t = hz.c.new_zeros((A_t.shape[0], 0))
+    else:
+        B_new_t = torch.as_tensor(
+            new_binary_coefficients, dtype=hz.c.dtype, device=hz.c.device
+        )
+        if B_new_t.ndim != 2 or B_new_t.shape[0] != A_t.shape[0]:
+            raise ValueError("new binary coefficient row mismatch")
+    q = int(B_new_t.shape[1])
+    old_rows = int(hz.Ac.shape[0])
+    old_bin = int(hz.Gb.shape[1])
+    Gb = torch.cat([hz.Gb, hz.c.new_zeros((hz.c.shape[0], q))], dim=1)
+    Ab_old = torch.cat([hz.Ab, hz.c.new_zeros((old_rows, q))], dim=1)
+    Ab_new = torch.cat([A_t @ hz.Gb, B_new_t], dim=1)
+    old_mask = (
+        hz.eq_mask.to(hz.c.device)
+        if hz.eq_mask is not None
+        else torch.ones(old_rows, dtype=torch.bool, device=hz.c.device)
+    )
+    bcol_ids = None
+    if hz.bcol_ids is not None and hz.bcol_ids.numel() == old_bin:
+        bcol_ids = torch.cat(
+            [hz.bcol_ids.to(hz.c.device), hz_fresh_col_ids(q, hz.c.device)]
+        )
+    return HZono(
+        c=hz.c.clone(),
+        Gc=hz.Gc.clone(),
+        Gb=Gb,
+        Ac=torch.cat([hz.Ac, A_t @ hz.Gc], dim=0),
+        Ab=torch.cat([Ab_old, Ab_new], dim=0),
+        b=torch.cat([hz.b, (rhs_t.reshape(-1, 1) - A_t @ hz.c)], dim=0),
+        eq_mask=torch.cat(
+            [old_mask, torch.zeros(A_t.shape[0], dtype=torch.bool, device=hz.c.device)]
+        ),
+        col_ids=_clone_ids(hz.col_ids),
+        bcol_ids=bcol_ids,
+    )
+
+
 def _clone_ids(t: Optional[torch.Tensor]) -> Optional[torch.Tensor]:
     return None if t is None else t.clone()
 
@@ -1141,6 +1292,15 @@ class _MILPResult:
     nodes: int = 0
 
 
+@dataclass(frozen=True)
+class HZFeasibilityResult:
+    """Public feasibility result for an HZ intersection query."""
+
+    status: str  # "feasible" | "infeasible" | "unknown"
+    nodes: int
+    elapsed: float
+
+
 def _row_sum(mat) -> "np.ndarray":
     return np.asarray(mat.sum(axis=1), dtype=np.float64).reshape(-1)
 
@@ -1291,6 +1451,38 @@ def _solve_hz_feasibility(
     if int(getattr(result, "status", -1)) == 2:
         return _MILPResult("infeasible", None, nodes)
     return _MILPResult("unknown", None, nodes)
+
+
+def hz_check_feasibility(
+    hz: "HZono | SparseHZono",
+    *,
+    time_limit: float = 30.0,
+    tolerance: float = 1e-7,
+) -> HZFeasibilityResult:
+    """Check whether a dense or sparse HZ is non-empty with the open solver.
+
+    This is intentionally a small public wrapper around the same SciPy/HiGHS
+    MILP path used by :class:`HZSolver`.  Route-conditioned verification uses
+    it to remove infeasible expert branches before any expert is instantiated.
+    """
+    started = time.monotonic()
+    if not _HAS_SCIPY:
+        return HZFeasibilityResult("unknown", 0, 0.0)
+    try:
+        model = _lower_hz_milp(hz)
+        result = _solve_hz_feasibility(
+            model,
+            started + max(0.0, float(time_limit)),
+            feasibility_tol=max(float(tolerance), 1e-9),
+        )
+    except Exception as exc:
+        logger.debug("HZ feasibility query failed: %s", exc)
+        return HZFeasibilityResult("unknown", 0, time.monotonic() - started)
+    return HZFeasibilityResult(
+        result.status,
+        result.nodes,
+        time.monotonic() - started,
+    )
 
 
 class HZSolver(Solver):
