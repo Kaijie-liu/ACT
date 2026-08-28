@@ -1,6 +1,25 @@
 {
   "experiment": "experiment1_confirmatory_bal010",
-  "status": "preregistered_before_scientific_launch",
+  "status": "failed_engineering_run_permanently_excluded",
+  "failure": {
+    "completed_census_rows": 400,
+    "completed_boundary_rows": 72,
+    "reason": "instance_timeout_seconds_was_recorded_but_not_hard_enforced",
+    "first_overrun_rank": 155,
+    "first_overrun_seconds": 302.2999066710472,
+    "decisive_overrun_rank": 171,
+    "decisive_overrun_seconds": 382.5428839838132,
+    "stopped_after_complete_rank": 171,
+    "scientific_verdicts_usable": false,
+    "artifacts": {
+      "config.json": "687a8c1b3d0692b41e3bfd044535f464e43ae8c1f69f3845f68f59c33d1527bc",
+      "sample_indices.json": "7dad79df206f3b11018d5d8429e95327d2f5bc2e6c534d01f6d0ac74cba0edab",
+      "census/results.jsonl": "2c442ead0a5cd9ea228efa0b9365ce56a513d58e13443648c8d88fbaddb97422",
+      "census/summary.json": "5739c15efc12406ad0816a75abb89ca12472461d0280eb1a724579cd8a29a823",
+      "boundary/results.jsonl": "2c7da018f24c49f99852e5666d07f6c426c9d3d99a045c24cf9b8f16ff940fab",
+      "boundary/results.csv": "f23b5316bca990ccd1ccf700fd0c8536410a2a1d47c141f637a0bcce770116ce"
+    }
+  },
   "cohort": {
     "selection": "deterministic_clean_correct_ranks",
     "rank_start": 100,

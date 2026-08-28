@@ -8,6 +8,7 @@ import argparse
 import csv
 import hashlib
 import json
+import multiprocessing as mp
 import os
 import statistics
 import sys
@@ -58,7 +59,7 @@ from act.util.path_config import get_torchvision_data_root
 
 DEFAULT_CONFIG = (
     PROJECT_ROOT
-    / "act/pipeline/moe/configs/experiment1_confirmatory_bal010.json"
+    / "act/pipeline/moe/configs/experiment1_confirmatory_bal010_r1.json"
 )
 EXPECTED_PYTHON = Path("/data1/Kane/miniconda3/envs/act-py312/bin/python")
 SEMANTIC_REASONS = {
@@ -515,6 +516,17 @@ def _run_boundary_row(
     gate_seconds = time.monotonic() - gate_started
     gate_candidate = gate.pop("_counterexample_input", None)
     gate_status, gate_reason = gate["status"], gate["reason"]
+    _write_json(
+        boundary_dir / "progress.json",
+        {
+            "sample_rank": rank,
+            "dataset_index": index,
+            "epsilon": epsilon,
+            "gate_status": gate_status,
+            "gate_reason": gate_reason,
+            "f0_invoked": gate_reason in SEMANTIC_REASONS,
+        },
+    )
     f0 = None
     f0_seconds = 0.0
     witness_path = witness_hash = None
@@ -625,6 +637,150 @@ def _run_boundary_row(
     row["instance_timeout_exceeded"] = (
         row["total_seconds"] > float(config["instance_timeout_seconds"])
     )
+    return row
+
+
+def _boundary_child(
+    result_path: Path,
+    *,
+    model,
+    dataset,
+    selection: dict[str, int],
+    work_dir: Path,
+    runtime: dict[str, Any],
+    config: dict[str, Any],
+    row_runner=_run_boundary_row,
+) -> None:
+    """Run one boundary row in a killable child and persist its return value."""
+    try:
+        if model is None or dataset is None:
+            checkpoint = _inside(Path(config["checkpoint"]), WRITE_ROOT)
+            model, payload = load_output_moe_checkpoint(
+                checkpoint, map_location="cpu"
+            )
+            model.double().eval()
+            dataset = _load_dataset(payload["dataset"], False, download=False)
+        row = row_runner(
+            model,
+            dataset,
+            selection,
+            work_dir,
+            runtime,
+            config,
+        )
+    except Exception as exc:
+        row = {
+            "sample_rank": selection["sample_rank"],
+            "dataset_index": selection["dataset_index"],
+            "status": "ERROR",
+            "reason": "EXPLICIT_NUMERICAL_OR_RUNNER_ERROR",
+            "error": f"{type(exc).__name__}: {exc}",
+            "total_seconds": 0.0,
+        }
+    _write_json(result_path, row)
+
+
+def _promote_row_artifacts(work_dir: Path, stage_dir: Path) -> None:
+    """Promote completed-row artifacts; timed-out work remains quarantined."""
+    for source in sorted(work_dir.rglob("*")):
+        if not source.is_file() or source.name in {"progress.json", "row.json"}:
+            continue
+        destination = stage_dir / source.relative_to(work_dir)
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        if destination.exists():
+            raise RuntimeError(f"refusing to overwrite {destination}")
+        source.replace(destination)
+
+
+def _run_boundary_with_deadline(
+    *,
+    model,
+    dataset,
+    selection: dict[str, int],
+    stage_dir: Path,
+    runtime: dict[str, Any],
+    config: dict[str, Any],
+    row_runner=_run_boundary_row,
+) -> dict[str, Any]:
+    """Enforce the preregistered wall deadline with process termination."""
+    rank = int(selection["sample_rank"])
+    work_dir = stage_dir / "row_work" / f"rank{rank}"
+    work_dir.mkdir(parents=True, exist_ok=False)
+    result_path = work_dir / "row.json"
+    context = mp.get_context("spawn")
+    process = context.Process(
+        target=_boundary_child,
+        kwargs={
+            "result_path": result_path,
+            "model": model,
+            "dataset": dataset,
+            "selection": selection,
+            "work_dir": work_dir,
+            "runtime": runtime,
+            "config": config,
+            "row_runner": row_runner,
+        },
+        daemon=False,
+    )
+    started = time.monotonic()
+    process.start()
+    timeout = float(config["instance_timeout_seconds"])
+    try:
+        process.join(timeout=timeout)
+        if process.is_alive():
+            process.terminate()
+            process.join()
+            elapsed = time.monotonic() - started
+            progress_path = work_dir / "progress.json"
+            progress: dict[str, Any] = {}
+            if progress_path.exists():
+                try:
+                    with progress_path.open(encoding="utf-8") as handle:
+                        progress = json.load(handle)
+                except (OSError, ValueError):
+                    progress = {}
+            return {
+                "sample_rank": rank,
+                "dataset_index": int(selection["dataset_index"]),
+                "status": "TIMEOUT",
+                "reason": "INSTANCE_HARD_DEADLINE",
+                "unique_safe": False,
+                "gate_status": progress.get("gate_status"),
+                "gate_reason": progress.get("gate_reason"),
+                "f0_invoked": bool(progress.get("f0_invoked", False)),
+                "full_model_witness_valid": False,
+                "deadline_seconds": timeout,
+                "deadline_enforced": True,
+                "deadline_overshoot_seconds": max(0.0, elapsed - timeout),
+                "partial_work_dir": str(work_dir.relative_to(stage_dir)),
+                "total_seconds": elapsed,
+            }
+    finally:
+        if process.is_alive():
+            process.terminate()
+            process.join()
+    elapsed = time.monotonic() - started
+    if process.exitcode != 0 or not result_path.exists():
+        return {
+            "sample_rank": rank,
+            "dataset_index": int(selection["dataset_index"]),
+            "status": "ERROR",
+            "reason": "BOUNDARY_CHILD_FAILED",
+            "error": f"child exit code {process.exitcode}",
+            "deadline_seconds": timeout,
+            "deadline_enforced": True,
+            "total_seconds": elapsed,
+        }
+    with result_path.open(encoding="utf-8") as handle:
+        row = json.load(handle)
+    internal_seconds = float(row.get("total_seconds", 0.0))
+    _promote_row_artifacts(work_dir, stage_dir)
+    row["internal_total_seconds"] = internal_seconds
+    row["total_seconds"] = elapsed
+    row["deadline_seconds"] = timeout
+    row["deadline_enforced"] = True
+    row["deadline_overshoot_seconds"] = max(0.0, elapsed - timeout)
+    row["instance_timeout_exceeded"] = False
     return row
 
 
@@ -748,6 +904,9 @@ def _boundary_summary(rows: Sequence[dict[str, Any]]) -> dict[str, Any]:
         "instance_timeout_exceeded": sum(
             bool(row.get("instance_timeout_exceeded")) for row in rows
         ),
+        "hard_deadline_timeouts": sum(
+            row.get("reason") == "INSTANCE_HARD_DEADLINE" for row in rows
+        ),
     }
 
 
@@ -802,13 +961,13 @@ def _run_stage(args) -> dict[str, Any]:
                             model, dataset, selection, epsilon_item, config
                         )
                     else:
-                        row = _run_boundary_row(
-                            model,
-                            dataset,
-                            selection,
-                            stage_dir,
-                            runtime,
-                            config,
+                        row = _run_boundary_with_deadline(
+                            model=None,
+                            dataset=None,
+                            selection=selection,
+                            stage_dir=stage_dir,
+                            runtime=runtime,
+                            config=config,
                         )
                 except Exception as exc:
                     row = {

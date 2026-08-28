@@ -1,0 +1,60 @@
+{
+  "experiment": "experiment1_confirmatory_bal010_r1",
+  "status": "preregistered_hard_deadline_rerun_before_launch",
+  "supersedes_failed_manifest": "act/pipeline/moe/configs/experiment1_confirmatory_protocol_manifest.json",
+  "change_scope": "engineering-only hard enforcement of the already registered 300-second wall deadline",
+  "scientific_configuration_changed": false,
+  "cohort": {
+    "selection": "deterministic_clean_correct_ranks",
+    "rank_start": 100,
+    "rank_end_inclusive": 199,
+    "sample_count": 100,
+    "development_rank_prefix_verified": [0, 99],
+    "development_sample_indices_sha256": "73c891e95e33d508ed0e50ccbcf4d48572fc29a2e71492e96f90bcfc23c143cf"
+  },
+  "checkpoint": {
+    "path": "/data1/Kane/MOE/ACT/data/moe/checkpoints/cifar10_top2_e8_seed0_bal010.pt",
+    "sha256": "fbaa7c871d28763ac5acb29a9502dc5d146e1d5af0b4a03e9911899251bd43f7"
+  },
+  "tracked_config": {
+    "path": "act/pipeline/moe/configs/experiment1_confirmatory_bal010_r1.json",
+    "sha256": "5f7051cb6bfb0493ae460cdfb80e28fdce89a914aa938a13753fe7bfe811d945"
+  },
+  "protocol_document": "act/pipeline/moe/docs/experiment1_confirmatory.md",
+  "output_directory": "/data1/Kane/MOE/ACT/data/moe/results/experiment1_confirmatory_bal010_r1",
+  "hard_deadline": {
+    "seconds": 300.0,
+    "mechanism": "one spawned child process per boundary row; terminate child at wall deadline",
+    "timeout_status": "TIMEOUT",
+    "timeout_reason": "INSTANCE_HARD_DEADLINE",
+    "partial_verdict_promoted": false,
+    "partial_artifacts": "quarantined_in_rank_local_work_directory"
+  },
+  "stages": {
+    "fixed_radius_census": {
+      "expected_rows": 400,
+      "epsilons": ["0.25/255", "0.5/255", "1/255", "2/255"],
+      "output_property_solving": false
+    },
+    "route_boundary_certification": {
+      "expected_rows": 100,
+      "primary_radius": "1.05 * exact_route_change_upper_endpoint",
+      "fallback": "F0_WEIGHTED_RANGE_ONLY_ON_SEMANTIC_INCOMPLETENESS",
+      "automatic_f1": false
+    }
+  },
+  "go_thresholds": {
+    "independent_audit_issues": 0,
+    "unique_safe_samples": 10,
+    "unique_safe_rate": 0.1,
+    "end_to_end_solved_rate": 0.6,
+    "candidate_reduction_rate": 0.2,
+    "conditional_width_median_strict_upper": 0.7,
+    "conditional_width_p90_strict_upper": 1.0,
+    "f0_semantic_resolution_rate": 0.25,
+    "all_unsafe_full_model_replayed": true,
+    "guard_identity_closed": true,
+    "silent_numerical_fallbacks": 0
+  },
+  "post_failure_policy": "report_failure_composition_without_automatically_starting_F1_or_baselines"
+}

@@ -236,6 +236,14 @@ def audit(config_path: Path) -> dict[str, Any]:
     unique_safe = 0
     for row in boundary:
         rank = int(row["sample_rank"])
+        if row.get("deadline_enforced") is not True:
+            issues.append(f"rank {rank}: hard instance deadline was not enforced")
+        if (
+            row.get("status") != "TIMEOUT"
+            and float(row.get("total_seconds", 0.0))
+            > float(config["instance_timeout_seconds"])
+        ):
+            issues.append(f"rank {rank}: non-timeout row exceeded hard deadline")
         if row.get("error") or row.get("status") == "ERROR":
             issues.append(f"rank {rank}: explicit runner error")
         if "NUMERICAL" in str(row.get("reason", "")):

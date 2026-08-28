@@ -1,7 +1,10 @@
 # ===- act/pipeline/moe/test_experiment1_confirmatory.py - Tests -----====#
 
 import json
+import tempfile
+import time
 import unittest
+from pathlib import Path
 
 from act.back_end.solver.solver_hz import hz_numerical_policy_manifest
 from act.pipeline.moe.audit_experiment1_confirmatory import _cluster_bootstrap
@@ -9,7 +12,25 @@ from act.pipeline.moe.experiment1_confirmatory import (
     DEFAULT_CONFIG,
     _boundary_summary,
     _census_summary,
+    _run_boundary_with_deadline,
 )
+
+
+def _slow_boundary_row(*_args, **_kwargs):
+    time.sleep(0.25)
+    return {"status": "SAFE", "reason": "must_not_return"}
+
+
+def _fast_boundary_row(model, dataset, selection, *_args, **_kwargs):
+    if model.spec.top_k != 2 or len(dataset) != 10000:
+        raise RuntimeError("spawned child did not load the frozen model/dataset")
+    return {
+        "sample_rank": selection["sample_rank"],
+        "dataset_index": selection["dataset_index"],
+        "status": "UNKNOWN",
+        "reason": "ENGINEERING_SPAWN_PROBE",
+        "total_seconds": 0.0,
+    }
 
 
 class ConfirmatoryProtocolTests(unittest.TestCase):
@@ -106,6 +127,49 @@ class ConfirmatoryProtocolTests(unittest.TestCase):
         )
         self.assertLessEqual(interval[0], 2.0 / 3.0)
         self.assertGreaterEqual(interval[1], 2.0 / 3.0)
+
+    def test_boundary_hard_deadline_terminates_child(self):
+        result_root = Path("/data1/Kane/MOE/ACT/data/moe/results")
+        with tempfile.TemporaryDirectory(dir=result_root) as temporary:
+            stage_dir = Path(temporary)
+            row = _run_boundary_with_deadline(
+                model=object(),
+                dataset=object(),
+                selection={"sample_rank": 100, "dataset_index": 196},
+                stage_dir=stage_dir,
+                runtime={},
+                config={"instance_timeout_seconds": 0.05},
+                row_runner=_slow_boundary_row,
+            )
+        self.assertEqual(row["status"], "TIMEOUT")
+        self.assertEqual(row["reason"], "INSTANCE_HARD_DEADLINE")
+        self.assertTrue(row["deadline_enforced"])
+        self.assertLess(row["total_seconds"], 0.5)
+
+    @unittest.skipUnless(
+        Path(
+            "/data1/Kane/MOE/ACT/data/moe/checkpoints/"
+            "cifar10_top2_e8_seed0_bal010.pt"
+        ).exists(),
+        "frozen confirmatory checkpoint is not available",
+    )
+    def test_spawned_child_loads_frozen_inputs(self):
+        with DEFAULT_CONFIG.open(encoding="utf-8") as handle:
+            config = json.load(handle)
+        config["instance_timeout_seconds"] = 10.0
+        result_root = Path("/data1/Kane/MOE/ACT/data/moe/results")
+        with tempfile.TemporaryDirectory(dir=result_root) as temporary:
+            row = _run_boundary_with_deadline(
+                model=None,
+                dataset=None,
+                selection={"sample_rank": 100, "dataset_index": 196},
+                stage_dir=Path(temporary),
+                runtime={},
+                config=config,
+                row_runner=_fast_boundary_row,
+            )
+        self.assertEqual(row["reason"], "ENGINEERING_SPAWN_PROBE")
+        self.assertTrue(row["deadline_enforced"])
 
 
 if __name__ == "__main__":

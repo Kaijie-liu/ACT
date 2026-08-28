@@ -377,3 +377,22 @@ Before scientific launch, a single rank-100 engineering probe at `0.25/255`
 reproduced the frozen development prefix, completed exact candidate and route-set
 analysis, and closed every guard identity. It produced no confirmatory artifact
 and is not included in any endpoint.
+
+The first confirmatory launch at implementation HEAD `3faabea9f` completed its
+400-row census, then exposed a timeout-enforcement bug during boundary solving.
+The runner recorded a 300-second limit but did not terminate the row: rank 155
+took 302.3 seconds, and rank 171 returned an `UNSAFE` after 382.5 seconds. The
+task was stopped immediately after that complete 72nd boundary row. Directory
+`data/moe/results/experiment1_confirmatory_bal010` is preserved and permanently
+excluded; neither its census nor any partial boundary verdict is scientific
+evidence. Its failure and frozen artifact hashes are recorded in
+`experiment1_confirmatory_protocol_manifest.json`.
+
+The corrected `_r1` runner executes every boundary row in a separate spawned
+process and terminates it at the registered 300-second wall deadline. A killed
+row is `TIMEOUT/INSTANCE_HARD_DEADLINE`; partial artifacts stay quarantined and
+no partial verdict is promoted. The scientific config is otherwise unchanged.
+The new config and preregistration are
+`experiment1_confirmatory_bal010_r1.json` and
+`experiment1_confirmatory_protocol_manifest_r1.json`. The full census is rerun
+under the corrected implementation so both stages share one frozen HEAD.

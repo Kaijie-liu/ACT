@@ -9,12 +9,21 @@ solver schedule, or F0 fallback.
 - checkpoint: `cifar10_top2_e8_seed0_bal010.pt`;
 - deterministic cohort: clean-correct ranks 100--199 under the same checkpoint;
 - official TorchVision CIFAR-10 test set;
-- tracked config: `configs/experiment1_confirmatory_bal010.json`;
-- raw output: a new `experiment1_confirmatory_bal010` directory;
+- tracked rerun config: `configs/experiment1_confirmatory_bal010_r1.json`;
+- raw output: a new `experiment1_confirmatory_bal010_r1` directory;
 - development and failed F0 directories are read-only and never overwritten.
 
 The saved sample-index prefix must reproduce development ranks 0--99 before the
 runner accepts ranks 100--199.
+
+The first launch directory `experiment1_confirmatory_bal010` is permanently
+excluded. Its runner recorded the 300-second limit but did not terminate a row:
+rank 155 took 302.3 seconds and rank 171 returned after 382.5 seconds. The task
+was stopped after 72 complete boundary rows. Its complete 400-row census and
+partial boundary outputs are preserved only as failed engineering artifacts and
+none of their verdicts enters confirmatory endpoints. The `_r1` rerun changes no
+scientific radius, cohort, solver budget, fallback trigger, or GO threshold; it
+only hard-enforces the already preregistered wall deadline.
 
 ## A. Fixed-radius router/width census
 
@@ -47,6 +56,13 @@ stable lower < minimum route-set-change radius <= unstable upper.
 The single primary radius is `1.05 * unstable upper`. An incomplete bisection is
 retained if the strict bracket remains valid; its width and
 `bisection_complete=false` are reported.
+
+Each boundary row runs in a separate spawned process with a 300-second wall
+deadline. At the deadline the child is terminated and the row is recorded as
+`TIMEOUT/INSTANCE_HARD_DEADLINE`; no partial verdict can be promoted. Completed
+witness artifacts are first written in a rank-local work directory and promoted
+only after the child returns a complete row. Timed-out work remains quarantined
+and is excluded from witness counts.
 
 The frozen order is:
 
