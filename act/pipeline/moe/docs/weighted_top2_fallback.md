@@ -135,6 +135,12 @@ separate witness artifact for independent replay. The preregistered decision is:
 Confirmatory ranks 100--199, baseline reproduction, and new training remain
 paused until the fallback and its soundness audit meet the unlock conditions.
 
+The initial launch directory `experiment1f0_bal010` is a preserved failed
+engineering run: a support-metadata serialization mismatch caused eight optimized
+rows to be labeled numerical. No verdict from that directory is used. The fixed
+runner has a regression test for the public support-result fields and writes a
+clean, non-overwriting run to `experiment1f0_bal010_r1`.
+
 ## F1 boundary
 
 F1 may split the margin at zero or other preregistered cut points, reuse ACT's

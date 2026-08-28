@@ -169,10 +169,10 @@ def _support_record(propagation) -> dict[str, Any]:
 
 def _support_status(result) -> dict[str, Any]:
     return {
-        "complete_exact": bool(result.complete_exact),
+        "complete_exact": bool(result.exact),
         "lower_status": list(result.lower_status),
         "upper_status": list(result.upper_status),
-        "gaps": list(result.gaps),
+        "gaps": list(result.solver_gap),
         "solves": int(result.solves),
         "elapsed": float(result.elapsed),
     }

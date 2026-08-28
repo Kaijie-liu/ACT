@@ -262,3 +262,12 @@ new non-repeated unique `SAFE` samples. Below that threshold, F0 remains a forma
 ablation and the next code stage is the preregistered F1 two-segment fallback.
 Baseline reproduction, new training, and confirmatory ranks 100--199 remain
 paused.
+
+The first F0 launch at implementation HEAD `21bb1cf86a19b8355832c7a36358ef7ed9368f1d`
+was stopped after eight rows because the result serializer requested obsolete
+support metadata names (`complete_exact` and `gaps`) rather than the public
+`exact` and `solver_gap` fields. Pair propagation and optimization ran, but all
+eight rows were consequently mislabeled `UNKNOWN_WEIGHTED_NUMERICAL`; they are
+not scientific F0 results. The partial directory
+`data/moe/results/experiment1f0_bal010` is preserved and will not be overwritten.
+The corrected clean run writes to `data/moe/results/experiment1f0_bal010_r1`.
