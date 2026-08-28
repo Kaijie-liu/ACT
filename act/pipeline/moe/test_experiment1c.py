@@ -4,6 +4,7 @@ from unittest.mock import patch
 import torch
 
 from act.back_end.moe import GateKind, OutputMoEFactoryConfig, build_output_moe
+from act.pipeline.moe.audit_experiment1c import _wilson
 from act.pipeline.moe.experiment1c import (
     _branch_reason,
     _inferred_row,
@@ -13,6 +14,11 @@ from act.util.stats import VerifyResult, VerifyStatus
 
 
 class Experiment1CTests(unittest.TestCase):
+    def test_wilson_interval_contains_point_estimate(self):
+        lower, upper = _wilson(2, 20)
+        self.assertLess(lower, 0.1)
+        self.assertGreater(upper, 0.1)
+
     def test_exact_route_change_bracket_is_stable_then_unstable(self):
         model = build_output_moe(
             OutputMoEFactoryConfig(

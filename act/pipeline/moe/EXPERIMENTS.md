@@ -152,3 +152,52 @@ witness validation, taxonomy reason, and split timings.
 Ranks 100--199 remain untouched. They become the confirmatory cohort only after
 the taxonomy, support schedule, and any decision to add a restricted weighted
 top-2 McCormick fallback are frozen from these 20 diagnostics.
+
+## Experiment 1C diagnostic result
+
+The complete clean run used implementation HEAD
+`d275fef5901c17e38e8ad28466be2cb10182de0a` and produced 60 rows for 20 distinct
+samples. Every sample has exactly the three preregistered multipliers and every
+reported `UNSAFE` has a full-model forward-validated witness. Rank 10 retained a
+strict stable/unstable bracket after one numerically undecided midpoint; it is
+marked `bisection_complete=false` rather than claiming the requested precision.
+
+At the closest 1.01x radius, the sample-level outcomes are:
+
+| Outcome | Samples |
+|---|---:|
+| `SAFE_PROVED` | 2 |
+| `UNSAFE_FULL_FORWARD` | 4 |
+| `UNKNOWN_GATE_SUFFICIENCY` | 12 |
+| `UNKNOWN_SOLVER_LIMIT` | 1 |
+| `TIMEOUT_EXPERT_SOLVE` | 1 |
+
+Ranks 4 and 21 are the two route-unstable unique `SAFE` samples. The diagnostic
+yield is 2/20 = 10.0% (Wilson 95% interval 2.8%--30.1%). This is positive closure
+evidence, but it does not meet the preregistered requirement of at least 10 unique
+samples and must not be presented as a confirmatory population estimate.
+
+Across all 60 radii, the outcomes are 6 `SAFE`, 14 validated `UNSAFE`, 39
+`UNKNOWN`, and one `TIMEOUT`. Of the 40 unresolved rows, 38 (95%) are classified as
+gate-sufficiency or expert-witness-not-lifted incompleteness. This exceeds the
+one-third trigger for the restricted weighted top-2 fallback; increasing solver
+timeouts alone is therefore not the next action.
+
+True constraint-aware support was evaluated on 126 expert branches. It reduced
+the actual expert ReLU binary total from 1550 to 1159, eliminating 391 binaries
+(25.2%) across 74 branches. The per-branch width-ratio median is 0.867 (IQR
+0.602--1.000, p90 1.000), equivalently a median binary reduction of 13.3%. Support
+cost 107.8 seconds in aggregate. This supports guard-aware binary elimination as a
+secondary structural result, but no end-to-end runtime benefit is claimed without
+a matched no-support solve.
+
+The runner summary's `support_after_milp_unstable` field is three too high because
+layers fully stabilized by LP retained the pre-LP display value. Actual binary
+allocation and certificates are unaffected. The independent audit reconstructs
+the correct value as `1433 - 158 - 175 = 1100`; the reporting path is fixed for
+future runs.
+
+Decision: keep candidate reduction and route-unstable width separation as core
+results; retain guard-aware elimination as a secondary structural claim; implement
+the restricted weighted top-2 McCormick fallback before touching ranks 100--199.
+Official baseline training and new model sweeps remain paused.

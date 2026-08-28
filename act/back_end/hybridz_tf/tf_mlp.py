@@ -462,6 +462,7 @@ def _sparse_relu_bounds(hz: SparseHZono, input_bounds: Bounds, L, tf):
         stats.update(
             lp_selected=int(len(selected)),
             after_lp_unstable=int(after_lp.size),
+            after_milp_unstable=int(after_lp.size),
             lp_eliminated=int(fast_unstable.size - after_lp.size),
             lp_seconds=float(support.elapsed),
             lp_solves=int(support.solves),

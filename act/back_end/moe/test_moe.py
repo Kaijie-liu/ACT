@@ -227,6 +227,7 @@ class HZRoutingTests(unittest.TestCase):
         stats = tf.guarded_support_stats()[0]
         self.assertEqual(stats["fast_unstable"], 1)
         self.assertEqual(stats["after_lp_unstable"], 0)
+        self.assertEqual(stats["after_milp_unstable"], 0)
 
 
 class SchedulerTests(unittest.TestCase):
