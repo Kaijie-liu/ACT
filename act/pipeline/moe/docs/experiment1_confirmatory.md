@@ -117,3 +117,49 @@ Public baseline work unlocks only if all preregistered conditions pass:
 
 Failure does not trigger F1 automatically. The unresolved composition is
 reported before any method or model change.
+
+## Audited confirmatory outcome
+
+The corrected `_r1` run completed 400/400 census rows and 100/100 boundary
+rows at implementation HEAD `1a67922c4`. The independent audit found zero
+issues and replayed all 20 `UNSAFE` witnesses against the full selected-softmax
+model. The two known long-tail rows, ranks 155 and 171, were terminated at
+300.35 and 300.21 seconds and remained `TIMEOUT`; no late verdict was promoted.
+
+On the 86 fixed-radius route-unstable rows, exact router HZ reduced the IBP
+candidate set on 83 rows (96.5%, sample-cluster bootstrap 95% interval
+91.3%--100%) and reduced the ordinary-zonotope set on 75 rows (87.2%, interval
+77.8%--95.6%). The route-unstable width ratio had median 0.430, IQR
+0.386--0.473, and p90 0.530. Both candidate reduction and binary-width
+separation pass their preregistered thresholds.
+
+The route-boundary outcomes over the full 100-sample denominator were 36
+`SAFE`, 20 replayed `UNSAFE`, 40 `UNKNOWN`, and four `TIMEOUT`. All 36 safe
+samples are unique route-changing certificates: 36.0%, Wilson 95% interval
+27.3%--45.8%. Of these, five came from gate elimination and 31 from F0. This
+establishes the Route A unique-certificate claim for a route-boundary cohort; it
+is not a natural-input prevalence estimate.
+
+Rank 195 stopped bisection at an unresolved midpoint, but retained a strict
+stable/unstable bracket of width `1.5318627450980338e-05` and was evaluated at
+`1.05 * upper` exactly as preregistered; it finished `SAFE`.
+
+F0 was invoked on all 60 base semantic-incompleteness cases and resolved 43
+(71.7%): 31 new safe certificates and 12 full-forward unsafe witnesses. Its
+paired overhead had median 28.1 seconds, IQR 7.4--63.5, and p90 115.1 seconds.
+The 17 unresolved F0 cases comprise 14 weighted solver limits, one range-only
+relaxation unknown, and the two hard-deadline rows.
+
+Guard support closed `1610 = 1183 + 380 + 47` eliminated binaries over 903
+fixed-radius branches: 356 branches had an elimination, and aggregate expert
+width fell from 10076 to 8466 (16.0%). Support cost 706.3 seconds, or 0.439
+seconds per eliminated binary. On the 225 matched end-to-end branches, solved
+coverage rose from 83.1% without support to 89.3% with support. This supports a
+secondary guard-tightening result, not an unconditional runtime-speedup claim.
+
+The only failed GO condition is end-to-end solved rate: 56/100 = 56%, below the
+registered 60%. The 44 unresolved rows are 24 samples with no exact route
+boundary found within the preregistered search up to `4/255`, 14 weighted solver
+limits, two expert-solve timeouts, two hard deadlines, one base solver limit,
+and one F0 range-relaxation unknown. Therefore official baseline work remains
+locked. F1, new training, and larger runs are not started automatically.

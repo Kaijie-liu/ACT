@@ -396,3 +396,51 @@ The new config and preregistration are
 `experiment1_confirmatory_bal010_r1.json` and
 `experiment1_confirmatory_protocol_manifest_r1.json`. The full census is rerun
 under the corrected implementation so both stages share one frozen HEAD.
+
+## Experiment 1 confirmatory audited result
+
+The corrected `_r1` experiment completed under implementation HEAD
+`1a67922c43f4e21f526e3aa12ef7b2f4e3242cba`. Its independent audit reported
+zero issues and replayed all 20 unsafe witnesses against the full weighted
+selected-softmax model. Ranks 155 and 171 hit the enforced wall deadline at
+300.35 and 300.21 seconds; both remained `TIMEOUT`, with partial artifacts
+quarantined and no late verdict promoted.
+
+| Confirmatory endpoint | Result | Threshold | Decision |
+|---|---:|---:|---|
+| Exact < IBP on route-unstable rows | 83/86 = 96.5% | at least 20% | pass |
+| Exact < zonotope on route-unstable rows | 75/86 = 87.2% | at least 20% | pass |
+| Conditional width median / p90 | 0.430 / 0.530 | <0.7 / <1 | pass |
+| Unique route-changing SAFE | 36/100 = 36.0% | at least 10 and 10% | pass |
+| F0 semantic resolution | 43/60 = 71.7% | at least 25% | pass |
+| End-to-end solved | 56/100 = 56.0% | at least 60% | **fail** |
+| Independent audit / unsafe replay | 0 issues / 20 of 20 | 0 / all | pass |
+
+The unique-safe Wilson 95% interval is 27.3%--45.8%. Sample-cluster bootstrap
+95% intervals for candidate reduction are 91.3%--100% against IBP and
+77.8%--95.6% against ordinary zonotope. The route-unstable width IQR is
+0.386--0.473. These confirm candidate reduction, conditional binary-width
+separation, and the central Route A unique-certificate claim on the explicitly
+constructed route-boundary cohort.
+
+The sole incomplete bisection, rank 195, retained a strict stable/unstable
+bracket of width `1.5318627450980338e-05`, used `1.05 * upper`, and finished
+`SAFE`; it was not dropped or silently replaced.
+
+F0 added 31 safe certificates and 12 full-forward unsafe witnesses; 17 of its
+60 invocations remained unresolved. Its paired runtime overhead was median 28.1
+seconds (IQR 7.4--63.5, p90 115.1). Guard support eliminated 1610/10076 expert
+binaries (16.0%) across 356/903 branches. The accounting identity is
+`1610 = 1183 LP + 380 MILP + 47 structural/propagation`. Support used 706.3
+seconds, 0.439 seconds per eliminated binary, and improved matched branch solved
+coverage from 83.1% to 89.3%.
+
+The 44 unresolved rows comprise 24 samples with no route boundary found in the
+registered search through `4/255`, 14 weighted solver limits, two expert-solve
+timeouts, two hard deadlines, one base solver limit, and one weighted range
+relaxation unknown. Since solved rate is the only failed GO condition, public
+baseline reproduction remains locked. This result does not trigger F1, training,
+or a larger cohort automatically.
+
+The final machine-readable result and core artifact hashes are in
+`act/pipeline/moe/configs/experiment1_confirmatory_protocol_manifest_r1.json`.

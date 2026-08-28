@@ -1,6 +1,6 @@
 {
   "experiment": "experiment1_confirmatory_bal010_r1",
-  "status": "preregistered_hard_deadline_rerun_before_launch",
+  "status": "complete_audited_baseline_locked_by_solved_rate",
   "supersedes_failed_manifest": "act/pipeline/moe/configs/experiment1_confirmatory_protocol_manifest.json",
   "change_scope": "engineering-only hard enforcement of the already registered 300-second wall deadline",
   "scientific_configuration_changed": false,
@@ -55,6 +55,101 @@
     "all_unsafe_full_model_replayed": true,
     "guard_identity_closed": true,
     "silent_numerical_fallbacks": 0
+  },
+  "result": {
+    "implementation_head": "1a67922c43f4e21f526e3aa12ef7b2f4e3242cba",
+    "independent_audit_issues": 0,
+    "soundness_audit_passed": true,
+    "unsafe_rows": 20,
+    "unsafe_witnesses_full_model_replayed": 20,
+    "fixed_radius_census": {
+      "rows": 400,
+      "complete_rows": 400,
+      "route_unstable_rows": 86,
+      "exact_reduces_ibp_rows": 83,
+      "exact_reduces_ibp_rate": 0.9651162790697675,
+      "exact_reduces_ibp_cluster_bootstrap_95": [0.9130434782608695, 1.0],
+      "exact_reduces_zonotope_rows": 75,
+      "exact_reduces_zonotope_rate": 0.872093023255814,
+      "exact_reduces_zonotope_cluster_bootstrap_95": [0.7777777777777778, 0.9558863930187459],
+      "route_unstable_width_ratio": {
+        "median": 0.42997198879551823,
+        "q1": 0.3860496492174852,
+        "q3": 0.47268740031897927,
+        "p90": 0.5303308823529411
+      }
+    },
+    "route_boundary": {
+      "rows": 100,
+      "status_counts": {"SAFE": 36, "UNSAFE": 20, "UNKNOWN": 40, "TIMEOUT": 4},
+      "solved_rows": 56,
+      "solved_rate": 0.56,
+      "unique_safe_samples": 36,
+      "unique_safe_rate": 0.36,
+      "unique_safe_wilson_95": [0.2727122040140433, 0.4576459754839126],
+      "no_route_boundary_within_search": 24,
+      "strict_incomplete_bisection_ranks": [195],
+      "hard_deadline_timeouts": 2
+    },
+    "f0_increment": {
+      "base_semantic_incompleteness": 60,
+      "invoked": 60,
+      "resolved": 43,
+      "resolution_rate": 0.7166666666666667,
+      "added_safe": 31,
+      "added_full_forward_unsafe": 12,
+      "remaining_unknown_or_timeout": 17,
+      "runtime_overhead_seconds": {
+        "median": 28.107858187519014,
+        "q1": 7.43487137532793,
+        "q3": 63.50543600972742,
+        "p90": 115.11652759891004
+      }
+    },
+    "guard_support": {
+      "branches": 903,
+      "branches_with_elimination": 356,
+      "binaries_before": 10076,
+      "binaries_after": 8466,
+      "binary_eliminated": 1610,
+      "lp_support_eliminated": 1183,
+      "milp_support_eliminated": 380,
+      "structural_or_propagation_eliminated": 47,
+      "support_seconds": 706.3193449303508,
+      "seconds_per_eliminated_binary": 0.438707667658603,
+      "matched_no_support_solved_rate": 0.8311111111111111,
+      "support_solved_rate": 0.8933333333333333
+    },
+    "go_conditions": {
+      "passed": [
+        "independent_audit_zero_issues",
+        "all_unsafe_replayed",
+        "unique_safe_count",
+        "unique_safe_rate",
+        "candidate_reduction_ibp",
+        "candidate_reduction_zonotope",
+        "route_unstable_width_median",
+        "route_unstable_width_p90",
+        "f0_semantic_resolution",
+        "guard_identity_closed",
+        "no_silent_numerical_fallback"
+      ],
+      "failed": ["end_to_end_solved_rate"],
+      "public_baseline_unlocked": false
+    }
+  },
+  "artifact_sha256": {
+    "config.json": "456736d7166cde3c75b7e2be9764638d5717744219f0efc14432d5c6f749195f",
+    "sample_indices.json": "7dad79df206f3b11018d5d8429e95327d2f5bc2e6c534d01f6d0ac74cba0edab",
+    "census/results.jsonl": "1e9b7a2da128e42c5e58740b44f935ae456837e6ffcbc6eb05251ec31b0185bd",
+    "census/results.csv": "ae0cf6b7c7ba4d7c73418bf1807abee22e953429caaccf759114c80b63cda59e",
+    "census/summary.json": "d71bff0a46a67faace13e765ac3e71fe71c38012bfe7cd1b505e379ccc7c6395",
+    "census/census.log": "cb9f9b14e28222d7a6e271297282b05f787d2e4a3890b60990d586105351fbc6",
+    "boundary/results.jsonl": "c853f021f6401ef3f04c3b9cc7c193dd2c77fee7666e8abf120458920f97d48d",
+    "boundary/results.csv": "b9cdb9f35d66b439c392101dc8365aef3dd44f0ade473a9d8b8e9f73170461f2",
+    "boundary/summary.json": "699e0eb37f089fe8da623e4fc1ed582ce16bc6cf3a50d0fe133db6b26dd5bc0b",
+    "boundary/boundary.log": "f16418c7129e8302aaaf1bd75acb65bf85a43bb84decc5e489c32afafdda9e7d",
+    "independent_audit.json": "c604c6a4aeadbfcdc3f20ec1004d9eeadd4a31b9bb7fc246b61b25649942de63"
   },
   "post_failure_policy": "report_failure_composition_without_automatically_starting_F1_or_baselines"
 }
