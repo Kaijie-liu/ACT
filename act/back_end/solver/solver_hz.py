@@ -412,6 +412,8 @@ def _require_sparse() -> None:
 
 def _as_csr(mat, *, shape=None):
     _require_sparse()
+    if isinstance(mat, torch.Tensor):
+        mat = mat.detach().cpu().numpy()
     out = mat if sp.issparse(mat) else sp.csr_matrix(mat, dtype=np.float64)
     out = out.tocsr().astype(np.float64)
     if shape is not None and out.shape != shape:
@@ -1803,7 +1805,12 @@ def hz_add_output_inequalities(
             raise ValueError(
                 f"output inequality shape mismatch: A={A_sp.shape}, n_out={hz.n_out}"
             )
-        rhs_np = np.asarray(rhs, dtype=np.float64).reshape(-1)
+        rhs_np = (
+            rhs.detach().cpu().numpy()
+            if isinstance(rhs, torch.Tensor)
+            else np.asarray(rhs)
+        )
+        rhs_np = np.asarray(rhs_np, dtype=np.float64).reshape(-1)
         if rhs_np.size != A_sp.shape[0]:
             raise ValueError("output inequality rhs shape mismatch")
         if new_binary_coefficients is None:
