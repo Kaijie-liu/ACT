@@ -201,3 +201,17 @@ Decision: keep candidate reduction and route-unstable width separation as core
 results; retain guard-aware elimination as a secondary structural claim; implement
 the restricted weighted top-2 McCormick fallback before touching ranks 100--199.
 Official baseline training and new model sweeps remain paused.
+
+The independent audit implementation was committed at
+`a51df8d0067b538dc75b9200702fa50782dc82e9`. Its report has no integrity issues
+and is saved with the raw results. Frozen result hashes are:
+
+| Artifact | SHA-256 |
+|---|---|
+| `config.json` | `1457ef26d8e3192ee71e52cac83c7182eb3786503799baddd67bd6304f064450` |
+| `selection.json` | `8c16269d9366b2f234e9b349c7b97c49d23d5b2b0c61c79d174231b2f718390f` |
+| `diagnostics.jsonl` | `1daa8ef2ceb06b248fb92b38fbeead6445b2fd97a81ec00d96302be93ec2f4bc` |
+| `diagnostics.csv` | `757884616b98add5c477cd55f7502f048d8b923712ea6ede3090fec8e32e150a` |
+| `summary.json` | `ee42d732d66af35eb87e2ed0388270cd037f30875e0ebf064bf6bc489ecaa6fa` |
+| `experiment1c.log` | `6172e116639f67eaf76bd3e05237f881755a82a620321b2542e639c1a773e9fa` |
+| `independent_audit.json` | `0be4d4eb9875bad7753229ef23ae1740069786507050afd034dff845d9b69af0` |
