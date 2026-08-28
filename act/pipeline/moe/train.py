@@ -9,13 +9,14 @@
 from __future__ import annotations
 
 import argparse
+import math
 from dataclasses import asdict
 from pathlib import Path
 from typing import Any
 
 import torch
 import torch.nn.functional as F
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, random_split
 
 from act.back_end.moe import GateKind, OutputMoEFactoryConfig, build_output_moe
 from act.util.path_config import get_project_root, get_torchvision_data_root
@@ -92,11 +93,35 @@ def evaluate(model, loader, device: torch.device) -> dict[str, Any]:
             decision.indices.detach().cpu().reshape(-1),
             minlength=model.spec.num_experts,
         )
+    selection_total = max(int(route_counts.sum().item()), 1)
+    route_frequencies = route_counts.double() / selection_total
+    positive = route_frequencies > 0
+    load_entropy = float(
+        -(route_frequencies[positive] * route_frequencies[positive].log()).sum().item()
+    )
     return {
         "accuracy": correct / max(total, 1),
         "route_counts": route_counts.tolist(),
+        "route_frequencies": route_frequencies.tolist(),
+        "load_entropy": load_entropy,
+        "effective_experts": math.exp(load_entropy),
+        "max_expert_load": float(route_frequencies.max().item()),
+        "min_expert_load": float(route_frequencies.min().item()),
         "samples": total,
     }
+
+
+def _balance_loss(decision, num_experts: int, kind: str) -> torch.Tensor:
+    mean_probability = torch.softmax(decision.scores, dim=-1).mean(dim=0)
+    if kind == "switch":
+        selection_frequency = torch.bincount(
+            decision.indices.reshape(-1), minlength=num_experts
+        ).to(mean_probability.dtype)
+        selection_frequency = selection_frequency / max(decision.indices.numel(), 1)
+        return num_experts * (selection_frequency.detach() * mean_probability).sum()
+    if kind == "probability":
+        return num_experts * mean_probability.square().sum()
+    raise ValueError(f"unknown balance loss {kind}")
 
 
 def train(args) -> Path:
@@ -114,19 +139,38 @@ def train(args) -> Path:
         seed=args.seed,
     )
     model = build_output_moe(config).to(device)
-    train_data = _load_dataset(args.dataset, True, args.download)
+    full_train_data = _load_dataset(args.dataset, True, args.download)
     test_data = _load_dataset(args.dataset, False, args.download)
+    if not 0.0 < args.validation_fraction < 1.0:
+        raise ValueError("validation_fraction must be strictly between 0 and 1")
+    validation_size = max(1, int(round(len(full_train_data) * args.validation_fraction)))
+    training_size = len(full_train_data) - validation_size
+    if training_size < 1:
+        raise ValueError("validation split leaves no training samples")
+    split_generator = torch.Generator().manual_seed(args.seed)
+    train_data, validation_data = random_split(
+        full_train_data,
+        (training_size, validation_size),
+        generator=split_generator,
+    )
     loader_args = {
         "batch_size": args.batch_size,
         "num_workers": args.workers,
         "pin_memory": device.type == "cuda",
     }
-    train_loader = DataLoader(train_data, shuffle=True, **loader_args)
+    shuffle_generator = torch.Generator().manual_seed(args.seed)
+    train_loader = DataLoader(
+        train_data, shuffle=True, generator=shuffle_generator, **loader_args
+    )
+    validation_loader = DataLoader(validation_data, shuffle=False, **loader_args)
     test_loader = DataLoader(test_data, shuffle=False, **loader_args)
     optimizer = torch.optim.AdamW(
         model.parameters(), lr=args.learning_rate, weight_decay=args.weight_decay
     )
 
+    best_epoch = 0
+    best_validation_metrics: dict[str, Any] | None = None
+    best_state: dict[str, torch.Tensor] | None = None
     for epoch in range(1, args.epochs + 1):
         model.train()
         running_loss = correct = total = 0
@@ -135,20 +179,48 @@ def train(args) -> Path:
             optimizer.zero_grad(set_to_none=True)
             outputs, decision = model.forward_with_routing(inputs)
             classification = F.cross_entropy(outputs, labels)
-            mean_probability = torch.softmax(decision.scores, dim=-1).mean(dim=0)
-            balance = model.spec.num_experts * mean_probability.square().sum()
+            balance = _balance_loss(
+                decision, model.spec.num_experts, args.balance_loss
+            )
             loss = classification + args.balance_coefficient * balance
             loss.backward()
             optimizer.step()
             running_loss += float(loss.item()) * labels.numel()
             correct += int((outputs.argmax(dim=-1) == labels).sum().item())
             total += int(labels.numel())
-        metrics = evaluate(model, test_loader, device)
+        metrics = evaluate(model, validation_loader, device)
+        if (
+            best_validation_metrics is None
+            or metrics["accuracy"] > best_validation_metrics["accuracy"]
+        ):
+            best_epoch = epoch
+            best_validation_metrics = metrics
+            best_state = {
+                key: value.detach().cpu().clone()
+                for key, value in model.state_dict().items()
+            }
         print(
             f"epoch={epoch:03d} loss={running_loss / max(total, 1):.5f} "
             f"train_acc={correct / max(total, 1):.4f} "
-            f"test_acc={metrics['accuracy']:.4f} routes={metrics['route_counts']}"
+            f"val_acc={metrics['accuracy']:.4f} routes={metrics['route_counts']}"
         )
+
+    if best_state is None or best_validation_metrics is None:
+        raise RuntimeError("training produced no validation checkpoint")
+    model.load_state_dict(best_state)
+    model.to(device)
+    test_metrics = evaluate(model, test_loader, device)
+    print(
+        f"best_epoch={best_epoch:03d} "
+        f"best_val_acc={best_validation_metrics['accuracy']:.4f} "
+        f"test_acc={test_metrics['accuracy']:.4f} "
+        f"routes={test_metrics['route_counts']} "
+        f"route_frequencies={test_metrics['route_frequencies']} "
+        f"load_entropy={test_metrics['load_entropy']:.6f} "
+        f"effective_experts={test_metrics['effective_experts']:.4f} "
+        f"max_load={test_metrics['max_expert_load']:.6f} "
+        f"min_load={test_metrics['min_expert_load']:.6f}"
+    )
 
     output = Path(args.output)
     if not output.is_absolute():
@@ -165,7 +237,15 @@ def train(args) -> Path:
             "dataset": args.dataset,
             "factory_config": payload_config,
             "state_dict": model.state_dict(),
-            "test_metrics": evaluate(model, test_loader, device),
+            "validation_metrics": best_validation_metrics,
+            "test_metrics": test_metrics,
+            "training_config": {
+                "balance_loss": args.balance_loss,
+                "balance_coefficient": args.balance_coefficient,
+                "validation_fraction": args.validation_fraction,
+                "best_epoch": best_epoch,
+                "seed": args.seed,
+            },
         },
         output,
     )
@@ -187,7 +267,14 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--batch-size", type=int, default=256)
     parser.add_argument("--learning-rate", type=float, default=1e-3)
     parser.add_argument("--weight-decay", type=float, default=1e-4)
+    parser.add_argument(
+        "--balance-loss",
+        choices=("switch", "probability"),
+        default="switch",
+        help="Switch selection/probability balance or the legacy probability-only loss",
+    )
     parser.add_argument("--balance-coefficient", type=float, default=1e-2)
+    parser.add_argument("--validation-fraction", type=float, default=0.1)
     parser.add_argument("--workers", type=int, default=4)
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--device", default="auto", help="auto, cpu, cuda, or cuda:N")

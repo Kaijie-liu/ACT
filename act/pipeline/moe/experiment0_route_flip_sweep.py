@@ -9,7 +9,7 @@ from types import SimpleNamespace
 
 import torch
 
-from act.pipeline.moe.route_flips import run
+from act.pipeline.moe.route_flips import RESULT_FIELDNAMES, run
 
 
 EPSILONS = (0.007843137, 0.015686275, 0.031372549)
@@ -18,12 +18,7 @@ FIELDNAMES = (
     "epsilon",
     "objective",
     "step_size",
-    "samples",
-    "route_flip_rate",
-    "prediction_flip_rate",
-    "both_rate",
-    "route_only_rate",
-    "prediction_only_rate",
+    *RESULT_FIELDNAMES,
 )
 
 
