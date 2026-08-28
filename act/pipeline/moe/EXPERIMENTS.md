@@ -271,3 +271,61 @@ eight rows were consequently mislabeled `UNKNOWN_WEIGHTED_NUMERICAL`; they are
 not scientific F0 results. The partial directory
 `data/moe/results/experiment1f0_bal010` is preserved and will not be overwritten.
 The corrected clean run writes to `data/moe/results/experiment1f0_bal010_r1`.
+
+## Experiment 1F0 diagnostic result
+
+The corrected run used implementation HEAD
+`7f6d36b415a080a5b47b0f4f0c12c3686266f2a2` and completed all 38 frozen parent
+rows, representing 14 distinct clean samples. This is a selected
+semantic-incompleteness diagnostic cohort, not a natural-sample prevalence
+cohort. The results are:
+
+| Result | Rows |
+|---|---:|
+| `SAFE_WEIGHTED_RANGE` | 26 |
+| `UNSAFE_FULL_FORWARD_FALLBACK` | 5 |
+| `UNKNOWN_WEIGHTED_RELAXATION` | 4 |
+| `UNKNOWN_WEIGHTED_SOLVER_LIMIT` | 3 |
+
+F0 resolved 31/38 rows (81.6%). It added nine non-repeated unique `SAFE` sample
+ranks: `0, 7, 11, 13, 15, 20, 22, 36, 47`. These are closure cases selected from
+previously unresolved rows; 9/14 must not be reported as a population estimate.
+The five unsafe rows occur on ranks 8, 25, and 33. Every unsafe result has a saved
+concrete input and was independently replayed against the full selected-softmax
+model.
+
+By parent taxonomy, the 34 `UNKNOWN_GATE_SUFFICIENCY` rows became 24 `SAFE`, three
+validated `UNSAFE`, and seven still `UNKNOWN`. The four
+`UNKNOWN_EXPERT_WITNESS_NOT_LIFTED` rows became two `SAFE` and two validated
+`UNSAFE`. No pair-level exception or numerical result remained in the corrected
+run.
+
+Total per-row time was 1056.0 seconds: 32.5 seconds candidate enumeration, 124.7
+seconds guarded expert propagation/tightening, and 852.0 seconds property solving.
+Median row time was 14.0 seconds and the 90th percentile was 60.7 seconds. The
+three solver-limit rows all belong to rank 38. F0 therefore has a localized
+budget long tail rather than a cohort-wide solver failure.
+
+The independent audit reported zero issues. It checked all 26 safe rows for
+complete exact-pair coverage and all nine class-margin properties per pair, and it
+replayed all five unsafe witnesses. The preregistered threshold (at least 10
+resolved rows or at least two new unique safe samples) is passed on both criteria.
+Decision: freeze F0 as the restricted weighted fallback; retain the seven
+unresolved rows as its range-only/solver-limit ablation boundary; do not implement
+or run F1 unless a later frozen evaluation requires more resolution. Confirmatory
+ranks 100--199, baseline reproduction, and training remain paused pending the
+next explicit stage decision.
+
+The tracked machine-readable result manifest is
+`act/pipeline/moe/configs/experiment1f0_bal010_manifest.json`. Core artifact
+hashes are:
+
+| Artifact | SHA-256 |
+|---|---|
+| `config.json` | `3d44ff3016a6ec8d4a18d17d0807557a4721fd39c233b6aa3110b02bc29a3787` |
+| `selection.json` | `48e4dd4713acdcaaae3a8ff63bc690e5f944e2584d8d125eeba2af4d3c8a93aa` |
+| `results.jsonl` | `a1da40c7ecbdb3b64ad86d825b41720265f97c7a08713b138e6d09523ca51057` |
+| `results.csv` | `cf8ad59948dc176e666532987129d1bed50cd53f3489871247fa3e7f6d8bcb33` |
+| `summary.json` | `3585df86bc9e692b15b95966c00f3b02de520d37c5b883cbefb474d79332effa` |
+| `experiment1f0.log` | `0d3c085e0b0071e0b4b853ec35ced3b56d776889059a8a36cd1354877d696bfe` |
+| `independent_audit.json` | `84cdc1879a38b593192c0b06cf459dfe587968228e7c6febb488a9ceead9b619` |

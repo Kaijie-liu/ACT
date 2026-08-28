@@ -141,6 +141,24 @@ rows to be labeled numerical. No verdict from that directory is used. The fixed
 runner has a regression test for the public support-result fields and writes a
 clean, non-overwriting run to `experiment1f0_bal010_r1`.
 
+## F0 diagnostic outcome
+
+The corrected frozen run completed 38 rows from 14 samples and resolved 31 rows:
+26 `SAFE_WEIGHTED_RANGE`, five independently replayed
+`UNSAFE_FULL_FORWARD_FALLBACK`, four `UNKNOWN_WEIGHTED_RELAXATION`, and three
+`UNKNOWN_WEIGHTED_SOLVER_LIMIT`. There were no numerical/backend rows.
+
+Nine non-repeated sample ranks gained a weighted F0 certificate. Because all
+parents were selected specifically for prior semantic incompleteness, this is a
+fallback-resolution result and not a population prevalence estimate. The
+independent audit found zero soundness or artifact-linkage issues and replayed all
+five saved concrete witnesses.
+
+F0 passes both preregistered continuation criteria: 31 resolved rows exceeds 10,
+and nine new unique safe samples exceeds two. The range-only configuration is
+therefore frozen. F1 remains a documented but unimplemented ablation and is not
+triggered by this diagnostic.
+
 ## F1 boundary
 
 F1 may split the margin at zero or other preregistered cut points, reuse ACT's
