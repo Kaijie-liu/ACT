@@ -52,6 +52,39 @@ class Experiment1CTests(unittest.TestCase):
         )
         self.assertEqual(reason, "UNKNOWN_GATE_SUFFICIENCY")
 
+    def test_large_input_route_bracket_avoids_degenerate_point_propagation(self):
+        model = build_output_moe(
+            OutputMoEFactoryConfig(
+                input_shape=(1025,),
+                num_classes=2,
+                num_experts=2,
+                top_k=1,
+                gate=GateKind.HARD_TOP1,
+                router_hidden=(),
+                expert_hidden=(),
+                seed=0,
+            )
+        ).double()
+        with torch.no_grad():
+            linear = model.router[1]
+            linear.weight.zero_()
+            linear.weight[0, 0] = 1.0
+            linear.bias.copy_(torch.tensor([-0.25, 0.0], dtype=torch.float64))
+        bracket = exact_route_change_bracket(
+            model,
+            torch.zeros(1, 1025, dtype=torch.float64),
+            [1],
+            0.5,
+            steps=2,
+            query_timeout=2.0,
+        )
+        self.assertEqual(
+            bracket["history"][0]["certificate"],
+            "strict_clean_router_margin",
+        )
+        self.assertEqual(bracket["lower_status"], "stable")
+        self.assertEqual(bracket["upper_status"], "unstable")
+
     def test_safe_monotonic_inference_points_to_source_radius(self):
         source = {
             "status": "SAFE",

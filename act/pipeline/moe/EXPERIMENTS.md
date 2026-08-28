@@ -54,6 +54,14 @@ Experiment 1C diagnoses solver censoring before any weighted-gate fallback is
 implemented. Its tracked configuration is
 `act/pipeline/moe/configs/experiment1c_bal010.json`.
 
+The first launch at implementation HEAD `4ad8181ca9a0c79d5a6c5973716d4d24a75ab9ff`
+stopped before its first result row because a zero-radius, 3072-dimensional point
+box was not retained by the sparse HybridZ propagation path. Its audit files are
+preserved in `data/moe/results/experiment1c_bal010`. The bracket now certifies the
+zero-radius endpoint from the strict concrete router margin and uses exact sparse
+HZ feasibility only at positive radii. The corrected run writes to
+`data/moe/results/experiment1c_bal010_r1`; it does not overwrite the failed launch.
+
 ### Deterministic diagnostic cohort
 
 Select the first 20 **distinct sample ranks** after sorting the frozen fixed-radius
@@ -128,12 +136,12 @@ Run with:
 ```
 
 The runner incrementally flushes
-`data/moe/results/experiment1c_bal010/diagnostics.jsonl` and
-`diagnostics.csv`, and writes `selection.json`, `config.json`, `summary.json`, and
-`experiment1c.log`. Existing outputs are never overwritten. Each branch records
-candidate and feasible route sets, solver stages, a labeled fast-HZ property lower
-bound, guarded-support metadata, binary widths before and after guard-aware
-support, witness validation, taxonomy reason, and split timings.
+`diagnostics.jsonl` and `diagnostics.csv`, and writes `selection.json`,
+`config.json`, `summary.json`, and `experiment1c.log` under the configured output
+directory. Existing outputs are never overwritten. Each branch records candidate
+and feasible route sets, solver stages, a labeled fast-HZ property lower bound,
+guarded-support metadata, binary widths before and after guard-aware support,
+witness validation, taxonomy reason, and split timings.
 
 Ranks 100--199 remain untouched. They become the confirmatory cohort only after
 the taxonomy, support schedule, and any decision to add a restricted weighted

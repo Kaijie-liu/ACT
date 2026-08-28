@@ -227,14 +227,34 @@ def exact_route_change_bracket(
     """Return a certified stable/unstable bracket for top-k set change."""
     clean = tuple(sorted(int(value) for value in clean_set))
     lower, upper = 0.0, float(initial_upper)
-    lower_report = _router_route_change(
-        model, x, clean, lower, query_timeout=query_timeout
-    )
+    with torch.no_grad():
+        scores = model.router(x).reshape(-1)
+    order = torch.argsort(scores, descending=True, stable=True)
+    concrete_set = tuple(sorted(int(value) for value in order[: model.spec.top_k]))
+    if concrete_set != clean:
+        raise RuntimeError("clean route set disagrees with router scores")
+    if model.spec.top_k < model.spec.num_experts:
+        point_margin = float(
+            (
+                scores[order[model.spec.top_k - 1]]
+                - scores[order[model.spec.top_k]]
+            ).item()
+        )
+    else:
+        point_margin = float("inf")
+    if point_margin <= 0.0:
+        raise RuntimeError("clean point has a top-k boundary tie")
+    lower_report = {
+        "status": "stable",
+        "entering_experts": [],
+        "branch_statuses": {},
+        "elapsed": 0.0,
+        "certificate": "strict_clean_router_margin",
+        "router_margin": point_margin,
+    }
     upper_report = _router_route_change(
         model, x, clean, upper, query_timeout=query_timeout
     )
-    if lower_report["status"] != "stable":
-        raise RuntimeError("clean point is not uniquely route-set stable")
     if upper_report["status"] != "unstable":
         raise RuntimeError("initial route-radius upper endpoint is not unstable")
     history = [
