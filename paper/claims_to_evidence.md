@@ -350,19 +350,29 @@ The partial matrix and snowball artifacts are:
 
 Both are explicitly labeled `PARTIAL_RETRIEVAL_NO_PREVALENCE`.
 
-## Pending evaluation slots
+## Executed comparisons and pending evaluation slots
 
-The following positions are deliberately present but contain no result.
+The remaining empty positions are kept explicit rather than inferred from
+mechanism tests.
 
-### P0a: explicit end-to-end route-invariance baseline — pending data
+### P0a: explicit end-to-end route-invariance baseline — complete
 
-P0a will run on confirmatory ranks 100--199. Exact tie-inclusive feasible
-unordered top-2 set uniqueness is the precondition. If uniqueness fails, the
-baseline returns `UNKNOWN`; it must not substitute another condition. Only a
-precondition-satisfying sample proceeds through the same expert/property backend
-as Route A. The eventual table must report coverage over all 100 samples,
-runtime, and Route A-only certificates. **No P0a result has been executed or is
-claimed here.**
+P0a ran on all confirmatory ranks 100--199. Exact tie-inclusive feasible
+unordered top-2 set uniqueness held for 24/100 samples and failed for 76/100.
+The explicit route-invariance baseline solved 12/100 (2 SAFE and 10
+full-forward UNSAFE), while staged Route A solved 68/100 on the same endpoints
+(38 SAFE and 30 full-forward UNSAFE), a paired coverage gain of 56 samples.
+All 36 route-changing SAFE samples are Route A-only. The independent audit
+reports zero issues and replays all 30 Route A UNSAFE witnesses through the
+complete selected-softmax model.
+
+Accounted time is 1,956.5 seconds for route invariance and 8,836.5 seconds for
+Route A. This is a coverage-cost result, not a Route A speedup: the baseline is
+cheaper because it abandons the 76 route-unstable endpoints. The comparison
+artifact is
+`act/pipeline/moe/results/route_invariance_baseline_confirmatory_20260829.json`
+at commit `2172a381e`. It does not overwrite the immutable confirmatory
+`56/100` endpoint.
 
 ### P0b: four-adapter consistency cohort — pending data
 
@@ -377,17 +387,23 @@ It is an adapter consistency and guard-retention comparison. The existing toy
 eta conformance and guarded-box timing benchmark are not P0b results. **No P0b
 certificate or ordering number is claimed here.**
 
-### B1: official-code RT-ER reproduction — pending data
+### B1: official-code RT-ER reproduction — environment ready, data pending
 
 The official repository is frozen at
 `30ef94d77b5451595b82e739aa8938e1f4c4521f`. Its exact author-pinned environment
 imports, but PyTorch 2.4.0+cu121 supports CUDA architectures only through
 `sm_90`, while the available Blackwell GPU is `sm_120`; the first CUDA tensor
-kernel fails. Dataset conversion, training, checkpoint telemetry, theorem
-instantiation, and official-scale verification did not start. The compatibility
-artifact is
+kernel fails. That exact-pin incompatibility remains an artifact-rot result.
+An isolated Blackwell-compatible environment separately passed a deterministic
+synthetic FFCV forward/backward smoke on the official MoE-ResNet18 architecture;
+it requires an explicitly recorded JPEG-library preload and is labeled
+`official-code, Blackwell-compatible deps + FFCV`. Dataset conversion, training,
+checkpoint telemetry, theorem instantiation, and official-scale verification
+still have not started. The exact-pin artifact is
 `act/pipeline/moe/results/baseline/icml2025_rt_er_author_pin_probe_20260829.json`
-at commit `291c6dfee9d68c6f025e240013f95b7ecbb1ab8e`.
+at commit `291c6dfee9d68c6f025e240013f95b7ecbb1ab8e`; the compatibility smoke is
+`act/pipeline/moe/results/environments/rt_er_blackwell_compatibility_smoke_20260829.json`
+at commit `5ba952d1d`.
 
 Any later Blackwell-compatible run must be labeled separately from the exact-pin
 probe. The official project releases training/model code but no checkpoint and
