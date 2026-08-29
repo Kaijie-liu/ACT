@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "status": "PREREGISTERED_NOT_RUN",
+  "label": "official-code, Blackwell-compatible deps + FFCV",
+  "checkpoint": {
+    "seed": 0,
+    "epoch": 130,
+    "selection": "final scheduled checkpoint; no best-epoch selection"
+  },
+  "selection": {
+    "dataset": "official torchvision CIFAR10 test",
+    "samples": 20,
+    "policy": "first deterministic clean-correct indices with a finite exact route boundary and 1.05 times upper bracket within cap",
+    "route_radius_multiplier": 1.05,
+    "route_radius_cap_over_255": 8.0,
+    "denominator": "all 20 selected route-boundary samples"
+  },
+  "applicability_epsilon_over_255": [0.25, 0.5, 1.0, 2.0, 4.0, 8.0],
+  "routing": {
+    "router": "folded affine 3072-to-4",
+    "tie_semantics": "ANY_LEGAL_TOPK",
+    "feasibility_time_limit_seconds": 30.0,
+    "hull_backend": "highspy incremental coordinate support",
+    "hull_time_limit_seconds": 120.0,
+    "incomplete_hull_policy": "sound unconditioned generator fallback per incomplete coordinate"
+  },
+  "formula": {
+    "implementation": "ACT reimplementation of author-paper Theorem 5.4 Equation (8)",
+    "providers": [
+      "SOUND_GLOBAL_SPECTRAL",
+      "AUTHOR_UNSPECIFIED"
+    ],
+    "readings": [
+      "continuous softmax router plus expert probabilities",
+      "released hard argmax router plus raw expert logits"
+    ],
+    "smallest_radius_over_255": 0.25,
+    "empirical_gradients_enabled": false
+  },
+  "crown": {
+    "environment": "/data1/Kane/MOE/envs/alpha-beta-crown",
+    "method": "CROWN",
+    "device": "cuda",
+    "input": "guarded coordinate box hull",
+    "negative_bound_semantics": "UNKNOWN_NEVER_UNSAFE",
+    "positive_bound_semantics": "CERTIFIED_MARGIN_FILTER_NOT_FORMAL_SAFE"
+  },
+  "numerical": {
+    "safe_positive_margin": 1e-07,
+    "outward_rounded_crown_safe_enabled": false,
+    "full_forward_replay_required_for_unsafe": true
+  },
+  "comparisons": [
+    "route-invariance baseline with identical CROWN expert backend",
+    "exact route candidates plus per-expert guarded-hull CROWN",
+    "paper formula with provider and semantic-reading labels"
+  ],
+  "monolithic": {
+    "enabled_in_this_runner": false,
+    "reason": "separate frozen CPU experiment after B1 to avoid training interference"
+  }
+}

@@ -1009,6 +1009,30 @@ endpoint, not the completed single-seed or multi-seed result. Its compact
 manifest is
 `act/pipeline/moe/results/icml2025_rt_er/seed0_epoch010_route_telemetry_20260830.json`.
 
+## ICML 2025 B3 executable comparison stage
+
+The final-checkpoint B3 execution layer is implemented but not run. It freezes
+the first 20 deterministic clean-correct test indices whose exact affine route
+upper bracket remains within the 8/255 cap after multiplication by 1.05. For
+each input it builds every tie-inclusive hard-top1 guard, decides candidate
+feasibility, constructs a guarded coordinate hull with the incremental LP
+backend, and serializes immutable boxes for a separate CROWN-environment worker.
+The route-invariance baseline and Route A therefore use the same expert backend;
+their applicability difference comes only from the former's route-stability
+precondition.
+
+The same runner instantiates Equation (8) under three provenance-preserving
+families: sound global constants for a continuous-softmax/probability reading,
+the released hard-argmax/raw-logit reading, and author-unspecified constants.
+It assigns the preregistered five-leaf outcome per input and never silently
+equates the continuous surrogate with the released hard-dispatch program. The
+CROWN worker retains the existing numerical discipline: positive raw
+auto_LiRPA margins are `CERTIFIED_MARGIN_FILTER_NOT_FORMAL_SAFE`, negative
+bounds are `UNKNOWN`, and `UNSAFE` requires a concrete full-model replay. Thus
+the code can collect conformance data now but cannot manufacture the missing
+outward-rounded formal endpoint. The monolithic CPU comparison remains a
+separate post-B1 experiment and is disabled in this runner.
+
 ## N1 engineering rerun code freeze
 
 The N1 performance runner freezes the original 20-row applicable-unresolved
