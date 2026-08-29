@@ -32,6 +32,7 @@ from act.back_end.moe import (
     analyze_topk_sets,
     build_act_moe_program,
     build_weighted_top2_f0,
+    compute_weighted_top2_gate_range,
     condition_topk_set,
     guarded_input_topk_set,
     linear_safety_rows,
@@ -367,6 +368,14 @@ def _run_parent_row(
                 propagated.expert_a.elapsed + propagated.expert_b.elapsed
             )
             total_tightening += tightening
+            margin_started = time.monotonic()
+            gate_range = compute_weighted_top2_gate_range(
+                conditioned_router,
+                pair,
+                time_limit=float(solver["margin_support_seconds"]),
+            )
+            margin_elapsed = time.monotonic() - margin_started
+            total_solve += margin_elapsed
             for property_index, (q, constant) in enumerate(properties):
                 property_started = time.monotonic()
                 encoding = build_weighted_top2_f0(
@@ -375,10 +384,10 @@ def _run_parent_row(
                     pair,
                     q,
                     constant,
-                    margin_time_limit=float(solver["margin_support_seconds"]),
                     difference_time_limit=float(
                         solver["difference_support_seconds"]
                     ),
+                    gate_range=gate_range,
                 )
                 decision = solve_weighted_top2_f0(
                     encoding,
@@ -499,6 +508,10 @@ def _run_parent_row(
                     "expert_b_private_binary": propagated.joint.b_private_binary,
                     "expert_a_support": _support_record(propagated.expert_a),
                     "expert_b_support": _support_record(propagated.expert_b),
+                    "margin_support": _support_status(
+                        gate_range.margin_support
+                    ),
+                    "margin_support_seconds": margin_elapsed,
                     "property_rows": property_rows,
                     "seconds": time.monotonic() - pair_started,
                 }

@@ -15,7 +15,9 @@ contract in
   selected-expert probability scaling as concrete PyTorch semantics;
 - program-level MoE IR composed of one router `Net` and one `Net` per expert;
 - tie-safe membership semantics: expert `i` may occur in any legal top-k set;
-- correlation-preserving HZ support bounds for safe pairwise `M[j,i]` values;
+- sound generator support bounds for safe pairwise `M[j,i]` values (constraint-
+  optimized tightening remains a performance improvement, not a soundness
+  requirement);
 - exact top-k membership intersection with at most `E-1` new binaries;
 - exact candidate feasibility through the open SciPy/HiGHS MILP path;
 - propagation of the route guard back to the input HZ and into a separately
@@ -24,6 +26,8 @@ contract in
   for weighted MoEs;
 - hard top-1 counterexamples are reported only after the concrete full model
   selects the assumed expert and violates the output property.
+- exact affine hard-top1 route-boundary geometry, including input clipping and
+  explicit folding of input normalization.
 
 Route B (intermediate weighted layers, history-budgeted union/merge, and
 route-preserving merge tests) is intentionally not included in this first slice.

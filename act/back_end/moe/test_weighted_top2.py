@@ -1,11 +1,13 @@
 # ===- act/back_end/moe/test_weighted_top2.py - Weighted Fallback Tests -====#
 
 import unittest
+from unittest.mock import patch
 
 import numpy as np
 import scipy.sparse as sp
 import torch
 
+import act.back_end.moe.weighted_top2 as weighted_top2_module
 from act.back_end.core import Bounds
 from act.back_end.moe.hz_routing import (
     analyze_topk_sets,
@@ -14,6 +16,7 @@ from act.back_end.moe.hz_routing import (
 from act.back_end.moe.weighted_top2 import (
     UNKNOWN_WEIGHTED_RELAXATION,
     build_weighted_top2_f0,
+    compute_weighted_top2_gate_range,
     mccormick_contains,
     mccormick_inequalities,
     shared_input_pair_hz,
@@ -57,7 +60,7 @@ def _expert_with_private_factors(entry, private_cont, private_binary):
     )
 
 
-def _equal_expert_encoding(offset=0.0):
+def _equal_expert_components(offset=0.0):
     entry = sparse_hz_from_bounds(
         Bounds(torch.tensor([[-1.0]]), torch.tensor([[1.0]])),
         frame_id=31,
@@ -78,6 +81,11 @@ def _equal_expert_encoding(offset=0.0):
         frame_id=entry.frame_id,
         exact=True,
     )
+    return pair, router
+
+
+def _equal_expert_encoding(offset=0.0):
+    pair, router = _equal_expert_components(offset)
     return build_weighted_top2_f0(
         pair,
         router,
@@ -95,6 +103,89 @@ class WeightedTop2FallbackTests(unittest.TestCase):
         self.assertEqual(encoding.margin_bounds, (0.0, 0.0))
         self.assertEqual(encoding.bounds.lambda_lower, 0.5)
         self.assertEqual(encoding.bounds.lambda_upper, 0.5)
+
+    def test_gate_range_is_reused_without_changing_the_encoding(self):
+        pair_hz, router = _equal_expert_components(offset=0.25)
+        legacy = build_weighted_top2_f0(
+            pair_hz,
+            router,
+            (0, 1),
+            [1.0],
+            0.0,
+            margin_time_limit=2.0,
+            difference_time_limit=2.0,
+        )
+        with patch.object(
+            weighted_top2_module,
+            "hz_support_bounds",
+            wraps=weighted_top2_module.hz_support_bounds,
+        ) as support:
+            gate_range = compute_weighted_top2_gate_range(
+                router,
+                (0, 1),
+                time_limit=2.0,
+            )
+            cached = build_weighted_top2_f0(
+                pair_hz,
+                router,
+                (0, 1),
+                [1.0],
+                0.0,
+                difference_time_limit=2.0,
+                gate_range=gate_range,
+            )
+            build_weighted_top2_f0(
+                pair_hz,
+                router,
+                (0, 1),
+                [-1.0],
+                0.5,
+                difference_time_limit=2.0,
+                gate_range=gate_range,
+            )
+        self.assertEqual(support.call_count, 3)
+        self.assertIs(cached.margin_support, gate_range.margin_support)
+        self.assertEqual(cached.margin_bounds, legacy.margin_bounds)
+        self.assertEqual(cached.bounds, legacy.bounds)
+        self.assertTrue(np.array_equal(cached.mccormick_A, legacy.mccormick_A))
+        self.assertTrue(np.array_equal(cached.mccormick_b, legacy.mccormick_b))
+
+    def test_gate_range_rejects_a_different_pair(self):
+        pair_hz, router = _equal_expert_components()
+        gate_range = compute_weighted_top2_gate_range(
+            router,
+            (0, 1),
+            time_limit=2.0,
+        )
+        with self.assertRaisesRegex(ValueError, "different expert pair"):
+            build_weighted_top2_f0(
+                pair_hz,
+                router,
+                (0, 2),
+                [1.0],
+                0.0,
+                difference_time_limit=2.0,
+                gate_range=gate_range,
+            )
+
+    def test_gate_range_rejects_another_domain_in_the_same_frame(self):
+        pair_hz, router = _equal_expert_components()
+        gate_range = compute_weighted_top2_gate_range(
+            router,
+            (0, 1),
+            time_limit=2.0,
+        )
+        copied_router = sparse_hz_linear(router, np.eye(2))
+        with self.assertRaisesRegex(ValueError, "different conditioned router"):
+            build_weighted_top2_f0(
+                pair_hz,
+                copied_router,
+                (0, 1),
+                [1.0],
+                0.0,
+                difference_time_limit=2.0,
+                gate_range=gate_range,
+            )
 
     def test_equal_experts_have_zero_product_difference(self):
         encoding = _equal_expert_encoding()

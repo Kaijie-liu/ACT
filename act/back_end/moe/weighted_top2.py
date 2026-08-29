@@ -10,7 +10,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Sequence
 
 import numpy as np
@@ -63,6 +63,19 @@ class McCormickBounds:
     difference_upper: float
     product_lower: float
     product_upper: float
+
+
+@dataclass(frozen=True)
+class WeightedTop2GateRange:
+    """Property-independent gate range for one guarded unordered pair."""
+
+    pair: tuple[int, int]
+    conditioned_router: SparseHZono = field(repr=False, compare=False)
+    router_frame_id: int | None
+    router_output_width: int
+    margin_bounds: tuple[float, float]
+    lambda_bounds: tuple[float, float]
+    margin_support: HZSupportBoundsResult
 
 
 @dataclass(frozen=True)
@@ -338,6 +351,52 @@ def _product_range(ll: float, lu: float, dl: float, du: float) -> tuple[float, f
     return float(corners.min()), float(corners.max())
 
 
+def _canonical_top2_pair(pair: Sequence[int]) -> tuple[int, int]:
+    selected = tuple(sorted(int(value) for value in pair))
+    if len(selected) != 2 or len(set(selected)) != 2:
+        raise ValueError("weighted top-2 fallback requires one distinct pair")
+    return selected
+
+
+def compute_weighted_top2_gate_range(
+    conditioned_router: SparseHZono,
+    pair: Sequence[int],
+    *,
+    time_limit: float,
+) -> WeightedTop2GateRange:
+    """Compute the guarded router-margin range once for a feasible pair.
+
+    The selected-softmax top-2 gate depends only on the guarded router and the
+    unordered expert pair. It is independent of the downstream property row,
+    so callers may safely reuse this immutable result for every property on the
+    same pair.
+    """
+    selected = _canonical_top2_pair(pair)
+    if selected[0] < 0 or selected[1] >= conditioned_router.n_out:
+        raise IndexError("weighted top-2 pair is outside the router output")
+    margin_W = np.zeros((1, conditioned_router.n_out), dtype=np.float64)
+    margin_W[0, selected[0]] = 1.0
+    margin_W[0, selected[1]] = -1.0
+    margin_hz = sparse_hz_linear(conditioned_router, margin_W)
+    margin_support = hz_support_bounds(
+        margin_hz,
+        [0],
+        time_limit=float(time_limit),
+        relax_binaries=False,
+    )
+    margin_lower = float(margin_support.bounds.lb.item())
+    margin_upper = float(margin_support.bounds.ub.item())
+    return WeightedTop2GateRange(
+        pair=selected,
+        conditioned_router=conditioned_router,
+        router_frame_id=conditioned_router.frame_id,
+        router_output_width=conditioned_router.n_out,
+        margin_bounds=(margin_lower, margin_upper),
+        lambda_bounds=_sigmoid_range(margin_lower, margin_upper),
+        margin_support=margin_support,
+    )
+
+
 def linear_safety_rows(
     output_spec: OutputSpec,
     n_out: int,
@@ -363,13 +422,12 @@ def build_weighted_top2_f0(
     property_row: Sequence[float],
     property_constant: float,
     *,
-    margin_time_limit: float,
+    margin_time_limit: float | None = None,
     difference_time_limit: float,
+    gate_range: WeightedTop2GateRange | None = None,
 ) -> WeightedTop2F0Encoding:
     """Build the range-only sigmoid + McCormick relaxation for one safe row."""
-    selected = tuple(sorted(int(value) for value in pair))
-    if len(selected) != 2 or len(set(selected)) != 2:
-        raise ValueError("weighted top-2 fallback requires one distinct pair")
+    selected = _canonical_top2_pair(pair)
     if conditioned_router.frame_id != pair_hz.output_hz.frame_id:
         raise ValueError("router and expert pair must share one generator frame")
     classes = len(pair_hz.a_rows)
@@ -377,19 +435,26 @@ def build_weighted_top2_f0(
     if q.size != classes or len(pair_hz.b_rows) != classes:
         raise ValueError("property row width does not match expert outputs")
 
-    margin_W = np.zeros((1, conditioned_router.n_out), dtype=np.float64)
-    margin_W[0, selected[0]] = 1.0
-    margin_W[0, selected[1]] = -1.0
-    margin_hz = sparse_hz_linear(conditioned_router, margin_W)
-    margin_support = hz_support_bounds(
-        margin_hz,
-        [0],
-        time_limit=float(margin_time_limit),
-        relax_binaries=False,
-    )
-    margin_lower = float(margin_support.bounds.lb.item())
-    margin_upper = float(margin_support.bounds.ub.item())
-    lambda_lower, lambda_upper = _sigmoid_range(margin_lower, margin_upper)
+    if gate_range is None:
+        if margin_time_limit is None:
+            raise ValueError("margin_time_limit is required without a gate range")
+        gate_range = compute_weighted_top2_gate_range(
+            conditioned_router,
+            selected,
+            time_limit=float(margin_time_limit),
+        )
+    if gate_range.pair != selected:
+        raise ValueError("gate range belongs to a different expert pair")
+    if gate_range.conditioned_router is not conditioned_router:
+        raise ValueError("gate range belongs to a different conditioned router")
+    if (
+        gate_range.router_frame_id != conditioned_router.frame_id
+        or gate_range.router_output_width != conditioned_router.n_out
+    ):
+        raise ValueError("gate range belongs to a different router frame")
+    margin_lower, margin_upper = gate_range.margin_bounds
+    lambda_lower, lambda_upper = gate_range.lambda_bounds
+    margin_support = gate_range.margin_support
 
     W = np.zeros((2, 2 * classes), dtype=np.float64)
     W[0, classes:] = q

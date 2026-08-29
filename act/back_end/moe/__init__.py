@@ -33,6 +33,12 @@ from act.back_end.moe.route_a import (
     RouteAVerificationReport,
     RouterAnalysis,
 )
+from act.back_end.moe.route_boundary import (
+    AffineCompetitorBoundary,
+    AffineTop1RouteBoundary,
+    affine_top1_route_boundary,
+    fold_affine_input_map,
+)
 from act.back_end.moe.verifier import verify_output_gate_elimination
 from act.back_end.moe.weighted_top2 import (
     SAFE_WEIGHTED_RANGE,
@@ -44,7 +50,9 @@ from act.back_end.moe.weighted_top2 import (
     UNSAFE_FULL_FORWARD_FALLBACK,
     WeightedTop2F0Decision,
     WeightedTop2F0Encoding,
+    WeightedTop2GateRange,
     build_weighted_top2_f0,
+    compute_weighted_top2_gate_range,
     linear_safety_rows,
     mccormick_contains,
     mccormick_inequalities,
@@ -54,6 +62,8 @@ from act.back_end.moe.weighted_top2 import (
 
 __all__ = [
     "GateKind",
+    "AffineCompetitorBoundary",
+    "AffineTop1RouteBoundary",
     "CandidateReport",
     "OutputLevelMoE",
     "OutputLevelMoEProgram",
@@ -78,16 +88,20 @@ __all__ = [
     "UNSAFE_FULL_FORWARD_FALLBACK",
     "WeightedTop2F0Decision",
     "WeightedTop2F0Encoding",
+    "WeightedTop2GateRange",
     "analyze_candidates",
     "analyze_topk_sets",
+    "affine_top1_route_boundary",
     "build_act_moe_program",
     "build_act_router_program",
     "build_output_moe",
     "build_weighted_top2_f0",
+    "compute_weighted_top2_gate_range",
     "condition_topk_membership",
     "condition_topk_set",
     "guarded_input_domain",
     "guarded_input_topk_set",
+    "fold_affine_input_map",
     "linear_safety_rows",
     "load_output_moe_checkpoint",
     "mccormick_contains",

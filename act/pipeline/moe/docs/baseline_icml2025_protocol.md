@@ -30,7 +30,9 @@ scope until this protocol's explicit gates are met.
 | local read-only clone | `/data1/Kane/MOE/baselines/Robust-MoE-Dual-Model` |
 | clone status | clean |
 | released checkpoint | none found in repository, releases, or README |
-| verifier implementation | none found in tracked Python/Markdown/text files |
+| training/attack/model source | public in the pinned repository |
+| trained checkpoint | not published |
+| verifier implementation | not published; none found in tracked Python/Markdown/text files |
 
 Per-file SHA-256 values are recorded in
 `act/pipeline/moe/configs/baseline_icml2025_provenance.json`. The external clone
@@ -97,6 +99,7 @@ These items are frozen before execution:
 | D7 | repository requirements pin torch 2.4.0/torchvision 0.19.0 | `act-py312` currently has torch 2.9.1+cu128/torchvision 0.24.1+cu128; this is a compatibility deviation |
 | D8 | the repository contains no certified-bound implementation | any theorem implementation is an **author-paper formula reimplementation**, not an official verifier |
 | D9 | the paper's analytic bound assumes Lipschitz router weights, while the released model executes hard argmax | the formula is reported only when its applicability is formally established; route-changing hard-dispatch regions are not silently assigned a continuous-gate certificate |
+| D10 | released experts return raw logits while Theorem 5.4 assumes an expert-output bound `M_Ri <= 1` | the formula reimplementation must define probability-versus-logit semantics and derive matching bounds |
 
 No undocumented repair is allowed. Each patch is classified as:
 
@@ -215,6 +218,12 @@ computed by exact box-constrained linear feasibility (or an equivalent analytic
 distance when clipping is inactive), not attack-only bisection. Verification
 ties remain inclusive.
 
+ACT's affine oracle is implemented in
+`act.back_end.moe.route_boundary.affine_top1_route_boundary`. It folds input
+normalization explicitly and handles pixel clipping by exact piecewise-linear
+support inversion. It cannot produce an RT-ER distribution until a trained
+checkpoint supplies the router parameters.
+
 The original ResNet18 is never silently reduced. If all 20 original-scale exact
 expert runs time out, the result is retained as `Official-scale reproduction`.
 A separately named `Verification-scale derivative` may then preserve the hard
@@ -236,6 +245,9 @@ of Theorem 5.4's certified radius. Any implementation must:
 For a hard top-1 model, route-changing regions are the crucial applicability
 test. Treating raw router logits as mixture weights would change the released
 model and is forbidden.
+
+The full theorem/code assumption matrix and permitted result labels are frozen in
+`act/pipeline/moe/docs/icml2025_certificate_applicability.md`.
 
 ## Stage gates
 

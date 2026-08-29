@@ -567,3 +567,33 @@ newer torch/torchvision versions than the author pins. Dependency installation i
 not authorized. Consequently B0 documentation is complete, but B1 smoke and
 training remain blocked pending a separate dependency decision. No baseline,
 training, F1, larger cohort, or ACT conversion was started by B0.
+
+## Certificate applicability and property-independent F0 margin
+
+A follow-up audit distinguishes the public RT-ER training/attack/model source
+from the unpublished assets: the authors provide neither trained checkpoint
+parameters nor an implementation of Theorem 5.4's certified radius. The theorem,
+paper artifact, and permitted result labels are recorded in
+`act/pipeline/moe/docs/icml2025_certificate_applicability.md`. In particular,
+the hard-argmax route and raw-logit expert code require explicit applicability
+checks for the theorem's Lipschitz router-weight and bounded expert-output
+assumptions. Assumption failure is not called an unsound certificate without the
+exact checkpoint, formula procedure, and independently replayed evidence.
+
+ACT now provides `affine_top1_route_boundary`, an exact piecewise-linear
+hard-route oracle for affine routers with optional input clipping and explicit
+normalization folding. It is unit-tested but has not been run on RT-ER because a
+trained official router is unavailable. Random initialization from the public
+source is not a scientific substitute.
+
+The F0 router-margin support has also been lifted out of the property loop. It
+depends only on the guarded feasible pair, so future runs compute it once and
+reuse one immutable `WeightedTop2GateRange` across all property rows. On the
+frozen confirmatory execution shape, this would reduce margin support from 918
+calls (1836 lower/upper solves) to 111 calls (222 solves), avoiding 1614 repeated
+solver calls without changing any McCormick row. A differential regression test
+requires cached and legacy encodings to have identical bounds and constraints.
+The historical confirmatory and D0 artifacts are not rerun or rewritten.
+
+This code/documentation stage launches no baseline, training, F1, additional
+cohort, large-model download, or certificate experiment.

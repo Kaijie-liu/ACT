@@ -75,6 +75,13 @@ w <= lambda_lower*d + d_upper*lambda - lambda_lower*d_upper.
 The checked scalar is `y=u+w`. The McCormick HZ is marked as a relaxation even
 when all preceding router and expert HZs are exact.
 
+The guarded margin and resulting lambda range depend only on the feasible pair,
+not on a property row. `compute_weighted_top2_gate_range` therefore computes
+them once per pair and every property-directed F0 row reuses the immutable
+result. A differential regression test requires the cached and legacy encodings
+to have identical bounds and McCormick rows. Difference support remains
+property-specific.
+
 Only a solver-certified, outward-corrected, strictly positive lower bound proves
 the property row. For an MILP, the certificate uses a finite HiGHS
 `mip_dual_bound` from a successful status-0 solve; for a pure LP, it uses the

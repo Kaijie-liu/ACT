@@ -85,6 +85,12 @@ The preferred engineering sequence is:
 are installed, but no project license is currently available, so Gurobi cannot
 be the required artifact backend.
 
+One property-independent cost has a simpler fix: selected-softmax top-2 router
+margin support depends on the guarded pair but not on the property row. It is now
+computed once per pair and reused. For the frozen confirmatory execution shape,
+this removes 1614 of the 13503 documented F0-stage solver calls while preserving
+identical gate bounds and McCormick constraints.
+
 ### Baseline status needs more exact language
 
 The confirmatory `route_invariance_status` is not an unevaluated guess. Exact
@@ -144,6 +150,10 @@ at least one additional conditional-computation architecture.
   It restores state on exit, but remains unsafe for concurrent verification.
 - The development experiment reports structural monolithic width only. A true
   monolithic router-plus-dispatch-plus-experts formulation is still absent.
+- The ICML 2025 authors publish training/attack/model source but no checkpoint
+  or certificate implementation. Theorem applicability can be specified now,
+  but no official-model route-radius or certificate-overlap result exists until
+  trained parameters are obtained.
 
 ## Frozen paper-safe claims
 

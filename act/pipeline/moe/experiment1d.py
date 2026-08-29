@@ -34,6 +34,7 @@ from act.back_end.moe import (
     analyze_topk_sets,
     build_act_moe_program,
     build_weighted_top2_f0,
+    compute_weighted_top2_gate_range,
     condition_topk_set,
     guarded_input_topk_set,
     linear_safety_rows,
@@ -404,6 +405,7 @@ def _run_f0(
             for row in (parent_pair or {}).get("property_rows", [])
         }
         property_rows: list[dict[str, Any]] = []
+        gate_range = None
         for property_index, (q, constant) in enumerate(context["properties"]):
             parent_prop = parent_props.get(property_index)
             if parent_prop is not None and parent_prop.get("status") in {"SAFE", "UNSAFE"}:
@@ -411,10 +413,20 @@ def _run_f0(
                 reused_properties += 1
                 continue
             rerun_properties += 1
+            if gate_range is None:
+                gate_range = compute_weighted_top2_gate_range(
+                    conditioned_router,
+                    pair,
+                    time_limit=float(
+                        config["f0"]["margin_support_seconds"]
+                    ),
+                )
             encoding = build_weighted_top2_f0(
                 propagated.joint, conditioned_router, pair, q, constant,
-                margin_time_limit=float(config["f0"]["margin_support_seconds"]),
-                difference_time_limit=float(config["f0"]["difference_support_seconds"]),
+                difference_time_limit=float(
+                    config["f0"]["difference_support_seconds"]
+                ),
+                gate_range=gate_range,
             )
             first_budget, second_budget = _attempt_budgets(
                 recorder, remaining_items, float(config["instance_timeout_seconds"])

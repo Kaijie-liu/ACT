@@ -21,6 +21,7 @@
     "commit_subject": "Update",
     "clone_clean": true,
     "license": "Apache-2.0",
+    "training_attack_model_source_public": true,
     "release_checkpoint_found": false,
     "official_verifier_found": false,
     "source_sha256": {
@@ -128,6 +129,11 @@
       "id": "D9",
       "kind": "semantic_applicability",
       "detail": "paper bound assumes Lipschitz router weights while released model executes hard argmax dispatch"
+    },
+    {
+      "id": "D10",
+      "kind": "output_semantics",
+      "detail": "released experts return raw logits while the paper theorem assumes an expert-output upper bound M_Ri <= 1"
     }
   ],
   "environment": {
@@ -186,7 +192,17 @@
   "certificate": {
     "classification": "author-paper formula reimplementation required",
     "official_implementation_found": false,
+    "trained_checkpoint_available": false,
     "hard_argmax_applicability_must_be_proved": true,
-    "raw_router_logits_must_not_be_substituted_as_gate_weights": true
+    "raw_router_logits_must_not_be_substituted_as_gate_weights": true,
+    "probability_vs_logit_semantics_must_be_defined": true,
+    "assumption_failure_label": "ASSUMPTION_NOT_ESTABLISHED",
+    "affine_route_oracle": {
+      "implementation": "act.back_end.moe.route_boundary.affine_top1_route_boundary",
+      "normalization_must_be_folded": true,
+      "pixel_box_supported": true,
+      "rt_er_distribution_run": false,
+      "blocked_reason": "trained official router weights are unavailable"
+    }
   }
 }
