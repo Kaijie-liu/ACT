@@ -997,6 +997,18 @@ fully clean. The compact result is
 the 800 MB raw smoke artifacts stay outside Git under the isolated run root.
 This passes the compatibility gate only and does not claim reproduced accuracy.
 
+The running seed-0 reproduction has completed its first frozen endpoint at
+epoch 10. Clean and PGD-50 test accuracy are 30.81% and 25.11%. The exact route
+radius median is 0.0025525 (0.651/255) and p90 is 0.0074740 (1.906/255): 66.39%
+of test inputs admit a route boundary within 1/255, 91.17% within 2/255, 99.68%
+within 4/255, and all 10,000 within 8/255. Loads are 16.01%, 18.95%, 37.91%, and
+27.13% (effective experts 3.782/4). All 200 concrete boundary witnesses replay,
+the 100-input reference crosscheck differs by at most 1.23e-16, and the frozen
+eta overcheck band contains 0/10,000 inputs. This is a scheduled trajectory
+endpoint, not the completed single-seed or multi-seed result. Its compact
+manifest is
+`act/pipeline/moe/results/icml2025_rt_er/seed0_epoch010_route_telemetry_20260830.json`.
+
 ## N1 engineering rerun code freeze
 
 The N1 performance runner freezes the original 20-row applicable-unresolved

@@ -1,0 +1,66 @@
+{
+  "checkpoint": {
+    "path": "/data1/Kane/MOE/baseline_runs/icml2025_rt_er/seed0_paper130/checkpoints/epoch_010.t7",
+    "reported_clean_accuracy_percent": 30.81,
+    "sha256": "d30ab40efc58be6f02a1465d25a341bf5f95b822b280462e73a2ab239429788b"
+  },
+  "classification": {
+    "computed_clean_accuracy": 0.3081,
+    "computed_clean_correct": 3081,
+    "train_clean_accuracy_percent": 28.01828286082474,
+    "train_loss": 2.141569506261767,
+    "train_robust_accuracy_percent": 21.6796875,
+    "validation_pgd50_accuracy_percent": 25.11
+  },
+  "epoch": 10,
+  "eta_overcheck": {
+    "eta": 1e-07,
+    "overcheck_branches": 0,
+    "overcheck_samples": 0,
+    "samples": 10000
+  },
+  "label": "official-code, Blackwell-compatible deps + FFCV",
+  "oracle_audit": {
+    "folded_router_max_score_difference": 3.32807606229224e-06,
+    "probe_witness_failures": 0,
+    "probe_witnesses_checked": 200,
+    "reference_crosscheck_max_radius_error": 1.231653667943533e-16,
+    "reference_crosscheck_passed": true
+  },
+  "raw_artifacts": {
+    "per_input_path": "/data1/Kane/MOE/baseline_runs/icml2025_rt_er/seed0_paper130/telemetry/epoch_010/per_input.npz",
+    "per_input_sha256": "18978d994ee435c8f8e1dc02af862c1e78a9abcec74111c3910a674fa389dd8a",
+    "summary_path": "/data1/Kane/MOE/baseline_runs/icml2025_rt_er/seed0_paper130/telemetry/epoch_010/summary.json",
+    "summary_sha256": "5b5ef361f832054919177ea0805e1a993357835678114b81fdf133bdf3de849f"
+  },
+  "route_geometry": {
+    "effective_expert_count": 3.7815470906527158,
+    "epsilon_reachable_counts": {
+      "0.25/255": 2247,
+      "0.5/255": 4085,
+      "1/255": 6639,
+      "2/255": 9117,
+      "4/255": 9968,
+      "8/255": 10000
+    },
+    "finite_route_boundaries": 10000,
+    "radius_quantiles_unit_pixels": {
+      "p10": 0.0004115879743243763,
+      "p25": 0.00111808985648363,
+      "p50": 0.002552486903531068,
+      "p75": 0.004886665152563001,
+      "p90": 0.007474010992982008,
+      "p95": 0.009235585462024451
+    },
+    "route_load_counts": [1601, 1895, 3791, 2713],
+    "route_load_probabilities": [0.1601, 0.1895, 0.3791, 0.2713]
+  },
+  "schema_version": 1,
+  "scientific_scope": "first scheduled telemetry endpoint of a running single-seed reproduction; not a final trajectory or multi-seed result",
+  "seed": 0,
+  "status": "PASSED",
+  "telemetry_runtime": {
+    "oracle_seconds": 0.46719735860824585,
+    "total_seconds": 4.151254351250827
+  }
+}
