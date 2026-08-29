@@ -1,0 +1,719 @@
+{
+  "schema_version": 1,
+  "status": "PARTIAL_RETRIEVAL_NO_PREVALENCE",
+  "reviewer": "A",
+  "audit_date": "2026-08-29",
+  "cutoff_date": "2026-08-29",
+  "source_policy": "PRIMARY_ONLY",
+  "author_contact": "NOT_PERFORMED",
+  "claim_limit": "This is an evidence matrix for eight already-adjudicated included families in a partial retrieval. It does not estimate ecosystem prevalence, artifact-availability prevalence, or certification-practice prevalence.",
+  "protocol": "act/pipeline/moe/configs/certification_gap_survey_protocol.json",
+  "raw_source_audit": "data/moe/survey/work/evidence_a/primary_source_audit_20260829.json",
+  "records": [
+    {
+      "record_index": 23,
+      "citation_key": "choi2025specsphere",
+      "title": "Adaptive Branch Specialization in Spectral-Spatial Graph Neural Networks for Certified Robustness",
+      "primary_sources": [
+        "https://arxiv.org/html/2505.08320v3",
+        "https://anonymous.4open.science/r/SpecSphere-684F"
+      ],
+      "dimensions": {
+        "numerical_instantiation": {
+          "code": "FORMULA_ONLY",
+          "evidence": [
+            {
+              "url": "https://arxiv.org/html/2505.08320v3",
+              "locator": "Section 6, Theorem 4 and Eq. (33), p. 7",
+              "finding": "The paper derives a fused-output perturbation bound from branch and gate Lipschitz quantities."
+            },
+            {
+              "url": "https://arxiv.org/html/2505.08320v3",
+              "locator": "Section 7, Table 2 and Figures 1-2, p. 8",
+              "finding": "The numerical results report clean and attack accuracy (DropEdge, Metattack, and Feature-PGD); no per-input certified radius or certified-accuracy evaluation of Theorem 4 was located."
+            }
+          ]
+        },
+        "constant_protocol": {
+          "code": "SOUND",
+          "evidence": [
+            {
+              "url": "https://arxiv.org/html/2505.08320v3",
+              "locator": "Section 6, Eqs. (30)-(33), p. 7",
+              "finding": "The certificate uses analytic branch bounds from Chebyshev coefficients, input norms, layer spectral-norm bounds, and a spectral-norm product for the gate. This coding concerns the stated analytic protocol, conditional on its premises; the paper does not numerically instantiate it."
+            }
+          ]
+        },
+        "official_checkpoint": {
+          "code": "NOT_CONTACTED",
+          "evidence": [
+            {
+              "url": "https://anonymous.4open.science/r/SpecSphere-684F",
+              "locator": "paper-linked code landing page",
+              "finding": "The link returned HTTP 403 at audit, so no public checkpoint could be inspected. No author contact was authorized."
+            }
+          ]
+        },
+        "certificate_code": {
+          "code": "NOT_FOUND",
+          "evidence": [
+            {
+              "url": "https://arxiv.org/html/2505.08320v3",
+              "locator": "p. 1 code footnote and reproducibility checklist",
+              "finding": "The paper points to an anonymous repository, but that official link was inaccessible at audit; executable certificate code could not be located in the inspectable official sources."
+            }
+          ]
+        },
+        "assumptions_machine_decidable": {
+          "code": "PARTIAL",
+          "undecidable_or_unoperationalized_premises": [
+            "The spatial-branch premise that the attention derivative norm is at most one is assumed but no artifact-level checking procedure is supplied.",
+            "The inaccessible paper-linked artifact prevents evaluating the learned-model-specific constants and margins."
+          ],
+          "evidence": [
+            {
+              "url": "https://arxiv.org/html/2505.08320v3",
+              "locator": "Section 6, Eqs. (30)-(33), p. 7",
+              "finding": "Several weight/filter quantities are directly computable, but at least one analytic premise is assumed and the artifact cannot be inspected."
+            }
+          ]
+        },
+        "artifact_theorem_semantics": {
+          "code": "NO_ARTIFACT",
+          "mismatches": [],
+          "evidence": [
+            {
+              "url": "https://anonymous.4open.science/r/SpecSphere-684F",
+              "locator": "repository landing page",
+              "finding": "The official paper-linked artifact was not inspectable at the cutoff, so an artifact/theorem semantic comparison could not be performed."
+            }
+          ]
+        }
+      },
+      "semantics": {
+        "router_and_gate_type": "Node-wise, channel-wise sigmoid context gate over two branches.",
+        "top_k_and_tie_semantics": "Not a top-k selector; continuous two-branch interpolation.",
+        "weighted_or_selected_output": "Weighted fused representation.",
+        "logit_probability_or_margin_output": "A linear classifier consumes the fused representation; training loss applies softmax.",
+        "preprocessing_and_perturbation_units": "Joint l0 edge flips p and l-infinity feature perturbation epsilon (Eq. (15)).",
+        "global_or_local_assumption_domain": "Node/fused-output bound under the stated joint perturbation set, conditional on global branch and gate bounds."
+      }
+    },
+    {
+      "record_index": 43,
+      "citation_key": "rmgte2026intrusion",
+      "title": "BALANCING ACCURACY AND ROBUSTNESS IN INTRUSION DETECTION: AN ENSEMBLE DEEP LEARNING APPROACH",
+      "primary_sources": [
+        "https://zenodo.org/records/18454317",
+        "https://zenodo.org/api/records/18454317/files/12Vol104No2.pdf/content"
+      ],
+      "dimensions": {
+        "numerical_instantiation": {
+          "code": "CERTIFICATE_EVALUATED",
+          "evidence": [
+            {
+              "url": "https://zenodo.org/api/records/18454317/files/12Vol104No2.pdf/content",
+              "locator": "Section 3.7, p. 158; Discussion, p. 160",
+              "finding": "The paper reports sigma=0.25, 200 Monte Carlo samples, and a final-classifier certified robustness radius of 0.48."
+            }
+          ]
+        },
+        "constant_protocol": {
+          "code": "UNSPECIFIED",
+          "evidence": [
+            {
+              "url": "https://zenodo.org/api/records/18454317/files/12Vol104No2.pdf/content",
+              "locator": "Section 3.6, Eq. (11), p. 158; Section 3.7, p. 158",
+              "finding": "The smoothing noise and sample count are stated, but the full confidence-bound/significance protocol needed to audit the reported certified radius was not located."
+            }
+          ]
+        },
+        "official_checkpoint": {
+          "code": "NOT_CONTACTED",
+          "evidence": [
+            {
+              "url": "https://zenodo.org/records/18454317",
+              "locator": "Files section",
+              "finding": "The official record contains the paper PDF and no model checkpoint. No author contact was authorized."
+            }
+          ]
+        },
+        "certificate_code": {
+          "code": "PAPER_FORMULA_ONLY",
+          "evidence": [
+            {
+              "url": "https://zenodo.org/records/18454317",
+              "locator": "record file list and linked resources",
+              "finding": "The paper specifies the smoothing classifier in Eq. (11), but the official record exposes no executable certificate implementation."
+            }
+          ]
+        },
+        "assumptions_machine_decidable": {
+          "code": "PARTIAL",
+          "undecidable_or_unoperationalized_premises": [
+            "The confidence interval, failure probability, and class-probability estimation rule underlying radius 0.48 are not reported.",
+            "No checkpoint or executable certificate artifact is released in the official record."
+          ],
+          "evidence": [
+            {
+              "url": "https://zenodo.org/api/records/18454317/files/12Vol104No2.pdf/content",
+              "locator": "Sections 3.6-3.7, pp. 157-158",
+              "finding": "The model/gating and smoothing parameters are partly specified, but the certificate cannot be fully reconstructed from released evidence."
+            }
+          ]
+        },
+        "artifact_theorem_semantics": {
+          "code": "NO_ARTIFACT",
+          "mismatches": [],
+          "evidence": [
+            {
+              "url": "https://zenodo.org/records/18454317",
+              "locator": "Files section",
+              "finding": "No executable model/certificate artifact is present for comparison with the randomized-smoothing statement."
+            }
+          ]
+        }
+      },
+      "semantics": {
+        "router_and_gate_type": "Input-dependent learned MoE gating described in Section 3.6.",
+        "top_k_and_tie_semantics": "Not reported in sufficient detail for an artifact-level tie audit.",
+        "weighted_or_selected_output": "Routed ensemble feeds a final classification head.",
+        "logit_probability_or_margin_output": "Randomized smoothing is defined over the complete final classifier.",
+        "preprocessing_and_perturbation_units": "Gaussian randomized smoothing with sigma=0.25; input-unit normalization needed to interpret radius 0.48 is not fully specified.",
+        "global_or_local_assumption_domain": "Per-input randomized-smoothing certificate for the final classifier."
+      }
+    },
+    {
+      "record_index": 140,
+      "citation_key": "bai2023adaptive",
+      "title": "Improving the Accuracy-Robustness Trade-Off of Classifiers via Adaptive Smoothing",
+      "primary_sources": [
+        "https://arxiv.org/html/2301.12554",
+        "https://github.com/Bai-YT/AdaptiveSmoothing"
+      ],
+      "official_artifact_commit": "51f019869564e551ac09b5da90ff90a7784e5eaa",
+      "dimensions": {
+        "numerical_instantiation": {
+          "code": "FORMULA_ONLY",
+          "evidence": [
+            {
+              "url": "https://arxiv.org/html/2301.12554",
+              "locator": "Section 4.1, Theorem 4.1/Theorem 6, pp. 11-12; Sections 4.2-5",
+              "finding": "The input-dependent alpha theorem is an existence result; the learned mixing network is evaluated with adaptive attacks rather than a numerical certificate."
+            },
+            {
+              "url": "https://arxiv.org/html/2301.12554",
+              "locator": "Appendix A.2-A.3, Figures 6-7",
+              "finding": "Numerical certified-radius curves exist for a fixed-alpha subcase, explicitly fixing alpha in the experiment setup; that subcase does not instantiate the included input-dependent guarantee."
+            }
+          ]
+        },
+        "constant_protocol": {
+          "code": "MIXED",
+          "evidence": [
+            {
+              "url": "https://arxiv.org/html/2301.12554",
+              "locator": "Section 3.1, Theorem 3.5/Theorem 5; Appendix A.2, pp. 8-10 and experiment appendix",
+              "finding": "The fixed-alpha bound uses an analytic Gaussian-smoothing Lipschitz constant, while numerical expectations are approximated by 10,000 sampled perturbations without a reported formal sampling confidence construction."
+            },
+            {
+              "url": "https://arxiv.org/html/2301.12554",
+              "locator": "Appendix C.3",
+              "finding": "Local Lipschitz behavior used diagnostically is estimated by a PGD-like empirical procedure."
+            }
+          ]
+        },
+        "official_checkpoint": {
+          "code": "PUBLIC",
+          "evidence": [
+            {
+              "url": "https://github.com/Bai-YT/AdaptiveSmoothing",
+              "locator": "README, model download sections for CIFAR-10 and CIFAR-100",
+              "finding": "The official repository links base classifiers and trained mixing-network checkpoints."
+            }
+          ]
+        },
+        "certificate_code": {
+          "code": "PUBLIC_OFFICIAL",
+          "evidence": [
+            {
+              "url": "https://github.com/Bai-YT/AdaptiveSmoothing/blob/main/visualizations/certified_radius_helper.py",
+              "locator": "visualizations/certified_radius_helper.py",
+              "finding": "The official repository implements the fixed-alpha Lipschitz and randomized-smoothing certified-radius formulas."
+            }
+          ]
+        },
+        "assumptions_machine_decidable": {
+          "code": "PARTIAL",
+          "undecidable_or_unoperationalized_premises": [
+            "Theorem 4.1/Theorem 6 establishes existence of an input-dependent alpha under set-separation conditions; the released learned mixing network is not accompanied by a procedure establishing those conditions for every input.",
+            "The public certificate helper operationalizes fixed alpha, not the learned input-dependent alpha artifact."
+          ],
+          "evidence": [
+            {
+              "url": "https://arxiv.org/html/2301.12554",
+              "locator": "Section 4.1, Theorem 4.1/Theorem 6; Appendix A.2",
+              "finding": "Fixed-alpha premises are operationalized, but the adaptive learned-gate guarantee is not fully machine-decidable from the artifact."
+            }
+          ]
+        },
+        "artifact_theorem_semantics": {
+          "code": "GAP",
+          "mismatches": [
+            "The released artifact is a learned input-dependent mixing network, while the numerical certificate helper and reported certificate curves use fixed alpha.",
+            "The adaptive theorem is existential and does not certify the released learned alpha function."
+          ],
+          "evidence": [
+            {
+              "url": "https://github.com/Bai-YT/AdaptiveSmoothing",
+              "locator": "README model descriptions and visualizations/certified_radius_helper.py",
+              "finding": "The same official repository exposes learned mixing checkpoints and a fixed-alpha certificate helper, making the semantic split directly inspectable."
+            }
+          ]
+        }
+      },
+      "semantics": {
+        "router_and_gate_type": "Input-dependent scalar mixing network alpha(x) between an accurate and a robust classifier.",
+        "top_k_and_tie_semantics": "Not top-k routing; continuous two-model interpolation.",
+        "weighted_or_selected_output": "Weighted combination of classifier probabilities.",
+        "logit_probability_or_margin_output": "Probability-space mixture after softmax.",
+        "preprocessing_and_perturbation_units": "CIFAR-10/100; l-infinity attacks for released models and l2/lp certificate theorems as specified per bound.",
+        "global_or_local_assumption_domain": "Fixed-alpha radius is per input; adaptive-alpha theorem is an existence statement over bounded perturbation sets."
+      }
+    },
+    {
+      "record_index": 154,
+      "citation_key": "laws2026",
+      "title": "LAWS: Learning from Actual Workloads Symbolically -- A Self-Certifying Parametrized Cache Architecture for Neural Inference, Robotics, and Edge Deployment",
+      "primary_sources": ["https://arxiv.org/html/2605.04069"],
+      "dimensions": {
+        "numerical_instantiation": {
+          "code": "FORMULA_ONLY",
+          "evidence": [
+            {
+              "url": "https://arxiv.org/html/2605.04069",
+              "locator": "Section 5.1, Theorem 3, pp. 12-13",
+              "finding": "The paper derives the uniform error bound epsilon_fit + 2 Lambda(W) C_E but does not report a trained-model numerical instantiation of all terms or certified coverage."
+            }
+          ]
+        },
+        "constant_protocol": {
+          "code": "MIXED",
+          "evidence": [
+            {
+              "url": "https://arxiv.org/html/2605.04069",
+              "locator": "Section 3, Theorem 1 and Remark 1, pp. 8-10",
+              "finding": "Lambda(W) is an analytic product of operator-norm bounds computable from weights, but the paper recommends empirical effective-Lipschitz calibration for production routing and does not provide a fully formal artifact protocol for epsilon_fit."
+            }
+          ]
+        },
+        "official_checkpoint": {
+          "code": "NOT_APPLICABLE",
+          "evidence": [
+            {
+              "url": "https://arxiv.org/html/2605.04069",
+              "locator": "Sections 4-6",
+              "finding": "LAWS is presented as an architecture over an arbitrary base model and expert library; no study-specific trained checkpoint is evaluated as the theorem artifact."
+            }
+          ]
+        },
+        "certificate_code": {
+          "code": "PAPER_FORMULA_ONLY",
+          "evidence": [
+            {
+              "url": "https://arxiv.org/html/2605.04069",
+              "locator": "Section 4.1, Algorithm 1; Section 5.1, Theorem 3",
+              "finding": "The update and bound are specified in the paper; no official executable certificate repository was linked or located by the cutoff."
+            }
+          ]
+        },
+        "assumptions_machine_decidable": {
+          "code": "PARTIAL",
+          "undecidable_or_unoperationalized_premises": [
+            "LayerNorm variance is restricted to an in-distribution condition stated to hold with high probability rather than a machine-checked bounded domain.",
+            "Uniform epsilon_fit and Lip(f) <= Lambda(W) are required; the generic PatternRecognize step does not give a complete checking procedure for all proposed expert classes.",
+            "Empirical production calibration cannot serve as a sound certificate constant."
+          ],
+          "evidence": [
+            {
+              "url": "https://arxiv.org/html/2605.04069",
+              "locator": "Remark 1; Definition 3; Algorithm 1; Theorem 3",
+              "finding": "Weight and embedding quantities are computable, but distributional and fitting premises are only partly operationalized."
+            }
+          ]
+        },
+        "artifact_theorem_semantics": {
+          "code": "NO_ARTIFACT",
+          "mismatches": [],
+          "evidence": [
+            {
+              "url": "https://arxiv.org/html/2605.04069",
+              "locator": "paper and linked resources",
+              "finding": "No released model/certificate artifact was located for semantic comparison."
+            }
+          ]
+        }
+      },
+      "semantics": {
+        "router_and_gate_type": "Any-match trie-radius routing to the nearest matching parametrized expert, otherwise fallback to the base model.",
+        "top_k_and_tie_semantics": "Single selected expert; equal-distance tie handling is not specified in the inspected theorem text.",
+        "weighted_or_selected_output": "Selected expert output or base-model fallback.",
+        "logit_probability_or_margin_output": "Vector-output approximation norm, not a classification-margin certificate.",
+        "preprocessing_and_perturbation_units": "PLT/trie distance and divergence-token embedding distance.",
+        "global_or_local_assumption_domain": "Theorem 3 states a uniform output approximation conditional on global Lambda(W), fitting, and expert Lipschitz premises; validity discussion restricts claims to P_M for a LayerNorm premise."
+      }
+    },
+    {
+      "record_index": 166,
+      "citation_key": "pham2026metamoe",
+      "title": "MetaMoE: Formal Verification of Compositional Robustness and Scalability of Mixture-of-Experts Architecture",
+      "primary_sources": [
+        "https://link.springer.com/chapter/10.1007/978-3-032-32357-6_8",
+        "https://link.springer.com/content/pdf/10.1007/978-3-032-32357-6_8.pdf"
+      ],
+      "dimensions": {
+        "numerical_instantiation": {
+          "code": "CERTIFICATE_EVALUATED",
+          "evidence": [
+            {
+              "url": "https://link.springer.com/chapter/10.1007/978-3-032-32357-6_8",
+              "locator": "Abstract and Section 6, pp. 181-186",
+              "finding": "Eight configurations and three perturbation budgets are evaluated; the paper reports numerical router/expert certified robustness results, including 100% router certified robustness accuracy at stated practical bounds."
+            }
+          ]
+        },
+        "constant_protocol": {
+          "code": "NOT_APPLICABLE",
+          "evidence": [
+            {
+              "url": "https://link.springer.com/content/pdf/10.1007/978-3-032-32357-6_8.pdf",
+              "locator": "Section 5, pp. 179-181",
+              "finding": "The numerical certificate uses an alpha-beta-CROWN formal-verification pipeline rather than a theorem constant or sampled Lipschitz provider."
+            }
+          ]
+        },
+        "official_checkpoint": {
+          "code": "NOT_CONTACTED",
+          "evidence": [
+            {
+              "url": "https://link.springer.com/chapter/10.1007/978-3-032-32357-6_8",
+              "locator": "article page, appendices, and linked resources",
+              "finding": "Architecture and ONNX-export details are public, but no paper-specific checkpoint link was located. No author contact was authorized."
+            }
+          ]
+        },
+        "certificate_code": {
+          "code": "PAPER_FORMULA_ONLY",
+          "evidence": [
+            {
+              "url": "https://link.springer.com/content/pdf/10.1007/978-3-032-32357-6_8.pdf",
+              "locator": "Section 5, pp. 179-181; publisher linked resources",
+              "finding": "The verification pipeline is described in the paper, but no official paper-specific executable certificate repository was located."
+            }
+          ]
+        },
+        "assumptions_machine_decidable": {
+          "code": "PARTIAL",
+          "undecidable_or_unoperationalized_premises": [
+            "The released material specifies architecture, raw-logit output, BN folding, and perturbation budgets, but does not release the trained weights required to decide router and expert robustness premises.",
+            "No paper-specific verification artifact or exact run configuration was located."
+          ],
+          "evidence": [
+            {
+              "url": "https://link.springer.com/chapter/10.1007/978-3-032-32357-6_8",
+              "locator": "Appendices B-C",
+              "finding": "The model/export semantics are unusually explicit, but the theorem premises cannot all be evaluated without weights and run artifacts."
+            }
+          ]
+        },
+        "artifact_theorem_semantics": {
+          "code": "NO_ARTIFACT",
+          "mismatches": [],
+          "evidence": [
+            {
+              "url": "https://link.springer.com/chapter/10.1007/978-3-032-32357-6_8",
+              "locator": "Appendices B-C and linked resources",
+              "finding": "Paper-level semantics are detailed, but no inspectable paper-specific trained/certificate artifact was located for an artifact/theorem comparison."
+            }
+          ]
+        }
+      },
+      "semantics": {
+        "router_and_gate_type": "Neural router with hard top-1 domain dispatch.",
+        "top_k_and_tie_semantics": "k=1; tie behavior is not reported in the inspected public evidence.",
+        "weighted_or_selected_output": "Selected domain expert output.",
+        "logit_probability_or_margin_output": "Raw logits, no softmax; Appendix B.",
+        "preprocessing_and_perturbation_units": "Image l-infinity budgets 2/255, 4/255, and 8/255.",
+        "global_or_local_assumption_domain": "Per-input compositional robustness requires invariant expert selection and robust selected-expert classification."
+      }
+    },
+    {
+      "record_index": 178,
+      "citation_key": "vasic2022moet",
+      "title": "MoET: Mixture of Expert Trees and its Application to Verifiable Reinforcement Learning",
+      "primary_sources": [
+        "https://arxiv.org/html/1906.06717v4",
+        "https://github.com/marko-vasic/MoET"
+      ],
+      "official_artifact_commit": "8c91db013604432e2cbc8779ba240d8cc4cedefe",
+      "dimensions": {
+        "numerical_instantiation": {
+          "code": "CERTIFICATE_EVALUATED",
+          "evidence": [
+            {
+              "url": "https://arxiv.org/html/1906.06717v4",
+              "locator": "Section 6 and Figure 5, p. 19",
+              "finding": "All evaluated hard-routed CartPole policies pass the bounded-state finite-horizon safety check and verification times are reported."
+            }
+          ]
+        },
+        "constant_protocol": {
+          "code": "NOT_APPLICABLE",
+          "evidence": [
+            {
+              "url": "https://arxiv.org/html/1906.06717v4",
+              "locator": "Section 5, pp. 11-13",
+              "finding": "The guarantee is discharged by complete SMT encoding of the policy and environment rather than a numerical robustness-bound constant."
+            }
+          ]
+        },
+        "official_checkpoint": {
+          "code": "PUBLIC",
+          "evidence": [
+            {
+              "url": "https://github.com/marko-vasic/MoET/tree/main/data/experiments/verified",
+              "locator": "data/experiments/verified",
+              "finding": "The official repository contains the routed policy artifact used by its verification command."
+            }
+          ]
+        },
+        "certificate_code": {
+          "code": "PUBLIC_OFFICIAL",
+          "evidence": [
+            {
+              "url": "https://github.com/marko-vasic/MoET/blob/main/python/viper/verification/cartpole.py",
+              "locator": "python/viper/verification/cartpole.py",
+              "finding": "The official repository exposes the CartPole SMT verification implementation and README command."
+            }
+          ]
+        },
+        "assumptions_machine_decidable": {
+          "code": "ALL",
+          "undecidable_or_unoperationalized_premises": [],
+          "evidence": [
+            {
+              "url": "https://github.com/marko-vasic/MoET/blob/main/python/viper/verification/cartpole.py",
+              "locator": "complete verification module together with data/experiments/verified",
+              "finding": "The bounded initial state, hard-routed policy, deterministic environment transition, finite horizon, and safety property are represented in the released verification artifact."
+            }
+          ]
+        },
+        "artifact_theorem_semantics": {
+          "code": "CONSISTENT",
+          "mismatches": [],
+          "evidence": [
+            {
+              "url": "https://arxiv.org/html/1906.06717v4",
+              "locator": "Section 5, pp. 11-13",
+              "finding": "The paper's hard MoETH decision-tree routing and closed-loop SMT verification match the released model and cartpole verifier paths."
+            }
+          ]
+        }
+      },
+      "semantics": {
+        "router_and_gate_type": "Hard hierarchical decision-tree router selecting one decision-tree expert.",
+        "top_k_and_tie_semantics": "Top-1 by deterministic tree predicates; boundary comparison semantics are encoded in SMT.",
+        "weighted_or_selected_output": "Selected expert action.",
+        "logit_probability_or_margin_output": "Discrete control action/policy, not classifier logits.",
+        "preprocessing_and_perturbation_units": "Bounded CartPole initial-state region and finite execution horizon.",
+        "global_or_local_assumption_domain": "Closed-loop safety over the encoded bounded initial states and finite horizon."
+      }
+    },
+    {
+      "record_index": 195,
+      "citation_key": "puigcerver2022adversarial",
+      "title": "On the Adversarial Robustness of Mixture of Experts",
+      "primary_sources": [
+        "https://arxiv.org/html/2210.10253",
+        "https://github.com/google-research/vmoe"
+      ],
+      "official_artifact_commit": "c07681241f81ba11421ba98e523e1499b2738a79",
+      "dimensions": {
+        "numerical_instantiation": {
+          "code": "FORMULA_ONLY",
+          "evidence": [
+            {
+              "url": "https://arxiv.org/html/2210.10253",
+              "locator": "Section 3, Lemma 1 and Theorem 1, pp. 4-6; Section 4",
+              "finding": "The paper derives Lipschitz bounds for smooth learned routing and fixed-routing linear experts, while experiments report adversarial attacks on V-MoE rather than numerical certificate radii/accuracy."
+            }
+          ]
+        },
+        "constant_protocol": {
+          "code": "UNSPECIFIED",
+          "evidence": [
+            {
+              "url": "https://arxiv.org/html/2210.10253",
+              "locator": "Section 3.1, Lemma 1, pp. 4-5",
+              "finding": "The bound depends on individual expert Lipschitz constants and a global supremum involving expert outputs/router vectors; no sound computation protocol for these quantities on the evaluated V-MoE is given."
+            }
+          ]
+        },
+        "official_checkpoint": {
+          "code": "NOT_CONTACTED",
+          "evidence": [
+            {
+              "url": "https://arxiv.org/html/2210.10253",
+              "locator": "Appendix B.1",
+              "finding": "The authors explicitly state that experimental models cannot be released because they were pretrained on proprietary data. No author contact was authorized."
+            }
+          ]
+        },
+        "certificate_code": {
+          "code": "PAPER_FORMULA_ONLY",
+          "evidence": [
+            {
+              "url": "https://github.com/google-research/vmoe",
+              "locator": "official repository README and tree",
+              "finding": "The paper links the V-MoE implementation, but no executable implementation of Lemma 1/Theorem 1 certificate evaluation was located; the formal result remains a paper formula."
+            }
+          ]
+        },
+        "assumptions_machine_decidable": {
+          "code": "PARTIAL",
+          "undecidable_or_unoperationalized_premises": [
+            "The experimental checkpoints are unavailable, preventing artifact-specific evaluation of expert Lipschitz constants and router/expert terms.",
+            "No procedure is given for soundly computing the global supremum in the smooth-MoE bound on the evaluated model.",
+            "The fixed-routing linear-expert theorem does not describe the sparse V-MoE artifact used in experiments."
+          ],
+          "evidence": [
+            {
+              "url": "https://arxiv.org/html/2210.10253",
+              "locator": "Sections 2.1, 3.1-3.2 and Appendix B.1",
+              "finding": "Some mathematical objects are explicit, but the evaluated artifact and its required bound quantities cannot be fully decided from released materials."
+            }
+          ]
+        },
+        "artifact_theorem_semantics": {
+          "code": "GAP",
+          "mismatches": [
+            "The main learned-routing Lipschitz analysis uses a continuous soft mixture over all experts, while the evaluated V-MoE uses sparse top-k dispatch.",
+            "The fixed-routing theorem assumes predetermined routing and linear experts, unlike the evaluated deep V-MoE.",
+            "Experimental checkpoints are not released, so no artifact-level theorem instantiation is possible."
+          ],
+          "evidence": [
+            {
+              "url": "https://arxiv.org/html/2210.10253",
+              "locator": "Section 2.1, Eqs. (1)-(2); Sections 3-4",
+              "finding": "The paper itself separates discontinuous sparse routing from the smooth MoE used for learned-router theory, then evaluates sparse V-MoE with attacks."
+            }
+          ]
+        }
+      },
+      "semantics": {
+        "router_and_gate_type": "Theory: softmax linear continuous weights; experiments: sparse V-MoE routing.",
+        "top_k_and_tie_semantics": "Sparse definition is top-1 with uniform random choice among tied maxima; experiments use top-2 V-MoE.",
+        "weighted_or_selected_output": "Theory includes all-expert weighted output and fixed routing; experiment is sparse selected experts.",
+        "logit_probability_or_margin_output": "Function-output Lipschitz analysis and adversarial loss, not a numerical class-margin certificate.",
+        "preprocessing_and_perturbation_units": "Norm-bounded adversarial perturbations; experiment-specific V-MoE image attack configuration is reported in Section 4.",
+        "global_or_local_assumption_domain": "Global Lipschitz bounds for the stated smooth/fixed-routing theoretical models."
+      }
+    },
+    {
+      "record_index": 203,
+      "citation_key": "zhang2025dualmodel",
+      "title": "Optimizing Robustness and Accuracy in Mixture of Experts: A Dual-Model Approach",
+      "primary_sources": [
+        "https://proceedings.mlr.press/v267/zhang25cj.html",
+        "https://raw.githubusercontent.com/mlresearch/v267/main/assets/zhang25cj/zhang25cj.pdf",
+        "https://github.com/TIML-Group/Robust-MoE-Dual-Model"
+      ],
+      "official_artifact_commit": "30ef94d77b5451595b82e739aa8938e1f4c4521f",
+      "dimensions": {
+        "numerical_instantiation": {
+          "code": "FORMULA_ONLY",
+          "evidence": [
+            {
+              "url": "https://raw.githubusercontent.com/mlresearch/v267/main/assets/zhang25cj/zhang25cj.pdf",
+              "locator": "Section 5, Theorems 5.4-5.5, p. 6; Section 6 and Tables 3-5, pp. 7-9",
+              "finding": "The paper states robustness-radius formulas, but its experiments report clean/AutoAttack accuracy and margins; no certified radius or certified-accuracy evaluation of Theorem 5.4/5.5 was located."
+            }
+          ]
+        },
+        "constant_protocol": {
+          "code": "UNSPECIFIED",
+          "evidence": [
+            {
+              "url": "https://raw.githubusercontent.com/mlresearch/v267/main/assets/zhang25cj/zhang25cj.pdf",
+              "locator": "Section 5, Assumption 5.3 and Theorems 5.4-5.5, pp. 5-6",
+              "finding": "The formulas require expert/router Lipschitz quantities L_Ri and r_Ri, but no sound or empirical computation protocol for those quantities is specified."
+            }
+          ]
+        },
+        "official_checkpoint": {
+          "code": "NOT_CONTACTED",
+          "evidence": [
+            {
+              "url": "https://github.com/TIML-Group/Robust-MoE-Dual-Model/releases",
+              "locator": "GitHub Releases and repository README",
+              "finding": "The official repository provides training/evaluation code but no release checkpoint. No author contact was authorized."
+            }
+          ]
+        },
+        "certificate_code": {
+          "code": "PAPER_FORMULA_ONLY",
+          "evidence": [
+            {
+              "url": "https://github.com/TIML-Group/Robust-MoE-Dual-Model",
+              "locator": "README and repository tree",
+              "finding": "The repository documents training and adversarial evaluation; no implementation of the Theorem 5.4/5.5 certificate was located."
+            }
+          ]
+        },
+        "assumptions_machine_decidable": {
+          "code": "PARTIAL",
+          "undecidable_or_unoperationalized_premises": [
+            "The official repository has no trained checkpoint, so model-specific router margins and expert quantities cannot be evaluated.",
+            "No computation protocol is supplied for L_Ri and r_Ri.",
+            "The theorem's gate semantics and the released hard-argmax router require separate readings rather than a silent identification."
+          ],
+          "evidence": [
+            {
+              "url": "https://github.com/TIML-Group/Robust-MoE-Dual-Model/blob/main/models/moe.py",
+              "locator": "Router.forward and MOE_Resnet18.forward",
+              "finding": "The affine router boundary is machine-decidable for concrete weights, but no weights are released and the theorem constants remain unoperationalized."
+            }
+          ]
+        },
+        "artifact_theorem_semantics": {
+          "code": "GAP",
+          "mismatches": [
+            "The official implementation computes a linear router's logits, takes torch.argmax, and returns only the selected expert output.",
+            "Theorem 5.4 is stated using Lipschitz router functions/weights in a weighted MoE output; the paper does not establish its applicability to the released hard-dispatch semantics.",
+            "No checkpoint or certificate implementation permits numerical reconciliation."
+          ],
+          "evidence": [
+            {
+              "url": "https://github.com/TIML-Group/Robust-MoE-Dual-Model/blob/main/models/moe.py",
+              "locator": "models/moe.py: Router.gate, Router.forward, MOE_Resnet18.forward",
+              "finding": "The official code is Linear(input, experts) followed by argmax and selected-expert dispatch."
+            },
+            {
+              "url": "https://raw.githubusercontent.com/mlresearch/v267/main/assets/zhang25cj/zhang25cj.pdf",
+              "locator": "Section 3 and Section 5, pp. 3-6",
+              "finding": "The paper's formal object and assumptions are expressed through input-dependent router weights and their Lipschitz constants."
+            }
+          ]
+        }
+      },
+      "semantics": {
+        "router_and_gate_type": "Official code: affine input router (Linear(3*size*size, num_experts)) with hard argmax top-1 dispatch.",
+        "top_k_and_tie_semantics": "top-1 torch.argmax; first-index tie behavior follows PyTorch implementation but is not discussed in the theorem.",
+        "weighted_or_selected_output": "Official code returns selected-expert logits; dual model averages outputs of two separately routed MoEs with fixed alpha.",
+        "logit_probability_or_margin_output": "Raw expert logits; attack experiments report accuracy/margins.",
+        "preprocessing_and_perturbation_units": "CIFAR-10 image l-infinity attacks in paper configuration; exact normalization-to-pixel-domain mapping requires reproduction audit.",
+        "global_or_local_assumption_domain": "Theorem 5.4/5.5 uses local robustness radii conditional on global/local Lipschitz premises and stable router-score separation."
+      }
+    }
+  ]
+}

@@ -797,6 +797,14 @@ counts only, not prevalence estimates. Reviewer inputs, hashes, disagreement
 rationales, and the executable reconciliation are committed with the partial
 result.
 
+Primary-source extraction is now complete for those eight already-adjudicated
+families. The partial matrix contains 48/48 frozen dimension cells, each with a
+URL and section/page/path locator, and retains the stronger label
+`PARTIAL_RETRIEVAL_NO_PREVALENCE`. An independent schema/evidence-completeness
+audit reports zero issues. The matrix does not close the preregistered search:
+source-native exports and snowballing remain incomplete, SpecSphere's official
+anonymous code link returned HTTP 403, and no author contact was authorized.
+
 ## ICML 2025 B1 author-pin compatibility probe
 
 The exact official dependency pins now import from the isolated
