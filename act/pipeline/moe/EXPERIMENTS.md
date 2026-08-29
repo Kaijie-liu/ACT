@@ -951,3 +951,23 @@ rows stop after the frozen exact candidate stage; invariant rows share one fresh
 downstream execution with Route A. This comparison may establish coverage cost
 and Route A-only certificates, but it is not a same-process solver speedup
 benchmark. The original confirmatory `56/100` endpoint remains immutable.
+
+## Incremental expert HZ backend code freeze
+
+The expert support/property path now has an opt-in `highspy` session that
+lowers one sparse-HZ branch once, changes column objectives incrementally, and
+reuses a scratch-row pool for property queries. It preserves the existing
+support/minimum/property return types and three-valued verdict policy. Only an
+exact output HZ that shares the input frame may return a falsified witness; a
+relaxed witness remains `UNKNOWN`. Any HiGHS warning or partial update
+invalidates the session, after which support falls back to sound fast bounds
+and properties fail closed to `UNKNOWN`.
+
+The implementation sets `small_matrix_value=1e-12` and rejects smaller nonzero
+base or scratch-row coefficients before HiGHS can silently drop them. Telemetry
+separates model builds, objective and row updates, solve counts, accepted basis
+submissions, iterations, nodes, and time. An accepted basis submission is not
+reported as proof of solver-internal warm-start use. Synthetic LP/MILP,
+support, minimum, and property tests compare against the existing SciPy path.
+This is a code/mechanism result until the opt-in path is connected to a frozen
+engineering rerun; it does not alter the confirmatory endpoint.

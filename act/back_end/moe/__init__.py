@@ -47,6 +47,10 @@ from act.back_end.moe.guarded_box_hull import (
     guarded_hz_box_hull_highs,
     guarded_hz_box_hull_scipy,
 )
+from act.back_end.moe.incremental_hz_solver import (
+    IncrementalHZBranchSolver,
+    IncrementalHZTelemetry,
+)
 from act.back_end.moe.conditioned_difference_support import (
     AffinePathSegment,
     ConditionedSegmentSupport,
@@ -119,6 +123,8 @@ __all__ = [
     "SegmentedWeightedTop2Encoding",
     "GuardedBoxHullResult",
     "GuardedHullTelemetry",
+    "IncrementalHZBranchSolver",
+    "IncrementalHZTelemetry",
     "EtaBandAudit",
     "AffineCompetitorBoundary",
     "AffineTop1RouteBoundary",
