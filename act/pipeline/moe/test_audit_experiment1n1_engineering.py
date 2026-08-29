@@ -57,6 +57,30 @@ class AuditExperiment1N1EngineeringTests(unittest.TestCase):
         }
         self.assertEqual(_safe_structure_issues(row), [])
 
+    def test_reused_safe_pair_propagates_to_nested_properties(self):
+        row = {
+            "n1": {
+                "status": "SAFE",
+                "feasible_pairs": [[0, 1]],
+                "pairs": [
+                    {
+                        "pair": [0, 1],
+                        "status": "SAFE",
+                        "reused_parent": True,
+                        "property_rows": [
+                            {
+                                "property_index": 0,
+                                "status": "SAFE",
+                                "reason": "SAFE_WEIGHTED_RANGE",
+                                "segments": [],
+                            }
+                        ],
+                    }
+                ],
+            }
+        }
+        self.assertEqual(_safe_structure_issues(row), [])
+
     def test_safe_must_cover_every_feasible_pair(self):
         row = {
             "n1": {

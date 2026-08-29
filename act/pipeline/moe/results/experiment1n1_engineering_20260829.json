@@ -1,0 +1,73 @@
+{
+  "artifact_sha256": {
+    "results_csv": "d55b989a2ca13ba2ca4b7cb47b8b2dc1efabdfbd942d97bd0d38d647911accf5",
+    "results_jsonl": "d2204ac825de26ed3479d0d0b0a4ff3c08f708ae525d71595560890a0bd22277",
+    "runner_summary": "1e36250976b6113d080c925cf1ce1d8747697d95a2beb09036dfe7e567fcd738",
+    "runtime_config": "5184bf7ce3f5c27cf525340348b713e9b7cb82ebe019d2fa0fc75b3fb5d89d5e"
+  },
+  "independent_audit": {
+    "issue_count": 0,
+    "sha256": "5a70290ba8c5468ae384f973d53bfff3287c9310df59f85f13ca1e900fd83abd",
+    "unsafe_replayed": 3
+  },
+  "result": {
+    "active_segments": 168,
+    "all_unsafe_full_forward_validated": true,
+    "baseline_solved": 12,
+    "baseline_solved_rate": 0.6,
+    "conditioned_support": {
+      "active_segments_with_recorded_range": 168,
+      "properties_with_any_strict_difference_tightening": 11,
+      "segmented_properties_with_recorded_unconditional_range": 157,
+      "segments_with_strict_difference_tightening": 11
+    },
+    "n1_solved": 14,
+    "n1_solved_rate": 0.7,
+    "new_full_forward_unsafe_ranks": [
+      120
+    ],
+    "new_safe_ranks": [
+      125
+    ],
+    "original_confirmatory_overall_solved_rate_immutable": 0.56,
+    "paired_solved_table": {
+      "baseline_solved_n1_solved_n11": 12,
+      "baseline_solved_n1_unsolved_n10": 0,
+      "baseline_unsolved_n1_solved_n01": 2,
+      "baseline_unsolved_n1_unsolved_n00": 6,
+      "exact_two_sided_mcnemar_p": 0.5,
+      "net_solved_gain": 2,
+      "test": "exact paired binomial/McNemar on discordant solved indicators"
+    },
+    "reason_counts": {
+      "INSTANCE_HARD_DEADLINE": 1,
+      "SAFE_WEIGHTED_RANGE": 11,
+      "UNKNOWN_WEIGHTED_RELAXATION": 2,
+      "UNKNOWN_WEIGHTED_SOLVER_LIMIT": 3,
+      "UNSAFE_FULL_FORWARD_FALLBACK": 3
+    },
+    "rows": 20,
+    "runtime": {
+      "interpretation": "descriptive engineering runtime; not a confirmatory endpoint",
+      "paired_difference_median_seconds": 15.908984548877925,
+      "paired_ratio_median": 1.2117956008679809
+    },
+    "scope": "engineering_performance_rerun_not_confirmatory_overwrite",
+    "segmented_property_rows": 157,
+    "status_counts": {
+      "SAFE": 11,
+      "TIMEOUT": 1,
+      "UNKNOWN": 5,
+      "UNSAFE": 3
+    },
+    "transition_counts": {
+      "SAFE->SAFE": 10,
+      "TIMEOUT->UNSAFE": 1,
+      "UNKNOWN->SAFE": 1,
+      "UNKNOWN->TIMEOUT": 1,
+      "UNKNOWN->UNKNOWN": 5,
+      "UNSAFE->UNSAFE": 2
+    }
+  },
+  "schema_version": 1
+}

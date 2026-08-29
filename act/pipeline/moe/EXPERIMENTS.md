@@ -788,7 +788,7 @@ pending full-model replay. The implementation reuses an identity-bound
 conditioned difference range instead of silently recomputing it on a different
 domain. Two additional tests cover end-to-end segmented SAFE aggregation and
 the prohibition on direct relaxation UNSAFE. Its engineering performance rerun
-remains pending.
+is reported below.
 
 ## Certification-gap survey partial execution
 
@@ -851,3 +851,25 @@ limit stopped the third property. Its progress artifact reports an explicit
 weighted solver limit. The incomplete smoke directory is retained and excluded
 from all summaries; only the 900-second child-process run below can produce the
 paired engineering result.
+
+The complete 20-row run finished without semantic conflicts. The unsegmented
+D0 baseline solved 12/20 rows (60%); N1 solved 14/20 (70%). The paired table is
+`n11=12, n10=0, n01=2, n00=6`, so the net gain is two rows and the exact
+two-sided paired binomial/McNemar p-value is 0.5. N1 added one SAFE result
+(rank 125) and one full-forward-validated UNSAFE result (rank 120). All three
+UNSAFE rows in the completed artifact replay successfully through the frozen
+weighted top-2 model. The original confirmatory endpoint remains 56/100 and is
+not overwritten by this engineering comparison.
+
+Retained-margin support was evaluated for 157 properties and 168 active
+segments. Eleven properties had at least one strict expert-difference support
+tightening. The median paired runtime difference was +15.91 seconds and the
+median ratio was 1.212, so this run supports a small coverage gain but not a
+runtime-speedup claim. The initial independent audit file is retained as a
+failed audit artifact: it emitted false positives because it did not inherit a
+pair-level `reused_parent` marker and compared two parent rows that had timed
+out before recording F0 pairs against an empty set. Audit schema v2 fixes those
+checks and independently rematerializes exact feasible top-2 sets for every
+non-timeout row. It reports zero issues, 20 unique ranks, no semantic-source
+drift, and 3/3 UNSAFE witness replays. The immutable publishable summary is
+`act/pipeline/moe/results/experiment1n1_engineering_20260829.json`.

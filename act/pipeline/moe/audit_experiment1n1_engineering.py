@@ -11,8 +11,21 @@ from typing import Any, Sequence
 
 import torch
 
-from act.back_end.moe import load_output_moe_checkpoint
-from act.pipeline.moe.experiment1 import PROJECT_ROOT, WRITE_ROOT, _inside, _sha256, _write_json
+from act.back_end.moe import (
+    analyze_topk_sets,
+    build_act_moe_program,
+    load_output_moe_checkpoint,
+)
+from act.back_end.solver.solver_hz import SparseHZono
+from act.front_end.specs import OutKind, OutputSpec
+from act.pipeline.moe.experiment1 import (
+    PROJECT_ROOT,
+    WRITE_ROOT,
+    _inside,
+    _propagate_component,
+    _sha256,
+    _write_json,
+)
 from act.pipeline.moe.train import _load_dataset
 
 
@@ -66,6 +79,7 @@ def _safe_structure_issues(
     if len(recorded_pairs) != len(pairs):
         issues.append("SAFE row contains a duplicate pair")
     for pair in pairs:
+        pair_reused = bool(pair.get("reused_parent"))
         if pair.get("status") != "SAFE":
             issues.append(f"SAFE row contains non-SAFE pair {pair.get('pair')}")
         properties = pair.get("property_rows", [])
@@ -84,7 +98,10 @@ def _safe_structure_issues(
                     f"SAFE row contains non-SAFE property {pair.get('pair')}/"
                     f"{prop.get('property_index')}"
                 )
-            if prop.get("reused_parent"):
+            # Experiment 1D can reuse an entire SAFE pair.  In that case the
+            # pair, rather than every nested property copied from it, carries
+            # the provenance marker.
+            if pair_reused or prop.get("reused_parent"):
                 continue
             if prop.get("reason") != "SAFE_WEIGHTED_SEGMENTED":
                 issues.append("new segmented SAFE property has the wrong reason")
@@ -94,6 +111,49 @@ def _safe_structure_issues(
             if any(segment.get("decision", {}).get("status") != "SAFE" for segment in segments):
                 issues.append("new segmented SAFE property contains a non-SAFE segment")
     return issues
+
+
+def _recompute_exact_pairs(
+    row: dict[str, Any],
+    *,
+    model,
+    dataset,
+    time_limit_per_set: float,
+) -> tuple[list[tuple[int, ...]] | None, str | None]:
+    """Independently rematerialize the exact reachable unordered top-k sets."""
+
+    image, label = dataset[int(row["dataset_index"])]
+    clean = image.unsqueeze(0).double()
+    epsilon = float(row["epsilon"])
+    lower, upper = (clean - epsilon).clamp(0, 1), (clean + epsilon).clamp(0, 1)
+    with torch.no_grad():
+        clean_output, _ = model.forward_with_routing(clean)
+    prediction = int(clean_output.argmax(dim=1).item())
+    if prediction != int(label):
+        return None, "frozen sample is no longer clean-correct during pair replay"
+    spec = OutputSpec(kind=OutKind.TOP1_ROBUST, y_true=[prediction])
+    program = build_act_moe_program(
+        model,
+        center=clean,
+        lower=lower,
+        upper=upper,
+        output_spec=spec,
+    )
+    router = _propagate_component(program.router)
+    if not isinstance(router.output_hz, SparseHZono) or not router.output_hz.exact:
+        return None, "pair replay did not produce an exact router HZ"
+    route_sets = analyze_topk_sets(
+        router.output_hz,
+        model.spec.top_k,
+        time_limit_per_set=time_limit_per_set,
+        router_exact=True,
+    )
+    if not route_sets.exact:
+        return None, "pair replay did not complete exact route-set feasibility"
+    return [
+        tuple(sorted(int(value) for value in pair))
+        for pair in route_sets.feasible
+    ], None
 
 
 def _replay_unsafe(
@@ -216,12 +276,17 @@ def audit(config_path: Path, result_dir: Path) -> dict[str, Any]:
             tuple(sorted(int(value) for value in pair))
             for pair in (row.get("n1") or {}).get("feasible_pairs", [])
         }
-        baseline_pairs = {
-            tuple(sorted(int(value) for value in pair))
-            for pair in (parent.get("f0") or {}).get("feasible_pairs", [])
-        }
-        if row.get("status") != "TIMEOUT" and n1_pairs != baseline_pairs:
-            add("pairing", "N1 feasible route pairs differ from paired baseline", rank)
+        if row.get("status") != "TIMEOUT":
+            replayed_pairs, replay_error = _recompute_exact_pairs(
+                row,
+                model=model,
+                dataset=dataset,
+                time_limit_per_set=float(config["candidate_query_timeout"]),
+            )
+            if replay_error is not None:
+                add("pairing", replay_error, rank)
+            elif n1_pairs != set(replayed_pairs or []):
+                add("pairing", "N1 feasible route pairs differ from exact replay", rank)
         expected_transition = f"{parent['status']}->{row['status']}"
         if row.get("paired_transition") != expected_transition:
             add("pairing", "paired transition mismatch", rank)
@@ -255,7 +320,7 @@ def audit(config_path: Path, result_dir: Path) -> dict[str, Any]:
     if recomputed_transitions != summary.get("paired_transitions"):
         add("summary", "paired transition counts mismatch")
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "scope": "independent_n1_engineering_artifact_audit",
         "issues": issues,
         "issue_count": len(issues),
