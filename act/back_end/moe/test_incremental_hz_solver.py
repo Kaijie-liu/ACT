@@ -22,6 +22,28 @@ from act.util.stats import VerifyStatus
 
 
 class IncrementalHZBranchSolverTests(unittest.TestCase):
+    def test_only_explicit_run_time_limit_warning_is_reusable(self):
+        import highspy
+
+        self.assertTrue(
+            IncrementalHZBranchSolver._run_status_is_expected_time_limit(
+                highspy.HighsStatus.kWarning,
+                highspy.HighsModelStatus.kTimeLimit,
+            )
+        )
+        self.assertFalse(
+            IncrementalHZBranchSolver._run_status_is_expected_time_limit(
+                highspy.HighsStatus.kWarning,
+                highspy.HighsModelStatus.kOptimal,
+            )
+        )
+        self.assertFalse(
+            IncrementalHZBranchSolver._run_status_is_expected_time_limit(
+                highspy.HighsStatus.kError,
+                highspy.HighsModelStatus.kTimeLimit,
+            )
+        )
+
     def _entry(self, lower=(-1.0, -1.0), upper=(1.0, 1.0), frame=1201):
         return sparse_hz_from_bounds(
             Bounds(

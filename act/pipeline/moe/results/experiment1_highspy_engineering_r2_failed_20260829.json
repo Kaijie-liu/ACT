@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "experiment": "experiment1_highspy_incremental_engineering_r2",
+  "status": "FAILED_EXCLUDED",
+  "scope": "engineering_backend_control_status_failure_not_scientific_result",
+  "failure": {
+    "completed_rows": 1,
+    "failed_rank": 110,
+    "observed_status": "TIMEOUT/TIMEOUT_SUPPORT",
+    "cause": "HiGHS run() returned HighsStatus.kWarning when the explicitly configured solve time limit was reached. The backend invalidated the session before reading HighsModelStatus.kTimeLimit, so the registered low-budget to escalation reuse path could not execute.",
+    "manual_stop_after_first_row": true,
+    "semantic_interpretation": "control-status classification failure; not evidence that incremental escalation is ineffective",
+    "corrective_policy": "Accept only the exact pair run()==kWarning and model_status==kTimeLimit as an expected reusable budget limit. All objective, row, basis, matrix, and other run warnings remain fail closed. Count every accepted time-limit warning in telemetry.",
+    "r3_output_directory": "/data1/Kane/MOE/ACT/data/moe/results/experiment1_highspy_incremental_engineering_r3"
+  },
+  "raw_artifacts": {
+    "directory": "/data1/Kane/MOE/ACT/data/moe/results/experiment1_highspy_incremental_engineering_r2",
+    "config_json_sha256": "8b9ce08a51a708ab6cbf261540831805a1d1020128cc60aa8af59ddf77af0637",
+    "experiment_log_sha256": "dc96acd3004405f7597747893a182cbb22868e6aff33a1db66a91d8c01ef87a8",
+    "results_csv_sha256": "b2620a99b4415f949678b393bad45ba10d4dc3a6a02dac0ad5df4bcd28e3b098",
+    "results_jsonl_sha256": "c14ff943965e5f0cdb6fcbf0e39a3d4f61f1c4451e958c54c52f5262e78bb907",
+    "rank110_checkpoint_sha256": "bc1395592dc9d637a23b15ba56db2816b44bd51edffa97fc06a20bbcb321970e",
+    "rank110_progress_sha256": "32b7e30d80bfcf9b61747840c268852ea46052ff7a2a5eaead5dede50e8d92d5",
+    "rank110_row_sha256": "4b971877a6c76e5e17959b9e68c09fc22e09c001f02d6df212d96a52c0ae7730",
+    "selection_json_sha256": "03e525b35258b024bc3cdcff9bb0eaff7bf0e5c6b81acd9befa3a856a6e4ecf0",
+    "launcher_log_sha256": "738bc68b8b0d45042c5cc8a9b68711f166294e6c407160a0519b303c24cfef62"
+  },
+  "exclusion_policy": "Retain r2 immutably and exclude its TIMEOUT from paired results. Run all 20 rows from scratch in r3."
+}

@@ -1063,6 +1063,17 @@ The `_r1` row is excluded and retained in
 `act/pipeline/moe/results/experiment1_highspy_engineering_r1_failed_20260829.json`;
 the clean `_r2` run starts all 20 rows again in a new directory.
 
+The `_r2` launch then exposed a distinct control-status bug on the first row:
+HiGHS returns `kWarning` from `run()` when an explicitly configured time limit
+is reached, while the model status is `kTimeLimit`. Treating that expected pair
+as a partial-update warning invalidated the session before escalation, making
+the intended budget extension impossible. `_r2` was stopped and excluded. The
+backend now accepts only this exact run/model-status pair and counts it as
+`run_time_limit_warnings_accepted`; all update, matrix, basis, and other run
+warnings still invalidate the session. The record is
+`act/pipeline/moe/results/experiment1_highspy_engineering_r2_failed_20260829.json`.
+The `_r3` run again starts all 20 rows from scratch.
+
 ## P0b CROWN adapter consistency code freeze
 
 The frozen 43-branch bal010 cohort compares four representations of the same

@@ -69,6 +69,7 @@ class IncrementalHZTelemetry:
     row_bound_updates: int
     row_update_seconds: float
     integrality_update_calls: int
+    run_time_limit_warnings_accepted: int
     budget_extension_calls: int
     budget_extension_seconds: float
     solves: int
@@ -150,6 +151,7 @@ class IncrementalHZBranchSolver:
         self._row_bounds = 0
         self._row_seconds = 0.0
         self._integrality_calls = 0
+        self._run_time_limit_warnings_accepted = 0
         self._budget_extension_calls = 0
         self._budget_extension_seconds = 0.0
         self._solves = 0
@@ -185,6 +187,15 @@ class IncrementalHZBranchSolver:
     def _require_ok(self, status, operation: str) -> None:
         if status != highspy.HighsStatus.kOk:
             raise _BackendFailure(f"{operation}:{status}")
+
+    @staticmethod
+    def _run_status_is_expected_time_limit(run_status, model_status) -> bool:
+        """Accept only HiGHS' documented run warning for an explicit limit."""
+
+        return bool(
+            run_status == highspy.HighsStatus.kWarning
+            and model_status == highspy.HighsModelStatus.kTimeLimit
+        )
 
     def _set_option(self, name: str, value) -> None:
         self._require_ok(self._solver.setOptionValue(name, value), f"option_{name}")
@@ -288,6 +299,9 @@ class IncrementalHZBranchSolver:
             row_bound_updates=self._row_bounds,
             row_update_seconds=self._row_seconds,
             integrality_update_calls=self._integrality_calls,
+            run_time_limit_warnings_accepted=(
+                self._run_time_limit_warnings_accepted
+            ),
             budget_extension_calls=self._budget_extension_calls,
             budget_extension_seconds=self._budget_extension_seconds,
             solves=self._solves,
@@ -475,7 +489,14 @@ class IncrementalHZBranchSolver:
             self._solve_seconds += time.monotonic() - solve_started
             self._solves += 1
             if run_status != highspy.HighsStatus.kOk:
-                raise _BackendFailure(f"run:{run_status}")
+                model_status = self._solver.getModelStatus()
+                if not self._run_status_is_expected_time_limit(
+                    run_status, model_status
+                ):
+                    raise _BackendFailure(
+                        f"run:{run_status}:model:{model_status}"
+                    )
+                self._run_time_limit_warnings_accepted += 1
         except Exception as exc:
             reason = f"update_or_run_failed:{type(exc).__name__}:{exc}"
             self._statuses[reason] += 1

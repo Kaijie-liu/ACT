@@ -17,6 +17,7 @@ def _telemetry(**updates):
         "row_coefficients_changed": 2,
         "row_bound_updates": 2,
         "integrality_update_calls": 1,
+        "run_time_limit_warnings_accepted": 1,
         "budget_extension_calls": 1,
         "budget_extension_seconds": 7.0,
         "solves": 3,

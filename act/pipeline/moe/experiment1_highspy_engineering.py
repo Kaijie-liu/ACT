@@ -22,7 +22,7 @@ from act.pipeline.moe.experiment1d import run as run_experiment1d
 
 DEFAULT_CONFIG = (
     PROJECT_ROOT
-    / "act/pipeline/moe/configs/experiment1_highspy_engineering_r2.json"
+    / "act/pipeline/moe/configs/experiment1_highspy_engineering_r3.json"
 )
 
 _COUNT_KEYS = (
@@ -35,6 +35,7 @@ _COUNT_KEYS = (
     "row_coefficients_changed",
     "row_bound_updates",
     "integrality_update_calls",
+    "run_time_limit_warnings_accepted",
     "budget_extension_calls",
     "solves",
     "cold_start_solves",
