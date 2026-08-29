@@ -139,6 +139,7 @@ class Propagation:
     unstable_per_relu: tuple[int, ...]
     guarded_support: tuple[dict[str, object], ...]
     elapsed: float
+    solver_backend: str = "scipy"
 
     @property
     def unstable_total(self) -> int:
@@ -305,9 +306,8 @@ def _propagate_component(net, *, entry_hz=None, hybridz_config=None) -> Propagat
         previous_tf = get_transfer_function()
     except RuntimeError:
         previous_tf = None
-    tf = HybridzTF(
-        config=hybridz_config or HybridZConfig(max_input_dim=1024)
-    )
+    effective_config = hybridz_config or HybridZConfig(max_input_dim=1024)
+    tf = HybridzTF(config=effective_config)
     set_transfer_function(tf)
     set_solver_mode("hybridz")
     if entry_hz is not None:
@@ -343,6 +343,7 @@ def _propagate_component(net, *, entry_hz=None, hybridz_config=None) -> Propagat
             tuple(unstable),
             tf.guarded_support_stats(),
             elapsed,
+            str(effective_config.expert_property_solver_backend),
         )
     finally:
         tf.clear_entry_hz()
@@ -389,24 +390,69 @@ def _solve_output(
     *,
     input_shape: tuple[int, ...],
     time_limit: float,
+    incremental_session=None,
 ) -> VerifyResult:
     if time_limit <= 0:
         return VerifyResult(VerifyStatus.TIMEOUT, metadata={"reason": "instance_deadline"})
-    solver = HZSolver(time_limit=time_limit)
-    result = solver.evaluate_spec(
-        propagation.output_hz,
-        output_spec,
-        batch_size=1,
-        n_out=int(propagation.output_hz.n_out),
-        input_hz=propagation.input_hz,
-        input_shape=input_shape,
-        timelimit=time_limit,
-    )[0]
+    backend = str(getattr(propagation, "solver_backend", "scipy"))
+    if backend == "scipy":
+        if incremental_session is not None:
+            raise ValueError("incremental session supplied to scipy solver path")
+        solver = HZSolver(time_limit=time_limit)
+        result = solver.evaluate_spec(
+            propagation.output_hz,
+            output_spec,
+            batch_size=1,
+            n_out=int(propagation.output_hz.n_out),
+            input_hz=propagation.input_hz,
+            input_shape=input_shape,
+            timelimit=time_limit,
+        )[0]
+    elif backend == "highspy_incremental":
+        from act.back_end.moe.incremental_hz_solver import (
+            IncrementalHZBranchSolver,
+        )
+
+        session = incremental_session or IncrementalHZBranchSolver(
+            propagation.output_hz,
+            time_limit=float(time_limit),
+            relax_binaries=False,
+        )
+        if session.hz is not propagation.output_hz:
+            raise ValueError("incremental property session belongs to another HZ")
+        result = session.evaluate_spec(
+            output_spec,
+            batch_size=1,
+            n_out=int(propagation.output_hz.n_out),
+            input_hz=propagation.input_hz,
+            input_shape=input_shape,
+        )[0]
+    else:
+        raise ValueError(f"unsupported expert property backend {backend!r}")
+    if backend == "highspy_incremental":
+        result.metadata["property_solver_backend"] = backend
     elapsed = float(result.metadata.get("elapsed", 0.0))
     if result.status == VerifyStatus.UNKNOWN and elapsed >= 0.98 * time_limit:
         result.status = VerifyStatus.TIMEOUT
         result.metadata["reason"] = "solver_deadline"
     return result
+
+
+def _new_incremental_property_session(
+    propagation: Propagation,
+    *,
+    time_limit: float,
+):
+    """Build one reusable session only for an explicitly opted-in branch."""
+    if propagation.solver_backend != "highspy_incremental":
+        return None
+    from act.back_end.moe.incremental_hz_solver import IncrementalHZBranchSolver
+
+    return IncrementalHZBranchSolver(
+        propagation.output_hz,
+        time_limit=float(time_limit),
+        relax_binaries=False,
+    )
 
 
 def _paper_status(status: VerifyStatus) -> str:

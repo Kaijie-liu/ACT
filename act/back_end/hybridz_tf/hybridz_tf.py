@@ -76,6 +76,12 @@ class HybridzTF(RegistryTF):
         self._guarded_support_milp_neurons = max(0, int(cfg.guarded_support_milp_neurons))
         self._guarded_support_lp_time_limit = max(0.0, float(cfg.guarded_support_lp_time_limit))
         self._guarded_support_milp_time_limit = max(0.0, float(cfg.guarded_support_milp_time_limit))
+        self._guarded_support_solver_backend = str(
+            cfg.guarded_support_solver_backend
+        )
+        self._expert_property_solver_backend = str(
+            cfg.expert_property_solver_backend
+        )
         self._guarded_support_stats: list[dict[str, object]] = []
 
     def set_entry_hz(self, hz: "HZono | SparseHZono | None") -> None:

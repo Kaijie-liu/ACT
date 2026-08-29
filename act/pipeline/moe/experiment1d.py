@@ -26,6 +26,7 @@ import torch
 
 from act.back_end.moe import (
     SAFE_WEIGHTED_RANGE,
+    WeightedTop2F0Decision,
     UNKNOWN_WEIGHTED_NUMERICAL,
     UNKNOWN_WEIGHTED_RELAXATION,
     UNKNOWN_WEIGHTED_SOLVER_LIMIT,
@@ -50,6 +51,7 @@ from act.pipeline.moe.experiment1 import (
     _forward_validate,
     _git_value,
     _inside,
+    _new_incremental_property_session,
     _propagate_component,
     _sha256,
     _solve_output,
@@ -344,6 +346,12 @@ def _support_config(config: dict[str, Any]) -> HybridZConfig:
         guarded_support_milp_neurons=int(support["milp_neurons"]),
         guarded_support_lp_time_limit=float(support["lp_time_limit"]),
         guarded_support_milp_time_limit=float(support["milp_time_limit"]),
+        guarded_support_solver_backend=str(
+            support.get("solver_backend", "scipy")
+        ),
+        expert_property_solver_backend=str(
+            config.get("solver", {}).get("backend", "scipy")
+        ),
     )
 
 
@@ -353,6 +361,70 @@ def _attempt_budgets(recorder: RowRecorder, remaining_items: int, deadline: floa
     first = min(allocation / 3.0, max(0.0, recorder.checkpoint_seconds - recorder.elapsed()))
     second = max(0.0, allocation - first)
     return max(0.01, first), max(0.0, second)
+
+
+def _solve_f0_attempt(
+    encoding,
+    *,
+    input_shape: tuple[int, ...],
+    time_limit: float,
+    tolerance: float,
+    backend: str,
+    incremental_session=None,
+):
+    if backend == "scipy":
+        if incremental_session is not None:
+            raise ValueError("incremental F0 session supplied to scipy path")
+        return solve_weighted_top2_f0(
+            encoding,
+            input_shape=input_shape,
+            time_limit=float(time_limit),
+            tolerance=float(tolerance),
+        )
+    if backend != "highspy_incremental":
+        raise ValueError(f"unsupported F0 solver backend {backend!r}")
+    from act.back_end.moe.incremental_hz_solver import (
+        IncrementalHZBranchSolver,
+    )
+
+    session = incremental_session or IncrementalHZBranchSolver(
+        encoding.output_hz,
+        time_limit=float(time_limit),
+        relax_binaries=False,
+    )
+    if session.hz is not encoding.output_hz:
+        raise ValueError("incremental F0 session belongs to another augmented HZ")
+    result = session.minimize_output(
+        0,
+        input_hz=encoding.input_hz,
+        input_shape=input_shape,
+    )
+    if (
+        result.status == "optimal"
+        and result.minimum is not None
+        and result.minimum > float(tolerance)
+    ):
+        status, reason = "SAFE", SAFE_WEIGHTED_RANGE
+    elif result.status == "timeout":
+        status, reason = "UNKNOWN", UNKNOWN_WEIGHTED_SOLVER_LIMIT
+    elif result.status == "optimal":
+        status, reason = "UNKNOWN", UNKNOWN_WEIGHTED_RELAXATION
+    else:
+        status, reason = "UNKNOWN", UNKNOWN_WEIGHTED_NUMERICAL
+    return WeightedTop2F0Decision(
+        status=status,
+        reason=reason,
+        minimum=result.minimum,
+        candidate_objective=result.candidate_objective,
+        candidate_input=result.candidate_input,
+        solver_status=result.solver_status,
+        solver_gap=result.solver_gap,
+        elapsed=result.elapsed,
+        solver_certified_lower_bound=result.solver_certified_lower_bound,
+        solver_bound_kind=result.solver_bound_kind,
+        solver_primal_objective=result.solver_primal_objective,
+        solver_dual_objective=result.solver_dual_objective,
+    )
 
 
 def _run_f0(
@@ -432,23 +504,56 @@ def _run_f0(
                 recorder, remaining_items, float(config["instance_timeout_seconds"])
             )
             attempts = []
-            decision = solve_weighted_top2_f0(
-                encoding, input_shape=tuple(context["x"].shape),
+            f0_backend = str(
+                config.get("solver", {}).get("f0_backend", "scipy")
+            )
+            if f0_backend == "highspy_incremental":
+                from act.back_end.moe.incremental_hz_solver import (
+                    IncrementalHZBranchSolver,
+                )
+
+                incremental_session = IncrementalHZBranchSolver(
+                    encoding.output_hz,
+                    time_limit=first_budget,
+                    relax_binaries=False,
+                )
+            else:
+                incremental_session = None
+            decision = _solve_f0_attempt(
+                encoding,
+                input_shape=tuple(context["x"].shape),
                 time_limit=first_budget,
                 tolerance=float(config["f0"]["safety_tolerance"]),
+                backend=f0_backend,
+                incremental_session=incremental_session,
             )
             active = {"tier": "F0", "pair": list(pair), "property_index": property_index, "attempt": 1}
-            recorder.progress(active=active, solver=_solver_snapshot(decision))
-            attempts.append({"budget": first_budget, **_solver_snapshot(decision)})
+            attempt = {"budget": first_budget, **_solver_snapshot(decision)}
+            if incremental_session is not None:
+                attempt["incremental_hz"] = (
+                    incremental_session.telemetry().as_dict()
+                )
+            recorder.progress(active=active, solver=attempt)
+            attempts.append(attempt)
             if decision.status == "UNKNOWN" and decision.reason == UNKNOWN_WEIGHTED_SOLVER_LIMIT and second_budget > 0.01:
-                decision = solve_weighted_top2_f0(
-                    encoding, input_shape=tuple(context["x"].shape),
+                if incremental_session is not None:
+                    incremental_session.extend_budget(second_budget)
+                decision = _solve_f0_attempt(
+                    encoding,
+                    input_shape=tuple(context["x"].shape),
                     time_limit=second_budget,
                     tolerance=float(config["f0"]["safety_tolerance"]),
+                    backend=f0_backend,
+                    incremental_session=incremental_session,
                 )
                 active["attempt"] = 2
-                recorder.progress(active=active, solver=_solver_snapshot(decision))
-                attempts.append({"budget": second_budget, **_solver_snapshot(decision)})
+                attempt = {"budget": second_budget, **_solver_snapshot(decision)}
+                if incremental_session is not None:
+                    attempt["incremental_hz"] = (
+                        incremental_session.telemetry().as_dict()
+                    )
+                recorder.progress(active=active, solver=attempt)
+                attempts.append(attempt)
             remaining_items -= 1
             checked = _validate_candidate(
                 model, decision.candidate_input, clean=context["x"],
@@ -485,6 +590,13 @@ def _run_f0(
                 "counterexample_topk_set": checked["topk_set"],
                 "witness_path": witness_path, "witness_sha256": witness_hash,
                 "attempts": attempts, "reused_parent": False,
+                **({
+                    "solver_backend": f0_backend,
+                    "incremental_reuse_scope": (
+                        "same_augmented_property_low_to_escalation"
+                    ),
+                    "cross_augmented_hz_reuse": False,
+                } if incremental_session is not None else {}),
             })
             if checked["valid"]:
                 break
@@ -545,17 +657,25 @@ def _run_gate(selection, context, model, work_dir, config, recorder):
             recorder, len(unresolved), float(config["instance_timeout_seconds"])
         )
         attempts = []
+        incremental_session = _new_incremental_property_session(
+            guarded,
+            time_limit=first_budget,
+        )
         result = _solve_output(
             guarded, context["spec"], input_shape=tuple(context["x"].shape),
             time_limit=first_budget,
+            incremental_session=incremental_session,
         )
         active = {"tier": "gate_elimination", "expert": expert, "attempt": 1}
         recorder.progress(active=active, solver=_gate_solver_snapshot(result))
         attempts.append({"budget": first_budget, **_gate_solver_snapshot(result)})
         if result.status in {VerifyStatus.UNKNOWN, VerifyStatus.TIMEOUT} and second_budget > 0.01:
+            if incremental_session is not None:
+                incremental_session.extend_budget(second_budget)
             result = _solve_output(
                 guarded, context["spec"], input_shape=tuple(context["x"].shape),
                 time_limit=second_budget,
+                incremental_session=incremental_session,
             )
             active["attempt"] = 2
             recorder.progress(active=active, solver=_gate_solver_snapshot(result))

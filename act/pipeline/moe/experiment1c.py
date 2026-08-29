@@ -40,6 +40,7 @@ from act.pipeline.moe.experiment1 import (
     _forward_validate,
     _git_value,
     _inside,
+    _new_incremental_property_session,
     _propagate_component,
     _sha256,
     _solve_output,
@@ -406,11 +407,16 @@ def _solve_staged(
     escalation_budget: float,
 ) -> tuple[VerifyResult, list[dict[str, Any]]]:
     stages: list[dict[str, Any]] = []
+    incremental_session = _new_incremental_property_session(
+        propagation,
+        time_limit=low_budget,
+    )
     result = _solve_output(
         propagation,
         output_spec,
         input_shape=input_shape,
         time_limit=low_budget,
+        incremental_session=incremental_session,
     )
     stages.append(
         {
@@ -421,11 +427,14 @@ def _solve_staged(
         }
     )
     if result.status in {VerifyStatus.UNKNOWN, VerifyStatus.TIMEOUT}:
+        if incremental_session is not None:
+            incremental_session.extend_budget(escalation_budget)
         result = _solve_output(
             propagation,
             output_spec,
             input_shape=input_shape,
             time_limit=escalation_budget,
+            incremental_session=incremental_session,
         )
         stages.append(
             {
@@ -510,6 +519,12 @@ def diagnose_radius(
         guarded_support_milp_neurons=int(config["support"]["milp_neurons"]),
         guarded_support_lp_time_limit=float(config["support"]["lp_time_limit"]),
         guarded_support_milp_time_limit=float(config["support"]["milp_time_limit"]),
+        guarded_support_solver_backend=str(
+            config["support"].get("solver_backend", "scipy")
+        ),
+        expert_property_solver_backend=str(
+            config["solver"].get("backend", "scipy")
+        ),
     )
     by_expert = {branch.expert: branch for branch in candidates.branches}
     branch_rows: list[dict[str, Any]] = []

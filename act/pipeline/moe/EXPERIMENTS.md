@@ -1007,8 +1007,24 @@ separates model builds, objective and row updates, solve counts, accepted basis
 submissions, iterations, nodes, and time. An accepted basis submission is not
 reported as proof of solver-internal warm-start use. Synthetic LP/MILP,
 support, minimum, and property tests compare against the existing SciPy path.
-This is a code/mechanism result until the opt-in path is connected to a frozen
-engineering rerun; it does not alter the confirmatory endpoint.
+
+The opt-in backend is now connected to all three repeated-solve sites used by
+the frozen closure: guarded preactivation support, expert property solving, and
+the final F0 augmented property HZ. Defaults remain `scipy`; a run must request
+`highspy_incremental` separately for support, expert properties, and F0. The
+same branch model is retained across low-budget and escalation attempts through
+an explicit cumulative budget extension. Different F0 properties still produce
+different McCormick-augmented HZs, so they deliberately receive independent
+sessions; telemetry records `cross_augmented_hz_reuse=false`.
+
+`experiment1_highspy_engineering.py` freezes all 20 applicable-unresolved D0
+rows, their original radii and parent hashes, and the 900-second deadline in a
+new engineering-only result directory. It aggregates model builds, objective
+and scratch-row updates, solve calls, basis submissions, iterations, nodes,
+budget extensions, and paired status/runtime transitions. The immutable
+confirmatory endpoints remain `56/100` overall and `56/76` applicable. This is
+still a code/mechanism result until the 20-row engineering rerun and independent
+audit complete.
 
 ## P0b CROWN adapter consistency code freeze
 

@@ -90,6 +90,24 @@ class IncrementalHZBranchSolverTests(unittest.TestCase):
         self.assertEqual(high.minimum, reference.minimum)
         self.assertIsNotNone(high.candidate_input)
 
+    def test_budget_escalation_reuses_the_same_model(self):
+        entry = self._entry(lower=(-1.0,), upper=(1.0,), frame=1213)
+        output = sparse_hz_linear(entry, [[1.0]])
+        session = IncrementalHZBranchSolver(output, time_limit=0.0)
+        first = session.minimize_output(
+            0, input_hz=entry, input_shape=(1, 1)
+        )
+        self.assertEqual(first.status, "timeout")
+        session.extend_budget(5.0)
+        second = session.minimize_output(
+            0, input_hz=entry, input_shape=(1, 1)
+        )
+        self.assertEqual(second.status, "optimal")
+        telemetry = session.telemetry()
+        self.assertEqual(telemetry.model_builds, 1)
+        self.assertEqual(telemetry.budget_extension_calls, 1)
+        self.assertEqual(telemetry.budget_extension_seconds, 5.0)
+
     def test_property_statuses_match_scipy_and_reuse_scratch_row(self):
         entry = self._entry(lower=(-0.1,), upper=(0.1,), frame=1203)
         safe_output = sparse_hz_linear(entry, [[1.0], [0.0], [-1.0]], [2.0, 0.0, -2.0])

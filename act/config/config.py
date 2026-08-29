@@ -366,6 +366,21 @@ class HybridZConfig:
     guarded_support_milp_neurons: int = 0
     guarded_support_lp_time_limit: float = 0.0
     guarded_support_milp_time_limit: float = 0.0
+    guarded_support_solver_backend: str = "scipy"
+    expert_property_solver_backend: str = "scipy"
+
+    def __post_init__(self) -> None:
+        supported = {"scipy", "highspy_incremental"}
+        if self.guarded_support_solver_backend not in supported:
+            raise ValueError(
+                "guarded_support_solver_backend must be scipy or "
+                "highspy_incremental"
+            )
+        if self.expert_property_solver_backend not in supported:
+            raise ValueError(
+                "expert_property_solver_backend must be scipy or "
+                "highspy_incremental"
+            )
 
 
 @dataclass

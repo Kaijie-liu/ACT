@@ -59,6 +59,49 @@ import act.back_end.interval_tf.tf_mlp as interval
 import act.back_end.interval_tf.tf_cnn as interval_cnn
 
 
+def _guarded_support_query(tf, hz, rows, *, time_limit, relax_binaries):
+    """Dispatch one batched preactivation support sweep."""
+    backend = tf._guarded_support_solver_backend
+    if backend == "scipy":
+        return (
+            hz_support_bounds(
+                hz,
+                rows,
+                time_limit=float(time_limit),
+                relax_binaries=bool(relax_binaries),
+            ),
+            None,
+        )
+    if backend == "highspy_incremental":
+        # Local import avoids imposing highspy on default ACT installations.
+        from act.back_end.moe.incremental_hz_solver import (
+            IncrementalHZBranchSolver,
+        )
+
+        session = IncrementalHZBranchSolver(
+            hz,
+            time_limit=float(time_limit),
+            relax_binaries=bool(relax_binaries),
+        )
+        result = session.support_bounds(rows)
+        return result, session.telemetry().as_dict()
+    raise ValueError(f"unsupported guarded support backend {backend!r}")
+
+
+def _support_fallback_sides(support) -> int:
+    certified = {
+        "constant_exact",
+        "lp_optimal",
+        "milp_optimal",
+        "highs_lp_optimum",
+        "highs_mip_dual_bound",
+    }
+    return sum(
+        status not in certified
+        for status in (*support.lower_status, *support.upper_status)
+    )
+
+
 def _hz_fact(fact: Fact, hz: HZono) -> Fact:
     hb = hz_compute_bounds(hz)
     return Fact(
@@ -433,6 +476,8 @@ def _sparse_relu_bounds(hz: SparseHZono, input_bounds: Bounds, L, tf):
         "milp_statuses": [],
         "milp_exact": False,
     }
+    if tf._guarded_support_solver_backend == "highspy_incremental":
+        stats["solver_backend"] = tf._guarded_support_solver_backend
     guarded = (
         tf._guarded_support_enabled
         and tf._entry_sparse_hz_override is not None
@@ -448,7 +493,8 @@ def _sparse_relu_bounds(hz: SparseHZono, input_bounds: Bounds, L, tf):
 
     if guarded and tf._guarded_support_lp_neurons > 0:
         selected = closest(fast_unstable)[: tf._guarded_support_lp_neurons]
-        support = hz_support_bounds(
+        support, incremental_telemetry = _guarded_support_query(
+            tf,
             hz,
             selected,
             time_limit=tf._guarded_support_lp_time_limit,
@@ -459,24 +505,25 @@ def _sparse_relu_bounds(hz: SparseHZono, input_bounds: Bounds, L, tf):
         lb[selected] = np.maximum(lb[selected], support_lb)
         ub[selected] = np.minimum(ub[selected], support_ub)
         after_lp = np.flatnonzero((lb < 0.0) & (ub > 0.0)).astype(np.int64)
-        stats.update(
+        lp_stats = dict(
             lp_selected=int(len(selected)),
             after_lp_unstable=int(after_lp.size),
             after_milp_unstable=int(after_lp.size),
             lp_eliminated=int(fast_unstable.size - after_lp.size),
             lp_seconds=float(support.elapsed),
             lp_solves=int(support.solves),
-            lp_fallback_sides=sum(
-                status == "fast_fallback"
-                for status in (*support.lower_status, *support.upper_status)
-            ),
+            lp_fallback_sides=_support_fallback_sides(support),
             lp_statuses=list((*support.lower_status, *support.upper_status)),
         )
+        if incremental_telemetry is not None:
+            lp_stats["lp_incremental_telemetry"] = incremental_telemetry
+        stats.update(lp_stats)
     else:
         after_lp = fast_unstable
     if guarded and tf._guarded_support_milp_neurons > 0 and after_lp.size > 0:
         selected = closest(after_lp)[: tf._guarded_support_milp_neurons]
-        support = hz_support_bounds(
+        support, incremental_telemetry = _guarded_support_query(
+            tf,
             hz,
             selected,
             time_limit=tf._guarded_support_milp_time_limit,
@@ -487,20 +534,20 @@ def _sparse_relu_bounds(hz: SparseHZono, input_bounds: Bounds, L, tf):
         lb[selected] = np.maximum(lb[selected], support_lb)
         ub[selected] = np.minimum(ub[selected], support_ub)
         after_milp = np.flatnonzero((lb < 0.0) & (ub > 0.0)).astype(np.int64)
-        stats.update(
+        milp_stats = dict(
             milp_selected=int(len(selected)),
             after_milp_unstable=int(after_milp.size),
             milp_eliminated=int(after_lp.size - after_milp.size),
             milp_seconds=float(support.elapsed),
             milp_solves=int(support.solves),
-            milp_fallback_sides=sum(
-                status == "fast_fallback"
-                for status in (*support.lower_status, *support.upper_status)
-            ),
+            milp_fallback_sides=_support_fallback_sides(support),
             solver_gap=[value for value in support.solver_gap if value is not None],
             milp_statuses=list((*support.lower_status, *support.upper_status)),
             milp_exact=bool(support.exact),
         )
+        if incremental_telemetry is not None:
+            milp_stats["milp_incremental_telemetry"] = incremental_telemetry
+        stats.update(milp_stats)
     if guarded:
         tf._guarded_support_stats.append(stats)
     return lb, ub

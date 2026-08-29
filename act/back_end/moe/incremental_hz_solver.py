@@ -69,6 +69,8 @@ class IncrementalHZTelemetry:
     row_bound_updates: int
     row_update_seconds: float
     integrality_update_calls: int
+    budget_extension_calls: int
+    budget_extension_seconds: float
     solves: int
     cold_start_solves: int
     basis_submission_attempts: int
@@ -148,6 +150,8 @@ class IncrementalHZBranchSolver:
         self._row_bounds = 0
         self._row_seconds = 0.0
         self._integrality_calls = 0
+        self._budget_extension_calls = 0
+        self._budget_extension_seconds = 0.0
         self._solves = 0
         self._cold_solves = 0
         self._basis_attempts = 0
@@ -168,6 +172,15 @@ class IncrementalHZBranchSolver:
     @property
     def available(self) -> bool:
         return self._solver is not None and self._build_error is None
+
+    def extend_budget(self, additional_seconds: float) -> None:
+        """Extend the cumulative deadline without rebuilding solver state."""
+        seconds = float(additional_seconds)
+        if not np.isfinite(seconds) or seconds < 0.0:
+            raise ValueError("budget extension must be finite and non-negative")
+        self.deadline += seconds
+        self._budget_extension_calls += 1
+        self._budget_extension_seconds += seconds
 
     def _require_ok(self, status, operation: str) -> None:
         if status != highspy.HighsStatus.kOk:
@@ -275,6 +288,8 @@ class IncrementalHZBranchSolver:
             row_bound_updates=self._row_bounds,
             row_update_seconds=self._row_seconds,
             integrality_update_calls=self._integrality_calls,
+            budget_extension_calls=self._budget_extension_calls,
+            budget_extension_seconds=self._budget_extension_seconds,
             solves=self._solves,
             cold_start_solves=self._cold_solves,
             basis_submission_attempts=self._basis_attempts,
@@ -701,6 +716,7 @@ class IncrementalHZBranchSolver:
         tolerance: float = HZ_NUMERICAL_POLICY.feasibility_tolerance,
     ) -> list[VerifyResult]:
         """Mirror HZSolver property semantics with one reusable highspy model."""
+        call_started = time.monotonic()
         batch = int(batch_size)
         if self.model.value_center.size != batch * int(n_out):
             return self._unknown_results(batch, "output_shape_mismatch")
@@ -838,6 +854,9 @@ class IncrementalHZBranchSolver:
         telemetry = self.telemetry().as_dict()
         for result in results:
             result.metadata["incremental_hz"] = telemetry
+            result.metadata["elapsed"] = time.monotonic() - call_started
+            result.metadata["solves"] = telemetry["solves"]
+            result.metadata["nodes"] = telemetry["mip_nodes"]
         return results
 
     def _validated_unsafe_witness(
