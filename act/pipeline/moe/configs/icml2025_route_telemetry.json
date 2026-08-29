@@ -55,8 +55,11 @@
     "runtime_and_environment"
   ],
   "execution_gate": {
-    "dependency_authorized": false,
-    "environment_created": false,
+    "dependency_authorized": true,
+    "environment_created": true,
+    "author_pin_imports_pass": true,
+    "author_pin_cuda_kernel_pass": false,
+    "blocked_reason": "torch 2.4.0+cu121 supports through sm_90; installed GPU is sm_120",
     "training_started": false
   }
 }

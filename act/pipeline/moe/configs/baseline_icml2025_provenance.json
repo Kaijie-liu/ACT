@@ -1,7 +1,7 @@
 {
   "schema": "act-moe-baseline-provenance-v1",
   "audit_date": "2026-08-29",
-  "stage": "B0_PROTOCOL_ONLY",
+  "stage": "B1_AUTHOR_PIN_COMPATIBILITY_BLOCKED",
   "act": {
     "repository": "/data1/Kane/MOE/ACT",
     "branch": "feat/moe-route-verification",
@@ -142,7 +142,7 @@
     }
   ],
   "environment": {
-    "python": "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+    "python": "/data1/Kane/MOE/envs/rt-er-repro/bin/python",
     "author_requirements": {
       "einops": "0.8.1",
       "ffcv": "1.0.2",
@@ -156,15 +156,24 @@
       "torchvision": "0.19.0"
     },
     "observed": {
-      "torch": "2.9.1+cu128",
-      "torchvision": "0.24.1+cu128",
-      "ffcv": "MISSING",
-      "timm": "MISSING",
-      "einops": "MISSING",
+      "python": "3.11.16",
+      "torch": "2.4.0+cu121",
+      "torchvision": "0.19.0+cu121",
+      "ffcv_distribution": "1.0.2",
+      "ffcv_module_version_attribute": "0.0.3rc1",
+      "timm": "1.0.15",
+      "einops": "0.8.1",
       "wandb": "MISSING"
     },
-    "dependency_install_authorized": false,
-    "b1_blocked": true
+    "dependency_install_authorized": true,
+    "isolated_environment_created": true,
+    "act_py312_unchanged": true,
+    "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+    "gpu_compute_capability": "sm_120",
+    "torch_cuda_arch_list": ["sm_50", "sm_60", "sm_70", "sm_75", "sm_80", "sm_86", "sm_90"],
+    "cuda_kernel_smoke": "FAIL_NO_KERNEL_IMAGE_SM120",
+    "b1_blocked": true,
+    "blocked_reason": "exact author-pinned PyTorch binary cannot execute CUDA kernels on sm_120"
   },
   "dataset": {
     "source": "official Torchvision CIFAR10 archive",
@@ -191,6 +200,7 @@
     "route_telemetry_every_epochs": 10,
     "immutable_intermediate_checkpoints_required": true,
     "f0_enabled": false,
+    "compatibility_probe_completed": true,
     "smoke_started": false,
     "training_started": false,
     "act_conversion_started": false,

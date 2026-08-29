@@ -114,23 +114,28 @@ Scientific patches cannot be labeled an official-code reproduction.
 
 ## Environment gate
 
-The only permitted environment is
-`/data1/Kane/miniconda3/envs/act-py312`. The B0 audit found:
+Dependency installation was subsequently authorized in an isolated environment
+under `/data1/Kane/MOE`; `act-py312` remains unchanged. The exact author pin is
+installed at `/data1/Kane/MOE/envs/rt-er-repro`:
 
-| Package | Author pin | Current environment |
+| Package | Author pin | Isolated author-pin environment |
 |---|---:|---:|
-| torch | 2.4.0 | 2.9.1+cu128 |
-| torchvision | 0.19.0 | 0.24.1+cu128 |
-| FFCV | 1.0.2 | missing |
-| timm | 1.0.15 | missing |
-| einops | 0.8.1 | missing |
+| torch | 2.4.0 | 2.4.0+cu121 |
+| torchvision | 0.19.0 | 0.19.0+cu121 |
+| FFCV | 1.0.2 | 1.0.2 |
+| timm | 1.0.15 | 1.0.15 |
+| einops | 0.8.1 | 0.8.1 |
 | wandb | not pinned | missing |
 
-Therefore B1 is currently **blocked by the no-install rule**. No smoke command
-may be launched until the user separately authorizes a dependency resolution
-that remains under `/data1/Kane/MOE`. Replacing FFCV with a Torchvision loader is
-a scientific/data-pipeline modification and cannot be used as the primary
-official-code reproduction.
+All imports pass. However, the installed GPU is Blackwell `sm_120`, whereas the
+author-pinned PyTorch binary contains kernels only through `sm_90`; the first
+CUDA tensor kernel fails with `no kernel image is available for execution on
+the device`. Since the author script unconditionally calls `net.cuda()`, B1 is
+now **blocked by an exact-pin hardware compatibility failure**, not by missing
+dependencies. No dataset conversion, smoke training, or full training was
+started. Replacing FFCV with a Torchvision loader remains a scientific data-
+pipeline modification. A newer PyTorch run would be a separately labeled
+Blackwell-compatible official-code reproduction, never a silent substitution.
 
 ## Dataset identity and write containment
 
@@ -287,7 +292,9 @@ B0 is complete when this document and its provenance JSON validate and are
 pushed. It unlocks only a dependency decision, not B1 execution.
 
 B1 requires explicit dependency authorization, a clean external clone, a
-committed wrapper/patch ledger, contained output paths, and a passing smoke.
+committed wrapper/patch ledger, contained output paths, and a passing smoke. The
+exact author pin currently fails the CUDA compatibility probe on `sm_120`, so
+this gate remains closed pending an explicitly labeled compatibility variant.
 B2 requires an audited seed-0 checkpoint. B3 requires B2 conformance.
 
 No public baseline, F1, confirmatory extension, or new training was launched by

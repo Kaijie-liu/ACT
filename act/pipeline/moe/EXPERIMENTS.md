@@ -797,6 +797,18 @@ counts only, not prevalence estimates. Reviewer inputs, hashes, disagreement
 rationales, and the executable reconciliation are committed with the partial
 result.
 
+## ICML 2025 B1 author-pin compatibility probe
+
+The exact official dependency pins now import from the isolated
+`/data1/Kane/MOE/envs/rt-er-repro` environment, and the external official clone
+remains clean at `30ef94d7`. The B1 probe fails at the first CUDA tensor kernel:
+PyTorch 2.4.0+cu121 supplies architectures through `sm_90`, while the installed
+Blackwell GPU is `sm_120`. The author script unconditionally calls CUDA, so no
+dataset conversion, training smoke, or epoch was started. This is recorded as
+an exact-pin compatibility result. A newer-PyTorch run requires a separately
+labeled Blackwell-compatible reproduction and cannot silently replace the
+author-pin result.
+
 ## N1 engineering rerun code freeze
 
 The N1 performance runner freezes the original 20-row applicable-unresolved
