@@ -68,7 +68,7 @@ from act.util.path_config import get_torchvision_data_root
 from act.util.stats import VerifyStatus
 
 
-DEFAULT_CONFIG = PROJECT_ROOT / "act/pipeline/moe/configs/experiment1d_bal010_r1.json"
+DEFAULT_CONFIG = PROJECT_ROOT / "act/pipeline/moe/configs/experiment1d_bal010_r2.json"
 EXPECTED_PYTHON = Path("/data1/Kane/miniconda3/envs/act-py312/bin/python")
 SEMANTIC_REASONS = {
     "UNKNOWN_GATE_SUFFICIENCY",
@@ -149,9 +149,32 @@ def _support_signature(record: dict[str, Any]) -> dict[str, Any]:
     return {key: record.get(key) for key in keys}
 
 
-def _assert_support_identity(actual: dict[str, Any], parent: dict[str, Any]) -> None:
-    if _support_signature(actual) != _support_signature(parent):
+def _assert_support_identity(
+    actual: dict[str, Any], parent: dict[str, Any]
+) -> dict[str, Any]:
+    actual_signature = _support_signature(actual)
+    parent_signature = _support_signature(parent)
+    required_keys = tuple(
+        key for key in actual_signature if key != "fallback_sides"
+    )
+    if any(
+        actual_signature[key] != parent_signature[key]
+        for key in required_keys
+    ):
         raise RuntimeError("rematerialized guarded-support signature changed")
+    return {
+        "structural_identity": True,
+        "actual": actual_signature,
+        "parent": parent_signature,
+        "fallback_side_drift": (
+            actual_signature["fallback_sides"]
+            - parent_signature["fallback_sides"]
+        ),
+        "interpretation": (
+            "time-limited side-status drift is recorded but is not a "
+            "structural binary-elimination change"
+        ),
+    }
 
 
 def _gate_support_record(propagation, shared_binary_width: int) -> dict[str, Any]:
@@ -368,8 +391,14 @@ def _run_f0(
         )
         support_a, support_b = _support_record(propagated.expert_a), _support_record(propagated.expert_b)
         if parent_pair is not None:
-            _assert_support_identity(support_a, parent_pair["expert_a_support"])
-            _assert_support_identity(support_b, parent_pair["expert_b_support"])
+            identity_a = _assert_support_identity(
+                support_a, parent_pair["expert_a_support"]
+            )
+            identity_b = _assert_support_identity(
+                support_b, parent_pair["expert_b_support"]
+            )
+        else:
+            identity_a = identity_b = None
         parent_props = {
             int(row["property_index"]): row
             for row in (parent_pair or {}).get("property_rows", [])
@@ -451,6 +480,8 @@ def _run_f0(
         pair_rows.append({
             "pair": list(pair), "status": pair_status, "reason": pair_reason,
             "expert_a_support": support_a, "expert_b_support": support_b,
+            "expert_a_support_identity": identity_a,
+            "expert_b_support_identity": identity_b,
             "property_rows": property_rows, "reused_parent": False,
         })
         if selected_witness is not None:
@@ -495,7 +526,9 @@ def _run_gate(selection, context, model, work_dir, config, recorder):
                 guarded, branch.guarded_input.n_bin
             )
             expected = {**parent_branch["support"], "relu_binaries": parent_branch["expert_relu_binaries_after_guard"], "binary_width": parent_branch["binary_width_after_guard"]}
-            _assert_support_identity(actual, expected)
+            support_identity = _assert_support_identity(actual, expected)
+        else:
+            support_identity = None
         first_budget, second_budget = _attempt_budgets(
             recorder, len(unresolved), float(config["instance_timeout_seconds"])
         )
@@ -542,6 +575,7 @@ def _run_gate(selection, context, model, work_dir, config, recorder):
             "counterexample_prediction": checked["prediction"],
             "counterexample_topk_set": checked["topk_set"],
             "attempts": attempts, "reused_parent": False,
+            "support_identity": support_identity,
         })
     reasons = [row["unknown_reason"] for row in branch_rows]
     if full_witness is not None:

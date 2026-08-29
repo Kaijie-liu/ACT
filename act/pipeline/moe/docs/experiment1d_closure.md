@@ -90,3 +90,11 @@ expert ReLU binary count, two intentionally different statistical universes.
 No solver verdict was produced. Directory `experiment1d_bal010_d0` is preserved
 and permanently excluded. The corrected run uses the unchanged frozen selection
 and mathematics and writes only to `experiment1d_bal010_d0_r1`.
+
+The `_r1` launch then exposed a second engineering distinction at rank 129. All
+structural quantities matched the parent (fast/after-support unstable counts,
+LP/MILP eliminations, and binary width), while one time-limited support side
+changed from fallback count 5 to 6. The strict assertion rejected that harmless
+status drift and the launch was stopped. `_r1` is preserved and excluded. The
+`_r2` runner requires exact structural identity, records any fallback-side drift
+explicitly, and never calls such drift an additional binary elimination.

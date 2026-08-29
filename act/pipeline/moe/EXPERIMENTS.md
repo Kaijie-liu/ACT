@@ -490,3 +490,11 @@ different accounting universes. No scientific solver verdict was returned. The
 partial `experiment1d_bal010_d0` directory is preserved and excluded; the fixed
 runner writes to `experiment1d_bal010_d0_r1` without changing selection, radius,
 encoding, or budgets.
+
+The `_r1` launch stopped at rank 129 after a second engineering assertion found
+fallback-side count 6 instead of 5. All structural support quantities were
+identical: fast and post-support unstable counts, LP/MILP eliminations, and
+binary width. Because fallback-side status is time-budget dependent, `_r2`
+requires exact structural identity and records that status drift separately.
+The partial `_r1` directory is preserved and excluded; mathematical encoding and
+all preregistered choices remain unchanged.

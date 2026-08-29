@@ -9,6 +9,7 @@ from act.pipeline.moe.experiment1d import (
     DEFAULT_CONFIG,
     RowRecorder,
     _gate_support_record,
+    _assert_support_identity,
     _load_frozen_selection,
     _summary,
 )
@@ -86,6 +87,30 @@ class Experiment1DTests(unittest.TestCase):
         self.assertEqual(record["fast_unstable"], 69)
         self.assertEqual(record["relu_binaries"], 52)
         self.assertEqual(record["binary_width"], 56)
+
+    def test_fallback_side_drift_is_recorded_not_structural(self):
+        actual = {
+            "relu_binaries": 55, "binary_width": 38,
+            "fast_unstable": 55, "after_lp_unstable": 38,
+            "after_milp_unstable": 37, "lp_eliminated": 17,
+            "milp_eliminated": 1, "fallback_sides": 6,
+        }
+        parent = {**actual, "fallback_sides": 5}
+        report = _assert_support_identity(actual, parent)
+        self.assertTrue(report["structural_identity"])
+        self.assertEqual(report["fallback_side_drift"], 1)
+
+    def test_structural_support_drift_remains_an_error(self):
+        actual = {
+            "relu_binaries": 55, "binary_width": 38,
+            "fast_unstable": 55, "after_lp_unstable": 38,
+            "after_milp_unstable": 37, "lp_eliminated": 17,
+            "milp_eliminated": 1, "fallback_sides": 6,
+        }
+        with self.assertRaises(RuntimeError):
+            _assert_support_identity(
+                actual, {**actual, "binary_width": 39}
+            )
 
 
 if __name__ == "__main__":
