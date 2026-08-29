@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "result_date": "2026-08-29",
+  "experiment": "P0A_EXPLICIT_ROUTE_INVARIANCE_BASELINE",
+  "scope": "artifact-backed confirmatory endpoint comparison",
+  "execution_git_head": "676bfffce",
+  "checkpoint_sha256": "fbaa7c871d28763ac5acb29a9502dc5d146e1d5af0b4a03e9911899251bd43f7",
+  "cohort": {
+    "sample_ranks": "100--199",
+    "samples": 100,
+    "route_boundary_primary": 76,
+    "no_boundary_cap_4_over_255": 24,
+    "tie_policy": "ANY_LEGAL_TOPK",
+    "route_set_semantics": "exact unordered top-2"
+  },
+  "baseline": {
+    "precondition": "one unique exact feasible unordered top-2 set",
+    "precondition_invariant": 24,
+    "precondition_failed": 76,
+    "status_counts": {"SAFE": 2, "UNSAFE": 10, "UNKNOWN": 82, "TIMEOUT": 6},
+    "solved": 12,
+    "coverage": 0.12,
+    "seconds": 1956.5151252150536
+  },
+  "route_a_staged": {
+    "status_counts": {"SAFE": 38, "UNSAFE": 30, "UNKNOWN": 22, "TIMEOUT": 10},
+    "solved": 68,
+    "coverage": 0.68,
+    "seconds": 8836.518153846264,
+    "separate_followup_closure_solved": 80
+  },
+  "paired_effect": {
+    "additional_solved_samples": 56,
+    "additional_coverage_points": 0.56,
+    "route_a_only_safe_samples": 36,
+    "route_a_to_baseline_accounted_runtime_ratio": 4.516457879606213,
+    "runtime_interpretation": "The route-invariance baseline is cheaper because it stops after the failed router precondition. This is a coverage-cost tradeoff, not a Route A speedup claim."
+  },
+  "soundness_audit": {
+    "issue_count": 0,
+    "unique_ranks": 100,
+    "unsafe_full_model_replays": 30,
+    "all_unsafe_replays_passed": true,
+    "baseline_and_route_a_share_downstream_backend_when_invariant": true,
+    "failed_preconditions_never_invoke_baseline_expert_solving": true
+  },
+  "provenance_note": "The raw runtime manifest retains the start HEAD. Parallel commits after launch added the incremental backend, audit, P0b, and environment documentation; they did not change the P0a runner, its frozen config, experiment1c/F0 semantics, or solver_hz implementation. The later __init__ export is non-semantic for P0a and is disclosed rather than hidden.",
+  "raw_artifacts": {
+    "directory": "data/moe/results/route_invariance_baseline_confirmatory_r1",
+    "config_sha256": "ab430ad7ef7ab324a3f6ce370f9abfb41fe2e44645eca3bb29fd727025d03042",
+    "results_jsonl_sha256": "80c9edf14fec55acd939fc476503c1c5e7a2b53033a7d34d1b94036f5e55c75a",
+    "results_csv_sha256": "d4ab561e78c5dee298f5bdfb3e1e172198d617388d55521029f5fa474c613a53",
+    "summary_sha256": "939a9976b903a41336ac9c912456ccf5732068d2fc415982a8fec297412e6aec",
+    "independent_audit_sha256": "61aaf75042d130380e684c451ea6465f8e0c13c0c0e323861f973bb992cc0d96"
+  },
+  "immutable_parent_endpoint": {
+    "confirmatory_overall_solved": 56,
+    "confirmatory_samples": 100,
+    "overwritten": false
+  }
+}

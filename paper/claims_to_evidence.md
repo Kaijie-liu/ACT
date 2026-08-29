@@ -18,8 +18,9 @@ rows and route conditioning yields a median structural-width ratio of 0.430.
 The immutable preregistered overall solved endpoint is 56/100 and fails its 60%
 gate; boundary applicability is 76/100 and conditional coverage is 56/76. We
 separately report follow-up closure and engineering results without rewriting
-that endpoint. Official-scale and explicit end-to-end baseline evaluations
-remain pending.
+that endpoint. Official-scale evaluation remains pending. The follow-up
+explicit end-to-end route-invariance comparison is complete and independently
+audited.
 
 ## Draft status and evidence boundary
 

@@ -972,6 +972,24 @@ downstream execution with Route A. This comparison may establish coverage cost
 and Route A-only certificates, but it is not a same-process solver speedup
 benchmark. The original confirmatory `56/100` endpoint remains immutable.
 
+P0a completed all 100 ranks with an independent zero-issue audit. The exact
+route-invariance precondition held for 24 samples and failed for 76. The
+explicit baseline solved 12/100 (2 SAFE, 10 full-model UNSAFE), while staged
+Route A solved 68/100 on the same per-sample endpoints (38 SAFE, 30 full-model
+UNSAFE). The paired coverage gain is 56 samples. All 36 route-changing SAFE
+certificates are Route A-only, so the previously reported unique-certificate
+count is now backed by an executed end-to-end baseline rather than only a
+router-precondition label.
+
+The baseline accounts for 1,956.5 seconds and Route A for 8,836.5 seconds
+(4.516x). This is the expected coverage-cost tradeoff: route invariance is
+cheaper precisely because it abandons all 76 route-unstable endpoints. It is
+not a Route A runtime-speedup result. The separate Experiment 1D closure would
+raise Route A solved coverage to 80/100, but it remains a follow-up field and
+does not overwrite either this P0a primary comparison or the immutable original
+confirmatory `56/100`. The independent audit replays all 30 primary UNSAFE
+witnesses through the complete selected-softmax model and reports zero issues.
+
 ## Incremental expert HZ backend code freeze
 
 The expert support/property path now has an opt-in `highspy` session that
