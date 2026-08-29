@@ -1086,6 +1086,41 @@ results, and user files were left intact. The `_r4` launch starts all 20 frozen
 rows from scratch in a new directory with identical scientific and engineering
 configuration.
 
+The clean `_r4` launch completed all 20 rows at implementation HEAD
+`2e344b43bb8042b764712eddbad68da0e440811d`. It returned 11 SAFE, two
+full-model-replayed UNSAFE, five UNKNOWN, and two TIMEOUT. Relative to the
+frozen D0 result, the paired transitions were `SAFE->SAFE=10`,
+`UNSAFE->UNSAFE=2`, `UNKNOWN->SAFE=1`, `UNKNOWN->UNKNOWN=5`,
+`UNKNOWN->TIMEOUT=1`, and `TIMEOUT->TIMEOUT=1`. Thus solved rows increased only
+from 12/20 to 13/20, with no solved regression. This is a separately labeled
+engineering result and does not rewrite either the confirmatory 56/100 or D0
+68/76 endpoint.
+
+End-to-end runtime did not improve. D0 took 5,151.10 seconds and incremental
+HiGHS took 5,674.07 seconds, a ratio of 1.102. The paired median difference was
++9.88 seconds; 6/20 rows were faster and 14/20 were slower. The 15.03x guarded
+coordinate-hull construction result therefore does not transfer to the full
+expert/F0 pipeline. Telemetry contains 292 sessions and model builds, 3,402
+solves, 12,348 row updates, and 47 budget extensions. All 75 accepted
+`run()==kWarning` events correspond exactly to 75 `kTimeLimit` model statuses;
+there were zero build failures and no warm-start claim.
+
+The original Experiment 1D audit reports 132 issues because it only recognizes
+SciPy's status-0/bound-kind fields. That audit remains preserved. A dedicated
+incremental-backend audit independently checks HiGHS `kOptimal`, finite dual
+bounds, outward-corrected positive minima, complete pair/property coverage,
+session warning accounting, and concrete witness replay. Its final r3 audit
+has zero issues and replays 2/2 UNSAFE witnesses. Two earlier audit reports are
+also retained: r1 had 297 false positives because it failed to propagate
+pair-level `reused_parent`, and r2 passed soundness but mislabeled an inherited
+D0 threshold as an incremental-vs-D0 preregistration. The immutable tracked
+summary is
+`act/pipeline/moe/results/experiment1_highspy_incremental_engineering_r4_20260830.json`.
+
+The engineering decision is to retain incremental HiGHS as an opt-in backend
+and a negative end-to-end performance result. It is not made the default, and
+no end-to-end speedup claim is permitted.
+
 ## P0b CROWN adapter consistency code freeze
 
 The frozen 43-branch bal010 cohort compares four representations of the same

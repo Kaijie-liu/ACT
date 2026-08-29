@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "experiment": "experiment1_highspy_incremental_engineering_r4",
+  "status": "COMPLETE_AUDITED",
+  "scope": "engineering_performance_rerun_not_confirmatory_overwrite",
+  "launch": {
+    "git_head": "2e344b43bb8042b764712eddbad68da0e440811d",
+    "branch": "feat/moe-route-verification",
+    "environment": "/data1/Kane/miniconda3/envs/act-py312",
+    "rows": 20,
+    "instance_timeout_seconds": 900.0,
+    "wall_seconds": 5674.073744624853
+  },
+  "immutable_parent_endpoints": {
+    "confirmatory_overall_solved": "56/100",
+    "confirmatory_applicable_solved": "56/76",
+    "d0_followup_solved": "12/20",
+    "d0_followup_applicable_coverage": "68/76"
+  },
+  "result": {
+    "status_counts": {
+      "SAFE": 11,
+      "UNSAFE": 2,
+      "UNKNOWN": 5,
+      "TIMEOUT": 2
+    },
+    "reason_counts": {
+      "SAFE_WEIGHTED_RANGE": 11,
+      "UNSAFE_FULL_FORWARD_FALLBACK": 2,
+      "UNKNOWN_WEIGHTED_RELAXATION": 2,
+      "UNKNOWN_WEIGHTED_SOLVER_LIMIT": 3,
+      "INSTANCE_HARD_DEADLINE": 2
+    },
+    "paired_status_transitions_vs_d0": {
+      "SAFE->SAFE": 10,
+      "UNSAFE->UNSAFE": 2,
+      "UNKNOWN->SAFE": 1,
+      "UNKNOWN->UNKNOWN": 5,
+      "UNKNOWN->TIMEOUT": 1,
+      "TIMEOUT->TIMEOUT": 1
+    },
+    "newly_solved_vs_d0": 1,
+    "solved_regressions_vs_d0": 0,
+    "net_solved_gain_vs_d0": 1,
+    "incremental_solved": "13/20",
+    "followup_applicable_coverage_if_reported_separately": "69/76",
+    "unsafe_full_model_replayed": "2/2"
+  },
+  "paired_runtime": {
+    "d0_total_seconds": 5151.0954439928755,
+    "incremental_total_seconds": 5674.073744624853,
+    "incremental_over_d0_total_ratio": 1.1015275889018648,
+    "paired_difference_median_seconds": 9.879029894247651,
+    "paired_difference_mean_seconds": 26.148915031598882,
+    "paired_row_ratio_median": 1.1143537480549774,
+    "paired_row_ratio_iqr": [
+      0.9993029874194536,
+      1.4497926544531556
+    ],
+    "faster_rows": 6,
+    "slower_rows": 14,
+    "wilcoxon_two_sided_p_exploratory": 0.01531219482421875,
+    "sign_test_two_sided_p_exploratory": 0.11531829833984375,
+    "interpretation": "single-run paired engineering measurement; no end-to-end speedup, and the aggregate run is 10.15% slower"
+  },
+  "incremental_telemetry": {
+    "sessions": 292,
+    "model_builds": 292,
+    "model_build_failures": 0,
+    "solves": 3402,
+    "objective_update_calls": 3402,
+    "row_update_calls": 12348,
+    "basis_submission_attempts": 2586,
+    "basis_submissions_accepted": 2586,
+    "budget_extension_calls": 47,
+    "accepted_time_limit_warnings": 75,
+    "time_limit_statuses": 75,
+    "solve_seconds": 3740.5446768645197,
+    "sessions_with_build_error": 0,
+    "warm_start_claimed": false
+  },
+  "audit": {
+    "incremental_backend_audit_version": "r3",
+    "passed": true,
+    "issues": 0,
+    "unsafe_replays": 2,
+    "generic_experiment1d_audit_issues": 132,
+    "generic_audit_interpretation": "schema incompatibility: the generic audit recognizes only original SciPy status-0 fields",
+    "excluded_incremental_audit_r1_issues": 297,
+    "excluded_incremental_audit_r1_cause": "pair-level reused_parent provenance was not propagated by the audit implementation",
+    "superseded_incremental_audit_r2_issues": 0,
+    "superseded_incremental_audit_r2_cause": "reporting mislabeled an inherited D0 threshold as an incremental-vs-D0 preregistration"
+  },
+  "raw_artifacts": {
+    "directory": "/data1/Kane/MOE/ACT/data/moe/results/experiment1_highspy_incremental_engineering_r4",
+    "config_sha256": "24b0b90b572031202c31244f97352c0e547507e90b3289b6040a7be0fb3ee489",
+    "selection_sha256": "03e525b35258b024bc3cdcff9bb0eaff7bf0e5c6b81acd9befa3a856a6e4ecf0",
+    "results_jsonl_sha256": "327a3782db584dc76c7f610912005d4b9db1a45786be9c48f853637e5fa40ac3",
+    "results_csv_sha256": "0bc4140ba648cddb2b9b2188f6caa667fd18c4d010b5245415e33ac3f86b0b9a",
+    "summary_sha256": "159a076bbddacba623b7a5dcb1727039cdbf7253fda466c0092bf75dcd3ba7d1",
+    "telemetry_sha256": "8b9492f7a2ffc70c56dd72db89d8a433a8c067ac0621db3ab5ca7ea420f2e8b5",
+    "generic_audit_sha256": "dc08250d6b20de156f0de55523360ea7e43ed406c1a7c85a5a688a5c79489fea",
+    "excluded_incremental_audit_r1_sha256": "6fcd37c75f9acf13ddab3466f18c662bef8e95cdf8bd272d83c64f0311fddf3c",
+    "superseded_incremental_audit_r2_sha256": "ae9db06d562d3e4e640e3c6e395fcfc888c12c7f9b8105e5d0fc23bf3b694b9e",
+    "incremental_audit_r3_sha256": "2a4e14b79044665a75eaf4714f36d595228a1111ff580a1b320dbc2dc8a49513",
+    "launcher_log_sha256": "5538bcbb8a8f8ebc4d2667f082290cd774c6a073b2c85c7b71829e0d148b1fa4",
+    "rank171_witness_sha256": "676055cad2315f9944b41fb15c43f4259c3179b1a04af3c46b95381bab372351",
+    "rank182_witness_sha256": "8553d168911af10dda4f066e1acc0ee131fbf7809729f23cb62fbe72b067902f"
+  },
+  "scientific_interpretation": {
+    "positive": "the incremental session is soundly reusable and adds one SAFE row without any solved regression",
+    "negative": "the 15x guarded-hull construction speedup does not transfer to end-to-end expert/F0 solving; total runtime increases 10.15% and only one D0-unsolved row is resolved",
+    "decision": "retain incremental HiGHS as an opt-in backend and negative engineering result; do not make it the default and do not claim an end-to-end speedup"
+  }
+}
