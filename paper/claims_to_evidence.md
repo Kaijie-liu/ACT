@@ -296,6 +296,26 @@ solver-internal warm-start behavior. The result is
 `act/pipeline/moe/results/guarded_box_hull_benchmark_20260829.json`, committed by
 `3943450fddcaa416b0fbe76779fdbcad93c3cb14`.
 
+### Incremental HiGHS end-to-end engineering rerun
+
+The same incremental backend was then connected to guarded support, expert
+properties, and F0 and run on all 20 frozen D0 rows. The dedicated backend
+audit reports zero issues and independently replays both UNSAFE witnesses. The
+paired result is negative for performance: D0 solved 12/20 and incremental
+HiGHS solved 13/20, with one `UNKNOWN->SAFE`, no solved regression, and one
+`UNKNOWN->TIMEOUT`. Total time increased from 5,151.10 to 5,674.07 seconds
+(1.102x); the paired median delta was +9.88 seconds, with 6/20 faster and 14/20
+slower.
+
+Telemetry records 292 sessions/builds, 3,402 solves, 12,348 row updates, 47
+budget extensions, zero build failures, and exact agreement between 75 accepted
+time-limit warnings and 75 `kTimeLimit` model statuses. This shows that model
+reuse is real and soundly controlled, but that the 15.03x coordinate-hull
+microbenchmark does not transfer to end-to-end expert/F0 solving. Incremental
+HiGHS remains opt-in; no end-to-end speedup is claimed. The tracked artifact is
+`act/pipeline/moe/results/experiment1_highspy_incremental_engineering_r4_20260830.json`,
+committed by `235b19aff348f156721deafed34471d3b37ad498`.
+
 ## A tie-inclusive backend pitfall
 
 For hard top-1 branch \(i\), let
