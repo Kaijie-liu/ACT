@@ -66,3 +66,11 @@ This mechanism is N1, not F1.  Its telemetry fixes
 `segmentation_axis=affine_path_margin`, `gate_function_encoded=false`, and
 `sigmoid_segments=0`.  A future gate-function segmentation must remain a
 separate, explicitly named ablation.
+
+For weighted top-2, `build_segmented_weighted_top2_f0` applies the same F0
+range-only McCormick construction independently on every retained margin
+segment.  The sigmoid is used only through monotone endpoint evaluation on the
+segment's guarded margin range.  Because the closed segments cover the parent
+domain, the property is certified only when every active segment is certified.
+A relaxation witness from any segment remains `UNKNOWN` until the full model
+is replayed; segmentation does not create a new direct `UNSAFE` rule.

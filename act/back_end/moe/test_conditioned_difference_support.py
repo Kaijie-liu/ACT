@@ -7,8 +7,10 @@ import torch
 
 from act.back_end.core import Bounds
 from act.back_end.moe.conditioned_difference_support import (
+    build_segmented_weighted_top2_f0,
     condition_on_affine_path_interval,
     conditioned_pair_difference_support,
+    solve_segmented_weighted_top2_f0,
 )
 from act.back_end.moe.weighted_top2 import shared_input_pair_hz
 from act.back_end.solver.solver_hz import (
@@ -178,6 +180,60 @@ class ConditionedDifferenceSupportTests(unittest.TestCase):
                 feasibility_time_limit=2.0,
                 difference_time_limit=2.0,
             )
+
+    def test_segmented_f0_reuses_conditioned_difference_support(self):
+        _, router, pair = _correlated_components()
+        encoding = build_segmented_weighted_top2_f0(
+            pair,
+            router,
+            (0, 1),
+            [1.0],
+            3.0,
+            cut_points=(0.0,),
+            margin_time_limit=2.0,
+            feasibility_time_limit=2.0,
+            difference_time_limit=2.0,
+        )
+        self.assertEqual(len(encoding.branches), 2)
+        for branch in encoding.branches:
+            bounds = branch.encoding.bounds
+            self.assertLessEqual(
+                bounds.difference_upper - bounds.difference_lower,
+                2.0 + 1e-7,
+            )
+            self.assertIs(
+                branch.encoding.difference_support,
+                branch.support.raw_support,
+            )
+        decision = solve_segmented_weighted_top2_f0(
+            encoding,
+            input_shape=(1, 1),
+            time_limit_per_segment=2.0,
+        )
+        self.assertEqual(decision.status, "SAFE")
+        self.assertEqual(decision.reason, "SAFE_WEIGHTED_SEGMENTED")
+        self.assertTrue(all(row.status == "SAFE" for row in decision.branch_decisions))
+
+    def test_segmented_relaxation_never_returns_unsafe_directly(self):
+        _, router, pair = _correlated_components()
+        encoding = build_segmented_weighted_top2_f0(
+            pair,
+            router,
+            (0, 1),
+            [1.0],
+            -3.0,
+            cut_points=(0.0,),
+            margin_time_limit=2.0,
+            feasibility_time_limit=2.0,
+            difference_time_limit=2.0,
+        )
+        decision = solve_segmented_weighted_top2_f0(
+            encoding,
+            input_shape=(1, 1),
+            time_limit_per_segment=2.0,
+        )
+        self.assertEqual(decision.status, "UNKNOWN")
+        self.assertNotEqual(decision.status, "UNSAFE")
 
 
 if __name__ == "__main__":

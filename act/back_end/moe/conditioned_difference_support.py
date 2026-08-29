@@ -24,8 +24,19 @@ from typing import Sequence
 import numpy as np
 import scipy.sparse as sp
 
-from act.back_end.moe.weighted_top2 import SharedInputPairHZ
+from act.back_end.moe.weighted_top2 import (
+    SAFE_WEIGHTED_SEGMENTED,
+    UNKNOWN_WEIGHTED_NUMERICAL,
+    SharedInputPairHZ,
+    WeightedTop2DifferenceRange,
+    WeightedTop2F0Decision,
+    WeightedTop2F0Encoding,
+    build_weighted_top2_f0,
+    compute_weighted_top2_gate_range,
+    solve_weighted_top2_f0,
+)
 from act.back_end.solver.solver_hz import (
+    HZ_NUMERICAL_POLICY,
     HZFeasibilityResult,
     HZSupportBoundsResult,
     SparseHZono,
@@ -56,6 +67,7 @@ class ConditionedSegmentSupport:
     """Support result for one retained affine-margin segment."""
 
     segment: AffinePathSegment
+    conditioned_domain: SparseHZono = field(repr=False, compare=False)
     conditioned_target: SparseHZono = field(repr=False, compare=False)
     feasibility: HZFeasibilityResult
     raw_support: HZSupportBoundsResult | None = field(
@@ -119,6 +131,44 @@ class SegmentedConditionedSupport:
             result
             for result in self.segments
             if result.segment.contains(value, tolerance=tolerance)
+        )
+
+
+@dataclass(frozen=True)
+class SegmentedWeightedTop2Branch:
+    """One margin-conditioned F0 encoding."""
+
+    segment: AffinePathSegment
+    encoding: WeightedTop2F0Encoding = field(repr=False, compare=False)
+    support: ConditionedSegmentSupport = field(repr=False, compare=False)
+
+
+@dataclass(frozen=True)
+class SegmentedWeightedTop2Encoding:
+    """All closed margin branches required for one property row."""
+
+    pair: tuple[int, int]
+    property_row: tuple[float, ...]
+    property_constant: float
+    conditioned_support: SegmentedConditionedSupport = field(
+        repr=False, compare=False
+    )
+    branches: tuple[SegmentedWeightedTop2Branch, ...]
+
+
+@dataclass(frozen=True)
+class SegmentedWeightedTop2Decision:
+    status: str
+    reason: str
+    branch_decisions: tuple[WeightedTop2F0Decision, ...]
+    elapsed: float
+
+    @property
+    def candidate_inputs(self) -> tuple[object, ...]:
+        return tuple(
+            decision.candidate_input
+            for decision in self.branch_decisions
+            if decision.candidate_input is not None
         )
 
 
@@ -292,11 +342,16 @@ def segmented_affine_conditioned_support(
     fallbacks = 0
     for segment in segment_specs:
         segment_started = time.monotonic()
-        conditioned = condition_on_affine_path_interval(
-            target_scalar,
+        conditioned_domain = condition_on_affine_path_interval(
+            target_hz,
             path_scalar,
             segment.lower,
             segment.upper,
+        )
+        conditioned = sparse_hz_linear(
+            conditioned_domain,
+            target_w,
+            [float(target_bias)],
         )
         feasibility = hz_check_feasibility(
             conditioned,
@@ -306,9 +361,10 @@ def segmented_affine_conditioned_support(
         if feasibility.status == "infeasible":
             results.append(
                 ConditionedSegmentSupport(
-                    segment,
-                    conditioned,
-                    feasibility,
+                    segment=segment,
+                    conditioned_domain=conditioned_domain,
+                    conditioned_target=conditioned,
+                    feasibility=feasibility,
                     elapsed=time.monotonic() - segment_started,
                 )
             )
@@ -349,9 +405,10 @@ def segmented_affine_conditioned_support(
             fallbacks += 1
         results.append(
             ConditionedSegmentSupport(
-                segment,
-                conditioned,
-                feasibility,
+                segment=segment,
+                conditioned_domain=conditioned_domain,
+                conditioned_target=conditioned,
+                feasibility=feasibility,
                 raw_support=support,
                 raw_bounds=raw,
                 tightened_bounds=tightened,
@@ -453,4 +510,155 @@ def conditioned_pair_difference_support(
         feasibility_time_limit=float(feasibility_time_limit),
         support_time_limit=float(difference_time_limit),
         relax_binaries=bool(relax_binaries),
+    )
+
+
+def build_segmented_weighted_top2_f0(
+    pair_hz: SharedInputPairHZ,
+    conditioned_router: SparseHZono,
+    pair: Sequence[int],
+    property_row: Sequence[float],
+    property_constant: float,
+    *,
+    cut_points: Sequence[float] = (0.0,),
+    margin_time_limit: float,
+    feasibility_time_limit: float,
+    difference_time_limit: float,
+) -> SegmentedWeightedTop2Encoding:
+    """Build one range-only F0 encoding for every retained margin segment.
+
+    The sigmoid is never symbolically encoded. Each segment obtains an ordinary
+    monotone sigmoid range from its guarded affine margin and a disagreement
+    range recomputed under the same retained path constraints.
+    """
+    selected = tuple(sorted(int(value) for value in pair))
+    if len(selected) != 2 or len(set(selected)) != 2:
+        raise ValueError("segmented weighted fallback requires two experts")
+    q = np.asarray(property_row, dtype=np.float64).reshape(-1)
+    conditioned = conditioned_pair_difference_support(
+        pair_hz,
+        conditioned_router,
+        selected,
+        q,
+        cut_points=cut_points,
+        margin_time_limit=float(margin_time_limit),
+        feasibility_time_limit=float(feasibility_time_limit),
+        difference_time_limit=float(difference_time_limit),
+        relax_binaries=True,
+    )
+
+    margin_weights = np.zeros(conditioned_router.n_out, dtype=np.float64)
+    margin_weights[selected[0]] = 1.0
+    margin_weights[selected[1]] = -1.0
+    margin_scalar = sparse_hz_linear(
+        conditioned_router,
+        margin_weights.reshape(1, -1),
+    )
+    branches: list[SegmentedWeightedTop2Branch] = []
+    for result in conditioned.segments:
+        if not result.active or result.tightened_bounds is None:
+            continue
+        if result.raw_support is None:
+            raise RuntimeError("active conditioned segment lost support metadata")
+        segment_router = condition_on_affine_path_interval(
+            conditioned_router,
+            margin_scalar,
+            result.segment.lower,
+            result.segment.upper,
+        )
+        segment_input = condition_on_affine_path_interval(
+            pair_hz.input_hz,
+            margin_scalar,
+            result.segment.lower,
+            result.segment.upper,
+        )
+        segment_pair = SharedInputPairHZ(
+            output_hz=result.conditioned_domain,
+            input_hz=segment_input,
+            a_rows=pair_hz.a_rows,
+            b_rows=pair_hz.b_rows,
+            shared_continuous=pair_hz.shared_continuous,
+            shared_binary=pair_hz.shared_binary,
+            a_private_continuous=pair_hz.a_private_continuous,
+            b_private_continuous=pair_hz.b_private_continuous,
+            a_private_binary=pair_hz.a_private_binary,
+            b_private_binary=pair_hz.b_private_binary,
+        )
+        gate_range = compute_weighted_top2_gate_range(
+            segment_router,
+            selected,
+            time_limit=float(margin_time_limit),
+        )
+        difference_range = WeightedTop2DifferenceRange(
+            pair=selected,
+            conditioned_pair_output=segment_pair.output_hz,
+            pair_frame_id=segment_pair.output_hz.frame_id,
+            pair_output_width=segment_pair.output_hz.n_out,
+            property_row=tuple(float(value) for value in q),
+            bounds=result.tightened_bounds,
+            support=result.raw_support,
+        )
+        encoding = build_weighted_top2_f0(
+            segment_pair,
+            segment_router,
+            selected,
+            q,
+            float(property_constant),
+            difference_time_limit=0.0,
+            gate_range=gate_range,
+            difference_range=difference_range,
+        )
+        branches.append(
+            SegmentedWeightedTop2Branch(
+                segment=result.segment,
+                encoding=encoding,
+                support=result,
+            )
+        )
+    return SegmentedWeightedTop2Encoding(
+        pair=selected,
+        property_row=tuple(float(value) for value in q),
+        property_constant=float(property_constant),
+        conditioned_support=conditioned,
+        branches=tuple(branches),
+    )
+
+
+def solve_segmented_weighted_top2_f0(
+    encoding: SegmentedWeightedTop2Encoding,
+    *,
+    input_shape: tuple[int, ...],
+    time_limit_per_segment: float,
+    tolerance: float = HZ_NUMERICAL_POLICY.safe_positive_margin,
+) -> SegmentedWeightedTop2Decision:
+    """Prove every closed segment; relaxation candidates remain non-UNSAFE."""
+    started = time.monotonic()
+    if not encoding.branches:
+        return SegmentedWeightedTop2Decision(
+            status="UNKNOWN",
+            reason=UNKNOWN_WEIGHTED_NUMERICAL,
+            branch_decisions=(),
+            elapsed=time.monotonic() - started,
+        )
+    decisions = tuple(
+        solve_weighted_top2_f0(
+            branch.encoding,
+            input_shape=input_shape,
+            time_limit=float(time_limit_per_segment),
+            tolerance=float(tolerance),
+        )
+        for branch in encoding.branches
+    )
+    if all(decision.status == "SAFE" for decision in decisions):
+        status, reason = "SAFE", SAFE_WEIGHTED_SEGMENTED
+    else:
+        status = "UNKNOWN"
+        reason = next(
+            decision.reason for decision in decisions if decision.status != "SAFE"
+        )
+    return SegmentedWeightedTop2Decision(
+        status=status,
+        reason=reason,
+        branch_decisions=decisions,
+        elapsed=time.monotonic() - started,
     )

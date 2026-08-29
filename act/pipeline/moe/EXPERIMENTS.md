@@ -770,7 +770,14 @@ concrete interval containment, monotonicity, zero-budget fallback, F1
 separation, constraint loss, and frame mismatch. The support-monotonicity and
 interval-union proof is in
 `act/back_end/moe/proofs/conditioned_support_monotonicity.md`. This stage is a
-mechanism result; its engineering performance rerun remains pending.
+mechanism result. The mechanism is now connected to F0 as one ordinary range-
+only McCormick encoding per active closed margin segment. Every segment must be
+SAFE for `SAFE_WEIGHTED_SEGMENTED`; a relaxation candidate remains UNKNOWN
+pending full-model replay. The implementation reuses an identity-bound
+conditioned difference range instead of silently recomputing it on a different
+domain. Two additional tests cover end-to-end segmented SAFE aggregation and
+the prohibition on direct relaxation UNSAFE. Its engineering performance rerun
+remains pending.
 
 ## Certification-gap survey partial execution
 

@@ -79,6 +79,19 @@ class WeightedTop2GateRange:
 
 
 @dataclass(frozen=True)
+class WeightedTop2DifferenceRange:
+    """Property-directed disagreement range bound to one conditioned pair."""
+
+    pair: tuple[int, int]
+    conditioned_pair_output: SparseHZono = field(repr=False, compare=False)
+    pair_frame_id: int | None
+    pair_output_width: int
+    property_row: tuple[float, ...]
+    bounds: tuple[float, float]
+    support: HZSupportBoundsResult = field(repr=False, compare=False)
+
+
+@dataclass(frozen=True)
 class WeightedTop2F0Encoding:
     """One property-directed scalar relaxation for one feasible expert pair."""
 
@@ -397,6 +410,43 @@ def compute_weighted_top2_gate_range(
     )
 
 
+def compute_weighted_top2_difference_range(
+    pair_hz: SharedInputPairHZ,
+    pair: Sequence[int],
+    property_row: Sequence[float],
+    *,
+    time_limit: float,
+) -> WeightedTop2DifferenceRange:
+    """Compute and identity-bind ``q.T @ (E_a-E_b)`` support."""
+    selected = _canonical_top2_pair(pair)
+    classes = len(pair_hz.a_rows)
+    q = np.asarray(property_row, dtype=np.float64).reshape(-1)
+    if q.size != classes or len(pair_hz.b_rows) != classes:
+        raise ValueError("property row width does not match expert outputs")
+    difference_W = np.zeros((1, 2 * classes), dtype=np.float64)
+    difference_W[0, :classes] = q
+    difference_W[0, classes:] = -q
+    difference_hz = sparse_hz_linear(pair_hz.output_hz, difference_W)
+    support = hz_support_bounds(
+        difference_hz,
+        [0],
+        time_limit=float(time_limit),
+        relax_binaries=True,
+    )
+    return WeightedTop2DifferenceRange(
+        pair=selected,
+        conditioned_pair_output=pair_hz.output_hz,
+        pair_frame_id=pair_hz.output_hz.frame_id,
+        pair_output_width=pair_hz.output_hz.n_out,
+        property_row=tuple(float(value) for value in q),
+        bounds=(
+            float(support.bounds.lb.item()),
+            float(support.bounds.ub.item()),
+        ),
+        support=support,
+    )
+
+
 def linear_safety_rows(
     output_spec: OutputSpec,
     n_out: int,
@@ -425,6 +475,7 @@ def build_weighted_top2_f0(
     margin_time_limit: float | None = None,
     difference_time_limit: float,
     gate_range: WeightedTop2GateRange | None = None,
+    difference_range: WeightedTop2DifferenceRange | None = None,
 ) -> WeightedTop2F0Encoding:
     """Build the range-only sigmoid + McCormick relaxation for one safe row."""
     selected = _canonical_top2_pair(pair)
@@ -465,14 +516,25 @@ def build_weighted_top2_f0(
         W,
         np.asarray([float(property_constant), 0.0]),
     )
-    difference_support = hz_support_bounds(
-        ud,
-        [1],
-        time_limit=float(difference_time_limit),
-        relax_binaries=True,
-    )
-    difference_lower = float(difference_support.bounds.lb.item())
-    difference_upper = float(difference_support.bounds.ub.item())
+    if difference_range is None:
+        difference_range = compute_weighted_top2_difference_range(
+            pair_hz,
+            selected,
+            q,
+            time_limit=float(difference_time_limit),
+        )
+    if difference_range.pair != selected:
+        raise ValueError("difference range belongs to a different expert pair")
+    if difference_range.conditioned_pair_output is not pair_hz.output_hz:
+        raise ValueError("difference range belongs to a different conditioned pair")
+    if (
+        difference_range.pair_frame_id != pair_hz.output_hz.frame_id
+        or difference_range.pair_output_width != pair_hz.output_hz.n_out
+        or difference_range.property_row != tuple(float(value) for value in q)
+    ):
+        raise ValueError("difference range belongs to a different property domain")
+    difference_support = difference_range.support
+    difference_lower, difference_upper = difference_range.bounds
     product_lower, product_upper = _product_range(
         lambda_lower,
         lambda_upper,

@@ -16,6 +16,7 @@ from act.back_end.moe.hz_routing import (
 from act.back_end.moe.weighted_top2 import (
     UNKNOWN_WEIGHTED_RELAXATION,
     build_weighted_top2_f0,
+    compute_weighted_top2_difference_range,
     compute_weighted_top2_gate_range,
     mccormick_contains,
     mccormick_inequalities,
@@ -185,6 +186,33 @@ class WeightedTop2FallbackTests(unittest.TestCase):
                 0.0,
                 difference_time_limit=2.0,
                 gate_range=gate_range,
+            )
+
+    def test_difference_range_rejects_another_domain_in_the_same_frame(self):
+        pair_hz, router = _equal_expert_components()
+        difference_range = compute_weighted_top2_difference_range(
+            pair_hz,
+            (0, 1),
+            [1.0],
+            time_limit=2.0,
+        )
+        copied_output = sparse_hz_linear(
+            pair_hz.output_hz,
+            np.eye(pair_hz.output_hz.n_out),
+        )
+        copied_pair = type(pair_hz)(
+            **{**pair_hz.__dict__, "output_hz": copied_output}
+        )
+        with self.assertRaisesRegex(ValueError, "different conditioned pair"):
+            build_weighted_top2_f0(
+                copied_pair,
+                router,
+                (0, 1),
+                [1.0],
+                0.0,
+                margin_time_limit=2.0,
+                difference_time_limit=2.0,
+                difference_range=difference_range,
             )
 
     def test_equal_experts_have_zero_product_difference(self):
