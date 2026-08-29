@@ -1,0 +1,464 @@
+# Path-Conditioned Verification for Routed Mixture-of-Experts
+
+## Abstract
+
+Formal verification of routed mixture-of-experts models is often reduced to a
+router-invariance check, even though route stability is sufficient rather than
+necessary for output robustness. We present a staged path-conditioned verifier
+that preserves tie-inclusive route conditions in a shared abstract frame,
+tightens downstream expert supports, and checks every feasible route branch. A
+cheap first tier eliminates normalized output gates by convexity. When that
+sufficient condition is inconclusive, a second tier uses a property-directed
+expert-disagreement decomposition and range-only McCormick relaxation without
+symbolically encoding exponentiation, division, or sigmoid segments. On an
+independent 100-sample route-boundary cohort of a verification-scale CIFAR-10
+weighted top-2 MoE, the method certifies 36 route-changing samples, while exact
+route analysis reduces ordinary-zonotope candidates on 75/86 route-unstable
+rows and route conditioning yields a median structural-width ratio of 0.430.
+The immutable preregistered overall solved endpoint is 56/100 and fails its 60%
+gate; boundary applicability is 76/100 and conditional coverage is 56/76. We
+separately report follow-up closure and engineering results without rewriting
+that endpoint. Official-scale and explicit end-to-end baseline evaluations
+remain pending.
+
+## Draft status and evidence boundary
+
+This is a claims-to-evidence paper draft, not a new experimental protocol. It
+is grounded in the repository state at
+`bcaee278e76a5d4970557d14f9d43df3123eb079`. The frozen scientific endpoint,
+follow-up closure experiments, and engineering reruns are reported separately.
+No pending result is inferred from an implementation, a protocol, or a smoke
+test.
+
+The current empirical model is a verification-scale CIFAR-10 weighted top-2
+MoE with a `3072 -> 128 -> ReLU -> 8` router, selected-softmax gating, and eight
+MLP experts. Its frozen checkpoint is
+`data/moe/checkpoints/cifar10_top2_e8_seed0_bal010.pt` with SHA-256
+`fbaa7c871d28763ac5acb29a9502dc5d146e1d5af0b4a03e9911899251bd43f7`.
+Its test accuracy is 49.26%. It is a controlled verification benchmark, not a
+claim about modern production-scale sparse MoEs.
+
+## Contributions supported by the current artifact
+
+1. A tie-inclusive, path-conditioned verification architecture that retains
+   route guards in the shared abstract factor frame and enforces conservative
+   three-valued verdict semantics.
+2. A normalized top-k decomposition requiring \(k-1\) property-directed
+   gate--expert products, with selected-softmax top-2 F0 as the evaluated
+   instance.
+3. A guarded-support mechanism and a retained-affine-margin refinement, with
+   explicit fallback rules that preserve soundness under solver limits.
+4. An independent verification-scale evaluation of candidate reduction,
+   structural width separation, route-changing certificates, F0 attribution,
+   and guard-aware paired coverage.
+5. A tie-inclusive implication counterexample and a sound eta-shifted compiler,
+   plus a partial primary-source artifact survey whose retrieval limitations are
+   reported rather than converted into prevalence claims.
+
+## Problem statement
+
+Router invariance is a convenient sufficient condition for verifying a routed
+model: if one route is fixed throughout the perturbation region, verification
+reduces to the selected expert. It is not a necessary condition for output
+robustness. A perturbation set may intersect multiple legal routing regions
+while every reachable routed output still satisfies the safety property.
+Rejecting such a region at the router boundary leaves valid output certificates
+unproved.
+
+We study output-level MoEs under tie-inclusive routing. The verifier must cover
+every legal unordered top-k route set, retain the corresponding route condition,
+and prove the output property on every feasible branch. For weighted normalized
+top-k gates, the method first tries a cheap expert-wise convex certificate and
+then models only the property-directed expert disagreement when that sufficient
+condition is inconclusive.
+
+The resulting system is best described as a staged, path-conditioned analysis
+for data-dependent dispatch:
+
+1. compute a correlation-preserving reachable router abstraction and exact
+   tie-inclusive feasible route sets when the router HZ remains unrelaxed;
+2. retain each route guard in the shared input factor frame;
+3. use guarded support to tighten expert propagation;
+4. apply expert-wise gate elimination as Tier 1;
+5. invoke a normalized-gate, property-directed McCormick fallback as Tier 2;
+6. report `UNSAFE` only after a concrete input violates the full routed model.
+
+## Mechanism and soundness argument
+
+### Retained route conditions
+
+For a feasible unordered top-k set \(S\), the verifier forms a guarded domain
+\(X_S\) by intersecting the input abstraction with all weak inequalities needed
+for membership in a legal top-k set. Weak inequalities deliberately include
+ties. Both router and expert propagation refer to the same factor frame, so
+input generators and router constraints remain shared while expert-local ReLU
+binaries remain disjoint.
+
+Candidate exactness is a conditional label. It is used only when the reachable
+router HZ has not undergone relaxation. Coordinate-wise IBP and ordinary
+zonotope candidates are sound upper sets, but they may lose the correlations
+needed to exclude infeasible experts or route sets.
+
+### Tier 1: convex gate elimination
+
+For normalized non-negative weights, if every feasible selected expert satisfies
+a convex linear output property throughout its guarded branch, their convex
+combination satisfies it as well. This removes the gate value from the checked
+obligation, but it is only sufficient: failure of one expert obligation is
+`UNKNOWN`, not `UNSAFE` for the weighted model.
+
+### Tier 2: normalized top-k disagreement decomposition
+
+For a canonical anchor \(b\in S\), normalized non-negative weights give
+
+\[
+F(x)=E_b(x)+\sum_{i\in S\setminus\{b\}}
+\lambda_i(x)\bigl(E_i(x)-E_b(x)\bigr).
+\]
+
+For one linear safety row \(q^T F+c\ge 0\), the encoding therefore needs
+exactly \(|S|-1\) property-directed products
+\(w_i=\lambda_i d_i\), where
+\(d_i=q^T(E_i-E_b)\). Sound gate boxes, expert-difference supports, McCormick
+hulls, and the simplex-intersection constraint on the omitted anchor form an
+outer relaxation. A strictly positive, outward-corrected lower bound proves
+safety. A non-positive relaxation optimum is only a candidate and cannot prove
+unsafety.
+
+Selected softmax and normalized sigmoid satisfy this gate-family contract;
+hard top-1 is the zero-product special case. Unnormalized `switch_prob` is
+rejected because it needs an additional scale product. The proof and gate-family
+scope are frozen at commit
+`a054ba382bb2cd02a6e4ed297944da9d2fbd98a3` in
+`act/back_end/moe/proofs/normalized_topk_decomposition.md`.
+
+For selected-softmax top-2, Tier 2 reduces to
+
+\[
+F=E_b+\lambda(E_a-E_b),\qquad
+\lambda\in[\sigma(\underline m),\sigma(\overline m)],
+\]
+
+where \(m=r_a-r_b\) is bounded under the pair guard. F0 uses only this numeric
+gate interval and one property-directed McCormick product. It does not encode
+exponentiation, division, sigmoid segments, or the symbolic nonlinear gate
+function.
+
+### Guard-aware support
+
+Adding a retained path condition produces a subset of the original domain.
+Consequently, its downstream lower support cannot decrease and its upper support
+cannot increase. ReLU binaries are allocated only after support is recomputed
+on this guarded domain. Unknown or timed-out support calls fall back to sound
+unconditioned bounds; they cannot create a certificate. The formal monotonicity
+and closed-interval coverage argument is in
+`act/back_end/moe/proofs/conditioned_support_monotonicity.md` at commit
+`f2500b935bd9527a025c5f7e126a8c504b8b6bea`.
+
+N1 applies the same principle after partitioning an affine router margin into
+closed intervals. Adjacent intervals overlap at cuts, so ties remain covered.
+N1 does not segment or encode sigmoid; every active segment must be safe.
+
+### Verdict discipline
+
+`SAFE` requires every feasible route set and every property row to have a
+solver-optimal, finite, outward-corrected lower bound strictly above `1e-7`.
+The registered feasibility and integrality tolerances are `1e-7`; the bound is
+corrected by an absolute-plus-relative `1e-9` term and `nextafter` toward
+negative infinity. A primal incumbent is never a safety certificate.
+
+For weighted top-k, an expert violation or a negative McCormick relaxation is
+`UNKNOWN`. `UNSAFE` requires recovery of a concrete input inside the perturbation
+set and replay against the complete selected-softmax model. The confirmatory
+audit replayed 20/20 unsafe witnesses; Experiment 1D replayed 2/2 new witnesses;
+the N1 engineering audit replayed 3/3.
+
+## Confirmatory evaluation
+
+### Cohort and endpoints
+
+The independent confirmatory cohort is the 100 deterministic clean-correct
+CIFAR-10 ranks 100--199. Ranks 0--99 were used for development and are not
+confirmatory. The fixed-radius census evaluates
+\(\epsilon\in\{0.25,0.5,1,2\}/255\) without output-property solving. The
+route-boundary endpoint evaluates one predeclared radius per sample,
+`1.05 * certified route-unstable upper endpoint`, with a route search capped at
+`4/255`.
+
+The audited confirmatory implementation HEAD is
+`1a67922c43f4e21f526e3aa12ef7b2f4e3242cba`; its result manifest is
+`act/pipeline/moe/configs/experiment1_confirmatory_protocol_manifest_r1.json`,
+committed by `45375d287162f17e6c1bb1168bfc16e6dd10d9b3`.
+
+### Candidate reduction
+
+Among 86 route-unstable fixed-radius rows, the exact, unrelaxed router HZ
+candidate set was strictly smaller than IBP on 83 rows (96.5%; sample-cluster
+bootstrap 95% interval 91.3%--100%) and smaller than the ordinary zonotope set
+on 75 rows (87.2%; 77.8%--95.6%). This supports correlation-preserving route
+analysis on the tested nonlinear router. It does not claim that arbitrary HZ
+pipelines remain exact after relaxed operations.
+
+### Binary-width separation
+
+On the same 86 route-unstable rows, the ratio between the maximum
+route-conditioned branch width and candidate-pruned structural monolithic width
+had median 0.430, IQR 0.386--0.473, and 90th percentile 0.530. This supports the
+structural consequence of decomposition when multiple experts are feasible. It
+is not a monolithic runtime comparison: a true monolithic router-dispatch-expert
+solver has not yet been executed.
+
+### Route-changing certificates and the immutable endpoint
+
+The route-boundary experiment certified 36/100 samples as `SAFE` despite failure
+of the exact route-invariance precondition (36.0%; Wilson 95% interval
+27.3%--45.8%). Five certificates came from Tier 1 gate elimination and 31 from
+F0. The denominator is the full predeclared route-boundary cohort; this is a
+route-boundary certification yield, not natural-input prevalence.
+
+The preregistered overall solved-rate endpoint was **56/100 = 56%**, below its
+60% threshold. This failure is immutable. Its composition is 36 safe, 20
+full-forward-validated unsafe, 40 unknown, and four timeouts. Separately, a
+route boundary was established within the frozen search cap for 76/100 samples,
+so confirmatory conditional verification coverage is **56/76 = 73.7%**. The 24
+samples with no boundary through `4/255` are boundary-inapplicable, not solver
+failures, but they remain in the original denominator.
+
+### F0 incremental contribution
+
+Tier 1 left 60 semantic-incompleteness rows. F0 resolved 43/60 (71.7%): 31
+additional safe certificates and 12 concrete full-model unsafe witnesses. Its
+paired runtime overhead had median 28.1 seconds, IQR 7.4--63.5, and p90 115.1
+seconds. This result establishes F0 as a core second tier, but does not establish
+an end-to-end speedup.
+
+### Guard-aware support
+
+In the confirmatory execution, guarded support reduced expert binaries from
+10,076 to 8,466: 1,610 eliminated (16.0%) across 356/903 branches. Its accounting
+identity closes as 1,183 LP-support eliminations + 380 MILP-support eliminations
++ 47 structural/propagation eliminations. The full reduction must not be
+attributed to support optimization alone.
+
+The later matched Experiment 1D table over 225 branches is
+`n00=21, n01=17, n10=3, n11=184`, where `n01` is support-only solved and `n10`
+is no-support-only solved. The net gain is 14 branches and the exact two-sided
+McNemar/binomial p-value is 0.00258. Median paired support-minus-no-support solve
+time is -0.069 seconds. This supports a coverage benefit and an association with
+binary elimination; it is not an unconditional runtime-speedup claim.
+
+## Follow-up applicable-unresolved closure
+
+Experiment 1D froze all 20 applicable but unresolved confirmatory rows and reran
+only unresolved property branches under the unchanged encoding and radius with
+a 900-second deadline. The audited clean run at implementation HEAD
+`5f1b15ad202bb2b55b094390a00b8b63aaaf08b1` ran all 20 and resolved 12: ten safe
+and two full-forward-validated unsafe. Seven remained unknown and one timed out.
+
+This raises applicable conditional coverage only as a separately labeled
+follow-up from 56/76 to **68/76 = 89.5%**. It does not backfill or replace the
+failed 56/100 confirmatory endpoint. The frozen manifest is
+`act/pipeline/moe/configs/experiment1d_bal010_manifest_r2.json`, committed by
+`33e404104699b89ac3a942c835e8bd9512034a5f`.
+
+## Engineering reruns and attribution
+
+### N1 retained-margin conditioning
+
+The N1 experiment is an
+`engineering_performance_rerun_not_confirmatory_overwrite` on the same frozen
+20 applicable-unresolved rows. The unsegmented D0 baseline solved 12/20; N1
+solved 14/20. The paired table is `n11=12, n10=0, n01=2, n00=6`, with exact
+two-sided McNemar/binomial p=0.5. N1 added one safe result and one replayed unsafe
+result. Eleven of 157 evaluated properties had at least one strictly tightened
+expert-difference support.
+
+Median paired runtime increased by 15.91 seconds (median ratio 1.212). These
+data support a small observed coverage gain and the retained-condition mechanism,
+but neither statistical superiority nor a runtime improvement. The immutable
+summary is `act/pipeline/moe/results/experiment1n1_engineering_20260829.json`,
+committed by `747c3e1d11bf6069e2c2c63715aac303bc6c8e5e`.
+
+### Incremental HiGHS guarded-box construction
+
+The paired guarded coordinate-box benchmark contains 43 exact feasible route
+branches from the frozen 20-sample selection. Both incremental HiGHS and the
+SciPy reference solved 264,192 coordinate objectives with zero fallback sides;
+all 43 paired hulls agreed within `1e-8`, with recorded maximum difference zero.
+Incremental HiGHS used 43 model builds and took 230.83 seconds. SciPy used
+264,192 model builds and took 3,491.51 seconds. The paired branch speed ratio has
+median **15.03x**, and the aggregate wall ratio is 15.13x.
+
+This is a descriptive engineering speed result for guarded coordinate-hull
+construction. It is not an end-to-end verification speedup and does not claim
+solver-internal warm-start behavior. The result is
+`act/pipeline/moe/results/guarded_box_hull_benchmark_20260829.json`, committed by
+`3943450fddcaa416b0fbe76779fdbcad93c3cb14`.
+
+## A tie-inclusive backend pitfall
+
+For hard top-1 branch \(i\), let
+
+\[
+g_i(x)=\max_{j\ne i}(r_j-r_i),\qquad
+s_i(x)=\min_k(C_kE_i+d_k).
+\]
+
+Under tie-inclusive semantics, branch \(i\) is legal when \(g_i\le0\). The
+apparently natural reduction `max(g_i,s_i) >= 0` is unsound: at a legal tie,
+`g_i=0` makes the reduction pass even when `s_i<0`. Repeating this reduction for
+every member does not repair the omission.
+
+For any \(\eta>0\), `max(g_i-eta,s_i) >= 0` is sound. Its exact additional
+obligation domain is \(0<g_i<\eta\); \(g_i=0\) is a real legal obligation, not
+an incompleteness case. The proof is in
+`act/back_end/moe/proofs/tie_safe_eta_implication.md` at commit
+`7bf8a388427035e6b51cb0ec56ad3bd9f3640861`.
+
+Pinned auto_LiRPA 0.7.2 toy conformance checked four analytically constant cases,
+including the unsafe legal tie, and passed all four. This validates graph
+lowering and tie semantics only; it is not an official-model certificate or a
+general numerical-soundness validation of CROWN. The artifact is
+`act/pipeline/moe/results/crown/tie_safe_toy_conformance_20260829.json`, committed
+by `6b4f2627eed465090894da851e013c8a950da4dc`.
+
+## Partial certification-gap survey
+
+The frozen survey has produced a reconciled partial corpus and a primary-source
+evidence matrix, but retrieval is not complete. Two reviewers screened the same
+321-record partial corpus; nine families received full-text review and eight
+were retained for six-dimension artifact extraction. All 48 cells have a primary
+source URL and locator, and the independent completeness audit found zero issues.
+One-hop snowballing added 13 non-seed candidates and no new included family under
+the frozen criteria.
+
+These counts support only an artifact-centered qualitative account of the eight
+already adjudicated families. They do **not** support ecosystem prevalence,
+artifact-availability prevalence, certification-practice prevalence, search
+recall, or a claim that no other eligible work exists. Source-native exports or
+citation membership remain blocked or incomplete for ACM, IEEE metadata, PMLR,
+CVF, USENIX, Springer metadata, OpenReview, and Semantic Scholar. Zero structured
+citation counts are not evidence of no citations. No authors were contacted.
+
+The partial matrix and snowball artifacts are:
+
+- `act/pipeline/moe/results/survey/evidence_matrix_partial_20260829.json`, commit
+  `16ea290f3d85be21d5491ae7e0e0e204445d5d81`;
+- `act/pipeline/moe/results/survey/snowball_partial_20260829.json`, commit
+  `bcaee278e76a5d4970557d14f9d43df3123eb079`.
+
+Both are explicitly labeled `PARTIAL_RETRIEVAL_NO_PREVALENCE`.
+
+## Pending evaluation slots
+
+The following positions are deliberately present but contain no result.
+
+### P0a: explicit end-to-end route-invariance baseline — pending data
+
+P0a will run on confirmatory ranks 100--199. Exact tie-inclusive feasible
+unordered top-2 set uniqueness is the precondition. If uniqueness fails, the
+baseline returns `UNKNOWN`; it must not substitute another condition. Only a
+precondition-satisfying sample proceeds through the same expert/property backend
+as Route A. The eventual table must report coverage over all 100 samples,
+runtime, and Route A-only certificates. **No P0a result has been executed or is
+claimed here.**
+
+### P0b: four-adapter consistency cohort — pending data
+
+P0b is frozen to 43 bal010 route branches and four configurations:
+
+1. HZ with the retained guard;
+2. guarded coordinate box hull passed to CROWN;
+3. original input box passed to CROWN;
+4. tie-safe eta-reduction passed to CROWN.
+
+It is an adapter consistency and guard-retention comparison. The existing toy
+eta conformance and guarded-box timing benchmark are not P0b results. **No P0b
+certificate or ordering number is claimed here.**
+
+### B1: official-code RT-ER reproduction — pending data
+
+The official repository is frozen at
+`30ef94d77b5451595b82e739aa8938e1f4c4521f`. Its exact author-pinned environment
+imports, but PyTorch 2.4.0+cu121 supports CUDA architectures only through
+`sm_90`, while the available Blackwell GPU is `sm_120`; the first CUDA tensor
+kernel fails. Dataset conversion, training, checkpoint telemetry, theorem
+instantiation, and official-scale verification did not start. The compatibility
+artifact is
+`act/pipeline/moe/results/baseline/icml2025_rt_er_author_pin_probe_20260829.json`
+at commit `291c6dfee9d68c6f025e240013f95b7ecbb1ab8e`.
+
+Any later Blackwell-compatible run must be labeled separately from the exact-pin
+probe. The official project releases training/model code but no checkpoint and
+no certificate implementation, so future models must be labeled
+**official-code, paper-config reproduction**, not author checkpoints. **No B1
+accuracy, route telemetry, certificate, or runtime is claimed here.**
+
+## Threats to validity
+
+### Construct validity
+
+- The central 36/100 number is route-boundary certification yield on a
+  deliberately constructed boundary cohort, not natural-input prevalence.
+- Candidate exactness refers to an unrelaxed reachable-router HZ, not every HZ
+  computation in ACT.
+- The width result is structural binary width, not a measured monolithic runtime
+  advantage.
+- Guard support's paired result is coverage; the evidence does not justify an
+  unconditional speedup claim.
+- F0 uses a sound outer relaxation. Its unresolved cases measure verifier
+  incompleteness, not model safety or unsafety.
+
+### Internal validity
+
+- The confirmatory endpoint is immutable at 56/100 even though 1D later reaches
+  68/76 applicable coverage. The closure is not backfilled.
+- The N1 and incremental-HiGHS measurements are explicitly engineering reruns;
+  neither changes confirmatory outcomes.
+- All weighted unsafe verdicts require full-model replay. Independent audits
+  reported zero issues for the confirmatory, 1D, N1, and guarded-hull artifacts.
+- Earlier failed or partial launch directories are preserved and excluded rather
+  than overwritten.
+
+### External validity
+
+- The main evidence uses one seed of a 49.26%-accuracy, MLP-expert CIFAR-10 MoE.
+  It cannot establish scaling to ResNet experts, token routing, intermediate
+  MoE layers, larger expert counts, or other datasets.
+- Exact route-set enumeration is combinatorial in \(E\) and \(k\); the present
+  `E=8,k=2` implementation is not an expert-count scalability result.
+- P0a, P0b, a true monolithic solver comparison, and official RT-ER B1 remain
+  pending. They are required before strong baseline or official-scale claims.
+
+### Statistical conclusion validity
+
+- Candidate intervals use sample-cluster bootstrap rather than treating four
+  radii from one sample as independent.
+- The confirmatory unique-safe result reports a Wilson interval on the full
+  predefined denominator. Solved-only denominators are not used.
+- N1 has only two discordant improvements and p=0.5; it is an observed mechanism
+  result, not evidence of statistically reliable superiority.
+- The survey is partial and cannot support prevalence inference.
+
+### Reproducibility and artifact validity
+
+- Every paper number must resolve through the paths and commits in
+  `paper/evidence_table.md`; raw artifacts remain separate from tracked summary
+  manifests.
+- The exact author-pin B1 failure is a hardware/software compatibility result,
+  not evidence about the official method's accuracy or robustness.
+- Tool adapters must preserve tie-inclusive semantics and must not promote
+  relaxation candidates or numerical fallbacks to semantic verdicts.
+
+## Paper-level conclusion supported today
+
+The current evidence supports the following bounded conclusion:
+
+> On an independent, verification-scale weighted top-2 MoE cohort,
+> correlation-preserving route analysis reduces candidate sets, route
+> conditioning separates structural binary width when multiple experts are
+> feasible, and a staged gate-elimination plus gate-range McCormick verifier
+> certifies route-changing regions that a route-invariance precondition rejects.
+> Guard-aware support improves paired branch coverage. These results do not yet
+> establish official-scale expert verification, a monolithic runtime advantage,
+> or ecosystem prevalence.
