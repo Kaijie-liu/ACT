@@ -1033,6 +1033,23 @@ the code can collect conformance data now but cannot manufacture the missing
 outward-rounded formal endpoint. The monolithic CPU comparison remains a
 separate post-B1 experiment and is disabled in this runner.
 
+## Dynamic-MoE verifier-front-end probe
+
+The parser-probe execution layer is frozen but not yet run. It exports the
+frozen bal010 weighted top-2 model and the immutable official RT-ER epoch-10
+checkpoint with their real dynamic dispatch (`TopK` or `ArgMax` followed by
+`Gather`) to ONNX opset 17. Four deterministic route-diverse CIFAR-10 inputs
+must agree first with ONNX Runtime; the RT-ER tensorized export wrapper must
+also agree with the author's grouped hard-dispatch forward before export.
+
+The resulting graph is then passed through the ONNX conversion and bounded
+graph components used by the frozen alpha-beta-CROWN checkout. Outcomes
+distinguish export rejection, reference-ONNX rejection, verifier-front-end
+rejection, silent semantic mismatch, and semantic-preserving acceptance. This
+experiment measures only whether an existing verifier front end can consume
+the unmodified dynamic program. It does not measure certification coverage or
+runtime, and acceptance is not a robustness certificate.
+
 ## N1 engineering rerun code freeze
 
 The N1 performance runner freezes the original 20-row applicable-unresolved

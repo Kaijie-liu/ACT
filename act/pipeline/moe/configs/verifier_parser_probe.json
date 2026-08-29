@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "status": "PREREGISTERED_NOT_RUN",
+  "purpose": "test whether an existing SOTA verifier frontend can consume dynamic MoE dispatch without semantic specialization",
+  "models": {
+    "bal010_weighted_top2": {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/checkpoints/cifar10_top2_e8_seed0_bal010.pt",
+      "checkpoint_sha256": "fbaa7c871d28763ac5acb29a9502dc5d146e1d5af0b4a03e9911899251bd43f7",
+      "dispatch": "TopK plus selected-softmax plus Gather"
+    },
+    "rt_er_epoch010_hard_top1": {
+      "checkpoint": "/data1/Kane/MOE/baseline_runs/icml2025_rt_er/seed0_paper130/checkpoints/epoch_010.t7",
+      "checkpoint_sha256": "d30ab40efc58be6f02a1465d25a341bf5f95b822b280462e73a2ab239429788b",
+      "official_commit": "30ef94d77b5451595b82e739aa8938e1f4c4521f",
+      "dispatch": "ArgMax plus Gather over all four official ResNet18 experts"
+    }
+  },
+  "export": {
+    "format": "ONNX",
+    "opset": 17,
+    "legacy_torch_exporter": true,
+    "dynamic_batch_axis": true,
+    "probe_samples": 4,
+    "probe_policy": "first route-diverse official CIFAR10 test inputs",
+    "semantic_atol": 0.0001,
+    "semantic_rtol": 0.00001
+  },
+  "consumer": {
+    "repository": "/data1/Kane/MOE/baselines/alpha-beta-CROWN",
+    "commit": "e5c7e17bf0488843acb77b7519f59876717a49f4",
+    "environment": "/data1/Kane/MOE/envs/alpha-beta-crown",
+    "stages": ["onnx2pytorch ConvertModel", "auto_LiRPA BoundedModule"]
+  },
+  "outcomes": [
+    "EXPORT_REJECTED",
+    "REFERENCE_ONNX_REJECTED",
+    "EXISTING_VERIFIER_CANNOT_CONSUME",
+    "SILENT_SEMANTIC_MISMATCH",
+    "EXISTING_VERIFIER_FRONTEND_ACCEPTS"
+  ],
+  "claim_scope": "frontend program-consumption evidence only; not verification coverage or runtime"
+}
