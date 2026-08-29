@@ -1,8 +1,11 @@
 import unittest
+from pathlib import Path
+from tempfile import TemporaryDirectory
 
 from act.pipeline.moe.benchmark_guarded_box_hull import (
     _backend_order,
     _max_abs_bound_difference,
+    _save_bounds_artifact,
     _summary,
 )
 
@@ -70,6 +73,21 @@ class GuardedBoxHullBenchmarkTests(unittest.TestCase):
         left = (np.asarray([-1.0, 0.0]), np.asarray([2.0, 3.0]))
         right = (np.asarray([-1.25, 0.0]), np.asarray([2.0, 3.5]))
         self.assertEqual(_max_abs_bound_difference(left, right), 0.5)
+
+    def test_bound_artifact_retains_every_compared_array(self):
+        arrays = {
+            "highspy": (np.asarray([-1.0]), np.asarray([2.0])),
+            "scipy": (np.asarray([-1.25]), np.asarray([2.5])),
+        }
+        with TemporaryDirectory(dir="/data1/Kane/MOE/cache/tmp") as directory:
+            relative, digest = _save_bounds_artifact(
+                Path(directory), "rank1:pair0-1", arrays
+            )
+            path = Path(directory) / relative
+            self.assertEqual(len(digest), 64)
+            with np.load(path, allow_pickle=False) as payload:
+                self.assertEqual(payload["highspy_lower"].tolist(), [-1.0])
+                self.assertEqual(payload["scipy_upper"].tolist(), [2.5])
 
     def test_complete_synthetic_summary_aggregates_paired_telemetry(self):
         branches = [_branch(110), _branch(111, difference=2e-10)]

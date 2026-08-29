@@ -112,6 +112,29 @@ def _bounds_sha256(lower: np.ndarray, upper: np.ndarray) -> str:
     return hashlib.sha256(values.tobytes(order="C")).hexdigest()
 
 
+def _save_bounds_artifact(
+    output_dir: Path,
+    branch_id: str,
+    arrays: dict[str, tuple[np.ndarray, np.ndarray]],
+) -> tuple[str, str]:
+    """Persist every compared bound so a separate process can audit the diff."""
+
+    relative = Path("bounds") / f"{branch_id.replace(':', '_')}.npz"
+    path = output_dir / relative
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("xb") as handle:
+        np.savez_compressed(
+            handle,
+            highspy_lower=arrays["highspy"][0],
+            highspy_upper=arrays["highspy"][1],
+            scipy_lower=arrays["scipy"][0],
+            scipy_upper=arrays["scipy"][1],
+        )
+        handle.flush()
+        os.fsync(handle.fileno())
+    return str(relative), _sha256(path)
+
+
 def _max_abs_bound_difference(
     left: tuple[np.ndarray, np.ndarray],
     right: tuple[np.ndarray, np.ndarray],
@@ -337,6 +360,7 @@ def _run_branch(
     context: dict[str, Any],
     pair: tuple[int, int],
     config: dict[str, Any],
+    output_dir: Path,
 ) -> dict[str, Any]:
     guarded = guarded_input_topk_set(
         context["router"].input_hz,
@@ -358,6 +382,9 @@ def _run_branch(
     difference = _max_abs_bound_difference(arrays["highspy"], arrays["scipy"])
     paired_complete = all(results[name]["complete"] for name in _BACKEND_NAMES)
     branch_id = f"rank{context['rank']}:pair{pair[0]}-{pair[1]}"
+    bounds_artifact, bounds_artifact_sha256 = _save_bounds_artifact(
+        output_dir, branch_id, arrays
+    )
     return {
         "branch_id": branch_id,
         "sample_rank": int(context["rank"]),
@@ -374,6 +401,8 @@ def _run_branch(
             "frame_id": guarded.frame_id,
         },
         "backend_order": list(order),
+        "bounds_artifact": bounds_artifact,
+        "bounds_artifact_sha256": bounds_artifact_sha256,
         "highspy": results["highspy"],
         "scipy": results["scipy"],
         "paired_complete": paired_complete,
@@ -458,7 +487,7 @@ def run(config_path: Path) -> dict[str, Any]:
                     raise RuntimeError("route-set enumeration is not exact")
                 for pair_values in context["route_sets"].feasible:
                     pair = tuple(sorted(int(value) for value in pair_values))
-                    branch = _run_branch(context, pair, config)
+                    branch = _run_branch(context, pair, config, output_dir)
                     branches.append(branch)
                     row_branches.append(branch)
                     _append_json(branch_handle, branch)
