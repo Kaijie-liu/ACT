@@ -47,6 +47,15 @@ from act.back_end.moe.guarded_box_hull import (
     guarded_hz_box_hull_highs,
     guarded_hz_box_hull_scipy,
 )
+from act.back_end.moe.conditioned_difference_support import (
+    AffinePathSegment,
+    ConditionedSegmentSupport,
+    ConditionedSupportTelemetry,
+    SegmentedConditionedSupport,
+    condition_on_affine_path_interval,
+    conditioned_pair_difference_support,
+    segmented_affine_conditioned_support,
+)
 from act.back_end.moe.tie_safe_implication import (
     EtaBandAudit,
     TieSafeTop1Implication,
@@ -94,6 +103,10 @@ from act.back_end.moe.weighted_topk import (
 
 __all__ = [
     "GateKind",
+    "AffinePathSegment",
+    "ConditionedSegmentSupport",
+    "ConditionedSupportTelemetry",
+    "SegmentedConditionedSupport",
     "GuardedBoxHullResult",
     "GuardedHullTelemetry",
     "EtaBandAudit",
@@ -143,6 +156,8 @@ __all__ = [
     "build_weighted_topk_range",
     "compute_normalized_topk_gate_box",
     "compute_weighted_top2_gate_range",
+    "condition_on_affine_path_interval",
+    "conditioned_pair_difference_support",
     "condition_topk_membership",
     "condition_topk_set",
     "guarded_input_domain",
@@ -163,6 +178,7 @@ __all__ = [
     "shared_input_pair_hz",
     "simplex_anchor_contains",
     "simplex_box_contains",
+    "segmented_affine_conditioned_support",
     "solve_weighted_topk_range",
     "solve_weighted_top2_f0",
     "top1_branch_guard_values",

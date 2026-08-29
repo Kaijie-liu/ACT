@@ -750,3 +750,24 @@ imports successfully, but its PyTorch 2.4.0+cu121 binary supports through
 author-pin incompatibility is retained as a result; B1 training was not
 started and no newer PyTorch was silently substituted. Exact versions and
 repository commits are recorded in the environment manifest.
+
+## N1 retained-path conditioned difference support
+
+N1 now partitions an affine router margin into closed intervals, retains each
+interval as two weak constraints on the shared HZ factor frame, and recomputes
+property-directed expert-difference support per segment. Adjacent intervals
+overlap at every cut, so tie points are covered by both sides. A segment is
+dropped only after an infeasibility proof; solver-unknown segments remain in
+the sound union, and incomplete support sides fall back to the unconditional
+bound with explicit telemetry.
+
+This is not F1: no sigmoid is encoded or segmented. The implementation records
+`segmentation_axis=affine_path_margin`, `gate_function_encoded=false`, and
+`sigmoid_segments=0`. It also checks the retained constraint prefix in addition
+to frame identity, preventing cross-domain reuse when a same-ID HZ has lost a
+path condition. Eight focused tests cover tightening, cut/tie coverage,
+concrete interval containment, monotonicity, zero-budget fallback, F1
+separation, constraint loss, and frame mismatch. The support-monotonicity and
+interval-union proof is in
+`act/back_end/moe/proofs/conditioned_support_monotonicity.md`. This stage is a
+mechanism result; its engineering performance rerun remains pending.
