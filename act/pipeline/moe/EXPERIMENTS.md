@@ -753,6 +753,23 @@ recorded in `act/back_end/moe/proofs/normalized_topk_decomposition.md`. This is
 a mechanism result; no new model or experiment result is claimed by the code
 stage.
 
+The N2 data path is now executable for the frozen alternate gate family:
+CIFAR-10, 8 experts, normalized-sigmoid top-3, router width 128, expert widths
+256/128, Switch coefficient 0.10, seed 0, 50 epochs, and batch size 256. The
+runner selects deterministic clean-correct ranks 0--4, exactly enumerates all
+tie-inclusive unordered top-3 sets, retains each set guard over the shared
+input frame, tries expert-wise gate elimination first, and invokes the generic
+range fallback only when needed. Every fallback property asserts exactly
+`k-1=2` products. A negative relaxation candidate remains `UNKNOWN`; only a
+full selected-model replay may produce `UNSAFE`.
+
+The target checkpoint does not yet exist, so this is a code-path freeze rather
+than an N2 experiment result. New checkpoints now record `epochs` and
+`batch_size` in addition to the prior training provenance, and the N2 runner
+rejects legacy or mismatched payloads instead of inferring those values. The
+real five-sample run begins only after the frozen model has completed training;
+until then no top-3 coverage, runtime, or certificate number is claimed.
+
 ## Tie-safe eta implication compiler
 
 The augmented-output backend now has a sound hard-top1 compiler for
