@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "experiment": "experiment1_highspy_incremental_engineering_r3",
+  "status": "FAILED_EXCLUDED",
+  "scope": "engineering_storage_failure_not_scientific_result",
+  "failure": {
+    "completed_rows": 4,
+    "failed_rank": 126,
+    "cause": "The /data1 filesystem reached zero available bytes while the rank-126 child atomically flushed its completed row JSON. Python raised ENOSPC; the parent failed closed on the nonzero child exit.",
+    "scientific_interpretation": "external storage failure after a completed computation; not a solver status and not evidence for or against the incremental backend",
+    "partial_rows_excluded": true,
+    "corrective_policy": "Retain r3 immutably, clear only explicitly reproducible caches inside /data1/Kane/MOE, verify every existing environment remains executable, and rerun all 20 frozen rows from scratch in a new r4 directory.",
+    "cache_cleanup": {
+      "deleted_targets": [
+        "/data1/Kane/MOE/cache/pip contents",
+        "/data1/Kane/MOE/cache/conda/pkgs contents",
+        "/data1/Kane/MOE/cache/conda-pkgs contents"
+      ],
+      "recoverability": "download/package caches are reproducible; environments, checkpoints, raw results, and user files were not removed",
+      "available_after_cleanup": "4.8 GiB"
+    },
+    "r4_output_directory": "/data1/Kane/MOE/ACT/data/moe/results/experiment1_highspy_incremental_engineering_r4"
+  },
+  "raw_artifacts": {
+    "directory": "/data1/Kane/MOE/ACT/data/moe/results/experiment1_highspy_incremental_engineering_r3",
+    "config_json_sha256": "d04814f76f7da6daa918e45f1411d04387b613f5f22d7085bfa08b0a9c3967f1",
+    "experiment_log_sha256": "a59238037f57e9b9682fb647df32d670da2f436760554dbcdfa093ac674758c5",
+    "results_csv_sha256": "6ce9edbc159da926feb244928f81c1ce75a1cb056be5c35d173b0de37e5b94a5",
+    "results_jsonl_sha256": "7bfdbe4c9958713bac79228d362a50bd17416ed8b212f1ba0ba0d38ff0b93fa8",
+    "selection_json_sha256": "03e525b35258b024bc3cdcff9bb0eaff7bf0e5c6b81acd9befa3a856a6e4ecf0",
+    "rank126_progress_sha256": "98f156125a84925bed4ff5959235235580b2b01f8c0ade66a08059d1841c22bc",
+    "launcher_log_sha256": "873cb7040a3648fc9a74c1b42372c6edf4b48b4bee17eb3b27455cb030ef4ad6"
+  },
+  "exclusion_policy": "Retain r3 immutably and exclude all four partial rows. Run all 20 rows from scratch in r4."
+}

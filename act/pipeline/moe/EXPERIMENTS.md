@@ -1074,6 +1074,18 @@ warnings still invalidate the session. The record is
 `act/pipeline/moe/results/experiment1_highspy_engineering_r2_failed_20260829.json`.
 The `_r3` run again starts all 20 rows from scratch.
 
+The `_r3` launch completed four rows and finished the rank-126 computation, but
+the `/data1` filesystem reached zero available bytes during the atomic row JSON
+flush. The child raised `ENOSPC`, and the parent correctly failed closed. This
+is an external storage failure, not a solver verdict. The partial rows are
+excluded and retained in
+`act/pipeline/moe/results/experiment1_highspy_engineering_r3_failed_20260830.json`.
+Only reproducible package/download caches under `/data1/Kane/MOE/cache` were
+cleared; all environments were then import-checked, and checkpoints, raw
+results, and user files were left intact. The `_r4` launch starts all 20 frozen
+rows from scratch in a new directory with identical scientific and engineering
+configuration.
+
 ## P0b CROWN adapter consistency code freeze
 
 The frozen 43-branch bal010 cohort compares four representations of the same

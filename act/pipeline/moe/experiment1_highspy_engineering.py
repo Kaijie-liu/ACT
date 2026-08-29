@@ -22,7 +22,7 @@ from act.pipeline.moe.experiment1d import run as run_experiment1d
 
 DEFAULT_CONFIG = (
     PROJECT_ROOT
-    / "act/pipeline/moe/configs/experiment1_highspy_engineering_r3.json"
+    / "act/pipeline/moe/configs/experiment1_highspy_engineering_r4.json"
 )
 
 _COUNT_KEYS = (
