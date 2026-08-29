@@ -68,7 +68,7 @@ from act.util.path_config import get_torchvision_data_root
 from act.util.stats import VerifyStatus
 
 
-DEFAULT_CONFIG = PROJECT_ROOT / "act/pipeline/moe/configs/experiment1d_bal010.json"
+DEFAULT_CONFIG = PROJECT_ROOT / "act/pipeline/moe/configs/experiment1d_bal010_r1.json"
 EXPECTED_PYTHON = Path("/data1/Kane/miniconda3/envs/act-py312/bin/python")
 SEMANTIC_REASONS = {
     "UNKNOWN_GATE_SUFFICIENCY",
@@ -152,6 +152,17 @@ def _support_signature(record: dict[str, Any]) -> dict[str, Any]:
 def _assert_support_identity(actual: dict[str, Any], parent: dict[str, Any]) -> None:
     if _support_signature(actual) != _support_signature(parent):
         raise RuntimeError("rematerialized guarded-support signature changed")
+
+
+def _gate_support_record(propagation, shared_binary_width: int) -> dict[str, Any]:
+    """Match the confirmatory gate branch's post-support binary universe."""
+    return {
+        **_support_summary(propagation.guarded_support),
+        "relu_binaries": max(
+            0, int(propagation.binary_width) - int(shared_binary_width)
+        ),
+        "binary_width": int(propagation.binary_width),
+    }
 
 
 class RowRecorder:
@@ -480,7 +491,9 @@ def _run_gate(selection, context, model, work_dir, config, recorder):
         )
         support = _support_summary(guarded.guarded_support)
         if parent_branch is not None:
-            actual = {**support, "relu_binaries": guarded.unstable_total, "binary_width": guarded.binary_width}
+            actual = _gate_support_record(
+                guarded, branch.guarded_input.n_bin
+            )
             expected = {**parent_branch["support"], "relu_binaries": parent_branch["expert_relu_binaries_after_guard"], "binary_width": parent_branch["binary_width_after_guard"]}
             _assert_support_identity(actual, expected)
         first_budget, second_budget = _attempt_budgets(

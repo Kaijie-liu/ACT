@@ -80,3 +80,13 @@ The public baseline is unlocked only if all conditions hold:
 
 Experiment 1D results are follow-up closure evidence. They never replace the
 original confirmatory 56% overall solved-rate failure.
+
+## Preserved first-launch failure
+
+The first D0 launch under implementation HEAD `152fa8c5f` stopped after ranks
+110 and 120 were explicitly rejected by the support-identity assertion. The
+runner compared the expert's fast preactivation count with the post-support
+expert ReLU binary count, two intentionally different statistical universes.
+No solver verdict was produced. Directory `experiment1d_bal010_d0` is preserved
+and permanently excluded. The corrected run uses the unchanged frozen selection
+and mathematics and writes only to `experiment1d_bal010_d0_r1`.

@@ -3,10 +3,12 @@ import tempfile
 import unittest
 from collections import Counter
 from pathlib import Path
+from types import SimpleNamespace
 
 from act.pipeline.moe.experiment1d import (
     DEFAULT_CONFIG,
     RowRecorder,
+    _gate_support_record,
     _load_frozen_selection,
     _summary,
 )
@@ -64,6 +66,26 @@ class Experiment1DTests(unittest.TestCase):
         self.assertEqual(summary["parent_boundary_applicability"], "76/100")
         self.assertAlmostEqual(summary["closure_conditional_coverage"], 61 / 76)
         self.assertTrue(summary["baseline_unlock_pre_audit"])
+
+    def test_gate_support_identity_uses_post_support_binary_universe(self):
+        propagation = SimpleNamespace(
+            guarded_support=({
+                "fast_unstable": 69,
+                "after_lp_unstable": 54,
+                "after_milp_unstable": 52,
+                "lp_eliminated": 15,
+                "milp_eliminated": 2,
+                "lp_seconds": 0.0,
+                "milp_seconds": 0.0,
+                "lp_fallback_sides": 2,
+                "milp_fallback_sides": 2,
+            },),
+            binary_width=56,
+        )
+        record = _gate_support_record(propagation, shared_binary_width=4)
+        self.assertEqual(record["fast_unstable"], 69)
+        self.assertEqual(record["relu_binaries"], 52)
+        self.assertEqual(record["binary_width"], 56)
 
 
 if __name__ == "__main__":

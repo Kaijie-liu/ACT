@@ -482,3 +482,11 @@ conditional coverage of at least 61/76 (80%), and no silent numerical fallback.
 Closure results remain follow-up evidence and are never backfilled into the
 original 56% endpoint. Full details are in
 `act/pipeline/moe/docs/experiment1d_closure.md`.
+
+The first D0 launch at HEAD `152fa8c5f` stopped after ranks 110 and 120 were
+rejected by an engineering support-identity assertion. It compared the fast
+preactivation count with the post-support expert ReLU binary count, which are
+different accounting universes. No scientific solver verdict was returned. The
+partial `experiment1d_bal010_d0` directory is preserved and excluded; the fixed
+runner writes to `experiment1d_bal010_d0_r1` without changing selection, radius,
+encoding, or budgets.
