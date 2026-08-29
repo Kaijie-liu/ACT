@@ -986,6 +986,17 @@ input was inspected outside autocast. It did not enter PGD or take an optimizer
 step. The route counter now uses the same autocast dtype contract as the author
 forward. Neither failed launch contributes a scientific result.
 
+Smoke r3 passed the corrected gate in 13.18 seconds. It used the audited real
+CIFAR-10 archive and official FFCV transforms, executed the PGD-10 RT-ER loss
+and one Adam update with finite gradients, ran a fixed-batch PGD-50 evaluation
+with finite outputs, and strictly reloaded all four experts plus the router.
+The restored logits matched exactly (maximum absolute error 0). An independent
+hash/schema/state audit reports zero issues, and the official clone remained
+fully clean. The compact result is
+`act/pipeline/moe/results/environments/rt_er_b1_real_smoke_20260830.json`;
+the 800 MB raw smoke artifacts stay outside Git under the isolated run root.
+This passes the compatibility gate only and does not claim reproduced accuracy.
+
 ## N1 engineering rerun code freeze
 
 The N1 performance runner freezes the original 20-row applicable-unresolved

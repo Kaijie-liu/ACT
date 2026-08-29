@@ -1,0 +1,67 @@
+{
+  "audit": {
+    "all_four_experts_present": true,
+    "artifact_hash_mismatches": 0,
+    "checkpoint_state_keys": 490,
+    "issue_count": 0,
+    "raw_audit_path": "/data1/Kane/MOE/baseline_runs/icml2025_rt_er/seed0_paper130_smoke_r3/audit.json",
+    "raw_audit_sha256": "6a946bab8ab675fd045f7215741cf4ccf8a82b2d71dc027b189e829802b7857d",
+    "status": "PASSED"
+  },
+  "dataset": {
+    "archive_sha256": "6d958be074577803d12ecdefd02955f39262c83c16fe9348329d7fe0b5c001ce",
+    "official_test_samples": 10000,
+    "official_train_samples": 50000,
+    "pipeline": "FFCV 1.0.2",
+    "smoke_samples_per_split": 16,
+    "substituted_data_pipeline": false
+  },
+  "environment": {
+    "cuda": "13.0",
+    "ffcv": "1.0.2",
+    "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+    "ld_preload": "/data1/Kane/MOE/envs/rt-er-blackwell/lib/libjpeg.so.8",
+    "python": "3.11.14",
+    "torch": "2.11.0+cu130",
+    "torchvision": "0.26.0"
+  },
+  "excluded_runs": [
+    {
+      "failure_sha256": "9a8c46094e2ee769780b4ce5b6f04d92019ee52de3dc3d8e487825bac5c10412",
+      "id": "seed0_paper130_smoke_r1",
+      "reason": "pre-experiment Python entrypoint import failure",
+      "scientific_work_started": false
+    },
+    {
+      "failure_sha256": "3423ce63c96687d5d26845c59c14cbf138509e506132178de09533bb99c4897b",
+      "id": "seed0_paper130_smoke_r2",
+      "reason": "pre-objective FP16 route instrumentation outside autocast",
+      "scientific_work_started": false
+    }
+  ],
+  "label": "official-code, Blackwell-compatible deps + FFCV",
+  "official_source": {
+    "commit": "30ef94d77b5451595b82e739aa8938e1f4c4521f",
+    "repository_clean_after": true,
+    "source_modified": false
+  },
+  "result": {
+    "checkpoint_roundtrip_max_abs_error": 0.0,
+    "gradients_finite": true,
+    "optimizer_step_executed": true,
+    "outputs_finite": true,
+    "runtime_seconds": 13.17726368829608,
+    "smoke_checkpoint_sha256": "31fa0d5fd5bd6ffc6d90381bcdc1060b93c088058c808aade70f6fff334637da",
+    "training_batch_loss": 2.349141836166382,
+    "training_clean_route_counts": [3, 0, 1, 0],
+    "training_second_route_counts": [1, 1, 2, 0]
+  },
+  "runner_commit": "c3b8fc4410ba105b1d570379abc59d5cade0ede9",
+  "schema_version": 1,
+  "scientific_scope": "real-data compatibility gate only; not an epoch, accuracy reproduction, or scientific endpoint",
+  "seed": 0,
+  "smoke_summary_path": "/data1/Kane/MOE/baseline_runs/icml2025_rt_er/seed0_paper130_smoke_r3/smoke/summary.json",
+  "smoke_summary_sha256": "33af377e95ca0022336877990f9d239919d57edbe165f315498d072c1ec2576e",
+  "stage": "B1_REAL_DATA_OFFICIAL_OBJECTIVE_SMOKE",
+  "status": "PASSED"
+}
