@@ -1042,8 +1042,9 @@ checkpoint with their real dynamic dispatch (`TopK` or `ArgMax` followed by
 must agree first with ONNX Runtime; the RT-ER tensorized export wrapper must
 also agree with the author's grouped hard-dispatch forward before export.
 
-The resulting graph is then passed through the ONNX conversion and bounded
-graph components used by the frozen alpha-beta-CROWN checkout. Outcomes
+The resulting graph is then passed through both the exact
+`complete_verifier.load_model_onnx` loader and its ONNX conversion and bounded
+graph components in the frozen alpha-beta-CROWN checkout. Outcomes
 distinguish export rejection, reference-ONNX rejection, verifier-front-end
 rejection, silent semantic mismatch, and semantic-preserving acceptance. This
 experiment measures only whether an existing verifier front end can consume

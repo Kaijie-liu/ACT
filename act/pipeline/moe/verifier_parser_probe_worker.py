@@ -7,6 +7,7 @@ import json
 import os
 from pathlib import Path
 import subprocess
+import sys
 import time
 from typing import Any
 
@@ -16,6 +17,7 @@ import torch
 
 MOE_ROOT = Path("/data1/Kane/MOE")
 CROWN_REPO = MOE_ROOT / "baselines/alpha-beta-CROWN"
+CROWN_FRONTEND = CROWN_REPO / "complete_verifier"
 CROWN_COMMIT = "e5c7e17bf0488843acb77b7519f59876717a49f4"
 
 
@@ -38,6 +40,15 @@ def run(onnx_path: Path, probes_path: Path) -> dict[str, Any]:
     if _git("rev-parse", "HEAD") != CROWN_COMMIT or _git("status", "--porcelain"):
         raise RuntimeError("α,β-CROWN repository identity/cleanliness gate failed")
     started = time.monotonic()
+
+    def finish(value: dict[str, Any]) -> dict[str, Any]:
+        value["runtime_seconds"] = time.monotonic() - started
+        if _git("status", "--porcelain"):
+            raise RuntimeError(
+                "alpha-beta-CROWN repository became dirty during parser probe"
+            )
+        return value
+
     result: dict[str, Any] = {
         "schema_version": 1,
         "crown_repository": str(CROWN_REPO),
@@ -45,7 +56,9 @@ def run(onnx_path: Path, probes_path: Path) -> dict[str, Any]:
         "onnx": str(onnx_path),
         "probes": str(probes_path),
         "onnx2pytorch": {"status": "NOT_RUN"},
+        "alpha_beta_crown_loader": {"status": "NOT_RUN"},
         "auto_lirpa": {"status": "NOT_RUN"},
+        "vnnlib_stage": {"status": "NOT_RUN"},
     }
     with np.load(probes_path, allow_pickle=False) as probes:
         inputs = torch.from_numpy(probes["inputs"].copy()).float()
@@ -79,18 +92,57 @@ def run(onnx_path: Path, probes_path: Path) -> dict[str, Any]:
             "error_type": type(error).__name__,
             "error": str(error),
         }
-        result["overall_status"] = "EXISTING_VERIFIER_CANNOT_CONSUME"
-        result["runtime_seconds"] = time.monotonic() - started
-        return result
 
-    if result["onnx2pytorch"]["status"] != "ACCEPTED_SEMANTICS_MATCH":
+    sys.path.insert(0, str(CROWN_FRONTEND))
+    try:
+        import arguments
+
+        arguments.Config.parse_config(["--device=cpu"], verbose=False)
+        from load_model import load_model_onnx
+
+        loaded, input_shape = load_model_onnx(str(onnx_path), x=inputs[:1])
+        with torch.no_grad():
+            loaded_output = loaded(inputs)
+        maximum_error = float((loaded_output - expected).abs().max().item())
+        loader_matches = bool(
+            torch.allclose(loaded_output, expected, atol=1e-4, rtol=1e-5)
+        )
+        result["alpha_beta_crown_loader"] = {
+            "status": (
+                "ACCEPTED_SEMANTICS_MATCH"
+                if loader_matches
+                else "ACCEPTED_SILENT_SEMANTIC_MISMATCH"
+            ),
+            "input_shape": list(input_shape),
+            "maximum_abs_error": maximum_error,
+        }
+    except Exception as error:
+        result["alpha_beta_crown_loader"] = {
+            "status": "REJECTED",
+            "error_type": type(error).__name__,
+            "error": str(error),
+        }
+
+    if result["alpha_beta_crown_loader"]["status"] == "REJECTED":
+        result["vnnlib_stage"] = {
+            "status": "NOT_REACHED_MODEL_FRONTEND_REJECTED"
+        }
+        result["overall_status"] = "EXISTING_VERIFIER_CANNOT_CONSUME"
+        return finish(result)
+    if result["alpha_beta_crown_loader"]["status"] != "ACCEPTED_SEMANTICS_MATCH":
+        result["vnnlib_stage"] = {
+            "status": "NOT_REACHED_SILENT_SEMANTIC_MISMATCH"
+        }
         result["overall_status"] = "SILENT_SEMANTIC_MISMATCH"
-        result["runtime_seconds"] = time.monotonic() - started
-        return result
+        return finish(result)
+    if result["onnx2pytorch"]["status"] != "ACCEPTED_SEMANTICS_MATCH":
+        raise RuntimeError(
+            "official loader accepted a graph rejected by its direct conversion component"
+        )
     try:
         from auto_LiRPA import BoundedModule
 
-        bounded = BoundedModule(converted, inputs[:1], device="cpu")
+        bounded = BoundedModule(loaded, inputs[:1], device="cpu")
         with torch.no_grad():
             bounded_output = bounded(inputs[:1])
         maximum_error = float((bounded_output - expected[:1]).abs().max().item())
@@ -104,6 +156,9 @@ def run(onnx_path: Path, probes_path: Path) -> dict[str, Any]:
             if matches
             else "SILENT_SEMANTIC_MISMATCH"
         )
+        result["vnnlib_stage"] = {
+            "status": "NOT_RUN_FRONTEND_PROGRAM_CONSUMPTION_SCOPE"
+        }
     except Exception as error:
         result["auto_lirpa"] = {
             "status": "REJECTED",
@@ -111,10 +166,7 @@ def run(onnx_path: Path, probes_path: Path) -> dict[str, Any]:
             "error": str(error),
         }
         result["overall_status"] = "EXISTING_VERIFIER_CANNOT_CONSUME"
-    result["runtime_seconds"] = time.monotonic() - started
-    if _git("status", "--porcelain"):
-        raise RuntimeError("α,β-CROWN repository became dirty during parser probe")
-    return result
+    return finish(result)
 
 
 def main() -> None:

@@ -29,7 +29,11 @@
     "repository": "/data1/Kane/MOE/baselines/alpha-beta-CROWN",
     "commit": "e5c7e17bf0488843acb77b7519f59876717a49f4",
     "environment": "/data1/Kane/MOE/envs/alpha-beta-crown",
-    "stages": ["onnx2pytorch ConvertModel", "auto_LiRPA BoundedModule"]
+    "stages": [
+      "onnx2pytorch ConvertModel cause isolation",
+      "complete_verifier.load_model_onnx official loader",
+      "auto_LiRPA BoundedModule"
+    ]
   },
   "outcomes": [
     "EXPORT_REJECTED",
