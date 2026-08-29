@@ -1051,6 +1051,18 @@ confirmatory endpoints remain `56/100` overall and `56/76` applicable. This is
 still a code/mechanism result until the 20-row engineering rerun and independent
 audit complete.
 
+The first full launch (`_r1`) was stopped after rank 110 failed the D0
+support-identity guard. This was an execution-scope mismatch: D0 correctly
+requires rematerialized SciPy support to reproduce its parent structure, while
+the engineering treatment intentionally substitutes incremental HiGHS for the
+time-limited support solver and may therefore soundly eliminate a different
+binary subset. The fix does not relax D0. Only the explicit engineering config
+may record structural support-signature drift; candidate sets, exact route sets,
+radii, parent hashes, support budgets, and numerical SAFE rules remain frozen.
+The `_r1` row is excluded and retained in
+`act/pipeline/moe/results/experiment1_highspy_engineering_r1_failed_20260829.json`;
+the clean `_r2` run starts all 20 rows again in a new directory.
+
 ## P0b CROWN adapter consistency code freeze
 
 The frozen 43-branch bal010 cohort compares four representations of the same

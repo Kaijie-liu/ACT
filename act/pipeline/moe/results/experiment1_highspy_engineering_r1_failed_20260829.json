@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "experiment": "experiment1_highspy_incremental_engineering_r1",
+  "status": "FAILED_EXCLUDED",
+  "scope": "engineering_runner_failure_not_scientific_result",
+  "failure": {
+    "completed_rows": 1,
+    "failed_rank": 110,
+    "error": "RuntimeError: rematerialized guarded-support signature changed",
+    "cause": "The closure identity guard correctly required SciPy support structure to match its parent, but the engineering run intentionally changed the support backend to incremental HiGHS. Different time-limited support completion can soundly eliminate a different binary set and must be recorded as the engineering treatment rather than rejected as parent drift.",
+    "manual_stop_after_first_error": true,
+    "semantic_verdict_produced": false,
+    "corrective_policy": "Only the explicitly labeled engineering config may record backend support-signature drift. Default Experiment 1D keeps the strict identity check. Candidate sets, route sets, radii, parent hashes, support budgets, and numerical SAFE policy remain frozen.",
+    "r2_output_directory": "/data1/Kane/MOE/ACT/data/moe/results/experiment1_highspy_incremental_engineering_r2"
+  },
+  "raw_artifacts": {
+    "directory": "/data1/Kane/MOE/ACT/data/moe/results/experiment1_highspy_incremental_engineering_r1",
+    "config_json_sha256": "568e8e10b903f20a9eb2b1343c640cd903067b940651a5839959f61b64d6acbb",
+    "experiment_log_sha256": "de18b2ce7436e30dbedc71f7c64d9a0c5498a7164c55fe236fa43131a5cf78ba",
+    "results_csv_sha256": "865d79a78a6f5efcf09432fe1f7c5179fb4959e17999ea738b0e2577774c7957",
+    "results_jsonl_sha256": "d168fd07a23c0f8d732d341b94da38be0616a209fec60eae98fa4c48294f631c",
+    "rank110_row_sha256": "2862e51fefcc8ec14d80d70fe2e65bc55336a26eec4dc96ce73c468e98f93247",
+    "selection_json_sha256": "03e525b35258b024bc3cdcff9bb0eaff7bf0e5c6b81acd9befa3a856a6e4ecf0",
+    "launcher_log_sha256": "738bc68b8b0d45042c5cc8a9b68711f166294e6c407160a0519b303c24cfef62"
+  },
+  "exclusion_policy": "Retain r1 immutably. Do not aggregate its row. Run all 20 rows from scratch in r2; never patch or append r1."
+}

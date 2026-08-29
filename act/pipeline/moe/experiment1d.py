@@ -153,20 +153,37 @@ def _support_signature(record: dict[str, Any]) -> dict[str, Any]:
 
 
 def _assert_support_identity(
-    actual: dict[str, Any], parent: dict[str, Any]
+    actual: dict[str, Any],
+    parent: dict[str, Any],
+    *,
+    allow_backend_drift: bool = False,
 ) -> dict[str, Any]:
     actual_signature = _support_signature(actual)
     parent_signature = _support_signature(parent)
     required_keys = tuple(
         key for key in actual_signature if key != "fallback_sides"
     )
-    if any(
-        actual_signature[key] != parent_signature[key]
+    changed = [
+        key
         for key in required_keys
-    ):
+        if actual_signature[key] != parent_signature[key]
+    ]
+    if changed and not allow_backend_drift:
         raise RuntimeError("rematerialized guarded-support signature changed")
+    if changed and allow_backend_drift:
+        drift = {
+            key: {
+                "parent": parent_signature[key],
+                "actual": actual_signature[key],
+            }
+            for key in changed
+        }
+    else:
+        drift = {}
     return {
-        "structural_identity": True,
+        "structural_identity": not changed,
+        "backend_drift_allowed": bool(allow_backend_drift),
+        "structural_drift": drift,
         "actual": actual_signature,
         "parent": parent_signature,
         "fallback_side_drift": (
@@ -174,7 +191,10 @@ def _assert_support_identity(
             - parent_signature["fallback_sides"]
         ),
         "interpretation": (
-            "time-limited side-status drift is recorded but is not a "
+            "backend support differences are permitted only in the explicit "
+            "engineering rerun; default D0 still requires structural identity"
+            if changed
+            else "time-limited side-status drift is recorded but is not a "
             "structural binary-elimination change"
         ),
     }
@@ -465,10 +485,18 @@ def _run_f0(
         support_a, support_b = _support_record(propagated.expert_a), _support_record(propagated.expert_b)
         if parent_pair is not None:
             identity_a = _assert_support_identity(
-                support_a, parent_pair["expert_a_support"]
+                support_a,
+                parent_pair["expert_a_support"],
+                allow_backend_drift=bool(
+                    config.get("engineering_allow_support_solver_drift", False)
+                ),
             )
             identity_b = _assert_support_identity(
-                support_b, parent_pair["expert_b_support"]
+                support_b,
+                parent_pair["expert_b_support"],
+                allow_backend_drift=bool(
+                    config.get("engineering_allow_support_solver_drift", False)
+                ),
             )
         else:
             identity_a = identity_b = None
@@ -650,7 +678,13 @@ def _run_gate(selection, context, model, work_dir, config, recorder):
                 guarded, branch.guarded_input.n_bin
             )
             expected = {**parent_branch["support"], "relu_binaries": parent_branch["expert_relu_binaries_after_guard"], "binary_width": parent_branch["binary_width_after_guard"]}
-            support_identity = _assert_support_identity(actual, expected)
+            support_identity = _assert_support_identity(
+                actual,
+                expected,
+                allow_backend_drift=bool(
+                    config.get("engineering_allow_support_solver_drift", False)
+                ),
+            )
         else:
             support_identity = None
         first_budget, second_budget = _attempt_budgets(

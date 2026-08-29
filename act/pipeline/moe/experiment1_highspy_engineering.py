@@ -22,7 +22,7 @@ from act.pipeline.moe.experiment1d import run as run_experiment1d
 
 DEFAULT_CONFIG = (
     PROJECT_ROOT
-    / "act/pipeline/moe/configs/experiment1_highspy_engineering.json"
+    / "act/pipeline/moe/configs/experiment1_highspy_engineering_r2.json"
 )
 
 _COUNT_KEYS = (
@@ -97,7 +97,25 @@ def summarize_incremental_telemetry(
     status_counts: Counter[str] = Counter()
     category_counts: Counter[str] = Counter()
     sessions = []
+    support_identity_counts: Counter[str] = Counter()
     for row in rows:
+        gate = row.get("gate") or {}
+        for branch in gate.get("branches", []):
+            identity = branch.get("support_identity")
+            if identity is not None:
+                support_identity_counts[
+                    "identical" if identity.get("structural_identity") else "drift"
+                ] += 1
+        f0 = row.get("f0") or {}
+        for pair in f0.get("pairs", []):
+            for key in ("expert_a_support_identity", "expert_b_support_identity"):
+                identity = pair.get(key)
+                if identity is not None:
+                    support_identity_counts[
+                        "identical"
+                        if identity.get("structural_identity")
+                        else "drift"
+                    ] += 1
         for category, telemetry in _terminal_sessions(row):
             category_counts[category] += 1
             sessions.append((category, telemetry))
@@ -134,6 +152,11 @@ def summarize_incremental_telemetry(
             telemetry.get("build_error") is not None
             for _, telemetry in sessions
         ),
+        "support_signature_comparisons": dict(support_identity_counts),
+        "support_signature_drift_semantics": (
+            "expected engineering effect of changing the support solver; "
+            "candidate, route-set, radius, and parent artifact identities remain frozen"
+        ),
         "paired_status_transitions": dict(transitions),
         "paired_total_seconds_difference": paired_seconds,
         "f0_reuse_scope": "same_augmented_property_low_to_escalation_only",
@@ -162,6 +185,10 @@ def _validate_engineering_config(config: dict[str, Any]) -> None:
         raise ValueError("expert properties must explicitly opt into highspy_incremental")
     if solver.get("f0_backend") != "highspy_incremental":
         raise ValueError("F0 must explicitly opt into highspy_incremental")
+    if config.get("engineering_allow_support_solver_drift") is not True:
+        raise ValueError(
+            "engineering rerun must explicitly record support-solver signature drift"
+        )
 
 
 def run(config_path: Path) -> dict[str, Any]:

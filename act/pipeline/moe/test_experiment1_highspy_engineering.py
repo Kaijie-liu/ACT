@@ -79,6 +79,7 @@ class IncrementalEngineeringRunnerTests(unittest.TestCase):
     def test_config_requires_explicit_opt_in_and_frozen_scope(self):
         config = {
             "scope": "engineering_performance_rerun_not_confirmatory_overwrite",
+            "engineering_allow_support_solver_drift": True,
             "expected_rows": 20,
             "instance_timeout_seconds": 900.0,
             "support": {"solver_backend": "highspy_incremental"},

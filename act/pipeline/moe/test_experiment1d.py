@@ -112,6 +112,26 @@ class Experiment1DTests(unittest.TestCase):
                 actual, {**actual, "binary_width": 39}
             )
 
+    def test_explicit_engineering_backend_drift_is_recorded(self):
+        actual = {
+            "relu_binaries": 50, "binary_width": 34,
+            "fast_unstable": 55, "after_lp_unstable": 35,
+            "after_milp_unstable": 34, "lp_eliminated": 20,
+            "milp_eliminated": 1, "fallback_sides": 0,
+        }
+        parent = {
+            "relu_binaries": 52, "binary_width": 36,
+            "fast_unstable": 55, "after_lp_unstable": 38,
+            "after_milp_unstable": 36, "lp_eliminated": 17,
+            "milp_eliminated": 2, "fallback_sides": 4,
+        }
+        report = _assert_support_identity(
+            actual, parent, allow_backend_drift=True
+        )
+        self.assertFalse(report["structural_identity"])
+        self.assertTrue(report["backend_drift_allowed"])
+        self.assertIn("binary_width", report["structural_drift"])
+
 
 if __name__ == "__main__":
     unittest.main()
