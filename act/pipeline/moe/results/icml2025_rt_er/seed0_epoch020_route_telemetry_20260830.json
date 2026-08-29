@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "status": "PASSED_WITH_STATIC_ROUTER_FINDING",
+  "seed": 0,
+  "epoch": 20,
+  "label": "official-code, Blackwell-compatible deps + FFCV",
+  "checkpoint": {
+    "path": "/data1/Kane/MOE/baseline_runs/icml2025_rt_er/seed0_paper130/checkpoints/epoch_020.t7",
+    "sha256": "f83d9d6a8343ec8149ac7f11c4d5cb3f13beb9761c71cc59c3a93ae55deb3015",
+    "reported_clean_accuracy_percent": 33.95
+  },
+  "classification": {
+    "computed_clean_accuracy": 0.3395,
+    "computed_clean_correct": 3395,
+    "train_clean_accuracy_percent": 31.020457474226806,
+    "train_robust_accuracy_percent": 24.3335212628866,
+    "train_loss": 2.0909128631513143,
+    "validation_pgd50_accuracy_percent": 27.0,
+    "clean_accuracy_change_from_epoch10_percentage_points": 3.14,
+    "validation_pgd50_change_from_epoch10_percentage_points": 1.89
+  },
+  "route_geometry": {
+    "finite_route_boundaries": 10000,
+    "radius_quantiles_unit_pixels": {
+      "p10": 0.0004115879743243763,
+      "p25": 0.00111808985648363,
+      "p50": 0.002552486903531068,
+      "p75": 0.004886665152563001,
+      "p90": 0.007474010992982008,
+      "p95": 0.009235585462024451
+    },
+    "epsilon_reachable_counts": {
+      "0.25/255": 2247,
+      "0.5/255": 4085,
+      "1/255": 6639,
+      "2/255": 9117,
+      "4/255": 9968,
+      "8/255": 10000
+    },
+    "route_load_counts": [1601, 1895, 3791, 2713],
+    "route_load_probabilities": [0.1601, 0.1895, 0.3791, 0.2713],
+    "effective_expert_count": 3.7815470906527158
+  },
+  "epoch10_to_epoch20_parameter_audit": {
+    "router_hash_epoch10": "ef39e3ca91c4e27cf64dce275771a510c9236d4be2d7c8756d5131cc8503bdbd",
+    "router_hash_epoch20": "ef39e3ca91c4e27cf64dce275771a510c9236d4be2d7c8756d5131cc8503bdbd",
+    "router_parameter_tensors": 2,
+    "router_parameter_tensors_changed": 0,
+    "expert_hash_epoch10": "96900d11fc864d4a27184463e533c917e045a1e86ff7a8ac70c3f1d868198ffb",
+    "expert_hash_epoch20": "72a1f4ce8c995401e349b9679d89e36078019af1b97b30ea6dea2fa5a275fdce",
+    "expert_parameter_tensors": 248,
+    "expert_parameter_tensors_changed": 248,
+    "optimizer_parameters": 250,
+    "optimizer_state_entries": 248,
+    "router_optimizer_state": {
+      "router.gate.weight": [],
+      "router.gate.bias": []
+    },
+    "clean_expert_assignments_exactly_equal": true,
+    "boundary_competitors_exactly_equal": true,
+    "maximum_route_radius_abs_difference": 1.0408340855860843e-17
+  },
+  "static_router_explanation": {
+    "released_forward": "Router.forward returns torch.argmax(gate_logits), and MOE_Resnet18 indexes the selected expert with those integer indices.",
+    "released_auxiliary_path": "get_second_expert returns torch.topk integer indices used only to construct expert-selection masks.",
+    "observed_optimizer_consequence": "The two router parameters have no Adam state after 20 epochs, while every expert parameter tensor changed.",
+    "interpretation": "The released official training program trains the experts but does not update the hard router; route geometry is fixed by initialization for this reproduction."
+  },
+  "eta_overcheck": {
+    "eta": 1e-07,
+    "samples": 10000,
+    "overcheck_samples": 0,
+    "overcheck_branches": 0
+  },
+  "oracle_audit": {
+    "folded_router_max_score_difference": 3.32807606229224e-06,
+    "probe_witnesses_checked": 200,
+    "probe_witness_failures": 0,
+    "reference_crosscheck_passed": true,
+    "reference_crosscheck_max_radius_error": 1.214306433183765e-16
+  },
+  "raw_artifacts": {
+    "metrics_path": "/data1/Kane/MOE/baseline_runs/icml2025_rt_er/seed0_paper130/metrics/epoch_020.json",
+    "metrics_sha256": "a96d3d9a18ebdc3fd9642cd7ef2ab8c853cf9c26b58ea01a9c0ea8683cbedec3",
+    "summary_path": "/data1/Kane/MOE/baseline_runs/icml2025_rt_er/seed0_paper130/telemetry/epoch_020/summary.json",
+    "summary_sha256": "0ddf5177c6d3e5d23c619c158b2d1531fea6fdda05bb549010539cb3d1c8b602",
+    "per_input_path": "/data1/Kane/MOE/baseline_runs/icml2025_rt_er/seed0_paper130/telemetry/epoch_020/per_input.npz",
+    "per_input_sha256": "158cdcafba3e9c7e5e58948927286e6bdc064c3c4c626e58f20ee16d75461baa"
+  },
+  "telemetry_runtime": {
+    "oracle_seconds": 0.39647181890904903,
+    "total_seconds": 4.142875551246107
+  },
+  "scientific_scope": "second scheduled endpoint of a running single-seed official-code reproduction. The static-router result characterizes the released training program; it is not a claim that all RT-ER-style training procedures must keep routers fixed, and it is not an output robustness certificate."
+}

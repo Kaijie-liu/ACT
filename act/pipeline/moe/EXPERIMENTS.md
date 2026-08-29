@@ -1009,6 +1009,25 @@ endpoint, not the completed single-seed or multi-seed result. Its compact
 manifest is
 `act/pipeline/moe/results/icml2025_rt_er/seed0_epoch010_route_telemetry_20260830.json`.
 
+The epoch-20 endpoint raises clean accuracy from 30.81% to 33.95% and PGD-50
+accuracy from 25.11% to 27.00%, but its route geometry is unchanged from epoch
+10. This is not a rounded-summary coincidence: the two router tensors have
+identical SHA-256 content at both checkpoints and zero changed tensors, whereas
+all 248 expert parameter tensors changed. The Adam checkpoint contains state
+for exactly those 248 expert parameters and no state for either router
+parameter. Clean expert assignments and boundary competitors are exactly
+equal; independently recomputed radii differ by at most `1.04e-17`.
+
+The released code explains the observation: `Router.forward` returns hard
+`argmax` indices, `get_second_expert` returns integer `topk` indices used as
+masks, and neither path places router scores in a differentiable loss. Thus
+this official-code reproduction trains experts while its randomly initialized
+router remains fixed. The 130-epoch run continues as frozen, since it remains
+the required official-code architecture reproduction and an expert-training
+baseline, but its checkpoint trajectory cannot support a claim that this
+training procedure pushes route boundaries outward. The compact endpoint is
+`act/pipeline/moe/results/icml2025_rt_er/seed0_epoch020_route_telemetry_20260830.json`.
+
 ## ICML 2025 B3 executable comparison stage
 
 The final-checkpoint B3 execution layer is implemented but not run. It freezes
