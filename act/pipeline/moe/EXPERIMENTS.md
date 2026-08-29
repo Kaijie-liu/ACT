@@ -1047,3 +1047,12 @@ directly. It never treats a repeat feasibility query as an execution gate. The
 failed `_r1` directory remains immutable and excluded; `_r2` writes a new result
 directory. This section records the corrected code freeze until all 43 branches
 and the independent audit complete.
+
+The completed failure record is
+`act/pipeline/moe/results/crown/crown_adapter_consistency_bal010_43_r1_failed_20260829.json`.
+The launcher exited normally after flushing all 43 rows, but four rows contain
+the repeated-query error and the independent audit reports 12 structural issues
+(three expected missing-result fields per error row). There were zero soundness
+cross-check issues and no `UNSAFE` statuses. The 39 otherwise valid rows are
+still excluded from scientific aggregation so `_r2` remains a clean full-cohort
+replication, not a four-row patch.

@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "experiment": "crown_adapter_consistency_bal010_43_r1",
+  "status": "FAILED_EXCLUDED",
+  "scope": "engineering_failure_record_not_scientific_result",
+  "execution_git_head": "c70efc9f97f58fae5fed13d2e26b3f522de056c6",
+  "checkpoint_sha256": "fbaa7c871d28763ac5acb29a9502dc5d146e1d5af0b4a03e9911899251bd43f7",
+  "expected_branches": 43,
+  "flushed_branches": 43,
+  "valid_branches": 39,
+  "error_branches": [
+    "rank129:pair4-6",
+    "rank129:pair4-7",
+    "rank155:pair1-4",
+    "rank155:pair4-5"
+  ],
+  "failure": {
+    "class": "REPEATED_ROUTE_SET_QUERY_TIMEOUT",
+    "semantic_discrepancy_found": false,
+    "description": "The runner repeated exact route-set enumeration with a 10-second limit after consuming frozen, independently audited route pairs. Four valid source branches were censored when the repeated query did not complete.",
+    "corrective_commit": "06fc2981c",
+    "corrective_policy": "Validate frozen source identities and the source exactness audit, rebuild the exact router HZ, and apply each frozen pair guard directly without a repeated feasibility-query gate."
+  },
+  "audit": {
+    "passed": false,
+    "issue_count": 12,
+    "soundness_issue_count": 0,
+    "unsafe_statuses_emitted": false
+  },
+  "raw_artifacts": {
+    "directory": "/data1/Kane/MOE/ACT/data/moe/results/crown_adapter_consistency_bal010_43_r1",
+    "branches_jsonl_sha256": "c74b3c8dc10d9552b92465af0259ac5adf7634abdc33b40ab8f3a599b859ce37",
+    "cohort_log_sha256": "76ad018a6fc11bfde51e4728531ae7773163cbd8c5174c80c9788c1ed2dae5cd",
+    "config_json_sha256": "48a3dfd8a220c94082cadce5ee811ff6cc7e0ce27ea806639cb2d1befcce1ef0",
+    "summary_json_sha256": "f0337f57ac1fcab5ab4cb00b884589b72cc38dc03129df2cc97c3046bdb1c41b",
+    "independent_summary_json_sha256": "d2b68b778e6fae69d82f0b9bca191661243d9505ffe881653ecb0ec9df7dbf0e"
+  },
+  "exclusion_policy": "Retain all raw artifacts immutably. Do not use the 39 valid rows or their status counts as a P0b result; rerun the full 43-branch cohort in a new r2 directory."
+}
