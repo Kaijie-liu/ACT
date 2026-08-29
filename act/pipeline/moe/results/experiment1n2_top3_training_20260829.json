@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "experiment": "experiment1n2_normalized_sigmoid_top3_seed0_training",
+  "status": "COMPLETE",
+  "scope": "alternate_gate_family_training_for_n2_mechanism_evaluation",
+  "label": "ACT verification-scale normalized-sigmoid top-3 model",
+  "execution_git_head": "87dd643867824bd659b172ead9880a37f26867b2",
+  "environment": {
+    "conda": "act-py312",
+    "python": "3.12.12",
+    "torch": "2.9.1+cu128",
+    "torchvision": "0.24.1+cu128",
+    "cuda_runtime": "12.8",
+    "device": "cuda"
+  },
+  "command": "/data1/Kane/miniconda3/envs/act-py312/bin/python -m act.pipeline.moe --dataset CIFAR10 --num-experts 8 --top-k 3 --gate normalized_sigmoid --router-hidden 128 --expert-hidden 256 128 --epochs 50 --batch-size 256 --learning-rate 0.001 --weight-decay 0.0001 --balance-loss switch --balance-coefficient 0.1 --validation-fraction 0.1 --seed 0 --device cuda --output /data1/Kane/MOE/ACT/data/moe/checkpoints/cifar10_top3_e8_seed0_bal010.pt",
+  "model": {
+    "dataset": "CIFAR10",
+    "num_experts": 8,
+    "top_k": 3,
+    "gate": "normalized_sigmoid",
+    "router_hidden": [128],
+    "expert_hidden": [256, 128],
+    "seed": 0
+  },
+  "training": {
+    "epochs": 50,
+    "batch_size": 256,
+    "learning_rate": 0.001,
+    "weight_decay": 0.0001,
+    "balance_loss": "switch",
+    "balance_coefficient": 0.1,
+    "validation_fraction": 0.1,
+    "best_epoch": 40
+  },
+  "best_validation": {
+    "accuracy": 0.5122,
+    "route_counts": [1908, 2092, 1664, 2458, 2109, 1598, 1863, 1308],
+    "route_frequencies": [0.1272, 0.13946666666666666, 0.11093333333333333, 0.16386666666666666, 0.1406, 0.10653333333333333, 0.1242, 0.0872],
+    "load_entropy": 2.063521231828717,
+    "effective_experts": 7.873645987463049,
+    "max_expert_load": 0.16386666666666666,
+    "min_expert_load": 0.0872
+  },
+  "test": {
+    "accuracy": 0.5035,
+    "route_counts": [3873, 4185, 3332, 4921, 4138, 3259, 3735, 2557],
+    "route_frequencies": [0.1291, 0.1395, 0.11106666666666666, 0.16403333333333334, 0.13793333333333332, 0.10863333333333333, 0.1245, 0.08523333333333333],
+    "load_entropy": 2.063315239024946,
+    "effective_experts": 7.87202424009007,
+    "max_expert_load": 0.16403333333333334,
+    "min_expert_load": 0.08523333333333333
+  },
+  "artifacts": {
+    "checkpoint": "/data1/Kane/MOE/ACT/data/moe/checkpoints/cifar10_top3_e8_seed0_bal010.pt",
+    "checkpoint_bytes": 27866313,
+    "checkpoint_sha256": "32ca3b25b11dfc2021929b983a9ebde6626bf4b901891a03bc0281fbce998f73",
+    "log": "/data1/Kane/MOE/ACT/data/moe/logs/cifar10_top3_e8_seed0_bal010.log",
+    "log_bytes": 6114,
+    "log_sha256": "1161e04a4f368f7dac0cc564fc34529585ad7dc9fc798d3e9df707397466c421"
+  },
+  "interpretation": "The model is sufficiently balanced for the intended five-sample N2 mechanism experiment. Accuracy is comparable to the verification-scale bal010 pilot; this is not an accuracy or architecture-scaling result."
+}

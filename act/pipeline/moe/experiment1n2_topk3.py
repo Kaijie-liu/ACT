@@ -854,6 +854,8 @@ def run(args) -> dict[str, Any]:
         raise FileNotFoundError(
             f"frozen N2 checkpoint is absent; training was not started: {checkpoint}"
         )
+    if _sha256(checkpoint) != config["checkpoint_sha256"]:
+        raise RuntimeError("frozen N2 checkpoint hash changed")
     if output_dir.exists():
         raise RuntimeError(f"Experiment 1N2 refuses to overwrite {output_dir}")
 

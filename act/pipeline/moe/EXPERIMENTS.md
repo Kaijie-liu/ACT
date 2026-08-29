@@ -763,12 +763,20 @@ range fallback only when needed. Every fallback property asserts exactly
 `k-1=2` products. A negative relaxation candidate remains `UNKNOWN`; only a
 full selected-model replay may produce `UNSAFE`.
 
-The target checkpoint does not yet exist, so this is a code-path freeze rather
-than an N2 experiment result. New checkpoints now record `epochs` and
-`batch_size` in addition to the prior training provenance, and the N2 runner
-rejects legacy or mismatched payloads instead of inferring those values. The
-real five-sample run begins only after the frozen model has completed training;
-until then no top-3 coverage, runtime, or certificate number is claimed.
+The frozen seed-0 checkpoint is now complete and hash-locked at
+`32ca3b25b11dfc2021929b983a9ebde6626bf4b901891a03bc0281fbce998f73`.
+Best validation accuracy is 51.22% at epoch 40 and test accuracy is 50.35%.
+Test load entropy is 2.0633, effective expert count is 7.872/8, and the maximum
+and minimum expert loads are 16.40% and 8.52%, respectively. Thus the alternate
+gate model supplies all eight experts without the collapse that invalidated the
+earliest pilot. The immutable training manifest is
+`act/pipeline/moe/results/experiment1n2_top3_training_20260829.json`.
+
+New checkpoints record epochs, batch size, learning rate, and weight decay in
+addition to the prior training provenance; the N2 runner rejects legacy,
+mismatched, or hash-changed payloads instead of inferring those values. No
+top-3 verifier coverage, runtime, or certificate number is claimed until the
+separate five-sample N2 run and its independent audit complete.
 
 ## Tie-safe eta implication compiler
 

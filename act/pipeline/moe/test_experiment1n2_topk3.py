@@ -101,6 +101,7 @@ class Experiment1N2TopK3Tests(unittest.TestCase):
         self.assertEqual(config["training"]["weight_decay"], 1e-4)
         self.assertEqual(config["training"]["seed"], 0)
         self.assertEqual(config["expected"]["products_per_property"], 2)
+        self.assertEqual(len(config["checkpoint_sha256"]), 64)
         for field in ("checkpoint", "dataset_root", "output_dir"):
             self.assertTrue(
                 Path(config[field]).resolve().is_relative_to(
