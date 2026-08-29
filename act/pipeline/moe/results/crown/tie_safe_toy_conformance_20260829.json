@@ -1,0 +1,72 @@
+{
+  "all_passed": true,
+  "auto_lirpa": "0.7.2",
+  "backend": "alpha-beta-CROWN/auto_LiRPA",
+  "cases": [
+    {
+      "concrete_compiled": 1.0,
+      "crown_lower": 1.0,
+      "crown_nonnegative": true,
+      "crown_upper": 1.0,
+      "exact_compiled": 1.0,
+      "expected_nonnegative": true,
+      "guard": 0.0,
+      "name": "legal_tie_safe",
+      "passed": true,
+      "safety": 1.0
+    },
+    {
+      "concrete_compiled": -1.0000000116860974e-07,
+      "crown_lower": -1.0000000116860974e-07,
+      "crown_nonnegative": false,
+      "crown_upper": -1.0000000116860974e-07,
+      "exact_compiled": -1e-07,
+      "expected_nonnegative": false,
+      "guard": 0.0,
+      "name": "legal_tie_unsafe",
+      "passed": true,
+      "safety": -1.0
+    },
+    {
+      "concrete_compiled": -5.000000058430487e-08,
+      "crown_lower": -5.000000058430487e-08,
+      "crown_nonnegative": false,
+      "crown_upper": -5.000000058430487e-08,
+      "exact_compiled": -5e-08,
+      "expected_nonnegative": false,
+      "guard": 5.000000058430487e-08,
+      "name": "eta_overcheck_band",
+      "passed": true,
+      "safety": -1.0
+    },
+    {
+      "concrete_compiled": 1.0000000116860974e-07,
+      "crown_lower": 1.0000000116860974e-07,
+      "crown_nonnegative": true,
+      "crown_upper": 1.0000000116860974e-07,
+      "exact_compiled": 1e-07,
+      "expected_nonnegative": true,
+      "guard": 2.0000000233721948e-07,
+      "name": "strictly_outside_eta_band",
+      "passed": true,
+      "safety": -1.0
+    }
+  ],
+  "claim_limit": "Checks graph lowering and tie semantics on analytically constant cases; it is not an official-model certificate or a numerical soundness validation of CROWN lower bounds.",
+  "cuda_runtime": "13.0",
+  "device": "cuda",
+  "device_name": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+  "eta": 1e-07,
+  "eta_policy": "safe_positive_margin",
+  "naive_tie_counterexample": {
+    "guard": 0.0,
+    "incorrectly_nonnegative": true,
+    "max_guard_safety": 0.0,
+    "unsafe_safety": -1.0
+  },
+  "python": "3.11.16",
+  "python311_typing_override_shim": true,
+  "schema_version": 1,
+  "scope": "toy_adapter_conformance_only",
+  "torch": "2.11.0+cu130"
+}

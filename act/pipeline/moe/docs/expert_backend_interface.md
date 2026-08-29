@@ -57,9 +57,10 @@ Three adapters remain scientifically distinct:
 3. **CROWN with an augmented affine-router output.** Append the route-score
    differences to the expert model and express the route guard as output
    constraints for Clip-and-Verify. Current official documentation suggests
-   this may preserve more guard information, but it remains
-   `UNVALIDATED_ADAPTER` until an installed, pinned environment passes concrete
-   and soundness smoke tests.
+   this may preserve more guard information. It is now
+   `TOY_CONFORMANCE_PASSED` after an installed, pinned environment passed the
+   analytic constant-network checks below. Official-model and numerical-
+   soundness validation remain outstanding.
 
 The guarded-box adapter's coordinate-hull layer is now executable as
 `guarded_hz_box_hull_highs`. It lowers one guarded HZ domain once, then changes
@@ -108,9 +109,15 @@ pure-PyTorch scalar ReLU DAG as `TieSafeTop1Implication`, defaulting to
 `safe_positive_margin=1e-7`. The exact extra-obligation band is `0<g<eta`;
 `g=0` is a legal tie, not an incompleteness case. `audit_eta_overcheck_band`
 reports both this strict band and the separate numerical boundary-tolerance
-band over sample/expert branch pairs. The module is ready for CROWN conformance,
-but remains `UNVALIDATED_ADAPTER` until that external backend smoke passes. No
-augmented-output result may use the naive zero-margin reduction.
+band over sample/expert branch pairs. The module passed a pinned auto_LiRPA
+0.7.2 CROWN lowering check on four analytically constant cases: a safe legal
+tie, an unsafe legal tie, an unsafe point in the eta-only overcheck band, and a
+non-member point strictly beyond that band. The unsafe legal tie receives a
+strictly negative lower bound while the naive compiler returns zero. This
+promotes only the graph adapter to `TOY_CONFORMANCE_PASSED`; it is not an
+official-model certificate and does not establish outward-rounded numerical
+soundness for CROWN. No augmented-output result may use the naive zero-margin
+reduction.
 
 The repository also contains a newer optimization API whose documentation
 mentions linear input constraints, but its normal expression parser still
@@ -127,7 +134,7 @@ On identical route branches and expert properties, report:
 | HZ guarded | exact halfspaces in HZ | exactness reference |
 | CROWN guarded-box | coordinate box hull of guarded cell | sound scalable relaxation |
 | CROWN original-box | original perturbation box | sound guard-dropping control |
-| CROWN augmented-output | affine guard as output constraints | none; adapter unvalidated |
+| CROWN augmented-output | tie-safe eta scalar ReLU DAG | toy conformance only |
 
 The primary guard result is the paired transition table, binary/relaxation
 tightness where available, solved coverage, and runtime. A faster runtime is an
@@ -135,7 +142,9 @@ experimental outcome, never implied by binary-width theory.
 
 ## Current gate
 
-No α,β-CROWN dependency was installed and no verifier run was launched. A
-separate environment under `/data1/Kane/MOE` and a pinned conformance smoke are
-required before promoting either CROWN adapter to a main experiment. The
-existing `act-py312` environment remains unchanged.
+The isolated CROWN environment is recorded in
+`act/pipeline/moe/results/environments/isolated_envs_20260829.json`. Its CUDA
+kernel and the four-case adapter conformance pass on the installed Blackwell
+GPU. The existing `act-py312` environment remains unchanged. Main-experiment
+promotion still requires official-model conformance and the frozen numerical
+acceptance policy; the toy smoke alone is insufficient.

@@ -734,4 +734,19 @@ The formal proposition and proof are in
 obligation domain is `0<g_i<eta`; `g_i=0` remains a required legal tie. The
 default `eta` is the frozen `safe_positive_margin=1e-7`, and the audit reports
 the mathematical band separately from numerical-boundary tolerance. This code
-has not yet been promoted to a CROWN result.
+has now passed a pinned auto_LiRPA 0.7.2 toy conformance on the Blackwell GPU.
+Four analytically constant cases cover a safe legal tie, an unsafe legal tie,
+the strict eta overcheck band, and a non-member point beyond that band. CROWN
+reproduces each exact scalar range and rejects the unsafe tie; the naive zero-
+margin compiler would incorrectly return zero. This is only a
+`TOY_CONFORMANCE_PASSED` adapter result, not an official-model certificate or
+an outward-rounding validation.
+
+Two isolated environments were created under `/data1/Kane/MOE` without
+changing `act-py312`. The α,β-CROWN environment imports auto_LiRPA 0.7.2 and
+runs CUDA kernels on the installed Blackwell GPU. The exact official RT-ER pin
+imports successfully, but its PyTorch 2.4.0+cu121 binary supports through
+`sm_90` and fails its first CUDA kernel on the machine's `sm_120` GPU. The
+author-pin incompatibility is retained as a result; B1 training was not
+started and no newer PyTorch was silently substituted. Exact versions and
+repository commits are recorded in the environment manifest.
