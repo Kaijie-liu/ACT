@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "experiment": "experiment1n2_normalized_sigmoid_top3_seed0_r2",
+  "status": "COMPLETE_AUDITED",
+  "scope": "five_sample_generality_engineering_cohort_not_prevalence",
+  "launch": {
+    "git_head": "f13e749ffc3f60ab7be62950f809512ee55db749",
+    "branch": "feat/moe-route-verification",
+    "environment": "/data1/Kane/miniconda3/envs/act-py312",
+    "checkpoint_sha256": "32ca3b25b11dfc2021929b983a9ebde6626bf4b901891a03bc0281fbce998f73",
+    "epsilon": 0.00392156862745098,
+    "clean_correct_ranks": [0, 1, 2, 3, 4]
+  },
+  "model": {
+    "dataset": "CIFAR10",
+    "gate_family": "normalized_sigmoid",
+    "num_experts": 8,
+    "top_k": 3,
+    "products_per_property": 2,
+    "router_hidden": [128],
+    "expert_hidden": [256, 128],
+    "test_accuracy": 0.5035,
+    "effective_experts": 7.872
+  },
+  "result": {
+    "rows": 5,
+    "total_seconds": 410.20914721582085,
+    "status_counts": {
+      "SAFE": 1,
+      "UNSAFE": 2,
+      "UNKNOWN": 2
+    },
+    "reason_counts": {
+      "SAFE_GATE_ELIMINATION": 1,
+      "UNSAFE_FULL_FORWARD_FALLBACK": 2,
+      "UNKNOWN_WEIGHTED_SOLVER_LIMIT": 2
+    },
+    "exact_feasible_route_sets": 8,
+    "route_sets_per_sample": [1, 1, 2, 3, 1],
+    "route_set_status_counts": {
+      "SAFE": 4,
+      "UNSAFE": 2,
+      "UNKNOWN": 2
+    },
+    "route_set_reason_counts": {
+      "SAFE_GATE_ELIMINATION": 1,
+      "SAFE_WEIGHTED_RANGE": 3,
+      "UNSAFE_FULL_FORWARD_FALLBACK": 2,
+      "UNKNOWN_WEIGHTED_SOLVER_LIMIT": 2
+    },
+    "fallback_property_rows": 55,
+    "all_fallback_properties_use_exactly_k_minus_1_products": true,
+    "two_product_path_observed": true,
+    "unsafe_full_model_replayed": "2/2"
+  },
+  "per_sample": [
+    {
+      "rank": 0,
+      "dataset_index": 2,
+      "route_sets": [[0, 1, 3]],
+      "status": "UNSAFE",
+      "reason": "UNSAFE_FULL_FORWARD_FALLBACK",
+      "seconds": 22.214523899368942
+    },
+    {
+      "rank": 1,
+      "dataset_index": 5,
+      "route_sets": [[0, 4, 6]],
+      "status": "SAFE",
+      "reason": "SAFE_GATE_ELIMINATION",
+      "seconds": 11.196542703546584
+    },
+    {
+      "rank": 2,
+      "dataset_index": 6,
+      "route_sets": [[0, 1, 5], [0, 2, 5]],
+      "status": "UNKNOWN",
+      "reason": "UNKNOWN_WEIGHTED_SOLVER_LIMIT",
+      "seconds": 116.9153264509514
+    },
+    {
+      "rank": 3,
+      "dataset_index": 7,
+      "route_sets": [[0, 2, 6], [2, 4, 6], [2, 5, 6]],
+      "status": "UNKNOWN",
+      "reason": "UNKNOWN_WEIGHTED_SOLVER_LIMIT",
+      "seconds": 170.85387477558106
+    },
+    {
+      "rank": 4,
+      "dataset_index": 9,
+      "route_sets": [[1, 3, 4]],
+      "status": "UNSAFE",
+      "reason": "UNSAFE_FULL_FORWARD_FALLBACK",
+      "seconds": 89.02887938637286
+    }
+  ],
+  "audit": {
+    "runner_audit_passed": true,
+    "runner_audit_issues": 0,
+    "external_audit_version": "r2",
+    "external_audit_passed": true,
+    "external_audit_issues": 0,
+    "exact_route_sets_recomputed": "5/5 samples",
+    "unsafe_witnesses_replayed": "2/2",
+    "manifest_files_checked": 7,
+    "excluded_external_audit_r1_issues": 2,
+    "excluded_external_audit_r1_cause": "audit required all nine properties after an already validated early UNSAFE witness"
+  },
+  "raw_artifacts": {
+    "directory": "/data1/Kane/MOE/ACT/data/moe/results/experiment1n2_top3_e8_seed0_r2",
+    "runtime_config_sha256": "511c0e1c31dd06e8297b73b63d343e08f1af5e6890b5164721ade4c0f46ec6ed",
+    "sample_indices_sha256": "9b37b74ff0796c765a68cf4b3c6cbb24349dcbbb8508a8b507d3448a239fc0bb",
+    "results_jsonl_sha256": "a2f1d0997ade44d8c994f5bd5865ee1c24a4065055547e4991feec26c69af832",
+    "summary_sha256": "85ba6174cf166495a4cb91d9e65261bbbb6cbed9b5a5116f0f22aa1cd0afbc00",
+    "runner_audit_sha256": "ee17f76e4c4f68b755f508bef60323340cd773aded1a5029a3bd656bd60167ca",
+    "manifest_sha256": "b267104e3744df8184253ae01f84ae90e0df8629f3a5a4066c08cc1e93c0bbd0",
+    "excluded_external_audit_r1_sha256": "f4fc21e096ea853f5f28986cad20dc75a4943bd3d41138a3d587cccd8bc6a74d",
+    "external_audit_r2_sha256": "bb57fa11af64c80b002178ee5b660fe2595478987cc3cd048e5c2804a27e7b1c",
+    "rank0_witness_sha256": "c14ff04517f8af6b7333daa2f523c8fef8cb5e6ed4f75f4f96ee898dbec1d840",
+    "rank4_witness_sha256": "141c3716c40e97cb38ff1b63924bec85bf4307e4e951831ec0cc8d49ee696461",
+    "launcher_log_sha256": "37add2374dda702819882927b8a29b6f8195bc98a7bce9054bf36bdd533c2191"
+  },
+  "scientific_interpretation": {
+    "supported": "the normalized top-k implementation executes a non-top2, alternate normalized gate family with exactly k-1 property-directed products while preserving exact tie-inclusive route-set obligations and full-replay UNSAFE semantics",
+    "not_supported": "five samples do not establish verifier prevalence, top-k scalability, accuracy quality, or superiority over a baseline",
+    "decision": "promote N2 from code-only mechanism to mechanism-plus-engineering evidence; retain the small-cohort label"
+  }
+}

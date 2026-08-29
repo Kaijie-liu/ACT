@@ -787,6 +787,29 @@ The runner now explicitly moves the selection module to the frozen selection
 device and tests that placement. `_r2` starts all five samples from scratch in
 a new directory; verification semantics and budgets are unchanged.
 
+The clean `_r2` run completed all five ranks at implementation HEAD
+`f13e749ffc3f60ab7be62950f809512ee55db749`. Across eight exactly feasible,
+tie-inclusive unordered top-3 sets, four branch obligations were SAFE, two
+were full-model-replayed UNSAFE, and two remained solver-limit UNKNOWN. At the
+sample level this is one SAFE, two UNSAFE, and two UNKNOWN. The run evaluated
+55 fallback property rows; every row used exactly `k-1=2` McCormick products.
+One SAFE sample closed at gate elimination, while three individual route sets
+were proved by the generic weighted-range fallback.
+
+The runner audit reports zero issues. A separate external audit rebuilt the
+exact router HZ for every sample, reproduced all eight feasible sets, checked
+the seven-file runner manifest, and independently replayed both UNSAFE
+witnesses through the complete normalized-sigmoid top-3 model. Its final r2
+audit reports zero issues. The first external audit is retained with two false
+positives because it incorrectly demanded all nine property rows after an
+already validated early UNSAFE witness.
+
+This promotes N2 from code-only mechanism evidence to a five-sample engineering
+generality result. It demonstrates an alternate normalized gate family and
+non-top2 execution, but it is not a prevalence, scalability, accuracy, or
+baseline-superiority result. The tracked summary is
+`act/pipeline/moe/results/experiment1n2_top3_seed0_r2_20260830.json`.
+
 ## Tie-safe eta implication compiler
 
 The augmented-output backend now has a sound hard-top1 compiler for
