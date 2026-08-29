@@ -82,6 +82,31 @@ class AuditExperiment1N1EngineeringTests(unittest.TestCase):
             _safe_structure_issues(row),
         )
 
+    def test_safe_must_cover_every_property(self):
+        row = {
+            "n1": {
+                "status": "SAFE",
+                "feasible_pairs": [[0, 1]],
+                "pairs": [
+                    {
+                        "pair": [0, 1],
+                        "status": "SAFE",
+                        "property_rows": [
+                            {
+                                "property_index": 0,
+                                "status": "SAFE",
+                                "reused_parent": True,
+                            }
+                        ],
+                    }
+                ],
+            }
+        }
+        self.assertIn(
+            "SAFE pair [0, 1] does not cover every property row",
+            _safe_structure_issues(row, expected_property_rows=2),
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

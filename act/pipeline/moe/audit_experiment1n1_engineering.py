@@ -19,7 +19,9 @@ def _load_jsonl(path: Path) -> list[dict[str, Any]]:
     return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines()]
 
 
-def _safe_structure_issues(row: dict[str, Any]) -> list[str]:
+def _safe_structure_issues(
+    row: dict[str, Any], *, expected_property_rows: int | None = None
+) -> list[str]:
     issues: list[str] = []
     n1 = row.get("n1") or {}
     if n1.get("status") != "SAFE":
@@ -42,7 +44,17 @@ def _safe_structure_issues(row: dict[str, Any]) -> list[str]:
     for pair in pairs:
         if pair.get("status") != "SAFE":
             issues.append(f"SAFE row contains non-SAFE pair {pair.get('pair')}")
-        for prop in pair.get("property_rows", []):
+        properties = pair.get("property_rows", [])
+        property_indices = [int(prop.get("property_index", -1)) for prop in properties]
+        if len(set(property_indices)) != len(property_indices):
+            issues.append(f"SAFE pair {pair.get('pair')} contains duplicate properties")
+        if expected_property_rows is not None and set(property_indices) != set(
+            range(expected_property_rows)
+        ):
+            issues.append(
+                f"SAFE pair {pair.get('pair')} does not cover every property row"
+            )
+        for prop in properties:
             if prop.get("status") != "SAFE":
                 issues.append(
                     f"SAFE row contains non-SAFE property {pair.get('pair')}/"
@@ -153,6 +165,8 @@ def audit(config_path: Path, result_dir: Path) -> dict[str, Any]:
     if payload.get("dataset") != "CIFAR10":
         add("provenance", "checkpoint dataset is not frozen CIFAR10")
     dataset = _load_dataset(payload["dataset"], False, download=False)
+    num_classes = int(payload["factory_config"]["num_classes"])
+    expected_property_rows = num_classes - 1
     for row in rows:
         rank = int(row["sample_rank"])
         parent = baseline.get(rank)
@@ -163,6 +177,20 @@ def audit(config_path: Path, result_dir: Path) -> dict[str, Any]:
             add("pairing", "baseline status mismatch", rank)
         if row.get("baseline_reason") != parent.get("reason"):
             add("pairing", "baseline reason mismatch", rank)
+        if int(row.get("dataset_index", -1)) != int(parent.get("dataset_index", -2)):
+            add("pairing", "dataset index mismatch", rank)
+        if abs(float(row.get("epsilon", -1.0)) - float(parent.get("epsilon", -2.0))) > 1e-15:
+            add("pairing", "epsilon mismatch", rank)
+        n1_pairs = {
+            tuple(sorted(int(value) for value in pair))
+            for pair in (row.get("n1") or {}).get("feasible_pairs", [])
+        }
+        baseline_pairs = {
+            tuple(sorted(int(value) for value in pair))
+            for pair in (parent.get("f0") or {}).get("feasible_pairs", [])
+        }
+        if row.get("status") != "TIMEOUT" and n1_pairs != baseline_pairs:
+            add("pairing", "N1 feasible route pairs differ from paired baseline", rank)
         expected_transition = f"{parent['status']}->{row['status']}"
         if row.get("paired_transition") != expected_transition:
             add("pairing", "paired transition mismatch", rank)
@@ -172,7 +200,9 @@ def audit(config_path: Path, result_dir: Path) -> dict[str, Any]:
         }:
             add("soundness", "paired solved semantics conflict", rank)
         if row["status"] == "SAFE":
-            for detail in _safe_structure_issues(row):
+            for detail in _safe_structure_issues(
+                row, expected_property_rows=expected_property_rows
+            ):
                 add("safe_structure", detail, rank)
         if row["status"] == "UNSAFE":
             for detail in _replay_unsafe(
