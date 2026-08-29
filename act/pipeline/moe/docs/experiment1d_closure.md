@@ -98,3 +98,42 @@ changed from fallback count 5 to 6. The strict assertion rejected that harmless
 status drift and the launch was stopped. `_r1` is preserved and excluded. The
 `_r2` runner requires exact structural identity, records any fallback-side drift
 explicitly, and never calls such drift an additional binary elimination.
+
+## Audited D0 result
+
+The clean `_r2` run completed all 20 frozen rows at implementation HEAD
+`5f1b15ad2`. Independent audit reported zero issues and replayed both new unsafe
+witnesses on the full selected-softmax model.
+
+| Status | Rows |
+|---|---:|
+| `SAFE_WEIGHTED_RANGE` | 10 |
+| `UNSAFE_FULL_FORWARD_FALLBACK` | 2 |
+| `UNKNOWN_WEIGHTED_SOLVER_LIMIT` | 4 |
+| `UNKNOWN_WEIGHTED_RELAXATION` | 2 |
+| `UNKNOWN_SOLVER_LIMIT` | 1 |
+| `INSTANCE_HARD_DEADLINE` | 1 |
+
+D0 solved 12/20 applicable unresolved rows. The original confirmatory endpoint
+remains 56/100 and failed; it is not backfilled. Follow-up applicable coverage is
+therefore `(56 + 12)/76 = 68/76 = 89.5%`. All preregistered baseline-unlock
+conditions pass. This only unlocks the next stage; this experiment did not start
+a baseline, F1, or training run.
+
+The runner reused 201 completed property rows and reran 135 unresolved property
+rows. All 20 rows have a 300-second record. Total row time was 5151.1 seconds,
+with median 149.9 seconds and maximum 900.4 seconds. Three rematerializations had
+time-limited fallback-side drift (`+1`, `-2`, `+1`), while every required
+structural signature remained identical; these drifts were recorded and did not
+change the binary-elimination accounting.
+
+The 225 matched guard branches produce the paired table
+`n00=21, n01=17, n10=3, n11=184`. Support therefore adds a net 14 solved
+branches; the exact two-sided McNemar/binomial p-value is `0.00258`. Median paired
+support-minus-no-support solve time is `-0.069` seconds. Binary elimination is
+associated with support-only solve transitions (Fisher p=`0.00378`, Spearman
+rho=`0.275`, p=`2.90e-5`), but this is a secondary association and not an
+unconditional runtime-speedup claim.
+
+The tracked machine-readable result manifest is
+`act/pipeline/moe/configs/experiment1d_bal010_manifest_r2.json`.

@@ -1,0 +1,80 @@
+{
+  "experiment": "experiment1d_bal010_d0_r2",
+  "implementation_head": "5f1b15ad202bb2b55b094390a00b8b63aaaf08b1",
+  "main_unchanged": "f1bc0f16612bd3f2112f2970174ec2f7cc3bf5ac",
+  "checkpoint_sha256": "fbaa7c871d28763ac5acb29a9502dc5d146e1d5af0b4a03e9911899251bd43f7",
+  "source_config_sha256": "e12ced82959d52120791791bc3daa0946814eb8e24f631f8f9c7cd14d5b72bcc",
+  "selection_manifest_sha256": "5077c79e53d5414df54739a42845f66baf03503ab769e3725d3639903f06b424",
+  "parent_confirmatory_results_sha256": "c853f021f6401ef3f04c3b9cc7c193dd2c77fee7666e8abf120458920f97d48d",
+  "immutable_parent_endpoints": {
+    "overall_solved": "56/100",
+    "overall_solved_rate": 0.56,
+    "boundary_applicability": "76/100",
+    "conditional_coverage": "56/76"
+  },
+  "closure": {
+    "rows": 20,
+    "status_counts": {
+      "SAFE": 10,
+      "UNSAFE": 2,
+      "UNKNOWN": 7,
+      "TIMEOUT": 1
+    },
+    "newly_solved_applicable_rows": 12,
+    "closure_conditional_coverage": "68/76",
+    "closure_conditional_coverage_rate": 0.8947368421052632,
+    "unsafe_witnesses_replayed": "2/2",
+    "total_seconds": 5151.0954439928755,
+    "median_row_seconds": 149.93766899965703,
+    "maximum_row_seconds": 900.4214712185785,
+    "reused_completed_property_rows": 201,
+    "rerun_unresolved_property_rows": 135,
+    "checkpoint_300_records": "20/20"
+  },
+  "reason_counts": {
+    "SAFE_WEIGHTED_RANGE": 10,
+    "UNSAFE_FULL_FORWARD_FALLBACK": 2,
+    "UNKNOWN_WEIGHTED_SOLVER_LIMIT": 4,
+    "UNKNOWN_WEIGHTED_RELAXATION": 2,
+    "UNKNOWN_SOLVER_LIMIT": 1,
+    "INSTANCE_HARD_DEADLINE": 1
+  },
+  "guard_paired": {
+    "branches": 225,
+    "n00": 21,
+    "n01_support_only_solved": 17,
+    "n10_no_support_only_solved": 3,
+    "n11": 184,
+    "net_solved_gain": 14,
+    "exact_mcnemar_two_sided_p": 0.0025768280029296875,
+    "median_support_minus_no_support_solve_seconds": -0.06905681826174259,
+    "binary_elimination_support_only_fisher_two_sided_p": 0.0037795105625659294,
+    "binary_elimination_transition_spearman_rho": 0.27486969937900424,
+    "binary_elimination_transition_spearman_p": 2.9036323405093085e-05,
+    "claim_limit": "paired coverage and association result; not an unconditional runtime speedup"
+  },
+  "independent_audit": {
+    "issues": 0,
+    "all_new_unsafe_replayed": true,
+    "no_silent_numerical_fallback": true,
+    "public_baseline_unlocked": true
+  },
+  "preserved_excluded_launches": [
+    "data/moe/results/experiment1d_bal010_d0",
+    "data/moe/results/experiment1d_bal010_d0_r1"
+  ],
+  "artifacts": {
+    "config.json": "267d8278cca723ee530f0ceec0c4d8d83fb43416157562e07b020458b7daf453",
+    "selection.json": "03e525b35258b024bc3cdcff9bb0eaff7bf0e5c6b81acd9befa3a856a6e4ecf0",
+    "results.jsonl": "2e5914447fd555f364132e1594a7dec2b545fdc8c78c81700487a8723a1f0328",
+    "results.csv": "a993697e657ef93c57857d93791821faacfab1f4d50ef42414d60b957b42a030",
+    "summary.json": "d8846122e221f7b85ddf93622242f5185003295aa26630c9434d33d214c21169",
+    "experiment1d.log": "60fa010d9eecce1fc435140959e0f0329d05cadd57cdc4c91a3d8f5bbbe1efda",
+    "guard_paired_audit.json": "9f05ae13ca882ba882fd84d647cefb8e22ac5c0ba43fd8c232941040c174caf3",
+    "independent_audit.json": "0faf76cc5619951c7d3a284b6dae1d4d1e476155df715473fb16eb87f1201f17"
+  },
+  "unsafe_witnesses": {
+    "rank171": "abf4eec62b03f99944614b120e62b0b65e2929002b3d8f3e14c812d6987bd1f7",
+    "rank182": "8553d168911af10dda4f066e1acc0ee131fbf7809729f23cb62fbe72b067902f"
+  }
+}

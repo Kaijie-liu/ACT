@@ -498,3 +498,36 @@ binary width. Because fallback-side status is time-budget dependent, `_r2`
 requires exact structural identity and records that status drift separately.
 The partial `_r1` directory is preserved and excluded; mathematical encoding and
 all preregistered choices remain unchanged.
+
+## Experiment 1D audited result
+
+The clean `_r2` run completed all 20 frozen applicable-unresolved rows under
+implementation HEAD `5f1b15ad2`. Independent audit reported zero issues and
+replayed both new unsafe witnesses against the full selected-softmax model.
+
+| Closure result | Rows |
+|---|---:|
+| `SAFE_WEIGHTED_RANGE` | 10 |
+| `UNSAFE_FULL_FORWARD_FALLBACK` | 2 |
+| `UNKNOWN_WEIGHTED_SOLVER_LIMIT` | 4 |
+| `UNKNOWN_WEIGHTED_RELAXATION` | 2 |
+| `UNKNOWN_SOLVER_LIMIT` | 1 |
+| `INSTANCE_HARD_DEADLINE` | 1 |
+
+D0 solved 12/20 rows. The parent confirmatory 56/100 overall solved-rate failure
+remains immutable. Applicable coverage increases only as follow-up closure from
+56/76 to 68/76 (89.5%). The run reused 201 completed property rows, reran 135
+unresolved properties, and wrote 20/20 checkpoint records. Total row time was
+5151.1 seconds (median 149.9, maximum 900.4 seconds).
+
+The matched guard table over 225 branches is `n00=21, n01=17, n10=3, n11=184`.
+The net solved gain is 14 branches and the exact two-sided McNemar p-value is
+`0.00258`. Median paired support-minus-no-support solve time is `-0.069` seconds.
+Binary elimination is positively associated with support-only transitions, but
+this remains a secondary association, not an unconditional runtime claim.
+
+All preregistered D0 unlock conditions pass: 20 rows, zero audit issues, 2/2
+unsafe replays, 12 newly solved rows, 68/76 conditional coverage, and no silent
+numerical fallback. Official baseline work is therefore unlocked but was not
+started in this stage. F1 and training remain paused. Frozen hashes are recorded
+in `act/pipeline/moe/configs/experiment1d_bal010_manifest_r2.json`.
