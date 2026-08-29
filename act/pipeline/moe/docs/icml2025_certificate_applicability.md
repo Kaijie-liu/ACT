@@ -212,3 +212,31 @@ radius distributions also require representative hidden activations, and router
 tensors are commonly embedded in large checkpoint shards. Such a study must be
 separately scoped as hidden-state local sensitivity, not input robustness or an
 end-to-end certificate.
+
+## Implemented constants providers
+
+`act.pipeline.moe.certificate_constants` now makes the previously implicit
+constant choice executable and provenance-carrying:
+
+- `SOUND_GLOBAL_SPECTRAL` composes induced `L_inf` upper bounds for supported
+  affine, convolutional, normalization, activation, pooling, sequential, and
+  audited official-CIFAR-ResNet structures. Unknown graphs are rejected rather
+  than silently treated as sequential.
+- `EMPIRICAL_GRADIENT_SAMPLED` records sampled gradient `L1` norms with the
+  permanent status `DIAGNOSTIC_ONLY`.
+- `AUTHOR_UNSPECIFIED` returns `NOT_FORMALLY_INSTANTIATED` without inventing a
+  value.
+
+For a probability reading, the provider composes the global logit bound with
+the sound `1/2` `L_inf`-to-scalar softmax-coordinate bound and records
+`M_Ri=1`. A raw-logit reading receives no global `M_Ri<=1` bound unless a
+separate sound provider supplies one. A continuous softmax router is handled by
+the same `1/2` composition; a hard-argmax router returns `NOT_APPLICABLE` at a
+reachable tie and is never assigned the misleading global constant zero.
+
+The Equation (8) evaluator preserves these statuses: empirical or missing
+constants cannot produce a formally labelled radius, and unnormalized routing
+weights are rejected. This is an ACT paper-formula reimplementation, not author
+certificate code. Unit tests cover exact linear norms, convolution and
+BatchNorm bounds, residual composition, unknown-graph rejection, provider
+labels, normalized-gate requirements, and formula arithmetic.

@@ -667,3 +667,21 @@ compiler. Exact constrained implication or a disclosed conservative
 
 No environment, dependency, training, survey search, external message,
 augmented adapter, highspy box hull, N1, N2, or F1 execution was started.
+
+## Theorem 5.4 constants-provider implementation
+
+The first executable analytic-certificate component is now implemented in
+`act.pipeline.moe.certificate_constants`. It distinguishes sound global
+induced-norm bounds, sampled-gradient diagnostics, and author-unspecified
+constants at the type/status level. Supported sound compositions cover the
+operators needed for the audited official CIFAR ResNet18 structure; unknown
+graphs fail closed. Softmax probability outputs receive a sound scalar
+`1/2` composition and `M_Ri=1`, whereas raw logits do not silently inherit that
+bound. Hard argmax routing is explicitly `NOT_APPLICABLE` at reachable ties and
+is never assigned a global router constant of zero.
+
+The Equation (8) evaluator refuses missing constants and unnormalized gates,
+and it cannot upgrade sampled gradients to a formal label. Eleven focused unit
+tests pass. This stage computes no RT-ER certificate because no reproduced
+checkpoint exists yet; it supplies the audited provider machinery required by
+that future execution.
