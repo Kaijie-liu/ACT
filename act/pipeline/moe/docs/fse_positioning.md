@@ -188,7 +188,8 @@ endpoint with the closure number.
 ## Next-stage order
 
 1. Preserve the completed ICML 2025 paper, route-telemetry, and expert-backend
-   provenance audits.
+   provenance audits; execute the frozen certification-gap survey without
+   changing its eligibility rules after inspecting outcomes.
 2. Resolve the frozen dependency decision before any smoke or training; the
    existing `act-py312` environment remains unchanged.
 3. Implement explicit route-invariance and true monolithic baselines; add solver
@@ -203,6 +204,12 @@ endpoint with the closure number.
 7. Treat margin-conditioned F1, arbitrary top-k gate abstraction, intermediate
    MoE, and token-level ViT MoE as later algorithm/scale milestones. F1 remains
    untriggered by the present evidence.
+
+The survey protocol is in
+`act/pipeline/moe/docs/certification_gap_survey.md`. It is a measurement study,
+not permission to weaken the verifier-side roadmap. Candidate papers are not
+hand selected, the eligible corpus has no target-size cap, and the motivating
+ICML 2025 case is removed in a required sensitivity analysis.
 
 No additional bal010 cohort, F1 run, public training, or baseline execution is
 authorized by this positioning note.

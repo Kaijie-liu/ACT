@@ -639,3 +639,31 @@ The backend contract is in `act/pipeline/moe/docs/expert_backend_interface.md`.
 
 No α,β-CROWN or RT-ER dependency was installed, no environment was created, and
 no baseline, training, N1, N2, F1, or theorem-radius experiment was started.
+
+## Certification-gap mini-survey preregistration
+
+The systematic mini-survey protocol is frozen in
+`act/pipeline/moe/docs/certification_gap_survey.md`, with a machine-readable
+mirror in
+`act/pipeline/moe/configs/certification_gap_survey_protocol.json`. It defines a
+2017-01-01 through 2026-08-29 window, uncapped eligible corpus, frozen Boolean
+concept query, one-hop snowballing, explicit inclusion/exclusion codes, paper-
+family deduplication, six evidence dimensions, official-artifact rules,
+constant/semantics extraction, two-reviewer requirements, author-contact policy,
+and artifact-centered wording. The already audited ICML 2025 paper is disclosed
+as a motivating/calibration case, and the final analysis must be repeated
+without it.
+
+No search or author contact was executed by this preregistration stage. Silence
+may only be labeled `NO_RESPONSE`, and an explicit refusal is required for
+`DECLINED`. Contact remains blocked without user authorization.
+
+The proposed zero-margin augmented-output reduction was also checked before
+implementation. For `g=max_j(r_j-r_i)`, `s=min_k(C_k E_i+d_k)`, the property
+`max(g,s)>=0` is unsound for `ANY_LEGAL_TOPK`: a legal tie has `g=0`, so an
+unsafe `s<0` incorrectly passes. The backend interface now forbids that
+compiler. Exact constrained implication or a disclosed conservative
+`max(g-eta,s)>=0` reduction are the admissible future designs.
+
+No environment, dependency, training, survey search, external message,
+augmented adapter, highspy box hull, N1, N2, or F1 execution was started.

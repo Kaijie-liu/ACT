@@ -1,0 +1,192 @@
+{
+  "schema_version": 1,
+  "status": "PREREGISTERED_NOT_STARTED",
+  "preregistration_date": "2026-08-29",
+  "coverage": {
+    "start_date": "2017-01-01",
+    "cutoff_date": "2026-08-29",
+    "unit": "paper_family",
+    "corpus_size_cap": null,
+    "peer_reviewed_and_preprints": true
+  },
+  "motivating_case": {
+    "citation_key": "zhang2025dualmodel",
+    "role": "motivating_and_retrieval_calibration",
+    "known_before_preregistration": true,
+    "sensitivity_analysis_excluding_case": true
+  },
+  "preregistration_retrieval_sentinels": [
+    {
+      "label": "Zhang et al. ICML 2025 dual-model",
+      "identity_status": "RESOLVED_MOTIVATING_CASE",
+      "automatic_inclusion": false
+    },
+    {
+      "label": "MetaMoE (SAIV 2026)",
+      "identity_status": "USER_NOMINATED_UNRESOLVED",
+      "automatic_inclusion": false
+    },
+    {
+      "label": "Puigcerver et al. 2022 Lipschitz analysis",
+      "identity_status": "USER_NOMINATED_UNRESOLVED",
+      "automatic_inclusion": false
+    },
+    {
+      "label": "Kada et al. 2025",
+      "identity_status": "USER_NOMINATED_UNRESOLVED",
+      "automatic_inclusion": false
+    }
+  ],
+  "research_questions": [
+    "numerical_theorem_instantiation",
+    "constant_and_bound_provenance",
+    "checkpoint_and_certificate_code_availability",
+    "machine_decidability_of_assumptions",
+    "artifact_theorem_semantic_alignment",
+    "five_leaf_operational_outcome"
+  ],
+  "sources": [
+    "DBLP",
+    "ACM Digital Library",
+    "IEEE Xplore",
+    "PMLR",
+    "CVF Open Access",
+    "USENIX",
+    "SpringerLink",
+    "OpenReview",
+    "arXiv",
+    "Semantic Scholar or OpenAlex cross-index"
+  ],
+  "query_groups": {
+    "routing": [
+      "mixture of experts",
+      "mixture-of-experts",
+      "MoE",
+      "conditional computation",
+      "dynamic routing",
+      "expert routing",
+      "routed model"
+    ],
+    "formal": [
+      "certif*",
+      "verif*",
+      "formal guarantee",
+      "provable robustness",
+      "robustness bound",
+      "certified radius"
+    ],
+    "property": [
+      "robust*",
+      "adversarial",
+      "perturb*",
+      "safety"
+    ]
+  },
+  "search_fields": ["title", "abstract", "keywords"],
+  "snowballing": {
+    "backward_hops": 1,
+    "forward_hops": 1,
+    "same_eligibility_rules": true
+  },
+  "inclusion_all_required": [
+    "input_dependent_expert_path_module_or_model_selection",
+    "formal_bounded_input_robustness_or_safety_claim",
+    "guarantee_applies_to_routed_model_output",
+    "theorem_algorithm_or_executable_certificate_procedure",
+    "public_full_text_by_cutoff"
+  ],
+  "exclusion_codes": [
+    "E_ATTACK_ONLY",
+    "E_ROUTER_ONLY",
+    "E_EXPERT_ONLY",
+    "E_NO_DYNAMIC_ROUTING",
+    "E_NO_BOUNDED_INPUT_PROPERTY",
+    "E_POSITION_OR_SURVEY",
+    "E_DUPLICATE_VERSION",
+    "E_NO_FULL_TEXT",
+    "E_OUTSIDE_WINDOW"
+  ],
+  "screening": {
+    "independent_screeners_required_for_prevalence_claim": 2,
+    "agreement_metrics": ["raw_agreement", "cohens_kappa"],
+    "written_adjudication": true,
+    "single_screener_label": "SINGLE_REVIEWER_PILOT_NO_PREVALENCE_CLAIM"
+  },
+  "coding": {
+    "numerical_instantiation": [
+      "CERTIFICATE_EVALUATED",
+      "FORMULA_ONLY",
+      "ATTACK_ONLY",
+      "AMBIGUOUS"
+    ],
+    "constant_protocol": [
+      "SOUND",
+      "EMPIRICAL",
+      "MIXED",
+      "UNSPECIFIED",
+      "NOT_APPLICABLE"
+    ],
+    "official_checkpoint": [
+      "PUBLIC",
+      "AUTHOR_PROVIDED",
+      "DECLINED",
+      "NO_RESPONSE",
+      "NOT_CONTACTED",
+      "NOT_APPLICABLE"
+    ],
+    "certificate_code": [
+      "PUBLIC_OFFICIAL",
+      "PAPER_FORMULA_ONLY",
+      "PARTIAL",
+      "NOT_FOUND"
+    ],
+    "assumptions_machine_decidable": [
+      "ALL",
+      "PARTIAL",
+      "NONE",
+      "AMBIGUOUS"
+    ],
+    "artifact_theorem_semantics": [
+      "CONSISTENT",
+      "GAP",
+      "AMBIGUOUS",
+      "NO_ARTIFACT"
+    ]
+  },
+  "required_semantic_fields": [
+    "router_and_gate_type",
+    "top_k_and_tie_semantics",
+    "weighted_or_selected_output",
+    "logit_probability_or_margin_output",
+    "preprocessing_and_perturbation_units",
+    "global_or_local_assumption_domain"
+  ],
+  "official_artifact_sources_only": true,
+  "contact_policy": {
+    "explicit_user_authorization_required": true,
+    "public_corresponding_author_channel_only": true,
+    "initial_day": 0,
+    "followup_not_before_day": 14,
+    "close_no_response_day": 30,
+    "silence_is_not_refusal": true,
+    "private_correspondence_committed": false
+  },
+  "required_analysis": [
+    "search_and_screening_flow",
+    "included_and_excluded_manifest",
+    "six_dimension_evidence_matrix",
+    "assumption_and_semantics_map",
+    "artifact_and_contact_status",
+    "five_leaf_outcomes",
+    "motivating_case_exclusion_sensitivity",
+    "limitations"
+  ],
+  "output_root": "/data1/Kane/MOE/ACT/data/moe/survey",
+  "execution": {
+    "search_started": false,
+    "authors_contacted": false,
+    "environment_created": false,
+    "training_started": false,
+    "verification_started": false
+  }
+}

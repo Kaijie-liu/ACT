@@ -61,6 +61,36 @@ Three adapters remain scientifically distinct:
    `UNVALIDATED_ADAPTER` until an installed, pinned environment passes concrete
    and soundness smoke tests.
 
+### Tie-safe implication warning
+
+A tempting single-output compiler defines
+
+```text
+g(x) = max_{j != i} (r_j(x) - r_i(x))
+s(x) = min_k (C_k E_i(x) + d_k)
+t(x) = max(g(x), s(x))
+```
+
+and asks a verifier to prove `t(x) >= 0` on the original box. This is correct
+for strict route interiors, but it is **not** semantically exact under
+`ANY_LEGAL_TOPK`: at a tie, `g(x)=0` and an unsafe `s(x)<0` still gives
+`t(x)=0`, so the compiled property passes even though expert `i` is a legal
+route and must be safe.
+
+Two admissible designs remain:
+
+1. retain the exact non-strict guard as a separate constraint in a backend that
+   supports constrained implication; or
+2. use a disclosed conservative margin `eta>0` and compile
+   `max(g(x)-eta, s(x)) >= 0`. For every legal route point `g(x)<=0`, the first
+   term is strictly negative, so safety is required. The price is also checking
+   some non-member points with `0<g(x)<eta`.
+
+The second design is sound but not semantically exact. `eta` must dominate the
+frozen route/numerical tolerance and be preregistered. Neither design is
+implemented in the current stage; no augmented-output result may use the naive
+zero-margin reduction.
+
 The repository also contains a newer optimization API whose documentation
 mentions linear input constraints, but its normal expression parser still
 reduces input constraints to coordinate bounds, and the inspected primal path
