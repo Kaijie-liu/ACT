@@ -89,7 +89,9 @@ def _write_json(path: Path, value: Any) -> None:
 
 
 def _route_counts(model, value: torch.Tensor) -> list[int]:
-    with torch.no_grad():
+    with torch.no_grad(), torch.amp.autocast(
+        value.device.type, enabled=value.device.type == "cuda"
+    ):
         routes = model.router(value)
     return torch.bincount(routes, minlength=4).cpu().tolist()
 
@@ -219,7 +221,8 @@ def run(run_root: Path, output_dir: Path, seed: int) -> dict[str, Any]:
     inputs, targets = next(iter(loaders["train"]))
     inputs, targets = inputs.contiguous(), targets.to(device)
     clean_route_counts = _route_counts(model, inputs)
-    second = model.router.get_second_expert(inputs)
+    with torch.amp.autocast("cuda", enabled=True):
+        second = model.router.get_second_expert(inputs)
     second_route_counts = torch.bincount(second, minlength=4).cpu().tolist()
     with torch.cuda.amp.autocast(enabled=True):
         outputs = model(inputs)

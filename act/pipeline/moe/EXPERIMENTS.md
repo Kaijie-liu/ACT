@@ -977,6 +977,15 @@ during, and after execution. This section records an implemented, tested code
 stage only; no real-data smoke or training result is claimed until the separate
 result stage completes.
 
+Two pre-objective smoke launches are retained as excluded engineering failures.
+Smoke r1 used a module entry point that imported ACT's Python-3.12-only package
+surface in the Python 3.11 Blackwell environment; the direct standalone entry
+point avoids that unrelated import. Smoke r2 completed real CIFAR decoding and
+FFCV conversion, then stopped in the smoke-only route counter because FP16 FFCV
+input was inspected outside autocast. It did not enter PGD or take an optimizer
+step. The route counter now uses the same autocast dtype contract as the author
+forward. Neither failed launch contributes a scientific result.
+
 ## N1 engineering rerun code freeze
 
 The N1 performance runner freezes the original 20-row applicable-unresolved
