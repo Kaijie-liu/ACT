@@ -701,3 +701,22 @@ official-shaped engineering check with 3,072 coordinates and three guard rows
 performed 6,144 support solves from one model build in 2.67 seconds. This is an
 implementation check, not a CROWN result or an RT-ER result. The original
 confirmatory endpoint is unchanged; no performance rerun has yet been made.
+
+## N2 normalized weighted top-k generalization
+
+The F0 decomposition is generalized from selected-softmax top-2 to any
+normalized non-negative top-k gate. For a canonical anchor, the encoding uses
+exactly `k-1` property-directed products and retains the omitted anchor weight
+through the simplex-intersection-box constraints. Selected softmax, normalized
+sigmoid, and hard top-1 are supported; unnormalized `switch_prob` is rejected
+because it requires an additional scale product.
+
+The implementation preserves shared input generators and route constraints
+while assigning disjoint private expert factors. Thirteen N2 tests cover the
+gate support matrix, top-k ties, concrete gate boxes, `k-1` decomposition
+identity, shared/private factor identity, McCormick consistency, simplex
+constraints, top-2 F0 compatibility, cross-domain rejection, extreme sigmoid
+scores, relaxation status semantics, and hard-top1 certification. The proof is
+recorded in `act/back_end/moe/proofs/normalized_topk_decomposition.md`. This is
+a mechanism result; no new model or experiment result is claimed by the code
+stage.

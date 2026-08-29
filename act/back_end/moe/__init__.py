@@ -79,6 +79,7 @@ from act.back_end.moe.weighted_topk import (
     normalized_gate_box_from_score_bounds,
     normalized_gate_support,
     shared_input_experts_hz,
+    simplex_anchor_contains,
     simplex_box_contains,
     solve_weighted_topk_range,
 )
@@ -147,6 +148,7 @@ __all__ = [
     "normalized_gate_support",
     "shared_input_experts_hz",
     "shared_input_pair_hz",
+    "simplex_anchor_contains",
     "simplex_box_contains",
     "solve_weighted_topk_range",
     "solve_weighted_top2_f0",
