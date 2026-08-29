@@ -1,0 +1,176 @@
+{
+  "authors_contacted": false,
+  "binary_eligibility_agreement": {
+    "cohen_kappa": 0.6610348468848997,
+    "confusion": {
+      "A=INCLUDE|B=INCLUDE": 4,
+      "A=NOT_INCLUDE|B=INCLUDE": 4,
+      "A=NOT_INCLUDE|B=NOT_INCLUDE": 313
+    },
+    "expected_agreement": 0.9632379344144564,
+    "labels": [
+      "INCLUDE",
+      "NOT_INCLUDE"
+    ],
+    "raw_agreement": 0.9875389408099688,
+    "records": 321
+  },
+  "claim_limit": "Upstream retrieval remains partial for several preregistered sources and snowballing is incomplete. These counts describe only the frozen partial corpus and cannot support ecosystem prevalence.",
+  "cutoff_date": "2026-08-29",
+  "final_decision_counts": {
+    "DUPLICATE": 3,
+    "EXCLUDE": 310,
+    "INCLUDE": 8
+  },
+  "final_flow": {
+    "additional_duplicate_versions": 3,
+    "frozen_exact_title_families": 321,
+    "full_text_assessed": 9,
+    "full_text_excluded": 1,
+    "included": 8,
+    "retrieved_records": 480,
+    "title_abstract_excluded": 309,
+    "unique_families": 318
+  },
+  "included_records": [
+    {
+      "decision": "INCLUDE",
+      "record_index": 23,
+      "resolution": "CONSENSUS",
+      "title": "Adaptive Branch Specialization in Spectral-Spatial Graph Neural Networks for Certified Robustness"
+    },
+    {
+      "decision": "INCLUDE",
+      "record_index": 43,
+      "resolution": "WRITTEN_ADJUDICATION",
+      "title": "BALANCING ACCURACY AND ROBUSTNESS IN INTRUSION DETECTION: AN ENSEMBLE DEEP LEARNING APPROACH"
+    },
+    {
+      "decision": "INCLUDE",
+      "record_index": 140,
+      "resolution": "WRITTEN_ADJUDICATION",
+      "title": "Improving the Accuracy-Robustness Trade-Off of Classifiers via Adaptive Smoothing"
+    },
+    {
+      "decision": "INCLUDE",
+      "record_index": 154,
+      "resolution": "WRITTEN_ADJUDICATION",
+      "title": "LAWS: Learning from Actual Workloads Symbolically -- A Self-Certifying Parametrized Cache Architecture for Neural Inference, Robotics, and Edge Deployment"
+    },
+    {
+      "decision": "INCLUDE",
+      "record_index": 166,
+      "resolution": "CONSENSUS",
+      "title": "MetaMoE: Formal Verification of Compositional Robustness and Scalability of Mixture-of-Experts Architecture"
+    },
+    {
+      "decision": "INCLUDE",
+      "record_index": 178,
+      "resolution": "WRITTEN_ADJUDICATION",
+      "title": "Mo\u00cbT: Mixture of Expert Trees and its Application to Verifiable Reinforcement Learning"
+    },
+    {
+      "decision": "INCLUDE",
+      "record_index": 195,
+      "resolution": "CONSENSUS",
+      "title": "On the Adversarial Robustness of Mixture of Experts"
+    },
+    {
+      "decision": "INCLUDE",
+      "record_index": 203,
+      "resolution": "CONSENSUS",
+      "title": "Optimizing Robustness and Accuracy in Mixture of Experts: A Dual-Model Approach"
+    }
+  ],
+  "independent_reviewers": 2,
+  "reviewer_inputs": {
+    "reviewer_a": {
+      "path": "data/moe/survey/work/reviewer_a/title_abstract_screen_20260829.json",
+      "sha256": "280b537229b32a1e2dd6d01cb597a419a22c0b5b938a24cec581f1b4f3a408b6"
+    },
+    "reviewer_b": {
+      "path": "data/moe/survey/work/reviewer_b/screening_decisions_20260829.json",
+      "sha256": "cc5a4bb22ff260da7e6e06aa1743955341197c00afe50ccba97832e0a9da8d7e"
+    }
+  },
+  "schema_version": 1,
+  "status": "PARTIAL_SOURCE_EXECUTION_RECONCILED_NO_PREVALENCE_CLAIM",
+  "three_class_agreement": {
+    "cohen_kappa": 0.6183115338882278,
+    "confusion": {
+      "A=DUPLICATE|B=DUPLICATE": 1,
+      "A=EXCLUDE|B=DUPLICATE": 2,
+      "A=EXCLUDE|B=EXCLUDE": 310,
+      "A=EXCLUDE|B=INCLUDE": 4,
+      "A=INCLUDE|B=INCLUDE": 4
+    },
+    "expected_agreement": 0.9510292019681487,
+    "labels": [
+      "DUPLICATE",
+      "EXCLUDE",
+      "INCLUDE"
+    ],
+    "raw_agreement": 0.9813084112149533,
+    "records": 321
+  },
+  "written_adjudications": [
+    {
+      "decision": "INCLUDE",
+      "evidence": "Section 3.6-3.7 and reported radius 0.48 on p. 160",
+      "rationale": "The public full text defines input-dependent MoE routing and a randomized-smoothing certificate for the final classifier, and reports a certified radius. Sparse methodological detail is an extraction finding, not an eligibility exclusion.",
+      "record_index": 43,
+      "reviewer_a": "EXCLUDE",
+      "reviewer_b": "INCLUDE",
+      "source": "https://zenodo.org/records/18454317",
+      "title": "BALANCING ACCURACY AND ROBUSTNESS IN INTRUSION DETECTION: AN ENSEMBLE DEEP LEARNING APPROACH"
+    },
+    {
+      "decision": "INCLUDE",
+      "evidence": "Theorem 4.1 and Sections 4-5",
+      "rationale": "Theorem 4.1 states a bounded-perturbation guarantee for an input-dependent assembled classifier. The fact that the learned mixing network is evaluated only by attacks is retained as an instantiation/semantic-alignment finding rather than used to exclude the paper family.",
+      "record_index": 140,
+      "reviewer_a": "EXCLUDE",
+      "reviewer_b": "INCLUDE",
+      "source": "https://arxiv.org/abs/2301.12554",
+      "title": "Improving the Accuracy-Robustness Trade-Off of Classifiers via Adaptive Smoothing"
+    },
+    {
+      "decision": "INCLUDE",
+      "evidence": "Definitions 3-4, routing-radius construction, and Theorem 3",
+      "rationale": "The routed cache selects an expert only inside a bounded routing ball, and Theorem 3 supplies a uniform routed-output approximation error bound. It is retained under the protocol's broad robustness-or-safety wording and must be stratified as output approximation rather than classification robustness.",
+      "record_index": 154,
+      "reviewer_a": "EXCLUDE",
+      "reviewer_b": "INCLUDE",
+      "source": "https://arxiv.org/abs/2605.04069",
+      "title": "LAWS: Learning from Actual Workloads Symbolically -- A Self-Certifying Parametrized Cache Architecture for Neural Inference, Robotics, and Edge Deployment"
+    },
+    {
+      "decision": "INCLUDE",
+      "evidence": "Section 5 SMT translation and Section 6 verification results",
+      "rationale": "The complete hard-routed policy, environment dynamics, bounded initial-state set, and finite-horizon safety property are encoded in SMT and evaluated. The protocol explicitly includes bounded input safety, not only adversarial classification radii.",
+      "record_index": 178,
+      "reviewer_a": "EXCLUDE",
+      "reviewer_b": "INCLUDE",
+      "source": "https://arxiv.org/abs/1906.06717",
+      "title": "Mo\u00cbT: Mixture of Expert Trees and its Application to Verifiable Reinforcement Learning"
+    },
+    {
+      "decision": "DUPLICATE",
+      "merged_into_record_index": 194,
+      "rationale": "Alternate preprint deposits have the same normalized title.",
+      "record_index": 193,
+      "reviewer_a": "EXCLUDE",
+      "reviewer_b": "DUPLICATE",
+      "title": "Occam\u2019s Razor in AI-assisted Complex Diagnosis: A Comparative Effectiveness Study of Single Large Language Models Versus Multi-Agent Systems in Resource-Constrained Primary Care Settings"
+    },
+    {
+      "decision": "DUPLICATE",
+      "merged_into_record_index": 251,
+      "rationale": "Versioned releases belong to the same repository artifact family.",
+      "record_index": 250,
+      "reviewer_a": "EXCLUDE",
+      "reviewer_b": "DUPLICATE",
+      "title": "shahbaaz-devsec/ZARQA-Grid-Inspection-Humanoid-Core: v3.0.0 - Phase III Spatial Cognition & Tamper-Evident Perception Release"
+    }
+  ]
+}

@@ -771,3 +771,21 @@ separation, constraint loss, and frame mismatch. The support-monotonicity and
 interval-union proof is in
 `act/back_end/moe/proofs/conditioned_support_monotonicity.md`. This stage is a
 mechanism result; its engineering performance rerun remains pending.
+
+## Certification-gap survey partial execution
+
+The frozen search has begun, but several preregistered source-native exports
+and one-hop snowballing remain incomplete. The current corpus is therefore
+labeled `PARTIAL_SOURCE_EXECUTION_RECONCILED_NO_PREVALENCE_CLAIM`; no ecosystem
+proportion is reported. No authors were contacted.
+
+Two reviewers independently screened the same 321-record frozen corpus. Binary
+eligibility agreement was 317/321 (98.75%, Cohen's kappa 0.661); three-class
+include/exclude/duplicate agreement was 315/321 (98.13%, kappa 0.618). Six
+written adjudications resolved four scope decisions and two additional version
+duplicates. The reconciled partial corpus contains 318 provisional families,
+of which nine received full-text review, one was excluded, and eight were
+retained for the future six-dimension artifact audit. These are screening-flow
+counts only, not prevalence estimates. Reviewer inputs, hashes, disagreement
+rationales, and the executable reconciliation are committed with the partial
+result.

@@ -1,0 +1,186 @@
+{
+  "schema_version": 1,
+  "reviewer": "B",
+  "generated_at_utc": "2026-08-29T08:03:00.889952+00:00",
+  "cutoff_date": "2026-08-29",
+  "independence_statement": "Independent decisions made from the frozen raw corpus, protocol, public primary full texts, and official paper/artifact pages only.",
+  "corpus": "/data1/Kane/MOE/ACT/data/moe/survey/work/raw/deduplicated_candidate_families_20260829.json",
+  "corpus_sha256": "7fe837407c43c0e96f90f749fe9e31f7fb6318bc6758e7ece863b056bdd03b25",
+  "protocol": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/certification_gap_survey_protocol.json",
+  "protocol_sha256": "e78b2a1a9eec19f9fa725c437435676936298b972286eba21a4de00cae0bd34b",
+  "methods": "/data1/Kane/MOE/ACT/act/pipeline/moe/docs/certification_gap_survey.md",
+  "methods_sha256": "7f40b7b9e74efa0dc120c684316e018bea898011ab70fa2397d6966258fc8681",
+  "status": "INDEPENDENT_REVIEWER_B_SCREENING_COMPLETE_PARTIAL_RETRIEVAL_NO_PREVALENCE_CLAIM",
+  "counts": {
+    "retrieved_input_records": 480,
+    "raw_exact_duplicates_merged": 159,
+    "raw_exact_title_families": 321,
+    "frozen_candidate_records_received": 321,
+    "reviewer_b_additional_duplicate_versions": 3,
+    "unique_families_after_reviewer_b_deduplication": 318,
+    "title_abstract_excluded": 309,
+    "full_text_assessed": 9,
+    "full_text_excluded": 1,
+    "included": 8,
+    "excluded_total": 310,
+    "duplicate_total": 3,
+    "exclusion_counts_by_code": {
+      "E_ATTACK_ONLY": 12,
+      "E_NO_DYNAMIC_ROUTING": 1,
+      "E_NO_BOUNDED_INPUT_PROPERTY": 277,
+      "E_POSITION_OR_SURVEY": 20,
+      "E_DUPLICATE_VERSION": 3
+    }
+  },
+  "included_records": [
+    {
+      "record_index": 23,
+      "title": "Adaptive Branch Specialization in Spectral-Spatial Graph Neural Networks for Certified Robustness",
+      "year": 2025,
+      "screening_note": "The formal bound covers the adaptively gated fused output under joint bounded structural and feature perturbations."
+    },
+    {
+      "record_index": 43,
+      "title": "BALANCING ACCURACY AND ROBUSTNESS IN INTRUSION DETECTION: AN ENSEMBLE DEEP LEARNING APPROACH",
+      "year": 2026,
+      "screening_note": "The paper defines and numerically reports randomized-smoothing certification for the final routed classifier, though certification details are sparse."
+    },
+    {
+      "record_index": 140,
+      "title": "Improving the Accuracy-Robustness Trade-Off of Classifiers via Adaptive Smoothing",
+      "year": 2024,
+      "screening_note": "A formal bounded-input guarantee is stated for an input-dependent composed classifier, although the learned adaptive gate is not itself numerically certified."
+    },
+    {
+      "record_index": 154,
+      "title": "LAWS: Learning from Actual Workloads Symbolically -- A Self-Certifying Parametrized Cache Architecture for Neural Inference, Robotics, and Edge Deployment",
+      "year": 2026,
+      "screening_note": "The self-certification theorem bounds the routed architecture's output error over its input domain and is therefore retained as a bounded-input output-safety guarantee."
+    },
+    {
+      "record_index": 166,
+      "title": "MetaMoE: Formal Verification of Compositional Robustness and Scalability of Mixture-of-Experts Architecture",
+      "year": 2026,
+      "screening_note": "The theorem and verifier cover the hard top-1 routed output under explicit assumptions, and numerical component certificates are reported."
+    },
+    {
+      "record_index": 178,
+      "title": "MoËT: Mixture of Expert Trees and its Application to Verifiable Reinforcement Learning",
+      "year": 2022,
+      "screening_note": "The executable SMT procedure verifies a bounded-state safety property of the complete hard-routed policy and closed-loop encoding."
+    },
+    {
+      "record_index": 195,
+      "title": "On the Adversarial Robustness of Mixture of Experts",
+      "year": 2022,
+      "screening_note": "The paper supplies formal routed-output Lipschitz robustness bounds but does not numerically instantiate them on the evaluated V-MoE artifacts."
+    },
+    {
+      "record_index": 203,
+      "title": "Optimizing Robustness and Accuracy in Mixture of Experts: A Dual-Model Approach",
+      "year": 2025,
+      "screening_note": "Formal bounds cover the routed model output, while the experiments do not numerically instantiate the certified radius."
+    }
+  ],
+  "full_text_assessed_records": [
+    {
+      "record_index": 23,
+      "title": "Adaptive Branch Specialization in Spectral-Spatial Graph Neural Networks for Certified Robustness",
+      "decision": "INCLUDE",
+      "primary_exclusion_code": null,
+      "public_full_text_by_cutoff": true
+    },
+    {
+      "record_index": 32,
+      "title": "AI SAFETY MODEL MOE: A MIXTURE-OF-EXPERTS ARCHITECTURE FOR CERTIFIABLE, RISK-AWARE GENERATION",
+      "decision": "EXCLUDE",
+      "primary_exclusion_code": "E_NO_BOUNDED_INPUT_PROPERTY",
+      "public_full_text_by_cutoff": true
+    },
+    {
+      "record_index": 43,
+      "title": "BALANCING ACCURACY AND ROBUSTNESS IN INTRUSION DETECTION: AN ENSEMBLE DEEP LEARNING APPROACH",
+      "decision": "INCLUDE",
+      "primary_exclusion_code": null,
+      "public_full_text_by_cutoff": true
+    },
+    {
+      "record_index": 140,
+      "title": "Improving the Accuracy-Robustness Trade-Off of Classifiers via Adaptive Smoothing",
+      "decision": "INCLUDE",
+      "primary_exclusion_code": null,
+      "public_full_text_by_cutoff": true
+    },
+    {
+      "record_index": 154,
+      "title": "LAWS: Learning from Actual Workloads Symbolically -- A Self-Certifying Parametrized Cache Architecture for Neural Inference, Robotics, and Edge Deployment",
+      "decision": "INCLUDE",
+      "primary_exclusion_code": null,
+      "public_full_text_by_cutoff": true
+    },
+    {
+      "record_index": 166,
+      "title": "MetaMoE: Formal Verification of Compositional Robustness and Scalability of Mixture-of-Experts Architecture",
+      "decision": "INCLUDE",
+      "primary_exclusion_code": null,
+      "public_full_text_by_cutoff": true
+    },
+    {
+      "record_index": 178,
+      "title": "MoËT: Mixture of Expert Trees and its Application to Verifiable Reinforcement Learning",
+      "decision": "INCLUDE",
+      "primary_exclusion_code": null,
+      "public_full_text_by_cutoff": true
+    },
+    {
+      "record_index": 195,
+      "title": "On the Adversarial Robustness of Mixture of Experts",
+      "decision": "INCLUDE",
+      "primary_exclusion_code": null,
+      "public_full_text_by_cutoff": true
+    },
+    {
+      "record_index": 203,
+      "title": "Optimizing Robustness and Accuracy in Mixture of Experts: A Dual-Model Approach",
+      "decision": "INCLUDE",
+      "primary_exclusion_code": null,
+      "public_full_text_by_cutoff": true
+    }
+  ],
+  "additional_duplicate_versions": [
+    {
+      "record_index": 177,
+      "title": "MoET: Interpretable and Verifiable Reinforcement Learning via Mixture of Expert Trees",
+      "merged_into_record_index": 178,
+      "merged_into_title": "MoËT: Mixture of Expert Trees and its Application to Verifiable Reinforcement Learning",
+      "reason": "Both records resolve to arXiv:1906.06717; record 178 also carries the later peer-reviewed Neural Networks DOI."
+    },
+    {
+      "record_index": 193,
+      "title": "Occam’s Razor in AI-assisted Complex Diagnosis: A Comparative Effectiveness Study of Single Large Language Models Versus Multi-Agent Systems in Resource-Constrained Primary Care Settings",
+      "merged_into_record_index": 194,
+      "merged_into_title": "Occam’s Razor in AI-assisted complex diagnosis: a comparative effectiveness study of single large language models versus multi-agent systems in resource-constrained primary care settings (Preprint)",
+      "reason": "Normalized titles are identical after removing the '(Preprint)' suffix; these are alternate preprint deposits of the same study."
+    },
+    {
+      "record_index": 250,
+      "title": "shahbaaz-devsec/ZARQA-Grid-Inspection-Humanoid-Core: v3.0.0 - Phase III Spatial Cognition & Tamper-Evident Perception Release",
+      "merged_into_record_index": 251,
+      "merged_into_title": "shahbaaz-devsec/ZARQA-Grid-Inspection-Humanoid-Core: ZARQA Grid Inspection Humanoid Core: Phase IV Cognitive Swarm Core Release (v4.0.0)",
+      "reason": "Both records are versioned releases of the same ZARQA Grid Inspection Humanoid Core repository; v3.0.0 is merged into v4.0.0."
+    }
+  ],
+  "limitations": [
+    "The supplied upstream retrieval is explicitly partial for several protocol sources; no prevalence inference is permitted.",
+    "Title/abstract screening necessarily relies on heterogeneous index abstracts, including null abstracts and repository descriptions.",
+    "Some included guarantees address a bounded state/input domain or routed-output approximation error rather than a conventional image-classification certified radius; these are retained under the protocol's robustness-or-safety wording for later adjudication.",
+    "Full-text screening determines eligibility only; preliminary numerical-instantiation labels are not a substitute for the complete six-dimension artifact audit.",
+    "No authors were contacted, no dependencies were installed, and no certificate execution or model training was performed."
+  ],
+  "artifact_paths": {
+    "decision_manifest": "/data1/Kane/MOE/ACT/data/moe/survey/work/reviewer_b/screening_decisions_20260829.json",
+    "full_text_assessments": "/data1/Kane/MOE/ACT/data/moe/survey/work/reviewer_b/full_text_assessments_20260829.json",
+    "screening_flow": "/data1/Kane/MOE/ACT/data/moe/survey/work/reviewer_b/screening_flow_20260829.json",
+    "inaccessible_items": "/data1/Kane/MOE/ACT/data/moe/survey/work/reviewer_b/inaccessible_items_20260829.json"
+  }
+}
