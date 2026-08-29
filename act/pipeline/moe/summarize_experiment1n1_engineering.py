@@ -139,6 +139,8 @@ def publish(result_dir: Path, audit_path: Path, output_path: Path) -> dict[str, 
     result_dir = _inside(result_dir, WRITE_ROOT)
     audit_path = _inside(audit_path, WRITE_ROOT)
     output_path = _inside(output_path, PROJECT_ROOT)
+    if output_path.exists():
+        raise RuntimeError(f"refusing to overwrite published result {output_path}")
     audit = json.loads(audit_path.read_text(encoding="utf-8"))
     if audit.get("issue_count") != 0:
         raise RuntimeError("N1 result cannot be published with audit issues")
