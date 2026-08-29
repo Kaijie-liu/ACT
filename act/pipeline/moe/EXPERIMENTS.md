@@ -720,3 +720,18 @@ scores, relaxation status semantics, and hard-top1 certification. The proof is
 recorded in `act/back_end/moe/proofs/normalized_topk_decomposition.md`. This is
 a mechanism result; no new model or experiment result is claimed by the code
 stage.
+
+## Tie-safe eta implication compiler
+
+The augmented-output backend now has a sound hard-top1 compiler for
+tie-inclusive routing. It verifies `max(g_i-eta,s_i)>=0`, expressed as a scalar
+affine/ReLU DAG, instead of the unsound zero-margin `max(g_i,s_i)>=0`. Seven
+tests include the explicit tie counterexample, randomized implication checks,
+direct graph-semantic equality, varying branches, and eta-band accounting.
+
+The formal proposition and proof are in
+`act/back_end/moe/proofs/tie_safe_eta_implication.md`. The exact additional
+obligation domain is `0<g_i<eta`; `g_i=0` remains a required legal tie. The
+default `eta` is the frozen `safe_positive_margin=1e-7`, and the audit reports
+the mathematical band separately from numerical-boundary tolerance. This code
+has not yet been promoted to a CROWN result.

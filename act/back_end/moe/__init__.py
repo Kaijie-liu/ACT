@@ -47,6 +47,14 @@ from act.back_end.moe.guarded_box_hull import (
     guarded_hz_box_hull_highs,
     guarded_hz_box_hull_scipy,
 )
+from act.back_end.moe.tie_safe_implication import (
+    EtaBandAudit,
+    TieSafeTop1Implication,
+    audit_eta_overcheck_band,
+    relu_pairwise_max,
+    relu_pairwise_min,
+    top1_branch_guard_values,
+)
 from act.back_end.moe.verifier import verify_output_gate_elimination
 from act.back_end.moe.weighted_top2 import (
     SAFE_WEIGHTED_RANGE,
@@ -88,6 +96,7 @@ __all__ = [
     "GateKind",
     "GuardedBoxHullResult",
     "GuardedHullTelemetry",
+    "EtaBandAudit",
     "AffineCompetitorBoundary",
     "AffineTop1RouteBoundary",
     "AffineTop1RouteBoundaryBatch",
@@ -105,6 +114,7 @@ __all__ = [
     "RouteAVerificationReport",
     "RouterAnalysis",
     "TiePolicy",
+    "TieSafeTop1Implication",
     "TopKMembershipDomain",
     "SharedInputPairHZ",
     "SharedInputExpertsHZ",
@@ -123,6 +133,7 @@ __all__ = [
     "UnsupportedNormalizedGateError",
     "analyze_candidates",
     "analyze_topk_sets",
+    "audit_eta_overcheck_band",
     "affine_top1_route_boundary",
     "affine_top1_route_boundary_batch",
     "build_act_moe_program",
@@ -146,11 +157,14 @@ __all__ = [
     "mccormick_inequalities",
     "normalized_gate_box_from_score_bounds",
     "normalized_gate_support",
+    "relu_pairwise_max",
+    "relu_pairwise_min",
     "shared_input_experts_hz",
     "shared_input_pair_hz",
     "simplex_anchor_contains",
     "simplex_box_contains",
     "solve_weighted_topk_range",
     "solve_weighted_top2_f0",
+    "top1_branch_guard_values",
     "verify_output_gate_elimination",
 ]

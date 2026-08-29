@@ -102,10 +102,15 @@ Two admissible designs remain:
    term is strictly negative, so safety is required. The price is also checking
    some non-member points with `0<g(x)<eta`.
 
-The second design is sound but not semantically exact. `eta` must dominate the
-frozen route/numerical tolerance and be preregistered. Neither design is
-implemented in the current stage; no augmented-output result may use the naive
-zero-margin reduction.
+The second design is sound but not semantically exact. `eta` must be positive,
+disclosed, and aligned with the frozen numerical policy. ACT now implements its
+pure-PyTorch scalar ReLU DAG as `TieSafeTop1Implication`, defaulting to
+`safe_positive_margin=1e-7`. The exact extra-obligation band is `0<g<eta`;
+`g=0` is a legal tie, not an incompleteness case. `audit_eta_overcheck_band`
+reports both this strict band and the separate numerical boundary-tolerance
+band over sample/expert branch pairs. The module is ready for CROWN conformance,
+but remains `UNVALIDATED_ADAPTER` until that external backend smoke passes. No
+augmented-output result may use the naive zero-margin reduction.
 
 The repository also contains a newer optimization API whose documentation
 mentions linear input constraints, but its normal expression parser still
