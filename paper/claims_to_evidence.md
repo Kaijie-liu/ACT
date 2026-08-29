@@ -133,6 +133,18 @@ scope are frozen at commit
 `a054ba382bb2cd02a6e4ed297944da9d2fbd98a3` in
 `act/back_end/moe/proofs/normalized_topk_decomposition.md`.
 
+The frozen five-sample N2 cohort executes this path on an alternate
+normalized-sigmoid top-3 model. It exactly enumerates eight tie-inclusive route
+sets and evaluates 55 fallback property rows, every one with exactly two
+property-directed products. Sample outcomes are one SAFE, two independently
+replayed UNSAFE, and two solver-limit UNKNOWN. An external audit rebuilds all
+five router HZs, reproduces all eight route sets, checks the runner manifest,
+and reports zero issues. This is mechanism-plus-engineering evidence for
+non-top2 and alternate-gate execution, not a prevalence or scalability claim.
+The artifact is
+`act/pipeline/moe/results/experiment1n2_top3_seed0_r2_20260830.json`, committed
+by `a44f64867f450d471860c4575e4e6bc084af7d71`.
+
 For selected-softmax top-2, Tier 2 reduces to
 
 \[
