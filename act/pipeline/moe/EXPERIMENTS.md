@@ -1097,3 +1097,11 @@ the repeated-query error and the independent audit reports 12 structural issues
 cross-check issues and no `UNSAFE` statuses. The 39 otherwise valid rows are
 still excluded from scientific aggregation so `_r2` remains a clean full-cohort
 replication, not a four-row patch.
+
+The completed `_r2` artifact will also be read by a separate audit module rather
+than relying only on the runner's in-process summary. That pass freezes the raw
+JSONL hash, revalidates the 43 source identities and tie/UNSAFE rules, and
+reports expert-level status counts plus paired guarded-box versus original-box
+CROWN lower-bound differences. Bound ordering is observed rather than assumed;
+the audit does not convert a CROWN negative relaxation into `UNSAFE` or claim a
+runtime speedup.
