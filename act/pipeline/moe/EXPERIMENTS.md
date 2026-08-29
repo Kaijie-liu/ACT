@@ -848,6 +848,25 @@ audit reports zero issues. The matrix does not close the preregistered search:
 source-native exports and snowballing remain incomplete, SpecSphere's official
 anonymous code link returned HTTP 403, and no author contact was authorized.
 
+The remaining source-access and one-hop snowball pass is now recorded as a
+second partial artifact, still with no prevalence claim. Eleven source rows
+record the exact endpoint outcome: arXiv and the OpenAlex cross-index exports
+are available; DBLP cannot express the required abstract/keyword conjunction;
+and ACM, IEEE metadata, PMLR, CVF, USENIX, Springer metadata, OpenReview, and
+Semantic Scholar remain blocked, incomplete, or lack a suitable complete
+native export. In particular, structured zero-citation counts are explicitly
+not treated as evidence that a seed has no citations.
+
+One-hop backward/forward retrieval produced 13 unique non-seed candidates and
+reencountered four seed families that were deduplicated. Applying the frozen
+criteria yielded no new included family: the 13 preliminary exclusions are
+partitioned among no input-dependent dynamic routing, attack/empirical-only
+robustness, and no formal bounded-input property. These are candidate-level
+screening records, not a recall estimate. The artifact
+`act/pipeline/moe/results/survey/snowball_partial_20260829.json` stores every
+primary URL, discovery edge, dedup key, exclusion code, source endpoint, and
+coverage limitation. Its independent structural audit reports zero issues.
+
 ## ICML 2025 B1 author-pin compatibility probe
 
 The exact official dependency pins now import from the isolated

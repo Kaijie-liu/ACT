@@ -1,0 +1,251 @@
+{
+  "schema_version": 1,
+  "status": "PARTIAL_RETRIEVAL_NO_PREVALENCE",
+  "audit_timestamp": "2026-08-29T20:14:59+10:00",
+  "cutoff_date": "2026-08-29",
+  "protocol": "act/pipeline/moe/configs/certification_gap_survey_protocol.json",
+  "author_contact": "NOT_PERFORMED",
+  "prevalence_claim_allowed": false,
+  "zero_citation_counts_are_not_absence_evidence": true,
+  "claim_limit": "Source-native exports and one-hop citation membership remain incomplete for access-limited sources. These records are screening evidence only and cannot estimate ecosystem prevalence or search recall.",
+  "source_native_export_audit": [
+    {
+      "source": "arXiv",
+      "endpoint": "https://export.arxiv.org/api/query",
+      "http_status": 200,
+      "result_count": 54,
+      "status": "FROZEN_API_EXPORT_AVAILABLE",
+      "limitation": "Only the accepted arXiv API interpretation of the frozen concept query is covered."
+    },
+    {
+      "source": "OpenAlex",
+      "endpoint": "https://api.openalex.org/works",
+      "http_status": 200,
+      "result_count": 416,
+      "status": "FROZEN_CROSS_INDEX_EXPORT_AVAILABLE",
+      "limitation": "The explicit wildcard expansion is a noisy cross-index completeness check, not a source-native substitute."
+    },
+    {
+      "source": "DBLP",
+      "endpoint": "https://dblp.org/search/publ/api",
+      "http_status": 200,
+      "result_count": 0,
+      "status": "LITERAL_QUERY_ZERO_COVERAGE_LIMIT",
+      "limitation": "DBLP does not expose the abstract/keyword fields required by the frozen conjunction; exact-title sentinel audit is separate."
+    },
+    {
+      "source": "ACM Digital Library",
+      "endpoint": "https://dl.acm.org/action/doSearch",
+      "http_status": 403,
+      "result_count": null,
+      "status": "SOURCE_NATIVE_EXPORT_BLOCKED",
+      "limitation": "Cloudflare denied the automated source-native query."
+    },
+    {
+      "source": "IEEE Xplore",
+      "endpoint": "https://ieeexplore.ieee.org/search/searchresult.jsp",
+      "http_status": 200,
+      "result_count": null,
+      "status": "SOURCE_NATIVE_EXPORT_BLOCKED",
+      "limitation": "The public search page was reachable, but the metadata API returned HTTP 403 Developer Inactive without an authorized key."
+    },
+    {
+      "source": "PMLR",
+      "endpoint": "https://proceedings.mlr.press/search.html",
+      "http_status": 404,
+      "result_count": null,
+      "status": "NO_GENERAL_NATIVE_QUERY_EXPORT",
+      "limitation": "Official paper pages can be verified individually, but the attempted general search endpoint does not exist."
+    },
+    {
+      "source": "CVF Open Access",
+      "endpoint": "https://openaccess.thecvf.com/",
+      "http_status": 200,
+      "result_count": null,
+      "status": "NO_GENERAL_NATIVE_QUERY_EXPORT",
+      "limitation": "Conference indices are reachable, but no complete cross-conference native query export was located."
+    },
+    {
+      "source": "USENIX",
+      "endpoint": "https://www.usenix.org/search/site",
+      "http_status": 200,
+      "result_count": null,
+      "status": "NO_GENERAL_NATIVE_QUERY_EXPORT",
+      "limitation": "Search HTML is reachable, but no complete machine-readable native export was located."
+    },
+    {
+      "source": "SpringerLink",
+      "endpoint": "https://api.springernature.com/meta/v2/json",
+      "http_status": 401,
+      "result_count": null,
+      "status": "SOURCE_NATIVE_EXPORT_BLOCKED",
+      "limitation": "HTML search is reachable, but the metadata API requires a key."
+    },
+    {
+      "source": "OpenReview",
+      "endpoint": "https://api2.openreview.net/notes",
+      "http_status": 200,
+      "result_count": 0,
+      "status": "FROZEN_QUERY_NOT_RELIABLY_EXPORTABLE",
+      "limitation": "The frozen literal query returned zero/searchUnavailable; simple-token queries cap at 10,000 noisy notes and cannot establish a complete export."
+    },
+    {
+      "source": "Semantic Scholar",
+      "endpoint": "https://api.semanticscholar.org/graph/v1",
+      "http_status": 429,
+      "result_count": null,
+      "status": "SOURCE_NATIVE_EXPORT_BLOCKED",
+      "limitation": "General search and paper endpoints were rate-limited without an API key."
+    }
+  ],
+  "snowball_coverage": {
+    "included_seed_families": 8,
+    "non_seed_candidates": 13,
+    "new_included_families": 0,
+    "seed_families_reencountered_and_deduplicated": [
+      "bai2023adaptive",
+      "puigcerver2022adversarial",
+      "zhang2025dualmodel",
+      "pham2026metamoe"
+    ],
+    "structured_reference_counts": {
+      "bai2023adaptive": {"openalex_backward": 9, "crossref_backward_count": 93, "openalex_forward": 16},
+      "pham2026metamoe": {"openalex_backward": 21, "crossref_backward_count": 46, "openalex_forward": 0},
+      "vasic2022moet": {"openalex_backward": 65, "crossref_backward_count": 61, "openalex_forward": 3},
+      "puigcerver2022adversarial": {"openalex_backward": 0, "openalex_forward": 3},
+      "choi2025specsphere": {"openalex_backward": 0, "openalex_forward": 0},
+      "rmgte2026intrusion": {"openalex_backward": 0, "openalex_forward": 0},
+      "laws2026": {"openalex_backward": 0, "openalex_forward": 0},
+      "zhang2025dualmodel": {"openalex_backward": 0, "openalex_forward": 0}
+    },
+    "limitation": "OpenAlex exposes incomplete structured citation membership for several seeds; Crossref cited-by counts do not enumerate members, and Semantic Scholar returned HTTP 429. Zero counts are not evidence of no citations."
+  },
+  "snowball_candidates": [
+    {
+      "dedup_key": "arxiv:2403.03676",
+      "title": "Simplified PCNet with Robustness",
+      "primary_url": "https://arxiv.org/abs/2403.03676",
+      "discovery_edges": [{"seed": "choi2025specsphere", "direction": "BACKWARD"}],
+      "preliminary_decision": "EXCLUDE",
+      "exclusion_code": "E_NO_DYNAMIC_ROUTING",
+      "rationale": "The adaptive neighborhood/filter order is a global hyperparameter or learned scalar rather than input-dependent expert/path selection."
+    },
+    {
+      "dedup_key": "arxiv:2302.01757",
+      "title": "RS-Del: Edit Distance Robustness Certificates for Sequence Classifiers via Randomized Deletion",
+      "primary_url": "https://arxiv.org/abs/2302.01757",
+      "discovery_edges": [{"seed": "rmgte2026intrusion", "direction": "BACKWARD"}],
+      "preliminary_decision": "EXCLUDE",
+      "exclusion_code": "E_NO_DYNAMIC_ROUTING",
+      "rationale": "The certified randomized-deletion sequence classifier is not an input-dependent routed composition."
+    },
+    {
+      "dedup_key": "arxiv:2412.03483",
+      "title": "Convolutional Neural Networks and Mixture of Experts for Intrusion Detection in 5G Networks and beyond",
+      "primary_url": "https://arxiv.org/abs/2412.03483",
+      "discovery_edges": [{"seed": "rmgte2026intrusion", "direction": "BACKWARD"}],
+      "preliminary_decision": "EXCLUDE",
+      "exclusion_code": "E_NO_BOUNDED_INPUT_PROPERTY",
+      "rationale": "The sparse MoE is evaluated for intrusion-detection performance without a formal bounded-input robustness property."
+    },
+    {
+      "dedup_key": "arxiv:2002.10025",
+      "title": "Triple Wins: Boosting Accuracy, Robustness and Efficiency Together by Enabling Input-Adaptive Inference",
+      "primary_url": "https://arxiv.org/abs/2002.10025",
+      "discovery_edges": [{"seed": "bai2023adaptive", "direction": "BACKWARD"}],
+      "preliminary_decision": "EXCLUDE",
+      "exclusion_code": "E_ATTACK_ONLY",
+      "rationale": "The routed model reports empirical robustness/training results rather than a routed-output certificate."
+    },
+    {
+      "dedup_key": "arxiv:2402.02263",
+      "title": "MixedNUTS: Training-Free Accuracy-Robustness Balance via Nonlinearly Mixed Classifiers",
+      "primary_url": "https://arxiv.org/abs/2402.02263",
+      "discovery_edges": [
+        {"seed": "bai2023adaptive", "direction": "FORWARD"},
+        {"seed": "zhang2025dualmodel", "direction": "BACKWARD"}
+      ],
+      "preliminary_decision": "EXCLUDE",
+      "exclusion_code": "E_NO_DYNAMIC_ROUTING",
+      "rationale": "The nonlinear mixture uses fixed global mixing parameters rather than input-dependent expert selection."
+    },
+    {
+      "dedup_key": "doi:10.1016/j.infsof.2024.107603",
+      "title": "Dynamic robustness evaluation for automated model selection in operation",
+      "primary_url": "https://doi.org/10.1016/j.infsof.2024.107603",
+      "discovery_edges": [{"seed": "bai2023adaptive", "direction": "FORWARD"}],
+      "preliminary_decision": "EXCLUDE",
+      "exclusion_code": "E_NO_BOUNDED_INPUT_PROPERTY",
+      "rationale": "The work empirically ranks model robustness under operational distribution shifts; it does not certify a bounded-input routed output."
+    },
+    {
+      "dedup_key": "title:robust-experts-iccvw-2025",
+      "title": "Robust Experts: The Effect of Adversarial Training on CNNs with Sparse Mixture-of-Experts Layers",
+      "primary_url": "https://openaccess.thecvf.com/content/ICCV2025W/STREAM/html/Pavlitska_Robust_Experts_The_Effect_of_Adversarial_Training_on_CNNs_with_ICCVW_2025_paper.html",
+      "discovery_edges": [
+        {"seed": "pham2026metamoe", "direction": "BACKWARD"},
+        {"seed": "puigcerver2022adversarial", "direction": "FORWARD"}
+      ],
+      "preliminary_decision": "EXCLUDE",
+      "exclusion_code": "E_ATTACK_ONLY",
+      "rationale": "The study evaluates adversarial training and attacks without a formal routed-output certificate."
+    },
+    {
+      "dedup_key": "doi:10.1109/OJSP.2025.3536853",
+      "title": "Robustifying Routers Against Input Perturbations for Sparse Mixture-of-Experts Vision Transformers",
+      "primary_url": "https://doi.org/10.1109/OJSP.2025.3536853",
+      "discovery_edges": [{"seed": "puigcerver2022adversarial", "direction": "FORWARD"}],
+      "preliminary_decision": "EXCLUDE",
+      "exclusion_code": "E_ATTACK_ONLY",
+      "rationale": "The work provides empirical attack/defense evaluation and does not certify the routed model output."
+    },
+    {
+      "dedup_key": "arxiv:2412.11608",
+      "title": "Towards Adversarial Robustness of Model-Level Mixture-of-Experts Architectures for Semantic Segmentation",
+      "primary_url": "https://arxiv.org/abs/2412.11608",
+      "discovery_edges": [{"seed": "puigcerver2022adversarial", "direction": "FORWARD"}],
+      "preliminary_decision": "EXCLUDE",
+      "exclusion_code": "E_ATTACK_ONLY",
+      "rationale": "The contribution is an empirical adversarial-robustness study without a formal routed-output certificate."
+    },
+    {
+      "dedup_key": "title:robust-moe-training-iccv-2023",
+      "title": "Robust Mixture-of-Expert Training for Convolutional Neural Networks",
+      "primary_url": "https://openaccess.thecvf.com/content/ICCV2023/html/Zhang_Robust_Mixture-of-Expert_Training_for_Convolutional_Neural_Networks_ICCV_2023_paper.html",
+      "discovery_edges": [
+        {"seed": "puigcerver2022adversarial", "direction": "FORWARD"},
+        {"seed": "zhang2025dualmodel", "direction": "BACKWARD"}
+      ],
+      "preliminary_decision": "EXCLUDE",
+      "exclusion_code": "E_ATTACK_ONLY",
+      "rationale": "AdvMoE reports adversarial-training robustness rather than a formal routed-output certificate."
+    },
+    {
+      "dedup_key": "arxiv:1903.07756",
+      "title": "Hierarchical Routing Mixture of Experts",
+      "primary_url": "https://arxiv.org/abs/1903.07756",
+      "discovery_edges": [{"seed": "vasic2022moet", "direction": "BACKWARD"}],
+      "preliminary_decision": "EXCLUDE",
+      "exclusion_code": "E_NO_BOUNDED_INPUT_PROPERTY",
+      "rationale": "The routed model has no formal bounded-input robustness or safety property."
+    },
+    {
+      "dedup_key": "arxiv:1805.08328",
+      "title": "Verifiable Reinforcement Learning via Policy Extraction",
+      "primary_url": "https://arxiv.org/abs/1805.08328",
+      "discovery_edges": [{"seed": "vasic2022moet", "direction": "BACKWARD"}],
+      "preliminary_decision": "EXCLUDE",
+      "exclusion_code": "E_NO_DYNAMIC_ROUTING",
+      "rationale": "Verification applies to an extracted fixed decision-tree policy, not an input-dependent routed composition."
+    },
+    {
+      "dedup_key": "arxiv:1905.04194",
+      "title": "Formal Verification of Input-Output Mappings of Tree Ensembles",
+      "primary_url": "https://arxiv.org/abs/1905.04194",
+      "discovery_edges": [{"seed": "vasic2022moet", "direction": "BACKWARD"}],
+      "preliminary_decision": "EXCLUDE",
+      "exclusion_code": "E_NO_DYNAMIC_ROUTING",
+      "rationale": "The verified tree ensemble is a fixed prediction model rather than a dynamically dispatched expert composition."
+    }
+  ]
+}
