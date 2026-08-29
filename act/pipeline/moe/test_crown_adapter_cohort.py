@@ -16,6 +16,7 @@ from act.pipeline.moe.crown_adapter_cohort import (
     _combine_experts,
     _safe_status,
     _summary,
+    _validate_frozen_pairs,
 )
 
 
@@ -140,6 +141,50 @@ class CrownAdapterCohortTests(unittest.TestCase):
         self.assertEqual(
             summary["variant_status_counts"]["crown_guarded_box"],
             {"CERTIFIED": 1},
+        )
+
+    def test_frozen_exact_pairs_do_not_require_repeat_feasibility_query(self):
+        selection = {
+            "sample_rank": 110,
+            "parent": {
+                "gate": {
+                    "feasible_route_sets": [[0, 3], [0, 7], [3, 6]],
+                }
+            },
+        }
+        source = [
+            {"sample_rank": 110, "route_pair": pair}
+            for pair in ([3, 0], [7, 0], [6, 3])
+        ]
+        self.assertEqual(
+            _validate_frozen_pairs(selection, source),
+            {(0, 3), (0, 7), (3, 6)},
+        )
+
+    def test_frozen_pair_identity_mismatch_fails_closed(self):
+        selection = {
+            "sample_rank": 110,
+            "parent": {"exact_feasible_pairs": [[0, 3], [0, 7]]},
+        }
+        with self.assertRaisesRegex(RuntimeError, "differ"):
+            _validate_frozen_pairs(
+                selection,
+                [{"sample_rank": 110, "route_pair": [0, 3]}],
+            )
+
+    def test_source_exactness_audit_covers_parent_deadline_without_pair_list(self):
+        selection = {"sample_rank": 155, "parent": {}}
+        source = [
+            {"sample_rank": 155, "route_pair": [1, 4]},
+            {"sample_rank": 155, "route_pair": [4, 5]},
+        ]
+        with self.assertRaisesRegex(RuntimeError, "audit is absent"):
+            _validate_frozen_pairs(selection, source)
+        self.assertEqual(
+            _validate_frozen_pairs(
+                selection, source, source_exact_audit_passed=True
+            ),
+            {(1, 4), (4, 5)},
         )
 
 

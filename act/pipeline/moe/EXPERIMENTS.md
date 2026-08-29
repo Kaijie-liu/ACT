@@ -1034,5 +1034,16 @@ shim must execute before importing the ACT package, so the runner and tests are
 launched as repository file paths with `PYTHONPATH=/data1/Kane/MOE/ACT`, not via
 `python -m act.pipeline...`. A real bal010 smoke exposed a crash in dynamic
 score slicing; fixed one-hot `nn.Linear` projectors now lower successfully in
-auto_LiRPA. This section records the code freeze only until all 43 branches and
-the independent audit complete.
+auto_LiRPA.
+
+The first full `_r1` execution is retained as an excluded engineering artifact.
+It exposed a second, non-semantic censoring path: the runner repeated an exact
+route-set query with a 10-second limit even though every source pair had already
+been frozen, hash-linked, and independently audited. A repeated query timeout
+therefore rejected a valid frozen branch without finding a discrepancy. The
+`_r2` code validates the source pair identities against the frozen parent exact
+pair list, rebuilds the shared model/router HZ frame, and applies each pair guard
+directly. It never treats a repeat feasibility query as an execution gate. The
+failed `_r1` directory remains immutable and excluded; `_r2` writes a new result
+directory. This section records the corrected code freeze until all 43 branches
+and the independent audit complete.

@@ -45,10 +45,12 @@ import torch
 from torch import nn
 
 from act.back_end.moe import (
+    build_act_moe_program,
     guarded_input_topk_set,
     linear_safety_rows,
     load_output_moe_checkpoint,
 )
+from act.front_end.specs import OutKind, OutputSpec
 from act.back_end.moe.tie_safe_implication import (
     relu_pairwise_max,
     relu_pairwise_min,
@@ -68,7 +70,7 @@ from act.pipeline.moe.experiment1 import (
     _sha256,
     _write_json,
 )
-from act.pipeline.moe.experiment1d import _load_frozen_selection, _row_context
+from act.pipeline.moe.experiment1d import _load_frozen_selection
 from act.pipeline.moe.train import _load_dataset
 from act.util.path_config import get_torchvision_data_root
 
@@ -274,6 +276,111 @@ def _load_guarded_box(source: dict[str, Any], shape: tuple[int, ...]):
         torch.from_numpy(lower.copy()).reshape(shape),
         torch.from_numpy(upper.copy()).reshape(shape),
     )
+
+
+def _parent_exact_pairs(
+    selection: dict[str, Any]
+) -> set[tuple[int, ...]] | None:
+    """Read the already-audited exact route sets without solving them again."""
+
+    parent = selection["parent"]
+    f0_parent = parent.get("f0") or {}
+    gate_parent = parent.get("gate") or {}
+    raw_pairs = (
+        f0_parent.get("feasible_pairs")
+        or gate_parent.get("feasible_route_sets")
+        or parent.get("exact_feasible_pairs")
+    )
+    if not raw_pairs:
+        return None
+    return {
+        tuple(sorted(int(value) for value in pair))
+        for pair in raw_pairs
+    }
+
+
+def _validate_frozen_pairs(
+    selection: dict[str, Any],
+    source_branches: Sequence[dict[str, Any]],
+    *,
+    source_exact_audit_passed: bool = False,
+) -> set[tuple[int, ...]]:
+    """Validate source identities against the frozen exact parent artifact.
+
+    The 43 guarded-box branches were produced from exact, independently audited
+    route sets. Re-running their feasibility queries here adds no semantic
+    evidence and can incorrectly censor a valid branch when the repeated query
+    reaches its time limit.
+    """
+
+    rank = int(selection["sample_rank"])
+    source_pairs: set[tuple[int, ...]] = set()
+    for branch in source_branches:
+        if int(branch["sample_rank"]) != rank:
+            raise RuntimeError("frozen source branch rank changed")
+        pair = tuple(sorted(int(value) for value in branch["route_pair"]))
+        if len(pair) != 2 or len(set(pair)) != 2:
+            raise RuntimeError("frozen source route pair is not unordered top-2")
+        source_pairs.add(pair)
+    if not source_pairs:
+        raise RuntimeError(f"rank {rank} has no frozen source branches")
+    parent_pairs = _parent_exact_pairs(selection)
+    if parent_pairs is None and not source_exact_audit_passed:
+        raise RuntimeError(
+            "frozen parent has no pair list and source exactness audit is absent"
+        )
+    if parent_pairs is not None and source_pairs != parent_pairs:
+        raise RuntimeError("frozen source pairs differ from frozen exact parent")
+    return source_pairs
+
+
+def _frozen_row_context(selection, model, dataset) -> dict[str, Any]:
+    """Rebuild the model/HZ frame while treating frozen pairs as authoritative."""
+
+    parent = selection["parent"]
+    rank = int(selection["sample_rank"])
+    index = int(selection["dataset_index"])
+    epsilon = float(selection["epsilon"])
+    image, label = dataset[index]
+    x = image.unsqueeze(0).double()
+    lower, upper = (x - epsilon).clamp(0, 1), (x + epsilon).clamp(0, 1)
+    with torch.no_grad():
+        clean_output, clean_route = model.forward_with_routing(x)
+    prediction = int(clean_output.argmax(dim=1).item())
+    clean_set = sorted(int(value) for value in clean_route.indices[0].tolist())
+    if prediction != int(label):
+        raise RuntimeError(f"rank {rank} is no longer clean-correct")
+    if parent.get("clean_prediction") is not None and prediction != int(
+        parent["clean_prediction"]
+    ):
+        raise RuntimeError("clean prediction changed from frozen parent")
+    if parent.get("clean_topk_set") is not None and clean_set != sorted(
+        int(value) for value in parent["clean_topk_set"]
+    ):
+        raise RuntimeError("clean top-k set changed from frozen parent")
+    spec = OutputSpec(kind=OutKind.TOP1_ROBUST, y_true=[prediction])
+    program = build_act_moe_program(
+        model, center=x, lower=lower, upper=upper, output_spec=spec
+    )
+    router = _propagate_component(program.router)
+    if not isinstance(router.output_hz, SparseHZono) or not router.output_hz.exact:
+        raise RuntimeError("adapter cohort requires an exact router HZ")
+    return {
+        "rank": rank,
+        "index": index,
+        "label": int(label),
+        "epsilon": epsilon,
+        "x": x,
+        "lower": lower,
+        "upper": upper,
+        "prediction": prediction,
+        "clean_set": clean_set,
+        "spec": spec,
+        "program": program,
+        "router": router,
+        "properties": linear_safety_rows(spec, int(clean_output.shape[1])),
+        "route_pair_authority": "FROZEN_EXACT_INDEPENDENTLY_AUDITED",
+    }
 
 
 def _hz_expert_record(
@@ -724,6 +831,21 @@ def run(config_path: Path) -> dict[str, Any]:
     source_summary = _inside(Path(config["source_summary_json"]), RESULTS_ROOT)
     if _sha256(source_summary) != config["source_summary_sha256"]:
         raise RuntimeError("frozen 43-branch summary changed")
+    source_audit_path = _inside(
+        Path(config["source_independent_audit_json"]), RESULTS_ROOT
+    )
+    if _sha256(source_audit_path) != config["source_independent_audit_sha256"]:
+        raise RuntimeError("frozen 43-branch independent audit changed")
+    source_audit = json.loads(source_audit_path.read_text(encoding="utf-8"))
+    source_exact_audit_passed = bool(
+        int(source_audit.get("issue_count", -1)) == 0
+        and source_audit.get("all_exact_feasible_pairs_covered") is True
+        and source_audit.get("all_paired_complete") is True
+        and int(source_audit.get("route_branches", -1))
+        == int(config["expected_branches"])
+    )
+    if not source_exact_audit_passed:
+        raise RuntimeError("frozen branch source did not pass its exactness audit")
     selection_manifest = _inside(Path(config["selection_manifest"]), PROJECT_ROOT)
     if _sha256(selection_manifest) != config["selection_manifest_sha256"]:
         raise RuntimeError("frozen Experiment 1D selection changed")
@@ -761,16 +883,14 @@ def run(config_path: Path) -> dict[str, Any]:
     ):
         for selection in selected:
             rank = int(selection["sample_rank"])
+            frozen = source_by_rank.get(rank, [])
             try:
-                context = _row_context(selection, model, dataset, config)
-                actual_pairs = {
-                    tuple(sorted(int(value) for value in pair))
-                    for pair in context["route_sets"].feasible
-                }
-                frozen = source_by_rank.get(rank, [])
-                frozen_pairs = {tuple(branch["route_pair"]) for branch in frozen}
-                if actual_pairs != frozen_pairs:
-                    raise RuntimeError("rematerialized pairs differ from frozen source")
+                _validate_frozen_pairs(
+                    selection,
+                    frozen,
+                    source_exact_audit_passed=source_exact_audit_passed,
+                )
+                context = _frozen_row_context(selection, model, dataset)
             except Exception as error:
                 context = None
                 row_error = f"{type(error).__name__}: {error}"
