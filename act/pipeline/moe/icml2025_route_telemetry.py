@@ -485,8 +485,8 @@ def run(
             "gpu": torch.cuda.get_device_name(device) if device.type == "cuda" else None,
         },
         "interpretation": (
-            "Exact affine hard-route geometry for an official-code, paper-config "
-            "reproduction checkpoint; not an expert-output robustness certificate."
+            f"Exact affine hard-route geometry for a {config['label']} checkpoint; "
+            "not an expert-output robustness certificate."
         ),
     }
     _write_json(output_dir / "summary.json", summary)

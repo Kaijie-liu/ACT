@@ -202,6 +202,17 @@ The frozen schema, checksum rules, label, and failure semantics are in
 `act/pipeline/moe/docs/icml2025_route_telemetry.md` and
 `act/pipeline/moe/configs/icml2025_route_telemetry.json`.
 
+The Blackwell seed-0 execution is implemented by three ACT-side files without
+editing the official clone: a deterministic launcher with a disclosed local
+W&B no-op shim, a real-CIFAR objective/checkpoint smoke, and a process-group
+supervisor. The supervisor waits for both the epoch checkpoint and its flushed
+training/validation metrics, pauses the author process group, copies and hashes
+the checkpoint, runs telemetry synchronously, and resumes only after telemetry
+succeeds. The seed-0-only config is
+`act/pipeline/moe/configs/icml2025_route_telemetry_blackwell_seed0.json` and is
+labeled `official-code, Blackwell-compatible deps + FFCV`. Missing telemetry is
+a run failure; it is never filled after training or silently omitted.
+
 ## B2 PyTorch-to-ACT conformance
 
 Conversion starts only after B1 passes. For at least 1000 frozen test inputs it

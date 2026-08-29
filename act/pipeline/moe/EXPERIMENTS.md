@@ -956,6 +956,27 @@ training result was produced. A slow real CIFAR archive download was stopped at
 source hashes, dependency versions, explicit launch condition, smoke scope, and
 disk accounting; B1 real-data training remains a separate next stage.
 
+## ICML 2025 B1 Blackwell seed-0 execution code
+
+The real-data B1 path is now executable without modifying the official clone.
+The compatibility launcher freezes Python, NumPy, Torch, CUDA, cuDNN, and FFCV
+random state and records two non-scientific shims: seed injection and a local
+JSONL W&B replacement for the author's broken `--nowandb` branch. The smoke
+uses the audited real CIFAR-10 archive, official FFCV transforms, official
+four-ResNet18 MoE, PGD-10 training objective with the author's fixed 512 loss
+denominator, one Adam step, PGD-50 evaluation, and a strict checkpoint
+roundtrip. It is a compatibility gate, not an epoch or accuracy endpoint.
+
+The seed-0 supervisor freezes the 130-epoch schedule and all 13 ten-epoch
+checkpoints. At each checkpoint it waits for the matching author metrics,
+pauses the complete training process group, creates an immutable epoch-qualified
+copy, runs exact 10,000-input route telemetry synchronously, verifies artifact
+identity, and resumes training. A telemetry error terminates the run and leaves
+an explicit failure artifact. The external clone must be fully clean before,
+during, and after execution. This section records an implemented, tested code
+stage only; no real-data smoke or training result is claimed until the separate
+result stage completes.
+
 ## N1 engineering rerun code freeze
 
 The N1 performance runner freezes the original 20-row applicable-unresolved

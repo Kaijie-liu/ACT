@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "status": "PREREGISTERED_NOT_RUN",
+  "label": "official-code, Blackwell-compatible deps + FFCV",
+  "official_source": {
+    "url": "https://github.com/TIML-Group/Robust-MoE-Dual-Model.git",
+    "commit": "30ef94d77b5451595b82e739aa8938e1f4c4521f",
+    "checkpoint_published": false,
+    "certificate_implementation_published": false
+  },
+  "training": {
+    "dataset": "CIFAR10",
+    "epochs": 130,
+    "seeds": [0],
+    "checkpoint_epochs": [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130],
+    "checkpoint_policy": "immutable epoch-qualified copy before synchronous telemetry",
+    "selection": "none; retain every scheduled checkpoint"
+  },
+  "router": {
+    "type": "affine_hard_top1",
+    "num_experts": 4,
+    "input_domain": "unit_pixels_nchw",
+    "normalization_mean_255": [125.307, 122.961, 113.8575],
+    "normalization_std_255": [51.5865, 50.847, 51.255],
+    "tie_semantics": "ANY_LEGAL_TOPK"
+  },
+  "dataset": {
+    "split": "official torchvision CIFAR10 test",
+    "ordered_samples": 10000,
+    "download": false,
+    "checksum_required": true,
+    "indices_required": true
+  },
+  "oracle": {
+    "implementation": "act.back_end.moe.affine_top1_route_boundary_batch",
+    "input_lower": 0.0,
+    "input_upper": 1.0,
+    "compute_device": "cuda",
+    "capacity_grid_steps": 255,
+    "grid_validation_tolerance": 1e-6,
+    "outward_absolute": 1e-9,
+    "outward_relative": 1e-9,
+    "reference_crosscheck_samples": 100,
+    "reference_radius_atol": 1e-12
+  },
+  "epsilon_over_255": [0.25, 0.5, 1.0, 2.0, 4.0, 8.0],
+  "execution": {
+    "batch_size": 256,
+    "probe_samples": 200,
+    "probe_policy": "official test indices 0 through 199",
+    "score_equivalence_atol": 1e-5,
+    "witness_tolerance": 1e-7,
+    "eta": 1e-7,
+    "eta_boundary_tolerance": 1e-7,
+    "training_metrics_optional_but_missing_values_never_imputed": true,
+    "training_pause_policy": "pause the whole author process group during checkpoint preservation and telemetry"
+  },
+  "required_outputs": [
+    "per_input_radius_brackets",
+    "route_load_entropy",
+    "effective_expert_count",
+    "boundary_competitor_counts",
+    "radius_quantiles",
+    "stable_reachable_undecided_counts",
+    "checkpoint_and_dataset_hashes",
+    "runtime_and_environment"
+  ],
+  "execution_gate": {
+    "dependency_authorized": true,
+    "environment_created": true,
+    "author_pin_cuda_kernel_pass": false,
+    "blackwell_compatible_cuda_kernel_pass": true,
+    "real_data_smoke_required": true,
+    "training_started": false,
+    "substituted_data_pipeline": false
+  }
+}
