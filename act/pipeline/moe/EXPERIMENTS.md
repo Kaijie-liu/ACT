@@ -1105,3 +1105,22 @@ reports expert-level status counts plus paired guarded-box versus original-box
 CROWN lower-bound differences. Bound ordering is observed rather than assumed;
 the audit does not convert a CROWN negative relaxation into `UNSAFE` or claim a
 runtime speedup.
+
+The clean `_r2` run completed all 43 branches and 86 expert obligations with
+zero branch errors, zero soundness cross-check issues, and two independent
+zero-issue audits. Guarded-box and original-box CROWN each certified the same
+four pairs and the same 29 expert obligations. Across 774 property rows their
+lower-bound difference had median `-2.38e-7` and range
+`[-4.77e-6, 2.62e-6]`; because these CROWN values are not outward-rounded,
+the micro-scale signed differences are numerical observations rather than a
+tightening claim. The coordinate hull therefore preserved no pair-certificate
+advantage over the original box in this cohort.
+
+The tie-safe eta reduction certified 0/43 pairs. Retained-guard exact HZ also
+certified 0/43 pairs at the frozen budget: 71/86 expert obligations were
+incomplete, 12 completed with a non-positive exact lower bound, and three were
+certified. Thus P0b does not establish a complete backend ordering. Its useful
+negative result is that coordinate boxing erased the guard's certificate value,
+while the sound eta compilation was too relaxed under CROWN. The immutable
+summary is
+`act/pipeline/moe/results/crown/crown_adapter_consistency_bal010_43_r2_20260829.json`.

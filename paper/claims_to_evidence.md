@@ -374,7 +374,7 @@ artifact is
 at commit `2172a381e`. It does not overwrite the immutable confirmatory
 `56/100` endpoint.
 
-### P0b: four-adapter consistency cohort — pending data
+### P0b: four-adapter consistency cohort — complete engineering result
 
 P0b is frozen to 43 bal010 route branches and four configurations:
 
@@ -383,9 +383,22 @@ P0b is frozen to 43 bal010 route branches and four configurations:
 3. original input box passed to CROWN;
 4. tie-safe eta-reduction passed to CROWN.
 
-It is an adapter consistency and guard-retention comparison. The existing toy
-eta conformance and guarded-box timing benchmark are not P0b results. **No P0b
-certificate or ordering number is claimed here.**
+All 43 branches and 86 expert obligations completed without a branch error;
+the runner audit and a separate raw-JSONL audit both report zero issues.
+Guarded-box and original-box CROWN certified the same four pairs and the same
+29 expert obligations. Across 774 property rows the paired lower-bound
+difference is only micro-scale (median (-2.38\times10^{-7}), range
+([-4.77\times10^{-6},2.62\times10^{-6}])) and is not outward-rounded. We
+therefore report no guard-box tightening or runtime-speedup claim.
+
+The tie-safe eta reduction certified no pair. Retained-guard exact HZ also
+certified no complete pair at the frozen budget because 71/86 expert
+obligations were solver-incomplete; only 15 completed exactly. P0b therefore
+does not establish a complete backend ordering. It shows instead that a
+coordinate-box adapter erased the route guard's certificate value on this
+cohort, while the sound eta output reduction was too loose under CROWN. The
+artifact is
+`act/pipeline/moe/results/crown/crown_adapter_consistency_bal010_43_r2_20260829.json`.
 
 ### B1: official-code RT-ER reproduction — environment ready, data pending
 

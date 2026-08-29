@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "experiment": "crown_adapter_consistency_bal010_43_r2",
+  "status": "COMPLETE_AUDITED",
+  "scope": "adapter_consistency_engineering_not_main_certificate",
+  "execution_git_head": "87dd643867824bd659b172ead9880a37f26867b2",
+  "environment": {
+    "python": "3.11.16",
+    "torch": "2.11.0+cu130",
+    "cuda_runtime": "13.0",
+    "auto_lirpa": "0.7.2"
+  },
+  "cohort": {
+    "branches": 43,
+    "expert_obligations": 86,
+    "property_rows_compared_between_crown_boxes": 774,
+    "branch_errors": 0,
+    "soundness_cross_check_issues": 0,
+    "unsafe_statuses_emitted": 0
+  },
+  "pair_status": {
+    "hz_retained_guard": {"CERTIFIED": 0, "UNKNOWN": 43},
+    "crown_guarded_box": {"CERTIFIED": 4, "UNKNOWN": 39},
+    "crown_original_box": {"CERTIFIED": 4, "UNKNOWN": 39},
+    "crown_tie_safe_eta": {"CERTIFIED": 0, "UNKNOWN": 43}
+  },
+  "pair_certificate_sets": {
+    "crown_guarded_box": [
+      "rank126:pair0-7",
+      "rank131:pair0-3",
+      "rank149:pair4-7",
+      "rank173:pair0-4"
+    ],
+    "crown_original_box": [
+      "rank126:pair0-7",
+      "rank131:pair0-3",
+      "rank149:pair4-7",
+      "rank173:pair0-4"
+    ],
+    "sets_equal": true
+  },
+  "expert_status": {
+    "hz_retained_guard": {
+      "CERTIFIED": 3,
+      "NOT_CERTIFIED_COMPLETE": 12,
+      "UNKNOWN_INCOMPLETE": 71
+    },
+    "crown_guarded_box": {
+      "CERTIFIED_MARGIN_FILTER": 29,
+      "UNKNOWN_RELAXATION": 57
+    },
+    "crown_original_box": {
+      "CERTIFIED_MARGIN_FILTER": 29,
+      "UNKNOWN_RELAXATION": 57
+    },
+    "crown_tie_safe_eta": {
+      "CERTIFIED_MARGIN_FILTER": 0,
+      "UNKNOWN_RELAXATION": 86
+    }
+  },
+  "guarded_vs_original_crown": {
+    "comparison_tolerance": 0.000001,
+    "expert_minimum_strictly_better": 1,
+    "expert_minimum_equal": 70,
+    "expert_minimum_strictly_worse": 15,
+    "property_lower_bound_difference_median": -2.384185791015625e-7,
+    "property_lower_bound_difference_minimum": -4.76837158203125e-6,
+    "property_lower_bound_difference_maximum": 2.6226043701171875e-6,
+    "interpretation": "The coordinate hull preserved no pair-level CROWN certificate advantage over the original box. Micro-scale signed differences are reported as non-outward-rounded numerical observations, not monotone tightening evidence."
+  },
+  "runtime_seconds": {
+    "hz_retained_guard_total": 2269.475158511661,
+    "hz_retained_guard_median_branch": 60.39193796552718,
+    "crown_guarded_box_total": 4.365628389641643,
+    "crown_guarded_box_median_branch": 0.09428559057414532,
+    "crown_original_box_total": 3.317708636634052,
+    "crown_original_box_median_branch": 0.07690247241407633,
+    "crown_tie_safe_eta_total": 9.378968563862145,
+    "crown_tie_safe_eta_median_branch": 0.2027223389595747
+  },
+  "numerical_and_semantic_limits": {
+    "crown_positive_filter_outward_rounded": false,
+    "negative_relaxation_is_unsafe": false,
+    "hz_complete_exact_expert_obligations": 15,
+    "hz_incomplete_expert_obligations": 71,
+    "hz_pair_ground_truth_complete": false,
+    "runtime_speedup_claimed": false,
+    "main_formal_certificate_claimed": false
+  },
+  "raw_artifacts": {
+    "directory": "/data1/Kane/MOE/ACT/data/moe/results/crown_adapter_consistency_bal010_43_r2",
+    "branches_jsonl_sha256": "06163674aaa98dc1bf676f97842ca799485b5cb4467968e5dc29ecd5f24dab9f",
+    "cohort_log_sha256": "9787641cb0649165f6f6f1553ef6f310ee0c2f5581ade9f5fa1694a52b56c383",
+    "config_json_sha256": "864cb5edd18ef131b8cb9be75906ee4204e81a6b2226b10ccf0e3f606de973f9",
+    "summary_json_sha256": "330ee62c84bf690408db5057e87b5198a4e1424a7b731f306231a510bc004af5",
+    "runner_independent_summary_sha256": "e8be506088bb41b94091994f746183fc175a654a4554f40c4345eab83da2a3a7",
+    "launcher_log_sha256": "5332106f4964661ade625c8522fb5f468e27ceb1f85e89e873a07be0f4fa456e",
+    "separate_independent_audit_sha256": "594c39ac78cc62e7966acc36e6900d618ff760de0d452fdfb103627be91c7bec"
+  },
+  "audit": {
+    "runner_independent_passed": true,
+    "separate_independent_passed": true,
+    "issue_count": 0
+  },
+  "paper_safe_conclusion": "On this verification-scale cohort, converting route guards to coordinate boxes did not change the CROWN certificate set, and the tie-safe eta output reduction was too relaxed to certify a pair. The exact retained-guard HZ reference was solver-censored on 71/86 expert obligations, so P0b does not establish a complete backend ordering."
+}
