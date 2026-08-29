@@ -700,7 +700,21 @@ Six new tests and the 47-test MoE regression set pass. A non-scientific
 official-shaped engineering check with 3,072 coordinates and three guard rows
 performed 6,144 support solves from one model build in 2.67 seconds. This is an
 implementation check, not a CROWN result or an RT-ER result. The original
-confirmatory endpoint is unchanged; no performance rerun has yet been made.
+confirmatory endpoint is unchanged.
+
+The first real frozen-branch run (`_r1`) was stopped after one branch and is
+retained as a failed engineering artifact. HiGHS returned `kWarning` while
+adding the guarded matrix because its default `small_matrix_value=1e-9` would
+drop a legitimate router coefficient of approximately `9.70e-10`; the wrapper
+correctly refused to treat that as a complete solve. The backend now requests
+the smallest supported threshold (`1e-12`), canonicalizes the CSR matrix, and
+still fails closed if HiGHS reports another warning. A regression test covers
+the sub-`1e-9` guard coefficient. On the same diagnostic branch, the corrected
+backend completed all 6,144 objectives in 5.14 seconds with zero fallback
+sides; SciPy had taken 81.37 seconds and the recorded hulls differed by at most
+`1.98e-9`. This single branch is a fix-validation observation, not the frozen
+paired speed result; the complete rerun uses the separate `_r2` config and
+directory.
 
 ## N2 normalized weighted top-k generalization
 

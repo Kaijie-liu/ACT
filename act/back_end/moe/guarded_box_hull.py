@@ -252,6 +252,17 @@ def guarded_hz_box_hull_highs(
     solver.setOptionValue("presolve", "on")
     solver.setOptionValue("parallel", "off")
     solver.setOptionValue("random_seed", 0)
+    # HiGHS otherwise drops coefficients below its 1e-9 default and returns
+    # kWarning from addRows.  Router-derived guard rows legitimately contain
+    # coefficients just below that threshold.  Preserve them down to the
+    # smallest value accepted by the installed HiGHS build; any still-smaller
+    # coefficient continues to trigger kWarning and the caller's sound
+    # fallback rather than being silently ignored.
+    small_matrix_status = solver.setOptionValue("small_matrix_value", 1e-12)
+    if small_matrix_status != highspy.HighsStatus.kOk:
+        raise RuntimeError(
+            f"HiGHS small_matrix_value configuration failed: {small_matrix_status}"
+        )
     solver.setOptionValue(
         "primal_feasibility_tolerance",
         HZ_NUMERICAL_POLICY.feasibility_tolerance,
@@ -266,7 +277,9 @@ def guarded_hz_box_hull_highs(
     if status != highspy.HighsStatus.kOk:
         raise RuntimeError(f"HiGHS addVars failed: {status}")
     if problem.A.shape[0]:
-        A = problem.A.tocsr()
+        A = problem.A.tocsr(copy=True)
+        A.sum_duplicates()
+        A.sort_indices()
         status = solver.addRows(
             int(A.shape[0]),
             problem.row_lb,

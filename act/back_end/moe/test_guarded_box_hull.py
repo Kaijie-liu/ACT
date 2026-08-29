@@ -84,6 +84,27 @@ class TestGuardedBoxHull(unittest.TestCase):
             self.assertTrue(np.all(incremental.bounds.lb.numpy().reshape(-1) <= witness))
             self.assertTrue(np.all(incremental.bounds.ub.numpy().reshape(-1) >= witness))
 
+    def test_small_guard_coefficient_is_not_silently_dropped(self):
+        # HiGHS defaults to ignoring matrix entries below 1e-9.  Router guard
+        # rows can contain legitimate coefficients on either side of that
+        # threshold, so the incremental backend must preserve this entry.
+        domain = self._domain(
+            [-1.0, -1.0],
+            [1.0, 1.0],
+            [[9.7e-10, 1.0]],
+            [0.25],
+        )
+        incremental = guarded_hz_box_hull_highs(domain, time_limit=5.0)
+        reference = guarded_hz_box_hull_scipy(domain, time_limit=5.0)
+        self.assertTrue(incremental.complete)
+        self.assertTrue(reference.complete)
+        np.testing.assert_allclose(
+            incremental.bounds.lb.numpy(), reference.bounds.lb.numpy(), atol=2e-8
+        )
+        np.testing.assert_allclose(
+            incremental.bounds.ub.numpy(), reference.bounds.ub.numpy(), atol=2e-8
+        )
+
     def test_affine_outputs_share_the_guarded_input_frame(self):
         entry = self._domain([-1.0, -1.0], [1.0, 1.0], [[1.0, 1.0]], [0.25])
         output = sparse_hz_linear(

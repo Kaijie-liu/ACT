@@ -1,0 +1,28 @@
+{
+  "experiment": "benchmark_guarded_box_hull_experiment1d_r2",
+  "result_semantics": "engineering_performance_rerun_not_confirmatory_overwrite",
+  "checkpoint": "/data1/Kane/MOE/ACT/data/moe/checkpoints/cifar10_top2_e8_seed0_bal010.pt",
+  "checkpoint_sha256": "fbaa7c871d28763ac5acb29a9502dc5d146e1d5af0b4a03e9911899251bd43f7",
+  "parent_results_jsonl": "/data1/Kane/MOE/ACT/data/moe/results/experiment1_confirmatory_bal010_r1/boundary/results.jsonl",
+  "parent_results_sha256": "c853f021f6401ef3f04c3b9cc7c193dd2c77fee7666e8abf120458920f97d48d",
+  "selection_manifest": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/experiment1d_selection_manifest.json",
+  "selection_manifest_sha256": "5077c79e53d5414df54739a42845f66baf03503ab769e3725d3639903f06b424",
+  "output_dir": "/data1/Kane/MOE/ACT/data/moe/results/benchmark_guarded_box_hull_experiment1d_r2",
+  "expected_rows": 20,
+  "candidate_query_timeout": 10.0,
+  "backend_time_limit_seconds": 300.0,
+  "highspy_submit_basis": true,
+  "bound_comparison_tolerance": 1e-8,
+  "backend_order": {
+    "even_sample_rank": ["highspy", "scipy"],
+    "odd_sample_rank": ["scipy", "highspy"]
+  },
+  "execution": {
+    "all_exact_feasible_unordered_top2_pairs": true,
+    "flush_each_branch": true,
+    "flush_each_row": true,
+    "retain_sound_fallback_on_incomplete_backend": true,
+    "speed_conclusion_requires_every_paired_branch_complete": true,
+    "overwrite_confirmatory_or_experiment1d": false
+  }
+}
