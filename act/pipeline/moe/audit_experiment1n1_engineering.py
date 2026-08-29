@@ -6,6 +6,7 @@ import argparse
 from collections import Counter
 import json
 from pathlib import Path
+import subprocess
 from typing import Any, Sequence
 
 import torch
@@ -13,6 +14,29 @@ import torch
 from act.back_end.moe import load_output_moe_checkpoint
 from act.pipeline.moe.experiment1 import PROJECT_ROOT, WRITE_ROOT, _inside, _sha256, _write_json
 from act.pipeline.moe.train import _load_dataset
+
+
+SEMANTIC_SOURCE_PATHS = (
+    "act/pipeline/moe/experiment1n1_engineering.py",
+    "act/pipeline/moe/experiment1.py",
+    "act/pipeline/moe/experiment1d.py",
+    "act/pipeline/moe/experiment1f0.py",
+    "act/pipeline/moe/configs/experiment1n1_bal010_engineering.json",
+    "act/back_end/moe/conditioned_difference_support.py",
+    "act/back_end/moe/weighted_top2.py",
+    "act/back_end/solver/solver_hz.py",
+)
+
+
+def _semantic_source_drift(launch_head: str) -> list[str]:
+    result = subprocess.run(
+        ["git", "diff", "--name-only", launch_head, "--", *SEMANTIC_SOURCE_PATHS],
+        cwd=PROJECT_ROOT,
+        check=True,
+        text=True,
+        capture_output=True,
+    )
+    return [line for line in result.stdout.splitlines() if line]
 
 
 def _load_jsonl(path: Path) -> list[dict[str, Any]]:
@@ -150,6 +174,13 @@ def audit(config_path: Path, result_dir: Path) -> dict[str, Any]:
         add("provenance", "embedded runtime config differs from source config")
     if runtime.get("checkpoint_sha256") != _sha256(Path(config["checkpoint"])):
         add("provenance", "checkpoint hash mismatch")
+    launch_head = str(runtime.get("git_head", ""))
+    try:
+        semantic_drift = _semantic_source_drift(launch_head)
+    except (subprocess.CalledProcessError, ValueError):
+        semantic_drift = ["UNABLE_TO_COMPARE_LAUNCH_HEAD"]
+    if semantic_drift:
+        add("provenance", f"semantic source drift after launch: {semantic_drift}")
     if _sha256(baseline_path) != config["baseline_results_sha256"]:
         add("provenance", "baseline artifact hash mismatch")
     if len(rows) != int(config["expected_rows"]):
@@ -247,6 +278,8 @@ def audit(config_path: Path, result_dir: Path) -> dict[str, Any]:
             "summary": _sha256(result_dir / "summary.json"),
             "baseline_results": _sha256(baseline_path),
         },
+        "launch_git_head": launch_head,
+        "semantic_source_drift_after_launch": semantic_drift,
         "confirmatory_endpoint_unchanged": 0.56,
     }
 
