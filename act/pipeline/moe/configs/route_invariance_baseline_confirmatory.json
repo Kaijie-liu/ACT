@@ -1,0 +1,54 @@
+{
+  "experiment": "route_invariance_baseline_confirmatory_r1",
+  "checkpoint": "/data1/Kane/MOE/ACT/data/moe/checkpoints/cifar10_top2_e8_seed0_bal010.pt",
+  "checkpoint_sha256": "fbaa7c871d28763ac5acb29a9502dc5d146e1d5af0b4a03e9911899251bd43f7",
+  "parent_results_jsonl": "/data1/Kane/MOE/ACT/data/moe/results/experiment1_confirmatory_bal010_r1/boundary/results.jsonl",
+  "parent_results_sha256": "c853f021f6401ef3f04c3b9cc7c193dd2c77fee7666e8abf120458920f97d48d",
+  "closure_results_jsonl": "/data1/Kane/MOE/ACT/data/moe/results/experiment1d_bal010_d0_r2/results.jsonl",
+  "closure_results_sha256": "2e5914447fd555f364132e1594a7dec2b545fdc8c78c81700487a8723a1f0328",
+  "output_dir": "/data1/Kane/MOE/ACT/data/moe/results/route_invariance_baseline_confirmatory_r1",
+  "expected_samples": 100,
+  "expected_precondition_counts": {"INVARIANT": 24, "UNSTABLE": 76},
+  "no_boundary_cap": 0.01568627450980392,
+  "instance_timeout_seconds": 300.0,
+  "candidate_query_timeout": 10.0,
+  "support": {
+    "lp_neurons": 32,
+    "milp_neurons": 4,
+    "lp_time_limit": 2.0,
+    "milp_time_limit": 5.0
+  },
+  "solver": {
+    "low_budget_per_branch": 5.0,
+    "escalation_budget_per_branch": 25.0
+  },
+  "f0": {
+    "candidate_query_timeout": 10.0,
+    "support": {
+      "lp_neurons": 32,
+      "milp_neurons": 4,
+      "lp_time_limit": 2.0,
+      "milp_time_limit": 5.0
+    },
+    "solver": {
+      "margin_support_seconds": 5.0,
+      "difference_support_seconds": 5.0,
+      "property_seconds": 10.0,
+      "safety_tolerance": 1e-7
+    }
+  },
+  "numerical_safety": {
+    "solver": "scipy.optimize.milp/HiGHS",
+    "require_solver_success": true,
+    "require_optimal_status": 0,
+    "require_finite_dual_bound": true,
+    "mip_relative_gap": 0.0,
+    "feasibility_tolerance": 1e-7,
+    "integrality_tolerance": 1e-7,
+    "outward_rounding": "nextafter after absolute-plus-relative correction",
+    "outward_absolute": 1e-9,
+    "outward_relative": 1e-9,
+    "safe_positive_margin": 1e-7,
+    "certifying_objective": "finite mip_dual_bound for MILP; status-0 optimum for pure LP; never a non-optimal primal incumbent"
+  }
+}

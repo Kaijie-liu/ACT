@@ -924,3 +924,30 @@ checks and independently rematerializes exact feasible top-2 sets for every
 non-timeout row. It reports zero issues, 20 unique ranks, no semantic-source
 drift, and 3/3 UNSAFE witness replays. The immutable publishable summary is
 `act/pipeline/moe/results/experiment1n1_engineering_20260829.json`.
+
+## Explicit route-invariance baseline execution
+
+P0a executes the missing end-to-end route-invariance baseline on the frozen
+confirmatory ranks 100--199. It does not infer property safety from router
+status alone. Exact, tie-inclusive feasibility must establish one unique
+unordered top-2 set before the baseline may invoke the property verifier. A
+second legal set returns `UNKNOWN/ROUTE_INVARIANCE_PRECONDITION_FAILED` without
+an expert solve.
+
+The comparison isolates that precondition: after it passes, the baseline and
+Route A use the same guarded HZ propagation, support policy, expert-wise gate
+elimination, F0 fallback, numerical SAFE policy, and full-model witness replay.
+Thus the baseline is not weakened by a different expert backend. For the 76
+samples with a registered route-boundary endpoint, the runner consumes the
+hash-locked confirmatory endpoint and exact route sets. For the 24 samples whose
+exact search found no route change through `4/255`, the endpoint is the
+registered `4/255` cap and the downstream solve is executed afresh. The two
+original hard-deadline rows obtain only their exact pair/radius identity from
+the hash-locked Experiment 1D artifact; their original confirmatory TIMEOUT
+verdict remains the primary Route A entry, while closure is a separate field.
+
+Runtime is labeled artifact-backed endpoint accounting. Route-unstable baseline
+rows stop after the frozen exact candidate stage; invariant rows share one fresh
+downstream execution with Route A. This comparison may establish coverage cost
+and Route A-only certificates, but it is not a same-process solver speedup
+benchmark. The original confirmatory `56/100` endpoint remains immutable.
