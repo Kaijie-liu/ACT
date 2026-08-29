@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "status": "COMPLETED_AUDITED",
+  "code_commit": "ae9974c97715b76d239195c3ae95a0caabb9864b",
+  "raw_result": {
+    "directory": "/data1/Kane/MOE/ACT/data/moe/results/parser_probe/dynamic_moe_frontend_20260830_r2",
+    "summary_sha256": "40cab5e1813a87bd369403e32e3bdefe6e246b635568d0749799d1160de3cbc2"
+  },
+  "consumer": {
+    "repository": "/data1/Kane/MOE/baselines/alpha-beta-CROWN",
+    "commit": "e5c7e17bf0488843acb77b7519f59876717a49f4",
+    "torch": "2.11.0+cu130",
+    "onnx": "1.22.0",
+    "onnxruntime": "1.29.0",
+    "onnx2pytorch": "0.4.1",
+    "auto_lirpa": "0.7.2",
+    "default_onnx_optimization_flags": []
+  },
+  "models": [
+    {
+      "name": "bal010_weighted_top2",
+      "dispatch": "TopK plus selected-softmax plus GatherElements",
+      "route_diverse_probe_keys": [[6, 7], [0, 3], [4, 5], [5, 7]],
+      "onnx_sha256": "f26770ef26c9d1836afabe09482b185b1b3d05b4dbb27ac2705237ce455d291d",
+      "probe_sha256": "e820465ca2f927bdba1e12b976d4294bf6f99de7ae4e0ca6801c8292ab5973c8",
+      "onnxruntime_maximum_abs_error": 2.384185791015625e-07,
+      "onnxruntime_semantic_match": true,
+      "dynamic_operator_counts": {
+        "TopK": 1,
+        "ArgMax": 0,
+        "Gather": 1,
+        "GatherElements": 1,
+        "If": 0
+      },
+      "direct_conversion": "REJECTED",
+      "official_loader": "REJECTED",
+      "rejection_type": "NotImplementedError",
+      "rejection_message": "Conversion not implemented for op_type=GatherElements.",
+      "vnnlib_stage": "NOT_REACHED_MODEL_FRONTEND_REJECTED",
+      "overall": "EXISTING_VERIFIER_CANNOT_CONSUME"
+    },
+    {
+      "name": "rt_er_epoch010_hard_top1",
+      "dispatch": "ArgMax plus GatherElements over four official ResNet18 experts",
+      "route_diverse_probe_keys": [[2], [3], [0], [1]],
+      "official_grouped_forward_maximum_abs_error": 1.341104507446289e-06,
+      "official_router_score_maximum_abs_error": 0.0,
+      "official_routes_match_exactly": true,
+      "onnx_sha256": "a8f88b30da025fac86f7341eee774ec03d02c40537874356b900e92047f98b2b",
+      "probe_sha256": "de542b7f289a99f431efc9aef32bc43d299e20efd61b646fb122d1cd9c20f867",
+      "onnxruntime_maximum_abs_error": 4.76837158203125e-07,
+      "onnxruntime_semantic_match": true,
+      "dynamic_operator_counts": {
+        "TopK": 0,
+        "ArgMax": 1,
+        "Gather": 6,
+        "GatherElements": 1,
+        "If": 1
+      },
+      "direct_conversion": "REJECTED",
+      "official_loader": "REJECTED",
+      "rejection_type": "NotImplementedError",
+      "rejection_message": "Conversion not implemented for op_type=GatherElements.",
+      "vnnlib_stage": "NOT_REACHED_MODEL_FRONTEND_REJECTED",
+      "overall": "EXISTING_VERIFIER_CANNOT_CONSUME"
+    }
+  ],
+  "independent_audit": {
+    "issues": 0,
+    "checks": [
+      "recomputed every tracked raw artifact hash",
+      "reran ONNX checker and ONNX Runtime from raw graphs and probes",
+      "recounted dynamic graph operators",
+      "replayed both direct conversion and complete_verifier.load_model_onnx failure messages",
+      "confirmed VNNLIB was not reached because model conversion failed first",
+      "confirmed official and alpha-beta-CROWN clones remained clean"
+    ]
+  },
+  "excluded_artifacts": [
+    {
+      "directory": "/data1/Kane/MOE/ACT/data/moe/results/parser_probe/dynamic_moe_frontend_20260830_r1",
+      "summary_sha256": "1a5df4ef9c087bba6e843a22f8685effc4005719eba7a19d23402f8056b7a5e1",
+      "reason": "component-only pilot superseded by the complete-loader r2 run"
+    },
+    {
+      "directory": "/data1/Kane/MOE/ACT/data/moe/results/parser_probe/worker_full_loader_smoke_20260830",
+      "result_sha256": "e68455b7954745d2870628ec9908e783d11dd3b74e501db80a7c443bd18b06f8",
+      "reason": "single-model implementation smoke; excluded from experimental outcomes"
+    }
+  ],
+  "conclusion": "Both frozen dynamic MoE programs export to valid, semantics-preserving ONNX graphs, but the unmodified alpha-beta-CROWN model loader rejects their dynamic dispatch before VNNLIB or auto_LiRPA processing.",
+  "claim_scope": "Frontend program-consumption evidence only. This is not evidence about verification coverage or runtime, and it does not imply that a specialized route-conditioned adapter cannot use alpha-beta-CROWN as an expert backend."
+}

@@ -1035,7 +1035,7 @@ separate post-B1 experiment and is disabled in this runner.
 
 ## Dynamic-MoE verifier-front-end probe
 
-The parser-probe execution layer is frozen but not yet run. It exports the
+The parser-probe execution layer exports the
 frozen bal010 weighted top-2 model and the immutable official RT-ER epoch-10
 checkpoint with their real dynamic dispatch (`TopK` or `ArgMax` followed by
 `Gather`) to ONNX opset 17. Four deterministic route-diverse CIFAR-10 inputs
@@ -1050,6 +1050,23 @@ rejection, silent semantic mismatch, and semantic-preserving acceptance. This
 experiment measures only whether an existing verifier front end can consume
 the unmodified dynamic program. It does not measure certification coverage or
 runtime, and acceptance is not a robustness certificate.
+
+The audited r2 run completed with zero issues. Both models exported to valid
+ONNX and matched PyTorch on four route-diverse inputs: maximum absolute errors
+were `2.38e-7` for bal010 and `4.77e-7` for RT-ER. The RT-ER tensorized wrapper
+also matched the author's grouped forward (`1.34e-6` maximum output error,
+exact routes, and zero router-score error). Nevertheless, both the isolated
+conversion component and the exact `complete_verifier.load_model_onnx` entry
+point rejected both programs with `NotImplementedError: Conversion not
+implemented for op_type=GatherElements.` The VNNLIB and auto_LiRPA stages were
+therefore not reached. This establishes a program-consumption gap for these
+two frozen dynamic-dispatch encodings; it does not claim that alpha-beta-CROWN
+cannot verify the individual experts after Route A specializes dispatch.
+
+The first component-only run and a single-model full-loader implementation
+smoke remain preserved in the raw result tree but are explicitly excluded.
+The compact audited result is
+`act/pipeline/moe/results/crown/dynamic_moe_parser_probe_20260830.json`.
 
 ## N1 engineering rerun code freeze
 
