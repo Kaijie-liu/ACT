@@ -100,6 +100,7 @@ These items are frozen before execution:
 | D8 | the repository contains no certified-bound implementation | any theorem implementation is an **author-paper formula reimplementation**, not an official verifier |
 | D9 | the paper's analytic bound assumes Lipschitz router weights, while the released model executes hard argmax | the formula is reported only when its applicability is formally established; route-changing hard-dispatch regions are not silently assigned a continuous-gate certificate |
 | D10 | released experts return raw logits while Theorem 5.4 assumes an expert-output bound `M_Ri <= 1` | the formula reimplementation must define probability-versus-logit semantics and derive matching bounds |
+| D11 | the paper reports no numerical Theorem 5.4/5.5 instance and specifies no Lipschitz-constant computation | there is no author certificate target to reproduce; sound, empirical, and unspecified constants receive different labels |
 
 No undocumented repair is allowed. Each patch is classified as:
 
@@ -180,9 +181,21 @@ bitwise equivalence. A provisional two-percentage-point target may be reported,
 but it is not promoted to a hard scientific exclusion until the code/paper
 ambiguities D1--D5 are resolved.
 
-Seeds 1--2 are not launched automatically. The seed-0 artifact, code provenance,
-compatibility patch, training curves, final checkpoint, route loads, PGD-50, and
-AutoAttack results are audited first.
+Three seeds `0, 1, 2` are required for scientific route-geometry and accuracy
+results. Seed 0 passes the smoke, conformance, and artifact audit before seeds
+1--2 are queued; this ordering is a failure-containment rule, not permission to
+publish a single-seed result.
+
+### Training-time route telemetry
+
+The author script overwrites one checkpoint every ten epochs. The wrapper must
+first preserve immutable epoch-qualified copies and then run the exact affine
+batch oracle on all 10,000 ordered CIFAR-10 test images. Median/IQR route radius,
+the fraction with a route boundary inside `8/255`, boundary-competitor counts,
+and route-load entropy are reported from epochs 10 through 130 for every seed.
+The frozen schema, checksum rules, label, and failure semantics are in
+`act/pipeline/moe/docs/icml2025_route_telemetry.md` and
+`act/pipeline/moe/configs/icml2025_route_telemetry.json`.
 
 ## B2 PyTorch-to-ACT conformance
 
@@ -211,7 +224,7 @@ same converted checkpoint:
 2. exact route analysis plus route-conditioned expert verification;
 3. true monolithic router/dispatch/all-expert formulation where executable;
 4. author-paper analytic formula reimplementation with an applicability status;
-5. an optional expert-backend ablation, separately scoped from route handling.
+5. a scalable expert-backend adapter, separately scoped from route handling.
 
 Because the official router is affine, minimum hard-route-change radius should be
 computed by exact box-constrained linear feasibility (or an equivalent analytic
@@ -219,10 +232,22 @@ distance when clipping is inactive), not attack-only bisection. Verification
 ties remain inclusive.
 
 ACT's affine oracle is implemented in
-`act.back_end.moe.route_boundary.affine_top1_route_boundary`. It folds input
+`act.back_end.moe.route_boundary.affine_top1_route_boundary`; its batch API
+provides sub-second quantized-CIFAR telemetry on the current GPU. It folds input
 normalization explicitly and handles pixel clipping by exact piecewise-linear
 support inversion. It cannot produce an RT-ER distribution until a trained
 checkpoint supplies the router parameters.
+
+Route conditioning is frozen as a backend-independent interface. For official-
+scale ResNet18 experts, the intended scalable comparison is CROWN over a sound
+guarded-cell box hull, with HZ retained as the exactness reference. Direct
+general linear input constraints are not supported by the audited α,β-CROWN
+VNNLIB/expression front ends at commit `e5c7e17...`. An augmented-router-output
+Clip-and-Verify adapter may preserve the guard but remains unvalidated until an
+authorized isolated environment passes a conformance smoke. The complete
+contract and provenance are recorded in
+`act/pipeline/moe/docs/expert_backend_interface.md` and
+`act/pipeline/moe/configs/alpha_beta_crown_provenance.json`.
 
 The original ResNet18 is never silently reduced. If all 20 original-scale exact
 expert runs time out, the result is retained as `Official-scale reproduction`.
@@ -248,6 +273,13 @@ model and is forbidden.
 
 The full theorem/code assumption matrix and permitted result labels are frozen in
 `act/pipeline/moe/docs/icml2025_certificate_applicability.md`.
+
+The paper-only audit answers two previously open questions: there is no
+numerical certificate experiment to reproduce, and no method is given for
+computing `L_Ri` or `r_Ri`. The pre-registered five-leaf decision tree therefore
+includes `NOT_FORMALLY_INSTANTIATED` and `VACUOUS_AT_REGISTERED_RADII` before
+testing route applicability. Attack-derived margins or sampled gradients never
+become formal bounds by naming them Lipschitz estimates.
 
 ## Stage gates
 

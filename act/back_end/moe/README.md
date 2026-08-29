@@ -26,8 +26,9 @@ contract in
   for weighted MoEs;
 - hard top-1 counterexamples are reported only after the concrete full model
   selects the assumed expert and violates the output property.
-- exact affine hard-top1 route-boundary geometry, including input clipping and
-  explicit folding of input normalization.
+- exact affine hard-top1 route-boundary geometry, including input clipping,
+  explicit folding of input normalization, concrete upper-bracket witnesses,
+  and a vectorized full-dataset API with a validated uint8-grid fast path.
 
 Route B (intermediate weighted layers, history-budgeted union/merge, and
 route-preserving merge tests) is intentionally not included in this first slice.

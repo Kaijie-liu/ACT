@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "audit_date": "2026-08-29",
+  "repository": {
+    "url": "https://github.com/Verified-Intelligence/alpha-beta-CROWN.git",
+    "local_read_only_clone": "/data1/Kane/MOE/baselines/alpha-beta-CROWN",
+    "branch": "main",
+    "commit": "e5c7e17bf0488843acb77b7519f59876717a49f4",
+    "license": "BSD-3-Clause",
+    "clone_clean": true
+  },
+  "source_findings": {
+    "resnet_supported": true,
+    "vnnlib_input_box_supported": true,
+    "vnnlib_general_linear_input_constraints_supported": false,
+    "expression_api_general_linear_input_constraints_supported": false,
+    "clip_and_verify_linear_output_constraints_advertised": true,
+    "direct_route_polytope_adapter_status": "UNSUPPORTED_FRONTEND",
+    "augmented_router_output_adapter_status": "UNVALIDATED_ADAPTER",
+    "evidence": [
+      "complete_verifier/read_vnnlib.py:update_rv_tuple",
+      "complete_verifier/api.py:_parse_input_bounds",
+      "complete_verifier/docs/abcrown_usage.md",
+      "README.md:Clip-and-Verify"
+    ]
+  },
+  "planned_adapters": [
+    "guarded_coordinate_box_hull",
+    "augmented_affine_router_output_clip_and_verify"
+  ],
+  "execution": {
+    "environment_created": false,
+    "dependencies_installed": false,
+    "verifier_smoke_run": false,
+    "training_started": false
+  }
+}

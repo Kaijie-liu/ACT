@@ -107,7 +107,10 @@ must remain visible in all paper tables.
 
 ## Contribution hierarchy
 
-The staged verifier should be presented in this order:
+The primary system boundary is now **route conditioning as a composable expert-
+backend layer**. It maps data-dependent dispatch into guarded per-expert
+verification obligations; it does not require every expert to use the HZ/HiGHS
+backend. The staged method should be presented in this order:
 
 1. **Retained route conditions.** Exact, tie-inclusive routing conditions stay
    in the shared generator frame and are reused by downstream analysis.
@@ -124,6 +127,10 @@ The staged verifier should be presented in this order:
 5. **Exact route feasibility.** Candidate and route-set reduction is supporting
    evidence for correlation preservation, with exactness restricted to
    unrelaxed reachable-router HZs.
+6. **Backend composability.** Native HZ preserves guards exactly at verification
+   scale. A CROWN-family backend can consume a sound guarded box hull at
+   official expert scale; direct guard retention remains adapter-dependent and
+   must pass conformance before it becomes a claim.
 
 Convex closure and max-versus-sum branch width are soundness lemmas, not strong
 standalone novelty claims. The strongest unifying description is
@@ -154,6 +161,14 @@ at least one additional conditional-computation architecture.
   or certificate implementation. Theorem applicability can be specified now,
   but no official-model route-radius or certificate-overlap result exists until
   trained parameters are obtained.
+- The audited α,β-CROWN VNNLIB and expression front ends accept input boxes,
+  not arbitrary route halfspaces. Clip-and-Verify advertises linear output
+  constraints, so an augmented-router-output adapter is plausible but remains
+  unvalidated. A guarded coordinate box hull is the current sound scalable
+  fallback.
+- The paper does not numerically instantiate Theorem 5.4/5.5 and does not state
+  how its Lipschitz constants are computed. This is a reproducibility finding,
+  not evidence that the theorem itself is unsound.
 
 ## Frozen paper-safe claims
 
@@ -172,12 +187,15 @@ endpoint with the closure number.
 
 ## Next-stage order
 
-1. Complete the ICML 2025 RT-ER B0 provenance and code/paper discrepancy audit.
-2. Resolve the frozen dependency decision before any smoke or training.
+1. Preserve the completed ICML 2025 paper, route-telemetry, and expert-backend
+   provenance audits.
+2. Resolve the frozen dependency decision before any smoke or training; the
+   existing `act-py312` environment remains unchanged.
 3. Implement explicit route-invariance and true monolithic baselines; add solver
    telemetry before claiming runtime improvements.
-4. Reproduce the official hard-top-1 ResNet18 model, then test ACT conversion
-   and original-scale feasibility without silently shrinking it.
+4. Reproduce three seeds of the official hard-top-1 ResNet18 model and record
+   exact route geometry at every ten-epoch checkpoint, then test ACT conversion
+   and original-scale expert backends without silently shrinking the model.
 5. Use a clearly named verification-scale derivative only if original-scale
    exact expert solving is intractable.
 6. Add lazy route-set enumeration and expert-count scaling before making claims

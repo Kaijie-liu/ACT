@@ -18,6 +18,34 @@ verifier. No RT-ER route-radius distribution may be reported until trained
 router weights are obtained through a disclosed reproduction or directly from
 the authors.
 
+## Paper-only questions Q1 and Q2
+
+The PMLR paper and its appendix were audited in full on 2026-08-29.
+
+**Q1: Is Theorem 5.4 numerically evaluated?** No. The paper provides the
+formula and proof, but no certified-radius table, curve, certified accuracy, or
+per-input theorem evaluation. Tables 1--10 and Figures 2--7 report attack
+accuracy, standard accuracy, training curves, or method ablations. They are not
+numerical instances of Theorem 5.4 or 5.5. A reproduction would therefore be
+the first disclosed numerical instantiation on an official-code model family,
+not a reproduction of an author-reported certificate result.
+
+**Q2: How are the Lipschitz constants obtained?** The paper does not specify a
+procedure. It defines `L_Ri` and `r_Ri`, says that these constants have been
+"optimized during RT-ER", and does not provide spectral-product bounds,
+bound-propagation code, sampled-gradient estimates, or numerical constant
+values. The nearby suggestion that a practical robust margin can be estimated
+on a strong adversarial input is not a sound lower-bound procedure for a formal
+certificate. Until a method is supplied, the formula is
+`NOT_FORMALLY_INSTANTIATED`.
+
+Any future implementation must classify constants before computing a radius:
+
+- sound global or local upper bounds may support a formal result;
+- empirical gradient/attack estimates are diagnostics only and must never be
+  labeled certified;
+- an unspecified constant source leaves the formula uninstantiated.
+
 ## Paper theorem and explicit assumptions
 
 The paper defines a robust MoE output
@@ -94,9 +122,20 @@ inversion in `act.back_end.moe.route_boundary.affine_top1_route_boundary` rather
 than assuming the unclipped formula.
 
 If the author router consumes normalized pixels `z = scale*x + shift`, callers
-must first fold normalization into the affine map. For the released FFCV path,
-the per-channel scale is `255/std` and shift is `-mean/std` when `x` is in
-`[0,1]` pixel units.
+must first fold normalization into the affine map. The released CIFAR script
+stores `mean_255` and `std_255` in raw uint8 units. Therefore, when `x` is in
+`[0,1]`, the scale is `255/std_255` and the shift is
+`-mean_255/std_255`. This equals `1/std_unit` and `-mean_unit/std_unit`
+when statistics are first divided by 255. A regression test evaluates both
+domains and requires matching router scores.
+
+`affine_top1_route_boundary_batch` computes all test-set boundaries without a
+Python loop over samples. Its general finite-box path uses grouped
+`sort+cumsum`. For exact uint8-derived CIFAR inputs, the explicit
+`compute_device="cuda", capacity_grid_steps=255` path validates every capacity
+against the declared grid, then uses a 256-bin weighted histogram. A synthetic
+10,000 by 3,072, four-expert run took 0.712 seconds on the recorded Blackwell
+GPU. This is an engineering benchmark, not an RT-ER scientific result.
 
 The oracle applies the frozen `1e-9 + 1e-9*scale` outward slack and directed
 rounding around the computed radius. A formal comparison uses:
@@ -130,17 +169,23 @@ The denominator must be stated. A natural test-set decomposition and a
 route-boundary-targeted cohort answer different questions and remain separately
 labeled.
 
-## Audit outcomes
+## Pre-registered five-leaf decision tree
 
 Let `R_formula(x)` be a faithfully reimplemented analytic radius and
 `R_route(x)` the exact hard-route boundary.
 
-| Observation | Sound interpretation |
-|---|---|
-| `R_formula < R_route` | the hard route is stable throughout the claimed ball; the routing applicability condition is satisfied |
-| `R_formula >= R_route` | the hard-gate Lipschitz premise fails somewhere inside the claimed ball; the theorem's applicability to that artifact is not established |
-| Route A proves safe beyond `R_route` | a sound route-changing certificate unavailable to a route-invariance-only application |
-| Concrete full model violates inside `R_formula` | potential unsoundness evidence, requiring independent replay and exact formula/checkpoint provenance |
+| Leaf | Observation | Sound interpretation |
+|---|---|---|
+| L1 | no disclosed sound method for `L_Ri`/`r_Ri`, or empirical estimates only | `NOT_FORMALLY_INSTANTIATED`; report estimates only as diagnostics |
+| L2 | sound constants exist, but no sample reaches the smallest registered radius `0.25/255` | `VACUOUS_AT_REGISTERED_RADII`; theorem applicability is no longer the numerical bottleneck |
+| L3 | a non-vacuous sound `R_formula < R_route_lower` | hard-route applicability is established for that input and radius |
+| L4 | a non-vacuous `R_formula >= R_route_upper` | a route boundary lies inside the claimed ball; report `ASSUMPTION_NOT_ESTABLISHED` for the hard-gate application |
+| L5 | Route A proves output safety at a radius beyond `R_route_upper` | a sound route-changing certificate outside a route-invariance-only application |
+
+Numerical overlap between the outward brackets is `UNDECIDED_NUMERICAL`, not
+assigned to L3 or L4. A concrete full-model violation inside `R_formula` is
+potential unsoundness evidence, but that escalation requires independent replay
+and exact formula/checkpoint provenance; it is not inferred from L1, L2, or L4.
 
 An assumption failure is reported as `NOT_APPLICABLE` or
 `ASSUMPTION_NOT_ESTABLISHED`, never automatically as `UNSAFE` or

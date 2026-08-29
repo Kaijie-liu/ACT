@@ -597,3 +597,45 @@ The historical confirmatory and D0 artifacts are not rerun or rewritten.
 
 This code/documentation stage launches no baseline, training, F1, additional
 cohort, large-model download, or certificate experiment.
+
+## Batch route oracle, paper questions, and backend interface
+
+The affine hard-top1 oracle now returns a concrete route-boundary witness and
+provides `affine_top1_route_boundary_batch`. The general finite-box algorithm
+groups inputs by clean expert and competitor and uses breakpoint
+`sort+cumsum`, never a scalar Python loop over test points. A declared
+`capacity_grid_steps=255` fast path first validates exact uint8-derived
+capacities, then performs one GPU-resident weighted histogram per route pair.
+On a synthetic 10,000 by 3,072, four-expert workload, the general NumPy path
+took 39.51 seconds, general CUDA sorting took 16.45 seconds, and the exact
+quantized-grid path took 0.712 seconds on the available RTX PRO 6000 Blackwell.
+These are implementation benchmarks, not RT-ER results.
+
+Regression tests cover scalar/batch agreement, independent SciPy LP agreement,
+upper-bracket witness replay, clean ties, unreachable competitors, finite-box
+clipping, CUDA/NumPy agreement, quantized-grid rejection, and the released
+CIFAR uint8 normalization folded into `[0,1]` pixels.
+
+A full paper audit answered the two certificate questions. Theorem 5.4/5.5 has
+no numerical certified-radius experiment, and the paper provides no procedure
+or values for `L_Ri` and `r_Ri`. The five-leaf preregistration now separates an
+uninstantiated formula, a sound but benchmark-vacuous formula, an applicable
+non-vacuous formula, a hard-route assumption failure, and a Route A certificate
+beyond the exact route boundary. Details are in
+`act/pipeline/moe/docs/icml2025_certificate_applicability.md`.
+
+Training-process telemetry is preregistered for seeds `0,1,2` and immutable
+epochs `10,20,...,130` in
+`act/pipeline/moe/docs/icml2025_route_telemetry.md` and its config JSON. It uses
+the label **official-code, paper-config reproduction** and does not impersonate
+the unavailable author checkpoint.
+
+The official α,β-CROWN repository was audited read-only at commit
+`e5c7e17bf0488843acb77b7519f59876717a49f4`. Its VNNLIB and expression front
+ends accept coordinate input bounds rather than arbitrary route halfspaces.
+The first sound scalable adapter is therefore CROWN over a guarded coordinate
+box hull; an augmented-router-output Clip-and-Verify adapter remains unvalidated.
+The backend contract is in `act/pipeline/moe/docs/expert_backend_interface.md`.
+
+No α,β-CROWN or RT-ER dependency was installed, no environment was created, and
+no baseline, training, N1, N2, F1, or theorem-radius experiment was started.

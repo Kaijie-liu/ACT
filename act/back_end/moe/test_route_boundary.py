@@ -4,10 +4,12 @@ import math
 import unittest
 
 import numpy as np
+import torch
 from scipy.optimize import linprog
 
 from act.back_end.moe.route_boundary import (
     affine_top1_route_boundary,
+    affine_top1_route_boundary_batch,
     fold_affine_input_map,
 )
 
@@ -36,6 +38,31 @@ class AffineRouteBoundaryTests(unittest.TestCase):
         self.assertAlmostEqual(report.radius, 0.7)
         self.assertTrue(report.box_constrained)
 
+    def test_upper_bracket_witness_reaches_the_reported_competitor(self):
+        weight = np.asarray(
+            [[1.0, 1.0, -0.5], [0.0, -0.25, 0.75], [-0.5, 0.5, 0.0]]
+        )
+        bias = np.asarray([-0.2, 0.1, -0.1])
+        point = np.asarray([0.1, 0.9, 0.4])
+        report = affine_top1_route_boundary(
+            weight,
+            bias,
+            point,
+            input_lower=0.0,
+            input_upper=1.0,
+        )
+        self.assertIsNotNone(report.boundary_witness_delta)
+        delta = np.asarray(report.boundary_witness_delta)
+        witness = point + delta
+        scores = weight @ witness + bias
+        self.assertLessEqual(np.max(np.abs(delta)), report.radius_upper)
+        self.assertTrue(np.all(witness >= 0.0))
+        self.assertTrue(np.all(witness <= 1.0))
+        self.assertGreaterEqual(
+            scores[report.boundary_competitor] + 1e-12,
+            scores[report.clean_expert],
+        )
+
     def test_box_can_make_a_competitor_unreachable(self):
         report = affine_top1_route_boundary(
             [[1.0], [0.0]],
@@ -46,7 +73,9 @@ class AffineRouteBoundaryTests(unittest.TestCase):
         )
         self.assertTrue(math.isinf(report.radius))
         self.assertIsNone(report.boundary_competitor)
+        self.assertIsNone(report.boundary_witness_delta)
         self.assertFalse(report.competitors[0].reachable)
+        self.assertIsNone(report.competitors[0].witness_delta)
 
     def test_clean_tie_has_zero_any_legal_route_radius(self):
         report = affine_top1_route_boundary(
@@ -72,6 +101,170 @@ class AffineRouteBoundaryTests(unittest.TestCase):
         expected = weight @ (scale * point + shift) + bias
         actual = folded_weight @ point + folded_bias
         self.assertTrue(np.array_equal(actual, expected))
+
+    def test_cifar_uint8_and_unit_pixel_domains_match_after_folding(self):
+        rng = np.random.default_rng(917)
+        pixels_uint8 = rng.integers(0, 256, size=(3, 4, 4), dtype=np.uint8)
+        pixels_unit = pixels_uint8.astype(np.float64) / 255.0
+        mean_255 = np.asarray([125.307, 122.961, 113.8575])
+        std_255 = np.asarray([51.5865, 50.847, 51.255])
+        feature_scale = np.repeat(255.0 / std_255, 16)
+        feature_shift = np.repeat(-mean_255 / std_255, 16)
+        weight = rng.normal(size=(4, 48))
+        bias = rng.normal(size=4)
+        folded_weight, folded_bias = fold_affine_input_map(
+            weight,
+            bias,
+            feature_scale,
+            feature_shift,
+        )
+        normalized = (
+            pixels_uint8.astype(np.float64) - mean_255[:, None, None]
+        ) / std_255[:, None, None]
+        expected = weight @ normalized.reshape(-1) + bias
+        actual = folded_weight @ pixels_unit.reshape(-1) + folded_bias
+        np.testing.assert_allclose(actual, expected, rtol=0.0, atol=1e-12)
+
+    def test_batch_oracle_matches_scalar_and_replays_witnesses(self):
+        rng = np.random.default_rng(20260830)
+        weight = rng.normal(size=(4, 7))
+        bias = rng.normal(size=4)
+        points = rng.uniform(size=(64, 7))
+        batch = affine_top1_route_boundary_batch(
+            weight,
+            bias,
+            points,
+            input_lower=0.0,
+            input_upper=1.0,
+            include_witnesses=True,
+        )
+        for index, point in enumerate(points):
+            scalar = affine_top1_route_boundary(
+                weight,
+                bias,
+                point,
+                input_lower=0.0,
+                input_upper=1.0,
+            )
+            self.assertEqual(batch.clean_experts[index], scalar.clean_expert)
+            self.assertEqual(
+                batch.boundary_competitors[index],
+                scalar.boundary_competitor,
+            )
+            self.assertAlmostEqual(batch.radii[index], scalar.radius, places=12)
+            delta = batch.witness_deltas[index]
+            witness = point + delta
+            scores = weight @ witness + bias
+            self.assertLessEqual(
+                np.max(np.abs(delta)),
+                batch.radius_uppers[index],
+            )
+            self.assertTrue(np.all(witness >= 0.0))
+            self.assertTrue(np.all(witness <= 1.0))
+            self.assertGreaterEqual(
+                scores[batch.boundary_competitors[index]] + 1e-11,
+                scores[batch.clean_experts[index]],
+            )
+        self.assertFalse(batch.radii.flags.writeable)
+        self.assertFalse(batch.witness_deltas.flags.writeable)
+
+    def test_batch_unconstrained_oracle_matches_scalar(self):
+        rng = np.random.default_rng(20260831)
+        weight = rng.normal(size=(3, 5))
+        bias = rng.normal(size=3)
+        points = rng.normal(size=(31, 5))
+        batch = affine_top1_route_boundary_batch(weight, bias, points)
+        expected = [
+            affine_top1_route_boundary(weight, bias, point) for point in points
+        ]
+        np.testing.assert_allclose(
+            batch.radii,
+            [row.radius for row in expected],
+            rtol=0.0,
+            atol=1e-14,
+        )
+        np.testing.assert_array_equal(
+            batch.boundary_competitors,
+            [row.boundary_competitor for row in expected],
+        )
+
+    @unittest.skipUnless(torch.cuda.is_available(), "CUDA is unavailable")
+    def test_cuda_batch_breakpoints_match_numpy(self):
+        rng = np.random.default_rng(20260901)
+        weight = rng.normal(size=(4, 31))
+        bias = rng.normal(size=4)
+        points = rng.uniform(size=(127, 31))
+        expected = affine_top1_route_boundary_batch(
+            weight,
+            bias,
+            points,
+            input_lower=0.0,
+            input_upper=1.0,
+        )
+        actual = affine_top1_route_boundary_batch(
+            weight,
+            bias,
+            points,
+            input_lower=0.0,
+            input_upper=1.0,
+            compute_device="cuda",
+        )
+        np.testing.assert_allclose(
+            actual.radii,
+            expected.radii,
+            rtol=0.0,
+            atol=1e-14,
+        )
+        np.testing.assert_array_equal(
+            actual.boundary_competitors,
+            expected.boundary_competitors,
+        )
+
+    @unittest.skipUnless(torch.cuda.is_available(), "CUDA is unavailable")
+    def test_cuda_quantized_grid_matches_general_breakpoints(self):
+        rng = np.random.default_rng(20260902)
+        weight = rng.normal(size=(4, 47))
+        bias = rng.normal(size=4)
+        points = rng.integers(0, 256, size=(193, 47)).astype(np.float64) / 255.0
+        expected = affine_top1_route_boundary_batch(
+            weight,
+            bias,
+            points,
+            input_lower=0.0,
+            input_upper=1.0,
+        )
+        actual = affine_top1_route_boundary_batch(
+            weight,
+            bias,
+            points,
+            input_lower=0.0,
+            input_upper=1.0,
+            compute_device="cuda",
+            capacity_grid_steps=255,
+        )
+        np.testing.assert_allclose(
+            actual.radii,
+            expected.radii,
+            rtol=0.0,
+            atol=1e-13,
+        )
+        np.testing.assert_array_equal(
+            actual.boundary_competitors,
+            expected.boundary_competitors,
+        )
+
+    @unittest.skipUnless(torch.cuda.is_available(), "CUDA is unavailable")
+    def test_quantized_grid_rejects_non_grid_pixels(self):
+        with self.assertRaisesRegex(ValueError, "declared finite grid"):
+            affine_top1_route_boundary_batch(
+                [[1.0], [0.0]],
+                [0.0, 0.0],
+                [[0.123456]],
+                input_lower=0.0,
+                input_upper=1.0,
+                compute_device="cuda",
+                capacity_grid_steps=255,
+            )
 
     def test_box_oracle_matches_independent_lp(self):
         rng = np.random.default_rng(20260829)

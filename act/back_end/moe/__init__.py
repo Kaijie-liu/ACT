@@ -36,7 +36,9 @@ from act.back_end.moe.route_a import (
 from act.back_end.moe.route_boundary import (
     AffineCompetitorBoundary,
     AffineTop1RouteBoundary,
+    AffineTop1RouteBoundaryBatch,
     affine_top1_route_boundary,
+    affine_top1_route_boundary_batch,
     fold_affine_input_map,
 )
 from act.back_end.moe.verifier import verify_output_gate_elimination
@@ -64,6 +66,7 @@ __all__ = [
     "GateKind",
     "AffineCompetitorBoundary",
     "AffineTop1RouteBoundary",
+    "AffineTop1RouteBoundaryBatch",
     "CandidateReport",
     "OutputLevelMoE",
     "OutputLevelMoEProgram",
@@ -92,6 +95,7 @@ __all__ = [
     "analyze_candidates",
     "analyze_topk_sets",
     "affine_top1_route_boundary",
+    "affine_top1_route_boundary_batch",
     "build_act_moe_program",
     "build_act_router_program",
     "build_output_moe",
