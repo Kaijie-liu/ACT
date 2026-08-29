@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "audit_date": "2026-08-29",
+  "stage": "B1_BLACKWELL_ENVIRONMENT_DISK_BUDGET",
+  "scope": "environment_and_smoke_only_no_training",
+  "filesystem": "/data1",
+  "filesystem_total_bytes": 4031331647488,
+  "filesystem_used_bytes_before": 3796124291072,
+  "filesystem_available_bytes_before": 30350368768,
+  "required_free_reserve_bytes": 15000000000,
+  "maximum_stage_growth_bytes": 8000000000,
+  "projected_available_after_maximum_growth_bytes": 22350368768,
+  "measured_existing_bytes": {
+    "official_repository": 227985,
+    "exact_pin_environment": 7674937300,
+    "crown_environment": 5526313170,
+    "moe_cache": 8882199785
+  },
+  "new_environment": "/data1/Kane/MOE/envs/rt-er-blackwell",
+  "cache_root": "/data1/Kane/MOE/cache",
+  "temporary_root": "/data1/Kane/MOE/cache/tmp/rt-er-blackwell",
+  "policy": {
+    "seed_scope": "seed0_only",
+    "training_allowed": false,
+    "stop_if_projected_free_below_reserve": true,
+    "pip_download_cache": "disabled_to_avoid_duplicate_large_cuda_wheels",
+    "dataset_download_requires_post_environment_budget_check": true
+  }
+}
