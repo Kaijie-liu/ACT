@@ -72,7 +72,7 @@ from act.util.stats import VerifyStatus
 
 
 DEFAULT_CONFIG = (
-    PROJECT_ROOT / "act/pipeline/moe/configs/experiment1n2_topk3_seed0.json"
+    PROJECT_ROOT / "act/pipeline/moe/configs/experiment1n2_topk3_seed0_r2.json"
 )
 EXPECTED_PYTHON = Path("/data1/Kane/miniconda3/envs/act-py312/bin/python")
 SAFE_GATE_ELIMINATION = "SAFE_GATE_ELIMINATION"
@@ -202,6 +202,12 @@ def select_clean_correct_indices(
         f"dataset contains only {clean_rank} clean-correct samples; "
         f"rank {largest} was requested"
     )
+
+
+def prepare_selection_model(model, device: torch.device):
+    """Move the reconstructed checkpoint module to the cohort device."""
+
+    return model.to(device).eval()
 
 
 def aggregate_property_rows(
@@ -866,7 +872,7 @@ def run(args) -> dict[str, Any]:
     selection_model, _ = load_output_moe_checkpoint(
         checkpoint, map_location=selection_device
     )
-    selection_model.eval()
+    selection_model = prepare_selection_model(selection_model, selection_device)
     selection = select_clean_correct_indices(
         selection_model,
         dataset,

@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "experiment": "experiment1n2_normalized_sigmoid_top3_seed0",
+  "status": "FAILED_EXCLUDED",
+  "scope": "n2_selection_device_launch_failure_not_scientific_result",
+  "failure": {
+    "completed_rows": 0,
+    "output_directory_created": false,
+    "cause": "The checkpoint loader reconstructed the selection model on CPU even when state tensors were loaded with map_location=cuda. The deterministic selector passed CUDA batches to the CPU router and PyTorch rejected the mixed-device linear operation.",
+    "scientific_interpretation": "startup device-placement bug before sample selection; no route set or property was evaluated",
+    "corrective_policy": "Explicitly move the reconstructed selection model to the frozen selection device, test that migration, and launch unchanged verification semantics in a new r2 directory."
+  },
+  "raw_artifacts": {
+    "launcher_log": "/data1/Kane/MOE/ACT/data/moe/logs/experiment1n2_top3_e8_seed0_r1.log",
+    "launcher_log_sha256": "7e80a525c69352371089c09d51ecda035d10f9a571ab77650689edb7fe0cc00a"
+  },
+  "exclusion_policy": "Retain the r1 launcher log and exclude it from N2 data. Run all five samples from scratch in r2."
+}

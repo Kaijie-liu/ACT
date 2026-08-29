@@ -1,0 +1,63 @@
+{
+  "experiment": "experiment1n2_normalized_sigmoid_top3_seed0_r2",
+  "checkpoint": "/data1/Kane/MOE/ACT/data/moe/checkpoints/cifar10_top3_e8_seed0_bal010.pt",
+  "checkpoint_sha256": "32ca3b25b11dfc2021929b983a9ebde6626bf4b901891a03bc0281fbce998f73",
+  "dataset_root": "/data1/Kane/MOE/ACT/data/torchvision",
+  "output_dir": "/data1/Kane/MOE/ACT/data/moe/results/experiment1n2_top3_e8_seed0_r2",
+  "model": {
+    "dataset": "CIFAR10",
+    "input_shape": [3, 32, 32],
+    "num_classes": 10,
+    "num_experts": 8,
+    "top_k": 3,
+    "gate": "normalized_sigmoid",
+    "router_hidden": [128],
+    "expert_hidden": [256, 128]
+  },
+  "training": {
+    "epochs": 50,
+    "batch_size": 256,
+    "learning_rate": 0.001,
+    "weight_decay": 0.0001,
+    "balance_loss": "switch",
+    "balance_coefficient": 0.1,
+    "validation_fraction": 0.1,
+    "seed": 0,
+    "device": "cuda"
+  },
+  "cohort": {
+    "selection_rule": "deterministic clean-correct ranks",
+    "clean_correct_ranks": [0, 1, 2, 3, 4],
+    "selection_batch_size": 256,
+    "selection_device": "cuda"
+  },
+  "verification": {
+    "epsilon_label": "1/255",
+    "epsilon": 0.00392156862745098,
+    "route_semantics": "ANY_LEGAL_TOPK_UNORDERED_TIE_INCLUSIVE",
+    "negative_relaxation_status": "UNKNOWN",
+    "unsafe_requirement": "FULL_MODEL_FORWARD_REPLAY"
+  },
+  "support": {
+    "enabled": true,
+    "max_input_dim": 1024,
+    "lp_neurons": 32,
+    "milp_neurons": 4,
+    "lp_time_limit": 2.0,
+    "milp_time_limit": 5.0
+  },
+  "solver": {
+    "route_set_seconds": 10.0,
+    "gate_elimination_seconds": 10.0,
+    "gate_support_seconds": 5.0,
+    "difference_support_seconds": 5.0,
+    "property_seconds": 10.0,
+    "safety_tolerance": 1e-7
+  },
+  "expected": {
+    "feasible_route_set_kind": "exact unordered top-3",
+    "gate_family": "normalized_sigmoid",
+    "products_per_property": 2,
+    "sample_count": 5
+  }
+}

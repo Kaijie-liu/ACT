@@ -29,6 +29,7 @@ from act.pipeline.moe.experiment1n2_topk3 import (
     aggregate_property_rows,
     aggregate_route_sets,
     independently_audit,
+    prepare_selection_model,
     select_clean_correct_indices,
     validate_checkpoint_contract,
     verify_route_set,
@@ -149,6 +150,18 @@ class Experiment1N2TopK3Tests(unittest.TestCase):
                 {"sample_rank": 4, "dataset_index": 5},
             ],
         )
+
+    def test_selection_model_is_explicitly_moved_to_requested_device(self):
+        class RecordingModel(torch.nn.Module):
+            def __init__(self):
+                super().__init__()
+                self.layer = torch.nn.Linear(1, 1)
+
+        model = RecordingModel().train()
+        prepared = prepare_selection_model(model, torch.device("cpu"))
+        self.assertIs(prepared, model)
+        self.assertFalse(prepared.training)
+        self.assertEqual(next(prepared.parameters()).device.type, "cpu")
 
     def test_property_aggregation_requires_every_row_safe(self):
         status, reason = aggregate_property_rows(

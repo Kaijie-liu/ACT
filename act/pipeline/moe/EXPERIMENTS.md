@@ -778,6 +778,15 @@ mismatched, or hash-changed payloads instead of inferring those values. No
 top-3 verifier coverage, runtime, or certificate number is claimed until the
 separate five-sample N2 run and its independent audit complete.
 
+The first N2 launch (`_r1`) failed before sample selection and created no result
+directory. `map_location=cuda` controlled state-tensor loading but did not move
+the reconstructed module, so a CUDA selection batch reached a CPU router. The
+launcher log is preserved and excluded in
+`act/pipeline/moe/results/experiment1n2_top3_seed0_r1_failed_20260830.json`.
+The runner now explicitly moves the selection module to the frozen selection
+device and tests that placement. `_r2` starts all five samples from scratch in
+a new directory; verification semantics and budgets are unchanged.
+
 ## Tie-safe eta implication compiler
 
 The augmented-output backend now has a sound hard-top1 compiler for
