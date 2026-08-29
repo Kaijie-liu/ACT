@@ -879,6 +879,26 @@ an exact-pin compatibility result. A newer-PyTorch run requires a separately
 labeled Blackwell-compatible reproduction and cannot silently replace the
 author-pin result.
 
+The separately labeled Blackwell environment now passes the compatibility gate
+as `official-code, Blackwell-compatible deps + FFCV`. It uses Python 3.11.14,
+PyTorch 2.11.0+cu130, torchvision 0.26.0+cu130, and a locally built FFCV 1.0.2;
+the exact-pin and CROWN environments remain unchanged. The first CUDA kernel
+passes on `sm_120`. FFCV initially failed because no OpenCV pkg-config entry was
+available, then built after installing headless libopencv and build support
+inside the new environment only.
+
+The official torchvision-to-FFCV import order exposes a JPEG ABI conflict. The
+required launch condition is recorded explicitly as
+`LD_PRELOAD=/data1/Kane/MOE/envs/rt-er-blackwell/lib/libjpeg.so.8`; it is not a
+silent environment substitution. With that condition, 16 deterministic
+synthetic CIFAR-shaped samples traversed FFCV and the official
+`MOE_Resnet18(num_experts=4)` completed a finite forward/backward pass on the
+Blackwell GPU. No optimizer step, epoch, checkpoint, accuracy measurement, or
+training result was produced. A slow real CIFAR archive download was stopped at
+2,719,744 bytes and left unextracted. The compatibility manifest records the
+source hashes, dependency versions, explicit launch condition, smoke scope, and
+disk accounting; B1 real-data training remains a separate next stage.
+
 ## N1 engineering rerun code freeze
 
 The N1 performance runner freezes the original 20-row applicable-unresolved
