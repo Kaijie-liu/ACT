@@ -685,3 +685,19 @@ and it cannot upgrade sampled gradients to a formal label. Eleven focused unit
 tests pass. This stage computes no RT-ER certificate because no reproduced
 checkpoint exists yet; it supplies the audited provider machinery required by
 that future execution.
+
+## Incremental guarded-box hull backend
+
+The first scalable expert-adapter component is implemented as
+`guarded_hz_box_hull_highs`. One guarded HZ is lowered to one HiGHS LP, and
+coordinate objectives are changed in place. Incomplete objectives retain sound
+fast generator bounds; binary HZ variables are relaxed and cannot receive an
+exact label. Solver telemetry records model builds, objective changes, status,
+iterations, solve time, and accepted basis submissions without claiming
+unobservable internal warm-start use.
+
+Six new tests and the 47-test MoE regression set pass. A non-scientific
+official-shaped engineering check with 3,072 coordinates and three guard rows
+performed 6,144 support solves from one model build in 2.67 seconds. This is an
+implementation check, not a CROWN result or an RT-ER result. The original
+confirmatory endpoint is unchanged; no performance rerun has yet been made.

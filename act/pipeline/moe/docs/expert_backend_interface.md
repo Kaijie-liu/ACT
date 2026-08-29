@@ -61,6 +61,22 @@ Three adapters remain scientifically distinct:
    `UNVALIDATED_ADAPTER` until an installed, pinned environment passes concrete
    and soundness smoke tests.
 
+The guarded-box adapter's coordinate-hull layer is now executable as
+`guarded_hz_box_hull_highs`. It lowers one guarded HZ domain once, then changes
+only the coordinate objective across the support sweep. Its result retains
+per-side solver status and falls back to the unconditioned generator bound for
+every incomplete objective, so a partial sweep remains a sound outer box.
+Binary HZ variables are continuously relaxed and such a result is never marked
+exact. Telemetry distinguishes model builds, objective changes, solves,
+iterations, and accepted basis submissions; it explicitly does not claim that
+HiGHS internally used an accepted basis as a warm start.
+
+A separately modelled SciPy path is retained for differential tests. Both
+paths ultimately use HiGHS, so this validates the lowering and incremental API
+rather than constituting independent-solver evidence. Random guarded domains,
+affine shared-frame outputs, infeasible guards, binary relaxation, and
+zero-budget fallback are covered by tests.
+
 ### Tie-safe implication warning
 
 A tempting single-output compiler defines
