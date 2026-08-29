@@ -713,8 +713,26 @@ the sub-`1e-9` guard coefficient. On the same diagnostic branch, the corrected
 backend completed all 6,144 objectives in 5.14 seconds with zero fallback
 sides; SciPy had taken 81.37 seconds and the recorded hulls differed by at most
 `1.98e-9`. This single branch is a fix-validation observation, not the frozen
-paired speed result; the complete rerun uses the separate `_r2` config and
-directory.
+paired speed result.
+
+The separate `_r2` run completed all 20 frozen samples and all 43 exact
+feasible unordered top-2 route branches. Both backends solved 264,192
+coordinate objectives with zero fallback sides, and all 43 paired hulls agreed
+within the frozen `1e-8` tolerance (recorded maximum absolute difference 0).
+The alternating order produced 17 `highspy->scipy` and 26 `scipy->highspy`
+branches. Incremental HiGHS used 43 model builds and 43 cold starts, taking
+230.83 wall seconds; the SciPy reference used 264,192 model builds/cold starts
+and took 3,491.51 seconds. The paired branch speed ratio has median 15.03x and
+the aggregate wall ratio is 15.13x. This is a descriptive engineering result
+for guarded coordinate hull construction, not a solver-internal warm-start
+claim and not an end-to-end verification speedup.
+
+An independent audit replayed all 43 compressed bound artifacts, verified
+their hashes, rematerialized all exact feasible pairs, recomputed every bound
+hash and difference, and found zero issues or disagreements. The immutable
+publishable summary is
+`act/pipeline/moe/results/guarded_box_hull_benchmark_20260829.json`. The
+original confirmatory 56/100 endpoint remains unchanged.
 
 ## N2 normalized weighted top-k generalization
 
