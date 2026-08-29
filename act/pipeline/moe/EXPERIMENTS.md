@@ -1052,6 +1052,14 @@ the code can collect conformance data now but cannot manufacture the missing
 outward-rounded formal endpoint. The monolithic CPU comparison remains a
 separate post-B1 experiment and is disabled in this runner.
 
+Following the observed epoch-20 static-router result, B3 also contains an
+audit-only provenance gate. It links optimizer slots to the final model's
+named parameters and compares the final router bit-for-bit with the immutable
+epoch-10 checkpoint. The frozen execution requires zero router optimizer state
+and exact equality to that reference. This addition changes no cohort,
+epsilon, solver, property, or numerical policy; it prevents the final B3 table
+from silently describing the released checkpoint's fixed router as learned.
+
 ## Dynamic-MoE verifier-front-end probe
 
 The parser-probe execution layer exports the

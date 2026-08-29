@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 from dataclasses import asdict
+import hashlib
 import json
 import math
 import os
@@ -83,6 +84,85 @@ class PixelNormalizedExpert(nn.Module):
 
     def forward(self, pixels: torch.Tensor) -> torch.Tensor:
         return self.expert((pixels * 255.0 - self.mean) / self.std)
+
+
+def _module_sha256(module: nn.Module) -> str:
+    digest = hashlib.sha256()
+    for name, value in sorted(module.state_dict().items()):
+        digest.update(name.encode("utf-8"))
+        digest.update(value.detach().cpu().contiguous().numpy().tobytes())
+    return digest.hexdigest()
+
+
+def audit_router_optimizer_state(
+    model: nn.Module,
+    payload: dict[str, Any],
+    *,
+    reference_model: nn.Module | None = None,
+) -> dict[str, Any]:
+    """Link checkpoint optimizer slots to named parameters in construction order."""
+
+    optimizer = payload.get("optimizer")
+    if not isinstance(optimizer, dict):
+        raise ValueError("official checkpoint lacks optimizer state")
+    parameter_ids = [
+        int(parameter_id)
+        for group in optimizer.get("param_groups", [])
+        for parameter_id in group.get("params", [])
+    ]
+    named_parameters = list(model.named_parameters())
+    if len(parameter_ids) != len(named_parameters):
+        raise RuntimeError(
+            "optimizer parameter order cannot be linked to official named parameters"
+        )
+    state = optimizer.get("state", {})
+    rows: list[dict[str, Any]] = []
+    expert_state_entries = 0
+    for (name, _parameter), parameter_id in zip(named_parameters, parameter_ids):
+        slot = state.get(parameter_id, {})
+        if name.startswith("experts.") and slot:
+            expert_state_entries += 1
+        if name.startswith("router."):
+            step = slot.get("step")
+            if isinstance(step, torch.Tensor):
+                step = float(step.item())
+            elif step is not None:
+                step = float(step)
+            rows.append(
+                {
+                    "name": name,
+                    "optimizer_parameter_id": parameter_id,
+                    "optimizer_state_keys": sorted(str(key) for key in slot),
+                    "step": step,
+                }
+            )
+    if not rows:
+        raise RuntimeError("official model has no named router parameters")
+    result: dict[str, Any] = {
+        "optimizer_parameters": len(parameter_ids),
+        "optimizer_state_entries": len(state),
+        "expert_parameters_with_optimizer_state": expert_state_entries,
+        "router_parameters": rows,
+        "router_parameters_with_optimizer_state": sum(
+            bool(row["optimizer_state_keys"]) for row in rows
+        ),
+        "router_sha256": _module_sha256(model.router),
+    }
+    if reference_model is not None:
+        reference_state = reference_model.router.state_dict()
+        current_state = model.router.state_dict()
+        if reference_state.keys() != current_state.keys():
+            raise RuntimeError("reference and final router state layouts differ")
+        result.update(
+            {
+                "reference_router_sha256": _module_sha256(reference_model.router),
+                "router_equal_reference": all(
+                    torch.equal(current_state[name], reference_state[name])
+                    for name in current_state
+                ),
+            }
+        )
+    return result
 
 
 def _write_json(path: Path, value: Any) -> None:
@@ -465,6 +545,29 @@ def prepare(config_path: Path, checkpoint: Path, telemetry_dir: Path, output_dir
     expected_epoch = int(config["checkpoint"]["epoch"])
     if checkpoint_epoch != expected_epoch or int(telemetry.get("epoch", -1)) != expected_epoch:
         raise RuntimeError("B3 requires the frozen final epoch-130 checkpoint and telemetry")
+    provenance = config["training_provenance"]
+    reference_config = provenance["router_reference_checkpoint"]
+    reference_checkpoint = _inside(Path(reference_config["path"]), WRITE_ROOT)
+    if _sha256(reference_checkpoint) != reference_config["sha256"]:
+        raise RuntimeError("B3 router-reference checkpoint changed")
+    reference_model, reference_payload = _load_official_model(
+        reference_checkpoint, device
+    )
+    if int(reference_payload.get("epoch", -1)) + 1 != int(
+        reference_config["epoch"]
+    ):
+        raise RuntimeError("B3 router-reference epoch differs from config")
+    optimizer_audit = audit_router_optimizer_state(
+        model, payload, reference_model=reference_model
+    )
+    if provenance["require_zero_router_optimizer_state"] and int(
+        optimizer_audit["router_parameters_with_optimizer_state"]
+    ) != 0:
+        raise RuntimeError("final router unexpectedly has optimizer state")
+    if provenance["require_router_equal_reference"] and not bool(
+        optimizer_audit["router_equal_reference"]
+    ):
+        raise RuntimeError("final router differs from frozen reference checkpoint")
     router = model.router.gate
     folded_weight, folded_bias = fold_official_router(
         router.weight.detach().cpu().double().numpy(),
@@ -605,6 +708,17 @@ def prepare(config_path: Path, checkpoint: Path, telemetry_dir: Path, output_dir
             "path": str(checkpoint),
             "sha256": _sha256(checkpoint),
             "epoch": checkpoint_epoch,
+        },
+        "training_provenance": {
+            "router_reference_checkpoint": {
+                **reference_config,
+                "observed_epoch": int(reference_payload.get("epoch", -1)) + 1,
+            },
+            "optimizer_audit": optimizer_audit,
+            "interpretation": (
+                "released hard-dispatch training updates experts but leaves the router "
+                "at its frozen initialization; B3 must not label it a learned router"
+            ),
         },
         "telemetry": {
             "directory": str(telemetry_dir),

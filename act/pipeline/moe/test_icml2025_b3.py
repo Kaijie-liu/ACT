@@ -13,6 +13,7 @@ from torch import nn
 from act.pipeline.moe.certificate_constants import ConstantStatus
 from act.pipeline.moe.icml2025_b3 import (
     PixelNormalizedExpert,
+    audit_router_optimizer_state,
     formula_leaf,
     route_applicability_census,
     select_boundary_cohort,
@@ -123,6 +124,48 @@ class PixelNormalizationTest(unittest.TestCase):
         })
         self.assertFalse(config["numerical"]["outward_rounded_crown_safe_enabled"])
         self.assertFalse(config["monolithic"]["enabled_in_this_runner"])
+
+
+class RouterOptimizerProvenanceTest(unittest.TestCase):
+    class ToyOfficial(nn.Module):
+        def __init__(self) -> None:
+            super().__init__()
+            self.experts = nn.ModuleList([nn.Linear(2, 2)])
+            self.router = nn.Module()
+            self.router.gate = nn.Linear(2, 1)
+
+    def test_detects_expert_only_optimizer_updates(self) -> None:
+        model = self.ToyOfficial()
+        reference = self.ToyOfficial()
+        reference.load_state_dict(model.state_dict())
+        optimizer = torch.optim.Adam(model.parameters(), lr=0.1)
+        optimizer.zero_grad()
+        model.experts[0](torch.ones(1, 2)).sum().backward()
+        optimizer.step()
+        result = audit_router_optimizer_state(
+            model,
+            {"optimizer": optimizer.state_dict()},
+            reference_model=reference,
+        )
+        self.assertEqual(result["router_parameters_with_optimizer_state"], 0)
+        self.assertEqual(result["expert_parameters_with_optimizer_state"], 2)
+        self.assertTrue(result["router_equal_reference"])
+
+    def test_detects_router_update(self) -> None:
+        model = self.ToyOfficial()
+        reference = self.ToyOfficial()
+        reference.load_state_dict(model.state_dict())
+        optimizer = torch.optim.Adam(model.parameters(), lr=0.1)
+        optimizer.zero_grad()
+        model.router.gate(torch.ones(1, 2)).sum().backward()
+        optimizer.step()
+        result = audit_router_optimizer_state(
+            model,
+            {"optimizer": optimizer.state_dict()},
+            reference_model=reference,
+        )
+        self.assertEqual(result["router_parameters_with_optimizer_state"], 2)
+        self.assertFalse(result["router_equal_reference"])
 
 
 if __name__ == "__main__":
