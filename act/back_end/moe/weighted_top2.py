@@ -94,6 +94,8 @@ class WeightedTop2F0Decision:
     elapsed: float
     solver_certified_lower_bound: float | None = None
     solver_bound_kind: str | None = None
+    solver_primal_objective: float | None = None
+    solver_dual_objective: float | None = None
 
 
 def _remap_columns(matrix, mapping: np.ndarray, width: int):
@@ -534,4 +536,6 @@ def solve_weighted_top2_f0(
         elapsed=result.elapsed,
         solver_certified_lower_bound=result.solver_certified_lower_bound,
         solver_bound_kind=result.solver_bound_kind,
+        solver_primal_objective=result.solver_primal_objective,
+        solver_dual_objective=result.solver_dual_objective,
     )

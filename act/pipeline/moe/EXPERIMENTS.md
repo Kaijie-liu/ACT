@@ -444,3 +444,41 @@ or a larger cohort automatically.
 
 The final machine-readable result and core artifact hashes are in
 `act/pipeline/moe/configs/experiment1_confirmatory_protocol_manifest_r1.json`.
+
+## Experiment 1D applicable-unresolved closure protocol
+
+The confirmatory 56/100 overall solved-rate endpoint remains a preregistered
+failure and will never be overwritten. Its interpretation is decomposed into
+76/100 samples with a certified route boundary inside the frozen search cap and
+56/76 (73.7%) conditional verification coverage. The 24 samples with no boundary
+through `4/255` are inapplicable to the route-boundary endpoint, not solver
+failures, but they remain in the immutable all-sample denominator.
+
+Experiment 1D freezes all 20 applicable unresolved rows: 14 weighted solver
+limits, two expert timeouts, two hard deadlines, one base solver limit, and one
+range-relaxation unknown. The tracked selection identifies each row by parent
+artifact hash, line, row hash, sample rank, dataset index, and reuse mode. Radius,
+candidate and pair semantics, guarded support, F0, and the numerical SAFE policy
+are unchanged. F1, a larger route cap, baseline reproduction, and training remain
+disabled.
+
+D0 reuses completed expert/property decisions and reruns only unresolved ones.
+Since the parent JSONL did not serialize live HZ/MILP Python objects, the required
+state is deterministically rematerialized and its candidate, pair, and support
+signature is checked against the parent record. The two killed rows have only a
+fixed epsilon and Tier-1 progress record; they are explicitly labeled
+`fixed_radius_rebuild` and do not repeat boundary search or bisection.
+
+Every row has a 900-second wall deadline and a 300-second state record containing
+the active branch and, where the F0 objective exists, incumbent, dual bound, and
+gap. The Tier-1 feasibility formulation marks these objective quantities as not
+applicable. SciPy/HiGHS does not expose a serializable warm start through this
+backend, so a still-unresolved identical encoding is restarted with the remaining
+budget after the checkpoint; no mathematical constraint changes.
+
+The baseline unlock is preregistered as all 20 rows run, zero audit issues, all
+new unsafe witnesses replayed, at least five newly solved applicable rows,
+conditional coverage of at least 61/76 (80%), and no silent numerical fallback.
+Closure results remain follow-up evidence and are never backfilled into the
+original 56% endpoint. Full details are in
+`act/pipeline/moe/docs/experiment1d_closure.md`.

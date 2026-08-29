@@ -2980,6 +2980,8 @@ class HZMinimumResult:
     reason: str
     solver_certified_lower_bound: float | None = None
     solver_bound_kind: str | None = None
+    solver_primal_objective: float | None = None
+    solver_dual_objective: float | None = None
 
 
 def hz_minimize_output(
@@ -3114,6 +3116,18 @@ def hz_minimize_output(
                 input_shape,
                 0,
             )
+    raw_primal = getattr(result, "fun", None)
+    solver_primal_objective = (
+        float(model.value_center[row] + float(raw_primal))
+        if raw_primal is not None and np.isfinite(raw_primal)
+        else candidate_objective
+    )
+    raw_dual = getattr(result, "mip_dual_bound", None)
+    solver_dual_objective = (
+        float(model.value_center[row] + float(raw_dual))
+        if raw_dual is not None and np.isfinite(raw_dual)
+        else None
+    )
     certified = _certified_solver_lower_bound(result, model.integrality)
     if certified is not None:
         solver_bound, solver_bound_kind = certified
@@ -3138,6 +3152,8 @@ def hz_minimize_output(
             f"optimal_{solver_bound_kind}",
             solver_bound,
             solver_bound_kind,
+            solver_primal_objective,
+            solver_dual_objective,
         )
     if solver_status == 2:
         status, reason = "infeasible", "empty_hz"
@@ -3154,4 +3170,6 @@ def hz_minimize_output(
         gap,
         time.monotonic() - started,
         reason,
+        solver_primal_objective=solver_primal_objective,
+        solver_dual_objective=solver_dual_objective,
     )
