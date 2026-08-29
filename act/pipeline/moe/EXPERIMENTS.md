@@ -531,3 +531,39 @@ unsafe replays, 12 newly solved rows, 68/76 conditional coverage, and no silent
 numerical fallback. Official baseline work is therefore unlocked but was not
 started in this stage. F1 and training remain paused. Frozen hashes are recorded
 in `act/pipeline/moe/configs/experiment1d_bal010_manifest_r2.json`.
+
+## Post-1D positioning audit and ICML 2025 baseline B0
+
+The post-1D code and artifact audit is recorded in
+`act/pipeline/moe/docs/fse_positioning.md`. It corrects an external review's
+central factual error: the bal010 checkpoint has a nonlinear
+`3072 -> 128 -> 8` ReLU router, not the factory's empty-hidden default. The
+confirmatory exact-router result therefore remains a correlation-preserving
+nonlinear route-feasibility result. The audit also freezes important limitations:
+the current model is verification-scale, the reported monolithic result is
+structural width rather than a monolithic runtime, route-set enumeration is
+combinatorial, and repeated fresh SciPy/HiGHS solves are a major implementation
+cost.
+
+The next scientific priority remains the official ICML 2025 RT-ER hard-top-1
+ResNet18 baseline. Phase B0 is now specified in
+`act/pipeline/moe/docs/baseline_icml2025_protocol.md`, with machine-readable
+provenance in
+`act/pipeline/moe/configs/baseline_icml2025_provenance.json`. The official remote
+HEAD still equals the audited commit
+`30ef94d77b5451595b82e739aa8938e1f4c4521f`, and the external clone is clean.
+
+B0 found code/paper discrepancies that must remain visible: the paper uses 130
+epochs while the script defaults to 200; the code defines no seed; W&B cannot be
+disabled by the advertised flag because of a bitwise-complement bug; checkpoint
+selection overwrites the last ten-epoch evaluation rather than selecting the
+best model; and the repository contains no implementation of the paper's
+analytic certificate. The certificate comparison must therefore be labeled an
+author-paper formula reimplementation and must audit the formula's continuous
+router-weight assumptions against the released hard-argmax model.
+
+The existing `act-py312` environment lacks FFCV, timm, einops, and W&B and uses
+newer torch/torchvision versions than the author pins. Dependency installation is
+not authorized. Consequently B0 documentation is complete, but B1 smoke and
+training remain blocked pending a separate dependency decision. No baseline,
+training, F1, larger cohort, or ACT conversion was started by B0.

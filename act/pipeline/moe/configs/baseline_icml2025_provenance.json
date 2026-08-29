@@ -1,0 +1,192 @@
+{
+  "schema": "act-moe-baseline-provenance-v1",
+  "audit_date": "2026-08-29",
+  "stage": "B0_PROTOCOL_ONLY",
+  "act": {
+    "repository": "/data1/Kane/MOE/ACT",
+    "branch": "feat/moe-route-verification",
+    "audit_head": "33e404104699b89ac3a942c835e8bd9512034a5f",
+    "main_immutable_sha": "f1bc0f16612bd3f2112f2970174ec2f7cc3bf5ac"
+  },
+  "official_source": {
+    "paper_title": "Optimizing Robustness and Accuracy in Mixture of Experts: A Dual-Model Approach",
+    "venue": "ICML 2025",
+    "paper_url": "https://proceedings.mlr.press/v267/zhang25cj.html",
+    "repository_url": "https://github.com/TIML-Group/Robust-MoE-Dual-Model",
+    "local_clone": "/data1/Kane/MOE/baselines/Robust-MoE-Dual-Model",
+    "branch": "main",
+    "commit": "30ef94d77b5451595b82e739aa8938e1f4c4521f",
+    "remote_head_at_audit": "30ef94d77b5451595b82e739aa8938e1f4c4521f",
+    "commit_date": "2025-08-17T10:57:35-05:00",
+    "commit_subject": "Update",
+    "clone_clean": true,
+    "license": "Apache-2.0",
+    "release_checkpoint_found": false,
+    "official_verifier_found": false,
+    "source_sha256": {
+      "LICENSE": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+      "attack/PGD.py": "439de8a197b39b0d5cb1d423e7cddff7fd505ce3add972ab44d016ad49fafe29",
+      "cifar10_RT_ER.py": "6ca3664e1fbb21c8dd6086a61bbe986708ccb608ccd94fc152e5c7883825512e",
+      "models/moe.py": "2f1159a80cc71c28f86baa5e4a2ff13feab49f80c66648dcdcd37af0ac70868b",
+      "models/resnet.py": "2c60672d9459aaee31a09297e1b60b2e9945339a15e9a803a30fd4e5866efdfa",
+      "requirements.txt": "242b0d6ce9507a11acd9cefca06db0ecad3a8fc0b33ebbbff55464483684e7f2"
+    }
+  },
+  "model": {
+    "dataset": "CIFAR-10",
+    "scope": "output-level",
+    "experts": 4,
+    "expert_architecture": "four independent CIFAR ResNet18 classifiers",
+    "router": "Flatten -> Linear(3072,4) -> argmax",
+    "routing": "hard top-1",
+    "concrete_tie_rule": "torch.argmax first maximum",
+    "verification_tie_rule": "ANY_LEGAL_TOPK",
+    "weighted_f0_applicable": false,
+    "normalization_uint8_scale": {
+      "mean": [125.307, 122.961, 113.8575],
+      "std": [51.5865, 50.847, 51.255]
+    }
+  },
+  "paper_config": {
+    "epochs": 130,
+    "epsilon": 0.03137254901960784,
+    "epsilon_label": "8/255",
+    "pgd_train_steps": 10,
+    "pgd_eval_steps": 50,
+    "attack_step_size": 0.00784313725490196,
+    "attack_step_size_label": "2/255",
+    "batch_size": 512,
+    "optimizer": "Adam",
+    "learning_rate": 0.0001,
+    "cyclic_base_learning_rate": 0.00005,
+    "cyclic_step_size_up": 500,
+    "beta": 6,
+    "augmentation": [
+      "RandomHorizontalFlip",
+      "RandomTranslate(padding=2)",
+      "Cutout(8)"
+    ],
+    "reported_top1_percent": {
+      "standard_accuracy_pgd_table": 77.81,
+      "whole_model_pgd50_robust_accuracy": 69.09,
+      "expert_targeted_pgd50_robust_accuracy": 75.71,
+      "router_targeted_pgd50_robust_accuracy": 72.28,
+      "standard_accuracy_autoattack_table": 75.92,
+      "whole_model_autoattack_robust_accuracy": 54.36
+    }
+  },
+  "author_code_defaults": {
+    "epochs": 200,
+    "seed_defined": false,
+    "checkpoint_selection": "overwrite every tenth epoch; no best-model selection",
+    "test_loader_order": "RANDOM",
+    "wandb_disable_flag_effective": false,
+    "cuda_call_unconditional": true
+  },
+  "discrepancies": [
+    {
+      "id": "D1",
+      "kind": "paper_code",
+      "detail": "paper specifies 130 training epochs while script default is 200"
+    },
+    {
+      "id": "D2",
+      "kind": "reproducibility",
+      "detail": "official code defines no Python, NumPy, PyTorch, CUDA, or FFCV seed"
+    },
+    {
+      "id": "D3",
+      "kind": "compatibility_bug",
+      "detail": "bitwise complement in usewandb = ~args.nowandb keeps W&B enabled"
+    },
+    {
+      "id": "D4",
+      "kind": "checkpoint_selection",
+      "detail": "best_acc is not used; one checkpoint is overwritten after each tenth-epoch test"
+    },
+    {
+      "id": "D5",
+      "kind": "evaluation_order",
+      "detail": "FFCV test loader uses random order"
+    },
+    {
+      "id": "D6",
+      "kind": "device",
+      "detail": "script calls net.cuda() unconditionally"
+    },
+    {
+      "id": "D7",
+      "kind": "environment",
+      "detail": "author pins torch 2.4.0 and torchvision 0.19.0; act-py312 has 2.9.1+cu128 and 0.24.1+cu128"
+    },
+    {
+      "id": "D8",
+      "kind": "certificate_source",
+      "detail": "official repository contains no implementation of the paper certified bound"
+    },
+    {
+      "id": "D9",
+      "kind": "semantic_applicability",
+      "detail": "paper bound assumes Lipschitz router weights while released model executes hard argmax dispatch"
+    }
+  ],
+  "environment": {
+    "python": "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+    "author_requirements": {
+      "einops": "0.8.1",
+      "ffcv": "1.0.2",
+      "numpy": "1.24.3",
+      "pandas": "2.2.3",
+      "Pillow": "11.2.1",
+      "Requests": "2.32.3",
+      "sympy": "1.13.3",
+      "timm": "1.0.15",
+      "torch": "2.4.0",
+      "torchvision": "0.19.0"
+    },
+    "observed": {
+      "torch": "2.9.1+cu128",
+      "torchvision": "0.24.1+cu128",
+      "ffcv": "MISSING",
+      "timm": "MISSING",
+      "einops": "MISSING",
+      "wandb": "MISSING"
+    },
+    "dependency_install_authorized": false,
+    "b1_blocked": true
+  },
+  "dataset": {
+    "source": "official Torchvision CIFAR10 archive",
+    "root": "/data1/Kane/MOE/ACT/data/torchvision",
+    "archive": "CIFAR10/raw/cifar-10-python.tar.gz",
+    "archive_sha256": "6d958be074577803d12ecdefd02955f39262c83c16fe9348329d7fe0b5c001ce",
+    "extracted_sha256": {
+      "batches.meta": "f962466ef690d46b226450fb9aadc74ba4bc64a76aa526b5827fe4bc5c7125cb",
+      "data_batch_1": "54636561a3ce25bd3e19253c6b0d8538147b0ae398331ac4a2d86c6d987368cd",
+      "data_batch_2": "766b2cef9fbc745cf056b3152224f7cf77163b330ea9a15f9392beb8b89bc5a8",
+      "data_batch_3": "0f00d98ebfb30b3ec0ad19f9756dc2630b89003e10525f5e148445e82aa6a1f9",
+      "data_batch_4": "3f7bb240661948b8f4d53e36ec720d8306f5668bd0071dcb4e6c947f78e9682b",
+      "data_batch_5": "d91802434d8376bbaeeadf58a737e3a1b12ac839077e931237e0dcd43adcb154",
+      "test_batch": "f53d8d457504f7cff4ea9e021afcf0e0ad8e24a91f3fc42091b8adef61157831"
+    }
+  },
+  "future_execution": {
+    "output_root": "/data1/Kane/MOE/baseline_runs/icml2025_rt_er",
+    "external_clone_must_remain_clean": true,
+    "primary_name": "official-code paper-config reproduction",
+    "primary_epochs": 130,
+    "primary_seed": 0,
+    "seed_is_disclosed_patch": true,
+    "f0_enabled": false,
+    "smoke_started": false,
+    "training_started": false,
+    "act_conversion_started": false,
+    "verification_started": false
+  },
+  "certificate": {
+    "classification": "author-paper formula reimplementation required",
+    "official_implementation_found": false,
+    "hard_argmax_applicability_must_be_proved": true,
+    "raw_router_logits_must_not_be_substituted_as_gate_weights": true
+  }
+}

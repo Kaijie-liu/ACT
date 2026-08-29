@@ -1,0 +1,250 @@
+# ICML 2025 RT-ER Baseline Protocol
+
+## Stage and scope
+
+This document freezes Phase B0 for the official repository accompanying
+*Optimizing Robustness and Accuracy in Mixture of Experts: A Dual-Model
+Approach* (ICML 2025). B0 is a provenance, semantics, dependency, and protocol
+audit only. It does not install packages, launch a smoke run, train a model, or
+modify the external clone.
+
+The first target is the single hard-top-1 RT-ER MoE invoked by
+
+```text
+python cifar10_RT_ER.py --net res18_moe
+```
+
+JTDMoE, Robust-MoE-CNN, V-MoE, F1, and new ACT model training remain out of
+scope until this protocol's explicit gates are met.
+
+## Official source identity
+
+| Field | Frozen value |
+|---|---|
+| repository | `https://github.com/TIML-Group/Robust-MoE-Dual-Model` |
+| branch | `main` |
+| commit | `30ef94d77b5451595b82e739aa8938e1f4c4521f` |
+| remote HEAD at audit | same as frozen commit |
+| commit date | `2025-08-17T10:57:35-05:00` |
+| license | Apache-2.0 |
+| local read-only clone | `/data1/Kane/MOE/baselines/Robust-MoE-Dual-Model` |
+| clone status | clean |
+| released checkpoint | none found in repository, releases, or README |
+| verifier implementation | none found in tracked Python/Markdown/text files |
+
+Per-file SHA-256 values are recorded in
+`act/pipeline/moe/configs/baseline_icml2025_provenance.json`. The external clone
+must remain clean. All run products will be rooted under
+`/data1/Kane/MOE/baseline_runs/icml2025_rt_er`; ACT-side wrappers and patch files
+will remain under the feature branch.
+
+## Author model semantics
+
+The CIFAR-10 model contains four independent ResNet18 experts and one router
+
+```text
+Flatten -> Linear(3072,4) -> argmax.
+```
+
+The router receives the same FFCV-normalized tensor as the experts. The code
+uses CIFAR channel means `[125.307,122.961,113.8575]` and standard deviations
+`[51.5865,50.847,51.255]` in the uint8 scale. The concrete hard route uses
+PyTorch `argmax`, which chooses the first maximum. ACT verification will use its
+more conservative `ANY_LEGAL_TOPK` semantics at exact ties. Concrete conversion
+tests must therefore record tie proximity and distinguish a deterministic
+concrete choice from all verification-legal choices.
+
+The model executes only the selected expert and emits that expert's ten logits.
+It is output-level hard top-1, not selected-softmax top-2 and not an intermediate
+token-level MoE. F0 is inapplicable. This cleanly tests route conditioning
+without weighted-gate sufficiency.
+
+## Paper-config target
+
+The ICML paper reports CIFAR-10 RT-ER with four ResNet18 experts, 130 epochs,
+`L_inf` training epsilon 8/255, 10-step PGD training, and 50-step PGD evaluation.
+For the top-1 model it reports:
+
+| Metric | Paper value |
+|---|---:|
+| standard accuracy | 77.81% |
+| PGD-50 whole-model robust accuracy | 69.09% |
+| PGD-50 expert-targeted robust accuracy | 75.71% |
+| PGD-50 router-targeted robust accuracy | 72.28% |
+| AutoAttack whole-model robust accuracy | 54.36% |
+
+The AutoAttack table lists standard accuracy 75.92%, not 77.81%. This difference
+must be treated as a paper-level checkpoint/evaluation ambiguity until it is
+explained; it is not silently averaged or replaced.
+
+The author script fixes beta 6 by default, batch size 512, Adam learning rate
+`1e-4`, cyclic base learning rate `5e-5` with `step_size_up=500`, 10-step PGD
+training, 50-step PGD testing, epsilon 8/255, and attack step size 2/255. Training
+augmentation is horizontal flip, two-pixel translation, and cutout size eight.
+
+## Code/paper discrepancy ledger
+
+These items are frozen before execution:
+
+| ID | Observation | Protocol consequence |
+|---|---|---|
+| D1 | paper says 130 epochs; script default is 200 | the primary run passes `--n_epochs 130` and is named **official-code, paper-config reproduction** |
+| D2 | the script never sets Python, NumPy, PyTorch, CUDA, or FFCV seeds | any injected seed is a disclosed reproducibility patch; the paper does not define a canonical seed |
+| D3 | `usewandb = ~args.nowandb` is truthy for both Boolean values | an ACT-side compatibility patch is required to disable W&B; `--nowandb` alone is ineffective |
+| D4 | the script tests/saves every ten epochs and overwrites one file; `best_acc` is never used for selection | the primary checkpoint is the last tested paper-config epoch, not a best-test checkpoint |
+| D5 | the test FFCV loader uses random order | sample order is nondeterministic unless the disclosed seed/loader patch controls it; aggregate full-test metrics are still defined |
+| D6 | the script unconditionally calls `net.cuda()` | B1 requires CUDA; a CPU fallback must not be claimed from the official script |
+| D7 | repository requirements pin torch 2.4.0/torchvision 0.19.0 | `act-py312` currently has torch 2.9.1+cu128/torchvision 0.24.1+cu128; this is a compatibility deviation |
+| D8 | the repository contains no certified-bound implementation | any theorem implementation is an **author-paper formula reimplementation**, not an official verifier |
+| D9 | the paper's analytic bound assumes Lipschitz router weights, while the released model executes hard argmax | the formula is reported only when its applicability is formally established; route-changing hard-dispatch regions are not silently assigned a continuous-gate certificate |
+
+No undocumented repair is allowed. Each patch is classified as:
+
+- `compatibility`: permits the pinned algorithm to run without changing its
+  mathematical training objective;
+- `reproducibility`: fixes otherwise unspecified stochastic state;
+- `scientific`: changes data, model, objective, optimizer, scheduler, attack, or
+  selection semantics.
+
+Scientific patches cannot be labeled an official-code reproduction.
+
+## Environment gate
+
+The only permitted environment is
+`/data1/Kane/miniconda3/envs/act-py312`. The B0 audit found:
+
+| Package | Author pin | Current environment |
+|---|---:|---:|
+| torch | 2.4.0 | 2.9.1+cu128 |
+| torchvision | 0.19.0 | 0.24.1+cu128 |
+| FFCV | 1.0.2 | missing |
+| timm | 1.0.15 | missing |
+| einops | 0.8.1 | missing |
+| wandb | not pinned | missing |
+
+Therefore B1 is currently **blocked by the no-install rule**. No smoke command
+may be launched until the user separately authorizes a dependency resolution
+that remains under `/data1/Kane/MOE`. Replacing FFCV with a Torchvision loader is
+a scientific/data-pipeline modification and cannot be used as the primary
+official-code reproduction.
+
+## Dataset identity and write containment
+
+The existing official Torchvision CIFAR-10 archive is
+`/data1/Kane/MOE/ACT/data/torchvision/CIFAR10/raw/cifar-10-python.tar.gz`, SHA-256
+`6d958be074577803d12ecdefd02955f39262c83c16fe9348329d7fe0b5c001ce`.
+All extracted-batch hashes are in the machine-readable provenance file.
+
+The author script writes FFCV `.beton` files and checkpoints relative to its
+working directory. Future execution must use a dedicated directory such as
+
+```text
+/data1/Kane/MOE/baseline_runs/icml2025_rt_er/seed0_paper130/
+```
+
+with the author repository supplied on `PYTHONPATH`. It must not run with the
+external clone as its working directory. This keeps author source clean and
+contains datasets, FFCV cache, checkpoints, W&B state, logs, and results under
+the authorized root.
+
+## B1 official-code reproduction
+
+### Smoke gate
+
+After dependency authorization and a committed compatibility wrapper, the
+smoke must exercise:
+
+1. official CIFAR decoding and FFCV conversion in the isolated run directory;
+2. one clean forward and backward pass;
+3. one adversarial training batch using the author RT-ER loss;
+4. one bounded smoke epoch or a preregistered fixed number of batches;
+5. checkpoint save/load and exact restored logits on a frozen batch;
+6. router logits, selected routes, per-expert route counts, and device/dtype;
+7. clean and adversarial evaluation on a fixed small batch;
+8. unchanged external-clone status.
+
+All four experts' usage is reported. Lack of usage is an important reproduction
+result, not automatically a reason to modify the training loss. It blocks using
+the checkpoint as a four-expert scalability claim unless corrected by an
+author-supported configuration.
+
+### Full seed-0 run
+
+The primary run is seed 0, 130 epochs, beta 6, and otherwise the paper/code
+settings above. Because the paper did not publish seeds or a checkpoint, the
+result is compared against the reported metrics as a reproduction interval, not
+bitwise equivalence. A provisional two-percentage-point target may be reported,
+but it is not promoted to a hard scientific exclusion until the code/paper
+ambiguities D1--D5 are resolved.
+
+Seeds 1--2 are not launched automatically. The seed-0 artifact, code provenance,
+compatibility patch, training curves, final checkpoint, route loads, PGD-50, and
+AutoAttack results are audited first.
+
+## B2 PyTorch-to-ACT conformance
+
+Conversion starts only after B1 passes. For at least 1000 frozen test inputs it
+must compare:
+
+- normalized inputs and pixel-space perturbation conversion;
+- router logits and deterministic concrete route;
+- all-legal tie routes when margins are within the frozen tolerance;
+- every expert's logits and the selected full-model logits;
+- top-1 prediction;
+- convolution, residual addition, BatchNorm running statistics/folding, and
+  normalization;
+- clean and adversarial inputs.
+
+Required outcomes are 100% prediction agreement, 100% route agreement outside
+explicit tie cases, and a preregistered maximum logit error. A route disagreement
+blocks verification.
+
+## B3 verification comparison
+
+The first frozen comparison uses 20 deterministic clean-correct samples from the
+same converted checkpoint:
+
+1. explicit route-invariance baseline;
+2. exact route analysis plus route-conditioned expert verification;
+3. true monolithic router/dispatch/all-expert formulation where executable;
+4. author-paper analytic formula reimplementation with an applicability status;
+5. an optional expert-backend ablation, separately scoped from route handling.
+
+Because the official router is affine, minimum hard-route-change radius should be
+computed by exact box-constrained linear feasibility (or an equivalent analytic
+distance when clipping is inactive), not attack-only bisection. Verification
+ties remain inclusive.
+
+The original ResNet18 is never silently reduced. If all 20 original-scale exact
+expert runs time out, the result is retained as `Official-scale reproduction`.
+A separately named `Verification-scale derivative` may then preserve the hard
+top-1 linear router and training semantics while shrinking experts. Only the
+derivative is used for exact monolithic ground truth at scale.
+
+## Analytic-certificate rule
+
+The official repository contains training and attack code but no implementation
+of Theorem 5.4's certified radius. Any implementation must:
+
+- cite the paper equation and state every Lipschitz and output-bound assumption;
+- define how expert and router constants are obtained;
+- distinguish continuous router weights from the released hard-argmax dispatch;
+- return `NOT_APPLICABLE`, not zero or `UNKNOWN`, when an assumption is false;
+- pass toy-model regression tests with independently computed bounds;
+- never be described as the authors' official verifier.
+
+For a hard top-1 model, route-changing regions are the crucial applicability
+test. Treating raw router logits as mixture weights would change the released
+model and is forbidden.
+
+## Stage gates
+
+B0 is complete when this document and its provenance JSON validate and are
+pushed. It unlocks only a dependency decision, not B1 execution.
+
+B1 requires explicit dependency authorization, a clean external clone, a
+committed wrapper/patch ledger, contained output paths, and a passing smoke.
+B2 requires an audited seed-0 checkpoint. B3 requires B2 conformance.
+
+No public baseline, F1, confirmatory extension, or new training was launched by
+B0.
