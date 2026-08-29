@@ -751,6 +751,17 @@ author-pin incompatibility is retained as a result; B1 training was not
 started and no newer PyTorch was silently substituted. Exact versions and
 repository commits are recorded in the environment manifest.
 
+The checkpoint telemetry protocol now has an executable runner rather than
+only an oracle/config. It loads an immutable official checkpoint from the
+clean pinned source tree, folds the uint8-domain normalization into the affine
+router, checks folded scores and clean routes against the official model,
+cross-checks 100 points against the general oracle, and writes all 10,000
+per-input brackets. It also records clean correctness, route-load entropy,
+directed/unordered boundary pairs, the frozen 200-input witness cohort, and the
+strict eta-only overcheck band. Missing PGD metrics remain missing unless an
+epoch metrics artifact is explicitly supplied. The runner has not been used
+on a trained checkpoint because the author-pin CUDA gate remains blocked.
+
 ## N1 retained-path conditioned difference support
 
 N1 now partitions an affine router margin into closed intervals, retains each

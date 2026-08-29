@@ -44,6 +44,16 @@
     "reference_radius_atol": 1e-12
   },
   "epsilon_over_255": [0.25, 0.5, 1.0, 2.0, 4.0, 8.0],
+  "execution": {
+    "batch_size": 256,
+    "probe_samples": 200,
+    "probe_policy": "official test indices 0 through 199",
+    "score_equivalence_atol": 1e-5,
+    "witness_tolerance": 1e-7,
+    "eta": 1e-7,
+    "eta_boundary_tolerance": 1e-7,
+    "training_metrics_optional_but_missing_values_never_imputed": true
+  },
   "required_outputs": [
     "per_input_radius_brackets",
     "route_load_entropy",
