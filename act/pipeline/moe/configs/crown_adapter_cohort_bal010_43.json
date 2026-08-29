@@ -1,0 +1,51 @@
+{
+  "experiment": "crown_adapter_consistency_bal010_43_r1",
+  "scope": "adapter_consistency_engineering_not_main_certificate",
+  "checkpoint": "/data1/Kane/MOE/ACT/data/moe/checkpoints/cifar10_top2_e8_seed0_bal010.pt",
+  "checkpoint_sha256": "fbaa7c871d28763ac5acb29a9502dc5d146e1d5af0b4a03e9911899251bd43f7",
+  "parent_results_jsonl": "/data1/Kane/MOE/ACT/data/moe/results/experiment1_confirmatory_bal010_r1/boundary/results.jsonl",
+  "parent_results_sha256": "c853f021f6401ef3f04c3b9cc7c193dd2c77fee7666e8abf120458920f97d48d",
+  "selection_manifest": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/experiment1d_selection_manifest.json",
+  "selection_manifest_sha256": "5077c79e53d5414df54739a42845f66baf03503ab769e3725d3639903f06b424",
+  "source_branches_jsonl": "/data1/Kane/MOE/ACT/data/moe/results/benchmark_guarded_box_hull_experiment1d_r2/branches.jsonl",
+  "source_branches_sha256": "192928366e7b28f507b077c0198518f25177a41a8f16ce76c748f10c44d6f5f7",
+  "source_summary_json": "/data1/Kane/MOE/ACT/data/moe/results/benchmark_guarded_box_hull_experiment1d_r2/summary.json",
+  "source_summary_sha256": "4566e1835ef279e3f92e4e246a8f410de65641bc26afd30039224d7f171db014",
+  "output_dir": "/data1/Kane/MOE/ACT/data/moe/results/crown_adapter_consistency_bal010_43_r1",
+  "expected_rows": 20,
+  "expected_branches": 43,
+  "candidate_query_timeout": 10.0,
+  "hz_property_time_limit_seconds": 30.0,
+  "crown_device": "cuda",
+  "crown_method": "CROWN",
+  "safe_positive_margin": 1e-7,
+  "tie_policy": "ANY_LEGAL_TOPK",
+  "negative_relaxation_semantics": "UNKNOWN_NEVER_UNSAFE",
+  "numerical_safety": {
+    "solver": "scipy.optimize.milp/HiGHS",
+    "require_solver_success": true,
+    "require_optimal_status": 0,
+    "require_finite_dual_bound": true,
+    "mip_relative_gap": 0.0,
+    "feasibility_tolerance": 1e-7,
+    "integrality_tolerance": 1e-7,
+    "outward_rounding": "nextafter after absolute-plus-relative correction",
+    "outward_absolute": 1e-9,
+    "outward_relative": 1e-9,
+    "safe_positive_margin": 1e-7,
+    "certifying_objective": "finite mip_dual_bound for MILP; status-0 optimum for pure LP; never a non-optimal primal incumbent"
+  },
+  "variants": [
+    "hz_retained_guard",
+    "crown_guarded_box",
+    "crown_original_box",
+    "crown_tie_safe_eta"
+  ],
+  "execution": {
+    "all_43_frozen_exact_route_pairs": true,
+    "both_pair_members_required": true,
+    "flush_each_branch": true,
+    "full_model_replay_required_for_unsafe": true,
+    "overwrite_existing_results": false
+  }
+}

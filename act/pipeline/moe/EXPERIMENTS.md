@@ -971,3 +971,30 @@ reported as proof of solver-internal warm-start use. Synthetic LP/MILP,
 support, minimum, and property tests compare against the existing SciPy path.
 This is a code/mechanism result until the opt-in path is connected to a frozen
 engineering rerun; it does not alter the confirmatory endpoint.
+
+## P0b CROWN adapter consistency code freeze
+
+The frozen 43-branch bal010 cohort compares four representations of the same
+expert-wise convex obligation: exact HZ with the unordered pair guard retained,
+the guarded coordinate hull passed to CROWN, the original perturbation box
+passed to CROWN, and a tie-safe eta implication passed to CROWN. Both member
+experts must prove every clean-prediction margin row before a pair is counted as
+certified. The eta graph uses
+`g_S = max(outside scores) - min(inside scores)` and
+`max(g_S - eta, minimum property margin)`, with weak tie-inclusive route
+semantics and `eta=1e-7`.
+
+Negative HZ or CROWN bounds never become an `UNSAFE` verdict in this cohort.
+CROWN uses a positive-margin filter and is explicitly labeled as not
+outward-rounded, so P0b is adapter-consistency evidence rather than a main
+formal-certificate table. Every exact-HZ refutation is checked against any
+CROWN positive-margin result, and the flushed JSONL is independently re-read
+against the frozen source-line and guarded-hull hashes.
+
+The CROWN environment uses Python 3.11. Its `typing.override` compatibility
+shim must execute before importing the ACT package, so the runner and tests are
+launched as repository file paths with `PYTHONPATH=/data1/Kane/MOE/ACT`, not via
+`python -m act.pipeline...`. A real bal010 smoke exposed a crash in dynamic
+score slicing; fixed one-hot `nn.Linear` projectors now lower successfully in
+auto_LiRPA. This section records the code freeze only until all 43 branches and
+the independent audit complete.
