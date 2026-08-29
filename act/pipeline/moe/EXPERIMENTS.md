@@ -796,3 +796,27 @@ retained for the future six-dimension artifact audit. These are screening-flow
 counts only, not prevalence estimates. Reviewer inputs, hashes, disagreement
 rationales, and the executable reconciliation are committed with the partial
 result.
+
+## N1 engineering rerun code freeze
+
+The N1 performance runner freezes the original 20-row applicable-unresolved
+Experiment 1D selection, parent row hashes, radii, route sets, guarded-support
+policy, numerical SAFE policy, and 900-second per-row deadline. It compares the
+already completed unsegmented D0 result against one natural affine-margin cut
+at zero. Every row is run; no threshold-triggered early stopping or selective
+rerun is allowed. Existing solved parent property rows are reused exactly, and
+only unresolved property rows receive N1.
+
+This is explicitly an `engineering_performance_rerun_not_confirmatory_overwrite`.
+The original confirmatory 56/100 endpoint is immutable. The output reports
+paired status transitions, solver metadata, support telemetry, segment counts,
+runtime differences, and full-forward witness validation. F1 remains disabled:
+the config fixes `sigmoid_segments=0` and `gate_function_encoded=false`.
+
+A non-result runner integration smoke on frozen rank 110 traversed candidate
+reconstruction, guarded shared-input pair propagation, margin segmentation,
+and two property solves before the deliberately shorter 180-second outer smoke
+limit stopped the third property. Its progress artifact reports an explicit
+weighted solver limit. The incomplete smoke directory is retained and excluded
+from all summaries; only the 900-second child-process run below can produce the
+paired engineering result.
