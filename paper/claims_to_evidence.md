@@ -549,10 +549,12 @@ An isolated Blackwell-compatible environment separately passed a deterministic
 synthetic FFCV forward/backward smoke on the official MoE-ResNet18 architecture;
 it requires an explicitly recorded JPEG-library preload and is labeled
 `official-code, Blackwell-compatible deps + FFCV`. The seed-0 130-epoch
-official-code reproduction is running; epochs 10 and 20, their checkpoints,
-and drift-guard telemetry are complete, while epoch 30 is next. The interim
-epoch-20 validation values are 33.95% clean and 27.0% robust accuracy and are
-not a final reproduction endpoint. Theorem instantiation and official-scale
+official-code reproduction is running; epochs 10, 20, and 30, their checkpoints,
+and drift-guard telemetry are complete.  Epoch 30 validation is 37.40% clean
+and 28.32% robust accuracy; the exact route geometry remains unchanged and its
+100-sample reference replay passes with maximum radius error `1.21e-16`.
+These are interim values, not a final reproduction endpoint.  Theorem
+instantiation and official-scale
 expert verification have not started. The exact-pin artifact is
 `act/pipeline/moe/results/baseline/icml2025_rt_er_author_pin_probe_20260829.json`
 at commit `291c6dfee9d68c6f025e240013f95b7ecbb1ab8e`; the compatibility smoke is

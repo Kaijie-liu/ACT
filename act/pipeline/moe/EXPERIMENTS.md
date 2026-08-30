@@ -1028,6 +1028,17 @@ baseline, but its checkpoint trajectory cannot support a claim that this
 training procedure pushes route boundaries outward. The compact endpoint is
 `act/pipeline/moe/results/icml2025_rt_er/seed0_epoch020_route_telemetry_20260830.json`.
 
+The epoch-30 endpoint is also immutable and complete.  Validation clean and
+PGD-50 accuracies are 37.40% and 28.32%.  Exact route geometry remains the
+same frozen-router geometry: 883 inputs are formally route-stable at 2/255,
+32 at 4/255, and none at 8/255; the 100-input independent reference replay has
+maximum radius error `1.21e-16`.  Checkpoint, metrics, and telemetry hashes are
+recorded in the live supervisor `progress.json`.  Epoch 30's training time
+(`4745.4 s`) is permanently excluded from throughput estimates because the
+TinyImageNet census overlapped part of it.  The following epoch is the first
+post-census project-only training-speed observation; a separate external GPU
+tenant remains visible, so it must not be labeled physical-GPU exclusive.
+
 The static route geometry has now been materialized as three audited figures
 and a 13-row table. Strictly below `2/255`, `4/255`, and `8/255`, the exact
 route-boundary counts are respectively 9,117, 9,968, and 10,000 of 10,000.
