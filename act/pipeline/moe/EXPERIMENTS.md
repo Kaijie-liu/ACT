@@ -1129,6 +1129,14 @@ program-consumption closure: dynamic MoE rejected, Route A specialized expert
 accepted. Acceptance is not a robustness certificate or a coverage/runtime
 claim. CROWN child processes are restricted to one CPU thread while B1 runs.
 
+The first specialization execution is retained as an excluded fail-closed
+engineering result. Its initial syntactic rule treated every ONNX `Gather` as
+expert dispatch, but the ResNet18 export uses one `Shape -> Gather` with a
+constant index solely to recover a tensor dimension. The r2 audit therefore
+forbids data-dependent `TopK`, `ArgMax`, `Gather`, and `GatherElements`, while
+explicitly classifying only constant-index `Shape -> Gather` as non-dispatch
+bookkeeping. Unit tests require a feature-tensor `Gather` to remain forbidden.
+
 ## N1 engineering rerun code freeze
 
 The N1 performance runner freezes the original 20-row applicable-unresolved

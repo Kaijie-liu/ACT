@@ -25,7 +25,7 @@ from act.pipeline.moe.verifier_parser_probe import _export_and_check, _run_worke
 
 
 DEFAULT_CONFIG = (
-    PROJECT_ROOT / "act/pipeline/moe/configs/verifier_specialization_probe.json"
+    PROJECT_ROOT / "act/pipeline/moe/configs/verifier_specialization_probe_r2.json"
 )
 
 
@@ -52,6 +52,45 @@ def specialize_official_expert(model: nn.Module, expert_index: int) -> nn.Module
     if not 0 <= int(expert_index) < len(experts):
         raise IndexError("expert index is outside the official model")
     return PixelNormalizedExpert(copy.deepcopy(experts[int(expert_index)])).float().eval()
+
+
+def audit_onnx_data_dispatch(onnx_path: Path) -> dict[str, Any]:
+    """Separate data-dependent dispatch from ONNX shape bookkeeping."""
+
+    import onnx
+
+    graph = onnx.load(str(onnx_path)).graph
+    producer = {output: node for node in graph.node for output in node.output}
+    initializers = {value.name for value in graph.initializer}
+    forbidden = {"TopK", "ArgMax", "Gather", "GatherElements"}
+    data_dispatch: list[dict[str, Any]] = []
+    shape_bookkeeping: list[dict[str, Any]] = []
+    for node in graph.node:
+        if node.op_type not in forbidden:
+            continue
+        record = {
+            "name": node.name,
+            "op_type": node.op_type,
+            "inputs": list(node.input),
+            "outputs": list(node.output),
+        }
+        if node.op_type == "Gather" and len(node.input) >= 2:
+            data_producer = producer.get(node.input[0])
+            index_producer = producer.get(node.input[1])
+            shape_input = data_producer is not None and data_producer.op_type == "Shape"
+            constant_index = node.input[1] in initializers or (
+                index_producer is not None and index_producer.op_type == "Constant"
+            )
+            if shape_input and constant_index:
+                shape_bookkeeping.append(record)
+                continue
+        data_dispatch.append(record)
+    return {
+        "data_dispatch_count": len(data_dispatch),
+        "data_dispatch_nodes": data_dispatch,
+        "shape_bookkeeping_count": len(shape_bookkeeping),
+        "shape_bookkeeping_nodes": shape_bookkeeping,
+    }
 
 
 def run(config_path: Path, output_dir: Path) -> dict[str, Any]:
@@ -96,7 +135,6 @@ def run(config_path: Path, output_dir: Path) -> dict[str, Any]:
         raise RuntimeError("specialization probe sample count changed")
 
     output_dir.mkdir(parents=True)
-    forbidden = tuple(config["required_outcome"]["forbidden_operators_after_specialization"])
     records: list[dict[str, Any]] = []
     for expert_index in config["checkpoint"]["experts"]:
         expert_index = int(expert_index)
@@ -123,15 +161,16 @@ def run(config_path: Path, output_dir: Path) -> dict[str, Any]:
         )
         if record["overall_status"] != "EXPORTED_SEMANTICS_MATCH":
             raise RuntimeError("specialized expert did not export with matching semantics")
-        present = {
-            name: int(record["onnx_operator_counts"].get(name, 0)) for name in forbidden
-        }
-        if any(present.values()):
-            raise RuntimeError(f"specialized expert retained dispatch operators: {present}")
+        dispatch_audit = audit_onnx_data_dispatch(Path(record["onnx"]))
+        if dispatch_audit["data_dispatch_count"]:
+            raise RuntimeError(
+                "specialized expert retained data-dependent dispatch: "
+                f"{dispatch_audit['data_dispatch_nodes']}"
+            )
         record["specialization"] = {
             "expert": expert_index,
             "dispatch_fixed": True,
-            "forbidden_operator_counts": present,
+            "onnx_dispatch_audit": dispatch_audit,
             "direct_semantics_match": True,
         }
         record["crown_frontend"] = _run_worker(record, output_dir)
