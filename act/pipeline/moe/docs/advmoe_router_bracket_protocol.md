@@ -220,3 +220,33 @@ Raw CSV and an SVG with live text are stored under
 `data/moe/results/advmoe_init_boundary_estimates_20260830_r1`. Independent
 replay reports zero issues at
 `act/pipeline/moe/results/advmoe_init_boundary_estimates_20260830_r1.json`.
+
+## Float32 CROWN numerical-reach probe
+
+A frozen first-five-sample probe tested the proposed “maximum positive CROWN
+epsilon” construction. It is not a sound-reach experiment: the installed
+backend is float32 and is not outward-rounded. The worker therefore records
+both requested epsilon and the effective representable input box.
+
+| rank | last positive requested epsilon | first negative requested epsilon | positive effective max width | negative effective max width |
+|---:|---:|---:|---:|---:|
+| 0 | 3.707e-9 | 3.731e-9 | 3.725e-9 | 7.451e-9 |
+| 1 | 2.328e-10 | 2.343e-10 | 2.328e-10 | 4.657e-10 |
+| 2 | 1.856e-9 | 1.868e-9 | 1.863e-9 | 3.725e-9 |
+| 3 | 7.405e-9 | 7.452e-9 | 0 | 1.490e-8 |
+| 4 | 1.856e-9 | 1.868e-9 | 1.863e-9 | 3.725e-9 |
+
+Linear extrapolation from the 0.5/255 CROWN bound predicts a median zero near
+`1.609e-12`, but the executed median sign bracket is
+`1.856e-9--1.868e-9`. In all 5/5 rows, the sign transition coincides with a
+discrete expansion of the float32 box and an increase in changed coordinates.
+The requested-epsilon bracket is therefore a frontend/relaxation quantization
+diagnostic, not a real-domain CROWN reach. It must not appear as a sound marker
+or support an “eleven-order certificate gap” claim.
+
+Independent audit replays all 75 requested boxes and reports zero issues at
+`act/pipeline/moe/results/advmoe_crown_numerical_reach_init5_20260830_r1.json`.
+No 10,000-input init CROWN census will be run. AdvMoE telemetry uses full-test
+first-order estimates, fixed-subset strong PGD, and trained-checkpoint-only
+CROWN/alpha/beta closure. The two-path end-to-end table remains independent of
+router-bound closure.

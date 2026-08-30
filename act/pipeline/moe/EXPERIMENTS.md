@@ -1808,3 +1808,15 @@ reported as an approximately `130x` architecture-regime diagnostic, not a
 formal AdvMoE boundary or causal attribution to convolution, weight sharing,
 pooling, or depth. Independent audit: zero issues at
 `act/pipeline/moe/results/advmoe_init_boundary_estimates_20260830_r1.json`.
+
+A first-five-sample log-bisection then tested whether sparse CROWN could supply
+a sound-reach marker for a certificate-gap plot. It cannot under the current
+numerical semantics. Linear extrapolation from 0.5/255 predicts median zero at
+`1.609e-12`, whereas executed positive/negative requested-epsilon brackets have
+median `1.856e-9--1.868e-9` and range from approximately `2.33e-10` to
+`7.45e-9`. Every one of the five sign transitions coincides with a discrete
+float32 box expansion. Independent replay checks 75 boxes with zero issues:
+`act/pipeline/moe/results/advmoe_crown_numerical_reach_init5_20260830_r1.json`.
+These are numerical frontend/relaxation diagnostics, not sound CROWN reach.
+The project therefore cancels the proposed 10,000-input init CROWN census and
+withholds the eleven-order certificate-gap figure.

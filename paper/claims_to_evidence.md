@@ -687,6 +687,16 @@ yet an official-checkpoint certificate result. The route-invariance baseline,
 by contrast, still requires a positive router-margin certificate before it can
 delegate one path to the same downstream backend.
 
+The initial proposal to visualize a sound CROWN reach near `1e-12` does not
+survive numerical audit. Although linear extrapolation gives median
+`1.609e-12`, a five-input float32 CROWN bisection changes sign between median
+requested epsilons `1.856e-9` and `1.868e-9`. All five transitions coincide
+with expansion to the next representable float32 input box. These values are
+frontend/relaxation diagnostics, not real-domain certified radii. Accordingly,
+the paper must not draw an eleven-order sound certificate-gap figure from this
+backend. A formally labelled reach requires outward-rounded or otherwise
+validated numerical semantics.
+
 ## Threats to validity
 
 ### Construct validity

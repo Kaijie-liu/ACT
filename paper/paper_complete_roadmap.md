@@ -63,10 +63,12 @@ The learned-router RT-ER modification is optional fallback work, not a
 completion requirement, because an official third-party learned router carries
 stronger external-validity evidence.
 
-The AdvMoE line is capped at one official seed-0 reproduction, init/final
-full-test router brackets, a deterministic intermediate telemetry subset, the
-five-radius staged-verifier table, and one guard-representation ablation. No
-second ratio or AdvMoE expert-count sweep is permitted. The literal router's
+The AdvMoE line is capped at one official seed-0 reproduction, full-test
+first-order router telemetry at init/final, deterministic intermediate
+telemetry and strong-PGD subsets, trained-checkpoint-only CROWN/alpha/beta
+closure, the five-radius two-path staged-verifier table, and one
+guard-representation ablation. No 10,000-input init CROWN census, second ratio,
+or AdvMoE expert-count sweep is permitted. The literal router's
 auto_LiRPA rejection and the default-CROWN memory bottleneck must be reported.
 The resource-gated sparse-CROWN pilot tightens IBP by 5.20x--5.37x in median
 bound magnitude but remains negative on every row; its 0/100 strong-PGD flips
@@ -80,6 +82,11 @@ boundary-scale estimates (`67.85/255` first-order and `70.64/255` PGD-slope),
 approximately `130x` the exact RT-ER K=20 aggregate median. This closes an
 architecture-regime diagnostic only; it neither closes the nonlinear-router
 bracket nor licenses a causal architecture claim.
+The first-five-sample numerical-reach bisection is ULP-limited in all five rows:
+its median sign transition is `1.856e-9--1.868e-9`, versus a `1.609e-12`
+linear extrapolation. It is retained as a negative numerical-semantics result,
+not a sound reach or paper-ready certificate-gap axis. The two-path staged
+table does not depend on certifying router stability.
 
 ### Tier 2: optional and non-blocking
 
