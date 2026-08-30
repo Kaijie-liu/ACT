@@ -1601,3 +1601,53 @@ Thus they do not inflate the reported applicability counts. The final audit is
 `results/icml2025_rt_er/tinyimagenet_router_census_k20_20260830_r2.json`; the
 cross-dataset record is
 `results/icml2025_rt_er/cross_dataset_router_census_figure2_20260830.json`.
+
+### Dimension-scale check and census freeze
+
+The cross-dataset figure is accompanied by a separate local-radius scale check.
+It measures `margin / ||delta_weight||_1` in each affine router's normalized
+input coordinates.  This is the unbounded local quantity in the standard-init
+`1/sqrt(d)` argument; it is not silently substituted for either census's exact
+box-capped or fixed-epsilon endpoint.  CIFAR-10 and official post-resize
+TinyImageNet are the only two independent initialization dimensions.  The
+raw-64 resize fold is the same function under another perturbation metric and
+is explicitly forbidden as a third point.  Numerical results are accepted only
+after the independent scalar-formula audit and are recorded separately from
+Figure 2's applicability counts.
+
+The audit reports zero issues and 160 independent scalar replays with maximum
+absolute error `6.23e-17`.  The dimension-only prediction is `7.000x`.  After
+the explicitly stated input-second-moment term is included, the prediction is
+`9.063x`; the observed aggregate local-radius median shift is `8.966x`, or
+`0.9894` of the adjusted prediction.  This is two-point empirical agreement
+with a standard-initialization order law, not a universal theorem or a
+preregistered acceptance endpoint.  The audited result is
+`results/icml2025_rt_er/router_dimension_law_20260830.json` and the revised,
+text-preserving Figure 2 record is
+`results/icml2025_rt_er/cross_dataset_router_census_figure2_20260830_r2.json`.
+
+The router census phase is frozen after these two official datasets, two
+architecture families, 40 constructions, and 400,000 seed-input decisions.
+No third dataset will be added.  TinyImageNet remains router-census-only: this
+project will not start 224-scale ViT expert certification.  Subsequent work is
+restricted to the already scheduled B1, exact-big-M rerun, monolithic baseline,
+B3 official-scale comparison, and the separately labelled learned-router
+training variant.
+
+### Preprocessing runtime as certificate identity
+
+The two excluded TinyImageNet executions are retained as an artifact-semantics
+result.  `_r1` changed 111/200,000 clean routes by replacing literal float16
+resize with a real-arithmetic centre.  `_r2` stopped before its first census row
+because the PyTorch 2.9.1 CUDA float16 resize reached 255.125 while the released
+PyTorch 2.11.0 runtime stayed inside `[0,255]`.  The accepted `_r3` run
+materializes and hashes released-runtime centres, records 42/200,000
+literal-normalization route differences, and proves that none intersects a
+formally stable endpoint at any registered radius.
+
+B3 therefore materializes, rather than infers after the fact, a certificate
+identity containing exact runtime versions, source/checkpoint/router/data and
+ordered-input hashes, preprocessing graph/order/dtypes/constants/domain, and
+solver/outward-rounding policy.  Any missing identity field fails closed.  The
+paper-facing rationale and claim boundary are in
+`paper/certified_artifact_identity.md`.

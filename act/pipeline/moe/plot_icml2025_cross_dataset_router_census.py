@@ -27,6 +27,11 @@ DEFAULT_TINY = (
     / "act/pipeline/moe/results/icml2025_rt_er/"
     "tinyimagenet_router_census_k20_20260830_r2.json"
 )
+DEFAULT_DIMENSION_LAW = (
+    PROJECT_ROOT
+    / "act/pipeline/moe/results/icml2025_rt_er/"
+    "router_dimension_law_20260830.json"
+)
 
 
 def _write_json(path: Path, value: Any) -> None:
@@ -53,6 +58,8 @@ def _boxplot_panel(
     epsilon_over_255: Sequence[float],
     title: str,
     color: str,
+    *,
+    annotate_exact_zeros: bool = False,
 ) -> None:
     values = np.asarray(fractions, dtype=np.float64)
     if values.ndim != 2 or values.shape[1] != len(epsilon_over_255):
@@ -60,8 +67,21 @@ def _boxplot_panel(
     if np.any((values < 0.0) | (values > 1.0)):
         raise ValueError("stable fractions escape [0,1]")
     positions = np.arange(values.shape[1], dtype=np.float64)
+    percentage = 100.0 * values
+    lower = np.min(percentage, axis=0)
+    upper = np.max(percentage, axis=0)
+    axis.fill_between(
+        positions,
+        lower,
+        upper,
+        color=color,
+        alpha=0.32,
+        linewidth=0,
+        label="cross-seed min--max",
+        zorder=0,
+    )
     axis.boxplot(
-        [100.0 * values[:, slot] for slot in range(values.shape[1])],
+        [percentage[:, slot] for slot in range(values.shape[1])],
         positions=positions,
         widths=0.52,
         patch_artist=True,
@@ -74,7 +94,7 @@ def _boxplot_panel(
         jitter = ((seed_slot % 5) - 2) * 0.025
         axis.scatter(
             positions + jitter,
-            100.0 * values[seed_slot],
+            percentage[seed_slot],
             s=13,
             color="#263849",
             alpha=0.64,
@@ -85,6 +105,18 @@ def _boxplot_panel(
     axis.set_title(title)
     axis.set_xlabel(r"$L_\infty$ radius")
     axis.grid(axis="y", which="both", alpha=0.23)
+    if annotate_exact_zeros:
+        for slot in np.flatnonzero(np.all(values == 0.0, axis=0)):
+            axis.annotate(
+                "0 exact\n(20/20)",
+                xy=(float(slot), 0.0),
+                xytext=(0, 9),
+                textcoords="offset points",
+                ha="center",
+                va="bottom",
+                fontsize=7.5,
+                color="#6f1d1b",
+            )
 
 
 def _tiny_fraction_matrix(arrays: dict[str, np.ndarray], domain: str) -> np.ndarray:
@@ -94,16 +126,44 @@ def _tiny_fraction_matrix(arrays: dict[str, np.ndarray], domain: str) -> np.ndar
     return np.mean(stable, axis=1)
 
 
-def run(cifar_path: Path, tiny_path: Path, output_dir: Path) -> dict[str, Any]:
+def run(
+    cifar_path: Path,
+    tiny_path: Path,
+    dimension_law_path: Path,
+    output_dir: Path,
+) -> dict[str, Any]:
     cifar_path = _inside(cifar_path, PROJECT_ROOT)
     tiny_path = _inside(tiny_path, PROJECT_ROOT)
+    dimension_law_path = _inside(dimension_law_path, PROJECT_ROOT)
     output_dir = _inside(output_dir, WRITE_ROOT)
     if output_dir.exists():
         raise RuntimeError(f"cross-dataset figure output exists: {output_dir}")
     cifar = json.loads(cifar_path.read_text(encoding="utf-8"))
     tiny = json.loads(tiny_path.read_text(encoding="utf-8"))
+    dimension_audit = json.loads(dimension_law_path.read_text(encoding="utf-8"))
     if cifar.get("status") != "COMPLETED_AUDITED" or tiny.get("status") != "COMPLETED_AUDITED":
         raise RuntimeError("both router censuses must be independently audited")
+    if dimension_audit.get("status") != "PASS" or dimension_audit.get(
+        "issue_count"
+    ) != 0:
+        raise RuntimeError("dimension-law result must pass independent audit")
+    dimension_raw_path = _inside(
+        Path(dimension_audit["raw_result"]["path"]), WRITE_ROOT
+    )
+    if _sha256(dimension_raw_path) != dimension_audit["raw_result"]["sha256"]:
+        raise RuntimeError("dimension-law raw result changed after audit")
+    dimension_raw = json.loads(dimension_raw_path.read_text(encoding="utf-8"))
+    predicted_shift = float(
+        dimension_raw["nominal_prediction"]["cifar_over_tiny"]
+    )
+    adjusted_shift = float(
+        dimension_raw["nominal_prediction"][
+            "input_second_moment_adjusted_cifar_over_tiny"
+        ]
+    )
+    observed_shift = float(
+        dimension_raw["observed"]["cifar_over_tiny_aggregate_median_ratio"]
+    )
 
     cifar_npz = _inside(
         Path(cifar["raw_result"]["directory"]) / "per_seed.npz", WRITE_ROOT
@@ -132,20 +192,43 @@ def run(cifar_path: Path, tiny_path: Path, output_dir: Path) -> dict[str, Any]:
         raise RuntimeError("cross-dataset seed grids changed")
 
     output_dir.mkdir(parents=True)
-    plt.rcParams.update({"font.size": 10, "svg.hashsalt": "act-moe-figure2-census"})
+    plt.rcParams.update(
+        {
+            "font.size": 10,
+            "svg.fonttype": "none",
+            "svg.hashsalt": "act-moe-figure2-census-r2",
+        }
+    )
     figure, axes = plt.subplots(1, 2, figsize=(11.5, 4.2), sharey=True)
     _boxplot_panel(
-        axes[0], cifar_stable, epsilon_over_255, "CIFAR-10 · ResNet18-MoE", "#cfe5f3"
+        axes[0],
+        cifar_stable,
+        epsilon_over_255,
+        "CIFAR-10 · ResNet18-MoE · d=3,072",
+        "#cfe5f3",
     )
     _boxplot_panel(
         axes[1],
         tiny_primary,
         epsilon_over_255,
-        "TinyImageNet · ViT-MoE · official 224 domain",
+        "TinyImageNet · ViT-MoE · d=150,528",
         "#dce8c8",
+        annotate_exact_zeros=True,
     )
     axes[0].set_ylabel("Formally route-stable inputs (%)")
     figure.suptitle("Route-invariance applicability across 20 official constructions")
+    figure.text(
+        0.5,
+        -0.01,
+        (
+            rf"Nominal $1/\sqrt{{d}}$ shift: {predicted_shift:.2f}$\times$; "
+            rf"moment-adjusted: {adjusted_shift:.2f}$\times$; "
+            rf"observed: {observed_shift:.2f}$\times$"
+        ),
+        ha="center",
+        va="top",
+        fontsize=9,
+    )
     _finish_figure(figure, output_dir / "figure2_cross_dataset_route_stability.svg")
 
     figure, axis = plt.subplots(figsize=(7.2, 4.2))
@@ -225,6 +308,10 @@ def run(cifar_path: Path, tiny_path: Path, output_dir: Path) -> dict[str, Any]:
         "sources": {
             "cifar": {"path": str(cifar_path), "sha256": _sha256(cifar_path)},
             "tinyimagenet": {"path": str(tiny_path), "sha256": _sha256(tiny_path)},
+            "dimension_law": {
+                "path": str(dimension_law_path),
+                "sha256": _sha256(dimension_law_path),
+            },
         },
         "seeds": tiny_seeds.tolist(),
         "epsilon_over_255": epsilon_over_255.tolist(),
@@ -238,6 +325,13 @@ def run(cifar_path: Path, tiny_path: Path, output_dir: Path) -> dict[str, Any]:
             for name in output_names
         },
         "scope": "Router applicability only. Main figure compares official CIFAR-10 and official post-resize TinyImageNet domains; raw64 is secondary.",
+        "dimension_annotation": {
+            "quantity": dimension_raw["quantity"],
+            "nominal_cifar_over_tiny": predicted_shift,
+            "second_moment_adjusted_cifar_over_tiny": adjusted_shift,
+            "observed_cifar_over_tiny": observed_shift,
+            "scope": dimension_raw["scope"],
+        },
     }
     _write_json(output_dir / "manifest.json", result)
     return result
@@ -247,9 +341,18 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--cifar", type=Path, default=DEFAULT_CIFAR)
     parser.add_argument("--tiny", type=Path, default=DEFAULT_TINY)
+    parser.add_argument(
+        "--dimension-law", type=Path, default=DEFAULT_DIMENSION_LAW
+    )
     parser.add_argument("--output-dir", type=Path, required=True)
     args = parser.parse_args()
-    print(json.dumps(run(args.cifar, args.tiny, args.output_dir), indent=2, sort_keys=True))
+    print(
+        json.dumps(
+            run(args.cifar, args.tiny, args.dimension_law, args.output_dir),
+            indent=2,
+            sort_keys=True,
+        )
+    )
 
 
 if __name__ == "__main__":

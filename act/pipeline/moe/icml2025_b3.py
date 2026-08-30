@@ -11,10 +11,12 @@ from __future__ import annotations
 import argparse
 from dataclasses import asdict
 import hashlib
+import importlib.metadata
 import json
 import math
 import os
 from pathlib import Path
+import platform
 import subprocess
 import sys
 import time
@@ -92,6 +94,83 @@ def _module_sha256(module: nn.Module) -> str:
         digest.update(name.encode("utf-8"))
         digest.update(value.detach().cpu().contiguous().numpy().tobytes())
     return digest.hexdigest()
+
+
+def _nvidia_driver_version() -> str:
+    completed = subprocess.run(
+        ["nvidia-smi", "--query-gpu=driver_version", "--format=csv,noheader"],
+        check=True,
+        text=True,
+        capture_output=True,
+    )
+    versions = sorted(
+        {row.strip() for row in completed.stdout.splitlines() if row.strip()}
+    )
+    if not versions:
+        raise RuntimeError("nvidia-smi returned no driver identity")
+    return ",".join(versions)
+
+
+def _package_version_or_unavailable(distribution: str) -> str:
+    try:
+        return importlib.metadata.version(distribution)
+    except importlib.metadata.PackageNotFoundError:
+        return "NOT_INSTALLED"
+
+
+def certificate_identity(
+    config: dict[str, Any],
+    checkpoint: Path,
+    model: nn.Module,
+    telemetry_artifact_path: Path,
+) -> dict[str, Any]:
+    """Materialize the runtime, preprocessing, and artifact certificate identity."""
+
+    import torchvision
+
+    archive = (
+        Path(get_torchvision_data_root()).resolve()
+        / "CIFAR10/raw/cifar-10-python.tar.gz"
+    )
+    if not archive.is_relative_to(WRITE_ROOT.resolve()) or not archive.is_file():
+        raise RuntimeError("CIFAR-10 archive identity is unavailable inside write root")
+    frozen = config["certificate_identity"]
+    identity = {
+        "python_version": platform.python_version(),
+        "torch_import_version": torch.__version__,
+        "torchvision_import_version": torchvision.__version__,
+        "torchvision_metadata_version": importlib.metadata.version("torchvision"),
+        "numpy_version": np.__version__,
+        "cuda_runtime_version": torch.version.cuda,
+        "nvidia_driver_version": _nvidia_driver_version(),
+        "official_source_commit": OFFICIAL_COMMIT,
+        "checkpoint_sha256": _sha256(checkpoint),
+        "dataset_archive_sha256": _sha256(archive),
+        "ordered_input_identity": {
+            "split": "official torchvision CIFAR10 test order",
+            "telemetry_per_input_sha256": _sha256(telemetry_artifact_path),
+        },
+        "preprocessing_graph": frozen["preprocessing_graph"],
+        "preprocessing_dtypes": frozen["preprocessing_dtypes"],
+        "normalization_constants": {
+            "mean_255": CIFAR_MEAN_255.tolist(),
+            "std_255": CIFAR_STD_255.tolist(),
+        },
+        "input_domain": frozen["input_domain"],
+        "router_sha256": _module_sha256(model.router),
+        "solver_and_outward_rounding_policy": {
+            "versions": {
+                name: _package_version_or_unavailable(name)
+                for name in ("scipy", "highspy", "gurobipy")
+            },
+            "routing": config["routing"],
+            "numerical": config["numerical"],
+        },
+    }
+    missing = sorted(set(frozen["required_manifest_fields"]) - set(identity))
+    if missing:
+        raise RuntimeError(f"certificate identity is incomplete: {missing}")
+    return identity
 
 
 def audit_router_optimizer_state(
@@ -709,6 +788,9 @@ def prepare(config_path: Path, checkpoint: Path, telemetry_dir: Path, output_dir
             "sha256": _sha256(checkpoint),
             "epoch": checkpoint_epoch,
         },
+        "certificate_identity": certificate_identity(
+            config, checkpoint, model, telemetry_artifact_path
+        ),
         "training_provenance": {
             "router_reference_checkpoint": {
                 **reference_config,

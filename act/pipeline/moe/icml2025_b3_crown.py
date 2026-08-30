@@ -5,9 +5,11 @@ from __future__ import annotations
 import argparse
 from collections import Counter
 import copy
+import importlib.metadata
 import json
 import os
 from pathlib import Path
+import platform
 import subprocess
 import sys
 import time
@@ -24,7 +26,11 @@ import torch
 
 from act.pipeline.moe.crown_adapter_cohort import _crown_bounds
 from act.pipeline.moe.experiment1 import PROJECT_ROOT, WRITE_ROOT, _inside, _sha256
-from act.pipeline.moe.icml2025_b3 import PixelNormalizedExpert
+from act.pipeline.moe.icml2025_b3 import (
+    PixelNormalizedExpert,
+    _nvidia_driver_version,
+    _package_version_or_unavailable,
+)
 from act.pipeline.moe.icml2025_route_telemetry import (
     OFFICIAL_COMMIT,
     OFFICIAL_REPO,
@@ -192,10 +198,16 @@ def run(prepare_path: Path, output_path: Path) -> dict[str, Any]:
         "formal_safe_count": 0,
         "runtime_seconds": time.monotonic() - started,
         "environment": {
-            "python": sys.version.split()[0],
+            "python": platform.python_version(),
             "torch": torch.__version__,
+            "torchvision": importlib.metadata.version("torchvision"),
+            "auto_lirpa": _package_version_or_unavailable("auto-lirpa"),
+            "numpy": np.__version__,
+            "cuda_runtime": torch.version.cuda,
+            "nvidia_driver": _nvidia_driver_version(),
             "device": device,
         },
+        "certificate_identity": prepare["certificate_identity"],
         "numerical_scope": (
             "auto_LiRPA positive-margin conformance filter; no outward-rounded "
             "formal SAFE claim and no negative-bound UNSAFE claim"

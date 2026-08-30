@@ -1,0 +1,44 @@
+{
+  "schema_version": 2,
+  "status": "COMPLETED_AUDITED",
+  "supersedes_figure_record": "act/pipeline/moe/results/icml2025_rt_er/cross_dataset_router_census_figure2_20260830.json",
+  "scope": "Route-invariance applicability over 20 official full-model constructions per dataset. The dimension annotation is a separate unbounded local-router-coordinate scale check, not an exact box-capped radius or output certificate.",
+  "datasets": {
+    "cifar10": {
+      "architecture": "MOE_Resnet18",
+      "features": 3072,
+      "domain": "official unit-pixel input",
+      "audit": "act/pipeline/moe/results/icml2025_rt_er/router_init_census_k20_20260830.json"
+    },
+    "tinyimagenet": {
+      "architecture": "MOE_ViT",
+      "features": 150528,
+      "domain": "official released-runtime float16-resized 224 center with continuous real-affine perturbation abstraction",
+      "audit": "act/pipeline/moe/results/icml2025_rt_er/tinyimagenet_router_census_k20_20260830_r2.json",
+      "exact_zero_endpoints": ["2/255", "4/255", "8/255"]
+    }
+  },
+  "dimension_scale": {
+    "audit": "act/pipeline/moe/results/icml2025_rt_er/router_dimension_law_20260830.json",
+    "audit_issues": 0,
+    "nominal_dimension_only_cifar_over_tiny": 7.0,
+    "second_moment_adjusted_cifar_over_tiny": 9.062711502476875,
+    "observed_local_radius_median_cifar_over_tiny": 8.96635363743948,
+    "observed_over_adjusted_prediction": 0.9893676561356876,
+    "claim_boundary": "standard-initialization order law with two-point empirical agreement; constants depend on initialization and input second moments; raw64 is not a third point"
+  },
+  "figure_artifacts": {
+    "directory": "/data1/Kane/MOE/ACT/data/moe/results/icml2025_rt_er/cross_dataset_router_figures_20260830_r2",
+    "manifest_sha256": "8bdc7800cbf89c2aa74b5d3c536a6b6ada746814f635bf9e61405bb342e0c8e0",
+    "main_svg_sha256": "d38e28f21eeafdd33c98beb1ef7e739a39668c740e88e780fcfa5393e51541a8",
+    "secondary_svg_sha256": "7a01b63674c6475909a39e22d85bd90c8314f2d3a92e2e9d5ab5e151bf05d1f8",
+    "csv_sha256": "167fd6b6824db4756c0d069f4b4837abff142d14843df4670beff52eb0816006",
+    "svg_text_policy": "svg.fonttype=none; selectable text verified",
+    "axis_policy": "symlog with explicit exact-zero annotations and cross-seed min-max bands"
+  },
+  "excluded_dimension_run": {
+    "directory": "/data1/Kane/MOE/ACT/data/moe/results/icml2025_rt_er/router_dimension_law_20260830_r1",
+    "reason": "engineering precursor omitted the input-second-moment term; retained and excluded before independent audit"
+  },
+  "conclusion": "The observed 8.966x local-radius median shift is within 1.1% of the 9.063x dimension-and-second-moment prediction. Figure 2 retains the exact applicability endpoints as the primary result."
+}

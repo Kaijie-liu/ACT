@@ -132,6 +132,11 @@ class PixelNormalizationTest(unittest.TestCase):
             "small or zero absolute coverage",
             config["primary_table_interpretation"]["absolute_certification_expectation"],
         )
+        identity = config["certificate_identity"]
+        self.assertIn("torch_import_version", identity["required_manifest_fields"])
+        self.assertIn("nvidia_driver_version", identity["required_manifest_fields"])
+        self.assertIn("preprocessing_graph", identity["required_manifest_fields"])
+        self.assertIn("missing or changed identity fields fail closed", identity["policy"])
 
 
 class RouterOptimizerProvenanceTest(unittest.TestCase):

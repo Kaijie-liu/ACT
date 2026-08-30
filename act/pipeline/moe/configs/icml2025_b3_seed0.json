@@ -66,6 +66,36 @@
     "outward_rounded_crown_safe_enabled": false,
     "full_forward_replay_required_for_unsafe": true
   },
+  "certificate_identity": {
+    "schema_version": 1,
+    "required_manifest_fields": [
+      "python_version",
+      "torch_import_version",
+      "torchvision_import_version",
+      "torchvision_metadata_version",
+      "numpy_version",
+      "cuda_runtime_version",
+      "nvidia_driver_version",
+      "official_source_commit",
+      "checkpoint_sha256",
+      "dataset_archive_sha256",
+      "ordered_input_identity",
+      "preprocessing_graph",
+      "preprocessing_dtypes",
+      "normalization_constants",
+      "input_domain",
+      "router_sha256",
+      "solver_and_outward_rounding_policy"
+    ],
+    "preprocessing_graph": "ordered torchvision CIFAR10 uint8 test image -> float64 unit pixels -> real-affine channel normalization inside PixelNormalizedExpert",
+    "preprocessing_dtypes": {
+      "decoded": "uint8",
+      "route_analysis": "float64",
+      "expert_wrapper": "torch.float32"
+    },
+    "input_domain": "continuous unit-pixel box intersected with the registered L-infinity ball",
+    "policy": "missing or changed identity fields fail closed; transform names without exact runtime, dtype, ordering, and constants are insufficient"
+  },
   "comparisons": [
     "route-invariance baseline with identical CROWN expert backend",
     "exact route candidates plus per-expert guarded-hull CROWN",
