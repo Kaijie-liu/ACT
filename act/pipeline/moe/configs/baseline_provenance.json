@@ -52,20 +52,23 @@
       "license": "NOT FOUND",
       "datasets": ["CIFAR-10", "CIFAR-100", "Tiny ImageNet", "ImageNet"],
       "router": {
-        "scope": "shared convolutional routing signal",
-        "architecture": "ResNet-like convolutional router",
+        "scope": "one image-level routing signal shared across 16 hidden MoE convolutions",
+        "architecture": "CIFAR-ResNet20-style convolutional router over the image tensor before the ResNet stem",
         "selection": "hard argmax",
-        "top_k": 1
+        "top_k": 1,
+        "literal_tie_semantics": "PyTorch argmax first maximum / lowest index",
+        "hidden_state_router": false
       },
       "router_training_audit": {
         "classification": "TRAINED_BY_EXPLICIT_ROUTER_OBJECTIVE",
-        "mechanisms": ["separate router optimizer", "supervised router cross-entropy", "adversarial router KL", "straight-through hard-selection backward"],
-        "evidence_level": "pinned source only",
-        "result": "act/pipeline/moe/results/published_moe_router_gradient_audit_20260830.json"
+        "mechanisms": ["separate router optimizer", "supervised router cross-entropy", "adversarial router KL"],
+        "ste_schedule_note": "classification STE gradients reach the router but the main optimizer excludes router parameters and the router zero_grad clears them before the explicit router loss",
+        "evidence_level": "pinned source plus synthetic optimizer/gradient schedule confirmation",
+        "result": "act/pipeline/moe/results/advmoe_architecture_audit_20260830.json"
       },
       "experts": {
         "architectures": ["ResNet", "VGG", "WideResNet", "DenseNet"],
-        "semantics": "MoE convolutional channel experts; not output-level weighted top-k"
+        "semantics": "global-route-specialized deep pathways formed by channel experts in hidden MoE convolutions; not output-level weighted top-k"
       },
       "checkpoint": {
         "files_in_repository": false,
@@ -73,7 +76,8 @@
         "published_elsewhere_in_official_readme": false
       },
       "source_reuse_policy": "Do not copy source into ACT unless licensing is clarified",
-      "intended_use": "independently run public hard-routing CNN training baseline"
+      "checkpoint_redistribution_policy": "unresolved without a repository license; default to hashes and exact reproduction instructions pending legal review",
+      "intended_use": "official third-party learned-router deep-path target after RT-ER B3"
     },
     {
       "name": "vmoe",

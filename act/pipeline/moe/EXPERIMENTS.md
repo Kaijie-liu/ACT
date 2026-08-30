@@ -1062,7 +1062,9 @@ scripts as an artifact divergence. Dynamic optimizer/checkpoint confirmation
 remains scoped to the current CIFAR-10 RT-ER seed-0 run. Static routing itself
 is not treated as invalid. The audited evidence is
 `act/pipeline/moe/results/icml2025_rt_er/released_training_router_gradient_audit_20260830.json`;
-responsible disclosure has not been sent and requires explicit authorization.
+responsible disclosure was subsequently authorized and the user reports having
+sent it personally. Its actual send date is still required for the contact
+timeline; see `act/pipeline/moe/docs/icml2025_rt_er_disclosure_log.md`.
 
 To distinguish the seed-0 route census from a single random draw, a separate
 20-seed initialization census is frozen. Each seed reconstructs the complete
@@ -1689,9 +1691,37 @@ located. The result is
 with interpretation and scope in
 `act/pipeline/moe/docs/published_moe_router_gradient_audit.md`.
 
-The user authorized responsible disclosure and a versioned Zenodo v1. Both are
-recorded as `AUTHORIZED_PENDING_EXTERNAL_CHANNEL`. The official paper supplied
-a corresponding-author address, but the connected Gmail search and send calls
-both failed with insufficient OAuth scopes (HTTP 403), so no delivery is
-claimed. No Zenodo connector/account/token is available, so no deposit, DOI, or
+The user authorized responsible disclosure and a versioned Zenodo v1. The user
+later reported personally sending the disclosure message, but the exact sent
+date has not yet been recorded. The earlier connected-Gmail search/send calls
+failed with insufficient OAuth scopes (HTTP 403) and remain a technical note,
+not Day 0. Reminder and public-issue windows begin only from the actual sent
+date. No Zenodo connector/account/token is available, so no deposit, DOI, or
 publication is claimed.
+
+### AdvMoE architecture semantics audit
+
+The pinned official robust-moe-cnn/AdvMoE CIFAR-10 path was audited without
+training or copying unlicensed source. It corrects an earlier planning
+assumption: the router reads the `[B,3,32,32]` image before the ResNet stem, not
+an intermediate feature. The official README configuration (`ResNet-18`,
+`E=2`, ratio `0.5`) has eight BasicBlocks and 16 routed MoE convolutions, all
+sharing one global hard top-1 route. Literal ties use PyTorch first-max argmax.
+
+Dynamic module replay confirms 269,202 router parameters, one shared router
+object, four routed convolutions at each selected width 32/64/128/256, and a
+5,834,652-parameter attached model. A synthetic optimizer-schedule control
+shows that classification STE creates gradients on all 59 router tensors but
+the main optimizer contains no router parameters and changes none; the router
+`zero_grad` clears those gradients before the explicit supervised/robust router
+loss, whose separate optimizer changes all 59 tensors.
+
+The independent audit reports zero issues over 34 hashed source anchors:
+`act/pipeline/moe/results/advmoe_architecture_audit_20260830.json`. This is an
+architecture/training-semantics result, not a checkpoint, accuracy, robustness,
+route-census, or certificate result. It changes the post-B3 target from a
+home-built hidden-router toy to an official deep route-specialized pathway.
+There is no prefix-HZ-before-router shortcut: input-space feasibility must
+propagate the nonlinear CNN router from pixels. Training remains queued after
+B1/B3. The external repository has no located license, so ACT contains no
+copied source and checkpoint redistribution remains unresolved.

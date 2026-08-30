@@ -594,6 +594,33 @@ accuracy, robustness, checkpoint, or certificate result is inferred for the
 other pipelines; robust-moe-cnn source is not copied because no license was
 located.
 
+### AdvMoE is a deep-path target, not a hidden-state router
+
+A follow-up architecture and optimizer-schedule audit corrects a planning
+assumption that would otherwise overstate generality. In the official CIFAR-10
+ResNet-18 configuration, AdvMoE's convolutional router consumes the image
+tensor before the dense ResNet stem. One PyTorch hard-argmax top-1 decision is
+shared by 16 hidden MoE convolutions across eight BasicBlocks. The resulting
+verification object is a full route-specialized deep pathway, not a prefix-HZ
+followed by a hidden-state router.
+
+The router is learned, but its update path is also narrower than a casual STE
+reading suggests. The main optimizer is created before router attachment and
+contains no router parameter. Although classification backpropagation creates
+nonzero STE gradients on all 59 router parameter tensors, the main optimizer
+changes none and the subsequent router `zero_grad` clears those gradients. The
+separate supervised/robust router objective then changes all 59 tensors in the
+synthetic schedule control. Thus the paper may call AdvMoE an explicitly
+learned hard router; it must not claim that classification STE performs the
+released router update.
+
+The independent replay reports zero issues over 34 hashed source anchors and
+confirms router input/output shapes, 16 routed layers, one shared router, and
+literal first-max tie behavior:
+`act/pipeline/moe/results/advmoe_architecture_audit_20260830.json`. This is an
+architecture/training-semantics result only. Training, sampled input-space
+route census, and deep-path certificates remain pending after RT-ER B3.
+
 ## Threats to validity
 
 ### Construct validity

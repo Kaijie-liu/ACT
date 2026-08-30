@@ -12,9 +12,10 @@ is published and this project reaches `PAPER_COMPLETE`.
 1. The official-scale B3 table is complete and independently audited across the
    frozen radius grid, including route applicability, identical-backend
    route-invariance, Route A, theorem-instantiation status, and attack ceiling.
-2. The separately labelled learned-router RT-ER variant has three completed
-   seeds, immutable checkpoints, router-geometry trajectories, and certificate
-   decomposition results.
+2. The official third-party AdvMoE target has a completed official-code
+   reproduction, frozen sampled input-space route census, and hidden-computation
+   Route A results. A separately labelled learned-router RT-ER variant is a
+   fallback only if this execution proves infeasible.
 3. Expert-count scaling is evaluated at `E in {4, 8, 16, 32, 64}` using the
    frozen lazy route-set enumeration/no-good-cut design and tightened big-M
    bounds.
@@ -35,7 +36,7 @@ above. No submission date can redefine `PAPER_COMPLETE`.
 |---|---|---|
 | Official RT-ER B1 and B3 | Official-scale end-to-end comparison | B1 running; B3 pending |
 | Router-gradient audits of RT-ER, robust-moe-cnn, and V-MoE | Multiple-pipeline external-validity map | Source audit complete, independently audited |
-| Learned-router RT-ER variant, three seeds | Controlled static-versus-learned routing comparison | Approved, must wait for B1 |
+| AdvMoE official third-party learned deep-path target | Learned-router and non-output-layer external validity | Architecture audit complete; training and Route A wait for B1/B3 |
 | Lazy route-set enumeration plus no-good cuts; exact-support big-M | `E` scalability and search-relaxation defense | Pending |
 | Dimension-law simulation grid | Defense against two-point-fit criticism | Pending; grid must be frozen before execution |
 | Source-native survey retrieval | Recall-qualified survey if retrieval succeeds | Pending institutional retrieval |
@@ -48,12 +49,19 @@ must be fixed before results are viewed. The primary check is the fitted
 log-log slope against `-1/2`, with uncertainty and constants reported rather
 than tuned.
 
-### Tier 1.5: strongly recommended after B3
+### Tier 1.5: absorbed by the AdvMoE target after B3
 
-A minimal hidden-layer MoE instance places dispatch in the second layer of a
-small CNN. The prefix HZ becomes the shared router/expert input domain; route
-conditioning and staged verification must reuse the existing semantics. This
-is one bounded model and experiment, not a new architecture sweep.
+The official AdvMoE CIFAR-10 architecture replaces the proposed home-built
+hidden-layer toy. Its router reads the image before the ResNet stem, so it is
+not a hidden-state router and there is no prefix-HZ domain to reuse. Instead,
+one learned global hard top-1 route specializes 16 hidden MoE convolutions
+throughout the ResNet. The bounded task is to propagate the nonlinear router
+from pixels and verify each feasible full deep pathway. This closes the
+"output-layer only" attack without mislabelling the architecture.
+
+The learned-router RT-ER modification is optional fallback work, not a
+completion requirement, because an official third-party learned router carries
+stronger external-validity evidence.
 
 ### Tier 2: optional and non-blocking
 
@@ -76,13 +84,13 @@ or manuscript closure.
 
 | Attack | Required defense | Status |
 |---|---|---|
-| “The 49%-accuracy model is a toy.” | Official-scale B3 plus an official third-party learned-router model if executable. | B3 pending; robust-moe-cnn source path identified |
+| “The 49%-accuracy model is a toy.” | Official-scale B3 plus an official third-party learned-router model if executable. | B3 pending; AdvMoE semantics audited, execution pending |
 | “Enumeration cannot scale beyond E=8.” | Lazy enumeration/no-good cuts and `E={4,8,16,32,64}` data. | Pending |
-| “The method only covers output-layer MoE.” | Bounded hidden-layer instance or explicit limitation. | Pending Tier 1.5 |
+| “The method only covers output-layer MoE.” | Official AdvMoE deep route-specialized pathway or explicit limitation. | Architecture target audited; verification pending after B3 |
 | “The route-invariance baseline is self-serving.” | Exact definition-level applicability plus identical downstream backend and public implementation. | Verification-scale comparison complete; official scale pending B3 |
 | “The cohort was selected after outcomes were known.” | Full-test applicability decomposition, frozen ranks, and immutable endpoints. | Closed |
 | “The dimension law fits two points.” | Frozen synthetic dimension grid, slope and constant analysis. | Pending |
-| “The paper targets one prior work.” | Multi-pipeline gradient audit, case series, neutral artifact wording, and responsible disclosure. | Audit complete; disclosure delivery pending external channel |
+| “The paper targets one prior work.” | Multi-pipeline gradient audit, case series, neutral artifact wording, and responsible disclosure. | Audit complete; user reports disclosure sent, exact Day-0 date not yet recorded |
 | “Guard value survives any abstraction.” | Retained-guard positive result plus box-hull, eta-reduction, and tie-soundness negative controls. | Closed at verification scale |
 | “Incremental solving gives a universal speedup.” | Separate build-dominated and search-dominated measurements, retaining the negative end-to-end result. | Closed |
 | “UNSAFE comes from a relaxation witness.” | Full-model replay for every weighted unsafe result. | Closed for completed cohorts; remains a standing gate |
@@ -96,9 +104,9 @@ failure interpretations, and which existing item it displaces. Interesting
 measurements without a claim-level gap are out of scope.
 
 Administrative external actions are tracked separately. The user authorized
-responsible disclosure and a versioned Zenodo v1 on 2026-08-30. Delivery and
-deposit remain `AUTHORIZED_PENDING_EXTERNAL_CHANNEL`. The corresponding-author
-address was resolved from the official paper and a send was attempted, but the
-connected Gmail account lacks the required search/send OAuth scopes (HTTP 403),
-so no message was delivered. No Zenodo connector, account, or deposit token is
-available. Neither action may be represented as completed.
+responsible disclosure and a versioned Zenodo v1 on 2026-08-30. The user later
+reported personally sending the author message; its actual send date has not
+yet been recorded, so Day 0, the one Day-14 reminder, and the Day-21--30 public
+issue window cannot yet be calendared. The failed agent Gmail attempt remains a
+technical note and is not Day 0. No Zenodo connector, account, or deposit token
+is available, so no deposit, DOI, or publication may be claimed.

@@ -1,0 +1,50 @@
+{
+  "claim_boundary": "This is a pinned architecture/training-semantics audit, not a trained checkpoint, accuracy, robustness, or certification result.",
+  "conclusion": {
+    "hidden_state_router": false,
+    "routed_layers": 16,
+    "router_input": "CIFAR image tensor before the ResNet stem",
+    "router_output": "one shared hard top-1 route",
+    "verification_target": "full deep route-specialized ResNet pathway"
+  },
+  "independent_replay": {
+    "expert_widths": [
+      32,
+      32,
+      32,
+      32,
+      64,
+      64,
+      64,
+      64,
+      128,
+      128,
+      128,
+      128,
+      256,
+      256,
+      256,
+      256
+    ],
+    "model_output_shape": [
+      3,
+      10
+    ],
+    "routed_moe_convolutions": 16,
+    "router_output_shape": [
+      3,
+      2
+    ],
+    "router_parameters": 269202,
+    "tie_index": 0,
+    "unique_router_object_ids": 1
+  },
+  "issue_count": 0,
+  "issues": [],
+  "raw_result": {
+    "path": "/data1/Kane/MOE/ACT/data/moe/results/advmoe_architecture_audit_20260830/raw.json",
+    "sha256": "1b6912c1d6025e17655334d26364519f17f8b1372429403e54c8fa0288610cda"
+  },
+  "schema_version": 1,
+  "status": "PASS"
+}

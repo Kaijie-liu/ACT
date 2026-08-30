@@ -21,8 +21,11 @@ independent result is
 ## robust-moe-cnn
 
 At official commit `c50796fb8284512b6f6ad8e843f95182cec527cf`, the convolutional
-router ends in a trainable expert-score layer. Hard top-1 selection uses an
-explicit straight-through backward. More decisively, the released trainer:
+router ends in a trainable expert-score layer. Hard top-1 selection exposes an
+explicit straight-through backward. The architecture follow-up establishes
+that this gradient reaches the router but is cleared before the separate
+router update; it is therefore not itself the update mechanism. More
+decisively, the released trainer:
 
 1. creates and attaches a router separately from the main model optimizer;
 2. creates a separate router optimizer;
@@ -35,6 +38,11 @@ external-validity candidate. It is not isomorphic to output-level weighted
 top-k Route A: its router and experts are convolutional and its hard route
 selects shared channel-expert computation. Any later execution must be reported
 in a separate column.
+
+The follow-up architecture audit corrects an earlier planning assumption: the
+router reads the CIFAR image before the ResNet stem, not an intermediate
+feature. One global decision controls 16 routed convolutions. See
+`act/pipeline/moe/docs/advmoe_architecture_semantics.md`.
 
 No license file was located. ACT stores only repository/commit identities,
 hashes, line predicates, and semantic conclusions. No source was copied into

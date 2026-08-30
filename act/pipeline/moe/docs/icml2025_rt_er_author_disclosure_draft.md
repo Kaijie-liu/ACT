@@ -1,12 +1,12 @@
 # Draft author clarification: released RT-ER router training
 
-**Status:** `SEND_ATTEMPT_FAILED_REAUTHENTICATION_REQUIRED`
+**Status:** `USER_REPORTED_SENT_EXACT_DATE_NOT_RECORDED`
 
-The user explicitly authorized sending on 2026-08-30. The corresponding-author
-address was resolved from the official PMLR paper. Gmail search and send were
-attempted, but both failed with `ACCESS_TOKEN_SCOPE_INSUFFICIENT` / HTTP 403.
-The message has not been sent and must not be reported as delivered. The Gmail
-connection must be reauthenticated with search/send scopes before retrying.
+The user explicitly authorized sending on 2026-08-30 and later reported having
+sent the message personally. The exact sent date has not yet been recorded, so
+the reminder and public-issue windows are not scheduled. An earlier agent Gmail
+search/send attempt failed with `ACCESS_TOKEN_SCOPE_INSUFFICIENT` / HTTP 403;
+that failed attempt is a technical note, not Day 0. No agent retry is required.
 Any reply belongs in the private, untracked survey directory defined by the
 author-contact policy; the address itself is not stored in this public file.
 
@@ -52,4 +52,5 @@ Best regards,
   differentiable estimator as underspecification and the observed released
   training behavior as an artifact-level fact.
 - No non-response may be converted into refusal or evidence against the
-  theorem; the frozen day-0/day-14/day-30 contact policy applies after sending.
+  theorem; the frozen Day-0/Day-14/Day-21--30 policy applies from the user's
+  actual sent date once recorded.

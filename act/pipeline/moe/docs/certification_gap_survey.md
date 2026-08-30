@@ -283,6 +283,9 @@ in the audited cases. They do not support ecosystem prevalence, search recall,
 or a claim that no other eligible work exists. The machine-readable closure is
 `act/pipeline/moe/results/survey/case_series_closure_20260830.json`.
 
-Author contact remains `NOT_PERFORMED`. A neutral RT-ER clarification draft is
-stored at `act/pipeline/moe/docs/icml2025_rt_er_author_disclosure_draft.md`, but
-it must not be sent without explicit user authorization.
+Author contact was later authorized, and the user reports personally sending
+the neutral RT-ER clarification stored at
+`act/pipeline/moe/docs/icml2025_rt_er_author_disclosure_draft.md`. The actual
+sent date has not yet been recorded; until it is, the Day-14 reminder and
+Day-21--30 public-issue windows remain unscheduled. The earlier failed agent
+Gmail attempt is not treated as delivery.
