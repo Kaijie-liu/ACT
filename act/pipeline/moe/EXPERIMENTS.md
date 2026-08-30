@@ -1136,6 +1136,20 @@ the 64x64 and VNN-COMP variants remain separately labelled alternatives. The
 compact audit is
 `act/pipeline/moe/results/icml2025_rt_er/tinyimagenet_scope_audit_20260830.json`.
 
+The execution decision now selects the literal official `224x224`,
+150,528-feature, four-expert `MOE_ViT` construction for the primary K=20
+census. No separately initialized 12,288-feature model will be built. A
+secondary raw-resolution analysis may instead compose the same official router
+with its deterministic bilinear resize. ACT now folds that resize by applying
+its exact real-arithmetic adjoint to every router row, after the existing
+pointwise normalization fold; it never materializes the dense
+150,528-by-12,288 resize matrix. Small-graph composition tests cover
+`align_corners=false`, antialiasing, normalization order, and shape rejection.
+The literal script performs a float16 conversion before resize, so the final
+census must quantify that finite-precision drift and label the 64x64 fold as a
+real-arithmetic preprocessing analysis rather than silently claiming bitwise
+equivalence.
+
 ## ICML 2025 B3 executable comparison stage
 
 The final-checkpoint B3 execution layer is implemented but not run. It freezes

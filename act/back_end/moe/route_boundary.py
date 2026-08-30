@@ -82,6 +82,78 @@ def fold_affine_input_map(
     return W * input_scale[None, :], b + W @ input_shift
 
 
+def fold_bilinear_resize_input_map(
+    weight: Sequence[Sequence[float]],
+    bias: Sequence[float] | None,
+    *,
+    channels: int,
+    input_size: tuple[int, int],
+    output_size: tuple[int, int],
+    align_corners: bool = False,
+    antialias: bool = True,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Fold a deterministic bilinear resize into an affine map.
+
+    The implementation applies the exact adjoint of PyTorch's real-arithmetic
+    bilinear resize to each affine output row.  It never materializes the dense
+    resize matrix, which is prohibitive for mappings such as ``64x64 ->
+    224x224``.  Fold any pointwise affine normalization after the resize with
+    :func:`fold_affine_input_map` before calling this function.
+    """
+
+    import torch
+    import torch.nn.functional as functional
+
+    W = np.asarray(weight, dtype=np.float64)
+    if W.ndim != 2:
+        raise ValueError("router weight must be a matrix")
+    if channels <= 0:
+        raise ValueError("resize channels must be positive")
+    input_height, input_width = map(int, input_size)
+    output_height, output_width = map(int, output_size)
+    if min(input_height, input_width, output_height, output_width) <= 0:
+        raise ValueError("resize dimensions must be positive")
+    expected_output = channels * output_height * output_width
+    if W.shape[1] != expected_output:
+        raise ValueError("router width does not match resized output shape")
+    b = (
+        np.zeros(W.shape[0], dtype=np.float64)
+        if bias is None
+        else np.asarray(bias, dtype=np.float64).reshape(-1)
+    )
+    if b.size != W.shape[0]:
+        raise ValueError("router bias width does not match router outputs")
+    if not np.all(np.isfinite(W)) or not np.all(np.isfinite(b)):
+        raise ValueError("resize folding requires finite affine parameters")
+
+    source = torch.zeros(
+        (1, channels, input_height, input_width),
+        dtype=torch.float64,
+        requires_grad=True,
+    )
+    resized = functional.interpolate(
+        source,
+        size=(output_height, output_width),
+        mode="bilinear",
+        align_corners=bool(align_corners),
+        antialias=bool(antialias),
+    )
+    row_weights = torch.as_tensor(W, dtype=torch.float64).reshape(
+        W.shape[0], channels, output_height, output_width
+    )
+    folded_rows: list[np.ndarray] = []
+    for row_index in range(W.shape[0]):
+        gradient = torch.autograd.grad(
+            resized,
+            source,
+            grad_outputs=row_weights[row_index][None],
+            retain_graph=row_index + 1 < W.shape[0],
+            create_graph=False,
+        )[0]
+        folded_rows.append(gradient.detach().numpy().reshape(-1).copy())
+    return np.stack(folded_rows), b.copy()
+
+
 def _outward_bracket(
     value: float,
     absolute: float,

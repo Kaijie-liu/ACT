@@ -40,6 +40,7 @@ from act.back_end.moe.route_boundary import (
     affine_top1_route_boundary,
     affine_top1_route_boundary_batch,
     fold_affine_input_map,
+    fold_bilinear_resize_input_map,
 )
 from act.back_end.moe.guarded_box_hull import (
     GuardedBoxHullResult,
@@ -184,6 +185,7 @@ __all__ = [
     "guarded_hz_box_hull_highs",
     "guarded_hz_box_hull_scipy",
     "fold_affine_input_map",
+    "fold_bilinear_resize_input_map",
     "decompose_normalized_topk_scalar",
     "linear_safety_rows",
     "load_output_moe_checkpoint",

@@ -11,6 +11,7 @@ from act.back_end.moe.route_boundary import (
     affine_top1_route_boundary,
     affine_top1_route_boundary_batch,
     fold_affine_input_map,
+    fold_bilinear_resize_input_map,
 )
 
 
@@ -124,6 +125,77 @@ class AffineRouteBoundaryTests(unittest.TestCase):
         expected = weight @ normalized.reshape(-1) + bias
         actual = folded_weight @ pixels_unit.reshape(-1) + folded_bias
         np.testing.assert_allclose(actual, expected, rtol=0.0, atol=1e-12)
+
+    def test_bilinear_resize_fold_matches_real_arithmetic_graph(self):
+        import torch.nn.functional as functional
+
+        generator = np.random.default_rng(17)
+        source = generator.random((3, 3, 4))
+        weight = generator.normal(size=(4, 3 * 7 * 6))
+        bias = generator.normal(size=4)
+        folded_weight, folded_bias = fold_bilinear_resize_input_map(
+            weight,
+            bias,
+            channels=3,
+            input_size=(3, 4),
+            output_size=(7, 6),
+            align_corners=False,
+            antialias=True,
+        )
+        resized = functional.interpolate(
+            torch.as_tensor(source[None], dtype=torch.float64),
+            size=(7, 6),
+            mode="bilinear",
+            align_corners=False,
+            antialias=True,
+        ).numpy().reshape(-1)
+        expected = weight @ resized + bias
+        actual = folded_weight @ source.reshape(-1) + folded_bias
+        np.testing.assert_allclose(actual, expected, rtol=1e-12, atol=1e-12)
+
+    def test_normalization_then_resize_fold_preserves_composition(self):
+        import torch.nn.functional as functional
+
+        generator = np.random.default_rng(23)
+        source = generator.random((3, 2, 3))
+        weight = generator.normal(size=(2, 3 * 5 * 4))
+        bias = generator.normal(size=2)
+        scale = np.broadcast_to(
+            np.asarray([1.2, 0.8, 1.5])[:, None, None], (3, 5, 4)
+        ).reshape(-1)
+        shift = np.broadcast_to(
+            np.asarray([-0.2, 0.1, 0.3])[:, None, None], (3, 5, 4)
+        ).reshape(-1)
+        normalized_weight, normalized_bias = fold_affine_input_map(
+            weight, bias, scale, shift
+        )
+        folded_weight, folded_bias = fold_bilinear_resize_input_map(
+            normalized_weight,
+            normalized_bias,
+            channels=3,
+            input_size=(2, 3),
+            output_size=(5, 4),
+        )
+        resized = functional.interpolate(
+            torch.as_tensor(source[None], dtype=torch.float64),
+            size=(5, 4),
+            mode="bilinear",
+            align_corners=False,
+            antialias=True,
+        ).numpy().reshape(-1)
+        expected = weight @ (scale * resized + shift) + bias
+        actual = folded_weight @ source.reshape(-1) + folded_bias
+        np.testing.assert_allclose(actual, expected, rtol=1e-12, atol=1e-12)
+
+    def test_bilinear_resize_fold_rejects_shape_mismatch(self):
+        with self.assertRaisesRegex(ValueError, "resized output shape"):
+            fold_bilinear_resize_input_map(
+                np.zeros((2, 10)),
+                np.zeros(2),
+                channels=3,
+                input_size=(2, 2),
+                output_size=(2, 2),
+            )
 
     def test_batch_oracle_matches_scalar_and_replays_witnesses(self):
         rng = np.random.default_rng(20260830)
