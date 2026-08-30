@@ -66,69 +66,157 @@ def run(config_path: Path) -> dict[str, Any]:
         raise RuntimeError(f"refuses to reuse {output_dir}")
     input_path = source_dir / "inputs.npz"
     prepare_path = source_dir / "prepare.json"
-    bounds_path = source_dir / "crown_bounds.json"
     with np.load(input_path, allow_pickle=False) as arrays:
         clean_margin = arrays["clean_margin"].astype(np.float64)
         ranks = arrays["dataset_indices"].astype(np.int64)
     prepare = json.loads(prepare_path.read_text(encoding="utf-8"))
-    bounds = json.loads(bounds_path.read_text(encoding="utf-8"))
     attacks = {float(row["epsilon"]): row for row in prepare["attack_rows"]}
-    bound_rows = {float(row["epsilon"]): row for row in bounds["rows"]}
-    epsilons = sorted(set(attacks) & set(bound_rows))
-    matrix: list[np.ndarray] = []
-    rows: list[dict[str, Any]] = []
-    for epsilon in epsilons:
-        attacked = np.asarray(attacks[epsilon]["attacked_margin"], dtype=np.float64)
-        lower = np.asarray(bound_rows[epsilon]["lower_bounds"], dtype=np.float64)
-        values = relaxation_inflation(clean_margin, lower, attacked)
-        matrix.append(values)
-        rows.append(
+    registered_sources = config.get("bound_sources")
+    if registered_sources is None:
+        registered_sources = [
             {
-                "epsilon": epsilon,
-                "epsilon_over_255": epsilon * 255.0,
-                "inflation": _distribution(values),
-                "log10_inflation": _distribution(np.log10(values)),
+                "label": "CROWN",
+                "path": str(source_dir / "crown_bounds.json"),
             }
-        )
+        ]
+    layers: list[dict[str, Any]] = []
+    layer_matrices: dict[str, list[np.ndarray]] = {}
+    source_records: dict[str, dict[str, str]] = {}
+    epsilons: list[float] | None = None
+    for registered in registered_sources:
+        label = str(registered["label"])
+        if label in layer_matrices:
+            raise ValueError(f"duplicate bound-source label: {label}")
+        bounds_path = _inside(Path(registered["path"]), MOE_ROOT)
+        bounds = json.loads(bounds_path.read_text(encoding="utf-8"))
+        bound_rows = {float(row["epsilon"]): row for row in bounds["rows"]}
+        current_epsilons = sorted(set(attacks) & set(bound_rows))
+        if epsilons is None:
+            epsilons = current_epsilons
+        elif current_epsilons != epsilons:
+            raise RuntimeError("bound sources do not share the registered epsilon grid")
+        matrix: list[np.ndarray] = []
+        rows: list[dict[str, Any]] = []
+        for epsilon in current_epsilons:
+            attacked = np.asarray(
+                attacks[epsilon]["attacked_margin"], dtype=np.float64
+            )
+            lower = np.asarray(
+                bound_rows[epsilon]["lower_bounds"], dtype=np.float64
+            )
+            values = relaxation_inflation(clean_margin, lower, attacked)
+            matrix.append(values)
+            rows.append(
+                {
+                    "epsilon": epsilon,
+                    "epsilon_over_255": epsilon * 255.0,
+                    "inflation": _distribution(values),
+                    "log10_inflation": _distribution(np.log10(values)),
+                }
+            )
+        layer_matrices[label] = matrix
+        layers.append({"label": label, "method": bounds.get("method"), "rows": rows})
+        source_records[label] = {"path": str(bounds_path), "sha256": _sha256(bounds_path)}
+    if epsilons is None or not layers:
+        raise RuntimeError("no registered bound sources were evaluated")
+    primary_label = str(config.get("primary_label", layers[-1]["label"]))
+    primary = next((layer for layer in layers if layer["label"] == primary_label), None)
+    if primary is None:
+        raise ValueError("primary_label is absent from bound_sources")
+    rows = primary["rows"]
     output_dir.mkdir(parents=True)
     csv_path = output_dir / "per_sample.csv"
     with csv_path.open("x", encoding="utf-8", newline="") as handle:
         writer = csv.writer(handle)
-        writer.writerow(["sample_rank", *[f"epsilon_{value*255:g}_over_255" for value in epsilons]])
+        columns = [
+            f"{label}_epsilon_{value*255:g}_over_255"
+            for label in layer_matrices
+            for value in epsilons
+        ]
+        writer.writerow(["sample_rank", *columns])
         for sample, rank in enumerate(ranks):
-            writer.writerow([int(rank), *[values[sample] for values in matrix]])
+            writer.writerow(
+                [
+                    int(rank),
+                    *[
+                        values[sample]
+                        for matrix in layer_matrices.values()
+                        for values in matrix
+                    ],
+                ]
+            )
 
     import matplotlib
     matplotlib.use("Agg")
     matplotlib.rcParams["svg.fonttype"] = "none"
     import matplotlib.pyplot as plt
     figure, axis = plt.subplots(figsize=(5.4, 3.7), constrained_layout=True)
-    axis.boxplot(
-        [np.log10(values) for values in matrix],
-        tick_labels=[f"{value*255:g}/255" for value in epsilons],
-        showfliers=True,
+    labels = list(layer_matrices)
+    colors = ["#d95f02", "#1b9e77", "#7570b3", "#e7298a"]
+    base = np.arange(len(epsilons), dtype=np.float64) + 1.0
+    width = 0.68 / len(labels)
+    for slot, label in enumerate(labels):
+        offset = (slot - (len(labels) - 1) / 2.0) * width
+        boxes = axis.boxplot(
+            [np.log10(values) for values in layer_matrices[label]],
+            positions=base + offset,
+            widths=width * 0.82,
+            showfliers=True,
+            patch_artist=True,
+        )
+        color = colors[slot % len(colors)]
+        for patch in boxes["boxes"]:
+            patch.set_facecolor(color)
+            patch.set_alpha(0.55)
+        for median in boxes["medians"]:
+            median.set_color("black")
+    axis.set_xticks(base, [f"{value*255:g}/255" for value in epsilons])
+    from matplotlib.patches import Patch
+    axis.legend(
+        handles=[
+            Patch(facecolor=colors[i % len(colors)], alpha=0.55, label=label)
+            for i, label in enumerate(labels)
+        ],
+        title="Router bound",
     )
     axis.set_xlabel("Perturbation radius")
     axis.set_ylabel(r"$\log_{10}$ relaxation inflation")
-    axis.set_title("AdvMoE init router: CROWN relaxation vs observed PGD drop")
+    axis.set_title("AdvMoE init router: relaxation vs observed PGD drop")
     axis.grid(axis="y", alpha=0.2)
     figure_path = output_dir / "relaxation_inflation.svg"
     figure.savefig(figure_path, format="svg")
     plt.close(figure)
 
+    source_payload: dict[str, Any] = {
+        "inputs": {"path": str(input_path), "sha256": _sha256(input_path)},
+        "prepare": {"path": str(prepare_path), "sha256": _sha256(prepare_path)},
+        "bound_sources": source_records,
+    }
+    # Preserve the original one-source result schema for existing consumers.
+    if len(source_records) == 1 and "CROWN" in source_records:
+        source_payload["bounds"] = source_records["CROWN"]
     result = {
         "schema_version": 1,
         "status": "COMPLETED_NOT_INDEPENDENTLY_AUDITED",
         "scope": config["scope"],
         "config": {"path": str(config_path), "sha256": _sha256(config_path)},
-        "sources": {
-            "inputs": {"path": str(input_path), "sha256": _sha256(input_path)},
-            "prepare": {"path": str(prepare_path), "sha256": _sha256(prepare_path)},
-            "bounds": {"path": str(bounds_path), "sha256": _sha256(bounds_path)},
-        },
+        "sources": source_payload,
         "definition": config["definition"],
         "samples": int(len(ranks)),
+        "primary_label": primary_label,
         "rows": rows,
+        "layers": layers,
+        "median_ratios": {
+            f"{labels[i]}_over_{labels[j]}": [
+                float(
+                    np.median(layer_matrices[labels[i]][epsilon_slot])
+                    / np.median(layer_matrices[labels[j]][epsilon_slot])
+                )
+                for epsilon_slot in range(len(epsilons))
+            ]
+            for i in range(len(labels))
+            for j in range(i + 1, len(labels))
+        },
         "artifacts": {
             "per_sample": {"path": str(csv_path), "sha256": _sha256(csv_path)},
             "figure": {"path": str(figure_path), "sha256": _sha256(figure_path)},

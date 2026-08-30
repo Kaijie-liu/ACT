@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "status": "FROZEN_PENDING_OFFICIAL_TRAINING",
+  "scope": "ADV_MOE_TRAINED_ROUTER_ROUTE_SHARE_AND_MARGIN_TELEMETRY",
+  "dataset": "official ordered CIFAR-10 test set",
+  "initialization_model_seed": 1234,
+  "checkpoint_policy": {
+    "initial_and_final": "full ordered 10000-input test set",
+    "intermediate": "frozen deterministic subset plus full route-share forward",
+    "no_test_selection": true
+  },
+  "required_per_checkpoint_metrics": [
+    "route_counts",
+    "route_shares",
+    "route_load_entropy",
+    "effective_route_count",
+    "signed_score_difference_mean",
+    "signed_score_difference_standard_deviation",
+    "absolute_signed_mean_over_standard_deviation",
+    "selected_margin_distribution",
+    "clean_accuracy",
+    "first_order_margin_over_input_gradient_l1_distribution",
+    "fixed_subset_strong_pgd_route_flip_count",
+    "fixed_subset_strong_pgd_margin_compression_distribution"
+  ],
+  "interpretation": "The primary question is whether the released supervised router objective breaks the 10000:0 initialization collapse and creates balanced input-dependent routing. No architecture effect is preclaimed. Checkpoint selection may not use test telemetry."
+}

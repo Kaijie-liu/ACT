@@ -1,0 +1,20 @@
+{
+  "schema_version": 2,
+  "status": "PREREGISTERED_NOT_RUN",
+  "scope": "ADV_MOE_INIT_20_SAMPLE_FIVE_RADIUS_IBP_AND_CROWN_RELAXATION_INFLATION_DIAGNOSTIC",
+  "source_result_dir": "/data1/Kane/MOE/ACT/data/moe/results/advmoe_router_bracket_init20_20260830_r7_strong_crown",
+  "bound_sources": [
+    {
+      "label": "IBP",
+      "path": "/data1/Kane/MOE/ACT/data/moe/results/advmoe_router_bracket_init20_20260830_r3/bounds.json"
+    },
+    {
+      "label": "CROWN",
+      "path": "/data1/Kane/MOE/ACT/data/moe/results/advmoe_router_bracket_init20_20260830_r7_strong_crown/crown_bounds.json"
+    }
+  ],
+  "primary_label": "CROWN",
+  "definition": "For each bound layer: (clean_margin - numerical_lower_bound) / (clean_margin - strongest_PGD_margin)",
+  "output_dir": "/data1/Kane/MOE/ACT/data/moe/results/advmoe_relaxation_inflation_layers_20260830_r2",
+  "interpretation": "A dimensionless comparison of each relaxation's permitted margin drop with the strongest observed PGD drop. Ratios between layers measure the empirical tightening of the relaxation diagnostic. No value is a certified approximation ratio or a bound on the true reachable drop."
+}

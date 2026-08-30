@@ -1797,16 +1797,16 @@ excluded. They exposed bounded-graph reuse, cyclic garbage retention, and
 retained bound-local references, respectively. Their attack endpoint hash is
 identical to the accepted run; no directory was overwritten.
 
-The same immutable artifacts support a separate empirical boundary-scale
+The same immutable artifacts support a separate empirical local-scale
 diagnostic without another model execution. Per input, it compares
 `clean_margin / ||grad_x margin||_1` with the 8/255 PGD-slope extrapolation
 `epsilon / fractional_compression`. Their medians are `67.850/255` and
 `70.644/255`; Pearson/Spearman correlations are `0.926/0.910`, 16/20 pairs are
 within 5%, and 19/20 are within 10%. The exact K=20 RT-ER unit-pixel aggregate
-median is `0.5324/255`, giving scale ratios `127.4x` and `132.7x`. This is
-reported as an approximately `130x` architecture-regime diagnostic, not a
-formal AdvMoE boundary or causal attribution to convolution, weight sharing,
-pooling, or depth. Independent audit: zero issues at
+median is `0.5324/255`, giving naive ratios `127.4x` and `132.7x`. Those ratios
+are retained only as historical local-gradient diagnostics; the full-test
+route-share result below invalidates an architecture-regime interpretation.
+Independent audit: zero issues at
 `act/pipeline/moe/results/advmoe_init_boundary_estimates_20260830_r1.json`.
 
 A first-five-sample log-bisection then tested whether sparse CROWN could supply
@@ -1844,6 +1844,36 @@ allowed margin drop with the strongest observed PGD drop. It is not a
 certified approximation ratio or bound on the true reachable drop. Independent
 audit replays 80 endpoints and 100 inflation values with zero issues:
 `act/pipeline/moe/results/advmoe_large_epsilon_and_inflation_20260830_r1.json`.
+
+The full official ordered test set then exposes the required confound. Under
+the official construction order and seed 1234, the init router assigns
+`10,000/10,000` images to expert 0. The signed difference `r_0-r_1` has mean
+`0.3064137`, standard deviation `0.0335224`, and
+`abs(mean)/standard_deviation=9.1406`. No opposite-route official test image
+exists, so all 20 preregistered line searches terminate as
+`NO_OPPOSITE_ROUTE_IN_OFFICIAL_TEST_SET`. This is a near-constant or globally
+offset-dominated result on the test distribution, not proof that a literal bias
+parameter is causal and not global constancy over the input cube. Independent
+replay has zero issues at
+`act/pipeline/moe/results/advmoe_init_route_share_20260830_r1.json`.
+
+A nested-endpoint continuation at `{128,192,255}/255` finds zero route flips on
+the same 20 inputs. Median compression is `86.14%`, `96.15%`, and `97.59%`, and
+the minimum replayed margin remains positive. Epsilon 1 spans each clipped unit
+pixel cube, but the result is still attack non-discovery. A layered inflation
+figure adds IBP medians `8.913e11--5.543e11` to the prior CROWN medians;
+CROWN reduces the diagnostic by `5.17x--5.36x` while leaving an approximately
+`1e11` residual. The combined audit reports zero issues at
+`act/pipeline/moe/results/advmoe_extreme_and_layered_inflation_20260830_r1.json`.
+
+Every future trained AdvMoE checkpoint must log route counts/shares, signed
+score-difference mean and standard deviation, absolute-mean-to-standard-
+deviation ratio, selected-margin distribution, load entropy, first-order
+diagnostics, and the frozen-subset strong attack. This tests whether supervised
+router training breaks the initialization collapse; no architecture effect is
+preclaimed.
+The corresponding frozen machine-readable field list is
+`act/pipeline/moe/configs/advmoe_training_router_telemetry_r1.json`.
 
 ## Lazy top-k enumeration and support-derived big-M
 

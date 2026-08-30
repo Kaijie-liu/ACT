@@ -71,6 +71,42 @@ def attack_diagnostic_brackets(
     return rows
 
 
+def reuse_better_nested_endpoints(
+    result: dict[str, Any],
+    *,
+    previous_endpoint: np.ndarray,
+    previous_margin: np.ndarray,
+    previous_routes: np.ndarray,
+    previous_success: np.ndarray,
+    inputs: np.ndarray,
+    clean_margin: np.ndarray,
+) -> int:
+    """Carry stronger endpoints forward across a nested epsilon schedule.
+
+    A point feasible for the previous L-infinity ball remains feasible for every
+    later ball.  This helper preserves the lower attacked margin per sample and
+    updates every dependent diagnostic atomically.
+    """
+    current_margin = np.asarray(result["attacked_margin"], dtype=np.float64)
+    previous_margin = np.asarray(previous_margin, dtype=np.float64)
+    reuse = previous_margin < current_margin
+    count = int(reuse.sum())
+    if not count:
+        return 0
+    result["adversarial"][reuse] = previous_endpoint[reuse]
+    result["attacked_margin"][reuse] = previous_margin[reuse]
+    result["replay_routes"][reuse] = previous_routes[reuse]
+    result["success"][reuse] = previous_success[reuse]
+    result["linf"][reuse] = np.max(
+        np.abs(previous_endpoint[reuse] - inputs[reuse]),
+        axis=(1, 2, 3),
+    )
+    result["margin_compression_fraction"][reuse] = (
+        clean_margin[reuse] - previous_margin[reuse]
+    ) / np.maximum(np.abs(clean_margin[reuse]), np.finfo(np.float32).eps)
+    return count
+
+
 def run(config_path: Path) -> dict[str, Any]:
     config_path = _inside(config_path, PROJECT_ROOT)
     config = json.loads(config_path.read_text(encoding="utf-8"))
@@ -105,6 +141,11 @@ def run(config_path: Path) -> dict[str, Any]:
     endpoints: list[np.ndarray] = []
     success_rows: list[np.ndarray] = []
     result_rows: list[dict[str, Any]] = []
+    previous_endpoint: np.ndarray | None = None
+    previous_margin: np.ndarray | None = None
+    previous_routes: np.ndarray | None = None
+    previous_success: np.ndarray | None = None
+    reuse_nested = bool(config.get("reuse_nested_endpoints", False))
     for epsilon_slot, epsilon in enumerate(epsilons):
         started = time.monotonic()
         result = strong_pgd_route_flip(
@@ -118,6 +159,27 @@ def run(config_path: Path) -> dict[str, Any]:
             seed=int(attack["seed"]) + epsilon_slot,
         )
         attack_seconds = time.monotonic() - started
+        nested_reuse_count = 0
+        if (
+            reuse_nested
+            and previous_endpoint is not None
+            and previous_margin is not None
+            and previous_routes is not None
+            and previous_success is not None
+        ):
+            nested_reuse_count = reuse_better_nested_endpoints(
+                result,
+                previous_endpoint=previous_endpoint,
+                previous_margin=previous_margin,
+                previous_routes=previous_routes,
+                previous_success=previous_success,
+                inputs=inputs_np,
+                clean_margin=clean_margin,
+            )
+        previous_endpoint = np.asarray(result["adversarial"], dtype=np.float32).copy()
+        previous_margin = np.asarray(result["attacked_margin"], dtype=np.float64).copy()
+        previous_routes = np.asarray(result["replay_routes"], dtype=np.int64).copy()
+        previous_success = np.asarray(result["success"], dtype=bool).copy()
         endpoints.append(result["adversarial"])
         success = np.asarray(result["success"], dtype=bool)
         success_rows.append(success)
@@ -138,6 +200,7 @@ def run(config_path: Path) -> dict[str, Any]:
                 ).tolist(),
                 "linf": np.asarray(result["linf"], dtype=np.float64).tolist(),
                 "seconds": attack_seconds,
+                "nested_endpoint_reuse_count": nested_reuse_count,
             }
         )
     success_matrix = np.stack(success_rows)
@@ -184,6 +247,7 @@ def run(config_path: Path) -> dict[str, Any]:
         "router_sha256": state_dict_sha256(router),
         "resource_gate": {"free_bytes_before": int(free), "total_bytes": int(total)},
         "clean_margin": clean_margin.tolist(),
+        "reuse_nested_endpoints": reuse_nested,
         "attack_rows": result_rows,
         "brackets": brackets,
         "artifacts": {

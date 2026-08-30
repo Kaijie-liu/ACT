@@ -77,15 +77,16 @@ engineering pilot has independently audited orchestration, all attack
 endpoints, BN identity, and CROWN accounting, but it does not satisfy the
 required init/final census or staged-verifier table. Alpha-CROWN and
 beta-CROWN/BaB remain closure tiers rather than silently substituted results.
-The existing pilot additionally supports two closely agreeing empirical
-boundary-scale estimates (`67.85/255` first-order and `70.64/255` PGD-slope),
-approximately `130x` the exact RT-ER K=20 aggregate median. This closes an
-architecture-regime diagnostic only; it neither closes the nonlinear-router
-bracket nor licenses a causal architecture claim.
-Large-epsilon PGD finds no flip on the 20 init inputs through 96/255, so the
-near-70/255 values are retained only as local linearized scales, not boundaries.
-The five-radius relaxation-inflation curve (`1.07e11--1.66e11` medians) is the
-compliant quantitative gap diagnostic, with no approximation-ratio claim.
+The existing pilot's two closely agreeing local estimates (`67.85/255`
+first-order and `70.64/255` PGD-slope) are now explicitly confounded: the
+official initialization routes all 10,000 test images to expert 0, with signed
+score-difference `abs(mean)/standard_deviation=9.1406`. The approximately 130x
+architecture interpretation is retired. Strong PGD finds no flip on the 20
+inputs through epsilon 1, but this remains attack non-discovery. The five-radius
+layered relaxation-inflation curve shows that CROWN improves IBP by
+`5.17x--5.36x` while leaving `1.07e11--1.66e11` CROWN medians; it has no
+approximation-ratio claim. Trained telemetry must report route share and signed
+offset at every checkpoint to determine whether training breaks the collapse.
 The first-five-sample numerical-reach bisection is ULP-limited in all five rows:
 its median sign transition is `1.856e-9--1.868e-9`, versus a `1.609e-12`
 linear extrapolation. It is retained as a negative numerical-semantics result,

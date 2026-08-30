@@ -94,12 +94,14 @@ this order law. We do not treat the raw-resolution fold as an independent
 third point, because resize changes the induced weight statistics, and we do
 not extrapolate this affine result to deep nonlinear routers.
 
-The AdvMoE audit supplies a useful boundary case. Its initialized convolutional
-router has a much larger local margin-to-gradient scale than the affine RT-ER
-router, and strong attacks do not find a flip through 96/255 on the frozen
-20-input diagnostic. Those observations are neither an exact boundary nor a
-formal stability result. They show why router architecture must be part of the
-analysis regime rather than hidden inside a generic “routing” label.
+The AdvMoE audit supplies a useful counterexample to an architecture-only
+reading. Its initialized convolutional router sends all 10,000 official test
+images to expert 0; the signed score difference has
+`abs(mean)/standard_deviation=9.1406`. Strong attacks find no flip on the frozen
+20-input diagnostic even when epsilon 1 spans the clipped pixel cube. These are
+neither exact boundary nor formal stability results. They show that route-share
+and offset diagnostics are necessary before interpreting a large local
+margin-to-gradient scale as an architectural property.
 
 ## Comparison enabled by path conditioning
 

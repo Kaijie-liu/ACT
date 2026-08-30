@@ -209,26 +209,65 @@ gradient. On the 20 frozen inputs, the first-order estimate has median
 Spearman correlation is `0.910`, 16/20 pairs agree within 5%, and 19/20 agree
 within 10%.
 
-The exact K=20 RT-ER aggregate pixel-box radius median is `0.5324/255`.
-Consequently, the corresponding architecture-regime scale ratios are `127.4x`
-and `132.7x`, which the project reports as approximately `130x` rather than a
-fixed `137x`. The AdvMoE values are local/extrapolated estimates, not route
-boundaries, witnesses, or certificates. The comparison does not isolate weight
-sharing, pooling, depth, or initialization as a causal mechanism.
+The exact K=20 RT-ER aggregate pixel-box radius median is `0.5324/255`, so a
+naive division produces local-scale ratios `127.4x` and `132.7x`. A subsequent
+full-test confound check invalidates any architecture-level interpretation of
+those ratios. They are retained only as historical local-gradient diagnostics,
+not reported as route-boundary or architecture-regime effects.
 
 The two estimators are not independent: margin-directed PGD and the first-order
 ratio share the same local-gradient geometry. A preregistered large-epsilon
 attack therefore tests the extrapolation at 16, 32, 64, and 96/255. Strong PGD
 finds 0/20 flips at every radius. Median margin compression is 21.04%, 38.45%,
-61.82%, and 76.60%, respectively. Thus the near-70/255 values are validated as
-closely agreeing local linear-scale estimates, not observed route boundaries;
-all attack-diagnostic intervals remain open beyond 96/255. Attack non-discovery
-is not a certified lower bound.
+61.82%, and 76.60%, respectively. The curve is sublinear at large epsilon and
+rejects the near-70/255 values as observed boundaries. Attack non-discovery is
+not a certified lower bound.
 
 Raw CSV and an SVG with live text are stored under
 `data/moe/results/advmoe_init_boundary_estimates_20260830_r1`. Independent
 replay reports zero issues at
 `act/pipeline/moe/results/advmoe_init_boundary_estimates_20260830_r1.json`.
+
+## Full-test route-share confound
+
+One batched forward over the official ordered CIFAR-10 test set resolves the
+main interpretation question. Under the official construction order and model
+seed 1234, all `10,000/10,000` inputs select expert 0. The signed score
+difference `r_0-r_1` has mean `0.3064137`, standard deviation `0.0335224`,
+median `0.3050824`, range `0.1889615--0.4461899`, and
+`abs(mean)/standard_deviation=9.1406`. This is evidence that the initialized
+router is near-constant or globally offset-dominated **on this test
+distribution**. It does not identify a literal bias parameter as the cause and
+does not establish global constancy over the input cube.
+
+Because the official test set contains no image assigned to expert 1, the
+preregistered cross-route line construction is inapplicable rather than
+unsuccessful: every frozen line row records
+`NO_OPPOSITE_ROUTE_IN_OFFICIAL_TEST_SET`. Independent full-test replay reports
+zero issues at
+`act/pipeline/moe/results/advmoe_init_route_share_20260830_r1.json`.
+
+The extreme continuation uses the same 20 frozen inputs, 100 steps, 10
+restarts, and nested endpoint reuse at 128, 192, and 255/255. It finds no route
+flip; median compression is `86.14%`, `96.15%`, and `97.59%`, and the minimum
+stored attacked margin remains positive (`0.02413`, `0.00592`, and `0.00592`).
+At epsilon 1, every per-sample clipped box spans the full unit pixel cube, but
+PGD remains heuristic. The result is strong attack non-discovery, not a proof
+that expert 1 has an empty global decision region. The superseded first launch
+is retained but excluded because it did not explicitly carry stronger nested
+endpoints forward. The accepted result and layered-inflation artifact have a
+combined zero-issue audit at
+`act/pipeline/moe/results/advmoe_extreme_and_layered_inflation_20260830_r1.json`.
+
+Future trained-checkpoint telemetry must therefore record route counts and
+shares, signed score-difference mean and standard deviation, the absolute-
+mean-to-standard-deviation ratio, selected-margin distribution, and load
+entropy at every checkpoint. The scientific question is whether the released
+supervised router objective breaks this initialization collapse and creates
+balanced, input-dependent routing; the initialization itself is not evidence
+of an intrinsically stable deep-router architecture.
+The frozen telemetry fields and checkpoint policy are machine-readable in
+`act/pipeline/moe/configs/advmoe_training_router_telemetry_r1.json`.
 
 ## Float32 CROWN numerical-reach probe
 
@@ -287,13 +326,13 @@ rounding policy or equivalent set-containment argument.
 
 At the five registered non-microscopic radii, the project reports
 
-`(clean_margin - CROWN_LB) / (clean_margin - strongest_PGD_margin)`.
+`(clean_margin - bound_LB) / (clean_margin - strongest_PGD_margin)`.
 
-The median values are `1.664e11`, `1.471e11`, `1.336e11`, `1.186e11`, and
-`1.073e11` at 0.5, 1, 2, 4, and 8/255. This recovers the eleven-order empirical
-separation without relying on an ULP-scale radius axis. It is a dimensionless
-relaxation-versus-observed-attack-drop diagnostic, not a certified
-approximation ratio and not a bound on the unknown true reachable margin drop.
-All 80 large-epsilon endpoints and all 100 inflation values replay under the
-zero-issue audit
-`act/pipeline/moe/results/advmoe_large_epsilon_and_inflation_20260830_r1.json`.
+For sparse CROWN, the median values are `1.664e11`, `1.471e11`, `1.336e11`,
+`1.186e11`, and `1.073e11` at 0.5, 1, 2, 4, and 8/255. The corresponding IBP
+medians are `8.913e11`, `7.763e11`, `6.993e11`, `6.271e11`, and `5.543e11`.
+CROWN therefore reduces this diagnostic by `5.17x--5.36x` while leaving an
+approximately `1e11` residual. The layered plot uses live SVG text. These are
+dimensionless relaxation-versus-observed-attack-drop diagnostics, not
+certified approximation ratios and not bounds on the unknown true reachable
+margin drop.

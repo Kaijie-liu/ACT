@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "status": "PREREGISTERED_NOT_RUN",
+  "scope": "ADV_MOE_INIT_FULL_TEST_ROUTE_SHARE_MARGIN_AND_CROSS_ROUTE_LINE_DIAGNOSTIC",
+  "model_seed": 1234,
+  "dataset_archive": "/data1/Kane/MOE/ACT/data/torchvision/CIFAR10/raw/cifar-10-python.tar.gz",
+  "device": "cuda",
+  "batch_size": 512,
+  "minimum_free_memory_bytes": 21474836480,
+  "line_sample_indices": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+  "line_partner_policy": "minimum pixel-space Linf distance among official test images assigned to the opposite route",
+  "line_bisection_iterations": 60,
+  "output_dir": "/data1/Kane/MOE/ACT/data/moe/results/advmoe_init_route_share_20260830_r1",
+  "interpretation": "Route share and the signed score-difference mean/std diagnose whether the init router is near-constant on the official test set. A concrete opposite-route line endpoint is an empirical upper bound on that sample's route-boundary radius. The same-route side of a line bracket is not a global or formal lower bound."
+}

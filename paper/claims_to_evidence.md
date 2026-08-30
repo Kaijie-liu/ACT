@@ -659,7 +659,7 @@ stability, and large negative relaxation bounds are not evidence of intrinsic
 router difficulty. Alpha-CROWN, beta-CROWN/BaB, the trained checkpoint, census,
 and deep-path certificate coverage remain pending.
 
-### The init diagnostics expose two router-architecture regimes
+### The init diagnostics expose an initialization confound
 
 The L1 diagnostic is the gradient of the selected-vs-competing route margin
 with respect to the unit-pixel input. Its per-input first-order boundary
@@ -669,21 +669,24 @@ Pearson and Spearman agreement are `0.926` and `0.910`; 16/20 estimates agree
 within 5% and 19/20 within 10%. Thus the agreement is pointwise rather than a
 quotient-of-medians coincidence.
 
-The K=20 RT-ER exact pixel-box aggregate median is `0.5324/255`, making the two
-scale ratios `127.4x` and `132.7x`. The bounded paper wording is therefore
-“approximately 130x larger empirical route-boundary scale at initialization.”
-This contrasts a deep convolutional router with a standard affine router and
-limits the affine `1/sqrt(d)` observation: it must not be extrapolated to deep
-routers. The evidence does not isolate weight sharing, pooling, depth, or any
-other architectural component as the causal mechanism, and the AdvMoE values
-are not exact boundaries or certificates.
+The K=20 RT-ER exact pixel-box aggregate median is `0.5324/255`, so direct
+division gives `127.4x` and `132.7x`. The project does not promote either ratio:
+a full-test confound check shows that the official AdvMoE initialization routes
+all `10,000/10,000` official test images to expert 0. The signed difference
+`r_0-r_1` has mean `0.3064137`, standard deviation `0.0335224`, and
+`abs(mean)/standard_deviation=9.1406`. The near-70/255 quantities therefore
+describe local gradients around a distribution-level near-constant router,
+not an architecture-induced route-boundary regime.
 
-The two estimates are also statistically dependent because the PGD direction
-is gradient-driven. A large-epsilon attack check finds no route flip on any of
-the 20 inputs through 96/255, despite median margin compression reaching 76.60%.
-Consequently, the approximately 130x comparison is restricted to an empirical
-local linearized scale; it is not an observed boundary ratio. The open
-attack-diagnostic endpoint above 96/255 is not a formal stability lower bound.
+The two estimates are statistically dependent because the PGD direction is
+gradient-driven. A large-epsilon attack check finds no route flip on any of the
+20 inputs through 96/255 despite median margin compression reaching 76.60%.
+A continuation at 128, 192, and 255/255 also finds no flip, with median
+compression `86.14%`, `96.15%`, and `97.59%`. Even epsilon 1 is attack
+non-discovery, not global constancy. No cross-route line bracket can be built
+from the official test set because it contains no opposite-route image. The
+paper reports the initialization collapse and removes the approximately 130x
+architecture wording.
 
 This regime also motivates a dependency inversion in the staged design. For
 the official AdvMoE `E=2` shared-route model, sound verification can, in
@@ -705,12 +708,11 @@ backend. A formally labelled reach requires outward-rounded or otherwise
 validated numerical semantics.
 
 At the ordinary `{0.5,1,2,4,8}/255` radii, a ULP-independent diagnostic is
-available: `(m-CROWN_LB)/(m-min_PGD_m)`. Median relaxation inflation remains
-between `1.07e11` and `1.66e11` across all five radii. This quantifies the
-distance between the sparse-CROWN relaxation and the strongest observed margin
-drop without claiming a certified approximation ratio or a bound on the true
-reachable margin. It provides quantitative motivation for verifying both
-static `E=2` paths without making router certification a soundness dependency.
+available: `(m-bound_LB)/(m-min_PGD_m)`. CROWN medians remain between `1.07e11`
+and `1.66e11`; IBP medians are `5.17x--5.36x` larger. This quantifies both the
+benefit of the bound tier and its large residual distance from the strongest
+observed margin drop, without claiming a certified approximation ratio or a
+bound on the true reachable margin.
 
 ## Threats to validity
 
