@@ -4,7 +4,10 @@
 
 Formal verification of routed mixture-of-experts models is often reduced to a
 router-invariance check, even though route stability is sufficient rather than
-necessary for output robustness. We present a staged path-conditioned verifier
+necessary for output robustness. Across 20 exact official full-model router
+initializations, route-invariance applicability at \(8/255\) is empty for 18
+seeds and leaves at most two of 10,000 test inputs for either remaining seed.
+We present a staged path-conditioned verifier
 that preserves tie-inclusive route conditions in a shared abstract frame,
 tightens downstream expert supports, and checks every feasible route branch. A
 cheap first tier eliminates normalized output gates by convexity. When that
@@ -18,15 +21,15 @@ rows and route conditioning yields a median structural-width ratio of 0.430.
 The immutable preregistered overall solved endpoint is 56/100 and fails its 60%
 gate; boundary applicability is 76/100 and conditional coverage is 56/76. We
 separately report follow-up closure and engineering results without rewriting
-that endpoint. Official-scale evaluation remains pending. The follow-up
-explicit end-to-end route-invariance comparison is complete and independently
-audited.
+that endpoint. Official-scale expert certification remains pending while the
+official-code reproduction runs. The follow-up explicit end-to-end
+route-invariance comparison is complete and independently audited.
 
 ## Draft status and evidence boundary
 
 This is a claims-to-evidence paper draft, not a new experimental protocol. It
 is grounded in the repository state at
-`bcaee278e76a5d4970557d14f9d43df3123eb079`. The frozen scientific endpoint,
+`bfc7c9b2e`. The frozen scientific endpoint,
 follow-up closure experiments, and engineering reruns are reported separately.
 No pending result is inferred from an implementation, a protocol, or a smoke
 test.
@@ -55,6 +58,9 @@ claim about modern production-scale sparse MoEs.
 5. A tie-inclusive implication counterexample and a sound eta-shifted compiler,
    plus a partial primary-source artifact survey whose retrieval limitations are
    reported rather than converted into prevalence claims.
+6. A 200,000-decision official-construction census showing that hard-route
+   certificate applicability is nearly empty at \(8/255\) and varies by an
+   order of magnitude across unseeded initializations at \(2/255\).
 
 ## Problem statement
 
@@ -432,7 +438,38 @@ cohort, while the sound eta output reduction was too loose under CROWN. The
 artifact is
 `act/pipeline/moe/results/crown/crown_adapter_consistency_bal010_43_r2_20260829.json`.
 
-### B1: official-code RT-ER reproduction — environment ready, data pending
+### B1: official-code RT-ER reproduction — training running, endpoint pending
+
+Before final expert checkpoints are available, the frozen affine router admits
+an exact initialization-distribution study. For seeds 0--19, the census builds
+the complete official four-ResNet18 model before reading the router, thereby
+preserving the official random-number consumption order. Seed 0 matches the
+epoch-10 training checkpoint router bit for bit. Across 200,000 test-input/seed
+pairs, exact five-radius classification has one undecided bracket at \(0.5/255\)
+and none at the four larger radii; the independent audit reports zero issues.
+
+At \(2/255\), formal route-invariance applicability averages 5.038% and ranges
+from 1.25% to 12.98%, a 10.384x initialization spread. At \(8/255\), 18/20
+initializations have an empty applicability set; seeds 4 and 9 retain one and
+two of 10,000 inputs. The 20-seed global maximum route-boundary radius is
+9.754/255 at seed 9, sample 3444, whereas seed 0 reaches only 6.252/255. Thus
+the correct conclusion is *near-empty applicability*, not that every observed
+boundary lies below \(8/255\).
+
+Because the released scripts do not seed or optimize the hard router, the
+10.384x spread is an initialization-lottery result for certificate
+applicability. It is not an output-robustness or trained-expert certificate.
+For the released hard-argmax artifact reading, the theorem-applicability tree
+is therefore evaluated by radius: at \(8/255\) the route-stability premise is
+not established for all but three sample-seed pairs; at \(2/255\), constants
+providers remain relevant only on the roughly 5% applicable subset. This does
+not silently transfer the hard-argmax census to a distinct continuous-gate
+semantics reading.
+
+The audited census and paper-figure records are
+`act/pipeline/moe/results/icml2025_rt_er/router_init_census_k20_20260830.json`
+and
+`act/pipeline/moe/results/icml2025_rt_er/router_init_figures_k20_20260830.json`.
 
 The official repository is frozen at
 `30ef94d77b5451595b82e739aa8938e1f4c4521f`. Its exact author-pinned environment
@@ -442,9 +479,12 @@ kernel fails. That exact-pin incompatibility remains an artifact-rot result.
 An isolated Blackwell-compatible environment separately passed a deterministic
 synthetic FFCV forward/backward smoke on the official MoE-ResNet18 architecture;
 it requires an explicitly recorded JPEG-library preload and is labeled
-`official-code, Blackwell-compatible deps + FFCV`. Dataset conversion, training,
-checkpoint telemetry, theorem instantiation, and official-scale verification
-still have not started. The exact-pin artifact is
+`official-code, Blackwell-compatible deps + FFCV`. The seed-0 130-epoch
+official-code reproduction is running; epochs 10 and 20, their checkpoints,
+and drift-guard telemetry are complete, while epoch 30 is next. The interim
+epoch-20 validation values are 33.95% clean and 27.0% robust accuracy and are
+not a final reproduction endpoint. Theorem instantiation and official-scale
+expert verification have not started. The exact-pin artifact is
 `act/pipeline/moe/results/baseline/icml2025_rt_er_author_pin_probe_20260829.json`
 at commit `291c6dfee9d68c6f025e240013f95b7ecbb1ab8e`; the compatibility smoke is
 `act/pipeline/moe/results/environments/rt_er_blackwell_compatibility_smoke_20260829.json`
@@ -453,8 +493,8 @@ at commit `5ba952d1d`.
 Any later Blackwell-compatible run must be labeled separately from the exact-pin
 probe. The official project releases training/model code but no checkpoint and
 no certificate implementation, so future models must be labeled
-**official-code, paper-config reproduction**, not author checkpoints. **No B1
-accuracy, route telemetry, certificate, or runtime is claimed here.**
+**official-code, paper-config reproduction**, not author checkpoints. No final
+B1 accuracy, expert certificate, or runtime conclusion is claimed here.
 
 ## Threats to validity
 
@@ -487,10 +527,14 @@ accuracy, route telemetry, certificate, or runtime is claimed here.**
 - The main evidence uses one seed of a 49.26%-accuracy, MLP-expert CIFAR-10 MoE.
   It cannot establish scaling to ResNet experts, token routing, intermediate
   MoE layers, larger expert counts, or other datasets.
+- The official-construction K=20 result studies exact affine-router geometry
+  only. It strengthens artifact applicability evidence but does not substitute
+  for B1/B3 expert verification.
 - Exact route-set enumeration is combinatorial in \(E\) and \(k\); the present
   `E=8,k=2` implementation is not an expert-count scalability result.
-- P0a, P0b, a true monolithic solver comparison, and official RT-ER B1 remain
-  pending. They are required before strong baseline or official-scale claims.
+- P0a and P0b are complete. A true monolithic solver comparison and official
+  RT-ER B3 expert verification remain pending before official-scale certificate
+  claims.
 
 ### Statistical conclusion validity
 
@@ -523,4 +567,7 @@ The current evidence supports the following bounded conclusion:
 > certifies route-changing regions that a route-invariance precondition rejects.
 > Guard-aware support improves paired branch coverage. These results do not yet
 > establish official-scale expert verification, a monolithic runtime advantage,
-> or ecosystem prevalence.
+> or ecosystem prevalence. Separately, exact official-construction router
+> geometry shows that route-invariance applicability is nearly empty at
+> \(8/255\) and varies 10.384x across initializations at \(2/255\); this is an
+> applicability finding, not an output certificate.

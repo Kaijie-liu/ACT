@@ -1089,6 +1089,18 @@ seeds on a symmetric-log scale and must identify the concrete seed/sample that
 attains the global maximum. It remains a route-applicability figure, not an
 output certificate.
 
+The audited `_r2` paper-figure stage is complete with zero issues across all
+100 seed-radius table rows, both parsed SVGs, all output hashes, and a separate
+visual inspection. At `2/255`, formal route-stability applicability averages
+5.038% and ranges from 1.25% to 12.98%, a 10.384x initialization spread. At
+`8/255`, 18/20 seeds have no formally stable test input; seeds 4 and 9 retain
+one and two inputs, respectively. The global maximum route-boundary radius is
+9.754/255 at seed 9, sample 3444. The seed-0 maximum is 6.252/255, so it is
+incorrect to generalize the seed-0 cap to all 20 seeds. The initial `_r1`
+render is retained but excluded because its maximum annotation overlapped the
+title; no numeric result changed. The tracked result is
+`act/pipeline/moe/results/icml2025_rt_er/router_init_figures_k20_20260830.json`.
+
 B3 primary reporting is consequently frozen on the nondegenerate
 `{0.5,1,2,4,8}/255` grid. It does not assume that adversarially trained
 ResNet18 experts will have positive absolute certified coverage at `8/255`;

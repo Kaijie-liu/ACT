@@ -1,0 +1,53 @@
+{
+  "audit": {
+    "checks": [
+      "recomputed all 100 seed-radius CSV partitions from the raw 20 by 10000 radius brackets",
+      "confirmed stable + reachable + undecided equals 10000 for every seed and radius",
+      "recomputed the per-seed and global maximum route-boundary radii from the raw NPZ",
+      "recomputed every output SHA-256 digest",
+      "parsed both SVG files as XML",
+      "visually inspected rasterized copies of both SVG files"
+    ],
+    "issues": 0,
+    "status": "PASS"
+  },
+  "code_commit": "bfc7c9b2e",
+  "figure_2_endpoints": {
+    "2/255": {
+      "formally_stable_fraction_mean": 0.05038,
+      "formally_stable_fraction_minimum": 0.0125,
+      "formally_stable_fraction_maximum": 0.1298,
+      "maximum_to_minimum_ratio": 10.383999999999999
+    },
+    "8/255": {
+      "empty_formally_stable_seeds": 18,
+      "nonempty_seed_counts": {
+        "4": 1,
+        "9": 2
+      },
+      "total_formally_stable_sample_seed_pairs": 3,
+      "total_sample_seed_pairs": 200000
+    }
+  },
+  "maximum_route_boundary": {
+    "radius": 0.03824905126052944,
+    "radius_over_255": 9.753508071435007,
+    "sample_index": 3444,
+    "seed": 9
+  },
+  "outputs": {
+    "maximum_route_boundary_by_seed.svg": "b53ef7550e0faa3ca8499fe24c17132431f7a8951924de14f9937f0097454178",
+    "route_stability_by_seed.svg": "8c01a3f521da4c6b92033bc83e6a9ebf2bdea3117fe3b84441c06223d2440a01",
+    "router_init_census_table.csv": "fb3061ae1d75a503567e2a7889bfb992d96681b3d3b9c97522f50e86bb8cb11c"
+  },
+  "raw_result": {
+    "directory": "/data1/Kane/MOE/ACT/data/moe/results/icml2025_rt_er/router_init_figures_k20_20260830_r2",
+    "manifest_sha256": "8f51af419d2525bb400b43f324f15f515f367b6c0f8e3ce9566f206f587e0712",
+    "source_per_seed_sha256": "3c9fa5ae517cc648d342947ff250654b409df3e67e6e71656262e35da3324600"
+  },
+  "schema_version": 1,
+  "seed0_maximum_radius_over_255": 6.2519314956233805,
+  "status": "COMPLETED_AUDITED",
+  "scientific_scope": "Paper figures for CIFAR-10 route-invariance applicability over 20 exact official full-model router initializations; no output certificate.",
+  "wording_guard": "The seed-0 maximum is below 8/255, but the 20-seed global maximum is 9.754/255. Do not claim that every observed route boundary is below 8/255."
+}
