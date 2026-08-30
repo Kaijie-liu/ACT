@@ -229,7 +229,15 @@ def _run_worker(record: dict[str, Any], output_dir: Path) -> dict[str, Any]:
         completed = subprocess.run(
             command,
             cwd=PROJECT_ROOT,
-            env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1", "PYTHONHASHSEED": "0"},
+            env={
+                **os.environ,
+                "PYTHONDONTWRITEBYTECODE": "1",
+                "PYTHONHASHSEED": "0",
+                "OMP_NUM_THREADS": "1",
+                "MKL_NUM_THREADS": "1",
+                "OPENBLAS_NUM_THREADS": "1",
+                "NUMEXPR_NUM_THREADS": "1",
+            },
             stdout=handle,
             stderr=subprocess.STDOUT,
             check=False,

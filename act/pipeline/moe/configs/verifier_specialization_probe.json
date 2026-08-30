@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "status": "PREREGISTERED_NOT_RUN",
+  "purpose": "close the dynamic-parser gap by testing whether Route A expert specialization produces programs accepted by the same verifier frontend",
+  "checkpoint": {
+    "path": "/data1/Kane/MOE/baseline_runs/icml2025_rt_er/seed0_paper130/checkpoints/epoch_010.t7",
+    "sha256": "d30ab40efc58be6f02a1465d25a341bf5f95b822b280462e73a2ab239429788b",
+    "epoch": 10,
+    "experts": [0, 1, 2, 3]
+  },
+  "dynamic_probe": {
+    "path": "/data1/Kane/MOE/ACT/act/pipeline/moe/results/crown/dynamic_moe_parser_probe_20260830.json",
+    "sha256": "c92d435b33faedc102552be180d428f5f99de2c52a77d38387cb386078c542a2"
+  },
+  "export": {
+    "opset": 17,
+    "probe_samples": 4,
+    "probe_dataset_indices": [0, 1, 2, 3],
+    "semantic_atol": 0.0001,
+    "semantic_rtol": 0.00001
+  },
+  "consumer": {
+    "repository": "/data1/Kane/MOE/baselines/alpha-beta-CROWN",
+    "commit": "e5c7e17bf0488843acb77b7519f59876717a49f4",
+    "environment": "/data1/Kane/MOE/envs/alpha-beta-crown",
+    "stages": [
+      "onnx2pytorch ConvertModel",
+      "complete_verifier.load_model_onnx",
+      "auto_LiRPA BoundedModule"
+    ]
+  },
+  "required_outcome": {
+    "dynamic_model": "EXISTING_VERIFIER_CANNOT_CONSUME",
+    "all_specialized_experts": "EXISTING_VERIFIER_FRONTEND_ACCEPTS",
+    "forbidden_operators_after_specialization": [
+      "TopK",
+      "ArgMax",
+      "Gather",
+      "GatherElements"
+    ]
+  },
+  "claim_scope": "frontend program-consumption closure only; acceptance is not a robustness certificate or coverage/runtime result"
+}

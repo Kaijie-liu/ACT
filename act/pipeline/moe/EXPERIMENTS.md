@@ -1120,6 +1120,15 @@ smoke remain preserved in the raw result tree but are explicitly excluded.
 The compact audited result is
 `act/pipeline/moe/results/crown/dynamic_moe_parser_probe_20260830.json`.
 
+The complementary specialization probe is frozen separately. It fixes each of
+the four official hard routes, exports the resulting raw-pixel ResNet18 branch,
+requires zero `TopK`, `ArgMax`, `Gather`, or `GatherElements` operators, and
+passes the graph through the same ONNX conversion, official model loader, and
+auto_LiRPA `BoundedModule` stages. Its only intended conclusion is a
+program-consumption closure: dynamic MoE rejected, Route A specialized expert
+accepted. Acceptance is not a robustness certificate or a coverage/runtime
+claim. CROWN child processes are restricted to one CPU thread while B1 runs.
+
 ## N1 engineering rerun code freeze
 
 The N1 performance runner freezes the original 20-row applicable-unresolved
