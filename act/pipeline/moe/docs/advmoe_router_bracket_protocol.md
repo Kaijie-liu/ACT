@@ -76,7 +76,7 @@ final full-test bracketed census, deterministic intermediate telemetry subset,
 five-radius staged-verifier table, and one guard ablation. No ratio or expert
 count sweep is added here.
 
-## Init-pilot result
+## First init-pilot result: weakest bracket only
 
 The accepted run is
 `data/moe/results/advmoe_router_bracket_init20_20260830_r3`. Its independent
@@ -109,3 +109,46 @@ the ACT repository root on `sys.path`. Each contains a `FAILED.json` identity
 record and neither reached bound construction. The accepted `_r3` run uses the
 same frozen mathematics after a worker-bootstrap-only repair; no failed
 directory was reused or overwritten.
+
+This result is an intermediate tool-layer state, not a conclusion that the
+deep router is intrinsically difficult to certify. Both sides of the bracket
+were deliberately weak: interval propagation is the least precise bound tier,
+and the attack used only 20 steps and two restarts. The next frozen engineering
+pilot therefore strengthens both sides without changing the 20 inputs or five
+radii.
+
+## Frozen three-tier nonlinear-router protocol
+
+The nonlinear CNN router uses a staged backend rather than ACT's exact HZ/MILP
+path:
+
+1. `IBP`: free diagnostic only; interval explosion is reported, not tuned;
+2. `CROWN/alpha-CROWN`: census tier, with sparse intermediate CROWN, bounded
+   CROWN batch width, and one sample per bounded graph;
+3. `beta-CROWN + BaB`: final-table closure for a frozen unresolved subset only.
+
+The second pilot config is
+`act/pipeline/moe/configs/advmoe_init_router_crown_strong_pilot.json`. Its attack
+uses 100 steps, 10 vectorized restarts, and a step size of epsilon/4 halved at
+50% and 75% of the trajectory. It records clean/attacked margins, fractional
+margin compression, clean input-gradient L1/L2/Linf norms, and every best
+endpoint. The CROWN worker runs the margin lower bound only, in eval mode, with
+sparse intermediate bounds, `crown_batch_size=128`, `max_crown_size=512`, and
+one input per graph. Positive numerical lower bounds remain non-formal because
+the installed backend is not outward-rounded.
+
+Resource probes establish why these controls are necessary. Default pure
+CROWN exceeded 90 seconds on CPU and exhausted the shared GPU after allocating
+more than 62 GiB. CROWN-IBP finishes 20 inputs in 0.26 seconds but only reduces
+the 0.5/255 bound scale from about `1.94e9` to `1.01e9`. With official-style
+sparse intermediate handling, pure CROWN completes one 0.5/255 input in 2.15
+seconds on GPU, peaks at 20.98 GiB, and gives `-3.62e8`. This is a real CROWN
+bound and a substantial tightening, but still an undecided numerical result.
+The full pilot has a 24-GiB worker peak gate and requires 30 GiB free before it
+creates a result directory; it never interrupts the protected B1 job.
+
+At initialization, all 19 BatchNorm layers must be in eval mode. Their running
+means, running variances, and batches-tracked state are stored as part of the
+deployment identity. Init results validate methods only; certification yield is
+evaluated on the trained checkpoint. The project does not use exact HZ/MILP to
+propagate this 269K-parameter convolutional router.
