@@ -26,7 +26,7 @@ from act.pipeline.moe.published_moe_router_gradient_audit import (
 
 
 CROWN_PYTHON = Path("/data1/Kane/MOE/envs/alpha-beta-crown/bin/python")
-WORKER_MODULE = "act.pipeline.moe.advmoe_router_bound_worker"
+WORKER_PATH = PROJECT_ROOT / "act/pipeline/moe/advmoe_router_bound_worker.py"
 
 
 def _write_json(path: Path, value: dict[str, Any]) -> None:
@@ -281,8 +281,7 @@ def run(config_path: Path, output_dir: Path) -> dict[str, Any]:
     subprocess.run(
         [
             str(CROWN_PYTHON),
-            "-m",
-            WORKER_MODULE,
+            str(WORKER_PATH),
             "--prepare",
             str(prepare_path),
             "--output",
