@@ -1,0 +1,82 @@
+{
+  "aggregate": {
+    "0.5/255": {
+      "formally_reachable_fraction": {"mean": 0.47635, "minimum": 0.3517, "maximum": 0.5633},
+      "formally_stable_fraction": {"mean": 0.523645, "minimum": 0.4367, "maximum": 0.6483},
+      "strict_route_changing_fraction": {"mean": 0.476355, "minimum": 0.3517, "maximum": 0.5633},
+      "undecided_sample_seed_pairs": 1
+    },
+    "1/255": {
+      "formally_reachable_fraction": {"mean": 0.75201, "minimum": 0.6008, "maximum": 0.8418},
+      "formally_stable_fraction": {"mean": 0.24799, "minimum": 0.1582, "maximum": 0.3992},
+      "strict_route_changing_fraction": {"mean": 0.75201, "minimum": 0.6008, "maximum": 0.8418},
+      "undecided_sample_seed_pairs": 0
+    },
+    "2/255": {
+      "formally_reachable_fraction": {"mean": 0.94962, "minimum": 0.8702, "maximum": 0.9875},
+      "formally_stable_fraction": {"mean": 0.05038, "minimum": 0.0125, "maximum": 0.1298},
+      "strict_route_changing_fraction": {"mean": 0.94962, "minimum": 0.8702, "maximum": 0.9875},
+      "undecided_sample_seed_pairs": 0
+    },
+    "4/255": {
+      "formally_reachable_fraction": {"mean": 0.99773, "minimum": 0.9881, "maximum": 1.0},
+      "formally_stable_fraction": {"mean": 0.00227, "minimum": 0.0, "maximum": 0.0119},
+      "strict_route_changing_fraction": {"mean": 0.99773, "minimum": 0.9881, "maximum": 1.0},
+      "undecided_sample_seed_pairs": 0
+    },
+    "8/255": {
+      "formally_reachable_fraction": {"mean": 0.999985, "minimum": 0.9998, "maximum": 1.0},
+      "formally_stable_fraction": {"mean": 0.000015, "minimum": 0.0, "maximum": 0.0002},
+      "strict_route_changing_fraction": {"mean": 0.999985, "minimum": 0.9998, "maximum": 1.0},
+      "undecided_sample_seed_pairs": 0
+    }
+  },
+  "audit": {
+    "checks": [
+      "recomputed all raw artifact hashes",
+      "recomputed every per-seed epsilon partition from the 20 by 10000 array",
+      "recomputed all route loads and unordered boundary-pair counts",
+      "confirmed every reachable/stable/undecided partition sums to 10000",
+      "confirmed seed-0 routes and competitors exactly match immutable epoch-20 telemetry",
+      "confirmed seed-0 radius maximum error is within the frozen 1e-12 tolerance"
+    ],
+    "issues": 0,
+    "status": "PASS"
+  },
+  "code_commit": "e95b2f820",
+  "dataset": {
+    "name": "CIFAR10",
+    "raw_sha256": "e54a434ec35094516eacbaac0f2f9550358d985e9d1f71b47d41d333c15ba304",
+    "samples_per_seed": 10000,
+    "split": "official torchvision test"
+  },
+  "excluded_engineering_artifact": {
+    "directory": "/data1/Kane/MOE/ACT/data/moe/results/icml2025_rt_er/router_init_census_k20_20260830_r1",
+    "reason": "overstrict bitwise scalar-radius replay gate; router, routes, competitors, and epsilon classifications were correct",
+    "status": "PERMANENTLY_EXCLUDED"
+  },
+  "initialization": {
+    "full_official_model_constructed_before_router_read": true,
+    "seeds": 20,
+    "seed_values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+    "seed0_bias_bitwise_checkpoint_match": true,
+    "seed0_weight_bitwise_checkpoint_match": true
+  },
+  "raw_result": {
+    "directory": "/data1/Kane/MOE/ACT/data/moe/results/icml2025_rt_er/router_init_census_k20_20260830_r2",
+    "per_seed_sha256": "3c9fa5ae517cc648d342947ff250654b409df3e67e6e71656262e35da3324600",
+    "router_initializations_sha256": "c3c98beee86e15913f12afcc8d4d3bea92545ddc18388912350de038f20e0e7a",
+    "summary_sha256": "312d575fcd1c902b923654d26fd08d95b5544ad2165fc5dcede3a6bdb0bb33b0"
+  },
+  "schema_version": 1,
+  "seed0_reference": {
+    "boundary_competitors_exact": true,
+    "clean_experts_exact": true,
+    "epsilon_classifications_exact": true,
+    "maximum_radius_error": 1.734723475976807e-17,
+    "strict_route_changing_at_8_over_255": 1.0
+  },
+  "status": "COMPLETED_AUDITED",
+  "scientific_scope": "Distribution of the released pipeline's untrained router initialization. It establishes route-boundary applicability, not output robustness, model accuracy, or a certificate.",
+  "conclusion": "Across 20 exact official full-model initializations, 8/255 route-invariance applicability is nearly empty: the mean formally stable fraction is 0.0015%, with a per-seed range from 0% to 0.02%."
+}

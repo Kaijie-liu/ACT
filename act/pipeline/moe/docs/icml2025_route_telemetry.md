@@ -137,6 +137,16 @@ route-boundary reachability only. They do not establish output failure or a
 Route A certificate. Seeds 1 and 2 remain gated on the completed seed-0 audit;
 they will not be launched merely to repeat a known flat router trajectory.
 
+A separate no-training initialization census covers official construction
+seeds 0--19. It reports the full `{0.5,1,2,4,8}/255` grid rather than relying on
+the seed-0 `8/255` endpoint. The mean strict route-changing fractions are
+47.635%, 75.201%, 94.962%, 99.773%, and 99.9985%, respectively. The corresponding
+minimum--maximum ranges are 35.17--56.33%, 60.08--84.18%, 87.02--98.75%,
+98.81--100%, and 99.98--100%. Only one of 200,000 sample-seed-radius decisions
+at `0.5/255` overlaps the outward numerical bracket; all other grid decisions
+are stable or reachable. This census strengthens the initialization claim but
+does not replace trained-expert evaluation.
+
 ## Execution status
 
 The authorized Blackwell-compatible reproduction is running in an isolated

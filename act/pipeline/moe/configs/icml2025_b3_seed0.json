@@ -26,6 +26,12 @@
     "denominator": "all 20 selected route-boundary samples"
   },
   "applicability_epsilon_over_255": [0.25, 0.5, 1.0, 2.0, 4.0, 8.0],
+  "primary_table_epsilon_over_255": [0.5, 1.0, 2.0, 4.0, 8.0],
+  "primary_table_interpretation": {
+    "route_stability_denominator": "all ordered official CIFAR10 test inputs",
+    "absolute_certification_expectation": "PGD-trained ResNet18 is not assumed certifiable at 8/255; small or zero absolute coverage is an admissible result",
+    "comparison_claim": "report identical-backend route-invariance and Route A coverage at every grid point; 8/255 may be a degenerate applicability limit and is never the only comparison"
+  },
   "routing": {
     "router": "folded affine 3072-to-4",
     "tie_semantics": "ANY_LEGAL_TOPK",

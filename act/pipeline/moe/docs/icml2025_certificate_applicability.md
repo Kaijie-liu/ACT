@@ -234,6 +234,17 @@ It does not supply the unpublished author checkpoint. The analytic certificate
 still requires a disclosed sound constants provider; the official checkpoint
 trajectory alone cannot fill that gap.
 
+The single-seed finding is not an isolated initialization. Twenty
+preregistered seeds were reconstructed by instantiating the complete official
+four-ResNet18 model before reading its router. Seed 0 matched the immutable
+checkpoint router bit for bit. Across seeds, the mean exact route-boundary
+reachability fractions at `0.5`, `1`, `2`, `4`, and `8/255` are 47.64%,
+75.20%, 94.96%, 99.77%, and 99.9985%. At `8/255`, the formally route-stable
+fraction has mean 0.0015% and range 0--0.02%; seed 0 is exactly 0%. Thus
+route-invariance applicability is empty for the observed official-code seed-0
+artifact and nearly empty under the released pipeline's initialization
+distribution. This is not an output-safety conclusion.
+
 Large public MoE router weights are not a zero-cost substitute. Per-token route
 radius distributions also require representative hidden activations, and router
 tensors are commonly embedded in large checkpoint shards. Such a study must be

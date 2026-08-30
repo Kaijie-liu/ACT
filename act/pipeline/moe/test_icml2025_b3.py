@@ -124,6 +124,14 @@ class PixelNormalizationTest(unittest.TestCase):
         })
         self.assertFalse(config["numerical"]["outward_rounded_crown_safe_enabled"])
         self.assertFalse(config["monolithic"]["enabled_in_this_runner"])
+        self.assertEqual(
+            config["primary_table_epsilon_over_255"],
+            [0.5, 1.0, 2.0, 4.0, 8.0],
+        )
+        self.assertIn(
+            "small or zero absolute coverage",
+            config["primary_table_interpretation"]["absolute_certification_expectation"],
+        )
 
 
 class RouterOptimizerProvenanceTest(unittest.TestCase):

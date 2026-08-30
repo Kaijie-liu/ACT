@@ -1071,6 +1071,22 @@ competitors matched exactly, and all five epsilon classifications matched, but
 semantic/classification equality and uses the oracle's existing `1e-12`
 reference tolerance for scalar radii; it does not relax any census threshold.
 
+The audited 20-seed census reports zero issues. Mean strict route-changing
+fractions at `{0.5,1,2,4,8}/255` are 47.635%, 75.201%, 94.962%, 99.773%, and
+99.9985%; the seedwise ranges are 35.17--56.33%, 60.08--84.18%,
+87.02--98.75%, 98.81--100%, and 99.98--100%. At `8/255`, formally stable
+route-invariance applicability averages 0.0015% and ranges from 0 to 0.02%.
+Thus the seed-0 empty applicability set is an exact artifact result, while the
+pipeline-level conclusion is a nearly empty distribution rather than a false
+20/20 claim of exact emptiness. The compact result is
+`act/pipeline/moe/results/icml2025_rt_er/router_init_census_k20_20260830.json`.
+
+B3 primary reporting is consequently frozen on the nondegenerate
+`{0.5,1,2,4,8}/255` grid. It does not assume that adversarially trained
+ResNet18 experts will have positive absolute certified coverage at `8/255`;
+zero is admissible. The comparison claim concerns identical-backend coverage
+and applicability across the full grid, not a single degenerate endpoint.
+
 ## ICML 2025 B3 executable comparison stage
 
 The final-checkpoint B3 execution layer is implemented but not run. It freezes
