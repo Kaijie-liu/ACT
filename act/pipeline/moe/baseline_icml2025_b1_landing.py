@@ -22,6 +22,44 @@ from act.pipeline.moe.baseline_icml2025_b1_supervisor import _checkpoint_epoch
 RT_ER_PYTHON = MOE_ROOT / "envs/rt-er-blackwell/bin/python"
 
 
+class RetryableGpuLandingError(RuntimeError):
+    """A transient GPU-capacity failure that the watcher may retry."""
+
+
+def gpu_memory_bytes(device_index: int = 0) -> tuple[int, int]:
+    result = subprocess.run(
+        [
+            "nvidia-smi",
+            f"--id={device_index}",
+            "--query-gpu=memory.free,memory.total",
+            "--format=csv,noheader,nounits",
+        ],
+        check=True,
+        text=True,
+        capture_output=True,
+    )
+    row = result.stdout.strip().splitlines()
+    if len(row) != 1:
+        raise RuntimeError("GPU resource query returned an unexpected row count")
+    free_mib, total_mib = (int(value.strip()) for value in row[0].split(","))
+    return free_mib * 1024 * 1024, total_mib * 1024 * 1024
+
+
+def require_gpu_resource(protocol: dict[str, Any]) -> dict[str, int]:
+    gate = protocol["gpu_resource_gate"]
+    free_bytes, total_bytes = gpu_memory_bytes(int(gate["device_index"]))
+    required = int(gate["minimum_free_memory_bytes"])
+    if free_bytes < required:
+        raise RetryableGpuLandingError(
+            f"GPU resource gate: {free_bytes} free bytes < {required} required"
+        )
+    return {
+        "free_memory_bytes": free_bytes,
+        "total_memory_bytes": total_bytes,
+        "minimum_free_memory_bytes": required,
+    }
+
+
 def _write_json(path: Path, value: dict[str, Any]) -> None:
     if path.exists():
         raise RuntimeError(f"refuses to overwrite {path}")
@@ -94,11 +132,18 @@ def endpoint_decisions(
         <= pgd50_accuracy
         <= float(robust_rule["inclusive_interval_percent"][1])
     )
+    pipeline_claim_status = (
+        "EXISTENCE_SUPPORTED_BY_SEED0_NO_SEED1_REQUIRED"
+        if standard_inside
+        else "SEED1_REQUIRED_BEFORE_PIPELINE_LEVEL_FAILURE_WORDING"
+    )
     return {
         "standard_accuracy_percent": standard_accuracy,
         "standard_accuracy_branch": standard_rule["inside"] if standard_inside else standard_rule["outside"],
         "pgd50_accuracy_percent": pgd50_accuracy,
         "pgd50_accuracy_branch": robust_rule["inside"] if robust_inside else robust_rule["outside"],
+        "pipeline_claim_status": pipeline_claim_status,
+        "seed1_followup_required": not standard_inside,
         "thresholds_changed_after_observation": False,
     }
 
@@ -130,14 +175,34 @@ def run_rehearsal(protocol_path: Path) -> dict[str, Any]:
     return result
 
 
-def _run_endpoint(protocol: dict[str, Any], protocol_path: Path, checkpoint: Path) -> tuple[Path, Path]:
+def _retryable_cuda_failure(log_path: Path) -> bool:
+    if not log_path.is_file():
+        return False
+    tail = log_path.read_text(encoding="utf-8", errors="replace")[-65536:].lower()
+    return any(
+        marker in tail
+        for marker in (
+            "cuda out of memory",
+            "outofmemoryerror",
+            "cublas_status_alloc_failed",
+            "cuda error: out of memory",
+        )
+    )
+
+
+def _run_endpoint(
+    protocol: dict[str, Any], protocol_path: Path, checkpoint: Path
+) -> tuple[Path, Path, dict[str, int]]:
     run_root = _inside(Path(protocol["run_root"]))
-    endpoint_dir = run_root / "landing/final_endpoint"
-    audit_path = run_root / "landing/final_endpoint_audit.json"
-    if endpoint_dir.exists() or audit_path.exists():
-        raise RuntimeError("final endpoint paths already exist")
-    endpoint_log = run_root / "landing/final_endpoint.log"
-    endpoint_log.parent.mkdir(parents=True, exist_ok=True)
+    resource = require_gpu_resource(protocol)
+    attempts_root = run_root / "landing/final_endpoint_attempts"
+    attempts_root.mkdir(parents=True, exist_ok=True)
+    prior = sorted(path for path in attempts_root.glob("attempt_*"))
+    attempt_root = attempts_root / f"attempt_{len(prior) + 1:03d}"
+    attempt_root.mkdir()
+    endpoint_dir = attempt_root / "endpoint"
+    audit_path = attempt_root / "endpoint_audit.json"
+    endpoint_log = attempt_root / "endpoint.log"
     command = [
         str(RT_ER_PYTHON),
         "-m",
@@ -152,8 +217,21 @@ def _run_endpoint(protocol: dict[str, Any], protocol_path: Path, checkpoint: Pat
         "cuda",
     ]
     with endpoint_log.open("xb") as handle:
-        subprocess.run(command, cwd=PROJECT_ROOT, stdout=handle, stderr=subprocess.STDOUT, check=True)
-    audit_log = run_root / "landing/final_endpoint_audit.log"
+        try:
+            subprocess.run(
+                command,
+                cwd=PROJECT_ROOT,
+                stdout=handle,
+                stderr=subprocess.STDOUT,
+                check=True,
+            )
+        except subprocess.CalledProcessError as error:
+            if _retryable_cuda_failure(endpoint_log):
+                raise RetryableGpuLandingError(
+                    f"endpoint attempt {attempt_root.name} exhausted GPU memory"
+                ) from error
+            raise
+    audit_log = attempt_root / "endpoint_audit.log"
     audit_command = [
         str(RT_ER_PYTHON),
         "-m",
@@ -166,8 +244,21 @@ def _run_endpoint(protocol: dict[str, Any], protocol_path: Path, checkpoint: Pat
         str(audit_path),
     ]
     with audit_log.open("xb") as handle:
-        subprocess.run(audit_command, cwd=PROJECT_ROOT, stdout=handle, stderr=subprocess.STDOUT, check=True)
-    return endpoint_dir, audit_path
+        try:
+            subprocess.run(
+                audit_command,
+                cwd=PROJECT_ROOT,
+                stdout=handle,
+                stderr=subprocess.STDOUT,
+                check=True,
+            )
+        except subprocess.CalledProcessError as error:
+            if _retryable_cuda_failure(audit_log):
+                raise RetryableGpuLandingError(
+                    f"audit attempt {attempt_root.name} exhausted GPU memory"
+                ) from error
+            raise
+    return endpoint_dir, audit_path, resource
 
 
 def _render_report(landing: dict[str, Any]) -> str:
@@ -182,15 +273,17 @@ reproduction completed and passed the unattended identity and endpoint audit.
 - Ordered full-test PGD-50 accuracy: `{decisions['pgd50_accuracy_percent']:.4f}%`
 - Standard-accuracy branch: `{decisions['standard_accuracy_branch']}`
 - PGD-50 branch: `{decisions['pgd50_accuracy_branch']}`
+- Pipeline-claim status: `{decisions['pipeline_claim_status']}`
 - Full-model replayed attack endpoints: `{landing['endpoint_audit']['samples_replayed']}`
 - Endpoint audit issues: `{landing['endpoint_audit']['issue_count']}`
 - Epoch-130 checkpoint SHA-256: `{landing['epoch130']['checkpoint_sha256']}`
 - Endpoint summary SHA-256: `{endpoint['summary_sha256']}`
 
 The original thresholds remain unchanged. Matching or missing them is a
-single-seed reproduction outcome under the disclosed compatibility environment;
-it does not establish checkpoint identity, theorem applicability, or a general
-claim about the paper's method.
+single-seed reproduction outcome under the disclosed compatibility environment.
+If seed 0 misses the SA interval, seed 1 is required before any pipeline-level
+failure wording. This result does not establish author-checkpoint identity,
+theorem applicability, or a general claim about the paper's method.
 """
 
 
@@ -264,7 +357,7 @@ def run_final(protocol_path: Path) -> dict[str, Any]:
         validate_completed_epoch(supervisor, epoch) for epoch in expected_epochs
     ]
     epoch130 = validated_schedule[-1]
-    endpoint_dir, audit_path = _run_endpoint(
+    endpoint_dir, audit_path, gpu_resource = _run_endpoint(
         protocol, protocol_path, Path(epoch130["checkpoint"])
     )
     endpoint_summary_path = endpoint_dir / "summary.json"
@@ -280,8 +373,16 @@ def run_final(protocol_path: Path) -> dict[str, Any]:
         interpretation,
     )
     rehearsal_path = run_root / "landing/rehearsal_epoch050/B1_LANDING_REHEARSAL.json"
-    if not rehearsal_path.is_file():
-        raise RuntimeError("epoch50 landing rehearsal is missing")
+    rehearsal_failure_path = run_root / "landing/rehearsal_epoch050/REHEARSAL_FAILED.json"
+    rehearsal = {
+        "status": "PASSED" if rehearsal_path.is_file() else "FAILED_OR_MISSING",
+        "path": str(rehearsal_path if rehearsal_path.is_file() else rehearsal_failure_path),
+        "sha256": (
+            _sha256(rehearsal_path)
+            if rehearsal_path.is_file()
+            else (_sha256(rehearsal_failure_path) if rehearsal_failure_path.is_file() else None)
+        ),
+    }
     landing = {
         "schema_version": 1,
         "status": "PASSED",
@@ -293,7 +394,8 @@ def run_final(protocol_path: Path) -> dict[str, Any]:
         },
         "epoch130": epoch130,
         "validated_checkpoint_schedule": validated_schedule,
-        "rehearsal": {"path": str(rehearsal_path), "sha256": _sha256(rehearsal_path)},
+        "rehearsal": rehearsal,
+        "gpu_resource_gate": gpu_resource,
         "endpoint": {
             "summary": str(endpoint_summary_path),
             "summary_sha256": _sha256(endpoint_summary_path),

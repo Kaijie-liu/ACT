@@ -23,9 +23,13 @@ When epoch 50 appears exactly once in `progress.json`, the hook validates:
 4. the telemetry reports epoch 50 and the same checkpoint identity.
 
 The rehearsal deliberately excludes ordered full-test evaluation, threshold
-interpretation, commit, and push. It writes only
+interpretation, commit, and push. It writes
 `landing/rehearsal_epoch050/B1_LANDING_REHEARSAL.json` under the external run
 root. This is an unattended-chain rehearsal, not an experimental endpoint.
+If a transient failure occurs, the watcher writes `REHEARSAL_FAILED.json`,
+retries after ten minutes, and continues guarding B1. A failed rehearsal does
+not disable final landing because final landing independently revalidates all
+13 checkpoint, metrics, and telemetry chains.
 
 ## Final landing
 
@@ -44,10 +48,32 @@ completed schedule is exactly epochs 10 through 130 in steps of ten. It then:
 7. only from a clean, feature-branch worktree exactly synchronized to the
    remote, writes the two tracked landing records, commits, and pushes them.
 
-Any failed identity, replay, branch, cleanliness, synchronization, or numerical
-check stops the sequence and preserves a failure JSON. Partial landing output
-is never committed. Push is retried three times; a persistent remote failure is
-recorded and requires manual recovery without force-push.
+Before endpoint evaluation, at least 30 GiB of device memory must be free. If
+the gate is not met, or the endpoint/replay subprocess reports CUDA OOM, the
+watcher records `WAITING_FOR_GPU`, waits ten minutes, and retries for at most 24
+hours. Each failed endpoint attempt has a new retained directory. Other failed
+identity, replay, branch, cleanliness, synchronization, or numerical checks
+stop the sequence and preserve a failure JSON. Partial landing output is never
+committed. Push is retried three times; a persistent remote failure is recorded
+and requires manual recovery without force-push.
+
+`progress.json` is read with three-attempt transient-parse tolerance. The hook
+also records progress age, the median completed-epoch duration, and live log
+heartbeats. If both progress and the freshest heartbeat exceed the larger of
+three median epochs or two hours, it writes `STALLED_SUSPECTED`. This is an
+attention state, not `FAILED`; the watcher continues polling because shared-GPU
+slowdown and process death cannot be distinguished from timestamps alone.
+
+## Asymmetric reproduction interpretation
+
+The epoch-130 gate is deliberately asymmetric. A seed-0 SA inside the frozen
+72.81--82.81% interval supports the existential statement that the released
+pipeline can reproduce the reported SA within tolerance. A miss supports only
+a seed-0 run statement and requires one frozen seed-1 reproduction before any
+pipeline-level insufficiency wording. Only if both registered runs miss may the
+paper use pipeline-level language, still scoped to the two disclosed
+Blackwell-compatible reproductions. The ordered full-test endpoint and
+independent PGD-50 replay are unchanged.
 
 ## Reporting behavior
 

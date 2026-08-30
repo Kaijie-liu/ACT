@@ -9,6 +9,33 @@
   "rehearsal_epoch": 50,
   "final_epoch": 130,
   "poll_seconds": 60,
+  "progress_read_retry": {
+    "attempts": 3,
+    "delay_seconds": 2,
+    "interpretation": "A single partial or transient progress.json read cannot terminate the unattended hook."
+  },
+  "staleness_detection": {
+    "epoch_duration_multiplier": 3,
+    "fallback_epoch_seconds": 2400,
+    "minimum_staleness_seconds": 7200,
+    "heartbeat_paths": [
+      "/data1/Kane/MOE/baseline_runs/icml2025_rt_er/seed0_paper130/progress.json",
+      "/data1/Kane/MOE/baseline_runs/icml2025_rt_er/seed0_paper130/logs/official_training.log",
+      "/data1/Kane/MOE/baseline_runs/icml2025_rt_er/seed0_paper130/logs/wandb.jsonl"
+    ],
+    "interpretation": "STALLED_SUSPECTED is a durable diagnostic, never a FAILED verdict. Progress age and the freshest live heartbeat must both exceed the threshold."
+  },
+  "rehearsal_retry_seconds": 600,
+  "gpu_resource_gate": {
+    "device_index": 0,
+    "minimum_free_memory_bytes": 32212254720,
+    "retry_seconds": 600,
+    "maximum_wait_seconds": 86400,
+    "retryable_failures": [
+      "resource gate below minimum free memory",
+      "CUDA out of memory during endpoint evaluation or independent replay"
+    ]
+  },
   "endpoint": {
     "dataset": "official ordered torchvision CIFAR-10 test set",
     "samples": 10000,
@@ -27,6 +54,13 @@
     "SA/PGD50 preregistered gate decision",
     "Git commit and push"
   ],
+  "rehearsal_failure_policy": "Record REHEARSAL_FAILED and continue watching. Retry every 10 minutes. Final landing independently validates all 13 identity chains and may proceed without a successful rehearsal.",
+  "asymmetric_reproduction_gate": {
+    "seed0_inside_standard_accuracy_interval": "one successful run supports the existential statement that the released pipeline can reproduce the reported SA within tolerance; seed1 is not required for that statement",
+    "seed0_outside_standard_accuracy_interval": "the result is per-run only and automatically requires one frozen seed1 reproduction before any pipeline-level failure wording",
+    "two_registered_failures": "only if both seed0 and seed1 miss the same frozen ordered-test SA interval may the paper use pipeline-level wording, scoped to the two disclosed compatibility reproductions",
+    "unchanged_endpoint": "epoch130 ordered full-test SA plus independently replayed official PGD50; thresholds remain frozen"
+  },
   "final_sequence": [
     "validate supervisor PASSED and all 13 immutable checkpoint/metrics/telemetry records",
     "validate epoch130 checkpoint and final route telemetry identities",
@@ -36,5 +70,5 @@
     "write B1_LANDED_summary.json and a tracked Markdown report",
     "commit and push only the two generated landing records on the feature branch"
   ],
-  "failure_policy": "fail closed, preserve a failure JSON under the run root, do not commit or push partial landing output"
+  "failure_policy": "fail closed, preserve failure and retry-attempt artifacts under the run root, never call STALLED_SUSPECTED a failure, and do not commit or push partial landing output"
 }

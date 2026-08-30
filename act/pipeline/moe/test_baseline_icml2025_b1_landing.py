@@ -3,9 +3,12 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 import tempfile
+import time
 import unittest
+from unittest import mock
 
 import numpy as np
 import torch
@@ -16,8 +19,15 @@ from act.pipeline.moe.baseline_icml2025_b1_endpoint import (
     _pixel_range,
 )
 from act.pipeline.moe.baseline_icml2025_b1_landing import (
+    RetryableGpuLandingError,
     endpoint_decisions,
+    require_gpu_resource,
     validate_completed_epoch,
+)
+from act.pipeline.moe.baseline_icml2025_b1_landing_watch import (
+    _attempt_rehearsal,
+    _read_json_with_retries,
+    _staleness_record,
 )
 from act.pipeline.moe.baseline_icml2025_b1_smoke import _sha256
 
@@ -56,9 +66,107 @@ class B1LandingTests(unittest.TestCase):
                 "outside": "RA_OUT",
             },
         }
-        self.assertEqual(endpoint_decisions(72.81, 74.09, interpretation)["standard_accuracy_branch"], "SA_IN")
-        self.assertEqual(endpoint_decisions(72.81, 74.09, interpretation)["pgd50_accuracy_branch"], "RA_IN")
-        self.assertEqual(endpoint_decisions(50.0, 20.0, interpretation)["standard_accuracy_branch"], "SA_OUT")
+        passed = endpoint_decisions(72.81, 74.09, interpretation)
+        self.assertEqual(passed["standard_accuracy_branch"], "SA_IN")
+        self.assertEqual(passed["pgd50_accuracy_branch"], "RA_IN")
+        self.assertFalse(passed["seed1_followup_required"])
+        self.assertEqual(
+            passed["pipeline_claim_status"],
+            "EXISTENCE_SUPPORTED_BY_SEED0_NO_SEED1_REQUIRED",
+        )
+        failed = endpoint_decisions(50.0, 20.0, interpretation)
+        self.assertEqual(failed["standard_accuracy_branch"], "SA_OUT")
+        self.assertTrue(failed["seed1_followup_required"])
+        self.assertEqual(
+            failed["pipeline_claim_status"],
+            "SEED1_REQUIRED_BEFORE_PIPELINE_LEVEL_FAILURE_WORDING",
+        )
+
+    def test_gpu_resource_gate_waits_below_frozen_minimum(self) -> None:
+        protocol = {
+            "gpu_resource_gate": {
+                "device_index": 0,
+                "minimum_free_memory_bytes": 30,
+            }
+        }
+        with mock.patch(
+            "act.pipeline.moe.baseline_icml2025_b1_landing.gpu_memory_bytes",
+            return_value=(29, 100),
+        ):
+            with self.assertRaises(RetryableGpuLandingError):
+                require_gpu_resource(protocol)
+        with mock.patch(
+            "act.pipeline.moe.baseline_icml2025_b1_landing.gpu_memory_bytes",
+            return_value=(30, 100),
+        ):
+            observed = require_gpu_resource(protocol)
+        self.assertEqual(observed["free_memory_bytes"], 30)
+
+    def test_progress_json_read_tolerates_two_transient_partial_writes(self) -> None:
+        path = Path("/data1/Kane/MOE/transient-progress.json")
+        with mock.patch.object(
+            Path,
+            "read_text",
+            side_effect=['{"status":', '{"status":', '{"status":"RUNNING"}'],
+        ) as read_text:
+            observed = _read_json_with_retries(
+                path, attempts=3, delay_seconds=0
+            )
+        self.assertEqual(observed["status"], "RUNNING")
+        self.assertEqual(read_text.call_count, 3)
+
+    def test_staleness_requires_progress_and_live_heartbeat_to_be_old(self) -> None:
+        with tempfile.TemporaryDirectory(dir="/data1/Kane/MOE") as directory:
+            root = Path(directory)
+            progress_path = root / "progress.json"
+            heartbeat_path = root / "wandb.jsonl"
+            metrics_path = root / "epoch.json"
+            progress_path.write_text("{}\n", encoding="utf-8")
+            heartbeat_path.write_text("{}\n", encoding="utf-8")
+            metrics_path.write_text(
+                json.dumps({"training": {"epoch_time": 100.0}}) + "\n",
+                encoding="utf-8",
+            )
+            now = time.time()
+            os.utime(progress_path, (now - 1000, now - 1000))
+            protocol = {
+                "staleness_detection": {
+                    "epoch_duration_multiplier": 3,
+                    "fallback_epoch_seconds": 100,
+                    "minimum_staleness_seconds": 300,
+                    "heartbeat_paths": [str(heartbeat_path)],
+                }
+            }
+            progress = {"completed": [{"metrics": str(metrics_path)}]}
+            active = _staleness_record(
+                progress_path, progress, protocol, now=now
+            )
+            self.assertFalse(active["suspected"])
+            os.utime(heartbeat_path, (now - 1000, now - 1000))
+            stalled = _staleness_record(
+                progress_path, progress, protocol, now=now
+            )
+            self.assertTrue(stalled["suspected"])
+            self.assertEqual(stalled["threshold_seconds"], 300.0)
+
+    def test_rehearsal_failure_is_recorded_and_nonfatal(self) -> None:
+        with tempfile.TemporaryDirectory(dir="/data1/Kane/MOE") as directory:
+            root = Path(directory)
+            protocol_path = root / "protocol.json"
+            failure_path = root / "REHEARSAL_FAILED.json"
+            protocol_path.write_text("{}\n", encoding="utf-8")
+            with mock.patch(
+                "act.pipeline.moe.baseline_icml2025_b1_landing_watch.run_rehearsal",
+                side_effect=RuntimeError("transient rehearsal failure"),
+            ):
+                completed = _attempt_rehearsal(
+                    protocol_path, failure_path, attempt_count=2
+                )
+            self.assertFalse(completed)
+            failure = json.loads(failure_path.read_text(encoding="utf-8"))
+            self.assertEqual(failure["status"], "REHEARSAL_FAILED")
+            self.assertTrue(failure["nonfatal_to_final_landing"])
+            self.assertEqual(failure["attempt_count"], 2)
 
     def test_completed_epoch_validates_all_hashes_and_telemetry_identity(self) -> None:
         with tempfile.TemporaryDirectory(dir="/data1/Kane/MOE") as directory:

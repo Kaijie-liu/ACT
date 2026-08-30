@@ -16,7 +16,7 @@
     "absolute_tolerance_percentage_points": 5.0,
     "inclusive_interval_percent": [72.81, 82.81],
     "inside": "STATIC_ROUTER_PIPELINE_REPRODUCES_REPORTED_SA_WITHIN_PREREGISTERED_TOLERANCE",
-    "outside": "RELEASED_SCRIPT_AND_FROZEN_CONFIGURATION_DO_NOT_REPRODUCE_REPORTED_SA_WITHIN_PREREGISTERED_TOLERANCE"
+    "outside": "SEED0_RUN_DOES_NOT_REPRODUCE_REPORTED_SA_WITHIN_PREREGISTERED_TOLERANCE_SEED1_REQUIRED_FOR_PIPELINE_LEVEL_WORDING"
   },
   "secondary_pgd50_rule": {
     "absolute_tolerance_percentage_points": 5.0,
@@ -27,7 +27,9 @@
   "discipline": [
     "the epoch130 result remains a single-seed reproduction outcome",
     "matching accuracy does not establish checkpoint identity or theorem applicability",
-    "missing the interval is reported as released-artifact insufficiency under the frozen compatibility reproduction, not as proof that the paper result is false",
+    "a seed0 pass supports only the existential statement that the released pipeline can reproduce SA within tolerance",
+    "a seed0 miss is reported per-run and requires one frozen seed1 reproduction before any pipeline-level insufficiency wording",
+    "only two registered misses may support pipeline-level wording, scoped to those two compatibility reproductions and never as proof that the paper result is false",
     "the threshold is not changed after epoch130 is observed"
   ]
 }

@@ -1906,6 +1906,16 @@ never signals, pauses, restarts, or changes training. The full behavior and
 post-B1 GPU/CPU resource order are documented in
 `act/pipeline/moe/docs/icml2025_b1_landing.md`.
 
+The strengthened watcher tolerates three transient `progress.json` parse
+failures, emits a nonterminal `STALLED_SUSPECTED` record only when progress and
+all live heartbeats exceed the registered threshold, and treats an epoch-50
+rehearsal failure as retryable rather than fatal to epoch-130 landing. Endpoint
+evaluation has a 30-GiB free-memory gate and a ten-minute, 24-hour bounded retry
+policy for gate shortages or explicit CUDA OOM; every failed attempt is
+retained. The SA interpretation is asymmetric: a seed-0 pass supports an
+existence statement, while a seed-0 miss requires a frozen seed-1 reproduction
+before pipeline-level wording.
+
 ## Lazy top-k enumeration and support-derived big-M
 
 The first scalability code stage replaces exhaustive route-set proposals with
