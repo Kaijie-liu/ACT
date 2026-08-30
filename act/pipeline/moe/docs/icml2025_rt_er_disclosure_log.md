@@ -1,21 +1,24 @@
-# RT-ER author clarification contact log
+# RT-ER author clarification protocol
 
-This log separates delivery facts from tooling failures. It contains no email
-address and no private reply content.
+**Status:** `CONTACT_MANAGED_BY_PI`
 
-| Event | Date | Status | Consequence |
-|---|---|---|---|
-| User authorization | 2026-08-30 | complete | Contact was permitted. |
-| Agent Gmail search/send attempt | 2026-08-30 | failed: HTTP 403 insufficient OAuth scopes | Technical note only; not Day 0 and not a delivery. |
-| User-reported personal send | exact date not yet recorded | reported sent | Becomes Day 0 only when the actual sent date is recorded. |
-| One polite reminder | Day 14 after actual send | pending | Send once; copying other listed authors is permitted. |
-| Neutral official-repository issue | Day 21--30 after actual send, or no later than one month before submission | pending | Ask only whether router exclusion was intentional; do not allege misconduct. |
+Contact dates and delivery are managed privately by the PI. The public
+repository stores no countdown, addresses, or private correspondence, and the
+agent performs no follow-up scheduling.
 
-No second reminder, program-chair contact, or research-integrity escalation is
-planned. Author non-response is not evidence against the theorem and does not
-block factual publication after good-faith contact. Any response must be stored
-in the private contact record; a paper-facing paraphrase requires appropriate
-permission and must preserve the artifact-centered scope.
+The frozen protocol is:
 
-The only missing scheduling fact is the user's actual send date. It must not be
-inferred from the authorization date or failed Gmail attempt.
+1. one polite reminder may be sent;
+2. if clarification remains unavailable, one neutral factual issue may be
+   opened in the official repository;
+3. there is no second reminder, program-chair contact, or research-integrity
+   escalation;
+4. non-response is not evidence against the theorem and does not block factual
+   publication after good-faith contact;
+5. the paper states that the authors were contacted, one reminder was sent, and
+   a public issue was opened, using the PI-managed dates applicable at
+   camera-ready time;
+6. any response remains private unless an appropriately permitted factual
+   paraphrase is included.
+
+This item is closed on the agent side.

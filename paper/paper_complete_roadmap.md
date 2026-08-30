@@ -63,6 +63,13 @@ The learned-router RT-ER modification is optional fallback work, not a
 completion requirement, because an official third-party learned router carries
 stronger external-validity evidence.
 
+The AdvMoE line is capped at one official seed-0 reproduction, init/final
+full-test router brackets, a deterministic intermediate telemetry subset, the
+five-radius staged-verifier table, and one guard-representation ablation. No
+second ratio or AdvMoE expert-count sweep is permitted. The literal router's
+auto_LiRPA rejection and the current CROWN memory bottleneck must be reported;
+IBP pilot filters cannot be renamed formal route-stability certificates.
+
 ### Tier 2: optional and non-blocking
 
 An upstream issue or patch may document dynamic `GatherElements` and input
@@ -90,7 +97,7 @@ or manuscript closure.
 | “The route-invariance baseline is self-serving.” | Exact definition-level applicability plus identical downstream backend and public implementation. | Verification-scale comparison complete; official scale pending B3 |
 | “The cohort was selected after outcomes were known.” | Full-test applicability decomposition, frozen ranks, and immutable endpoints. | Closed |
 | “The dimension law fits two points.” | Frozen synthetic dimension grid, slope and constant analysis. | Pending |
-| “The paper targets one prior work.” | Multi-pipeline gradient audit, case series, neutral artifact wording, and responsible disclosure. | Audit complete; user reports disclosure sent, exact Day-0 date not yet recorded |
+| “The paper targets one prior work.” | Multi-pipeline gradient audit, case series, neutral artifact wording, and responsible disclosure. | Audit complete; contact managed by PI under the frozen one-reminder/one-issue protocol |
 | “Guard value survives any abstraction.” | Retained-guard positive result plus box-hull, eta-reduction, and tie-soundness negative controls. | Closed at verification scale |
 | “Incremental solving gives a universal speedup.” | Separate build-dominated and search-dominated measurements, retaining the negative end-to-end result. | Closed |
 | “UNSAFE comes from a relaxation witness.” | Full-model replay for every weighted unsafe result. | Closed for completed cohorts; remains a standing gate |
@@ -103,10 +110,8 @@ that no current item can close. It must state its bounded cost, success and
 failure interpretations, and which existing item it displaces. Interesting
 measurements without a claim-level gap are out of scope.
 
-Administrative external actions are tracked separately. The user authorized
-responsible disclosure and a versioned Zenodo v1 on 2026-08-30. The user later
-reported personally sending the author message; its actual send date has not
-yet been recorded, so Day 0, the one Day-14 reminder, and the Day-21--30 public
-issue window cannot yet be calendared. The failed agent Gmail attempt remains a
-technical note and is not Day 0. No Zenodo connector, account, or deposit token
-is available, so no deposit, DOI, or publication may be claimed.
+Administrative external actions are tracked separately. Author contact is
+`CONTACT_MANAGED_BY_PI`; the repository retains only the one-reminder,
+one-neutral-public-issue, and standard-paper-wording protocol. The agent does no
+countdown or follow-up. No Zenodo connector, account, or deposit token is
+available, so no deposit, DOI, or publication may be claimed.

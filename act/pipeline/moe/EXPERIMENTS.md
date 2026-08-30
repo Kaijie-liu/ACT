@@ -1062,9 +1062,9 @@ scripts as an artifact divergence. Dynamic optimizer/checkpoint confirmation
 remains scoped to the current CIFAR-10 RT-ER seed-0 run. Static routing itself
 is not treated as invalid. The audited evidence is
 `act/pipeline/moe/results/icml2025_rt_er/released_training_router_gradient_audit_20260830.json`;
-responsible disclosure was subsequently authorized and the user reports having
-sent it personally. Its actual send date is still required for the contact
-timeline; see `act/pipeline/moe/docs/icml2025_rt_er_disclosure_log.md`.
+responsible disclosure is now `CONTACT_MANAGED_BY_PI`. The repository retains
+only the one-reminder/one-neutral-issue protocol and standard paper wording;
+the agent keeps no dates or countdown.
 
 To distinguish the seed-0 route census from a single random draw, a separate
 20-seed initialization census is frozen. Each seed reconstructs the complete
@@ -1691,13 +1691,11 @@ located. The result is
 with interpretation and scope in
 `act/pipeline/moe/docs/published_moe_router_gradient_audit.md`.
 
-The user authorized responsible disclosure and a versioned Zenodo v1. The user
-later reported personally sending the disclosure message, but the exact sent
-date has not yet been recorded. The earlier connected-Gmail search/send calls
-failed with insufficient OAuth scopes (HTTP 403) and remain a technical note,
-not Day 0. Reminder and public-issue windows begin only from the actual sent
-date. No Zenodo connector/account/token is available, so no deposit, DOI, or
-publication is claimed.
+The user authorized responsible disclosure and a versioned Zenodo v1. Author
+contact is `CONTACT_MANAGED_BY_PI`; the public repository retains only the
+one-reminder/one-neutral-issue protocol and paper wording, with no dates or
+agent countdown. No Zenodo connector/account/token is available, so no deposit,
+DOI, or publication is claimed.
 
 ### AdvMoE architecture semantics audit
 
@@ -1725,3 +1723,31 @@ There is no prefix-HZ-before-router shortcut: input-space feasibility must
 propagate the nonlinear CNN router from pixels. Training remains queued after
 B1/B3. The external repository has no located license, so ACT contains no
 copied source and checkpoint redistribution remains unresolved.
+
+### AdvMoE dependency and bracket-harness code freeze
+
+The read-only dependency audit reports zero issues. The official requirements
+do not pin Python, PyTorch, torchvision, or CUDA; only SciPy 1.6.0 is pinned,
+and the README names a requirements filename that is absent. The model-only
+router passes a finite CUDA forward on `sm_120` under unchanged `act-py312`, but
+the full training entry point fails before argument parsing at missing `h5py`;
+other declared training packages are also absent. No install or environment
+creation occurred. A future environment must be labelled
+`official-code, Blackwell-compatible dependency reproduction`, not exact-pin.
+
+The router bracket harness now includes official RNG-order initialization,
+ordered CIFAR-10 archive loading, property-directed route-flip PGD with replayed
+witness artifacts, a separate bound worker, fail-closed aggregation, and deep
+route specialization. Current auto_LiRPA rejects the literal router's strided
+slice graph. A fixed-shape lowering replaces slice shortcuts by identity
+stride-2 convolutions and dynamic pooling by fixed 8x8 average pooling; tests
+show bit-exact scores/routes on the registered domain and concrete equivalence
+between dynamic execution and both 16-convolution specialized paths.
+
+Full patches-mode CROWN is not run during B1: one CPU-thread probe exceeded 90
+seconds and a one-sample GPU probe exhausted the available 95 GiB device after
+holding over 62 GiB. The frozen 20-sample engineering pilot therefore uses
+one-thread CPU IBP plus PGD only. Positive bounds remain numerical filters, not
+outward-rounded formal route-stability certificates; negative bounds are
+UNKNOWN. Protocol:
+`act/pipeline/moe/docs/advmoe_router_bracket_protocol.md`.

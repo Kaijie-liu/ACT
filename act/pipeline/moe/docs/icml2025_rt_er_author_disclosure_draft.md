@@ -1,12 +1,10 @@
 # Draft author clarification: released RT-ER router training
 
-**Status:** `USER_REPORTED_SENT_EXACT_DATE_NOT_RECORDED`
+**Status:** `CONTACT_MANAGED_BY_PI`
 
-The user explicitly authorized sending on 2026-08-30 and later reported having
-sent the message personally. The exact sent date has not yet been recorded, so
-the reminder and public-issue windows are not scheduled. An earlier agent Gmail
-search/send attempt failed with `ACCESS_TOKEN_SCOPE_INSUFFICIENT` / HTTP 403;
-that failed attempt is a technical note, not Day 0. No agent retry is required.
+The PI manages contact, dates, reminders, and any public issue outside the
+repository. The agent performs no countdown or follow-up scheduling. The public
+repository retains only the neutral message template and protocol.
 Any reply belongs in the private, untracked survey directory defined by the
 author-contact policy; the address itself is not stored in this public file.
 
@@ -52,5 +50,5 @@ Best regards,
   differentiable estimator as underspecification and the observed released
   training behavior as an artifact-level fact.
 - No non-response may be converted into refusal or evidence against the
-  theorem; the frozen Day-0/Day-14/Day-21--30 policy applies from the user's
-  actual sent date once recorded.
+  theorem; one reminder and, if needed, one neutral public issue are the full
+  protocol. Contact is managed by the PI.

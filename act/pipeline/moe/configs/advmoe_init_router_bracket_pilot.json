@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "parent_commit_required": "PENDING_CODE_FREEZE_COMMIT",
+  "model_seed": 1234,
+  "dataset": {
+    "name": "CIFAR10",
+    "split": "official ordered test_batch",
+    "archive": "/data1/Kane/MOE/ACT/data/torchvision/CIFAR10/raw/cifar-10-python.tar.gz"
+  },
+  "sample_indices": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+  "epsilons": [
+    0.00196078431372549,
+    0.00392156862745098,
+    0.00784313725490196,
+    0.01568627450980392,
+    0.03137254901960784
+  ],
+  "attack": {
+    "objective": "competitor score minus clean-selected score",
+    "steps": 20,
+    "restarts": 2,
+    "step_divisor": 4.0,
+    "seed": 8120,
+    "device": "cuda"
+  },
+  "bound_worker": {
+    "method": "IBP",
+    "paper_target_method": "CROWN",
+    "conv_mode": "patches",
+    "device": "cpu",
+    "torch_threads": 1,
+    "hard_timeout_seconds": 180
+  },
+  "numerical": {
+    "safe_positive_margin": 1e-7,
+    "outward_rounding": false,
+    "formal_safe_enabled": false
+  },
+  "scope": "20-sample engineering correctness pilot while RT-ER B1 is active; not a paper census"
+}

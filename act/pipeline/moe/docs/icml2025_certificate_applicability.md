@@ -222,9 +222,8 @@ This is an artifact-centered result, not an objection to static routing itself.
 Static or stochastic expert assignment is a legitimate published design, as in
 [Hash Layers](https://arxiv.org/abs/2106.04426) and
 [THOR](https://arxiv.org/abs/2110.04260). It also does not establish that
-Theorem 5.4 is unsound. A neutral disclosure was subsequently authorized and
-the user reports sending it personally; the actual sent date remains to be
-recorded for the reminder/public-issue schedule.
+Theorem 5.4 is unsound. Neutral author contact is `CONTACT_MANAGED_BY_PI`; the
+agent retains no dates or countdown.
 
 ## Current evidence and remaining scope
 

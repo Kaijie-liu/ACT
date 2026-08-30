@@ -90,16 +90,18 @@ it closes a genuine structural gap: dispatch changes computation throughout a
 deep network rather than only combining output experts. The required adapter is
 therefore:
 
-1. propagate a pixel-domain abstraction through the nonlinear CNN router;
+1. bound the nonlinear CNN router margin from pixels, paired with concrete
+   route-flip attacks and an explicit undecided band;
 2. determine feasible global hard top-1 routes with conservative tie coverage;
 3. specialize all 16 MoE convolutions consistently to one global route;
 4. verify the resulting full ResNet pathway for every feasible route.
 
-This is not the previously proposed hidden-prefix construction. The cheap
-feature-space margin may still be reported as a diagnostic, but input-space
-route feasibility and certification require propagation from pixels. Any
-sampled census must freeze its deterministic input ranks before execution and
-must be labelled separately from the affine RT-ER full-test census.
+This is not the previously proposed hidden-prefix construction. The installed
+auto_LiRPA backend also needs a fixed-shape adapter for the source's strided
+slice shortcuts and dynamic global pooling. That adapter is concretely exact on
+the registered 32x32 domain, but current positive bounds remain numerical
+filters rather than outward-rounded formal certificates. See
+`act/pipeline/moe/docs/advmoe_router_bracket_protocol.md`.
 
 ## Scope, licensing, and next gate
 
