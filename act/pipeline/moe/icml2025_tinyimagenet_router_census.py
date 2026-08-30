@@ -31,8 +31,11 @@ OFFICIAL_COMMIT = "30ef94d77b5451595b82e739aa8938e1f4c4521f"
 BLACKWELL_PYTHON = MOE_ROOT / "envs/rt-er-blackwell/bin/python"
 BLACKWELL_JPEG = MOE_ROOT / "envs/rt-er-blackwell/lib/libjpeg.so.8"
 WORKER = PROJECT_ROOT / "act/pipeline/moe/icml2025_tinyimagenet_router_worker.py"
+PREPROCESS_WORKER = (
+    PROJECT_ROOT / "act/pipeline/moe/icml2025_tinyimagenet_preprocess_worker.py"
+)
 DEFAULT_CONFIG = (
-    PROJECT_ROOT / "act/pipeline/moe/configs/icml2025_tinyimagenet_router_census_r2.json"
+    PROJECT_ROOT / "act/pipeline/moe/configs/icml2025_tinyimagenet_router_census_r3.json"
 )
 
 
@@ -326,6 +329,53 @@ def run(config_path: Path, output_dir: Path) -> dict[str, Any]:
     if seeds.tolist() != config["initialization"]["seeds"]:
         raise RuntimeError("TinyImageNet worker seed order changed")
 
+    preprocessing_dir = Path(config["preprocessing"]["cache_dir"]).resolve()
+    if not preprocessing_dir.is_relative_to(MOE_ROOT):
+        raise RuntimeError("TinyImageNet preprocessing cache escapes scope")
+    preprocessing_log = output_dir / "preprocessing_materialization.log"
+    preprocessing_command = [
+        str(BLACKWELL_PYTHON),
+        str(PREPROCESS_WORKER),
+        "--config",
+        str(config_path),
+        "--router-arrays",
+        str(arrays_path),
+        "--output-dir",
+        str(preprocessing_dir),
+    ]
+    with preprocessing_log.open("xb") as handle:
+        completed = subprocess.run(
+            preprocessing_command,
+            cwd=PROJECT_ROOT,
+            env={
+                **os.environ,
+                "LD_PRELOAD": str(BLACKWELL_JPEG),
+                "PYTHONDONTWRITEBYTECODE": "1",
+                "PYTHONHASHSEED": "0",
+                "OMP_NUM_THREADS": "1",
+                "MKL_NUM_THREADS": "1",
+                "OPENBLAS_NUM_THREADS": "1",
+                "NUMEXPR_NUM_THREADS": "1",
+            },
+            stdout=handle,
+            stderr=subprocess.STDOUT,
+            check=False,
+        )
+    preprocessing_manifest_path = preprocessing_dir / "manifest.json"
+    if completed.returncode or not preprocessing_manifest_path.is_file():
+        raise RuntimeError("released-runtime preprocessing materialization failed")
+    preprocessing = json.loads(preprocessing_manifest_path.read_text(encoding="utf-8"))
+    resized_path = Path(preprocessing["outputs"]["literal_resized"]["path"]).resolve()
+    literal_scores_path = Path(preprocessing["outputs"]["literal_scores"]["path"]).resolve()
+    for path, item in (
+        (resized_path, preprocessing["outputs"]["literal_resized"]),
+        (literal_scores_path, preprocessing["outputs"]["literal_scores"]),
+    ):
+        if not path.is_relative_to(MOE_ROOT) or _sha256(path) != item["sha256"]:
+            raise RuntimeError("released-runtime preprocessing artifact changed")
+    literal_resized_memmap = np.load(resized_path, mmap_mode="r", allow_pickle=False)
+    literal_scores_memmap = np.load(literal_scores_path, mmap_mode="r", allow_pickle=False)
+
     scale, shift = _normalization_vectors(config)
     weights_224: list[np.ndarray] = []
     biases_224: list[np.ndarray] = []
@@ -357,12 +407,6 @@ def run(config_path: Path, output_dir: Path) -> dict[str, Any]:
     tensor_weights_64 = torch.as_tensor(
         np.stack(weights_64), dtype=torch.float64, device=device
     )
-    tensor_original_weights = torch.as_tensor(
-        original_weights, dtype=torch.float64, device=device
-    )
-    tensor_original_biases = torch.as_tensor(
-        original_biases, dtype=torch.float64, device=device
-    )
     epsilon_over_255 = [float(value) for value in config["epsilon_over_255"]]
     epsilons = torch.as_tensor(
         np.asarray(epsilon_over_255) / 255.0, dtype=torch.float64, device=device
@@ -383,16 +427,6 @@ def run(config_path: Path, output_dir: Path) -> dict[str, Any]:
     maximum_fold_score_drift = np.zeros(len(seeds), dtype=np.float64)
     resize_route_mismatches = np.zeros(len(seeds), dtype=np.int64)
     maximum_resize_score_drift = np.zeros(len(seeds), dtype=np.float64)
-    mean = torch.as_tensor(
-        config["router"]["normalization_mean_255"],
-        dtype=torch.float16,
-        device=device,
-    )[None, :, None, None]
-    std = torch.as_tensor(
-        config["router"]["normalization_std_255"],
-        dtype=torch.float16,
-        device=device,
-    )[None, :, None, None]
     oracle = config["oracle"]
     batch_size = int(oracle["batch_size"])
     started = time.monotonic()
@@ -407,14 +441,11 @@ def run(config_path: Path, output_dir: Path) -> dict[str, Any]:
             align_corners=False,
             antialias=True,
         )
-        literal_resized_255 = functional.interpolate(
-            torch.as_tensor(raw_uint8, dtype=torch.float16, device=device),
-            size=(224, 224),
-            mode="bilinear",
-            align_corners=False,
-            antialias=True,
+        literal_resized_255 = torch.as_tensor(
+            np.array(literal_resized_memmap[start:stop], copy=True),
+            dtype=torch.float16,
+            device=device,
         )
-        literal_normalized = ((literal_resized_255 - mean) / std).double().flatten(1)
         points_224 = (literal_resized_255.double() / 255.0).flatten(1)
         real_points_224 = real_resized_unit.flatten(1)
         points_64 = raw_unit.flatten(1)
@@ -470,9 +501,10 @@ def run(config_path: Path, output_dir: Path) -> dict[str, Any]:
             raw_scores = points_64 @ tensor_weights_64[seed_slot].T + tensor_biases_224[
                 seed_slot
             ]
-            literal_scores = (
-                literal_normalized @ tensor_original_weights[seed_slot].T
-                + tensor_original_biases[seed_slot]
+            literal_scores = torch.as_tensor(
+                np.array(literal_scores_memmap[seed_slot, start:stop], copy=True),
+                dtype=torch.float64,
+                device=device,
             )
             maximum_fold_score_drift[seed_slot] = max(
                 maximum_fold_score_drift[seed_slot],
@@ -592,6 +624,12 @@ def run(config_path: Path, output_dir: Path) -> dict[str, Any]:
             "manifest": str(worker_dir / "manifest.json"),
             "manifest_sha256": _sha256(worker_dir / "manifest.json"),
             "arrays_sha256": _sha256(arrays_path),
+        },
+        "preprocessing": {
+            "manifest": str(preprocessing_manifest_path),
+            "manifest_sha256": _sha256(preprocessing_manifest_path),
+            "literal_resized_sha256": preprocessing["outputs"]["literal_resized"]["sha256"],
+            "literal_scores_sha256": preprocessing["outputs"]["literal_scores"]["sha256"],
         },
         "elapsed_seconds": time.monotonic() - started,
         "epsilon_over_255": epsilon_over_255,

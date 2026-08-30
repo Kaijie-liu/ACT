@@ -1575,3 +1575,12 @@ the released transform resizes float16 pixels. Literal replay changed 111 of
 200,000 clean routes. The corrected `_r2` protocol centers primary balls on
 the literal resized pixels, reports float16-normalization drift separately,
 and keeps raw-64 folding as an explicitly secondary real-arithmetic analysis.
+
+The `_r2` execution then stopped before its first census row: ACT PyTorch 2.9.1
+produced float16 antialiased-resize overshoots as large as 255.125, while the
+released Blackwell-compatible PyTorch 2.11.0 runtime stayed within `[0,255]` on
+all validation pixels. It is also retained and excluded. The `_r3` protocol
+materializes the literal resized centers and preprocessing-only router scores
+inside the pinned released runtime, hashes that cache, and only then performs
+the fixed-radius affine support calculation in ACT. This makes the runtime
+boundary explicit rather than silently substituting ACT's resize kernel.

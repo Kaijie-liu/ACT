@@ -25,7 +25,7 @@ MOE_ROOT = Path("/data1/Kane/MOE")
 OFFICIAL_REPO = MOE_ROOT / "baselines/Robust-MoE-Dual-Model"
 OFFICIAL_COMMIT = "30ef94d77b5451595b82e739aa8938e1f4c4521f"
 DEFAULT_CONFIG = (
-    PROJECT_ROOT / "act/pipeline/moe/configs/icml2025_tinyimagenet_router_census_r2.json"
+    PROJECT_ROOT / "act/pipeline/moe/configs/icml2025_tinyimagenet_router_census_r3.json"
 )
 
 
@@ -136,6 +136,26 @@ def run(config_path: Path, raw_dir: Path, output_path: Path) -> dict[str, Any]:
     require(worker_manifest.is_relative_to(MOE_ROOT), "worker manifest escaped scope")
     require(_sha256(worker_manifest) == summary["worker"]["manifest_sha256"], "worker manifest hash mismatch")
     require(_sha256(worker_arrays) == summary["worker"]["arrays_sha256"], "worker arrays hash mismatch")
+    preprocessing_manifest = Path(summary["preprocessing"]["manifest"]).resolve()
+    require(preprocessing_manifest.is_relative_to(MOE_ROOT), "preprocessing manifest escaped scope")
+    require(
+        _sha256(preprocessing_manifest) == summary["preprocessing"]["manifest_sha256"],
+        "preprocessing manifest hash mismatch",
+    )
+    preprocessing = json.loads(preprocessing_manifest.read_text(encoding="utf-8"))
+    literal_resized_path = Path(
+        preprocessing["outputs"]["literal_resized"]["path"]
+    ).resolve()
+    literal_scores_path = Path(preprocessing["outputs"]["literal_scores"]["path"]).resolve()
+    require(
+        _sha256(literal_resized_path) == summary["preprocessing"]["literal_resized_sha256"],
+        "literal resize cache hash mismatch",
+    )
+    require(
+        _sha256(literal_scores_path) == summary["preprocessing"]["literal_scores_sha256"],
+        "literal score cache hash mismatch",
+    )
+    literal_resized_memmap = np.load(literal_resized_path, mmap_mode="r", allow_pickle=False)
 
     dataset_root = Path(config["dataset"]["root"]).resolve()
     image_paths, ordered_digest = _ordered_images(
@@ -273,15 +293,9 @@ def run(config_path: Path, raw_dir: Path, output_path: Path) -> dict[str, Any]:
             align_corners=False,
             antialias=True,
         )[0].numpy()
-        if not torch.cuda.is_available():
-            raise RuntimeError("literal float16 resize audit requires CUDA")
-        literal_resized = functional.interpolate(
-            torch.from_numpy((raw * 255.0).astype(np.float16))[None].cuda(),
-            size=(224, 224),
-            mode="bilinear",
-            align_corners=False,
-            antialias=True,
-        )[0].double().cpu().numpy() / 255.0
+        literal_resized = (
+            np.asarray(literal_resized_memmap[sample_slot], dtype=np.float64) / 255.0
+        )
         for domain, point, weight, bias in (
             (
                 "official_post_resize_224",
@@ -342,6 +356,9 @@ def run(config_path: Path, raw_dir: Path, output_path: Path) -> dict[str, Any]:
             "per_seed_sha256": _sha256(per_seed_path),
             "worker_manifest_sha256": _sha256(worker_manifest),
             "worker_arrays_sha256": _sha256(worker_arrays),
+            "preprocessing_manifest_sha256": _sha256(preprocessing_manifest),
+            "literal_resized_sha256": _sha256(literal_resized_path),
+            "literal_scores_sha256": _sha256(literal_scores_path),
         },
         "dataset": {
             "name": config["dataset"]["name"],

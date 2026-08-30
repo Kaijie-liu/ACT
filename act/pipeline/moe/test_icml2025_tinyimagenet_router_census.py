@@ -23,7 +23,7 @@ from act.pipeline.moe.plot_icml2025_cross_dataset_router_census import (
 
 CONFIG = Path(
     "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/"
-    "icml2025_tinyimagenet_router_census_r2.json"
+    "icml2025_tinyimagenet_router_census_r3.json"
 )
 
 
@@ -152,7 +152,12 @@ class FrozenTinyImageNetCensusConfigTest(unittest.TestCase):
     def test_freezes_official_224_model_and_same_model_raw64_analysis(self) -> None:
         config = json.loads(CONFIG.read_text(encoding="utf-8"))
         self.assertEqual(config["status"], "PREREGISTERED_NOT_RUN")
-        self.assertEqual(config["supersedes"]["excluded_run"], "tinyimagenet_router_census_k20_20260830_r1")
+        self.assertEqual(len(config["supersedes"]["excluded_runs"]), 2)
+        self.assertEqual(config["preprocessing"]["runtime"]["torch"], "2.11.0+cu130")
+        self.assertEqual(
+            config["preprocessing"]["runtime"]["torchvision_import"],
+            "0.26.0+cu130",
+        )
         self.assertEqual(config["initialization"]["seeds"], list(range(20)))
         self.assertEqual(
             config["initialization"]["seed0_expected_router_sha256"],

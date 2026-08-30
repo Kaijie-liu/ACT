@@ -36,7 +36,12 @@ The released transform converts decoded pixels to float16 before resizing. An
 excluded first run incorrectly centered the primary balls on a real-arithmetic
 resize; 111 of 200,000 literal route replays differed. That run is retained as
 `tinyimagenet_router_census_k20_20260830_r1` but cannot support official-domain
-claims. The corrected primary domain uses the literal resized center. The
+claims. A second run stopped before its first census row because ACT's PyTorch
+2.9.1 resize kernel overshot the natural pixel box, whereas the released
+Blackwell-compatible PyTorch 2.11.0 runtime did not. The corrected runner
+therefore materializes primary centers and preprocessing-only score replays in
+that pinned released runtime, hash anchors the cache, and consumes it from ACT.
+The corrected primary domain uses the literal resized center. The
 secondary domain necessarily uses the real-arithmetic resize operator and is
 labelled `real-arithmetic preprocessing composition`; it is never described as
 a bitwise model rewrite. Resize drift and float16-normalization drift are
@@ -81,4 +86,4 @@ unchanged.
   the composed raw-64 analysis is secondary.
 
 The corrected frozen configuration is
-`act/pipeline/moe/configs/icml2025_tinyimagenet_router_census_r2.json`.
+`act/pipeline/moe/configs/icml2025_tinyimagenet_router_census_r3.json`.
