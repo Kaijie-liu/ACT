@@ -507,7 +507,38 @@ PyTorch 2.9.1 versus 2.11.0 float16-resize kernel difference before producing a
 census row. The final evidence is
 `act/pipeline/moe/results/icml2025_rt_er/tinyimagenet_router_census_k20_20260830_r2.json`
 and
-`act/pipeline/moe/results/icml2025_rt_er/cross_dataset_router_census_figure2_20260830.json`.
+`act/pipeline/moe/results/icml2025_rt_er/cross_dataset_router_census_figure2_20260830_r2.json`.
+
+The cross-dataset shift is also tested with a separate quantity whose scope
+matches the initialization argument: the unbounded local affine radius in each
+router's normalized input coordinates.  The dimension-only prediction is
+
+\[
+\sqrt{150528/3072}=7.000.
+\]
+
+Because the clean-margin scale also depends on the normalized input second
+moment, substituting the measured moments (1.555 for CIFAR-10 and 0.928 for
+TinyImageNet at the released literal centres) predicts a 9.063x CIFAR-to-Tiny
+median shift.  The observed aggregate median shift is 8.966x, 0.9894 of that
+prediction.  An independent audit reports zero issues and a maximum error of
+`6.23e-17` over 160 scalar formula replays.  This supports a standard-init
+order law with two empirical points; it is not a universal theorem, an exact
+box-capped radius, or an output certificate.  The raw-64 fold is the same
+function under another metric and is not counted as a third dimension point.
+The audit is
+`act/pipeline/moe/results/icml2025_rt_er/router_dimension_law_20260830.json`.
+
+The excluded preprocessing runs establish a separate artifact-semantics
+finding.  Replacing the released float16 resize by a real-arithmetic centre
+changed 111/200,000 clean routes, and nominally identical float16 antialiased
+resize transforms under PyTorch 2.9.1 and 2.11.0 had different range behavior
+(the former reached 255.125).  B3 consequently binds exact runtime versions,
+source/checkpoint/router/data and input-order hashes, preprocessing
+graph/order/dtypes/constants/domain, and solver/outward policy into every
+certificate identity.  This is an executable fail-closed manifest requirement,
+not merely a reporting recommendation.  Its paper-facing scope is in
+`paper/certified_artifact_identity.md`.
 
 The official repository is frozen at
 `30ef94d77b5451595b82e739aa8938e1f4c4521f`. Its exact author-pinned environment
@@ -608,4 +639,8 @@ The current evidence supports the following bounded conclusion:
 > or ecosystem prevalence. Separately, exact official-construction router
 > geometry shows that route-invariance applicability is nearly empty at
 > \(8/255\) and varies 10.384x across initializations at \(2/255\); this is an
-> applicability finding, not an output certificate.
+> applicability finding, not an output certificate.  Across the two official
+> construction families, the observed normalized-coordinate local-radius shift
+> (8.966x) agrees with the dimension-and-input-second-moment prediction (9.063x),
+> while the finite-precision preprocessing audit shows that exact runtime and
+> dtype/order must be bound into the identity of the certified artifact.
