@@ -1553,3 +1553,18 @@ high-dimensional theorem. A separate random differential check compared 1,600
 single-halfspace coordinate bounds with SciPy/HiGHS and observed maximum
 float64 difference zero; this validates the transcription, while the proof
 remains the soundness argument.
+
+### Official TinyImageNet `MOE_ViT` router census
+
+The final router-only census extends the official-pipeline applicability audit
+to the released TinyImageNet `MOE_ViT` architecture without training. The
+primary input semantics are the script's 224x224 bilinear-resize output
+(`150528 -> 4` affine hard router); a separately labelled secondary analysis
+folds that same resize into the same router over raw 64x64 pixels. It does not
+construct the rejected non-official 12,288-feature model variant.
+
+Seeds 0--19 and radii `{0.5,1,2,4,8}/255` are frozen. The Stanford archive and
+10,000 validation-image order are hash anchored, validation labels are unused,
+and the released float16-before-resize path is replayed solely to quantify the
+real-arithmetic abstraction's finite-precision drift. See
+`docs/icml2025_tinyimagenet_router_census.md` for semantics and audit rules.
