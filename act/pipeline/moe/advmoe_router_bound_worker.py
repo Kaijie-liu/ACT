@@ -169,22 +169,25 @@ def run(prepare_path: Path, output_path: Path) -> dict[str, Any]:
         end = min(start + sample_batch_size, len(inputs))
         chunk_inputs = inputs[start:end]
         chunk_routes = clean_routes[start:end]
-        chunk_adapter = CrownCompatibleAdvMoeRouter(raw_router).to(device).eval()
         C = torch.zeros(len(chunk_inputs), 1, 2, device=device, dtype=inputs.dtype)
         batch_indices = torch.arange(len(chunk_inputs), device=device)
         C[batch_indices, 0, chunk_routes] = 1
         C[batch_indices, 0, 1 - chunk_routes] = -1
-        if device.startswith("cuda"):
-            torch.cuda.reset_peak_memory_stats()
-        build_started = time.monotonic()
-        bounded = BoundedModule(
-            chunk_adapter,
-            chunk_inputs,
-            device=device,
-            bound_opts=bound_options,
-        )
-        build_seconds += time.monotonic() - build_started
         for epsilon in epsilons:
+            # Rebuild for each radius. auto_LiRPA retains intermediate CROWN
+            # state across calls; reusing one graph over nested radii caused
+            # monotonically growing allocations and tripped the resource gate.
+            chunk_adapter = CrownCompatibleAdvMoeRouter(raw_router).to(device).eval()
+            if device.startswith("cuda"):
+                torch.cuda.reset_peak_memory_stats()
+            build_started = time.monotonic()
+            bounded = BoundedModule(
+                chunk_adapter,
+                chunk_inputs,
+                device=device,
+                bound_opts=bound_options,
+            )
+            build_seconds += time.monotonic() - build_started
             lower = torch.clamp(chunk_inputs - epsilon, 0, 1)
             upper = torch.clamp(chunk_inputs + epsilon, 0, 1)
             bounded_input = BoundedTensor(
@@ -220,17 +223,19 @@ def run(prepare_path: Path, output_path: Path) -> dict[str, Any]:
                 if isinstance(exc, torch.OutOfMemoryError) and torch.cuda.is_available():
                     torch.cuda.empty_cache()
             row_accumulators[epsilon]["seconds"] += time.monotonic() - started
-        if device.startswith("cuda"):
-            peak_memory_bytes = max(peak_memory_bytes, torch.cuda.max_memory_allocated())
-            maximum_peak = worker_config.get("maximum_peak_memory_bytes")
-            if maximum_peak is not None and peak_memory_bytes > int(maximum_peak):
-                raise RuntimeError(
-                    f"CROWN peak memory {peak_memory_bytes} exceeds frozen limit "
-                    f"{int(maximum_peak)}"
+            if device.startswith("cuda"):
+                peak_memory_bytes = max(
+                    peak_memory_bytes, torch.cuda.max_memory_allocated()
                 )
-        del bounded, chunk_adapter
-        if device.startswith("cuda"):
-            torch.cuda.empty_cache()
+                maximum_peak = worker_config.get("maximum_peak_memory_bytes")
+                if maximum_peak is not None and peak_memory_bytes > int(maximum_peak):
+                    raise RuntimeError(
+                        f"CROWN peak memory {peak_memory_bytes} exceeds frozen limit "
+                        f"{int(maximum_peak)}"
+                    )
+            del bounded, chunk_adapter
+            if device.startswith("cuda"):
+                torch.cuda.empty_cache()
 
     rows = []
     for epsilon in epsilons:
