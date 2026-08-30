@@ -1,0 +1,78 @@
+{
+  "artifact": {
+    "commit": "30ef94d77b5451595b82e739aa8938e1f4c4521f",
+    "repository": "https://github.com/TIML-Group/Robust-MoE-Dual-Model"
+  },
+  "audit": {
+    "issues": [],
+    "review_date": "2026-08-30",
+    "status": "PASS"
+  },
+  "dynamic_confirmation": {
+    "checkpoint_interval": "CIFAR-10 RT-ER seed 0, epoch 10 to epoch 20",
+    "expert_parameter_tensors_changed": 248,
+    "expert_parameters_with_adam_state": 248,
+    "router_content_sha256": "ef39e3ca91c4e27cf64dce275771a510c9236d4be2d7c8756d5131cc8503bdbd",
+    "router_parameter_tensors_changed": 0,
+    "router_parameters_with_adam_state": 0,
+    "scope": "Dynamic optimizer/checkpoint evidence covers this one running CIFAR-10 RT-ER reproduction only."
+  },
+  "fairness_context": {
+    "claim_boundary": "Static or random routing is a legitimate design choice; the finding concerns the released artifact's realized optimization path and its relationship to the paper's training motivation.",
+    "references": [
+      {
+        "title": "Hash Layers for Large Sparse Models",
+        "url": "https://arxiv.org/abs/2106.04426"
+      },
+      {
+        "title": "Taming Sparsely Activated Transformer with Stochastic Experts",
+        "url": "https://arxiv.org/abs/2110.04260"
+      }
+    ]
+  },
+  "paper_audit": {
+    "classification": {
+      "artifact_effect": "PAPER_ARTIFACT_DIVERGENCE_IN_REALIZED_ROUTER_OPTIMIZATION_EFFECT",
+      "differentiation_mechanism": "PAPER_UNDERSPECIFIED"
+    },
+    "evidence": [
+      "Equation (2) optimizes the robust-MoE parameter set and includes a model loss plus the second-expert regularizer.",
+      "The text motivating Assumption 5.3 states that robust training encourages separation between selected and unselected router scores and local route stability.",
+      "The paper states that expert and router Lipschitz constants have been optimized during RT-ER.",
+      "Algorithm 1 updates the robust-MoE parameter set, but no straight-through estimator, differentiable gate surrogate, or explicit router loss is specified."
+    ],
+    "paper": "https://proceedings.mlr.press/v267/zhang25cj.html",
+    "scope": "The paper treats the router as part of the optimized robust MoE and attributes a router-margin effect to robust training, while leaving the hard-dispatch differentiation mechanism unspecified. The released scripts do not realize that effect. This is not a claim that static routing is invalid or that Theorem 5.4 is unsound."
+  },
+  "responsible_disclosure": {
+    "status": "NOT_SENT_REQUIRES_EXPLICIT_USER_AUTHORIZATION"
+  },
+  "schema_version": 1,
+  "source_audit": {
+    "conclusion": "All four released training entry points use the shared hard-index Router. Their losses depend on expert outputs selected by integer argmax/top-k indices and expose no differentiable router-score path.",
+    "files": [
+      {
+        "path": "models/moe.py",
+        "sha256": "2f1159a80cc71c28f86baa5e4a2ff13feab49f80c66648dcdcd37af0ac70868b"
+      },
+      {
+        "path": "cifar10_RT_ER.py",
+        "sha256": "6ca3664e1fbb21c8dd6086a61bbe986708ccb608ccd94fc152e5c7883825512e"
+      },
+      {
+        "path": "tinyimagenet_RT_ER.py",
+        "sha256": "f2ae69b926a5e29493cb59542efc111c7b5805327be44bf95f3231347ec81111"
+      },
+      {
+        "path": "cifar10_JTDMoE.py",
+        "sha256": "2678140801d74f821d327fbfee851230c4c488a4a093e39854ef689b3321d141"
+      },
+      {
+        "path": "tinyimagenet_JTDMoE.py",
+        "sha256": "e5100f5b91f099dc099c38b8c2709fd381eedb18a84cc7dcf04a294cc441b5ec"
+      }
+    ],
+    "scope": "Source-level gradient-path conclusion covers all four released training entry points at the pinned commit. Dynamic optimizer-state and cross-epoch tensor evidence does not automatically extend beyond the observed CIFAR-10 RT-ER run."
+  },
+  "status": "COMPLETED"
+}

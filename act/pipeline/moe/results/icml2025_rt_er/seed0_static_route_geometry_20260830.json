@@ -1,0 +1,71 @@
+{
+  "audit": {
+    "issues": [],
+    "method": "independent recomputation from the immutable 10000-row epoch-20 artifact; SVG XML parse; CSV row/value/hash checks",
+    "status": "PASS"
+  },
+  "checkpoint": {
+    "epoch": 20,
+    "router_content_sha256": "ef39e3ca91c4e27cf64dce275771a510c9236d4be2d7c8756d5131cc8503bdbd",
+    "sha256": "f83d9d6a8343ec8149ac7f11c4d5cb3f13beb9761c71cc59c3a93ae55deb3015"
+  },
+  "expert_load": {
+    "counts": [1601, 1895, 3791, 2713],
+    "effective_experts": 3.78155,
+    "maximum_expert": 2,
+    "maximum_fraction": 0.3791,
+    "probabilities": [0.1601, 0.1895, 0.3791, 0.2713]
+  },
+  "outputs": {
+    "manifest": {
+      "path": "/data1/Kane/MOE/ACT/data/moe/results/icml2025_rt_er/seed0_static_route_figures_20260830_r1/manifest.json",
+      "sha256": "347721238713fc391f52d7f6874a084a72057694d655d9183a01ca74b219c062"
+    },
+    "route_boundary_cdf": {
+      "path": "/data1/Kane/MOE/ACT/data/moe/results/icml2025_rt_er/seed0_static_route_figures_20260830_r1/route_boundary_cdf.svg",
+      "sha256": "ac89559eb8d0362075db796533da85344557e12e3372a1943329a8b7ba60c0fb"
+    },
+    "route_confusion": {
+      "path": "/data1/Kane/MOE/ACT/data/moe/results/icml2025_rt_er/seed0_static_route_figures_20260830_r1/route_confusion.svg",
+      "sha256": "cbac93251ec0d9ef1037d7dcf7921c3cba07c5620e2add5346e3fd593c836c87"
+    },
+    "route_geometry_table": {
+      "path": "/data1/Kane/MOE/ACT/data/moe/results/icml2025_rt_er/seed0_static_route_figures_20260830_r1/route_geometry_table.csv",
+      "rows": 13,
+      "sha256": "dd4f32072f57439c5678bf4e754f63ea6b0d481d5e0035788eb047590556b627"
+    },
+    "route_load": {
+      "path": "/data1/Kane/MOE/ACT/data/moe/results/icml2025_rt_er/seed0_static_route_figures_20260830_r1/route_load.svg",
+      "sha256": "7456a3be72fe6fe2200a9d3de5a0aec735933e7653da2dafb758ef49d94e84a6"
+    }
+  },
+  "route_boundary": {
+    "maximum": 0.024517,
+    "maximum_per_255": 6.251835,
+    "strict_census": {
+      "2/255": {"count": 9117, "denominator": 10000, "fraction": 0.9117},
+      "4/255": {"count": 9968, "denominator": 10000, "fraction": 0.9968},
+      "8/255": {"count": 10000, "denominator": 10000, "fraction": 1.0}
+    }
+  },
+  "route_confusion": {
+    "unordered_nearest_boundary_pair_counts": {
+      "0-1": 1342,
+      "0-2": 2722,
+      "0-3": 1250,
+      "1-2": 1327,
+      "1-3": 2181,
+      "2-3": 1178
+    }
+  },
+  "samples": 10000,
+  "schema_version": 1,
+  "scientific_scope": "Official-code, Blackwell-compatible dependency reproduction, seed 0 epoch 20. Because the released router has no differentiable training path, these values are exact for later checkpoints only while the frozen bitwise drift guard continues to pass. Boundary reachability is not an output counterexample or certificate.",
+  "source": {
+    "per_input_path": "/data1/Kane/MOE/baseline_runs/icml2025_rt_er/seed0_paper130/telemetry/epoch_020/per_input.npz",
+    "per_input_sha256": "158cdcafba3e9c7e5e58948927286e6bdc064c3c4c626e58f20ee16d75461baa",
+    "tracked_result": "act/pipeline/moe/results/icml2025_rt_er/seed0_epoch020_route_telemetry_20260830.json",
+    "tracked_result_sha256": "f8f3c71e39f7b2d54e8239ec6150974107575072f1ec95e092ebbe9291d444aa"
+  },
+  "status": "COMPLETED"
+}

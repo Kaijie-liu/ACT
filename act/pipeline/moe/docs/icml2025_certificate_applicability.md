@@ -191,21 +191,48 @@ An assumption failure is reported as `NOT_APPLICABLE` or
 `ASSUMPTION_NOT_ESTABLISHED`, never automatically as `UNSAFE` or
 `UNSOUND_CERTIFICATE`.
 
-## Current blockers and next evidence
+## Released training-gradient audit
 
-The official repository contains random initialization code, not trained router
-weights. Consequently the following are not yet scientific results:
+The official-code, paper-config reproduction now supplies checkpointed model
+weights. At epochs 10 and 20, all 248 expert parameter tensors changed, while
+both router tensors were bitwise identical. The Adam checkpoint has state for
+all 248 expert parameters and no state for either router parameter.
 
-- RT-ER test-set route-boundary distributions;
-- overlap between analytic radii and hard-route boundaries;
-- certificate decomposition on the official model.
+This is explained by the released source. The shared `Router.forward` returns
+integer `argmax` indices and `get_second_expert` returns integer `topk` indices.
+All four released training entry points (`cifar10_RT_ER.py`,
+`tinyimagenet_RT_ER.py`, `cifar10_JTDMoE.py`, and
+`tinyimagenet_JTDMoE.py`) form their losses from expert outputs selected through
+those indices. None exposes a differentiable router-score path, an explicit
+router loss, or a straight-through gate estimator. This source-level conclusion
+covers the four scripts at author commit `30ef94d...`; the cross-epoch tensor and
+optimizer-state evidence covers the running CIFAR-10 RT-ER seed-0 reproduction.
 
-The next admissible routes are:
+The paper treats the router as part of the robust-MoE parameters, says robust
+training encourages selected-router-score separation and local route stability,
+and says the experts' and router's Lipschitz constants have been optimized
+during RT-ER. It does not specify how gradients pass through the released hard
+`argmax` dispatch. We therefore record two related but distinct findings:
 
-1. obtain the original checkpoint from the authors and record its hash and
-   redistribution terms; or
-2. perform the already specified official-code, paper-config reproduction after
-   dependency authorization.
+1. the hard-router differentiation mechanism is underspecified in the paper;
+2. the released training artifact does not realize the stated router-optimization
+   effect.
+
+This is an artifact-centered result, not an objection to static routing itself.
+Static or stochastic expert assignment is a legitimate published design, as in
+[Hash Layers](https://arxiv.org/abs/2106.04426) and
+[THOR](https://arxiv.org/abs/2110.04260). It also does not establish that
+Theorem 5.4 is unsound. A neutral disclosure to the authors remains unsent and
+requires explicit user authorization.
+
+## Current evidence and remaining scope
+
+Because the epoch-20 router is identical to epoch 10, the seed-0 reproduction
+already supplies an exact 10,000-input route-boundary census for the released
+training artifact, subject to a bitwise drift guard at every later checkpoint.
+It does not supply the unpublished author checkpoint. The analytic certificate
+still requires a disclosed sound constants provider; the official checkpoint
+trajectory alone cannot fill that gap.
 
 Large public MoE router weights are not a zero-cost substitute. Per-token route
 radius distributions also require representative hidden activations, and router

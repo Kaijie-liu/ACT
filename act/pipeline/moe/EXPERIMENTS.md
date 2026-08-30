@@ -1028,6 +1028,31 @@ baseline, but its checkpoint trajectory cannot support a claim that this
 training procedure pushes route boundaries outward. The compact endpoint is
 `act/pipeline/moe/results/icml2025_rt_er/seed0_epoch020_route_telemetry_20260830.json`.
 
+The static route geometry has now been materialized as three audited figures
+and a 13-row table. Strictly below `2/255`, `4/255`, and `8/255`, the exact
+route-boundary counts are respectively 9,117, 9,968, and 10,000 of 10,000.
+Thus the route-invariance precondition fails somewhere inside the `8/255` ball
+for every test input, although this says nothing by itself about output safety.
+The expert loads are 16.01%, 18.95%, 37.91%, and 27.13% (effective expert count
+3.782). The most common unordered nearest-boundary pairs are `0-2` (27.22%)
+and `1-3` (21.81%). The compact audit manifest is
+`act/pipeline/moe/results/icml2025_rt_er/seed0_static_route_geometry_20260830.json`;
+the hashed SVG/CSV artifacts remain under
+`data/moe/results/icml2025_rt_er/seed0_static_route_figures_20260830_r1`.
+
+A pinned source audit also inspected all four official training entry points,
+not only CIFAR-10 RT-ER. They share the same integer `argmax`/`topk` router and
+none places router scores in a differentiable loss. The paper treats the router
+as part of the optimized robust MoE and motivates Assumption 5.3 through
+training-induced router-score separation, but does not specify a differentiable
+hard-routing estimator. We classify the missing estimator as paper
+underspecification and the absent stated optimization effect in the released
+scripts as an artifact divergence. Dynamic optimizer/checkpoint confirmation
+remains scoped to the current CIFAR-10 RT-ER seed-0 run. Static routing itself
+is not treated as invalid. The audited evidence is
+`act/pipeline/moe/results/icml2025_rt_er/released_training_router_gradient_audit_20260830.json`;
+responsible disclosure has not been sent and requires explicit authorization.
+
 ## ICML 2025 B3 executable comparison stage
 
 The final-checkpoint B3 execution layer is implemented but not run. It freezes

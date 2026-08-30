@@ -116,9 +116,30 @@ counterexample.
 - No theorem radius is computed until a sound Lipschitz-constant method is
   separately defined.
 
-## Execution gate
+## Seed-0 static-router amendment
 
-This protocol and the batch oracle are ready, but reproduction is not launched.
-The authors' pinned FFCV/Torch environment requires separate dependency
-authorization. No environment is created and `act-py312` is not modified by
-this stage.
+Epochs 10 and 20 revealed that the released hard router has no differentiable
+training path: both router tensors are bitwise identical and have no Adam state,
+while all 248 expert tensors changed. The source-level audit reaches the same
+conclusion for all four released training entry points. This observation does
+not alter the frozen seed-0 run or discard any scheduled telemetry.
+
+Instead, per-checkpoint telemetry now also serves as a drift guard. Every later
+checkpoint must preserve the epoch-10 router content hash
+`ef39e3ca91c4e27cf64dce275771a510c9236d4be2d7c8756d5131cc8503bdbd`.
+Any mismatch stops the static-router interpretation. If the guard continues to
+pass, later route-geometry summaries are integrity confirmations rather than
+independent longitudinal observations; accuracy remains time varying.
+
+At epoch 20, strict concrete census counts are 9,117/10,000 below `2/255`,
+9,968/10,000 below `4/255`, and 10,000/10,000 below `8/255`. These establish
+route-boundary reachability only. They do not establish output failure or a
+Route A certificate. Seeds 1 and 2 remain gated on the completed seed-0 audit;
+they will not be launched merely to repeat a known flat router trajectory.
+
+## Execution status
+
+The authorized Blackwell-compatible reproduction is running in an isolated
+environment. Epochs 10 and 20 have completed with immutable checkpoints and
+audited telemetry. This document does not claim the unfinished epoch-130
+accuracy endpoint or a reproduced author checkpoint.
