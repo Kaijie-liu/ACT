@@ -1904,6 +1904,17 @@ second moments, and a cluster-bootstrap comparison of the log-log slope with
 `-1/2`. It must be committed and pushed before execution; it is not a third
 dataset or an output certificate.
 
+The preregistration was pushed at `16e35aa44` before the 28.58-second CPU run.
+The 3,840-row result has slopes `-0.528558` and `-0.485386`; both pass the
+frozen point-error rule. The Tiny-moment 95% cluster-bootstrap interval
+contains `-0.5`, while the CIFAR-moment interval
+`[-0.555536,-0.500086]` does not. Thus the composite preregistered endpoint is
+`NOT_MET`, despite missing by only `8.6e-5`; it is not rounded or rerun. The
+observed/predicted second-moment radius ratios are `1.287559/1.294673`.
+Independent audit reports zero issues and eight scalar replays with maximum
+absolute error `2.78e-17`. The tracked record is
+`results/icml2025_rt_er/router_dimension_law_simulation_20260830_r1.json`.
+
 ## B1 unattended landing
 
 The official RT-ER B1 supervisor remains the sole owner of training. A separate

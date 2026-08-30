@@ -38,7 +38,7 @@ above. No submission date can redefine `PAPER_COMPLETE`.
 | Router-gradient audits of RT-ER, robust-moe-cnn, and V-MoE | Multiple-pipeline external-validity map | Source audit complete, independently audited |
 | AdvMoE official third-party learned deep-path target | Learned-router and non-output-layer external validity | Architecture/dependency audits plus strong-PGD/sparse-CROWN init pilot complete; K=20 dual-BN init census complete and init line sealed; alpha/beta closure, training, and Route A wait for B1/B3 |
 | Lazy route-set enumeration plus no-good cuts; exact-support big-M | `E` scalability and search-relaxation defense | Implemented and E=8 differential audited; E-scaling/timed rerun pending |
-| Dimension-law simulation grid | Defense against two-point-fit criticism | Frozen in `router_dimension_law_simulation_r1.json`; execution pending |
+| Dimension-law simulation grid | Defense against two-point-fit criticism | Executed and audited: both point slopes near -1/2, but one of two frozen bootstrap-interval rules misses by 8.6e-5; composite endpoint retained as failed |
 | Source-native survey retrieval | Recall-qualified survey if retrieval succeeds | Pending institutional retrieval |
 | Monolithic solver baseline | Direct decomposition comparison | Pending after B1 |
 
@@ -53,6 +53,14 @@ constants reported rather than tuned. The point-slope tolerance is `0.08`, and
 the 20-seed cluster-bootstrap 95% interval must include `-1/2`. Sixteen samples
 per seed and moment, 2,000 bootstrap replicates, and all random-seed
 derivations are frozen before execution.
+
+The frozen run contains 3,840 observations. Point slopes are `-0.5286` and
+`-0.4854`, both within the registered `0.08` error. The Tiny-moment bootstrap
+interval contains `-0.5`; the CIFAR-moment interval is
+`[-0.555536,-0.500086]` and therefore does not. The composite preregistered
+endpoint is recorded as failed without rounding, threshold changes, or a
+replacement run. The grid is supportive order-law evidence, not an
+unqualified confirmation.
 
 ### Tier 1.5: absorbed by the AdvMoE target after B3
 
@@ -129,7 +137,7 @@ or manuscript closure.
 | “The method only covers output-layer MoE.” | Official AdvMoE deep route-specialized pathway or explicit limitation. | Both static paths specialize exactly in tests; init router bracket remains unresolved and property verification remains pending after B3 |
 | “The route-invariance baseline is self-serving.” | Exact definition-level applicability plus identical downstream backend and public implementation. | Verification-scale comparison complete; official scale pending B3 |
 | “The cohort was selected after outcomes were known.” | Full-test applicability decomposition, frozen ranks, and immutable endpoints. | Closed |
-| “The dimension law fits two points.” | Frozen synthetic dimension grid, slope and constant analysis. | Pending |
+| “The dimension law fits two points.” | Frozen synthetic dimension grid, slope and constant analysis. | Closed with a mixed preregistered result: point estimates support the order, composite gate fails 1/2 interval checks |
 | “The paper targets one prior work.” | Multi-pipeline gradient audit, case series, neutral artifact wording, and responsible disclosure. | Audit complete; contact managed by PI under the frozen one-reminder/one-issue protocol |
 | “Guard value survives any abstraction.” | Retained-guard positive result plus box-hull, eta-reduction, and tie-soundness negative controls. | Closed at verification scale |
 | “Incremental solving gives a universal speedup.” | Separate build-dominated and search-dominated measurements, retaining the negative end-to-end result. | Closed |

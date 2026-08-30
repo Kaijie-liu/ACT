@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "status": "AUDIT_PASS_PREREGISTERED_COMPOSITE_RULE_NOT_MET",
+  "scope": "AFFINE_ROUTER_STANDARD_INITIALIZATION_DIMENSION_SCALING",
+  "preregistration": {
+    "path": "act/pipeline/moe/configs/router_dimension_law_simulation_r1.json",
+    "sha256": "c7c539a7d5298f5a5f6a5ee1368f5e2156fd5b674e1bb316bd9cdcbd23553f51",
+    "commit_before_execution": "16e35aa44170555dbd2242084b11c481b56e64a7"
+  },
+  "raw_artifacts": {
+    "directory": "/data1/Kane/MOE/ACT/data/moe/results/router_dimension_law_simulation_20260830_r1",
+    "rows_sha256": "0b06230133857e167b4291e56549b7d18f2430b9e20ca9c7355d7bb1ad8ade38",
+    "summary_sha256": "4dabc45fc9f17819ae4ab37cc55da677a64d4a625b9ecff5aa757b27dfafa188",
+    "audit_sha256": "4ee8ec43836935ae85f54e71f189f8008376e28cf18f4c37d064c34078179d4d"
+  },
+  "audit": {
+    "status": "PASS",
+    "issue_count": 0,
+    "scalar_replay_checks": 8,
+    "scalar_replay_maximum_absolute_error": 2.7755575615628914e-17
+  },
+  "registered_grid": {
+    "dimensions": [1000, 3000, 12000, 50000, 150000, 500000],
+    "router_seeds": 20,
+    "samples_per_seed_and_moment": 16,
+    "input_moment_families": 2,
+    "row_count": 3840
+  },
+  "fits": {
+    "CIFAR_NORMALIZED_MOMENT": {
+      "slope": -0.5285578897150331,
+      "cluster_bootstrap_95_percent_interval": [-0.5555363015425506, -0.5000860239915014],
+      "absolute_error_from_expected_minus_one_half": 0.028557889715033147,
+      "point_rule_passed": true,
+      "interval_rule_passed": false,
+      "preregistered_consistency_passed": false
+    },
+    "TINY224_LITERAL_CENTER_MOMENT": {
+      "slope": -0.4853859918715844,
+      "cluster_bootstrap_95_percent_interval": [-0.5123605455034653, -0.4612631978088601],
+      "absolute_error_from_expected_minus_one_half": 0.014614008128415623,
+      "point_rule_passed": true,
+      "interval_rule_passed": true,
+      "preregistered_consistency_passed": true
+    }
+  },
+  "moment_scale_check": {
+    "expected_sqrt_second_moment_ratio": 1.2946730717824106,
+    "median_observed_radius_ratio": 1.2875590096835423
+  },
+  "interpretation": "Both point slopes are close to -1/2 and pass the frozen point-error rule. The Tiny moment family passes the full composite rule. The CIFAR interval ends at -0.500086 and therefore does not include -0.5; the composite preregistered endpoint is failed without rounding the interval, changing the threshold, or rerunning. The simulation supplies supportive order-law evidence but not an unqualified preregistered confirmation.",
+  "claim_boundary": "Synthetic standard-initialization mechanism check only. Not a universal theorem, clipped-box route boundary, third dataset, output certificate, or reason to change the earlier two-point result."
+}

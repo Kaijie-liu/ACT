@@ -94,6 +94,17 @@ this order law. We do not treat the raw-resolution fold as an independent
 third point, because resize changes the induced weight statistics, and we do
 not extrapolate this affine result to deep nonlinear routers.
 
+A synthetic grid was frozen before execution to test whether this account is
+merely a fit to those two points. Across dimensions from 1,000 to 500,000,
+20 default-initialized four-way routers, and two fixed input second moments,
+the fitted slopes are `-0.5286` and `-0.4854`. Both pass the registered point
+tolerance around `-1/2`. The result is deliberately not called a complete
+preregistered confirmation: the Tiny-moment cluster-bootstrap interval
+contains `-0.5`, while the CIFAR-moment interval ends at `-0.500086` and misses
+it by `8.6e-5`. The composite gate therefore fails one of two interval checks.
+This mixed result supports the order-of-growth mechanism while preserving its
+sampling uncertainty and claim boundary.
+
 The AdvMoE audit supplies a useful counterexample to an architecture-only
 reading. Its initialized convolutional router sends all 10,000 official test
 images to expert 0; the signed score difference has

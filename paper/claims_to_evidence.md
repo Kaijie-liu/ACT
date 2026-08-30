@@ -529,6 +529,17 @@ function under another metric and is not counted as a third dimension point.
 The audit is
 `act/pipeline/moe/results/icml2025_rt_er/router_dimension_law_20260830.json`.
 
+A separately preregistered synthetic grid tests the two-point-fit objection at
+dimensions `{1000,3000,12000,50000,150000,500000}`. Its two fixed-second-
+moment point slopes are `-0.5286` and `-0.4854`, both within the frozen `0.08`
+tolerance around `-1/2`. The Tiny-moment bootstrap interval contains `-0.5`;
+the CIFAR-moment interval is `[-0.555536,-0.500086]` and formally misses it.
+The composite gate is therefore failed rather than rounded into a pass. Audit
+reports zero issues and eight deterministic scalar replays with maximum error
+`2.78e-17`. This is supportive order-law evidence, not an unqualified
+preregistered confirmation. The tracked record is
+`act/pipeline/moe/results/icml2025_rt_er/router_dimension_law_simulation_20260830_r1.json`.
+
 The excluded preprocessing runs establish a separate artifact-semantics
 finding.  Replacing the released float16 resize by a real-arithmetic centre
 changed 111/200,000 clean routes, and nominally identical float16 antialiased
