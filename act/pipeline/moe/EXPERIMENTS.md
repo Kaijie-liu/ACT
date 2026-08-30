@@ -1081,6 +1081,14 @@ pipeline-level conclusion is a nearly empty distribution rather than a false
 20/20 claim of exact emptiness. The compact result is
 `act/pipeline/moe/results/icml2025_rt_er/router_init_census_k20_20260830.json`.
 
+The paper-figure stage renders the full per-seed stability distribution at all
+five registered radii and the maximum route-boundary radius for every seed. It
+uses formal stability (`epsilon < radius_lower`), not rounded percentages or a
+strict point estimate. The figure must expose rather than hide zero-applicability
+seeds on a symmetric-log scale and must identify the concrete seed/sample that
+attains the global maximum. It remains a route-applicability figure, not an
+output certificate.
+
 B3 primary reporting is consequently frozen on the nondegenerate
 `{0.5,1,2,4,8}/255` grid. It does not assume that adversarially trained
 ResNet18 experts will have positive absolute certified coverage at `8/255`;
