@@ -46,13 +46,21 @@ def run(config_path: Path, output_dir: Path) -> dict[str, Any]:
     if output_dir.exists():
         raise RuntimeError(f"output directory already exists: {output_dir}")
     config = json.loads(config_path.read_text(encoding="utf-8"))
+    attack_device = str(config["attack"]["device"])
+    if attack_device.startswith("cuda"):
+        free_memory, _total_memory = torch.cuda.mem_get_info(torch.device(attack_device))
+        required_free = int(config["resource_gate"]["minimum_free_gpu_memory_bytes"])
+        if free_memory < required_free:
+            raise RuntimeError(
+                f"GPU resource gate: {free_memory} free bytes < {required_free} required"
+            )
     output_dir.mkdir(parents=True)
     archive = _inside(Path(config["dataset"]["archive"]), MOE_ROOT)
     inputs_all, labels_all = load_cifar10_test_archive(archive)
     indices = [int(value) for value in config["sample_indices"]]
     inputs_np = inputs_all[indices]
     labels = labels_all[indices]
-    device = torch.device(str(config["attack"]["device"]))
+    device = torch.device(attack_device)
     model, router, _moe_type = construct_official_init(int(config["model_seed"]))
     del model
     router = router.to(device).eval()

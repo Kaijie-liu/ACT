@@ -222,6 +222,12 @@ def run(prepare_path: Path, output_path: Path) -> dict[str, Any]:
             row_accumulators[epsilon]["seconds"] += time.monotonic() - started
         if device.startswith("cuda"):
             peak_memory_bytes = max(peak_memory_bytes, torch.cuda.max_memory_allocated())
+            maximum_peak = worker_config.get("maximum_peak_memory_bytes")
+            if maximum_peak is not None and peak_memory_bytes > int(maximum_peak):
+                raise RuntimeError(
+                    f"CROWN peak memory {peak_memory_bytes} exceeds frozen limit "
+                    f"{int(maximum_peak)}"
+                )
         del bounded, chunk_adapter
         if device.startswith("cuda"):
             torch.cuda.empty_cache()
