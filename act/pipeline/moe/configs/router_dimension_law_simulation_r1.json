@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "status": "PREREGISTERED_NOT_RUN",
+  "scope": "AFFINE_ROUTER_STANDARD_INITIALIZATION_DIMENSION_SCALING",
+  "dimensions": [1000, 3000, 12000, 50000, 150000, 500000],
+  "num_experts": 4,
+  "router_seeds": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+  "samples_per_seed_and_moment": 16,
+  "synthetic_input_seed_base": 17000000,
+  "synthetic_input_seed_formula": "base + 100000 * dimension_index + 1000 * router_seed + moment_index",
+  "input_families": [
+    {
+      "label": "CIFAR_NORMALIZED_MOMENT",
+      "fixed_second_moment": 1.554975707473284,
+      "source": "audited official CIFAR-10 normalized router inputs in router_dimension_law_20260830_r2"
+    },
+    {
+      "label": "TINY224_LITERAL_CENTER_MOMENT",
+      "fixed_second_moment": 0.9276910751175297,
+      "source": "audited official TinyImageNet literal-center router inputs in router_dimension_law_20260830_r2"
+    }
+  ],
+  "synthetic_input_distribution": "independent Rademacher coordinates multiplied by sqrt(fixed_second_moment), giving the registered second moment exactly for every sample",
+  "router_initialization": "fresh torch.nn.Linear(d, 4, bias=True, dtype=float32) immediately after torch.manual_seed(router_seed); this is PyTorch default uniform initialization, then evaluated in float64",
+  "radius_quantity": "unbounded local affine top-1 L-infinity radius min_j margin_j / ||w_selected-w_j||_1; no pixel clipping and no output certificate",
+  "primary_fit": "ordinary least squares of log aggregate-median radius on log dimension, separately for each fixed input moment",
+  "bootstrap_replicates": 2000,
+  "uncertainty": "2000 deterministic cluster bootstrap replicates resampling the 20 router seeds and recomputing all six aggregate medians",
+  "expected_slope": -0.5,
+  "preregistered_consistency_rule": {
+    "absolute_point_slope_error_at_most": 0.08,
+    "cluster_bootstrap_95_percent_interval_must_include": -0.5
+  },
+  "constant_check": "report fitted intercepts and the ratio of radii between the two fixed-moment families; do not tune either moment after observation",
+  "claim_boundary": "A synthetic standard-initialization mechanism check against a two-point-fit objection. It is not a universal law, an exact clipped-box route boundary, a third dataset, or an output-robustness certificate."
+}

@@ -60,6 +60,15 @@ degree of the observed collapse without explaining it away. Trained telemetry
 therefore binds its mode and statistics identity and reports both registered
 semantics from fresh checkpoint copies.
 
+The distinction is stronger than a mode flag. In train mode, the route of one
+image can depend on the other examples in its batch, so the router is not a
+single-input function unless the co-batch rule is specified. Formal per-input
+verification targets eval mode with checkpoint running statistics; the
+train-mode row is only a training-dynamics diagnostic. We relate the
+near-constant initialization to established signal-propagation/rank-collapse
+and MoE load-balancing literature, and claim the routed manifestation and its
+verification consequences rather than rediscovering those phenomena.
+
 These observations motivate an explicit certificate identity.  Every B3 result
 must bind all of the following fields:
 

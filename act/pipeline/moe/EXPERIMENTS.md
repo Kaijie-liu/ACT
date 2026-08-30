@@ -1888,6 +1888,22 @@ it, and collapse direction varies by initialization. The init line is sealed;
 trained telemetry records both eval/current-running-statistics and
 train/ordered-test-batch-statistics rows at every checkpoint.
 
+Train-mode BatchNorm does not define a single-input router: one image's route
+can depend on the other images in its batch. Therefore only eval mode with the
+checkpoint's stored running statistics is a per-input verification object.
+The ordered train-mode row remains a training-dynamics diagnostic and may not
+be reported as a certificate. Known initialization signal/rank-collapse and
+MoE load-imbalance literature supplies the prior context; our scoped finding
+is the routed manifestation plus its certification consequences.
+
+The synthetic dimension-law red-team grid is preregistered in
+`configs/router_dimension_law_simulation_r1.json`. It freezes dimensions
+`{1000,3000,12000,50000,150000,500000}`, 20 default-initialized affine-router
+seeds, 16 exact-Rademacher samples for each of the two already audited input
+second moments, and a cluster-bootstrap comparison of the log-log slope with
+`-1/2`. It must be committed and pushed before execution; it is not a third
+dataset or an output certificate.
+
 ## B1 unattended landing
 
 The official RT-ER B1 supervisor remains the sole owner of training. A separate

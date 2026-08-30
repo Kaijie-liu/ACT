@@ -38,16 +38,21 @@ above. No submission date can redefine `PAPER_COMPLETE`.
 | Router-gradient audits of RT-ER, robust-moe-cnn, and V-MoE | Multiple-pipeline external-validity map | Source audit complete, independently audited |
 | AdvMoE official third-party learned deep-path target | Learned-router and non-output-layer external validity | Architecture/dependency audits plus strong-PGD/sparse-CROWN init pilot complete; K=20 dual-BN init census complete and init line sealed; alpha/beta closure, training, and Route A wait for B1/B3 |
 | Lazy route-set enumeration plus no-good cuts; exact-support big-M | `E` scalability and search-relaxation defense | Implemented and E=8 differential audited; E-scaling/timed rerun pending |
-| Dimension-law simulation grid | Defense against two-point-fit criticism | Pending; grid must be frozen before execution |
+| Dimension-law simulation grid | Defense against two-point-fit criticism | Frozen in `router_dimension_law_simulation_r1.json`; execution pending |
 | Source-native survey retrieval | Recall-qualified survey if retrieval succeeds | Pending institutional retrieval |
 | Monolithic solver baseline | Direct decomposition comparison | Pending after B1 |
 
 The dimension simulation grid is frozen before execution as
 `d in {1000, 3000, 12000, 50000, 150000, 500000}`. Router initialization must
 follow the documented PyTorch default scaling. Synthetic input second moments
-must be fixed before results are viewed. The primary check is the fitted
-log-log slope against `-1/2`, with uncertainty and constants reported rather
-than tuned.
+are frozen to the independently audited CIFAR normalized moment
+`1.554975707473284` and Tiny-224 literal-centre moment `0.9276910751175297`;
+every synthetic sample uses an exactly matching Rademacher construction. The
+primary check is the fitted log-log slope against `-1/2`, with uncertainty and
+constants reported rather than tuned. The point-slope tolerance is `0.08`, and
+the 20-seed cluster-bootstrap 95% interval must include `-1/2`. Sixteen samples
+per seed and moment, 2,000 bootstrap replicates, and all random-seed
+derivations are frozen before execution.
 
 ### Tier 1.5: absorbed by the AdvMoE target after B3
 

@@ -117,8 +117,18 @@ degenerate start, not about one router architecture being inherently stable.
 RT-ER permanently preserves its random initialization because its released
 training script has no optimization path to the router. AdvMoE exposes an
 explicit router objective, so training must first escape its highly imbalanced
-initial partition. The checkpoint trajectory tests whether and when that
-escape occurs; initialization alone cannot answer it.
+initial partition. The shallow bal010 router supplies the third case: after
+training it exhibits a rich multi-expert route geometry. These regimes answer
+the same question differently—RT-ER preserves degeneracy, AdvMoE is born
+degenerate and must escape it, and bal010 develops nontrivial geometry. The
+checkpoint trajectory tests whether and when that escape occurs;
+initialization alone cannot answer it.
+
+The AdvMoE trajectory also separates functions. Eval mode with stored running
+statistics defines the single-input router that can be verified. Train-mode
+BatchNorm defines a co-batch-dependent mapping and is reported only as a
+training-dynamics diagnostic. No certificate silently changes between these
+semantics.
 
 ## Backend composition rather than backend replacement
 

@@ -100,12 +100,28 @@ its degree.
 
 The train-mode row is a controlled co-batch diagnostic, not a replay of the
 literal shuffled and augmented training stream. It is intentionally labelled
-as such. Trained-checkpoint telemetry therefore reports route load, signed
+as such. More fundamentally, a training-mode BatchNorm router maps a batch to
+a batch of routes: the route assigned to one image may change when its
+co-batch changes. It is not a well-defined single-input function unless the
+co-batch construction is part of the specification. Per-input formal
+verification therefore uses eval mode and the checkpoint's recorded running
+statistics. Train-mode BatchNorm is used only to study training dynamics, not
+as a certification target.
+
+Trained-checkpoint telemetry therefore reports route load, signed
 offset, and margin distributions under two identities: eval mode with the
 checkpoint's current running statistics, and a fresh checkpoint copy in train
 mode over registered ordered test batches. Neither identity is allowed to
 select a checkpoint. This distinction lets us ask when training escapes
 initial load collapse without silently changing the function under study.
+
+We do not position the observed near-constant initialization as a new general
+theory of deep networks. Signal-propagation and rank-collapse phenomena at
+random initialization, and MoE load imbalance during training, are established
+topics. The new object here is their routed-program manifestation and its
+certification consequence: an initial router may have no meaningful partition
+to certify, while the function seen during training can differ from the
+single-input function later presented to a verifier.
 
 ## Certificate identity and fail-closed use
 

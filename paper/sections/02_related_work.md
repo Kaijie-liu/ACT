@@ -39,6 +39,21 @@ categories.
 
 ## Empirically robust and large sparse MoE
 
+Random-initialization pathologies are not new. Mean-field analyses identify
+finite signal-propagation depth scales, and prior work shows that
+unnormalized deep representations can undergo rank collapse while BatchNorm
+changes that behavior. MoE training work likewise treats imbalanced routing as
+a known optimization problem: Switch Transformer includes an auxiliary
+load-balancing loss, and BASE Layers motivates balanced assignment by the
+difficulty of learning balanced routing. Our contribution is therefore not a
+claim to have discovered rank collapse or expert-load imbalance. We instantiate
+these known phenomena in released MoE routers and measure two verification
+consequences that prior work does not study: which route-invariance obligations
+become degenerate, and whether supervised router training creates nontrivial
+route geometry that can be certified. The manuscript cites Schoenholz et al.
+(2017), Daneshmand et al. (2020), Fedus et al. (2022), and Lewis et al. (2021)
+for the underlying initialization and load-balancing literature.
+
 Robust-MoE-CNN/AdvMoE provides a complementary official third-party target. Its
 hard top-1 router is learned with a supervised objective and a straight-through
 gradient path, and one route selects weight slices shared across 16 convolution
@@ -61,6 +76,13 @@ and THOR-like randomized routing. Their existence calibrates our RT-ER finding:
 the issue is not that a fixed router is prohibited, but that theorem premises,
 training narrative, and released optimization path must identify the same
 artifact.
+
+BatchNorm fixes another semantic boundary. In training mode, the route assigned
+to one image can depend on the other images in its batch; without a registered
+co-batch policy, the router is not a function of one input. Per-input
+verification consequently targets eval mode with checkpoint running
+statistics. Train-mode rows are training-dynamics diagnostics only and are
+never presented as certificates of a single-input function.
 
 ## General-purpose neural verifiers
 
