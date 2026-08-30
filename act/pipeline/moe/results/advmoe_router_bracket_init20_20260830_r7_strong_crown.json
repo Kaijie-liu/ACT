@@ -1,0 +1,225 @@
+{
+  "adapter_equivalence": {
+    "max_abs_error": 0.0,
+    "outputs_equal": true,
+    "routes_equal": true
+  },
+  "batchnorm_deployment_identity": {
+    "layers": 19,
+    "maximum_abs_running_mean": 0.0,
+    "maximum_abs_running_variance_minus_one": 0.0,
+    "maximum_batches_tracked": 0,
+    "training_layers": 0
+  },
+  "conclusion": "All 100 strong-attack endpoints replay and all CROWN/accounting identities pass. Strong PGD finds no route flip; median margin compression reaches 11.324% at 8/255. Sparse CROWN is materially tighter than IBP but all lower bounds remain negative by hundreds of millions or more, so every row remains undecided. This init engineering result is neither formal stability nor a census.",
+  "issue_count": 0,
+  "issues": [],
+  "peak_memory_bytes": 22523740672,
+  "raw_artifacts": {
+    "attack_endpoints": {
+      "path": "/data1/Kane/MOE/ACT/data/moe/results/advmoe_router_bracket_init20_20260830_r7_strong_crown/attack_endpoints.npz",
+      "sha256": "63f0ec0ed88b9425fb9feb101c5f63794ef28b3f2f97c5095142de59210f9fbc"
+    },
+    "bounds": {
+      "path": "/data1/Kane/MOE/ACT/data/moe/results/advmoe_router_bracket_init20_20260830_r7_strong_crown/crown_bounds.json",
+      "sha256": "49defa76ac1730547fcd7a727ce94379fbe453cc844e8c6319c5e0b325981783"
+    },
+    "inputs": {
+      "path": "/data1/Kane/MOE/ACT/data/moe/results/advmoe_router_bracket_init20_20260830_r7_strong_crown/inputs.npz",
+      "sha256": "e0104452d7059b80ce138e929261a75d5e37058f40af836d03ed2f5c1b2d46ea"
+    },
+    "prepare": {
+      "path": "/data1/Kane/MOE/ACT/data/moe/results/advmoe_router_bracket_init20_20260830_r7_strong_crown/prepare.json",
+      "sha256": "301cea0a8f48af51eec97615f0d43591da77916e4c7ca3172c4460e00ae0320f"
+    },
+    "summary": {
+      "path": "/data1/Kane/MOE/ACT/data/moe/results/advmoe_router_bracket_init20_20260830_r7_strong_crown/summary.json",
+      "sha256": "62c0fa3f55d1e6ce7f4d428fbc43774c3ca9bed787f95bf0eff89a86a403397e"
+    },
+    "worker_log": {
+      "path": "/data1/Kane/MOE/ACT/data/moe/results/advmoe_router_bracket_init20_20260830_r7_strong_crown/crown_worker.log",
+      "sha256": "bd8ef0a1054b69d456e82382160db4319722a85fb7cee4e5e071a34a3a5ec7dc"
+    }
+  },
+  "router_sha256": "fabc6e7e8c07ac1dc3cfec37a249124a07f10efea12b1b05235e9e9c03dff9e3",
+  "rows": [
+    {
+      "attack_confirmed_route_unstable": 0,
+      "attack_seconds": 2.001227972097695,
+      "attacked_margin": {
+        "max": 0.3586512804031372,
+        "median": 0.3064601570367813,
+        "min": 0.259759783744812,
+        "q25": 0.29557254910469055,
+        "q75": 0.3134012594819069
+      },
+      "bound_error": null,
+      "bound_method": "CROWN",
+      "conflicts": 0,
+      "crown_lower_bound": {
+        "max": -316530848.0,
+        "median": -374473952.0,
+        "min": -417819424.0,
+        "q25": -386431032.0,
+        "q75": -356219152.0
+      },
+      "crown_seconds": 35.026357722468674,
+      "epsilon": 0.00196078431372549,
+      "formal_route_stable": 0,
+      "formal_route_stable_reason": "backend lower bounds are not outward-rounded",
+      "margin_compression_fraction": {
+        "max": 0.008413688279688358,
+        "median": 0.007349368184804916,
+        "min": 0.0065931654535233974,
+        "q25": 0.007071764091961086,
+        "q75": 0.007500383537262678
+      },
+      "positive_numerical_bound_filter": 0,
+      "samples": 20,
+      "undecided_band": 20
+    },
+    {
+      "attack_confirmed_route_unstable": 0,
+      "attack_seconds": 1.7020475398749113,
+      "attacked_margin": {
+        "max": 0.35627204179763794,
+        "median": 0.3041977137327194,
+        "min": 0.2577112913131714,
+        "q25": 0.2933240756392479,
+        "q75": 0.3111700937151909
+      },
+      "bound_error": null,
+      "bound_method": "CROWN",
+      "conflicts": 0,
+      "crown_lower_bound": {
+        "max": -568063424.0,
+        "median": -660480704.0,
+        "min": -723376128.0,
+        "q25": -674369536.0,
+        "q75": -639956576.0
+      },
+      "crown_seconds": 36.109123004600406,
+      "epsilon": 0.00392156862745098,
+      "formal_route_stable": 0,
+      "formal_route_stable_reason": "backend lower bounds are not outward-rounded",
+      "margin_compression_fraction": {
+        "max": 0.01677701808512211,
+        "median": 0.014686645474284887,
+        "min": 0.01318327710032463,
+        "q25": 0.014104842906817794,
+        "q75": 0.014939704909920692
+      },
+      "positive_numerical_bound_filter": 0,
+      "samples": 20,
+      "undecided_band": 20
+    },
+    {
+      "attack_confirmed_route_unstable": 0,
+      "attack_seconds": 1.788580701686442,
+      "attacked_margin": {
+        "max": 0.3515232801437378,
+        "median": 0.2997041195631027,
+        "min": 0.2537045180797577,
+        "q25": 0.28886257857084274,
+        "q75": 0.30673356354236603
+      },
+      "bound_error": null,
+      "bound_method": "CROWN",
+      "conflicts": 0,
+      "crown_lower_bound": {
+        "max": -1032015040.0,
+        "median": -1197689792.0,
+        "min": -1293260032.0,
+        "q25": -1214559840.0,
+        "q75": -1173440768.0
+      },
+      "crown_seconds": 36.33076471555978,
+      "epsilon": 0.00784313725490196,
+      "formal_route_stable": 0,
+      "formal_route_stable_reason": "backend lower bounds are not outward-rounded",
+      "margin_compression_fraction": {
+        "max": 0.033313822001218796,
+        "median": 0.02930434700101614,
+        "min": 0.026336589828133583,
+        "q25": 0.02807825757190585,
+        "q75": 0.02978911204263568
+      },
+      "positive_numerical_bound_filter": 0,
+      "samples": 20,
+      "undecided_band": 20
+    },
+    {
+      "attack_confirmed_route_unstable": 0,
+      "attack_seconds": 1.725783832371235,
+      "attacked_margin": {
+        "max": 0.34205982089042664,
+        "median": 0.2907845973968506,
+        "min": 0.24600335955619812,
+        "q25": 0.2801278308033943,
+        "q75": 0.2980196103453636
+      },
+      "bound_error": null,
+      "bound_method": "CROWN",
+      "conflicts": 0,
+      "crown_lower_bound": {
+        "max": -1884361472.0,
+        "median": -2118697024.0,
+        "min": -2311544576.0,
+        "q25": -2140524544.0,
+        "q75": -2056593856.0
+      },
+      "crown_seconds": 36.7614987231791,
+      "epsilon": 0.01568627450980392,
+      "formal_route_stable": 0,
+      "formal_route_stable_reason": "backend lower bounds are not outward-rounded",
+      "margin_compression_fraction": {
+        "max": 0.06613978743553162,
+        "median": 0.05787871405482292,
+        "min": 0.052211128175258636,
+        "q25": 0.05566818825900555,
+        "q75": 0.05934089794754982
+      },
+      "positive_numerical_bound_filter": 0,
+      "samples": 20,
+      "undecided_band": 20
+    },
+    {
+      "attack_confirmed_route_unstable": 0,
+      "attack_seconds": 1.5756990294903517,
+      "attacked_margin": {
+        "max": 0.32326412200927734,
+        "median": 0.27316612005233765,
+        "min": 0.2319052368402481,
+        "q25": 0.26328203082084656,
+        "q75": 0.2815752327442169
+      },
+      "bound_error": null,
+      "bound_method": "CROWN",
+      "conflicts": 0,
+      "crown_lower_bound": {
+        "max": -3457108480.0,
+        "median": -3732893056.0,
+        "min": -3988945152.0,
+        "q25": -3763147200.0,
+        "q75": -3685970240.0
+      },
+      "crown_seconds": 35.25757521484047,
+      "epsilon": 0.03137254901960784,
+      "formal_route_stable": 0,
+      "formal_route_stable_reason": "backend lower bounds are not outward-rounded",
+      "margin_compression_fraction": {
+        "max": 0.13047803938388824,
+        "median": 0.11324390769004822,
+        "min": 0.10264952480792999,
+        "q25": 0.10865417495369911,
+        "q75": 0.11634800769388676
+      },
+      "positive_numerical_bound_filter": 0,
+      "samples": 20,
+      "undecided_band": 20
+    }
+  ],
+  "schema_version": 1,
+  "scope": "INDEPENDENT_AUDIT_STRONG_ATTACK_SPARSE_CROWN_INIT_PILOT",
+  "status": "PASS"
+}

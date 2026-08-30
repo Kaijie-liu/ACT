@@ -621,24 +621,43 @@ literal first-max tie behavior:
 architecture/training-semantics result only. Training, sampled input-space
 route census, and deep-path certificates remain pending after RT-ER B3.
 
-### AdvMoE init bracket is currently fully undecided
+### Two dependency failure modes are distinguished
 
-The frozen 20-input engineering pilot validates the route-bracket harness but
-does not yet buy a nonlinear-router census. At every radius in
-`{0.5,1,2,4,8}/255`, PGD finds no concrete route flip and one-thread IBP gives
-no positive numerical lower-bound filter, leaving 20/20 inputs undecided. The
-largest absolute lower/upper bounds reach `2.07e10`/`2.84e10`, exposing severe
-deep-router IBP abstraction explosion. The installed full CROWN path is not a
-safe fallback during B1: its literal frontend rejects the source graph, the
-bit-exact lowered graph exceeded the CPU pilot budget, and a one-input GPU
-probe exhausted the available 95 GiB device.
+The official RT-ER reproduction is `pinned-but-rotted`: the released dependency
+pin is concrete but cannot execute its first CUDA kernel on the registered
+Blackwell device. AdvMoE is `unpinned`: its requirements do not specify Python,
+PyTorch, torchvision, or CUDA, the README names a missing requirements file,
+and the training entry point stops at undeclared packages. These labels describe
+artifact reproducibility failure modes, not method accuracy or quality. No
+dependency was installed and no AdvMoE training environment was created in the
+current stage.
+
+### AdvMoE init bracket remains fully undecided after stronger tools
+
+The first frozen 20-input engineering pilot established only that weak PGD and
+IBP could not close the route bracket. The second pilot keeps the same inputs
+and five radii but uses 100-step, 10-restart margin-directed PGD and
+resource-gated sparse backward CROWN. The literal router remains rejected;
+the fixed-shape adapter is bit-exact and the accepted CROWN worker peaks at
+20.98 GiB while B1 remains alive.
+
+Strong PGD finds 0/20 flips at every radius. Median margin compression grows
+from 0.735% at 0.5/255 to 11.324% at 8/255, with a maximum of 13.048% at
+8/255. The clean margin median is `0.3087212`, and the attacked 8/255 margin
+median remains `0.2731661`. Median sparse-CROWN lower bounds range from
+`-3.7447e8` at 0.5/255 to `-3.7329e9` at 8/255. This reduces median bound
+magnitude by 5.20x--5.37x relative to IBP, but no numerical lower bound is
+positive and every one of the 100 sample-radius rows remains undecided.
 
 The independent audit reports zero issues and replays archive, model, adapter,
-hash, partition, and witness identities:
-`act/pipeline/moe/results/advmoe_router_bracket_init20_20260830_r3.json`. The
-only paper-safe conclusion is that the fail-closed harness works and current
-IBP cannot close the bracket. Zero attack flips must not be called stability;
-the pilot is not prevalence, accuracy, robustness, or certificate evidence.
+hash, partition, all attack endpoints, BN deployment state, resource limits,
+and CROWN/accounting identities:
+`act/pipeline/moe/results/advmoe_router_bracket_init20_20260830_r7_strong_crown.json`.
+The paper-safe conclusion is that a materially stronger two-sided engineering
+bracket remains unresolved at initialization. Zero attack flips are not formal
+stability, and large negative relaxation bounds are not evidence of intrinsic
+router difficulty. Alpha-CROWN, beta-CROWN/BaB, the trained checkpoint, census,
+and deep-path certificate coverage remain pending.
 
 ## Threats to validity
 
@@ -679,9 +698,11 @@ the pilot is not prevalence, accuracy, robustness, or certificate evidence.
 - P0a and P0b are complete. A true monolithic solver comparison and official
   RT-ER B3 expert verification remain pending before official-scale certificate
   claims.
-- The AdvMoE init pilot has a 100/100 sample-radius undecided band under its
-  deliberately cheap PGD/IBP harness. It establishes neither nonlinear-router
-  applicability nor third-party deep-path certificate coverage.
+- The AdvMoE init pilot still has a 100/100 sample-radius undecided band after
+  100-step, 10-restart PGD and sparse backward CROWN. This is an init engineering
+  result, not nonlinear-router applicability, stability, prevalence, or
+  third-party deep-path certificate coverage. Alpha-CROWN and beta-CROWN/BaB
+  remain unexecuted closure tiers.
 
 ### Statistical conclusion validity
 

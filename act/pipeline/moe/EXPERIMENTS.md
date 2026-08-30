@@ -1744,12 +1744,12 @@ stride-2 convolutions and dynamic pooling by fixed 8x8 average pooling; tests
 show bit-exact scores/routes on the registered domain and concrete equivalence
 between dynamic execution and both 16-convolution specialized paths.
 
-Full patches-mode CROWN is not run during B1: one CPU-thread probe exceeded 90
-seconds and a one-sample GPU probe exhausted the available 95 GiB device after
-holding over 62 GiB. The frozen 20-sample engineering pilot therefore uses
-one-thread CPU IBP plus PGD only. Positive bounds remain numerical filters, not
-outward-rounded formal route-stability certificates; negative bounds are
-UNKNOWN. Protocol:
+Default patches-mode CROWN was rejected for concurrent B1 use: one CPU-thread
+probe exceeded 90 seconds and a one-sample GPU probe exhausted the available
+95 GiB device after holding over 62 GiB. The first frozen 20-sample engineering
+pilot therefore used one-thread CPU IBP plus weak PGD. Positive bounds remain
+numerical filters, not outward-rounded formal route-stability certificates;
+negative bounds are UNKNOWN. Protocol:
 `act/pipeline/moe/docs/advmoe_router_bracket_protocol.md`.
 
 The accepted init pilot is
@@ -1764,3 +1764,35 @@ abstraction-explosion result, not evidence that the init router is stable. The
 literal frontend rejection and fixed-adapter bit-exactness were independently
 replayed. Failed `_r1` and `_r2` launches are preserved with permanent-exclude
 records; neither produced bounds or a summary and neither was reused.
+
+A second frozen pilot strengthened both sides of the bracket without changing
+the ordered 20 inputs or five radii. The attack uses 100 steps, 10 vectorized
+restarts, epsilon/4 initial step size, and scheduled halvings at 50% and 75%.
+The resource-gated worker uses lower-bound-only sparse backward CROWN, one
+sample per bounded graph, `crown_batch_size=128`, `max_crown_size=512`, and no
+full convolution alpha. This is a CROWN engineering result, not alpha-CROWN or
+beta-CROWN/BaB.
+
+The accepted directory is
+`data/moe/results/advmoe_router_bracket_init20_20260830_r7_strong_crown`; its
+independent audit has zero issues at
+`act/pipeline/moe/results/advmoe_router_bracket_init20_20260830_r7_strong_crown.json`.
+Strong PGD found no route flip. Median margin compression was 0.735%, 1.469%,
+2.930%, 5.788%, and 11.324% at 0.5, 1, 2, 4, and 8/255; the corresponding
+maxima were 0.841%, 1.678%, 3.331%, 6.614%, and 13.048%. Median sparse-CROWN
+lower bounds were `-3.7447e8`, `-6.6048e8`, `-1.1977e9`, `-2.1187e9`, and
+`-3.7329e9`. This is a 5.20x--5.37x reduction in median bound magnitude from
+IBP, but all 100 sample-radius rows remain undecided.
+
+The clean margin median is `0.3087212`; median clean input-gradient norms are
+`L1=1.1474504`, `L2=0.02989978`, and `Linf=0.0019159`. At 8/255 the attacked
+margin median is `0.2731661`. Zero flips are empirical attack evidence only;
+the negative CROWN bounds are UNKNOWN, and this init pilot is neither formal
+stability nor a census. All 19 BatchNorm layers were in eval mode with default
+init running statistics. The worker peaked at `22,523,740,672` bytes (20.98
+GiB), below its 24-GiB gate, and B1 remained alive.
+
+Failed `_r4`, `_r5`, and `_r6` directories are preserved and permanently
+excluded. They exposed bounded-graph reuse, cyclic garbage retention, and
+retained bound-local references, respectively. Their attack endpoint hash is
+identical to the accepted run; no directory was overwritten.

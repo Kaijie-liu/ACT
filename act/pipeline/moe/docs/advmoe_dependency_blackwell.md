@@ -48,11 +48,16 @@ suggests:
 4. after lowering, batch-20 IBP completes quickly, but default patches-mode
    CROWN takes more than 90 seconds on one CPU thread and a single-sample GPU
    probe exhausts a 95 GiB Blackwell after the worker holds more than 62 GiB.
+5. resource-gated sparse backward CROWN, with one input per graph and at most
+   512 selected unstable intermediates, completes the accepted 20-input,
+   five-radius init pilot at a 20.98-GiB peak while B1 remains alive.
 
-The CROWN time/OOM observations are engineering feasibility probes, not paper
-coverage measurements. No further full CROWN probe runs concurrently with B1.
-The harness keeps the backend pluggable and records bound errors rather than
-silently falling back.
+The default-CROWN time/OOM observations and accepted sparse-CROWN run are
+engineering feasibility measurements, not paper coverage measurements. The
+accepted sparse configuration is not alpha-CROWN or beta-CROWN/BaB and does
+not replace trained-checkpoint evaluation. The harness keeps the backend
+pluggable, enforces a 24-GiB worker peak gate, and records bound errors rather
+than silently falling back.
 
 ## Next environment gate
 

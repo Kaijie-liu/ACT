@@ -152,3 +152,43 @@ means, running variances, and batches-tracked state are stored as part of the
 deployment identity. Init results validate methods only; certification yield is
 evaluated on the trained checkpoint. The project does not use exact HZ/MILP to
 propagate this 269K-parameter convolutional router.
+
+## Strong-attack and sparse-CROWN engineering result
+
+The accepted result directory is
+`data/moe/results/advmoe_router_bracket_init20_20260830_r7_strong_crown`.
+Its independently replayed audit is
+`act/pipeline/moe/results/advmoe_router_bracket_init20_20260830_r7_strong_crown.json`
+and reports zero issues. All 100 stored attack endpoints replay inside their
+registered boxes with the same margins and routes.
+
+| epsilon | route flips | median margin compression | maximum compression | median CROWN lower bound | CROWN seconds | undecided |
+|---:|---:|---:|---:|---:|---:|---:|
+| 0.5/255 | 0/20 | 0.735% | 0.841% | -374,473,952 | 35.03 | 20/20 |
+| 1/255 | 0/20 | 1.469% | 1.678% | -660,480,704 | 36.11 | 20/20 |
+| 2/255 | 0/20 | 2.930% | 3.331% | -1,197,689,792 | 36.33 | 20/20 |
+| 4/255 | 0/20 | 5.788% | 6.614% | -2,118,697,024 | 36.76 | 20/20 |
+| 8/255 | 0/20 | 11.324% | 13.048% | -3,732,893,056 | 35.26 | 20/20 |
+
+The clean route margin has median `0.3087212` and range
+`[0.2618431, 0.3610316]`. Median clean input-gradient norms are
+`L1=1.1474504`, `L2=0.02989978`, and `Linf=0.0019159`. At 8/255 the attacked
+margin remains positive on all 20 inputs, with median `0.2731661` and range
+`[0.2319052, 0.3232641]`. These are empirical attack diagnostics, not a
+stability proof.
+
+Relative to the earlier IBP pilot, the median lower-bound magnitude is reduced
+by `5.20x--5.37x`, but every CROWN lower bound remains negative by hundreds of
+millions or more. Thus the stronger two-sided bracket is still 100/100
+undecided. This result does not establish that the deep router is intrinsically
+difficult to certify or that it is stable; alpha-CROWN and beta-CROWN/BaB remain
+unexecuted closure tiers, and trained-checkpoint behavior remains the target.
+
+The accepted worker peak was `22,523,740,672` bytes (20.98 GiB), below the
+frozen 24-GiB gate, while the protected B1 process remained alive. Init
+BatchNorm identity was 19 eval-mode layers with zero running means, unit
+running variances, and zero batches tracked. Failed `_r4`, `_r5`, and `_r6`
+directories are permanently excluded and preserved: they exposed, in order,
+bounded-graph reuse, cyclic garbage retention, and retained bound-local
+references. All three contain the same independently hashed attack endpoints
+as the accepted run, and none was overwritten.
