@@ -1518,6 +1518,15 @@ is drafted at
 `DRAFT_NOT_SENT`; sending still requires explicit user authorization, and any
 reply must remain in the private untracked survey directory.
 
+The local artifact-release inventory is staged at
+`act/pipeline/moe/configs/artifact_release_manifest_draft.json` and documented
+in `act/pipeline/moe/docs/artifact_release_staging.md`. It currently enumerates
+completed verification-scale checkpoints, selected replayed witnesses, parser
+and specialization ONNX graphs, the K=20 router census, and Figure 2 artifacts.
+It is not an external Zenodo deposit: B1/B3 outputs, full witness collections,
+creator metadata, and per-artifact license review remain pending, and neither
+upload nor publication is authorized.
+
 The geometric mechanism is formalized in
 `act/back_end/moe/proofs/guarded_box_coordinate_hull.md`. For one affine
 halfspace it gives the exact coordinate bounds and the necessary-and-sufficient
