@@ -126,6 +126,149 @@ def pgd_route_flip(
     }
 
 
+def clean_margin_diagnostics(
+    router: torch.nn.Module,
+    inputs: torch.Tensor,
+    clean_routes: torch.Tensor,
+) -> dict[str, np.ndarray]:
+    """Measure clean E=2 margins and their input-gradient norms."""
+    router.eval()
+    differentiable = inputs.detach().clone().requires_grad_(True)
+    batch = torch.arange(len(inputs), device=inputs.device)
+    competitors = 1 - clean_routes
+    scores = router(differentiable)
+    margins = scores[batch, clean_routes] - scores[batch, competitors]
+    gradient = torch.autograd.grad(margins.sum(), differentiable)[0].flatten(1)
+    return {
+        "clean_margin": margins.detach().cpu().double().numpy(),
+        "gradient_l1": gradient.abs().sum(dim=1).detach().cpu().double().numpy(),
+        "gradient_l2": gradient.norm(p=2, dim=1).detach().cpu().double().numpy(),
+        "gradient_linf": gradient.abs().max(dim=1).values.detach().cpu().double().numpy(),
+    }
+
+
+def strong_pgd_route_flip(
+    router: torch.nn.Module,
+    inputs: torch.Tensor,
+    clean_routes: torch.Tensor,
+    *,
+    epsilon: float,
+    steps: int,
+    restarts: int,
+    step_divisor: float,
+    seed: int,
+) -> dict[str, Any]:
+    """Vectorized multi-restart margin PGD with a frozen halving schedule."""
+    if steps < 4 or restarts < 1:
+        raise ValueError("strong PGD requires at least four steps and one restart")
+    router.eval()
+    device = inputs.device
+    samples = len(inputs)
+    generator = torch.Generator(device=device)
+    generator.manual_seed(seed)
+    expanded_inputs = inputs.unsqueeze(0).expand(restarts, *inputs.shape).clone()
+    expanded_routes = clean_routes.unsqueeze(0).expand(restarts, samples).reshape(-1)
+    lower = torch.clamp(inputs - epsilon, 0, 1)
+    upper = torch.clamp(inputs + epsilon, 0, 1)
+    expanded_lower = lower.unsqueeze(0).expand_as(expanded_inputs)
+    expanded_upper = upper.unsqueeze(0).expand_as(expanded_inputs)
+    if restarts > 1:
+        noise = torch.empty_like(expanded_inputs[1:]).uniform_(
+            -epsilon, epsilon, generator=generator
+        )
+        expanded_inputs[1:] = torch.max(
+            torch.min(expanded_inputs[1:] + noise, expanded_upper[1:]),
+            expanded_lower[1:],
+        )
+    adversarial = expanded_inputs.reshape(-1, *inputs.shape[1:]).detach()
+    flat_lower = expanded_lower.reshape_as(adversarial)
+    flat_upper = expanded_upper.reshape_as(adversarial)
+    flat_batch = torch.arange(len(adversarial), device=device)
+    competitors = 1 - expanded_routes
+
+    with torch.no_grad():
+        clean_scores = router(inputs)
+        clean_batch = torch.arange(samples, device=device)
+        clean_margin = (
+            clean_scores[clean_batch, clean_routes]
+            - clean_scores[clean_batch, 1 - clean_routes]
+        )
+    best = inputs.detach().clone()
+    best_attacked_margin = clean_margin.detach().clone()
+
+    def update_best(candidate: torch.Tensor) -> None:
+        nonlocal best, best_attacked_margin
+        with torch.no_grad():
+            scores = router(candidate)
+            margins = (
+                scores[flat_batch, expanded_routes]
+                - scores[flat_batch, competitors]
+            ).reshape(restarts, samples)
+            restart_margin, restart_index = margins.min(dim=0)
+            improve = restart_margin < best_attacked_margin
+            candidate_view = candidate.reshape(restarts, samples, *inputs.shape[1:])
+            sample_index = torch.arange(samples, device=device)
+            selected = candidate_view[restart_index, sample_index]
+            best_attacked_margin = torch.where(
+                improve, restart_margin, best_attacked_margin
+            )
+            best[improve] = selected[improve]
+
+    update_best(adversarial)
+    base_step = epsilon / step_divisor
+    for step in range(steps):
+        if step < steps // 2:
+            step_size = base_step
+        elif step < (3 * steps) // 4:
+            step_size = base_step / 2
+        else:
+            step_size = base_step / 4
+        adversarial.requires_grad_(True)
+        scores = router(adversarial)
+        objective = (
+            scores[flat_batch, competitors]
+            - scores[flat_batch, expanded_routes]
+        )
+        gradient = torch.autograd.grad(objective.sum(), adversarial)[0]
+        adversarial = adversarial.detach() + step_size * gradient.sign()
+        adversarial = torch.max(torch.min(adversarial, flat_upper), flat_lower).detach()
+        update_best(adversarial)
+
+    with torch.no_grad():
+        replay_scores = router(best)
+        batch = torch.arange(samples, device=device)
+        replay_routes = replay_scores.argmax(dim=1)
+        attacked_margin = (
+            replay_scores[batch, clean_routes]
+            - replay_scores[batch, 1 - clean_routes]
+        )
+    success = replay_routes != clean_routes
+    denominator = clean_margin.abs().clamp_min(torch.finfo(clean_margin.dtype).eps)
+    compression = (clean_margin - attacked_margin) / denominator
+    return {
+        "success": success.detach().cpu().numpy(),
+        "adversarial": best.detach().cpu().numpy(),
+        "replay_routes": replay_routes.detach().cpu().numpy(),
+        "clean_margin": clean_margin.detach().cpu().double().numpy(),
+        "attacked_margin": attacked_margin.detach().cpu().double().numpy(),
+        "margin_compression_fraction": compression.detach().cpu().double().numpy(),
+        "linf": (best - inputs)
+        .abs()
+        .flatten(1)
+        .max(dim=1)
+        .values.detach()
+        .cpu()
+        .double()
+        .numpy(),
+        "schedule": {
+            "name": "PIECEWISE_HALVING_50_75",
+            "base_step": base_step,
+            "breaks": [steps // 2, (3 * steps) // 4],
+            "multipliers": [1.0, 0.5, 0.25],
+        },
+    }
+
+
 def aggregate_bracket(
     *,
     indices: list[int],

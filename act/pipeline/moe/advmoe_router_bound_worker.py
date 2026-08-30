@@ -43,6 +43,48 @@ from act.pipeline.moe.published_moe_router_gradient_audit import (
 )
 
 
+def batchnorm_deployment_identity(module: torch.nn.Module) -> dict[str, Any]:
+    layers = [item for item in module.modules() if isinstance(item, torch.nn.BatchNorm2d)]
+    return {
+        "layers": len(layers),
+        "training_layers": sum(int(item.training) for item in layers),
+        "maximum_abs_running_mean": max(
+            (float(item.running_mean.abs().max().item()) for item in layers),
+            default=0.0,
+        ),
+        "maximum_abs_running_variance_minus_one": max(
+            (float((item.running_var - 1).abs().max().item()) for item in layers),
+            default=0.0,
+        ),
+        "maximum_batches_tracked": max(
+            (int(item.num_batches_tracked.item()) for item in layers),
+            default=0,
+        ),
+    }
+
+
+def crown_bound_options(config: dict[str, Any]) -> dict[str, Any]:
+    """Translate the frozen scalable-CROWN controls into auto_LiRPA options."""
+    return {
+        "conv_mode": str(config.get("conv_mode", "patches")),
+        "sparse_features_alpha": bool(config.get("sparse_alpha", False)),
+        "sparse_spec_alpha": bool(config.get("sparse_alpha", False)),
+        "sparse_intermediate_bounds": bool(config.get("sparse_intermediate", False)),
+        "use_full_conv_alpha": bool(config.get("full_conv_alpha", True)),
+        "crown_batch_size": int(config.get("crown_batch_size", int(1e9))),
+        "max_crown_size": int(config.get("max_crown_size", int(1e9))),
+        "batched_crown_max_vram_ratio": float(
+            config.get("batched_crown_max_vram_ratio", 0.9)
+        ),
+        "optimize_bound_args": {
+            "iteration": int(config.get("alpha_iterations", 20)),
+            "lr_alpha": float(config.get("alpha_lr", 0.1)),
+            "use_shared_alpha": bool(config.get("share_alphas", False)),
+            "keep_best": True,
+        },
+    }
+
+
 def _write_json(path: Path, value: dict[str, Any]) -> None:
     if path.exists():
         raise RuntimeError(f"worker refuses to overwrite {path}")
@@ -88,12 +130,16 @@ def run(prepare_path: Path, output_path: Path) -> dict[str, Any]:
 
     device = str(config["bound_worker"]["device"])
     method = str(config["bound_worker"]["method"])
-    conv_mode = str(config["bound_worker"]["conv_mode"])
+    worker_config = config["bound_worker"]
+    conv_mode = str(worker_config["conv_mode"])
     torch.set_num_threads(int(config["bound_worker"]["torch_threads"]))
     raw_router = raw_router.to(device).eval()
     inputs = inputs.to(device)
     clean_routes = clean_routes.to(device)
     raw_probe = _raw_frontend_probe(raw_router, inputs[:1])
+    batchnorm_identity = batchnorm_deployment_identity(raw_router)
+    if batchnorm_identity["training_layers"] != 0:
+        raise RuntimeError("router BatchNorm layers are not in deployment eval mode")
 
     adapted = CrownCompatibleAdvMoeRouter(raw_router).to(device).eval()
     adapted.validate_input_shape(inputs)
@@ -104,51 +150,96 @@ def run(prepare_path: Path, output_path: Path) -> dict[str, Any]:
     from auto_LiRPA import BoundedModule, BoundedTensor
     from auto_LiRPA.perturbations import PerturbationLpNorm
 
-    C = torch.zeros(len(inputs), 1, 2, device=device, dtype=inputs.dtype)
-    batch_indices = torch.arange(len(inputs), device=device)
-    C[batch_indices, 0, clean_routes] = 1
-    C[batch_indices, 0, 1 - clean_routes] = -1
-    build_started = time.monotonic()
-    bounded = BoundedModule(
-        adapted,
-        inputs,
-        device=device,
-        bound_opts={"conv_mode": conv_mode},
-    )
-    build_seconds = time.monotonic() - build_started
-    rows = []
-    for epsilon in config["epsilons"]:
-        epsilon = float(epsilon)
-        lower = torch.clamp(inputs - epsilon, 0, 1)
-        upper = torch.clamp(inputs + epsilon, 0, 1)
-        bounded_input = BoundedTensor(
-            inputs,
-            PerturbationLpNorm(norm=float("inf"), x_L=lower, x_U=upper),
+    bound_options = crown_bound_options(worker_config)
+    sample_batch_size = int(worker_config.get("sample_batch_size", len(inputs)))
+    bound_upper_enabled = bool(worker_config.get("bound_upper", True))
+    epsilons = [float(value) for value in config["epsilons"]]
+    row_accumulators = {
+        epsilon: {
+            "lower_bounds": [None] * len(inputs),
+            "upper_bounds": [None] * len(inputs) if bound_upper_enabled else [],
+            "seconds": 0.0,
+            "sample_errors": [],
+        }
+        for epsilon in epsilons
+    }
+    build_seconds = 0.0
+    peak_memory_bytes = 0
+    for start in range(0, len(inputs), sample_batch_size):
+        end = min(start + sample_batch_size, len(inputs))
+        chunk_inputs = inputs[start:end]
+        chunk_routes = clean_routes[start:end]
+        chunk_adapter = CrownCompatibleAdvMoeRouter(raw_router).to(device).eval()
+        C = torch.zeros(len(chunk_inputs), 1, 2, device=device, dtype=inputs.dtype)
+        batch_indices = torch.arange(len(chunk_inputs), device=device)
+        C[batch_indices, 0, chunk_routes] = 1
+        C[batch_indices, 0, 1 - chunk_routes] = -1
+        if device.startswith("cuda"):
+            torch.cuda.reset_peak_memory_stats()
+        build_started = time.monotonic()
+        bounded = BoundedModule(
+            chunk_adapter,
+            chunk_inputs,
+            device=device,
+            bound_opts=bound_options,
         )
-        started = time.monotonic()
-        try:
-            bound_lower, bound_upper = bounded.compute_bounds(
-                x=(bounded_input,), C=C, method=method
+        build_seconds += time.monotonic() - build_started
+        for epsilon in epsilons:
+            lower = torch.clamp(chunk_inputs - epsilon, 0, 1)
+            upper = torch.clamp(chunk_inputs + epsilon, 0, 1)
+            bounded_input = BoundedTensor(
+                chunk_inputs,
+                PerturbationLpNorm(norm=float("inf"), x_L=lower, x_U=upper),
             )
-            lower_values = bound_lower.reshape(-1).detach().cpu().double().tolist()
-            upper_values = bound_upper.reshape(-1).detach().cpu().double().tolist()
-            error = None
-            status = "COMPLETED_NUMERICAL_FILTER"
-        except Exception as exc:
-            lower_values = []
-            upper_values = []
-            error = {"type": type(exc).__name__, "message": str(exc)[:500]}
-            status = "ERROR"
-            if isinstance(exc, torch.OutOfMemoryError) and torch.cuda.is_available():
-                torch.cuda.empty_cache()
+            started = time.monotonic()
+            try:
+                bound_lower, bound_upper = bounded.compute_bounds(
+                    x=(bounded_input,),
+                    C=C,
+                    method=method,
+                    bound_upper=bound_upper_enabled,
+                )
+                lower_values = (
+                    bound_lower.reshape(-1).detach().cpu().double().tolist()
+                )
+                row_accumulators[epsilon]["lower_bounds"][start:end] = lower_values
+                if bound_upper_enabled:
+                    upper_values = (
+                        bound_upper.reshape(-1).detach().cpu().double().tolist()
+                    )
+                    row_accumulators[epsilon]["upper_bounds"][start:end] = upper_values
+            except Exception as exc:
+                row_accumulators[epsilon]["sample_errors"].append(
+                    {
+                        "start": start,
+                        "end": end,
+                        "type": type(exc).__name__,
+                        "message": str(exc)[:500],
+                    }
+                )
+                if isinstance(exc, torch.OutOfMemoryError) and torch.cuda.is_available():
+                    torch.cuda.empty_cache()
+            row_accumulators[epsilon]["seconds"] += time.monotonic() - started
+        if device.startswith("cuda"):
+            peak_memory_bytes = max(peak_memory_bytes, torch.cuda.max_memory_allocated())
+        del bounded, chunk_adapter
+        if device.startswith("cuda"):
+            torch.cuda.empty_cache()
+
+    rows = []
+    for epsilon in epsilons:
+        accumulator = row_accumulators[epsilon]
+        errors = accumulator["sample_errors"]
         rows.append(
             {
                 "epsilon": epsilon,
-                "status": status,
-                "lower_bounds": lower_values,
-                "upper_bounds": upper_values,
-                "seconds": time.monotonic() - started,
-                "error": error,
+                "status": (
+                    "COMPLETED_NUMERICAL_FILTER" if not errors else "PARTIAL_ERROR"
+                ),
+                "lower_bounds": accumulator["lower_bounds"],
+                "upper_bounds": accumulator["upper_bounds"],
+                "seconds": accumulator["seconds"],
+                "error": None if not errors else {"sample_errors": errors},
             }
         )
     result = {
@@ -162,10 +253,15 @@ def run(prepare_path: Path, output_path: Path) -> dict[str, Any]:
         "router_sha256": state_dict_sha256(raw_router),
         "raw_frontend_probe": raw_probe,
         "adapter_equivalence": equivalence,
+        "batchnorm_deployment_identity": batchnorm_identity,
         "graph_build_seconds": build_seconds,
         "method": method,
         "conv_mode": conv_mode,
         "device": device,
+        "bound_options": bound_options,
+        "sample_batch_size": sample_batch_size,
+        "bound_upper": bound_upper_enabled,
+        "peak_memory_bytes": peak_memory_bytes,
         "rows": rows,
         "environment": {
             "python": platform.python_version(),
