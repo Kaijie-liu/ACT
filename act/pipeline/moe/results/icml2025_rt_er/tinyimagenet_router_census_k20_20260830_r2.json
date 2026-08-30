@@ -1,0 +1,164 @@
+{
+  "aggregate": {
+    "official_composed_raw_64": {
+      "0.5": {
+        "reachable_fraction_mean": 0.5485399999999999,
+        "stable_fraction_maximum": 0.5278,
+        "stable_fraction_mean": 0.4514600000000001,
+        "stable_fraction_minimum": 0.39,
+        "undecided_sample_seed_pairs": 0
+      },
+      "1.0": {
+        "reachable_fraction_mean": 0.8280449999999998,
+        "stable_fraction_maximum": 0.2492,
+        "stable_fraction_mean": 0.17195500000000002,
+        "stable_fraction_minimum": 0.1214,
+        "undecided_sample_seed_pairs": 0
+      },
+      "2.0": {
+        "reachable_fraction_mean": 0.9802,
+        "stable_fraction_maximum": 0.0583,
+        "stable_fraction_mean": 0.0198,
+        "stable_fraction_minimum": 0.0089,
+        "undecided_sample_seed_pairs": 0
+      },
+      "4.0": {
+        "reachable_fraction_mean": 0.999665,
+        "stable_fraction_maximum": 0.0028,
+        "stable_fraction_mean": 0.00033500000000000007,
+        "stable_fraction_minimum": 0.0,
+        "undecided_sample_seed_pairs": 0
+      },
+      "8.0": {
+        "reachable_fraction_mean": 1.0,
+        "stable_fraction_maximum": 0.0,
+        "stable_fraction_mean": 0.0,
+        "stable_fraction_minimum": 0.0,
+        "undecided_sample_seed_pairs": 0
+      }
+    },
+    "official_post_resize_224": {
+      "0.5": {
+        "reachable_fraction_mean": 0.99648,
+        "stable_fraction_maximum": 0.0181,
+        "stable_fraction_mean": 0.0035199999999999997,
+        "stable_fraction_minimum": 0.0007,
+        "undecided_sample_seed_pairs": 0
+      },
+      "1.0": {
+        "reachable_fraction_mean": 0.999995,
+        "stable_fraction_maximum": 0.0001,
+        "stable_fraction_mean": 5e-06,
+        "stable_fraction_minimum": 0.0,
+        "undecided_sample_seed_pairs": 0
+      },
+      "2.0": {
+        "reachable_fraction_mean": 1.0,
+        "stable_fraction_maximum": 0.0,
+        "stable_fraction_mean": 0.0,
+        "stable_fraction_minimum": 0.0,
+        "undecided_sample_seed_pairs": 0
+      },
+      "4.0": {
+        "reachable_fraction_mean": 1.0,
+        "stable_fraction_maximum": 0.0,
+        "stable_fraction_mean": 0.0,
+        "stable_fraction_minimum": 0.0,
+        "undecided_sample_seed_pairs": 0
+      },
+      "8.0": {
+        "reachable_fraction_mean": 1.0,
+        "stable_fraction_maximum": 0.0,
+        "stable_fraction_mean": 0.0,
+        "stable_fraction_minimum": 0.0,
+        "undecided_sample_seed_pairs": 0
+      }
+    }
+  },
+  "audit": {
+    "checks": [
+      "recomputed all tracked and raw artifact hashes",
+      "recomputed all K=20 by 10000 by five-radius partitions",
+      "recomputed all expert loads and reachable competitor-pair counts",
+      "recomputed six deterministic seed-sample-domain cases from the scalar support formula",
+      "confirmed real-arithmetic resize folding preserves clean routes",
+      "confirmed literal preprocessing route mismatches do not intersect any formal stable endpoint",
+      "confirmed official clone identity and cleanliness"
+    ],
+    "differential_seed_sample_domain_checks": 6,
+    "issue_count": 0,
+    "issues": [],
+    "status": "PASS"
+  },
+  "code_commit": "de096211b3d69291520fe7956d312aef36b612c4",
+  "dataset": {
+    "archive_sha256": "6198c8ae015e2b3e007c7841da39ec069199b9aa3bfa943a462022fe5e43c821",
+    "labels_used": false,
+    "name": "Tiny ImageNet",
+    "ordered_image_names_sha256": "f7b49f29003b2096adb316726acc83b92d2587c7036af03a1fb6b6f46fba4a08",
+    "samples_per_seed": 10000,
+    "split": "validation images"
+  },
+  "initialization": {
+    "official_model": "MOE_ViT",
+    "router_shape": [
+      4,
+      150528
+    ],
+    "seed0_router_sha256": "de73e3c74832c8d41cb23ac70ea5ae697b5749ed42dd418b4719e2d544a5f79f",
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19
+    ]
+  },
+  "preprocessing_audit": {
+    "literal_comparisons": 200000,
+    "maximum_fold_score_drift": 1.8074430840897548e-13,
+    "maximum_literal_float16_score_drift": 0.0013131775518098188,
+    "maximum_real_vs_float16_resize_score_drift": 0.0019743135678733648,
+    "total_fold_route_mismatches": 0,
+    "total_literal_float16_route_mismatches": 42,
+    "total_real_vs_float16_resize_route_mismatches": 82
+  },
+  "primary_semantics_agreement": {
+    "formal_stable_literal_route_mismatches_by_epsilon": {
+      "0.5": 0,
+      "1.0": 0,
+      "2.0": 0,
+      "4.0": 0,
+      "8.0": 0
+    },
+    "literal_clean_route_mismatches": 42
+  },
+  "raw_result": {
+    "directory": "/data1/Kane/MOE/ACT/data/moe/results/icml2025_rt_er/tinyimagenet_router_census_k20_20260830_r3",
+    "literal_resized_sha256": "1cfc74dc3963a7bb3a78cac93fd0c5695949ee818f9c319c1b065c7e3e9fcc9e",
+    "literal_scores_sha256": "080c6482c90d88851db7cb13fbe85af3eca1da397a8d6b83a9fbbaff5c745701",
+    "per_seed_sha256": "5bb391c08e66718444e91486a5ba1dcffd62c3d6b26920caf133171f3ddb73d1",
+    "preprocessing_manifest_sha256": "36ff7676974d8d80867108bd6c9f16314da2be85f5ead9223b06d4e58dab5146",
+    "summary_sha256": "70378054dff3ab3fa4a0b3104bbfa60547c880920b449e28992e6fba70c0c835",
+    "worker_arrays_sha256": "ad7a160960ae91096dc7b60f9612681746b824f9a1d20968169dfde3120425fb",
+    "worker_manifest_sha256": "a87a622419372be5c0df269fef410593dced35f41c4ca9190e0944d25931537c"
+  },
+  "schema_version": 1,
+  "scope": "router applicability geometry only; no labels, expert forward pass, accuracy, training, or output certificate",
+  "status": "COMPLETED_AUDITED"
+}

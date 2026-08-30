@@ -156,6 +156,7 @@ def run(config_path: Path, raw_dir: Path, output_path: Path) -> dict[str, Any]:
         "literal score cache hash mismatch",
     )
     literal_resized_memmap = np.load(literal_resized_path, mmap_mode="r", allow_pickle=False)
+    literal_scores_memmap = np.load(literal_scores_path, mmap_mode="r", allow_pickle=False)
 
     dataset_root = Path(config["dataset"]["root"]).resolve()
     image_paths, ordered_digest = _ordered_images(
@@ -183,6 +184,8 @@ def run(config_path: Path, raw_dir: Path, output_path: Path) -> dict[str, Any]:
     )
     expected_shape = (len(seeds), len(image_paths), len(epsilons_over_255))
     recomputed_aggregate: dict[str, Any] = {}
+    primary_clean_route_mismatches = 0
+    primary_stable_mismatch_by_epsilon: list[int] = []
     for domain in config["domains"]:
         clean = arrays[f"{domain}__clean_experts"]
         competitors = arrays[f"{domain}__competitors"]
@@ -207,6 +210,23 @@ def run(config_path: Path, raw_dir: Path, output_path: Path) -> dict[str, Any]:
             f"{domain} competitor index escaped",
         )
         recomputed_aggregate[domain] = {}
+        if domain == "official_post_resize_224":
+            literal_clean = np.argmax(literal_scores_memmap, axis=2)
+            clean_mismatch = clean != literal_clean
+            primary_clean_route_mismatches = int(np.count_nonzero(clean_mismatch))
+            primary_stable_mismatch_by_epsilon = [
+                int(np.count_nonzero(clean_mismatch & stable[:, :, slot]))
+                for slot in range(stable.shape[2])
+            ]
+            require(
+                primary_clean_route_mismatches
+                == int(summary["preprocessing_audit"]["total_literal_float16_route_mismatches"]),
+                "literal preprocessing route-mismatch count changed",
+            )
+            require(
+                not any(primary_stable_mismatch_by_epsilon),
+                "formal primary stable rows include literal preprocessing route mismatches",
+            )
         for epsilon_slot, epsilon in enumerate(epsilons_over_255):
             stable_fractions = np.mean(stable[:, :, epsilon_slot], axis=1)
             reachable_fractions = np.mean(reachable[:, :, epsilon_slot], axis=1)
@@ -376,6 +396,13 @@ def run(config_path: Path, raw_dir: Path, output_path: Path) -> dict[str, Any]:
         },
         "aggregate": recomputed_aggregate,
         "preprocessing_audit": summary["preprocessing_audit"],
+        "primary_semantics_agreement": {
+            "literal_clean_route_mismatches": primary_clean_route_mismatches,
+            "formal_stable_literal_route_mismatches_by_epsilon": {
+                str(float(epsilon)): primary_stable_mismatch_by_epsilon[slot]
+                for slot, epsilon in enumerate(epsilons_over_255)
+            },
+        },
         "audit": {
             "status": "PASS" if not issues else "FAIL",
             "issues": issues,
@@ -387,6 +414,7 @@ def run(config_path: Path, raw_dir: Path, output_path: Path) -> dict[str, Any]:
                 "recomputed all expert loads and reachable competitor-pair counts",
                 "recomputed six deterministic seed-sample-domain cases from the scalar support formula",
                 "confirmed real-arithmetic resize folding preserves clean routes",
+                "confirmed literal preprocessing route mismatches do not intersect any formal stable endpoint",
                 "confirmed official clone identity and cleanliness",
             ],
         },

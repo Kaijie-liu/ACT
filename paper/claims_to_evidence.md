@@ -486,6 +486,29 @@ The audited census and paper-figure records are
 and
 `act/pipeline/moe/results/icml2025_rt_er/router_init_figures_k20_20260830.json`.
 
+The same official-construction census was independently repeated on the
+released TinyImageNet `MOE_ViT` pipeline, using its 150,528-feature hard router
+and all 10,000 validation images without labels. Released-runtime float16
+resize centers are materialized in the pinned Blackwell environment before ACT
+performs real-affine support calculations. Across 200,000 seed-input pairs,
+the primary post-resize route-stable set contains 704 pairs at 0.5/255, one at
+1/255, and none at 2/255, 4/255, or 8/255. Independent audit reports zero
+issues. This extends the applicability-collapse observation across two datasets
+and two expert architecture families; it remains router geometry, not an
+expert or output certificate.
+
+The secondary composition to raw 64x64 pixels is reported separately because
+the input metric changes: its mean stable fractions are 45.146%, 17.1955%,
+1.98%, 0.0335%, and 0% across the five radii. Forty-two of 200,000 literal
+float16-normalization clean routes differ from the real-affine abstraction,
+but none intersects any reported formal-stable endpoint. Two earlier runs are
+retained and excluded: one used the wrong real-resize center, and one exposed a
+PyTorch 2.9.1 versus 2.11.0 float16-resize kernel difference before producing a
+census row. The final evidence is
+`act/pipeline/moe/results/icml2025_rt_er/tinyimagenet_router_census_k20_20260830_r2.json`
+and
+`act/pipeline/moe/results/icml2025_rt_er/cross_dataset_router_census_figure2_20260830.json`.
+
 The official repository is frozen at
 `30ef94d77b5451595b82e739aa8938e1f4c4521f`. Its exact author-pinned environment
 imports, but PyTorch 2.4.0+cu121 supports CUDA architectures only through

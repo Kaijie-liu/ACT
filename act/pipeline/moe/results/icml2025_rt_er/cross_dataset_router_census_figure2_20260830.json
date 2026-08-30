@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "status": "COMPLETED_AUDITED",
+  "scope": "Route-invariance applicability over 20 official full-model constructions per dataset; no labels, accuracy, expert verification, or output-robustness claim.",
+  "datasets": {
+    "cifar10": {
+      "architecture": "MOE_Resnet18",
+      "domain": "official unit-pixel input",
+      "audit": "act/pipeline/moe/results/icml2025_rt_er/router_init_census_k20_20260830.json",
+      "stable_fraction_mean": {"0.5/255": 0.523645, "1/255": 0.24799, "2/255": 0.05038, "4/255": 0.00227, "8/255": 0.000015}
+    },
+    "tinyimagenet": {
+      "architecture": "MOE_ViT",
+      "domain": "official released-runtime float16-resized 224 center with continuous real-affine perturbation abstraction",
+      "audit": "act/pipeline/moe/results/icml2025_rt_er/tinyimagenet_router_census_k20_20260830_r2.json",
+      "stable_fraction_mean": {"0.5/255": 0.00352, "1/255": 0.000005, "2/255": 0.0, "4/255": 0.0, "8/255": 0.0},
+      "stable_fraction_range": {"0.5/255": [0.0007, 0.0181], "1/255": [0.0, 0.0001], "2/255": [0.0, 0.0], "4/255": [0.0, 0.0], "8/255": [0.0, 0.0]},
+      "total_stable_seed_input_pairs": {"0.5/255": 704, "1/255": 1, "2/255": 0, "4/255": 0, "8/255": 0},
+      "raw64_secondary_stable_fraction_mean": {"0.5/255": 0.45146, "1/255": 0.171955, "2/255": 0.0198, "4/255": 0.000335, "8/255": 0.0},
+      "preprocessing_semantics": {
+        "literal_clean_route_mismatches": 42,
+        "comparisons": 200000,
+        "formal_stable_mismatch_intersections": {"0.5/255": 0, "1/255": 0, "2/255": 0, "4/255": 0, "8/255": 0},
+        "real_resize_vs_raw_fold_route_mismatches": 0,
+        "maximum_real_resize_vs_raw_fold_score_drift": 1.8074430840897548e-13
+      }
+    }
+  },
+  "figure_artifacts": {
+    "directory": "/data1/Kane/MOE/ACT/data/moe/results/icml2025_rt_er/cross_dataset_router_figures_20260830_r1",
+    "manifest_sha256": "fb68f615dd2f655be3cc36cd543a7bfddd2239c6b10ef65ce7ff1f088f793cd7",
+    "main_svg_sha256": "081d3d8c1c0237945a331c6d665c3310a114e84aa663b066ec748ef1c5d9ef65",
+    "secondary_svg_sha256": "84c5d996fe5355f2ee0da9853311931578d70860707ced8fd67ac961460f5a06",
+    "csv_sha256": "167fd6b6824db4756c0d069f4b4837abff142d14843df4670beff52eb0816006"
+  },
+  "excluded_runs": [
+    {"run": "tinyimagenet_router_census_k20_20260830_r1", "reason": "wrong primary center; 111/200000 literal route differences"},
+    {"run": "tinyimagenet_router_census_k20_20260830_r2", "reason": "failed before first row because ACT torch 2.9.1 float16 resize escaped the natural box"}
+  ],
+  "conclusion": "The released TinyImageNet ViT-MoE pipeline has an even smaller route-invariance applicability set than the CIFAR-10 ResNet18-MoE pipeline: only one of 200000 seed-input pairs remains formally stable at 1/255, and none remains at 2/255 or above in the official post-resize domain."
+}

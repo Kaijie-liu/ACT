@@ -1584,3 +1584,20 @@ materializes the literal resized centers and preprocessing-only router scores
 inside the pinned released runtime, hashes that cache, and only then performs
 the fixed-radius affine support calculation in ACT. This makes the runtime
 boundary explicit rather than silently substituting ACT's resize kernel.
+
+The final `_r3` census completed in 534.5 seconds and the independent audit
+reported zero issues. In the primary official post-resize domain, the mean
+formally route-stable fraction across 20 seeds is 0.352% at 0.5/255, 0.0005%
+at 1/255 (one of 200,000 seed-input pairs), and exactly zero at 2/255, 4/255,
+and 8/255. The raw-64 real-arithmetic composition is materially different:
+45.146%, 17.1955%, 1.98%, 0.0335%, and 0% at the same radii. It remains a
+secondary preprocessing-domain analysis rather than a new model.
+
+The real resize fold has zero clean-route mismatches and maximum score drift
+`1.81e-13`. Literal float16 normalization differs from the primary real-affine
+abstraction on 42/200,000 clean routes, but the final audit proves that none of
+those 42 pairs intersects a formally stable endpoint at any registered radius.
+Thus they do not inflate the reported applicability counts. The final audit is
+`results/icml2025_rt_er/tinyimagenet_router_census_k20_20260830_r2.json`; the
+cross-dataset record is
+`results/icml2025_rt_er/cross_dataset_router_census_figure2_20260830.json`.

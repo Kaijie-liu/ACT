@@ -25,7 +25,7 @@ DEFAULT_CIFAR = (
 DEFAULT_TINY = (
     PROJECT_ROOT
     / "act/pipeline/moe/results/icml2025_rt_er/"
-    "tinyimagenet_router_census_k20_20260830.json"
+    "tinyimagenet_router_census_k20_20260830_r2.json"
 )
 
 
