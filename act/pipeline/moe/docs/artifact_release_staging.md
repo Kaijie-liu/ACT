@@ -8,10 +8,12 @@ currently available checkpoints, replayed witnesses, dynamic and specialized
 ONNX graphs, router census, and paper figures with their paths, hashes, sizes,
 and readiness state.
 
-This is **not** a Zenodo record. No upload, external draft deposition, DOI
-reservation, or publication has been authorized or performed. The manifest is
-intentionally labeled `DRAFT_INCOMPLETE_DO_NOT_UPLOAD` while B1 and B3 remain
-incomplete.
+This is **not** yet a Zenodo record. On 2026-08-30 the user authorized a
+versioned Zenodo v1 using the currently frozen artifact set, with later B1/B3
+artifacts added as new versions. No Zenodo account, token, connector, creator
+metadata, or deposit ID is available to this task, so no upload, DOI
+reservation, or publication has occurred. The local manifest is therefore
+`AUTHORIZED_PENDING_EXTERNAL_CHANNEL`, not a published archive.
 
 ## Release boundaries
 
@@ -29,18 +31,15 @@ incomplete.
 
 ## Remaining gate before an external deposit
 
-1. B1 must finish and its final checkpoints/telemetry must pass the frozen
-   audit.
-2. B3 and remaining baseline results must be added without overwriting earlier
-   artifacts.
-3. The complete witness collections must be archived with a per-file manifest.
-4. Final ONNX graphs must pass ONNX checker and replay against their parent
-   checkpoints.
-5. Creators, affiliations, description, keywords, and per-artifact license
-   decisions require user approval.
-6. A final local hash audit must pass before any upload.
-7. Uploading, reserving a DOI, and publishing each require explicit external
-   authorization.
+1. Zenodo account/channel and creator/affiliation metadata must be supplied.
+2. The v1 selected-file list needs a final local hash audit and archive build.
+3. Source uses the repository AGPL-3.0-or-later license; project-generated
+   data/figures/witnesses use CC-BY-4.0; checkpoint/model binaries retain an
+   explicit per-parent provenance/license note rather than silently inheriting
+   one blanket license.
+4. B1/B3 remain future archive versions and cannot overwrite v1 identities.
+5. Complete witness collections and final ONNX graphs remain gated on replay
+   and per-file manifests before their later release version.
 
 The tracked draft removes the risk of discovering missing binary provenance at
 submission time while preserving the rule that no external publication occurs

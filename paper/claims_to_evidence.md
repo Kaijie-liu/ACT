@@ -567,6 +567,33 @@ no certificate implementation, so future models must be labeled
 **official-code, paper-config reproduction**, not author checkpoints. No final
 B1 accuracy, expert certificate, or runtime conclusion is claimed here.
 
+## Learned routing in other official pipelines
+
+A pinned source-to-loss-to-optimizer audit prevents the RT-ER artifact finding
+from becoming an unsupported field-wide statement. At official robust-moe-cnn
+commit `c50796fb8284512b6f6ad8e843f95182cec527cf`, the released trainer uses a
+separate router optimizer, supervised router cross-entropy, adversarial router
+KL, and an explicit straight-through backward for hard top-1 selection. At
+official V-MoE commit `c07681241f81ba11421ba98e523e1499b2738a79`, the published
+E=8, K=2 configuration creates Dense gates, uses selected gate values to combine
+expert outputs, adds positive importance/load losses, and differentiates the
+complete parameter tree without a router freeze rule.
+
+Thus two of the three audited official pipelines expose learned router paths;
+the pinned RT-ER release is the static case. This strengthens external validity
+for learned routing while narrowing the criticism to the RT-ER artifact rather
+than static routing or MoE releases generally. The mechanisms are not
+interchangeable: robust-moe-cnn is a shared convolutional hard top-1 model and
+V-MoE is hidden-layer weighted token routing, whereas Route A's main evaluation
+is output-level weighted top-k.
+
+The independent audit has zero issues across 26 hashed source anchors:
+`act/pipeline/moe/results/published_moe_router_gradient_audit_20260830.json`.
+Only RT-ER has dynamic tensor and optimizer-state evidence in this project. No
+accuracy, robustness, checkpoint, or certificate result is inferred for the
+other pipelines; robust-moe-cnn source is not copied because no license was
+located.
+
 ## Threats to validity
 
 ### Construct validity

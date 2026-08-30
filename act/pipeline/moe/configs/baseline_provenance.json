@@ -24,6 +24,11 @@
         "selection": "hard argmax",
         "top_k": 1
       },
+      "router_training_audit": {
+        "classification": "RELEASED_TRAINING_PATH_DOES_NOT_UPDATE_ROUTER",
+        "evidence_level": "pinned source plus dynamic checkpoint and optimizer-state confirmation",
+        "result": "act/pipeline/moe/results/published_moe_router_gradient_audit_20260830.json"
+      },
       "experts": {
         "cifar10": "four ResNet-18 classifiers",
         "tiny_imagenet": "four ViT-small classifiers"
@@ -52,6 +57,12 @@
         "selection": "hard argmax",
         "top_k": 1
       },
+      "router_training_audit": {
+        "classification": "TRAINED_BY_EXPLICIT_ROUTER_OBJECTIVE",
+        "mechanisms": ["separate router optimizer", "supervised router cross-entropy", "adversarial router KL", "straight-through hard-selection backward"],
+        "evidence_level": "pinned source only",
+        "result": "act/pipeline/moe/results/published_moe_router_gradient_audit_20260830.json"
+      },
       "experts": {
         "architectures": ["ResNet", "VGG", "WideResNet", "DenseNet"],
         "semantics": "MoE convolutional channel experts; not output-level weighted top-k"
@@ -78,6 +89,12 @@
         "architecture": "NoisyTopExpertsPerItemRouter",
         "selection": "configurable sparse top-k",
         "top_k": "configurable; official published configurations include sparse multi-expert routing"
+      },
+      "router_training_audit": {
+        "classification": "TRAINED_END_TO_END_BY_COMBINE_WEIGHTS_AND_AUXILIARY_LOSSES",
+        "mechanisms": ["selected softmax combine weights", "importance loss", "load loss", "full parameter-tree gradient"],
+        "evidence_level": "pinned source only",
+        "result": "act/pipeline/moe/results/published_moe_router_gradient_audit_20260830.json"
       },
       "experts": {
         "architecture": "Transformer MLP experts"

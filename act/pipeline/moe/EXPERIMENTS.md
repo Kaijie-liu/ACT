@@ -1662,3 +1662,36 @@ ordered-input hashes, preprocessing graph/order/dtypes/constants/domain, and
 solver/outward-rounding policy.  Any missing identity field fails closed.  The
 paper-facing rationale and claim boundary are in
 `paper/certified_artifact_identity.md`.
+
+### Three-pipeline router gradient audit and paper-complete decision
+
+The submission plan is now milestone-driven. FSE 2027 is explicitly skipped;
+`paper/paper_complete_roadmap.md` defines the date-independent completion gate,
+the finite Tier 1/1.5/2 work registry, a red-team claim matrix, and prohibitions
+against new census datasets, ViT-224 expert certification, unjustified F1, and
+pre-retrieval prevalence claims.
+
+A pinned, no-training audit follows router parameters from definition through
+loss to optimizer update in three official pipelines. The existing RT-ER audit
+remains the only one with dynamic checkpoint and Adam-state confirmation: its
+released paths do not update the router. In contrast, robust-moe-cnn has an
+explicit router optimizer, supervised router objective, adversarial router KL,
+and a straight-through hard-selection backward. V-MoE's published E=8, K=2
+configuration trains Dense gates through selected combine weights and positive
+importance/load losses under a full-parameter-tree gradient.
+
+The independent audit reports zero issues over three pinned repositories and 26
+hashed source anchors. These are source-level findings for robust-moe-cnn and
+V-MoE; no baseline dependency was installed and no training was started.
+robust-moe-cnn remains external and read-only because no license file was
+located. The result is
+`act/pipeline/moe/results/published_moe_router_gradient_audit_20260830.json`,
+with interpretation and scope in
+`act/pipeline/moe/docs/published_moe_router_gradient_audit.md`.
+
+The user authorized responsible disclosure and a versioned Zenodo v1. Both are
+recorded as `AUTHORIZED_PENDING_EXTERNAL_CHANNEL`. The official paper supplied
+a corresponding-author address, but the connected Gmail search and send calls
+both failed with insufficient OAuth scopes (HTTP 403), so no delivery is
+claimed. No Zenodo connector/account/token is available, so no deposit, DOI, or
+publication is claimed.

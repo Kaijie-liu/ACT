@@ -1,10 +1,14 @@
 # Draft author clarification: released RT-ER router training
 
-**Status:** `DRAFT_NOT_SENT`
+**Status:** `SEND_ATTEMPT_FAILED_REAUTHENTICATION_REQUIRED`
 
-Sending this message requires explicit user authorization. No recipient address
-is stored in the repository. Any reply belongs in the private, untracked survey
-directory defined by the author-contact policy.
+The user explicitly authorized sending on 2026-08-30. The corresponding-author
+address was resolved from the official PMLR paper. Gmail search and send were
+attempted, but both failed with `ACCESS_TOKEN_SCOPE_INSUFFICIENT` / HTTP 403.
+The message has not been sent and must not be reported as delivered. The Gmail
+connection must be reauthenticated with search/send scopes before retrying.
+Any reply belongs in the private, untracked survey directory defined by the
+author-contact policy; the address itself is not stored in this public file.
 
 ## Subject
 
