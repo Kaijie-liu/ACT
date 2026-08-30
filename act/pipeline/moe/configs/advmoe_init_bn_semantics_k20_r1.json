@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "status": "PREREGISTERED_NOT_RUN",
+  "scope": "ADV_MOE_INIT_K20_EVAL_DEFAULT_BN_VS_TRAIN_BATCH_BN_ROUTE_SHARE",
+  "seeds": [1234, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+  "seed_roles": {
+    "1234": "released_default_and_previously_observed_development_seed",
+    "0-18": "nineteen_fresh_follow_up_seeds"
+  },
+  "dataset_archive": "/data1/Kane/MOE/ACT/data/torchvision/CIFAR10/raw/cifar-10-python.tar.gz",
+  "dataset_semantics": "official ordered CIFAR-10 test set, ToTensor unit pixels, no augmentation",
+  "device": "cpu",
+  "torch_threads": 2,
+  "batch_size": 128,
+  "bn_semantics": [
+    {
+      "label": "EVAL_DEFAULT_RUNNING_STATS",
+      "mode": "eval",
+      "definition": "initial weights with BatchNorm eval mode, running_mean=0, running_var=1, num_batches_tracked=0"
+    },
+    {
+      "label": "TRAIN_ORDERED_TEST_BATCH_STATS",
+      "mode": "train",
+      "definition": "initial weights with BatchNorm train mode; current statistics are computed over consecutive ordered test batches of 128 (final batch 16); running statistics update but are not used for current-batch outputs"
+    }
+  ],
+  "collapse_definition": "maximum route share equals exactly 1.0 on all 10000 ordered test inputs",
+  "output_dir": "/data1/Kane/MOE/ACT/data/moe/results/advmoe_init_bn_semantics_k20_20260830_r1",
+  "interpretation": "The train-mode test-batch result is a precisely registered BN-semantic diagnostic, not the literal first augmented shuffled training batch. Report default seed separately from the 19 fresh seeds. A collapse is scoped to the official test distribution and does not prove global constancy or identify a particular bias parameter as causal."
+}

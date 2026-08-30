@@ -549,9 +549,9 @@ An isolated Blackwell-compatible environment separately passed a deterministic
 synthetic FFCV forward/backward smoke on the official MoE-ResNet18 architecture;
 it requires an explicitly recorded JPEG-library preload and is labeled
 `official-code, Blackwell-compatible deps + FFCV`. The seed-0 130-epoch
-official-code reproduction is running; epochs 10, 20, and 30, their checkpoints,
-and drift-guard telemetry are complete.  Epoch 30 validation is 37.40% clean
-and 28.32% robust accuracy; the exact route geometry remains unchanged and its
+official-code reproduction is running; epochs 10, 20, 30, and 40, their
+checkpoints, and drift-guard telemetry are complete. Epoch 40 validation is
+34.91% clean and 27.90% robust accuracy; the exact route geometry remains unchanged and its
 100-sample reference replay passes with maximum radius error `1.21e-16`.
 These are interim values, not a final reproduction endpoint.  Theorem
 instantiation and official-scale
@@ -688,6 +688,25 @@ from the official test set because it contains no opposite-route image. The
 paper reports the initialization collapse and removes the approximately 130x
 architecture wording.
 
+The single-seed result is not treated as one well-defined “initial model.” A
+K=20 follow-up reconstructs every router in official RNG-consumption order and
+evaluates two registered BatchNorm semantics on the same ordered 10,000-image
+stream. Eval mode with default zero/unit running statistics is exactly
+single-expert collapsed for 13/20 seeds; train mode with ordered-test
+current-batch statistics is collapsed for 8/20. Median maximum expert shares
+are 100% and 99.305%, while median absolute signed-mean-to-standard-deviation
+ratios are 9.159 and 2.474. The 19 fresh seeds alone yield 12/19 and 7/19
+collapses. Independent full replay reports zero issues.
+
+This closes, rather than enlarges, the initialization line. BatchNorm semantics
+materially changes offset and load but does not explain the collapse away.
+Collapse direction varies across seeds. The train-mode row is a controlled
+ordered-test co-batch diagnostic, not the literal shuffled and augmented
+training stream. The paper may call BN mode and statistics part of artifact
+identity; it may not infer global constancy, a causal bias parameter, or an
+intrinsic deep-router stability effect. Future trained-checkpoint telemetry
+reports both eval/current-running-statistics and registered train-batch rows.
+
 This regime also motivates a dependency inversion in the staged design. For
 the official AdvMoE `E=2` shared-route model, sound verification can, in
 principle, enumerate both static specialized pathways over the entire input
@@ -758,6 +777,10 @@ bound on the true reachable margin.
   result, not nonlinear-router applicability, stability, prevalence, or
   third-party deep-path certificate coverage. Alpha-CROWN and beta-CROWN/BaB
   remain unexecuted closure tiers.
+- The K=20 dual-BN census is an ordered-test initialization diagnostic. Its
+  train-mode batches are not a literal replay of the augmented shuffled
+  training stream, and neither semantic substitutes for trained-checkpoint
+  results.
 
 ### Statistical conclusion validity
 

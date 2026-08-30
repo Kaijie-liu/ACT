@@ -89,14 +89,17 @@ any router bound. Router certification is an optional pruning optimization,
 not a soundness dependency.
 
 The initialization audit demonstrates why this distinction matters, but not
-for the initially suspected reason. The official construction sends all
-10,000 ordered CIFAR-10 test inputs to expert 0. The signed score difference
-has mean 0.3064, standard deviation 0.03352, and an absolute-mean-to-standard-
-deviation ratio of 9.14. Local margin-to-gradient estimates that appeared to
-be roughly 130 times the RT-ER boundary scale are therefore confounded by a
-near-constant, globally offset-dominated initialization on this distribution.
-We retire the architecture interpretation rather than converting the ratio
-into a headline.
+for the initially suspected reason. At the released default seed, eval mode
+with default BatchNorm running statistics sends all 10,000 ordered CIFAR-10
+test inputs to expert 0. Across 20 official-construction-order initializations,
+13/20 eval-mode routers and 8/20 train-batch-statistics routers are exactly
+collapsed on the same stream; their median maximum expert shares are 100% and
+99.305%, respectively. Batch statistics weaken the signed global offset but
+do not remove the load collapse. Collapse targets also change with the seed.
+Local margin-to-gradient estimates that appeared to be roughly 130 times the
+RT-ER boundary scale are therefore confounded by an initialization-dependent,
+semantics-dependent near-constant router on this distribution. We retire the
+architecture interpretation rather than converting the ratio into a headline.
 
 Strong PGD does not find a route flip on the frozen 20 inputs even when the
 clipped epsilon-1 boxes span the full pixel cube. This remains attack non-
@@ -106,7 +109,16 @@ from IBP to CROWN reduces the dimensionless inflation diagnostic by about
 5.2 times but leaves an approximately (10^{11}) residual. The trained-
 checkpoint evaluation must determine whether the supervised router objective
 breaks the initial load collapse; it records route share and signed offset at
-every checkpoint.
+every checkpoint under both eval/current-running-statistics and registered
+train-batch-statistics semantics.
+
+The contrast with RT-ER is therefore about how training interacts with a
+degenerate start, not about one router architecture being inherently stable.
+RT-ER permanently preserves its random initialization because its released
+training script has no optimization path to the router. AdvMoE exposes an
+explicit router objective, so training must first escape its highly imbalanced
+initial partition. The checkpoint trajectory tests whether and when that
+escape occurs; initialization alone cannot answer it.
 
 ## Backend composition rather than backend replacement
 

@@ -269,6 +269,46 @@ of an intrinsically stable deep-router architecture.
 The frozen telemetry fields and checkpoint policy are machine-readable in
 `act/pipeline/moe/configs/advmoe_training_router_telemetry_r1.json`.
 
+## K=20 BatchNorm-semantics closure
+
+The single-seed 10,000:0 result used eval-mode BatchNorm with untouched running
+means and variances. Because the released training loop evaluates the router in
+train mode, the phrase “initial router” did not yet identify one function. A
+follow-up fixed two semantics before execution:
+
+- `EVAL_DEFAULT_RUNNING_STATS`: eval mode, zero running means, unit running
+  variances, and zero batches tracked;
+- `TRAIN_ORDERED_TEST_BATCH_STATS`: train mode over consecutive ordered test
+  batches of 128, with a final batch of 16.
+
+The latter is a co-batch diagnostic, not the literal shuffled and augmented
+training stream. For each seed, two routers are separately reconstructed in the
+official RNG-consumption order and must have identical initial state hashes.
+
+| semantic | exactly collapsed seeds | median maximum share | median abs(mean)/std |
+|---|---:|---:|---:|
+| eval/default running statistics | 13/20 | 100.000% | 9.159 |
+| train/ordered-test batch statistics | 8/20 | 99.305% | 2.474 |
+
+The 19 fresh seeds alone give 12/19 and 7/19 exact collapses, respectively.
+Collapsed directions are not fixed: eval mode yields eight expert-0 targets
+and five expert-1 targets, while train-batch mode yields four of each. Batch
+statistics therefore materially reduce global signed offset but do not explain
+away the initialization collapse. The finding is scoped to the registered test
+stream; it neither proves global constancy nor identifies a literal bias
+parameter as the cause.
+
+This closes the initialization line. No further init experiment is scheduled.
+Trained-checkpoint telemetry uses fresh checkpoint copies and reports both
+`EVAL_CURRENT_RUNNING_STATS` and `TRAIN_ORDERED_TEST_BATCH_STATS` at every
+registered checkpoint. The primary trajectory is when, and under which
+semantic first, the supervised router escapes the highly imbalanced start.
+The paper-facing independent replay is
+`act/pipeline/moe/results/advmoe_init_bn_semantics_k20_20260830_r2.json` and
+reports zero issues, including separate validation of the default seed and the
+19-fresh-seed aggregate. The earlier `_r1` audit is retained as a successful
+but narrower replay that did not separately assert those two derived views.
+
 ## Float32 CROWN numerical-reach probe
 
 A frozen first-five-sample probe tested the proposed “maximum positive CROWN

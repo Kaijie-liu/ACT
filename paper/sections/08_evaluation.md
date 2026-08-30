@@ -34,9 +34,9 @@ big-M tightening, and MIP-start submission affect solved sets, binaries, model
 builds, solve time, and completeness as (E) increases?
 
 **RQ7: Artifact applicability.** Are published theorem assumptions,
-preprocessing semantics, and represented perturbation sets established by the
-released artifacts? How sensitive is the route-invariance applicability set to
-radius and initialization?
+preprocessing semantics, represented perturbation sets, and stateful-layer
+evaluation modes established by the released artifacts? How sensitive is the
+route-invariance applicability set to radius and initialization?
 
 ## Subjects and data
 
@@ -58,8 +58,10 @@ audit, never for end-to-end expert certification.
 AdvMoE is a third-party learned-router target with two shared deep paths. Its
 repository lacks a license and a complete dependency specification; no source
 is copied into ACT and checkpoint redistribution is not assumed. The official
-ordered CIFAR-10 test set is used for the initialization route-share audit.
-Training and final-checkpoint verification remain pending.
+ordered CIFAR-10 test set is used for the K=20 initialization route-share audit
+under both eval/default-running-statistics and registered train/current-batch-
+statistics semantics. Training and final-checkpoint verification remain
+pending.
 
 Every dataset archive, split, checkpoint, preprocessing product, runtime, and
 result file is identified by hash in the artifact manifest. Raw binary
@@ -189,8 +191,11 @@ radii. Interim B1 accuracy and router census values cannot populate this table.
 
 The final AdvMoE checkpoint evaluation records clean accuracy, route share,
 signed router-score offset, selected-margin distribution, and load entropy.
-Intermediate checkpoints use the same fields to test whether supervised router
-training breaks the `10,000:0` initialization collapse. First-order diagnostics
+Intermediate checkpoints use the same fields under both eval/current-running-
+statistics and train/ordered-test-current-batch-statistics semantics to test
+whether supervised router training breaks the initialization collapse. The
+train-mode row is a co-batch diagnostic, not a replay of the literal augmented
+training stream. First-order diagnostics
 cover the full test set; strong PGD uses a frozen deterministic subset; CROWN,
 alpha-CROWN, or beta-CROWN closure is restricted to the final checkpoint and a
 registered subset.
@@ -230,8 +235,12 @@ invariance set is empty for 18 seeds and contains at most two of 10,000 inputs
 for the other two. TinyImageNet supplies an independently labelled census and
 preprocessing-semantics audit, not an expert result.
 
-AdvMoE initialization provides a distinct artifact finding: every official
-test image selects expert 0, so local boundary-scale ratios are confounded.
+AdvMoE initialization provides a distinct artifact finding. At the default
+seed, every official test image selects expert 0. Across K=20 initializations,
+13 eval/default-stat routers and 8 train-batch-stat routers are exactly
+collapsed; median maximum load remains 100% and 99.305%. Thus local boundary-
+scale ratios are confounded, and the identity of an init function must include
+BatchNorm mode and statistics.
 Sparse CROWN reduces IBP's dimensionless relaxation inflation by 5.17--5.36
 times but leaves a residual near (10^{11}). No-flip attacks through epsilon 1
 are non-proof diagnostics. These results motivate checkpoint route-share

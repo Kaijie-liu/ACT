@@ -3,8 +3,9 @@
 A robustness claim binds a mathematical property to an executable artifact.
 That identity is often described by a model checkpoint and a perturbation
 radius. Our audits show that this is insufficient for routed models: the input
-transform, the runtime implementation of that transform, and the numerical set
-actually passed to a verifier can each change the program being certified.
+transform, the runtime implementation of that transform, the numerical set
+actually passed to a verifier, and stateful-layer evaluation semantics can
+each change the program being certified.
 
 ## Finding 1: preprocessing is part of the routed program
 
@@ -75,15 +76,46 @@ provide a validated outward-rounding argument. ACT's HZ solver follows a
 different policy: it applies an absolute-plus-relative outward slack and then
 `nextafter` toward the unsafe direction before consuming a support bound.
 
+## Finding 4: initialization does not identify BatchNorm semantics
+
+A BatchNorm network does not define one unambiguous function at
+initialization. At least three objects can be meant by an “initial model”:
+initial weights evaluated with default running means and variances, the same
+weights evaluated in training mode with current-batch statistics, or initial
+weights evaluated after a data-dependent running-statistics warm-up. The
+released AdvMoE training process uses the second kind of function while a
+fresh checkpoint loaded for evaluation normally uses the first.
+
+We isolate the first two semantics on 20 official-construction-order router
+initializations and the same ordered 10,000-image CIFAR-10 test stream. Under
+eval mode with default zero means and unit variances, 13/20 seeds route every
+image to one expert; the median maximum expert share is 100%. Current-batch
+statistics reduce, but do not remove, the effect: 8/20 seeds remain exactly
+collapsed, and the median maximum share is 99.305%. Collapse targets vary
+across seeds. The absolute signed-score mean divided by its standard deviation
+has median 9.159 in eval mode and 2.474 with ordered-test batch statistics.
+Thus the seed-1234 10,000:0 result is neither a single-seed accident nor purely
+an eval-default-statistics artifact, but BatchNorm semantics materially changes
+its degree.
+
+The train-mode row is a controlled co-batch diagnostic, not a replay of the
+literal shuffled and augmented training stream. It is intentionally labelled
+as such. Trained-checkpoint telemetry therefore reports route load, signed
+offset, and margin distributions under two identities: eval mode with the
+checkpoint's current running statistics, and a fresh checkpoint copy in train
+mode over registered ordered test batches. Neither identity is allowed to
+select a checkpoint. This distinction lets us ask when training escapes
+initial load collapse without silently changing the function under study.
+
 ## Certificate identity and fail-closed use
 
-Every final result binds five groups of fields: source and checkpoint hashes;
+Every final result binds six groups of fields: source and checkpoint hashes;
 ordered dataset and preprocessing identities; exact runtime and device
-versions; requested and represented perturbation sets; and solver tolerances,
-integrality, positive-margin, and outward-rounding policies. A missing or
-changed field invalidates reuse of the certificate. This policy turns the
-three observations into a constructive requirement rather than a post-hoc
-warning.
+versions; requested and represented perturbation sets; solver tolerances,
+integrality, positive-margin, and outward-rounding policies; and stateful-layer
+mode plus stored or batch-derived statistics. A missing or changed field
+invalidates reuse of the certificate. This policy turns the four observations
+into a constructive requirement rather than a post-hoc warning.
 
 The same discipline changes how negative results are handled. The continuous
 TinyImageNet run, the out-of-range resize run, and the microscopic CROWN

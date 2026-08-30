@@ -9,7 +9,22 @@
     "intermediate": "frozen deterministic subset plus full route-share forward",
     "no_test_selection": true
   },
+  "batch_norm_semantics": [
+    {
+      "label": "EVAL_CURRENT_RUNNING_STATS",
+      "mode": "eval",
+      "definition": "checkpoint weights with BatchNorm eval mode and the running statistics stored in that checkpoint"
+    },
+    {
+      "label": "TRAIN_ORDERED_TEST_BATCH_STATS",
+      "mode": "train",
+      "definition": "a fresh checkpoint copy with BatchNorm train mode; current statistics are computed over consecutive ordered test batches of 128 (final batch 16); updated running statistics are discarded after telemetry"
+    }
+  ],
+  "bn_comparison_scope": "The train-mode row is a registered ordered-test co-batch diagnostic, not the literal shuffled and augmented training stream. Both rows use identical checkpoint weights and ordered inputs; neither selects checkpoints.",
   "required_per_checkpoint_metrics": [
+    "batch_norm_semantics_label",
+    "batch_norm_state_before_and_after",
     "route_counts",
     "route_shares",
     "route_load_entropy",
@@ -23,5 +38,5 @@
     "fixed_subset_strong_pgd_route_flip_count",
     "fixed_subset_strong_pgd_margin_compression_distribution"
   ],
-  "interpretation": "The primary question is whether the released supervised router objective breaks the 10000:0 initialization collapse and creates balanced input-dependent routing. No architecture effect is preclaimed. Checkpoint selection may not use test telemetry."
+  "interpretation": "For each registered BN semantic, the primary question is whether the released supervised router objective breaks the initialization collapse and creates balanced input-dependent routing. Escape timing and collapse target are reported separately by semantic. No architecture effect is preclaimed. Checkpoint selection may not use test telemetry."
 }

@@ -36,7 +36,7 @@ above. No submission date can redefine `PAPER_COMPLETE`.
 |---|---|---|
 | Official RT-ER B1 and B3 | Official-scale end-to-end comparison | B1 running; B3 pending |
 | Router-gradient audits of RT-ER, robust-moe-cnn, and V-MoE | Multiple-pipeline external-validity map | Source audit complete, independently audited |
-| AdvMoE official third-party learned deep-path target | Learned-router and non-output-layer external validity | Architecture/dependency audits plus strong-PGD/sparse-CROWN init pilot complete; 100/100 remains undecided; alpha/beta closure, training, and Route A wait for B1/B3 |
+| AdvMoE official third-party learned deep-path target | Learned-router and non-output-layer external validity | Architecture/dependency audits plus strong-PGD/sparse-CROWN init pilot complete; K=20 dual-BN init census complete and init line sealed; alpha/beta closure, training, and Route A wait for B1/B3 |
 | Lazy route-set enumeration plus no-good cuts; exact-support big-M | `E` scalability and search-relaxation defense | Implemented and E=8 differential audited; E-scaling/timed rerun pending |
 | Dimension-law simulation grid | Defense against two-point-fit criticism | Pending; grid must be frozen before execution |
 | Source-native survey retrieval | Recall-qualified survey if retrieval succeeds | Pending institutional retrieval |
@@ -86,7 +86,12 @@ inputs through epsilon 1, but this remains attack non-discovery. The five-radius
 layered relaxation-inflation curve shows that CROWN improves IBP by
 `5.17x--5.36x` while leaving `1.07e11--1.66e11` CROWN medians; it has no
 approximation-ratio claim. Trained telemetry must report route share and signed
-offset at every checkpoint to determine whether training breaks the collapse.
+offset under both eval/current-running-statistics and registered
+train/ordered-test-batch semantics at every checkpoint. The K=20 closure finds
+exact collapse for 13/20 eval-default-stat seeds and 8/20 train-batch-stat
+seeds, with median maximum loads of 100% and 99.305%. BatchNorm semantics
+changes the degree but does not remove the initialization phenomenon; no
+further init measurement is allowed.
 The first-five-sample numerical-reach bisection is ULP-limited in all five rows:
 its median sign transition is `1.856e-9--1.868e-9`, versus a `1.609e-12`
 linear extrapolation. It is retained as a negative numerical-semantics result,
@@ -124,7 +129,7 @@ or manuscript closure.
 | “Guard value survives any abstraction.” | Retained-guard positive result plus box-hull, eta-reduction, and tie-soundness negative controls. | Closed at verification scale |
 | “Incremental solving gives a universal speedup.” | Separate build-dominated and search-dominated measurements, retaining the negative end-to-end result. | Closed |
 | “UNSAFE comes from a relaxation witness.” | Full-model replay for every weighted unsafe result. | Closed for completed cohorts; remains a standing gate |
-| “Floating-point preprocessing or frontend set representation is outside the artifact identity.” | Runtime/preprocessing identity plus requested/represented-set schema, ULP point-collapse regression, and fail-closed replay. | Closed in implementation; B3 instance pending |
+| “Preprocessing, frontend set representation, or BN mode is outside the artifact identity.” | Runtime/preprocessing identity, requested/represented-set schema, ULP point-collapse regression, dual-BN initialization census, and fail-closed replay. | Closed in implementation; B3 instance pending |
 
 ## Change control
 
@@ -138,3 +143,15 @@ Administrative external actions are tracked separately. Author contact is
 one-neutral-public-issue, and standard-paper-wording protocol. The agent does no
 countdown or follow-up. No Zenodo connector, account, or deposit token is
 available, so no deposit, DOI, or publication may be claimed.
+
+## Post-B1 resource schedule
+
+B1 landing triggers two resource-separated lanes. The GPU lane builds the
+isolated AdvMoE reproduction environment and starts official seed-0 training.
+The CPU lane runs the paired exact-support-big-M, lazy-enumeration/MIP-start,
+and monolithic-MILP studies with bounded workers and low process priority.
+These jobs may overlap only while monitoring shows that the AdvMoE data loader
+and CPU timing do not contend. B3 CROWN evaluation begins after both lanes have
+closed and the GPU has a quiet window; it is not launched concurrently with
+training. This schedule changes resource occupancy, not any frozen scientific
+endpoint.

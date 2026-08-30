@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "status": "FROZEN_BEFORE_EPOCH50_REHEARSAL",
+  "scope": "ICML2025_RT_ER_B1_UNATTENDED_LANDING",
+  "label": "official-code, Blackwell-compatible deps + FFCV, seed0",
+  "run_root": "/data1/Kane/MOE/baseline_runs/icml2025_rt_er/seed0_paper130",
+  "branch": "feat/moe-route-verification",
+  "remote": "origin",
+  "rehearsal_epoch": 50,
+  "final_epoch": 130,
+  "poll_seconds": 60,
+  "endpoint": {
+    "dataset": "official ordered torchvision CIFAR-10 test set",
+    "samples": 10000,
+    "batch_size": 512,
+    "attack_seed": 0,
+    "epsilon": 0.03137254901960784,
+    "step_size": 0.00784313725490196,
+    "steps": 50,
+    "random_start": true,
+    "input_pipeline": "uint8 pixels -> CUDA float16 -> torchvision Normalize using official mean/std",
+    "full_endpoint_replay_required": true
+  },
+  "endpoint_interpretation": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/icml2025_b1_endpoint_interpretation.json",
+  "rehearsal_exclusions": [
+    "ordered full-test endpoint evaluation",
+    "SA/PGD50 preregistered gate decision",
+    "Git commit and push"
+  ],
+  "final_sequence": [
+    "validate supervisor PASSED and all 13 immutable checkpoint/metrics/telemetry records",
+    "validate epoch130 checkpoint and final route telemetry identities",
+    "run ordered full-test SA and official-semantics PGD50",
+    "independently replay every stored attack endpoint through the full routed model",
+    "apply the frozen SA and PGD50 interpretation rules without changing thresholds",
+    "write B1_LANDED_summary.json and a tracked Markdown report",
+    "commit and push only the two generated landing records on the feature branch"
+  ],
+  "failure_policy": "fail closed, preserve a failure JSON under the run root, do not commit or push partial landing output"
+}

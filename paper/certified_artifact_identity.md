@@ -48,6 +48,18 @@ regime: at registered radii of at least `0.5/255`, the audited boxes are not
 ULP-degenerate. It does not imply a material ULP error at ordinary robustness
 radii.
 
+A fourth ambiguity is stateful-layer mode. A fresh AdvMoE router with 19
+BatchNorm layers denotes one function in eval mode with default running
+statistics and another in train mode with current-batch statistics. Across 20
+official-construction-order seeds on the ordered CIFAR-10 test stream, the
+former is exactly single-expert collapsed for 13 seeds and the latter for 8;
+median maximum expert share is 100% and 99.305%, respectively. The train-mode
+row is an ordered-test co-batch diagnostic rather than the literal augmented
+training stream. It shows that BatchNorm semantics materially changes the
+degree of the observed collapse without explaining it away. Trained telemetry
+therefore binds its mode and statistics identity and reports both registered
+semantics from fresh checkpoint copies.
+
 These observations motivate an explicit certificate identity.  Every B3 result
 must bind all of the following fields:
 
@@ -59,6 +71,8 @@ must bind all of the following fields:
   input domain;
 - both `requested_radius` and the fully identified `represented_set`, including
   the represented lower/upper tensors and per-coordinate effective widths;
+- the mode of every stateful layer and the identity or derivation rule for its
+  running or current-batch statistics;
 - solver versions and the numerical, integrality, feasibility, positive-margin,
   and outward-rounding policies used to derive a verdict.
 

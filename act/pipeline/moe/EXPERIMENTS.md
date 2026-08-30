@@ -1875,6 +1875,37 @@ preclaimed.
 The corresponding frozen machine-readable field list is
 `act/pipeline/moe/configs/advmoe_training_router_telemetry_r1.json`.
 
+The init confound is closed with 20 official-construction-order seeds under two
+explicit BatchNorm semantics on the same ordered 10,000-image test stream.
+Eval mode with default zero/unit running statistics produces exact single-
+expert collapse for 13/20 seeds; train mode with ordered-test current-batch
+statistics produces 8/20. Median maximum expert shares are 100.000% and
+99.305%, and median `abs(signed mean)/standard deviation` values are 9.159 and
+2.474. The 19 fresh seeds alone give 12/19 and 7/19 collapses. The train-mode
+row is a controlled co-batch diagnostic, not the shuffled augmented training
+stream. BatchNorm semantics changes the degree of collapse but does not remove
+it, and collapse direction varies by initialization. The init line is sealed;
+trained telemetry records both eval/current-running-statistics and
+train/ordered-test-batch-statistics rows at every checkpoint.
+
+## B1 unattended landing
+
+The official RT-ER B1 supervisor remains the sole owner of training. A separate
+read-only watcher is frozen in
+`act/pipeline/moe/configs/icml2025_b1_landing_protocol_r1.json`. At epoch 50 it
+rehearses only the checkpoint/metrics/telemetry identity chain. At supervisor
+`PASSED`, it requires the complete 10--130 schedule, freezes epoch 130, runs
+ordered full-test SA and official PGD-50, independently replays all 10,000
+stored endpoints through the literal routed model, applies the pre-existing
+inclusive interpretation intervals, and writes `B1_LANDED_summary.json`.
+
+Only after every audit passes may the hook create its two tracked landing
+records, commit, and push the feature branch. It requires a clean worktree
+exactly synchronized with the remote and fails closed on any discrepancy. It
+never signals, pauses, restarts, or changes training. The full behavior and
+post-B1 GPU/CPU resource order are documented in
+`act/pipeline/moe/docs/icml2025_b1_landing.md`.
+
 ## Lazy top-k enumeration and support-derived big-M
 
 The first scalability code stage replaces exhaustive route-set proposals with
