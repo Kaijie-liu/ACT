@@ -123,7 +123,7 @@ or manuscript closure.
 | “Guard value survives any abstraction.” | Retained-guard positive result plus box-hull, eta-reduction, and tie-soundness negative controls. | Closed at verification scale |
 | “Incremental solving gives a universal speedup.” | Separate build-dominated and search-dominated measurements, retaining the negative end-to-end result. | Closed |
 | “UNSAFE comes from a relaxation witness.” | Full-model replay for every weighted unsafe result. | Closed for completed cohorts; remains a standing gate |
-| “Floating-point preprocessing is outside the artifact identity.” | Runtime/preprocessing identity schema and fail-closed replay. | Closed in implementation; B3 instance pending |
+| “Floating-point preprocessing or frontend set representation is outside the artifact identity.” | Runtime/preprocessing identity plus requested/represented-set schema, ULP point-collapse regression, and fail-closed replay. | Closed in implementation; B3 instance pending |
 
 ## Change control
 

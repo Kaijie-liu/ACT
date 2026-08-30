@@ -260,6 +260,29 @@ first-order estimates, fixed-subset strong PGD, and trained-checkpoint-only
 CROWN/alpha/beta closure. The two-path end-to-end table remains independent of
 router-bound closure.
 
+### Requested set versus represented set
+
+The float radius requested by an experiment and the tensor box passed to a
+backend are different certificate-identity fields. Every future CROWN row must
+record:
+
+- `requested_radius`;
+- representation dtype and tensor shape;
+- SHA-256 identities of the centre, represented lower/upper tensors, per-side
+  deltas, and total coordinate widths;
+- effective lower/upper L-infinity radii;
+- minimum/maximum represented coordinate width;
+- zero-width and unchanged-coordinate counts.
+
+`represented_linf_box` materializes this record in
+`act/pipeline/moe/certified_artifact_identity.py`. The CROWN reach worker now
+uses the same returned lower/upper tensors for both the backend call and the
+identity record. A positive requested radius with a zero-width represented box
+is a point query. It cannot establish the requested real-ball property. More
+generally, this metadata diagnoses representation; it does not prove outward
+containment. A formal real-domain label still requires a validated outward-
+rounding policy or equivalent set-containment argument.
+
 ## Dimensionless relaxation inflation
 
 At the five registered non-microscopic radii, the project reports

@@ -1815,7 +1815,15 @@ numerical semantics. Linear extrapolation from 0.5/255 predicts median zero at
 `1.609e-12`, whereas executed positive/negative requested-epsilon brackets have
 median `1.856e-9--1.868e-9` and range from approximately `2.33e-10` to
 `7.45e-9`. Every one of the five sign transitions coincides with a discrete
-float32 box expansion. Independent replay checks 75 boxes with zero issues:
+float32 box expansion. Rank 3 additionally has a positive requested radius
+whose represented box has exactly zero width. The request and represented set
+are therefore separate certificate-identity objects: a positive backend bound
+over the point does not certify the requested real ball. A reusable identity
+record now hashes represented lower/upper tensors and per-coordinate widths,
+and a one-dimensional identity-network regression reproduces the collapse.
+This finding is scoped to microscopic radii; audited registered radii at or
+above 0.5/255 are not ULP-degenerate. Independent replay checks 75 boxes with
+zero issues:
 `act/pipeline/moe/results/advmoe_crown_numerical_reach_init5_20260830_r1.json`.
 These are numerical frontend/relaxation diagnostics, not sound CROWN reach.
 The project therefore cancels the proposed 10,000-input init CROWN census and

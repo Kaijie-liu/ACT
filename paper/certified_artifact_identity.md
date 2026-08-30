@@ -26,6 +26,28 @@ establishes that the 42 disagreements have empty intersection with the formally
 stable endpoints at every registered radius.  This is the hard condition that
 prevents finite-precision route drift from inflating the reported applicability.
 
+A third failure mode appears before network propagation. A verifier API may be
+asked to certify a real-valued radius `epsilon>0` while its float32 frontend
+materializes `x-epsilon` and `x+epsilon` as the same tensor as `x`. In the
+AdvMoE numerical-reach probe, rank 3 has a positive requested radius below
+approximately `1.49e-8` but an effective box width of exactly zero. The
+resulting computation is a point check, not a certificate for the requested
+real ball. All five observed CROWN sign transitions coincide with expansion to
+a new representable float32 box. This is not an AdvMoE-specific property: a
+one-dimensional identity network reproduces the same positive-request,
+zero-width represented set in the executable regression suite.
+
+The request and the represented set are therefore separate certificate
+identity fields. ACT records the requested radius together with the dtype,
+shape, hashes of the represented lower and upper tensors, hashes of per-side
+deltas and total coordinate widths, effective one-sided radii, and zero-width
+coordinate counts. A positive backend bound over a represented set that is
+strictly smaller than the requested real ball cannot be promoted to a
+real-domain certificate. This finding is scoped to the microscopic-radius
+regime: at registered radii of at least `0.5/255`, the audited boxes are not
+ULP-degenerate. It does not imply a material ULP error at ordinary robustness
+radii.
+
 These observations motivate an explicit certificate identity.  Every B3 result
 must bind all of the following fields:
 
@@ -35,6 +57,8 @@ must bind all of the following fields:
   and ordered-input identity;
 - the complete preprocessing graph, operation order, constants, dtypes, and
   input domain;
+- both `requested_radius` and the fully identified `represented_set`, including
+  the represented lower/upper tensors and per-coordinate effective widths;
 - solver versions and the numerical, integrality, feasibility, positive-margin,
   and outward-rounding policies used to derive a verdict.
 
@@ -43,6 +67,13 @@ resize" is not enough to identify a certifiable program.  This is a scoped
 artifact-semantics result: it does not claim that either runtime is generally
 incorrect, nor that floating-point inference has a unique real-arithmetic
 interpretation.
+
+The reusable representation record and its point-collapse regression are in
+`act/pipeline/moe/certified_artifact_identity.py` and
+`act/pipeline/moe/test_certified_artifact_identity.py`. They diagnose the set
+passed to a numerical backend; they do not retrofit outward rounding into
+auto_LiRPA. ACT's HZ support path separately applies outward slack and
+`nextafter` toward the unsafe direction before using a solver bound.
 
 The excluded and accepted evidence is anchored by
 `act/pipeline/moe/results/icml2025_rt_er/tinyimagenet_router_census_k20_20260830_r2.json`.

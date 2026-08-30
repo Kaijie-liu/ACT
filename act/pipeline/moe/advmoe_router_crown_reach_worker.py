@@ -35,6 +35,7 @@ from act.pipeline.moe.advmoe_adapter import (
     construct_official_init,
     state_dict_sha256,
 )
+from act.pipeline.moe.certified_artifact_identity import represented_linf_box
 from act.pipeline.moe.advmoe_router_bound_worker import (
     batchnorm_deployment_identity,
     crown_bound_options,
@@ -132,12 +133,7 @@ def run(config_path: Path) -> dict[str, Any]:
         adapter = CrownCompatibleAdvMoeRouter(raw_router).to(device).eval()
         torch.cuda.reset_peak_memory_stats()
         bounded = BoundedModule(adapter, sample, device=device, bound_opts=options)
-        lower = torch.clamp(sample - float(epsilon), 0, 1)
-        upper = torch.clamp(sample + float(epsilon), 0, 1)
-        effective_lower = float((sample - lower).abs().max().item())
-        effective_upper = float((upper - sample).abs().max().item())
-        changed_lower = int(torch.count_nonzero(lower != sample).item())
-        changed_upper = int(torch.count_nonzero(upper != sample).item())
+        lower, upper, represented_set = represented_linf_box(sample, epsilon)
         bounded_input = BoundedTensor(
             sample,
             PerturbationLpNorm(norm=float("inf"), x_L=lower, x_U=upper),
@@ -164,10 +160,17 @@ def run(config_path: Path) -> dict[str, Any]:
             "requested_epsilon": float(epsilon),
             "lower_bound": value,
             "positive_numerical_filter": bool(value > 0),
-            "effective_lower_linf": effective_lower,
-            "effective_upper_linf": effective_upper,
-            "changed_lower_coordinates": changed_lower,
-            "changed_upper_coordinates": changed_upper,
+            "effective_lower_linf": represented_set.effective_lower_linf,
+            "effective_upper_linf": represented_set.effective_upper_linf,
+            "changed_lower_coordinates": (
+                represented_set.coordinate_count
+                - represented_set.unchanged_lower_coordinates
+            ),
+            "changed_upper_coordinates": (
+                represented_set.coordinate_count
+                - represented_set.unchanged_upper_coordinates
+            ),
+            "represented_set": represented_set.as_dict(),
             "seconds": seconds,
             "peak_memory_bytes": current_peak,
         }
