@@ -29,7 +29,7 @@ route-invariance comparison is complete and independently audited.
 
 This is a claims-to-evidence paper draft, not a new experimental protocol. It
 is grounded in the repository state at
-`3cd0b1385`. The frozen scientific endpoint,
+`7ef324e18`. The frozen scientific endpoint,
 follow-up closure experiments, and engineering reruns are reported separately.
 No pending result is inferred from an implementation, a protocol, or a smoke
 test.
@@ -361,15 +361,17 @@ general numerical-soundness validation of CROWN. The artifact is
 `act/pipeline/moe/results/crown/tie_safe_toy_conformance_20260829.json`, committed
 by `6b4f2627eed465090894da851e013c8a950da4dc`.
 
-## Partial certification-gap survey
+## Audited certification-gap case series
 
-The frozen survey has produced a reconciled partial corpus and a primary-source
-evidence matrix, but retrieval is not complete. Two reviewers screened the same
-321-record partial corpus; nine families received full-text review and eight
-were retained for six-dimension artifact extraction. All 48 cells have a primary
-source URL and locator, and the independent completeness audit found zero issues.
-One-hop snowballing added 13 non-seed candidates and no new included family under
-the frozen criteria.
+The frozen survey protocol produced a reconciled partial corpus and a
+primary-source evidence matrix, but source-native retrieval could not be
+completed. We therefore close it as an audited case series rather than promote
+it to a prevalence study. Two reviewers screened the same 321-record partial
+corpus; nine families received full-text review and eight were retained for
+six-dimension artifact extraction. All 48 cells have a primary-source URL and
+locator, and the independent completeness audit found zero issues. One-hop
+snowballing added 13 non-seed candidates and no new included family under the
+frozen criteria.
 
 These counts support only an artifact-centered qualitative account of the eight
 already adjudicated families. They do **not** support ecosystem prevalence,
@@ -386,7 +388,10 @@ The partial matrix and snowball artifacts are:
 - `act/pipeline/moe/results/survey/snowball_partial_20260829.json`, commit
   `bcaee278e76a5d4970557d14f9d43df3123eb079`.
 
-Both are explicitly labeled `PARTIAL_RETRIEVAL_NO_PREVALENCE`.
+The source artifacts retain their `PARTIAL_RETRIEVAL_NO_PREVALENCE` labels; the
+reporting decision is frozen in
+`act/pipeline/moe/results/survey/case_series_closure_20260830.json` as
+`AUDITED_CASE_SERIES_CLOSED_NO_PREVALENCE`. No author contact has been sent.
 
 ## Executed comparisons and pending evaluation slots
 
