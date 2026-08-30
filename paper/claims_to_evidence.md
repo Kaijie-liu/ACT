@@ -621,6 +621,25 @@ literal first-max tie behavior:
 architecture/training-semantics result only. Training, sampled input-space
 route census, and deep-path certificates remain pending after RT-ER B3.
 
+### AdvMoE init bracket is currently fully undecided
+
+The frozen 20-input engineering pilot validates the route-bracket harness but
+does not yet buy a nonlinear-router census. At every radius in
+`{0.5,1,2,4,8}/255`, PGD finds no concrete route flip and one-thread IBP gives
+no positive numerical lower-bound filter, leaving 20/20 inputs undecided. The
+largest absolute lower/upper bounds reach `2.07e10`/`2.84e10`, exposing severe
+deep-router IBP abstraction explosion. The installed full CROWN path is not a
+safe fallback during B1: its literal frontend rejects the source graph, the
+bit-exact lowered graph exceeded the CPU pilot budget, and a one-input GPU
+probe exhausted the available 95 GiB device.
+
+The independent audit reports zero issues and replays archive, model, adapter,
+hash, partition, and witness identities:
+`act/pipeline/moe/results/advmoe_router_bracket_init20_20260830_r3.json`. The
+only paper-safe conclusion is that the fail-closed harness works and current
+IBP cannot close the bracket. Zero attack flips must not be called stability;
+the pilot is not prevalence, accuracy, robustness, or certificate evidence.
+
 ## Threats to validity
 
 ### Construct validity
@@ -660,6 +679,9 @@ route census, and deep-path certificates remain pending after RT-ER B3.
 - P0a and P0b are complete. A true monolithic solver comparison and official
   RT-ER B3 expert verification remain pending before official-scale certificate
   claims.
+- The AdvMoE init pilot has a 100/100 sample-radius undecided band under its
+  deliberately cheap PGD/IBP harness. It establishes neither nonlinear-router
+  applicability nor third-party deep-path certificate coverage.
 
 ### Statistical conclusion validity
 

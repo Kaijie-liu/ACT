@@ -1,0 +1,110 @@
+{
+  "adapter_equivalence": {
+    "max_abs_error": 0.0,
+    "outputs_equal": true,
+    "routes_equal": true
+  },
+  "bound_magnitude": {
+    "maximum_absolute_lower_bound": 20738076672.0,
+    "maximum_absolute_upper_bound": 28447031296.0
+  },
+  "conclusion": "The harness and identities pass independently. On this init-only 20-sample pilot, PGD finds no route flips and one-thread IBP gives no positive numerical margin filters at any frozen radius, leaving all 100 sample-radius rows undecided. This is not evidence of route stability, prevalence, accuracy, robustness, or certification.",
+  "issue_count": 0,
+  "issues": [],
+  "radius_rows": [
+    {
+      "attack_confirmed_route_unstable": 0,
+      "bound_error": null,
+      "bound_method": "IBP",
+      "conflicts": 0,
+      "epsilon": 0.00196078431372549,
+      "formal_route_stable": 0,
+      "formal_route_stable_reason": "backend lower bounds are not outward-rounded",
+      "positive_numerical_bound_filter": 0,
+      "samples": 20,
+      "undecided_band": 20
+    },
+    {
+      "attack_confirmed_route_unstable": 0,
+      "bound_error": null,
+      "bound_method": "IBP",
+      "conflicts": 0,
+      "epsilon": 0.00392156862745098,
+      "formal_route_stable": 0,
+      "formal_route_stable_reason": "backend lower bounds are not outward-rounded",
+      "positive_numerical_bound_filter": 0,
+      "samples": 20,
+      "undecided_band": 20
+    },
+    {
+      "attack_confirmed_route_unstable": 0,
+      "bound_error": null,
+      "bound_method": "IBP",
+      "conflicts": 0,
+      "epsilon": 0.00784313725490196,
+      "formal_route_stable": 0,
+      "formal_route_stable_reason": "backend lower bounds are not outward-rounded",
+      "positive_numerical_bound_filter": 0,
+      "samples": 20,
+      "undecided_band": 20
+    },
+    {
+      "attack_confirmed_route_unstable": 0,
+      "bound_error": null,
+      "bound_method": "IBP",
+      "conflicts": 0,
+      "epsilon": 0.01568627450980392,
+      "formal_route_stable": 0,
+      "formal_route_stable_reason": "backend lower bounds are not outward-rounded",
+      "positive_numerical_bound_filter": 0,
+      "samples": 20,
+      "undecided_band": 20
+    },
+    {
+      "attack_confirmed_route_unstable": 0,
+      "bound_error": null,
+      "bound_method": "IBP",
+      "conflicts": 0,
+      "epsilon": 0.03137254901960784,
+      "formal_route_stable": 0,
+      "formal_route_stable_reason": "backend lower bounds are not outward-rounded",
+      "positive_numerical_bound_filter": 0,
+      "samples": 20,
+      "undecided_band": 20
+    }
+  ],
+  "raw_artifacts": {
+    "bounds": {
+      "path": "/data1/Kane/MOE/ACT/data/moe/results/advmoe_router_bracket_init20_20260830_r3/bounds.json",
+      "sha256": "9b6498df35cb125530b6dab75c20f0d1765484e2e5d3883fb1801aca52a30a16"
+    },
+    "inputs": {
+      "path": "/data1/Kane/MOE/ACT/data/moe/results/advmoe_router_bracket_init20_20260830_r3/inputs.npz",
+      "sha256": "933923b1b9ceea259da4098e19ff716223163dd3b0dcad5a5e2154099ee526ae"
+    },
+    "prepare": {
+      "path": "/data1/Kane/MOE/ACT/data/moe/results/advmoe_router_bracket_init20_20260830_r3/prepare.json",
+      "sha256": "a154aeae9bb6002da6fecb140906c6492d2550ac2c616642f909f253aea5760d"
+    },
+    "summary": {
+      "path": "/data1/Kane/MOE/ACT/data/moe/results/advmoe_router_bracket_init20_20260830_r3/summary.json",
+      "sha256": "fd2e1eb5fe7800abe7741d5c34a2219e11b8db66434dc48ba16d2d06c6892673"
+    },
+    "witnesses": {
+      "path": "/data1/Kane/MOE/ACT/data/moe/results/advmoe_router_bracket_init20_20260830_r3/witnesses.npz",
+      "sha256": "b17011ab3e470eb5b2d07e101d7eb2cf9fe7e1ee83ccdf340941f5fd1a781d18"
+    }
+  },
+  "router_sha256": "fabc6e7e8c07ac1dc3cfec37a249124a07f10efea12b1b05235e9e9c03dff9e3",
+  "schema_version": 1,
+  "scope": "INIT_20_SAMPLE_ENGINEERING_PILOT_INDEPENDENT_AUDIT",
+  "status": "PASS",
+  "totals": {
+    "attack_confirmed_route_unstable": 0,
+    "formal_route_stable": 0,
+    "positive_numerical_bound_filter": 0,
+    "sample_radius_rows": 100,
+    "stored_witnesses": 0,
+    "undecided_band": 100
+  }
+}

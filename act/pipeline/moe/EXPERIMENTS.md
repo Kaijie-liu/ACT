@@ -1751,3 +1751,16 @@ one-thread CPU IBP plus PGD only. Positive bounds remain numerical filters, not
 outward-rounded formal route-stability certificates; negative bounds are
 UNKNOWN. Protocol:
 `act/pipeline/moe/docs/advmoe_router_bracket_protocol.md`.
+
+The accepted init pilot is
+`data/moe/results/advmoe_router_bracket_init20_20260830_r3`; the independent
+audit has zero issues at
+`act/pipeline/moe/results/advmoe_router_bracket_init20_20260830_r3.json`.
+Across 20 ordered test inputs and all five radii, PGD found zero route flips,
+the numerical IBP filter had zero positive lower bounds, and all 100
+sample-radius rows were undecided. Maximum absolute lower/upper relaxation
+bounds were `2.0738076672e10`/`2.8447031296e10`, so this is an explicit IBP
+abstraction-explosion result, not evidence that the init router is stable. The
+literal frontend rejection and fixed-adapter bit-exactness were independently
+replayed. Failed `_r1` and `_r2` launches are preserved with permanent-exclude
+records; neither produced bounds or a summary and neither was reused.

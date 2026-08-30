@@ -36,7 +36,7 @@ above. No submission date can redefine `PAPER_COMPLETE`.
 |---|---|---|
 | Official RT-ER B1 and B3 | Official-scale end-to-end comparison | B1 running; B3 pending |
 | Router-gradient audits of RT-ER, robust-moe-cnn, and V-MoE | Multiple-pipeline external-validity map | Source audit complete, independently audited |
-| AdvMoE official third-party learned deep-path target | Learned-router and non-output-layer external validity | Architecture audit complete; training and Route A wait for B1/B3 |
+| AdvMoE official third-party learned deep-path target | Learned-router and non-output-layer external validity | Architecture/dependency audits and init harness pilot complete; pilot is 100/100 undecided; training and Route A wait for B1/B3 |
 | Lazy route-set enumeration plus no-good cuts; exact-support big-M | `E` scalability and search-relaxation defense | Pending |
 | Dimension-law simulation grid | Defense against two-point-fit criticism | Pending; grid must be frozen before execution |
 | Source-native survey retrieval | Recall-qualified survey if retrieval succeeds | Pending institutional retrieval |
@@ -69,6 +69,9 @@ five-radius staged-verifier table, and one guard-representation ablation. No
 second ratio or AdvMoE expert-count sweep is permitted. The literal router's
 auto_LiRPA rejection and the current CROWN memory bottleneck must be reported;
 IBP pilot filters cannot be renamed formal route-stability certificates.
+The init engineering pilot has independently audited orchestration but leaves
+all 100 sample-radius rows undecided, so it does not satisfy the required
+init/final census or staged-verifier table.
 
 ### Tier 2: optional and non-blocking
 
@@ -91,9 +94,9 @@ or manuscript closure.
 
 | Attack | Required defense | Status |
 |---|---|---|
-| “The 49%-accuracy model is a toy.” | Official-scale B3 plus an official third-party learned-router model if executable. | B3 pending; AdvMoE semantics audited, execution pending |
+| “The 49%-accuracy model is a toy.” | Official-scale B3 plus an official third-party learned-router model if executable. | B3 pending; AdvMoE init harness audited but its cheap bracket is fully undecided; training pending |
 | “Enumeration cannot scale beyond E=8.” | Lazy enumeration/no-good cuts and `E={4,8,16,32,64}` data. | Pending |
-| “The method only covers output-layer MoE.” | Official AdvMoE deep route-specialized pathway or explicit limitation. | Architecture target audited; verification pending after B3 |
+| “The method only covers output-layer MoE.” | Official AdvMoE deep route-specialized pathway or explicit limitation. | Both static paths specialize exactly in tests; property verification remains pending after B3 |
 | “The route-invariance baseline is self-serving.” | Exact definition-level applicability plus identical downstream backend and public implementation. | Verification-scale comparison complete; official scale pending B3 |
 | “The cohort was selected after outcomes were known.” | Full-test applicability decomposition, frozen ranks, and immutable endpoints. | Closed |
 | “The dimension law fits two points.” | Frozen synthetic dimension grid, slope and constant analysis. | Pending |

@@ -75,3 +75,37 @@ The full AdvMoE line remains bounded to seed-0 official-code training, init and
 final full-test bracketed census, deterministic intermediate telemetry subset,
 five-radius staged-verifier table, and one guard ablation. No ratio or expert
 count sweep is added here.
+
+## Init-pilot result
+
+The accepted run is
+`data/moe/results/advmoe_router_bracket_init20_20260830_r3`. Its independent
+audit is tracked at
+`act/pipeline/moe/results/advmoe_router_bracket_init20_20260830_r3.json` and
+reports zero issues. The literal router is rejected by the installed
+auto_LiRPA frontend (`AssertionError`), while the fixed-shape adapter is
+bit-exact on all 20 registered inputs (`max_abs_error=0`, identical routes).
+
+| epsilon | attack-confirmed unstable | positive numerical filter | undecided |
+|---:|---:|---:|---:|
+| 0.5/255 | 0/20 | 0/20 | 20/20 |
+| 1/255 | 0/20 | 0/20 | 20/20 |
+| 2/255 | 0/20 | 0/20 | 20/20 |
+| 4/255 | 0/20 | 0/20 | 20/20 |
+| 8/255 | 0/20 | 0/20 | 20/20 |
+
+Thus all 100 sample-radius rows remain undecided. PGD not finding a flip is not
+route-stability evidence. The one-thread IBP relaxation is unusably loose on
+this deep init router: the largest absolute lower and upper bounds are
+`2.0738076672e10` and `2.8447031296e10`. These magnitudes diagnose abstraction
+explosion; they do not describe concrete router margins. The result validates
+the orchestration, identity, adapter, fail-closed aggregation, and independent
+audit paths only. It is not a route census or a certificate result.
+
+Two earlier launch directories are permanently excluded and retained. The
+first invoked the worker as a module, causing Python 3.11 to import ACT before
+the local `typing.override` shim. The second invoked it as a file but lacked
+the ACT repository root on `sys.path`. Each contains a `FAILED.json` identity
+record and neither reached bound construction. The accepted `_r3` run uses the
+same frozen mathematics after a worker-bootstrap-only repair; no failed
+directory was reused or overwritten.

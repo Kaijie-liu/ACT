@@ -3,6 +3,7 @@ import unittest
 import numpy as np
 import torch
 
+from act.pipeline.moe.audit_advmoe_router_bracket_pilot import validate_accounting
 from act.pipeline.moe.advmoe_router_bracket import aggregate_bracket, pgd_route_flip
 
 
@@ -69,6 +70,54 @@ class AdvMoeRouterBracketTests(unittest.TestCase):
             method="CROWN",
         )
         self.assertEqual(len(issues), 1)
+
+    def test_independent_accounting_rejects_mutated_summary(self):
+        config = {
+            "sample_indices": [0, 1],
+            "epsilons": [0.1],
+            "numerical": {"safe_positive_margin": 1e-7},
+            "bound_worker": {"method": "IBP"},
+        }
+        prepare = {
+            "attack_rows": [
+                {
+                    "epsilon": 0.1,
+                    "success": [True, False],
+                    "replay_routes": [1, 0],
+                    "linf": [0.1, 0.1],
+                }
+            ]
+        }
+        bounds = {
+            "rows": [
+                {
+                    "epsilon": 0.1,
+                    "status": "COMPLETED_NUMERICAL_FILTER",
+                    "lower_bounds": [-1.0, 0.2],
+                }
+            ]
+        }
+        correct = {
+            "summaries": [
+                {
+                    "epsilon": 0.1,
+                    "samples": 2,
+                    "attack_confirmed_route_unstable": 1,
+                    "positive_numerical_bound_filter": 1,
+                    "undecided_band": 0,
+                    "conflicts": 0,
+                    "formal_route_stable": 0,
+                    "formal_route_stable_reason": (
+                        "backend lower bounds are not outward-rounded"
+                    ),
+                    "bound_method": "IBP",
+                }
+            ]
+        }
+        self.assertEqual(validate_accounting(config, prepare, bounds, correct), [])
+        correct["summaries"][0]["undecided_band"] = 1
+        issues = validate_accounting(config, prepare, bounds, correct)
+        self.assertTrue(any("undecided_band" in issue for issue in issues))
 
 
 if __name__ == "__main__":
