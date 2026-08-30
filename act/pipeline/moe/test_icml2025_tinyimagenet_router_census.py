@@ -13,6 +13,12 @@ from act.back_end.moe import affine_top1_route_boundary_batch
 from act.pipeline.moe.icml2025_tinyimagenet_router_census import (
     fixed_epsilon_route_partition_torch,
 )
+from act.pipeline.moe.audit_icml2025_tinyimagenet_router_census import (
+    _direct_fixed_partition,
+)
+from act.pipeline.moe.plot_icml2025_cross_dataset_router_census import (
+    _tiny_fraction_matrix,
+)
 
 
 CONFIG = Path(
@@ -103,6 +109,43 @@ class FixedEpsilonRoutePartitionTest(unittest.TestCase):
                 outward_absolute=1e-9,
                 outward_relative=1e-9,
             )
+
+    def test_independent_scalar_audit_transcription_matches_runner(self) -> None:
+        generator = np.random.default_rng(42)
+        weight = generator.normal(size=(3, 7))
+        bias = generator.normal(size=3)
+        point = generator.uniform(size=7)
+        epsilons = np.asarray([0.0, 0.03, 0.2], dtype=np.float64)
+        runner = fixed_epsilon_route_partition_torch(
+            torch.from_numpy(weight),
+            torch.from_numpy(bias),
+            torch.from_numpy(point[None]),
+            torch.from_numpy(epsilons),
+            input_lower=0.0,
+            input_upper=1.0,
+            outward_absolute=1e-12,
+            outward_relative=1e-12,
+        )
+        clean, stable, reachable, undecided = _direct_fixed_partition(
+            weight, bias, point, epsilons, 1e-12, 1e-12
+        )
+        self.assertEqual(clean, int(runner["clean_experts"][0]))
+        np.testing.assert_array_equal(stable, runner["formally_stable"][0])
+        np.testing.assert_array_equal(reachable, runner["formally_reachable"][0])
+        np.testing.assert_array_equal(undecided, runner["undecided"][0])
+
+
+class CrossDatasetFigureHelperTest(unittest.TestCase):
+    def test_reduces_seed_sample_epsilon_array_only_along_samples(self) -> None:
+        stable = np.asarray(
+            [
+                [[True, False], [False, False]],
+                [[True, True], [True, False]],
+            ],
+            dtype=np.bool_,
+        )
+        actual = _tiny_fraction_matrix({"domain__stable": stable}, "domain")
+        np.testing.assert_array_equal(actual, [[0.5, 0.0], [1.0, 0.5]])
 
 
 class FrozenTinyImageNetCensusConfigTest(unittest.TestCase):
