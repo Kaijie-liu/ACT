@@ -160,9 +160,11 @@ def run(result_path: Path, output_dir: Path) -> dict[str, Any]:
     axis.annotate(
         f"global max {maximum['radius_over_255']:.3f}/255\nseed {maximum['seed']}, sample {maximum['sample_index']}",
         xy=(maximum["seed"], maximum["radius_over_255"]),
-        xytext=(-74, 14),
+        xytext=(28, -34),
         textcoords="offset points",
         arrowprops={"arrowstyle": "->", "color": "#6b4f1d"},
+        ha="left",
+        va="top",
     )
     axis.set_xticks(seeds)
     axis.set_xlabel("Official construction seed")
