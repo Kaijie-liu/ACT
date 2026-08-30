@@ -82,6 +82,10 @@ boundary-scale estimates (`67.85/255` first-order and `70.64/255` PGD-slope),
 approximately `130x` the exact RT-ER K=20 aggregate median. This closes an
 architecture-regime diagnostic only; it neither closes the nonlinear-router
 bracket nor licenses a causal architecture claim.
+Large-epsilon PGD finds no flip on the 20 init inputs through 96/255, so the
+near-70/255 values are retained only as local linearized scales, not boundaries.
+The five-radius relaxation-inflation curve (`1.07e11--1.66e11` medians) is the
+compliant quantitative gap diagnostic, with no approximation-ratio claim.
 The first-five-sample numerical-reach bisection is ULP-limited in all five rows:
 its median sign transition is `1.856e-9--1.868e-9`, versus a `1.609e-12`
 linear extrapolation. It is retained as a negative numerical-semantics result,

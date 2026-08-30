@@ -1820,3 +1820,19 @@ float32 box expansion. Independent replay checks 75 boxes with zero issues:
 These are numerical frontend/relaxation diagnostics, not sound CROWN reach.
 The project therefore cancels the proposed 10,000-input init CROWN census and
 withholds the eleven-order certificate-gap figure.
+
+The preregistered large-epsilon continuation uses the same 20 samples and the
+same 100-step, 10-restart attack at `{16,32,64,96}/255`. It finds zero route
+flips at all 80 endpoints. Median margin compression is 21.04%, 38.45%, 61.82%,
+and 76.60%. Therefore the earlier `67.85/255` and `70.64/255` values remain
+local linear-scale estimates; they are not observed route boundaries. Every
+attack-diagnostic interval is open above 96/255, and attack non-discovery is
+not a certified lower bound.
+
+The ULP-sensitive radius figure is replaced by a dimensionless relaxation
+inflation computed at the existing five radii. Its median values decrease from
+`1.664e11` at 0.5/255 to `1.073e11` at 8/255. The definition compares CROWN's
+allowed margin drop with the strongest observed PGD drop. It is not a
+certified approximation ratio or bound on the true reachable drop. Independent
+audit replays 80 endpoints and 100 inflation values with zero issues:
+`act/pipeline/moe/results/advmoe_large_epsilon_and_inflation_20260830_r1.json`.

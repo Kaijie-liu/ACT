@@ -216,6 +216,15 @@ fixed `137x`. The AdvMoE values are local/extrapolated estimates, not route
 boundaries, witnesses, or certificates. The comparison does not isolate weight
 sharing, pooling, depth, or initialization as a causal mechanism.
 
+The two estimators are not independent: margin-directed PGD and the first-order
+ratio share the same local-gradient geometry. A preregistered large-epsilon
+attack therefore tests the extrapolation at 16, 32, 64, and 96/255. Strong PGD
+finds 0/20 flips at every radius. Median margin compression is 21.04%, 38.45%,
+61.82%, and 76.60%, respectively. Thus the near-70/255 values are validated as
+closely agreeing local linear-scale estimates, not observed route boundaries;
+all attack-diagnostic intervals remain open beyond 96/255. Attack non-discovery
+is not a certified lower bound.
+
 Raw CSV and an SVG with live text are stored under
 `data/moe/results/advmoe_init_boundary_estimates_20260830_r1`. Independent
 replay reports zero issues at
@@ -250,3 +259,18 @@ No 10,000-input init CROWN census will be run. AdvMoE telemetry uses full-test
 first-order estimates, fixed-subset strong PGD, and trained-checkpoint-only
 CROWN/alpha/beta closure. The two-path end-to-end table remains independent of
 router-bound closure.
+
+## Dimensionless relaxation inflation
+
+At the five registered non-microscopic radii, the project reports
+
+`(clean_margin - CROWN_LB) / (clean_margin - strongest_PGD_margin)`.
+
+The median values are `1.664e11`, `1.471e11`, `1.336e11`, `1.186e11`, and
+`1.073e11` at 0.5, 1, 2, 4, and 8/255. This recovers the eleven-order empirical
+separation without relying on an ULP-scale radius axis. It is a dimensionless
+relaxation-versus-observed-attack-drop diagnostic, not a certified
+approximation ratio and not a bound on the unknown true reachable margin drop.
+All 80 large-epsilon endpoints and all 100 inflation values replay under the
+zero-issue audit
+`act/pipeline/moe/results/advmoe_large_epsilon_and_inflation_20260830_r1.json`.

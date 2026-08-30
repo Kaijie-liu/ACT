@@ -678,6 +678,13 @@ routers. The evidence does not isolate weight sharing, pooling, depth, or any
 other architectural component as the causal mechanism, and the AdvMoE values
 are not exact boundaries or certificates.
 
+The two estimates are also statistically dependent because the PGD direction
+is gradient-driven. A large-epsilon attack check finds no route flip on any of
+the 20 inputs through 96/255, despite median margin compression reaching 76.60%.
+Consequently, the approximately 130x comparison is restricted to an empirical
+local linearized scale; it is not an observed boundary ratio. The open
+attack-diagnostic endpoint above 96/255 is not a formal stability lower bound.
+
 This regime also motivates a dependency inversion in the staged design. For
 the official AdvMoE `E=2` shared-route model, sound verification can, in
 principle, enumerate both static specialized pathways over the entire input
@@ -696,6 +703,14 @@ frontend/relaxation diagnostics, not real-domain certified radii. Accordingly,
 the paper must not draw an eleven-order sound certificate-gap figure from this
 backend. A formally labelled reach requires outward-rounded or otherwise
 validated numerical semantics.
+
+At the ordinary `{0.5,1,2,4,8}/255` radii, a ULP-independent diagnostic is
+available: `(m-CROWN_LB)/(m-min_PGD_m)`. Median relaxation inflation remains
+between `1.07e11` and `1.66e11` across all five radii. This quantifies the
+distance between the sparse-CROWN relaxation and the strongest observed margin
+drop without claiming a certified approximation ratio or a bound on the true
+reachable margin. It provides quantitative motivation for verifying both
+static `E=2` paths without making router certification a soundness dependency.
 
 ## Threats to validity
 
