@@ -7,6 +7,7 @@ import csv
 import json
 import os
 from pathlib import Path
+import time
 from typing import Any
 
 import numpy as np
@@ -105,6 +106,7 @@ def run(config_path: Path) -> dict[str, Any]:
     success_rows: list[np.ndarray] = []
     result_rows: list[dict[str, Any]] = []
     for epsilon_slot, epsilon in enumerate(epsilons):
+        started = time.monotonic()
         result = strong_pgd_route_flip(
             router,
             inputs,
@@ -115,6 +117,7 @@ def run(config_path: Path) -> dict[str, Any]:
             step_divisor=float(attack["step_divisor"]),
             seed=int(attack["seed"]) + epsilon_slot,
         )
+        attack_seconds = time.monotonic() - started
         endpoints.append(result["adversarial"])
         success = np.asarray(result["success"], dtype=bool)
         success_rows.append(success)
@@ -134,7 +137,7 @@ def run(config_path: Path) -> dict[str, Any]:
                     result["replay_routes"], dtype=np.int64
                 ).tolist(),
                 "linf": np.asarray(result["linf"], dtype=np.float64).tolist(),
-                "seconds": float(result["seconds"]),
+                "seconds": attack_seconds,
             }
         )
     success_matrix = np.stack(success_rows)
