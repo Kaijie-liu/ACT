@@ -29,7 +29,7 @@ route-invariance comparison is complete and independently audited.
 
 This is a claims-to-evidence paper draft, not a new experimental protocol. It
 is grounded in the repository state at
-`bfc7c9b2e`. The frozen scientific endpoint,
+`3cd0b1385`. The frozen scientific endpoint,
 follow-up closure experiments, and engineering reruns are reported separately.
 No pending result is inferred from an implementation, a protocol, or a smoke
 test.
@@ -428,6 +428,16 @@ Guarded-box and original-box CROWN certified the same four pairs and the same
 difference is only micro-scale (median (-2.38\times10^{-7}), range
 ([-4.77\times10^{-6},2.62\times10^{-6}])) and is not outward-rounded. We
 therefore report no guard-box tightening or runtime-speedup claim.
+
+For one route halfspace intersected with a box, the coordinate-hull proposition
+in `act/back_end/moe/proofs/guarded_box_coordinate_hull.md` gives the exact
+condition under which each coordinate face survives: the adverse contribution
+of that coordinate must be absorbable by the best compensation from all other
+coordinates. Hence an oblique guard may remove a large part of the box while
+leaving its coordinate hull unchanged. Multiple guards still require a joint
+LP; independent face tests are not composed unsoundly. The proposition explains
+the P0b geometry but does not claim that high-dimensional hulls are always
+unchanged.
 
 The tie-safe eta reduction certified no pair. Retained-guard exact HZ also
 certified no complete pair at the frozen budget because 71/86 expert

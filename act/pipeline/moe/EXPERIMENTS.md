@@ -1501,3 +1501,16 @@ negative result is that coordinate boxing erased the guard's certificate value,
 while the sound eta compilation was too relaxed under CROWN. The immutable
 summary is
 `act/pipeline/moe/results/crown/crown_adapter_consistency_bal010_43_r2_20260829.json`.
+
+The geometric mechanism is formalized in
+`act/back_end/moe/proofs/guarded_box_coordinate_hull.md`. For one affine
+halfspace it gives the exact coordinate bounds and the necessary-and-sufficient
+condition for each box face to survive. It also records the critical limitation:
+multiple route halfspaces require joint LP feasibility because independently
+compatible face witnesses can be mutually incompatible. The proposition
+explains how an oblique guard can be nonredundant while its coordinate hull is
+unchanged; it does not promote the P0b observation into a distribution-free
+high-dimensional theorem. A separate random differential check compared 1,600
+single-halfspace coordinate bounds with SciPy/HiGHS and observed maximum
+float64 difference zero; this validates the transcription, while the proof
+remains the soundness argument.
