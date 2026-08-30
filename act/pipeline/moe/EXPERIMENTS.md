@@ -1053,6 +1053,16 @@ is not treated as invalid. The audited evidence is
 `act/pipeline/moe/results/icml2025_rt_er/released_training_router_gradient_audit_20260830.json`;
 responsible disclosure has not been sent and requires explicit authorization.
 
+To distinguish the seed-0 route census from a single random draw, a separate
+20-seed initialization census is frozen. Each seed reconstructs the complete
+official four-ResNet18 model before reading the router, preserving the official
+random-number consumption order; a standalone Linear draw is not admitted.
+Seed 0 must match the immutable epoch-10 router bit for bit and reproduce all
+10,000 immutable route-boundary rows. The census reports strict and outward-safe
+counts at `{0.5,1,2,4,8}/255`, per-seed loads and boundary pairs, and the full
+minimum--maximum range across all preregistered seeds. It is an initialization
+distribution result, not a trained-model certificate.
+
 ## ICML 2025 B3 executable comparison stage
 
 The final-checkpoint B3 execution layer is implemented but not run. It freezes
