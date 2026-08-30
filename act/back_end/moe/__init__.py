@@ -10,6 +10,7 @@ from act.back_end.moe.factory import (
 from act.back_end.moe.model import OutputLevelMoE, RoutingDecision
 from act.back_end.moe.hz_routing import (
     CandidateReport,
+    LazyTopKSetReport,
     RouteBranch,
     TopKSetBranch,
     TopKSetDomain,
@@ -19,6 +20,7 @@ from act.back_end.moe.hz_routing import (
     analyze_topk_sets,
     condition_topk_membership,
     condition_topk_set,
+    enumerate_topk_sets_lazy,
     guarded_input_domain,
     guarded_input_topk_set,
 )
@@ -50,6 +52,7 @@ from act.back_end.moe.guarded_box_hull import (
 )
 from act.back_end.moe.incremental_hz_solver import (
     IncrementalHZBranchSolver,
+    IncrementalHZFeasibilityResult,
     IncrementalHZTelemetry,
 )
 from act.back_end.moe.conditioned_difference_support import (
@@ -125,12 +128,14 @@ __all__ = [
     "GuardedBoxHullResult",
     "GuardedHullTelemetry",
     "IncrementalHZBranchSolver",
+    "IncrementalHZFeasibilityResult",
     "IncrementalHZTelemetry",
     "EtaBandAudit",
     "AffineCompetitorBoundary",
     "AffineTop1RouteBoundary",
     "AffineTop1RouteBoundaryBatch",
     "CandidateReport",
+    "LazyTopKSetReport",
     "OutputLevelMoE",
     "OutputLevelMoEProgram",
     "OutputLevelMoESpec",
@@ -180,6 +185,7 @@ __all__ = [
     "conditioned_pair_difference_support",
     "condition_topk_membership",
     "condition_topk_set",
+    "enumerate_topk_sets_lazy",
     "guarded_input_domain",
     "guarded_input_topk_set",
     "guarded_hz_box_hull_highs",

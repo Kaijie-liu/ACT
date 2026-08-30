@@ -77,6 +77,9 @@ class IncrementalHZTelemetry:
     basis_submission_attempts: int
     basis_submissions_accepted: int
     basis_valid_after_solve: int
+    partial_mip_start_attempts: int
+    partial_mip_starts_accepted: int
+    partial_mip_start_values: int
     status_counts: tuple[tuple[str, int], ...]
     simplex_iterations: int
     ipm_iterations: int
@@ -93,6 +96,7 @@ class IncrementalHZTelemetry:
                 "accepted submission only; solver-internal use is not claimed"
             ),
             "warm_start_claimed": False,
+            "partial_mip_start_internal_use_claimed": False,
             "warnings_fail_closed": True,
             "small_matrix_value": 1e-12,
         }
@@ -109,6 +113,18 @@ class _QueryResult:
     gap: float | None
     primal: float | None
     dual: float | None
+    reason: str
+
+
+@dataclass(frozen=True)
+class IncrementalHZFeasibilityResult:
+    """Feasibility result with an independently validated generator point."""
+
+    status: str
+    point: np.ndarray | None
+    solver_status: int | None
+    gap: float | None
+    elapsed: float
     reason: str
 
 
@@ -159,6 +175,9 @@ class IncrementalHZBranchSolver:
         self._basis_attempts = 0
         self._basis_accepted = 0
         self._basis_valid = 0
+        self._partial_mip_start_attempts = 0
+        self._partial_mip_starts_accepted = 0
+        self._partial_mip_start_values = 0
         self._simplex_iterations = 0
         self._ipm_iterations = 0
         self._mip_nodes = 0
@@ -183,6 +202,37 @@ class IncrementalHZBranchSolver:
         self.deadline += seconds
         self._budget_extension_calls += 1
         self._budget_extension_seconds += seconds
+
+    def submit_partial_mip_start(
+        self,
+        indices: Sequence[int],
+        values: Sequence[float],
+    ) -> bool:
+        """Submit a partial MIP start without claiming solver-internal use."""
+
+        self._partial_mip_start_attempts += 1
+        if not self.available:
+            self._statuses["partial_mip_start_backend_unavailable"] += 1
+            return False
+        columns = np.asarray(indices, dtype=np.int32).reshape(-1)
+        start_values = np.asarray(values, dtype=np.float64).reshape(-1)
+        if (
+            columns.size != start_values.size
+            or np.any(columns < 0)
+            or np.any(columns >= self.model.n_var)
+            or not np.all(np.isfinite(start_values))
+        ):
+            self._statuses["partial_mip_start_invalid"] += 1
+            return False
+        status = self._solver.setSolution(
+            int(columns.size), columns, start_values
+        )
+        if status != highspy.HighsStatus.kOk:
+            self._statuses[f"partial_mip_start_rejected:{status}"] += 1
+            return False
+        self._partial_mip_starts_accepted += 1
+        self._partial_mip_start_values += int(columns.size)
+        return True
 
     def _require_ok(self, status, operation: str) -> None:
         if status != highspy.HighsStatus.kOk:
@@ -309,6 +359,9 @@ class IncrementalHZBranchSolver:
             basis_submission_attempts=self._basis_attempts,
             basis_submissions_accepted=self._basis_accepted,
             basis_valid_after_solve=self._basis_valid,
+            partial_mip_start_attempts=self._partial_mip_start_attempts,
+            partial_mip_starts_accepted=self._partial_mip_starts_accepted,
+            partial_mip_start_values=self._partial_mip_start_values,
             status_counts=tuple(sorted(self._statuses.items())),
             simplex_iterations=self._simplex_iterations,
             ipm_iterations=self._ipm_iterations,
@@ -417,6 +470,8 @@ class IncrementalHZBranchSolver:
         extra_A: sp.csr_matrix | np.ndarray | None = None,
         extra_lb: Sequence[float] | None = None,
         extra_ub: Sequence[float] | None = None,
+        mip_start_indices: Sequence[int] | None = None,
+        mip_start_values: Sequence[float] | None = None,
     ) -> _QueryResult:
         if self.model.n_var == 0:
             if extra_A is None:
@@ -473,6 +528,13 @@ class IncrementalHZBranchSolver:
                 extra_A, extra_lb, extra_ub
             )
             self._set_objective(vector)
+            if mip_start_indices is not None or mip_start_values is not None:
+                if mip_start_indices is None or mip_start_values is None:
+                    raise _BackendFailure("partial_mip_start_pair_incomplete")
+                self.submit_partial_mip_start(
+                    mip_start_indices,
+                    mip_start_values,
+                )
             accepted_basis = False
             if self.submit_basis and self._last_basis is not None:
                 self._basis_attempts += 1
@@ -660,6 +722,42 @@ class IncrementalHZBranchSolver:
             time.monotonic() - started,
             self._solves - start_solves,
             bool(complete and not self.relax_binaries and self.hz.exact),
+        )
+
+    def find_feasible(
+        self,
+        *,
+        extra_A: sp.csr_matrix | np.ndarray | None = None,
+        extra_lb: Sequence[float] | None = None,
+        extra_ub: Sequence[float] | None = None,
+        mip_start_indices: Sequence[int] | None = None,
+        mip_start_values: Sequence[float] | None = None,
+    ) -> IncrementalHZFeasibilityResult:
+        """Find a point while reusing this session and its incremental rows.
+
+        ``extra_A`` is a cumulative scratch-row block.  Growing it by one row
+        preserves the already built model and lets callers implement no-good
+        cut enumeration without rebuilding the HZ MILP.  A returned point has
+        passed the same bounds, integrality, and row checks used by property
+        witnesses; an unchecked solver incumbent is never exposed.
+        """
+
+        started = time.monotonic()
+        result = self._run(
+            np.zeros(self.model.n_var, dtype=np.float64),
+            extra_A=extra_A,
+            extra_lb=extra_lb,
+            extra_ub=extra_ub,
+            mip_start_indices=mip_start_indices,
+            mip_start_values=mip_start_values,
+        )
+        return IncrementalHZFeasibilityResult(
+            status=result.status,
+            point=result.point,
+            solver_status=result.solver_status,
+            gap=result.gap,
+            elapsed=time.monotonic() - started,
+            reason=result.reason,
         )
 
     def minimize_output(

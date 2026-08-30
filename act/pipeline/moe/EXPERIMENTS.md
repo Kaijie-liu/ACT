@@ -1836,3 +1836,23 @@ allowed margin drop with the strongest observed PGD drop. It is not a
 certified approximation ratio or bound on the true reachable drop. Independent
 audit replays 80 endpoints and 100 inflation values with zero issues:
 `act/pipeline/moe/results/advmoe_large_epsilon_and_inflation_20260830_r1.json`.
+
+## Lazy top-k enumeration and support-derived big-M
+
+The first scalability code stage replaces exhaustive route-set proposals with
+one sparse-HZ HiGHS model containing `E` selector binaries. Every validated
+top-k solution adds a cumulative no-good cut, and enumeration is complete only
+after the same model proves the remaining problem infeasible. A partial MIP
+start over non-selector HZ variables is submitted after each cut; accepted
+submission is recorded, but solver-internal use is not claimed. The big-M
+source is now an explicit `fast`/`lp`/`exact` option, with per-side status and
+fail-closed generator fallback.
+
+On the frozen all-tied E=8 top-2 correctness instance, exhaustive and lazy
+enumeration return the same 28 unordered legal sets. Lazy enumeration builds
+one model, adds 28 no-good cuts, accepts 28 partial MIP starts, and uses 29
+solves including the final infeasibility proof. A guarded control reduces
+selection binaries from `2` with fast support to `0` with exact support.
+Independent audit reports zero issues at
+`act/pipeline/moe/results/lazy_topk_e8_correctness_20260830_r2.json`. These are
+correctness and tightening results, not the pending E-scaling/runtime result.

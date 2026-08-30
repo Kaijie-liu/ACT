@@ -37,7 +37,7 @@ above. No submission date can redefine `PAPER_COMPLETE`.
 | Official RT-ER B1 and B3 | Official-scale end-to-end comparison | B1 running; B3 pending |
 | Router-gradient audits of RT-ER, robust-moe-cnn, and V-MoE | Multiple-pipeline external-validity map | Source audit complete, independently audited |
 | AdvMoE official third-party learned deep-path target | Learned-router and non-output-layer external validity | Architecture/dependency audits plus strong-PGD/sparse-CROWN init pilot complete; 100/100 remains undecided; alpha/beta closure, training, and Route A wait for B1/B3 |
-| Lazy route-set enumeration plus no-good cuts; exact-support big-M | `E` scalability and search-relaxation defense | Pending |
+| Lazy route-set enumeration plus no-good cuts; exact-support big-M | `E` scalability and search-relaxation defense | Implemented and E=8 differential audited; E-scaling/timed rerun pending |
 | Dimension-law simulation grid | Defense against two-point-fit criticism | Pending; grid must be frozen before execution |
 | Source-native survey retrieval | Recall-qualified survey if retrieval succeeds | Pending institutional retrieval |
 | Monolithic solver baseline | Direct decomposition comparison | Pending after B1 |

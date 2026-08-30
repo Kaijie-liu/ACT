@@ -17,6 +17,7 @@ from act.back_end.moe.hz_routing import (
     analyze_candidates,
     analyze_topk_sets,
     condition_topk_membership,
+    enumerate_topk_sets_lazy,
     guarded_input_domain,
 )
 from act.back_end.moe.route_a import RouteAEngine
@@ -158,6 +159,60 @@ class HZRoutingTests(unittest.TestCase):
         membership = condition_topk_membership(scores, expert=0, top_k=2)
         self.assertEqual(membership.selection_binaries, 2)
         self.assertLessEqual(membership.selection_binaries, 2)
+
+    def test_exact_support_removes_spurious_big_m_binaries(self):
+        domain = sparse_hz_from_bounds(
+            Bounds(torch.tensor([[-1.0]]), torch.tensor([[1.0]])),
+            frame_id=31,
+        )
+        domain = hz_add_output_inequalities(domain, [[-1.0]], [-0.5])
+        router = sparse_hz_linear(
+            domain,
+            [[1.0], [-1.0], [0.0]],
+        )
+        fast = condition_topk_membership(
+            router,
+            expert=0,
+            top_k=2,
+            big_m_support_mode="fast",
+        )
+        exact = condition_topk_membership(
+            router,
+            expert=0,
+            top_k=2,
+            big_m_support_mode="exact",
+            big_m_support_time_limit=5.0,
+        )
+        self.assertEqual(fast.selection_binaries, 2)
+        self.assertEqual(exact.selection_binaries, 0)
+        self.assertTrue(exact.big_m_support_exact)
+        self.assertEqual(exact.big_m, {})
+        self.assertTrue(
+            all(status == "milp_optimal" for status in exact.big_m_upper_status)
+        )
+
+    def test_lazy_e8_top2_matches_exhaustive_tie_enumeration(self):
+        domain = sparse_hz_from_bounds(
+            Bounds(torch.tensor([[-1.0]]), torch.tensor([[1.0]])),
+            frame_id=37,
+        )
+        router = sparse_hz_linear(domain, torch.ones(8, 1, dtype=torch.float64))
+        exhaustive = analyze_topk_sets(
+            router,
+            2,
+            time_limit_per_set=5.0,
+        )
+        lazy = enumerate_topk_sets_lazy(router, 2, time_limit=10.0)
+        self.assertTrue(exhaustive.exact)
+        self.assertTrue(lazy.complete, lazy.reason)
+        self.assertEqual(lazy.route_sets, exhaustive.feasible)
+        self.assertEqual(len(lazy.route_sets), 28)
+        self.assertEqual(lazy.no_good_cuts, 28)
+        self.assertEqual(lazy.solves, 29)
+        self.assertEqual(lazy.telemetry["model_builds"], 1)
+        self.assertEqual(lazy.telemetry["partial_mip_start_attempts"], 28)
+        self.assertEqual(lazy.telemetry["partial_mip_starts_accepted"], 28)
+        self.assertFalse(lazy.telemetry["partial_mip_start_internal_use_claimed"])
 
     def test_sparse_guard_preserves_exact_frame(self):
         input_hz = sparse_hz_from_bounds(
