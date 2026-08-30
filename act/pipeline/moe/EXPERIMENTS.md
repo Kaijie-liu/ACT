@@ -1087,6 +1087,35 @@ ResNet18 experts will have positive absolute certified coverage at `8/255`;
 zero is admissible. The comparison claim concerns identical-backend coverage
 and applicability across the full grid, not a single degenerate endpoint.
 
+## TinyImageNet scope audit
+
+TinyImageNet is represented in the official VNN-COMP 2025 benchmark repository
+as the carried `tinyimagenet_2024` benchmark, but it is not interchangeable with
+the released RT-ER TinyImageNet script. The three observed input domains are:
+
+- raw TinyImageNet images: `3x64x64 = 12,288` features;
+- a sampled official VNN-COMP VNNLIB property: 9,408 declared inputs, consistent
+  with `3x56x56`;
+- the released `tinyimagenet_RT_ER.py` MoE path: an unconditional resize to
+  `224x224` followed by `MOE_ViT(num_experts=4, size=224)`, hence a 150,528-input
+  affine router.
+
+The author script parses `--size` but assigns it to an unused `imsize`, then
+overwrites `size=224`. Its default `--net` is `vit`; the MoE path requires the
+explicit `vit_moe` option. A literal official-code census therefore cannot be
+reported as a 12,288-feature experiment. Conversely, changing the router to
+64x64 is a valid but explicitly non-official variant. The `/data1/Kane/MOE`
+inventory contains ACT VNN-COMP wrappers and alpha-beta-CROWN configuration and
+download scripts, but no raw TinyImageNet tree and no local TinyImageNet ONNX or
+VNNLIB benchmark artifacts. No other `/data1/Kane` project was inspected.
+
+The approved execution was stopped before download because its 12,288-feature
+assumption conflicts with the released artifact. The recommended artifact case
+study is the literal 150,528-feature, four-expert path with a batched oracle;
+the 64x64 and VNN-COMP variants remain separately labelled alternatives. The
+compact audit is
+`act/pipeline/moe/results/icml2025_rt_er/tinyimagenet_scope_audit_20260830.json`.
+
 ## ICML 2025 B3 executable comparison stage
 
 The final-checkpoint B3 execution layer is implemented but not run. It freezes

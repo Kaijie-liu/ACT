@@ -1,0 +1,78 @@
+{
+  "audit": {
+    "issues": [],
+    "review_date": "2026-08-30",
+    "status": "PASS"
+  },
+  "local_inventory": {
+    "root_searched": "/data1/Kane/MOE",
+    "actual_tinyimagenet_dataset_found": false,
+    "actual_vnncomp_tinyimagenet_onnx_or_vnnlib_found": false,
+    "found_only": [
+      "/data1/Kane/MOE/ACT/vnncomp runner integration",
+      "/data1/Kane/MOE/baselines/alpha-beta-CROWN VNN-COMP configuration files",
+      "/data1/Kane/MOE/baselines/alpha-beta-CROWN TinyImageNet download/training scripts",
+      "/data1/Kane/MOE/baselines/Robust-MoE-Dual-Model TinyImageNet training scripts"
+    ],
+    "scope": "No directory outside /data1/Kane/MOE was listed or read."
+  },
+  "raw_dataset_semantics": {
+    "name": "Tiny ImageNet",
+    "nominal_image_shape": [3, 64, 64],
+    "nominal_input_features": 12288,
+    "status": "NOT_PRESENT_LOCALLY"
+  },
+  "released_rt_er_script": {
+    "path": "/data1/Kane/MOE/baselines/Robust-MoE-Dual-Model/tinyimagenet_RT_ER.py",
+    "sha256": "f2ae69b926a5e29493cb59542efc111c7b5805327be44bf95f3231347ec81111",
+    "default_net_argument": "vit",
+    "moe_net_argument": "vit_moe",
+    "moe_experts": 4,
+    "model_factory": "MOE_ViT(num_experts=4, size=224)",
+    "script_image_resize": [224, 224],
+    "router_input_features": 150528,
+    "argument_issue": "The parsed --size value is assigned to imsize, then the script overwrites size with 224 before data and model construction.",
+    "scope": "A literal official-script MoE census is 224x224 and cannot be labelled as a 12288-feature router census."
+  },
+  "schema_version": 1,
+  "status": "SCOPE_CONFLICT_REQUIRES_SELECTION",
+  "vnncomp_benchmark": {
+    "official_repository": "https://github.com/VNN-COMP/vnncomp2025_benchmarks",
+    "repository_head_observed": "8b7b811b78ce6a329dc96f04ae6652da3c245948",
+    "benchmark": "benchmarks/tinyimagenet_2024",
+    "instances": 200,
+    "model": "TinyImageNet_resnet_medium.onnx",
+    "sample_vnnlib_declared_inputs": 9408,
+    "sample_vnnlib_implied_shape": [3, 56, 56],
+    "sample_epsilon": 0.0039,
+    "local_alpha_beta_crown_config": {
+      "path": "/data1/Kane/MOE/baselines/alpha-beta-CROWN/complete_verifier/exp_configs/vnncomp25/tinyimagenet.yaml",
+      "sha256": "4a958258de0990cbb7d8834319346f83b9b0caa2b4c057e40d0007d5aaf60d5f"
+    },
+    "scope": "This is a VNN-COMP single-network benchmark, not an RT-ER MoE checkpoint or raw TinyImageNet distribution."
+  },
+  "permitted_next_scopes": [
+    {
+      "label": "official-code TinyImageNet RT-ER router initialization",
+      "input_features": 150528,
+      "experts": 4,
+      "status": "RECOMMENDED_FOR_ARTIFACT_CASE_STUDY",
+      "requirements": "Use the literal 224x224 resize and MOE_ViT construction; batch the affine oracle to avoid materializing all 10000 by 150528 float64 inputs."
+    },
+    {
+      "label": "modified raw-resolution TinyImageNet router geometry",
+      "input_features": 12288,
+      "experts": 4,
+      "status": "NON_OFFICIAL_VARIANT",
+      "requirements": "Change size from 224 to 64 explicitly and never label the result official-code reproduction."
+    },
+    {
+      "label": "VNN-COMP tinyimagenet_2024 verifier benchmark",
+      "input_features": 9408,
+      "experts": null,
+      "status": "SEPARATE_NON_MOE_BASELINE",
+      "requirements": "Use the official ONNX/VNNLIB artifacts; it cannot supply the RT-ER router-init census."
+    }
+  ],
+  "execution_decision": "No download or census was started because the approved 12288-feature specification conflicts with the literal released RT-ER script and the VNN-COMP benchmark uses a third input domain."
+}
