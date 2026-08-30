@@ -55,7 +55,10 @@ and `undecided` states. Ties are never classified stable under
 
 This fixed-radius method avoids constructing a `10000 x 150528` capacity-sort
 tensor. Images are decoded and evaluated in chunks, while the K=20 router
-weights remain resident on the selected device.
+weights remain resident on the selected device. A preregistration-stage
+full-width performance smoke fixed the chunk size at 128 before the first
+census run; it changes only scheduling and leaves every mathematical endpoint
+unchanged.
 
 ## Reproducibility and failure policy
 
