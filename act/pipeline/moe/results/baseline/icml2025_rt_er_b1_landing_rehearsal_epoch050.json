@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "status": "PASSED_REHEARSAL",
+  "scope": "B1_UNATTENDED_LANDING_EPOCH50_REHEARSAL",
+  "observed_date": "2026-08-31",
+  "raw_rehearsal": {
+    "path": "/data1/Kane/MOE/baseline_runs/icml2025_rt_er/seed0_paper130/landing/rehearsal_epoch050/B1_LANDING_REHEARSAL.json",
+    "sha256": "935986a8dbfe7c4d76dc39a5846ab4d2ef46e958309aa46519e3dd7a387e702b"
+  },
+  "protocol": {
+    "path": "act/pipeline/moe/configs/icml2025_b1_landing_protocol_r1.json",
+    "sha256": "87d5299de9bb73f4df331b56d61180b8244d2208fe4783b854377b5a779a5397"
+  },
+  "epoch50": {
+    "checkpoint_sha256": "9cd4f29677a68a6e541f2741acd04e4da3edafe44a02601bb02db04a64828d20",
+    "metrics_sha256": "27b665ae399162d649681ac40705f5753e7527d5638d1df81973d5b4f33b50ce",
+    "telemetry_summary_sha256": "f21d5e8e4a9326a2294e4d9a927ac288fb3bb330d73ee0cc7dbe09441cfdc6cb",
+    "telemetry_checkpoint_identity_passed": true,
+    "validation_standard_accuracy_percent": 36.64,
+    "validation_robust_accuracy_percent": 28.01
+  },
+  "watcher": {
+    "attempt_count": 1,
+    "rehearsal_complete": true,
+    "training_was_not_signaled_or_restarted": true
+  },
+  "excluded": [
+    "ordered full-test endpoint evaluation",
+    "SA/PGD50 preregistered gate decision",
+    "epoch130 landing conclusion"
+  ],
+  "conclusion": "The hardened unattended hook recovered and validated the epoch-50 checkpoint, metrics, and telemetry identity chain on its first attempt. This is an automation rehearsal, not the B1 scientific endpoint."
+}

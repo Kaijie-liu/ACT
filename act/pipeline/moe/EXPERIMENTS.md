@@ -1943,6 +1943,15 @@ retained. The SA interpretation is asymmetric: a seed-0 pass supports an
 existence statement, while a seed-0 miss requires a frozen seed-1 reproduction
 before pipeline-level wording.
 
+The epoch-50 rehearsal completed on 2026-08-31 on its first watcher attempt.
+Checkpoint, metrics, telemetry-summary, and telemetry-to-checkpoint identities
+all matched; the watcher did not signal or restart training. The interim
+validation values are SA `36.64%` and RA `28.01%`, and remain non-endpoint
+diagnostics. The raw rehearsal SHA-256 is
+`935986a8dbfe7c4d76dc39a5846ab4d2ef46e958309aa46519e3dd7a387e702b`;
+the tracked manifest is
+`results/baseline/icml2025_rt_er_b1_landing_rehearsal_epoch050.json`.
+
 ## Lazy top-k enumeration and support-derived big-M
 
 The first scalability code stage replaces exhaustive route-set proposals with
