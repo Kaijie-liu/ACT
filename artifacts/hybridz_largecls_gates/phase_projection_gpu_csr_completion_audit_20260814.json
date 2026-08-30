@@ -1,0 +1,152 @@
+{
+  "schema": "act.hybridz.phase_projection_gpu_csr_completion_audit.v1",
+  "created_at": "2026-08-14T01:17:10+10:00",
+  "status": "OBJECTIVE_COMPLETE_INDEPENDENT_AUDIT_NO_BLOCKER",
+  "audit_complete": true,
+  "production_default_enabled": false,
+  "formal_enabled_fixed400": {
+    "previous_falsified": 43,
+    "current_falsified": 59,
+    "gain": 16,
+    "unknown": 341,
+    "errors": 0,
+    "families": {
+      "cifar100_medium": {
+        "falsified": 14,
+        "total": 100
+      },
+      "cifar100_large": {
+        "falsified": 10,
+        "total": 100
+      },
+      "tinyimagenet_medium": {
+        "falsified": 35,
+        "total": 200
+      }
+    }
+  },
+  "frozen_sha256": {
+    "act/back_end/hybridz_tf/forward_exact_relu_phase_projection_candidate.py": "4b66470df55edebb595e0e06c6b8a2de5c65496b8671c4d2f2552003d01ea306",
+    "act/back_end/hybridz_tf/forward_exact_relu_live_row_stream_candidate.py": "d53c2335c43905097e78bef8311175d7151d7e98293a6152fce62dba00d37511",
+    "act/back_end/hybridz_tf/test_forward_exact_relu_phase_projection_candidate.py": "a59d08ad648bf8d91387f7f2d6934cf318c7d00c355c1bc2276f6f6eb4441991",
+    "act/back_end/config.py": "8d94960cf4686f8d9c894cc18c1483b57092faa52e794905dce9f622c8fddf21",
+    "act/back_end/verifier.py": "eb3dfc8611ee97262bf71d66b8deee58a6a2544d0934d94ca7b075424dbc3afd",
+    "act/pipeline/verification/hybridz_phase_projection_fixed400.py": "d3e1825b9a8f8c8bb7f83cb8f08bdabd68f0c3fa32c379cac8ce08bb4c1e24c1",
+    "artifacts/hybridz_largecls_gates/phase_projection_gpu_csr_fixed400_20260814.jsonl": "749db4e400329598c23c3dd7c9b9863c291eb3d1ba556cdcfcfa879c58487b43",
+    "artifacts/hybridz_largecls_gates/phase_projection_gpu_csr_fixed400_20260814.summary.json": "036a87f7005033ad8478af5dbecfce8657d3f02457f654a9b0e63e5b47e2ab41",
+    "artifacts/hybridz_largecls_gates/phase_projection_single_stream_float64_candidate_20260813.json": "a1323cf69ac5e9f2f7189b8ce4ac96e67cd6e0b354f1c6a044a3a5433b7e16c9",
+    "artifacts/hybridz_largecls_gates/phase_projection_margin_ceiling_census_20260814.json": "0ed6b4980dc52f3852551f2afded26c18802f90cf200fc454ee37dd99a971551",
+    "artifacts/hybridz_largecls_gates/phase_projection_performance_reference_semantics_20260814.json": "96956ba0f9628f2aa4f110c9230c560fd822859482a7f886051ac4a282bd42ca"
+  },
+  "requirements": [
+    {
+      "id": "formal_fixed400_gain",
+      "requirement": "Significantly improve the formal CIFAR100/TinyImageNet fixed-400 result over 43/400.",
+      "status": "PROVED",
+      "evidence": "Production verify_once fixed-400 completed 59 FALSIFIED, 341 UNKNOWN, 0 ERROR; the production and disconnected 59-case sets are identical."
+    },
+    {
+      "id": "candidate_has_no_authority",
+      "requirement": "Candidate phases, float64 generator arithmetic, and LP must not authorize a verdict.",
+      "status": "PROVED",
+      "evidence": "All 59 candidate receipts set candidate_authority=false, proof_authority=false, and verdict_authority=false."
+    },
+    {
+      "id": "terminal_authority_only",
+      "requirement": "FALSIFIED authority must require raw BOX membership, verifier-owned zero-width forward intervals, and a positive stored-binary64 Fraction property lower bound.",
+      "status": "PROVED",
+      "evidence": "The production return path performs these three checks in sequence; all 59 FALSIFIED receipts carry verifier_owned_proof_authority=true and a positive singleton margin. A separate deterministic Fraction DAG oracle enclosed 8/8 exact outputs."
+    },
+    {
+      "id": "prohibited_methods_absent",
+      "requirement": "No input sampling or ONNX input-point execution, PGD, BaB/split/enumeration, backward bounds, or dual tightening.",
+      "status": "PROVED",
+      "evidence": "All 400 production receipts have every prohibition flag false; static inspection found no prohibited runtime import or autograd call."
+    },
+    {
+      "id": "single_path_no_menu",
+      "requirement": "Do not add a fallback, selector retry list, parameter menu, or redundant production backend.",
+      "status": "PROVED",
+      "evidence": "The enabled configuration is mutually exclusive with optional phase/property/dual enhancements, the candidate has exactly one linprog call and zero phase/property retries, and failure returns UNKNOWN before the root solver."
+    },
+    {
+      "id": "fail_closed",
+      "requirement": "Unsupported domains, numerical failures, deadlines, and unexpected ordinary exceptions must fail closed.",
+      "status": "PROVED_WITH_BOUNDED_TESTS",
+      "evidence": "25/25 production/dependency tests and 5/5 direct failure checks passed; malformed GPU rows, zero weights, expired replay, and unexpected exceptions all rejected without fallback. The fixed-400 run had zero errors."
+    },
+    {
+      "id": "single_request_response_gate",
+      "requirement": "Median isolated single-request speedup must be at least 1.50x with zero conflicts.",
+      "status": "PROVED",
+      "evidence": "Frozen five-pair median speedup is 2.028740601961213x with zero conflicts."
+    },
+    {
+      "id": "four_thread_response_gate",
+      "requirement": "Four-thread median speedup must be at least 2.00x and exact paired-bootstrap 95% lower bound at least 1.80x.",
+      "status": "PROVED_NARROW_MARGIN",
+      "evidence": "Frozen five-pair median is 2.0390893676307082x and bootstrap lower bound is 1.800903776193539x with zero conflicts. The gate must not be rerun for luck."
+    },
+    {
+      "id": "memory_gate",
+      "requirement": "The replacement must satisfy the fresh-process wall/RSS gate.",
+      "status": "PROVED",
+      "evidence": "Host HWM decreased from 4,948,779,008 to 3,844,440,064 bytes; combined host-plus-CUDA diagnostic decreased from 5,466,082,304 to 4,674,436,096 bytes."
+    },
+    {
+      "id": "structural_deletion",
+      "requirement": "Delete at least one complete cold-request traversal or materialization rather than stacking another optimization.",
+      "status": "PROVED",
+      "evidence": "The old two-generator-stream phase reconstruction was replaced by one generator stream plus GPU-emitted selected CSR and triangular preelimination; every successful receipt reports generator_streams=1 and no old fallback is retained."
+    },
+    {
+      "id": "production_integration",
+      "requirement": "Integrate only after the capability, response, consistency, and memory gates pass.",
+      "status": "PROVED_DEFAULT_OFF",
+      "evidence": "The production verifier uses the frozen candidate behind the existing default-zero lazy configuration; fixed-400 production receipts were generated after all required gates passed."
+    },
+    {
+      "id": "independent_release_review",
+      "requirement": "A reviewer who did not implement the candidate should replay the bounded soundness and failure checklist before changing the default release state.",
+      "status": "PROVED_WITH_BOUNDED_INDEPENDENT_AUDIT",
+      "evidence": "A separate read-only reviewer reported NO-BLOCKER on the frozen default-off integration: 9 frozen hashes matched, 25/25 focused/dependency tests and 5/5 hostile injections passed, 128 Conv plus 4 Dense GPU/CPU CSR comparisons had zero bit mismatch, all 400 receipts and 403 manifest/input hashes matched, and the locked response summaries recomputed to 2.0287406x single, 2.0390894x four-thread, and 1.800903776x bootstrap lower bound."
+    }
+  ],
+  "unknown_census": {
+    "strictly_negative_margin": 333,
+    "lp_no_candidate": 8,
+    "lp_infeasible": 7,
+    "lp_time_limit": 1,
+    "positive_candidate_terminal_rejections": 0,
+    "closest_case": "tinyimagenet_medium_iid143",
+    "closest_margin": -0.0010710773153006503,
+    "next_algorithmic_boundary": "At most one preregistered deterministic cell update may be screened after the performance-reference policy is explicitly fixed; the rejected five-pivot warm-walk and all runtime menus remain closed."
+  },
+  "ceiling_measurements": {
+    "margin_census": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_margin_ceiling_census_20260814.json",
+      "sha256": "0ed6b4980dc52f3852551f2afded26c18802f90cf200fc454ee37dd99a971551",
+      "negative_within_0.01": 4,
+      "negative_within_0.02": 8,
+      "negative_within_0.05": 21
+    },
+    "performance_reference_semantics": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_performance_reference_semantics_20260814.json",
+      "sha256": "96956ba0f9628f2aa4f110c9230c560fd822859482a7f886051ac4a282bd42ca",
+      "policy_choice_required": true
+    },
+    "vnncomp_public_ceiling": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_vnncomp_public_ceiling_20260814.json",
+      "sha256": "91b875c57bcebd8b784b1e1141ab727526aa44aeb3928ce7ddcdb8b887117294",
+      "official_public_sat_union": 67,
+      "act_intersection": 59,
+      "act_unknown_and_public_sat": 8,
+      "mathematical_ceiling_claim": false
+    }
+  },
+  "release_decision": {
+    "current": "KEEP_DEFAULT_OFF",
+    "reason": "The requested 43-to-59 formal gain and the independent bounded audit are complete. The audit authorizes the frozen default-off integration only; changing the default is a separate release-policy decision.",
+    "required_user_action": "Only an explicit decision is needed if the production default should be changed; no further audit is required for the current default-off integration."
+  }
+}

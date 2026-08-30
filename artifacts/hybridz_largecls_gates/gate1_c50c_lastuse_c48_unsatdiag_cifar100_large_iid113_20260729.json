@@ -1,0 +1,54 @@
+{
+  "config": {
+    "branch_requires_unstable_successor": false,
+    "branching_method": "gain",
+    "device": "cuda",
+    "dtype": "float64",
+    "dual_iters": 40,
+    "frontier_contraction_target": 0.0,
+    "joint_gain_groups": 1,
+    "max_batch_size": 8,
+    "multi_split_levels": 3,
+    "per_subproblem_refine": "none",
+    "per_subproblem_refine_iters": 0,
+    "per_subproblem_refine_layer_cap": 2,
+    "per_subproblem_refine_rows_cap": 64,
+    "property_branch_focus": "worst",
+    "property_separable_bab": true,
+    "solver_tier": "dual_alpha_eta",
+    "time_budget_seconds": 12.0
+  },
+  "counterexample": null,
+  "cuda_peak": {
+    "allocated_bytes": 20272722432,
+    "available": true,
+    "reserved_bytes": 35452354560
+  },
+  "ground_truth_loaded": false,
+  "inputs": {
+    "onnx": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/onnx/CIFAR100_resnet_large.onnx",
+    "onnx_sha256": "5747c00f20d8458b60da85c6ae446b4689409307146ca02f439277fbb7d89f16",
+    "vnnlib": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/vnnlib/CIFAR100_resnet_large_prop_idx_1439_sidx_8354_eps_0.0039.vnnlib",
+    "vnnlib_sha256": "4425caad857d90470a6db6f60de288d8a685676f2ae5a02076b6cd5baa65b3a3"
+  },
+  "proof_authority": false,
+  "result": {
+    "metadata": {
+      "nodes": 1,
+      "pool_remaining": 0,
+      "property_forest_root_rows": [],
+      "property_separable_bab": true,
+      "resolved_by": "root_presolve",
+      "spec_rows_kept": 0,
+      "spec_rows_total": 99
+    },
+    "status": "certified"
+  },
+  "schema": "act.hybridz_joint_gain_probe.v1",
+  "timing": {
+    "setup_seconds": 1.881772756576538,
+    "total_seconds": 40.40586042404175,
+    "verdict_seconds": 38.52408766746521
+  },
+  "verdict_source": "ordinary_sound_dual_bab"
+}

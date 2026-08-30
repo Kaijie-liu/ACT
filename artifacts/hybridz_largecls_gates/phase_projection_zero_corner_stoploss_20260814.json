@@ -1,0 +1,136 @@
+{
+  "schema": "act.hybridz.phase_projection_zero_corner_stoploss.v1",
+  "date": "2026-08-14",
+  "status": "STOP_LOSS_UNDER_CURRENT_RATCHET_DESPITE_3_OF_3_ABILITY",
+  "rule": {
+    "name": "unique_first_stream_analytic_inward_box_corner",
+    "candidate_authority": false,
+    "terminal_authority": "raw_BOX;verifier_owned_zero_width_interval;stored_binary64_Fraction_property",
+    "target_cell_update_used": false,
+    "phase_delta_or_expansion_used": false,
+    "lp_model_built": false,
+    "lp_solve_used": false,
+    "retry_or_fallback_menu": false
+  },
+  "historical_direct_corner_audit": {
+    "source": "artifacts/hybridz_largecls_gates/global_exact_root_algorithm_screen_20260812.json",
+    "historical_result": "0/3 positive controls retained",
+    "historical_rule_included": "updated-cell phase and margin replay before the terminal BOX/singleton checks",
+    "current_authority_difference": "The frozen 59-path gives no authority to intermediate candidate phase or margin arithmetic; only the terminal proof authorizes a verdict.",
+    "cifar100_medium_iid2_reconstruction": {
+      "first_to_target_phase_changes": 187,
+      "first_corner_target_affine_margin": 0.04426611742896647,
+      "target_phase_rows": 2177,
+      "target_phase_rows_violated_over_1e_9": 4,
+      "maximum_target_phase_violation": 0.0020373629864485748,
+      "interpretation": "The old direct corner was rejected by its intermediate target-cell consistency condition even though the current terminal-only authority can prove the same analytic candidate."
+    }
+  },
+  "retired_one_pass_projection": {
+    "rule": "one orthogonal projection onto the four initially violated target-phase hyperplanes followed by one BOX clip",
+    "gram_rank": 4,
+    "gram_condition": 3.157858996980151,
+    "projection_seconds": 0.0015658996999263763,
+    "remaining_phase_violations_over_1e_9": 4,
+    "remaining_maximum_phase_violation": 0.0012255818079483834,
+    "terminal_exact_margin_lower": 0.04204824045474265,
+    "decision": "Retired rather than retained beside zero-correction; the simpler zero-correction rule passed and no algorithm menu is allowed."
+  },
+  "positive_control_audit": {
+    "tested": 3,
+    "terminal_verified": 3,
+    "cases": [
+      {
+        "case": "cifar100_medium_iid2",
+        "selected_property_row": 67,
+        "input_factors": 3072,
+        "first_cell_affine_margin": 0.08076929576396763,
+        "terminal_exact_margin_lower": 0.04448673025513461,
+        "corner_path_seconds_instrumented": 0.6951973466202617,
+        "terminal_seconds": 0.44176333397626877,
+        "candidate_plus_terminal_seconds_instrumented": 1.1369606805965304,
+        "onnx_sha256": "aba117ad0ad4abdd630c220beca70cd58825e72e7bada5dffdda10bb725cece4",
+        "vnnlib_sha256": "33e795c8421b7b19125f32415adb9cee09b2f90cb83152c4cd3aa03810e91ec3"
+      },
+      {
+        "case": "cifar100_large_iid118",
+        "selected_property_row": 28,
+        "input_factors": 3072,
+        "first_cell_affine_margin": 0.531779619009876,
+        "terminal_exact_margin_lower": 0.5471241397537048,
+        "corner_path_seconds_instrumented": 0.978755340911448,
+        "terminal_seconds": 1.7161821741610765,
+        "candidate_plus_terminal_seconds_instrumented": 2.6949375150725245,
+        "onnx_sha256": "5747c00f20d8458b60da85c6ae446b4689409307146ca02f439277fbb7d89f16",
+        "vnnlib_sha256": "885ee9f008a908094ab00d00124436cc0483454b40c775c57fa9a43b2b3388e1"
+      },
+      {
+        "case": "tinyimagenet_medium_iid1",
+        "selected_property_row": 58,
+        "input_factors": 9408,
+        "first_cell_affine_margin": 0.71192909418344,
+        "terminal_exact_margin_lower": 0.6694463423404624,
+        "corner_path_seconds_instrumented": 1.7900664806365967,
+        "terminal_seconds": 1.1273458953946829,
+        "candidate_plus_terminal_seconds_instrumented": 2.9174123760312796,
+        "onnx_sha256": "234b04b151d640f8fc859fab00729448ba533d8feb3679427cbadb94467ec776",
+        "vnnlib_sha256": "96809936f26c5a4ac7bef4ec604d6abebc2c44af1a3fc8b50ed19748cc3bc665"
+      }
+    ],
+    "scope_limit": "No retained-59, fixed-14, fixed-40, or fixed-400 expansion was authorized or run."
+  },
+  "ratchet_screen": {
+    "source_single_gate_sha256": "0580a4a04758e3b1d9b0f56ae992fe2d443d9e7645217e70c18fc4f0bcce4439",
+    "source_four_thread_gate_sha256": "b3c5171e2906b956985b3142d0ae73ce41f16e7dd88acb321e67360a02e9c05b",
+    "performance_rerun": false,
+    "single": {
+      "current_59_wall_median_seconds": 1.438896358013153,
+      "next_1_5x_budget_seconds": 0.9592642386754354,
+      "counterfactual_retained_stage_seconds_per_pair_after_deleting_target_center_delta_expansion_model_lp": [
+        0.7353365374729037,
+        0.7342725386843085,
+        0.8450274923816323,
+        0.7832219963893294,
+        0.8679222473874688
+      ],
+      "counterfactual_median_seconds": 0.7832219963893294,
+      "interpretation": "The frozen single-request stage arithmetic is promising but is not a measured gate."
+    },
+    "four_thread": {
+      "current_59_group_wall_median_seconds": 3.068358832038939,
+      "next_2x_group_budget_seconds": 1.5341794160194695,
+      "counterfactual_retained_stage_max_seconds_per_group": [
+        1.9278038321062922,
+        1.909257423132658,
+        1.9759571179747581,
+        1.7923060981556773,
+        1.9803239330649376
+      ],
+      "counterfactual_median_of_group_max_seconds": 1.9278038321062922,
+      "interpretation": "Even the frozen stage-subtraction diagnostic remains about 0.394 seconds above the ratchet group budget. Changed scheduling could alter these durations, so this is a stop-loss screen rather than a formal performance verdict."
+    },
+    "decision": "Do not implement or promote under the current 59-path ratchet. Reopen only after a policy change to a fixed reference or a separate structural deletion of first-stream/setup contention."
+  },
+  "negative_multi_flip_compatibility": {
+    "same_first_cell_primal_and_dual_state_produced": false,
+    "reason": "Zero-correction deliberately deletes the LP, so it produces no optimal residuals, marginals, or basis for the preregistered marginal-driven multi-flip rule.",
+    "conditional_negative_lp_added": false,
+    "decision": "Do not add an LP only for negative cases; that would introduce a conditional secondary runtime route and restore the work this replacement was meant to delete."
+  },
+  "prohibitions": {
+    "input_sampling_used": false,
+    "center_boundary_or_random_onnx_execution_used": false,
+    "pgd_used": false,
+    "bab_or_split_used": false,
+    "backward_bounds_used": false,
+    "dual_tightening_used": false,
+    "candidate_or_intermediate_arithmetic_has_authority": false
+  },
+  "implementation": {
+    "probe": "scratch_phase_projection_zero_corner_probe.py",
+    "probe_sha256": "a94a88e3c53c1d5a49866e40bd80499d6f5f0b08e9619018391b59823ea10324",
+    "phase_projection_sha256": "4b66470df55edebb595e0e06c6b8a2de5c65496b8671c4d2f2552003d01ea306",
+    "production_files_changed": false,
+    "gpu_released_after_audit": true
+  }
+}

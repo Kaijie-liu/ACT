@@ -47,11 +47,12 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+import itertools
 from typing import Any, Dict, List, Optional, Tuple
 
 import torch
 
-from act.back_end.bab.node import SubproblemBatch
+from act.back_end.bab.node import SubproblemBatch, _infer_spec_axis_size
 from act.back_end.core import Bounds, Net
 from act.front_end.specs import InKind
 
@@ -679,11 +680,7 @@ class FSBBranching(BaBSRBranching):
                 hypo[key] = value.clone()
 
         n_neurons = len(net.by_id[lid].out_vars)
-        n_specs = 1
-        if batch.incremental_alpha is not None and lid in batch.incremental_alpha:
-            n_specs = int(batch.incremental_alpha[lid].shape[1])
-        elif batch.incremental_eta is not None and lid in batch.incremental_eta:
-            n_specs = int(batch.incremental_eta[lid].shape[1])
+        n_specs = _infer_spec_axis_size(batch)
 
         if lid not in hypo:
             hypo[lid] = torch.zeros(
@@ -730,6 +727,8 @@ def _collect_neuron_candidates(
     branch_batch: SubproblemBatch,
     bounds_dict: Dict[int, Bounds],
     nu_per_layer: Dict[int, torch.Tensor],
+    *,
+    spec_row_index: Optional[torch.Tensor] = None,
 ) -> Optional[Tuple[torch.Tensor, torch.Tensor, torch.Tensor]]:
     """Per-lane BaBSR scores (area x |nu|) over all splittable neurons.
 
@@ -755,7 +754,23 @@ def _collect_neuron_candidates(
         if already is not None:
             amb &= already[:, 0, :n].to(device) == 0
         area = (-lb[:, :n] * ub[:, :n] / (ub[:, :n] - lb[:, :n]).clamp(min=1e-12)).clamp(min=0)
-        nv = nut.reshape(kb, -1, nut.shape[-1])[:, :, :n].abs().sum(dim=1)
+        nu_rows = nut.reshape(kb, -1, nut.shape[-1])[:, :, :n]
+        if spec_row_index is None:
+            nv = nu_rows.abs().sum(dim=1)
+        else:
+            focus = spec_row_index.to(
+                device=nu_rows.device, dtype=torch.long
+            ).reshape(-1)
+            if focus.numel() != kb:
+                raise ValueError(
+                    "spec_row_index must contain one row per BaB lane"
+                )
+            if bool(
+                ((focus < 0) | (focus >= nu_rows.shape[1])).any().item()
+            ):
+                raise ValueError("spec_row_index is outside the dual row axis")
+            lane_index = torch.arange(kb, device=nu_rows.device)
+            nv = nu_rows[lane_index, focus].abs()
         sc = torch.where(amb, area * nv, torch.full_like(area, float("-inf")))
         cand_scores.append(sc)
         cand_layers.append(torch.full((kb, n), lid, device=device, dtype=torch.long))
@@ -771,16 +786,131 @@ def _collect_neuron_candidates(
     )
 
 
+def _propose_joint_split_groups(
+    scores: torch.Tensor,
+    layer_ids: torch.Tensor,
+    neuron_ids: torch.Tensor,
+    *,
+    k_levels: int,
+    max_groups: int,
+    pool_size: int = 8,
+) -> Optional[Tuple[torch.Tensor, torch.Tensor]]:
+    """Propose score-strong and layer-diverse joint ReLU groups.
+
+    The proposal has no proof authority.  Group zero is always the ordinary
+    global top-k baseline.  Remaining groups interleave the best score-sum
+    combinations with combinations spanning the most distinct ReLU layers.
+    A later bound pass measures the complete child partition before choosing
+    a group.
+
+    The returned tensors have shape ``[lanes, groups, k_levels]``.  The group
+    count is the largest common count available to every lane, capped by
+    ``max_groups``; no lane is padded with a duplicate proposal.
+    """
+
+    if scores.ndim != 2 or layer_ids.shape != scores.shape or neuron_ids.shape != scores.shape:
+        raise ValueError("joint split candidate tensors must share rank-2 shape")
+    if k_levels < 2 or max_groups < 1 or pool_size < k_levels:
+        return None
+
+    lane_groups: List[List[Tuple[Tuple[int, int], ...]]] = []
+    for lane in range(scores.shape[0]):
+        finite = torch.where(torch.isfinite(scores[lane]))[0]
+        if int(finite.numel()) < k_levels:
+            return None
+        take = min(int(pool_size), int(finite.numel()))
+        ranked = finite[
+            torch.topk(scores[lane].index_select(0, finite), k=take).indices
+        ]
+        columns = tuple(int(value) for value in ranked.tolist())
+        combinations = list(itertools.combinations(columns, k_levels))
+        if not combinations:
+            return None
+
+        def identity(combo: Tuple[int, ...]) -> Tuple[Tuple[int, int], ...]:
+            return tuple(
+                (
+                    int(layer_ids[lane, column].item()),
+                    int(neuron_ids[lane, column].item()),
+                )
+                for column in combo
+            )
+
+        def score_sum(combo: Tuple[int, ...]) -> float:
+            return float(
+                sum(float(scores[lane, column].item()) for column in combo)
+            )
+
+        baseline_columns = tuple(columns[:k_levels])
+        ordered_columns: List[Tuple[int, ...]] = [baseline_columns]
+        seen = {identity(baseline_columns)}
+        by_score = sorted(
+            combinations,
+            key=lambda combo: (
+                -score_sum(combo),
+                -len({int(layer_ids[lane, column]) for column in combo}),
+                combo,
+            ),
+        )
+        by_diversity = sorted(
+            combinations,
+            key=lambda combo: (
+                -len({int(layer_ids[lane, column]) for column in combo}),
+                -score_sum(combo),
+                combo,
+            ),
+        )
+        for rank in range(max(len(by_score), len(by_diversity))):
+            for source in (by_diversity, by_score):
+                if rank >= len(source):
+                    continue
+                combo = source[rank]
+                key = identity(combo)
+                if key in seen:
+                    continue
+                seen.add(key)
+                ordered_columns.append(combo)
+                if len(ordered_columns) >= max_groups:
+                    break
+            if len(ordered_columns) >= max_groups:
+                break
+        lane_groups.append([identity(combo) for combo in ordered_columns])
+
+    common_groups = min(max_groups, *(len(groups) for groups in lane_groups))
+    if common_groups < 1:
+        return None
+    output_layers = torch.empty(
+        scores.shape[0],
+        common_groups,
+        k_levels,
+        device=scores.device,
+        dtype=torch.long,
+    )
+    output_neurons = torch.empty_like(output_layers)
+    for lane, groups in enumerate(lane_groups):
+        for group_index, group in enumerate(groups[:common_groups]):
+            for bit, (layer_id, neuron_id) in enumerate(group):
+                output_layers[lane, group_index, bit] = layer_id
+                output_neurons[lane, group_index, bit] = neuron_id
+    return output_layers, output_neurons
+
+
 def enumerate_unstable_candidates(
     branch_batch: SubproblemBatch,
     bounds_dict: Optional[Dict[int, Bounds]],
     nu_per_layer: Optional[Dict[int, torch.Tensor]],
     *,
     limit: Optional[int] = None,
+    spec_row_index: Optional[torch.Tensor] = None,
 ) -> List[Dict[str, Any]]:
     if bounds_dict is None or nu_per_layer is None:
         return []
-    cand = _collect_neuron_candidates(branch_batch, bounds_dict, nu_per_layer)
+    cand = _collect_neuron_candidates(
+        branch_batch,
+        bounds_dict,
+        nu_per_layer,
+        spec_row_index=spec_row_index,
+    )
     if cand is None:
         return []
     scores, layers, neurons = cand
@@ -831,11 +961,7 @@ def _multi_split_from_groups(
             l: t.index_select(0, parent_index.to(t.device)) for l, t in state.items()
         }
 
-    m_specs = 1
-    if batch.incremental_alpha:
-        m_specs = int(next(iter(batch.incremental_alpha.values())).shape[1])
-    elif batch.split_signs:
-        m_specs = int(next(iter(batch.split_signs.values())).shape[1])
+    m_specs = _infer_spec_axis_size(batch)
 
     signs = _gather(batch.split_signs) or {}
     for lid_val in torch.unique(top_layers).tolist():
@@ -876,6 +1002,13 @@ def _multi_split_from_groups(
             if batch.lower_bound is not None
             else None
         ),
+        spec_row_ids=(
+            batch.spec_row_ids.index_select(
+                0, parent_index.to(batch.spec_row_ids.device)
+            )
+            if batch.spec_row_ids is not None
+            else None
+        ),
     )
     return children, parent_index
 
@@ -886,6 +1019,8 @@ def _multi_split_from_decision(
     bounds_dict: Optional[Dict[int, Bounds]],
     nu_per_layer: Optional[Dict[int, torch.Tensor]],
     k_levels: int,
+    *,
+    spec_row_index: Optional[torch.Tensor] = None,
 ) -> Optional[Tuple[SubproblemBatch, torch.Tensor]]:
     """Joint top-k neuron split: each lane emits all 2^k sign combinations.
 
@@ -903,7 +1038,12 @@ def _multi_split_from_decision(
     """
     if bounds_dict is None or nu_per_layer is None:
         return None
-    cand = _collect_neuron_candidates(batch, bounds_dict, nu_per_layer)
+    cand = _collect_neuron_candidates(
+        batch,
+        bounds_dict,
+        nu_per_layer,
+        spec_row_index=spec_row_index,
+    )
     if cand is None:
         return None
     all_scores, all_layers, all_neurons = cand

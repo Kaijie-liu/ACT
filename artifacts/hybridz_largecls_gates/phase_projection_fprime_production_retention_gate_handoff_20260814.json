@@ -1,0 +1,126 @@
+{
+  "schema": "act.hybridz.fprime.production_retention_gate_handoff.v1",
+  "created_date": "2026-08-14",
+  "status": "FROZEN_STATIC_REVIEWED_NOT_RUN_AWAITING_EXPLICIT_GPU_AUTHORIZATION",
+  "goal": "Run the current production verifier on fixed14 first, then prove retention of the frozen formal59 without repeating the four overlapping cases.",
+  "frozen_harness": {
+    "path": "scratch_phase_projection_fprime_production_retention_gate.py",
+    "sha256": "b49abc97dad197ebac402afc21d60668e90ed60fde47d5e811e4b82c78adeb75"
+  },
+  "frozen_dependencies": {
+    "audited_five_case_helper": {
+      "path": "scratch_phase_projection_fprime_production_five_case_sentinel.py",
+      "sha256": "3d168c9f29fae8343d5f101794d6b829cfbdf48a30dda57cea2cfd30ac595873"
+    },
+    "production_source_bundle_sha256": "2c990582fe20e7e880a530557d5ca9c825c3d44f3f20758cf64df8d1845f6855",
+    "fixed14_source": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_single_stream_float64_candidate_20260813.json",
+      "sha256": "a1323cf69ac5e9f2f7189b8ce4ac96e67cd6e0b354f1c6a044a3a5433b7e16c9",
+      "order_rule": "fixed_14.candidate_terminal_verified followed by fixed_14.remaining_unknown"
+    },
+    "retained59_source": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_gpu_csr_fixed400_20260814.jsonl",
+      "sha256": "749db4e400329598c23c3dd7c9b9863c291eb3d1ba556cdcfcfa879c58487b43",
+      "selection_rule": "locked legacy validated-status predicate with strict integer schema replay",
+      "validated_falsified": 59
+    },
+    "legacy_validator_source": {
+      "path": "act/pipeline/verification/hybridz_phase_projection_fixed400.py",
+      "sha256": "d3e1825b9a8f8c8bb7f83cb8f08bdabd68f0c3fa32c379cac8ce08bb4c1e24c1"
+    },
+    "manifest_sha256": "3a55e4dee4345fead432641059fedd946924875cc26294212b32df2a9146afad"
+  },
+  "frozen_execution": {
+    "stage_order": [
+      "fixed14",
+      "retained59_remaining55"
+    ],
+    "fixed14_cases": 14,
+    "fixed14_original_falsified_required": 4,
+    "fixed14_additional_required": [
+      "tinyimagenet_medium_iid143"
+    ],
+    "fixed14_minimum_falsified": 5,
+    "retained59_cases": 59,
+    "overlap_reused_without_rerun": [
+      "cifar100_medium_iid2",
+      "cifar100_medium_iid11",
+      "cifar100_large_iid118",
+      "tinyimagenet_medium_iid6"
+    ],
+    "unique_production_attempts_if_complete": 69,
+    "attempts_per_unique_case_max": 1,
+    "stop_loss": "Persist and stop immediately on the first ERROR or any required FALSIFIED result becoming non-FALSIFIED.",
+    "new_falsified_accounting": "List outside retained59; never add to the formal59 denominator."
+  },
+  "run_state": {
+    "gpu_run_started": false,
+    "authorized_worker_started": false,
+    "fixed14_started": false,
+    "retained59_started": false,
+    "attempted_unique": 0,
+    "completed_unique": 0,
+    "formal_retention_result_available": false,
+    "current_formal_baseline": "59/400",
+    "retention_claim": "NOT_MEASURED"
+  },
+  "dedicated_runtime_outputs": {
+    "events": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_fprime_production_retention_gate_20260814.events.jsonl",
+      "exists": false
+    },
+    "summary": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_fprime_production_retention_gate_20260814.json",
+      "exists": false
+    },
+    "parent_lock": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_fprime_production_retention_gate_20260814.events.jsonl.lock",
+      "exists": false
+    }
+  },
+  "completed_checks": {
+    "py_compile": "PASS",
+    "cpu_only_static_check": "PASS",
+    "manifest_cardinality": {
+      "fixed14": 14,
+      "fixed14_required": 5,
+      "retained59": 59,
+      "overlap": 4,
+      "unique_execution": 69
+    },
+    "in_memory_complete_state": {
+      "status": "PASS",
+      "fixed14_falsified": 5,
+      "retained59_retained": 59,
+      "new_falsified_outside_retained59": [
+        "tinyimagenet_medium_iid143"
+      ]
+    },
+    "independent_manifest_review": "NO-BLOCKER",
+    "independent_harness_redteam": "NO-BLOCKER",
+    "gpu_used_by_checks": false,
+    "benchmark_worker_used_by_checks": false
+  },
+  "authority_and_prohibitions": {
+    "terminal_authority": "decoded input in raw BOX; verifier-owned zero-width outward forward interval; exact Fraction property lower bound positive",
+    "candidate_authority": false,
+    "external_sat_labels_enter_production": false,
+    "input_sampling": false,
+    "onnx_input_point_execution": false,
+    "pgd": false,
+    "bab_split_or_enumeration": false,
+    "backward_bounds": false,
+    "dual_tightening": false,
+    "runtime_fallback_or_menu": false,
+    "production_files_edited_by_harness_work": false
+  },
+  "resume": {
+    "precondition": "Obtain explicit GPU authorization and confirm every frozen SHA still matches.",
+    "cpu_only_recheck_command": "python scratch_phase_projection_fprime_production_retention_gate.py --static-check",
+    "authorized_parent_command": "python scratch_phase_projection_fprime_production_retention_gate.py",
+    "forbidden_direct_command": "Do not invoke --worker-case directly.",
+    "current_mode": "fresh run because all dedicated runtime outputs are absent",
+    "interruption_semantics": "Every attempt is append+fsync before launch; a started attempt without a persisted result blocks resume and is never retried.",
+    "next_expected_action": "After authorization, run only the parent command and inspect the atomic summary; do not start performance/fixed400 work before this gate resolves."
+  }
+}

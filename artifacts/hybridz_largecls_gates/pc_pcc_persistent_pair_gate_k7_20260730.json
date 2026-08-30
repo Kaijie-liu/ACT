@@ -1,0 +1,101 @@
+{
+  "affinity_core_count": 4,
+  "bootstrap_samples": 200000,
+  "bootstrap_seed": 20260730,
+  "cpu_affinity": "8-11",
+  "date": "2026-07-30",
+  "dimensions": {
+    "constraint_nonzeros": 1386,
+    "n_binary": 7,
+    "n_continuous": 21,
+    "n_equality": 0,
+    "n_out": 1,
+    "n_upper": 399
+  },
+  "generator": {
+    "command": "env CUDA_VISIBLE_DEVICES='' HZ_MILP_THREADS=1 taskset -c 8-11 python act/back_end/hybridz_tf/probe_persistent_phase_conflict_oracle.py",
+    "module": "act.back_end.hybridz_tf.probe_persistent_phase_conflict_oracle",
+    "validator_argument": "--validate-artifact"
+  },
+  "git_head": "391785fe7fa7c02b927ac2a9240a09d293f1363c",
+  "highs_threads": 1,
+  "invocation_spec_prebuilt": true,
+  "legacy_median_seconds": 0.174744864,
+  "legacy_seconds": [
+    0.21231971,
+    0.174743361,
+    0.174744864,
+    0.174342103,
+    0.175281116
+  ],
+  "median_paired_speedup": 4.267898,
+  "paired_bootstrap_95_lower": 4.24751,
+  "paired_speedups": [
+    5.140054,
+    4.260977,
+    4.267898,
+    4.24751,
+    4.284607
+  ],
+  "pairs": 5,
+  "parent_semantic_digest": "5c29820c9d12e75249f3a0d6d34135cb6c51bd99a26add68b8e5b42e2256cfb6",
+  "passed": true,
+  "persistent_median_seconds": 0.041010164,
+  "persistent_seconds": [
+    0.041306899,
+    0.041010164,
+    0.04094401,
+    0.04104572,
+    0.040909498
+  ],
+  "property_digest": "dcdecbc010de2d64718c91fb323060aafdf3a118375ee5c6d0f97c017301c789",
+  "result_fallbacks": 0,
+  "runtime": {
+    "highs": "1.14.0",
+    "numpy": "2.3.5",
+    "python": "3.12.12",
+    "scipy": "1.16.3"
+  },
+  "schema": "act.pc_pcc_persistent_pair_gate.v2",
+  "source_sha256": {
+    "adaptive_phase_forest.py": "54decfe91f42db7e6c2641d982c1012259748df5c6c13c193812c66859ec9af8",
+    "persistent_phase_conflict_oracle.py": "7826361d89b56807261adb088277b49e8aecbbb348a9615b947397600fe07f9d",
+    "probe_persistent_phase_conflict_oracle.py": "515fa6ad3beefa817ad518eb7675bdf0b7c258a4dabfdd831c7b6d12675e5a9a",
+    "property_phase_conflict_clique.py": "d07855bb6392c2c4b1559e0e4da5c99daf19e7957c8d34ca522cc630c10c3e3b",
+    "test_persistent_phase_conflict_oracle.py": "dd20a0f15c1efee48d853f474ed373a079be6f5cb16c0a3417e698a3f52f9372",
+    "test_property_phase_conflict_clique.py": "193a5ed30b75512d2e91bc97229a2b41f516bcceb65f334478ea9517c0dc885e"
+  },
+  "thresholds": {
+    "median_paired_speedup_min": 2.0,
+    "paired_bootstrap_95_lower_min": 1.8,
+    "result_fallbacks_max": 0
+  },
+  "tightness": {
+    "after": 1.0,
+    "before": 2.333333333333,
+    "toy": "K7 C49"
+  },
+  "timing_order": [
+    [
+      "legacy",
+      "persistent"
+    ],
+    [
+      "persistent",
+      "legacy"
+    ],
+    [
+      "legacy",
+      "persistent"
+    ],
+    [
+      "persistent",
+      "legacy"
+    ],
+    [
+      "legacy",
+      "persistent"
+    ]
+  ],
+  "warmup_pairs": 1
+}

@@ -1,0 +1,60 @@
+SCIP version 10.0.2 [precision: 8 byte] [memory: block] [mode: optimized] [LP solver: SoPlex 8.0.2] [GitHash: b8eaf98]
+Copyright (c) 2002-2026 Zuse Institute Berlin (ZIB)
+
+External libraries: 
+  SoPlex 8.0.2         Linear programming solver developed at Zuse Institute Berlin (soplex.zib.de) [GitHash: cfadddc
+  CppAD 20180000.0     Algorithmic Differentiation of C++ algorithms developed by B. Bell (github.com/coin-or/CppAD)
+  ZLIB 1.3.1           General purpose compression library by J. Gailly and M. Adler (zlib.net)
+  MPFR 4.2.1           GNU Multiple Precision Floating-Point Reliable Library (mpfr.org)
+  Boost 1.90.0         Boost C++ Libraries (boost.org)
+  TinyCThread 1.2      small portable implementation of the C11 threads API (tinycthread.github.io)
+  GMP 6.3.0            GNU Multiple Precision Arithmetic Library developed by T. Granlund (gmplib.org)
+  AMPL/MP 4.0.4        AMPL .nl file reader library (github.com/ampl/mp)
+  Nauty 2.8.8          Computing Graph Automorphism Groups by Brendan D. McKay (users.cecs.anu.edu.au/~bdm/nauty)
+  sassy 2.1            Symmetry preprocessor by Markus Anders (github.com/markusa4/sassy)
+
+user parameter file <scip.set> not found - using default parameters
+
+exact/enable = TRUE
+limits/time = 2
+
+read problem <artifacts/hybridz_largecls_gates/exact_query_capture_cifar100_medium_iid29_20260812/cifar100_iid29_exact_or.lp>
+============
+
+original problem has 11498 variables (1151 bin, 0 int, 10347 cont) and 15502 constraints
+
+read problem <artifacts/hybridz_largecls_gates/exact_query_capture_cifar100_medium_iid29_20260812/cifar100_iid29_search_or.sol>
+============
+
+primal solution from solution file <artifacts/hybridz_largecls_gates/exact_query_capture_cifar100_medium_iid29_20260812/cifar100_iid29_search_or.sol> was accepted as candidate, will be checked when solving starts
+original problem has 11498 variables (1151 bin, 0 int, 10347 cont) and 15502 constraints
+
+  [exactlinear] <base_9398>: -5547112977968129/576460752303423488<t_x580>[C] (0)6323287937566209/576460752303423488<t_x581>[C] (0)-7295861281394689/4722366482869645213696<t_x582>[C] (0)5569082255697921/576460752303423488<t_x612>[C] (0)-5484056944711681/9444732965739290427392<t_x613>[C] (0)-5449366758522881/576460752303423488<t_x614>[C] (0)4634748841870081/147573952589676412928<t_x644>[C] (0)-6150878292623361/576460752303423488<t_x645>[C] (0)5586009687623681/576460752303423488<t_x646>[C] (0)-5436020368717825/1152921504606846976<t_x1604>[C] (0)8178397212659713/2305843009213693952<t_x1605>[C] (0)-8792602153459713/18889465931478580854784<t_x1606>[C] (0)5698653087596545/1152921504606846976<t_x1636>[C] (0)-6479198127200257/75557863725914323419136<t_x1637>[C] (0)-5759450836987905/1152921504606846976<t_x1638>[C] (0)6557793720749057/4722366482869645213696<t_x1668>[C] (0)-4520504745883649/1152921504606846976<t_x1669>[C] (0)5167367868358657/1152921504606846976<t_x1670>[C] (0)-6524079033722881/1152921504606846976<t_x2628>[C] (0)7246684608278529/1152921504606846976<t_x2629>[C] (0)5962364834320385/9444732965739290427392<t_x2630>[C] (0)7222943602008065/1152921504606846976<t_x2660>[C] (0)7424425660734721/9444732965739290427392<t_x2661>[C] (0)-7519971422580737/1152921504606846976<t_x2662>[C] (0)6344382537655297/2361183241434822606848<t_x2692>[C] (0)-7615061358399489/1152921504606846976<t_x2693>[C] (0)7035406879793153/1152921504606846976<t_x2694>[C] (0)-3226725370532051/36028797018963968<t_x3316>[C] (-1) <= 4984654316621357/144115188075855872;
+;
+violation: right hand side is violated by 7922247165506847/144115188075855872
+all 1 solutions given by solution candidate storage are infeasible
+
+presolving (in exact solving mode):
+   (1.2s) symmetry computation started: requiring (bin +, int +, cont +), (fixed: bin -, int -, cont -)
+   Symmetry detection interrupted: constraints of type exactlinear do not provide symmetry information.
+   If symmetries shall be detected, implement the CONSGETPERMSYMGRAPH callback.
+   (1.2s) could not compute symmetry
+presolving (1 rounds: 1 fast, 1 medium, 1 exhaustive):
+ 0 deleted vars, 0 deleted constraints, 0 added constraints, 0 tightened bounds, 0 added holes, 0 changed sides, 0 changed coefficients
+ 0 implications, 0 cliques, 0 implied integral variables (0 bin, 0 int, 0 cont)
+presolved problem has 11498 variables (1151 bin, 0 int, 10347 cont) and 15502 constraints
+  15502 constraints of type <exactlinear>
+transformed objective value is always integral (scale: 1)
+Presolving Time: 0.07
+
+solving problem in exact solving mode
+
+
+SCIP Status        : solving was interrupted [time limit reached]
+Solving Time (sec) : 2.56
+Solving Nodes      : 1
+Primal Bound       : +1.00000000000000e+20 (0 solutions)
+Dual Bound         : +0.00000000000000e+00
+Gap                : infinite
+
+

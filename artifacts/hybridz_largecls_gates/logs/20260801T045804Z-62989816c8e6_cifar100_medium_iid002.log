@@ -1,0 +1,35 @@
+[ACT] Auto-detecting project root: .
+[WARN] Gurobi license not found: modules/gurobi/gurobi.lic
+[INFO] Please place gurobi.lic in: modules/gurobi
+✅ Device Manager Initialized: device=cuda:0, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/onnx/CIFAR100_resnet_medium.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 12 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: CIFAR100_resnet_medium.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 3, 32, 32)
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 3072 inputs, 100 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.create_specs:Generating specs for cifar100_medium/CIFAR100_resnet_medium__CIFAR100_resnet_medium_prop_idx_6232_sidx_3020_eps_0.0039
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed CIFAR100_resnet_medium_prop_idx_6232_sidx_3020_eps_0.0039.vnnlib: 1 query(ies) [vnnlib 1.0 flat]
+INFO:act.front_end.vnnlib_loader.create_specs:Parsed VNNLIB specs: 1 queries, first kind=(BOX, TOP1_ROBUST)
+[gate-worker-phase] parse_convert_specs_seconds=1.088247s total=1.157103s remaining=43.842896s
+
+🧬 Synthesizing models from 1 spec result(s)...
+
+🎉 Synthesis Complete:
+   Total specs: 1
+   Wrapped models: 1
+[gate-worker-phase] synthesis_seconds=0.001331s total=1.158464s remaining=43.841535s
+[gate-worker-phase] torch2act_seconds=0.105092s total=1.263569s remaining=43.736430s
+[gate-worker-phase] analysis_solver_replay_seconds=start total=1.263807s remaining=43.736191s
+[verifier-phase-clique] stage=interval_analyze_start elapsed=0.000090s remaining=43.486311s
+[verifier-phase-clique] stage=interval_analyze_done elapsed=0.184708s remaining=43.301693s
+[verifier-phase-clique] stage=operator_preselection_start elapsed=0.191388s remaining=43.295013s
+[verifier-phase-clique] stage=operator_preselection_done elapsed=0.270069s remaining=43.216333s
+[verifier-phase-clique] stage=operator_build_start elapsed=0.270097s remaining=43.216304s
+[verifier-phase-clique] stage=operator_build_done elapsed=25.298919s remaining=18.187482s
+[verifier-phase-clique] stage=k4_pipeline_start elapsed=25.298966s remaining=18.187435s
+[verifier-phase-clique-outcome] {"certified_edge_count":null,"clique_count":null,"cut_row_count":null,"fallback_reason":"downstream_error","fresh_upper_rows":null,"materialized":false,"source_upper_rows":null,"status":"baseline_fallback_error","timings":{"focus_and_replay_seconds":0.044141423888504505,"hardness_seconds":0.0230057118460536,"literal_selection_seconds":0.6745286583900452,"raw_top1_seconds":0.09039184171706438,"total_seconds":7.342076279222965}}
+[verifier-phase-clique] stage=k4_pipeline_done elapsed=34.547562s remaining=8.938839s
+[verifier-phase-clique] stage=hz_objbound_decide_start elapsed=34.774537s remaining=8.711864s

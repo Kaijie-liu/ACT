@@ -1,0 +1,167 @@
+{
+  "schema": "act.hybridz.phase_projection_fprime_production_stage_handoff.v1",
+  "created_at": "2026-08-14T17:45:00+10:00",
+  "status": "PAUSED_AFTER_PRODUCTION_FIVE_CASE_PASS",
+  "formal_score_changed": false,
+  "goal_policy": {
+    "name": "F_prime_ability_noninferiority",
+    "source": "artifacts/hybridz_largecls_gates/goal_amendment_dual_informed_ability_noninferiority_20260814.json",
+    "sha256": "39f2249f2efc1f4e7c1716e59876bdcd330f1ecfb48e2e365c038938e6f9714a"
+  },
+  "formal_fixed400_checkpoint": {
+    "falsified": 59,
+    "unknown": 341,
+    "error": 0,
+    "by_family": {
+      "cifar100_medium": 14,
+      "cifar100_large": 10,
+      "cifar100_total": 24,
+      "tinyimagenet_medium": 35
+    },
+    "jsonl": "artifacts/hybridz_largecls_gates/phase_projection_gpu_csr_fixed400_20260814.jsonl",
+    "jsonl_sha256": "749db4e400329598c23c3dd7c9b9863c291eb3d1ba556cdcfcfa879c58487b43",
+    "summary": "artifacts/hybridz_largecls_gates/phase_projection_gpu_csr_fixed400_20260814.summary.json",
+    "summary_sha256": "036a87f7005033ad8478af5dbecfce8657d3f02457f654a9b0e63e5b47e2ab41"
+  },
+  "production_source_bundle": {
+    "digest_sha256": "2c990582fe20e7e880a530557d5ca9c825c3d44f3f20758cf64df8d1845f6855",
+    "phase": {
+      "path": "act/back_end/hybridz_tf/forward_exact_relu_phase_projection_candidate.py",
+      "sha256": "13625f452c36a1b7844e4385b884471c8a0c82abf015bf2af417257e2c96c23a"
+    },
+    "phase_test": {
+      "path": "act/back_end/hybridz_tf/test_forward_exact_relu_phase_projection_candidate.py",
+      "sha256": "c1730ae10c5d604506998f7e62c58fa43958c2d55627a10ba3048a1da127775c"
+    },
+    "device_program": {
+      "path": "act/back_end/hybridz_tf/phase_projection_device_program.py",
+      "sha256": "7f0cce0e461f63ff6599ddd82ad5e61ef7c921eb489ef7bbbf4d60cda9048962"
+    },
+    "safe_highs_owner": {
+      "path": "act/back_end/hybridz_tf/phase_projection_highs_owner.py",
+      "sha256": "2f5678a5b3d2b098637b27558a8bdbffcc5160ca89cb8b4947f557320d03f5b7"
+    },
+    "incremental_repair": {
+      "path": "act/back_end/hybridz_tf/phase_projection_incremental_repair.py",
+      "sha256": "acc1a98fa47d36c3b0bea7d10bf93af33d41ee9de108b0151ca01cd4822f997e"
+    }
+  },
+  "production_five_case_sentinel": {
+    "status": "COMPLETE_COMPATIBLE",
+    "attempted": 5,
+    "completed": 5,
+    "errors": 0,
+    "retries": 0,
+    "harness": "scratch_phase_projection_fprime_production_five_case_sentinel.py",
+    "harness_sha256": "3d168c9f29fae8343d5f101794d6b829cfbdf48a30dda57cea2cfd30ac595873",
+    "summary": "artifacts/hybridz_largecls_gates/phase_projection_fprime_production_five_case_sentinel_20260814.json",
+    "summary_sha256": "fc1471a8c41dc548a8386a34a1996fe1fdf2d91f420accdab53803153ac8c681",
+    "events": "artifacts/hybridz_largecls_gates/phase_projection_fprime_production_five_case_sentinel_20260814.events.jsonl",
+    "events_sha256": "134f219c36c024f7a068129509b873af9bd895f2aa82e5e250ec177a567c06f4",
+    "independent_artifact_audit": "NO_BLOCKER",
+    "results": [
+      {
+        "case": "cifar100_medium_iid2",
+        "status": "FALSIFIED",
+        "role": "retained_positive",
+        "repair_updates": 0,
+        "fraction_margin_lower": 0.09290191317380003
+      },
+      {
+        "case": "cifar100_large_iid153",
+        "status": "UNKNOWN",
+        "role": "negative_margin_negative_control"
+      },
+      {
+        "case": "tinyimagenet_medium_iid143",
+        "status": "FALSIFIED",
+        "role": "new_production_terminal_positive",
+        "selector": "optimal_negative_all_tight_strict_negative_upper_row_dual",
+        "selected_rows": 57,
+        "repair_updates": 1,
+        "fraction_margin_lower": 0.0002169995966969651
+      },
+      {
+        "case": "cifar100_large_iid166",
+        "status": "UNKNOWN",
+        "role": "infeasible_ray_fail_closed_control",
+        "dual_ray_requests": 1
+      },
+      {
+        "case": "tinyimagenet_medium_iid153",
+        "status": "FALSIFIED",
+        "role": "new_production_terminal_positive",
+        "selector": "infeasible_all_exact_nonzero_validated_dual_ray_phase_rows",
+        "selected_rows": 5,
+        "repair_updates": 1,
+        "fraction_margin_lower": 0.029165812151973114
+      }
+    ]
+  },
+  "conditional_if_all_remaining_gates_pass": {
+    "falsified": 61,
+    "unknown": 339,
+    "error": 0,
+    "by_family": {
+      "cifar100_total": 24,
+      "tinyimagenet_medium": 37
+    },
+    "new_cases": [
+      "tinyimagenet_medium_iid143",
+      "tinyimagenet_medium_iid153"
+    ],
+    "formal_authority": false,
+    "reason": "fixed14, retained59, noninferiority, fixed40, and fixed400 gates are not yet run"
+  },
+  "prepared_but_not_run": {
+    "retention_harness": "scratch_phase_projection_fprime_production_retention_gate.py",
+    "retention_harness_sha256": "b49abc97dad197ebac402afc21d60668e90ed60fde47d5e811e4b82c78adeb75",
+    "retention_manifest_sha256": "3a55e4dee4345fead432641059fedd946924875cc26294212b32df2a9146afad",
+    "retention_handoff": "artifacts/hybridz_largecls_gates/phase_projection_fprime_production_retention_gate_handoff_20260814.json",
+    "retention_handoff_sha256": "ad2f50c0a8c51db47620232c5612e48c1d95e55c62e568672733ca4c44445ddc",
+    "audit": "NO_BLOCKER",
+    "status": "NOT_RUN",
+    "attempts": 0,
+    "gpu_started": false,
+    "runtime_artifacts_exist": false
+  },
+  "remaining_gate_order": [
+    "fixed14: retain the old four and add Tiny143, zero ERROR",
+    "retained59: retain 59 of 59, zero ERROR",
+    "single-request and four-concurrent paired noninferiority controls",
+    "fixed40 retention",
+    "fixed400: at least 60 FALSIFIED, at most 340 UNKNOWN, zero ERROR",
+    "independent source, receipt, performance, RSS, and result audit"
+  ],
+  "resume": {
+    "requires_explicit_gpu_authorization": true,
+    "first_command_after_authorization": "PYTHONUNBUFFERED=1 python scratch_phase_projection_fprime_production_retention_gate.py",
+    "do_not_run_existing_fixed400_runner": true,
+    "reason": "the older runner resume identity does not bind the new source bundle"
+  },
+  "packaging_followup": {
+    "status": "NOT_APPLIED",
+    "required_dependency": "highspy==1.15.0",
+    "runtime_githash": "8396001",
+    "default_off_without_highspy": "importable",
+    "enabled_without_highspy": "fail_closed_UNKNOWN"
+  },
+  "restrictions": {
+    "input_sampling_used": false,
+    "onnx_input_point_execution_used": false,
+    "pgd_used": false,
+    "bab_or_split_used": false,
+    "enumeration_used": false,
+    "backward_bounds_used": false,
+    "dual_tightening_used": false,
+    "fallback_or_runtime_menu_used": false,
+    "retry_or_parameter_scan_used": false,
+    "external_sat_labels_read_by_production": false,
+    "cross_request_cache_used": false,
+    "second_solver_used": false
+  },
+  "runtime_at_pause": {
+    "gpu_compute_processes": 0,
+    "background_gate_processes": 0
+  }
+}

@@ -166,10 +166,22 @@ class HybridzTF(TransferFunction):
         return self._hz_cache.get(int(layer_id))
 
     @staticmethod
-    def _id_sig(ids: Optional[torch.Tensor]):
+    def _id_sig(ids):
         if ids is None:
             return None
-        return (int(ids.numel()),)
+        if isinstance(ids, torch.Tensor):
+            flat = ids.detach().reshape(-1)
+            return (
+                int(flat.numel()),
+                None if flat.numel() == 0 else int(flat[0].item()),
+                None if flat.numel() == 0 else int(flat[-1].item()),
+            )
+        flat = ids.reshape(-1)
+        return (
+            int(flat.size),
+            None if flat.size == 0 else int(flat[0]),
+            None if flat.size == 0 else int(flat[-1]),
+        )
 
     @classmethod
     def _hz_sig(cls, hz: Optional[HZono]):
@@ -201,6 +213,7 @@ class HybridzTF(TransferFunction):
         if hz is None:
             return None
         return (
+            id(hz),
             tuple(hz.c.shape),
             cls._csr_sig(hz.Gc),
             cls._csr_sig(hz.Gb),
@@ -210,6 +223,8 @@ class HybridzTF(TransferFunction):
             cls._csr_sig(hz.Auc),
             cls._csr_sig(hz.Aub),
             None if hz.ub is None else tuple(hz.ub.shape),
+            cls._id_sig(hz.col_ids),
+            cls._id_sig(hz.bcol_ids),
         )
 
     def side_state_signature(self, layer_id: int):
@@ -297,7 +312,9 @@ class HybridzTF(TransferFunction):
         return hz
 
     def _sparse_from_bounds(self, bounds: Bounds) -> SparseHZono:
-        return hz_mlp.sparse_hz_from_bounds(bounds)
+        reuse = self._input_ids if self._input_box_matches(bounds) else None
+        ids = None if reuse is None else reuse.detach().cpu().numpy()
+        return hz_mlp.sparse_hz_from_bounds(bounds, col_ids=ids)
 
     def _sparse_box_matches(self, bounds: Bounds) -> bool:
         return self._input_box_matches(bounds)
@@ -311,6 +328,18 @@ class HybridzTF(TransferFunction):
                 self._sparse_hz_cache[L.id] = hz
                 if self._sparse_input_hz is None:
                     self._sparse_input_hz = hz
+                if self._input_ids is None:
+                    full_ids = getattr(hz, "full_col_ids", None)
+                    if full_ids is not None:
+                        self._input_ids = torch.as_tensor(
+                            full_ids,
+                            dtype=torch.long,
+                            device=input_bounds.lb.device,
+                        )
+                        self._input_box = (
+                            input_bounds.lb.flatten().clone(),
+                            input_bounds.ub.flatten().clone(),
+                        )
                 self._sparse_drop_reasons.pop(L.id, None)
                 return
 

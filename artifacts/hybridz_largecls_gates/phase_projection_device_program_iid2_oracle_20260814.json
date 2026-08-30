@@ -1,0 +1,102 @@
+{
+  "schema": "act.hybridz.phase_projection_device_program_iid2_oracle.v1",
+  "created_at": "2026-08-14",
+  "status": "IID2_COMPONENT_BITWISE_ORACLE_PASS_NOT_PRODUCTION",
+  "case": "cifar100_medium_iid2",
+  "all_checks_pass": true,
+  "checks": {
+    "first_assign_equal": true,
+    "first_pre_center_bitwise_equal": true,
+    "first_output_center_bitwise_equal": true,
+    "target_assign_equal": true,
+    "target_pre_center_bitwise_equal": true,
+    "target_output_center_bitwise_equal": true,
+    "first_stream_preactivation_bitwise_equal": true,
+    "first_stream_output_bitwise_equal": true,
+    "delta_preactivation_bitwise_equal": true,
+    "delta_output_bitwise_equal": true,
+    "terminal_lower_bitwise_equal": true,
+    "terminal_upper_bitwise_equal": true
+  },
+  "digests": {
+    "first_pre_center": "3cbbddc56c6296de225063a7fa2b876bdf41481d52105b621668fa200075b8b3",
+    "target_pre_center": "242c20deae91cf4a7f350d47ffebec844e29c4392f43bce466d5f87c674ab1ef",
+    "first_stream_preactivation": "b58fa6ece7029050eb44699ab3cbbd20ebb860e8f8e35c844590e3388a948f37",
+    "delta_preactivation": "f910e94619610e5870365c24611bee92d8e25cb15d6dd6bf878e322e650d7bfb"
+  },
+  "shape": {
+    "input_factors": 3072,
+    "phase_changes": 187,
+    "delta_batches": 3,
+    "factor_batch": 64
+  },
+  "memory": {
+    "entry_allocated_bytes": 295025152,
+    "program_reported_cuda_bytes": 45784064,
+    "current_allocated_bytes": 340964352,
+    "peak_allocated_bytes": 371897856,
+    "incremental_peak_over_entry_bytes": 76872704,
+    "released_allocated_bytes_after_gc_and_empty_cache": 59704320,
+    "full_phase_by_input_device_buffer_used": false,
+    "full_phase_by_delta_device_buffer_used": false,
+    "measurement_scope": "single_process_single_iid2_component_oracle_not_a_concurrency_or_promotion_memory_gate"
+  },
+  "focused_tests": {
+    "py_compile": true,
+    "cpu_mock_passed": 8,
+    "cpu_mock_failed": 0,
+    "gpu_oracle_runs": 1
+  },
+  "files": {
+    "device_program": {
+      "path": "act/back_end/hybridz_tf/phase_projection_device_program.py",
+      "sha256": "4afeaa96b0f76dfd6e6943ce27627ac6b1c9420941749735f65fdf9bee09af43"
+    },
+    "device_program_test": {
+      "path": "act/back_end/hybridz_tf/test_phase_projection_device_program.py",
+      "sha256": "9c5dc58059a3aefd1b8484a67f83771a5be01fdd31caa9c20d911eed105117a0"
+    },
+    "frozen_phase": {
+      "path": "act/back_end/hybridz_tf/forward_exact_relu_phase_projection_candidate.py",
+      "sha256": "4b66470df55edebb595e0e06c6b8a2de5c65496b8671c4d2f2552003d01ea306"
+    },
+    "frozen_live": {
+      "path": "act/back_end/hybridz_tf/forward_exact_relu_live_row_stream_candidate.py",
+      "sha256": "d53c2335c43905097e78bef8311175d7151d7e98293a6152fce62dba00d37511"
+    },
+    "verifier_unchanged_by_this_work": {
+      "path": "act/back_end/verifier.py",
+      "sha256": "eb3dfc8611ee97262bf71d66b8deee58a6a2544d0934d94ca7b075424dbc3afd"
+    }
+  },
+  "interface_contract": {
+    "candidate_and_terminal_programs_are_distinct": true,
+    "candidate_program_references_terminal_program": false,
+    "terminal_program_contains_candidate_state": false,
+    "terminal_entry_parameters": [
+      "decoded_binary64",
+      "terminal_program"
+    ],
+    "center_operation_order_changed": false,
+    "delta_result": "K-column D for each exact row and graph output only",
+    "target_pre_or_target_output_materialized_by_delta_pass": false,
+    "request_local_only": true,
+    "cross_request_cache": false
+  },
+  "restrictions": {
+    "single_iid2_only": true,
+    "performance_gate_run": false,
+    "fixed_suite_run": false,
+    "input_sampling_used": false,
+    "onnx_point_execution_used": false,
+    "pgd_used": false,
+    "bab_split_or_enumeration_used": false,
+    "backward_bounds_used": false,
+    "dual_tightening_used": false,
+    "solver_called_by_new_module": false,
+    "fallback_or_runtime_menu_used": false,
+    "production_integrated": false,
+    "formal_fixed400_unchanged": 59
+  },
+  "claim_limit": "This admits the isolated device-program component for production wiring review. It is not a performance result, fixed-suite result, formal score gain, or authorization to change the verifier verdict boundary."
+}

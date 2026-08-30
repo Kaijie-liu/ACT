@@ -1,0 +1,113 @@
+{
+  "config": {
+    "block_size": 1024,
+    "device": "cuda",
+    "dtype": "float64",
+    "onnx_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/onnx/CIFAR100_resnet_medium.onnx",
+    "overwrite": false,
+    "steps": 4,
+    "target_relu_ids": [
+      10,
+      14,
+      22,
+      40
+    ],
+    "time_limit_seconds": 12.0,
+    "time_semantics": "query_transaction_builder_only",
+    "transaction_time_limit_seconds": 12.0,
+    "vnnlib_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/vnnlib/CIFAR100_resnet_medium_prop_idx_6232_sidx_3020_eps_0.0039.vnnlib"
+  },
+  "cuda_environment": {
+    "cuda_build": "12.8",
+    "device": "cuda",
+    "device_index": 0,
+    "device_name": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+    "dtype": "float64",
+    "status": "tracking"
+  },
+  "cuda_memory": {
+    "device_index": 0,
+    "device_name": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+    "peak_allocated_bytes": 2011665920,
+    "peak_reserved_bytes": 2195718144,
+    "status": "measured",
+    "total_bytes": 101947998208
+  },
+  "diagnostic_only": true,
+  "error": {
+    "message": "DEADLINE_EXPIRED: DEADLINE_EXPIRED: query-dual replay deadline expired",
+    "type": "QueryDualPipelineTimeout"
+  },
+  "failed_stage": "query_dual_transaction",
+  "hz_solver_called": false,
+  "input_integrity_stable": true,
+  "input_sha256_after": {
+    "onnx": "aba117ad0ad4abdd630c220beca70cd58825e72e7bada5dffdda10bb725cece4",
+    "vnnlib": "33e795c8421b7b19125f32415adb9cee09b2f90cb83152c4cd3aa03810e91ec3"
+  },
+  "input_sha256_before": {
+    "onnx": "aba117ad0ad4abdd630c220beca70cd58825e72e7bada5dffdda10bb725cece4",
+    "vnnlib": "33e795c8421b7b19125f32415adb9cee09b2f90cb83152c4cd3aa03810e91ec3"
+  },
+  "operator_hz_called": false,
+  "phase_seconds": {
+    "assert_extract": 0.00029688281938433647,
+    "cuda_initialize": 0.1587654696777463,
+    "cuda_memory": 0.00023086601868271828,
+    "input_hash_before": 0.004000299144536257,
+    "parse_convert_specs": 0.8369977087713778,
+    "receipt_finalization": 0.0001278459094464779,
+    "source_hash_after": 0.0004905238747596741,
+    "source_hash_before": 0.008034749887883663,
+    "synthesis": 0.0014476659707725048,
+    "torch2act": 0.09785661892965436
+  },
+  "produces_verdict": false,
+  "production_dependencies": true,
+  "proof_authority": false,
+  "receipt_finalization_seconds": 0.0001278459094464779,
+  "receipt_sha256": "eb2ccaa1a486547e6ad0ae49339063d540cb3209dc54377e32aa0045ab08782b",
+  "schema": "act.query_dual_gate1_probe.v1",
+  "setup_seconds": 1.1075763897970319,
+  "source_integrity_stable": true,
+  "source_sha256": {
+    "act.back_end.hybridz_tf.query_dual_box_certifier": "6946fe40ea7739b13ea4d31046acd85431278d546458d178e26f7f1c0405ce68",
+    "act.back_end.hybridz_tf.query_dual_candidates": "dfbc7ed7fdfa181afc097fe4596144bd6a7bf0196afc0214f47ebb38547dd61d",
+    "act.back_end.hybridz_tf.query_dual_pipeline": "638e799a63f0494384299ce8801287407fc9fdaf8e02e300caa2cbdfbe47be77",
+    "act.back_end.hybridz_tf.query_dual_replay": "cc45dc74686a11a9220f63018623c9ccb0d3f473f67b13b38819917deebaacfa",
+    "act.front_end.model_synthesis": "0a4104de37653f7a11321b62c8fb0a24dd98a51ba01d546446069e8c2abeffc8",
+    "act.front_end.vnnlib_loader.create_specs": "2f0df22f69bc4f384435012832725247dd70c605bec7219b5610e5d43d322e71",
+    "act.pipeline.verification.torch2act": "84ad13bfed2565649ec3431454584f9d2ba10063c44c8a4f9762135a84375a0c",
+    "act.util.device_manager": "e58c585af28e329627061216578d5dacfb3b52365c2071b15cad69befd70c55e",
+    "query_dual_probe": "22f2f1dab54cde8e4bc5e8e0f9330650e04fd5b2bdd088104f75aa4be66d5fe3"
+  },
+  "source_sha256_after": {
+    "act.back_end.hybridz_tf.query_dual_box_certifier": "6946fe40ea7739b13ea4d31046acd85431278d546458d178e26f7f1c0405ce68",
+    "act.back_end.hybridz_tf.query_dual_candidates": "dfbc7ed7fdfa181afc097fe4596144bd6a7bf0196afc0214f47ebb38547dd61d",
+    "act.back_end.hybridz_tf.query_dual_pipeline": "638e799a63f0494384299ce8801287407fc9fdaf8e02e300caa2cbdfbe47be77",
+    "act.back_end.hybridz_tf.query_dual_replay": "cc45dc74686a11a9220f63018623c9ccb0d3f473f67b13b38819917deebaacfa",
+    "act.front_end.model_synthesis": "0a4104de37653f7a11321b62c8fb0a24dd98a51ba01d546446069e8c2abeffc8",
+    "act.front_end.vnnlib_loader.create_specs": "2f0df22f69bc4f384435012832725247dd70c605bec7219b5610e5d43d322e71",
+    "act.pipeline.verification.torch2act": "84ad13bfed2565649ec3431454584f9d2ba10063c44c8a4f9762135a84375a0c",
+    "act.util.device_manager": "e58c585af28e329627061216578d5dacfb3b52365c2071b15cad69befd70c55e",
+    "query_dual_probe": "22f2f1dab54cde8e4bc5e8e0f9330650e04fd5b2bdd088104f75aa4be66d5fe3"
+  },
+  "source_sha256_before": {
+    "act.back_end.hybridz_tf.query_dual_box_certifier": "6946fe40ea7739b13ea4d31046acd85431278d546458d178e26f7f1c0405ce68",
+    "act.back_end.hybridz_tf.query_dual_candidates": "dfbc7ed7fdfa181afc097fe4596144bd6a7bf0196afc0214f47ebb38547dd61d",
+    "act.back_end.hybridz_tf.query_dual_pipeline": "638e799a63f0494384299ce8801287407fc9fdaf8e02e300caa2cbdfbe47be77",
+    "act.back_end.hybridz_tf.query_dual_replay": "cc45dc74686a11a9220f63018623c9ccb0d3f473f67b13b38819917deebaacfa",
+    "act.front_end.model_synthesis": "0a4104de37653f7a11321b62c8fb0a24dd98a51ba01d546446069e8c2abeffc8",
+    "act.front_end.vnnlib_loader.create_specs": "2f0df22f69bc4f384435012832725247dd70c605bec7219b5610e5d43d322e71",
+    "act.pipeline.verification.torch2act": "84ad13bfed2565649ec3431454584f9d2ba10063c44c8a4f9762135a84375a0c",
+    "act.util.device_manager": "e58c585af28e329627061216578d5dacfb3b52365c2071b15cad69befd70c55e",
+    "query_dual_probe": "22f2f1dab54cde8e4bc5e8e0f9330650e04fd5b2bdd088104f75aa4be66d5fe3"
+  },
+  "status": "error",
+  "test_only": false,
+  "total_seconds": 15.005934101063758,
+  "transaction_seconds": 13.862049159128219,
+  "transaction_stop_loss_pass": false,
+  "transaction_stop_loss_seconds": 10.5,
+  "validation_seconds": null
+}

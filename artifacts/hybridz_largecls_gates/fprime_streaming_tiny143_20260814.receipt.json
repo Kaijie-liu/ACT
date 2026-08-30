@@ -1,0 +1,162 @@
+{
+  "base": {
+    "builder_error_type": "ExactReLUPhaseProjectionUnknown",
+    "loaded_nnz": 887374,
+    "logical_nnz": 907584,
+    "model_status": "HighsModelStatus.kOptimal",
+    "rows": 1154,
+    "seconds_instrumented": 3.998516598716378,
+    "simplex_iterations": 75
+  },
+  "candidate": {
+    "aux_min_bound_slack": 4.164686993978004e-06,
+    "definition_max_abs_residual": 2.386875896584484e-10,
+    "margin": 0.0002170229788827265,
+    "optimal": true
+  },
+  "capture": {
+    "exclusive_no_overwrite": true,
+    "raw_final_json_line_path": "artifacts/hybridz_largecls_gates/fprime_streaming_tiny143_20260814.raw.json",
+    "receipt_path": "artifacts/hybridz_largecls_gates/fprime_streaming_tiny143_20260814.receipt.json"
+  },
+  "case": "tinyimagenet_medium_iid143",
+  "generic_source_sha256": "1f399a29be9fdf9cf2cca0b89adbb6721b307d1913d37be3bb704155458fdaeb",
+  "oracle": {
+    "full_target_materialization_excluded_from_proposed_timing": true,
+    "invoked": true,
+    "keep_count": 1160,
+    "margin_at_lowrank_factors": 0.00021702292860403816,
+    "max_upper_row_violation": 2.221121075691307e-10,
+    "nnz": 914226,
+    "rebuilt_stage_seconds": {
+      "center": 0.0393363730981946,
+      "delta": 0.019137966446578503,
+      "expansion": 0.28665541764348745
+    },
+    "rows": 1160,
+    "second_solver_used": false,
+    "seconds_nonauthority": 1.0853069555014372,
+    "violated_rows": 0
+  },
+  "owner": {
+    "dual_ray_calls": 0,
+    "dual_ray_exist_calls": 0,
+    "instances": 1,
+    "model_loads": 2,
+    "poisoned": false,
+    "solves": 2,
+    "state_before_close": "UPDATED_SOLVED"
+  },
+  "plan": {
+    "appended_nnz": 65316,
+    "appended_rows_total": 74,
+    "aux_bound_max": 0.1942753318929092,
+    "aux_bound_min": -0.11917403575317488,
+    "auxiliary_columns_appended": 57,
+    "base_screened_rows": 1154,
+    "definition_range_rows_appended": 57,
+    "existing_aux_nnz": 4817,
+    "missing_phase_rows_appended": 17,
+    "tiny": {
+      "flipped_x_tiny_scanned": 1274,
+      "owner_appended_rows": {
+        "affected_rows": 7,
+        "deleted_tiny_nnz": 2159,
+        "formula": "L'=down(L-sum(max(a*l,a*u))); U'=up(U-sum(min(a*l,a*u)))",
+        "logical_rows_with_any_finite_bound": 74,
+        "maximum_bound_widening": 2.3272902940733864e-10
+      },
+      "owner_existing_new_columns": {
+        "affected_rows": 17,
+        "deleted_tiny_nnz": 32,
+        "formula": "L'=down(L-sum(max(a*l,a*u))); U'=up(U-sum(min(a*l,a*u)))",
+        "logical_rows_with_any_finite_bound": 1154,
+        "maximum_bound_widening": 8.808925811010226e-14
+      },
+      "owner_projection_pending": false,
+      "owner_y_tiny_projection_passes": 1,
+      "plan_y_tiny_compensation_count": 0,
+      "plan_y_tiny_projection_count": 0
+    }
+  },
+  "representation": {
+    "existing_flipped_phase_operation": "same oriented row; upper bound becomes lower bound",
+    "formula_0_to_1": "y_i=c_i+q_i*x+sum_{j<i}D_ij*y_j",
+    "formula_1_to_0": "y_i=-(c_i+q_i*x)",
+    "full_target_pre_or_output_materialized_on_proposed_path": false,
+    "objective": "c_obj+q_obj*x+D_obj*y",
+    "same_highs_owner": true,
+    "second_solver": false,
+    "target_pre": "c+Q*x+D*y"
+  },
+  "restrictions": {
+    "bab_split_or_enumeration_used": false,
+    "backward_bounds_used": false,
+    "candidate_lp_marginal_or_ray_has_authority": false,
+    "dual_tightening_used": false,
+    "fallback_or_runtime_menu": false,
+    "input_center_boundary_or_random_sampling_used": false,
+    "onnx_input_point_execution_used": false,
+    "parameter_scan": false,
+    "pgd_used": false,
+    "phase_updates_max": 1,
+    "production_modified": false,
+    "resolves_after_base_max": 1,
+    "second_solver_used": false,
+    "updated_full_target_materialized_on_proposed_path": false
+  },
+  "schema": "act.scratch.fprime_persistent_lowrank_streaming_sentinel.v1",
+  "scratch_sha256": "4d7adffe5bf4e9913debc003db859ff2c4d975bec232d02dcedd01e7e6cf69be",
+  "selected_flip_count": 57,
+  "selected_rows_sha256": "2b107af66ed3cf4c13b5b0aea4e76b9f2669b6a311dd9e3f0d2a90086e89032d",
+  "selection_diagnostics": {
+    "margin": -0.0010710791634582773,
+    "selected_count": 57,
+    "strict_negative_row_dual_count": 57,
+    "tight_count": 57,
+    "tightness_uses_loaded_safe_upper": true
+  },
+  "selection_rule": "optimal_negative_all_tight_strict_negative_upper_row_dual",
+  "source_locks": {
+    "fprime": "6ce6ab6b208a1224ce70cfc0e4f183f5acf07fbc6d9db65ef34a8f4694602a15",
+    "live": "d53c2335c43905097e78bef8311175d7151d7e98293a6152fce62dba00d37511",
+    "phase": "4b66470df55edebb595e0e06c6b8a2de5c65496b8671c4d2f2552003d01ea306"
+  },
+  "status": "UPDATED_TERMINAL_VERIFIED",
+  "streaming_plan": "reuse_base_loaded_x_existing_D_only_owner_projects_y_tiny_once",
+  "terminal": {
+    "fraction_margin_lower": 0.0002169995966969651,
+    "raw_box": true,
+    "seconds": 1.1012535151094198,
+    "verified": true,
+    "zero_width_interval": true
+  },
+  "timing": {
+    "component_delta_mutation_warm_readback_seconds": 0.09812913462519646,
+    "component_screening_target_pass": false,
+    "component_screening_target_seconds": 0.09717,
+    "component_target_is_not_fprime_promotion_authority": true,
+    "delta_seconds": 0.0063056014478206635,
+    "full_incremental_including_owner_projection_seconds": 0.22013100422918797,
+    "full_incremental_through_readback_seconds": 0.2094183126464486,
+    "mutation_seconds": 0.004630569368600845,
+    "owner_projection_seconds": 0.010712691582739353,
+    "plan_assembly_seconds": 0.11128917802125216,
+    "readback_seconds": 0.0003489349037408829,
+    "timing_authority": false,
+    "warm_solve_seconds": 0.08684402890503407
+  },
+  "updated": {
+    "basis_valid_before_warm_run": true,
+    "columns": 9465,
+    "model_status": "HighsModelStatus.kOptimal",
+    "mutation_seconds": 0.004630569368600845,
+    "nnz": 955316,
+    "objective_value": -0.6765264022831845,
+    "owner_projection_seconds": 0.010712691582739353,
+    "readback_seconds": 0.0003489349037408829,
+    "rows": 1228,
+    "simplex_iterations": 428,
+    "warm_solve_seconds": 0.08684402890503407
+  }
+}

@@ -1,0 +1,114 @@
+{
+  "schema": "act.hybridz.constructive_full_primal_stoploss.v1",
+  "date": "2026-08-11",
+  "status": "REJECTED_NO_FORMAL_RESULT_AND_LATENCY",
+  "candidate": "Propagate one deterministic verifier-internal value alongside the ordinary exact Operator-HZ build, assign every local materialization factor and exact ReLU phase, and submit the resulting complete base-feasible factor vector once to the unchanged exact solver.",
+  "scope": {
+    "family": "cifar100_medium",
+    "iid": 29,
+    "operator_exact_budget": -1,
+    "operator_materialize_add": false,
+    "solver_paths": 1,
+    "solver_retries": 0,
+    "input_sampling": false,
+    "pgd": false,
+    "concrete_onnx_execution": false,
+    "raw_onnx_replay": false,
+    "production_files_changed": 0
+  },
+  "root_cause_of_previous_infeasible_diagnostic": {
+    "continuous_factors_left_unassigned": 8192,
+    "constraint_family": "affine_chain_cut:20",
+    "unassigned_maximum_row_violation": 1.2354619542998209,
+    "unassigned_rows_violating_by_more_than_1e_8": 8267,
+    "violating_family_counts": {
+      "affine_chain_cut": 8188,
+      "relu_exact_x_branch": 58,
+      "relu_exact_lower": 21
+    }
+  },
+  "complete_internal_point": {
+    "continuous_factors": 18539,
+    "binary_phase_factors": 1061,
+    "upper_rows": 31795,
+    "affine_chain_cut_factor_range": [
+      -0.9812599031852188,
+      0.9273041303707124
+    ],
+    "continuous_factor_range": [
+      -0.9999999999999999,
+      0.9273041303707124
+    ],
+    "continuous_factors_outside_unit_box": 0,
+    "negative_phase_factors": 605,
+    "positive_phase_factors": 456,
+    "maximum_stored_binary64_row_residual": -4.208060760385039e-20,
+    "positive_stored_binary64_row_residuals": 0,
+    "abstract_property_rows": 99,
+    "maximum_abstract_property_margin": -1.1952774496419867,
+    "abstract_property_rows_at_or_above_zero": 0,
+    "candidate_counterexample": false
+  },
+  "construction_cost": {
+    "act_sparse_forward_seconds": 0.05669929180294275,
+    "local_factor_fill_seconds": 0.0010120142251253128,
+    "incremental_numeric_seconds": 0.057711306028068066,
+    "operator_build_seconds_with_diagnostic": 2.913564305752516,
+    "parse_build_and_noop_solver_seconds": 4.225833383388817
+  },
+  "single_common_path_solver_gate": {
+    "configured_total_verifier_seconds": 30.0,
+    "complete_start_calls": 1,
+    "highs_set_solution_status": "HighsStatus.kOk",
+    "solver_elapsed_seconds": 44.32982289604843,
+    "end_to_end_elapsed_seconds": 48.46305121202022,
+    "persistent_lp_status": "budget_exhausted",
+    "persistent_lp_survivor_rows": 99,
+    "base_feasibility_status": "FEASIBLE",
+    "solver_result": "UNKNOWN",
+    "valid_property_candidate": false,
+    "formal_solved_count_gain": 0
+  },
+  "single_constructive_phase_cell_lp_gate": {
+    "role": "Replace the general exact MIP by one deterministic, constructively feasible exact-ReLU phase cell and one continuous aggregate-property LP.",
+    "solver_sessions": 1,
+    "fallbacks": 0,
+    "continuous_columns": 19600,
+    "fixed_phase_columns": 1061,
+    "native_ranged_rows": 17489,
+    "native_nnz": 3498525,
+    "ranged_row_pairs": 14306,
+    "exact_power_of_two_scaled_rows": 2082,
+    "scale_exponent_min": 1,
+    "scale_exponent_median": 5.0,
+    "scale_exponent_max": 25,
+    "retained_nnz": 3498525,
+    "add_columns_status": "HighsStatus.kOk",
+    "add_rows_status": "HighsStatus.kOk",
+    "set_solution_status": "HighsStatus.kOk",
+    "run_status": "HighsStatus.kWarning",
+    "model_status": "Unknown",
+    "valid_original_hz_primal": false,
+    "returned_placeholder_maximum_original_row_violation": 1.8761177773274537e36,
+    "parse_analyze_build_seconds": 4.232251510955393,
+    "matrix_prepare_load_solve_seconds": 2.5148249119520187,
+    "highs_run_seconds": 2.216211131773889,
+    "end_to_end_seconds": 6.74707680568099,
+    "formal_candidate": false,
+    "formal_solved_count_gain": 0
+  },
+  "decision": {
+    "retain_candidate": false,
+    "run_tinyimagenet": false,
+    "add_runtime_mode": false,
+    "add_second_solver_path": false,
+    "explore_more_phase_start_variants": false,
+    "reason": "The complete start cheaply removes base-HZ primal discovery as an ambiguity, but it neither reaches an unsafe abstract property row nor helps the unchanged exact property solve return a candidate or proof. Replacing the MIP by the single constructively feasible phase-cell LP also returned no valid primal even after exact power-of-two row scaling made native loading kOk. This remains a non-authoritative diagnostic rather than CIFAR100/TinyImageNet progress."
+  },
+  "retained_production_sha256": {
+    "act/back_end/hybridz_tf/operator_hz.py": "0f3ea83b3ad9141e59917e5574cbb3eacf4f69a81645d7d41d829d4bc4af5707",
+    "act/back_end/solver/solver_hz.py": "d4fe5491aec1d41819a00a6638d2ca7fd3b2d128939667f53623d8c89db4300d",
+    "act/back_end/verifier.py": "ad5184509e1f9122698e8dfb628b96b91ff102d4bb56fa54f2316c54b6cb9278",
+    "act/pipeline/verification/hybridz_largecls_gate.py": "45eb6536accfbaf8e30f62697f4c4f83f19f1c9a0a5d70e1dac4d4eb4a77b5a1"
+  }
+}

@@ -1,0 +1,145 @@
+{
+  "schema": "act.hybridz.global_exact_root_algorithm_screen.v1",
+  "date": "2026-08-12",
+  "status": "NO_ADMISSIBLE_LOW_REDUNDANCY_PROTOTYPE",
+  "formal_baseline": {
+    "fixed400_falsified": 43,
+    "fixed400_unknown": 357,
+    "cifar100_medium_falsified": 12,
+    "cifar100_large_falsified": 10,
+    "tinyimagenet_medium_falsified": 21,
+    "phase_projection_sha256": "615b45516b0d4cd2a3632c4f260efffc4fc5cf451444225f8d1bb3e6a04993ba"
+  },
+  "required_contract": {
+    "all_unstable_relu_phases_exact": true,
+    "triangle_or_convex_fallback_forbidden": true,
+    "act_bab_forbidden": true,
+    "backward_propagation_or_bounds_forbidden": true,
+    "dual_tightening_forbidden": true,
+    "input_sampling_forbidden": true,
+    "pgd_forbidden": true,
+    "one_common_responsive_path_required": true,
+    "independent_certificate_is_auxiliary_only": true
+  },
+  "local_structure": {
+    "case": "cifar100_medium_iid0",
+    "phase_rows": 2030,
+    "input_factors": 3072,
+    "phase_matrix_nnz": 2126574,
+    "phase_matrix_structural_rank": 2030,
+    "row_interaction_density": 0.662,
+    "row_interaction_minimum_degree": 622,
+    "treewidth_lower_bound": 622,
+    "interpretation": "The exact phase system has no low-rank, component, sharing, or low-separator structure for a compact dynamic program."
+  },
+  "screened_families": [
+    {
+      "family": "root LP rounding, feasibility pump, or MIP start",
+      "decision": "rejected_duplicate",
+      "reason": "binary-only exact-phase MIP starts, deterministic rounding of persistent-LP candidates, complete constructive starts, second phase projection, and fixed-cell LP variants are already closed by formal capability or concurrency gates"
+    },
+    {
+      "family": "Reluplex, DPLL(T), SAT phase learning, or exact star enumeration",
+      "decision": "inadmissible",
+      "reason": "completeness requires ReLU case splits or activation-region enumeration, which is the forbidden combinatorial search under a different name"
+    },
+    {
+      "family": "multi-neuron LP, SDP, or completely-positive formulation",
+      "decision": "inadmissible_or_unscalable",
+      "reason": "tractable variants are convex relaxations; the exact completely-positive program retains NP-hard membership and introduces a dense lifted matrix whose quadratic storage is incompatible with the current full forward graph and latency budget"
+    },
+    {
+      "family": "mixed complementarity or semismooth local solve",
+      "decision": "rejected_before_prototype",
+      "reason": "the signed residual network is a general nonmonotone complementarity problem with no complete root-only pivot guarantee; a local numerical solve would be another nonauthoritative search path and a custom backend"
+    },
+    {
+      "family": "additional corner, line, plane, hinge, neighbor, or property selector",
+      "decision": "rejected_duplicate",
+      "reason": "the fixed formal endpoints and global affine structure census already close these single-cell selection families on the first official UNKNOWN capability target"
+    }
+  ],
+  "additional_common_path_stoploss": {
+    "direct_first_cell_analytic_corner_without_lp": {
+      "rule": "reuse the verifier-derived first-cell analytic corner as the candidate in the updated exact cell and retain all phase, margin, BOX, and singleton replay",
+      "positive_controls": [
+        "cifar100_medium_iid2",
+        "cifar100_large_iid118",
+        "tinyimagenet_medium_iid1"
+      ],
+      "positive_controls_retained": 0,
+      "positive_controls_tested": 3,
+      "first_unknowns_observed_before_stop": [
+        "cifar100_medium_iid0",
+        "cifar100_large_iid100"
+      ],
+      "new_falsified_before_stop": 0,
+      "decision": "rejected_immediately_the_continuous_lp_is_capability_essential_for_every_positive_control"
+    },
+    "impossible_zero_cost_lp_four_worker_upper_bound": {
+      "case": "cifar100_medium_iid2",
+      "requests_per_group": 4,
+      "paired_groups": 5,
+      "precomputed_correct_lp_solution_replayed_at_zero_cost": true,
+      "all_statuses_match": true,
+      "paired_speedups": [
+        1.1771348251552525,
+        1.2301064707768534,
+        1.2463849790464139,
+        1.2478473840266975,
+        1.2477747667965688
+      ],
+      "median_paired_speedup": 1.2463849790464139,
+      "minimum_paired_speedup": 1.1771348251552525,
+      "required_four_worker_median_speedup": 2.0,
+      "passed_four_worker_gate": false,
+      "decision": "reject_native_loader_warm_basis_or_gpu_row_action_as_standalone_directions_even_a_free_lp_cannot_cross_the_gate"
+    },
+    "impossible_zero_cost_support_lp_and_singleton_floor": {
+      "case": "cifar100_medium_iid2",
+      "requests_per_group": 4,
+      "paired_groups": 5,
+      "search_support_results_free": true,
+      "correct_lp_solution_free": true,
+      "terminal_singleton_proof_free": true,
+      "remaining_work": "two generator streams, selected affine matrix construction, exact phase and margin replay, and host/device orchestration",
+      "cache_mismatches": 0,
+      "all_statuses_match": true,
+      "paired_speedups": [
+        1.8371016124086539,
+        1.8640862895842278,
+        1.952367880796895,
+        1.8462316273936665,
+        1.7958787033714108
+      ],
+      "median_paired_speedup": 1.8462316273936665,
+      "minimum_paired_speedup": 1.7958787033714108,
+      "required_four_worker_median_speedup": 2.0,
+      "passed_four_worker_gate": false,
+      "realizable": false,
+      "decision": "all identified local optimizations are jointly closed; a promotable path must remove a complete generator stream or replace the representation itself"
+    },
+    "large_fail_closed_diagnosis": {
+      "case": "cifar100_large_iid103",
+      "fixed400_reason": "unexpected_fail_closed:ExactReLULiveRowStreamError at the ten-second candidate deadline under concurrency",
+      "single_request_extended_diagnostic_seconds": 8.868476330302656,
+      "single_request_reason": "the single LP candidate failed exact phase or margin replay",
+      "resource_or_last_use_failure": false,
+      "new_falsified": false,
+      "decision": "do not treat the fixed400 wrapper label as evidence for an RSS or last-use capability gap"
+    }
+  },
+  "primary_references": [
+    "https://arxiv.org/abs/2405.21063",
+    "https://proceedings.mlr.press/v151/brown22b.html",
+    "https://openreview.net/forum?id=l_amHf1oaK",
+    "https://openreview.net/forum?id=BkPrDFgR-"
+  ],
+  "implementation": {
+    "new_solver_added": false,
+    "new_runtime_fallback_added": false,
+    "production_files_changed": false,
+    "real_or_large_run_added": false
+  },
+  "decision": "Do not implement a feasibility-pump wrapper, fifth solver encoding, complementarity backend, or relaxation path. Resume only with a genuinely new exact root mechanism whose theoretical representation fits the dense high-separator system and whose single-path performance can cross the existing gates."
+}

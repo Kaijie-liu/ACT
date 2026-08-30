@@ -1,0 +1,1575 @@
+{
+  "layers": [
+    {
+      "attributes": {
+        "cache": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        },
+        "id": 0,
+        "in_vars": {
+          "length": 0
+        },
+        "kind": "INPUT",
+        "out_vars": {
+          "length": 3072
+        },
+        "params": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        }
+      },
+      "layer_id": 0,
+      "out_vars": 3072,
+      "preds": [],
+      "succs": [
+        1
+      ],
+      "type": "Layer"
+    },
+    {
+      "attributes": {
+        "cache": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        },
+        "id": 1,
+        "in_vars": {
+          "length": 3072
+        },
+        "kind": "INPUT_SPEC",
+        "out_vars": {
+          "length": 3072
+        },
+        "params": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        }
+      },
+      "layer_id": 1,
+      "out_vars": 3072,
+      "preds": [
+        0
+      ],
+      "succs": [
+        2
+      ],
+      "type": "Layer"
+    },
+    {
+      "attributes": {
+        "cache": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        },
+        "id": 2,
+        "in_vars": {
+          "length": 3072
+        },
+        "kind": "CONV2D",
+        "out_vars": {
+          "length": 14400
+        },
+        "params": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        }
+      },
+      "layer_id": 2,
+      "out_vars": 14400,
+      "preds": [
+        1
+      ],
+      "succs": [
+        3
+      ],
+      "type": "Layer"
+    },
+    {
+      "attributes": {
+        "cache": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        },
+        "id": 3,
+        "in_vars": {
+          "length": 14400
+        },
+        "kind": "RELU",
+        "out_vars": {
+          "length": 14400
+        },
+        "params": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        }
+      },
+      "layer_id": 3,
+      "out_vars": 14400,
+      "preds": [
+        2
+      ],
+      "succs": [
+        4,
+        7
+      ],
+      "type": "Layer"
+    },
+    {
+      "attributes": {
+        "cache": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        },
+        "id": 4,
+        "in_vars": {
+          "length": 14400
+        },
+        "kind": "CONV2D",
+        "out_vars": {
+          "length": 8192
+        },
+        "params": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        }
+      },
+      "layer_id": 4,
+      "out_vars": 8192,
+      "preds": [
+        3
+      ],
+      "succs": [
+        5
+      ],
+      "type": "Layer"
+    },
+    {
+      "attributes": {
+        "cache": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        },
+        "id": 5,
+        "in_vars": {
+          "length": 8192
+        },
+        "kind": "RELU",
+        "out_vars": {
+          "length": 8192
+        },
+        "params": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        }
+      },
+      "layer_id": 5,
+      "out_vars": 8192,
+      "preds": [
+        4
+      ],
+      "succs": [
+        6
+      ],
+      "type": "Layer"
+    },
+    {
+      "attributes": {
+        "cache": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        },
+        "id": 6,
+        "in_vars": {
+          "length": 8192
+        },
+        "kind": "CONV2D",
+        "out_vars": {
+          "length": 8192
+        },
+        "params": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        }
+      },
+      "layer_id": 6,
+      "out_vars": 8192,
+      "preds": [
+        5
+      ],
+      "succs": [
+        8
+      ],
+      "type": "Layer"
+    },
+    {
+      "attributes": {
+        "cache": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        },
+        "id": 7,
+        "in_vars": {
+          "length": 14400
+        },
+        "kind": "CONV2D",
+        "out_vars": {
+          "length": 8192
+        },
+        "params": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        }
+      },
+      "layer_id": 7,
+      "out_vars": 8192,
+      "preds": [
+        3
+      ],
+      "succs": [
+        8
+      ],
+      "type": "Layer"
+    },
+    {
+      "attributes": {
+        "cache": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        },
+        "id": 8,
+        "in_vars": {
+          "length": 16384
+        },
+        "kind": "ADD",
+        "out_vars": {
+          "length": 8192
+        },
+        "params": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        }
+      },
+      "layer_id": 8,
+      "out_vars": 8192,
+      "preds": [
+        6,
+        7
+      ],
+      "succs": [
+        9,
+        12
+      ],
+      "type": "Layer"
+    },
+    {
+      "attributes": {
+        "cache": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        },
+        "id": 9,
+        "in_vars": {
+          "length": 8192
+        },
+        "kind": "CONV2D",
+        "out_vars": {
+          "length": 8192
+        },
+        "params": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        }
+      },
+      "layer_id": 9,
+      "out_vars": 8192,
+      "preds": [
+        8
+      ],
+      "succs": [
+        10
+      ],
+      "type": "Layer"
+    },
+    {
+      "attributes": {
+        "cache": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        },
+        "id": 10,
+        "in_vars": {
+          "length": 8192
+        },
+        "kind": "RELU",
+        "out_vars": {
+          "length": 8192
+        },
+        "params": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        }
+      },
+      "layer_id": 10,
+      "out_vars": 8192,
+      "preds": [
+        9
+      ],
+      "succs": [
+        11
+      ],
+      "type": "Layer"
+    },
+    {
+      "attributes": {
+        "cache": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        },
+        "id": 11,
+        "in_vars": {
+          "length": 8192
+        },
+        "kind": "CONV2D",
+        "out_vars": {
+          "length": 8192
+        },
+        "params": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        }
+      },
+      "layer_id": 11,
+      "out_vars": 8192,
+      "preds": [
+        10
+      ],
+      "succs": [
+        12
+      ],
+      "type": "Layer"
+    },
+    {
+      "attributes": {
+        "cache": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        },
+        "id": 12,
+        "in_vars": {
+          "length": 16384
+        },
+        "kind": "ADD",
+        "out_vars": {
+          "length": 8192
+        },
+        "params": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        }
+      },
+      "layer_id": 12,
+      "out_vars": 8192,
+      "preds": [
+        11,
+        8
+      ],
+      "succs": [
+        13,
+        16
+      ],
+      "type": "Layer"
+    },
+    {
+      "attributes": {
+        "cache": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        },
+        "id": 13,
+        "in_vars": {
+          "length": 8192
+        },
+        "kind": "CONV2D",
+        "out_vars": {
+          "length": 8192
+        },
+        "params": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        }
+      },
+      "layer_id": 13,
+      "out_vars": 8192,
+      "preds": [
+        12
+      ],
+      "succs": [
+        14
+      ],
+      "type": "Layer"
+    },
+    {
+      "attributes": {
+        "cache": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        },
+        "id": 14,
+        "in_vars": {
+          "length": 8192
+        },
+        "kind": "RELU",
+        "out_vars": {
+          "length": 8192
+        },
+        "params": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        }
+      },
+      "layer_id": 14,
+      "out_vars": 8192,
+      "preds": [
+        13
+      ],
+      "succs": [
+        15
+      ],
+      "type": "Layer"
+    },
+    {
+      "attributes": {
+        "cache": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        },
+        "id": 15,
+        "in_vars": {
+          "length": 8192
+        },
+        "kind": "CONV2D",
+        "out_vars": {
+          "length": 8192
+        },
+        "params": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        }
+      },
+      "layer_id": 15,
+      "out_vars": 8192,
+      "preds": [
+        14
+      ],
+      "succs": [
+        16
+      ],
+      "type": "Layer"
+    },
+    {
+      "attributes": {
+        "cache": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        },
+        "id": 16,
+        "in_vars": {
+          "length": 16384
+        },
+        "kind": "ADD",
+        "out_vars": {
+          "length": 8192
+        },
+        "params": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        }
+      },
+      "layer_id": 16,
+      "out_vars": 8192,
+      "preds": [
+        15,
+        12
+      ],
+      "succs": [
+        17,
+        20
+      ],
+      "type": "Layer"
+    },
+    {
+      "attributes": {
+        "cache": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        },
+        "id": 17,
+        "in_vars": {
+          "length": 8192
+        },
+        "kind": "CONV2D",
+        "out_vars": {
+          "length": 8192
+        },
+        "params": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        }
+      },
+      "layer_id": 17,
+      "out_vars": 8192,
+      "preds": [
+        16
+      ],
+      "succs": [
+        18
+      ],
+      "type": "Layer"
+    },
+    {
+      "attributes": {
+        "cache": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        },
+        "id": 18,
+        "in_vars": {
+          "length": 8192
+        },
+        "kind": "RELU",
+        "out_vars": {
+          "length": 8192
+        },
+        "params": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        }
+      },
+      "layer_id": 18,
+      "out_vars": 8192,
+      "preds": [
+        17
+      ],
+      "succs": [
+        19
+      ],
+      "type": "Layer"
+    },
+    {
+      "attributes": {
+        "cache": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        },
+        "id": 19,
+        "in_vars": {
+          "length": 8192
+        },
+        "kind": "CONV2D",
+        "out_vars": {
+          "length": 8192
+        },
+        "params": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        }
+      },
+      "layer_id": 19,
+      "out_vars": 8192,
+      "preds": [
+        18
+      ],
+      "succs": [
+        20
+      ],
+      "type": "Layer"
+    },
+    {
+      "attributes": {
+        "cache": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        },
+        "id": 20,
+        "in_vars": {
+          "length": 16384
+        },
+        "kind": "ADD",
+        "out_vars": {
+          "length": 8192
+        },
+        "params": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        }
+      },
+      "layer_id": 20,
+      "out_vars": 8192,
+      "preds": [
+        19,
+        16
+      ],
+      "succs": [
+        21,
+        24
+      ],
+      "type": "Layer"
+    },
+    {
+      "attributes": {
+        "cache": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        },
+        "id": 21,
+        "in_vars": {
+          "length": 8192
+        },
+        "kind": "CONV2D",
+        "out_vars": {
+          "length": 2048
+        },
+        "params": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        }
+      },
+      "layer_id": 21,
+      "out_vars": 2048,
+      "preds": [
+        20
+      ],
+      "succs": [
+        22
+      ],
+      "type": "Layer"
+    },
+    {
+      "attributes": {
+        "cache": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        },
+        "id": 22,
+        "in_vars": {
+          "length": 2048
+        },
+        "kind": "RELU",
+        "out_vars": {
+          "length": 2048
+        },
+        "params": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        }
+      },
+      "layer_id": 22,
+      "out_vars": 2048,
+      "preds": [
+        21
+      ],
+      "succs": [
+        23
+      ],
+      "type": "Layer"
+    },
+    {
+      "attributes": {
+        "cache": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        },
+        "id": 23,
+        "in_vars": {
+          "length": 2048
+        },
+        "kind": "CONV2D",
+        "out_vars": {
+          "length": 2048
+        },
+        "params": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        }
+      },
+      "layer_id": 23,
+      "out_vars": 2048,
+      "preds": [
+        22
+      ],
+      "succs": [
+        25
+      ],
+      "type": "Layer"
+    },
+    {
+      "attributes": {
+        "cache": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        },
+        "id": 24,
+        "in_vars": {
+          "length": 8192
+        },
+        "kind": "CONV2D",
+        "out_vars": {
+          "length": 2048
+        },
+        "params": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        }
+      },
+      "layer_id": 24,
+      "out_vars": 2048,
+      "preds": [
+        20
+      ],
+      "succs": [
+        25
+      ],
+      "type": "Layer"
+    },
+    {
+      "attributes": {
+        "cache": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        },
+        "id": 25,
+        "in_vars": {
+          "length": 4096
+        },
+        "kind": "ADD",
+        "out_vars": {
+          "length": 2048
+        },
+        "params": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        }
+      },
+      "layer_id": 25,
+      "out_vars": 2048,
+      "preds": [
+        23,
+        24
+      ],
+      "succs": [
+        26,
+        29
+      ],
+      "type": "Layer"
+    },
+    {
+      "attributes": {
+        "cache": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        },
+        "id": 26,
+        "in_vars": {
+          "length": 2048
+        },
+        "kind": "CONV2D",
+        "out_vars": {
+          "length": 2048
+        },
+        "params": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        }
+      },
+      "layer_id": 26,
+      "out_vars": 2048,
+      "preds": [
+        25
+      ],
+      "succs": [
+        27
+      ],
+      "type": "Layer"
+    },
+    {
+      "attributes": {
+        "cache": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        },
+        "id": 27,
+        "in_vars": {
+          "length": 2048
+        },
+        "kind": "RELU",
+        "out_vars": {
+          "length": 2048
+        },
+        "params": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        }
+      },
+      "layer_id": 27,
+      "out_vars": 2048,
+      "preds": [
+        26
+      ],
+      "succs": [
+        28
+      ],
+      "type": "Layer"
+    },
+    {
+      "attributes": {
+        "cache": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        },
+        "id": 28,
+        "in_vars": {
+          "length": 2048
+        },
+        "kind": "CONV2D",
+        "out_vars": {
+          "length": 2048
+        },
+        "params": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        }
+      },
+      "layer_id": 28,
+      "out_vars": 2048,
+      "preds": [
+        27
+      ],
+      "succs": [
+        29
+      ],
+      "type": "Layer"
+    },
+    {
+      "attributes": {
+        "cache": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        },
+        "id": 29,
+        "in_vars": {
+          "length": 4096
+        },
+        "kind": "ADD",
+        "out_vars": {
+          "length": 2048
+        },
+        "params": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        }
+      },
+      "layer_id": 29,
+      "out_vars": 2048,
+      "preds": [
+        28,
+        25
+      ],
+      "succs": [
+        30,
+        33
+      ],
+      "type": "Layer"
+    },
+    {
+      "attributes": {
+        "cache": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        },
+        "id": 30,
+        "in_vars": {
+          "length": 2048
+        },
+        "kind": "CONV2D",
+        "out_vars": {
+          "length": 2048
+        },
+        "params": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        }
+      },
+      "layer_id": 30,
+      "out_vars": 2048,
+      "preds": [
+        29
+      ],
+      "succs": [
+        31
+      ],
+      "type": "Layer"
+    },
+    {
+      "attributes": {
+        "cache": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        },
+        "id": 31,
+        "in_vars": {
+          "length": 2048
+        },
+        "kind": "RELU",
+        "out_vars": {
+          "length": 2048
+        },
+        "params": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        }
+      },
+      "layer_id": 31,
+      "out_vars": 2048,
+      "preds": [
+        30
+      ],
+      "succs": [
+        32
+      ],
+      "type": "Layer"
+    },
+    {
+      "attributes": {
+        "cache": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        },
+        "id": 32,
+        "in_vars": {
+          "length": 2048
+        },
+        "kind": "CONV2D",
+        "out_vars": {
+          "length": 2048
+        },
+        "params": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        }
+      },
+      "layer_id": 32,
+      "out_vars": 2048,
+      "preds": [
+        31
+      ],
+      "succs": [
+        33
+      ],
+      "type": "Layer"
+    },
+    {
+      "attributes": {
+        "cache": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        },
+        "id": 33,
+        "in_vars": {
+          "length": 4096
+        },
+        "kind": "ADD",
+        "out_vars": {
+          "length": 2048
+        },
+        "params": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        }
+      },
+      "layer_id": 33,
+      "out_vars": 2048,
+      "preds": [
+        32,
+        29
+      ],
+      "succs": [
+        34,
+        37
+      ],
+      "type": "Layer"
+    },
+    {
+      "attributes": {
+        "cache": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        },
+        "id": 34,
+        "in_vars": {
+          "length": 2048
+        },
+        "kind": "CONV2D",
+        "out_vars": {
+          "length": 2048
+        },
+        "params": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        }
+      },
+      "layer_id": 34,
+      "out_vars": 2048,
+      "preds": [
+        33
+      ],
+      "succs": [
+        35
+      ],
+      "type": "Layer"
+    },
+    {
+      "attributes": {
+        "cache": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        },
+        "id": 35,
+        "in_vars": {
+          "length": 2048
+        },
+        "kind": "RELU",
+        "out_vars": {
+          "length": 2048
+        },
+        "params": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        }
+      },
+      "layer_id": 35,
+      "out_vars": 2048,
+      "preds": [
+        34
+      ],
+      "succs": [
+        36
+      ],
+      "type": "Layer"
+    },
+    {
+      "attributes": {
+        "cache": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        },
+        "id": 36,
+        "in_vars": {
+          "length": 2048
+        },
+        "kind": "CONV2D",
+        "out_vars": {
+          "length": 2048
+        },
+        "params": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        }
+      },
+      "layer_id": 36,
+      "out_vars": 2048,
+      "preds": [
+        35
+      ],
+      "succs": [
+        37
+      ],
+      "type": "Layer"
+    },
+    {
+      "attributes": {
+        "cache": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        },
+        "id": 37,
+        "in_vars": {
+          "length": 4096
+        },
+        "kind": "ADD",
+        "out_vars": {
+          "length": 2048
+        },
+        "params": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        }
+      },
+      "layer_id": 37,
+      "out_vars": 2048,
+      "preds": [
+        36,
+        33
+      ],
+      "succs": [
+        38
+      ],
+      "type": "Layer"
+    },
+    {
+      "attributes": {
+        "cache": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        },
+        "id": 38,
+        "in_vars": {
+          "length": 2048
+        },
+        "kind": "FLATTEN",
+        "out_vars": {
+          "length": 2048
+        },
+        "params": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        }
+      },
+      "layer_id": 38,
+      "out_vars": 2048,
+      "preds": [
+        37
+      ],
+      "succs": [
+        39
+      ],
+      "type": "Layer"
+    },
+    {
+      "attributes": {
+        "cache": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        },
+        "id": 39,
+        "in_vars": {
+          "length": 2048
+        },
+        "kind": "DENSE",
+        "out_vars": {
+          "length": 100
+        },
+        "params": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        }
+      },
+      "layer_id": 39,
+      "out_vars": 100,
+      "preds": [
+        38
+      ],
+      "succs": [
+        40
+      ],
+      "type": "Layer"
+    },
+    {
+      "attributes": {
+        "cache": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        },
+        "id": 40,
+        "in_vars": {
+          "length": 100
+        },
+        "kind": "RELU",
+        "out_vars": {
+          "length": 100
+        },
+        "params": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        }
+      },
+      "layer_id": 40,
+      "out_vars": 100,
+      "preds": [
+        39
+      ],
+      "succs": [
+        41
+      ],
+      "type": "Layer"
+    },
+    {
+      "attributes": {
+        "cache": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        },
+        "id": 41,
+        "in_vars": {
+          "length": 100
+        },
+        "kind": "DENSE",
+        "out_vars": {
+          "length": 100
+        },
+        "params": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        }
+      },
+      "layer_id": 41,
+      "out_vars": 100,
+      "preds": [
+        40
+      ],
+      "succs": [
+        42
+      ],
+      "type": "Layer"
+    },
+    {
+      "attributes": {
+        "cache": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        },
+        "id": 42,
+        "in_vars": {
+          "length": 100
+        },
+        "kind": "ASSERT",
+        "out_vars": {
+          "length": 100
+        },
+        "params": {
+          "array": {
+            "dtype": "object",
+            "shape": []
+          }
+        }
+      },
+      "layer_id": 42,
+      "out_vars": 100,
+      "preds": [
+        41
+      ],
+      "succs": [],
+      "type": "Layer"
+    }
+  ],
+  "relu": [
+    {
+      "active_count": 4696,
+      "exact_rows_count": 316,
+      "inactive_count": 9388,
+      "l_count": 14400,
+      "layer_id": 3,
+      "pred": 2,
+      "relaxed_rows_count": 0,
+      "size": 14400,
+      "u_count": 14400,
+      "unstable_count": 316
+    },
+    {
+      "active_count": 1291,
+      "exact_rows_count": 242,
+      "inactive_count": 6659,
+      "l_count": 8192,
+      "layer_id": 5,
+      "pred": 4,
+      "relaxed_rows_count": 0,
+      "size": 8192,
+      "u_count": 8192,
+      "unstable_count": 242
+    },
+    {
+      "active_count": 73,
+      "exact_rows_count": 202,
+      "inactive_count": 7917,
+      "l_count": 8192,
+      "layer_id": 10,
+      "pred": 9,
+      "relaxed_rows_count": 0,
+      "size": 8192,
+      "u_count": 8192,
+      "unstable_count": 202
+    },
+    {
+      "active_count": 7,
+      "exact_rows_count": 47,
+      "inactive_count": 8138,
+      "l_count": 8192,
+      "layer_id": 14,
+      "pred": 13,
+      "relaxed_rows_count": 0,
+      "size": 8192,
+      "u_count": 8192,
+      "unstable_count": 47
+    },
+    {
+      "active_count": 0,
+      "exact_rows_count": 0,
+      "inactive_count": 8192,
+      "l_count": 8192,
+      "layer_id": 18,
+      "pred": 17,
+      "relaxed_rows_count": 0,
+      "size": 8192,
+      "u_count": 8192,
+      "unstable_count": 0
+    },
+    {
+      "active_count": 47,
+      "exact_rows_count": 155,
+      "inactive_count": 1846,
+      "l_count": 2048,
+      "layer_id": 22,
+      "pred": 21,
+      "relaxed_rows_count": 0,
+      "size": 2048,
+      "u_count": 2048,
+      "unstable_count": 155
+    },
+    {
+      "active_count": 0,
+      "exact_rows_count": 0,
+      "inactive_count": 2048,
+      "l_count": 2048,
+      "layer_id": 27,
+      "pred": 26,
+      "relaxed_rows_count": 0,
+      "size": 2048,
+      "u_count": 2048,
+      "unstable_count": 0
+    },
+    {
+      "active_count": 0,
+      "exact_rows_count": 0,
+      "inactive_count": 2048,
+      "l_count": 2048,
+      "layer_id": 31,
+      "pred": 30,
+      "relaxed_rows_count": 0,
+      "size": 2048,
+      "u_count": 2048,
+      "unstable_count": 0
+    },
+    {
+      "active_count": 0,
+      "exact_rows_count": 0,
+      "inactive_count": 2048,
+      "l_count": 2048,
+      "layer_id": 35,
+      "pred": 34,
+      "relaxed_rows_count": 0,
+      "size": 2048,
+      "u_count": 2048,
+      "unstable_count": 0
+    },
+    {
+      "active_count": 9,
+      "exact_rows_count": 90,
+      "inactive_count": 1,
+      "l_count": 100,
+      "layer_id": 40,
+      "pred": 39,
+      "relaxed_rows_count": 0,
+      "size": 100,
+      "u_count": 100,
+      "unstable_count": 90
+    }
+  ],
+  "schema": "act.hybridz.relu_phase_topology_capture.v1",
+  "scope": {
+    "family": "cifar100_medium",
+    "iid": 29,
+    "input_sampling": false,
+    "onnx_concrete_execution": false,
+    "pgd": false,
+    "solver_called": false
+  },
+  "solver_intercepts": [
+    {
+      "n_bin": 1052,
+      "n_cont": 10347,
+      "n_eq": 0,
+      "n_ub": 15402
+    }
+  ],
+  "worker_rc": 0
+}

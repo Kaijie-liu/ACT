@@ -1,0 +1,77 @@
+{
+  "schema": "act.operator_constraint_program.phase_b_checkpoint.v1",
+  "status": "frozen_no_blocker_default_off_synthetic",
+  "created_date": "2026-08-10",
+  "scope": {
+    "default_enabled": false,
+    "real_model_run": false,
+    "large_model_run": false,
+    "solver_consumer_connected": false,
+    "proof_or_verdict_authority": false
+  },
+  "freeze": {
+    "operator": {
+      "path": "act/back_end/hybridz_tf/operator_hz.py",
+      "sha256": "4dff6de88b64dd583be8ff2eebc145da720ebdb31f92a3de8065edc4d1ec2d7b"
+    },
+    "focused_test": {
+      "path": "act/back_end/hybridz_tf/test_operator_constraint_program_sink.py",
+      "sha256": "92ea98ac0da1b7d2821946995b8b90596a7b041351c9c3bf9a091fe6ba434f5c"
+    },
+    "constraint_program_core_sha256": "d301ebf546cc01bfdd133a00572ca87dc7632331b81188d3812635b99f7b5ab0",
+    "constraint_program_test_sha256": "c41968e7800ed8e819a7440c32814c959fc41c096435ffc9d9833b65da37d205"
+  },
+  "implementation": {
+    "allocator_construction": "public reserve/initialize only",
+    "owner_construction": "public reserve/initialize only",
+    "pre_seal_failure": "terminal discard; no legacy fallback",
+    "post_seal_failure": "preserve complete sealed program; fail whole build; no partial HZ and no fallback",
+    "cleanup_exception_policy": "secondary cleanup errors are notes; the primary BaseException object is re-raised",
+    "replay_cursor_policy": "explicit bounded close; consumer primary cannot be replaced by close failure",
+    "relu_policy": "exact_budget=-1 only; every unstable ReLU exact binary; no triangle/dual hook",
+    "range_policy": "ADD_MATERIALIZE only; fallback_pairs must equal zero"
+  },
+  "tests": {
+    "focused": {
+      "tests": 16,
+      "result": "pass"
+    },
+    "operator_rbs_joint": {
+      "tests": 61,
+      "subtests": 20,
+      "result": "pass"
+    },
+    "successful_multibatch_replay": {
+      "width": 129,
+      "source_rows": 129,
+      "virtual_facets": 258,
+      "batches": [[0, 256], [256, 2]],
+      "legacy_bitwise_equal": true,
+      "fallback_pairs": 0
+    },
+    "exact_relu_forbidden_hook_gate": {
+      "unstable_rows": 3,
+      "binary_factors": 3,
+      "triangle_hook_called": false,
+      "dual_hook_called": false,
+      "result": "pass"
+    },
+    "lifecycle_faults": {
+      "adapter_post_new_return": "pass",
+      "owner_post_new_return": "pass",
+      "cleanup_secondary_preserves_primary": "pass",
+      "offset_256_consumer_and_close_double_fault": "pass"
+    }
+  },
+  "redteam": {
+    "lifecycle": {
+      "agent": "/root/phaseb_lifecycle_redteam",
+      "status": "no_blocker"
+    },
+    "parity_and_forbidden_paths": {
+      "agent": "/root/phaseb_parity_redteam",
+      "status": "no_blocker"
+    }
+  },
+  "next_action": "Phase C must add an explicit authenticated solver handoff and native RANGE/LE streaming loader. It must not silently rediscover the program from SparseHZono or fall back to expanded legacy rows."
+}

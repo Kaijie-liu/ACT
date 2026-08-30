@@ -1,0 +1,51 @@
+{
+  "schema": "act.hybridz.aggregate_exact_mip_witness_stoploss.v1",
+  "date": "2026-08-11",
+  "status": "STOPLOSS_NO_VALID_PRIMAL",
+  "candidate": "Use one fixed sum of all original rival margins as the sole objective of one exact phase MIP, with no per-rival retry or fallback.",
+  "scope": {
+    "family": "cifar100_medium",
+    "iid": 29,
+    "operator_exact_budget": -1,
+    "operator_materialize_add": false,
+    "solver_sessions": 1,
+    "solver_threads": 1,
+    "highs_time_limit_seconds": 15.0,
+    "input_sampling": false,
+    "pgd": false,
+    "concrete_onnx_execution": false,
+    "raw_onnx_replay": false,
+    "production_files_changed": 0
+  },
+  "model": {
+    "continuous_columns": 18539,
+    "binary_phase_columns": 1061,
+    "total_columns": 19600,
+    "native_rows": 17489,
+    "original_nnz": 3498525,
+    "highs_candidate_nnz": 3485625
+  },
+  "timing_seconds": {
+    "parse_convert": 1.1756865279749036,
+    "formal_hz_build": 7.156485935673118,
+    "native_add_rows": 0.07848840765655041,
+    "highs_run": 15.350776111707091,
+    "measured_total": 23.761436983011663
+  },
+  "result": {
+    "highs_return": "HighsStatus.kWarning",
+    "highs_model_status": "Time limit reached",
+    "incumbent_valid_in_original_hz": false,
+    "incumbent_validation_failure": "rows",
+    "maximum_original_row_violation": 7.322845084817458,
+    "original_property_witness": false,
+    "formal_solved_count_gain": 0
+  },
+  "decision": {
+    "retain_candidate": false,
+    "run_tinyimagenet": false,
+    "add_runtime_mode": false,
+    "fallback_added": false,
+    "reason": "The one-session aggregate objective did not produce even a valid base exact-HZ primal inside the bounded solve, so changing property scheduling cannot address the dominant feasibility search bottleneck."
+  }
+}

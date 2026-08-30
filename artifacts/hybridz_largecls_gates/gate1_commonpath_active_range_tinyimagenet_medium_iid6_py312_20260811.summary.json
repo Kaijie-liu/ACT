@@ -1,0 +1,3224 @@
+{
+  "instance_results": [
+    {
+      "benchmark": "tinyimagenet_2024",
+      "conclusive": false,
+      "csv_timeout_seconds": 100.0,
+      "cuda_peak_memory": {
+        "available": false,
+        "device_total_bytes": null,
+        "logical_device_index": null,
+        "max_memory_allocated_bytes": null,
+        "max_memory_reserved_bytes": null,
+        "observation_status": "unavailable",
+        "reset_performed": false,
+        "schema": "act.cuda_peak_memory.v1",
+        "unavailable_reason": "worker_hard_killed_before_receipt"
+      },
+      "diagnostic_only": true,
+      "failure_class": null,
+      "failure_reason": null,
+      "family": "tinyimagenet_medium",
+      "fatal_reason": null,
+      "gate": 6,
+      "ground_truth_loaded": false,
+      "iid": 6,
+      "onnx_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/tinyimagenet_2024/onnx/TinyImageNet_resnet_medium.onnx",
+      "operator_phase_clique_diagnostic": false,
+      "promotion_eligible": false,
+      "property_micro_rlt_packet_mode": "both",
+      "property_micro_rlt_parent_only_diagnostic": false,
+      "query_dual_feedback_config": {
+        "block_size": 1024,
+        "device": "cuda",
+        "effective_steps": 0,
+        "effective_time_limit": 0.0,
+        "requested_steps": 0,
+        "requested_time_limit": 0.0,
+        "status": "not_promoted",
+        "targets": []
+      },
+      "query_dual_feedback_status": "not_promoted",
+      "query_dual_feedback_targets": [],
+      "record_type": "instance_result",
+      "recorded_at": "2026-08-11T06:45:37.764443Z",
+      "reference_diagnostic_label": "S",
+      "reference_diagnostic_label_present": true,
+      "reference_label_used_for_verdict_or_pass": false,
+      "result": {
+        "cuda_peak_memory": {
+          "available": false,
+          "device_total_bytes": null,
+          "logical_device_index": null,
+          "max_memory_allocated_bytes": null,
+          "max_memory_reserved_bytes": null,
+          "observation_status": "unavailable",
+          "reset_performed": false,
+          "schema": "act.cuda_peak_memory.v1",
+          "unavailable_reason": "worker_hard_killed_before_receipt"
+        },
+        "log_path": "/data1/Kane/FSE/ACT/artifacts/hybridz_largecls_gates/logs/20260811T064507Z-804a83c5f436_tinyimagenet_medium_iid006.log",
+        "metadata": {
+          "hard_kill": true,
+          "reason": "outer_total_wall_deadline"
+        },
+        "outer_timed_out": true,
+        "outer_timeout_seconds": 30.0,
+        "parent_wall_seconds": 30.159359741955996,
+        "phase_times": {},
+        "resources_after": {
+          "gpu": {
+            "free_bytes": 101913198592,
+            "gpu_index": 0,
+            "total_bytes": 102641958912,
+            "uuid": "GPU-f491c2c6-a093-590a-6b8a-13b5f76aadcc"
+          },
+          "memory": {
+            "available_bytes": 106929823744,
+            "source": "/proc/meminfo"
+          }
+        },
+        "resources_before": {
+          "gpu": {
+            "free_bytes": 101913198592,
+            "gpu_index": 0,
+            "total_bytes": 102641958912,
+            "uuid": "GPU-f491c2c6-a093-590a-6b8a-13b5f76aadcc"
+          },
+          "memory": {
+            "available_bytes": 107097526272,
+            "source": "/proc/meminfo"
+          }
+        },
+        "schema_version": 3,
+        "status": "timeout",
+        "worker_state": "completed"
+      },
+      "run_id": "20260811T064507Z-804a83c5f436",
+      "schema_version": 3,
+      "vnnlib_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/tinyimagenet_2024/vnnlib/TinyImageNet_resnet_medium_prop_idx_9262_sidx_880_eps_0.0039.vnnlib"
+    }
+  ],
+  "record_type": "summary",
+  "run_end": {
+    "all_expected_completed": true,
+    "all_results_conclusive": false,
+    "artifact_sha256": "f770f4ba83c5b97ed2d0cadbe1f4cedfdc32a110f6b746500042221c9bfc657e",
+    "completed_instance_count": 1,
+    "config_sha256": "22737c1cb3a5efc9d99e886c23a3e88ba199b76a5f1e839897639c6bad9966b4",
+    "counts": {
+      "timeout": 1
+    },
+    "cuda_peak_memory_policy": {
+      "capture_apis": [
+        "torch.cuda.max_memory_allocated",
+        "torch.cuda.max_memory_reserved"
+      ],
+      "capture_scope": "through_worker_result_construction",
+      "completed_worker_requires_captured_receipt": true,
+      "dynamic_values_in_experiment_fingerprint": false,
+      "reset_api": "torch.cuda.reset_peak_memory_stats",
+      "reset_point": "after_initialize_device_before_model_parse",
+      "schema": "act.cuda_peak_memory.v1",
+      "synchronize_before_capture": true
+    },
+    "cuda_peak_memory_summary": {
+      "all_instance_results_captured": false,
+      "captured_count": 0,
+      "device_total_bytes": null,
+      "error_count": 0,
+      "instance_result_count": 1,
+      "max_memory_allocated_bytes": null,
+      "max_memory_reserved_bytes": null,
+      "missing_count": 0,
+      "observed_device_total_bytes": [],
+      "policy": {
+        "capture_apis": [
+          "torch.cuda.max_memory_allocated",
+          "torch.cuda.max_memory_reserved"
+        ],
+        "capture_scope": "through_worker_result_construction",
+        "completed_worker_requires_captured_receipt": true,
+        "dynamic_values_in_experiment_fingerprint": false,
+        "reset_api": "torch.cuda.reset_peak_memory_stats",
+        "reset_point": "after_initialize_device_before_model_parse",
+        "schema": "act.cuda_peak_memory.v1",
+        "synchronize_before_capture": true
+      },
+      "schema": "act.cuda_peak_memory_summary.v1",
+      "unavailable_count": 1
+    },
+    "cumulative_count": 6,
+    "delta_count": 1,
+    "diagnostic_only": true,
+    "elapsed_seconds": 30.475289583206177,
+    "engine": "operator_hz_objbound",
+    "environment_sha256": "8b045f036374a73290ecbcca2c07c8e693531fb90fc61ca25f3b8028cce6e8ce",
+    "expected_instance_count": 1,
+    "experiment_sha256": "dd765eb8b20208307df8cba1b385b4e23404ecb9a99b141854044982e22fcc84",
+    "finished_at": "2026-08-11T06:45:37.933333Z",
+    "gate": 6,
+    "global_failure_class": null,
+    "global_failure_reason": null,
+    "global_fatal": null,
+    "ground_truth_loaded": false,
+    "manifest_sha256": "323b045ac703dc0a876c1d042359346d1578ee6ebd08a1b017770964efd9ff83",
+    "operator_phase_clique_diagnostic": false,
+    "partial_family_diagnostic": true,
+    "promotion": null,
+    "promotion_chain": [],
+    "promotion_chain_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "promotion_eligible": false,
+    "property_micro_rlt_packet_mode": "both",
+    "property_micro_rlt_parent_only_diagnostic": false,
+    "property_micro_rlt_runtime": {
+      "packet_mode": "both",
+      "parent_only_diagnostic": false,
+      "parent_prefilter_seconds": 0.0,
+      "product_cap": 0
+    },
+    "query_dual_candidate_policy": {
+      "candidate_bound_source": "none_descriptor_only",
+      "candidate_non_authoritative_audit_fields": [
+        "lr_alpha",
+        "lr_decay",
+        "solver",
+        "elapsed_seconds",
+        "timings"
+      ],
+      "candidate_protocol": "descriptor_only_v2",
+      "candidate_schema": "act.query_dual_candidates.v2",
+      "candidate_success_status": "descriptors_generated",
+      "conv_channel_chunk_binding": "root_box_certificate",
+      "cpu_independent_replay_required": true,
+      "gpu_frozen_alpha_replay": false,
+      "operator_schema": "operator_hz_verified_query_dual_feedback_v1",
+      "optimizer_margins_exported": false,
+      "pipeline_non_authoritative_audit_fields": [
+        "candidate_generator",
+        "candidate_solver_factory",
+        "dual_solver_default_device",
+        "dual_solver_default_dtype",
+        "candidate_cuda_device_name"
+      ],
+      "pipeline_schema": "act.verified_query_dual_feedback.v2",
+      "property_stage_schema": "act.verified_query_dual_property.v2",
+      "replay_chunk_size_binding": "equals_effective_query_dual_feedback_block_size",
+      "replay_max_workspace_bytes_binding": "each_cpu_replay_receipt",
+      "target_empty_status": "no_queries_fallback",
+      "target_stage_schema": "act.verified_query_dual_stage.v2",
+      "wrapper_schema": "verifier_query_dual_feedback_transaction_v1"
+    },
+    "query_dual_feedback_effective_by_family": {
+      "cifar100_large": {
+        "block_size": 1024,
+        "device": "cuda",
+        "effective_steps": 0,
+        "effective_time_limit": 0.0,
+        "requested_steps": 0,
+        "requested_time_limit": 0.0,
+        "status": "not_promoted",
+        "targets": []
+      },
+      "cifar100_medium": {
+        "block_size": 1024,
+        "device": "cuda",
+        "effective_steps": 0,
+        "effective_time_limit": 0.0,
+        "requested_steps": 0,
+        "requested_time_limit": 0.0,
+        "status": "gate1_candidate",
+        "targets": []
+      },
+      "tinyimagenet_medium": {
+        "block_size": 1024,
+        "device": "cuda",
+        "effective_steps": 0,
+        "effective_time_limit": 0.0,
+        "requested_steps": 0,
+        "requested_time_limit": 0.0,
+        "status": "not_promoted",
+        "targets": []
+      }
+    },
+    "query_dual_feedback_families": {
+      "cifar100_large": {
+        "status": "not_promoted",
+        "targets": []
+      },
+      "cifar100_medium": {
+        "status": "gate1_candidate",
+        "targets": []
+      },
+      "tinyimagenet_medium": {
+        "status": "not_promoted",
+        "targets": []
+      }
+    },
+    "query_dual_feedback_runtime": {
+      "block_size": 1024,
+      "device": "cuda",
+      "steps": 0,
+      "time_limit": 0.0
+    },
+    "receipt_jsonl": "/data1/Kane/FSE/ACT/artifacts/hybridz_largecls_gates/gate1_commonpath_active_range_tinyimagenet_medium_iid6_py312_20260811.jsonl",
+    "record_type": "run_end",
+    "reference_diagnostic_label_present": true,
+    "reference_labels_are_proof": false,
+    "run_end_integrity": {
+      "checks": {
+        "artifact_sha256": true,
+        "config_sha256": true,
+        "csv_sha256": true,
+        "environment_sha256": true,
+        "source_sha256": true
+      },
+      "errors": [],
+      "expected": {
+        "artifact_sha256": "f770f4ba83c5b97ed2d0cadbe1f4cedfdc32a110f6b746500042221c9bfc657e",
+        "config_sha256": "22737c1cb3a5efc9d99e886c23a3e88ba199b76a5f1e839897639c6bad9966b4",
+        "csv_sha256": {
+          "cifar100_2024": "aa656d7a73529ba7c41b5618440f543ba4677418bb44115d384b644cc034f9ee",
+          "tinyimagenet_2024": "188058624df1122f32295f99d83380485a7d736212555a5e8214204459c22b7e"
+        },
+        "environment_sha256": "8b045f036374a73290ecbcca2c07c8e693531fb90fc61ca25f3b8028cce6e8ce",
+        "source_sha256": "0ea70715c55b97e6994944ba88396870b7dc41713aad02b5207411d7c7f8ba2a"
+      },
+      "observed": {
+        "artifact_sha256": "f770f4ba83c5b97ed2d0cadbe1f4cedfdc32a110f6b746500042221c9bfc657e",
+        "config_sha256": "22737c1cb3a5efc9d99e886c23a3e88ba199b76a5f1e839897639c6bad9966b4",
+        "csv_sha256": {
+          "cifar100_2024": "aa656d7a73529ba7c41b5618440f543ba4677418bb44115d384b644cc034f9ee",
+          "tinyimagenet_2024": "188058624df1122f32295f99d83380485a7d736212555a5e8214204459c22b7e"
+        },
+        "environment_sha256": "8b045f036374a73290ecbcca2c07c8e693531fb90fc61ca25f3b8028cce6e8ce",
+        "source_sha256": "0ea70715c55b97e6994944ba88396870b7dc41713aad02b5207411d7c7f8ba2a"
+      },
+      "passed": true
+    },
+    "run_id": "20260811T064507Z-804a83c5f436",
+    "schema_version": 3,
+    "selected_families": [
+      "tinyimagenet_medium"
+    ],
+    "source_sha256": "0ea70715c55b97e6994944ba88396870b7dc41713aad02b5207411d7c7f8ba2a",
+    "status": "DIAGNOSTIC_PARTIAL",
+    "stopped_families": {
+      "tinyimagenet_medium": "STOPLOSS:max_inconclusive_per_family=1"
+    },
+    "unpromoted_diagnostic": false
+  },
+  "run_start": {
+    "artifact_files": [
+      {
+        "kinds": [
+          "onnx"
+        ],
+        "path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/onnx/CIFAR100_resnet_large.onnx",
+        "sha256": "5747c00f20d8458b60da85c6ae446b4689409307146ca02f439277fbb7d89f16",
+        "size_bytes": 15243961,
+        "uses": [
+          "gate14:cifar100_large:iid110",
+          "gate14:cifar100_large:iid153",
+          "gate40:cifar100_large:iid102",
+          "gate40:cifar100_large:iid133",
+          "gate40:cifar100_large:iid160",
+          "gate40:cifar100_large:iid161",
+          "gate40:cifar100_large:iid180",
+          "gate40:cifar100_large:iid182",
+          "gate6:cifar100_large:iid113",
+          "gate6:cifar100_large:iid118"
+        ]
+      },
+      {
+        "kinds": [
+          "onnx"
+        ],
+        "path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/onnx/CIFAR100_resnet_medium.onnx",
+        "sha256": "aba117ad0ad4abdd630c220beca70cd58825e72e7bada5dffdda10bb725cece4",
+        "size_bytes": 10156168,
+        "uses": [
+          "gate14:cifar100_medium:iid11",
+          "gate14:cifar100_medium:iid50",
+          "gate40:cifar100_medium:iid0",
+          "gate40:cifar100_medium:iid10",
+          "gate40:cifar100_medium:iid21",
+          "gate40:cifar100_medium:iid3",
+          "gate40:cifar100_medium:iid64",
+          "gate40:cifar100_medium:iid86",
+          "gate6:cifar100_medium:iid2",
+          "gate6:cifar100_medium:iid29"
+        ]
+      },
+      {
+        "kinds": [
+          "vnnlib"
+        ],
+        "path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/vnnlib/CIFAR100_resnet_large_prop_idx_1063_sidx_7948_eps_0.0039.vnnlib",
+        "sha256": "f9b77b99fe82813df69b11e9ed2c378798c6d252277ab107ce3dd68429285b76",
+        "size_bytes": 338307,
+        "uses": [
+          "gate14:cifar100_large:iid110"
+        ]
+      },
+      {
+        "kinds": [
+          "vnnlib"
+        ],
+        "path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/vnnlib/CIFAR100_resnet_large_prop_idx_1216_sidx_6431_eps_0.0039.vnnlib",
+        "sha256": "4866d621441efd5bb8f568c09f6d3ff52b05e5bc7688c1f136ba4fa15bcb489c",
+        "size_bytes": 337303,
+        "uses": [
+          "gate40:cifar100_large:iid180"
+        ]
+      },
+      {
+        "kinds": [
+          "vnnlib"
+        ],
+        "path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/vnnlib/CIFAR100_resnet_large_prop_idx_1439_sidx_8354_eps_0.0039.vnnlib",
+        "sha256": "4425caad857d90470a6db6f60de288d8a685676f2ae5a02076b6cd5baa65b3a3",
+        "size_bytes": 340248,
+        "uses": [
+          "gate6:cifar100_large:iid113"
+        ]
+      },
+      {
+        "kinds": [
+          "vnnlib"
+        ],
+        "path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/vnnlib/CIFAR100_resnet_large_prop_idx_3681_sidx_4987_eps_0.0039.vnnlib",
+        "sha256": "11be08ead4e07ab4ae5e668723d015c32b932417ef29d6b285422bb833b7f6b4",
+        "size_bytes": 338654,
+        "uses": [
+          "gate40:cifar100_large:iid133"
+        ]
+      },
+      {
+        "kinds": [
+          "vnnlib"
+        ],
+        "path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/vnnlib/CIFAR100_resnet_large_prop_idx_4652_sidx_1371_eps_0.0039.vnnlib",
+        "sha256": "5b425e64c837085d070e219e8ac0e29012b30f2ef9f8e3af1ec7f5e00bc8e507",
+        "size_bytes": 340821,
+        "uses": [
+          "gate14:cifar100_large:iid153"
+        ]
+      },
+      {
+        "kinds": [
+          "vnnlib"
+        ],
+        "path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/vnnlib/CIFAR100_resnet_large_prop_idx_5162_sidx_8126_eps_0.0039.vnnlib",
+        "sha256": "c67e88f7a0a36f6dec78aa2d3d751c500e815078673662a1633b26b5e294e7be",
+        "size_bytes": 340330,
+        "uses": [
+          "gate40:cifar100_large:iid160"
+        ]
+      },
+      {
+        "kinds": [
+          "vnnlib"
+        ],
+        "path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/vnnlib/CIFAR100_resnet_large_prop_idx_5308_sidx_1650_eps_0.0039.vnnlib",
+        "sha256": "962d278c6835db6ee300d07184961c4e9317ce80ce067325b9eea3840285691e",
+        "size_bytes": 338563,
+        "uses": [
+          "gate40:cifar100_large:iid102"
+        ]
+      },
+      {
+        "kinds": [
+          "vnnlib"
+        ],
+        "path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/vnnlib/CIFAR100_resnet_large_prop_idx_5546_sidx_4338_eps_0.0039.vnnlib",
+        "sha256": "bff876dd0b2c183d1f2526f8846dcf873cf15b4dbd607f0729920b0fde6fc7e8",
+        "size_bytes": 340874,
+        "uses": [
+          "gate40:cifar100_large:iid182"
+        ]
+      },
+      {
+        "kinds": [
+          "vnnlib"
+        ],
+        "path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/vnnlib/CIFAR100_resnet_large_prop_idx_8502_sidx_2893_eps_0.0039.vnnlib",
+        "sha256": "34c4533bd3eeef8be75012a87cd6e1bed2999f10fd19c721d48509fda523d876",
+        "size_bytes": 342096,
+        "uses": [
+          "gate40:cifar100_large:iid161"
+        ]
+      },
+      {
+        "kinds": [
+          "vnnlib"
+        ],
+        "path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/vnnlib/CIFAR100_resnet_large_prop_idx_9773_sidx_3718_eps_0.0039.vnnlib",
+        "sha256": "885ee9f008a908094ab00d00124436cc0483454b40c775c57fa9a43b2b3388e1",
+        "size_bytes": 336228,
+        "uses": [
+          "gate6:cifar100_large:iid118"
+        ]
+      },
+      {
+        "kinds": [
+          "vnnlib"
+        ],
+        "path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/vnnlib/CIFAR100_resnet_medium_prop_idx_4429_sidx_1471_eps_0.0039.vnnlib",
+        "sha256": "a0fd1008fcd127ac83840bc00c8f10e995e513bebb22aa9394b2e789d2333720",
+        "size_bytes": 339082,
+        "uses": [
+          "gate6:cifar100_medium:iid29"
+        ]
+      },
+      {
+        "kinds": [
+          "vnnlib"
+        ],
+        "path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/vnnlib/CIFAR100_resnet_medium_prop_idx_4752_sidx_1800_eps_0.0039.vnnlib",
+        "sha256": "370e0f7173fa4f645c742795c053b7c2cd4b81500778bf927ca8f74297fbe154",
+        "size_bytes": 340776,
+        "uses": [
+          "gate14:cifar100_medium:iid11"
+        ]
+      },
+      {
+        "kinds": [
+          "vnnlib"
+        ],
+        "path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/vnnlib/CIFAR100_resnet_medium_prop_idx_4964_sidx_5266_eps_0.0039.vnnlib",
+        "sha256": "0aefbbad1445b41fcf21da2437bae008910ec61f3a257d0e8bf9812e651c0a11",
+        "size_bytes": 336156,
+        "uses": [
+          "gate40:cifar100_medium:iid86"
+        ]
+      },
+      {
+        "kinds": [
+          "vnnlib"
+        ],
+        "path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/vnnlib/CIFAR100_resnet_medium_prop_idx_5973_sidx_7841_eps_0.0039.vnnlib",
+        "sha256": "001ea3a6f7aaf2fd7d1b5b82b50e2869c3f8cd64b05cffcaad0345355c29e39f",
+        "size_bytes": 341063,
+        "uses": [
+          "gate40:cifar100_medium:iid64"
+        ]
+      },
+      {
+        "kinds": [
+          "vnnlib"
+        ],
+        "path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/vnnlib/CIFAR100_resnet_medium_prop_idx_6232_sidx_3020_eps_0.0039.vnnlib",
+        "sha256": "33e795c8421b7b19125f32415adb9cee09b2f90cb83152c4cd3aa03810e91ec3",
+        "size_bytes": 341810,
+        "uses": [
+          "gate6:cifar100_medium:iid2"
+        ]
+      },
+      {
+        "kinds": [
+          "vnnlib"
+        ],
+        "path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/vnnlib/CIFAR100_resnet_medium_prop_idx_7641_sidx_1041_eps_0.0039.vnnlib",
+        "sha256": "80a12b1dc2625f8da6505e8251a06abce4eac036bbb73a08e07c585e52fee818",
+        "size_bytes": 340557,
+        "uses": [
+          "gate40:cifar100_medium:iid0"
+        ]
+      },
+      {
+        "kinds": [
+          "vnnlib"
+        ],
+        "path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/vnnlib/CIFAR100_resnet_medium_prop_idx_7704_sidx_3701_eps_0.0039.vnnlib",
+        "sha256": "c508645aecb7042aa37fa1c6c98088026438b2a3a5fd270e8c2eabd2998cf4db",
+        "size_bytes": 341957,
+        "uses": [
+          "gate40:cifar100_medium:iid10"
+        ]
+      },
+      {
+        "kinds": [
+          "vnnlib"
+        ],
+        "path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/vnnlib/CIFAR100_resnet_medium_prop_idx_8594_sidx_5815_eps_0.0039.vnnlib",
+        "sha256": "ef5c77eab884d317cde09a4a2aa58c0f453a4fbea123d22fad715498cb1166f5",
+        "size_bytes": 341754,
+        "uses": [
+          "gate40:cifar100_medium:iid21"
+        ]
+      },
+      {
+        "kinds": [
+          "vnnlib"
+        ],
+        "path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/vnnlib/CIFAR100_resnet_medium_prop_idx_913_sidx_2404_eps_0.0039.vnnlib",
+        "sha256": "295075c963461299d128f9514cefbc8b99082d11e42ee5403c57d39ec689addc",
+        "size_bytes": 341403,
+        "uses": [
+          "gate14:cifar100_medium:iid50"
+        ]
+      },
+      {
+        "kinds": [
+          "vnnlib"
+        ],
+        "path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/vnnlib/CIFAR100_resnet_medium_prop_idx_9694_sidx_2810_eps_0.0039.vnnlib",
+        "sha256": "478c88ff1f9aa8e51c01cb2c09b18d0143736aa64695a3574ece78f627eb3d82",
+        "size_bytes": 341735,
+        "uses": [
+          "gate40:cifar100_medium:iid3"
+        ]
+      },
+      {
+        "kinds": [
+          "onnx"
+        ],
+        "path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/tinyimagenet_2024/onnx/TinyImageNet_resnet_medium.onnx",
+        "sha256": "234b04b151d640f8fc859fab00729448ba533d8feb3679427cbadb94467ec776",
+        "size_bytes": 14475376,
+        "uses": [
+          "gate14:tinyimagenet_medium:iid0",
+          "gate14:tinyimagenet_medium:iid143",
+          "gate14:tinyimagenet_medium:iid159",
+          "gate14:tinyimagenet_medium:iid93",
+          "gate40:tinyimagenet_medium:iid1",
+          "gate40:tinyimagenet_medium:iid100",
+          "gate40:tinyimagenet_medium:iid105",
+          "gate40:tinyimagenet_medium:iid115",
+          "gate40:tinyimagenet_medium:iid130",
+          "gate40:tinyimagenet_medium:iid158",
+          "gate40:tinyimagenet_medium:iid167",
+          "gate40:tinyimagenet_medium:iid191",
+          "gate40:tinyimagenet_medium:iid193",
+          "gate40:tinyimagenet_medium:iid2",
+          "gate40:tinyimagenet_medium:iid34",
+          "gate40:tinyimagenet_medium:iid47",
+          "gate40:tinyimagenet_medium:iid64",
+          "gate40:tinyimagenet_medium:iid84",
+          "gate6:tinyimagenet_medium:iid17",
+          "gate6:tinyimagenet_medium:iid6"
+        ]
+      },
+      {
+        "kinds": [
+          "vnnlib"
+        ],
+        "path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/tinyimagenet_2024/vnnlib/TinyImageNet_resnet_medium_prop_idx_1126_sidx_4974_eps_0.0039.vnnlib",
+        "sha256": "9497c3bdd8ade3804cfd9fe8d415941a18049753e31eede0adbf4260cdc280c1",
+        "size_bytes": 1044088,
+        "uses": [
+          "gate14:tinyimagenet_medium:iid0"
+        ]
+      },
+      {
+        "kinds": [
+          "vnnlib"
+        ],
+        "path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/tinyimagenet_2024/vnnlib/TinyImageNet_resnet_medium_prop_idx_2063_sidx_8156_eps_0.0039.vnnlib",
+        "sha256": "0089ecbe47c9f4322ea8391c358e8a1dc7645e5832f6a35920434f84a07c0f8c",
+        "size_bytes": 1049583,
+        "uses": [
+          "gate6:tinyimagenet_medium:iid17"
+        ]
+      },
+      {
+        "kinds": [
+          "vnnlib"
+        ],
+        "path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/tinyimagenet_2024/vnnlib/TinyImageNet_resnet_medium_prop_idx_3437_sidx_2708_eps_0.0039.vnnlib",
+        "sha256": "17428c1298247c3d94956164ca8784dec126b8a59bdfacd1f16556c080752651",
+        "size_bytes": 1041941,
+        "uses": [
+          "gate14:tinyimagenet_medium:iid93"
+        ]
+      },
+      {
+        "kinds": [
+          "vnnlib"
+        ],
+        "path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/tinyimagenet_2024/vnnlib/TinyImageNet_resnet_medium_prop_idx_3553_sidx_3392_eps_0.0039.vnnlib",
+        "sha256": "812bec2c0362d92d123380df161e1da6d5addbc84a27304d0a079090e814f5c7",
+        "size_bytes": 1037284,
+        "uses": [
+          "gate14:tinyimagenet_medium:iid143"
+        ]
+      },
+      {
+        "kinds": [
+          "vnnlib"
+        ],
+        "path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/tinyimagenet_2024/vnnlib/TinyImageNet_resnet_medium_prop_idx_4327_sidx_7050_eps_0.0039.vnnlib",
+        "sha256": "6b376a6a052f5d1efbeb7a43585d084a98ebca221eb79274861bd09eac1b620f",
+        "size_bytes": 1041618,
+        "uses": [
+          "gate40:tinyimagenet_medium:iid64"
+        ]
+      },
+      {
+        "kinds": [
+          "vnnlib"
+        ],
+        "path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/tinyimagenet_2024/vnnlib/TinyImageNet_resnet_medium_prop_idx_4500_sidx_6717_eps_0.0039.vnnlib",
+        "sha256": "076ff892546a945f78a51576d8ec9d3e090961bb467f373acef7aa2915056bc2",
+        "size_bytes": 1046692,
+        "uses": [
+          "gate40:tinyimagenet_medium:iid47"
+        ]
+      },
+      {
+        "kinds": [
+          "vnnlib"
+        ],
+        "path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/tinyimagenet_2024/vnnlib/TinyImageNet_resnet_medium_prop_idx_4686_sidx_8792_eps_0.0039.vnnlib",
+        "sha256": "c4b78601da01b5291b58a042edc5bd0eb75f97383b7ec1f9df6ce894fd2d0f2c",
+        "size_bytes": 1040313,
+        "uses": [
+          "gate40:tinyimagenet_medium:iid100"
+        ]
+      },
+      {
+        "kinds": [
+          "vnnlib"
+        ],
+        "path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/tinyimagenet_2024/vnnlib/TinyImageNet_resnet_medium_prop_idx_5442_sidx_6087_eps_0.0039.vnnlib",
+        "sha256": "1a4c6b3617109e227f5086c9f9161919bb877e96e0a0b951f07f499a1917f968",
+        "size_bytes": 1044847,
+        "uses": [
+          "gate40:tinyimagenet_medium:iid158"
+        ]
+      },
+      {
+        "kinds": [
+          "vnnlib"
+        ],
+        "path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/tinyimagenet_2024/vnnlib/TinyImageNet_resnet_medium_prop_idx_5922_sidx_1989_eps_0.0039.vnnlib",
+        "sha256": "452cdf1c04b6a7ecb1c610f06751baf0e4b696c40ad67188f426a7de1279c7ac",
+        "size_bytes": 1046821,
+        "uses": [
+          "gate40:tinyimagenet_medium:iid193"
+        ]
+      },
+      {
+        "kinds": [
+          "vnnlib"
+        ],
+        "path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/tinyimagenet_2024/vnnlib/TinyImageNet_resnet_medium_prop_idx_6546_sidx_3168_eps_0.0039.vnnlib",
+        "sha256": "d2c659d01991674cacc88aea43c7820ad31c63cc490aae9602e00809402797c3",
+        "size_bytes": 1045321,
+        "uses": [
+          "gate40:tinyimagenet_medium:iid34"
+        ]
+      },
+      {
+        "kinds": [
+          "vnnlib"
+        ],
+        "path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/tinyimagenet_2024/vnnlib/TinyImageNet_resnet_medium_prop_idx_6700_sidx_2455_eps_0.0039.vnnlib",
+        "sha256": "910af18ae07ebfaa618dd3f02568e72eb185ab3405fd358d887a81c99560dbc7",
+        "size_bytes": 1051143,
+        "uses": [
+          "gate40:tinyimagenet_medium:iid191"
+        ]
+      },
+      {
+        "kinds": [
+          "vnnlib"
+        ],
+        "path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/tinyimagenet_2024/vnnlib/TinyImageNet_resnet_medium_prop_idx_6827_sidx_2613_eps_0.0039.vnnlib",
+        "sha256": "96809936f26c5a4ac7bef4ec604d6abebc2c44af1a3fc8b50ed19748cc3bc665",
+        "size_bytes": 1045845,
+        "uses": [
+          "gate40:tinyimagenet_medium:iid1"
+        ]
+      },
+      {
+        "kinds": [
+          "vnnlib"
+        ],
+        "path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/tinyimagenet_2024/vnnlib/TinyImageNet_resnet_medium_prop_idx_6957_sidx_1178_eps_0.0039.vnnlib",
+        "sha256": "6e093b0d74933c8139836eb1a854f0d1da297530f07b92277bacd92ee4ff273b",
+        "size_bytes": 1046335,
+        "uses": [
+          "gate40:tinyimagenet_medium:iid105"
+        ]
+      },
+      {
+        "kinds": [
+          "vnnlib"
+        ],
+        "path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/tinyimagenet_2024/vnnlib/TinyImageNet_resnet_medium_prop_idx_7749_sidx_8253_eps_0.0039.vnnlib",
+        "sha256": "e6f828fc83a80f626c7cc7adb1e954437468a2224b32c29c527749732c66339c",
+        "size_bytes": 1044391,
+        "uses": [
+          "gate40:tinyimagenet_medium:iid84"
+        ]
+      },
+      {
+        "kinds": [
+          "vnnlib"
+        ],
+        "path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/tinyimagenet_2024/vnnlib/TinyImageNet_resnet_medium_prop_idx_7943_sidx_6299_eps_0.0039.vnnlib",
+        "sha256": "27992347f22d80750a97dd4b5c3d602732d0977c7681a70d2109e0a27c9ee466",
+        "size_bytes": 1045034,
+        "uses": [
+          "gate40:tinyimagenet_medium:iid2"
+        ]
+      },
+      {
+        "kinds": [
+          "vnnlib"
+        ],
+        "path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/tinyimagenet_2024/vnnlib/TinyImageNet_resnet_medium_prop_idx_9262_sidx_880_eps_0.0039.vnnlib",
+        "sha256": "e43da462a4b9758587532cd311a7e51b6dcb9ede5c656df0a5fbde2a76e7e2f4",
+        "size_bytes": 1039104,
+        "uses": [
+          "gate6:tinyimagenet_medium:iid6"
+        ]
+      },
+      {
+        "kinds": [
+          "vnnlib"
+        ],
+        "path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/tinyimagenet_2024/vnnlib/TinyImageNet_resnet_medium_prop_idx_9600_sidx_3536_eps_0.0039.vnnlib",
+        "sha256": "d2aff1d2c60f7b77888c7348ce7ed31446a9fbe4c3d13b7d4d6626498137705c",
+        "size_bytes": 1046497,
+        "uses": [
+          "gate40:tinyimagenet_medium:iid130"
+        ]
+      },
+      {
+        "kinds": [
+          "vnnlib"
+        ],
+        "path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/tinyimagenet_2024/vnnlib/TinyImageNet_resnet_medium_prop_idx_974_sidx_2976_eps_0.0039.vnnlib",
+        "sha256": "402c868016e0a7c24ce771be240ada8dbad02923c7d6eb67d0c531cfcb0b58dc",
+        "size_bytes": 1044948,
+        "uses": [
+          "gate40:tinyimagenet_medium:iid167"
+        ]
+      },
+      {
+        "kinds": [
+          "vnnlib"
+        ],
+        "path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/tinyimagenet_2024/vnnlib/TinyImageNet_resnet_medium_prop_idx_9825_sidx_6883_eps_0.0039.vnnlib",
+        "sha256": "d8491f029cab63899953e6588c0a4587554c1acc7649e10370e395a9f83271d5",
+        "size_bytes": 1045403,
+        "uses": [
+          "gate14:tinyimagenet_medium:iid159"
+        ]
+      },
+      {
+        "kinds": [
+          "vnnlib"
+        ],
+        "path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/tinyimagenet_2024/vnnlib/TinyImageNet_resnet_medium_prop_idx_9875_sidx_1510_eps_0.0039.vnnlib",
+        "sha256": "2f28e1e8291c36b4e6b317bdffe6137db671e0e6367df3089c97208beffa6fea",
+        "size_bytes": 1039765,
+        "uses": [
+          "gate40:tinyimagenet_medium:iid115"
+        ]
+      }
+    ],
+    "artifact_sha256": "f770f4ba83c5b97ed2d0cadbe1f4cedfdc32a110f6b746500042221c9bfc657e",
+    "config_sha256": "22737c1cb3a5efc9d99e886c23a3e88ba199b76a5f1e839897639c6bad9966b4",
+    "cuda_peak_memory_policy": {
+      "capture_apis": [
+        "torch.cuda.max_memory_allocated",
+        "torch.cuda.max_memory_reserved"
+      ],
+      "capture_scope": "through_worker_result_construction",
+      "completed_worker_requires_captured_receipt": true,
+      "dynamic_values_in_experiment_fingerprint": false,
+      "reset_api": "torch.cuda.reset_peak_memory_stats",
+      "reset_point": "after_initialize_device_before_model_parse",
+      "schema": "act.cuda_peak_memory.v1",
+      "synchronize_before_capture": true
+    },
+    "cumulative_count": 6,
+    "delta_count": 1,
+    "diagnostic_only": true,
+    "engine_connected": true,
+    "engine_connection_reason": "operator_hz_objbound dispatch found",
+    "environment": {
+      "ambient_hz_options": {},
+      "distributions": [
+        {
+          "name": "accelerate",
+          "version": "1.12.0"
+        },
+        {
+          "name": "asttokens",
+          "version": "3.0.1"
+        },
+        {
+          "name": "backports.zstd",
+          "version": "1.2.0"
+        },
+        {
+          "name": "brotli",
+          "version": "1.2.0"
+        },
+        {
+          "name": "certifi",
+          "version": "2026.4.22"
+        },
+        {
+          "name": "cffi",
+          "version": "2.0.0"
+        },
+        {
+          "name": "charset-normalizer",
+          "version": "3.4.4"
+        },
+        {
+          "name": "clarabel",
+          "version": "0.11.1"
+        },
+        {
+          "name": "colorama",
+          "version": "0.4.6"
+        },
+        {
+          "name": "coloredlogs",
+          "version": "15.0.1"
+        },
+        {
+          "name": "comm",
+          "version": "0.2.3"
+        },
+        {
+          "name": "contourpy",
+          "version": "1.3.3"
+        },
+        {
+          "name": "coverage",
+          "version": "7.14.3"
+        },
+        {
+          "name": "cuda-bindings",
+          "version": "12.9.4"
+        },
+        {
+          "name": "cuda-pathfinder",
+          "version": "1.2.2"
+        },
+        {
+          "name": "cvxpy",
+          "version": "1.9.1"
+        },
+        {
+          "name": "cycler",
+          "version": "0.12.1"
+        },
+        {
+          "name": "debugpy",
+          "version": "1.8.17"
+        },
+        {
+          "name": "decorator",
+          "version": "5.2.1"
+        },
+        {
+          "name": "executing",
+          "version": "2.2.1"
+        },
+        {
+          "name": "filelock",
+          "version": "3.20.0"
+        },
+        {
+          "name": "flatbuffers",
+          "version": "25.9.23"
+        },
+        {
+          "name": "fonttools",
+          "version": "4.61.0"
+        },
+        {
+          "name": "fsspec",
+          "version": "2025.12.0"
+        },
+        {
+          "name": "gmpy2",
+          "version": "2.2.1"
+        },
+        {
+          "name": "gurobipy",
+          "version": "13.0.0"
+        },
+        {
+          "name": "h2",
+          "version": "4.3.0"
+        },
+        {
+          "name": "hf-xet",
+          "version": "1.2.0"
+        },
+        {
+          "name": "highspy",
+          "version": "1.14.0"
+        },
+        {
+          "name": "hpack",
+          "version": "4.1.0"
+        },
+        {
+          "name": "huggingface-hub",
+          "version": "0.36.0"
+        },
+        {
+          "name": "humanfriendly",
+          "version": "10.0"
+        },
+        {
+          "name": "hyperframe",
+          "version": "6.1.0"
+        },
+        {
+          "name": "idna",
+          "version": "3.11"
+        },
+        {
+          "name": "ipykernel",
+          "version": "7.1.0"
+        },
+        {
+          "name": "ipython",
+          "version": "9.8.0"
+        },
+        {
+          "name": "ipython_pygments_lexers",
+          "version": "1.1.1"
+        },
+        {
+          "name": "ipywidgets",
+          "version": "8.1.8"
+        },
+        {
+          "name": "jedi",
+          "version": "0.19.2"
+        },
+        {
+          "name": "jinja2",
+          "version": "3.1.6"
+        },
+        {
+          "name": "joblib",
+          "version": "1.5.2"
+        },
+        {
+          "name": "jupyter_client",
+          "version": "8.7.0"
+        },
+        {
+          "name": "jupyter_core",
+          "version": "5.9.1"
+        },
+        {
+          "name": "jupyterlab_widgets",
+          "version": "3.0.16"
+        },
+        {
+          "name": "kiwisolver",
+          "version": "1.4.9"
+        },
+        {
+          "name": "markdown-it-py",
+          "version": "4.0.0"
+        },
+        {
+          "name": "markupsafe",
+          "version": "3.0.3"
+        },
+        {
+          "name": "matplotlib",
+          "version": "3.10.8"
+        },
+        {
+          "name": "matplotlib-inline",
+          "version": "0.2.1"
+        },
+        {
+          "name": "mdurl",
+          "version": "0.1.2"
+        },
+        {
+          "name": "ml_dtypes",
+          "version": "0.5.4"
+        },
+        {
+          "name": "mpmath",
+          "version": "1.3.0"
+        },
+        {
+          "name": "munkres",
+          "version": "1.1.4"
+        },
+        {
+          "name": "nest_asyncio",
+          "version": "1.6.0"
+        },
+        {
+          "name": "networkx",
+          "version": "3.6.1"
+        },
+        {
+          "name": "numpy",
+          "version": "2.3.5"
+        },
+        {
+          "name": "nvidia-cublas-cu12",
+          "version": "12.8.4.1"
+        },
+        {
+          "name": "nvidia-cuda-cupti-cu12",
+          "version": "12.8.90"
+        },
+        {
+          "name": "nvidia-cuda-nvrtc-cu12",
+          "version": "12.8.93"
+        },
+        {
+          "name": "nvidia-cuda-runtime-cu12",
+          "version": "12.8.90"
+        },
+        {
+          "name": "nvidia-cudnn-cu12",
+          "version": "9.10.2.21"
+        },
+        {
+          "name": "nvidia-cufft-cu12",
+          "version": "11.3.3.83"
+        },
+        {
+          "name": "nvidia-cufile-cu12",
+          "version": "1.13.1.3"
+        },
+        {
+          "name": "nvidia-curand-cu12",
+          "version": "10.3.9.90"
+        },
+        {
+          "name": "nvidia-cusolver-cu12",
+          "version": "11.7.3.90"
+        },
+        {
+          "name": "nvidia-cusparse-cu12",
+          "version": "12.5.8.93"
+        },
+        {
+          "name": "nvidia-cusparselt-cu12",
+          "version": "0.7.1"
+        },
+        {
+          "name": "nvidia-nccl-cu12",
+          "version": "2.27.5"
+        },
+        {
+          "name": "nvidia-nvjitlink-cu12",
+          "version": "12.8.93"
+        },
+        {
+          "name": "nvidia-nvshmem-cu12",
+          "version": "3.3.20"
+        },
+        {
+          "name": "nvidia-nvtx-cu12",
+          "version": "12.8.90"
+        },
+        {
+          "name": "onnx",
+          "version": "1.19.1"
+        },
+        {
+          "name": "onnx-ir",
+          "version": "0.2.0"
+        },
+        {
+          "name": "onnx-simplifier",
+          "version": "0.5.0"
+        },
+        {
+          "name": "onnx2torch",
+          "version": "1.5.15"
+        },
+        {
+          "name": "onnxruntime-gpu",
+          "version": "1.22.2"
+        },
+        {
+          "name": "onnxscript",
+          "version": "0.6.2"
+        },
+        {
+          "name": "onnxsim",
+          "version": "0.6.3"
+        },
+        {
+          "name": "osqp",
+          "version": "1.1.3"
+        },
+        {
+          "name": "packaging",
+          "version": "25.0"
+        },
+        {
+          "name": "pandas",
+          "version": "2.3.3"
+        },
+        {
+          "name": "parso",
+          "version": "0.8.5"
+        },
+        {
+          "name": "pexpect",
+          "version": "4.9.0"
+        },
+        {
+          "name": "pillow",
+          "version": "12.0.0"
+        },
+        {
+          "name": "pip",
+          "version": "25.3"
+        },
+        {
+          "name": "platformdirs",
+          "version": "4.5.1"
+        },
+        {
+          "name": "ply",
+          "version": "3.11"
+        },
+        {
+          "name": "prompt_toolkit",
+          "version": "3.0.52"
+        },
+        {
+          "name": "protobuf",
+          "version": "6.31.1"
+        },
+        {
+          "name": "psutil",
+          "version": "7.1.3"
+        },
+        {
+          "name": "ptyprocess",
+          "version": "0.7.0"
+        },
+        {
+          "name": "pure_eval",
+          "version": "0.2.3"
+        },
+        {
+          "name": "pycparser",
+          "version": "3.0"
+        },
+        {
+          "name": "pygments",
+          "version": "2.19.2"
+        },
+        {
+          "name": "pyparsing",
+          "version": "3.2.5"
+        },
+        {
+          "name": "pyqt5",
+          "version": "5.15.11"
+        },
+        {
+          "name": "pyqt5_sip",
+          "version": "12.17.0"
+        },
+        {
+          "name": "pyscipopt",
+          "version": "6.2.1"
+        },
+        {
+          "name": "pyside6",
+          "version": "6.9.3"
+        },
+        {
+          "name": "pysocks",
+          "version": "1.7.1"
+        },
+        {
+          "name": "python-dateutil",
+          "version": "2.9.0.post0"
+        },
+        {
+          "name": "pytz",
+          "version": "2025.2"
+        },
+        {
+          "name": "pyyaml",
+          "version": "6.0.3"
+        },
+        {
+          "name": "pyzmq",
+          "version": "27.1.0"
+        },
+        {
+          "name": "qdldl",
+          "version": "0.1.9.post1"
+        },
+        {
+          "name": "qscintilla",
+          "version": "2.14.1"
+        },
+        {
+          "name": "regex",
+          "version": "2025.11.3"
+        },
+        {
+          "name": "requests",
+          "version": "2.32.5"
+        },
+        {
+          "name": "rich",
+          "version": "15.0.0"
+        },
+        {
+          "name": "safetensors",
+          "version": "0.7.0"
+        },
+        {
+          "name": "scikit-learn",
+          "version": "1.8.0"
+        },
+        {
+          "name": "scipy",
+          "version": "1.16.3"
+        },
+        {
+          "name": "scs",
+          "version": "3.2.11"
+        },
+        {
+          "name": "sentencepiece",
+          "version": "0.2.1"
+        },
+        {
+          "name": "setuptools",
+          "version": "80.9.0"
+        },
+        {
+          "name": "shiboken6",
+          "version": "6.9.3"
+        },
+        {
+          "name": "sip",
+          "version": "6.10.0"
+        },
+        {
+          "name": "six",
+          "version": "1.17.0"
+        },
+        {
+          "name": "sparsediffpy",
+          "version": "0.3.0"
+        },
+        {
+          "name": "stack_data",
+          "version": "0.6.3"
+        },
+        {
+          "name": "sympy",
+          "version": "1.14.0"
+        },
+        {
+          "name": "threadpoolctl",
+          "version": "3.6.0"
+        },
+        {
+          "name": "tokenizers",
+          "version": "0.22.1"
+        },
+        {
+          "name": "toml",
+          "version": "0.10.2"
+        },
+        {
+          "name": "tomli",
+          "version": "2.4.1"
+        },
+        {
+          "name": "torch",
+          "version": "2.9.1+cu128"
+        },
+        {
+          "name": "torchaudio",
+          "version": "2.9.1+cu128"
+        },
+        {
+          "name": "torchvision",
+          "version": "0.24.1+cu128"
+        },
+        {
+          "name": "tornado",
+          "version": "6.5.3"
+        },
+        {
+          "name": "tqdm",
+          "version": "4.67.1"
+        },
+        {
+          "name": "traitlets",
+          "version": "5.14.3"
+        },
+        {
+          "name": "transformers",
+          "version": "4.57.3"
+        },
+        {
+          "name": "triton",
+          "version": "3.5.1"
+        },
+        {
+          "name": "typing_extensions",
+          "version": "4.15.0"
+        },
+        {
+          "name": "tzdata",
+          "version": "2025.2"
+        },
+        {
+          "name": "unicodedata2",
+          "version": "17.0.0"
+        },
+        {
+          "name": "urllib3",
+          "version": "2.6.1"
+        },
+        {
+          "name": "wcwidth",
+          "version": "0.2.14"
+        },
+        {
+          "name": "wheel",
+          "version": "0.45.1"
+        },
+        {
+          "name": "widgetsnbextension",
+          "version": "4.0.15"
+        }
+      ],
+      "fixed_worker_environment": {
+        "CUBLAS_WORKSPACE_CONFIG": ":4096:8",
+        "CUDA_DEVICE_ORDER": "PCI_BUS_ID",
+        "CUDA_VISIBLE_DEVICES": "0",
+        "HZ_EXACT_BASE_WITNESS_MAX_TERMS": "250000",
+        "HZ_HIGHS_OPTIONS": "",
+        "HZ_LP_PREFILTER_FRACTION": "0.9",
+        "HZ_LP_PREFILTER_MAX_SECONDS": "60.0",
+        "HZ_LP_PREFILTER_THREADS": "1",
+        "HZ_MILP_BACKEND": "highs",
+        "HZ_MILP_CUTOFF_ROW": "1",
+        "HZ_MILP_ELIM_SINGLETONS": "0",
+        "HZ_MILP_EQ_SUBST": "0",
+        "HZ_MILP_EQ_SUBST_MAX_INEQ": "2",
+        "HZ_MILP_HEURISTIC": "",
+        "HZ_MILP_SCALE": "0",
+        "HZ_MILP_THREADS": "1",
+        "HZ_QUERY_WORKERS": "1",
+        "HZ_RELU_TIGHT_ALL_ROWS": "0",
+        "HZ_RELU_TIGHT_LP_TIMEOUT": "0",
+        "HZ_RELU_TIGHT_MAX_ROWS": "0",
+        "HZ_TIGHT_THREADS": "1",
+        "MKL_NUM_THREADS": "1",
+        "NUMEXPR_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "PYTHONHASHSEED": "0",
+        "PYTHONNOUSERSITE": "1",
+        "TOKENIZERS_PARALLELISM": "false"
+      },
+      "gpu": {
+        "compute_capability": "12.0",
+        "driver_version": "580.126.09",
+        "gpu_index": 0,
+        "name": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+        "total_bytes": 102641958912,
+        "uuid": "GPU-f491c2c6-a093-590a-6b8a-13b5f76aadcc"
+      },
+      "platform": {
+        "machine": "x86_64",
+        "release": "6.14.0-1020-oem",
+        "system": "Linux",
+        "version": "#20-Ubuntu SMP PREEMPT_DYNAMIC Mon Jan 19 08:17:52 UTC 2026"
+      },
+      "process_environment": {
+        "CONDA_PREFIX": "/data1/Kane/miniconda3",
+        "LD_LIBRARY_PATH": null,
+        "PATH": "/home/kaijieliu/.elan/bin:/home/kaijieliu/bin:/home/kaijieliu/.codex/tmp/arg0/codex-arg0jGWdId:/home/kaijieliu/.vscode-server/cli/servers/Stable-e4c7e7b1d6d060162f4aa7f8225271b67ce1df75/server/bin/remote-cli:/home/kaijieliu/.elan/bin:/home/kaijieliu/bin:/data1/Kane/miniconda3/bin:/data1/Kane/miniconda3/condabin:/home/kaijieliu/.elan/bin:/home/kaijieliu/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/kaijieliu/.vscode-server/extensions/openai.chatgpt-26.5803.61601-linux-x64/bin/linux-x86_64",
+        "PYTHONPATH": null,
+        "VIRTUAL_ENV": null
+      },
+      "python": {
+        "executable": "/data1/Kane/miniconda3/envs/act-py312/bin/python3.12",
+        "executable_sha256": "3662f23758ced1fbeefff88a4f73dd8107f290f784dc13a1311ee6e7202cef21",
+        "implementation": "CPython",
+        "version": "3.12.12 | packaged by conda-forge | (main, Oct 22 2025, 23:25:55) [GCC 14.3.0]"
+      }
+    },
+    "environment_sha256": "8b045f036374a73290ecbcca2c07c8e693531fb90fc61ca25f3b8028cce6e8ce",
+    "experiment_sha256": "dd765eb8b20208307df8cba1b385b4e23404ecb9a99b141854044982e22fcc84",
+    "gate": 6,
+    "ground_truth_loaded": false,
+    "manifest_sha256": "323b045ac703dc0a876c1d042359346d1578ee6ebd08a1b017770964efd9ff83",
+    "operator_phase_clique_diagnostic": false,
+    "partial_family_diagnostic": true,
+    "promotion": null,
+    "promotion_chain": [],
+    "promotion_eligible": false,
+    "property_micro_rlt_packet_mode": "both",
+    "property_micro_rlt_parent_only_diagnostic": false,
+    "query_dual_candidate_policy": {
+      "candidate_bound_source": "none_descriptor_only",
+      "candidate_non_authoritative_audit_fields": [
+        "lr_alpha",
+        "lr_decay",
+        "solver",
+        "elapsed_seconds",
+        "timings"
+      ],
+      "candidate_protocol": "descriptor_only_v2",
+      "candidate_schema": "act.query_dual_candidates.v2",
+      "candidate_success_status": "descriptors_generated",
+      "conv_channel_chunk_binding": "root_box_certificate",
+      "cpu_independent_replay_required": true,
+      "gpu_frozen_alpha_replay": false,
+      "operator_schema": "operator_hz_verified_query_dual_feedback_v1",
+      "optimizer_margins_exported": false,
+      "pipeline_non_authoritative_audit_fields": [
+        "candidate_generator",
+        "candidate_solver_factory",
+        "dual_solver_default_device",
+        "dual_solver_default_dtype",
+        "candidate_cuda_device_name"
+      ],
+      "pipeline_schema": "act.verified_query_dual_feedback.v2",
+      "property_stage_schema": "act.verified_query_dual_property.v2",
+      "replay_chunk_size_binding": "equals_effective_query_dual_feedback_block_size",
+      "replay_max_workspace_bytes_binding": "each_cpu_replay_receipt",
+      "target_empty_status": "no_queries_fallback",
+      "target_stage_schema": "act.verified_query_dual_stage.v2",
+      "wrapper_schema": "verifier_query_dual_feedback_transaction_v1"
+    },
+    "query_dual_feedback_effective_by_family": {
+      "cifar100_large": {
+        "block_size": 1024,
+        "device": "cuda",
+        "effective_steps": 0,
+        "effective_time_limit": 0.0,
+        "requested_steps": 0,
+        "requested_time_limit": 0.0,
+        "status": "not_promoted",
+        "targets": []
+      },
+      "cifar100_medium": {
+        "block_size": 1024,
+        "device": "cuda",
+        "effective_steps": 0,
+        "effective_time_limit": 0.0,
+        "requested_steps": 0,
+        "requested_time_limit": 0.0,
+        "status": "gate1_candidate",
+        "targets": []
+      },
+      "tinyimagenet_medium": {
+        "block_size": 1024,
+        "device": "cuda",
+        "effective_steps": 0,
+        "effective_time_limit": 0.0,
+        "requested_steps": 0,
+        "requested_time_limit": 0.0,
+        "status": "not_promoted",
+        "targets": []
+      }
+    },
+    "query_dual_feedback_families": {
+      "cifar100_large": {
+        "status": "not_promoted",
+        "targets": []
+      },
+      "cifar100_medium": {
+        "status": "gate1_candidate",
+        "targets": []
+      },
+      "tinyimagenet_medium": {
+        "status": "not_promoted",
+        "targets": []
+      }
+    },
+    "record_type": "run_start",
+    "reference_diagnostic_label_present": true,
+    "reference_labels_are_proof": false,
+    "run_id": "20260811T064507Z-804a83c5f436",
+    "runtime": {
+      "default_gate": 6,
+      "device": "cuda",
+      "dtype": "float64",
+      "engine": "operator_hz_objbound",
+      "gpu_dual_learning_rate": 0.08,
+      "gpu_dual_row_topk": 0,
+      "gpu_dual_steps": 0,
+      "gpu_dual_time_limit": 0.0,
+      "gpu_index": 0,
+      "lp_prefilter_fraction": 0.9,
+      "lp_prefilter_max_seconds": 60.0,
+      "max_inconclusive_per_family": 1,
+      "operator_exact_budget": -1,
+      "operator_materialize_add": false,
+      "operator_phase_clique_time_limit": 0.0,
+      "preactivation_lp_budget": 0,
+      "preactivation_lp_time_limit": 0.0,
+      "property_correlation_budget": 0,
+      "property_correlation_time_limit": 0.0,
+      "property_micro_rlt_packet_mode": "both",
+      "property_micro_rlt_parent_only_diagnostic": false,
+      "property_micro_rlt_parent_prefilter_seconds": 0.0,
+      "property_micro_rlt_product_cap": 0,
+      "property_residual_budget": 0,
+      "property_residual_max_adjoint_cells": 30000000,
+      "property_residual_pool_per_rival": 8,
+      "property_residual_time_limit": 0.0,
+      "property_tail_add_source_planes": false,
+      "property_tail_alpha_device": "cuda",
+      "property_tail_alpha_learning_rate": 0.08,
+      "property_tail_alpha_max_cells": 50000000,
+      "property_tail_alpha_steps": 0,
+      "property_tail_alpha_time_limit": 0.0,
+      "property_tail_mixture_grid_bits": 0,
+      "property_tail_pairhull_budget": 0,
+      "property_tail_pairhull_time_limit": 0.0,
+      "property_tail_suffix_alpha_device": "cuda",
+      "property_tail_suffix_alpha_steps": 0,
+      "property_tail_suffix_alpha_time_limit": 0.0,
+      "property_tail_suffix_blocks": 0,
+      "property_tail_upper": false,
+      "query_dual_feedback_block_size": 1024,
+      "query_dual_feedback_device": "cuda",
+      "query_dual_feedback_steps": 0,
+      "query_dual_feedback_time_limit": 0.0,
+      "residual_bound_screen": false,
+      "residual_phase_screen": false,
+      "row_workers": 1,
+      "total_solver_threads": 1,
+      "wall_timeout_seconds": 30.0
+    },
+    "schema_version": 3,
+    "selected_families": [
+      "tinyimagenet_medium"
+    ],
+    "source_files": [
+      {
+        "path": "act/__init__.py",
+        "sha256": "b3204a0711583a8ed89328a34486e5d7712335994415cb7905ec439afd041245",
+        "size_bytes": 56
+      },
+      {
+        "path": "act/back_end/__init__.py",
+        "sha256": "9735f02bd0f2e49e6ccbc49cbb627e1daa0909557a52d4933280f57dbe59efec",
+        "size_bytes": 3747
+      },
+      {
+        "path": "act/back_end/__main__.py",
+        "sha256": "56903d309a00beb144391469787cd7492dd062df554703fd94c807fec0bdc1d9",
+        "size_bytes": 273
+      },
+      {
+        "path": "act/back_end/analyze.py",
+        "sha256": "91ebdbc94c00eb3f72711f98369ebd493d15e4d652961c538fc9bdb0eb9470a6",
+        "size_bytes": 8566
+      },
+      {
+        "path": "act/back_end/bab/__init__.py",
+        "sha256": "553a7b359c7d9c7f174a6f4bfbf03f0faa803a2f7baa61e43e403d5162bd6c9f",
+        "size_bytes": 892
+      },
+      {
+        "path": "act/back_end/bab/bab.py",
+        "sha256": "af59d9e677a0fd8f11329f5f2a0a9d6c03f8968a26384b2d68c4d00d8143d8f7",
+        "size_bytes": 192132
+      },
+      {
+        "path": "act/back_end/bab/branching/__init__.py",
+        "sha256": "f699f5bb958af0cfb4a527a53070353eb46608b6580c9854d401b264a048a311",
+        "size_bytes": 968
+      },
+      {
+        "path": "act/back_end/bab/branching/bounding.py",
+        "sha256": "c3acf803ed702593222e4c31b16a442fe805493d076cbd9d2b2f0392fc17f410",
+        "size_bytes": 24695
+      },
+      {
+        "path": "act/back_end/bab/branching/branching.py",
+        "sha256": "e9bf2fa4bc9f67cfc01abf4e80ff43232c49c9f36b5cff83c1b4d3fb076cb40e",
+        "size_bytes": 41766
+      },
+      {
+        "path": "act/back_end/bab/node.py",
+        "sha256": "ea5512c923f7bdf63f9f0484b46dfb78defe0228ae74a223061ffe7df05d9cd2",
+        "size_bytes": 20744
+      },
+      {
+        "path": "act/back_end/bab/property_forest_authority.py",
+        "sha256": "7d5201e6d49465cceb0a90557280ede3a2d4fa4634efed4e999f535f3ee55069",
+        "size_bytes": 33098
+      },
+      {
+        "path": "act/back_end/bab/test_joint_gain_branching.py",
+        "sha256": "7377a262b794cb74cf874a9a6827a377fa8f5072e2b162767ab2ce0892499cef",
+        "size_bytes": 8394
+      },
+      {
+        "path": "act/back_end/bab/test_per_subproblem_refine.py",
+        "sha256": "9a4b5bd4ee67d3d9cfaba0cf1f8a304a5b26c8d509a0820db8c9f29b9a4980dc",
+        "size_bytes": 8763
+      },
+      {
+        "path": "act/back_end/bab/test_property_separable_bab.py",
+        "sha256": "22753bc4ceee60fdb1de9d316697ad97b2a7d7273420d6e5bdc052ac86957ced",
+        "size_bytes": 71114
+      },
+      {
+        "path": "act/back_end/cli.py",
+        "sha256": "cd39fc1b35369c2e062ad91c7e6f144494385d1afdfe4a9011530057c46e5223",
+        "size_bytes": 71565
+      },
+      {
+        "path": "act/back_end/config.py",
+        "sha256": "999b0e5eaaa5379054d33761c080d738fdcf3377960a78eb16e3c08675dcdd2c",
+        "size_bytes": 60677
+      },
+      {
+        "path": "act/back_end/config.yaml",
+        "sha256": "0a1c16e6f8c1026db0cb0f4fc430d84a2777f1458119720b2a5e2dc74356cd43",
+        "size_bytes": 11014
+      },
+      {
+        "path": "act/back_end/cons_exportor.py",
+        "sha256": "f9722612273ac6c93b4c2eb4a28e5c1c2c0281757e60fa5ce51ca91fa569395f",
+        "size_bytes": 123153
+      },
+      {
+        "path": "act/back_end/core.py",
+        "sha256": "1bd9a1ae832bbecf25232e130759156dcd8f88758458ec9a5399635544c07065",
+        "size_bytes": 9654
+      },
+      {
+        "path": "act/back_end/dual_tf/__init__.py",
+        "sha256": "424f0ad98668ad5210cc3eb96e95611245bc8db192cfe8dcd2a8eb8b2f28ba98",
+        "size_bytes": 4372
+      },
+      {
+        "path": "act/back_end/dual_tf/dual_tf.py",
+        "sha256": "338510ced12a74a300e774fb01e20091e2fc348e023f5851a6649927f3349ab6",
+        "size_bytes": 31797
+      },
+      {
+        "path": "act/back_end/dual_tf/test_forward_liveness.py",
+        "sha256": "8eb0d0f1210c66582d1947a8be2faff61f0e74ab06925c8afdef6ff7a76652ea",
+        "size_bytes": 11117
+      },
+      {
+        "path": "act/back_end/dual_tf/tf_cnn.py",
+        "sha256": "49ecb68c69cfe1c6ad3993e938bfdce12efebd20c8e429b23a325d27f3610798",
+        "size_bytes": 17127
+      },
+      {
+        "path": "act/back_end/dual_tf/tf_forward.py",
+        "sha256": "27ccabc4d09364185b3d10315eda1724ffa37ba508966f6fb7ace1074a4fa093",
+        "size_bytes": 38712
+      },
+      {
+        "path": "act/back_end/dual_tf/tf_mlp.py",
+        "sha256": "c91d13d3aade683bacc25db4e85b813395a6c2216634d21187a40e1824b80e8f",
+        "size_bytes": 26954
+      },
+      {
+        "path": "act/back_end/dual_tf/tf_rnn.py",
+        "sha256": "be11686c690f3f51da250564d5081c624c8c3a3a481621c901182a6a363d4438",
+        "size_bytes": 2035
+      },
+      {
+        "path": "act/back_end/dual_tf/tf_smooth.py",
+        "sha256": "1fc1a12bf90386cdbd0b0f4e7dba29da7afb1e5ecc812dfeb28876008999d085",
+        "size_bytes": 19232
+      },
+      {
+        "path": "act/back_end/dual_tf/tf_transformer.py",
+        "sha256": "ee97a6d19141ca791785764b861b22a59236441e311c89a98c0e1283c0400213",
+        "size_bytes": 39748
+      },
+      {
+        "path": "act/back_end/examples/__init__.py",
+        "sha256": "9d58ae6759f285622221cba78ac0d4be0e705d864c8b4a1d48a0f40e9381fe05",
+        "size_bytes": 710
+      },
+      {
+        "path": "act/back_end/examples/config_gen_act_net.yaml",
+        "sha256": "0ff55a4418276891a30392d9437f55a91058a2711109a7de3970c9df859a5fed",
+        "size_bytes": 17509
+      },
+      {
+        "path": "act/back_end/hybridz_tf/__init__.py",
+        "sha256": "a3d209ab2f774453d42942f92126683d88b3357d970fdb58b4aa04f93c5e942a",
+        "size_bytes": 694
+      },
+      {
+        "path": "act/back_end/hybridz_tf/adaptive_phase_forest.py",
+        "sha256": "fa47833d2ce6942a7da1b043e1c30fefac2372f94b840f175864d20ac5cef8de",
+        "size_bytes": 50351
+      },
+      {
+        "path": "act/back_end/hybridz_tf/exact_ranged_row_compaction.py",
+        "sha256": "e7ea8cfa6aec7d065b55d20a589c83fc3c25d4028d2929b98eba3874af211d78",
+        "size_bytes": 24862
+      },
+      {
+        "path": "act/back_end/hybridz_tf/exact_ranged_row_native_load_sentinel.py",
+        "sha256": "b166b81e6d39f8f53f446d06e18f177082ebfd33c353939266156e434f1d5f8d",
+        "size_bytes": 39518
+      },
+      {
+        "path": "act/back_end/hybridz_tf/exact_sparse_conv_affine_core.py",
+        "sha256": "ad65848cca2cf15a060fa570473b4130eff5459edd93c9460304f607b5dfaafb",
+        "size_bytes": 60846
+      },
+      {
+        "path": "act/back_end/hybridz_tf/exact_sparse_conv_csr_candidate.py",
+        "sha256": "cc4db6d83beba319fec39ae2d847bc6702a4d35acb4c2c2a7044d286e56f1403",
+        "size_bytes": 54187
+      },
+      {
+        "path": "act/back_end/hybridz_tf/exact_sparse_conv_native_schedule_candidate.py",
+        "sha256": "2558ac84c15ce81c2e6d39628214b6c3f4d186269a2b2d7621e4f19949a290db",
+        "size_bytes": 68163
+      },
+      {
+        "path": "act/back_end/hybridz_tf/forward_exact_add_relu_deferral.py",
+        "sha256": "1a4a6509b85b84276a3d982a8c8f2f1d4558b7177505baec78f39da2bc6c4ef5",
+        "size_bytes": 19089
+      },
+      {
+        "path": "act/back_end/hybridz_tf/forward_exact_relu_census.py",
+        "sha256": "698f23e591de9ceb31426b6a5214483e4b56c68fc8515e847ddafd4f6b36e177",
+        "size_bytes": 27521
+      },
+      {
+        "path": "act/back_end/hybridz_tf/forward_exact_relu_dag_interning.py",
+        "sha256": "65fde62b5193080bc140551f0dbd20d68b3c587faa60d93a8d411652efc07368",
+        "size_bytes": 54847
+      },
+      {
+        "path": "act/back_end/hybridz_tf/forward_exact_relu_numeric_candidate.py",
+        "sha256": "06f4ce831f474984df0e7e0989595ec0fe02cc983d29abf82fcddde84b595e07",
+        "size_bytes": 31924
+      },
+      {
+        "path": "act/back_end/hybridz_tf/gpu_dual_candidates.py",
+        "sha256": "cc4d7fef472cfdf9be36983b4a1105b12bc2aab03d95d2045ed0e20d48b61bc2",
+        "size_bytes": 63747
+      },
+      {
+        "path": "act/back_end/hybridz_tf/hybridz_tf.py",
+        "sha256": "f99ce2e7db41b6f35b3a8e31f5f66ca993a314818edfe27ed2c3d47a5f790493",
+        "size_bytes": 21679
+      },
+      {
+        "path": "act/back_end/hybridz_tf/localized_phase_conflict_oracle.py",
+        "sha256": "3e3f094fb7412304f3a908655e07174568492b7c8cde6b85234e38b7a53203e7",
+        "size_bytes": 54963
+      },
+      {
+        "path": "act/back_end/hybridz_tf/motif_local_sharpness.py",
+        "sha256": "ca4102cafac8657c267bd1f27166cda56009e62ae7a32f47cd88f85a62144fdc",
+        "size_bytes": 17698
+      },
+      {
+        "path": "act/back_end/hybridz_tf/multi_rival_shared_phase_audit.py",
+        "sha256": "2f028923387b49b228591f62821c24d0f386ebb22050730c196fe02a8016b265",
+        "size_bytes": 10838
+      },
+      {
+        "path": "act/back_end/hybridz_tf/operator_exact_relu_phase_clique_materializer.py",
+        "sha256": "6c557134f42bfc3196606f9131b9a33d4aaab7497410d3b889854e5d81f8f428",
+        "size_bytes": 66224
+      },
+      {
+        "path": "act/back_end/hybridz_tf/operator_exact_relu_phase_cliques.py",
+        "sha256": "f1f65474e031faa2319a4e51f147d4bebbeb7426d1577ed5ce20547d26067496",
+        "size_bytes": 178467
+      },
+      {
+        "path": "act/back_end/hybridz_tf/operator_exact_relu_phase_literals.py",
+        "sha256": "9dbe50c57feb36cd796d510666f5ce44bc5e3304bae84422492d26a85c07188f",
+        "size_bytes": 51561
+      },
+      {
+        "path": "act/back_end/hybridz_tf/operator_hz.py",
+        "sha256": "0f3ea83b3ad9141e59917e5574cbb3eacf4f69a81645d7d41d829d4bc4af5707",
+        "size_bytes": 542253
+      },
+      {
+        "path": "act/back_end/hybridz_tf/operator_localized_phase_edge_candidate.py",
+        "sha256": "487e1ce45372120b6c1ae6c8b1d10063a7a647ae673f4c77c9143b6ba87f625b",
+        "size_bytes": 34629
+      },
+      {
+        "path": "act/back_end/hybridz_tf/operator_phase_clique_pipeline.py",
+        "sha256": "45dee47abeebd26882f12c5ce290ead80bcb084c57b9fa085f7ae0bc02d9053e",
+        "size_bytes": 118675
+      },
+      {
+        "path": "act/back_end/hybridz_tf/operator_phase_conditioned_build_only.py",
+        "sha256": "1183793afc71912fb3ecce3b14996091191331f576c1fbe56679665d7c5bac8d",
+        "size_bytes": 75310
+      },
+      {
+        "path": "act/back_end/hybridz_tf/operator_phase_conditioned_k3_build_only.py",
+        "sha256": "8101c50772c75cd64d436252856c54e0dba03214999ba3a7ca7d371cd4d984c0",
+        "size_bytes": 152634
+      },
+      {
+        "path": "act/back_end/hybridz_tf/operator_phase_conditioned_k3_memory_sentinel.py",
+        "sha256": "552a0ed940e5b8c8cfda11fb57836ba7f2acb3270305795e318047cee80f3cd3",
+        "size_bytes": 78013
+      },
+      {
+        "path": "act/back_end/hybridz_tf/operator_phase_conditioned_live_adapter.py",
+        "sha256": "959c004455cb271f0914e8d98549cbe776cc6910ff6f03ea4b65928245e4b0cd",
+        "size_bytes": 35498
+      },
+      {
+        "path": "act/back_end/hybridz_tf/operator_phase_conditioned_objective_bounds.py",
+        "sha256": "c31fbadafeaf83c477dc206bfd58fa17c5389384cb3995208ab4880db13a858b",
+        "size_bytes": 148443
+      },
+      {
+        "path": "act/back_end/hybridz_tf/operator_phase_conditioned_objective_hull.py",
+        "sha256": "e0f520a4a6450e9a23484eb61a998b05a74006385bb40ddfdb35c68869b4cf89",
+        "size_bytes": 50933
+      },
+      {
+        "path": "act/back_end/hybridz_tf/operator_phase_conditioned_objective_hull_fresh_materializer.py",
+        "sha256": "38aec9ddb9bda7a1c8b29df559e611ebe40cf6628a2b62eec4f4c75ef42ac9df",
+        "size_bytes": 112475
+      },
+      {
+        "path": "act/back_end/hybridz_tf/operator_phase_conditioned_objective_hull_row_materializer.py",
+        "sha256": "60a284a6b07ab780df6315ee5eb93c13040d9ddd1e41b357ff964086cf5e872b",
+        "size_bytes": 38772
+      },
+      {
+        "path": "act/back_end/hybridz_tf/operator_phase_conditioned_pair_infeasibility.py",
+        "sha256": "c99d5e9af11e62f3dda0f44cdedd7a66f02226d447e5daf41d8e97cd33637b29",
+        "size_bytes": 49287
+      },
+      {
+        "path": "act/back_end/hybridz_tf/operator_phase_conditioned_relaxed_lp_live_owner.py",
+        "sha256": "74b13c64a5e30c86590a0fc6264391a3af58df2c5a417dc575aacd4f2289d807",
+        "size_bytes": 80692
+      },
+      {
+        "path": "act/back_end/hybridz_tf/persistent_phase_conflict_oracle.py",
+        "sha256": "33113de635314ef6812d549a3e8fc0a1594948841233df7ce208f6a07316d2b6",
+        "size_bytes": 122397
+      },
+      {
+        "path": "act/back_end/hybridz_tf/phase_forest_solver_receipt.py",
+        "sha256": "8bd8d51db46432f733ba7135458435467c26484a1d3ef17cf6c751d1594e4068",
+        "size_bytes": 46352
+      },
+      {
+        "path": "act/back_end/hybridz_tf/preformed_split_primal_certificate.py",
+        "sha256": "219beda0b1e52aa867a62256a390c575b34b8c9dc5e9693dbaf666f04e4d9238",
+        "size_bytes": 41444
+      },
+      {
+        "path": "act/back_end/hybridz_tf/probe_persistent_phase_conflict_oracle.py",
+        "sha256": "515fa6ad3beefa817ad518eb7675bdf0b7c258a4dabfdd831c7b6d12675e5a9a",
+        "size_bytes": 15227
+      },
+      {
+        "path": "act/back_end/hybridz_tf/property_causal_block_dual.py",
+        "sha256": "8c7d3c7303d3da20eb90f6e0de58f39b68a124646a69462587454fae5ed71c80",
+        "size_bytes": 35305
+      },
+      {
+        "path": "act/back_end/hybridz_tf/property_causal_block_integration.py",
+        "sha256": "bef630c3cbbbb0d0dd0eb0f476ff99d61990182e56afea34aedf1a2d061d8b28",
+        "size_bytes": 27741
+      },
+      {
+        "path": "act/back_end/hybridz_tf/property_correlated_plane_bundle.py",
+        "sha256": "881f32777706310debcb94e375e8313eb6c29d37fbda16488dede9849d846a7b",
+        "size_bytes": 58871
+      },
+      {
+        "path": "act/back_end/hybridz_tf/property_cross_layer_residual_facet.py",
+        "sha256": "b413e9e5d4c1d7e8c4585b25f847fc9e71782121974bf8504ffd5cbb90e8fda7",
+        "size_bytes": 39637
+      },
+      {
+        "path": "act/back_end/hybridz_tf/property_micro_rlt.py",
+        "sha256": "cd81461800598eb69e234ec990c7a24a5852e29bb0fdf3d4732e71a3ee9fe32a",
+        "size_bytes": 49945
+      },
+      {
+        "path": "act/back_end/hybridz_tf/property_pairhull.py",
+        "sha256": "eea284ba16daf4eb60fc55890abbdc8b396f2f22df8fe4582df84f0a73ff4b02",
+        "size_bytes": 19290
+      },
+      {
+        "path": "act/back_end/hybridz_tf/property_pairhull_candidates.py",
+        "sha256": "9c799c150d0cfc3b6bef71feb4211ae7a84cc0142189ab17bc11d1abb2e559be",
+        "size_bytes": 51710
+      },
+      {
+        "path": "act/back_end/hybridz_tf/property_phase_conflict_clique.py",
+        "sha256": "d07855bb6392c2c4b1559e0e4da5c99daf19e7957c8d34ca522cc630c10c3e3b",
+        "size_bytes": 72772
+      },
+      {
+        "path": "act/back_end/hybridz_tf/property_phase_literal_groups.py",
+        "sha256": "f9fa72bce00d2f0c85dba6a75852b2161e81b86ae32263d7c5934380b66ec664",
+        "size_bytes": 32243
+      },
+      {
+        "path": "act/back_end/hybridz_tf/property_phase_subset_clique.py",
+        "sha256": "063c87cbe483dc21932dc9eca0ebda18b403c6d8a04dd8191d1aaf940330f0c6",
+        "size_bytes": 42785
+      },
+      {
+        "path": "act/back_end/hybridz_tf/property_residual_targets.py",
+        "sha256": "f3dc7b34347bcbb587009603425a2b90e7b2deff41dfc65399ab3d2d7df4c457",
+        "size_bytes": 54867
+      },
+      {
+        "path": "act/back_end/hybridz_tf/property_residualization.py",
+        "sha256": "097c37cd8f930c52138fd4a42330f7228442d7272a9497de37a65fd57b1fa6bd",
+        "size_bytes": 34669
+      },
+      {
+        "path": "act/back_end/hybridz_tf/property_tail_candidates.py",
+        "sha256": "72f729afa85cc64a79659920d67beb22a3417a826d3202166726b1bc9af41c01",
+        "size_bytes": 18399
+      },
+      {
+        "path": "act/back_end/hybridz_tf/query_dual_blas_contract.py",
+        "sha256": "d2bc8974ebda1f8788dc3940e16aaa395b8fc6e4beb4cb270d4ca0493d061d90",
+        "size_bytes": 16642
+      },
+      {
+        "path": "act/back_end/hybridz_tf/query_dual_box_certifier.py",
+        "sha256": "11e864d5215e4033ff8ce596a9645140b10da3098c2918d06a9e89dfba153df0",
+        "size_bytes": 55470
+      },
+      {
+        "path": "act/back_end/hybridz_tf/query_dual_candidates.py",
+        "sha256": "08b8525ce582781669e2446c7f45eea29e21cd4553fdd9caf34029ea798bea6a",
+        "size_bytes": 95897
+      },
+      {
+        "path": "act/back_end/hybridz_tf/query_dual_gpu_certificate_toy.py",
+        "sha256": "a29aa9313828b7e4b1c8eefd2d17f0e401299bdaabca2e1bf71dbee8f3cedc9d",
+        "size_bytes": 11697
+      },
+      {
+        "path": "act/back_end/hybridz_tf/query_dual_pipeline.py",
+        "sha256": "488acb8c212b16a5b3c19cb01f037f323ba2718b5877e66f77703e6a7df219ad",
+        "size_bytes": 111654
+      },
+      {
+        "path": "act/back_end/hybridz_tf/query_dual_pipeline_v3.py",
+        "sha256": "b9098e6b3307582f9a0ac807d77df66a3a60d17ddfeba1de8584c819b5a2f61d",
+        "size_bytes": 111552
+      },
+      {
+        "path": "act/back_end/hybridz_tf/query_dual_replay.py",
+        "sha256": "6507b725d10fe02ce11dcd433931d05ae41e04b554044b4862193c7c14fd66c9",
+        "size_bytes": 152550
+      },
+      {
+        "path": "act/back_end/hybridz_tf/query_dual_replay_v5.py",
+        "sha256": "3bd0e6358705bccb42ac3d9fdaf50f357fe24537239b04d079b6473b09e58a4c",
+        "size_bytes": 26358
+      },
+      {
+        "path": "act/back_end/hybridz_tf/query_dual_replay_v51.py",
+        "sha256": "bbf2f3ebcedcfe1c9e4d4bf8d5f29304f06243b3c9738b1c26093c59916538ac",
+        "size_bytes": 54141
+      },
+      {
+        "path": "act/back_end/hybridz_tf/query_dual_replay_v51_conv.py",
+        "sha256": "cc58681fafd2a2a4827711164b894962f96b7931f639ffebeb03c074f0d97b56",
+        "size_bytes": 47364
+      },
+      {
+        "path": "act/back_end/hybridz_tf/query_dual_replay_v51_session.py",
+        "sha256": "5b81f096c1d8279bae88e62f91bcdcd78d8efa640227361ef0e7ed676ec6c172",
+        "size_bytes": 94041
+      },
+      {
+        "path": "act/back_end/hybridz_tf/query_dual_replay_v51b_prepared_adapter.py",
+        "sha256": "a839eac9596e6e24358123a250a1649f49b2786d23c96d2367076a12a00aea74",
+        "size_bytes": 105562
+      },
+      {
+        "path": "act/back_end/hybridz_tf/query_dual_replay_v51b_private_decoder.py",
+        "sha256": "7d2452cddbf8cb141a678255f6c931f095639e54588e9cb71b62dff476dcccc0",
+        "size_bytes": 53192
+      },
+      {
+        "path": "act/back_end/hybridz_tf/query_dual_replay_v51b_private_kernel.py",
+        "sha256": "6f72ee6f1f301c9818dcc2ab754346a4cdb08ff072b1b3f18fb3557c55228329",
+        "size_bytes": 131799
+      },
+      {
+        "path": "act/back_end/hybridz_tf/query_dual_replay_v5_candidate.py",
+        "sha256": "c8a7a0495bfff515dfc1fe4a3fde9cf0e0ad9cda017f4f103cd0604f926785cc",
+        "size_bytes": 30095
+      },
+      {
+        "path": "act/back_end/hybridz_tf/query_dual_scalar_guard.py",
+        "sha256": "1c466f511f52f8f93e79bc6707d33495bf186f7958ea3fafbe5edfb8b50ed4f9",
+        "size_bytes": 27042
+      },
+      {
+        "path": "act/back_end/hybridz_tf/query_dual_scalar_guard_v51.py",
+        "sha256": "dad748771e9bf8ea7c4db8fb0a163a975cfe3b3e5e4f6242b117a77d940b8e44",
+        "size_bytes": 37529
+      },
+      {
+        "path": "act/back_end/hybridz_tf/query_dual_v51_authority.py",
+        "sha256": "99b42d5275046e5f1195fe799409de9a69df21c416b4d15fe110e6a87f94f4a8",
+        "size_bytes": 100475
+      },
+      {
+        "path": "act/back_end/hybridz_tf/query_dual_v51b_material_cache.py",
+        "sha256": "faaf583bdf5bdc64fbbdcfa41e2fa50416db24a51ff316a44a2b706c04f0f369",
+        "size_bytes": 89360
+      },
+      {
+        "path": "act/back_end/hybridz_tf/query_dual_v51b_physical_registry.py",
+        "sha256": "9ed0b7a6ef7ff599895c8249a7a1795417984d844c32e12f957edb82a7a0a804",
+        "size_bytes": 183061
+      },
+      {
+        "path": "act/back_end/hybridz_tf/query_dual_v5_authority.py",
+        "sha256": "140d4e723767ed9341a640927d8db31e7d92e85c65341dfcba4aebf06201ae98",
+        "size_bytes": 53831
+      },
+      {
+        "path": "act/back_end/hybridz_tf/raw_vnnlib_focused_rival_bridge.py",
+        "sha256": "275086e95021e314ea374ae47db5fd0394048313730f09594e2c76161d576e98",
+        "size_bytes": 62831
+      },
+      {
+        "path": "act/back_end/hybridz_tf/raw_vnnlib_rival_adapter.py",
+        "sha256": "aeb55c5bb3da1d4b53f3ae5f523887669e02e84046376ca69d66c857df23d520",
+        "size_bytes": 80407
+      },
+      {
+        "path": "act/back_end/hybridz_tf/split_cg_memory_sentinel.py",
+        "sha256": "aca6578ecc2ae19c4b160c63c357af901db86cae941d5fcf6e250eb083e13ee2",
+        "size_bytes": 95498
+      },
+      {
+        "path": "act/back_end/hybridz_tf/split_constraint_generation_candidate.py",
+        "sha256": "8541486f5f5ffa4e8801cdc5856ea65358982bbd817c8e98a065e676c646293f",
+        "size_bytes": 49770
+      },
+      {
+        "path": "act/back_end/hybridz_tf/strict_split_lp_improvement_certificate.py",
+        "sha256": "ccd1c670ead73152af87646e261b747da8bb50d154fa9a1b8cb3cf7326cbfe71",
+        "size_bytes": 43170
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_adaptive_phase_forest.py",
+        "sha256": "3b8b0e9887ef2685779d73bfa54321436224cb92ec977d039dc4f7c33aab1544",
+        "size_bytes": 46253
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_binary_phase_split.py",
+        "sha256": "d5687243ace224c13bf85eb3ef89295a788475b13adfbb32bc3a107dc77d1f3a",
+        "size_bytes": 60362
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_binary_relax_lp_certificate.py",
+        "sha256": "bd6184ee5451bf31da7bab3207be557e01c6299cb42a291ffd8f72c114be32e5",
+        "size_bytes": 13194
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_exact_ranged_row_compaction.py",
+        "sha256": "087efc9bc3bee6b3bc82b6f4dee5638324dbfa6a89e039b9186200ba90a60575",
+        "size_bytes": 15913
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_exact_ranged_row_native_load_sentinel.py",
+        "sha256": "8fb8da3245e928af906ea6d9fcd4eb995b2ddacdc0de4a8cfb1825a4e532b7f7",
+        "size_bytes": 21185
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_exact_sparse_conv_affine_core.py",
+        "sha256": "2fe3dc6d4d1c56750a29b9599d3acdaf31344ab1ee4bd78ce19cd39016b414d1",
+        "size_bytes": 34049
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_exact_sparse_conv_csr_candidate.py",
+        "sha256": "b9c4540c67f91b568d9a08377f1a980f4945be95a9da567f908817ce9f701efa",
+        "size_bytes": 45524
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_exact_sparse_conv_native_schedule_candidate.py",
+        "sha256": "6726698ba06b6eaf45a37b7a51bffa6f4c51cbf2afc05ec1a710a8077204522d",
+        "size_bytes": 39073
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_forward_exact_add_relu_deferral.py",
+        "sha256": "03888ba0bf4bc1ab12eac0dd0dea62ff5f4669ec99692af445f5eb33e8b485e7",
+        "size_bytes": 16208
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_forward_exact_relu_census.py",
+        "sha256": "e19461e3051ba429ba11c9fab6a1a2cab00d9c340142ccdbe3d7f10e0410d192",
+        "size_bytes": 17131
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_forward_exact_relu_dag_interning.py",
+        "sha256": "1a642e02562c9bd667956230bc7fc21eae6a3c4c8dc6a21e2e4770c31a872d2e",
+        "size_bytes": 32483
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_forward_exact_relu_numeric_candidate.py",
+        "sha256": "6b44528d3ae6efe8366ef102bff8564a9e710b7d8e5d944f0513a50dac8e5c85",
+        "size_bytes": 31007
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_gpu_dual_candidates.py",
+        "sha256": "b0dcd8e67943a451488fc6659e3511534295c662f7650b69c61519ac83a990e5",
+        "size_bytes": 61157
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_localized_phase_conflict_oracle.py",
+        "sha256": "2cceecff363fe4308a342fc8cb0138ba876a77a644c3509e0ea898f86119f9f6",
+        "size_bytes": 22863
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_localized_phase_conflict_oracle_adversarial.py",
+        "sha256": "ee6f02c1825ac736bc59d02487e9c3cf01f3674b9ca1ccddb158c8cbf8733794",
+        "size_bytes": 17273
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_motif_local_sharpness.py",
+        "sha256": "acad51e24d9d7e3a15c1fbb38ddfe4458df6d006d0b8238cbdff17772dfba74e",
+        "size_bytes": 4137
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_multi_rival_shared_phase_audit.py",
+        "sha256": "7da9bfa63771208ff1fbcc6eb818f3d098700cfe768c1713c7dcd8a5101256dd",
+        "size_bytes": 7435
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_objbound_safe_capability.py",
+        "sha256": "d835207ab92d5f8d4d624e364e6c66215a184fd593b6a00bff3d4d1e1c95ad37",
+        "size_bytes": 5190
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_operator_add_fusion.py",
+        "sha256": "dc0eecc43f81f46d009f9e43aabb49d0158f4df34551f41ddebfa4e8a38c2545",
+        "size_bytes": 59374
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_operator_constraint_program_sink.py",
+        "sha256": "92ea98ac0da1b7d2821946995b8b90596a7b041351c9c3bf9a091fe6ba434f5c",
+        "size_bytes": 41933
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_operator_conv_csr_builder.py",
+        "sha256": "0779208f4bb5a6f9ced2069ea6e948167cfca1c9784331469f18d871367597a3",
+        "size_bytes": 25879
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_operator_exact_relu_phase_clique_materializer.py",
+        "sha256": "15dfc82659e321d2678929d7a6b48b4881d75e0f04834c769582ef62fc7c6df5",
+        "size_bytes": 41409
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_operator_exact_relu_phase_cliques.py",
+        "sha256": "6624220467b9a9dcb2b6793551798384431fba467b6375021477b951b61c7147",
+        "size_bytes": 100511
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_operator_exact_relu_phase_literals.py",
+        "sha256": "8366d960d013c738cc4fcbb592f9318e4818794ac81fd49869d83202469a3776",
+        "size_bytes": 34222
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_operator_exact_target_reservoir.py",
+        "sha256": "b8d81111a08399c5595cc4fd2bc7953ca6858aa464d22e25db7c664d7c4045c1",
+        "size_bytes": 19369
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_operator_localized_phase_edge_candidate.py",
+        "sha256": "778f8f4c51916504b960bd869e2ff2433f28ada41735abb4f62888ba39bc9ebd",
+        "size_bytes": 18572
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_operator_micro_rlt.py",
+        "sha256": "7ce364a85affda07561c576cd70e5fb898aaaba95ccc0b3c19744b800d9a219e",
+        "size_bytes": 24770
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_operator_phase_clique_pipeline.py",
+        "sha256": "31a0361da30d2b0b0a257f60dc80e5368fba892b803df025816ce4d672087665",
+        "size_bytes": 42513
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_operator_phase_clique_solver_handoff.py",
+        "sha256": "6699c38c4fe4f69f8d00417cee45745feef4c8214f108e2eaca2bbb8ccb1ed6d",
+        "size_bytes": 21829
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_operator_phase_clique_verifier_integration.py",
+        "sha256": "e9d291601c6f324bdddc6231a8f67bc130f3000d6eb2f2f06ff51992d32bda44",
+        "size_bytes": 16507
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_operator_phase_conditioned_build_only.py",
+        "sha256": "c97974c3f6a779db384f620ce64d59216db1c438fed775fc80be35c540734563",
+        "size_bytes": 31122
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_operator_phase_conditioned_k3_build_only.py",
+        "sha256": "22010fdc6fec2547cfed71eddb07081176f4d83f8451be7c453540ae60a1f559",
+        "size_bytes": 49210
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_operator_phase_conditioned_k3_memory_sentinel.py",
+        "sha256": "d0955b13763a0a940d3b0a367fa8a3d4f4d88783b7fccad001058c05252c6938",
+        "size_bytes": 27370
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_operator_phase_conditioned_live_adapter.py",
+        "sha256": "d15a067dbf4ab21e2439035e6b795c225cfbe888467a3badbdf919e8f5968a99",
+        "size_bytes": 17557
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_operator_phase_conditioned_objective_bounds.py",
+        "sha256": "1196ff47319b00381e2dbd4f9732bf54e4376bd418c74e24851d5b84b2abdf62",
+        "size_bytes": 79875
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_operator_phase_conditioned_objective_hull.py",
+        "sha256": "951aa27030587f487ecb93b3ab572c65aaef15b062141c77414b655dfe7d452b",
+        "size_bytes": 55356
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_operator_phase_conditioned_objective_hull_fresh_materializer.py",
+        "sha256": "ae311ac2785b42466420b6c7e00494c7b5d58fa62eda3307c50c47d66242aee6",
+        "size_bytes": 57101
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_operator_phase_conditioned_objective_hull_row_materializer.py",
+        "sha256": "f3fd4309687a7ee90f640e885239d786f678440f79cc8653b17162d4da7b930c",
+        "size_bytes": 31144
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_operator_phase_conditioned_pair_infeasibility.py",
+        "sha256": "ea805a0d185929daaa541b04843b970e9c796112bf433993e0f68fec74a14e9d",
+        "size_bytes": 19114
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_operator_phase_conditioned_relaxed_lp_live_owner.py",
+        "sha256": "508bef693c9362c6b75169447935ef48d8a53faabccb97438264d2fb8f32f491",
+        "size_bytes": 25282
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_operator_property_correlation.py",
+        "sha256": "ac09411227ebbf3157392e802798829bd80b90795c5bc02802dee904f052ae69",
+        "size_bytes": 20128
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_operator_rbs_adaptive_k4_integration.py",
+        "sha256": "493de1983cb74d8abb12fd50284a09cc5d13a8c8134ab099af0f9eab4d6632a9",
+        "size_bytes": 19843
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_operator_residual_normal_form.py",
+        "sha256": "7f05e10e20f5f12d114ca1476c241671cb39b255ccf4a30c01211af360cb1d8a",
+        "size_bytes": 19872
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_persistent_phase_conflict_oracle.py",
+        "sha256": "ced516b93774b55dffb7f7467867b8176502cb5bd77cd2dcea9003a1768e6f4c",
+        "size_bytes": 72173
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_phase0_audit.py",
+        "sha256": "95edea7a5cc13f1f0e9aa25a1bbe511ed322a263e79a47f5d92f209f33f5ce91",
+        "size_bytes": 92300
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_phase_cover_integrity.py",
+        "sha256": "43abc8fd77d2ac4dc05fc719448a4dd39403eca320e40e5d3c498e46f5f6a13d",
+        "size_bytes": 13002
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_phase_forest_solver_receipt.py",
+        "sha256": "2d9bff2331575ce1c1ffde2fb0242fad96ecf1076326e36bc207aff010ed876f",
+        "size_bytes": 22194
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_preactivation_hardening.py",
+        "sha256": "5ece6e520d8112f196b5d06012063e37542707a02a9f9330124a4ed7df6ebf9a",
+        "size_bytes": 13638
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_preformed_factor_objective_certificate.py",
+        "sha256": "1bf44f52607e8e6797caf43fbb5d959c2d9b32011a9a34a9e1ac54cf71f1725b",
+        "size_bytes": 24463
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_preformed_split_primal_certificate.py",
+        "sha256": "3822d29664c964500855ba94134689f80375dd53fa8b6dbdef48f00e2d66fd46",
+        "size_bytes": 29776
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_property_causal_block_dual.py",
+        "sha256": "c31e37140d23f8ced10ac801076138f69eb0e33f389c027aeac309b5a5289a2b",
+        "size_bytes": 15395
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_property_causal_block_integration.py",
+        "sha256": "701ed854bfe00b59c29d9d4e75bdf2c15735b94e599b605dcfbb1acf67a840fc",
+        "size_bytes": 20435
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_property_causal_block_seeded_soundness.py",
+        "sha256": "326a14f3c2c07b856a0332789716e85d6f4f9dca4381e8b25bb583eac4b0f742",
+        "size_bytes": 14725
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_property_conditioned_incidence_cone.py",
+        "sha256": "3410e2033908c2ee481a4c97384ca0c9906cb9a4463bcd01be1840f478211bed",
+        "size_bytes": 16902
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_property_correlated_plane_bundle.py",
+        "sha256": "9b16c282b8f6af594a0f89042194e55f0395eb63c6a53e06ff2b50008e5ea868",
+        "size_bytes": 35433
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_property_cross_layer_residual_facet.py",
+        "sha256": "1deb4ea223b7ccf9c273924a17e63ce351b4aba6073797e16f24431861ba03e3",
+        "size_bytes": 29033
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_property_micro_rlt.py",
+        "sha256": "5a4f9e7e15a2b2cf13d328205daa6479cd884dd30d5d00d9074dc62aac4503a7",
+        "size_bytes": 35986
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_property_micro_rlt_parent_prefilter.py",
+        "sha256": "7bb97c700cedfd216037663dea50f1d51cb91a4f19f13edc122d3a9011cbce42",
+        "size_bytes": 41806
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_property_pairhull.py",
+        "sha256": "791f9fc043d3b145ef3b716be009541090b4313b3478186b93c9f01af80e1527",
+        "size_bytes": 17403
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_property_pairhull_candidates.py",
+        "sha256": "ceae0ca238ede52a8c86e538aa3da91cd3aa5c50fbfe9c1bfdf5e5c4c95353a5",
+        "size_bytes": 16259
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_property_pairhull_verifier.py",
+        "sha256": "08e02d8abf169fe5f427be03cfc29419f37a20ca45c5b27e8ef7db82d755222b",
+        "size_bytes": 16364
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_property_phase_conflict_clique.py",
+        "sha256": "193a5ed30b75512d2e91bc97229a2b41f516bcceb65f334478ea9517c0dc885e",
+        "size_bytes": 35277
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_property_phase_literal_groups.py",
+        "sha256": "57a5787aa74137f41338af8373860c52663a5a77f129c095bf2e0934e5f28231",
+        "size_bytes": 18708
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_property_phase_subset_clique.py",
+        "sha256": "031e439ad1cf2dbb85065cff1c1f4f23cb898640d7096935e4cf44d1c6d07ae2",
+        "size_bytes": 20974
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_property_residual_targets.py",
+        "sha256": "877d2dce887d40fac9f5c6fbbb17f9920cce88322280282e3163caf5b3c79609",
+        "size_bytes": 24171
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_property_residualization.py",
+        "sha256": "3547e0b396a9c43c125f0fa7ec2c7cfead150f67cad10e62442b69910d8b5df7",
+        "size_bytes": 10131
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_property_tail_candidates.py",
+        "sha256": "61a1e6dc7fcaf58ace2e15a387460862b2f3b5e343831a438f24b1aa521dedc2",
+        "size_bytes": 7027
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_property_tail_upper.py",
+        "sha256": "15cd8064ddfe04714502ec1d2d2a399b968c7900520fd801542e2c70951b1689",
+        "size_bytes": 62300
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_property_upper_groups.py",
+        "sha256": "a41381dc34f8910946aa2e7cd6c35497313813da7ce5d7b4e6f0fa2a07646338",
+        "size_bytes": 22803
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_query_dual_affine_suffix.py",
+        "sha256": "dec59669f0be7c9c000b6fa65d523946267ab5a15a05d0a96854c118d992b1c4",
+        "size_bytes": 30669
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_query_dual_blas_contract.py",
+        "sha256": "c26379449c81518c756e31b6b3d4e9f84db9aabab13b5f077cdd90b17dc063b3",
+        "size_bytes": 4243
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_query_dual_box_certifier.py",
+        "sha256": "2188065b6dbfecdb5e582c5cd0664aaf1b86aa0ec250d9bf47d9db4e4d531cc7",
+        "size_bytes": 11053
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_query_dual_candidates.py",
+        "sha256": "bc6c07aaf9a1fbf408c5560bbd468ffaf67764f71aa9fcdc82c4dd7e4728cc5f",
+        "size_bytes": 39260
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_query_dual_gpu_certificate_toy.py",
+        "sha256": "6df757c1b8dd2388eff5a51830a27acf28121647a4aa044cca2d8f629beaf52a",
+        "size_bytes": 6082
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_query_dual_operator_bound_frame.py",
+        "sha256": "2c414291f9287835bc884d47138212c60c6d35c9e09d1a4499660676dc090e3b",
+        "size_bytes": 5632
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_query_dual_operator_integration.py",
+        "sha256": "a2db16ff7b0fd26020e985a5f1e28c4e6ef8bcc676cb36c761f25efa95ed560f",
+        "size_bytes": 43849
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_query_dual_pipeline.py",
+        "sha256": "1598e1017bd8f011cda3b8a7354a238170f93bbac13a3ce2db9af373e4c35952",
+        "size_bytes": 40494
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_query_dual_pipeline_v3.py",
+        "sha256": "ae29b06106aaf1d9c25d4f5869f74935a28560186bce1c2b83e5cccc8c08e399",
+        "size_bytes": 51427
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_query_dual_replay.py",
+        "sha256": "a02eb771845887d1394eb86a93332cf63ed0fe96670fc7d6424c4c7008afdb09",
+        "size_bytes": 24270
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_query_dual_replay_v3.py",
+        "sha256": "0c5db67ea92100fb050e6d8c40c02b58f7c1641b520110dfe29fe06101de4c55",
+        "size_bytes": 21322
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_query_dual_replay_v4.py",
+        "sha256": "a2962e206c54f82259bcd30a1e893f5d2bbb8c974f30bb0089f001c0767c81a9",
+        "size_bytes": 7263
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_query_dual_replay_v5.py",
+        "sha256": "79e9f4791bd947c70f17a2e7af224ae53912f5e18be6474703dc4b8fa557efe5",
+        "size_bytes": 10865
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_query_dual_replay_v51.py",
+        "sha256": "109cc8db4fd017988c7f9b5e81de9ead72a490c5fb932f33ac06634aa23f0b7f",
+        "size_bytes": 29051
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_query_dual_replay_v51_conv.py",
+        "sha256": "f780bc7a56fe8f236e500ca93124b411144549f7aad3cd71c25a51df1aaa1cdb",
+        "size_bytes": 21175
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_query_dual_replay_v51_session.py",
+        "sha256": "d622bfdf857fda5d6667c602d33425d07d9f8bbfad2ac235eaaebb00445a7809",
+        "size_bytes": 29979
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_query_dual_replay_v51b_prepared_adapter.py",
+        "sha256": "7288d3bc73cc6a86223b58092e0504f72a206384b02cd704876670d3d2a60f01",
+        "size_bytes": 94188
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_query_dual_replay_v51b_private_decoder.py",
+        "sha256": "758ad5d1c019754f96a7ae2945b7b887e06517de9428fa8d50ee516209b0a84b",
+        "size_bytes": 71504
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_query_dual_replay_v51b_private_kernel.py",
+        "sha256": "536f13d7c1e87dce7c1ec8cc2fda094667773f06d06e47d7ddb21a4318601032",
+        "size_bytes": 124063
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_query_dual_replay_v5_candidate.py",
+        "sha256": "7d50e80e59e6a4a8d314a6f80d7fe8fd5b68e71236d41656a5b4935fdeb30bb0",
+        "size_bytes": 15932
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_query_dual_scalar_guard.py",
+        "sha256": "014140b90edd774f2d077d8348c13732c5338f5e1f74fdcb0f5b9f958fb5922c",
+        "size_bytes": 20821
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_query_dual_scalar_guard_v51.py",
+        "sha256": "0126e54ed9174dccd7e9f818de9e034060b35973b2f449f5732132550d107607",
+        "size_bytes": 18652
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_query_dual_v51_authority.py",
+        "sha256": "c606dedde3bf34f26e8410f50840bdf2d746266e3c1d42a69db8d4c45287ac6e",
+        "size_bytes": 49226
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_query_dual_v51b_material_cache.py",
+        "sha256": "ed89938a7489c35e593c3fe1322d6143463e95a2dd7a9c9a675e0499f65c140a",
+        "size_bytes": 43246
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_query_dual_v51b_physical_registry.py",
+        "sha256": "5cfc27b0ff561534769cdf72942bb4f7412b9aa8ca37f418f7d39d03885893a4",
+        "size_bytes": 132741
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_query_dual_v5_authority.py",
+        "sha256": "d4456674adc54c3fe26ea288788dcca3d8c6c828fdd91affb55f76f638bcf4d0",
+        "size_bytes": 18005
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_raw_vnnlib_focused_rival_bridge.py",
+        "sha256": "0d206e7dd8dacb3a0b560c2633a5f2816e4576d75e35b5938a2c9a68be387eb8",
+        "size_bytes": 24987
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_raw_vnnlib_rival_adapter.py",
+        "sha256": "dc73480897422d9d048fb8e690900477f43a0ad0024980b04e1fe9d4a8453925",
+        "size_bytes": 40980
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_split_block_lp_certificate.py",
+        "sha256": "05cc958350598b2caaca9f8509f9f44984f0f23706f8916f06de453af7484aeb",
+        "size_bytes": 16912
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_split_cg_memory_sentinel.py",
+        "sha256": "21fffae359467ac3817efbde45d26ca4b6d17e43c4136ed9dafb635430b64d72",
+        "size_bytes": 39950
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_split_constraint_generation_candidate.py",
+        "sha256": "57409787b062f72007c9b37a9a75113aed01bc7d11cfe93c7e55bc8a2d0223de",
+        "size_bytes": 25506
+      },
+      {
+        "path": "act/back_end/hybridz_tf/test_strict_split_lp_improvement_certificate.py",
+        "sha256": "46cfb7ffaf7ae9dd9e28f1990514be8dfd18e8d7231d0d6e47b9bcee55984828",
+        "size_bytes": 19032
+      },
+      {
+        "path": "act/back_end/hybridz_tf/tf_cnn.py",
+        "sha256": "5d08530b5daa52fa3f98445512193861b473ff14cd915d6193a8b4a038d088be",
+        "size_bytes": 27659
+      },
+      {
+        "path": "act/back_end/hybridz_tf/tf_mlp.py",
+        "sha256": "08d70ffeb59bc1b1a068c5a89cb3c71937d12d266467ca1b2f755ecf471e215f",
+        "size_bytes": 129039
+      },
+      {
+        "path": "act/back_end/hybridz_tf/tf_rnn.py",
+        "sha256": "f0813c3621ec40d72506642d8b7d7e70fd92dcdc82e00418cbd7e4656fa7c6f4",
+        "size_bytes": 13522
+      },
+      {
+        "path": "act/back_end/hybridz_tf/tf_transformer.py",
+        "sha256": "444e9259652bdabdbd64e3e18659d586b2e2d2ca41406eada6308c4ed79e810e",
+        "size_bytes": 1627
+      },
+      {
+        "path": "act/back_end/interval_tf/__init__.py",
+        "sha256": "4850c001448353b61ddc79758553ef7cd352101d3349101bcb34f43e77460d67",
+        "size_bytes": 901
+      },
+      {
+        "path": "act/back_end/interval_tf/interval_tf.py",
+        "sha256": "14be4ec9a7f9ac3975f34496339d092239e78ef7402831077938d09706b3236a",
+        "size_bytes": 9970
+      },
+      {
+        "path": "act/back_end/interval_tf/tf_attention.py",
+        "sha256": "f6736b644cd27bdb1483c1f72043b6e8a78084443804c2499e5f053765cdef56",
+        "size_bytes": 35687
+      },
+      {
+        "path": "act/back_end/interval_tf/tf_cnn.py",
+        "sha256": "37def41d57ed828d52954eb16bff92e00dbe5bbb3dc65f519ac62a536e859489",
+        "size_bytes": 33495
+      },
+      {
+        "path": "act/back_end/interval_tf/tf_mlp.py",
+        "sha256": "b477c294eba4641889e9e55c2ea281cfdfd0f3fef83fe00bbaa47ba09545874c",
+        "size_bytes": 31608
+      },
+      {
+        "path": "act/back_end/interval_tf/tf_rnn.py",
+        "sha256": "47ba111b8645017d581e9e08a2fcb4db899647346fd1e3c369c615eb2ed26412",
+        "size_bytes": 17646
+      },
+      {
+        "path": "act/back_end/interval_tf/tf_transformer.py",
+        "sha256": "a50fae8ea0d56464670386e99ee1a094e33da2665723853a9fba819760a85ddb",
+        "size_bytes": 11067
+      },
+      {
+        "path": "act/back_end/layer_schema.py",
+        "sha256": "db7cddde1fb9ffafe1b9e2f76cbc7b366201a11bcefce26d40356d4e52701790",
+        "size_bytes": 30824
+      },
+      {
+        "path": "act/back_end/layer_util.py",
+        "sha256": "1a253846e9688c87e019aaaa4a02b690c626f33730383e29bd97177d718c5e36",
+        "size_bytes": 12213
+      },
+      {
+        "path": "act/back_end/net_factory.py",
+        "sha256": "53e5e9b3df93e7fb42a993736fd846361837b5d4fdd83f50e7b20d29ff37298b",
+        "size_bytes": 96424
+      },
+      {
+        "path": "act/back_end/serialization/__init__.py",
+        "sha256": "910dc1e450a31ab558b89f8ca5ae56010bd6cc5007b3278c4723f3fa55f8fa1c",
+        "size_bytes": 1120
+      },
+      {
+        "path": "act/back_end/serialization/serialization.py",
+        "sha256": "7fb2b25fdc546846d8a703336edf4d3850037270756bc335dcd92300c21791cd",
+        "size_bytes": 11703
+      },
+      {
+        "path": "act/back_end/serialization/test_serialization.py",
+        "sha256": "f95633aa35b749f5ab3f7b61f4336770e8f07aff5b3c9432e45f180a8d0dceb5",
+        "size_bytes": 9949
+      },
+      {
+        "path": "act/back_end/solver/__init__.py",
+        "sha256": "2f47957609b6814d94b7c19a3ab98061696f6535aa7e07c6f3e383d012cb8744",
+        "size_bytes": 1039
+      },
+      {
+        "path": "act/back_end/solver/constraint_block_dag_candidate.py",
+        "sha256": "4dcace661ea6886c755ff7848cb6de5f1f440742fdcc0f1d6a69dd713ad03f44",
+        "size_bytes": 95159
+      },
+      {
+        "path": "act/back_end/solver/constraint_block_dag_memory_sentinel.py",
+        "sha256": "95cf82461a851682f480a5398f6e2f54cae9f110532347c9ce9fd63ed24024c9",
+        "size_bytes": 72305
+      },
+      {
+        "path": "act/back_end/solver/constraint_program.py",
+        "sha256": "d301ebf546cc01bfdd133a00572ca87dc7632331b81188d3812635b99f7b5ab0",
+        "size_bytes": 251394
+      },
+      {
+        "path": "act/back_end/solver/constraint_program_highs.py",
+        "sha256": "4856d455c7d03eced6286dafc88747aa4832386fa851c872c0347651d906f699",
+        "size_bytes": 54662
+      },
+      {
+        "path": "act/back_end/solver/constraint_program_highs_schedule_candidate.py",
+        "sha256": "3ff2dce957b90b789a13362fc6ad6f0616cc9d55ba58ec6752f6189bcf575e90",
+        "size_bytes": 24060
+      },
+      {
+        "path": "act/back_end/solver/solver_base.py",
+        "sha256": "d960ac4d718aa424327d2040a61feb5dc5f7fb73441f6b76488c82594ea873de",
+        "size_bytes": 11519
+      },
+      {
+        "path": "act/back_end/solver/solver_dual.py",
+        "sha256": "6d458582eb9e045d0ab2232bce35412de79e9330c5e85ee5d7e962de1f59b386",
+        "size_bytes": 79919
+      },
+      {
+        "path": "act/back_end/solver/solver_gurobi.py",
+        "sha256": "b324ccc012e7ce8e30d4b86dff473031484ef282fcc8a716a25e39d285ec1355",
+        "size_bytes": 12334
+      },
+      {
+        "path": "act/back_end/solver/solver_hz.py",
+        "sha256": "d4fe5491aec1d41819a00a6638d2ca7fd3b2d128939667f53623d8c89db4300d",
+        "size_bytes": 643379
+      },
+      {
+        "path": "act/back_end/solver/solver_torchlp.py",
+        "sha256": "99a4e387f95b597a8a4594e9cb2a871b67ba9ecc7a6374742c11fb3a357ed0d4",
+        "size_bytes": 12664
+      },
+      {
+        "path": "act/back_end/solver/test_constraint_block_dag_candidate.py",
+        "sha256": "fcc3db852852a25d5a357bbac8593f64af472a1125486356fdcdf4eea17da1d0",
+        "size_bytes": 37806
+      },
+      {
+        "path": "act/back_end/solver/test_constraint_block_dag_memory_sentinel.py",
+        "sha256": "c988068b354695a6f476fde72e07dd821272739ce7f8cf46d11ac91e2a753469",
+        "size_bytes": 24859
+      },
+      {
+        "path": "act/back_end/solver/test_constraint_program.py",
+        "sha256": "c41968e7800ed8e819a7440c32814c959fc41c096435ffc9d9833b65da37d205",
+        "size_bytes": 160891
+      },
+      {
+        "path": "act/back_end/solver/test_constraint_program_highs.py",
+        "sha256": "d61d2eae67d4cb5e6c8fb687f523a59fc326afe4bdb74de3630441587a5e6e14",
+        "size_bytes": 58306
+      },
+      {
+        "path": "act/back_end/solver/test_constraint_program_highs_schedule_candidate.py",
+        "sha256": "eb22ad2c8badfc7ca88ba235c02c926c36f9600749f49f7309043f3d87e16d18",
+        "size_bytes": 24488
+      },
+      {
+        "path": "act/back_end/solver/test_hz_col_id_allocator.py",
+        "sha256": "3affecb0df791e85dc0ec65734c45f392b52724ed929e2aea805326f91faa5b2",
+        "size_bytes": 4469
+      },
+      {
+        "path": "act/back_end/solver/test_solver_hz_binary_shift.py",
+        "sha256": "894af568e360d4d30df1588b02733db4c9e95b43fc07e20c17eb26fddef64071",
+        "size_bytes": 14162
+      },
+      {
+        "path": "act/back_end/transfer_functions.py",
+        "sha256": "80c47a1c5da58f4950406dbb1ba4743c2430a77eb3e821720b846448e75835a2",
+        "size_bytes": 8521
+      },
+      {
+        "path": "act/back_end/utils.py",
+        "sha256": "df756062f90962dc0d0e9fbe178f9b2ccdfd87c9fa686134029d1c8c7b677376",
+        "size_bytes": 10975
+      },
+      {
+        "path": "act/back_end/verifier.py",
+        "sha256": "ad5184509e1f9122698e8dfb628b96b91ff102d4bb56fa54f2316c54b6cb9278",
+        "size_bytes": 383252
+      },
+      {
+        "path": "act/front_end/__init__.py",
+        "sha256": "c999db87e814115ace2fffb50e1f424c54b7b1a4a612c030a56b2a77419dfe4f",
+        "size_bytes": 1630
+      },
+      {
+        "path": "act/front_end/__main__.py",
+        "sha256": "4aea1fd53bc15ecf387a7b858b3f15cd7f13e246298f80f89924a98b7aaba022",
+        "size_bytes": 395
+      },
+      {
+        "path": "act/front_end/bert_loader/__init__.py",
+        "sha256": "2b62ce4136124b3fe3f552f51b4f9fbf9421b113676f3a4b8c246f29bb1955e3",
+        "size_bytes": 1268
+      },
+      {
+        "path": "act/front_end/bert_loader/create_specs.py",
+        "sha256": "7cc1d11d02454b0e99ef5ff9c97db9769183109e571b3343288ae02e21152ac8",
+        "size_bytes": 7990
+      },
+      {
+        "path": "act/front_end/bert_loader/data_loader.py",
+        "sha256": "0816dfad7b64f8f07a5719741e93e2ab771335d9ef224a102e9c851f3860b924",
+        "size_bytes": 12271
+      },
+      {
+        "path": "act/front_end/cli.py",
+        "sha256": "ed41ab90214c9615c92a572bc792ee4580a9ecd5c0661b8703bbe001383df271",
+        "size_bytes": 32820
+      },
+      {
+        "path": "act/front_end/creator_registry.py",
+        "sha256": "2b8fd1c329f2cb33ea1b63d7a2183c54163dc47acd957d99c1a089930b31b13f",
+        "size_bytes": 8830
+      },
+      {
+        "path": "act/front_end/model_synthesis.py",
+        "sha256": "0a4104de37653f7a11321b62c8fb0a24dd98a51ba01d546446069e8c2abeffc8",
+        "size_bytes": 30328
+      },
+      {
+        "path": "act/front_end/spec_creator_base.py",
+        "sha256": "f6f1070a9f13b23b76a1486c53e71fe32c2f9062156f8e20e05abf36631678c3",
+        "size_bytes": 15939
+      },
+      {
+        "path": "act/front_end/specs.py",
+        "sha256": "4684da73f40ff6368a4e5464a8b6add98d1af86d1be16f0beb9c79405b0fba51",
+        "size_bytes": 24662
+      },
+      {
+        "path": "act/front_end/torchvision_loader/__init__.py",
+        "sha256": "dfe84fee23d388125178bea8ad7f1b12baae1e0f8f0d6314d8178e8a8902a090",
+        "size_bytes": 2359
+      },
+      {
+        "path": "act/front_end/torchvision_loader/__main__.py",
+        "sha256": "13d6a1c0c2fadd81ac748595b610ce549fe086d6a543d9d061beff32a9f9710f",
+        "size_bytes": 281
+      },
+      {
+        "path": "act/front_end/torchvision_loader/cli.py",
+        "sha256": "3856518b84ad4d76d22d33d6e9b48313d504de81a8b06949092d46c304cff2cc",
+        "size_bytes": 40299
+      },
+      {
+        "path": "act/front_end/torchvision_loader/create_specs.py",
+        "sha256": "76f72dbc74deebcc74ce7fe7c6fbcfe0560a4a7ad2a2adffb7a32ab01856de2d",
+        "size_bytes": 19668
+      },
+      {
+        "path": "act/front_end/torchvision_loader/data_model_loader.py",
+        "sha256": "1eaae3982d38c26360b66a8716d4574b16830167235052ed14aedf7ad4e0090e",
+        "size_bytes": 38560
+      },
+      {
+        "path": "act/front_end/torchvision_loader/data_model_mapping.py",
+        "sha256": "ae3d14110111dc922a996a0c306a8a8358d85cc1eef52a5ff820799c59a5c3eb",
+        "size_bytes": 29172
+      },
+      {
+        "path": "act/front_end/torchvision_loader/model_definitions.py",
+        "sha256": "8c6baec462cfb50fb32480eee644bb592e3f991ff592348a63aa3b2187d9b134",
+        "size_bytes": 6239
+      },
+      {
+        "path": "act/front_end/verifiable_model.py",
+        "sha256": "49da709ba66c1e639ab8c02409660169386032149a06c9cb61470616814ae4c6",
+        "size_bytes": 35672
+      },
+      {
+        "path": "act/front_end/vnnlib_loader/__init__.py",
+        "sha256": "6b4db58d2afc0a8b93d961c7caed733c25f81ad1450d1a45cba6b87e9309c60a",
+        "size_bytes": 3215
+      },
+      {
+        "path": "act/front_end/vnnlib_loader/__main__.py",
+        "sha256": "ed20954c1af1ee813c105e3b2c29dafc87069c4e5782d257f1a0f8e308006dd2",
+        "size_bytes": 418
+      },
+      {
+        "path": "act/front_end/vnnlib_loader/category_mapping.py",
+        "sha256": "86c28f3e4f9f9880c719a7d1d73c0ca652da23541f12e711bc43af497323c6f2",
+        "size_bytes": 17716
+      },
+      {
+        "path": "act/front_end/vnnlib_loader/cli.py",
+        "sha256": "75ff85997b28b20f533fe822448e5f359acb274507cffb2401908e059d5842bf",
+        "size_bytes": 12534
+      },
+      {
+        "path": "act/front_end/vnnlib_loader/create_specs.py",
+        "sha256": "2f0df22f69bc4f384435012832725247dd70c605bec7219b5610e5d43d322e71",
+        "size_bytes": 15686
+      },
+      {
+        "path": "act/front_end/vnnlib_loader/data_model_loader.py",
+        "sha256": "35185db29f328a317e693a7c05fd9f7c82d3a07e1eec7c7df7714fe62f59faa2",
+        "size_bytes": 33542
+      },
+      {
+        "path": "act/front_end/vnnlib_loader/onnx_converter.py",
+        "sha256": "6e48645e18b8ce5cafd0afd77d6e7e74fb39b55bf6b8a2ed4ce88895b4907bd1",
+        "size_bytes": 22925
+      },
+      {
+        "path": "act/front_end/vnnlib_loader/vnnlib_parser.py",
+        "sha256": "7703a90db9b6abde9870dfd1330305c17063987f8665f200a2c417c918cbe2d2",
+        "size_bytes": 64830
+      },
+      {
+        "path": "act/pipeline/__init__.py",
+        "sha256": "e2aba23ea1fd2135b3e9bc7540b040825718c94788c4dbd3f7b9c6de9400b200",
+        "size_bytes": 2514
+      },
+      {
+        "path": "act/pipeline/__main__.py",
+        "sha256": "a76e21fc32ba8e7c9c48536b98cbb8c0bbb4afdb6d93083db2e068d25c370c50",
+        "size_bytes": 688
+      },
+      {
+        "path": "act/pipeline/cli.py",
+        "sha256": "cc26f6de8856d1ac805aa292fb3be7cc82d32db40791960cf2cee202b940f107",
+        "size_bytes": 67728
+      },
+      {
+        "path": "act/pipeline/fuzzing/__init__.py",
+        "sha256": "3c6ea3b94600126be9d9f26a5c7b64a656a8d39ddbe16ea26ae67a8f6103a1fa",
+        "size_bytes": 635
+      },
+      {
+        "path": "act/pipeline/fuzzing/actfuzzer.py",
+        "sha256": "4a137d46fb9b2c6bd3e0ec93947cb5dd443e126922f27082f65428b8be2b2b74",
+        "size_bytes": 25502
+      },
+      {
+        "path": "act/pipeline/fuzzing/checker.py",
+        "sha256": "397296e085223b2c94eec006df6f8f53ccbfb5a09c57816b7d049d11676598e3",
+        "size_bytes": 10355
+      },
+      {
+        "path": "act/pipeline/fuzzing/config.yaml",
+        "sha256": "6d0ae4290e2494a6e31308c0e96714e5f7cded5de964c4b192f55b23006c6b98",
+        "size_bytes": 2773
+      },
+      {
+        "path": "act/pipeline/fuzzing/corpus.py",
+        "sha256": "8aa581470712423aeaab96e53aafca1b58420fda96e5d8d3f24d7f2666fd7642",
+        "size_bytes": 11396
+      },
+      {
+        "path": "act/pipeline/fuzzing/coverage.py",
+        "sha256": "b77d99efb4750bfe77d2258ba8767b7df4d6d80df795346682e3c98311964516",
+        "size_bytes": 15766
+      },
+      {
+        "path": "act/pipeline/fuzzing/mutations.py",
+        "sha256": "305f09fa5dcf27aa36ba8858bc914bd2aeb51831d972fd4b9c7bef2f61c36185",
+        "size_bytes": 32116
+      },
+      {
+        "path": "act/pipeline/fuzzing/trace_reader.py",
+        "sha256": "b77ffa6ad42a56c7a514f156b1080613fce2928d33ac429962c5ff778b75b314",
+        "size_bytes": 32347
+      },
+      {
+        "path": "act/pipeline/fuzzing/trace_storage.py",
+        "sha256": "74542dc14770c5fbc08dc5b93c51307faa61499245ac653b1cbc1e5e88c91fe9",
+        "size_bytes": 11311
+      },
+      {
+        "path": "act/pipeline/fuzzing/tracer.py",
+        "sha256": "92c9e42898ba86870d475eb07d41585d367ea49c66506179765a9f5c82610561",
+        "size_bytes": 10014
+      },
+      {
+        "path": "act/pipeline/verification/__init__.py",
+        "sha256": "00d362a0214c5796bb598edc87dbf7ada6954487c9aebaa481d923e23cba3517",
+        "size_bytes": 1024
+      },
+      {
+        "path": "act/pipeline/verification/act2torch.py",
+        "sha256": "b804d2383f1be6f0731ed3639c659be3ffb26eedceef7ebccb43469a6a434b24",
+        "size_bytes": 53406
+      },
+      {
+        "path": "act/pipeline/verification/hybridz_joint_gain_probe.py",
+        "sha256": "721d4ad1c6552a5552dfda753d658ac3eda1de356eb540fec229dd2a91d38364",
+        "size_bytes": 20981
+      },
+      {
+        "path": "act/pipeline/verification/hybridz_largecls_gate.py",
+        "sha256": "45eb6536accfbaf8e30f62697f4c4f83f19f1c9a0a5d70e1dac4d4eb4a77b5a1",
+        "size_bytes": 257887
+      },
+      {
+        "path": "act/pipeline/verification/hybridz_phase_clique_build_probe.py",
+        "sha256": "5e81f670f9575ad394da39146981d3659300d484ce7b36b252f4c8c4ea4d934a",
+        "size_bytes": 427917
+      },
+      {
+        "path": "act/pipeline/verification/llm_probe.py",
+        "sha256": "008a632773444834b12fc8a58612ffe519110a162e54ce23b899acf7d6ed197a",
+        "size_bytes": 30283
+      },
+      {
+        "path": "act/pipeline/verification/model_factory.py",
+        "sha256": "08bc12de3215d1402308c8c34e6150dc7bd3477bd2b6664857c07dba2a58ef5e",
+        "size_bytes": 18157
+      },
+      {
+        "path": "act/pipeline/verification/per_neuron_bounds.py",
+        "sha256": "6ca4b1321e5e5b9846944237f16f725585a4181375bfad253693c1868e836e8b",
+        "size_bytes": 22667
+      },
+      {
+        "path": "act/pipeline/verification/query_dual_c10_cpu_parallel_audit.py",
+        "sha256": "3825d5cc18b810b87a4fb74f0917b9d837cc6c0c066897185b998d24a13bcfdf",
+        "size_bytes": 11021
+      },
+      {
+        "path": "act/pipeline/verification/query_dual_probe.py",
+        "sha256": "39e739f1ada378ba4bb2676ea25e2cc244c5881e2436b3e02d0673e5fe30b846",
+        "size_bytes": 57373
+      },
+      {
+        "path": "act/pipeline/verification/query_dual_v3_cuda_toy_audit.py",
+        "sha256": "b5ac5478d0eae891a37c4cd0568a8d60d843f2ff231b31f27c41de268d7774bd",
+        "size_bytes": 16266
+      },
+      {
+        "path": "act/pipeline/verification/query_dual_v3_toy_audit.py",
+        "sha256": "1c3e8e0b7ac12305e688818b63b6d9b62c62dc5b9330f283e85c09ef4eaf8a0e",
+        "size_bytes": 22615
+      },
+      {
+        "path": "act/pipeline/verification/query_dual_v51_controlled_audit.py",
+        "sha256": "bb738d531d8d0d36ed5de994b0ddaa569d30b0b793ce7e7101a56c5d8145f77a",
+        "size_bytes": 93196
+      },
+      {
+        "path": "act/pipeline/verification/query_dual_v5_controlled_audit.py",
+        "sha256": "623f492bf8a7c3e2ed681b3277858b3146f64539e0e3c02ac4befc8da8329748",
+        "size_bytes": 28023
+      },
+      {
+        "path": "act/pipeline/verification/strict_replay.py",
+        "sha256": "8bc133172d8e12cee321fe32170c6939855bae637eb6d9aa5bee91dfe5d4bfac",
+        "size_bytes": 23990
+      },
+      {
+        "path": "act/pipeline/verification/strict_replay_toy_audit.py",
+        "sha256": "e1d2f0d9c5c567b5e6d159f1aa19fdcde6acc9367637d708e2e840912d2c6ba6",
+        "size_bytes": 14824
+      },
+      {
+        "path": "act/pipeline/verification/test_hybridz_joint_gain_probe.py",
+        "sha256": "2c6db9e484be2af689bed44390634afe433ae4df8f620bdeb82c471dc6eee937",
+        "size_bytes": 4745
+      },
+      {
+        "path": "act/pipeline/verification/test_hybridz_largecls_gate.py",
+        "sha256": "e568c85c0568719a25707702e71b11e70cc61ac9cb892fd51c3474110c843f59",
+        "size_bytes": 168684
+      },
+      {
+        "path": "act/pipeline/verification/test_hybridz_phase_clique_build_probe.py",
+        "sha256": "aea35727146f35100dc5561aba28ee3697352263421bd0535e1ac6e23aed4ec2",
+        "size_bytes": 268327
+      },
+      {
+        "path": "act/pipeline/verification/test_query_dual_probe.py",
+        "sha256": "803de7c33da93640a51cc525872efe3ad3392e15d99022cd94e04b3929bd4256",
+        "size_bytes": 29042
+      },
+      {
+        "path": "act/pipeline/verification/test_query_dual_v3_cuda_toy_audit.py",
+        "sha256": "2e0894c02033862045ab29fec721e5e27365a1eb5a7a0788d818a0475ff48c29",
+        "size_bytes": 3239
+      },
+      {
+        "path": "act/pipeline/verification/test_query_dual_v3_toy_audit.py",
+        "sha256": "3d5df37eaae9874f3057589b8ccb5a826ffd791f7e892718e7d7412968e3dfe2",
+        "size_bytes": 2983
+      },
+      {
+        "path": "act/pipeline/verification/test_query_dual_v51_controlled_audit.py",
+        "sha256": "f7f63df6a3ce2abb1570e2cbedefd92305ccaf3e9ab69f7ceeb7b475bb43dd6b",
+        "size_bytes": 22489
+      },
+      {
+        "path": "act/pipeline/verification/torch2act.py",
+        "sha256": "84ad13bfed2565649ec3431454584f9d2ba10063c44c8a4f9762135a84375a0c",
+        "size_bytes": 102906
+      },
+      {
+        "path": "act/pipeline/verification/utils.py",
+        "sha256": "85374b505202a488533a1d9bc2dd41b7f9053acd214f66774613f9bc335ef00a",
+        "size_bytes": 73032
+      },
+      {
+        "path": "act/pipeline/verification/validate_verifier.py",
+        "sha256": "31577e226067e4f65c3579a7ec1f4a004ce8abe013f0ad21d363824db33ab380",
+        "size_bytes": 42745
+      },
+      {
+        "path": "act/pipeline/verification/vnncomp_runner.py",
+        "sha256": "229f914b32db93358fa235750a3425ffe856ff605922e9a860181eca32743dfe",
+        "size_bytes": 9464
+      },
+      {
+        "path": "act/util/__init__.py",
+        "sha256": "125d8c683a85b73a01e440056fd2d40da7057601449c9b049c05bf480bcb14e3",
+        "size_bytes": 1049
+      },
+      {
+        "path": "act/util/cli_utils.py",
+        "sha256": "18576886b3f0505cfa3d733958c43b3ff18594f784a0b3e97ea473043a8d4380",
+        "size_bytes": 2276
+      },
+      {
+        "path": "act/util/device_manager.py",
+        "sha256": "e58c585af28e329627061216578d5dacfb3b52365c2071b15cad69befd70c55e",
+        "size_bytes": 5356
+      },
+      {
+        "path": "act/util/format_utils.py",
+        "sha256": "9be2a8c27ca93d3330672ef3ea548c4b960f9efeb183ed47c1867f47b8b6d256",
+        "size_bytes": 1661
+      },
+      {
+        "path": "act/util/model_inference.py",
+        "sha256": "99af033b8a5095e654fd36b6b828c8fd2981b2bdb87d9140d11fbf28bd18bdde",
+        "size_bytes": 6147
+      },
+      {
+        "path": "act/util/options.py",
+        "sha256": "eb1061a8460f31c43836e93fd86b05ddcbcb887a23c17e90291c6f39579a0ec0",
+        "size_bytes": 3013
+      },
+      {
+        "path": "act/util/path_config.py",
+        "sha256": "60027634e76dfa673248d15716140fa7760ae31fe19c60c6a59d6a28771f22b6",
+        "size_bytes": 8199
+      },
+      {
+        "path": "act/util/stats.py",
+        "sha256": "2c76718f0f98d7c5a7093c9c4d8419af834d73d771ca976d95648610fa0e8ac3",
+        "size_bytes": 22055
+      },
+      {
+        "path": "act/util/torchvision_urls.py",
+        "sha256": "25b9c02ab5f0468f1f75d98dd83e0f131dc7af954dc128a6e23f3ff955fc7aa1",
+        "size_bytes": 1452
+      },
+      {
+        "path": "environment.yml",
+        "sha256": "0db2667ab387b77e42ee895e9464a5bb9c0cee674d8d61e854fd01dc2a07fb87",
+        "size_bytes": 1064
+      }
+    ],
+    "source_sha256": "0ea70715c55b97e6994944ba88396870b7dc41713aad02b5207411d7c7f8ba2a",
+    "started_at": "2026-08-11T06:45:07.458060Z",
+    "unpromoted_diagnostic": false
+  },
+  "schema_version": 3,
+  "written_at": "2026-08-11T06:45:37.934980Z"
+}

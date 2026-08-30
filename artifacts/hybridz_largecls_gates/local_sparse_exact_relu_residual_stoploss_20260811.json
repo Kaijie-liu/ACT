@@ -1,0 +1,63 @@
+{
+  "schema": "act.hybridz.local_sparse_exact_relu_residual_stoploss.v1",
+  "created_at_local": "2026-08-11",
+  "status": "stop_before_implementation",
+  "candidate": "Use y = slope*x + rho only for exact ReLU preactivation rows with at most 32 stored generator nonzeros; retain the original phase binary and all exact Big-M rows.",
+  "scope": {
+    "operator_exact_budget": -1,
+    "operator_materialize_add": false,
+    "solver_executed": false,
+    "concrete_onnx_execution": false,
+    "input_sampling": false,
+    "pgd": false,
+    "production_code_changed": false
+  },
+  "sparsity_census": {
+    "cifar100_medium_iid29": {
+      "exact_rows": 1052,
+      "eligible_nnz_le_32": 316,
+      "eligible_fraction": 0.30038022813688214,
+      "eligible_layers": [3],
+      "eligible_row_nnz": 27,
+      "later_layer_row_nnz_ranges": [[73, 247], [341, 862], [379, 983], [279, 938], [2407, 2407]]
+    },
+    "tinyimagenet_medium_iid17": {
+      "exact_rows": 1914,
+      "eligible_nnz_le_32": 605,
+      "eligible_fraction": 0.3160919540229885,
+      "eligible_layers": [3],
+      "eligible_row_nnz": 27,
+      "later_layer_row_nnz_ranges": [[86, 278], [306, 888], [522, 991], [381, 997], [7133, 7133]]
+    }
+  },
+  "cifar100_build_only_result": {
+    "rewritten_rows": 316,
+    "rewritten_layers": [3],
+    "baseline": {
+      "continuous_factors": 10347,
+      "binary_phase_factors": 1052,
+      "source_rows": 15402,
+      "source_nnz": 1994878
+    },
+    "candidate": {
+      "continuous_factors": 10367,
+      "binary_phase_factors": 1078,
+      "source_rows": 15468,
+      "source_nnz": 2530908,
+      "observed_build_seconds": 2.81319500785321,
+      "timing_authority": false
+    },
+    "continuous_factor_delta": 20,
+    "binary_phase_factor_delta": 26,
+    "source_row_delta": 66,
+    "source_nnz_delta": 536030,
+    "source_nnz_increase_fraction": 0.26870313793621566
+  },
+  "decision": {
+    "retain_candidate": false,
+    "run_tinyimagenet_candidate": false,
+    "add_sparse_eligibility_branch": false,
+    "formal_solved_count_gain": 0,
+    "reason": "The only shared sparse subset is the first exact ReLU layer. Reparameterizing it weakens later independent cube bounds enough to create 26 additional exact phases and increases constraint nnz by 26.9 percent."
+  }
+}

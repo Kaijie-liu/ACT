@@ -16,6 +16,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Dict, List, Tuple, Optional, Any, TYPE_CHECKING
 import logging
+import math
 import torch
 import re
 
@@ -40,6 +41,174 @@ class UnsupportedSpecError(Exception):
 # -------------------------------------------------------------------------
 # Public API
 # -------------------------------------------------------------------------
+
+
+def evaluate_vnnlib_2_concrete(
+    vnnlib_path: Path,
+    x: Any,
+    y: Any,
+    tol: float = 0.0,
+) -> Dict[str, Any]:
+    """Evaluate a raw VNNLIB 2.0 unsafe set on one concrete ``(x, y)``.
+
+    Legacy flat VNNLIB is deliberately rejected by this version-specific API;
+    strict replay uses :func:`evaluate_vnnlib_concrete`, which recognizes both
+    audited dialects without a permissive fallback.
+    """
+
+    return _evaluate_vnnlib_concrete(
+        vnnlib_path, x, y, tol, required_dialect="vnnlib-2.0"
+    )
+
+
+def evaluate_vnnlib_concrete(
+    vnnlib_path: Path,
+    x: Any,
+    y: Any,
+    tol: float = 0.0,
+) -> Dict[str, Any]:
+    """Evaluate raw VNNLIB 1.0 or 2.0 assertions on concrete ``(x, y)``.
+
+    This is deliberately independent of query materialisation.  It preserves
+    top-level assertion conjunction, nested ``and``/``or`` structure, coupled-X
+    rows, mixed X/Y affine atoms, and strict comparisons.  Dialect recognition
+    is exact: mixed or unknown declaration syntax fails closed.
+    """
+
+    return _evaluate_vnnlib_concrete(
+        vnnlib_path, x, y, tol, required_dialect=None
+    )
+
+
+def extract_vnnlib_concrete_layout(vnnlib_path: Path) -> Dict[str, Any]:
+    """Return the strictly recognized concrete-evaluation layout.
+
+    Unlike the evaluator, this inspection helper raises on malformed or unknown
+    syntax.  It is used before ONNX Runtime execution to validate witness and
+    model tensor sizes.
+    """
+
+    path = Path(vnnlib_path)
+    content = path.read_text(encoding="utf-8")
+    layout = _prepare_concrete_vnnlib(content, required_dialect=None)
+    return {
+        "dialect": layout["dialect"],
+        "vnnlib_version": layout["vnnlib_version"],
+        "num_inputs": layout["num_inputs"],
+        "num_outputs": layout["num_outputs"],
+        "input_shape": list(layout["input_shape"]),
+        "output_shape": list(layout["output_shape"]),
+    }
+
+
+def _evaluate_vnnlib_concrete(
+    vnnlib_path: Path,
+    x: Any,
+    y: Any,
+    tol: float,
+    *,
+    required_dialect: Optional[str],
+) -> Dict[str, Any]:
+    """Fail-closed implementation shared by the public dialect entry points.
+
+    The returned mapping contains only JSON-serializable values.  Any read,
+    parse, shape, numeric, or unsupported-expression error fails closed with
+    ``holds=False`` and ``evaluated=False`` rather than raising.
+    """
+
+    path = Path(vnnlib_path)
+    base: Dict[str, Any] = {
+        "schema_version": 1,
+        "vnnlib_path": str(path),
+        "dialect": None,
+        "vnnlib_version": None,
+        "tolerance": None,
+        "evaluated": False,
+        "holds": False,
+        "num_inputs": None,
+        "num_outputs": None,
+        "input_shape": None,
+        "output_shape": None,
+        "assertions": [],
+        "atoms": [],
+        "error": None,
+    }
+    try:
+        tolerance = float(tol)
+        if not math.isfinite(tolerance) or tolerance < 0.0:
+            raise VNNLibParseError(
+                f"concrete evaluation tolerance must be finite and nonnegative, got {tol!r}"
+            )
+        base["tolerance"] = tolerance
+
+        content = path.read_text(encoding="utf-8")
+        layout = _prepare_concrete_vnnlib(
+            content, required_dialect=required_dialect
+        )
+        input_shape = layout["input_shape"]
+        output_shape = layout["output_shape"]
+        num_inputs = layout["num_inputs"]
+        num_outputs = layout["num_outputs"]
+        x_values = _concrete_flat_values(x, "x", num_inputs)
+        y_values = _concrete_flat_values(y, "y", num_outputs)
+
+        forms = _parse_all_forms(layout["rewritten"])
+        assert_forms = [
+            form
+            for form in forms
+            if isinstance(form, list) and form and form[0] == "assert"
+        ]
+        if not assert_forms:
+            raise VNNLibParseError(
+                "concrete VNNLIB evaluation requires at least one assertion"
+            )
+        for form in assert_forms:
+            if len(form) != 2:
+                raise VNNLibParseError(
+                    f"assert expects exactly one body, got {len(form) - 1}"
+                )
+
+        atom_log: List[Dict[str, Any]] = []
+        assertion_log: List[Dict[str, Any]] = []
+        all_hold = True
+        for index, form in enumerate(assert_forms):
+            atom_start = len(atom_log)
+            holds, tree = _evaluate_concrete_boolean(
+                form[1],
+                x_values,
+                y_values,
+                tolerance,
+                atom_log,
+                num_inputs,
+                num_outputs,
+            )
+            assertion_log.append({
+                "index": index,
+                "holds": bool(holds),
+                "atom_indices": list(range(atom_start, len(atom_log))),
+                "tree": tree,
+            })
+            all_hold = all_hold and holds
+
+        base.update({
+            "evaluated": True,
+            "holds": bool(all_hold),
+            "dialect": layout["dialect"],
+            "vnnlib_version": layout["vnnlib_version"],
+            "num_inputs": num_inputs,
+            "num_outputs": num_outputs,
+            "input_shape": list(input_shape),
+            "output_shape": list(output_shape),
+            "assertions": assertion_log,
+            "atoms": atom_log,
+        })
+        return base
+    except Exception as exc:
+        base["error"] = {
+            "type": type(exc).__name__,
+            "message": str(exc),
+        }
+        return base
 
 
 def parse_vnnlib_to_tensors(
@@ -86,10 +255,14 @@ def parse_vnnlib_to_tensors(
                 num_outputs = _numel(out_shape)
                 content = _rewrite_vnnlib_2_bracket_vars(content, in_name, in_shape, out_name, out_shape)
         else:
-            raise UnsupportedSpecError(
-                f"{vnnlib_path.name}: VNNLIB 1.0 flat format is no longer supported "
-                f"(ACT is VNNLIB 2.0-only); provide a 2.0 file declaring "
-                f"(vnnlib-version)/(declare-network)."
+            layout = _prepare_concrete_vnnlib(
+                content, required_dialect="vnnlib-1.0-flat"
+            )
+            content = layout["rewritten"]
+            num_inputs = int(layout["num_inputs"])
+            num_outputs = int(layout["num_outputs"])
+            _validate_legacy_query_materialization(
+                content, num_inputs, num_outputs
             )
 
         # Extract input bounds from top-level simple X-bound asserts only.
@@ -141,7 +314,12 @@ def parse_vnnlib_to_tensors(
             'num_inputs': num_inputs,
             'num_outputs': num_outputs,
             'property_type': property_type,
-            'vnnlib_path': str(vnnlib_path)
+            'vnnlib_path': str(vnnlib_path),
+            'dialect': (
+                'vnnlib-2.0'
+                if "(vnnlib-version" in content or "(declare-network" in content
+                else 'vnnlib-1.0-flat'
+            ),
         }
         
         logger.info(
@@ -162,13 +340,14 @@ def parse_vnnlib_queries(
     labeled_tensor: Optional['LabeledInputTensor'] = None
 ) -> List[Tuple[InputSpec, OutputSpec]]:
     """
-    Parse a VNNLIB 2.0 file into a list of verification queries.
+    Parse an audited VNNLIB 1.0-flat or VNNLIB 2.0 file into queries.
 
-    ACT is VNNLIB 2.0-only: the file must declare ``(vnnlib-version ...)`` /
-    ``(declare-network ...)``. Legacy flat 1.0 files (bare ``declare-const X_0``)
-    are rejected. Parsing is delegated to :func:`parse_vnnlib_2_0`, which
-    ravel-rewrites bracket vars ``X[i,..]``/``Y[j,..]`` to flat ``X_n``/``Y_n``
-    before the shared query-assembly core.
+    The legacy path is intentionally narrow.  It accepts complete finite
+    per-coordinate input boxes plus affine output-only Boolean assertions.
+    Coupled/non-rectangular inputs, branch-local input constraints, mixed X/Y
+    rows, strict inequalities and equalities are rejected instead of being
+    silently approximated.  Raw concrete replay remains able to evaluate those
+    constructs without materialising them.
 
     Semantics:
       - Multiple top-level ``(assert ...)`` forms are conjunctive (implicit AND).
@@ -181,7 +360,7 @@ def parse_vnnlib_queries(
         result collapses to a single TOP1_ROBUST OutputSpec.
 
     Raises:
-        UnsupportedSpecError: If the file is legacy VNNLIB 1.0 flat format.
+        UnsupportedSpecError: If the property cannot be materialised exactly.
         VNNLibParseError: If the file is missing or unparseable.
     """
     if not vnnlib_path.exists():
@@ -192,13 +371,46 @@ def parse_vnnlib_queries(
     except Exception as e:
         raise VNNLibParseError(f"Failed to read {vnnlib_path}: {e}") from e
 
-    if "(vnnlib-version" in content or "(declare-network" in content:
+    semantic_content = _strip_smt_comments(content)
+    if (
+        re.search(r"\(\s*vnnlib-version\b", semantic_content)
+        or re.search(r"\(\s*declare-network\b", semantic_content)
+    ):
         return parse_vnnlib_2_0(vnnlib_path, labeled_tensor=labeled_tensor)
 
-    raise UnsupportedSpecError(
-        f"{vnnlib_path.name}: VNNLIB 1.0 flat format is no longer supported "
-        f"(ACT is VNNLIB 2.0-only); provide a 2.0 file declaring "
-        f"(vnnlib-version)/(declare-network)."
+    layout = _prepare_concrete_vnnlib(
+        content, required_dialect="vnnlib-1.0-flat"
+    )
+    num_inputs = int(layout["num_inputs"])
+    num_outputs = int(layout["num_outputs"])
+    _validate_legacy_query_materialization(
+        layout["rewritten"], num_inputs, num_outputs
+    )
+
+    tensor_shape = (
+        tuple(labeled_tensor.tensor.shape)
+        if labeled_tensor is not None
+        else (num_inputs,)
+    )
+    if _numel(tensor_shape) != num_inputs:
+        raise VNNLibParseError(
+            f"legacy VNNLIB declares {num_inputs} inputs, but model/sample "
+            f"shape {tensor_shape} has {_numel(tensor_shape)} elements"
+        )
+    true_label = (
+        labeled_tensor.label if labeled_tensor is not None else None
+    )
+    if true_label is None:
+        true_label = extract_label_from_vnnlib(vnnlib_path)
+    true_label = _validate_true_label(true_label, num_outputs)
+    return _queries_from_rewritten(
+        layout["rewritten"],
+        num_inputs,
+        num_outputs,
+        tensor_shape,
+        true_label,
+        vnnlib_path.name,
+        dialect_name="vnnlib 1.0 flat",
     )
 
 
@@ -215,7 +427,7 @@ def validate_vnnlib_file(vnnlib_path: Path) -> bool:
     try:
         parse_vnnlib_to_tensors(vnnlib_path)
         return True
-    except VNNLibParseError as e:
+    except (VNNLibParseError, UnsupportedSpecError) as e:
         logger.error(f"VNNLIB validation failed: {e}")
         return False
 
@@ -266,6 +478,7 @@ _X_RE = re.compile(r"X_(\d+)")
 _Y_RE = re.compile(r"Y_(\d+)")
 _Ineq = Tuple[List[float], List[float], float]
 _Query = List[_Ineq]
+_MAX_LEGACY_DNF_QUERIES = 10_000
 
 
 # -------------------------------------------------------------------------
@@ -302,7 +515,10 @@ def parse_vnnlib_2_0(
             f"VNNLIB 2.0 declared input shape {input_shape} has {num_inputs} elements, "
             f"but model/sample input shape {tensor_shape} has {tensor_numel}"
         )
-    true_label = labeled_tensor.label if labeled_tensor is not None else None
+    true_label = _validate_true_label(
+        labeled_tensor.label if labeled_tensor is not None else None,
+        num_outputs,
+    )
 
     rewritten = _rewrite_vnnlib_2_bracket_vars(
         content,
@@ -323,6 +539,8 @@ def _queries_from_rewritten(
     tensor_shape: Tuple[int, ...],
     true_label,
     name: str,
+    *,
+    dialect_name: str = "vnnlib 2.0",
 ) -> List[Tuple[InputSpec, OutputSpec]]:
     """Shared core: turn a flat-name-rewritten 2.0 body into (InputSpec, OutputSpec)
     queries. Used by both single-network and isomorphic dual-network 2.0 parsing."""
@@ -346,7 +564,9 @@ def _queries_from_rewritten(
 
     if not complex_assert_bodies:
         out_spec = _build_output_spec([], num_outputs, true_label)
-        logger.info(f"Parsed {name}: 1 query(ies) [vnnlib 2.0 input-only]")
+        logger.info(
+            f"Parsed {name}: 1 query(ies) [{dialect_name} input-only]"
+        )
         return [(base_in_spec, out_spec)]
 
     per_assert: List[List[_Query]] = []
@@ -387,7 +607,9 @@ def _queries_from_rewritten(
         if promoted is not None:
             results = [promoted]
 
-    logger.info(f"Parsed {name}: {len(results)} query(ies) [vnnlib 2.0]")
+    logger.info(
+        f"Parsed {name}: {len(results)} query(ies) [{dialect_name}]"
+    )
     return results
 
 
@@ -512,6 +734,446 @@ def _rewrite_vnnlib_2_bracket_vars(
         return f"Y_{_ravel_c_order(indices, output_shape)}"
 
     return var_re.sub(repl, content)
+
+
+def _legacy_flat_declared_size(
+    forms: List[Any],
+    prefix: str,
+) -> int:
+    declared: List[int] = []
+    seen = set()
+    token_re = re.compile(r"([XY])_(\d+)")
+    for form in forms:
+        if not (
+            isinstance(form, list)
+            and form
+            and form[0] == "declare-const"
+        ):
+            continue
+        if len(form) != 3:
+            raise VNNLibParseError(
+                f"legacy declare-const expects name and sort: {form!r}"
+            )
+        name, sort = form[1], form[2]
+        match = token_re.fullmatch(name) if isinstance(name, str) else None
+        if match is None:
+            raise UnsupportedSpecError(
+                f"unsupported legacy declaration {form!r}"
+            )
+        if match.group(1) != prefix:
+            continue
+        if sort != "Real":
+            raise UnsupportedSpecError(
+                f"legacy concrete evaluator supports Real declarations, got {sort!r}"
+            )
+        index = int(match.group(2))
+        if index in seen:
+            raise VNNLibParseError(
+                f"duplicate legacy declaration {prefix}_{index}"
+            )
+        seen.add(index)
+        declared.append(index)
+    if not declared:
+        raise VNNLibParseError(
+            f"legacy VNNLIB missing declare-const {prefix}_i"
+        )
+    expected = set(range(max(declared) + 1))
+    if seen != expected:
+        missing = sorted(expected - seen)
+        raise VNNLibParseError(
+            f"legacy {prefix} declarations are not contiguous; missing {missing[:8]}"
+        )
+    return len(expected)
+
+
+def _strip_smt_comments(content: str) -> str:
+    """Remove SMT-LIB line comments before dialect recognition."""
+
+    return "\n".join(line.split(";", 1)[0] for line in content.splitlines())
+
+
+def _prepare_concrete_vnnlib(
+    content: str,
+    *,
+    required_dialect: Optional[str],
+) -> Dict[str, Any]:
+    semantic_content = _strip_smt_comments(content)
+    has_v2 = bool(
+        re.search(r"\(\s*vnnlib-version\b", semantic_content)
+        or re.search(r"\(\s*declare-network\b", semantic_content)
+        or re.search(r"\(\s*declare-input\b", semantic_content)
+        or re.search(r"\(\s*declare-output\b", semantic_content)
+    )
+    has_legacy = bool(
+        re.search(
+            r"\(\s*declare-const\s+[XY]_\d+\s+Real\s*\)",
+            semantic_content,
+        )
+    )
+    if has_v2 and has_legacy:
+        raise UnsupportedSpecError("mixed VNNLIB 1.0/2.0 declarations")
+    if not has_v2 and not has_legacy:
+        raise UnsupportedSpecError("unrecognized VNNLIB declaration dialect")
+
+    if has_v2:
+        dialect = "vnnlib-2.0"
+        if len(re.findall(r"\(\s*declare-network\b", semantic_content)) > 1:
+            raise UnsupportedSpecError(
+                "concrete evaluator requires one network/output tensor"
+            )
+        input_name, _input_dtype, input_shape = _extract_vnnlib_2_decl(
+            semantic_content, "input"
+        )
+        output_name, _output_dtype, output_shape = _extract_vnnlib_2_decl(
+            semantic_content, "output"
+        )
+        rewritten = _rewrite_vnnlib_2_bracket_vars(
+            semantic_content,
+            input_name=input_name,
+            input_shape=input_shape,
+            output_name=output_name,
+            output_shape=output_shape,
+        )
+    else:
+        dialect = "vnnlib-1.0-flat"
+        forms = _parse_all_forms(semantic_content)
+        num_inputs = _legacy_flat_declared_size(forms, "X")
+        num_outputs = _legacy_flat_declared_size(forms, "Y")
+        input_shape = (num_inputs,)
+        output_shape = (num_outputs,)
+        rewritten = semantic_content
+
+        declared_x = set(range(num_inputs))
+        declared_y = set(range(num_outputs))
+        referenced_x = {int(item) for item in _X_RE.findall(semantic_content)}
+        referenced_y = {int(item) for item in _Y_RE.findall(semantic_content)}
+        if not referenced_x.issubset(declared_x):
+            raise VNNLibParseError(
+                f"legacy assertion references undeclared X indices "
+                f"{sorted(referenced_x - declared_x)[:8]}"
+            )
+        if not referenced_y.issubset(declared_y):
+            raise VNNLibParseError(
+                f"legacy assertion references undeclared Y indices "
+                f"{sorted(referenced_y - declared_y)[:8]}"
+            )
+
+    if required_dialect is not None and dialect != required_dialect:
+        raise UnsupportedSpecError(
+            f"expected {required_dialect}, recognized {dialect}"
+        )
+    return {
+        "dialect": dialect,
+        "vnnlib_version": "2.0" if has_v2 else "1.0",
+        "input_shape": tuple(input_shape),
+        "output_shape": tuple(output_shape),
+        "num_inputs": _numel(tuple(input_shape)),
+        "num_outputs": _numel(tuple(output_shape)),
+        "rewritten": rewritten,
+    }
+
+
+def _validate_legacy_output_boolean(
+    body: Any,
+    num_inputs: int,
+    num_outputs: int,
+) -> None:
+    """Validate one exactly materialisable legacy output Boolean tree."""
+
+    if not isinstance(body, list) or not body:
+        raise UnsupportedSpecError(
+            f"legacy output assertion is not a Boolean form: {body!r}"
+        )
+    op = body[0]
+    if op in ("and", "or"):
+        if len(body) < 2:
+            raise UnsupportedSpecError(
+                f"zero-arity legacy {op} is not materialised"
+            )
+        for child in body[1:]:
+            _validate_legacy_output_boolean(
+                child, num_inputs, num_outputs
+            )
+        return
+
+    if op in ("<", ">", "=", "=="):
+        raise UnsupportedSpecError(
+            "strict inequalities/equalities are supported by raw replay but "
+            "are not materialised by the legacy query frontend"
+        )
+    if op not in ("<=", ">=") or len(body) != 3:
+        raise UnsupportedSpecError(
+            f"unsupported legacy Boolean/output form: {body!r}"
+        )
+    inequality = _parse_inequality(
+        op, body[1], body[2], num_inputs, num_outputs
+    )
+    if inequality is None:
+        raise UnsupportedSpecError(
+            f"legacy output comparison is non-affine or malformed: {body!r}"
+        )
+    x_coeffs, y_coeffs, constant = inequality
+    if any(value != 0.0 for value in x_coeffs):
+        raise UnsupportedSpecError(
+            "legacy coupled/non-rectangular or mixed X/Y assertion cannot be "
+            f"materialised as BOX + output rows: {body!r}"
+        )
+    if not any(value != 0.0 for value in y_coeffs):
+        raise UnsupportedSpecError(
+            f"legacy non-input assertion must constrain at least one Y: {body!r}"
+        )
+    if not all(
+        math.isfinite(float(value))
+        for value in [*y_coeffs, constant]
+    ):
+        raise VNNLibParseError(
+            f"legacy output assertion has non-finite coefficients: {body!r}"
+        )
+
+
+def _legacy_dnf_branch_count(body: Any, cap: int) -> int:
+    """Count materialised DNF branches without constructing the product."""
+
+    if not isinstance(body, list) or not body:
+        return 1
+    op = body[0]
+    if op == "or":
+        count = 0
+        for child in body[1:]:
+            count += _legacy_dnf_branch_count(child, cap)
+            if count > cap:
+                return count
+        return count
+    if op == "and":
+        count = 1
+        for child in body[1:]:
+            count *= _legacy_dnf_branch_count(child, cap)
+            if count > cap:
+                return count
+        return count
+    return 1
+
+
+def _validate_legacy_query_materialization(
+    content: str,
+    num_inputs: int,
+    num_outputs: int,
+) -> None:
+    """Fail closed unless legacy syntax maps exactly to ACT's query objects."""
+
+    forms = _parse_all_forms(content)
+    simple_input_bodies: List[Any] = []
+    output_assertions = 0
+    projected_queries = 1
+    for form in forms:
+        if not isinstance(form, list) or not form:
+            raise UnsupportedSpecError(
+                f"unsupported top-level legacy form: {form!r}"
+            )
+        command = form[0]
+        if command == "declare-const":
+            continue
+        if command == "set-logic":
+            if len(form) != 2:
+                raise VNNLibParseError(
+                    f"malformed legacy set-logic: {form!r}"
+                )
+            continue
+        if command != "assert":
+            raise UnsupportedSpecError(
+                f"unsupported top-level legacy command {command!r}"
+            )
+        if len(form) != 2:
+            raise VNNLibParseError(
+                f"assert expects exactly one body: {form!r}"
+            )
+        body = form[1]
+        if _is_simple_x_bound(body):
+            simple_input_bodies.append(body)
+            continue
+        _validate_legacy_output_boolean(
+            body, num_inputs, num_outputs
+        )
+        projected_queries *= _legacy_dnf_branch_count(
+            body, _MAX_LEGACY_DNF_QUERIES
+        )
+        if projected_queries > _MAX_LEGACY_DNF_QUERIES:
+            raise UnsupportedSpecError(
+                "legacy Boolean expansion would create "
+                f"{projected_queries} queries; limit is "
+                f"{_MAX_LEGACY_DNF_QUERIES}"
+            )
+        output_assertions += 1
+
+    bounds = _extract_input_bounds(simple_input_bodies, num_inputs)
+    if len(bounds) != num_inputs:
+        missing = [index for index in range(num_inputs) if index not in bounds]
+        raise UnsupportedSpecError(
+            "legacy query frontend requires a bound for every input; "
+            f"missing indices {missing[:8]}"
+        )
+    for index in range(num_inputs):
+        lower, upper = bounds[index]
+        if not math.isfinite(lower) or not math.isfinite(upper):
+            raise UnsupportedSpecError(
+                "legacy query frontend requires finite lower and upper bounds "
+                f"for X_{index}, got [{lower}, {upper}]"
+            )
+        if lower > upper:
+            raise VNNLibParseError(
+                f"legacy input box is empty at X_{index}: [{lower}, {upper}]"
+            )
+    if output_assertions == 0:
+        raise UnsupportedSpecError(
+            "legacy query frontend requires at least one output assertion"
+        )
+
+
+def _concrete_flat_values(value: Any, name: str, expected: int) -> List[float]:
+    try:
+        tensor = (
+            value.detach().cpu()
+            if isinstance(value, torch.Tensor)
+            else torch.as_tensor(value)
+        )
+    except Exception as exc:
+        raise VNNLibParseError(
+            f"concrete {name} cannot be converted to a numeric tensor"
+        ) from exc
+    if tensor.is_complex():
+        raise VNNLibParseError(f"concrete {name} must be real-valued")
+    flat = tensor.reshape(-1)
+    if int(flat.numel()) != int(expected):
+        raise VNNLibParseError(
+            f"concrete {name} has {flat.numel()} elements, expected {expected}"
+        )
+    try:
+        finite = bool(torch.isfinite(flat).all().item())
+    except (RuntimeError, TypeError) as exc:
+        raise VNNLibParseError(f"concrete {name} must be numeric") from exc
+    if not finite:
+        raise VNNLibParseError(f"concrete {name} contains NaN or infinity")
+    return [float(item) for item in flat.tolist()]
+
+
+def _concrete_linear_value(
+    expr: Any,
+    x: List[float],
+    y: List[float],
+    num_inputs: int,
+    num_outputs: int,
+) -> float:
+    parsed = _parse_linear_expr(expr, num_inputs, num_outputs)
+    if parsed is None:
+        raise UnsupportedSpecError(
+            f"unsupported or non-affine concrete expression: {expr!r}"
+        )
+    x_coeffs, y_coeffs, constant = parsed
+    terms = [float(constant)]
+    terms.extend(float(coef) * value for coef, value in zip(x_coeffs, x))
+    terms.extend(float(coef) * value for coef, value in zip(y_coeffs, y))
+    if not all(math.isfinite(term) for term in terms):
+        raise VNNLibParseError(
+            f"non-finite coefficient or value in concrete expression: {expr!r}"
+        )
+    try:
+        result = math.fsum(terms)
+    except OverflowError as exc:
+        raise VNNLibParseError(
+            f"overflow while evaluating concrete expression: {expr!r}"
+        ) from exc
+    if not math.isfinite(result):
+        raise VNNLibParseError(
+            f"non-finite result for concrete expression: {expr!r}"
+        )
+    return result
+
+
+def _evaluate_concrete_boolean(
+    body: Any,
+    x: List[float],
+    y: List[float],
+    tol: float,
+    atom_log: List[Dict[str, Any]],
+    num_inputs: int,
+    num_outputs: int,
+) -> Tuple[bool, Dict[str, Any]]:
+    if not isinstance(body, list) or not body:
+        raise UnsupportedSpecError(
+            f"unsupported concrete Boolean expression: {body!r}"
+        )
+    op = body[0]
+    if op in ("and", "or"):
+        children = [
+            _evaluate_concrete_boolean(
+                child,
+                x,
+                y,
+                tol,
+                atom_log,
+                num_inputs,
+                num_outputs,
+            )
+            for child in body[1:]
+        ]
+        child_holds = [holds for holds, _tree in children]
+        holds = all(child_holds) if op == "and" else any(child_holds)
+        return bool(holds), {
+            "kind": op,
+            "holds": bool(holds),
+            "children": [tree for _holds, tree in children],
+        }
+
+    if op not in ("<", ">", "<=", ">=", "=", "==") or len(body) != 3:
+        raise UnsupportedSpecError(
+            f"unsupported concrete Boolean operator/form: {body!r}"
+        )
+    lhs = _concrete_linear_value(
+        body[1], x, y, num_inputs, num_outputs
+    )
+    rhs = _concrete_linear_value(
+        body[2], x, y, num_inputs, num_outputs
+    )
+    residual = lhs - rhs
+    if not math.isfinite(residual):
+        raise VNNLibParseError(
+            f"non-finite comparison residual: lhs={lhs!r}, rhs={rhs!r}"
+        )
+
+    if op == "<=":
+        holds = residual <= tol
+        slack = -residual
+    elif op == ">=":
+        holds = residual >= -tol
+        slack = residual
+    elif op == "<":
+        holds = residual < tol
+        slack = -residual
+    elif op == ">":
+        holds = residual > -tol
+        slack = residual
+    else:
+        holds = abs(residual) <= tol
+        slack = -abs(residual)
+
+    atom_index = len(atom_log)
+    atom_log.append({
+        "index": atom_index,
+        "op": op,
+        "lhs": body[1],
+        "rhs": body[2],
+        "lhs_value": float(lhs),
+        "rhs_value": float(rhs),
+        "residual_lhs_minus_rhs": float(residual),
+        "slack": float(slack),
+        "tolerance": float(tol),
+        "holds": bool(holds),
+    })
+    return bool(holds), {
+        "kind": "atom",
+        "holds": bool(holds),
+        "atom_index": atom_index,
+    }
 
 
 def _normalize_vnnlib_2_body(body: Any) -> Any:
@@ -642,6 +1304,43 @@ def _infer_property_type(content: str, num_outputs: int) -> str:
 # -------------------------------------------------------------------------
 # Helper: label coercion
 # -------------------------------------------------------------------------
+
+
+def _validate_true_label(
+    true_label: Any,
+    num_outputs: int,
+) -> Optional[int]:
+    """Return one in-range integer class label or reject explicitly."""
+
+    if true_label is None:
+        return None
+    if isinstance(true_label, torch.Tensor):
+        if true_label.numel() != 1:
+            raise VNNLibParseError(
+                "classification label must contain exactly one element, "
+                f"got shape {tuple(true_label.shape)}"
+            )
+        value = true_label.detach().cpu().reshape(-1)[0].item()
+    else:
+        value = true_label
+    if isinstance(value, bool):
+        raise VNNLibParseError("classification label cannot be Boolean")
+    try:
+        numeric = float(value)
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise VNNLibParseError(
+            f"classification label must be an integer, got {value!r}"
+        ) from exc
+    if not math.isfinite(numeric) or not numeric.is_integer():
+        raise VNNLibParseError(
+            f"classification label must be a finite integer, got {value!r}"
+        )
+    label = int(numeric)
+    if label < 0 or label >= int(num_outputs):
+        raise VNNLibParseError(
+            f"classification label {label} is outside [0, {num_outputs})"
+        )
+    return label
 
 
 def _coerce_label_to_tensor(true_label: Any) -> torch.Tensor:

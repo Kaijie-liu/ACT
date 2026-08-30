@@ -1,0 +1,48 @@
+Running HiGHS 1.14.0 (git hash: 7df0786): Copyright (c) 2026 under MIT licence terms
+Number of BV entries in BOUNDS section is 1151
+WARNING: LP matrix packed vector contains 27206 |value| in [8.78203e-15, 9.99978e-10] less than or equal to 1e-09: ignored
+MIP cifar100_iid29_compact_search_or has 9379 rows; 11498 cols; 1539031 nonzeros; 1151 integer variables (1151 binary)
+Coefficient ranges:
+  Matrix  [1e-09, 5e+01]
+  Cost    [0e+00, 0e+00]
+  Bound   [1e+00, 1e+00]
+  RHS     [2e-15, 4e+01]
+WARNING: Problem has some excessively small row bounds
+Presolving model
+9154 rows, 11209 cols, 1538581 nonzeros 0s
+9134 rows, 11194 cols, 1533384 nonzeros 1s
+Presolve reductions: rows 9134(-245); columns 11194(-304); nonzeros 1532336(-6695) 
+Objective function is integral with scale 1
+
+Solving MIP model with:
+   9134 rows
+   11194 cols (1141 binary, 0 integer, 0 implied int., 10053 continuous, 0 domain fixed)
+   1532336 nonzeros
+
+Src: B => Branching; C => Central rounding; F => Feasibility pump; H => Heuristic;
+     I => Shifting; J => Feasibility jump; L => Sub-MIP; P => Empty MIP; R => Randomized rounding;
+     S => Solve LP; T => Evaluate node; U => Unbounded; X => User solution; Y => HiGHS solution;
+     Z => ZI Round; l => Trivial lower; p => Trivial point; u => Trivial upper; z => Trivial zero
+
+        Nodes      |    B&B Tree     |            Objective Bounds              |  Dynamic Constraints |       Work      
+Src  Proc. InQueue |  Leaves   Expl. | BestBound       BestSol              Gap |   Cuts   InLp Confl. | LpIters     Time
+
+         0       0         0   0.00%   0               inf                  inf        0      0      0         0     6.3s
+         0       0         0   0.00%   0               inf                  inf        0      0      6      8199    20.0s
+
+Solving report
+  Model             cifar100_iid29_compact_search_or
+  Status            Time limit reached
+  Primal bound      inf
+  Dual bound        0
+  Gap               inf
+  P-D integral      0
+  Solution status   -
+  Timing            20.01
+  Max sub-MIP depth 0
+  Nodes             0
+  Repair LPs        0
+  LP iterations     8199
+                    0 (strong br.)
+                    0 (separation)
+                    0 (heuristics)

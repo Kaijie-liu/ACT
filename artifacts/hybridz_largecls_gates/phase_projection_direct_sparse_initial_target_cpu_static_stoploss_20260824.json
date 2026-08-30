@@ -1,0 +1,153 @@
+{
+  "schema": "act.hybridz.direct_sparse_initial_target.cpu_static_stoploss.v1",
+  "created_at": "2026-08-24T00:03:13+10:00",
+  "status": "CPU_STATIC_PRE_RUN_STOP_LOSS",
+  "verdict": "NO_GO_NO_GPU_NO_PRODUCTION",
+  "component_name": "request_local_direct_sparse_initial_target_compiler",
+  "gate_stage": "independent_static_contract_audit_before_cpu_sentinel_publish",
+  "first_hard_failure": "FROZEN_RESOURCE_CONTRACT_NOT_SATISFIED",
+  "disposition": "NO_PATH_STOP_LOSS_NO_RETRY",
+  "scope": {
+    "cpu_hostile_unit_tests_run": true,
+    "official_cpu_case_run": false,
+    "gpu_or_cuda_run": false,
+    "solver_or_owner_run": false,
+    "production_or_config_mutations": 0,
+    "runtime_public_or_expected_labels_used": false,
+    "formal_fixed400_changed": false
+  },
+  "locks": {
+    "preregistration": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_direct_sparse_initial_target_cpu_static_preregistration_20260823.json",
+      "sha256": "4947fdd006e129c5609d16ed1c2e2ff19944e445f4a558810d5811253e2e6160"
+    },
+    "payment_map": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_status_corner_payment_map_20260823.json",
+      "sha256": "0bef9eb4db032ec2739d64ad77a82ca8835a2e348d5a1d8311f1f5e955519a77"
+    },
+    "stage_a_completion": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_infeasible_first_corner_stage_a_completion_20260823.json",
+      "sha256": "3be89aeec744b2ff5101cccd3713498b4c1259c456950197964b466c695f4705"
+    },
+    "stage_a_receipts": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_infeasible_first_corner_sentinel_20260820.receipts.jsonl",
+      "sha256": "22b992c8332d9190bf1d5249022c0338148e52115c911e8b7a5b621de7fa8e5c"
+    },
+    "compiler_candidate": {
+      "path": "scratch_phase_projection_direct_sparse_initial_target_compiler.py",
+      "sha256": "5d7e495ca59bdd896a621729e4fde9f0185b2dc6bc26bb98584be4fdc5b72818"
+    },
+    "compiler_tests": {
+      "path": "test_scratch_phase_projection_direct_sparse_initial_target_compiler.py",
+      "sha256": "dd751bb8a287b4029bcaf7a73b5985ba5a9b4e61a43642d568f146e7cc4d56ec"
+    },
+    "formal_fixed400_ledger": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_gpu_csr_fixed400_20260814.jsonl",
+      "sha256": "749db4e400329598c23c3dd7c9b9863c291eb3d1ba556cdcfcfa879c58487b43"
+    },
+    "production_source_bundle_sha256": "2c990582fe20e7e880a530557d5ca9c825c3d44f3f20758cf64df8d1845f6855"
+  },
+  "production_source_locks_unchanged": {
+    "act/back_end/hybridz_tf/forward_exact_relu_phase_projection_candidate.py": "13625f452c36a1b7844e4385b884471c8a0c82abf015bf2af417257e2c96c23a",
+    "act/back_end/hybridz_tf/phase_projection_device_program.py": "7f0cce0e461f63ff6599ddd82ad5e61ef7c921eb489ef7bbbf4d60cda9048962",
+    "act/back_end/hybridz_tf/phase_projection_highs_owner.py": "2f5678a5b3d2b098637b27558a8bdbffcc5160ca89cb8b4947f557320d03f5b7",
+    "act/back_end/hybridz_tf/phase_projection_incremental_repair.py": "acc1a98fa47d36c3b0bea7d10bf93af33d41ee9de108b0151ca01cd4822f997e"
+  },
+  "tiny143_resource_arithmetic": {
+    "phase_rows_P": 1668,
+    "input_factors_n": 9408,
+    "initial_phase_changes_k": 206,
+    "repair_selected_rows_not_initial_k": 57,
+    "output_width_o": 200,
+    "segments_ceil_n_over_64": 147,
+    "full_logical_nnz_N": 3079720,
+    "formula": "24*N+4*P*ceil(n/64)+8*64*(P+k+o)+4*(P+1)+8*n",
+    "terms_bytes": {
+      "24N": 73913280,
+      "4Psegments": 980784,
+      "512_times_P_plus_k_plus_o": 1061888,
+      "4_times_P_plus_1": 6676,
+      "8n": 75264
+    },
+    "formula_total_bytes": 76037892,
+    "formula_total_mib": 72.51538467407227,
+    "preregistered_numeric_diagnostic_correct": true,
+    "prior_75961604_calculation_role": "correct arithmetic for k=57 but invalid for the Tiny143 initial compiler because 57 is the later repair selection count",
+    "initial_k_206_evidence": "stage_a_receipts tinyimagenet_medium_iid143 candidate_receipt.initial_phase_changes",
+    "repair_k_57_evidence": "stage_a_receipts tinyimagenet_medium_iid143 candidate_receipt.repair_selected_rows"
+  },
+  "resource_contract_failure": {
+    "preregistered_requirements": {
+      "checked_before_every_allocation": true,
+      "resource_preflight_before_allocation_pass": true,
+      "max_compile_bytes": 2000000000
+    },
+    "candidate_self_description": "contract_formula_not_observed_peak",
+    "observed_peak_available": false,
+    "cumulative_live_byte_ledger_present": false,
+    "known_owned_snapshot_lower_bound": {
+      "first_phase_shape": [1668, 9408],
+      "first_phase_float64_bytes": 125540352,
+      "first_output_shape": [200, 9408],
+      "first_output_float64_bytes": 15052800,
+      "two_required_snapshots_bytes": 140593152,
+      "exceeds_formula_total_bytes": true,
+      "ratio_to_formula_total": 1.8489880282320295
+    },
+    "unaccounted_or_not_prechecked_allocation_classes": [
+      "immutable input bytes snapshots",
+      "generated publish-seal bytes copies",
+      "NumPy matrix multiplication outputs and temporaries",
+      "NumPy where and flatnonzero outputs",
+      "SciPy boolean CSR slicing and its buffers",
+      "screened metadata copies"
+    ],
+    "per_allocation_cap_is_not_cumulative_formula_proof": true,
+    "why_fatal": "The frozen gate requires allocation preflight and a bounded request-local compile resource contract. The candidate only computes a shape formula that is neither an observed peak nor an upper bound on its own required live allocations. Unit-test success cannot substitute for that contract."
+  },
+  "nonfatal_static_evidence_preserved": {
+    "targeted_unittests": {
+      "passed": 20,
+      "failed": 0,
+      "elapsed_seconds_approx": 0.039
+    },
+    "py_compile_passed": true,
+    "git_diff_check_passed": true,
+    "math_core": "PASS_FOR_EXACT_REAL_BLOCK_RECURRENCE_AND_EXACT_DYADIC_SCREEN_ONLY",
+    "baseexception_identity_and_owned_cleanup": "PASS_AFTER_PRE_SENTINEL_FIX",
+    "zero_retained_rows_fail_closed": true,
+    "canonical_full_and_screened_csr_toys": true,
+    "gpu_used": false,
+    "authority_granted": false
+  },
+  "additional_audit_notes": {
+    "exact_fraction_screening": "Sound conservative refinement over the emitted binary64 CSR, but it need not produce the same keep mask as the old nominal float64 screen; any future direction must declare and gate that semantic difference explicitly.",
+    "csr_constructor_claim": "The AST proves one explicit sp.csr_matrix call, not one CSR object: full_rows[keep] implicitly materializes a screened CSR. This is not used to override the earlier resource failure.",
+    "compiler_test_parameter_note": "The archived resource-formula unit test uses k=57 and therefore does not validate the preregistered Tiny143 initial-k=206 diagnostic."
+  },
+  "score_and_authority": {
+    "formal_fixed400": {
+      "total": 400,
+      "falsified": 59,
+      "unknown": 341,
+      "errors": 0,
+      "cifar100_falsified": 24,
+      "tinyimagenet_falsified": 35
+    },
+    "disconnected_stage_a_candidate_union_not_formal": {
+      "falsified": 61,
+      "cifar100_falsified": 25,
+      "tinyimagenet_falsified": 36
+    },
+    "status_corner_production_integration": "NOT_AUTHORIZED_PAYMENT_REMAINS_ZERO",
+    "fixed_four_gpu_component_gate": "NOT_AUTHORIZED_AND_NOT_RUN"
+  },
+  "stop_loss_guards": {
+    "do_not_relabel_formula_as_observed_peak": true,
+    "do_not_replace_initial_k_206_with_repair_k_57": true,
+    "do_not_run_the_conditional_fixed_four_gpu_gate": true,
+    "do_not_integrate_status_corner_or_direct_sparse_candidate": true,
+    "do_not_retry_or_tune_this_preregistered_direction": true,
+    "do_not_reopen_closed_fprime_attempt": true
+  }
+}

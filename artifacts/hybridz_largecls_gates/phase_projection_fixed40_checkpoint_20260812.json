@@ -1,0 +1,152 @@
+{
+  "schema": "act.hybridz.phase_projection_fixed40_checkpoint.v1",
+  "date": "2026-08-12",
+  "status": "DISCONNECTED_CANDIDATE_FIXED40_COMPLETE",
+  "scope": {
+    "production_integrated": false,
+    "candidate_authority": false,
+    "proof_authority": false,
+    "verdict_authority": false,
+    "input_sampling_used": false,
+    "pgd_used": false,
+    "concrete_onnx_execution_used": false,
+    "triangle_rows": 0,
+    "act_bab_used": false,
+    "backward_bound_propagation_used": false,
+    "dual_tightening_used": false,
+    "phase_updates_per_case": 1,
+    "phase_retries": 0,
+    "property_rows_per_case": 1,
+    "property_row_retries": 0,
+    "input_lps_per_case": 1
+  },
+  "files": {
+    "candidate": {
+      "path": "act/back_end/hybridz_tf/forward_exact_relu_phase_projection_candidate.py",
+      "sha256": "615b45516b0d4cd2a3632c4f260efffc4fc5cf451444225f8d1bb3e6a04993ba"
+    },
+    "test": {
+      "path": "act/back_end/hybridz_tf/test_forward_exact_relu_phase_projection_candidate.py",
+      "sha256": "dc7d63a9be58722cc29613b74eab7fb4c17778656c2b664b8dec4bc4f1087669"
+    },
+    "production_operator_unchanged": {
+      "path": "act/back_end/hybridz_tf/operator_hz.py",
+      "sha256": "2502c009d6b5d37983e3f6d072e802c7734ac9bd106bb2a252e0a562da390fd8"
+    }
+  },
+  "performance_gate": {
+    "single_pair_speedup": 4.0278879877390645,
+    "four_concurrent_five_pair_median_speedup": 2.1237243882995824,
+    "paired_bootstrap_95_lower": 2.0565868603512625,
+    "candidate_result_conflicts": 0,
+    "stable_id_conflicts": 0,
+    "passed": true
+  },
+  "fixed40": {
+    "completed": 40,
+    "singleton_verified": 6,
+    "unknown": 34,
+    "cifar100": {
+      "completed": 20,
+      "singleton_verified": 4,
+      "unknown": 16,
+      "successful_cases": [
+        {
+          "case": "cifar100_medium_iid2",
+          "phase_rows": 2177,
+          "selected_property_row": 67,
+          "singleton_margin_lower": 0.09290159780434681,
+          "candidate_seconds": 3.649829409085214
+        },
+        {
+          "case": "cifar100_large_iid118",
+          "phase_rows": 2191,
+          "selected_property_row": 28,
+          "singleton_margin_lower": 0.5550047360054379,
+          "candidate_seconds": 8.897874094545841
+        },
+        {
+          "case": "cifar100_medium_iid11",
+          "phase_rows": 1510,
+          "selected_property_row": 72,
+          "singleton_margin_lower": 0.00025345571853629956,
+          "candidate_seconds": 3.116606429219246
+        },
+        {
+          "case": "cifar100_medium_iid64",
+          "phase_rows": 2147,
+          "selected_property_row": 54,
+          "singleton_margin_lower": 0.014603240410815732,
+          "candidate_seconds": 3.205685952678323
+        }
+      ],
+      "unknown_cases": [
+        "cifar100_medium_iid29",
+        "cifar100_large_iid113",
+        "cifar100_medium_iid50",
+        "cifar100_large_iid110",
+        "cifar100_large_iid153",
+        "cifar100_medium_iid86",
+        "cifar100_medium_iid0",
+        "cifar100_medium_iid10",
+        "cifar100_medium_iid21",
+        "cifar100_medium_iid3",
+        "cifar100_large_iid180",
+        "cifar100_large_iid133",
+        "cifar100_large_iid160",
+        "cifar100_large_iid102",
+        "cifar100_large_iid182",
+        "cifar100_large_iid161"
+      ]
+    },
+    "tinyimagenet": {
+      "completed": 20,
+      "singleton_verified": 2,
+      "unknown": 18,
+      "successful_cases": [
+        {
+          "case": "tinyimagenet_medium_iid193",
+          "phase_rows": 2471,
+          "selected_property_row": 198,
+          "singleton_margin_lower": 0.03523107067518083,
+          "candidate_seconds": 8.15486885420978
+        },
+        {
+          "case": "tinyimagenet_medium_iid1",
+          "phase_rows": 2488,
+          "selected_property_row": 58,
+          "singleton_margin_lower": 0.7018047321672078,
+          "candidate_seconds": 8.20666381251067
+        }
+      ],
+      "unknown_cases": [
+        "tinyimagenet_medium_iid6",
+        "tinyimagenet_medium_iid17",
+        "tinyimagenet_medium_iid0",
+        "tinyimagenet_medium_iid93",
+        "tinyimagenet_medium_iid143",
+        "tinyimagenet_medium_iid159",
+        "tinyimagenet_medium_iid64",
+        "tinyimagenet_medium_iid47",
+        "tinyimagenet_medium_iid100",
+        "tinyimagenet_medium_iid158",
+        "tinyimagenet_medium_iid34",
+        "tinyimagenet_medium_iid191",
+        "tinyimagenet_medium_iid105",
+        "tinyimagenet_medium_iid84",
+        "tinyimagenet_medium_iid2",
+        "tinyimagenet_medium_iid130",
+        "tinyimagenet_medium_iid167",
+        "tinyimagenet_medium_iid115"
+      ]
+    }
+  },
+  "interpretation": {
+    "cifar100_algorithmic_progress": true,
+    "tinyimagenet_algorithmic_progress": true,
+    "strict_candidate_solved_count_gain": 6,
+    "formal_production_solved_count_gain": 0,
+    "reason_formal_gain_is_zero": "The fixed40 successes are verifier-owned strict interval results, but the module remains disconnected and non-authoritative pending production integration and blast-radius gates.",
+    "next_step": "Integrate exactly this one UNSAFE-only path under the existing HybridZ shared deadline; no extra fallback representation and no independent ONNX replay in the critical path."
+  }
+}

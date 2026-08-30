@@ -1,0 +1,77 @@
+{
+  "config": {
+    "branch_requires_unstable_successor": true,
+    "branching_method": "gain",
+    "device": "cuda",
+    "dtype": "float64",
+    "dual_iters": 40,
+    "frontier_contraction_target": 0.0,
+    "joint_gain_groups": 1,
+    "max_batch_size": 8,
+    "multi_split_levels": 3,
+    "per_subproblem_refine": "split_successors",
+    "per_subproblem_refine_iters": 0,
+    "per_subproblem_refine_layer_cap": 2,
+    "per_subproblem_refine_rows_cap": 8,
+    "property_branch_focus": "worst",
+    "solver_tier": "dual_alpha_eta",
+    "time_budget_seconds": 12.0
+  },
+  "cuda_peak": {
+    "allocated_bytes": 10215481856,
+    "available": true,
+    "reserved_bytes": 10475274240
+  },
+  "ground_truth_loaded": false,
+  "inputs": {
+    "onnx": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/onnx/CIFAR100_resnet_medium.onnx",
+    "onnx_sha256": "aba117ad0ad4abdd630c220beca70cd58825e72e7bada5dffdda10bb725cece4",
+    "vnnlib": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/vnnlib/CIFAR100_resnet_medium_prop_idx_6232_sidx_3020_eps_0.0039.vnnlib",
+    "vnnlib_sha256": "33e795c8421b7b19125f32415adb9cee09b2f90cb83152c4cd3aa03810e91ec3"
+  },
+  "proof_authority": false,
+  "result": {
+    "metadata": {
+      "any_dropped_frontier_cap": false,
+      "branch_requires_unstable_successor": true,
+      "child_refine_calls": 1,
+      "child_refine_changed_layers": 0,
+      "child_refine_queried_objective_rows": 256,
+      "child_refine_seconds": 0.1629812652245164,
+      "child_refine_selected_layer_ids": [
+        14,
+        40
+      ],
+      "child_refine_strict_lower_entries": 0,
+      "child_refine_strict_upper_entries": 0,
+      "exhausted_budget_nodes": false,
+      "exhausted_budget_time": true,
+      "frontier_contraction_target": 0.0,
+      "joint_gain_groups": 1,
+      "joint_gain_groups_tested": 0,
+      "joint_gain_more_diverse_lanes": 0,
+      "joint_gain_nonbaseline_lanes": 0,
+      "joint_gain_probe_calls": 0,
+      "joint_gain_probe_nodes": 0,
+      "joint_gain_worst_child_improvement_max": 0.0,
+      "nodes": 9,
+      "nodes_minted": 0,
+      "pool_remaining": 16,
+      "property_branch_focus": "worst",
+      "reason": "budget_exhausted_with_unproven_subboxes",
+      "spec_rows_kept": 8,
+      "split_depth_histogram": {
+        "1": 8,
+        "3": 1
+      }
+    },
+    "status": "unknown"
+  },
+  "schema": "act.hybridz_joint_gain_probe.v1",
+  "timing": {
+    "setup_seconds": 1.205873727798462,
+    "total_seconds": 26.100964546203613,
+    "verdict_seconds": 24.89509081840515
+  },
+  "verdict_source": "ordinary_sound_dual_bab"
+}

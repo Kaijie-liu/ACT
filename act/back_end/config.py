@@ -9,6 +9,8 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field, fields
+import math
+from numbers import Integral, Real
 from pathlib import Path
 from typing import Any, Final, List, Optional, Union
 
@@ -29,6 +31,57 @@ VALID_BERT_METHODS: Final[tuple[str, ...]] = (
     "ibp",
     "discrete",
 )
+
+
+def normalize_query_dual_feedback_targets(value: Any) -> tuple[int, ...]:
+    """Normalize query-dual layer ids from YAML or a comma-separated CLI.
+
+    The first occurrence wins when an id is repeated.  Rejecting booleans and
+    non-integral YAML values keeps the serialized experiment identity
+    unambiguous (``True`` must never silently become layer ``1``).
+    """
+
+    if isinstance(value, str):
+        stripped = value.strip()
+        if not stripped:
+            items: list[Any] = []
+        else:
+            tokens = [token.strip() for token in stripped.split(",")]
+            if any(not token for token in tokens):
+                raise ValueError(
+                    "query_dual_feedback_targets must be a comma-separated "
+                    "list of nonnegative integers"
+                )
+            try:
+                items = [int(token, 10) for token in tokens]
+            except ValueError as exc:
+                raise ValueError(
+                    "query_dual_feedback_targets must be a comma-separated "
+                    "list of nonnegative integers"
+                ) from exc
+    elif isinstance(value, (list, tuple)):
+        items = list(value)
+    else:
+        raise ValueError(
+            "query_dual_feedback_targets must be a YAML list/tuple or a "
+            "comma-separated CLI string"
+        )
+
+    normalized: list[int] = []
+    seen: set[int] = set()
+    for item in items:
+        if isinstance(item, bool) or not isinstance(item, int):
+            raise ValueError(
+                "query_dual_feedback_targets entries must be integers"
+            )
+        if item < 0:
+            raise ValueError(
+                "query_dual_feedback_targets entries must be nonnegative"
+            )
+        if item not in seen:
+            seen.add(item)
+            normalized.append(item)
+    return tuple(normalized)
 
 
 @dataclass(frozen=True)
@@ -159,11 +212,14 @@ class BaBConfig:
     per_subproblem_refine: str = "none"
     """Per-subproblem sparse backward refinement of intermediate bounds in the
     BaB loop (requires reuse_root_bounds): 'none' (off), 'tail' (last two
-    unstable activation layers), 'all' (every unstable activation layer). For
-    each child batch, the split-hardened bounds are re-tightened by a K-lane
-    backward pass over the unstable-neuron union only (stable phases are
-    exact, so refining them gains nothing), so splits propagate relationally
-    downstream instead of only through the interval refresh."""
+    unstable activation layers), 'all' (every unstable activation layer), or
+    'split_successors' (the first reachable unstable ReLU descendants in
+    network topological order, capped by ``per_subproblem_refine_layer_cap``).
+    For each child batch, the split-hardened bounds are
+    re-tightened by a K-lane backward pass over the unstable-neuron union only
+    (stable phases are exact, so refining them gains nothing), so splits
+    propagate relationally downstream instead of only through interval
+    refresh."""
 
     per_subproblem_refine_iters: int = 0
     """Adam iterations for per-subproblem refine rows (0 = single fixed-slope
@@ -172,6 +228,9 @@ class BaBConfig:
     per_subproblem_refine_rows_cap: int = 64
     """Max refined neurons per layer per batch (top-cap by interval width);
     bounds the K x 2*cap backward cost."""
+
+    per_subproblem_refine_layer_cap: int = 2
+    """Maximum downstream ReLU layers selected by ``split_successors``."""
 
     auto_batch_safety: float = 0.55
     """Fraction of GPU memory the auto batch sizer (max_batch_size='auto') may
@@ -191,6 +250,48 @@ class BaBConfig:
     constraining k neurons together exceeds the sum of the k individual
     split gains, because the split multipliers are optimized jointly
     against all constraints.     1 = single-split behavior."""
+
+    joint_gain_groups: int = 1
+    """Number of alternative joint ReLU groups measured before a gain split.
+
+    ``1`` preserves the score-only top-k baseline.  Values above one add
+    layer-diverse groups from the same finite BaBSR pool and select the group
+    whose complete ``2^k`` child partition has the best measured worst lower
+    bound.  The measurement is heuristic only; every selected group is still
+    expanded into all phase combinations."""
+
+    property_branch_focus: str = "sum"
+    """How gain branching aggregates dual sensitivities across property rows.
+
+    ``"sum"`` preserves the baseline sum of absolute sensitivities.
+    ``"worst"`` uses only the currently smallest-slack (least certified)
+    property row in each BaB lane to propose split neurons.  Every property
+    row remains present in the bound solve and verdict."""
+
+    property_separable_bab: bool = False
+    """Prove every unresolved conjunct in its own complete BaB tree.
+
+    This is valid only for ALL-rows output semantics.  Each tree starts from
+    the full input region and carries one immutable original ASSERT-row id;
+    the overall property is certified only after every tree is exhausted.
+    The default keeps the ordinary shared multi-row tree."""
+
+    branch_requires_unstable_successor: bool = False
+    """Restrict split proposals to ReLUs with an unstable ReLU descendant.
+
+    This is a heuristic-only long-horizon filter: terminal activation splits
+    cannot propagate phase information into another relaxation.  If the
+    filter would remove every candidate, branching fails safe to the original
+    unfiltered set."""
+
+    frontier_contraction_target: float = 0.0
+    """Optional survivor-aware cap on joint split depth.
+
+    ``0`` disables the policy.  A value in ``(0, 1]`` chooses the largest
+    split depth ``k`` whose observed wave survivor rate ``r`` satisfies
+    ``2**k * r <= target``.  Depth one is the fail-safe minimum when no
+    available depth can contract the frontier.  The root keeps the ordinary
+    batch-fill depth because it has no child-survival observation yet."""
 
     llm_probe_enabled: bool = False
     llm_probe_backend: str = "mock"
@@ -243,6 +344,20 @@ class BaBConfig:
             raise ValueError("num_verify_iters must be non-negative")
         if self.max_eps < 0 or self.eps < 0:
             raise ValueError("eps and max_eps must be non-negative")
+        if self.joint_gain_groups < 1:
+            raise ValueError("joint_gain_groups must be positive")
+        if self.property_branch_focus not in {"sum", "worst"}:
+            raise ValueError(
+                "property_branch_focus must be 'sum' or 'worst'"
+            )
+        if not 0.0 <= self.frontier_contraction_target <= 1.0:
+            raise ValueError(
+                "frontier_contraction_target must be in [0, 1]"
+            )
+        if self.per_subproblem_refine_layer_cap < 1:
+            raise ValueError(
+                "per_subproblem_refine_layer_cap must be positive"
+            )
 
     @classmethod
     def from_yaml(
@@ -330,11 +445,6 @@ class GenerationConfig:
                 f"expected one of {_VALID_COVERAGE_MODES}"
             )
 
-@dataclass
-class HybridZConfig:
-    timeout: Optional[float] = None
-    engine: str = "dense_hz_objbound"
-
 # ---------------------------------------------------------------------------
 # BackendConfig — unified back-end configuration
 # ---------------------------------------------------------------------------
@@ -358,6 +468,796 @@ class HybridZConfig:
     compressed_relu: Optional[bool] = None
     relu_valid_cuts: Optional[bool] = None
     cell_budget: Optional[int] = None
+    operator_exact_budget: int = 0
+    operator_phase_projection_time_limit: float = 0.0
+    operator_phase_clique_time_limit: float = 0.0
+    operator_materialize_add: bool = True
+    preactivation_lp_budget: int = 0
+    preactivation_lp_time_limit: float = 0.0
+    property_correlation_budget: int = 0
+    property_correlation_time_limit: float = 0.0
+    residual_phase_screen: bool = False
+    residual_bound_screen: bool = False
+    property_residual_budget: int = 0
+    property_residual_time_limit: float = 0.0
+    property_residual_max_adjoint_cells: int = 30_000_000
+    property_residual_pool_per_rival: int = 8
+    property_tail_upper: bool = False
+    property_micro_rlt_product_cap: int = 0
+    property_micro_rlt_packet_mode: str = "both"
+    property_micro_rlt_parent_prefilter_seconds: float = 0.0
+    property_micro_rlt_parent_only_diagnostic: bool = False
+    property_tail_add_source_planes: bool = False
+    property_tail_alpha_steps: int = 0
+    property_tail_alpha_time_limit: float = 0.0
+    property_tail_alpha_learning_rate: float = 0.08
+    property_tail_alpha_max_cells: int = 50_000_000
+    property_tail_alpha_device: str = "auto"
+    property_tail_mixture_grid_bits: int = 0
+    property_tail_pairhull_budget: int = 0
+    property_tail_pairhull_time_limit: float = 0.0
+    property_tail_suffix_blocks: int = 0
+    property_tail_suffix_alpha_steps: int = 0
+    property_tail_suffix_alpha_time_limit: float = 0.0
+    property_tail_suffix_alpha_device: str = "auto"
+    query_dual_feedback_targets: tuple[int, ...] = ()
+    query_dual_feedback_steps: int = 0
+    query_dual_feedback_time_limit: float = 0.0
+    query_dual_feedback_block_size: int = 1024
+    query_dual_feedback_device: str = "cuda"
+    gpu_dual_steps: int = 0
+    gpu_dual_time_limit: float = 0.0
+    gpu_dual_row_topk: int = 0
+    gpu_dual_learning_rate: float = 0.08
+    lp_prefilter_fraction: float = 0.20
+    lp_prefilter_max_seconds: float = 8.0
+
+    def __post_init__(self) -> None:
+        valid_engines = {
+            "dense_hz_objbound",
+            "sparse_hz_objbound",
+            "operator_hz_objbound",
+        }
+        if self.engine not in valid_engines:
+            raise ValueError(
+                f"Invalid HybridZ engine {self.engine!r}; "
+                f"expected one of {sorted(valid_engines)}"
+            )
+        if (
+            isinstance(self.operator_exact_budget, bool)
+            or not isinstance(self.operator_exact_budget, Integral)
+        ):
+            raise ValueError(
+                "operator_exact_budget must be an integer"
+            )
+        self.operator_exact_budget = int(self.operator_exact_budget)
+        if self.operator_exact_budget < -1:
+            raise ValueError(
+                "operator_exact_budget must be -1, 0, or a positive integer"
+            )
+        if (
+            isinstance(self.operator_phase_projection_time_limit, bool)
+            or not isinstance(
+                self.operator_phase_projection_time_limit, Real
+            )
+        ):
+            raise ValueError(
+                "operator_phase_projection_time_limit must be numeric"
+            )
+        phase_projection_seconds = float(
+            self.operator_phase_projection_time_limit
+        )
+        if (
+            not math.isfinite(phase_projection_seconds)
+            or not 0.0 <= phase_projection_seconds <= 30.0
+        ):
+            raise ValueError(
+                "operator_phase_projection_time_limit must be finite and "
+                "lie in [0, 30]"
+            )
+        self.operator_phase_projection_time_limit = (
+            phase_projection_seconds
+        )
+        if phase_projection_seconds > 0.0 and (
+            self.engine != "operator_hz_objbound"
+            or self.operator_exact_budget != -1
+        ):
+            raise ValueError(
+                "operator phase projection requires operator_hz_objbound "
+                "and operator_exact_budget=-1"
+            )
+        if (
+            isinstance(self.operator_phase_clique_time_limit, bool)
+            or not isinstance(
+                self.operator_phase_clique_time_limit, Real
+            )
+        ):
+            raise ValueError(
+                "operator_phase_clique_time_limit must be numeric"
+            )
+        phase_clique_seconds = float(
+            self.operator_phase_clique_time_limit
+        )
+        if (
+            not math.isfinite(phase_clique_seconds)
+            or not 0.0 <= phase_clique_seconds <= 40.0
+        ):
+            raise ValueError(
+                "operator_phase_clique_time_limit must be finite and lie "
+                "in [0, 40]"
+            )
+        if phase_clique_seconds == 0.0:
+            phase_clique_seconds = 0.0
+        self.operator_phase_clique_time_limit = phase_clique_seconds
+        if int(self.preactivation_lp_budget) < 0:
+            raise ValueError("preactivation_lp_budget must be nonnegative")
+        preactivation_seconds = float(self.preactivation_lp_time_limit)
+        if (
+            not math.isfinite(preactivation_seconds)
+            or preactivation_seconds < 0.0
+        ):
+            raise ValueError(
+                "preactivation_lp_time_limit must be finite and nonnegative"
+            )
+        if int(self.property_correlation_budget) < 0:
+            raise ValueError(
+                "property_correlation_budget must be nonnegative"
+            )
+        correlation_seconds = float(self.property_correlation_time_limit)
+        if (
+            not math.isfinite(correlation_seconds)
+            or correlation_seconds < 0.0
+        ):
+            raise ValueError(
+                "property_correlation_time_limit must be finite and "
+                "nonnegative"
+            )
+        if (int(self.property_correlation_budget) > 0) != (
+            correlation_seconds > 0.0
+        ):
+            raise ValueError(
+                "property correlation budget and time limit must be "
+                "enabled together"
+            )
+        if (
+            int(self.property_correlation_budget) > 0
+            and not bool(self.operator_materialize_add)
+        ):
+            raise ValueError(
+                "property correlation shadows require "
+                "operator_materialize_add=true"
+            )
+        if not isinstance(self.residual_phase_screen, bool):
+            raise ValueError("residual_phase_screen must be a boolean")
+        if (
+            self.residual_phase_screen
+            and not bool(self.operator_materialize_add)
+        ):
+            raise ValueError(
+                "residual_phase_screen requires "
+                "operator_materialize_add=true"
+            )
+        if not isinstance(self.residual_bound_screen, bool):
+            raise ValueError("residual_bound_screen must be a boolean")
+        if (
+            self.residual_bound_screen
+            and not bool(self.operator_materialize_add)
+        ):
+            raise ValueError(
+                "residual_bound_screen requires "
+                "operator_materialize_add=true"
+            )
+        if self.residual_phase_screen and self.residual_bound_screen:
+            raise ValueError(
+                "residual phase-only and bound screens are mutually "
+                "exclusive modes"
+            )
+        if (
+            isinstance(self.property_residual_budget, bool)
+            or not isinstance(self.property_residual_budget, Integral)
+        ):
+            raise ValueError(
+                "property_residual_budget must be an integer"
+            )
+        self.property_residual_budget = int(
+            self.property_residual_budget
+        )
+        if self.property_residual_budget < 0:
+            raise ValueError("property_residual_budget must be nonnegative")
+        if (
+            isinstance(self.property_residual_time_limit, bool)
+            or not isinstance(self.property_residual_time_limit, Real)
+        ):
+            raise ValueError(
+                "property_residual_time_limit must be numeric"
+            )
+        residual_seconds = float(self.property_residual_time_limit)
+        if not math.isfinite(residual_seconds) or residual_seconds < 0.0:
+            raise ValueError(
+                "property_residual_time_limit must be finite and nonnegative"
+            )
+        self.property_residual_time_limit = residual_seconds
+        if int(self.property_residual_max_adjoint_cells) <= 0:
+            raise ValueError(
+                "property_residual_max_adjoint_cells must be positive"
+            )
+        if int(self.property_residual_pool_per_rival) <= 0:
+            raise ValueError(
+                "property_residual_pool_per_rival must be positive"
+            )
+        phase_split_mode = bool(
+            self.property_tail_upper
+            and int(self.operator_exact_budget) > 0
+            and int(self.property_residual_budget) > 0
+        )
+        phase_clique_enabled = phase_clique_seconds > 0.0
+        micro_rlt_cap = self.property_micro_rlt_product_cap
+        if isinstance(micro_rlt_cap, bool) or not isinstance(
+            micro_rlt_cap, int
+        ):
+            raise ValueError(
+                "property_micro_rlt_product_cap must be an integer"
+            )
+        if not 0 <= micro_rlt_cap <= 4096:
+            raise ValueError(
+                "property_micro_rlt_product_cap must lie in [0, 4096]"
+            )
+        micro_rlt_packet_mode = self.property_micro_rlt_packet_mode
+        if (
+            not isinstance(micro_rlt_packet_mode, str)
+            or micro_rlt_packet_mode
+            not in {"both", "first", "second"}
+        ):
+            raise ValueError(
+                "property_micro_rlt_packet_mode must be one of "
+                "both|first|second"
+            )
+        if micro_rlt_cap <= 0 and micro_rlt_packet_mode != "both":
+            raise ValueError(
+                "property_micro_rlt_packet_mode first/second requires "
+                "property micro-RLT to be enabled"
+            )
+        raw_micro_rlt_seconds = (
+            self.property_micro_rlt_parent_prefilter_seconds
+        )
+        if isinstance(raw_micro_rlt_seconds, bool) or not isinstance(
+            raw_micro_rlt_seconds, (int, float)
+        ):
+            raise ValueError(
+                "property_micro_rlt_parent_prefilter_seconds must be numeric"
+            )
+        micro_rlt_seconds = float(raw_micro_rlt_seconds)
+        if (
+            not math.isfinite(micro_rlt_seconds)
+            or not 0.0 <= micro_rlt_seconds <= 10.0
+        ):
+            raise ValueError(
+                "property_micro_rlt_parent_prefilter_seconds must be finite "
+                "and lie in [0, 10]"
+            )
+        self.property_micro_rlt_parent_prefilter_seconds = (
+            micro_rlt_seconds
+        )
+        if not isinstance(
+            self.property_micro_rlt_parent_only_diagnostic, bool
+        ):
+            raise ValueError(
+                "property_micro_rlt_parent_only_diagnostic must be a boolean"
+            )
+        if (micro_rlt_cap > 0) != (micro_rlt_seconds > 0.0):
+            raise ValueError(
+                "property micro-RLT product cap and parent prefilter time "
+                "must be enabled together"
+            )
+        if (
+            self.property_micro_rlt_parent_only_diagnostic
+            and micro_rlt_cap <= 0
+        ):
+            raise ValueError(
+                "property_micro_rlt_parent_only_diagnostic requires "
+                "property micro-RLT to be enabled"
+            )
+        if micro_rlt_cap > 0:
+            if self.engine != "operator_hz_objbound":
+                raise ValueError(
+                    "property micro-RLT requires "
+                    "engine=operator_hz_objbound"
+                )
+            if self.property_tail_upper is not True:
+                raise ValueError(
+                    "property micro-RLT requires property_tail_upper=true"
+                )
+            if (
+                not phase_split_mode
+                or int(self.operator_exact_budget) != 2
+                or int(self.property_residual_budget) != 2
+            ):
+                raise ValueError(
+                    "property micro-RLT requires the depth-2 property-tail "
+                    "phase split with operator_exact_budget="
+                    "property_residual_budget=2"
+                )
+        if phase_split_mode:
+            if not 1 <= int(self.operator_exact_budget) <= 2:
+                raise ValueError(
+                    "property-tail exact phase cover supports depth 1 or 2"
+                )
+            if int(self.property_residual_budget) != int(
+                self.operator_exact_budget
+            ):
+                raise ValueError(
+                    "property-tail exact phase cover requires "
+                    "property_residual_budget=operator_exact_budget; the "
+                    "residual selector is used only to choose split ReLUs"
+                )
+            if residual_seconds <= 0.0:
+                raise ValueError(
+                    "property-tail exact phase cover requires "
+                    "property_residual_time_limit>0"
+                )
+        elif bool(self.property_tail_upper) and int(
+            self.property_residual_budget
+        ) > 0:
+            raise ValueError(
+                "property_tail_upper and property_residual_budget are "
+                "mutually exclusive candidates"
+            )
+        if int(self.property_correlation_budget) > 0 and (
+            int(self.property_residual_budget) > 0
+            or bool(self.property_tail_upper)
+        ):
+            raise ValueError(
+                "property correlation, residual normal form, and property "
+                "tail are isolated candidate families"
+            )
+        if phase_clique_enabled:
+            if self.engine != "operator_hz_objbound":
+                raise ValueError(
+                    "operator phase cliques require "
+                    "engine=operator_hz_objbound"
+                )
+            if self.operator_materialize_add is not True:
+                raise ValueError(
+                    "operator phase cliques require "
+                    "operator_materialize_add=true"
+                )
+            if int(self.operator_exact_budget) != 4:
+                raise ValueError(
+                    "operator phase cliques require "
+                    "operator_exact_budget=4"
+                )
+            if int(self.property_residual_budget) != 4:
+                raise ValueError(
+                    "operator phase cliques require "
+                    "property_residual_budget=4"
+                )
+            if residual_seconds <= 0.0:
+                raise ValueError(
+                    "operator phase cliques require "
+                    "property_residual_time_limit>0"
+                )
+            if bool(self.property_tail_upper):
+                raise ValueError(
+                    "operator phase cliques require "
+                    "property_tail_upper=false"
+                )
+            if int(self.property_correlation_budget) != 0:
+                raise ValueError(
+                    "operator phase cliques require "
+                    "property_correlation_budget=0"
+                )
+            if self.residual_phase_screen or self.residual_bound_screen:
+                raise ValueError(
+                    "operator phase cliques require residual screens off"
+                )
+            if int(self.preactivation_lp_budget) != 0:
+                raise ValueError(
+                    "operator phase cliques require "
+                    "preactivation_lp_budget=0"
+                )
+            if preactivation_seconds != 0.0:
+                raise ValueError(
+                    "operator phase cliques require "
+                    "preactivation_lp_time_limit=0"
+                )
+            if micro_rlt_cap != 0:
+                raise ValueError(
+                    "operator phase cliques require "
+                    "property_micro_rlt_product_cap=0"
+                )
+        if not isinstance(self.property_tail_add_source_planes, bool):
+            raise ValueError(
+                "property_tail_add_source_planes must be a boolean"
+            )
+        if (
+            self.property_tail_add_source_planes
+            and self.property_tail_upper is not True
+        ):
+            raise ValueError(
+                "property_tail_add_source_planes requires "
+                "property_tail_upper=true"
+            )
+        if (
+            self.property_tail_add_source_planes
+            and self.operator_materialize_add is not True
+        ):
+            raise ValueError(
+                "property_tail_add_source_planes requires "
+                "operator_materialize_add=true"
+            )
+        if int(self.property_tail_alpha_steps) < 0:
+            raise ValueError(
+                "property_tail_alpha_steps must be nonnegative"
+            )
+        property_tail_alpha_seconds = float(
+            self.property_tail_alpha_time_limit
+        )
+        if (
+            not math.isfinite(property_tail_alpha_seconds)
+            or property_tail_alpha_seconds < 0.0
+        ):
+            raise ValueError(
+                "property_tail_alpha_time_limit must be finite and "
+                "nonnegative"
+            )
+        if (
+            int(self.property_tail_alpha_steps) > 0
+        ) != (property_tail_alpha_seconds > 0.0):
+            raise ValueError(
+                "property-tail alpha steps and time limit must be enabled "
+                "together"
+            )
+        property_tail_alpha_lr = float(
+            self.property_tail_alpha_learning_rate
+        )
+        if (
+            not math.isfinite(property_tail_alpha_lr)
+            or property_tail_alpha_lr <= 0.0
+        ):
+            raise ValueError(
+                "property_tail_alpha_learning_rate must be finite and "
+                "positive"
+            )
+        if int(self.property_tail_alpha_max_cells) <= 0:
+            raise ValueError(
+                "property_tail_alpha_max_cells must be positive"
+            )
+        property_tail_alpha_device = str(
+            self.property_tail_alpha_device
+        ).lower()
+        if property_tail_alpha_device not in {"auto", "cpu", "cuda"}:
+            raise ValueError(
+                "property_tail_alpha_device must be auto, cpu, or cuda"
+            )
+        self.property_tail_alpha_device = property_tail_alpha_device
+        if (
+            int(self.property_tail_alpha_steps) > 0
+            and not bool(self.property_tail_upper)
+        ):
+            raise ValueError(
+                "property-tail alpha candidates require "
+                "property_tail_upper"
+            )
+        if (
+            int(self.property_tail_alpha_steps) > 0
+            and int(self.operator_exact_budget) != 0
+        ):
+            raise ValueError(
+                "property-tail alpha candidates currently require "
+                "operator_exact_budget=0"
+            )
+        mixture_grid_bits = self.property_tail_mixture_grid_bits
+        if isinstance(mixture_grid_bits, bool) or not isinstance(
+            mixture_grid_bits, int
+        ):
+            raise ValueError(
+                "property_tail_mixture_grid_bits must be an integer"
+            )
+        if not 0 <= mixture_grid_bits <= 24:
+            raise ValueError(
+                "property_tail_mixture_grid_bits must lie in [0, 24]"
+            )
+        if (
+            mixture_grid_bits > 0
+            and self.property_tail_upper is not True
+        ):
+            raise ValueError(
+                "property_tail_mixture_grid_bits>0 requires "
+                "property_tail_upper=true"
+            )
+        if (
+            mixture_grid_bits > 0
+            and int(self.property_tail_alpha_steps) <= 0
+        ):
+            raise ValueError(
+                "property_tail_mixture_grid_bits>0 requires "
+                "property_tail_alpha_steps>0"
+            )
+        if (
+            mixture_grid_bits > 0
+            and property_tail_alpha_seconds <= 0.0
+        ):
+            raise ValueError(
+                "property_tail_mixture_grid_bits>0 requires "
+                "property_tail_alpha_time_limit>0"
+            )
+        if (
+            mixture_grid_bits > 0
+            and int(self.operator_exact_budget) != 0
+        ):
+            raise ValueError(
+                "property_tail_mixture_grid_bits>0 requires "
+                "operator_exact_budget=0"
+            )
+        pairhull_budget = self.property_tail_pairhull_budget
+        if isinstance(pairhull_budget, bool) or not isinstance(
+            pairhull_budget, int
+        ):
+            raise ValueError(
+                "property_tail_pairhull_budget must be an integer"
+            )
+        if not 0 <= pairhull_budget <= 8:
+            raise ValueError(
+                "property_tail_pairhull_budget must lie in [0, 8]"
+            )
+        raw_pairhull_seconds = self.property_tail_pairhull_time_limit
+        if isinstance(raw_pairhull_seconds, bool) or not isinstance(
+            raw_pairhull_seconds, (int, float)
+        ):
+            raise ValueError(
+                "property_tail_pairhull_time_limit must be numeric"
+            )
+        pairhull_seconds = float(raw_pairhull_seconds)
+        if (
+            not math.isfinite(pairhull_seconds)
+            or not 0.0 <= pairhull_seconds <= 1.5
+        ):
+            raise ValueError(
+                "property_tail_pairhull_time_limit must be finite and "
+                "lie in [0, 1.5]"
+            )
+        self.property_tail_pairhull_time_limit = pairhull_seconds
+        if (pairhull_budget > 0) != (pairhull_seconds > 0.0):
+            raise ValueError(
+                "property-tail PairHull budget and time limit must be "
+                "enabled together"
+            )
+        if pairhull_budget > 0 and self.property_tail_upper is not True:
+            raise ValueError(
+                "property_tail_pairhull_budget>0 requires "
+                "property_tail_upper=true"
+            )
+        if (
+            pairhull_budget > 0
+            and int(self.operator_exact_budget) != 0
+        ):
+            raise ValueError(
+                "property_tail_pairhull_budget>0 requires "
+                "operator_exact_budget=0"
+            )
+        suffix_blocks = self.property_tail_suffix_blocks
+        if isinstance(suffix_blocks, bool) or not isinstance(
+            suffix_blocks, int
+        ):
+            raise ValueError(
+                "property_tail_suffix_blocks must be an integer"
+            )
+        if not 0 <= suffix_blocks <= 8:
+            raise ValueError(
+                "property_tail_suffix_blocks must lie in [0, 8]"
+            )
+        if suffix_blocks > 0 and self.property_tail_upper is not True:
+            raise ValueError(
+                "property_tail_suffix_blocks>0 requires "
+                "property_tail_upper=true"
+            )
+        if suffix_blocks > 0 and self.operator_materialize_add is not True:
+            raise ValueError(
+                "property_tail_suffix_blocks>0 requires "
+                "operator_materialize_add=true"
+            )
+        if phase_split_mode and not 1 <= suffix_blocks <= 7:
+            raise ValueError(
+                "property-tail exact phase cover requires a shared-suffix "
+                "constraint prefix with property_tail_suffix_blocks in [1, 7]"
+            )
+        suffix_alpha_steps = self.property_tail_suffix_alpha_steps
+        if isinstance(suffix_alpha_steps, bool) or not isinstance(
+            suffix_alpha_steps, int
+        ):
+            raise ValueError(
+                "property_tail_suffix_alpha_steps must be an integer"
+            )
+        if not 0 <= suffix_alpha_steps <= 64:
+            raise ValueError(
+                "property_tail_suffix_alpha_steps must lie in [0, 64]"
+            )
+        suffix_alpha_seconds = float(
+            self.property_tail_suffix_alpha_time_limit
+        )
+        if (
+            not math.isfinite(suffix_alpha_seconds)
+            or not 0.0 <= suffix_alpha_seconds <= 20.0
+        ):
+            raise ValueError(
+                "property_tail_suffix_alpha_time_limit must be finite and "
+                "lie in [0, 20]"
+            )
+        if (suffix_alpha_steps > 0) != (suffix_alpha_seconds > 0.0):
+            raise ValueError(
+                "property-tail suffix alpha steps and time limit must be "
+                "enabled together"
+            )
+        if suffix_alpha_steps > 0 and suffix_blocks <= 0:
+            raise ValueError(
+                "property_tail_suffix_alpha_steps>0 requires "
+                "property_tail_suffix_blocks>0"
+            )
+        suffix_alpha_device = str(
+            self.property_tail_suffix_alpha_device
+        ).lower()
+        if suffix_alpha_device not in {"auto", "cpu", "cuda"}:
+            raise ValueError(
+                "property_tail_suffix_alpha_device must be auto, cpu, or cuda"
+            )
+        self.property_tail_suffix_alpha_device = suffix_alpha_device
+        self.query_dual_feedback_targets = (
+            normalize_query_dual_feedback_targets(
+                self.query_dual_feedback_targets
+            )
+        )
+        query_steps = self.query_dual_feedback_steps
+        if isinstance(query_steps, bool) or not isinstance(query_steps, int):
+            raise ValueError(
+                "query_dual_feedback_steps must be an integer"
+            )
+        if not 0 <= query_steps <= 64:
+            raise ValueError(
+                "query_dual_feedback_steps must lie in [0, 64]"
+            )
+        raw_query_seconds = self.query_dual_feedback_time_limit
+        if isinstance(raw_query_seconds, bool) or not isinstance(
+            raw_query_seconds, (int, float)
+        ):
+            raise ValueError(
+                "query_dual_feedback_time_limit must be numeric"
+            )
+        query_seconds = float(raw_query_seconds)
+        if (
+            not math.isfinite(query_seconds)
+            or not 0.0 <= query_seconds <= 20.0
+        ):
+            raise ValueError(
+                "query_dual_feedback_time_limit must be finite and lie in "
+                "[0, 20]"
+            )
+        self.query_dual_feedback_time_limit = query_seconds
+        query_block_size = self.query_dual_feedback_block_size
+        if (
+            isinstance(query_block_size, bool)
+            or not isinstance(query_block_size, int)
+            or not 1 <= query_block_size <= 4096
+        ):
+            raise ValueError(
+                "query_dual_feedback_block_size must be an integer in "
+                "[1, 4096]"
+            )
+        query_device = str(self.query_dual_feedback_device).lower()
+        if query_device not in {"cpu", "cuda"}:
+            raise ValueError(
+                "query_dual_feedback_device must be cpu or cuda"
+            )
+        self.query_dual_feedback_device = query_device
+        if query_steps == 0:
+            if query_seconds != 0.0:
+                raise ValueError(
+                    "disabled query-dual feedback requires "
+                    "query_dual_feedback_time_limit=0"
+                )
+        else:
+            property_only_bound_replay = bool(
+                self.residual_bound_screen
+                and not self.query_dual_feedback_targets
+            )
+            if (
+                not self.query_dual_feedback_targets
+                and not property_only_bound_replay
+            ):
+                raise ValueError(
+                    "enabled query-dual feedback requires target ReLUs or "
+                    "residual_bound_screen=true for property-only replay"
+                )
+            if query_seconds <= 0.0:
+                raise ValueError(
+                    "enabled query-dual feedback requires "
+                    "query_dual_feedback_time_limit>0"
+                )
+            if (
+                not property_only_bound_replay
+                and self.property_tail_upper is not True
+            ):
+                raise ValueError(
+                    "enabled query-dual feedback requires "
+                    "property_tail_upper=true"
+                )
+            if (
+                property_only_bound_replay
+                and self.property_tail_upper is not False
+            ):
+                raise ValueError(
+                    "property-only residual-bound query replay requires "
+                    "property_tail_upper=false"
+                )
+            if self.engine != "operator_hz_objbound":
+                raise ValueError(
+                    "enabled query-dual feedback requires "
+                    "engine=operator_hz_objbound"
+                )
+            if int(self.operator_exact_budget) != 0:
+                raise ValueError(
+                    "enabled query-dual feedback requires "
+                    "operator_exact_budget=0"
+                )
+        if phase_clique_enabled and query_steps != 0:
+            raise ValueError(
+                "operator phase cliques require "
+                "query_dual_feedback_steps=0"
+            )
+        if int(self.gpu_dual_steps) < 0:
+            raise ValueError("gpu_dual_steps must be nonnegative")
+        gpu_dual_seconds = float(self.gpu_dual_time_limit)
+        if not math.isfinite(gpu_dual_seconds) or gpu_dual_seconds < 0.0:
+            raise ValueError(
+                "gpu_dual_time_limit must be finite and nonnegative"
+            )
+        if int(self.gpu_dual_row_topk) < 0:
+            raise ValueError("gpu_dual_row_topk must be nonnegative")
+        if phase_clique_enabled and (
+            int(self.gpu_dual_steps) != 0
+            or gpu_dual_seconds != 0.0
+            or int(self.gpu_dual_row_topk) != 0
+        ):
+            raise ValueError(
+                "operator phase cliques require GPU dual candidates off"
+            )
+        if phase_projection_seconds > 0.0 and any(
+            (
+                phase_clique_enabled,
+                int(self.preactivation_lp_budget) != 0,
+                float(self.preactivation_lp_time_limit) != 0.0,
+                int(self.property_correlation_budget) != 0,
+                float(self.property_correlation_time_limit) != 0.0,
+                bool(self.residual_phase_screen),
+                bool(self.residual_bound_screen),
+                int(self.property_residual_budget) != 0,
+                float(self.property_residual_time_limit) != 0.0,
+                bool(self.property_tail_upper),
+                int(self.property_micro_rlt_product_cap) != 0,
+                query_steps != 0,
+                query_seconds != 0.0,
+                int(self.gpu_dual_steps) != 0,
+                gpu_dual_seconds != 0.0,
+                int(self.gpu_dual_row_topk) != 0,
+            )
+        ):
+            raise ValueError(
+                "operator phase projection is a single-path mode and "
+                "cannot be combined with optional phase/property/dual "
+                "enhancements"
+            )
+        gpu_dual_lr = float(self.gpu_dual_learning_rate)
+        if not math.isfinite(gpu_dual_lr) or gpu_dual_lr <= 0.0:
+            raise ValueError(
+                "gpu_dual_learning_rate must be finite and positive"
+            )
+        fraction = float(self.lp_prefilter_fraction)
+        if not math.isfinite(fraction) or not 0.0 <= fraction <= 1.0:
+            raise ValueError("lp_prefilter_fraction must lie in [0, 1]")
+        lp_seconds = float(self.lp_prefilter_max_seconds)
+        if not math.isfinite(lp_seconds) or lp_seconds < 0.0:
+            raise ValueError(
+                "lp_prefilter_max_seconds must be finite and nonnegative"
+            )
 
     def verdict_timeout(self, fallback_timeout: Optional[float] = None) -> float:
         """Resolve the HybridZ verdict wall time in seconds."""
@@ -545,10 +1445,6 @@ class BackendConfig:
         hz_merged.update(hz_overrides)
         hz_config = HybridZConfig(**hz_merged)
 
-        hz_merged = {k: v for k, v in hz_raw.items() if k in hz_fields}
-        hz_merged.update(hz_overrides)
-        hz_config = HybridZConfig(**hz_merged)
-
         # Build top-level config
         top_fields = {fld.name for fld in fields(cls)} - {"bab", "generation", "hybridz"}
         top_merged: dict[str, Any] = {}
@@ -571,6 +1467,11 @@ class BackendConfig:
         bab_d = d.pop("bab")
         gen_d = d.pop("generation")
         hz_d = d.pop("hybridz")
+        # ``yaml.safe_load`` cannot read PyYAML's ``!!python/tuple`` tag.
+        # Serialize the immutable in-memory target tuple as portable YAML.
+        hz_d["query_dual_feedback_targets"] = list(
+            hz_d["query_dual_feedback_targets"]
+        )
         bab_enabled = d.pop("bab_enabled")
         bab_d["enabled"] = bab_enabled
 

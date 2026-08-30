@@ -1,0 +1,258 @@
+{
+  "schema": "act.hybridz.phase_projection_zero_corner_ability_stoploss.v1",
+  "date": "2026-08-14",
+  "status": "STOP_LOSS_FORMAL_RETENTION_FAILED",
+  "sole_rule": {
+    "candidate": "unique first-stream analytic inward BOX corner",
+    "candidate_authority": false,
+    "terminal_authority": "raw_BOX;verifier_owned_zero_width_interval;stored_binary64_Fraction_property",
+    "target_cell_update_used": false,
+    "phase_delta_or_expansion_used": false,
+    "lp_model_or_solve_used": false,
+    "four_by_four_projection_used": false,
+    "conditional_fallback_or_blend_used": false,
+    "retry_menu_used": false
+  },
+  "public_unknown_ability_gate": {
+    "source": "artifacts/hybridz_largecls_gates/phase_projection_vnncomp_public_ceiling_20260814.json",
+    "public_sat_targets": 8,
+    "terminal_verified": 1,
+    "unknown": 7,
+    "new_terminal_verified_cases": [
+      "cifar100_large_iid166"
+    ],
+    "cases": [
+      {
+        "case": "cifar100_large_iid110",
+        "raw_box_verified": true,
+        "selected_property_row": 0,
+        "first_cell_affine_margin": 0.004437426765143138,
+        "terminal_exact_margin_lower": -0.017476659155789553,
+        "terminal_verified": false,
+        "corner_path_seconds_instrumented": 1.0131485033780336,
+        "terminal_seconds": 1.7289578299969435,
+        "candidate_plus_terminal_seconds_instrumented": 2.742106333374977
+      },
+      {
+        "case": "cifar100_large_iid114",
+        "raw_box_verified": true,
+        "selected_property_row": 34,
+        "first_cell_affine_margin": 0.00666505513354243,
+        "terminal_exact_margin_lower": -0.0057733765542352655,
+        "terminal_verified": false,
+        "corner_path_seconds_instrumented": 0.9727949611842632,
+        "terminal_seconds": 1.7470528548583388,
+        "candidate_plus_terminal_seconds_instrumented": 2.719847816042602
+      },
+      {
+        "case": "cifar100_large_iid160",
+        "raw_box_verified": true,
+        "selected_property_row": 61,
+        "first_cell_affine_margin": -0.009295477127663987,
+        "terminal_exact_margin_lower": -0.022724759614879075,
+        "terminal_verified": false,
+        "corner_path_seconds_instrumented": 0.9769210387021303,
+        "terminal_seconds": 1.8048924952745438,
+        "candidate_plus_terminal_seconds_instrumented": 2.781813533976674
+      },
+      {
+        "case": "cifar100_large_iid161",
+        "raw_box_verified": true,
+        "selected_property_row": 5,
+        "first_cell_affine_margin": -0.008387157676793322,
+        "terminal_exact_margin_lower": -0.022230107180601477,
+        "terminal_verified": false,
+        "corner_path_seconds_instrumented": 0.9477326739579439,
+        "terminal_seconds": 2.1757100662216544,
+        "candidate_plus_terminal_seconds_instrumented": 3.1234427401795983
+      },
+      {
+        "case": "cifar100_large_iid166",
+        "raw_box_verified": true,
+        "selected_property_row": 87,
+        "first_cell_affine_margin": 0.42477186868091454,
+        "terminal_exact_margin_lower": 0.4187211701057267,
+        "terminal_verified": true,
+        "corner_path_seconds_instrumented": 1.0416448740288615,
+        "terminal_seconds": 1.9367711255326867,
+        "candidate_plus_terminal_seconds_instrumented": 2.9784159995615482,
+        "frozen_59_path_outcome": "UNKNOWN because the selected-cell LP was infeasible"
+      },
+      {
+        "case": "tinyimagenet_medium_iid93",
+        "raw_box_verified": true,
+        "selected_property_row": 178,
+        "first_cell_affine_margin": -0.21920973762909712,
+        "terminal_exact_margin_lower": -0.2576287949808105,
+        "terminal_verified": false,
+        "corner_path_seconds_instrumented": 2.9151045316830277,
+        "terminal_seconds": 1.1459738621488214,
+        "candidate_plus_terminal_seconds_instrumented": 4.061078393831849
+      },
+      {
+        "case": "tinyimagenet_medium_iid143",
+        "raw_box_verified": true,
+        "selected_property_row": 100,
+        "first_cell_affine_margin": 0.005205717584909064,
+        "terminal_exact_margin_lower": -0.016527808281491474,
+        "terminal_verified": false,
+        "corner_path_seconds_instrumented": 2.219324459321797,
+        "terminal_seconds": 1.1273849057033658,
+        "candidate_plus_terminal_seconds_instrumented": 3.3467093650251627
+      },
+      {
+        "case": "tinyimagenet_medium_iid153",
+        "raw_box_verified": true,
+        "selected_property_row": 103,
+        "first_cell_affine_margin": 0.04337547558103583,
+        "terminal_exact_margin_lower": -0.018335355815114696,
+        "terminal_verified": false,
+        "corner_path_seconds_instrumented": 2.7920200042426586,
+        "terminal_seconds": 1.1361782290041447,
+        "candidate_plus_terminal_seconds_instrumented": 3.9281982332468033
+      }
+    ]
+  },
+  "public_unsat_negative_control": {
+    "case": "cifar100_large_iid153",
+    "official_result": "unsat",
+    "raw_box_verified": true,
+    "selected_property_row": 85,
+    "first_cell_affine_margin": 0.012950699359952189,
+    "terminal_exact_margin_lower": -0.010812124137450807,
+    "terminal_verified": false,
+    "corner_path_seconds_instrumented": 0.9534444538876414,
+    "terminal_seconds": 1.7029836578294635,
+    "candidate_plus_terminal_seconds_instrumented": 2.656428111717105,
+    "interpretation": "The terminal proof correctly refused a positive verdict despite the non-authoritative first-cell affine margin being positive."
+  },
+  "retained59_partial_stoploss": {
+    "source": "artifacts/hybridz_largecls_gates/phase_projection_single_stream_float64_candidate_20260813.json",
+    "planned": 59,
+    "completed_before_stop": 41,
+    "terminal_verified": 34,
+    "regressed_to_unknown": 7,
+    "errors_among_completed": 0,
+    "next_case_interrupted_without_result": "tinyimagenet_medium_iid189",
+    "not_attempted_after_stop": 17,
+    "terminal_verified_cases": [
+      "cifar100_medium_iid2",
+      "cifar100_medium_iid43",
+      "cifar100_medium_iid48",
+      "cifar100_medium_iid61",
+      "cifar100_medium_iid64",
+      "cifar100_medium_iid65",
+      "cifar100_medium_iid69",
+      "cifar100_medium_iid97",
+      "cifar100_large_iid118",
+      "cifar100_large_iid119",
+      "cifar100_large_iid124",
+      "cifar100_large_iid148",
+      "cifar100_large_iid155",
+      "cifar100_large_iid164",
+      "cifar100_large_iid181",
+      "cifar100_large_iid183",
+      "cifar100_large_iid194",
+      "cifar100_large_iid199",
+      "tinyimagenet_medium_iid1",
+      "tinyimagenet_medium_iid29",
+      "tinyimagenet_medium_iid38",
+      "tinyimagenet_medium_iid46",
+      "tinyimagenet_medium_iid62",
+      "tinyimagenet_medium_iid65",
+      "tinyimagenet_medium_iid77",
+      "tinyimagenet_medium_iid85",
+      "tinyimagenet_medium_iid87",
+      "tinyimagenet_medium_iid90",
+      "tinyimagenet_medium_iid103",
+      "tinyimagenet_medium_iid116",
+      "tinyimagenet_medium_iid120",
+      "tinyimagenet_medium_iid125",
+      "tinyimagenet_medium_iid155",
+      "tinyimagenet_medium_iid181"
+    ],
+    "regressed_cases": [
+      {
+        "case": "cifar100_medium_iid11",
+        "terminal_exact_margin_lower": -0.01191029453363357
+      },
+      {
+        "case": "cifar100_medium_iid31",
+        "terminal_exact_margin_lower": -0.0100399522160666
+      },
+      {
+        "case": "cifar100_medium_iid54",
+        "terminal_exact_margin_lower": -0.03230226043568063
+      },
+      {
+        "case": "cifar100_medium_iid83",
+        "terminal_exact_margin_lower": -0.041483502149632256
+      },
+      {
+        "case": "tinyimagenet_medium_iid7",
+        "terminal_exact_margin_lower": -0.01803424295997047
+      },
+      {
+        "case": "tinyimagenet_medium_iid69",
+        "terminal_exact_margin_lower": -0.01713571652548218
+      },
+      {
+        "case": "tinyimagenet_medium_iid150",
+        "terminal_exact_margin_lower": -0.017749016869103684
+      }
+    ],
+    "family_completed_counts": {
+      "cifar100_medium": {
+        "completed": 12,
+        "terminal_verified": 8,
+        "regressed": 4
+      },
+      "cifar100_large": {
+        "completed": 10,
+        "terminal_verified": 10,
+        "regressed": 0
+      },
+      "tinyimagenet_medium": {
+        "completed": 19,
+        "terminal_verified": 16,
+        "regressed": 3
+      }
+    },
+    "decision": "Formal retention failed after seven reproducible regressions. The running audit was stopped after the already-completed 41st case; the remaining retained-59 controls and fixed-14 were not run."
+  },
+  "ability_accounting": {
+    "frozen_production_formal_falsified": 59,
+    "zero_corner_new_terminal_verified_outside_frozen59": 1,
+    "set_union_if_two_disallowed_paths_were_combined": 60,
+    "runtime_union_or_fallback_allowed": false,
+    "zero_corner_terminal_verified_among_completed_frozen_controls_plus_new_case": 35,
+    "formal_score_changed": false,
+    "interpretation": "iid166 is a genuine disconnected verifier-terminal gain, but the sole zero-correction replacement already loses seven frozen positives. It therefore cannot promote as the one common path, and the 60-case set union cannot be claimed as an admissible runtime result."
+  },
+  "stoploss": {
+    "production_integration": false,
+    "fixed14_run": false,
+    "fixed400_run": false,
+    "blend_or_conditional_lp_designed": false,
+    "further_parameter_or_algorithm_search": false,
+    "gpu_processes_remaining": 0,
+    "decision": "Archive zero-correction as a complementary but non-retentive candidate and do not modify production."
+  },
+  "prohibitions": {
+    "input_sampling_used": false,
+    "center_boundary_or_random_onnx_execution_used": false,
+    "pgd_used": false,
+    "bab_or_split_used": false,
+    "backward_bounds_used": false,
+    "dual_tightening_used": false,
+    "candidate_or_public_result_has_authority": false
+  },
+  "implementation": {
+    "probe": "scratch_phase_projection_zero_corner_probe.py",
+    "probe_sha256": "a94a88e3c53c1d5a49866e40bd80499d6f5f0b08e9619018391b59823ea10324",
+    "retention_harness": "scratch_phase_projection_zero_corner_retention.py",
+    "retention_harness_sha256": "a4e4dd9410ef1d4f9974b88e77f90188b9fc68eb390590ff9296028ab99a816a",
+    "phase_projection_sha256": "4b66470df55edebb595e0e06c6b8a2de5c65496b8671c4d2f2552003d01ea306",
+    "production_files_changed": false
+  }
+}

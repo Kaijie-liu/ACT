@@ -1,0 +1,270 @@
+{
+  "schema": "act.hybridz.fprime.persistent_lowrank_streaming_component.v1",
+  "created_at": "2026-08-14",
+  "status": "STREAMING_COMPONENT_ABILITY_AND_MECHANICAL_PASS_FULL_FPRIME_NONINFERIORITY_UNMEASURED",
+  "formal_fixed400": {
+    "falsified": 59,
+    "unknown": 341,
+    "changed_by_this_sentinel": false,
+    "production_integrated": false,
+    "fixed_or_performance_group_run": false
+  },
+  "unique_plan": {
+    "name": "reuse_base_loaded_x_existing_D_only_owner_projects_y_tiny_once",
+    "base_x": "reuse the already-loaded screened x CSR and its x-tiny-compensated upper bounds without copy, hstack, canonicalization, or refilter",
+    "existing_unflipped": "caller passes the base FrozenRows upper unchanged and logical D including tiny terms",
+    "existing_flipped": "caller scans only each of the K full logical base rows to derive the opposite lower bound with x-tiny compensation only",
+    "new_column_owner": "the one Highs owner deletes and projects logical D tiny terms exactly once, then appends the K columns",
+    "new_rows": "complete rows are built only for newly required phase rows and K topological native RANGE definitions",
+    "mutation": "append K columns, change existing row sides, append missing phase plus definition rows, warm solve once, read back once",
+    "same_owner": true,
+    "second_solver": false,
+    "updated_target_pre_or_output_materialized_on_proposed_path": false,
+    "parameter_or_rule_change_from_generic_plan": false
+  },
+  "tiny_ownership": {
+    "caller_y_tiny_projection_count": 0,
+    "caller_y_tiny_compensation_count": 0,
+    "owner_y_tiny_projection_passes": 1,
+    "upper_formula": "b'=up(b-sum(min(a*l,a*u)))",
+    "range_lower_formula": "L'=down(L-sum(max(a*l,a*u)))",
+    "range_upper_formula": "U'=up(U-sum(min(a*l,a*u)))",
+    "arithmetic": "Fraction.from_float over stored binary64, one outward conversion per projection stage",
+    "double_compensation": false
+  },
+  "cpu_static": {
+    "py_compile": "PASS",
+    "bare_json_boolean_names_absent": true,
+    "real_build_streaming_plan_invoked": true,
+    "owner_side_y_tiny_deleted_once_in_toy": 2,
+    "sequential_projection_outward_encloses_one_shot": true,
+    "exclusive_raw_and_receipt_write_test": "PASS"
+  },
+  "cases": [
+    {
+      "case": "cifar100_large_iid153",
+      "status": "UPDATED_NONPOSITIVE_OR_UNSOLVED",
+      "selected_flips": 58,
+      "selection_sha256": "249a556c825e9eb57eee6aa06c67d18b51adda90c469dcd38821eb6f65bcffd3",
+      "candidate_margin": -0.0036483713352920073,
+      "full_rebuild_margin_at_same_factors": -0.0036483713354409364,
+      "full_rebuild_violated_rows": 0,
+      "full_rebuild_max_upper_violation": 1.5651906853930697e-12,
+      "definition_max_abs_residual": 2.540412324947283e-12,
+      "terminal": null,
+      "owner": {
+        "instances": 1,
+        "solves": 2,
+        "basis_valid_before_warm_run": true,
+        "poisoned": false,
+        "owner_y_tiny_terms_projected": 6,
+        "owner_y_tiny_projection_passes": 1
+      },
+      "shape": {
+        "base_screened_rows": 1720,
+        "auxiliary_columns": 58,
+        "missing_phase_rows": 3,
+        "definition_rows": 58,
+        "existing_aux_loaded_nnz": 1714,
+        "appended_loaded_nnz": 4340
+      },
+      "timing_seconds": {
+        "delta": 0.007838443852961063,
+        "streaming_plan_assembly": 0.028061051853001118,
+        "owner_new_column_projection": 0.0005480190739035606,
+        "mutation": 0.0007371688261628151,
+        "warm_solve": 0.01861193496733904,
+        "readback": 0.00014678575098514557,
+        "component_without_plan_or_projection": 0.027334333397448063,
+        "full_incremental_including_owner_projection": 0.05594340432435274
+      },
+      "evidence": {
+        "raw": "artifacts/hybridz_largecls_gates/fprime_streaming_large153_20260814.raw.json",
+        "raw_sha256": "23572a1cdab39764bb54724367482bea6add0706d35dea857fbc9c5c4452412d",
+        "receipt": "artifacts/hybridz_largecls_gates/fprime_streaming_large153_20260814.receipt.json",
+        "receipt_sha256": "5c37450f84a13aef2bb1ec44c9aa58142215fb8c82661f0258cbcae651c9ebce"
+      }
+    },
+    {
+      "case": "tinyimagenet_medium_iid143",
+      "status": "UPDATED_TERMINAL_VERIFIED",
+      "selected_flips": 57,
+      "selection_sha256": "2b107af66ed3cf4c13b5b0aea4e76b9f2669b6a311dd9e3f0d2a90086e89032d",
+      "candidate_margin": 0.0002170229788827265,
+      "full_rebuild_margin_at_same_factors": 0.00021702292860403816,
+      "full_rebuild_violated_rows": 0,
+      "full_rebuild_max_upper_violation": 2.221121075691307e-10,
+      "definition_max_abs_residual": 2.386875896584484e-10,
+      "terminal": {
+        "verified": true,
+        "fraction_margin_lower": 0.0002169995966969651,
+        "seconds": 1.1012535151094198
+      },
+      "owner": {
+        "instances": 1,
+        "solves": 2,
+        "basis_valid_before_warm_run": true,
+        "poisoned": false,
+        "owner_y_tiny_terms_projected": 32,
+        "owner_y_tiny_projection_passes": 1
+      },
+      "shape": {
+        "base_screened_rows": 1154,
+        "auxiliary_columns": 57,
+        "missing_phase_rows": 17,
+        "definition_rows": 57,
+        "existing_aux_loaded_nnz": 4785,
+        "appended_loaded_nnz": 63157
+      },
+      "timing_seconds": {
+        "delta": 0.0063056014478206635,
+        "streaming_plan_assembly": 0.11128917802125216,
+        "owner_new_column_projection": 0.010712691582739353,
+        "mutation": 0.004630569368600845,
+        "warm_solve": 0.08684402890503407,
+        "readback": 0.0003489349037408829,
+        "component_without_plan_or_projection": 0.09812913462519646,
+        "full_incremental_including_owner_projection": 0.22013100422918797,
+        "terminal": 1.1012535151094198,
+        "incremental_plus_terminal": 1.3213845193386078
+      },
+      "evidence": {
+        "raw": "artifacts/hybridz_largecls_gates/fprime_streaming_tiny143_20260814.raw.json",
+        "raw_sha256": "fd18654438e6828a5b00adfb9f389f1614716bc5497bb9856878c1c6847daa2f",
+        "receipt": "artifacts/hybridz_largecls_gates/fprime_streaming_tiny143_20260814.receipt.json",
+        "receipt_sha256": "96ab3db5ef19d4316b38223829ebe7bf025dc1f335ea44e082f904c81d750869"
+      }
+    },
+    {
+      "case": "tinyimagenet_medium_iid153",
+      "status": "UPDATED_TERMINAL_VERIFIED",
+      "selected_flips": 5,
+      "selection_sha256": "b6bbf35dcaf5d762d8d1676f97b50065acd9eb2752b9532dcd49db8a8d312c4d",
+      "candidate_margin": 0.029165834970771427,
+      "full_rebuild_margin_at_same_factors": 0.029165834971066396,
+      "full_rebuild_violated_rows": 0,
+      "full_rebuild_max_upper_violation": 3.051062874570576e-12,
+      "definition_max_abs_residual": 5.292620508523527e-12,
+      "terminal": {
+        "verified": true,
+        "fraction_margin_lower": 0.029165812152095683,
+        "seconds": 1.1224892418831587
+      },
+      "owner": {
+        "instances": 1,
+        "solves": 2,
+        "dual_ray_exist_calls": 1,
+        "dual_ray_calls": 1,
+        "basis_valid_before_warm_run": true,
+        "poisoned": false,
+        "owner_y_tiny_terms_projected": 0,
+        "owner_y_tiny_projection_passes": 1
+      },
+      "shape": {
+        "base_screened_rows": 2202,
+        "auxiliary_columns": 5,
+        "missing_phase_rows": 6,
+        "definition_rows": 5,
+        "existing_aux_loaded_nnz": 713,
+        "appended_loaded_nnz": 14616
+      },
+      "timing_seconds": {
+        "delta": 0.0062485383823513985,
+        "streaming_plan_assembly": 0.009783364832401276,
+        "owner_new_column_projection": 0.00015768501907587051,
+        "mutation": 0.0040893396362662315,
+        "warm_solve": 0.29326089564710855,
+        "readback": 0.00031372997909784317,
+        "component_without_plan_or_projection": 0.30391250364482403,
+        "full_incremental_including_owner_projection": 0.3138535534963012,
+        "terminal": 1.1224892418831587,
+        "incremental_plus_terminal": 1.4363427953794598
+      },
+      "evidence": {
+        "raw": "artifacts/hybridz_largecls_gates/fprime_streaming_tiny153_20260814.raw.json",
+        "raw_sha256": "1219ec9d804482fd1b2f0b21959336cbabf903d188281d9b60b71210b24a4b66",
+        "receipt": "artifacts/hybridz_largecls_gates/fprime_streaming_tiny153_20260814.receipt.json",
+        "receipt_sha256": "6e4c1eaf931d714dd45f7e10eb356a1aa3526fbf0b701f60e94842098196f831"
+      }
+    }
+  ],
+  "generic_to_streaming_reduction": {
+    "cifar100_large_iid153_full_incremental_seconds": {
+      "generic": 0.09191528428345919,
+      "streaming": 0.05594340432435274,
+      "ratio_streaming_over_generic": 0.6086409323592785
+    },
+    "tinyimagenet_medium_iid143_full_incremental_seconds": {
+      "generic": 2.288850696757436,
+      "streaming": 0.22013100422918797,
+      "ratio_streaming_over_generic": 0.09617534448229528
+    },
+    "tinyimagenet_medium_iid153_full_incremental_seconds": {
+      "generic": 1.7246095733717084,
+      "streaming": 0.3138535534963012,
+      "ratio_streaming_over_generic": 0.18198527848984386
+    }
+  },
+  "single_request_budget": {
+    "timing_authority": false,
+    "frozen_current_phase_seconds": {
+      "cifar100_large_iid153": 0.9946541227400303,
+      "tinyimagenet_medium_iid143": 1.9302229192107916,
+      "tinyimagenet_medium_iid153": 2.9282685881480575
+    },
+    "minimum_same_input_device_or_other_base_saving_needed_if_terminal_costs_match_this_run": {
+      "cifar100_large_iid153": 0.05594340432435274,
+      "tinyimagenet_medium_iid143": 1.3213845193386078,
+      "tinyimagenet_medium_iid153": 1.4363427953794598
+    },
+    "interpretation": "The old UNKNOWN controls paid no terminal. Therefore the complete new path is noninferior only if same-input structural base and terminal acceleration offsets the full update plus the new terminal. An iid2 component result cannot authorize these TinyImageNet budgets.",
+    "arithmetic_impossibility_proved": false,
+    "same_input_full_path_measurement_required": true
+  },
+  "four_thread_budget": {
+    "measured_for_these_controls": false,
+    "available_transferable_headroom_seconds": null,
+    "reason": "the existing device artifact reports only iid2 combined group stream-plus-terminal wall and cannot be decomposed or transferred to Large153/Tiny143/Tiny153",
+    "promotion_claimed": false
+  },
+  "candidate_only_limitation": {
+    "missing_row_screen": "this sentinel used the current candidate-style float base row_max plus a float K-term auxiliary upper sum",
+    "authority": false,
+    "observed_oracle": "all three low-rank factors violated zero full-rebuild screened rows",
+    "production_requirement": "use the separately audited outward missing-row screen or append every ambiguous row; do not grant this diagnostic screen proof authority"
+  },
+  "restrictions": {
+    "input_sampling_used": false,
+    "onnx_input_point_execution_used": false,
+    "pgd_used": false,
+    "bab_split_or_enumeration_used": false,
+    "backward_bounds_used": false,
+    "dual_tightening_used": false,
+    "candidate_or_lp_has_authority": false,
+    "second_solver_used": false,
+    "fallback_menu_retry_or_parameter_scan_used": false,
+    "phase_updates": 1
+  },
+  "source_locks": {
+    "streaming_scratch": "scratch_phase_projection_fprime_persistent_lowrank_streaming_sentinel.py",
+    "streaming_scratch_sha256": "4d7adffe5bf4e9913debc003db859ff2c4d975bec232d02dcedd01e7e6cf69be",
+    "generic_scratch_sha256": "1f399a29be9fdf9cf2cca0b89adbb6721b307d1913d37be3bb704155458fdaeb",
+    "fprime_probe_sha256": "6ce6ab6b208a1224ce70cfc0e4f183f5acf07fbc6d9db65ef34a8f4694602a15",
+    "one_multi_helper_sha256": "9c158f7f13087fe2be93e3b67114db704cfa46432e82fda94e5162dd8da10040",
+    "phase_production_sha256": "4b66470df55edebb595e0e06c6b8a2de5c65496b8671c4d2f2552003d01ea306",
+    "live_production_sha256": "d53c2335c43905097e78bef8311175d7151d7e98293a6152fce62dba00d37511"
+  },
+  "environment_after_runs": {
+    "gpu_compute_processes": 0,
+    "gpu_memory_used_mib": 34,
+    "gpu_utilization_percent": 0
+  },
+  "decision": {
+    "mathematics": "PASS",
+    "ability": "PASS on the preregistered three-case component controls",
+    "generic_plan": "RETIRED_PERFORMANCE_STOP_LOSS",
+    "streaming_component": "RETAIN AS THE ONLY INTEGRATION CANDIDATE",
+    "production": "DO_NOT_EDIT_OR_PROMOTE YET",
+    "next_gate": "same-input complete current versus device-base-plus-streaming-update paired single runs, then four-thread only if every single control is noninferior; no parameter or representation alternatives"
+  }
+}

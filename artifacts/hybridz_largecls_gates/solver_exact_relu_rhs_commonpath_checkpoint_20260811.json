@@ -1,0 +1,178 @@
+{
+  "schema": "act.hybridz.solver_exact_relu_rhs_commonpath_checkpoint.v1",
+  "date": "2026-08-11",
+  "scope": "synthetic_exact_relu_full_build_plus_hz_objbound",
+  "goal_constraints": {
+    "common_path_only": true,
+    "new_runtime_modes": 0,
+    "new_constraint_representations": 0,
+    "new_fallbacks": 0,
+    "triangle_rows": 0,
+    "network_branch_and_bound": false,
+    "backward_or_dual": false,
+    "bounded_real_cifar100_run": true,
+    "tinyimagenet_or_large_run": false
+  },
+  "implementation": {
+    "solver_path": "act/back_end/solver/solver_hz.py",
+    "solver_sha256": "c759856c6a6b7a88f2739578db4ed727ccc1d8f83e471db9cef0455172bd16e0",
+    "solver_test_path": "act/back_end/solver/test_solver_hz_binary_shift.py",
+    "solver_test_sha256": "41b41a219af54a035c2ec4db287ec31b5d25c207f92a1208bbce4e2125a6fc63",
+    "operator_path": "act/back_end/hybridz_tf/operator_hz.py",
+    "operator_sha256": "cf760a5bad588f41f1ef3903c56bdc58d85fbebf5202eb51385e758eb97314ca",
+    "operator_test_path": "act/back_end/hybridz_tf/test_operator_add_fusion.py",
+    "operator_test_sha256": "2e7cf8f3b60c8eae15e32403db274156f8b4478e3bb3e155eee437cfd7636163",
+    "changes": [
+      "Use vectorized IEEE-754 TwoSum for the dominant zero-or-one-binary-term exact-ReLU RHS transform.",
+      "Keep the established Fraction implementation only for rows with more than one binary term.",
+      "Count exact-phase rows with one integer and allocate detailed per-row dictionaries only when property suffix or micro-RLT consumers are explicitly enabled."
+    ]
+  },
+  "correctness": {
+    "independent_fraction_random_and_edge_pairs": 100121,
+    "wrong_exact_expansions": 0,
+    "inward_upper_roundings": 0,
+    "actual_width256_rhs_bits_equal": true,
+    "full_stage_result_conflicts": 0,
+    "focused_and_adjacent_tests_passed": 142,
+    "focused_and_adjacent_subtests_passed": 35,
+    "py_compile_passed": true,
+    "diff_check_passed": true
+  },
+  "fused_synthetic_gate": {
+    "fixture": "width256, eight residual blocks, 2048 exact unstable ReLUs",
+    "structure": {
+      "continuous": 2304,
+      "binary": 2048,
+      "upper_rows": 6144,
+      "constraint_nnz": 14336,
+      "exact_record_count": 2048
+    },
+    "single_request": {
+      "paired_repeats": 15,
+      "fraction_median_ms": 44.35358289629221,
+      "twosum_median_ms": 26.54219139367342,
+      "ratio_of_medians": 1.6710595684599088,
+      "paired_median_speedup": 1.6704851014550766,
+      "fraction_p95_ms": 44.78804059326649,
+      "twosum_p95_ms": 26.99430789798498,
+      "gate_required": 1.5,
+      "gate_passed": true
+    },
+    "four_concurrent": {
+      "paired_repeats": 15,
+      "fraction_group_median_ms": 199.46249574422836,
+      "twosum_group_median_ms": 98.63899182528257,
+      "ratio_of_medians": 2.0221465371172145,
+      "paired_median_speedup": 1.9154761822015949,
+      "paired_bootstrap_95_lower": 1.8246304784800307,
+      "paired_bootstrap_95_upper": 2.0660997405504813,
+      "fraction_p95_ms": 219.9724517762661,
+      "twosum_p95_ms": 112.77901791036128,
+      "median_gate_required": 2.0,
+      "bootstrap_gate_required": 1.8,
+      "gate_passed": true
+    },
+    "fresh_child_request": {
+      "paired_repeats": 7,
+      "fixture_and_imports_complete_before_request_timer": true,
+      "fraction_median_ms": 48.314740881323814,
+      "twosum_median_ms": 29.72340304404497,
+      "ratio_of_medians": 1.62547810591303,
+      "paired_median_speedup": 1.6173254637247498,
+      "paired_bootstrap_95_lower": 1.6042968795598898,
+      "fraction_p95_ms": 49.5082694105804,
+      "twosum_p95_ms": 30.984532739967108,
+      "fraction_worst_hwm_delta_bytes": 13824000,
+      "twosum_worst_hwm_delta_bytes": 13828096,
+      "fraction_median_minor_faults": 1295,
+      "twosum_median_minor_faults": 1295,
+      "total_major_faults": 0,
+      "full_process_median_ms_fraction": 1062.2368827462196,
+      "full_process_median_ms_twosum": 1045.1132524758577,
+      "request_gate_passed": true,
+      "process_startup_is_not_a_per_request_claim": true
+    }
+  },
+  "explicit_materialized_no_fallback_gate": {
+    "fixture": "same width256/eight-block graph with materialize_add=true",
+    "structure": {
+      "continuous": 4352,
+      "binary": 2048,
+      "upper_rows": 10240,
+      "constraint_nnz": 22528
+    },
+    "single_request": {
+      "fraction_median_ms": 80.2601845934987,
+      "twosum_median_ms": 54.84417174011469,
+      "speedup": 1.4634223117420875,
+      "gate_required": 1.5,
+      "gate_passed": false
+    },
+    "four_concurrent": {
+      "fraction_group_median_ms": 287.17628959566355,
+      "twosum_group_median_ms": 161.45785804837942,
+      "speedup": 1.7786454810370005,
+      "paired_bootstrap_95_lower": 1.6521174530671885,
+      "median_gate_required": 2.0,
+      "bootstrap_gate_required": 1.8,
+      "gate_passed": false
+    }
+  },
+  "real_model_topology_preflight": {
+    "cifar100_medium": {
+      "onnx_nodes": 59,
+      "add_nodes": 8,
+      "add_with_sole_relu_consumer": 0,
+      "add_with_exactly_one_affine_relu_route": 8,
+      "affine_relu_route_coverage": 1.0,
+      "relu_layers": 10,
+      "maximum_relu_units_per_sample": 55460
+    },
+    "tinyimagenet_medium": {
+      "onnx_nodes": 59,
+      "add_nodes": 8,
+      "add_with_sole_relu_consumer": 0,
+      "add_with_exactly_one_affine_relu_route": 8,
+      "affine_relu_route_coverage": 1.0,
+      "relu_layers": 10,
+      "maximum_relu_units_per_sample": 172296
+    }
+  },
+  "bounded_real_cifar100_medium_iid2": {
+    "declared_environment": "/data1/Kane/miniconda3/envs/act-py312",
+    "outer_timeout_seconds": 30.0,
+    "status": "timeout",
+    "run_end_status": "DIAGNOSTIC_PARTIAL",
+    "parent_wall_seconds": 30.192954467609525,
+    "parse_convert_specs_seconds": 1.309758,
+    "synthesis_seconds": 0.001623,
+    "torch2act_seconds": 0.117586,
+    "analysis_solver_replay_started_at_seconds": 1.673817,
+    "first_usable_result_produced": false,
+    "worker_hard_killed_and_reaped": true,
+    "gpu_free_bytes_restored": true,
+    "receipt_jsonl": "artifacts/hybridz_largecls_gates/gate1_twosum_exact_cifar100_medium_iid2_actpy312_20260811.jsonl",
+    "receipt_jsonl_sha256": "321d0f2b6d153f0f80f9e8ad89b44911855b9fba7f5fad50d9d9afaf2c495755",
+    "summary_json": "artifacts/hybridz_largecls_gates/gate1_twosum_exact_cifar100_medium_iid2_actpy312_20260811.summary.json",
+    "summary_json_sha256": "ada14f9a138594b6703fc0f03cdde081edc66a10528b7b029cdcf09aa725f1f0",
+    "worker_log": "artifacts/hybridz_largecls_gates/logs/20260811T053257Z-ec265c9a619b_cifar100_medium_iid002.log",
+    "worker_log_sha256": "9b1b5133db151042b8ad2b626d809c3f48faa96d68008b01fc45f18df88288a1",
+    "initial_base_environment_attempt": {
+      "status": "FAIL_ERROR",
+      "reason": "missing declared onnx2torch dependency in base Python; no network build or solve executed",
+      "summary_json": "artifacts/hybridz_largecls_gates/gate1_twosum_exact_cifar100_medium_iid2_20260811.summary.json",
+      "summary_json_sha256": "336e34706975fac8fc123cce1e8f24ab26593e3a37ba9a35ddcb51bd84a50754"
+    }
+  },
+  "decision": {
+    "retain_commonpath_deletions": true,
+    "synthetic_fused_gates_passed": true,
+    "selected_no_fallback_real_path_gates_passed": false,
+    "production_promotion": false,
+    "real_model_allowed": false,
+    "large_model_allowed": false,
+    "status": "ABSOLUTE_LATENCY_WIN_REAL_FIRST_RESPONSE_TIMEOUT",
+    "reason": "Both medium ONNX graphs contain the intended affine-ReLU route after every ADD, but CIFAR100-medium iid2 still produced no usable response within the bounded 30-second real gate. TinyImageNet was not attempted."
+  }
+}

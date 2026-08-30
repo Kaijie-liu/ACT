@@ -1,0 +1,90 @@
+{
+  "schema": "act.scratch.phase_projection_one_multi_flip.v1",
+  "case": "tinyimagenet_medium_iid143",
+  "status": "TERMINAL_VERIFIED",
+  "external_labels_read_by_rule": false,
+  "frozen_reason": "float screen rejected candidate margin=-0.0010710773153007613",
+  "old_margin": -0.0010710773153007613,
+  "new_margin": 0.00021702546121615818,
+  "margin_gain": 0.0012881027765169195,
+  "strict_improvement": true,
+  "selected_property_row": 100,
+  "selected_flip_count": 57,
+  "selected_by_layer": {
+    "5": 33,
+    "9": 17,
+    "20": 3,
+    "44": 4
+  },
+  "selected_marginal_magnitude_min": 1.9907314092724436e-05,
+  "selected_marginal_magnitude_max": 0.3470894669219666,
+  "negative_marginal_screened_rows": 57,
+  "tight_screened_rows": 57,
+  "selected_rows_canonical_sha256": "2b107af66ed3cf4c13b5b0aea4e76b9f2669b6a311dd9e3f0d2a90086e89032d",
+  "selected_rows_first_ten": [
+    {"layer_id": 5, "position": 31, "relu_row": 1320},
+    {"layer_id": 5, "position": 54, "relu_row": 2863},
+    {"layer_id": 5, "position": 66, "relu_row": 4476},
+    {"layer_id": 5, "position": 85, "relu_row": 8204},
+    {"layer_id": 5, "position": 126, "relu_row": 13246},
+    {"layer_id": 5, "position": 129, "relu_row": 13352},
+    {"layer_id": 5, "position": 138, "relu_row": 13770},
+    {"layer_id": 5, "position": 140, "relu_row": 13851},
+    {"layer_id": 5, "position": 161, "relu_row": 17510},
+    {"layer_id": 5, "position": 179, "relu_row": 19092}
+  ],
+  "new_cell_changes_from_first": 185,
+  "new_lp": {
+    "success": true,
+    "rows": 1160,
+    "nnz": 914226,
+    "margin": 0.00021702546121615818,
+    "phase_consistent": 1646,
+    "phase_inconsistent": 22,
+    "max_phase_sign_violation": 2.3555585130022316e-08,
+    "all_phase_sign_violations_within_frozen_primal_tolerance": false,
+    "model_seconds": 0.7065616752952337,
+    "lp_seconds": 0.1227727709338069
+  },
+  "terminal": {
+    "raw_box": true,
+    "zero_width_interval": true,
+    "fraction_margin_lower": 0.0002169926152308932,
+    "verified": true,
+    "seconds": 1.087017398327589
+  },
+  "timing": {
+    "frozen_negative_path_seconds": 2.760190743021667,
+    "update_center_seconds": 0.0405008178204298,
+    "update_delta_seconds": 0.019013908691704273,
+    "update_expansion_seconds": 0.5699942586943507,
+    "update_model_seconds": 0.7065616752952337,
+    "update_lp_seconds": 0.1227727709338069,
+    "one_update_total_seconds": 1.4662970444187522,
+    "end_to_end_seconds": 7.337552624754608,
+    "frozen_and_end_to_end_timing_authority": false,
+    "note": "sys.settrace captured frozen function locals and materially perturbs frozen/end-to-end timing; isolated update and terminal stage timings remain diagnostic only"
+  },
+  "rule": {
+    "name": "flip_all_tight_strictly_negative_marginal_phase_rows_once",
+    "tightness": "residual <= frozen_primal_tolerance * (1 + abs(rhs))",
+    "marginal": "strictly < 0; no magnitude threshold",
+    "top_k": null,
+    "threshold_scan": false,
+    "retry": false,
+    "strict_margin_improvement_required": true
+  },
+  "restrictions": {
+    "input_sampling_used": false,
+    "onnx_point_execution_used": false,
+    "pgd_used": false,
+    "bab_or_split_used": false,
+    "backward_bounds_used": false,
+    "dual_tightening_used": false,
+    "candidate_or_marginal_has_authority": false,
+    "phase_updates": 1,
+    "phase_or_property_retries": 0,
+    "fallback_menu": false
+  },
+  "production_modified": false
+}

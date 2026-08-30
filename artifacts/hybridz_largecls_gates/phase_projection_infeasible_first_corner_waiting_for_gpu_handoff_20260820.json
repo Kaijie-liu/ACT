@@ -1,0 +1,169 @@
+{
+  "schema": "act.hybridz.infeasible_first_corner.waiting_for_gpu_handoff.v1",
+  "created_at": "2026-08-20T16:24:00+10:00",
+  "status": "WAITING_FOR_GPU",
+  "execution_state": "NOT_RUN",
+  "scope": "disconnected_scratch_only_stage_a_ability_sentinel",
+  "frozen_identity": {
+    "harness": {
+      "path": "scratch_phase_projection_infeasible_first_corner_sentinel.py",
+      "sha256": "15c75bb5bf9de615b9749baccccde327dec0d53fca151e930ff1a15554bda242"
+    },
+    "preregistration": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_infeasible_first_corner_preregistration_20260820.json",
+      "sha256": "7ebb03b32b0eb2f5123f293a24c55887430b39a80317ff965f25b07ced31c682"
+    },
+    "private_transformed_owner_sha256": "fe733d1e5972194266ef90a3ba7f21c00eb12b46543d116faa6dcd1d42cf04fc",
+    "private_transformed_phase_sha256": "0f37084d3f45d8b487563777de5e66c173efaa05e95b428db90604eef51372ce",
+    "canonical_source_bundle_sha256": "2c990582fe20e7e880a530557d5ca9c825c3d44f3f20758cf64df8d1845f6855"
+  },
+  "pre_gpu_review": {
+    "verdict": "PRE_GPU_NO_BLOCKER",
+    "independent_routes": 2,
+    "routes": [
+      {
+        "route": "primary_static_and_hostile_review",
+        "verdict": "PRE_GPU_NO_BLOCKER"
+      },
+      {
+        "route": "independent_full_matrix_redteam",
+        "verdict": "PRE_GPU_NO_BLOCKER"
+      }
+    ],
+    "frozen_sha_scope_only": true,
+    "gpu_used_by_review": false,
+    "authorized_runtime_worker_used_by_review": false,
+    "unauthorized_fail_closed_worker_probe_used": true
+  },
+  "runtime_outputs": {
+    "all_absent_at_handoff": true,
+    "events": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_infeasible_first_corner_sentinel_20260820.events.jsonl",
+      "exists": false
+    },
+    "raw": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_infeasible_first_corner_sentinel_20260820.raw.jsonl",
+      "exists": false
+    },
+    "receipts": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_infeasible_first_corner_sentinel_20260820.receipts.jsonl",
+      "exists": false
+    },
+    "summary": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_infeasible_first_corner_sentinel_20260820.json",
+      "exists": false
+    },
+    "durability": "parent creates ledgers exclusively; every attempt marker and result is append-plus-fsync; summary is exclusive-create and persisted before completion",
+    "existing_output_policy": "If any dedicated output exists, do not launch, resume, or retry; preserve it and audit the recorded attempt."
+  },
+  "stage_a_execution_contract": {
+    "case_order": [
+      "cifar100_medium_iid2",
+      "tinyimagenet_medium_iid143",
+      "cifar100_large_iid166",
+      "tinyimagenet_medium_iid153",
+      "cifar100_large_iid153",
+      "cifar100_medium_iid50",
+      "cifar100_large_iid101",
+      "cifar100_large_iid120",
+      "tinyimagenet_medium_iid9",
+      "tinyimagenet_medium_iid173",
+      "tinyimagenet_medium_iid176"
+    ],
+    "hard_gates": {
+      "cifar100_medium_iid2": "FALSIFIED",
+      "tinyimagenet_medium_iid143": "FALSIFIED",
+      "cifar100_large_iid166": "FALSIFIED",
+      "tinyimagenet_medium_iid153": [
+        "FALSIFIED",
+        "UNKNOWN"
+      ],
+      "cifar100_large_iid153": "UNKNOWN",
+      "remaining_cases": [
+        "FALSIFIED",
+        "UNKNOWN"
+      ]
+    },
+    "first_hard_failure_stop": true,
+    "stop_before_all_remaining_cases_on_first_gate_miss_or_error": true,
+    "attempts_per_case": 1,
+    "retries": 0,
+    "stage_b_authorized": false
+  },
+  "authorization_and_waiter": {
+    "handoff_itself_authorizes_gpu_execution": false,
+    "fresh_explicit_root_authorization_required": true,
+    "fresh_explicit_root_authorization_status": "GRANTED_TO_ACTIVE_WAITER_SESSION_22704_ONLY",
+    "automatic_waiter_state": "ACTIVE_WAITING_FOR_GPU",
+    "automatic_waiter": {
+      "controller": "root_unified_exec",
+      "session_id": 22704,
+      "observed_state_at_handoff": "ACTIVE_WAITING_FOR_ZERO_GPU_COMPUTE_PROCESSES",
+      "waiter_started_by_root": true,
+      "gpu_parent_not_launched_at_handoff": true,
+      "session_reference_role": "ephemeral_diagnostic_only",
+      "session_reference_may_expire_across_sessions": true,
+      "second_waiter_forbidden_while_existing_waiter_or_parent_is_active": true
+    },
+    "automatic_waiter_may_start_only_after_fresh_root_authorization": true,
+    "gpu_readiness_probe_argv": [
+      "nvidia-smi",
+      "--query-compute-apps=pid",
+      "--format=csv,noheader,nounits"
+    ],
+    "gpu_readiness_rule": "Re-query dynamically; launch once only after an external controller has established GPU availability. Never key the decision to a PID captured in this handoff.",
+    "automatic_waiter_command_template": "set -eu; while :; do gpu_pids=$(nvidia-smi --query-compute-apps=pid --format=csv,noheader,nounits) || exit 70; if ! printf '%s\\n' \"$gpu_pids\" | grep -Eq '[0-9]'; then break; fi; sleep 30; done; exec env ACT_INFEASIBLE_FIRST_CORNER_GPU_AUTHORIZATION=ROOT_AUTHORIZED_INFEASIBLE_FIRST_CORNER_20260820 PYTHONUNBUFFERED=1 python scratch_phase_projection_infeasible_first_corner_sentinel.py --run-authorized",
+    "automatic_waiter_command_record_role": "auditable resume template; the active session id is only an ephemeral diagnostic reference",
+    "authorized_environment": {
+      "ACT_INFEASIBLE_FIRST_CORNER_GPU_AUTHORIZATION": "ROOT_AUTHORIZED_INFEASIBLE_FIRST_CORNER_20260820",
+      "PYTHONUNBUFFERED": "1"
+    },
+    "authorized_parent_argv": [
+      "python",
+      "scratch_phase_projection_infeasible_first_corner_sentinel.py",
+      "--run-authorized"
+    ],
+    "working_directory": "/data1/Kane/FSE/ACT",
+    "direct_worker_launch_forbidden": true,
+    "worker_flag": "--worker-case",
+    "single_parent_launch_only": true,
+    "no_retry": true
+  },
+  "instantaneous_external_gpu_diagnostic": {
+    "observed_at": "2026-08-20T16:24:00+10:00",
+    "observed_compute_processes": [
+      {
+        "pid": 1453161,
+        "process_name": "python3",
+        "used_memory_mib": 1572,
+        "cwd": "/data1/Kane/rnn_cert"
+      }
+    ],
+    "processes_are_outside_this_attempt": true,
+    "diagnostic_only": true,
+    "launch_or_resume_dependency": false,
+    "pid_must_not_be_cached_or_polled_by_identity": true
+  },
+  "accounting_and_promotion": {
+    "formal_fixed400_before": "59/400",
+    "formal_gain_for_this_disconnected_attempt": 0,
+    "formal_fixed400_changed": false,
+    "production_or_config_changed": false,
+    "production_promotion_authorized": false,
+    "result_role": "disconnected_ability_observation_only"
+  },
+  "auditable_resume": {
+    "current_claim": "No GPU attempt has started and no case has run; root unified exec session 22704 is actively waiting for GPU availability and has not launched the parent.",
+    "next_session_checks": [
+      "Before any launch, check for an existing status-corner parent or waiter and inspect all four dedicated runtime outputs; never start a second waiter while an existing waiter or parent remains active.",
+      "Recompute and match every frozen SHA in frozen_identity.",
+      "Confirm all four dedicated runtime outputs are still absent.",
+      "If the existing waiter is still active, monitor it only and do not launch anything else.",
+      "If the existing waiter expired without a parent or any output, obtain fresh explicit root authorization and a current GPU availability lease before creating one replacement waiter.",
+      "Launch only the frozen parent once from the frozen working directory, either through the already-authorized active waiter or through a freshly authorized replacement after the old waiter is confirmed absent.",
+      "After exit, preserve and audit all ledgers and the summary; never rerun a missing, interrupted, failed, or stopped case."
+    ],
+    "recoverable_from_handoff": true,
+    "not_run_is_auditable": true
+  }
+}

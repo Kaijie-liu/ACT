@@ -1,0 +1,151 @@
+{
+  "schema": "act.hybridz.projection_skip_chain_candidate.v1",
+  "created_at_local": "2026-08-11",
+  "status": "retained_structural_candidate_not_promoted",
+  "goal_scope": "CIFAR100/TinyImageNet common forward exact-ReLU HybridZ path",
+  "algorithm": {
+    "description": "Keep the source ADD affine expression live through the graph-owned 1x1 stride-2 projection and require the existing downstream ADD-to-Conv-to-exact-ReLU fusion to consume it.",
+    "selected_runtime_algorithm_count": 1,
+    "runtime_fallback_count": 0,
+    "second_full_representation": false,
+    "unsupported_policy": "ordinary existing path before admission; fail closed after admission",
+    "new_public_mode": false,
+    "new_solver_backend": false
+  },
+  "eligibility": {
+    "operator_exact_budget": -1,
+    "operator_materialize_add": false,
+    "source_kind": "ADD",
+    "projection": "Conv2D kernel=1x1 stride=2 padding=0 dilation=1 groups=1",
+    "main_route": "Conv2D->ReLU->Conv2D->target ADD",
+    "projection_route": "Conv2D->target ADD",
+    "required_downstream_route": "target ADD->Conv2D->ReLU",
+    "graph_owned_unique_fanout": true
+  },
+  "real_abstract_builds": {
+    "cifar100_medium_iid29": {
+      "baseline": {
+        "continuous_factors": 18539,
+        "binary_phase_factors": 1061,
+        "source_rows": 31795,
+        "source_nnz": 5867563,
+        "native_rows": 17489,
+        "native_nnz": 3498525,
+        "folded_pairs": 14306,
+        "materialized_layer": 20,
+        "materialized_continuous_factors": 8192
+      },
+      "candidate": {
+        "continuous_factors": 10347,
+        "binary_phase_factors": 1052,
+        "source_rows": 15402,
+        "source_nnz": 1994878,
+        "native_rows": 9279,
+        "native_nnz": 1556040,
+        "folded_pairs": 6123,
+        "materialization_events": 0,
+        "projection_skip_chain_applied": 1
+      },
+      "native_row_reduction_fraction": 0.46943793241466064,
+      "native_nnz_reduction_fraction": 0.5552297039466633,
+      "source_row_reduction_fraction": 0.5155842113539865,
+      "source_nnz_reduction_fraction": 0.660015921431095,
+      "observed_candidate_build_seconds": 2.394,
+      "build_timing_authority": false
+    },
+    "tinyimagenet_medium_iid17": {
+      "baseline": {
+        "continuous_factors": 60097,
+        "binary_phase_factors": 1919,
+        "source_rows": 102897,
+        "source_nnz": 20550675,
+        "native_rows": 54327,
+        "native_nnz": 12127453,
+        "folded_pairs": 48570,
+        "materialized_layer": 20,
+        "materialized_continuous_factors": 25088
+      },
+      "candidate": {
+        "continuous_factors": 35006,
+        "binary_phase_factors": 1914,
+        "source_rows": 52710,
+        "source_nnz": 7797772,
+        "native_rows": 29226,
+        "native_nnz": 5838020,
+        "folded_pairs": 23484,
+        "materialization_events": 0,
+        "projection_skip_chain_applied": 1
+      },
+      "native_row_reduction_fraction": 0.46203545198520074,
+      "native_nnz_reduction_fraction": 0.5186112038529442,
+      "source_row_reduction_fraction": 0.48774016735181785,
+      "source_nnz_reduction_fraction": 0.6205588380916929,
+      "observed_candidate_build_seconds": 10.2375,
+      "build_timing_authority": false
+    }
+  },
+  "formal_query_census": {
+    "method": "outward verifier-internal HybridZ cube support only",
+    "solver_executed": false,
+    "cifar100_medium_iid29": {
+      "rival_rows": 99,
+      "cube_certified_rows": 0,
+      "solver_survivor_rows": 99,
+      "cube_upper_min": 25.46499,
+      "cube_upper_median": 31.42661,
+      "cube_upper_max": 36.57313,
+      "maximum_roundoff_guard": 4.028e-10
+    },
+    "tinyimagenet_medium_iid17": {
+      "rival_rows": 199,
+      "cube_certified_rows": 0,
+      "solver_survivor_rows": 199,
+      "cube_upper_min": 40.29835,
+      "cube_upper_median": 51.28597,
+      "cube_upper_max": 59.69406,
+      "maximum_roundoff_guard": 2.997e-9
+    },
+    "conclusion": "The next bottleneck is the one shared exact output-query session; representation micro-optimization alone cannot produce a first verdict."
+  },
+  "single_formal_attempt": {
+    "family": "tinyimagenet_medium",
+    "iid": 17,
+    "outer_timeout_seconds": 100.0,
+    "parent_wall_seconds": 100.55635497905314,
+    "analysis_solver_replay_seconds": 95.669809,
+    "status": "timeout",
+    "conclusive": false,
+    "formal_solved_count_gain": 0,
+    "retries": 0,
+    "longer_timeout_used": false,
+    "authoritative_worker_receipt_available": false,
+    "target_dual_free_compatible": false,
+    "target_dual_free_caveat": "The existing gate configuration retained its persistent LP/Lagrangian certificate stage; this historical timeout is diagnostic only and cannot promote the updated dual-free target.",
+    "receipt_jsonl": "artifacts/hybridz_largecls_gates/gate1_exactphase_projection_skip_tinyimagenet_medium_iid17_once_20260811.jsonl",
+    "receipt_jsonl_sha256": "64e7a0caa87652f893ce86d2a683b5744c07759d1286ee62e7f36842dfe0753c",
+    "summary_json": "artifacts/hybridz_largecls_gates/gate1_exactphase_projection_skip_tinyimagenet_medium_iid17_once_20260811.summary.json",
+    "summary_json_sha256": "eaded1d5d2f57a9928d686723a90d593e3d932a7c4faa169e07046b0d1ace4d7",
+    "log": "artifacts/hybridz_largecls_gates/logs/20260811T112523Z-f012fe46ad28_tinyimagenet_medium_iid017.log",
+    "log_sha256": "d914b7836f126acf025b94f7c7a9827299df33731026cd260db670fe48d06d5f"
+  },
+  "validation": {
+    "focused_regression": "46/46",
+    "py_compile": true,
+    "diff_check": true,
+    "scalar_fraction_phase_oracle": true,
+    "all_unstable_relu_exact": true,
+    "triangle_rows": 0,
+    "runtime_fallback": false,
+    "operator_hz_sha256": "2502c009d6b5d37983e3f6d072e802c7734ac9bd106bb2a252e0a562da390fd8",
+    "test_operator_add_fusion_sha256": "129719716cf1cc598b850f3e39c1fc28fed36ca839dfb6b67296bbc6b9116933"
+  },
+  "forbidden_methods": {
+    "input_sampling_used": false,
+    "pgd_used": false,
+    "concrete_onnx_execution_used_for_candidate_search": false,
+    "triangle_fallback_used": false,
+    "branch_and_bound_used": false,
+    "backward_propagation_used": false
+  },
+  "decision": "Retain the single common-path structural deletion and its exact tests, but do not claim a CIFAR100/TinyImageNet solved-count breakthrough. Replace the current multi-stage output-query work with one dual-free exact query session before another real gate."
+}

@@ -1,0 +1,184 @@
+{
+  "schema": "act.hybridz.phase_projection_gpu_event_path_stoploss.v1",
+  "date": "2026-08-12",
+  "status": "BATCH_PERFORMANCE_BREAKTHROUGH_CAPABILITY_GATE_FAILED",
+  "scope": {
+    "case": "cifar100_medium_iid2",
+    "role": "replace the phase-cell selector with analytic one-dimensional ReLU event traversal",
+    "line": "the existing first-cell formal property direction from the represented input center to its analytic factor corner",
+    "event_rule": "advance only to the next analytic ReLU zero; no grid or sampled line points",
+    "production_integrated": false
+  },
+  "baseline": {
+    "formal_status": "FALSIFIED",
+    "full_phase_projection_seconds": 3.5923816356807947,
+    "full_fresh_process_seconds": 4.863600015640259,
+    "initial_phase_changes": 187
+  },
+  "full_gpu_recompute_probe": {
+    "segments": 64,
+    "line_parameter_reached": 0.3270374215974788,
+    "elapsed_seconds": 2.1818297393620014,
+    "single_segment_seconds": 0.033706095069646835,
+    "events_per_second": 29.33317794940064
+  },
+  "cached_suffix_gpu_probe": {
+    "completed_line_parameter": 1.0,
+    "segments": 186,
+    "elapsed_seconds": 6.004320587962866,
+    "events_per_second": 30.81114628870382,
+    "affine_kernel_calls": 3497,
+    "event_start_layer_counts": {
+      "3": 104,
+      "5": 54,
+      "10": 19,
+      "14": 1,
+      "22": 5,
+      "40": 2
+    },
+    "best_raw_piecewise_affine_margin": 0.04448646731619843
+  },
+  "layer_batched_partition_probe": {
+    "algorithm": "carry every current analytic segment as one CUDA batch, add all exact raw ReLU roots once per graph layer, and release tensors after their last DAG consumer",
+    "cifar100_medium_iid2_positive_control": {
+      "final_segments": 186,
+      "segments_after_relu": [105, 159, 178, 179, 179, 184, 184, 184, 184, 186],
+      "affine_kernel_calls": 21,
+      "sweep_seconds": 0.08176635671406984,
+      "peak_cuda_bytes": 188539392,
+      "raw_affine_margin": 0.04448646731619399,
+      "optimistic_speedup_over_complete_retained_phase_projection": 44.00054622105207
+    },
+    "cifar100_medium_iid0_unknown_target": {
+      "final_segments": 159,
+      "affine_kernel_calls": 21,
+      "sweep_seconds": 0.07628871966153383,
+      "peak_cuda_bytes": 152887296,
+      "selected_property_row": 53,
+      "selected_segment_lower": 0.9884270200257348,
+      "selected_segment_upper": 1.0,
+      "selected_parameter": 1.0,
+      "best_raw_affine_margin": -0.07121735363579784,
+      "formal_result": "UNKNOWN",
+      "new_capability": false
+    },
+    "cifar100_medium_iid0_exact_lp_endpoint_line": {
+      "line_endpoint_source": "the existing exact-cell continuous LP candidate, not a sampled input",
+      "endpoint_phase_rows_consistent": 2030,
+      "endpoint_phase_rows_total": 2030,
+      "endpoint_formal_margin_lower": -0.03056648102799219,
+      "final_segments": 159,
+      "sweep_seconds": 0.07284847181290388,
+      "peak_cuda_bytes": 152887296,
+      "selected_property_row": 53,
+      "selected_segment_lower": 0.9999997697302905,
+      "selected_segment_upper": 1.0,
+      "selected_parameter": 1.0,
+      "best_raw_affine_margin": -0.03056641604509469,
+      "new_capability": false
+    },
+    "cifar100_medium_iid0_phase_balance_endpoint_line": {
+      "line_endpoint_source": "the parameter-free max-min phase-safety LP subject to the first-cell property reaching zero",
+      "phase_balance_optimal_safety": -0.059029043840639624,
+      "final_segments": 154,
+      "sweep_seconds": 0.07140794768929482,
+      "peak_cuda_bytes": 150396928,
+      "selected_property_row": 53,
+      "selected_segment_lower": 0.9957517458745797,
+      "selected_segment_upper": 1.0,
+      "selected_parameter": 1.0,
+      "best_raw_affine_margin": -0.06597935490124573,
+      "new_capability": false
+    },
+    "performance_shape_passed": true,
+    "first_unknown_capability_gate_passed": false,
+    "prototype_retained": false
+  },
+  "analytic_two_dimensional_plane_probe": {
+    "case": "cifar100_medium_iid0",
+    "plane": "the convex triangle spanned by the represented center, the existing analytic property-corner endpoint, and the existing exact-cell LP endpoint",
+    "network_evaluation": "all preactivations and property margins were propagated as affine plane coefficients; no ONNX execution at sampled points was used",
+    "first_relu_arrangement": {
+      "width": 14400,
+      "zero_lines_intersecting_triangle": 97,
+      "unique_interior_pair_intersections": 1370,
+      "regions": 1468,
+      "construction_seconds": 0.204855,
+      "all_region_affine_coefficient_bytes": 507340800
+    },
+    "second_relu_streaming_census": {
+      "parent_regions": 1468,
+      "child_regions": 2784,
+      "maximum_children_per_parent": 23,
+      "median_crossing_lines_per_parent": 0,
+      "maximum_crossing_lines_per_parent": 7,
+      "gpu_convolution_seconds": 0.05277,
+      "polygon_split_seconds": 0.79095,
+      "region_cap_hit": false
+    },
+    "full_network_bounded_census": {
+      "groups_processed": 89,
+      "groups_total": 92,
+      "complete": false,
+      "wall_cap_seconds": 10.0,
+      "elapsed_seconds": 10.070626012049615,
+      "maximum_regions_in_group": 86,
+      "total_final_regions_processed": 3710,
+      "relu_crossing_lines_processed": 2092,
+      "affine_kernel_calls": 1780,
+      "peak_cuda_bytes": 143809536,
+      "best_observed_raw_margin": -0.03056641604509469,
+      "best_observed_property_row": 53,
+      "region_cap_hit": false
+    },
+    "fixed_batch64_followup": {
+      "purpose": "test whether the ten-second failure was only per-group affine-kernel launch overhead",
+      "group_width": 64,
+      "groups_processed": 22,
+      "groups_total": 23,
+      "complete": false,
+      "elapsed_seconds": 10.00117470882833,
+      "affine_kernel_calls": 441,
+      "maximum_regions_in_group": 219,
+      "total_final_regions_processed": 3674,
+      "relu_crossing_lines_processed": 2078,
+      "peak_cuda_bytes": 358299648,
+      "best_observed_raw_margin": -0.03056641604509469,
+      "best_observed_property_row": 53,
+      "region_cap_hit": false,
+      "interpretation": "Reducing affine launches by about four times did not reduce the bounded propagation wall time; polygon partitioning and live-state replication dominate. Increasing the batch again would mainly raise memory and is closed."
+    },
+    "formal_result": "UNKNOWN",
+    "new_capability": false,
+    "prototype_retained": false,
+    "decision": "The plane has controlled region growth, but the complete selector exceeded the fixed ten-second frontend budget after 89 of 92 groups and had not improved on the existing negative exact-LP endpoint margin. A single fixed-width-64 follow-up reduced affine launches from 1,780 to 441 but still hit ten seconds after 22 of 23 groups, used 358,299,648 CUDA bytes, and found the identical best negative endpoint margin. The missing tail is not claimed negative. Further batching mainly increases memory, while rebuilding or retaining a second runtime path for the tail is disallowed by the latency and single-path constraints. This natural plane is closed without TinyImageNet or fixed-set expansion."
+  },
+  "optimism_and_missing_cost": [
+    "The event selector used raw GPU layer tensors and did not carry the production stored-affine outward error envelopes.",
+    "The measurement excluded construction of the selected exact-cell generator stream.",
+    "The measurement excluded the exact phase LP and verifier-owned singleton proof.",
+    "The positive raw affine margin is not a formal result and receives no solved-count credit."
+  ],
+  "performance_gate": {
+    "required_same_topology_speedup": 1.5,
+    "optimistic_speedup": 0.5982994383881842,
+    "trace_alone_over_baseline_full_phase_time": 1.6714038754473766,
+    "sequential_trace_gate_passed": false,
+    "layer_batched_selector_only_gate_passed": true,
+    "full_formal_candidate_gate_complete": false,
+    "tinyimagenet_run": false,
+    "fixed14_run": false
+  },
+  "forbidden_methods_used": {
+    "input_sampling": false,
+    "center_boundary_or_random_onnx_execution": false,
+    "pgd": false,
+    "triangle_or_convex_relu": false,
+    "act_bab": false,
+    "backward_bounds": false,
+    "dual_tightening": false
+  },
+  "production_candidate_sha256": "615b45516b0d4cd2a3632c4f260efffc4fc5cf451444225f8d1bb3e6a04993ba",
+  "production_files_changed": false,
+  "decision": "Layer-batched analytic partition is a real performance result, but it only accelerates already-closed directions. On the first CIFAR100 UNKNOWN target, the complete property-corner, exact-LP-endpoint, and phase-balance-endpoint lines all had nonpositive best margins at their final segments. A natural two-dimensional plane had controlled region growth but exceeded the ten-second frontend cap before its last three groups and had not improved the negative exact-LP endpoint margin. The disconnected prototypes were deleted and were not expanded into runtime alternatives."
+}

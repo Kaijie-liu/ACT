@@ -66,6 +66,10 @@ class SubproblemBatch:
     lower_bound: Optional[torch.Tensor] = None
     node_id: Optional[torch.Tensor] = None  # [N] long; logical identity
     parent_id: Optional[torch.Tensor] = None  # [N] long; parent's node_id (-1 for root)
+    # Optional original ASSERT-row identity for property-separable BaB.  Every
+    # tagged lane proves exactly one conjunct over a complete copy of the
+    # input region; splitting must preserve this identity losslessly.
+    spec_row_ids: Optional[torch.Tensor] = None  # [N] long
 
     # -- properties ---------------------------------------------------------
 
@@ -118,6 +122,48 @@ class SubproblemBatch:
         return self.widths().sum(dim=-1)
 
 
+def _infer_spec_axis_size(batch: SubproblemBatch) -> int:
+    """Infer the shared split-state property axis without mistaking neurons for M.
+
+    Per-class alpha has shape ``[B, M, n]``, while shared alpha deliberately
+    has shape ``[B, n]``.  Only rank-3 proof state carries an explicit spec
+    axis.  A property-forest lane is fixed to one ASSERT row by construction.
+    """
+
+    if batch.spec_row_ids is not None:
+        if batch.spec_row_ids.numel() != batch.batch_size:
+            raise ValueError(
+                "spec_row_ids must contain one id per subproblem"
+            )
+        return 1
+
+    candidates: list[int] = []
+    for name, state in (
+        ("split_signs", batch.split_signs),
+        ("incremental_eta", batch.incremental_eta),
+        ("incremental_alpha", batch.incremental_alpha),
+    ):
+        if state is None:
+            continue
+        for tensor in state.values():
+            if not isinstance(tensor, torch.Tensor):
+                continue
+            if name in ("split_signs", "incremental_eta") and tensor.dim() != 3:
+                raise ValueError(
+                    f"{name} must use [B, M, n] tensors"
+                )
+            if tensor.dim() == 3:
+                candidates.append(int(tensor.shape[1]))
+
+    if not candidates:
+        return 1
+    if any(value != candidates[0] for value in candidates[1:]):
+        raise ValueError(
+            f"inconsistent proof-state spec axes: {candidates}"
+        )
+    return candidates[0]
+
+
 # ---------------------------------------------------------------------------
 # Batch splitting (tensor-native)
 # ---------------------------------------------------------------------------
@@ -164,6 +210,13 @@ def split_input(
         lower_bound=(
             batch.lower_bound.index_select(0, parent_index.to(batch.lower_bound.device))
             if batch.lower_bound is not None
+            else None
+        ),
+        spec_row_ids=(
+            batch.spec_row_ids.index_select(
+                0, parent_index.to(batch.spec_row_ids.device)
+            )
+            if batch.spec_row_ids is not None
             else None
         ),
     )
@@ -265,6 +318,13 @@ def split_input_nary(
             if batch.lower_bound is not None
             else None
         ),
+        spec_row_ids=(
+            batch.spec_row_ids.index_select(
+                0, parent_index.to(batch.spec_row_ids.device)
+            )
+            if batch.spec_row_ids is not None
+            else None
+        ),
     )
     return children, parent_index
 
@@ -299,6 +359,9 @@ def concat_children(a: SubproblemBatch, b: SubproblemBatch) -> SubproblemBatch:
         split_signs=_concat_optional_dicts(a.split_signs, b.split_signs),
         parent_margins=_concat_optional_tensor(a.parent_margins, b.parent_margins, "parent_margins"),
         lower_bound=_concat_optional_tensor(a.lower_bound, b.lower_bound, "lower_bound"),
+        spec_row_ids=_concat_optional_tensor(
+            a.spec_row_ids, b.spec_row_ids, "spec_row_ids"
+        ),
     )
 
 
@@ -365,6 +428,11 @@ def split_subproblems(
         split_signs=left_split_signs,
         parent_margins=left_parent_margins,
         lower_bound=(batch.lower_bound.clone() if batch.lower_bound is not None else None),
+        spec_row_ids=(
+            batch.spec_row_ids.clone()
+            if batch.spec_row_ids is not None
+            else None
+        ),
     )
     right = SubproblemBatch(
         lb=right_lb,
@@ -375,6 +443,11 @@ def split_subproblems(
         split_signs=right_split_signs,
         parent_margins=right_parent_margins,
         lower_bound=(batch.lower_bound.clone() if batch.lower_bound is not None else None),
+        spec_row_ids=(
+            batch.spec_row_ids.clone()
+            if batch.spec_row_ids is not None
+            else None
+        ),
     )
     return left, right
 
@@ -416,6 +489,11 @@ def split_neuron_subproblems(
         split_signs=_clone_signs(+1.0),
         parent_margins=batch.parent_margins.clone() if batch.parent_margins is not None else None,
         lower_bound=batch.lower_bound.clone() if batch.lower_bound is not None else None,
+        spec_row_ids=(
+            batch.spec_row_ids.clone()
+            if batch.spec_row_ids is not None
+            else None
+        ),
     )
     off = SubproblemBatch(
         lb=batch.lb.clone(),
@@ -426,6 +504,11 @@ def split_neuron_subproblems(
         split_signs=_clone_signs(-1.0),
         parent_margins=batch.parent_margins.clone() if batch.parent_margins is not None else None,
         lower_bound=batch.lower_bound.clone() if batch.lower_bound is not None else None,
+        spec_row_ids=(
+            batch.spec_row_ids.clone()
+            if batch.spec_row_ids is not None
+            else None
+        ),
     )
     return on, off
 

@@ -1,0 +1,237 @@
+{
+  "schema": "act.hybridz.structural_support.stage_a_stoploss_completion.v1",
+  "created_at": "2026-08-20T14:56:03+10:00",
+  "status": "COMPLETE_ARCHIVED_STAGE_A_STOP_LOSS",
+  "audit_verdict": "PASS_STOPLOSS_ARCHIVE",
+  "attempt_disposition": {
+    "sentinel_status": "STAGE_A_STOP_LOSS",
+    "one_preregistered_attempt_consumed": true,
+    "retry_authorized": false,
+    "resume_authorized": false,
+    "stage_b_authorized": false,
+    "production_promotion_authorized": false,
+    "production_promotion_forbidden_reason": "Stage A required at least one new CIFAR100 FALSIFIED result; none was produced.",
+    "next_action_for_this_attempt": "archive_only_no_retry"
+  },
+  "ability_outcome": {
+    "accounting_role": "disconnected_capability_only",
+    "control_retained": [
+      "cifar100_medium_iid2"
+    ],
+    "tinyimagenet_capabilities_retained": [
+      {
+        "case": "tinyimagenet_medium_iid143",
+        "validated_status": "FALSIFIED",
+        "base_model_status": "OPTIMAL",
+        "base_candidate_margin": -0.0010710791634582773,
+        "updated_candidate_margin": 0.0002170229788828375,
+        "exact_fraction_terminal_margin_lower": 0.0002169995966969651,
+        "repair_selected_rows": 57
+      },
+      {
+        "case": "tinyimagenet_medium_iid153",
+        "validated_status": "FALSIFIED",
+        "base_model_status": "INFEASIBLE",
+        "updated_candidate_margin": 0.029165834970990213,
+        "exact_fraction_terminal_margin_lower": 0.029165812151973114,
+        "repair_selected_rows": 5
+      }
+    ],
+    "new_cifar100_falsified": [],
+    "cifar100_target_statuses": {
+      "cifar100_large_iid166": "UNKNOWN",
+      "cifar100_large_iid110": "UNKNOWN",
+      "cifar100_large_iid160": "UNKNOWN",
+      "cifar100_large_iid114": "UNKNOWN",
+      "cifar100_large_iid161": "UNKNOWN"
+    },
+    "required_safe_control": {
+      "case": "cifar100_large_iid153",
+      "validated_status": "UNKNOWN"
+    },
+    "deep_gap_control": {
+      "case": "tinyimagenet_medium_iid93",
+      "validated_status": "UNKNOWN"
+    },
+    "formal_gain": 0,
+    "formal_score_before": "59/400",
+    "formal_score_after": "59/400"
+  },
+  "stage_a_validation": {
+    "expected_order": [
+      "cifar100_medium_iid2",
+      "tinyimagenet_medium_iid143",
+      "tinyimagenet_medium_iid153",
+      "cifar100_large_iid166",
+      "cifar100_large_iid153",
+      "cifar100_large_iid110",
+      "cifar100_large_iid160",
+      "cifar100_large_iid114",
+      "cifar100_large_iid161",
+      "tinyimagenet_medium_iid93"
+    ],
+    "observed_order_matches": true,
+    "attempted": 10,
+    "attempts_per_case": 1,
+    "results": {
+      "FALSIFIED": 3,
+      "UNKNOWN": 7,
+      "ERROR": 0
+    },
+    "stage_a_passed": false,
+    "stage_b_started": false,
+    "stage_b_records": 0,
+    "json_documents_valid": true,
+    "jsonl_records_valid": true,
+    "events_raw_receipts_case_order_agree": true,
+    "events_raw_receipts_statuses_agree": true,
+    "raw_record_sha256_cross_links_valid": true,
+    "identity_sha256": "22c5767b54a1d1f259d95f678e8355cf3c3f94015b0a00cbe543e9f716fe7e22",
+    "transport": {
+      "all_returncode_zero": true,
+      "all_exactly_one_canonical_stdout_marker": true,
+      "all_exactly_one_isolated_result_record": true,
+      "timeouts": 0
+    }
+  },
+  "run_artifacts": {
+    "events": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_structural_support_sentinel_20260820.events.jsonl",
+      "sha256": "ce75e0f1a35adb54c3a2e42b282cb2e58dc9818b6828e6c91cf62e9eb9bd3c53",
+      "bytes": 8917,
+      "records": 24
+    },
+    "raw": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_structural_support_sentinel_20260820.raw.jsonl",
+      "sha256": "51da6e01d5a45f47c308dcd4313ad8d0f897aa88d01173cdaf85dc09978fd265",
+      "bytes": 86922,
+      "records": 11
+    },
+    "receipts": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_structural_support_sentinel_20260820.receipts.jsonl",
+      "sha256": "98fc61249bf7de18122192eca562e029efba0dc8096280d20d04556892294d67",
+      "bytes": 48402,
+      "records": 11
+    },
+    "summary": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_structural_support_sentinel_20260820.json",
+      "sha256": "a7d31dc4a0ab586bf9f749823f8ff1b90bb32c06ee4b3bde0072f73e6cbe217e",
+      "bytes": 6234
+    }
+  },
+  "source_and_rule_locks": {
+    "canonical_source_bundle_sha256": "2c990582fe20e7e880a530557d5ca9c825c3d44f3f20758cf64df8d1845f6855",
+    "canonical_source_bundle_revalidated_after_run": true,
+    "production_files": {
+      "act/back_end/config.py": "8d94960cf4686f8d9c894cc18c1483b57092faa52e794905dce9f622c8fddf21",
+      "act/back_end/hybridz_tf/forward_exact_relu_live_row_stream_candidate.py": "d53c2335c43905097e78bef8311175d7151d7e98293a6152fce62dba00d37511",
+      "act/back_end/hybridz_tf/forward_exact_relu_phase_projection_candidate.py": "13625f452c36a1b7844e4385b884471c8a0c82abf015bf2af417257e2c96c23a",
+      "act/back_end/hybridz_tf/operator_hz.py": "2502c009d6b5d37983e3f6d072e802c7734ac9bd106bb2a252e0a562da390fd8",
+      "act/back_end/hybridz_tf/phase_projection_device_program.py": "7f0cce0e461f63ff6599ddd82ad5e61ef7c921eb489ef7bbbf4d60cda9048962",
+      "act/back_end/hybridz_tf/phase_projection_highs_owner.py": "2f5678a5b3d2b098637b27558a8bdbffcc5160ca89cb8b4947f557320d03f5b7",
+      "act/back_end/hybridz_tf/phase_projection_incremental_repair.py": "acc1a98fa47d36c3b0bea7d10bf93af33d41ee9de108b0151ca01cd4822f997e",
+      "act/back_end/verifier.py": "eb3dfc8611ee97262bf71d66b8deee58a6a2544d0934d94ca7b075424dbc3afd"
+    },
+    "production_or_config_mutations": 0,
+    "harness": {
+      "path": "scratch_phase_projection_structural_support_sentinel.py",
+      "sha256": "c701e7f488dbb3d6d9b99042e46963a9619a98c043c352955c1080af8352dc8f"
+    },
+    "preregistration": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_structural_support_preregistration_20260820.json",
+      "sha256": "a7619e1688a828b7455d50c86507e2d483570a45ec77a993da9a7e7eed2a7a1d"
+    },
+    "private_transformed_phase_sha256": "a0a19914972d1c217f4081a770aeee779ad2018a4d7ad13fd2dcd620af450153",
+    "unique_runtime_rule": "all_primal_tight_or_all_opaque_exact_nonzero_once",
+    "unique_runtime_rule_count": 1
+  },
+  "formal_fixed400_checkpoint": {
+    "status": "COMPLETE_UNCHANGED",
+    "formal_fixed400_changed": false,
+    "completed": 400,
+    "totals": {
+      "FALSIFIED": 59,
+      "UNKNOWN": 341,
+      "ERROR": 0
+    },
+    "families": {
+      "cifar100_medium": {
+        "FALSIFIED": 14,
+        "UNKNOWN": 86
+      },
+      "cifar100_large": {
+        "FALSIFIED": 10,
+        "UNKNOWN": 90
+      },
+      "tinyimagenet_medium": {
+        "FALSIFIED": 35,
+        "UNKNOWN": 165
+      }
+    },
+    "jsonl": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_gpu_csr_fixed400_20260814.jsonl",
+      "sha256": "749db4e400329598c23c3dd7c9b9863c291eb3d1ba556cdcfcfa879c58487b43"
+    },
+    "summary": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_gpu_csr_fixed400_20260814.summary.json",
+      "sha256": "036a87f7005033ad8478af5dbecfce8657d3f02457f654a9b0e63e5b47e2ab41"
+    },
+    "retention_completion": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_fprime_production_retention_completion_20260814.json",
+      "sha256": "aaf288bf66659105f122f26fa72fd1039111283fae50b754956e059facc15c56"
+    }
+  },
+  "authority_and_prohibition_audit": {
+    "terminal_authority_rule": "decoded_input_in_raw_BOX;verifier_owned_zero_width_forward_interval;exact_Fraction_property_lower_bound_positive",
+    "all_three_falsified_have_verifier_owned_terminal_authority": true,
+    "candidate_owner_or_dual_signal_has_authority": false,
+    "runtime_received_expected_or_public_labels": false,
+    "per_instance_runtime_rule_used": false,
+    "input_sampling_used": false,
+    "onnx_point_execution_used": false,
+    "pgd_used": false,
+    "bab_used": false,
+    "activation_split_used": false,
+    "input_split_used": false,
+    "enumeration_used": false,
+    "backward_bounds_used": false,
+    "dual_tightening_used": false,
+    "row_dual_consumed_by_selector": false,
+    "opaque_signal_sign_or_magnitude_consumed_by_selector": false,
+    "corner_or_parameter_scan_used": false,
+    "fallback_or_runtime_menu_used": false,
+    "retry_used": false,
+    "second_update_used": false,
+    "second_owner_or_solver_used": false,
+    "cross_request_cache_used": false,
+    "fail_closed_unknown_count": 7,
+    "resource_preflight": {
+      "repair_cases": 9,
+      "passed_before_delta": 9,
+      "revalidated_at_helper_entry": 9,
+      "revalidated_at_repair_schedule": 9,
+      "bindings_released_at_helper_exit": 9
+    },
+    "owner_lifecycle": {
+      "logical_owner_instances_per_case": 1,
+      "native_owner_instances_per_case": 1,
+      "logical_owner_close_calls_per_case": 1,
+      "native_clear_calls_per_case": 1,
+      "native_clear_model_calls_per_case": 0,
+      "all_final_states": "CLOSED",
+      "max_dual_ray_exist_calls_per_case": 1,
+      "max_dual_ray_calls_per_case": 1
+    }
+  },
+  "gpu_release_boundary": {
+    "observed_at": "2026-08-20T14:56:03+10:00",
+    "structural_support_parent_or_worker_processes_alive": 0,
+    "attempt_owned_gpu_compute_processes_alive": 0,
+    "attempt_gpu_resources_released": true,
+    "external_gpu_compute_processes_observed": 6,
+    "gpu_zero_utilization_percent_observed": 100,
+    "gpu_zero_memory_used_mib_observed": 4543,
+    "gpu_globally_idle": false,
+    "boundary_claim": "Only the completed sentinel's parent/workers and allocations are claimed released; concurrently observed GPU processes belonged to other workspaces and are outside this attempt."
+  }
+}

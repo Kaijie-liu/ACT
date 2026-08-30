@@ -1,0 +1,88 @@
+{
+  "schema": "act.hybridz.phase_projection_commonpath_residual_stoploss.v1",
+  "date": "2026-08-12",
+  "formal_baseline": {
+    "fixed400_falsified": 43,
+    "fixed400_unknown": 357,
+    "cifar100_medium_falsified": 12,
+    "cifar100_large_falsified": 10,
+    "tinyimagenet_medium_falsified": 21,
+    "production_candidate_sha256": "615b45516b0d4cd2a3632c4f260efffc4fc5cf451444225f8d1bb3e6a04993ba"
+  },
+  "loop_invariant_stream_hoist": {
+    "scope": "same parsed graph and facts on cifar100_medium_iid2",
+    "single_thread_speedup": 1.009,
+    "four_worker_speedup": 1.031,
+    "required_single_thread_speedup": 1.5,
+    "required_four_worker_median_speedup": 2.0,
+    "decision": "rejected_no_material_latency_gain"
+  },
+  "build_local_affine_cache": {
+    "cached_items": [
+      "immutable affine snapshots",
+      "device weights",
+      "fan-in counts",
+      "exact support propagation"
+    ],
+    "best_single_thread_speedup": 2.259,
+    "best_four_worker_speedup": 1.768,
+    "fully_cached_single_thread_speedup": 2.102,
+    "fully_cached_four_worker_speedup": 1.737,
+    "required_four_worker_median_speedup": 2.0,
+    "required_four_worker_bootstrap_95_lower": 1.8,
+    "cross_query_fixed14_same_model_fingerprints": {
+      "cifar100_medium": {"queries": 4, "unique": 4, "duplicates": 0},
+      "cifar100_large": {"queries": 4, "unique": 4, "duplicates": 0},
+      "tinyimagenet_medium": {"queries": 6, "unique": 6, "duplicates": 0}
+    },
+    "decision": "rejected_concurrent_gate_failed_and_cross_query_reuse_population_zero"
+  },
+  "second_cell_sparse_residual": {
+    "scope": "cifar100_medium_iid2_first_to_second_fixed_phase_cell",
+    "phase_changes_by_relu": [104, 54, 21, 1, 0, 5, 0, 0, 0, 2],
+    "final_output_structural_delta_rows": 100,
+    "restricted_affine_delta_nnz": 32839860,
+    "full_affine_weight_nnz": 74315216,
+    "restricted_affine_delta_ratio": 0.44189,
+    "selected_residual_stream_nnz": 3389854,
+    "existing_selected_matrix_nnz": 5178905,
+    "residual_build_seconds": 0.089,
+    "residual_stream_seconds": 0.170,
+    "prototype_total_seconds": 3.913,
+    "stored_bit_equivalence": false,
+    "stored_bit_difference": {
+      "residual_projected_margin_lower": 0.0929015511795961,
+      "frozen_projected_margin_lower": 0.09290155117959588,
+      "cause": "residual accumulation changes binary64 reduction order"
+    },
+    "decision": "rejected_materialized_residual_is_slower_and_not_stored_bit_equivalent"
+  },
+  "zero_interior_multiplier": {
+    "rule": "set the single uniform phase and input interior multiplier from 16 to the exact boundary value 0 without adding a retry or fallback",
+    "fixed_manifest_sentinels": [
+      {"case": "cifar100_medium_iid2", "baseline": "FALSIFIED", "candidate": "UNKNOWN"},
+      {"case": "tinyimagenet_medium_iid1", "baseline": "FALSIFIED", "candidate": "UNKNOWN"},
+      {"case": "tinyimagenet_medium_iid143", "baseline": "UNKNOWN", "candidate": "UNKNOWN"}
+    ],
+    "new_falsified": 0,
+    "baseline_falsified_retained": 0,
+    "decision": "rejected_immediately_no_gain_and_two_success_regressions_no_parameter_scan"
+  },
+  "interpretation": [
+    "python_affine_caching_does_not_meet_the_required_concurrent_gate",
+    "cross_query_cache_reuse_has_zero_population_on_the_fixed14_topologies",
+    "the_second_cell_residual_is_not_sparse_enough_after_affine_propagation_and_changes_reduction_order",
+    "the_existing_interior_guard_is_required_for_replay_stability_on_positive_controls",
+    "do_not_integrate_any_of_these_as_runtime_fallbacks"
+  ],
+  "forbidden_methods_used": {
+    "input_sampling": false,
+    "center_boundary_or_random_onnx_execution": false,
+    "pgd": false,
+    "act_bab": false,
+    "backward_bounds": false,
+    "dual_tightening": false
+  },
+  "production_files_changed_by_experiments": false,
+  "production_candidate_restored_to_frozen_hash": true
+}

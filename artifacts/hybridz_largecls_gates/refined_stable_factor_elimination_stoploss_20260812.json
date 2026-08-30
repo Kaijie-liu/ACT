@@ -1,0 +1,81 @@
+{
+  "schema": "act.hybridz.refined_stable_factor_elimination_stoploss.v1",
+  "recorded_date": "2026-08-12",
+  "status": "closed_by_frontend_gate",
+  "scope": {
+    "production_integrated": false,
+    "proof_authority": false,
+    "verdict_authority": false,
+    "formal_solver_run": false,
+    "input_sampling_used": false,
+    "pgd_used": false,
+    "concrete_onnx_execution_used": false,
+    "triangle_rows": 0,
+    "act_bab_used": false,
+    "backward_bound_propagation_used": false,
+    "dual_tightening_used": false,
+    "runtime_fallbacks": 0
+  },
+  "candidate": {
+    "description": "one outward refinement pass followed by a second compact generator stream that removes every newly stable ReLU factor",
+    "published_representations": 1,
+    "runtime_fallbacks": 0,
+    "retained_after_stop_loss": false
+  },
+  "cifar100_medium_iid2": {
+    "refined_stable_rows_eliminated": 764,
+    "before": {
+      "continuous": 6853,
+      "binary": 1413,
+      "equalities": 1504,
+      "upper_rows": 5094,
+      "constraint_nnz": 1613577,
+      "output_nnz": 10100,
+      "build_seconds": 1.6474280171096325
+    },
+    "after": {
+      "continuous": 5998,
+      "binary": 1413,
+      "equalities": 1413,
+      "upper_rows": 4239,
+      "constraint_nnz": 1421581,
+      "output_nnz": 10100,
+      "build_seconds": 2.92480942979455
+    }
+  },
+  "cifar100_medium_iid29": {
+    "refined_stable_rows_eliminated": 466,
+    "before": {
+      "continuous": 5311,
+      "binary": 788,
+      "equalities": 885,
+      "upper_rows": 2927,
+      "constraint_nnz": 977465,
+      "output_nnz": 10100,
+      "build_seconds": 1.562123728916049
+    },
+    "after": {
+      "continuous": 4748,
+      "binary": 788,
+      "equalities": 788,
+      "upper_rows": 2364,
+      "constraint_nnz": 782344,
+      "output_nnz": 367200,
+      "build_seconds": 2.5881294710561633
+    },
+    "retained_builder_baseline_seconds": 3.090159577317536,
+    "same_topology_speedup": 1.194,
+    "required_speedup": 1.5,
+    "frontend_gate_passed": false
+  },
+  "stop_loss": {
+    "closed": true,
+    "reasons": [
+      "the required same-topology 1.5x frontend gate failed",
+      "the second generator/shadow traversal made the candidate 1.66x slower than the retained v2 candidate on iid29",
+      "substituting stable active factors densified the iid29 output map from 10100 to 367200 nonzeros"
+    ],
+    "action": "remove the second-stream implementation and keep the v2 constraint-local representation as the compact frontend baseline",
+    "formal_solver_launch_authorized": false
+  }
+}

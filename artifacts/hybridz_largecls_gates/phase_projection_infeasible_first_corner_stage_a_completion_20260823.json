@@ -1,0 +1,214 @@
+{
+  "schema": "act.hybridz.infeasible_first_corner.stage_a_completion.v1",
+  "created_at": "2026-08-23T23:37:09+10:00",
+  "status": "COMPLETE_STAGE_A_ABILITY_FROZEN_PENDING_PAYMENT",
+  "audit_verdict": "PASS_ABILITY_ONLY_NO_PRODUCTION_AUTHORIZATION",
+  "attempt_disposition": {
+    "one_preregistered_attempt_consumed": true,
+    "retry_authorized": false,
+    "stage_a_passed": true,
+    "production_integration_started": false,
+    "production_promotion_authorized": false,
+    "promotion_blocker": "A distinct request-local paired-noninferiority payment path must be established before production integration.",
+    "next_action": "complete the read-only payment map; integrate only if it identifies an evidence-backed path not closed by an earlier stop-loss"
+  },
+  "ability_outcome": {
+    "accounting_role": "disconnected_admissible_candidate_union_only",
+    "formal_score_before": "59/400",
+    "formal_score_after": "59/400",
+    "formal_gain": 0,
+    "candidate_union": {
+      "total": 61,
+      "cifar100": 25,
+      "tinyimagenet": 36,
+      "new_outside_formal59": [
+        "tinyimagenet_medium_iid143",
+        "cifar100_large_iid166"
+      ]
+    },
+    "falsified": [
+      {
+        "case": "cifar100_medium_iid2",
+        "role": "retained_positive_control",
+        "base_model_status": "OPTIMAL",
+        "repair_selected_rows": 0,
+        "repair_updates": 0,
+        "exact_fraction_terminal_margin_lower": 0.09290191317380003
+      },
+      {
+        "case": "tinyimagenet_medium_iid143",
+        "role": "new_tinyimagenet_candidate",
+        "base_model_status": "OPTIMAL",
+        "repair_rule": "optimal_negative_all_tight_strict_negative_upper_row_dual",
+        "repair_selected_rows": 57,
+        "repair_updates": 1,
+        "owner_solves": 2,
+        "exact_fraction_terminal_margin_lower": 0.0002169995966969651
+      },
+      {
+        "case": "cifar100_large_iid166",
+        "role": "new_cifar100_candidate",
+        "base_model_status": "INFEASIBLE",
+        "candidate_rule": "typed_INFEASIBLE_then_fixed_first_analytic_inward_box_corner",
+        "repair_selected_rows": 0,
+        "repair_updates": 0,
+        "owner_solves": 1,
+        "dual_ray_exist_calls": 0,
+        "dual_ray_calls": 0,
+        "candidate_margin_without_authority": 0.42477186868091454,
+        "exact_fraction_terminal_margin_lower": 0.4187211701057267
+      }
+    ],
+    "unknown": [
+      "tinyimagenet_medium_iid153",
+      "cifar100_large_iid153",
+      "cifar100_medium_iid50",
+      "cifar100_large_iid101",
+      "cifar100_large_iid120",
+      "tinyimagenet_medium_iid9",
+      "tinyimagenet_medium_iid173",
+      "tinyimagenet_medium_iid176"
+    ]
+  },
+  "stage_a_validation": {
+    "attempted_unique": 11,
+    "attempts_per_case": 1,
+    "results": {
+      "FALSIFIED": 3,
+      "UNKNOWN": 8,
+      "ERROR": 0
+    },
+    "events_records": 26,
+    "raw_records": 12,
+    "receipt_records": 12,
+    "order_and_attempt_tokens_unique": true,
+    "canonical_jsonl_and_transport_closed": true,
+    "raw_receipt_event_sha_links_closed": true,
+    "all_child_returncodes_bound_to_status": true,
+    "timeouts": 0
+  },
+  "authority_and_rule_audit": {
+    "unique_runtime_rule": "current_v3_OPTIMAL_else_typed_INFEASIBLE_first_corner",
+    "terminal_authority_rule": "decoded_input_in_raw_BOX;verifier_owned_zero_width_forward_interval;exact_Fraction_property_lower_bound_positive",
+    "same_stored_binary64_input_for_box_and_terminal": true,
+    "candidate_or_lp_has_verdict_authority": false,
+    "all_falsified_have_verifier_owned_terminal_authority": true,
+    "all_unknown_fail_closed_without_candidate_receipt_or_authority": true,
+    "owner_lifecycle": {
+      "owners_per_attempt_max": 1,
+      "all_constructed_owners_closed": true,
+      "all_constructed_native_owners_cleared": true,
+      "native_clear_model_calls": 0,
+      "large166_solution_reads": 0,
+      "large166_incremental_updates": 0,
+      "large166_warm_resolves": 0
+    },
+    "input_sampling_used": false,
+    "onnx_point_execution_used": false,
+    "pgd_used": false,
+    "bab_used": false,
+    "activation_split_used": false,
+    "input_split_used": false,
+    "enumeration_used": false,
+    "backward_bounds_used": false,
+    "dual_tightening_used": false,
+    "runtime_expected_or_public_labels_used": false,
+    "per_instance_runtime_rule_used": false,
+    "fallback_or_runtime_menu_used": false,
+    "retry_or_parameter_scan_used": false,
+    "second_solver_used": false,
+    "cross_request_cache_used": false
+  },
+  "run_artifacts": {
+    "events": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_infeasible_first_corner_sentinel_20260820.events.jsonl",
+      "sha256": "f26e1f4a60b5603fcedd265a6232bf3acc1e33fd9898255dffa92980c38dc638",
+      "bytes": 8839,
+      "records": 26
+    },
+    "raw": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_infeasible_first_corner_sentinel_20260820.raw.jsonl",
+      "sha256": "4d490774206605ab9e93da9fd30c82abee43125ae8780cd3b56324b5586636bf",
+      "bytes": 77273,
+      "records": 12
+    },
+    "receipts": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_infeasible_first_corner_sentinel_20260820.receipts.jsonl",
+      "sha256": "22b992c8332d9190bf1d5249022c0338148e52115c911e8b7a5b621de7fa8e5c",
+      "bytes": 31087,
+      "records": 12
+    },
+    "summary": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_infeasible_first_corner_sentinel_20260820.json",
+      "sha256": "bab5722c120841518a470a5ecfb4a4b6f1640516c6de7abaf82c5c7f4acc769b",
+      "bytes": 5804
+    }
+  },
+  "source_and_rule_locks": {
+    "harness": {
+      "path": "scratch_phase_projection_infeasible_first_corner_sentinel.py",
+      "sha256": "15c75bb5bf9de615b9749baccccde327dec0d53fca151e930ff1a15554bda242"
+    },
+    "preregistration": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_infeasible_first_corner_preregistration_20260820.json",
+      "sha256": "7ebb03b32b0eb2f5123f293a24c55887430b39a80317ff965f25b07ced31c682"
+    },
+    "canonical_source_bundle_sha256": "2c990582fe20e7e880a530557d5ca9c825c3d44f3f20758cf64df8d1845f6855",
+    "private_owner_sha256": "fe733d1e5972194266ef90a3ba7f21c00eb12b46543d116faa6dcd1d42cf04fc",
+    "private_phase_sha256": "0f37084d3f45d8b487563777de5e66c173efaa05e95b428db90604eef51372ce",
+    "owner_optimal_readback_ast_sha256": "f9552c2381d0174fefdc00ccf1688fec9ebf6beaaf48c43efa1f1d121070ccbe",
+    "phase_optimal_selector_ast_sha256": "2ae4af8b8ce721b0faffad12864d3c0be34f9e28192dc92387af9df65c26ccc2",
+    "production_or_config_mutations": 0
+  },
+  "formal_fixed400_checkpoint": {
+    "status": "COMPLETE_UNCHANGED",
+    "completed": 400,
+    "totals": {
+      "FALSIFIED": 59,
+      "UNKNOWN": 341,
+      "ERROR": 0
+    },
+    "families": {
+      "cifar100_medium": {
+        "FALSIFIED": 14,
+        "UNKNOWN": 86
+      },
+      "cifar100_large": {
+        "FALSIFIED": 10,
+        "UNKNOWN": 90
+      },
+      "tinyimagenet_medium": {
+        "FALSIFIED": 35,
+        "UNKNOWN": 165
+      }
+    },
+    "jsonl": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_gpu_csr_fixed400_20260814.jsonl",
+      "sha256": "749db4e400329598c23c3dd7c9b9863c291eb3d1ba556cdcfcfa879c58487b43"
+    },
+    "summary": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_gpu_csr_fixed400_20260814.summary.json",
+      "sha256": "036a87f7005033ad8478af5dbecfce8657d3f02457f654a9b0e63e5b47e2ab41"
+    }
+  },
+  "independent_read_only_audits": {
+    "artifact_transport_and_authority": {
+      "verdict": "NO_BLOCKER",
+      "filesystem_artifact": null,
+      "source": "in-session collaboration agent status_corner_artifact_audit"
+    },
+    "mathematics_and_authority": {
+      "verdict": "PASS_ABILITY_AUTHORITY",
+      "filesystem_artifact": null,
+      "source": "in-session collaboration agent status_corner_math_audit"
+    }
+  },
+  "archive_limitation_and_next_gate_requirement": {
+    "limitation": "The Stage A artifact stores the candidate SHA-256 and terminal scalar lower bound, but not the full stored-binary64 witness bytes or terminal lower/upper arrays; the controlled in-process verifier authority is valid, while the archived files alone cannot recompute the exact Fraction result.",
+    "required_for_production_gate_artifacts": "Persist the exact stored-binary64 witness bytes or a lossless array artifact, bind its SHA-256 into every receipt, and retain enough verifier-owned terminal output data for an independent offline Fraction replay.",
+    "performance_gate_status": "NOT_RUN_NOT_YET_AUTHORIZED",
+    "retained59_status_for_this_rule": "NOT_RUN_NOT_YET_AUTHORIZED",
+    "fixed40_status": "NOT_RUN_NOT_YET_AUTHORIZED",
+    "fixed400_status": "NOT_RUN_NOT_YET_AUTHORIZED"
+  }
+}

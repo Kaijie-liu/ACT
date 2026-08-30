@@ -1,0 +1,169 @@
+{
+  "schema": "act.scratch.phase_projection_highs_owner_contract.v1",
+  "created_at": "2026-08-14",
+  "status": "PASS_CPU_ONLY_SCRATCH_CONTRACT",
+  "audit_complete": true,
+  "formal_fixed400_unchanged": 59,
+  "production_modified": false,
+  "benchmark_run": false,
+  "gpu_used": false,
+  "candidate_only": true,
+  "proof_authority": false,
+  "verdict_authority": false,
+  "source": {
+    "path": "scratch_phase_projection_highs_owner_contract.py",
+    "sha256": "fe9caab1d8452a9c3125696b067f2470050610e03a64fa8cd73e1ef855bcd9cf",
+    "py_compile_passed": true,
+    "self_contained_sentinel_passed": true
+  },
+  "highs_pin": {
+    "highspy_version": "1.15.0",
+    "highs_githash": "8396001",
+    "objective_sense": "MINIMIZE(-candidate_objective)",
+    "options": {
+      "output_flag": false,
+      "solver": "simplex",
+      "presolve": "off",
+      "simplex_strategy": 1,
+      "simplex_scale_strategy": 2,
+      "threads": 1,
+      "parallel": "off",
+      "random_seed": 0,
+      "small_matrix_value": 1e-12,
+      "large_matrix_value": 1000000000000000.0,
+      "infinite_bound": 1e20,
+      "primal_feasibility_tolerance": 1e-9,
+      "dual_feasibility_tolerance": 1e-9
+    },
+    "all_options_read_back": true,
+    "cost_and_column_bounds_bitwise_read_back_after_each_addCols": true
+  },
+  "minimal_api": {
+    "request_owner": "SafeHighsOwner(negative_objective, column_lower, column_upper, deadline_monotonic)",
+    "base": [
+      "append_rows(canonical CSR, row bounds, sealed full_row_ids)",
+      "solve() -> OptimalSolve or InfeasibleRaySolve"
+    ],
+    "updated": [
+      "reload_updated(...) performs strict-kOk clearModel on the same native Highs instance",
+      "append_rows(...) and solve() exactly once",
+      "updated infeasible raises InfeasibleRayDisabled without getDualRayExist/getDualRay/getSolution"
+    ],
+    "final_cleanup": "context exit calls clear exactly once and preserves any primary BaseException"
+  },
+  "contract": {
+    "native_Highs_constructions_per_request": 1,
+    "request_lifecycle": "base load/solve -> clearModel -> optional updated load/solve -> clear",
+    "base_infeasible_calls": "getDualRayExist exactly once and true, then getDualRay exactly once and true",
+    "upper_only_ray": "shape matches solver row order, finite, every value <= 0, at least one stored-binary64 exact nonzero",
+    "updated_infeasible_ray_calls": 0,
+    "stale_getSolution_used_for_infeasible": false,
+    "row_mapping": "full phase-row ids are copied, sealed, hashed, and bound to append order before native addRows",
+    "CSR": "exact int32 indptr/indices, float64 data, canonical strictly increasing rows, no duplicates, no explicit zeros, finite, and abs(data) < 1e15",
+    "silent_CSR_repair": false,
+    "tiny_matrix_rule": "delete only 0 < abs(a) <= 1e-12 explicitly and outward-project row bounds",
+    "tiny_upper_formula": "U - exact Fraction sum(min(a*l,a*u)), rounded toward +inf",
+    "tiny_lower_formula": "L - exact Fraction sum(max(a*l,a*u)), rounded toward -inf",
+    "tiny_objective_rule": "0 < abs(c) <= 1e-12 fails closed; objective coefficients are never deleted",
+    "nonfinite_or_abs_cost_ge_1e20": "fail before native Highs construction",
+    "per_load_postcondition": "exact cumulative column, row, and nnz counts",
+    "any_non_kOk": "POISONED; no retry or readback; clear and discard",
+    "deadline": "checked before and after run/readback and before/after dual-ray retrieval; late results are discarded",
+    "cleanup": "BaseException primary identity wins; hostile cleanup __str__/__repr is never called; cleanup failure is a secondary note"
+  },
+  "authority_boundary": {
+    "runtime_ray_checks": "state, shape, finite, upper-row sign, stored-binary64 exact-nonzero",
+    "runtime_algebraic_ray_replay": false,
+    "toy_algebraic_oracle": true,
+    "toy_algebraic_oracle_scope": "CPU-only API semantic audit of row-plus-finite-column-bound contradiction",
+    "toy_algebraic_oracle_used_by_runtime_selector": false,
+    "ray_or_marginal_tightens_bounds": false,
+    "ray_or_candidate_authorizes_verdict": false
+  },
+  "checks": {
+    "optimal_upper_rows": {
+      "primal": [0.75, 0.25],
+      "row_value": [1.0, 0.75],
+      "row_dual": [-1.0, -1.0],
+      "upper_residual": [0.0, 0.0],
+      "full_row_ids": [10, 20],
+      "minimized_objective": -1.75
+    },
+    "base_infeasible_row_plus_bound_ray": {
+      "column_bounds": [0.0, 1.0],
+      "upper_rows": ["x <= -1", "x <= -1"],
+      "row_ray": [-1.0, 0.0],
+      "exact_row_rhs": "1",
+      "exact_bound_support": "0",
+      "exact_contradiction_gap": "1",
+      "getDualRayExist_calls": 1,
+      "getDualRay_calls": 1,
+      "owner_getSolution_calls": 0,
+      "raw_stale_solution_row_dual": [-0.0, -0.0]
+    },
+    "redundant_row_order": {
+      "order_101_202_support": [101],
+      "order_202_101_support": [202],
+      "finding": "ray support changes with redundant row order; solver positions require the load-time full-row mapping"
+    },
+    "same_owner_base_then_updated_infeasible": {
+      "Highs_construction_count": 1,
+      "clearModel_calls": 1,
+      "run_calls": 2,
+      "getSolution_calls_base": 1,
+      "getSolution_calls_updated": 0,
+      "getDualRayExist_calls_updated": 0,
+      "getDualRay_calls_updated": 0,
+      "clear_calls": 1
+    },
+    "tiny_nonsymmetric_bounds": {
+      "deleted_coefficient": 1e-12,
+      "deleted_column_bounds": [-3.0, 2.0],
+      "stored_outward_upper": 0.500000000003,
+      "correct_upper_strictly_exceeds_rejected_b_plus_max": true,
+      "deleted_nnz": 1
+    },
+    "real_kWarning_partial_mutation": {
+      "status": "HighsStatus.kWarning",
+      "rows_after_warning": 1,
+      "nnz_after_warning": 0,
+      "owner_warning_causes_poison_clear_discard": true
+    },
+    "malformed_rejected_before_addRows": [
+      "NaN data",
+      "wrong indptr terminal",
+      "duplicate index",
+      "explicit zero",
+      "int64 index",
+      "abs(data) >= large_matrix_value"
+    ],
+    "invalid_objective_rejected_before_Highs": [
+      "0 < abs(c) <= 1e-12",
+      "NaN",
+      "infinity",
+      "abs(c) >= 1e20"
+    ],
+    "deadline_faults": {
+      "expired_before_run_run_calls": 0,
+      "late_after_run_getSolution_calls": 0,
+      "late_after_getDualRayExist_getDualRay_calls": 0,
+      "late_after_getDualRay_returned_to_caller": false
+    },
+    "cleanup_double_fault": {
+      "same_primary_BaseException_identity": true,
+      "secondary_cleanup_noted": true,
+      "hostile_cleanup_stringification_avoided": true,
+      "clear_calls": 1
+    }
+  },
+  "restrictions": {
+    "input_sampling_used": false,
+    "onnx_input_point_execution_used": false,
+    "pgd_used": false,
+    "bab_split_or_enumeration_used": false,
+    "backward_bounds_used": false,
+    "dual_tightening_used": false,
+    "runtime_retry_or_fallback_menu_used": false,
+    "parameter_scan_used": false
+  }
+}

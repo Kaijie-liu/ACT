@@ -1,0 +1,112 @@
+{
+  "schema": "act.hybridz.solver_ready_primary_v2_checkpoint.v1",
+  "date": "2026-08-11",
+  "scope": "disconnected_offline_c89_ratio_synthetic",
+  "goal_amendment": "common_path_first_single_representation_low_latency",
+  "implementation": {
+    "path": "act/back_end/solver/constraint_program_highs_schedule_candidate.py",
+    "sha256": "3ff2dce957b90b789a13362fc6ad6f0616cc9d55ba58ec6752f6189bcf575e90"
+  },
+  "test": {
+    "path": "act/back_end/solver/test_constraint_program_highs_schedule_candidate.py",
+    "sha256": "eb22ad2c8badfc7ca88ba235c02c926c36f9600749f49f7309043f3d87e16d18"
+  },
+  "common_path_contract": {
+    "source_rows": 897,
+    "source_nnz": 97549,
+    "legacy_virtual_rows": 1537,
+    "legacy_virtual_nnz": 144805,
+    "homogeneous_source_blocks": true,
+    "direct_binary_free_blocks": true,
+    "bounded_mixed_binary_fanin": 2,
+    "python_fraction_in_candidate": false,
+    "legacy_materialization_in_candidate": false,
+    "postsolve_full_program_replay": false,
+    "runtime_fallback_count": 0,
+    "rare_or_unsupported_action": "UNKNOWN",
+    "input_graph_scans": 1
+  },
+  "correctness": {
+    "focused_unittest_passed": 7,
+    "focused_unittest_failed": 0,
+    "fraction_point_and_jacobian_equivalence": true,
+    "highs_model_status_equivalence": true,
+    "py_compile_passed": true,
+    "diff_check_passed": true,
+    "witness_validated": false,
+    "proof_authority": false,
+    "verdict_authority": false,
+    "solver_status_authority": false
+  },
+  "warm_single_topology": {
+    "thread_count": 1,
+    "paired_repeats": 15,
+    "candidate_median_wall_ms": 11.588805,
+    "fair_legacy_median_wall_ms": 18.751802,
+    "median_wall_speedup": 1.6180962575520081,
+    "candidate_p95_wall_ms": null,
+    "fair_baseline_skips_zero_binary_fraction_work": true,
+    "gate_required": 1.5,
+    "gate_passed": true
+  },
+  "fresh_process": {
+    "thread_count": 1,
+    "paired_repeats": 7,
+    "candidate_cold_median_wall_ms": 13.474822,
+    "legacy_cold_median_wall_ms": 21.880489,
+    "cold_median_speedup": 1.623805420212601,
+    "candidate_cold_p95_wall_ms": 14.4435687,
+    "legacy_cold_p95_wall_ms": 24.2738634,
+    "p95_speedup": 1.6806001275848121,
+    "candidate_worst_hwm_delta_bytes": 12918784,
+    "legacy_worst_hwm_delta_bytes": 17842176,
+    "hwm_ratio": 0.7240587695133149,
+    "paired_median_speedup": 1.6750035271509478,
+    "paired_bootstrap_95_lower": 1.6200450538133433,
+    "paired_bootstrap_95_upper": 1.6909588369425486,
+    "bootstrap_gate_required": 1.8,
+    "bootstrap_gate_passed": false,
+    "interpreter_startup_in_timing": false,
+    "source_fixture_prebuilt_before_timing": true,
+    "source_fixture_retained_during_timing": true,
+    "page_faults_measured": false
+  },
+  "four_thread_five_pair": {
+    "candidate_median_wall_ms": 22.401577,
+    "legacy_median_wall_ms": 32.922586,
+    "median_speedup": 1.4696548372465028,
+    "gate_required": 2.0,
+    "gate_passed": false
+  },
+  "optimistic_prebuilt_schedule_upper_bound_20260812": {
+    "scope": "The native RANGE schedule was prebuilt for free and all schedule construction, authority, and validation cost was excluded.",
+    "warmup_groups": 2,
+    "measured_groups": 5,
+    "four_workers": true,
+    "paired_speedups": [
+      2.00145215086295,
+      2.012291389550948,
+      1.84704501514755,
+      1.7759874700360547,
+      2.019888419094088
+    ],
+    "median_speedup": 2.00145215086295,
+    "paired_bootstrap_95_lower": 1.7759874700360547,
+    "required_median_speedup": 2.0,
+    "required_bootstrap_95_lower": 1.8,
+    "gate_passed": false,
+    "interpretation": "Even an unrealistically free native producer misses the required confidence gate, so Q=1 integration is closed."
+  },
+  "decision": {
+    "single_topology_gate_passed": true,
+    "fresh_first_response_gate_passed": true,
+    "four_thread_gate_passed": false,
+    "bootstrap_gate_passed": false,
+    "full_promotion_gate_complete": false,
+    "promotion": false,
+    "real_model_allowed": false,
+    "large_model_allowed": false,
+    "status": "FROZEN_NO_PROMOTION",
+    "stop_loss": "Do not add fallback or rare-case machinery to this layout. A later prebuilt-schedule optimistic upper bound also failed the confidence gate, so Q=1 producer/solver integration is closed; only a genuinely used, fairly compared multi-query workload could reopen it."
+  }
+}

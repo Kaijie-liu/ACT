@@ -1,0 +1,170 @@
+{
+  "schema": "act.hybridz.strict_phase_sharing_refinement_stoploss.v1",
+  "date": "2026-08-12",
+  "production_candidate_sha256": "615b45516b0d4cd2a3632c4f260efffc4fc5cf451444225f8d1bb3e6a04993ba",
+  "strict_phase_equivalence_census": {
+    "cifar100_medium_iid29": {
+      "relu_nodes": 10,
+      "shared_preactivation_graph_nodes": 0,
+      "exact_phase_rows": 788,
+      "bitwise_full_affine_duplicate_groups": 0,
+      "duplicate_phase_rows": 0,
+      "continuous_factors": 5311,
+      "source_rows": 3812,
+      "source_nnz": 977465
+    },
+    "tinyimagenet_medium_iid0": {
+      "relu_nodes": 10,
+      "shared_preactivation_graph_nodes": 0,
+      "exact_phase_rows": 1428,
+      "bitwise_full_affine_duplicate_groups": 0,
+      "duplicate_phase_rows": 0,
+      "continuous_factors": 13046,
+      "source_rows": 6437,
+      "source_nnz": 2667631
+    }
+  },
+  "refinement_by_relu_layer": {
+    "cifar100_medium_iid29": [
+      {"layer_id": 3, "interval_unstable": 316, "refined_exact": 316, "stabilized_active": 0, "stabilized_inactive": 0},
+      {"layer_id": 5, "interval_unstable": 242, "refined_exact": 204, "stabilized_active": 14, "stabilized_inactive": 24},
+      {"layer_id": 10, "interval_unstable": 286, "refined_exact": 80, "stabilized_active": 42, "stabilized_inactive": 164},
+      {"layer_id": 14, "interval_unstable": 81, "refined_exact": 14, "stabilized_active": 9, "stabilized_inactive": 58},
+      {"layer_id": 18, "interval_unstable": 0, "refined_exact": 0, "stabilized_active": 0, "stabilized_inactive": 0},
+      {"layer_id": 22, "interval_unstable": 229, "refined_exact": 83, "stabilized_active": 26, "stabilized_inactive": 120},
+      {"layer_id": 27, "interval_unstable": 0, "refined_exact": 0, "stabilized_active": 0, "stabilized_inactive": 0},
+      {"layer_id": 31, "interval_unstable": 0, "refined_exact": 0, "stabilized_active": 0, "stabilized_inactive": 0},
+      {"layer_id": 35, "interval_unstable": 0, "refined_exact": 0, "stabilized_active": 0, "stabilized_inactive": 0},
+      {"layer_id": 40, "interval_unstable": 100, "refined_exact": 91, "stabilized_active": 6, "stabilized_inactive": 3}
+    ],
+    "tinyimagenet_medium_iid0": [
+      {"layer_id": 3, "interval_unstable": 620, "refined_exact": 620, "stabilized_active": 0, "stabilized_inactive": 0},
+      {"layer_id": 5, "interval_unstable": 492, "refined_exact": 408, "stabilized_active": 41, "stabilized_inactive": 43},
+      {"layer_id": 10, "interval_unstable": 296, "refined_exact": 140, "stabilized_active": 47, "stabilized_inactive": 109},
+      {"layer_id": 14, "interval_unstable": 2, "refined_exact": 1, "stabilized_active": 0, "stabilized_inactive": 1},
+      {"layer_id": 18, "interval_unstable": 10, "refined_exact": 2, "stabilized_active": 2, "stabilized_inactive": 6},
+      {"layer_id": 22, "interval_unstable": 247, "refined_exact": 115, "stabilized_active": 41, "stabilized_inactive": 91},
+      {"layer_id": 27, "interval_unstable": 0, "refined_exact": 0, "stabilized_active": 0, "stabilized_inactive": 0},
+      {"layer_id": 31, "interval_unstable": 0, "refined_exact": 0, "stabilized_active": 0, "stabilized_inactive": 0},
+      {"layer_id": 35, "interval_unstable": 0, "refined_exact": 0, "stabilized_active": 0, "stabilized_inactive": 0},
+      {"layer_id": 40, "interval_unstable": 200, "refined_exact": 142, "stabilized_active": 12, "stabilized_inactive": 46}
+    ]
+  },
+  "full_correlation_refinement_experiment": {
+    "cifar100_medium_iid29_interval_unstable_rows": 1254,
+    "cifar100_medium_iid29_refined_exact_rows": 788,
+    "cifar100_medium_iid29_stabilized_rows": 466,
+    "new_falsified_on_fixed40_unknown_subset": 0,
+    "baseline_successes_tested": 43,
+    "baseline_successes_retained": 12,
+    "large_or_tiny_successes_retained": 0,
+    "fail_closed_live_row_results_across_77_comparisons": 51,
+    "decision": "rejected_extra_full_generator_stream_breaks_common_large_model_path"
+  },
+  "three_relu_prefix_refinement_experiment": {
+    "rule": "same_graph_prefix_through_the_third_relu_for_both_models",
+    "cifar100_medium_iid29": {
+      "interval_exact_rows": 1254,
+      "prefix_refined_exact_rows": 1010,
+      "stabilized_rows": 244,
+      "prefix_continuous_columns": 3916
+    },
+    "tinyimagenet_medium_iid1": {
+      "baseline_phase_rows": 2488,
+      "prefix_refined_phase_rows": 2261,
+      "baseline_candidate_seconds": 8.248759589392352,
+      "prefix_candidate_seconds": 10.878023858182132
+    },
+    "fixed14": {
+      "baseline_falsified": 3,
+      "prefix_falsified": 3,
+      "new_falsified": 0
+    },
+    "performance_gate_cifar100_medium_iid2": {
+      "single_speedup": 3.5021343456642895,
+      "four_worker_five_pair_median_speedup": 2.1740463684408593,
+      "paired_bootstrap_95_lower": 2.142248120756991,
+      "stable_id_conflicts": 0,
+      "gate_passed": true
+    },
+    "decision": "rejected_no_formal_solved_count_gain_and_tiny_latency_regression"
+  },
+  "fixed_cell_redundant_phase_constraint_elimination": {
+    "rule": "drop_a_phase_lp_row_only_when_its_existing_outward_l1_bound_is_no_greater_than_the_stored_inequality_rhs_over_the_entire_input_factor_box",
+    "feasible_set_changed": false,
+    "fixed14": {
+      "baseline_falsified": 3,
+      "candidate_falsified_under_four_workers": 2,
+      "new_falsified": 0
+    },
+    "cifar100_medium_iid2": {
+      "baseline_lp_rows": 2177,
+      "candidate_lp_rows": 1140,
+      "baseline_lp_nnz": 2465565,
+      "candidate_lp_nnz": 560712,
+      "baseline_lp_seconds": 0.9156767455860972,
+      "candidate_lp_seconds": 0.16820660885423422,
+      "baseline_total_candidate_seconds": 3.5923816356807947,
+      "candidate_total_seconds": 3.0522460686042905,
+      "full_candidate_speedup": 1.17696330994817,
+      "singleton_margin_unchanged": true
+    },
+    "cifar100_medium_iid11": {
+      "baseline_lp_rows": 1510,
+      "candidate_lp_rows": 787,
+      "baseline_lp_nnz": 1721676,
+      "candidate_lp_nnz": 340557
+    },
+    "historical_lp_timeout_buckets": {
+      "cifar100_large_iid101": "still_lp_time_limit",
+      "tinyimagenet_medium_iid61": "advanced_to_exact_replay_but_remained_unknown"
+    },
+    "decision": "rejected_full_candidate_speedup_below_1_5_and_zero_formal_solved_gain"
+  },
+  "combined_affine_structure_memo_and_redundant_phase_rows": {
+    "scope": "same_network_same_facts_cifar100_medium_iid2_full_phase_projection_candidate",
+    "semantic_checks": {
+      "decoded_input_bitwise_equal": true,
+      "projected_margin_equal": true,
+      "singleton_margin_equal": true,
+      "phase_replay_counts_equal": true,
+      "stable_id_conflicts": 0
+    },
+    "single_thread_paired_7": {
+      "median_speedup": 1.870541,
+      "minimum_speedup": 1.6907,
+      "maximum_speedup": 1.9757,
+      "gate_threshold": 1.5,
+      "gate_passed": true
+    },
+    "four_worker_five_pair": {
+      "paired_speedups": [1.7253, 1.5515, 1.6989, 1.5711, 1.5317],
+      "median_speedup": 1.5711,
+      "paired_bootstrap_95_lower": 1.5317,
+      "required_median_speedup": 2.0,
+      "required_bootstrap_95_lower": 1.8,
+      "zero_result_conflicts": true,
+      "gate_passed": false
+    },
+    "decision": "rejected_and_fully_reverted_because_the_required_concurrent_end_to_end_gate_failed"
+  },
+  "interpretation": [
+    "strict_graph_owned_or_bitwise_full_affine_phase_sharing_has_zero_population",
+    "correlation_refinement_is_structurally_effective_on_cifar100_medium",
+    "the_extra_full_stream_is_not_a_uniform_low_latency_path_for_large_or_tiny_models",
+    "a_bounded_three_relu_prefix_passes_the_synthetic_performance_gate_but_adds_zero_fixed14_verdicts",
+    "fixed_cell_redundant_phase_rows_are_numerous_but_lp_only_speedup_does_not_meet_the_full_candidate_gate",
+    "memoizing_repeated_affine_structure_combined_with_row_elimination_passes_the_single_pair_gate_but_not_the_required_four_worker_gate",
+    "do_not_add_model_specific_sharing_or_refinement_fallbacks"
+  ],
+  "forbidden_methods_used": {
+    "input_sampling": false,
+    "center_boundary_or_random_onnx_execution": false,
+    "pgd": false,
+    "act_bab": false,
+    "backward_bounds": false,
+    "dual_tightening": false
+  },
+  "production_files_changed_by_experiments": false,
+  "production_candidate_restored_to_frozen_hash": true
+}

@@ -1,0 +1,49 @@
+{
+  "schema": "act.hybridz.fixed_center_phase_property_lp_stoploss.v1",
+  "date": "2026-08-11",
+  "status": "STOPLOSS_NO_VALID_PRIMAL",
+  "candidate": "Replace the exact phase MIP by one continuous LP whose phase variables are fixed once from the stored preactivation-center signs and whose sole objective is the sum of all original rival margins.",
+  "scope": {
+    "family": "cifar100_medium",
+    "iid": 29,
+    "phase_assignment_source": "verifier_stored_preactivation_centers",
+    "solver_sessions": 1,
+    "solver_threads": 1,
+    "highs_time_limit_seconds": 15.0,
+    "fallbacks": 0,
+    "input_sampling": false,
+    "pgd": false,
+    "concrete_onnx_execution": false,
+    "production_files_changed": 0
+  },
+  "model": {
+    "columns": 19600,
+    "fixed_phase_columns": 1061,
+    "native_rows": 17489,
+    "native_nnz": 3498525,
+    "add_columns_status": "HighsStatus.kOk",
+    "add_rows_status": "HighsStatus.kWarning"
+  },
+  "timing_seconds": {
+    "parse_convert": 0.8267633123323321,
+    "formal_hz_build": 2.358487294986844,
+    "matrix_transform": 0.022714772261679173,
+    "native_load": 0.05081694573163986,
+    "highs_run": 15.011231772601604,
+    "measured_total": 18.2700140979141
+  },
+  "result": {
+    "highs_return": "HighsStatus.kWarning",
+    "highs_model_status": "Time limit reached",
+    "solution_value_valid": false,
+    "original_hz_primal_validated": false,
+    "property_witness": false,
+    "formal_solved_count_gain": 0
+  },
+  "decision": {
+    "retain_candidate": false,
+    "run_tinyimagenet": false,
+    "add_runtime_mode": false,
+    "reason": "Even after all phase binaries were fixed and the model became a continuous LP, the bounded single-session solve produced no primal. This cannot replace the exact MIP path or improve the formal solved count."
+  }
+}

@@ -1,0 +1,176 @@
+schema_version: 3
+
+# Fixed VNN-COMP 2025 large-classification stop-loss ladder.
+# Stage entries are DELTAS: Gate-14 runs only its eight additions after a
+# promoted Gate-6 receipt, and Gate-40 runs only its 26 additions after a
+# promoted Gate-14 receipt.  This avoids paying for previous sentinels twice.
+benchmark_root: /data1/Kane/data/vnncomp2025_benchmarks/benchmarks
+
+runtime:
+  default_gate: 6
+  wall_timeout_seconds: 100.0
+  device: cuda
+  gpu_index: 0
+  dtype: float64
+  engine: operator_hz_objbound
+  operator_exact_budget: 0
+  # Property-focused K4 phase-conflict cliques.  Zero is a strict no-op;
+  # initial trials must opt in on one explicit Gate-1 iid.
+  operator_phase_clique_time_limit: 0.0
+  operator_materialize_add: true
+  # Independently replayed query-dual feedback is frozen off.  Target layer
+  # ids are family-local below and can only be activated for that family.
+  query_dual_feedback_steps: 0
+  query_dual_feedback_time_limit: 0.0
+  query_dual_feedback_block_size: 1024
+  query_dual_feedback_device: cuda
+  # Candidate family switch.  Frozen at zero until controlled toys and the
+  # same Gate-1 sentinel show a strict benefit under the shared 100 s budget.
+  preactivation_lp_budget: 0
+  preactivation_lp_time_limit: 0.0
+  # Property-conditioned row-local ADD correlation shadows.  Frozen off in
+  # official gates until the toy and same-iid2 build-only receipts pass.
+  property_correlation_budget: 0
+  property_correlation_time_limit: 0.0
+  residual_phase_screen: false
+  residual_bound_screen: false
+  # Property-driven shared ReLU residual normal form.  Frozen off until its
+  # controlled toys and same-instance build-only gate earn promotion.
+  property_residual_budget: 0
+  property_residual_time_limit: 0.0
+  property_residual_max_adjoint_cells: 30000000
+  property_residual_pool_per_rival: 8
+  property_tail_upper: false
+  # C49 bounded signed micro-RLT and its SAFE-only parent relaxation
+  # prefilter.  Both switches are coupled and remain frozen at zero until the
+  # depth-2 toy/operator/solver audit earns a same-instance Gate-1 trial.
+  property_micro_rlt_product_cap: 0
+  # C55 packet isolation is diagnostic-only for first/second.  Production
+  # and every cap-zero profile retain the complete two-packet transaction.
+  property_micro_rlt_packet_mode: both
+  property_micro_rlt_parent_prefilter_seconds: 0.0
+  # Stop-before-phase-cover is an explicit single-iid diagnostic only.  It
+  # remains false in every promotable profile.
+  property_micro_rlt_parent_only_diagnostic: false
+  # Candidate property-tail source planes.  Official gates keep this frozen
+  # off until the same-instance toy/build-only ladder earns promotion.
+  property_tail_add_source_planes: false
+  # Candidate-only negative lower slopes.  The official device is frozen;
+  # exact Fraction reconstruction and grouped alpha=0 fallback are mandatory.
+  property_tail_alpha_steps: 0
+  property_tail_alpha_time_limit: 0.0
+  property_tail_alpha_learning_rate: 0.08
+  property_tail_alpha_max_cells: 50000000
+  property_tail_alpha_device: cuda
+  # Optional dyadic mixture candidate grid.  Official gates keep it disabled
+  # until the controlled alpha/tail ladder earns promotion.
+  property_tail_mixture_grid_bits: 0
+  # Projected two-neuron PairHull candidates.  The budget caps a global pool
+  # of unique disjoint pairs; the official gate stays frozen off until exact
+  # toys and the same-instance build-only stop-loss pass.
+  property_tail_pairhull_budget: 0
+  property_tail_pairhull_time_limit: 0.0
+  # Shared-suffix projection.  Official profiles remain frozen at zero until
+  # the controlled toy and six-sentinel stop-loss gates promote it.
+  property_tail_suffix_blocks: 0
+  property_tail_suffix_alpha_steps: 0
+  property_tail_suffix_alpha_time_limit: 0.0
+  property_tail_suffix_alpha_device: cuda
+  # Candidate-only CUDA dual optimizer.  Defaults stay frozen off; Gate-1
+  # experiments must opt in explicitly and remain non-promotable.
+  gpu_dual_steps: 0
+  gpu_dual_time_limit: 0.0
+  gpu_dual_row_topk: 0
+  gpu_dual_learning_rate: 0.08
+  # With operator_exact_budget=0 the model is continuous.  The persistent LP
+  # plus independently checked dual receipt is the only non-box SAFE engine,
+  # so it receives the useful verdict budget instead of rebuilding the same
+  # 10M-nnz cutoff model once per rival.
+  lp_prefilter_fraction: 0.90
+  lp_prefilter_max_seconds: 60.0
+  row_workers: 4
+  total_solver_threads: 20
+  max_inconclusive_per_family: 1
+
+families:
+  cifar100_medium:
+    benchmark: cifar100_2024
+    model_basename: CIFAR100_resnet_medium.onnx
+    iid_min: 0
+    iid_max: 99
+    # C8: C5 supplies the sound ReLU frame, so query-dual replays only the
+    # final 99 property objectives and no intermediate one-hot targets.
+    query_dual_feedback_targets: []
+    query_dual_feedback_status: gate1_candidate
+  cifar100_large:
+    benchmark: cifar100_2024
+    model_basename: CIFAR100_resnet_large.onnx
+    iid_min: 100
+    iid_max: 199
+    # Not promoted: this architecture has no approved target schedule yet.
+    query_dual_feedback_targets: []
+    query_dual_feedback_status: not_promoted
+  tinyimagenet_medium:
+    benchmark: tinyimagenet_2024
+    model_basename: TinyImageNet_resnet_medium.onnx
+    iid_min: 0
+    iid_max: 199
+    # Not promoted: this architecture has no approved target schedule yet.
+    query_dual_feedback_targets: []
+    query_dual_feedback_status: not_promoted
+
+stages:
+  "6":
+    previous_gate: null
+    cumulative_size: 6
+    add:
+      - {family: cifar100_medium, iid: 2, reference_diagnostic_label: S}
+      - {family: cifar100_medium, iid: 29, reference_diagnostic_label: U}
+      - {family: cifar100_large, iid: 118, reference_diagnostic_label: S}
+      - {family: cifar100_large, iid: 113, reference_diagnostic_label: U}
+      - {family: tinyimagenet_medium, iid: 6, reference_diagnostic_label: S}
+      - {family: tinyimagenet_medium, iid: 17, reference_diagnostic_label: U}
+
+  "14":
+    previous_gate: 6
+    cumulative_size: 14
+    add:
+      - {family: cifar100_medium, iid: 11, reference_diagnostic_label: S}
+      - {family: cifar100_medium, iid: 50, reference_diagnostic_label: U}
+      - {family: cifar100_large, iid: 110, reference_diagnostic_label: S}
+      - {family: cifar100_large, iid: 153, reference_diagnostic_label: U}
+      - {family: tinyimagenet_medium, iid: 93, reference_diagnostic_label: S}
+      - {family: tinyimagenet_medium, iid: 143, reference_diagnostic_label: S}
+      - {family: tinyimagenet_medium, iid: 159, reference_diagnostic_label: U}
+      - {family: tinyimagenet_medium, iid: 0, reference_diagnostic_label: U}
+
+  "40":
+    previous_gate: 14
+    cumulative_size: 40
+    add:
+      - {family: cifar100_medium, iid: 64, reference_diagnostic_label: S}
+      - {family: cifar100_medium, iid: 0, reference_diagnostic_label: U}
+      - {family: cifar100_medium, iid: 3, reference_diagnostic_label: U}
+      - {family: cifar100_medium, iid: 10, reference_diagnostic_label: U}
+      - {family: cifar100_medium, iid: 21, reference_diagnostic_label: U}
+      - {family: cifar100_medium, iid: 86, reference_diagnostic_label: U}
+      - {family: cifar100_large, iid: 160, reference_diagnostic_label: S}
+      - {family: cifar100_large, iid: 161, reference_diagnostic_label: S}
+      - {family: cifar100_large, iid: 102, reference_diagnostic_label: U}
+      - {family: cifar100_large, iid: 133, reference_diagnostic_label: U}
+      - {family: cifar100_large, iid: 180, reference_diagnostic_label: U}
+      - {family: cifar100_large, iid: 182, reference_diagnostic_label: U}
+      - {family: tinyimagenet_medium, iid: 1, reference_diagnostic_label: S}
+      - {family: tinyimagenet_medium, iid: 193, reference_diagnostic_label: S}
+      - {family: tinyimagenet_medium, iid: 2, reference_diagnostic_label: U}
+      - {family: tinyimagenet_medium, iid: 34, reference_diagnostic_label: U}
+      - {family: tinyimagenet_medium, iid: 47, reference_diagnostic_label: U}
+      - {family: tinyimagenet_medium, iid: 64, reference_diagnostic_label: U}
+      - {family: tinyimagenet_medium, iid: 84, reference_diagnostic_label: U}
+      - {family: tinyimagenet_medium, iid: 100, reference_diagnostic_label: U}
+      - {family: tinyimagenet_medium, iid: 105, reference_diagnostic_label: U}
+      - {family: tinyimagenet_medium, iid: 115, reference_diagnostic_label: U}
+      - {family: tinyimagenet_medium, iid: 130, reference_diagnostic_label: U}
+      - {family: tinyimagenet_medium, iid: 158, reference_diagnostic_label: U}
+      - {family: tinyimagenet_medium, iid: 167, reference_diagnostic_label: U}
+      - {family: tinyimagenet_medium, iid: 191, reference_diagnostic_label: U}

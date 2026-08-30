@@ -1,0 +1,133 @@
+{
+  "schema": "act.hybridz.exact_scip_vipr_capability_checkpoint.v1",
+  "created_at_local": "2026-08-12",
+  "status": "EXACT_SOLVER_AND_INDEPENDENT_CERTIFICATE_CHAIN_PASSED_TOY_ONLY",
+  "goal_scope": "single replacement exact output-query backend for CIFAR100/TinyImageNet forward-only exact-ReLU HybridZ",
+  "official_sources": {
+    "scip_exact_documentation": "https://www.scipopt.org/doc-10.0.0/html/EXACT.php",
+    "scip_repository": "https://github.com/scipopt/scip",
+    "soplex_repository": "https://github.com/scipopt/soplex",
+    "vipr_repository": "https://github.com/scipopt/vipr"
+  },
+  "source_identity": {
+    "scip_version": "10.0.2",
+    "scip_git_sha": "b8eaf989f9168f966a471b2039ffb75d925d5202",
+    "soplex_version": "8.0.2",
+    "soplex_git_sha": "cfadddc47e142fb21e040ff9dc564cbe2e8e3801",
+    "vipr_git_sha": "30f2951d1e90e47afa821bdd1b12b82246656c42",
+    "gmp_version": "6.3.0",
+    "mpfr_version": "4.2.1",
+    "boost_headers_version": "1.90.0"
+  },
+  "build": {
+    "environment": "/data1/Kane/miniconda3/envs/act-py312",
+    "temporary_root": "/tmp/act-scip-exact.pqnpIk",
+    "temporary_root_persistent_across_reboot": false,
+    "install_prefix": "/tmp/act-scip-exact.pqnpIk/install",
+    "scip_options": {
+      "EXACTSOLVE": "ON",
+      "LPS": "spx",
+      "LPSEXACT": "spx",
+      "GMP": "ON",
+      "MPFR": "ON",
+      "PAPILO": "OFF",
+      "ZIMPL": "OFF"
+    },
+    "soplex_options": {
+      "BOOST": "ON",
+      "GMP": "ON",
+      "MPFR": "ON",
+      "PAPILO": "OFF"
+    },
+    "binary_sha256": {
+      "scip": "d4fe8a35e7f8b111091cd0e743d602dacf3c8bb4b6ec34ba21aff0a1a03071bf",
+      "soplex": "481ad0a66166a5c90da1f635991dbdfc547e5c34a111be1400b1c3c425490631",
+      "viprcomp": "34d83b9b13a1ef4fa9f21a4a8cf8fbe7e6d36cadb9ae10b23cbaa7ce6813484e",
+      "viprchk": "2d7404cf211584bc499bcba3cfca4960f4abb7748364a094c319381d03dc9cbf"
+    }
+  },
+  "exact_mip_self_test": {
+    "instance": "SCIP check/instances/MIPEX/flugpl_rational.mps",
+    "variables": 18,
+    "integer_variables": 11,
+    "configuration": {
+      "exact_enable": true,
+      "separating_emphasis": "off",
+      "certificate_enabled": true,
+      "viprcomp_threads": 1
+    },
+    "scip_status": "optimal",
+    "scip_seconds": 0.06,
+    "scip_nodes": 586,
+    "exact_primal_bound": "1201500",
+    "exact_dual_bound": "1201500",
+    "viprcomp_completed_derivations": 16147,
+    "viprchk_status": "verified",
+    "viprchk_terminal_message": "Successfully verified optimal value range [1201500, 1201500].",
+    "raw_certificate_bytes": 1286281,
+    "completed_certificate_bytes": 1289006,
+    "sha256": {
+      "raw_certificate": "969d884485300aabe0b7b94e4bc07466c3e52f4ddd00896077fbdaff8441a68b",
+      "completed_certificate": "7640859035a0b0bfe03d08b985c8a6d94483c472978a74d3751ef0fa164ea354",
+      "scip_log": "e53c40898a97ae8f1fcdbe29ee43cb4a94449e98d51f36df25fd34dbe81f9356",
+      "viprcomp_log": "37c222a2b1a3bd8dc9a0ea55a30af18b43fc0b407d13c169f2786eac0bb18b52",
+      "viprchk_log": "5be3333675dcc0472caa778dd6fc96340c9ce2e2e0d3a425c5be9c785f987e4a"
+    }
+  },
+  "negative_control": {
+    "configuration": "exact mode with default separators",
+    "scip_exact_optimum_still_found": true,
+    "viprcomp_completed": true,
+    "viprchk_status": "rejected",
+    "viprchk_error": "In L101_gom4_x5: Index is out of bounds -1",
+    "decision": "The verifier backend must use the one selected cuts-off configuration. Default-cut proof output is not accepted and is not a runtime fallback."
+  },
+  "dataset_effect": {
+    "retained_projection_skip_cifar100": {
+      "native_rows_before": 17489,
+      "native_rows_after": 9279,
+      "native_nnz_before": 3498525,
+      "native_nnz_after": 1556040,
+      "row_reduction_fraction": 0.46943793241466064,
+      "nnz_reduction_fraction": 0.5552297039466633
+    },
+    "retained_projection_skip_tinyimagenet": {
+      "native_rows_before": 54327,
+      "native_rows_after": 29226,
+      "native_nnz_before": 12127453,
+      "native_nnz_after": 5838020,
+      "row_reduction_fraction": 0.46203545198520074,
+      "nnz_reduction_fraction": 0.5186112038529442
+    },
+    "new_cifar100_verdicts": 0,
+    "new_tinyimagenet_verdicts": 0,
+    "formal_solved_count_gain": 0,
+    "real_cifar100_run_in_this_phase": false,
+    "real_tinyimagenet_run_in_this_phase": false
+  },
+  "integration_decision": {
+    "production_code_changed": false,
+    "backend_integrated": false,
+    "selected_design": "one exact SCIP session with exact rational model data and mandatory VIPR completion/checking; no secondary solver fallback",
+    "next_stop_loss": "CIFAR100-medium iid29 build/export-only admission on the retained 9279-row/1556040-nnz model; measure exact rational export wall time, bytes, RSS and frontend latency before any solve",
+    "tinyimagenet_policy": "Do not run until the smaller CIFAR100 export/session gate passes",
+    "safe_authority_rule": "Only a successfully checked VIPR certificate may authorize SAFE; timeout, resource exhaustion, incomplete certificate, completer failure or checker failure returns UNKNOWN",
+    "unsafe_authority_rule": "A solver candidate may only be exposed after the existing independent raw ONNX/VNNLIB replay; ONNX execution is never used to search for candidates"
+  },
+  "method_restrictions": {
+    "input_center_boundary_random_or_grid_sampling_used": false,
+    "pgd_used": false,
+    "concrete_onnx_execution_used_for_candidate_search": false,
+    "triangle_or_convex_relu_fallback_used": false,
+    "act_branch_and_bound_used": false,
+    "backward_propagation_used": false,
+    "dual_tightening_used": false,
+    "runtime_backend_fallback_added": false
+  },
+  "runtime_state_at_checkpoint": {
+    "background_solver_processes": 0,
+    "background_test_processes": 0,
+    "unfinished_runs": 0
+  },
+  "decision": "This is a genuine proof-capability breakthrough but not yet a CIFAR100/TinyImageNet verification breakthrough. Retain the projection-skip structural reduction, persist this reproducible exact-backend checkpoint, and resume with the single C100 build/export stop-loss only."
+}

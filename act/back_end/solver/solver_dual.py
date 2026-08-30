@@ -888,7 +888,25 @@ class DualSolver(Solver):
             b = out.get(lid)
             if b is None:
                 continue
-            s = signs[:, 0, :] if signs.dim() == 3 else signs
+            if signs.dim() == 3:
+                if signs.shape[1] < 1:
+                    raise ValueError(
+                        f"split_signs[{lid}] has an empty property axis"
+                    )
+                reference = signs[:, :1, :]
+                if not torch.equal(signs, reference.expand_as(signs)):
+                    raise ValueError(
+                        f"split_signs[{lid}] must encode one phase shared "
+                        "by every property row"
+                    )
+                s = signs[:, 0, :]
+            elif signs.dim() == 2:
+                s = signs
+            else:
+                raise ValueError(
+                    f"split_signs[{lid}] must have rank 2 or 3, got "
+                    f"rank {signs.dim()}"
+                )
             if not bool((s != 0).any().item()):
                 continue
             lb = b.lb.flatten(start_dim=1).clone()
@@ -1019,6 +1037,8 @@ class DualSolver(Solver):
         rows_cap: int = 64,
         optimize_iters: int = 0,
         lane_chunk: int = 32,
+        layer_cap: int = 2,
+        audit: Optional[Dict[str, Any]] = None,
     ) -> Dict[int, Bounds]:
         """K-lane per-subproblem sparse refinement of pre-activation bounds.
 
@@ -1040,10 +1060,13 @@ class DualSolver(Solver):
         """
         if mode == "none":
             return bounds_dict
-        if mode not in ("tail", "all"):
+        if mode not in ("tail", "all", "split_successors"):
             raise ValueError(
-                f"per_subproblem_refine mode must be none|tail|all, got {mode!r}"
+                "per_subproblem_refine mode must be "
+                f"none|tail|all|split_successors, got {mode!r}"
             )
+        if layer_cap < 1:
+            raise ValueError("layer_cap must be positive")
 
         out = self._harden_split_bounds(bounds_dict, split_signs)
 
@@ -1059,7 +1082,43 @@ class DualSolver(Solver):
         unstable_lids = [lid for lid, n_unstable in stats if n_unstable > 0]
         if not unstable_lids:
             return out
-        selected = unstable_lids[-2:] if mode == "tail" else unstable_lids
+        if mode == "tail":
+            selected = unstable_lids[-2:]
+        elif mode == "all":
+            selected = unstable_lids
+        else:
+            split_lids = {
+                int(lid)
+                for lid, signs in (split_signs or {}).items()
+                if bool((signs != 0).any().item())
+            }
+            reachable: set[int] = set()
+            work = list(split_lids)
+            while work:
+                current = work.pop()
+                for successor in net.succs.get(current, []):
+                    successor = int(successor)
+                    if successor in reachable:
+                        continue
+                    reachable.add(successor)
+                    work.append(successor)
+            selected = [
+                lid
+                for lid in unstable_lids
+                if lid in reachable and lid not in split_lids
+            ][: int(layer_cap)]
+        if audit is not None:
+            audit.update(
+                {
+                    "mode": str(mode),
+                    "selected_layer_ids": [
+                        int(layer_id) for layer_id in selected
+                    ],
+                    "queried_objective_rows": 0,
+                    "proof_authority": False,
+                }
+            )
+        queried_objective_rows = 0
 
         for lid in selected:
             preds = net.preds.get(lid, [])
@@ -1085,6 +1144,7 @@ class DualSolver(Solver):
             eye[torch.arange(n_amb), amb_idx] = 1.0
             rows = torch.cat([eye, -eye], dim=0)
             m_rows = int(rows.shape[0])
+            queried_objective_rows += int(k_lanes * m_rows)
             margins = torch.empty(k_lanes, m_rows, device=device, dtype=dtype)
             for k0 in range(0, k_lanes, lane_chunk):
                 k1 = min(k0 + lane_chunk, k_lanes)
@@ -1117,6 +1177,8 @@ class DualSolver(Solver):
             out[lid] = refined
             if pred_lid in out and out[pred_lid].lb.shape == refined.lb.shape:
                 out[pred_lid] = refined
+        if audit is not None:
+            audit["queried_objective_rows"] = int(queried_objective_rows)
         return out
 
     def recompute_bounds_and_nu(
@@ -1199,8 +1261,9 @@ class DualSolver(Solver):
         - ALL-rows kinds (LINEAR_LE, TOP1_ROBUST, MARGIN_ROBUST, RANGE):
           ``encode_linear`` emits (C, thresholds) in UB-cert form (CERTIFIED
           iff ``UB(C @ y) < threshold``). Pass ``-C`` / ``-thresholds`` to
-          ``compute_certified_bound`` and compare; ``slack >= 0`` means the
-          row passes. Certified iff every row passes (``.all()``).
+          ``compute_certified_bound`` and compare; a row passes only with a
+          finite, strictly positive slack outside the numerical tolerance
+          band. Certified iff every row passes (``.all()``).
         - EXISTS-row kind (UNSAFE_LINEAR): the unsafe polytope is
           ``P = {y : c_i^T y <= d_i for ALL i}``. SAFE iff for all reachable
           y, some row i satisfies ``c_i^T y > d_i`` (escape). Sound
@@ -1309,7 +1372,11 @@ class DualSolver(Solver):
                 margins = margins_flat.view(B, N)
                 slack = margins - thresholds
                 cert_tol = cert_eps * margins.abs().clamp(min=1.0)
-                certified = ((slack > cert_tol) & active_mask).any(dim=-1)
+                certified = (
+                    torch.isfinite(slack)
+                    & (slack > cert_tol)
+                    & active_mask
+                ).any(dim=-1)
 
             return SpecBatchResult(
                 margins=margins,
@@ -1338,11 +1405,12 @@ class DualSolver(Solver):
             margins = margins_flat.view(B, M)
             slack = margins - thresholds_neg
             # margins is a SOUND LOWER bound on the true margin: certify iff
-            # every active row has slack >= 0. A positive tolerance band flags
-            # safe near-boundary rows (false UNKNOWN); slack < -cert_tol would be
-            # unsound. Hard zero boundary, matching bab.py.
-            violations = (slack < 0) & active_mask
-            certified = ~violations.any(dim=-1)
+            # every active row has finite slack strictly above the positive
+            # tolerance band.  A zero/tied or non-finite row stays UNKNOWN;
+            # TOP1/MARGIN concrete ASSERT semantics count a tie as violation.
+            cert_tol = cert_eps * margins.abs().clamp(min=1.0)
+            row_certified = torch.isfinite(slack) & (slack > cert_tol)
+            certified = ((~active_mask) | row_certified).all(dim=-1)
 
         return SpecBatchResult(
             margins=margins,

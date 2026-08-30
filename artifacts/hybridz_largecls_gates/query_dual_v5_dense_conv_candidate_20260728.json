@@ -1,0 +1,121 @@
+{
+  "schema": "act.query_dual_v5_dense_conv_candidate_audit.v1",
+  "status": "controlled_candidate_pass",
+  "proof_authority": false,
+  "controlled_toy_only": true,
+  "real_onnx_or_vnnlib_accessed": false,
+  "production_replay_modified": false,
+  "seed": 20260728,
+  "candidate": {
+    "module": "act/back_end/hybridz_tf/query_dual_replay_v5_candidate.py",
+    "scope": "dense Conv2D only",
+    "sparse_branch": "unchanged frozen componentwise/scatter replay",
+    "nominal_policy": "same kernel-offset order, same channel GEMM, same offset additions",
+    "guard_policy": "two-stage scalar D plus A",
+    "tau_definition": "up(k*eta/(1-k*u))",
+    "tau_scope": "support transform, D/A mass upper bounds, and final per-offset guards",
+    "plan_arrays": "immutable bytes",
+    "plan_manifest_content_sha256": "aba6fe5cd4615bcac6dfe6c9028d5140697e32c7456e6bbdeb8fb64f4b6f244a"
+  },
+  "formula": {
+    "support": "m_i=max(abs(lb_i),abs(ub_i))",
+    "outward_channel_support": "S_o[co,p]>=sum_ci abs(W_o[co,ci])*m[ci,target_o(p)]",
+    "channel_mass_D": "D_o[q]>=sum_(p,co) abs(c[q,co,p])*S_o[co,p]",
+    "accumulation_mass_A": "A_o[q]>=sum_(p,ci) m[ci,target_o(p)]*(abs(old[q,ci,p])+abs(term_o[q,ci,p]))",
+    "channel_guard": "sum_o up(gamma_dot*D_o + tau_dot*sum(m_o))",
+    "accumulation_guard": "sum_o up(gamma_add*A_o + tau_add*sum(m_o))",
+    "total_guard": "up(channel_guard+accumulation_guard)",
+    "underflow_multiplicity": "sum(m_o) is applied once per valid group/kernel offset for both its channel-dot results and its offset additions"
+  },
+  "soundness_tests": {
+    "candidate_test_count": 10,
+    "combined_v1_v3_v4_v5_test_count": 38,
+    "failures": 0,
+    "errors": 0,
+    "fixed_fraction_oracles": [
+      "padding boundary offsets",
+      "stride-2",
+      "dilation",
+      "groups",
+      "1e16 channel cancellation",
+      "subnormal product and multiplicity"
+    ],
+    "deterministic_fraction_geometry_fuzz_cases": 64,
+    "additional_gates": [
+      "frozen nominal bit identity",
+      "sparse threshold equality remains sparse",
+      "minimum subnormal counts as nonzero",
+      "signed zero does not count as nonzero",
+      "expired deadline fails closed",
+      "gamma and tau dominate exact Fraction formulas",
+      "fully changed top-level plan manifest is rejected",
+      "plan arrays and results are immutable",
+      "result proof_authority is false"
+    ]
+  },
+  "benchmark": {
+    "device": "cpu",
+    "dtype": "binary64",
+    "blas_threads": 8,
+    "shape": {
+      "input": [128, 8, 8],
+      "output": [128, 8, 8],
+      "weight": [128, 128, 3, 3],
+      "queries": 99,
+      "stride": [1, 1],
+      "padding": [1, 1],
+      "dilation": [1, 1],
+      "groups": 1
+    },
+    "support_precompute_seconds": 0.0056166620925068855,
+    "alternating_order": [
+      "candidate",
+      "frozen",
+      "frozen",
+      "candidate",
+      "candidate",
+      "frozen",
+      "frozen",
+      "candidate",
+      "candidate",
+      "frozen"
+    ],
+    "frozen_seconds": [
+      1.9037327351979911,
+      1.7088124840520322,
+      1.8235090356320143,
+      1.7954988852143288,
+      0.9781191567890346
+    ],
+    "candidate_seconds": [
+      0.34194960817694664,
+      0.15639423206448555,
+      0.1572917620651424,
+      0.2918810937553644,
+      0.27037850907072425
+    ],
+    "frozen_median_seconds": 1.7954988852143288,
+    "candidate_kernel_median_seconds": 0.27037850907072425,
+    "kernel_speedup": 6.6406863895557295,
+    "candidate_one_shot_seconds": 0.27599517116323113,
+    "one_shot_speedup": 6.5055445631417275,
+    "conservative_min_frozen_over_max_candidate_speedup": 2.8604190015123314,
+    "nominal_all_bits_identical": true,
+    "candidate_to_frozen_guard_median_ratio": 0.9999999999997227
+  },
+  "decision": {
+    "performance_gate_2x_passed": true,
+    "candidate_remains_non_authoritative": true,
+    "next_step": "eligible only for a separately sealed V5 sidecar/guard-ledger authority implementation and controlled transaction gates",
+    "real_instance_authorized_by_this_artifact": false
+  },
+  "source_sha256": {
+    "frozen_query_dual_replay": "6e291bdd4526518496e664c14e15664bf554c1e9f089d92f65f8097081db5d7e",
+    "candidate_module": "c8a7a0495bfff515dfc1fe4a3fde9cf0e0ad9cda017f4f103cd0604f926785cc",
+    "candidate_tests": "7d50e80e59e6a4a8d314a6f80d7fe8fd5b68e71236d41656a5b4935fdeb30bb0"
+  },
+  "reproduction": {
+    "tests": "/data1/Kane/miniconda3/envs/act-py312/bin/python -m unittest -v act.back_end.hybridz_tf.test_query_dual_replay_v5_candidate",
+    "benchmark_method": "same-process alternating frozen/candidate calls under threadpool_limits(8); support preparation measured separately; deterministic synthetic Gaussian weights, coefficients, and boxes"
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "schema": "act.hybridz.phase_projection_safe_and_all_rival_stoploss.v1",
+  "date": "2026-08-12",
+  "status": "CLOSED_BY_THREE_FAMILY_AND_FIRST_UNKNOWN_GATES",
+  "control_flow_finding": {
+    "phase_projection_unknown_returns_before_generic_interval_certification": true,
+    "verifier_unknown_return_line": 3081,
+    "generic_interval_certification_line": 7464,
+    "potential_soundness_issue": false,
+    "potential_completeness_issue": true
+  },
+  "existing_interval_safe_census": [
+    {
+      "case": "cifar100_medium_iid0",
+      "safe": false,
+      "maximum_margin_upper": 248.49428541778974,
+      "seconds": 1.4139987099915743
+    },
+    {
+      "case": "cifar100_large_iid100",
+      "safe": false,
+      "maximum_margin_upper": 73.31041682396932,
+      "seconds": 1.2933357385918498
+    },
+    {
+      "case": "tinyimagenet_medium_iid0",
+      "safe": false,
+      "maximum_margin_upper": 411.4919242609622,
+      "seconds": 1.7153650624677539
+    }
+  ],
+  "constraint_local_hybridz_cube_safe_census": [
+    {
+      "case": "cifar100_medium_iid0",
+      "safe": false,
+      "maximum_exact_dyadic_cube_upper": 136.4270864114275,
+      "build_seconds": 1.7578291054815054,
+      "bound_seconds": 0.03158370964229107
+    },
+    {
+      "case": "cifar100_large_iid100",
+      "safe": false,
+      "maximum_exact_dyadic_cube_upper": 42.72713879637064,
+      "build_seconds": 5.014820972457528,
+      "bound_seconds": 0.03171639237552881
+    },
+    {
+      "case": "tinyimagenet_medium_iid0",
+      "safe": false,
+      "maximum_exact_dyadic_cube_upper": 180.00394367767743,
+      "build_seconds": 3.956970304250717,
+      "bound_seconds": 0.12193300016224384
+    }
+  ],
+  "all_rival_analytic_line": {
+    "case": "cifar100_medium_iid0",
+    "endpoint": "existing exact-cell LP candidate",
+    "segments": 159,
+    "affine_kernel_calls": 21,
+    "sweep_seconds": 0.1043798215687275,
+    "property_rows_checked": 99,
+    "best_property_row": 53,
+    "best_parameter": 1.0,
+    "best_segment": [0.9999997697302905, 1.0],
+    "best_raw_margin": -0.03056641604509469,
+    "selected_row_53_best_raw_margin": -0.03056641604509469,
+    "interpretation": "The original selector did not hide a positive alternate TOP1 rival anywhere on the complete analytic line."
+  },
+  "forbidden_methods_used": {
+    "input_sampling": false,
+    "center_boundary_or_random_onnx_execution": false,
+    "pgd": false,
+    "triangle_or_convex_relu": false,
+    "act_bab": false,
+    "backward_bounds": false,
+    "dual_tightening": false
+  },
+  "production_candidate_sha256": "615b45516b0d4cd2a3632c4f260efffc4fc5cf451444225f8d1bb3e6a04993ba",
+  "production_files_changed": false,
+  "decision": "The early UNKNOWN return does bypass generic SAFE checks, but neither existing interval bounds nor the stricter exact-dyadic constraint-local HybridZ cube proved SAFE on one fixed UNKNOWN from each family. The complete all-rival analytic line also found no positive alternate property row. Do not add a SAFE side path or all-rival selector branch; move only to common-path stream/memory improvements."
+}

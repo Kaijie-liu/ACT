@@ -1,0 +1,96 @@
+{
+  "schema": "act.hybridz.goal_amendment.post59_ability_ratchet.v1",
+  "created_at": "2026-08-14T09:23:17+10:00",
+  "status": "ACTIVE",
+  "baseline": {
+    "formal_fixed400_falsified": 59,
+    "formal_fixed400_unknown": 341,
+    "formal_fixed400_errors": 0,
+    "previous_formal_baseline": 43,
+    "independent_audit": "NO_BLOCKER",
+    "production_default_enabled": false,
+    "phase_source_sha256": "4b66470df55edebb595e0e06c6b8a2de5c65496b8671c4d2f2552003d01ea306",
+    "live_source_sha256": "d53c2335c43905097e78bef8311175d7151d7e98293a6152fce62dba00d37511",
+    "test_sha256": "a59d08ad648bf8d91387f7f2d6934cf318c7d00c355c1bc2276f6f6eb4441991",
+    "fixed400_jsonl_sha256": "749db4e400329598c23c3dd7c9b9863c291eb3d1ba556cdcfcfa879c58487b43"
+  },
+  "objective": {
+    "primary": "Increase the formal CIFAR100/TinyImageNet fixed-400 FALSIFIED count above 59 while retaining every existing formal case.",
+    "structural": "Use one deterministic representation that deletes complete traversals or materializations to pay for any added cell ability.",
+    "responsiveness": "Do not make the verifier frontend slower or grow a redundant backend stack.",
+    "stoploss": "If no path can pass the frozen ability, response, consistency, and memory gates, preserve reproducible arithmetic or experimental impossibility evidence instead of adding a menu."
+  },
+  "authority_boundary": {
+    "candidate_authority": false,
+    "candidate_proof_authority": false,
+    "candidate_verdict_authority": false,
+    "only_formal_success_rule": [
+      "decoded input is inside the raw BOX",
+      "verifier-owned zero-width outward forward replay succeeds",
+      "stored-binary64 Fraction property lower bound is strictly positive"
+    ],
+    "external_vnncomp_labels_authorize_verdict": false,
+    "external_vnncomp_labels_change_runtime_rule": false
+  },
+  "prohibitions": {
+    "input_center_sampling": true,
+    "input_boundary_sampling": true,
+    "random_input_sampling": true,
+    "onnx_input_point_search": true,
+    "pgd": true,
+    "bab": true,
+    "activation_split": true,
+    "input_split": true,
+    "enumeration": true,
+    "backward_bound": true,
+    "dual_tightening": true,
+    "per_instance_runtime_special_cases": true,
+    "fallback_backend": true,
+    "selector_retry_menu": true,
+    "parameter_scan": true,
+    "rare_edge_case_backend_stacking": true
+  },
+  "failure_semantics": {
+    "unsupported_domain": "UNKNOWN",
+    "deadline": "UNKNOWN",
+    "numerical_failure": "UNKNOWN",
+    "resource_failure": "UNKNOWN",
+    "unexpected_candidate_failure": "UNKNOWN_WITHOUT_ROOT_FALLBACK"
+  },
+  "promotion_gates_against_current_59_path": {
+    "single_request_median_speedup_min": 1.5,
+    "four_thread_median_speedup_min": 2.0,
+    "paired_bootstrap_95pct_lower_min": 1.8,
+    "result_conflicts_max": 0,
+    "formal_retention_required": 59,
+    "formal_gain_required": 1,
+    "wall_rss_gate_required": true,
+    "fixed400_required_after_all_prior_gates": true,
+    "registered_iid2_next_single_budget_seconds": 0.9592642386754354,
+    "registered_iid2_nonterminal_reduction_needed_seconds": 0.4796321193377177,
+    "narrow_gate_rerun_for_luck_forbidden": true
+  },
+  "measurement_plan": {
+    "ability_path": "At most one deterministic multi-flip cell update, with one fixed mathematical selection rule and no retries.",
+    "initial_targets": "The three closest public-sat ACT UNKNOWN cases plus one near-zero public-unsat negative control; labels are evaluation strata only.",
+    "latency_control": "Any negative-only update must be timed on a preregistered negative control in addition to the positive iid2 retention control.",
+    "gate_order": [
+      "scratch mechanical and authority audit",
+      "minimal positive/negative ability sentinel",
+      "fixed controls and all 59 retention",
+      "single-request response gate",
+      "four-thread paired/bootstrap response gate",
+      "fresh-process wall/RSS gate",
+      "production fixed-400",
+      "independent bounded audit"
+    ]
+  },
+  "public_reachability_context": {
+    "official_public_sat_union": 67,
+    "act_formal_intersection": 59,
+    "act_unknown_and_public_sat": 8,
+    "public_ceiling_is_mathematical_ceiling": false,
+    "source_artifact": "artifacts/hybridz_largecls_gates/phase_projection_vnncomp_public_ceiling_20260814.json",
+    "source_sha256": "91b875c57bcebd8b784b1e1141ab727526aa44aeb3928ce7ddcdb8b887117294"
+  }
+}

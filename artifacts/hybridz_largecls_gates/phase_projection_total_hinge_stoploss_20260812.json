@@ -1,0 +1,73 @@
+{
+  "schema": "act.hybridz.phase_projection_total_hinge_stoploss.v1",
+  "date": "2026-08-12",
+  "status": "CLOSED_BY_FIRST_UNKNOWN_CAPABILITY_GATE",
+  "scope": {
+    "case": "cifar100_medium_iid0",
+    "role": "replace the analytic-corner phase selector with one global normalized total-hinge LP",
+    "production_integrated": false,
+    "runtime_fallbacks": 0,
+    "phase_cells_submitted_to_the_exact_lp": 1,
+    "tinyimagenet_run": false,
+    "fixed14_run": false
+  },
+  "algorithm": {
+    "first_affine_model": "the existing verifier-owned initial exact phase cell",
+    "property_constraint": "the selected first-cell property affine lower envelope must be nonnegative",
+    "selector_objective": "minimize the sum of normalized nonnegative violations of all current exact phase inequalities",
+    "normalizer": "1 + abs(stored_center) + outward_row_l1 + stored_arithmetic_radius",
+    "phase_assignment": "the sign of each verifier affine preactivation at the unique selector LP point",
+    "final_step": "build one selected exact phase cell and solve the unchanged single continuous input LP"
+  },
+  "selector_result": {
+    "success": true,
+    "selected_property_row": 53,
+    "input_factors": 3072,
+    "phase_rows": 2030,
+    "rows": 2031,
+    "columns": 5102,
+    "nnz": 2131487,
+    "seconds": 0.6708789095282555,
+    "objective": 1.8047999799085257,
+    "positive_phase_slacks": 137,
+    "maximum_normalized_slack": 0.06864771107190809,
+    "selected_phase_changes": 137,
+    "ambiguous_phase_rows": 0
+  },
+  "exact_cell_result": {
+    "lp_success": true,
+    "lp_nnz": 2126574,
+    "lp_seconds": 0.49169748090207577,
+    "replay_consistent": 2030,
+    "replay_inconsistent": 0,
+    "replay_ambiguous": 0,
+    "projected_margin_lower": -0.02979118381749281,
+    "projected_margin_upper": -0.02979105405310288,
+    "previous_exact_lp_endpoint_margin_lower": -0.03056648102799219,
+    "total_diagnostic_seconds": 5.3553515914827585,
+    "formal_result": "UNKNOWN"
+  },
+  "direct_verifier_candidate_check": {
+    "candidate_source": "the sole total-hinge LP optimum, before selecting a second affine cell",
+    "decoded_input_inside_original_box": true,
+    "verifier": "ACT zero-width forward interval plus exact Fraction property lower bound",
+    "selected_property_row": 53,
+    "singleton_margin_lower": -0.06433955397168267,
+    "singleton_verified": false,
+    "input_sampling": false,
+    "onnx_point_execution": false,
+    "interpretation": "The verifier-generated LP point itself is not a counterexample; failure is not caused by the later exact-cell replay or by an auxiliary certificate."
+  },
+  "forbidden_methods_used": {
+    "input_sampling": false,
+    "center_boundary_or_random_onnx_execution": false,
+    "pgd": false,
+    "triangle_or_convex_relu": false,
+    "act_bab": false,
+    "backward_bounds": false,
+    "dual_tightening": false
+  },
+  "production_candidate_sha256": "615b45516b0d4cd2a3632c4f260efffc4fc5cf451444225f8d1bb3e6a04993ba",
+  "production_files_changed": false,
+  "decision": "The single global hinge selector changed the phase cell and slightly improved the rigorous projected margin, but the first UNKNOWN target remained strictly negative while adding a second 2.13-million-nnz LP. Sending the sole selector optimum directly to ACT's zero-width verifier also produced a negative exact property margin. Under the single-path latency and first-target capability stop rules it is closed without TinyImageNet, fixed-set, parameter, or aggregation variants. No implementation was retained."
+}

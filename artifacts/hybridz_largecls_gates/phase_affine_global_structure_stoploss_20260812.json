@@ -1,0 +1,71 @@
+{
+  "schema": "act.hybridz.phase_affine_global_structure_stoploss.v1",
+  "date": "2026-08-12",
+  "status": "NO_LOW_DIMENSION_OR_LOW_SEPARATOR_GLOBAL_PHASE_SHORTCUT",
+  "scope": {
+    "case": "cifar100_medium_iid0",
+    "matrix": "the 2030 verifier-owned exact-phase preactivation affine rows over the 3072 active input-factor frame",
+    "production_integrated": false,
+    "solver_run": false
+  },
+  "phase_affine_matrix": {
+    "rows": 2030,
+    "columns": 3072,
+    "active_input_columns": 2883,
+    "nnz": 2126574,
+    "density": 0.34100696582512313,
+    "structural_rank": 2030,
+    "structural_row_rank_fraction": 1.0,
+    "exact_duplicate_rows": 0,
+    "exact_sign_opposite_rows": 0,
+    "row_nnz_minimum": 27,
+    "row_nnz_median": 819.0,
+    "row_nnz_maximum": 2883,
+    "active_column_degree_minimum": 458,
+    "active_column_degree_median": 742.0,
+    "active_column_degree_maximum": 978,
+    "largest_bipartite_row_component": 2030
+  },
+  "row_interaction_graph": {
+    "edge_rule": "two phase rows are adjacent when their stored affine supports share at least one input factor",
+    "undirected_edges": 1363842,
+    "possible_edges": 2059435,
+    "density": 0.662240857322518,
+    "degree_minimum": 622,
+    "degree_median": 1268.0,
+    "degree_maximum": 2029,
+    "shared_factors_per_edge_minimum": 3,
+    "shared_factors_per_edge_median": 147.0,
+    "shared_factors_per_edge_maximum": 2883,
+    "treewidth_lower_bound_from_whole_graph_minimum_degree": 622
+  },
+  "relu_layer_row_counts": {
+    "3": 544,
+    "5": 407,
+    "10": 532,
+    "14": 157,
+    "18": 8,
+    "22": 282,
+    "40": 100
+  },
+  "native_sos1_review": {
+    "pyscipopt_has_sos1_api": true,
+    "binary_phase_semantics_required": true,
+    "removing_phase_binaries_for_pure_complementarity_admissible": false,
+    "retaining_binaries_with_native_disjunction_already_tested_as_indicators": true,
+    "prior_indicator_result": "root-node time limit with zero candidate",
+    "decision": "Do not add a fifth solver encoding. Pure SOS1 removes the explicitly required phase/binary representation, while binary-preserving native disjunction duplicates the already-failed indicator path and still invokes general branching."
+  },
+  "forbidden_methods_used": {
+    "input_sampling": false,
+    "center_boundary_or_random_onnx_execution": false,
+    "pgd": false,
+    "triangle_or_convex_relu": false,
+    "act_bab": false,
+    "backward_bounds": false,
+    "dual_tightening": false
+  },
+  "production_candidate_sha256": "615b45516b0d4cd2a3632c4f260efffc4fc5cf451444225f8d1bb3e6a04993ba",
+  "production_files_changed": false,
+  "decision": "The exact-phase system is structurally full-row-rank, globally connected, and has a dense row-interaction graph with a treewidth lower bound of at least 622. Strict equality sharing, low-rank coordinates, connected-component splitting, and low-treewidth dynamic programming therefore cannot replace the global cell problem on this target. The remaining frontier is a genuinely global nonconvex exact solver, not another local selector, phase-sharing table, or solver encoding wrapper."
+}

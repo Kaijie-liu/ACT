@@ -1,0 +1,232 @@
+{
+  "schema": "act.hybridz.phase_projection_margin_ceiling_census.v1",
+  "created_at": "2026-08-14T01:30:00+10:00",
+  "source": {
+    "path": "artifacts/hybridz_largecls_gates/phase_projection_gpu_csr_fixed400_20260814.jsonl",
+    "sha256": "749db4e400329598c23c3dd7c9b9863c291eb3d1ba556cdcfcfa879c58487b43",
+    "records": 400
+  },
+  "method": {
+    "receipt_only": true,
+    "model_execution": false,
+    "onnx_input_point_execution": false,
+    "input_sampling": false,
+    "pgd": false,
+    "bab_or_split": false,
+    "backward_bounds": false,
+    "dual_tightening": false,
+    "negative_margin_parser": "exact float after 'float screen rejected candidate margin='",
+    "histogram_intervals": "(-infinity,-1],(-1,-0.5],(-0.5,-0.1],(-0.1,-0.05],(-0.05,-0.02],(-0.02,-0.01],(-0.01,-0.005],(-0.005,0)",
+    "quantile_method": "NumPy/default linear, Hyndman-Fan type 7",
+    "cdf_semantics": "strict margin > threshold"
+  },
+  "classification": {
+    "falsified": 59,
+    "unknown": 341,
+    "strictly_negative_margin": 333,
+    "lp_no_candidate": 8,
+    "lp_infeasible": 7,
+    "lp_time_limit": 1,
+    "positive_candidate_terminal_rejections": 0,
+    "errors": 0
+  },
+  "overall_negative_margins": {
+    "count": 333,
+    "histogram_counts": [
+      48,
+      93,
+      146,
+      25,
+      13,
+      4,
+      2,
+      2
+    ],
+    "strict_cdf_toward_zero": {
+      "greater_than_-0.001": 0,
+      "greater_than_-0.002": 1,
+      "greater_than_-0.005": 2,
+      "greater_than_-0.01": 4,
+      "greater_than_-0.02": 8,
+      "greater_than_-0.05": 21
+    },
+    "quantiles": {
+      "minimum": -2.295023605131861,
+      "p01": -1.9771762542,
+      "p05": -1.4109380683,
+      "p10": -1.1251167685,
+      "p25": -0.7374440995058218,
+      "p50": -0.4261573825254872,
+      "p75": -0.1932447706505469,
+      "p90": -0.0743155991,
+      "p95": -0.0367321765,
+      "p99": -0.00931302272,
+      "maximum": -0.0010710773153006503
+    }
+  },
+  "by_family": {
+    "cifar100_medium": {
+      "negative_count": 85,
+      "histogram_counts": [
+        8,
+        22,
+        45,
+        6,
+        2,
+        2,
+        0,
+        0
+      ],
+      "strict_cdf_toward_zero": {
+        "greater_than_-0.001": 0,
+        "greater_than_-0.002": 0,
+        "greater_than_-0.005": 0,
+        "greater_than_-0.01": 0,
+        "greater_than_-0.02": 2,
+        "greater_than_-0.05": 4
+      },
+      "median": -0.3377573928,
+      "maximum": -0.011395328038919073
+    },
+    "cifar100_large": {
+      "negative_count": 87,
+      "histogram_counts": [
+        3,
+        21,
+        43,
+        7,
+        9,
+        1,
+        2,
+        1
+      ],
+      "strict_cdf_toward_zero": {
+        "greater_than_-0.001": 0,
+        "greater_than_-0.002": 0,
+        "greater_than_-0.005": 1,
+        "greater_than_-0.01": 3,
+        "greater_than_-0.02": 4,
+        "greater_than_-0.05": 13
+      },
+      "median": -0.2779401187,
+      "maximum": -0.00453403149642484
+    },
+    "tinyimagenet_medium": {
+      "negative_count": 161,
+      "histogram_counts": [
+        37,
+        50,
+        58,
+        12,
+        2,
+        1,
+        0,
+        1
+      ],
+      "strict_cdf_toward_zero": {
+        "greater_than_-0.001": 0,
+        "greater_than_-0.002": 1,
+        "greater_than_-0.005": 1,
+        "greater_than_-0.01": 1,
+        "greater_than_-0.02": 2,
+        "greater_than_-0.05": 4
+      },
+      "median": -0.5468896087,
+      "maximum": -0.0010710773153006503
+    }
+  },
+  "closest_negative_cases": [
+    [
+      "tinyimagenet_medium_iid143",
+      -0.0010710773153006503
+    ],
+    [
+      "cifar100_large_iid110",
+      -0.00453403149642484
+    ],
+    [
+      "cifar100_large_iid153",
+      -0.005464856144083763
+    ],
+    [
+      "cifar100_large_iid160",
+      -0.008333114340001058
+    ],
+    [
+      "cifar100_medium_iid95",
+      -0.011395328038919073
+    ],
+    [
+      "cifar100_large_iid161",
+      -0.01351101621004358
+    ],
+    [
+      "tinyimagenet_medium_iid76",
+      -0.01614832502161656
+    ],
+    [
+      "cifar100_medium_iid23",
+      -0.019912106613534153
+    ],
+    [
+      "cifar100_large_iid114",
+      -0.020136842498330754
+    ],
+    [
+      "cifar100_large_iid172",
+      -0.020933727493497867
+    ]
+  ],
+  "lp_no_candidate": [
+    [
+      "cifar100_medium_iid50",
+      "infeasible"
+    ],
+    [
+      "cifar100_large_iid101",
+      "infeasible"
+    ],
+    [
+      "cifar100_large_iid120",
+      "time_limit"
+    ],
+    [
+      "cifar100_large_iid166",
+      "infeasible"
+    ],
+    [
+      "tinyimagenet_medium_iid9",
+      "infeasible"
+    ],
+    [
+      "tinyimagenet_medium_iid153",
+      "infeasible"
+    ],
+    [
+      "tinyimagenet_medium_iid173",
+      "infeasible"
+    ],
+    [
+      "tinyimagenet_medium_iid176",
+      "infeasible"
+    ]
+  ],
+  "historical_gain_scenarios": [
+    {
+      "description": "one previously measured active-boundary pivot on CIFAR100-medium iid0",
+      "measured_gain": 0.0003144815,
+      "strictly_negative_cases_crossing_zero_if_unrealistically_additive_across_instances": 0
+    },
+    {
+      "description": "five attempted pivots / four committed improvements on CIFAR100-medium iid0",
+      "measured_cumulative_gain": 0.00162520,
+      "strictly_negative_cases_crossing_zero_if_unrealistically_additive_across_instances": 1
+    }
+  ],
+  "interpretation": {
+    "quantified_near_zero_pool": "Four cases lie within 0.01 of zero, eight within 0.02, and twenty-one within 0.05.",
+    "iid143_not_guaranteed": "The historical one-pivot gain is only about 29 percent of iid143's gap. A larger deterministic multi-flip update is possible in principle but has no measured cross-instance gain guarantee.",
+    "plausible_harvest": "A single cell update has a data-supported target pool in the low single digits, not a benchmark-wide gain; a real candidate diagnostic is required before claiming any solved increment.",
+    "authority": "This is a receipt-only candidate-margin census and cannot authorize a verifier verdict."
+  }
+}

@@ -1,0 +1,119 @@
+{
+  "schema": "act.hybridz.direct_sparse_forward_graph_census_stoploss.v1",
+  "recorded_at": "2026-08-11",
+  "scope": "read_only_structure_census",
+  "representation": {
+    "description": "One direct local forward graph: uncertain inputs are columns; stable-active ReLUs alias their predecessor; stable-inactive ReLUs are constants; every nonconstant Conv/Dense/ADD output receives one continuous column and one native ranged equality; every interval-unstable ReLU receives one output column, one binary column, three exact phase rows, and seven row nonzeros.",
+    "affine_roundoff_policy": "A production implementation would use one outward two-sided equality band per local affine or ADD row. This changes bounds, not the row/nonzero census.",
+    "fallbacks": 0,
+    "alternative_runtime_representations": 0
+  },
+  "method": {
+    "abstract_interval_analysis_used": true,
+    "concrete_onnx_execution": false,
+    "input_sampling_used": false,
+    "pgd_used": false,
+    "solver_executed": false,
+    "expanded_conv_csr_materialized": false,
+    "conv_count_method": "Exact integer-valued convolution of the predecessor variable mask with the stored nonzero-weight mask, including stride, padding, dilation, and groups.",
+    "constant_pruning": "Structural propagation of variable masks through the complete ACT graph; no sampled values or phase guesses.",
+    "thread_count": 1,
+    "device": "cuda:0",
+    "dtype": "float64"
+  },
+  "cases": [
+    {
+      "name": "cifar100_medium_iid29",
+      "onnx_sha256": "aba117ad0ad4abdd630c220beca70cd58825e72e7bada5dffdda10bb725cece4",
+      "vnnlib_sha256": "a0fd1008fcd127ac83840bc00c8f10e995e513bebb22aa9394b2e789d2333720",
+      "layer_count": 43,
+      "interval_relu_counts": {
+        "active": 6085,
+        "inactive": 48121,
+        "unstable": 1254
+      },
+      "direct_graph": {
+        "continuous_columns": 137198,
+        "binary_columns": 1254,
+        "columns": 138452,
+        "rows": 136634,
+        "nnz": 35426210
+      },
+      "direct_graph_without_constant_pruning": {
+        "rows": 151482,
+        "nnz": 74553634
+      },
+      "retained_hybridz_native_baseline": {
+        "continuous_columns": 18539,
+        "binary_columns": 1061,
+        "columns": 19600,
+        "rows": 17489,
+        "nnz": 3498525
+      },
+      "direct_over_hybridz_ratio": {
+        "columns": 7.063877551020409,
+        "rows": 7.812567899822746,
+        "nnz": 10.126041688997507
+      },
+      "dominant_direct_nnz_layers": [
+        {"layer_id": 9, "kind": "CONV2D", "nnz": 7938048},
+        {"layer_id": 13, "kind": "CONV2D", "nnz": 7938048},
+        {"layer_id": 17, "kind": "CONV2D", "nnz": 7938048},
+        {"layer_id": 21, "kind": "CONV2D", "nnz": 1984512},
+        {"layer_id": 26, "kind": "CONV2D", "nnz": 1640448}
+      ],
+      "parse_convert_interval_seconds": 1.3465945180505514
+    },
+    {
+      "name": "tinyimagenet_medium_iid17",
+      "onnx_sha256": "234b04b151d640f8fc859fab00729448ba533d8feb3679427cbadb94467ec776",
+      "vnnlib_sha256": "0089ecbe47c9f4322ea8391c358e8a1dc7645e5832f6a35920434f84a07c0f8c",
+      "layer_count": 43,
+      "interval_relu_counts": {
+        "active": 23464,
+        "inactive": 146849,
+        "unstable": 1983
+      },
+      "direct_graph": {
+        "continuous_columns": 412367,
+        "binary_columns": 1983,
+        "columns": 414350,
+        "rows": 406925,
+        "nnz": 119074953
+      },
+      "direct_graph_without_constant_pruning": {
+        "rows": 460685,
+        "nnz": 250246025
+      },
+      "retained_hybridz_native_baseline": {
+        "continuous_columns": 60097,
+        "binary_columns": 1919,
+        "columns": 62016,
+        "rows": 54327,
+        "nnz": 12127453
+      },
+      "direct_over_hybridz_ratio": {
+        "columns": 6.681340299277606,
+        "rows": 7.490290279235003,
+        "nnz": 9.818628280810488
+      },
+      "dominant_direct_nnz_layers": [
+        {"layer_id": 9, "kind": "CONV2D", "nnz": 26239488},
+        {"layer_id": 13, "kind": "CONV2D", "nnz": 26239488},
+        {"layer_id": 17, "kind": "CONV2D", "nnz": 26239488},
+        {"layer_id": 21, "kind": "CONV2D", "nnz": 6559872},
+        {"layer_id": 26, "kind": "CONV2D", "nnz": 5920896}
+      ],
+      "parse_convert_interval_seconds": 1.5228228084743023
+    }
+  ],
+  "gate": {
+    "requires_both_models_to_materially_reduce_columns_rows_and_nnz": true,
+    "passed": false,
+    "decision": "STOP_BEFORE_IMPLEMENTATION",
+    "reason": "After common structural constant pruning, the direct local formulation is still more than 6.6x larger in columns, 7.4x larger in rows, and 9.8x larger in nnz on both target models. Row count alone closes the path even under an unrealistically cheap affine coefficient representation.",
+    "candidate_files_created": 0,
+    "production_code_changed": false,
+    "formal_solved_count_gain": 0
+  }
+}

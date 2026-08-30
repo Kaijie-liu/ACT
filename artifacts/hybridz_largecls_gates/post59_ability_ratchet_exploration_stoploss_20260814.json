@@ -1,0 +1,145 @@
+{
+  "schema": "act.hybridz.post59_ability_ratchet_exploration_stoploss.v1",
+  "created_at": "2026-08-14",
+  "status": "CLOSED_STOP_LOSS_FORMAL_59_UNCHANGED",
+  "audit_complete": false,
+  "formal_result": {
+    "fixed400_falsified_before": 59,
+    "fixed400_falsified_after": 59,
+    "fixed400_unknown": 341,
+    "fixed400_errors": 0,
+    "production_default_enabled": false,
+    "production_modified": false,
+    "fixed14_run": false,
+    "fixed40_run": false,
+    "fixed400_rerun": false
+  },
+  "goal": {
+    "source": "artifacts/hybridz_largecls_gates/goal_amendment_post59_ability_ratchet_20260814.json",
+    "source_sha256": "eb34cf05f25c7782d4c858685351ac53d64998e4af883379b9346fc64734e4df",
+    "performance_reference": "current formal 59-path",
+    "formal_retention_required": 59,
+    "formal_gain_required": 1,
+    "single_request_speedup_required": 1.5,
+    "four_thread_speedup_required": 2.0,
+    "paired_bootstrap_lower_required": 1.8
+  },
+  "authority_boundary": {
+    "candidate_authority": false,
+    "lp_or_marginal_authority": false,
+    "only_terminal_authority": [
+      "decoded input lies inside the raw BOX",
+      "verifier-owned zero-width outward forward succeeds",
+      "stored-binary64 Fraction property lower bound is strictly positive"
+    ]
+  },
+  "restrictions": {
+    "input_center_boundary_or_random_sampling_used": false,
+    "onnx_input_point_search_used": false,
+    "pgd_used": false,
+    "bab_split_or_enumeration_used": false,
+    "backward_bounds_used": false,
+    "dual_tightening_used": false,
+    "per_instance_runtime_special_case_used": false,
+    "fallback_or_runtime_menu_used": false,
+    "parameter_scan_used": false,
+    "rare_edge_backend_stacking_used": false
+  },
+  "frozen_production": {
+    "phase_source_sha256": "4b66470df55edebb595e0e06c6b8a2de5c65496b8671c4d2f2552003d01ea306",
+    "live_source_sha256": "d53c2335c43905097e78bef8311175d7151d7e98293a6152fce62dba00d37511"
+  },
+  "experiments": {
+    "one_deterministic_multi_flip": {
+      "status": "DISCONNECTED_CAPABILITY_POSITIVE_NOT_PRODUCTION",
+      "rule": "flip every screened phase row that is primal-tight under the frozen tolerance and has a strictly negative upper-row marginal; perform exactly one simultaneous update and one re-solve",
+      "runtime_retries": 0,
+      "runtime_top_k_or_threshold_scan": false,
+      "evaluated_cases": 9,
+      "new_terminal_verified_cases": [
+        "tinyimagenet_medium_iid143"
+      ],
+      "tiny143_base_margin": -0.0010710773153007613,
+      "tiny143_candidate_margin": 0.00021702546121615818,
+      "tiny143_fraction_margin_lower": 0.0002169926152308932,
+      "tiny143_flips": 57,
+      "tiny143_candidate_phase_sign_mismatches": 22,
+      "tiny143_max_phase_sign_mismatch": 2.3555585130022316e-08,
+      "candidate_phase_assignment_has_authority": false,
+      "formal_gain": 0,
+      "artifact": "artifacts/hybridz_largecls_gates/phase_projection_one_multi_flip_capability_20260814.json",
+      "artifact_sha256": "1a7dbb47467eea657dfecf552b51d24cff20adcdbad238f7e53027c86665a303",
+      "tiny143_artifact": "artifacts/hybridz_largecls_gates/phase_projection_one_multi_flip_tiny143_audit_output_20260814.json",
+      "tiny143_artifact_sha256": "0b2091d80fe364925c731dabb8e525654824028c73a13bd024ed9636d4d7e539",
+      "scratch": "scratch_phase_projection_one_multi_flip_probe.py",
+      "scratch_sha256": "9c158f7f13087fe2be93e3b67114db704cfa46432e82fda94e5162dd8da10040"
+    },
+    "zero_correction_analytic_corner": {
+      "status": "RETIRED_FORMAL_RETENTION_FAILURE",
+      "public_gap_new_terminal_verified_cases": [
+        "cifar100_large_iid166"
+      ],
+      "large166_fraction_margin_lower": 0.4187211701057267,
+      "retained59_checked": 41,
+      "retained59_preserved": 34,
+      "retained59_regressed": 7,
+      "regressed_cases": [
+        "cifar100_medium_iid11",
+        "cifar100_medium_iid31",
+        "cifar100_medium_iid54",
+        "cifar100_medium_iid83",
+        "tinyimagenet_medium_iid7",
+        "tinyimagenet_medium_iid69",
+        "tinyimagenet_medium_iid150"
+      ],
+      "reason": "It can reach a new case only as a second path.  Combining it with the retained path would violate the single-path/no-menu requirement.",
+      "formal_gain": 0,
+      "artifact": "artifacts/hybridz_largecls_gates/phase_projection_zero_corner_ability_stoploss_20260814.json",
+      "artifact_sha256": "54e062c41aa2d20db84ffa1a951285581b7b277deb406f6e554620824abc72a4",
+      "probe_sha256": "a94a88e3c53c1d5a49866e40bd80499d6f5f0b08e9619018391b59823ea10324",
+      "retention_harness_sha256": "a4e4dd9410ef1d4f9974b88e77f90188b9fc68eb390590ff9296028ab99a816a"
+    },
+    "request_local_device_affine_program": {
+      "status": "COMPONENT_GATE_PASS_NOT_FULL_PROMOTION",
+      "cross_request_cache": false,
+      "generator_bitwise_equal": true,
+      "terminal_bounds_bitwise_equal": true,
+      "candidate_terminal_causally_independent": true,
+      "single_current_median_seconds": 0.702328,
+      "single_proposed_median_seconds": 0.278302,
+      "four_thread_current_median_seconds": 1.6642138055,
+      "four_thread_proposed_median_seconds": 1.0549424961,
+      "four_thread_median_saving_seconds": 0.6114475029,
+      "artifact": "artifacts/hybridz_largecls_gates/device_affine_program_iid2_sentinel_20260814.json",
+      "artifact_sha256": "7c0dc7de4d08dd396c2aecf53d1499bdc6b9860d7797ce8c041a887997dceca7",
+      "scratch_sha256": "4e7d9a44fe42823f353905e0396b649a6e154b208691c8fb8548c67ffaaa66f2"
+    },
+    "chunked_target_transaction": {
+      "status": "STOP_LOSS_PERFORMANCE_FAIL_AND_PROPOSED_LOADER_SOUNDNESS_BLOCKED",
+      "single_budget_seconds": 0.642884481,
+      "single_observed_median_seconds": 0.3012215793132782,
+      "single_pass": true,
+      "four_thread_budget_seconds": 0.367045639,
+      "four_thread_observed_median_seconds": 1.183849610388279,
+      "four_thread_pass": false,
+      "four_thread_chunk_compose_screen_filter_load_median_seconds_per_request": 0.8498365395,
+      "mechanical_transaction_equivalence": false,
+      "bounded_terminal_observation_pass": true,
+      "loader_soundness": "BLOCKED: the scratch tiny-coefficient RHS compensation omitted the general b - sum(min(a*l,a*u)) rule and did not assert symmetric bounds",
+      "highs_equivalence": "NOT CLAIMED: current SciPy/HiGHS 1.12 and proposed highspy/HiGHS 1.15 use different versions/options and returned different factors",
+      "performance_stop_loss_valid": true,
+      "artifact": "artifacts/hybridz_largecls_gates/phase_projection_chunked_target_transaction_iid2_20260814.json",
+      "artifact_sha256": "8caedde58b3f97841f11d3b10684471437b47258d42c3d8bf5bd3c3e93fa41b3",
+      "scratch_sha256": "9fbbb958c54ebfac4b43d3fe8d467916dbee23a0242fe288fed16cca19adf73a"
+    }
+  },
+  "decision": {
+    "production_integration": false,
+    "formal_count_remains": 59,
+    "multi_flip_disconnected_gain": 1,
+    "multi_flip_formal_gain": 0,
+    "reason": "The only ability-positive update is additive to the retained 59-path.  The only preregistered structural transaction intended to pay for it missed the four-thread transaction budget by 0.816803971 seconds and independently failed its loader soundness audit.  The simpler zero-correction replacement regressed seven of the first 41 retained positives.  The no-menu rule therefore forbids combining these paths.",
+    "no_further_tuning_or_gate_rerun": true,
+    "restart_condition": "A single deterministic representation must preserve all 59, add at least one terminal-verified case, implement a sound request-local loader, and meet the unchanged current-59 single/four-thread/bootstrap/RSS gates without fallback or a second runtime path."
+  }
+}

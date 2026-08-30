@@ -1,0 +1,168 @@
+{
+  "base": {
+    "builder_error_type": "ExactReLUPhaseProjectionUnknown",
+    "loaded_nnz": 1345089,
+    "logical_nnz": 1359504,
+    "model_status": "HighsModelStatus.kInfeasible",
+    "rows": 2202,
+    "seconds_instrumented": 2.931808943860233,
+    "simplex_iterations": 227
+  },
+  "candidate": {
+    "aux_min_bound_slack": 0.004605360185879825,
+    "definition_max_abs_residual": 5.292620508523527e-12,
+    "margin": 0.029165834970771427,
+    "optimal": true
+  },
+  "capture": {
+    "exclusive_no_overwrite": true,
+    "raw_final_json_line_path": "artifacts/hybridz_largecls_gates/fprime_streaming_tiny153_20260814.raw.json",
+    "receipt_path": "artifacts/hybridz_largecls_gates/fprime_streaming_tiny153_20260814.receipt.json"
+  },
+  "case": "tinyimagenet_medium_iid153",
+  "generic_source_sha256": "1f399a29be9fdf9cf2cca0b89adbb6721b307d1913d37be3bb704155458fdaeb",
+  "oracle": {
+    "full_target_materialization_excluded_from_proposed_timing": true,
+    "invoked": true,
+    "keep_count": 2202,
+    "margin_at_lowrank_factors": 0.029165834971066396,
+    "max_upper_row_violation": 3.051062874570576e-12,
+    "nnz": 1359504,
+    "rebuilt_stage_seconds": {
+      "center": 0.03974525164812803,
+      "delta": 0.052786942571401596,
+      "expansion": 0.903862445615232
+    },
+    "rows": 2202,
+    "second_solver_used": false,
+    "seconds_nonauthority": 1.9598503168672323,
+    "violated_rows": 0
+  },
+  "owner": {
+    "dual_ray_calls": 1,
+    "dual_ray_exist_calls": 1,
+    "instances": 1,
+    "model_loads": 2,
+    "poisoned": false,
+    "solves": 2,
+    "state_before_close": "UPDATED_SOLVED"
+  },
+  "plan": {
+    "appended_nnz": 14616,
+    "appended_rows_total": 11,
+    "aux_bound_max": 0.09978695026255054,
+    "aux_bound_min": -0.045902459478192395,
+    "auxiliary_columns_appended": 5,
+    "base_screened_rows": 2202,
+    "definition_range_rows_appended": 5,
+    "existing_aux_nnz": 713,
+    "missing_phase_rows_appended": 6,
+    "tiny": {
+      "flipped_x_tiny_scanned": 0,
+      "owner_appended_rows": {
+        "affected_rows": 0,
+        "deleted_tiny_nnz": 0,
+        "formula": "L'=down(L-sum(max(a*l,a*u))); U'=up(U-sum(min(a*l,a*u)))",
+        "logical_rows_with_any_finite_bound": 11,
+        "maximum_bound_widening": 0.0
+      },
+      "owner_existing_new_columns": {
+        "affected_rows": 0,
+        "deleted_tiny_nnz": 0,
+        "formula": "L'=down(L-sum(max(a*l,a*u))); U'=up(U-sum(min(a*l,a*u)))",
+        "logical_rows_with_any_finite_bound": 2202,
+        "maximum_bound_widening": 0.0
+      },
+      "owner_projection_pending": false,
+      "owner_y_tiny_projection_passes": 1,
+      "plan_y_tiny_compensation_count": 0,
+      "plan_y_tiny_projection_count": 0
+    }
+  },
+  "representation": {
+    "existing_flipped_phase_operation": "same oriented row; upper bound becomes lower bound",
+    "formula_0_to_1": "y_i=c_i+q_i*x+sum_{j<i}D_ij*y_j",
+    "formula_1_to_0": "y_i=-(c_i+q_i*x)",
+    "full_target_pre_or_output_materialized_on_proposed_path": false,
+    "objective": "c_obj+q_obj*x+D_obj*y",
+    "same_highs_owner": true,
+    "second_solver": false,
+    "target_pre": "c+Q*x+D*y"
+  },
+  "restrictions": {
+    "bab_split_or_enumeration_used": false,
+    "backward_bounds_used": false,
+    "candidate_lp_marginal_or_ray_has_authority": false,
+    "dual_tightening_used": false,
+    "fallback_or_runtime_menu": false,
+    "input_center_boundary_or_random_sampling_used": false,
+    "onnx_input_point_execution_used": false,
+    "parameter_scan": false,
+    "pgd_used": false,
+    "phase_updates_max": 1,
+    "production_modified": false,
+    "resolves_after_base_max": 1,
+    "second_solver_used": false,
+    "updated_full_target_materialized_on_proposed_path": false
+  },
+  "schema": "act.scratch.fprime_persistent_lowrank_streaming_sentinel.v1",
+  "scratch_sha256": "4d7adffe5bf4e9913debc003db859ff2c4d975bec232d02dcedd01e7e6cf69be",
+  "selected_flip_count": 5,
+  "selected_rows_sha256": "b6bbf35dcaf5d762d8d1676f97b50065acd9eb2752b9532dcd49db8a8d312c4d",
+  "selection_diagnostics": {
+    "algebraic_farkas_replay_used": false,
+    "exact_nonzero_count": 5,
+    "finite": true,
+    "has_ray": true,
+    "implicit_bound_components_consumed": false,
+    "owned_contiguous_float64_read_only": true,
+    "proof_or_tightening_authority": false,
+    "rows": 2202,
+    "selected_count": 5,
+    "upper_row_sign_nonpositive": true,
+    "validation_scope": "api_state_shape_finite_upper_sign_exact_nonzero_only"
+  },
+  "selection_rule": "infeasible_all_exact_nonzero_validated_dual_ray_phase_rows",
+  "source_locks": {
+    "fprime": "6ce6ab6b208a1224ce70cfc0e4f183f5acf07fbc6d9db65ef34a8f4694602a15",
+    "live": "d53c2335c43905097e78bef8311175d7151d7e98293a6152fce62dba00d37511",
+    "phase": "4b66470df55edebb595e0e06c6b8a2de5c65496b8671c4d2f2552003d01ea306"
+  },
+  "status": "UPDATED_TERMINAL_VERIFIED",
+  "streaming_plan": "reuse_base_loaded_x_existing_D_only_owner_projects_y_tiny_once",
+  "terminal": {
+    "fraction_margin_lower": 0.029165812152095683,
+    "raw_box": true,
+    "seconds": 1.1224892418831587,
+    "verified": true,
+    "zero_width_interval": true
+  },
+  "timing": {
+    "component_delta_mutation_warm_readback_seconds": 0.30391250364482403,
+    "component_screening_target_pass": false,
+    "component_screening_target_seconds": 0.09717,
+    "component_target_is_not_fprime_promotion_authority": true,
+    "delta_seconds": 0.0062485383823513985,
+    "full_incremental_including_owner_projection_seconds": 0.3138535534963012,
+    "full_incremental_through_readback_seconds": 0.3136958684772253,
+    "mutation_seconds": 0.0040893396362662315,
+    "owner_projection_seconds": 0.00015768501907587051,
+    "plan_assembly_seconds": 0.009783364832401276,
+    "readback_seconds": 0.00031372997909784317,
+    "timing_authority": false,
+    "warm_solve_seconds": 0.29326089564710855
+  },
+  "updated": {
+    "basis_valid_before_warm_run": true,
+    "columns": 9413,
+    "model_status": "HighsModelStatus.kOptimal",
+    "mutation_seconds": 0.0040893396362662315,
+    "nnz": 1360418,
+    "objective_value": -1.5922245159380797,
+    "owner_projection_seconds": 0.00015768501907587051,
+    "readback_seconds": 0.00031372997909784317,
+    "rows": 2213,
+    "simplex_iterations": 962,
+    "warm_solve_seconds": 0.29326089564710855
+  }
+}

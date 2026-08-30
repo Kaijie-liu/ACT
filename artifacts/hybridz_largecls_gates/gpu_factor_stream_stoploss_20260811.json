@@ -1,0 +1,99 @@
+{
+  "schema": "act.hybridz.gpu_factor_stream_stoploss.v1",
+  "created_at_local": "2026-08-11",
+  "status": "performance_gate_failed_candidate_removed",
+  "goal_scope": "CIFAR100/TinyImageNet common forward exact-ReLU HybridZ path",
+  "candidate": {
+    "description": "Propagate fixed batches of continuous-factor columns through the verifier DAG on CUDA, alias stable-active ReLUs, set stable-inactive rows to zero, and retain one local continuous factor, one binary phase factor, and all three exact Big-M facets for every interval-unstable ReLU.",
+    "selected_runtime_algorithm_count": 1,
+    "fixed_factor_batch": 64,
+    "runtime_fallbacks": 0,
+    "second_full_hz_built": false,
+    "triangle_rows": 0,
+    "branch_and_bound": false,
+    "backward_propagation": false,
+    "dual_tightening": false,
+    "solver_executed": false
+  },
+  "symbolic_gate": {
+    "status": "passed",
+    "tests": "3/3",
+    "method": "Fraction phase elimination and Jacobian comparison on a scalar residual DAG; no model input points were evaluated",
+    "stable_active_alias_additional_factors": 0,
+    "unstable_relu_binary_factors": 1,
+    "unstable_relu_exact_upper_facets": 3
+  },
+  "cifar100_medium_iid29": {
+    "model": "CIFAR100_resnet_medium.onnx",
+    "property": "CIFAR100_resnet_medium_prop_idx_4429_sidx_1471_eps_0.0039.vnnlib",
+    "candidate_structure": {
+      "continuous_factors": 4426,
+      "binary_phase_factors": 1254,
+      "source_rows": 3762,
+      "constraint_nnz": 3453014,
+      "output_nnz": 10100
+    },
+    "retained_production_structure": {
+      "continuous_factors": 10347,
+      "binary_phase_factors": 1052,
+      "source_rows": 15402,
+      "constraint_nnz": 1994878
+    },
+    "first_complete_candidate": {
+      "wall_seconds": 2.055070507340133,
+      "cuda_peak_allocated_bytes": 1353082880
+    },
+    "integrated_shadow_candidate": {
+      "wall_seconds": 1.636104840785265,
+      "cuda_peak_allocated_bytes": 1265831424,
+      "incremental_cuda_peak_bytes": 1220428800,
+      "matrix_build_seconds": 0.5054550291970372,
+      "gpu_schedule_seconds": 0.2797807678580284,
+      "gpu_stream_seconds": 0.5825926037505269,
+      "integrated_shadow_seconds": 0.17421599477529526,
+      "assembly_seconds": 0.08836416061967611
+    },
+    "paired_gate": {
+      "protocol": "one warmup each, five AB/BA alternating pairs, one CPU thread, same converted graph and interval facts",
+      "retained_production_median_seconds": 2.1953833550214767,
+      "candidate_median_seconds": 1.5711547983810306,
+      "paired_speedups": [
+        1.4014007065953689,
+        1.3946980005191922,
+        1.3939900475372988,
+        1.4068396036821778,
+        1.4004221595714506
+      ],
+      "median_paired_speedup": 1.4004221595714506,
+      "required_speedup": 1.5,
+      "passed": false
+    },
+    "batch128_stoploss": {
+      "median_batch64_seconds": 1.6081076236441731,
+      "median_batch128_seconds": 1.5541790630668402,
+      "batch128_over_batch64_speedup": 1.0346990651585002,
+      "candidate128_over_production_speedup": 1.4125678354522142,
+      "full_hz_bitwise_equal_across_independent_batch64_and_batch128_builds": false,
+      "passed": false,
+      "retained": false
+    }
+  },
+  "tinyimagenet": {
+    "attempted": false,
+    "reason": "The smaller CIFAR100 common-path gate did not reach 1.5x."
+  },
+  "method_restrictions": {
+    "input_center_boundary_random_or_grid_sampling_used": false,
+    "pgd_used": false,
+    "concrete_onnx_execution_used_for_candidate_search": false,
+    "formal_solver_used": false
+  },
+  "formal_solved_count_gain": 0,
+  "candidate_files_before_removal": {
+    "implementation": "act/back_end/hybridz_tf/forward_exact_relu_gpu_stream_candidate.py",
+    "implementation_sha256": "303f7bcb4c8263bee86b40baf5c0135e4ef33a16ceebef3bdcc1f72b43e80ab3",
+    "test": "act/back_end/hybridz_tf/test_forward_exact_relu_gpu_stream_candidate.py",
+    "test_sha256": "99320822d2b4cff1128091ed20afdbc9dc4376709abe7a6a6f1b8c3d613773a4"
+  },
+  "decision": "Close and remove the disconnected candidate. It reduced retained rows and factors but increased constraint nnz, required about 1.2 GiB incremental CUDA allocation, and delivered only a stable 1.400x paired frontend speedup. Do not run TinyImageNet or a solver from this route, and do not retain a second backend implementation."
+}

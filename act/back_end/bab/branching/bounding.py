@@ -129,6 +129,7 @@ class RandomBounding(BoundingStrategy):
         self._lb: Optional[torch.Tensor] = None  # (M, D)
         self._ub: Optional[torch.Tensor] = None  # (M, D)
         self._depths: Optional[torch.Tensor] = None  # (M,)
+        self._spec_row_ids: Optional[torch.Tensor] = None  # (M,)
 
     # -- BoundingStrategy interface -----------------------------------------
 
@@ -137,11 +138,28 @@ class RandomBounding(BoundingStrategy):
             self._lb = batch.lb.clone()
             self._ub = batch.ub.clone()
             self._depths = batch.depths.clone()
+            self._spec_row_ids = (
+                batch.spec_row_ids.clone()
+                if batch.spec_row_ids is not None
+                else None
+            )
         else:
             assert self._ub is not None and self._depths is not None
+            assert (self._spec_row_ids is None) == (
+                batch.spec_row_ids is None
+            )
             self._lb = torch.cat([self._lb, batch.lb], dim=0)
             self._ub = torch.cat([self._ub, batch.ub], dim=0)
             self._depths = torch.cat([self._depths, batch.depths], dim=0)
+            if self._spec_row_ids is not None:
+                assert batch.spec_row_ids is not None
+                self._spec_row_ids = torch.cat(
+                    [
+                        self._spec_row_ids,
+                        batch.spec_row_ids.to(self._spec_row_ids.device),
+                    ],
+                    dim=0,
+                )
 
     def pop(self, batch_size: int = 1) -> SubproblemBatch:
         if self.empty:
@@ -157,16 +175,28 @@ class RandomBounding(BoundingStrategy):
             lb=self._lb[selected],
             ub=self._ub[selected],
             depths=self._depths[selected],
+            spec_row_ids=(
+                self._spec_row_ids.index_select(
+                    0, selected.to(self._spec_row_ids.device)
+                )
+                if self._spec_row_ids is not None
+                else None
+            ),
         )
 
         if len(remaining) > 0:
             self._lb = self._lb[remaining]
             self._ub = self._ub[remaining]
             self._depths = self._depths[remaining]
+            if self._spec_row_ids is not None:
+                self._spec_row_ids = self._spec_row_ids.index_select(
+                    0, remaining.to(self._spec_row_ids.device)
+                )
         else:
             self._lb = None
             self._ub = None
             self._depths = None
+            self._spec_row_ids = None
 
         return result
 
@@ -178,6 +208,8 @@ class RandomBounding(BoundingStrategy):
         self._lb = self._lb[:cap]
         self._ub = self._ub[:cap]
         self._depths = self._depths[:cap]
+        if self._spec_row_ids is not None:
+            self._spec_row_ids = self._spec_row_ids[:cap]
         return total - cap
 
     def __len__(self) -> int:
@@ -328,9 +360,11 @@ class TopKBounding(BoundingStrategy):
         self._parent_margins: Optional[torch.Tensor] = None
         self._node_id: Optional[torch.Tensor] = None
         self._parent_id: Optional[torch.Tensor] = None
+        self._spec_row_ids: Optional[torch.Tensor] = None
         self._incremental_alpha: Optional[Dict[int, torch.Tensor]] = None
         self._incremental_eta: Optional[Dict[int, torch.Tensor]] = None
         self._split_signs: Optional[Dict[int, torch.Tensor]] = None
+        self._fair_spec_cursor = 0
 
     def push(self, batch: SubproblemBatch) -> None:
         n_new = batch.batch_size
@@ -355,6 +389,11 @@ class TopKBounding(BoundingStrategy):
             self._parent_margins = parent.clone()
             self._node_id = batch.node_id.clone() if batch.node_id is not None else None
             self._parent_id = batch.parent_id.clone() if batch.parent_id is not None else None
+            self._spec_row_ids = (
+                batch.spec_row_ids.clone()
+                if batch.spec_row_ids is not None
+                else None
+            )
             self._incremental_alpha = _clone_optional_dict(batch.incremental_alpha)
             self._incremental_eta = _clone_optional_dict(batch.incremental_eta)
             self._split_signs = _clone_optional_dict(batch.split_signs)
@@ -364,6 +403,9 @@ class TopKBounding(BoundingStrategy):
         assert prev_lower is not None and prev_parent is not None
         assert (self._node_id is None) == (batch.node_id is None)
         assert (self._parent_id is None) == (batch.parent_id is None)
+        assert (self._spec_row_ids is None) == (
+            batch.spec_row_ids is None
+        )
         n_old = prev_lb.shape[0]
         self._incremental_alpha = _merge_optional_dict(self._incremental_alpha, n_old, batch.incremental_alpha, n_new)
         self._incremental_eta = _merge_optional_dict(self._incremental_eta, n_old, batch.incremental_eta, n_new)
@@ -379,6 +421,15 @@ class TopKBounding(BoundingStrategy):
         if self._parent_id is not None:
             assert batch.parent_id is not None
             self._parent_id = torch.cat([self._parent_id, batch.parent_id.to(self._parent_id.device)], dim=0)
+        if self._spec_row_ids is not None:
+            assert batch.spec_row_ids is not None
+            self._spec_row_ids = torch.cat(
+                [
+                    self._spec_row_ids,
+                    batch.spec_row_ids.to(self._spec_row_ids.device),
+                ],
+                dim=0,
+            )
 
     def pop(self, batch_size: int = 1) -> SubproblemBatch:
         lb = self._lb
@@ -390,9 +441,49 @@ class TopKBounding(BoundingStrategy):
             selected = torch.arange(total, device=lb.device)
             remaining: Optional[torch.Tensor] = None
         else:
-            order = torch.argsort(self._priority_scores(), descending=True)
-            selected = order[:n]
-            remaining = order[n:]
+            order = torch.argsort(
+                self._priority_scores(), descending=True, stable=True
+            )
+            if self._spec_row_ids is None:
+                selected = order[:n]
+            else:
+                # Property forests must not let one hard rival starve every
+                # other proof tree.  Take the highest-priority node from as
+                # many row identities as fit, rotating the first identity
+                # across waves, then fill any spare slots by global priority.
+                ordered_indices = [int(value) for value in order.tolist()]
+                row_by_index = {
+                    index: int(self._spec_row_ids[index].item())
+                    for index in ordered_indices
+                }
+                row_ids = sorted(set(row_by_index.values()))
+                if row_ids:
+                    shift = self._fair_spec_cursor % len(row_ids)
+                    row_ids = row_ids[shift:] + row_ids[:shift]
+                chosen: list[int] = []
+                for row_id in row_ids[:n]:
+                    chosen.append(
+                        next(
+                            index
+                            for index in ordered_indices
+                            if row_by_index[index] == row_id
+                        )
+                    )
+                chosen_set = set(chosen)
+                chosen.extend(
+                    index
+                    for index in ordered_indices
+                    if index not in chosen_set
+                )
+                selected = torch.tensor(
+                    chosen[:n], device=lb.device, dtype=torch.long
+                )
+                self._fair_spec_cursor += min(n, len(row_ids))
+            selected_mask = torch.zeros(
+                total, dtype=torch.bool, device=lb.device
+            )
+            selected_mask[selected] = True
+            remaining = order[~selected_mask.index_select(0, order)]
 
         result = self._build(selected)
         if remaining is None or remaining.numel() == 0:
@@ -404,7 +495,56 @@ class TopKBounding(BoundingStrategy):
     def _priority_scores(self) -> torch.Tensor:
         depths_t, lb = self._depths, self._lower_bound
         assert depths_t is not None and lb is not None
-        return self.order(depths_t, lb)
+        if not lb.is_floating_point():
+            raise TypeError("TopK lower bounds must use a floating-point dtype")
+
+        # A single NaN/Inf must not poison the global min/max normalization used
+        # by the built-in orders.  Non-authoritative NaN/-Inf bounds are handled
+        # fail-closed as maximally urgent; +Inf is a strong positive lower bound
+        # and therefore minimally urgent.  The finite surrogate is used only to
+        # obtain ordinary scores for finite lanes -- the two non-finite classes
+        # are overwritten below and never gain proof authority.
+        unreliable = torch.isnan(lb) | torch.isneginf(lb)
+        positive_inf = torch.isposinf(lb)
+        finite = torch.isfinite(lb)
+        if bool(finite.any().item()):
+            finite_values = lb[finite]
+            finite_floor = finite_values.min()
+            finite_ceiling = finite_values.max()
+            order_lb = torch.where(
+                unreliable,
+                finite_floor,
+                torch.where(positive_inf, finite_ceiling, lb),
+            )
+        else:
+            order_lb = torch.zeros_like(lb)
+
+        scores = self.order(depths_t, order_lb)
+        if scores.shape != lb.shape:
+            raise ValueError(
+                "TopK order must return one priority score per lower bound"
+            )
+        if not scores.is_floating_point():
+            raise TypeError("TopK priority scores must use a floating-point dtype")
+        limits = torch.finfo(scores.dtype)
+        # Custom order functions are also contained fail-closed: an undefined
+        # score is processed promptly instead of acquiring backend-dependent
+        # argsort placement.
+        scores = torch.nan_to_num(
+            scores,
+            nan=limits.max,
+            posinf=limits.max,
+            neginf=limits.max,
+        )
+        return torch.where(
+            unreliable,
+            torch.full_like(scores, limits.max),
+            torch.where(
+                positive_inf,
+                torch.full_like(scores, limits.min),
+                scores,
+            ),
+        )
 
     def _build(self, idx: torch.Tensor) -> SubproblemBatch:
         lb, ub, depths = self._lb, self._ub, self._depths
@@ -431,6 +571,13 @@ class TopKBounding(BoundingStrategy):
                 if self._parent_id is not None
                 else None
             ),
+            spec_row_ids=(
+                self._spec_row_ids.index_select(
+                    0, idx.to(self._spec_row_ids.device)
+                )
+                if self._spec_row_ids is not None
+                else None
+            ),
         )
 
     def _restrict(self, idx: torch.Tensor) -> None:
@@ -438,6 +585,7 @@ class TopKBounding(BoundingStrategy):
         self._lb, self._ub, self._depths = kept.lb, kept.ub, kept.depths
         self._lower_bound, self._parent_margins = kept.lower_bound, kept.parent_margins
         self._node_id, self._parent_id = kept.node_id, kept.parent_id
+        self._spec_row_ids = kept.spec_row_ids
         self._incremental_alpha, self._incremental_eta, self._split_signs = (
             kept.incremental_alpha,
             kept.incremental_eta,
@@ -448,13 +596,16 @@ class TopKBounding(BoundingStrategy):
         self._lb = self._ub = self._depths = None
         self._lower_bound = self._parent_margins = None
         self._node_id = self._parent_id = None
+        self._spec_row_ids = None
         self._incremental_alpha = self._incremental_eta = self._split_signs = None
 
     def evict_to(self, cap: int) -> int:
         total = len(self)
         if total <= cap or cap <= 0:
             return 0
-        order = torch.argsort(self._priority_scores(), descending=True)
+        order = torch.argsort(
+            self._priority_scores(), descending=True, stable=True
+        )
         self._restrict(order[:cap])
         return total - cap
 

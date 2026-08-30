@@ -1726,6 +1726,99 @@ def sparse_empty(rows: int, cols: int) -> sp.csr_matrix:
     return sp.csr_matrix((int(rows), int(cols)), dtype=np.float64)
 
 
+def _sparse_fresh_ids(k: int) -> np.ndarray:
+    return (
+        hz_fresh_col_ids(int(k), device="cpu")
+        .detach()
+        .cpu()
+        .numpy()
+        .astype(np.int64, copy=False)
+    )
+
+
+def _sparse_copy_ids(ids: Optional[np.ndarray]) -> Optional[np.ndarray]:
+    return None if ids is None else np.asarray(ids, dtype=np.int64).copy()
+
+
+def _sparse_reindex_cols(
+    mat: sp.csr_matrix,
+    old_ids: np.ndarray,
+    new_ids: np.ndarray,
+) -> sp.csr_matrix:
+    """Embed ``mat`` in ``new_ids`` without changing factor semantics."""
+
+    old_ids = np.asarray(old_ids, dtype=np.int64).reshape(-1)
+    new_ids = np.asarray(new_ids, dtype=np.int64).reshape(-1)
+    if mat.shape[1] != old_ids.size:
+        raise ValueError(
+            f"sparse frame width/id mismatch: matrix={mat.shape[1]}, ids={old_ids.size}"
+        )
+    new_pos = {int(gid): pos for pos, gid in enumerate(new_ids.tolist())}
+    try:
+        remap = np.asarray([new_pos[int(gid)] for gid in old_ids], dtype=np.int64)
+    except KeyError as exc:
+        raise ValueError(f"target sparse frame omits generator id {exc.args[0]}") from None
+    coo = mat.tocoo()
+    out = sp.coo_matrix(
+        (coo.data, (coo.row, remap[coo.col])),
+        shape=(mat.shape[0], new_ids.size),
+        dtype=np.float64,
+    ).tocsr()
+    out.eliminate_zeros()
+    return out
+
+
+def _sparse_align_frame(
+    hz: SparseHZono,
+    col_ids: np.ndarray,
+    bcol_ids: np.ndarray,
+) -> SparseHZono:
+    """Return ``hz`` expressed in the requested stable generator frame."""
+
+    if hz.col_ids is None or hz.bcol_ids is None:
+        raise ValueError("sparse HZ join requires stable continuous and binary ids")
+    col_ids = np.asarray(col_ids, dtype=np.int64).reshape(-1)
+    bcol_ids = np.asarray(bcol_ids, dtype=np.int64).reshape(-1)
+    return SparseHZono(
+        c=hz.c,
+        Gc=_sparse_reindex_cols(hz.Gc, hz.col_ids, col_ids),
+        Gb=_sparse_reindex_cols(hz.Gb, hz.bcol_ids, bcol_ids),
+        Ac=_sparse_reindex_cols(hz.Ac, hz.col_ids, col_ids),
+        Ab=_sparse_reindex_cols(hz.Ab, hz.bcol_ids, bcol_ids),
+        b=hz.b,
+        Auc=(
+            None
+            if hz.Auc is None
+            else _sparse_reindex_cols(hz.Auc, hz.col_ids, col_ids)
+        ),
+        Aub=(
+            None
+            if hz.Aub is None
+            else _sparse_reindex_cols(hz.Aub, hz.bcol_ids, bcol_ids)
+        ),
+        ub=hz.ub,
+        col_ids=col_ids,
+        bcol_ids=bcol_ids,
+    )
+
+
+def _sparse_union_ids(
+    parts: Sequence[SparseHZono],
+    attr: str,
+) -> np.ndarray:
+    ordered: List[int] = []
+    seen = set()
+    for part in parts:
+        ids = getattr(part, attr)
+        if ids is None:
+            raise ValueError(f"sparse HZ join requires stable {attr}")
+        for gid in np.asarray(ids, dtype=np.int64).tolist():
+            if int(gid) not in seen:
+                seen.add(int(gid))
+                ordered.append(int(gid))
+    return np.asarray(ordered, dtype=np.int64)
+
+
 def sparse_pad_cols(mat: sp.csr_matrix, cols: int) -> sp.csr_matrix:
     mat = mat.tocsr()
     cols = int(cols)
@@ -1737,8 +1830,29 @@ def sparse_pad_cols(mat: sp.csr_matrix, cols: int) -> sp.csr_matrix:
 
 
 def sparse_hz_pad_frame(hz: SparseHZono, n_cont: int, n_bin: int) -> SparseHZono:
+    """Pad one representation with semantically-unused fresh columns.
+
+    This helper preserves a single set but must not be used to align sibling
+    branches.  Branch joins use ``_sparse_align_frame`` and generator ids.
+    """
+
+    if n_cont < hz.n_cont or n_bin < hz.n_bin:
+        raise ValueError(
+            f"cannot shrink sparse HZ frame from ({hz.n_cont}, {hz.n_bin}) "
+            f"to ({n_cont}, {n_bin})"
+        )
     Auc = None if hz.Auc is None else sparse_pad_cols(hz.Auc, n_cont)
     Aub = None if hz.Aub is None else sparse_pad_cols(hz.Aub, n_bin)
+    col_ids = None
+    if hz.col_ids is not None:
+        col_ids = np.concatenate(
+            [hz.col_ids, _sparse_fresh_ids(n_cont - hz.n_cont)]
+        )
+    bcol_ids = None
+    if hz.bcol_ids is not None:
+        bcol_ids = np.concatenate(
+            [hz.bcol_ids, _sparse_fresh_ids(n_bin - hz.n_bin)]
+        )
     return SparseHZono(
         c=hz.c,
         Gc=sparse_pad_cols(hz.Gc, n_cont),
@@ -1749,10 +1863,17 @@ def sparse_hz_pad_frame(hz: SparseHZono, n_cont: int, n_bin: int) -> SparseHZono
         Auc=Auc,
         Aub=Aub,
         ub=hz.ub,
+        col_ids=col_ids,
+        bcol_ids=bcol_ids,
     )
 
 
-def sparse_hz_from_bounds(bounds: Bounds, *, drop_zero_radius: bool = True) -> SparseHZono:
+def sparse_hz_from_bounds(
+    bounds: Bounds,
+    *,
+    drop_zero_radius: bool = True,
+    col_ids: Optional[Sequence[int]] = None,
+) -> SparseHZono:
     """Create a sparse HZ box from ACT ``Bounds``.
 
     By default, zero-radius dimensions do not allocate useless generator
@@ -1764,13 +1885,22 @@ def sparse_hz_from_bounds(bounds: Bounds, *, drop_zero_radius: bool = True) -> S
     ub = bounds.ub.detach().cpu().double().numpy().reshape(-1)
     center = (lb + ub) * 0.5
     rad = (ub - lb) * 0.5
+    full_col_ids = (
+        _sparse_fresh_ids(rad.size)
+        if col_ids is None
+        else np.asarray(col_ids, dtype=np.int64).reshape(-1)
+    )
+    if full_col_ids.size != rad.size:
+        raise ValueError(
+            f"sparse input id mismatch: ids={full_col_ids.size}, input={rad.size}"
+        )
     if drop_zero_radius:
         rows = np.nonzero(np.abs(rad) > 1e-12)[0].astype(np.int32)
     else:
         rows = np.arange(rad.size, dtype=np.int32)
     cols = np.arange(rows.size, dtype=np.int32)
     Gc = sp.csr_matrix((rad[rows], (rows, cols)), shape=(rad.size, rows.size), dtype=np.float64)
-    return SparseHZono(
+    out = SparseHZono(
         c=center,
         Gc=Gc,
         Gb=sparse_empty(rad.size, 0),
@@ -1780,7 +1910,11 @@ def sparse_hz_from_bounds(bounds: Bounds, *, drop_zero_radius: bool = True) -> S
         Auc=sparse_empty(0, rows.size),
         Aub=sparse_empty(0, 0),
         ub=np.zeros(0, dtype=np.float64),
+        col_ids=full_col_ids[rows],
+        bcol_ids=np.zeros(0, dtype=np.int64),
     )
+    out.full_col_ids = full_col_ids.copy()
+    return out
 
 
 def sparse_hz_linear(hz: SparseHZono, W, bias: Optional[Sequence[float]] = None) -> SparseHZono:
@@ -1810,6 +1944,8 @@ def sparse_hz_linear(hz: SparseHZono, W, bias: Optional[Sequence[float]] = None)
         Auc=hz.Auc,
         Aub=hz.Aub,
         ub=hz.ub,
+        col_ids=_sparse_copy_ids(hz.col_ids),
+        bcol_ids=_sparse_copy_ids(hz.bcol_ids),
     )
 
 
@@ -2072,6 +2208,16 @@ def sparse_hz_gather_rows_like(
 
     row_idx = np.asarray(rows, dtype=np.int64).reshape(-1)
     tmpl = template if template is not None else base
+    if base is not tmpl:
+        if (
+            base.col_ids is not None
+            and base.bcol_ids is not None
+            and tmpl.col_ids is not None
+            and tmpl.bcol_ids is not None
+        ):
+            base = _sparse_align_frame(base, tmpl.col_ids, tmpl.bcol_ids)
+        elif base.n_cont != tmpl.n_cont or base.n_bin != tmpl.n_bin:
+            raise ValueError("sparse gather template has an untracked generator frame")
     n = int(row_idx.size)
     valid = row_idx >= 0
     c = np.full(n, float(fill_value), dtype=np.float64)
@@ -2109,6 +2255,8 @@ def sparse_hz_gather_rows_like(
         Auc=tmpl.Auc,
         Aub=tmpl.Aub,
         ub=tmpl.ub,
+        col_ids=_sparse_copy_ids(tmpl.col_ids),
+        bcol_ids=_sparse_copy_ids(tmpl.bcol_ids),
     )
 
 
@@ -2380,8 +2528,18 @@ def sparse_hz_apply_relu_exact(
     ub_rhs = np.concatenate(upper_rhs)
     Auc.eliminate_zeros()
     Aub.eliminate_zeros()
+    col_ids = None
+    bcol_ids = None
+    if hz.col_ids is not None:
+        col_ids = np.concatenate(
+            [hz.col_ids, _sparse_fresh_ids(2 * k if compressed else 4 * k)]
+        )
+    if hz.bcol_ids is not None:
+        bcol_ids = np.concatenate([hz.bcol_ids, _sparse_fresh_ids(k)])
     out = SparseHZono(
         out_c, out_Gc, out_Gb, Ac, Ab, b, Auc, Aub, ub_rhs,
+        col_ids=col_ids,
+        bcol_ids=bcol_ids,
     )
     if return_info:
         return out, (int(active.sum()), int(inactive.sum()), k), info
@@ -2766,6 +2924,8 @@ def sparse_hz_apply_scurve_piecewise(
             Auc=hz.Auc,
             Aub=hz.Aub,
             ub=hz.ub,
+            col_ids=_sparse_copy_ids(hz.col_ids),
+            bcol_ids=_sparse_copy_ids(hz.bcol_ids),
         )
         if return_info:
             info = {
@@ -3098,8 +3258,16 @@ def sparse_hz_apply_scurve_piecewise(
     Auc.eliminate_zeros()
     Aub.eliminate_zeros()
 
+    col_ids = None
+    bcol_ids = None
+    if hz.col_ids is not None:
+        col_ids = np.concatenate([hz.col_ids, _sparse_fresh_ids(2 * r)])
+    if hz.bcol_ids is not None:
+        bcol_ids = np.concatenate([hz.bcol_ids, _sparse_fresh_ids(r)])
     out = SparseHZono(
         out_c, out_Gc, out_Gb, Ac, Ab, b, Auc, Aub, ub_rhs,
+        col_ids=col_ids,
+        bcol_ids=bcol_ids,
     )
     if return_info:
         info = {
@@ -3196,6 +3364,8 @@ def sparse_hz_add_const(hz: SparseHZono, bias) -> SparseHZono:
         Auc=hz.Auc,
         Aub=hz.Aub,
         ub=hz.ub,
+        col_ids=_sparse_copy_ids(hz.col_ids),
+        bcol_ids=_sparse_copy_ids(hz.bcol_ids),
     )
 
 
@@ -3217,6 +3387,8 @@ def sparse_hz_gather_rows(hz: SparseHZono, rows: Sequence[int]) -> SparseHZono:
         Auc=hz.Auc,
         Aub=hz.Aub,
         ub=hz.ub,
+        col_ids=_sparse_copy_ids(hz.col_ids),
+        bcol_ids=_sparse_copy_ids(hz.bcol_ids),
     )
 
 
@@ -3289,9 +3461,11 @@ def sparse_hz_concat(parts: Iterable[SparseHZono]) -> SparseHZono:
     parts = list(parts)
     if not parts:
         raise ValueError("sparse_hz_concat requires at least one part")
-    n_cont = max(p.n_cont for p in parts)
-    n_bin = max(p.n_bin for p in parts)
-    padded = [sparse_hz_pad_frame(p, n_cont, n_bin) for p in parts]
+    col_ids = _sparse_union_ids(parts, "col_ids")
+    bcol_ids = _sparse_union_ids(parts, "bcol_ids")
+    padded = [_sparse_align_frame(p, col_ids, bcol_ids) for p in parts]
+    n_cont = int(col_ids.size)
+    n_bin = int(bcol_ids.size)
     Ac, Ab, b = _merge_equalities(padded, n_cont, n_bin)
     Auc, Aub, ub = _merge_uppers(padded, n_cont, n_bin)
     Gc = sp.vstack([p.Gc for p in padded], format="csr")
@@ -3308,16 +3482,20 @@ def sparse_hz_concat(parts: Iterable[SparseHZono]) -> SparseHZono:
         Auc=Auc,
         Aub=Aub,
         ub=ub,
+        col_ids=col_ids,
+        bcol_ids=bcol_ids,
     )
 
 
 def sparse_hz_add_same_frame(x: SparseHZono, y: SparseHZono) -> SparseHZono:
-    """Exact sum when both HZs use the same global generator frame."""
+    """Exact sum after aligning shared and branch-local generator identities."""
 
-    n_cont = max(x.n_cont, y.n_cont)
-    n_bin = max(x.n_bin, y.n_bin)
-    xp = sparse_hz_pad_frame(x, n_cont, n_bin)
-    yp = sparse_hz_pad_frame(y, n_cont, n_bin)
+    col_ids = _sparse_union_ids([x, y], "col_ids")
+    bcol_ids = _sparse_union_ids([x, y], "bcol_ids")
+    n_cont = int(col_ids.size)
+    n_bin = int(bcol_ids.size)
+    xp = _sparse_align_frame(x, col_ids, bcol_ids)
+    yp = _sparse_align_frame(y, col_ids, bcol_ids)
     if xp.n_out != yp.n_out:
         raise ValueError(f"add shape mismatch: {xp.n_out} vs {yp.n_out}")
     Ac, Ab, b = _merge_equalities([xp, yp], n_cont, n_bin)
@@ -3336,6 +3514,8 @@ def sparse_hz_add_same_frame(x: SparseHZono, y: SparseHZono) -> SparseHZono:
         Auc=Auc,
         Aub=Aub,
         ub=ub,
+        col_ids=col_ids,
+        bcol_ids=bcol_ids,
     )
 
 

@@ -1,0 +1,111 @@
+{
+  "schema": "act.hybridz.phase_projection_device_program.synthetic_release_gate.v1",
+  "created_at": "2026-08-14",
+  "status": "PASS_NOT_PRODUCTION",
+  "all_checks_pass": true,
+  "run_policy": {
+    "synthetic_gpu_runs": 1,
+    "rerun_performed": false,
+    "first_blocker_stops": true
+  },
+  "capture": {
+    "combined_stdout_path": "artifacts/hybridz_largecls_gates/phase_projection_device_program_synthetic_release_run1_stdout_20260814.txt",
+    "combined_stdout_sha256": "cd1a2045c1743826bca735f5bcdc46d6878184617f94983c33519cd380b3b447",
+    "exit_code": 0,
+    "wall_seconds": 1.586499352
+  },
+  "static_reference_audit": {
+    "passed": true,
+    "programs_assignments": 1,
+    "programs_deletions": 1,
+    "forbidden_tensor_bindings": [],
+    "tensor_clone_calls": 0,
+    "strong_reference_manifest": {
+      "success_persistent_owner": [
+        "programs"
+      ],
+      "success_after_delete": [
+        "three weakref.ref objects",
+        "three integer storage pointers"
+      ],
+      "failure_transient_owner": [
+        "pair inside observing_seal; its successful callback frame returned before injection"
+      ],
+      "failure_after_injection": [
+        "three weakref.ref objects",
+        "the injected exception object and its sanitized traceback"
+      ]
+    }
+  },
+  "success_release": {
+    "storage_disjoint": true,
+    "three_storage_weakrefs_dead": true,
+    "entry_allocated_bytes": 1536,
+    "peak_allocated_bytes": 5120,
+    "released_allocated_bytes": 1536,
+    "released_minus_entry_bytes": 0,
+    "allowed_allocator_constant_bytes": 1048576,
+    "allocated_returned_within_constant": true
+  },
+  "baseexception_release": {
+    "injection_stage": "device affine 1 complete",
+    "three_storages_alive_before_injection": true,
+    "caught": true,
+    "same_primary_identity": true,
+    "traceback_frame_names": [
+      "main",
+      "build_request_local_programs"
+    ],
+    "traceback_has_no_impl_or_injection_frame": true,
+    "exception_alive_during_release_check": true,
+    "three_storage_weakrefs_dead_while_exception_alive": true,
+    "allocated_bytes_during_live_exception": 1536,
+    "allocated_minus_entry_bytes": 0,
+    "allocated_returned_within_constant": true
+  },
+  "python_traceback_boundary": {
+    "sanitized_implementation_frames_released": true,
+    "public_wrapper_frame_intentionally_retained_by_live_primary": true,
+    "external_synthetic_csr_bytes_retained_through_wrapper_arguments": 1536,
+    "interpretation": "The live primary traceback retains the public wrapper and its external input arguments. Those 1536 bytes existed at entry. Candidate, terminal, and absolute-weight storage allocated inside the implementation all died and allocation returned exactly to the entry value."
+  },
+  "post_process_gpu": {
+    "compute_processes": 0,
+    "gpu_memory_used_mib": 34,
+    "gpu_total_memory_mib": 97887,
+    "gpu_utilization_percent": 0
+  },
+  "source_locks": {
+    "synthetic_gate_script": {
+      "path": "scratch_phase_projection_device_program_synthetic_release_hostile.py",
+      "sha256": "3a7dbbb20e7ee6f4893f2a3b538bb45f4d411382338b91efe8f587abd6dd05af"
+    },
+    "device_program": {
+      "path": "act/back_end/hybridz_tf/phase_projection_device_program.py",
+      "sha256": "7f0cce0e461f63ff6599ddd82ad5e61ef7c921eb489ef7bbbf4d60cda9048962"
+    },
+    "device_program_test": {
+      "path": "act/back_end/hybridz_tf/test_phase_projection_device_program.py",
+      "sha256": "06d28254ea60cc20c1ebb0f009124c0a94edcea16a096733e30f3bf23ca5da64"
+    }
+  },
+  "relation_to_iid2_oracle": {
+    "iid2_rerun": false,
+    "prior_blocked_artifact_modified": false,
+    "scope": "This independent synthetic gate supplies only the previously invalid in-process release evidence. It does not replace or rewrite the unique iid2 run receipt."
+  },
+  "resource_scope": {
+    "synthetic_cuda_only": true,
+    "model_or_onnx_loaded": false,
+    "benchmark_or_fixed_case_run": false,
+    "sampling_or_onnx_point_execution": false,
+    "pgd": false,
+    "bab_split_or_enumeration": false,
+    "backward_bounds": false,
+    "dual_tightening": false,
+    "solver": false,
+    "performance_gate": false,
+    "production_modified": false
+  },
+  "claim_limit": "This closes only the isolated device-program request-local CUDA ownership and BaseException cleanup gate. It is not a production integration, performance, benchmark, verifier-authority, or formal-score result."
+}

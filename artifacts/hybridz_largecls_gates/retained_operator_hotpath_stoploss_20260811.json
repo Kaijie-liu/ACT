@@ -1,0 +1,88 @@
+{
+  "schema": "act.hybridz.retained_operator_hotpath_stoploss.v1",
+  "created_at_local": "2026-08-11",
+  "status": "performance_gate_failed_all_changes_reverted",
+  "goal_scope": "CIFAR100/TinyImageNet common forward exact-ReLU HybridZ path",
+  "profile": {
+    "family": "cifar100_medium",
+    "iid": 29,
+    "retained_wall_seconds": 2.3980927420780063,
+    "continuous_factors": 10347,
+    "binary_phase_factors": 1052,
+    "source_rows": 15402,
+    "constraint_nnz": 1994878,
+    "largest_measured_costs_seconds": {
+      "vectorized_conv_builder_cumulative": 1.122,
+      "csr_sort_indices": 0.405,
+      "coo_to_csr": 0.296,
+      "csr_matmat_numeric": 0.237,
+      "csr_matvec": 0.208,
+      "csr_matmat_symbolic": 0.115,
+      "absolute_csr_topology_views": 0.108
+    }
+  },
+  "cached_direct_conv_only": {
+    "final_hz_bitwise_equal": true,
+    "shape_equal": true,
+    "cold_direct_seconds": 1.6310371281579137,
+    "first_retained_seconds": 2.32554704323411,
+    "cold_speedup": 1.4258087710489906,
+    "retained_median_seconds": 2.3313857968896627,
+    "direct_median_seconds": 1.5966650219634175,
+    "paired_speedups": [
+      1.4578777377548862,
+      1.4671404910850163,
+      1.4601596232268932,
+      1.4526540308295248,
+      1.4696445297758505
+    ],
+    "median_paired_speedup": 1.4601596232268932,
+    "passed_1_5_gate": false
+  },
+  "direct_conv_plus_single_abs_snapshot": {
+    "description": "Use the audited direct Conv CSR constructor and reuse one canonical abs(W) snapshot between each live-affine prescreen and its retained row chunks.",
+    "final_hz_bitwise_equal": true,
+    "shape_equal": true,
+    "cold_candidate_seconds": 1.62400137539953,
+    "first_frozen_baseline_seconds": 2.404513674788177,
+    "cold_speedup": 1.4806106147518678,
+    "frozen_baseline_median_seconds": 2.4260318968445063,
+    "candidate_median_seconds": 1.6302412310615182,
+    "paired_speedups": [
+      1.4947351853092976,
+      1.5209037496968016,
+      1.4705428877386504,
+      1.4929430718430923,
+      1.4957799250234962
+    ],
+    "median_paired_speedup": 1.4947351853092976,
+    "required_speedup": 1.5,
+    "passed": false,
+    "four_thread_gate_attempted": false,
+    "reason_four_thread_skipped": "The mandatory preceding single-request gate failed."
+  },
+  "paired_nonnegative_spmv_diagnostic": {
+    "affine_calls": 66,
+    "bitwise_mismatches": 0,
+    "two_separate_spmv_seconds": 0.07295066863298416,
+    "one_two_column_spmv_seconds": 0.08887189347296953,
+    "speedup": 0.820845167168849,
+    "decision": "Do not combine the reductions; it is slower."
+  },
+  "validation": {
+    "focused_regression": "46 passed, 17 subtests passed",
+    "py_compile": true,
+    "diff_check": true,
+    "operator_hz_restored_sha256": "2502c009d6b5d37983e3f6d072e802c7734ac9bd106bb2a252e0a562da390fd8",
+    "test_operator_add_fusion_sha256": "129719716cf1cc598b850f3e39c1fc28fed36ca839dfb6b67296bbc6b9116933"
+  },
+  "method_restrictions": {
+    "solver_executed": false,
+    "input_sampling_used": false,
+    "pgd_used": false,
+    "concrete_onnx_candidate_search": false,
+    "tinyimagenet_attempted": false
+  },
+  "formal_solved_count_gain": 0,
+  "decision": "Do not promote the cached direct Conv constructor or abs(W) reuse. The combined candidate was bitwise exact but missed the strict 1.5x gate at 1.4947x, so all production changes were reverted and no concurrency, TinyImageNet, or solver gate was run."
+}

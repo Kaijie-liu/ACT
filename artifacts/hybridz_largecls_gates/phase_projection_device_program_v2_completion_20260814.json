@@ -1,0 +1,134 @@
+{
+  "schema": "act.hybridz.phase_projection_device_program.component_audit_completion.v1",
+  "created_at": "2026-08-14",
+  "status": "COMPONENT_AUDIT_COMPLETE_NOT_PRODUCTION",
+  "audit_complete": true,
+  "source_blockers": [],
+  "component": "request-local CUDA phase-projection device program",
+  "scope": "Isolated component arithmetic, authority isolation, request-local CUDA ownership, and failure cleanup only.",
+  "source_locks": {
+    "device_program": {
+      "path": "act/back_end/hybridz_tf/phase_projection_device_program.py",
+      "sha256": "7f0cce0e461f63ff6599ddd82ad5e61ef7c921eb489ef7bbbf4d60cda9048962"
+    },
+    "device_program_test": {
+      "path": "act/back_end/hybridz_tf/test_phase_projection_device_program.py",
+      "sha256": "06d28254ea60cc20c1ebb0f009124c0a94edcea16a096733e30f3bf23ca5da64"
+    }
+  },
+  "iid2_unique_oracle": {
+    "runs": 1,
+    "rerun_performed": false,
+    "blocked_receipt": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_device_program_iid2_oracle_v2_blocked_20260814.json",
+      "sha256": "1616434d6978ec85c22fc9c940f78095aaffba0a5338c7492fd8a3e98981bbd7"
+    },
+    "raw_combined_stdout": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_device_program_iid2_oracle_v2_run1_stdout_20260814.txt",
+      "sha256": "40a849b4af3e287ce7b3d03a95e7be5d5af433fe31c3ce9d1a531f3c8650b816"
+    },
+    "bitwise_checks": {
+      "passed": 12,
+      "failed": 0,
+      "all_pass": true,
+      "items": {
+        "first_assign_equal": true,
+        "first_pre_center_bitwise_equal": true,
+        "first_output_center_bitwise_equal": true,
+        "target_assign_equal": true,
+        "target_pre_center_bitwise_equal": true,
+        "target_output_center_bitwise_equal": true,
+        "first_stream_preactivation_bitwise_equal": true,
+        "first_stream_output_bitwise_equal": true,
+        "delta_preactivation_bitwise_equal": true,
+        "delta_output_bitwise_equal": true,
+        "terminal_lower_bitwise_equal": true,
+        "terminal_upper_bitwise_equal": true
+      }
+    },
+    "authority_isolation_checks": {
+      "all_candidate_terminal_affine_storages_disjoint": true,
+      "candidate_weight_mutation_did_not_change_terminal": true,
+      "raw_box_uses_sealed_input": true,
+      "terminal_saw_same_sealed_input_object": true,
+      "all_pass": true
+    },
+    "release_subcheck": {
+      "status": "HARNESS_INVALID_NOT_A_COMPONENT_FAILURE",
+      "cause": "The oracle script retained its final local tensor tuple during the in-process release observation.",
+      "only_invalid_subitems": [
+        "all_program_affine_tensors_released",
+        "allocated_bytes_returned_to_entry_or_lower"
+      ],
+      "bitwise_or_authority_results_invalidated": false,
+      "component_release_claim_from_this_oracle": false,
+      "closed_by_independent_synthetic_gate": true
+    }
+  },
+  "independent_synthetic_release_gate": {
+    "runs": 1,
+    "rerun_performed": false,
+    "status": "PASS_NOT_PRODUCTION",
+    "artifact": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_device_program_synthetic_release_gate_20260814.json",
+      "sha256": "f99b13ba72a4479f6f6b1879108546f5bef3bd78e83ca8df4489ec67fe9d8303"
+    },
+    "raw_combined_stdout": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_device_program_synthetic_release_run1_stdout_20260814.txt",
+      "sha256": "cd1a2045c1743826bca735f5bcdc46d6878184617f94983c33519cd380b3b447"
+    },
+    "success_release": {
+      "three_storages_disjoint": true,
+      "three_storage_weakrefs_dead_after_owner_delete": true,
+      "allocated_minus_entry_bytes": 0,
+      "pass": true
+    },
+    "baseexception_release": {
+      "three_storages_alive_before_injection": true,
+      "same_primary_identity": true,
+      "traceback_frame_names": [
+        "main",
+        "build_request_local_programs"
+      ],
+      "traceback_has_no_implementation_or_injection_frame": true,
+      "exception_alive_during_check": true,
+      "three_storage_weakrefs_dead_while_exception_alive": true,
+      "allocated_minus_entry_bytes": 0,
+      "pass": true
+    },
+    "closes_iid2_release_harness_gap": true
+  },
+  "consolidated_findings": {
+    "frozen_old_implementation_parity_12_of_12": true,
+    "candidate_terminal_three_storage_isolation": true,
+    "candidate_mutation_cannot_change_terminal_storage": true,
+    "raw_box_and_terminal_share_one_immutable_sealed_input": true,
+    "request_local_cuda_storage_releases_after_success": true,
+    "request_local_cuda_storage_releases_during_live_baseexception": true,
+    "baseexception_primary_identity_preserved": true,
+    "implementation_traceback_frames_removed": true,
+    "component_audit_pass": true
+  },
+  "restrictions": {
+    "input_center_boundary_or_random_sampling_used": false,
+    "onnx_input_point_execution_used": false,
+    "pgd_used": false,
+    "bab_split_or_enumeration_used": false,
+    "backward_bounds_used": false,
+    "dual_tightening_used": false,
+    "candidate_or_lp_has_verdict_authority": false,
+    "second_solver_used": false,
+    "fallback_or_runtime_menu_used": false,
+    "parameter_scan_used": false,
+    "benchmark_or_fixed_suite_run_by_synthetic_gate": false,
+    "production_source_modified_by_audit": false
+  },
+  "formal_status": {
+    "fixed400_score": 59,
+    "fixed400_total": 400,
+    "score_changed_by_component_audit": false,
+    "production_integrated": false,
+    "promotion_claimed": false
+  },
+  "claim_limit": "The isolated device-program component audit is complete with no source blocker. This is not production integration, a performance gate, a fixed-suite result, verifier authority, or a formal score change."
+}

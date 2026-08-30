@@ -1,0 +1,912 @@
+{
+  "schema": "act.hybridz.phase_projection.single_stream_float64_candidate.v1",
+  "created_at": "2026-08-13T15:31:06+10:00",
+  "status": "production_integrated_fixed400_breakthrough",
+  "audit_complete": true,
+  "production_integrated": true,
+  "formal_result_changed": true,
+  "formal_fixed_400": {
+    "falsified": 59,
+    "unknown": 341,
+    "cifar100_medium_falsified": 14,
+    "cifar100_large_falsified": 10,
+    "tinyimagenet_medium_falsified": 35
+  },
+  "disconnected_result": {
+    "new_terminal_verified_cases": 16,
+    "cifar100_new": 2,
+    "tinyimagenet_new": 14,
+    "retained_previous_terminal_verified_cases": 43,
+    "measured_terminal_verified_lower_bound_on_fixed_400_manifest": 59,
+    "claim": "not a production or formal score"
+  },
+  "method": {
+    "candidate_arithmetic": "float64 without candidate outward error bands",
+    "generator_streams": 1,
+    "projected_cell": "topologically triangular batch phase auxiliaries pre-eliminated into input-factor coordinates",
+    "selector": "one deterministic analytic-corner rival and phase projection",
+    "lp": "one scipy highs-ds solve with presolve disabled",
+    "fallback_menu": false,
+    "float32_used": false,
+    "candidate_authority": false,
+    "terminal_authority": "unchanged raw BOX check plus verifier-owned zero-width interval forward plus exact stored-binary64 Fraction property lower bound"
+  },
+  "prohibitions": {
+    "input_sampling_used": false,
+    "onnx_input_point_execution_used": false,
+    "pgd_used": false,
+    "bab_or_split_used": false,
+    "backward_bound_used": false,
+    "dual_tightening_used": false
+  },
+  "disconnected_implementation_snapshot": {
+    "path": "scratch_phase_projection_float64_probe.py",
+    "sha256": "f23a36dbe58f41011d989eac8823723949eb63561b7ed85815ae3748adcc4bf4",
+    "test_path": "test_scratch_phase_projection_float64_probe.py",
+    "test_sha256": "14f8b23cb5ea4440830d1e4803d36815f1c4ffac591fd23e61fc8bef888f1777",
+    "focused_tests_passed": 9,
+    "scope": "disconnected scratch only",
+    "py_compile_passed": true,
+    "diff_check_passed": true,
+    "production_files_modified": false
+  },
+  "public_ceiling_source": {
+    "repository": "https://github.com/VNN-COMP/vnncomp2025_results.git",
+    "commit": "ea89fbc2518b6729f17c96eeec22c56c88e496a9",
+    "selection_only": true,
+    "runtime_or_verdict_dependency": false,
+    "official_counts": {
+      "cifar100_sat": 29,
+      "cifar100_unsat": 171,
+      "tinyimagenet_sat": 38,
+      "tinyimagenet_unsat": 137,
+      "tinyimagenet_unknown": 25
+    },
+    "official_sat_but_current_formal_unknown": 24,
+    "recovered_by_disconnected_candidate": 16,
+    "still_unknown": 8
+  },
+  "fixed_14": {
+    "previous_terminal_verified": [
+      "cifar100_medium_iid2",
+      "cifar100_medium_iid11",
+      "cifar100_large_iid118"
+    ],
+    "candidate_terminal_verified": [
+      "cifar100_medium_iid2",
+      "cifar100_medium_iid11",
+      "cifar100_large_iid118",
+      "tinyimagenet_medium_iid6"
+    ],
+    "new": [
+      "tinyimagenet_medium_iid6"
+    ],
+    "new_case_receipt": {
+      "case": "tinyimagenet_medium_iid6",
+      "status": "FALSIFIED",
+      "phase_changes": 242,
+      "phase_rows": 1948,
+      "float_margin": 0.8137693587,
+      "terminal_exact_margin_lower": 0.8137692942,
+      "candidate_seconds_rounded": 5.199
+    },
+    "remaining_unknown": [
+      "cifar100_medium_iid29",
+      "cifar100_medium_iid50",
+      "cifar100_large_iid113",
+      "cifar100_large_iid110",
+      "cifar100_large_iid153",
+      "tinyimagenet_medium_iid0",
+      "tinyimagenet_medium_iid17",
+      "tinyimagenet_medium_iid93",
+      "tinyimagenet_medium_iid143",
+      "tinyimagenet_medium_iid159"
+    ]
+  },
+  "retention_43": {
+    "scope": "all 43 cases reported FALSIFIED by the frozen fixed-400 production record",
+    "retained": 43,
+    "unknown": 0,
+    "timeout": 0,
+    "harness_error": 0,
+    "fresh_child_serial_elapsed_seconds": 814.1811402970925,
+    "timing_authority": false,
+    "timing_note": "The long serial run accumulated severe cold/thermal/system effects and is only a capability-retention gate.",
+    "terminal_proof": "unchanged verifier-owned singleton proof on every case",
+    "retained_cases": [
+      "cifar100_medium_iid2",
+      "cifar100_medium_iid11",
+      "cifar100_medium_iid31",
+      "cifar100_medium_iid43",
+      "cifar100_medium_iid48",
+      "cifar100_medium_iid54",
+      "cifar100_medium_iid61",
+      "cifar100_medium_iid64",
+      "cifar100_medium_iid65",
+      "cifar100_medium_iid69",
+      "cifar100_medium_iid83",
+      "cifar100_medium_iid97",
+      "cifar100_large_iid118",
+      "cifar100_large_iid119",
+      "cifar100_large_iid124",
+      "cifar100_large_iid148",
+      "cifar100_large_iid155",
+      "cifar100_large_iid164",
+      "cifar100_large_iid181",
+      "cifar100_large_iid183",
+      "cifar100_large_iid194",
+      "cifar100_large_iid199",
+      "tinyimagenet_medium_iid1",
+      "tinyimagenet_medium_iid7",
+      "tinyimagenet_medium_iid29",
+      "tinyimagenet_medium_iid38",
+      "tinyimagenet_medium_iid46",
+      "tinyimagenet_medium_iid62",
+      "tinyimagenet_medium_iid65",
+      "tinyimagenet_medium_iid69",
+      "tinyimagenet_medium_iid77",
+      "tinyimagenet_medium_iid85",
+      "tinyimagenet_medium_iid87",
+      "tinyimagenet_medium_iid90",
+      "tinyimagenet_medium_iid103",
+      "tinyimagenet_medium_iid116",
+      "tinyimagenet_medium_iid120",
+      "tinyimagenet_medium_iid125",
+      "tinyimagenet_medium_iid150",
+      "tinyimagenet_medium_iid155",
+      "tinyimagenet_medium_iid181",
+      "tinyimagenet_medium_iid189",
+      "tinyimagenet_medium_iid193"
+    ]
+  },
+  "official_sat_current_unknown_cases": [
+    {
+      "case": "cifar100_large_iid110",
+      "status": "UNKNOWN",
+      "reason": "negative_float_margin",
+      "float_margin": -0.0045339351
+    },
+    {
+      "case": "cifar100_large_iid166",
+      "status": "UNKNOWN",
+      "reason": "candidate_lp_infeasible",
+      "candidate_seconds": 6.1326939864084125
+    },
+    {
+      "case": "cifar100_large_iid114",
+      "status": "UNKNOWN",
+      "reason": "negative_float_margin",
+      "float_margin": -0.020135375050218784,
+      "candidate_seconds": 4.464893275871873
+    },
+    {
+      "case": "cifar100_large_iid160",
+      "status": "UNKNOWN",
+      "reason": "negative_float_margin",
+      "float_margin": -0.008333158574025834,
+      "candidate_seconds": 4.5104945208877325
+    },
+    {
+      "case": "cifar100_large_iid161",
+      "status": "UNKNOWN",
+      "reason": "negative_float_margin",
+      "float_margin": -0.013511269658544045,
+      "candidate_seconds": 4.922691508196294
+    },
+    {
+      "case": "cifar100_medium_iid26",
+      "status": "FALSIFIED",
+      "float_margin": 0.7227632395085624,
+      "terminal_exact_margin_lower": 0.7227632265437212,
+      "candidate_seconds": 1.6819303249940276
+    },
+    {
+      "case": "cifar100_medium_iid39",
+      "status": "FALSIFIED",
+      "float_margin": 0.23020164698184742,
+      "terminal_exact_margin_lower": 0.23020163854432388,
+      "candidate_seconds": 2.0224299635738134
+    },
+    {
+      "case": "tinyimagenet_medium_iid73",
+      "status": "FALSIFIED",
+      "float_margin": 0.8064342732611716,
+      "terminal_exact_margin_lower": 0.806434227107049,
+      "candidate_seconds": 5.791813089512289
+    },
+    {
+      "case": "tinyimagenet_medium_iid108",
+      "status": "FALSIFIED",
+      "float_margin": 0.1420513798216062,
+      "terminal_exact_margin_lower": 0.14205130540031696,
+      "candidate_seconds": 6.728867268189788
+    },
+    {
+      "case": "tinyimagenet_medium_iid32",
+      "status": "FALSIFIED",
+      "float_margin": 0.0734820443077987,
+      "terminal_exact_margin_lower": 0.07348199993734461,
+      "candidate_seconds": 7.021660544909537
+    },
+    {
+      "case": "tinyimagenet_medium_iid164",
+      "status": "FALSIFIED",
+      "float_margin": 0.7808589939435704,
+      "terminal_exact_margin_lower": 0.7808589100980905,
+      "candidate_seconds": 5.961934188380837
+    },
+    {
+      "case": "tinyimagenet_medium_iid153",
+      "status": "UNKNOWN",
+      "reason": "candidate_lp_infeasible",
+      "candidate_seconds": 6.523287330754101
+    },
+    {
+      "case": "tinyimagenet_medium_iid192",
+      "status": "FALSIFIED",
+      "float_margin": 1.1902557343180833,
+      "terminal_exact_margin_lower": 1.190255668832199,
+      "candidate_seconds": 5.478661116212606
+    },
+    {
+      "case": "tinyimagenet_medium_iid93",
+      "status": "UNKNOWN",
+      "reason": "negative_float_margin",
+      "float_margin": -0.2250360557
+    },
+    {
+      "case": "tinyimagenet_medium_iid161",
+      "status": "FALSIFIED",
+      "float_margin": 1.3406160371596503,
+      "terminal_exact_margin_lower": 1.3406159816433831,
+      "candidate_seconds": 8.782284446060658
+    },
+    {
+      "case": "tinyimagenet_medium_iid54",
+      "status": "FALSIFIED",
+      "float_margin": 0.07079962179675503,
+      "terminal_exact_margin_lower": 0.07079955059522192,
+      "candidate_seconds": 8.575616432353854
+    },
+    {
+      "case": "tinyimagenet_medium_iid143",
+      "status": "UNKNOWN",
+      "reason": "negative_float_margin",
+      "float_margin": -0.0010710788
+    },
+    {
+      "case": "tinyimagenet_medium_iid10",
+      "status": "FALSIFIED",
+      "float_margin": 0.9085480775220769,
+      "terminal_exact_margin_lower": 0.9085480269973711,
+      "candidate_seconds": 6.560618756338954
+    },
+    {
+      "case": "tinyimagenet_medium_iid60",
+      "status": "FALSIFIED",
+      "float_margin": 0.5646359385880906,
+      "terminal_exact_margin_lower": 0.5646358951620165,
+      "candidate_seconds": 7.484022940509021
+    },
+    {
+      "case": "tinyimagenet_medium_iid23",
+      "status": "FALSIFIED",
+      "float_margin": 1.1088174988324597,
+      "terminal_exact_margin_lower": 1.1088174471032222,
+      "candidate_seconds": 6.301222802139819
+    },
+    {
+      "case": "tinyimagenet_medium_iid146",
+      "status": "FALSIFIED",
+      "float_margin": 0.33537219468621515,
+      "terminal_exact_margin_lower": 0.33537213413621814,
+      "candidate_seconds": 8.887090731412172
+    },
+    {
+      "case": "tinyimagenet_medium_iid6",
+      "status": "FALSIFIED",
+      "float_margin": 0.8137693587,
+      "terminal_exact_margin_lower": 0.8137692942,
+      "candidate_seconds_rounded": 5.199
+    },
+    {
+      "case": "tinyimagenet_medium_iid3",
+      "status": "FALSIFIED",
+      "float_margin": 0.481541973541024,
+      "terminal_exact_margin_lower": 0.4815419112702628,
+      "candidate_seconds": 7.033613286912441
+    },
+    {
+      "case": "tinyimagenet_medium_iid53",
+      "status": "FALSIFIED",
+      "float_margin": 0.27553013311973196,
+      "terminal_exact_margin_lower": 0.2755300695847076,
+      "candidate_seconds": 8.361721171997488
+    }
+  ],
+  "warm_timing_sentinel": {
+    "case": "cifar100_medium_iid2",
+    "same_process_total_seconds": [
+      1.7435,
+      1.4734,
+      1.4636
+    ],
+    "warm_median_seconds": 1.4734,
+    "retained_reference_seconds": 3.321821867,
+    "diagnostic_speedup": 2.254660238,
+    "performance_gate_claimed": false,
+    "four_worker_gate_run": false
+  },
+  "uncontended_single_request_gate": {
+    "case": "cifar100_medium_iid2",
+    "warmups_per_path": 2,
+    "paired_repetitions": 5,
+    "old_seconds": [
+      3.4947984404861927,
+      3.897932091727853,
+      3.7313248682767153,
+      3.6165058007463813,
+      3.4623615369200706
+    ],
+    "new_seconds_before_all_nonzero_support_elimination": [
+      2.2309375694021583,
+      2.0229433197528124,
+      2.041352294385433,
+      1.8541533211246133,
+      1.955542627722025
+    ],
+    "paired_speedups": [
+      1.5665155710398122,
+      1.926861743315749,
+      1.8278691426949718,
+      1.9504890774366141,
+      1.7705374906367093
+    ],
+    "median_paired_speedup": 1.8278691426949718,
+    "required": 1.5,
+    "passed": true,
+    "result_conflicts": 0
+  },
+  "all_nonzero_support_elimination": {
+    "description": "For exact-binary64 affine tensors whose stored entries are all nonzero, replace repeated CPU weight!=0 support scans with mathematically equivalent CUDA ones-convolution and transpose-convolution support propagation.",
+    "fallback": false,
+    "zero_weight_policy": "fail closed with UNKNOWN",
+    "cifar100_medium_iid2_reference_seconds": 0.28962883446365595,
+    "cifar100_medium_iid2_candidate_seconds": 0.054569060914218426,
+    "diagnostic_speedup": 5.307564939021898,
+    "row_equivalence": {
+      "cifar100_medium": "live and possible rows exact",
+      "cifar100_large": "live and possible rows exact",
+      "tinyimagenet_medium": "live and possible rows exact"
+    },
+    "terminal_margins_unchanged_on_three_topologies": true
+  },
+  "uncontended_four_thread_gate_after_support_elimination": {
+    "case": "cifar100_medium_iid2",
+    "warmup_groups": 2,
+    "paired_groups": 5,
+    "requests_per_group": 4,
+    "paired_speedups": [
+      2.14864255550729,
+      2.1091174672393684,
+      1.7819190120217456,
+      2.1906323038764044,
+      2.090852003506017
+    ],
+    "median_paired_speedup": 2.1091174672393684,
+    "bootstrap_seed": 20260811,
+    "bootstrap_resamples": 20000,
+    "bootstrap_95pct_lower": 1.7819190120217456,
+    "required_median_speedup": 2.0,
+    "required_bootstrap_95pct_lower": 1.8,
+    "old_wall_median_seconds": 6.301769536919892,
+    "new_wall_median_seconds": 2.9832549579441547,
+    "old_rss_peak_median_bytes": 4950736896,
+    "new_rss_peak_median_bytes": 4579762176,
+    "old_cuda_peak_median_bytes": 520766464,
+    "new_cuda_peak_median_bytes": 834148864,
+    "result_conflicts": 0,
+    "passed": false,
+    "stop_loss": "Median gate passed, but bootstrap lower missed by about 0.018081x. No parameter tuning or repeat-for-luck is permitted."
+  },
+  "native_full_generator_restart_stoploss": {
+    "case": "cifar100_medium_iid2",
+    "objective": "Delete live-row analysis, selected CSR construction, and device CSR construction as one replacement representation.",
+    "native_representation": "full-layer float64 Conv/Dense generator batches",
+    "preactivation_max_abs_difference": 0.0,
+    "output_max_abs_difference": 0.0,
+    "terminal_exact_margin_unchanged": true,
+    "selected_csr_generator_seconds": 0.36028250213712454,
+    "native_full_generator_seconds": 1.368454409763217,
+    "native_over_selected_speed_ratio": 0.26327694921123757,
+    "decision": "rejected_before_integration",
+    "reason": "The replacement generator is about 3.8 times slower. Even crediting the full measured setup as free cannot make the total path faster.",
+    "production_or_candidate_file_change": false
+  },
+  "direct_selected_conv_restart_stoploss": {
+    "case": "cifar100_medium_iid2",
+    "objective": "Delete per-request selected-CSR construction and device materialization while retaining only live output rows.",
+    "representation": "one runtime-geometry Triton kernel reading original float64 CONV weights; no runtime fallback",
+    "isolated_representation_probe": {
+      "live_seconds": 0.04582732170820236,
+      "selected_csr_build_seconds": 0.602633498609066,
+      "selected_csr_schedule_seconds": 0.01139463298022747,
+      "ordered_csr_stream_seconds": 0.36009029019623995,
+      "direct_weight_schedule_seconds": 0.0027295714244246483,
+      "direct_stream_median_seconds": 0.4475175989791751,
+      "old_representation_seconds_excluding_live": 0.9741184217855334,
+      "direct_representation_seconds_including_live": 0.4960744921118021,
+      "diagnostic_representation_speedup": 1.9636535183227943,
+      "selected_rows": 102788,
+      "selected_csr_nnz_avoided": 5178905,
+      "preactivation_bit_equal": true,
+      "output_bit_equal": true
+    },
+    "terminal_equivalence": {
+      "selected_property_row": 67,
+      "float_margin": 0.0929016641169671,
+      "terminal_exact_margin_lower": 0.09290165200581857,
+      "all_results_singleton_verified": true
+    },
+    "corrected_single_request_gate": {
+      "paired_speedups": [
+        2.4700721616580315,
+        2.479827682296054,
+        2.655081075583506,
+        1.4241274891017632,
+        1.9736054503551088
+      ],
+      "median_paired_speedup": 2.4700721616580315,
+      "required_median_speedup": 1.5,
+      "passed": true,
+      "result_conflicts": 0,
+      "note": "An earlier 7.76x report used the wrong ten-second HZ UNKNOWN baseline and was rejected before use; these numbers compare against the frozen phase-projection path."
+    },
+    "four_thread_gate": {
+      "paired_speedups": [
+        1.6727372732013723,
+        1.8066508988453616,
+        1.7259440326706759,
+        1.6572010729669964,
+        1.4887871730190083
+      ],
+      "median_paired_speedup": 1.6727372732013723,
+      "paired_bootstrap_95pct_lower": 1.4887871730190083,
+      "required_median_speedup": 2.0,
+      "required_bootstrap_95pct_lower": 1.8,
+      "result_conflicts": 0,
+      "passed": false,
+      "profiled_first_stream_seconds_per_request": [
+        1.6838531447574496,
+        1.7711248528212309,
+        1.765076806768775,
+        1.676781414076686
+      ],
+      "reason": "The direct GPU stream serialized under concurrency and missed both gates."
+    },
+    "scatter_fusion_stoploss": {
+      "attempt": "Write direct CONV results to final rows and remove selected temporary plus scatter.",
+      "warm_first_stream_seconds": [0.4537806436419487, 0.45453060884028673],
+      "warm_total_seconds": [1.2890620874240994, 1.2797460183501244],
+      "decision": "rejected_before_gate_rerun",
+      "reason": "No material improvement over the unfused direct kernel."
+    },
+    "decision": "rejected_and_removed",
+    "production_integrated": false,
+    "formal_solved_gain": 0
+  },
+  "all_nonzero_vectorized_selected_csr_restart_stoploss": {
+    "case": "cifar100_medium_iid2",
+    "objective": "Retain the concurrency-friendly ordered-CSR stream but vectorize all selected-CSR emission in the admitted all-nonzero-weight domain.",
+    "runtime_fallbacks": 0,
+    "zero_weight_policy": "UNKNOWN",
+    "csr_bit_equal_to_existing_builder_on_focused_oracle": true,
+    "terminal_exact_margin_unchanged": true,
+    "single_request_gate": {
+      "paired_speedups": [
+        1.5051942628006312,
+        1.2142976037128619,
+        1.663323292254798,
+        1.4193172928637934,
+        2.068751155454665
+      ],
+      "median_paired_speedup": 1.5051942628006312,
+      "required": 1.5,
+      "passed": true,
+      "observed_setup_seconds": [
+        1.1833582781255245,
+        1.9041538024321198,
+        1.318017616868019,
+        1.824154525063932,
+        0.3433839539065957
+      ],
+      "warning": "The median barely passed and large temporary-array allocation was unstable."
+    },
+    "four_thread_gate": {
+      "paired_speedups": [
+        1.144815489432576,
+        1.0886905676801752,
+        1.2650968488012375,
+        1.0371434997339652,
+        1.0524113975116598
+      ],
+      "median_paired_speedup": 1.0886905676801752,
+      "paired_bootstrap_95pct_lower": 1.0371434997339652,
+      "required_median_speedup": 2.0,
+      "required_bootstrap_95pct_lower": 1.8,
+      "result_conflicts": 0,
+      "passed": false,
+      "observed_setup_seconds_range": [2.542621621862054, 3.517250490374863],
+      "reason": "One-shot vectorized topology tensors caused severe memory-bandwidth and allocation contention."
+    },
+    "decision": "rejected_and_removed_without_chunk_tuning",
+    "production_integrated": false,
+    "formal_solved_gain": 0
+  },
+  "gpu_emitted_selected_csr_promotion_candidate": {
+    "representation": "gpu_emitted_selected_csr_v1",
+    "description": "Two deterministic Triton passes emit the exact selected Conv CSR directly on the GPU; Dense rows use indexed binary64 tensors. The existing ordered-CSR generator stream is unchanged.",
+    "admission_domain": "all stored affine weights are finite and nonzero",
+    "zero_weight_policy": "UNKNOWN without fallback",
+    "runtime_fallbacks": 0,
+    "candidate_authority": false,
+    "terminal_authority": "unchanged raw BOX check plus verifier-owned zero-width interval forward plus exact stored-binary64 Fraction property lower bound",
+    "cifar100_medium_iid2_exact_csr_and_timing": {
+      "cpu_build_and_schedule_seconds": 0.5188656868413091,
+      "gpu_build_and_schedule_seconds": [
+        0.026487811468541622,
+        0.026001647114753723,
+        0.025161171332001686
+      ],
+      "gpu_median_seconds": 0.026001647114753723,
+      "csr_mismatches": 0,
+      "float_margin": 0.09290166411696688,
+      "terminal_exact_margin_lower": 0.09290165200581857,
+      "source_sha256": "2a8d15b10d80cb857da7d9960f6165b1a9c2049178ba9411640c7c870acd17f4"
+    },
+    "cross_topology_exact_csr_and_terminal": {
+      "cifar100_large_iid118": {
+        "cpu_build_and_schedule_seconds": 1.646360034123063,
+        "gpu_build_and_schedule_median_seconds": 0.0660336734727025,
+        "csr_mismatches": 0,
+        "float_margin": 0.5550047916440053,
+        "terminal_exact_margin_lower": 0.5550047816534173,
+        "receipt_sha256": "796126b487d101165d5ddad2452a9233091b186f6a23f26f711c2963fb998458"
+      },
+      "tinyimagenet_medium_iid1": {
+        "cpu_build_and_schedule_seconds": 1.0851409062743187,
+        "gpu_build_and_schedule_median_seconds": 0.059571162797510624,
+        "csr_mismatches": 0,
+        "float_margin": 0.7018048158110539,
+        "terminal_exact_margin_lower": 0.701804764251813,
+        "receipt_sha256": "ff85bbf4d2e2e8523c99befff9bdb096f083d88e5a01d487e6201bb4c75993d0"
+      }
+    },
+    "single_request_gate": {
+      "paired_speedups": [
+        3.9319138547083403,
+        2.028740601961213,
+        1.3798490602850881,
+        2.8848415914480485,
+        1.9674549082702144
+      ],
+      "median_paired_speedup": 2.028740601961213,
+      "required_median_speedup": 1.5,
+      "result_conflicts": 0,
+      "passed": true,
+      "receipt_sha256": "0580a4a04758e3b1d9b0f56ae992fe2d443d9e7645217e70c18fc4f0bcce4439"
+    },
+    "four_thread_gate": {
+      "paired_speedups": [
+        1.800903776193539,
+        2.171821089086809,
+        1.92690169538298,
+        2.360819854111551,
+        2.0390893676307082
+      ],
+      "median_paired_speedup": 2.0390893676307082,
+      "paired_bootstrap_95pct_lower": 1.800903776193539,
+      "required_median_speedup": 2.0,
+      "required_bootstrap_95pct_lower": 1.8,
+      "result_conflicts": 0,
+      "passed": true,
+      "receipt_sha256": "b3c5171e2906b956985b3142d0ae73ce41f16e7dd88acb321e67360a02e9c05b"
+    },
+    "fresh_process_memory_gate": {
+      "workers": 4,
+      "warmup_groups": 2,
+      "measured_groups": 5,
+      "baseline_median_group_seconds": 6.303654442541301,
+      "candidate_median_group_seconds": 3.327642726711929,
+      "baseline_final_hwm_bytes": 4948779008,
+      "candidate_final_hwm_bytes": 3844440064,
+      "baseline_median_cuda_peak_bytes": 517303296,
+      "candidate_median_cuda_peak_bytes": 829996032,
+      "combined_host_plus_cuda_diagnostic_bytes": {
+        "baseline": 5466082304,
+        "candidate": 4674436096
+      },
+      "all_outcomes_singleton_verified": true,
+      "host_memory_improved": true,
+      "combined_host_plus_cuda_diagnostic_improved": true,
+      "candidate_cuda_peak_increased": true,
+      "baseline_receipt_sha256": "fdac79f830ed1336d73a8755664dddecfe1311c40283d507144a20fe555b5288",
+      "candidate_receipt_sha256": "7460b734b8e45c6e5b9860baa02bdf52180f0fe9385cbe7d9d604ffe0ea01088"
+    },
+    "fresh_child_capability_gates": {
+      "fixed14": {
+        "attempted": 14,
+        "falsified": 4,
+        "unknown": 10,
+        "errors": 0,
+        "elapsed_seconds": 89.19627900235355,
+        "receipt_sha256": "bf1bd2b695995dc5db026bd35466a88a2f6afde21804c95730a3ea84b05d29fe"
+      },
+      "retained59": {
+        "attempted": 59,
+        "falsified": 59,
+        "unknown": 0,
+        "errors": 0,
+        "minimum_terminal_exact_margin": 0.00025346796228209456,
+        "elapsed_seconds": 478.01272937562317,
+        "receipt_sha256": "9583fa1b128ccc5458e8d998d9df5706389f60a2b4623dac4a347dabc813a8ef"
+      },
+      "fixed400": {
+        "attempted": 400,
+        "falsified": 59,
+        "unknown": 341,
+        "errors": 0,
+        "cifar100_medium_falsified": 14,
+        "cifar100_large_falsified": 10,
+        "tinyimagenet_medium_falsified": 35,
+        "minimum_terminal_exact_margin": 0.00025346796228209456,
+        "maximum_fresh_child_seconds": 23.495937909930944,
+        "elapsed_seconds": 1158.295019206591,
+        "receipt_sha256": "57c856ba09cfe16d8e5401707ad093f4d71443149fb6bd92ca3aeb39e7592984"
+      }
+    },
+    "production_integration": {
+      "verifier_entry": "operator_phase_projection_time_limit greater than zero with the existing single-path config guard",
+      "default_enabled": false,
+      "lazy_import_preserved": true,
+      "old_two_stream_implementation_retained_as_fallback": false,
+      "explicit_scale_bias_supported": true,
+      "scale_bias_terminal_interval_rounding": "outward",
+      "production_source_sha256": "4b66470df55edebb595e0e06c6b8a2de5c65496b8671c4d2f2552003d01ea306",
+      "live_row_dependency_sha256": "d53c2335c43905097e78bef8311175d7151d7e98293a6152fce62dba00d37511",
+      "focused_test_sha256": "a59d08ad648bf8d91387f7f2d6934cf318c7d00c355c1bc2276f6f6eb4441991",
+      "fixed400_harness_sha256": "d3e1825b9a8f8c8bb7f83cb8f08bdabd68f0c3fa32c379cac8ce08bb4c1e24c1",
+      "focused_and_adjacent_tests": {
+        "passed": 34,
+        "failed": 0
+      },
+      "production_fixed400": {
+        "attempted": 400,
+        "falsified": 59,
+        "unknown": 341,
+        "errors": 0,
+        "cifar100_medium_falsified": 14,
+        "cifar100_large_falsified": 10,
+        "tinyimagenet_medium_falsified": 35,
+        "minimum_terminal_exact_margin": 0.00025361815719049385,
+        "candidate_seconds_median": 1.9767675953917205,
+        "candidate_seconds_p95": 3.4711044961586595,
+        "candidate_seconds_maximum": 10.494603713043034,
+        "fresh_worker_seconds_median": 3.9813832831569016,
+        "fresh_worker_seconds_p95": 5.477850288152695,
+        "fresh_worker_seconds_maximum": 12.423617829568684,
+        "falsified_set_exactly_matches_disconnected_59": true,
+        "jsonl_sha256": "749db4e400329598c23c3dd7c9b9863c291eb3d1ba556cdcfcfa879c58487b43",
+        "summary_sha256": "036a87f7005033ad8478af5dbecfce8657d3f02457f654a9b0e63e5b47e2ab41"
+      }
+    },
+    "decision": "production_integrated_and_fixed400_complete_pending_independent_hostile_audit",
+    "production_integrated": true,
+    "formal_solved_gain": 16
+  },
+  "contended_abba_diagnostic": {
+    "case": "cifar100_medium_iid2",
+    "pairs": 5,
+    "old_median_seconds": 5.625317948870361,
+    "new_median_seconds": 5.779237559996545,
+    "paired_speedup_median": 0.973366796306903,
+    "passed": false,
+    "performance_authority": false,
+    "reason": "A foreign abcrown.py process occupied about 46.7 GiB on the same GPU at 97-98 percent utilization during the run.",
+    "foreign_process_was_modified_or_terminated": false,
+    "required_action": "repeat the exact AB/BA protocol only when the GPU is uncontended"
+  },
+  "bounded_self_audit_20260814": {
+    "status": "PASS",
+    "independent": false,
+    "release_authority": false,
+    "production_focused_and_dependency_tests": {
+      "passed": 25,
+      "failed": 0
+    },
+    "bounded_fail_closed_checks": {
+      "passed": 5,
+      "covered": [
+        "duplicate selected GPU CSR rows reject before emission",
+        "out-of-range selected GPU CSR rows reject before emission",
+        "zero affine weight rejects without fallback",
+        "expired singleton deadline rejects before replay",
+        "unexpected ordinary candidate exception maps to UNKNOWN without root-solver fallback"
+      ]
+    },
+    "fixed400_receipt_audit": {
+      "records": 400,
+      "unique_cases": 400,
+      "falsified": 59,
+      "unknown": 341,
+      "errors": 0,
+      "authority_and_prohibition_receipts_checked": 400,
+      "passed": true
+    },
+    "selected_csr_geometry_audit": {
+      "conv_geometries": 128,
+      "dense_geometries": 4,
+      "gpu_cpu_csr_bitwise_mismatches": 0,
+      "coverage": "batch, groups, stride, padding, dilation, kernel shape, selected rows, and possible-source masks",
+      "passed": true
+    },
+    "terminal_interval_fraction_audit": {
+      "deterministic_inputs": 4,
+      "exact_outputs_checked": 8,
+      "layers": [
+        "DENSE",
+        "SCALE",
+        "BIAS",
+        "RELU",
+        "DENSE",
+        "ADD"
+      ],
+      "exact_fraction_values_enclosed": 8,
+      "passed": true
+    },
+    "default_path_audit": {
+      "default_time_limit": 0.0,
+      "default_enabled": false,
+      "phase_module_loaded_by_fresh_verifier_import": false,
+      "passed": true
+    },
+    "disconnected_vs_production_positive_set": {
+      "disconnected": 59,
+      "production": 59,
+      "symmetric_difference": 0,
+      "passed": true
+    },
+    "production_unknown_census": {
+      "unknown": 341,
+      "strictly_negative_candidate_margin": 333,
+      "lp_no_candidate": 8,
+      "lp_infeasible": 7,
+      "lp_time_limit": 1,
+      "positive_candidate_rejected_by_terminal_replay": 0,
+      "negative_margin_quantiles": {
+        "minimum": -2.295023605131861,
+        "p50": -0.4261573825254872,
+        "p90": -0.07423208438977325,
+        "p95": -0.03800977206530165,
+        "p99": -0.008333114340001058,
+        "maximum": -0.0010710773153006503
+      },
+      "closest_negative_cases": [
+        [
+          "tinyimagenet_medium_iid143",
+          -0.0010710773153006503
+        ],
+        [
+          "cifar100_large_iid110",
+          -0.00453403149642484
+        ],
+        [
+          "cifar100_large_iid153",
+          -0.005464856144083763
+        ]
+      ],
+      "method": "receipt-only internal verifier census; no input-point execution or sampling"
+    },
+    "static_checks": {
+      "candidate_linprog_calls": 1,
+      "forbidden_runtime_imports": false,
+      "autograd_calls": false,
+      "basis_or_solver_menu": false,
+      "py_compile_passed": true,
+      "trailing_whitespace_found": false
+    },
+    "production_hashes_unchanged": true,
+    "performance_gate_rerun": false,
+    "reason_not_release_complete": "This was a self-audit only; release completion was subsequently established by the independent bounded audit recorded below."
+  },
+  "independent_bounded_audit_20260814": {
+    "status": "NO_BLOCKER",
+    "independent": true,
+    "scope": "Frozen default-off 59/400 production integration and the preregistered release gates only.",
+    "frozen_hashes_matched": 9,
+    "production_focused_and_dependency_tests": {
+      "passed": 25,
+      "failed": 0
+    },
+    "hostile_fail_closed_injections": {
+      "passed": 5,
+      "failed": 0
+    },
+    "selected_csr_geometry_audit": {
+      "conv_geometries": 128,
+      "dense_geometries": 4,
+      "gpu_cpu_csr_bitwise_mismatches": 0
+    },
+    "terminal_fraction_oracle": {
+      "exact_outputs_enclosed": 8,
+      "exact_outputs_checked": 8,
+      "grouped_and_dilated_conv_outputs_enclosed": 48,
+      "grouped_and_dilated_conv_outputs_checked": 48
+    },
+    "fixed400_receipt_replay": {
+      "records": 400,
+      "unique_cases": 400,
+      "falsified": 59,
+      "unknown": 341,
+      "errors": 0,
+      "positive_set_symmetric_difference_vs_disconnected": 0,
+      "manifest_and_input_file_hashes_matched": 403
+    },
+    "performance_receipt_recalculation": {
+      "single_request_median_speedup": 2.028740601961213,
+      "four_thread_median_speedup": 2.0390893676307082,
+      "exact_paired_bootstrap_population_lower_bound": 1.800903776193539,
+      "performance_suite_rerun": false,
+      "caveat": "The audit recomputed the locked five-point summaries, but the raw per-run provenance receipts were not durably available for an independent rerun provenance check."
+    },
+    "authority_boundary": "Does not authorize default enabling, a new multi-flip path, or a different performance-reference policy.",
+    "prohibited_methods_executed": false,
+    "files_edited_by_reviewer": false
+  },
+  "ceiling_measurements_20260814": {
+    "margin_census": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_margin_ceiling_census_20260814.json",
+      "sha256": "0ed6b4980dc52f3852551f2afded26c18802f90cf200fc454ee37dd99a971551",
+      "negative_within_0.01": 4,
+      "negative_within_0.02": 8,
+      "negative_within_0.05": 21
+    },
+    "performance_reference_semantics": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_performance_reference_semantics_20260814.json",
+      "sha256": "96956ba0f9628f2aa4f110c9230c560fd822859482a7f886051ac4a282bd42ca",
+      "ratchet_next_single_budget_seconds": 0.9592642386754354,
+      "ratchet_budget_after_iid2_terminal_median_seconds": 0.5293967484806975,
+      "fixed_reference_single_headroom_seconds": 0.9087787941098215,
+      "fixed_reference_four_thread_median_headroom_seconds": 0.11862423690035939,
+      "fixed_reference_tightest_bootstrap_pair_headroom_seconds": 0.0017553875222802162,
+      "policy_choice_required": true
+    },
+    "vnncomp_public_ceiling": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_vnncomp_public_ceiling_20260814.json",
+      "sha256": "91b875c57bcebd8b784b1e1141ab727526aa44aeb3928ce7ddcdb8b887117294",
+      "official_public_sat_union": 67,
+      "act_intersection": 59,
+      "act_unknown_and_public_sat": 8,
+      "act_coverage_of_public_sat_union": 0.8805970149253731,
+      "mathematical_ceiling_claim": false
+    }
+  },
+  "known_limitations": [
+    "The float64 LP and projected phases have no proof authority and may be infeasible or misleading.",
+    "Only a positive candidate is passed to the unchanged terminal verifier proof.",
+    "The 24-case census was externally label-selected and is an ability ceiling diagnostic, not an unbiased benchmark score.",
+    "The full fixed-400 manifest and frozen default-off integration passed an independent bounded hostile audit; this does not authorize default enabling or any future multi-flip extension.",
+    "The 67-case VNN-COMP public falsification set is external reachability evidence, not an ACT proof authority or a mathematical ceiling; 333 cases without a public sat result are not thereby SAFE.",
+    "The single/four-worker response gates and fresh-process memory gate passed before integration; production fixed-400 response medians and tails are recorded separately.",
+    "The four-worker bootstrap lower bound passed by only 0.0009038x and must not be rerun or substituted merely to obtain a larger margin.",
+    "Some fresh-child requests took as long as 23.50 seconds; the configured production deadline must continue to map expiration to UNKNOWN."
+  ],
+  "promotion_state": "production_integrated_fixed400_59_independent_audit_no_blocker_default_off",
+  "required_next_gates": [
+    "Freeze the passing single/four-worker measurements; do not rerun or tune them for a larger margin.",
+    "The direct selected-CONV and all-nonzero vectorized-CSR restarts are closed; do not revive them through tile, chunk, or allocator scans.",
+    "The independent bounded hostile audit is complete; preserve its frozen hashes and do not substitute a rerun for the narrowly passing concurrency evidence.",
+    "Keep the mode default-off unless an explicit release-policy decision authorizes changing the default; do not add an old-algorithm fallback or optional selector menu.",
+    "Any future ability work must start from the production 59/400 baseline and preserve the same terminal authority boundary."
+  ]
+}

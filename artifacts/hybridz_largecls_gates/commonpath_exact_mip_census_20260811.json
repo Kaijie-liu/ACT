@@ -1,0 +1,150 @@
+{
+  "schema": "act.hybridz.commonpath_exact_mip_census.v1",
+  "date": "2026-08-11",
+  "status": "CENSUS_COMPLETE_NATIVE_SOLVE_REPLACEMENT_REQUIRED",
+  "scope": {
+    "runtime_algorithms_added": 0,
+    "runtime_fallbacks_added": 0,
+    "production_files_changed": 0,
+    "reference_labels_used_for_proof": false,
+    "tinyimagenet_solver_run": false
+  },
+  "goal_amendment": {
+    "common_cases_only": true,
+    "selected_runtime_algorithm_count": 1,
+    "rare_case_policy": "bounded preflight then UNKNOWN",
+    "rare_case_optimization_is_not_a_goal": true,
+    "backend_full_representation_passes_per_request": 1,
+    "frontend_cold_first_response_is_a_hard_gate": true,
+    "input_sampling_for_counterexamples_forbidden": true,
+    "forbidden_concrete_searches": [
+      "input_box_center",
+      "input_box_boundary",
+      "random_input",
+      "input_grid",
+      "PGD",
+      "concrete_candidate_ranking_or_repair"
+    ],
+    "onnx_execution_policy": "independent zero-tolerance validation of an exact-verifier-produced witness only; never candidate generation or search",
+    "candidate_rule": "a candidate must replace measured native solve work; it may not coexist as a retry, fallback, or side representation"
+  },
+  "cifar100_medium_iid29": {
+    "real_model_build_only_census": true,
+    "build_elapsed_seconds": 4.058,
+    "continuous_factors": 18539,
+    "binary_phase_factors": 1061,
+    "solver_columns": 19600,
+    "source_upper_rows": 31795,
+    "source_constraint_nnz": 5867563,
+    "native_rows": 17489,
+    "native_constraint_nnz": 3498525,
+    "ranged_pairs": 14306,
+    "row_reduction_fraction": 0.44994495989935523,
+    "nnz_reduction_fraction": 0.4037516086320675,
+    "objective_rows": 99,
+    "constraint_families": {
+      "affine_chain_cut": {"rows": 16384, "continuous_nnz": 3903744, "binary_nnz": 0},
+      "relu_active": {"rows": 12228, "continuous_nnz": 834332, "binary_nnz": 0},
+      "relu_exact_lower": {"rows": 1061, "continuous_nnz": 563152, "binary_nnz": 0},
+      "relu_exact_x_branch": {"rows": 1061, "continuous_nnz": 563152, "binary_nnz": 1061},
+      "relu_exact_zero_branch": {"rows": 1061, "continuous_nnz": 1061, "binary_nnz": 1061}
+    },
+    "cold_gate": {
+      "wall_timeout_seconds": 30.0,
+      "parent_wall_seconds": 30.310831458307803,
+      "status": "timeout",
+      "first_usable_result": false,
+      "receipt_jsonl": "artifacts/hybridz_largecls_gates/gate1_commonpath_active_range_cifar100_medium_iid29_py312_20260811.jsonl",
+      "receipt_sha256": "ffcb166ff00fa423cae5b7c6c908429a62eaf10009f983fa4f822b25dfdd42e1",
+      "summary_sha256": "511dcce025b8bc81e9050f4ff652365fa1e4308e07f762e7d726eeb0b4f6a555",
+      "worker_log_sha256": "3afa80767c2073324d91f1f79ec6af7f56df3aa1993b3fd559fe4d9a842b3db4"
+    }
+  },
+  "tinyimagenet_medium_iid17": {
+    "real_model_build_only_census": true,
+    "build_elapsed_seconds": 12.322040771134198,
+    "continuous_factors": 60097,
+    "binary_phase_factors": 1919,
+    "solver_columns": 62016,
+    "source_upper_rows": 102897,
+    "source_constraint_nnz": 20550675,
+    "native_rows": 54327,
+    "native_constraint_nnz": 12127453,
+    "ranged_pairs": 48570,
+    "row_reduction_fraction": 0.47202542348173415,
+    "nnz_reduction_fraction": 0.4098756853485348,
+    "objective_rows": 199,
+    "constraint_families": {
+      "affine_chain_cut": {"rows": 50176, "continuous_nnz": 12959232, "binary_nnz": 0},
+      "relu_active": {"rows": 46964, "continuous_nnz": 3887212, "binary_nnz": 0},
+      "relu_exact_lower": {"rows": 1919, "continuous_nnz": 1849237, "binary_nnz": 0},
+      "relu_exact_x_branch": {"rows": 1919, "continuous_nnz": 1849237, "binary_nnz": 1919},
+      "relu_exact_zero_branch": {"rows": 1919, "continuous_nnz": 1919, "binary_nnz": 1919}
+    },
+    "solver_run": false,
+    "reason_solver_skipped": "the smaller CIFAR100 common-path cold gate had already failed; this run only completed the minimum structural census"
+  },
+  "persistent_lp_rounding_stoploss": {
+    "dataset": "cifar100_medium_iid29",
+    "lp_time_cap_seconds": 6.0,
+    "lp_runs": 87,
+    "lp_status_counts": {"kTimeLimit": 87},
+    "rounded_candidates_base_feasible": 0,
+    "rounded_candidates_unsafe_and_feasible": 0,
+    "best_base_row_violation": 14.64569,
+    "decision": "reject deterministic binary rounding; do not add a rounding branch, repair pass, or retry"
+  },
+  "objective_connectivity_stoploss": {
+    "dataset": "cifar100_medium_iid29",
+    "base_rows": 17489,
+    "base_columns": 19600,
+    "base_nnz": 3498525,
+    "bipartite_components": 290,
+    "objective_rows": 99,
+    "objective_support_columns_each": 101,
+    "connected_rows_each": 17489,
+    "connected_columns_each": 19313,
+    "connected_nnz_each": 3498525,
+    "decision": "reject objective-local connected-component slicing; every property objective reaches the complete constraint matrix"
+  },
+  "lp_budget_reallocation_stoploss": {
+    "dataset": "cifar100_medium_iid2",
+    "candidate": "reduce the existing persistent-LP fraction from 0.90 to 0.20 and give the remaining shared deadline to the same exact MIP path",
+    "parameter_sweep_performed": false,
+    "wall_timeout_seconds": 30.0,
+    "parent_wall_seconds": 30.292984754778445,
+    "analysis_returned_seconds_from_worker_start": 28.640063,
+    "status": "timeout",
+    "first_usable_result": false,
+    "receipt_jsonl": "artifacts/hybridz_largecls_gates/gate1_commonpath_lp20_cifar100_medium_iid2_py312_20260811.jsonl",
+    "receipt_sha256": "a50ef9e55a79a6215af8126f111d1a83bbdbef328169b875141d5178d1b8aa08",
+    "summary_sha256": "ffd0556fc83e4e0d7aba3fef879a57b4f9a68bfa060e376308145e6200002ef6",
+    "worker_log_sha256": "072f229ab44502acd6da23752e16ab7d88d3eff68c803b568fad298f1eca3eaf",
+    "decision": "reject and do not scan more fractions; no code or configuration change retained"
+  },
+  "exact_phase_mip_start_stoploss": {
+    "candidate": "one binary-only center-phase partial start for the existing exact HiGHS cutoff model",
+    "single_request_speedup_width128": 1.8689988459207438,
+    "single_request_speedup_width256": 2.054724358917881,
+    "four_concurrent_width128_median_paired_speedup": 1.2557085939823571,
+    "four_concurrent_width128_bootstrap_95_lower": 1.22325730392625,
+    "gate_passed": false,
+    "real_model_run": false,
+    "production_code_retained": false,
+    "artifact": "artifacts/hybridz_largecls_gates/exact_phase_mip_start_stoploss_20260811.json",
+    "decision": "reject after the concurrent response gate; do not add another phase-start variant or heuristic sweep"
+  },
+  "conclusion": {
+    "frontend_is_dominant_bottleneck": false,
+    "python_loader_is_dominant_bottleneck": false,
+    "native_highs_run_is_dominant_bottleneck": true,
+    "lp_then_mip_budget_tuning_is_sufficient": false,
+    "new_solved_instances": 0,
+    "next_candidate_must": [
+      "replace the existing native exact-MIP work",
+      "preserve every unstable ReLU phase exactly",
+      "use one model representation and one solve path",
+      "cross the cold first-result gate before production integration"
+    ]
+  }
+}

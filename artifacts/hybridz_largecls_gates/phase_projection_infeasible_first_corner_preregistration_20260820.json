@@ -1,0 +1,113 @@
+{
+  "authority": {
+    "candidate_and_solver_state_authority": false,
+    "formal_positive_rule": "decoded_input_in_raw_BOX;verifier_owned_candidate_blind_zero_width_forward_interval;same_StoredBinary64Input_exact_Fraction_property_lower_bound_positive",
+    "verifier_owned_terminal_only": true
+  },
+  "execution": {
+    "first_hard_failure_stop": "stop before every remaining case if iid2 or Tiny143 is not FALSIFIED, large166 is not FALSIFIED, large153 is not UNKNOWN, or any attempted case is ERROR",
+    "fresh_worker_per_case": true,
+    "gpu_execution_requires_new_explicit_root_authorization_after_independent_pre_gpu_audits": true,
+    "retries": 0,
+    "runtime_receives_case_outcome_expectations_or_public_labels": false,
+    "stage_a_only": true,
+    "worker_attempts_per_case": 1
+  },
+  "formal_accounting": {
+    "disconnected_results_are_not_formal_gain": true,
+    "fixed400_baseline": "59/400",
+    "production_or_config_changed_by_this_probe": false,
+    "tinyimagenet_medium_iid153": "FALSIFIED_or_UNKNOWN_is_an_ability_observation_only; UNKNOWN_is_explicitly_allowed"
+  },
+  "frozen_optimal_retention_evidence": {
+    "claim": "the frozen formal59 cases were observed on the current-v3 production path with base OPTIMAL; this evidence is audit context only and is never passed to runtime",
+    "events_path": "artifacts/hybridz_largecls_gates/phase_projection_fprime_production_retention_gate_20260814.events.jsonl",
+    "events_sha256": "bfc249ed95d27d9e73c0554477ad1644d879abcb3fc640f900f45c9ce1c33b43",
+    "summary_path": "artifacts/hybridz_largecls_gates/phase_projection_fprime_production_retention_gate_20260814.json",
+    "summary_sha256": "870175a30f09fd359b743f63ca480fddc707b9ef3d6959b1b434a8765faa3567"
+  },
+  "goal": "Test one status-dispatch rule that preserves the complete current-v3 OPTIMAL path and uses the already-fixed first analytic inward BOX corner only when the one base owner returns typed INFEASIBLE status, without reading an infeasibility ray.",
+  "prohibitions": {
+    "activation_or_input_split": false,
+    "bab_or_enumeration": false,
+    "backward_bounds": false,
+    "candidate_output_consumed_by_terminal": false,
+    "corner_or_parameter_scan": false,
+    "cross_request_cache": false,
+    "dual_ray_read": false,
+    "dual_tightening": false,
+    "fallback_or_runtime_menu": false,
+    "input_sampling": false,
+    "onnx_point_execution": false,
+    "pgd": false,
+    "second_owner_or_solver": false,
+    "second_update": false,
+    "topk_or_threshold_menu": false
+  },
+  "resource_policy": {
+    "current_v3_optimal_negative_repair": "fixed exact-integer preflight before repair delta allocation; all existing selected rows or UNKNOWN",
+    "infeasible_corner": "no repair delta, no incremental helper, no warm solve",
+    "max_conservative_transaction_bytes": 2000000000,
+    "max_dense_elements": 200000000,
+    "max_logical_nnz": 200000000,
+    "max_phase_rows": 200000,
+    "max_selected_rows": 200000
+  },
+  "rule": {
+    "base_optimal_margin_negative": "unchanged current-v3 candidate space, row space, selector, one simultaneous update, and one same-owner warm solve: all primal-tight rows with strictly negative upper-row dual",
+    "base_optimal_margin_positive": "unchanged current-v3 candidate space, row space, and direct candidate dispatch",
+    "base_optimal_margin_zero": "UNKNOWN",
+    "base_typed_infeasible": {
+      "candidate": "the unique already-computed first-stream analytic inward BOX corner",
+      "dual_ray_api_calls": 0,
+      "incremental_update_calls": 0,
+      "owner_result_payload": "typed status only; no row dual, ray, support, sign, or magnitude",
+      "warm_solves_after_base": 0
+    },
+    "other_or_failed_owner_status": "UNKNOWN",
+    "single_state_dispatch": true
+  },
+  "schema": "act.hybridz.phase_projection_infeasible_first_corner_preregistration.v1",
+  "scope": "disconnected_scratch_only_ability_sentinel",
+  "stage_a": {
+    "case_order": [
+      "cifar100_medium_iid2",
+      "tinyimagenet_medium_iid143",
+      "cifar100_large_iid166",
+      "tinyimagenet_medium_iid153",
+      "cifar100_large_iid153",
+      "cifar100_medium_iid50",
+      "cifar100_large_iid101",
+      "cifar100_large_iid120",
+      "tinyimagenet_medium_iid9",
+      "tinyimagenet_medium_iid173",
+      "tinyimagenet_medium_iid176"
+    ],
+    "historical_no_candidate_status_cases": [
+      "cifar100_medium_iid50",
+      "cifar100_large_iid101",
+      "cifar100_large_iid120",
+      "tinyimagenet_medium_iid9",
+      "tinyimagenet_medium_iid173",
+      "tinyimagenet_medium_iid176"
+    ],
+    "success": {
+      "allowed_status_each": [
+        "FALSIFIED",
+        "UNKNOWN"
+      ],
+      "cifar100_large_iid153": "UNKNOWN",
+      "errors": 0,
+      "must_complete_all_11_after_every_prior_hard_gate_passes": true,
+      "required_falsified": [
+        "cifar100_medium_iid2",
+        "tinyimagenet_medium_iid143",
+        "cifar100_large_iid166"
+      ],
+      "tinyimagenet_medium_iid153": [
+        "FALSIFIED",
+        "UNKNOWN"
+      ]
+    }
+  }
+}

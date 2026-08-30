@@ -1,0 +1,108 @@
+{
+  "schema": "act.hybridz.phasec_loader_repair_independent_audit.v1",
+  "created_at_local": "2026-08-11",
+  "verdict": "NO_BLOCKER_FOR_REPAIRED_DISCONNECTED_SCOPE",
+  "promotion_verdict": "NO-PROMOTION",
+  "scope": {
+    "reviewer_did_not_implement_repair": true,
+    "production_integration": false,
+    "producer_authenticated": false,
+    "proof_authority": false,
+    "verdict_authority": false,
+    "solver_status_authority": false,
+    "real_model_run": false,
+    "large_model_run": false,
+    "cifar100_run": false,
+    "tinyimagenet_run": false,
+    "arbitrary_instruction_level_async_fault_proof": false,
+    "bounded_api_callback_cleanup_fault_model": true
+  },
+  "locked_sha256": {
+    "act/back_end/solver/constraint_program.py": "d301ebf546cc01bfdd133a00572ca87dc7632331b81188d3812635b99f7b5ab0",
+    "act/back_end/solver/constraint_program_highs.py": "4856d455c7d03eced6286dafc88747aa4832386fa851c872c0347651d906f699",
+    "act/back_end/solver/test_constraint_program_highs.py": "d61d2eae67d4cb5e6c8fb687f523a59fc326afe4bdb74de3630441587a5e6e14"
+  },
+  "repaired_blockers": [
+    {
+      "id": "PHASEC-SOUNDNESS-001",
+      "result": "PASS",
+      "evidence": "Cursor, HiGHS, final-validation, and retirement secondary failures attach constant builtin notes without str, repr, truth testing, or dynamic type-name access; hostile secondary objects did not replace the exact primary."
+    },
+    {
+      "id": "PHASEC-SOUNDNESS-002",
+      "result": "PASS",
+      "evidence": "Binding-only receipt reports model_loaded=false and binary_integrality_loaded=false; successful binary load reports true; continuous-only load reports integrality false. Generic branch_and_bound_called fields were removed and the remaining claim is scoped to ACT network BaB."
+    },
+    {
+      "id": "PHASEC-SOUNDNESS-003",
+      "result": "PASS",
+      "evidence": "Failed bind, observed graph break, execute validation failure, and interrupted registry retirement set a one-way terminal state before cleanup; graph restoration did not revive the capability and the triggering primary object was preserved."
+    }
+  ],
+  "tests": [
+    {
+      "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 python -m unittest -q act.back_end.solver.test_constraint_program_highs",
+      "result": "PASS",
+      "passed": 32,
+      "failed": 0
+    },
+    {
+      "command": "python -m unittest -q ConstraintProgramStructureTests ConstraintProgramHostileTests",
+      "result": "PASS",
+      "passed": 32,
+      "failed": 0
+    },
+    {
+      "command": "python -m unittest -q test_operator_constraint_program_sink test_constraint_program_highs",
+      "result": "PASS",
+      "passed": 48,
+      "failed": 0
+    },
+    {
+      "command": "independent inline hostile-secondary, receipt-phase, graph-ABA, retirement-cleanup checks",
+      "result": "PASS",
+      "checks": 4
+    },
+    {
+      "command": "python -m py_compile plus git diff --check",
+      "result": "PASS"
+    }
+  ],
+  "static_scope_findings": {
+    "production_consumer_imports": 0,
+    "legacy_iterator_called_by_loader": false,
+    "whole_program_hstack_or_vstack_in_loader": false,
+    "triangle_called": false,
+    "act_network_bab_called": false,
+    "backward_called": false,
+    "dual_called": false,
+    "silent_runtime_fallback": false
+  },
+  "performance_recheck": {
+    "rows": 96,
+    "repeats": 7,
+    "semantic_equivalence": true,
+    "candidate_median_wall_ms": 17.181998,
+    "baseline_median_wall_ms": 2.034624,
+    "wall_speedup": 0.1184160305454581,
+    "cpu_speedup": 0.11837284727049459,
+    "rss_hwm_measured": false,
+    "promotion": false
+  },
+  "common_path_latency_audit": {
+    "goal_amendment": "artifacts/hybridz_largecls_gates/goal_amendment_commonpath_latency_20260811.json",
+    "handoff_record_validation_median_ms": 0.485092,
+    "second_expected_record_validation_median_ms": 0.484899,
+    "two_consecutive_entry_validations_median_ms": 0.968495,
+    "finding": "The disconnected execute path still performs two full entry validations and one final live-graph validation, in addition to legacy HZ reconstruction and full postsolve Fraction replay. This is correct within its diagnostic scope but violates the new single-primary common-path latency objective.",
+    "decision": "Freeze this implementation only as a correctness oracle. Do not optimize or integrate it; the next performance work must use the solver-ready primary V2 design with one capture/build/load/witness path."
+  },
+  "remaining_limits": [
+    "The handoff remains disconnected and is not producer authenticated.",
+    "The route is about 8.4x slower than baseline and has no HWM evidence.",
+    "No real dataset or production verifier evidence exists.",
+    "No claim is made about HiGHS internal MIP branching; only ACT network BaB is absent.",
+    "The review covers bounded API/callback/cleanup faults, not an unbounded adversary interrupting every Python instruction."
+  ],
+  "next_action": "Do not add further fallbacks or lifecycle machinery to this oracle. Implement only the disconnected solver-ready primary V2 common path, beginning with direct A_bin.nnz==0 native blocks, and return UNKNOWN for unsupported rare mixed cases."
+}

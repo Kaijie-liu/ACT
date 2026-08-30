@@ -1,0 +1,26 @@
+[ACT] Auto-detecting project root: .
+[WARN] Gurobi license not found: modules/gurobi/gurobi.lic
+[INFO] Please place gurobi.lic in: modules/gurobi
+✅ Device Manager Initialized: device=cuda:0, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/tinyimagenet_2024/onnx/TinyImageNet_resnet_medium.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 12 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: TinyImageNet_resnet_medium.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 3, 56, 56)
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 9408 inputs, 200 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.create_specs:Generating specs for tinyimagenet_medium/TinyImageNet_resnet_medium__TinyImageNet_resnet_medium_prop_idx_2063_sidx_8156_eps_0.0039
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed TinyImageNet_resnet_medium_prop_idx_2063_sidx_8156_eps_0.0039.vnnlib: 1 query(ies) [vnnlib 1.0 flat]
+INFO:act.front_end.vnnlib_loader.create_specs:Parsed VNNLIB specs: 1 queries, first kind=(BOX, TOP1_ROBUST)
+[gate-worker-phase] parse_convert_specs_seconds=1.848052s total=2.073512s remaining=97.926487s
+
+🧬 Synthesizing models from 1 spec result(s)...
+
+🎉 Synthesis Complete:
+   Total specs: 1
+   Wrapped models: 1
+[gate-worker-phase] synthesis_seconds=0.001305s total=2.074847s remaining=97.925152s
+[gate-worker-phase] torch2act_seconds=0.190492s total=2.265357s remaining=97.734641s
+[gate-worker-phase] analysis_solver_replay_seconds=start total=2.265594s remaining=97.734405s
+[gate-worker-phase] analysis_solver_replay_seconds=95.735982s total=98.001581s remaining=1.998418s

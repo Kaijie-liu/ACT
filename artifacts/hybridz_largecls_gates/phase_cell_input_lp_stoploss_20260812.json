@@ -1,0 +1,67 @@
+{
+  "schema": "act.hybridz.phase_cell_input_lp_stoploss.v1",
+  "recorded_date": "2026-08-12",
+  "instance": "cifar100_medium_iid2",
+  "status": "closed_by_stop_loss",
+  "scope": {
+    "production_integrated": false,
+    "proof_authority": false,
+    "verdict_authority": false,
+    "input_sampling_used": false,
+    "pgd_used": false,
+    "concrete_onnx_execution_used": false,
+    "phase_assignments_tried": 1,
+    "property_rows_selected": 1,
+    "continuous_lp_used": true,
+    "mixed_integer_solver_used": false,
+    "triangle_rows": 0,
+    "act_bab_used": false,
+    "backward_bound_propagation_used": false,
+    "dual_tightening_used": false
+  },
+  "algorithm": {
+    "phase_assignment": "one sequential assignment from verifier abstract forward centers",
+    "property_row_selection": "largest unconstrained fixed-cell affine cube upper",
+    "input_optimization": "one continuous LP over the 3072 input factors with every selected ReLU phase imposed",
+    "candidate_check": "verifier-internal stored-affine outward replay only",
+    "onnx_replay": false,
+    "retry_or_alternative_phase_cell": false
+  },
+  "unconstrained_analytic_corner": {
+    "input_factors": 3072,
+    "interval_exact_relu_rows": 2177,
+    "selected_property_row": 67,
+    "selected_cube_upper": 0.08076900055379567,
+    "margin_lower": 0.08076888275970008,
+    "margin_upper": 0.08076900055536505,
+    "phase_consistent_rows": 1990,
+    "phase_inconsistent_rows": 187,
+    "phase_ambiguous_rows": 0,
+    "result": "rejected_by_exact_phase_consistency"
+  },
+  "phase_constrained_input_lp": {
+    "rows": 2177,
+    "columns": 3072,
+    "nnz": 2465301,
+    "solve_seconds": 0.7078169267624617,
+    "solver_status": "optimal",
+    "margin_lower": -0.1543424641826755,
+    "margin_upper": -0.1543423463870105,
+    "strict_replay_phase_consistent_rows": 2078,
+    "strict_replay_phase_inconsistent_rows": 24,
+    "strict_replay_phase_ambiguous_rows": 75,
+    "result": "no_unsafe_verifier_candidate"
+  },
+  "stop_loss": {
+    "closed": true,
+    "reason": "the only selected fixed phase cell and property row has a rigorously negative optimized margin; its floating LP point also does not pass strict phase replay",
+    "do_not_add": [
+      "phase-cell retries",
+      "historical-rival selection",
+      "sampled input centers, corners, or random points",
+      "PGD",
+      "concrete ONNX counterexample search"
+    ],
+    "next_step": "eliminate all one-pass refined stable ReLU factors before rebuilding the single compact exact representation"
+  }
+}

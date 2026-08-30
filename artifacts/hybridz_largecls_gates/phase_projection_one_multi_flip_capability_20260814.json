@@ -1,0 +1,317 @@
+{
+  "schema": "act.hybridz.phase_projection.one_multi_flip_capability.v1",
+  "created_at": "2026-08-14T03:40:00+10:00",
+  "status": "DISCONNECTED_CAPABILITY_POSITIVE_NOT_PRODUCTION",
+  "audit_complete": false,
+  "production_integrated": false,
+  "formal_fixed400_before": 59,
+  "formal_fixed400_after": 59,
+  "disconnected_terminal_verified_increment": 1,
+  "conditional_fixed400_lower_bound_if_integrated_without_regression": 60,
+  "scope": {
+    "objective": "Test one deterministic, at-most-once multi-flip cell update after the frozen 59-path returns a strictly negative selected-cell margin.",
+    "production_files_modified": false,
+    "runtime_rule_reads_external_labels": false,
+    "evaluation_labels_used_only_to_define_offline_tiers": true,
+    "initial_tier": [
+      "tinyimagenet_medium_iid143",
+      "cifar100_large_iid110",
+      "cifar100_large_iid160",
+      "cifar100_large_iid153"
+    ],
+    "initial_tier_roles": {
+      "public_sat_closest_three": [
+        "tinyimagenet_medium_iid143",
+        "cifar100_large_iid110",
+        "cifar100_large_iid160"
+      ],
+      "public_non_sat_negative_control": "cifar100_large_iid153"
+    },
+    "expansion_condition": "Run the other five public-sat ACT-UNKNOWN cases only after at least one initial-tier positive candidate passes the unchanged terminal.",
+    "expansion_condition_met": true,
+    "expanded_tier": [
+      "cifar100_large_iid114",
+      "cifar100_large_iid161",
+      "cifar100_large_iid166",
+      "tinyimagenet_medium_iid93",
+      "tinyimagenet_medium_iid153"
+    ]
+  },
+  "frozen_rule": {
+    "name": "flip_all_tight_strictly_negative_marginal_phase_rows_once",
+    "base_model": "The frozen 59-path selected exact-phase affine LP: minimize negative selected-rival margin, HiGHS dual simplex, presolve disabled, primal feasibility tolerance 1e-9.",
+    "eligible_screened_phase_row": "HiGHS ineqlin.residual <= 1e-9 * (1 + abs(screened_rhs)) and ineqlin.marginal < 0.0.",
+    "marginal_sign_semantics": "For minimization of negative margin with A_ub x <= b, a strictly negative upper-bound marginal says a local RHS relaxation decreases the minimized objective and therefore locally increases margin.",
+    "set_rule": "Select every eligible row simultaneously. There is no marginal-magnitude threshold, top-k, tie, threshold scan, or subset search.",
+    "deterministic_order": "Map screened rows back through the frozen keep mask, then rebuild changes in topological layer order and ascending exact-row local position. Selection is a set; order only fixes triangular-delta serialization.",
+    "update": "Negate each selected phase Boolean, rebuild exactly one candidate affine cell from the same first stream using the existing triangular phase-delta representation, and solve exactly one more LP for the same selected property row.",
+    "commit_rule": "The updated candidate margin must be strictly greater than the first LP margin. Infeasibility, no eligible row, non-improvement, malformed marginal, numerical failure, or deadline stops with UNKNOWN.",
+    "positive_rule": "Only a strictly positive updated candidate is decoded and sent through the unchanged raw BOX, verifier-owned zero-width interval forward, and stored-binary64 Fraction property lower bound.",
+    "phase_updates": 1,
+    "phase_retries": 0,
+    "property_retries": 0,
+    "fallback_menu": false,
+    "external_result_dependency": false,
+    "marginal_has_verdict_authority": false,
+    "marginal_changes_or_tightens_bounds": false,
+    "dual_tightening_used": false,
+    "interpretation": "The LP marginal chooses a candidate phase set only; it neither proves a bound nor authorizes a verdict."
+  },
+  "restrictions": {
+    "restrictions_removed": false,
+    "input_center_boundary_or_random_sampling_used": false,
+    "onnx_input_point_execution_used": false,
+    "pgd_used": false,
+    "bab_used": false,
+    "activation_or_input_split_used": false,
+    "phase_enumeration_used": false,
+    "backward_bounds_or_sensitivity_used": false,
+    "dual_tightening_used": false,
+    "candidate_or_lp_authority_used": false,
+    "terminal_authority": "raw BOX plus verifier-owned zero-width interval forward plus exact stored-binary64 Fraction property lower bound"
+  },
+  "evidence": {
+    "scratch_source": {
+      "path": "scratch_phase_projection_one_multi_flip_probe.py",
+      "sha256": "9c158f7f13087fe2be93e3b67114db704cfa46432e82fda94e5162dd8da10040",
+      "py_compile_passed": true,
+      "scope": "disconnected scratch only"
+    },
+    "tiny143_audit_output": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_one_multi_flip_tiny143_audit_output_20260814.json",
+      "sha256": "0b2091d80fe364925c731dabb8e525654824028c73a13bd024ed9636d4d7e539"
+    },
+    "frozen_production_sources_unchanged": {
+      "phase_projection_path": "act/back_end/hybridz_tf/forward_exact_relu_phase_projection_candidate.py",
+      "phase_projection_sha256": "4b66470df55edebb595e0e06c6b8a2de5c65496b8671c4d2f2552003d01ea306",
+      "live_stream_path": "act/back_end/hybridz_tf/forward_exact_relu_live_row_stream_candidate.py",
+      "live_stream_sha256": "d53c2335c43905097e78bef8311175d7151d7e98293a6152fce62dba00d37511"
+    },
+    "fixed400_source": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_gpu_csr_fixed400_20260814.jsonl",
+      "sha256": "749db4e400329598c23c3dd7c9b9863c291eb3d1ba556cdcfcfa879c58487b43"
+    },
+    "public_ceiling_source": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_vnncomp_public_ceiling_20260814.json",
+      "sha256": "91b875c57bcebd8b784b1e1141ab727526aa44aeb3928ce7ddcdb8b887117294"
+    },
+    "margin_census_source": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_margin_ceiling_census_20260814.json",
+      "sha256": "0ed6b4980dc52f3852551f2afded26c18802f90cf200fc454ee37dd99a971551"
+    }
+  },
+  "results": [
+    {
+      "case": "tinyimagenet_medium_iid143",
+      "evaluation_role": "public_sat_initial_target",
+      "base_margin": -0.0010710773153007613,
+      "selected_property_row": 100,
+      "flips": 57,
+      "updated_margin": 0.00021702546121615818,
+      "margin_gain": 0.0012881027765169195,
+      "strict_improvement": true,
+      "updated_lp_rows": 1160,
+      "updated_lp_nnz": 914226,
+      "candidate_phase_consistent": 1646,
+      "candidate_phase_inconsistent": 22,
+      "maximum_candidate_phase_sign_violation": 2.3555585130022316e-08,
+      "terminal_raw_box": true,
+      "terminal_zero_width_interval": true,
+      "terminal_fraction_margin_lower": 0.0002169926152308932,
+      "terminal_verified": true,
+      "isolated_update_seconds_first_run": 1.3308773413300514,
+      "isolated_update_seconds_audit_run": 1.4662970444187522,
+      "update_stage_seconds_audit_run": {
+        "center": 0.0405008178204298,
+        "delta": 0.019013908691704273,
+        "expansion": 0.5699942586943507,
+        "model": 0.7065616752952337,
+        "lp": 0.1227727709338069
+      },
+      "terminal_seconds_audit_run": 1.087017398327589,
+      "selection_sha256": "2b107af66ed3cf4c13b5b0aea4e76b9f2669b6a311dd9e3f0d2a90086e89032d",
+      "audit_reproduction": "Selection count and digest, base margin, updated margin, and terminal Fraction lower bound reproduced exactly without changing the rule."
+    },
+    {
+      "case": "cifar100_large_iid110",
+      "evaluation_role": "public_sat_initial_target",
+      "base_margin": -0.00453403149642484,
+      "flips": 118,
+      "updated_margin": -0.00039202746903654884,
+      "margin_gain": 0.004142004027388291,
+      "strict_improvement": true,
+      "candidate_phase_inconsistent": 29,
+      "isolated_update_seconds": 0.4364342000335455,
+      "update_stage_seconds": {
+        "center": 0.049092525616288185,
+        "delta": 0.051520925015211105,
+        "expansion": 0.2323759999126196,
+        "model": 0.057467883452773094,
+        "lp": 0.042071099393069744
+      },
+      "terminal_invoked": false
+    },
+    {
+      "case": "cifar100_large_iid160",
+      "evaluation_role": "public_sat_initial_target",
+      "base_margin": -0.008333114340001058,
+      "flips": 88,
+      "updated_margin": -0.0014360456772712915,
+      "margin_gain": 0.006897068662729766,
+      "strict_improvement": true,
+      "candidate_phase_inconsistent": 26,
+      "isolated_update_seconds": 0.38594500068575144,
+      "update_stage_seconds": {
+        "center": 0.0505291735753417,
+        "delta": 0.0504714073613286,
+        "expansion": 0.19846332911401987,
+        "model": 0.04556621052324772,
+        "lp": 0.037329938262701035
+      },
+      "terminal_invoked": false
+    },
+    {
+      "case": "cifar100_large_iid153",
+      "evaluation_role": "public_non_sat_negative_control",
+      "base_margin": -0.005464856144083763,
+      "flips": 58,
+      "updated_margin": -0.0036483714441357673,
+      "margin_gain": 0.0018164846999479956,
+      "strict_improvement": true,
+      "candidate_phase_inconsistent": 6,
+      "isolated_update_seconds": 0.3890368826687336,
+      "update_stage_seconds": {
+        "center": 0.05215289443731308,
+        "delta": 0.03437988180667162,
+        "expansion": 0.24350380804389715,
+        "model": 0.03363846801221371,
+        "lp": 0.022218341939151287
+      },
+      "terminal_invoked": false,
+      "false_positive": false
+    },
+    {
+      "case": "cifar100_large_iid114",
+      "evaluation_role": "public_sat_expanded_target",
+      "base_margin": -0.02013684249833081,
+      "flips": 188,
+      "updated_margin": -0.0017511340244757423,
+      "margin_gain": 0.018385708473855067,
+      "strict_improvement": true,
+      "candidate_phase_inconsistent": 78,
+      "isolated_update_seconds": 0.6600008485838771,
+      "update_stage_seconds": {
+        "center": 0.04919249750673771,
+        "delta": 0.06919360440224409,
+        "expansion": 0.36189521476626396,
+        "model": 0.07164784986525774,
+        "lp": 0.10379208344966173
+      },
+      "terminal_invoked": false
+    },
+    {
+      "case": "cifar100_large_iid161",
+      "evaluation_role": "public_sat_expanded_target",
+      "base_margin": -0.01351101621004358,
+      "flips": 118,
+      "updated_margin": -0.010673852550292962,
+      "margin_gain": 0.002837163659750619,
+      "strict_improvement": true,
+      "candidate_phase_inconsistent": 36,
+      "isolated_update_seconds": 0.5450724670663476,
+      "update_stage_seconds": {
+        "center": 0.04868074972182512,
+        "delta": 0.05993098206818104,
+        "expansion": 0.30512945633381605,
+        "model": 0.06639461778104305,
+        "lp": 0.06037370674312115
+      },
+      "terminal_invoked": false
+    },
+    {
+      "case": "cifar100_large_iid166",
+      "evaluation_role": "public_sat_expanded_target",
+      "base_outcome": "LP_INFEASIBLE",
+      "update_invoked": false,
+      "status": "STOP_LOSS_UNKNOWN",
+      "reason": "The frozen LP produced no primal/marginal from which the single update rule could select a set."
+    },
+    {
+      "case": "tinyimagenet_medium_iid93",
+      "evaluation_role": "public_sat_expanded_target",
+      "base_margin": -0.22503653884251973,
+      "flips": 106,
+      "updated_margin": -0.22278913412660306,
+      "margin_gain": 0.0022474047159166677,
+      "strict_improvement": true,
+      "candidate_phase_inconsistent": 28,
+      "isolated_update_seconds": 0.8863984374329448,
+      "update_stage_seconds": {
+        "center": 0.039450449869036674,
+        "delta": 0.03511595167219639,
+        "expansion": 0.30582885444164276,
+        "model": 0.3354553868994117,
+        "lp": 0.16388367302715778
+      },
+      "terminal_invoked": false
+    },
+    {
+      "case": "tinyimagenet_medium_iid153",
+      "evaluation_role": "public_sat_expanded_target",
+      "base_outcome": "LP_INFEASIBLE",
+      "update_invoked": false,
+      "status": "STOP_LOSS_UNKNOWN",
+      "reason": "The frozen LP produced no primal/marginal from which the single update rule could select a set."
+    }
+  ],
+  "aggregate": {
+    "public_sat_targets": 8,
+    "public_sat_terminal_verified": 1,
+    "public_sat_strictly_improved_but_still_negative": 5,
+    "public_sat_base_lp_infeasible_fail_closed": 2,
+    "negative_controls": 1,
+    "negative_control_false_positives": 0,
+    "strict_improvements_among_updated_cases": 7,
+    "non_improvements_among_updated_cases": 0,
+    "isolated_update_seconds_all_updated_median": 0.5450724670663476,
+    "isolated_update_seconds_all_updated_minimum": 0.38594500068575144,
+    "isolated_update_seconds_all_updated_maximum": 1.4662970444187522,
+    "public_sat_union_before": 67,
+    "act_formal_coverage_before": 59,
+    "disconnected_coverage_after": 60,
+    "remaining_public_sat_after_disconnected_result": 7,
+    "formal_coverage_after": 59
+  },
+  "phase_consistency_audit": {
+    "finding": "The updated candidate LP factors are not a strict replay of the selected float phase assignment. Tiny143 has 22 sign discrepancies and a maximum sign violation about 2.36e-8, which exceeds the configured unscaled 1e-9 tolerance.",
+    "safe_interpretation": "Do not call the updated float object an exact or replay-consistent cell and do not grant its margin authority.",
+    "why_tiny143_verdict_survives": "The terminal starts from the decoded stored-binary64 input, checks raw BOX membership, recomputes the whole network with verifier-owned zero-width forward intervals, and evaluates the property with Fraction arithmetic. It does not consume the LP phase assignment, LP cell constraints, marginal values, or candidate margin.",
+    "terminal_independent_of_candidate_phase_discrepancy": true
+  },
+  "performance": {
+    "claim": "No performance gate is claimed.",
+    "frozen_path_timing_authority": false,
+    "reason_frozen_timing_invalid": "sys.settrace was used only to capture frozen function locals and materially perturbs Python timing.",
+    "isolated_update_timing_authority": false,
+    "observed_shape": "The one update adds about 0.386 to 1.466 seconds before any positive terminal; Tiny143 then adds about 1.087 seconds for the unchanged terminal.",
+    "current_path_ratchet": "If the >=1.5x/2x rule is applied request-for-request against the current 59-path on a negative instance, this additive ability route fails by construction because it performs all current work and then more work.",
+    "positive_iid2_bypass_warning": "The existing positive iid2 gate would not execute the update and therefore cannot measure this ability overhead.",
+    "required_negative_sentinels": [
+      "tinyimagenet_medium_iid143",
+      "cifar100_large_iid153"
+    ],
+    "required_future_measurement": "Any integration must preregister uncontended and four-concurrent negative-path latency/memory gates, while retaining iid2 as a regression control."
+  },
+  "decision": {
+    "capability_result": "PROMISING_PLUS_ONE",
+    "production_decision": "DO_NOT_INTEGRATE_FROM_THIS_SCRATCH_RECEIPT",
+    "reason": "The route produces one independently terminal-verified new counterexample, but its benchmark-wide yield is only +1/400, the candidate phase object is not strictly replay-consistent, and the additive negative-path cost has not passed a policy-valid performance gate.",
+    "stop_loss": "Do not try top-k variants, marginal thresholds, subset menus, a second phase update, property retries, or repeat-for-luck. The single frozen rule has completed its bounded capability census.",
+    "reopen_for_production_only_if": [
+      "The performance-reference policy permits ability latency against a fixed baseline rather than requiring an additive route to beat the current 59-path request-for-request.",
+      "A no-trace implementation reuses current locals and preserves the unchanged terminal boundary.",
+      "Tiny143 and the negative control pass preregistered single and four-concurrent latency/memory gates.",
+      "Hostile fail-closed, deterministic selection, fixed-set retention, fixed400, and independent audits all pass."
+    ]
+  }
+}

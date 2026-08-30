@@ -1,0 +1,79 @@
+{
+  "schema": "act.hybridz.phase_projection_global_cell_stoploss.v1",
+  "date": "2026-08-12",
+  "formal_baseline": {
+    "fixed400_falsified": 43,
+    "fixed400_unknown": 357,
+    "cifar100_medium_falsified": 12,
+    "cifar100_large_falsified": 10,
+    "tinyimagenet_medium_falsified": 21
+  },
+  "dominant_failure_bucket": {
+    "fixed400_exact_phase_or_margin_replay_failures": 345,
+    "representative_verifier_internal_diagnostics": [
+      {
+        "case": "cifar100_medium_iid0",
+        "phase_rows_consistent": 2030,
+        "phase_rows_inconsistent": 0,
+        "phase_rows_ambiguous": 0,
+        "phase_rows_total": 2030,
+        "projected_margin_lower": -0.03056648102799219
+      },
+      {
+        "case": "cifar100_large_iid100",
+        "phase_rows_consistent": 4527,
+        "phase_rows_inconsistent": 0,
+        "phase_rows_ambiguous": 0,
+        "phase_rows_total": 4527,
+        "projected_margin_lower": -0.7279774608895548
+      },
+      {
+        "case": "tinyimagenet_medium_iid0",
+        "phase_rows_consistent": 1865,
+        "phase_rows_inconsistent": 2,
+        "phase_rows_ambiguous": 0,
+        "phase_rows_total": 1867,
+        "projected_margin_lower": -0.36755448818388203
+      }
+    ],
+    "interpretation": "The common failure is a materially nonpositive optimum inside the selected exact phase cell, not a permissive replay guard or floating-point envelope."
+  },
+  "complementarity_feasibility_review": {
+    "relu_relation": "y>=0, y-z>=0, and y*(y-z)=0",
+    "network_problem_class": "mixed linear complementarity / LPCC with boxed free inputs, arbitrary signed residual weights, and a property objective",
+    "standard_monotone_lcp": false,
+    "reason": "The input box, affine equalities, property feasibility condition, and arbitrary signed network operators do not yield one monotone square LCP with a polynomial pivot guarantee.",
+    "complete_solution_requirement": "A complete method must make combinatorial active-set choices or use a mixed-integer/disjunctive search, which violates the no-BaB and low-latency constraints.",
+    "available_specialized_solver": false,
+    "implementation_cost": "A new global sparse basis/factorization engine would duplicate backend machinery and operate on thousands of phase variables with million-scale coupling; it is not a compact common-path change.",
+    "prototype_built": false,
+    "decision": "STOP_BEFORE_IMPLEMENTATION"
+  },
+  "solver_ready_native_range_upper_bound": {
+    "schedule_construction_cost_assumed_zero": true,
+    "four_worker_paired_speedups": [
+      2.00145215086295,
+      2.012291389550948,
+      1.84704501514755,
+      1.7759874700360547,
+      2.019888419094088
+    ],
+    "median_speedup": 2.00145215086295,
+    "paired_bootstrap_95_lower": 1.7759874700360547,
+    "required_median_speedup": 2.0,
+    "required_bootstrap_95_lower": 1.8,
+    "gate_passed": false,
+    "decision": "Q1_SINGLE_REPRESENTATION_INTEGRATION_CLOSED"
+  },
+  "forbidden_methods_used": {
+    "input_sampling": false,
+    "center_boundary_or_random_onnx_execution": false,
+    "pgd": false,
+    "act_bab": false,
+    "backward_bounds": false,
+    "dual_tightening": false
+  },
+  "production_candidate_sha256": "615b45516b0d4cd2a3632c4f260efffc4fc451444225f8d1bb3e6a04993ba",
+  "production_files_changed": false,
+  "decision": "Do not add a complementarity backend, replay fallback, or native RANGE side path. A future attempt must replace the current cell selector with one compact, genuinely global mechanism whose complexity is bounded before implementation."
+}

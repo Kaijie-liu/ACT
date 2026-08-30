@@ -1,0 +1,242 @@
+{
+  "schema": "act.hybridz.phase_projection_objective_stoploss.v1",
+  "date": "2026-08-12",
+  "scope": "fixed-manifest verifier-only objective and phase-cell experiments",
+  "production_candidate_sha256": "615b45516b0d4cd2a3632c4f260efffc4fc5cf451444225f8d1bb3e6a04993ba",
+  "baseline_fixed400": {
+    "falsified": 43,
+    "unknown": 357,
+    "errors": 0
+  },
+  "comparison_sets": {
+    "fixed40_unknown_subset": 34,
+    "all_baseline_successes": 43
+  },
+  "experiments": [
+    {
+      "name": "reselect_rival_after_phase_update",
+      "new_falsified_on_fixed40_unknown_subset": 0,
+      "baseline_successes_retained": 43,
+      "baseline_successes_tested": 43,
+      "decision": "rejected_no_capability_gain_and_extra_matrix_work"
+    },
+    {
+      "name": "defer_projected_margin_gate_to_singleton_verification",
+      "new_falsified_on_fixed40_unknown_subset": 0,
+      "unknown_reasons": {
+        "singleton_interval_did_not_prove": 24,
+        "phase_or_margin_replay_failed": 8,
+        "lp_infeasible": 1,
+        "singleton_deadline": 1
+      },
+      "decision": "rejected_extra_failure_path_work_without_gain"
+    },
+    {
+      "name": "second_deterministic_phase_projection",
+      "new_falsified_on_fixed40_unknown_subset": 0,
+      "unknown_reasons": {
+        "phase_or_margin_replay_failed": 16,
+        "lp_time_limit": 3,
+        "live_row_fail_closed": 15
+      },
+      "decision": "rejected_slower_and_less_stable"
+    },
+    {
+      "name": "singleton_interval_phase_assignment_at_analytic_corner",
+      "new_falsified_on_fixed40_unknown_subset": 0,
+      "unknown_reasons": {
+        "phase_or_margin_replay_failed": 24,
+        "deadline_before_lp": 3,
+        "lp_time_limit": 2,
+        "live_row_fail_closed": 5
+      },
+      "decision": "rejected_no_gain_and_more_deadline_pressure"
+    },
+    {
+      "name": "verify_all_top1_rows_for_same_candidate",
+      "new_falsified_on_fixed40_unknown_subset": 0,
+      "decision": "rejected_same_candidate_violated_no_alternate_property_row"
+    },
+    {
+      "name": "center_margin_rival_selection",
+      "new_falsified_on_fixed40_unknown_subset": 0,
+      "baseline_successes_retained": 34,
+      "baseline_successes_tested": 43,
+      "decision": "rejected_lost_9_existing_successes"
+    },
+    {
+      "name": "smooth_multirival_single_objective",
+      "new_falsified_on_fixed40_unknown_subset": 0,
+      "baseline_successes_retained": 18,
+      "baseline_successes_tested": 43,
+      "decision": "rejected_lost_25_existing_successes"
+    },
+    {
+      "name": "single_strongest_obstructing_phase_neighbor",
+      "rule": "replace_a_hopeless_projected_cell_with_one_robustly_signed_adjacent_phase_cell_then_solve_only_one_lp",
+      "baseline_fixed14_falsified": 3,
+      "candidate_fixed14_falsified": 3,
+      "new_falsified": 0,
+      "large_deadline_regressions": 1,
+      "decision": "rejected_no_capability_gain_and_more_deadline_pressure"
+    },
+    {
+      "name": "controllable_affine_upper_rival_score",
+      "rule": "rank_one_rival_by_center_plus_input_generator_l1_without_uncontrollable_arithmetic_error",
+      "baseline_fixed14_falsified": 3,
+      "candidate_fixed14_falsified": 3,
+      "new_falsified": 0,
+      "decision": "rejected_identical_formal_outcomes"
+    },
+    {
+      "name": "single_center_selected_exact_cell",
+      "rule": "replace_the_analytic_phase_projection_with_the_single_center_selected_exact_cell_and_solve_one_lp",
+      "sentinel_cases": 6,
+      "baseline_successes_in_sentinels": 3,
+      "candidate_successes_in_sentinels": 2,
+      "new_falsified_on_baseline_unknown_sentinels": 0,
+      "lost_baseline_successes": [
+        "cifar100_medium_iid2"
+      ],
+      "decision": "rejected_early_stop_lost_existing_capability_and_added_none"
+    },
+    {
+      "name": "analytic_property_line_phase_cell_traversal",
+      "rule": "trace_relu_breakpoints_continuously_along_the_single_property_direction_choose_one_best_cell_then_solve_one_full_dimensional_lp",
+      "breakpoint_cap": 64,
+      "sentinel_cases": 6,
+      "candidate_successes": 0,
+      "deadline_exhaustions_during_line_traversal": 6,
+      "baseline_successes_retained": 0,
+      "input_sampling_used": false,
+      "onnx_execution_used": false,
+      "decision": "rejected_early_stop_repeated_full_forward_replay_violates_latency_budget"
+    },
+    {
+      "name": "exact_power_of_two_phase_lp_row_normalization",
+      "rule": "scale_every_phase_inequality_and_rhs_by_one_exact_binary_power_chosen_from_its_linf_magnitude_before_the_same_single_lp",
+      "baseline_fixed14_falsified": 3,
+      "candidate_fixed14_falsified": 2,
+      "new_falsified": 0,
+      "lost_under_four_worker_census": [
+        "cifar100_large_iid118"
+      ],
+      "tiny_deadline_regressions": 4,
+      "decision": "rejected_no_capability_gain_and_extra_full_matrix_latency"
+    },
+    {
+      "name": "uniform_highs_primal_feasibility_tolerance_1e_minus_10",
+      "rule": "run_the_same_single_phase_lp_with_the_minimum_supported_primal_feasibility_tolerance_and_no_other_change",
+      "baseline_fixed14_falsified": 3,
+      "candidate_fixed14_falsified": 2,
+      "new_falsified": 0,
+      "lost_under_four_worker_census": [
+        "cifar100_large_iid118"
+      ],
+      "decision": "rejected_no_capability_gain"
+    },
+    {
+      "name": "batched_all_rival_minimum_phase_change_selection",
+      "rule": "use_the_first_stream_to_evaluate_every_top1_analytic_corner_in_one_sparse_dense_batch_then_select_one_positive_potential_cell_with_the_fewest_phase_changes",
+      "cifar100_medium_negative_control": "iid29",
+      "negative_control_positive_first_cell_upper_rows": 0,
+      "negative_control_new_falsified": 0,
+      "positive_control": "iid2",
+      "positive_control_retained": true,
+      "approximate_extra_candidate_seconds_on_positive_control": 0.1,
+      "decision": "rejected_first_cell_has_no_positive_property_direction_on_target_negative_control"
+    },
+    {
+      "name": "forward_exact_hz_output_local_factor_phase_selection",
+      "rule": "propagate_every_exact_relu_local_output_factor_once_to_the_network_output_and_choose_each_phase_from_the_selected_property_coefficient_sign_before_one_fixed_cell_lp",
+      "sentinel_cases": 6,
+      "input_lp_infeasible": 6,
+      "new_falsified": 0,
+      "baseline_successes_retained": 0,
+      "decision": "rejected_independent_output_factor_signs_ignore_input_phase_coupling_and_form_unrealizable_cells"
+    },
+    {
+      "name": "analytic_first_cell_zero_crossing_scale",
+      "rule": "move_once_along_the_existing_property_affine_direction_to_its_unique_linearized_zero_crossing_then_select_one_cell_and_run_one_lp",
+      "sentinel_cases": 6,
+      "baseline_successes_tested": 3,
+      "baseline_successes_retained": 3,
+      "baseline_unknowns_tested": 3,
+      "new_falsified": 0,
+      "decision": "rejected_no_capability_gain_without_expanding_to_fixed14"
+    },
+    {
+      "name": "direct_singleton_proof_without_heuristic_phase_or_margin_gate",
+      "rule": "use_the_same_single_lp_input_but_send_it_directly_to_the_verifier_owned_zero_width_forward_and_exact_property_proof",
+      "fixed40_unknowns_tested": 34,
+      "new_falsified": 0,
+      "singleton_deadline_regressions_under_four_workers": true,
+      "decision": "rejected_phase_and_margin_gate_hides_no_formal_result_and_avoids_wasted_frontend_work"
+    },
+    {
+      "name": "interval_span_dominant_initial_phase",
+      "rule": "choose_each_initial_exact_phase_by_the_larger_formal_interval_side_then_keep_the_existing_one_projection_one_lp_path",
+      "baseline_successes_tested": 3,
+      "baseline_successes_retained": 2,
+      "lost_successes": ["cifar100_medium_iid2"],
+      "baseline_unknowns_tested": 3,
+      "new_falsified": 0,
+      "decision": "rejected_early_stop_lost_existing_capability_and_added_none"
+    },
+    {
+      "name": "first_relu_boundary_adjacent_cell",
+      "rule": "analytically_cross_only_the_first_relu_boundary_on_the_existing_property_ray_then_run_one_cell_and_one_lp",
+      "sentinel_cases": 6,
+      "analytic_phase_ambiguity": 6,
+      "new_falsified": 0,
+      "decision": "rejected_outward_phase_envelopes_correctly_make_the_boundary_ambiguous_no_step_scan"
+    },
+    {
+      "name": "opposite_property_corner_phase_cell",
+      "rule": "use_the_opposite_corner_of_the_same_property_affine_only_to_select_one_exact_cell_then_maximize_the_original_property_in_one_lp",
+      "sentinel_cases": 6,
+      "baseline_successes_retained": 0,
+      "new_falsified": 0,
+      "decision": "rejected_early_stop_all_positive_controls_lost"
+    },
+    {
+      "name": "event_driven_scalar_piecewise_affine_line",
+      "rule": "trace_relu_breakpoints_as_scalar_forward_dual_numbers_along_one_formal_property_ray_without_onnx_execution_or_input_sampling_then_submit_one_selected_cell_to_one_lp",
+      "segment_cap": 64,
+      "cifar100_medium_iid2": {
+        "segments": 64,
+        "line_parameter_reached": 0.19414678032500385,
+        "trace_seconds": 4.265163406729698,
+        "result": "UNKNOWN"
+      },
+      "cifar100_medium_iid29": {
+        "segments": 64,
+        "line_parameter_reached": 0.27581815982602514,
+        "trace_seconds": 4.215963669121265,
+        "result": "UNKNOWN"
+      },
+      "new_falsified": 0,
+      "decision": "rejected_event_population_is_hundreds_deep_and_scalar_trace_alone_violates_common_path_latency"
+    }
+  ],
+  "diagnostic_example": {
+    "case": "cifar100_medium_iid29",
+    "exact_phase_rows_consistent": 1254,
+    "exact_phase_rows_total": 1254,
+    "objective_value_before_envelope": -0.3748274276135757,
+    "strict_arithmetic_error": 5.0271207437021246e-08,
+    "strict_projected_margin_lower": -0.3748274778870839,
+    "interpretation": "failure_is_candidate_search_not_roundoff_envelope"
+  },
+  "forbidden_methods_used": {
+    "input_sampling": false,
+    "center_boundary_or_random_onnx_execution": false,
+    "pgd": false,
+    "act_bab": false,
+    "backward_bounds": false,
+    "dual_tightening": false
+  },
+  "production_files_changed_by_experiments": false,
+  "production_candidate_restored_to_frozen_hash": true,
+  "next_direction": "stop static corner_neighbor_and_piecewise_line variants; any next mechanism must select a materially different global exact cell without executing sampled onnx inputs, repeated full_graph replay, parameter scans, or fallback stacking"
+}

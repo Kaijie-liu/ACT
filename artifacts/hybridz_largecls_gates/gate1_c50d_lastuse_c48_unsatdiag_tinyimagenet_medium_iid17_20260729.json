@@ -1,0 +1,91 @@
+{
+  "config": {
+    "branch_requires_unstable_successor": false,
+    "branching_method": "gain",
+    "device": "cuda",
+    "dtype": "float64",
+    "dual_iters": 40,
+    "frontier_contraction_target": 0.0,
+    "joint_gain_groups": 1,
+    "max_batch_size": 8,
+    "multi_split_levels": 3,
+    "per_subproblem_refine": "none",
+    "per_subproblem_refine_iters": 0,
+    "per_subproblem_refine_layer_cap": 2,
+    "per_subproblem_refine_rows_cap": 64,
+    "property_branch_focus": "worst",
+    "property_separable_bab": true,
+    "solver_tier": "dual_alpha_eta",
+    "time_budget_seconds": 12.0
+  },
+  "counterexample": null,
+  "cuda_peak": {
+    "allocated_bytes": 28137928704,
+    "available": true,
+    "reserved_bytes": 33426505728
+  },
+  "ground_truth_loaded": false,
+  "inputs": {
+    "onnx": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/tinyimagenet_2024/onnx/TinyImageNet_resnet_medium.onnx",
+    "onnx_sha256": "234b04b151d640f8fc859fab00729448ba533d8feb3679427cbadb94467ec776",
+    "vnnlib": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/tinyimagenet_2024/vnnlib/TinyImageNet_resnet_medium_prop_idx_2063_sidx_8156_eps_0.0039.vnnlib",
+    "vnnlib_sha256": "0089ecbe47c9f4322ea8391c358e8a1dc7645e5832f6a35920434f84a07c0f8c"
+  },
+  "proof_authority": false,
+  "result": {
+    "metadata": {
+      "any_dropped_frontier_cap": false,
+      "any_dropped_max_depth": false,
+      "branch_requires_unstable_successor": false,
+      "child_refine_calls": 0,
+      "child_refine_changed_layers": 0,
+      "child_refine_queried_objective_rows": 0,
+      "child_refine_seconds": 0.0,
+      "child_refine_selected_layer_ids": [],
+      "child_refine_strict_lower_entries": 0,
+      "child_refine_strict_upper_entries": 0,
+      "exhausted_budget_nodes": false,
+      "exhausted_budget_time": false,
+      "frontier_contraction_target": 0.0,
+      "joint_gain_groups": 1,
+      "joint_gain_groups_tested": 0,
+      "joint_gain_more_diverse_lanes": 0,
+      "joint_gain_nonbaseline_lanes": 0,
+      "joint_gain_probe_calls": 0,
+      "joint_gain_probe_nodes": 0,
+      "joint_gain_worst_child_improvement_max": 0.0,
+      "nodes": 9,
+      "nodes_minted": 0,
+      "nonterminal_filter_applied_calls": 0,
+      "nonterminal_filter_calls": 0,
+      "nonterminal_filter_fallbacks": 0,
+      "nonterminal_filter_selected_layer_ids": [],
+      "pool_remaining": 0,
+      "property_branch_focus": "worst",
+      "property_forest_all_solves_single_row": true,
+      "property_forest_certified_nodes_by_row": {
+        "126": 8
+      },
+      "property_forest_processed_by_row": {
+        "126": 9
+      },
+      "property_forest_root_count": 1,
+      "property_forest_root_rows": [
+        126
+      ],
+      "property_separable_bab": true,
+      "spec_rows_kept": 1,
+      "split_depth_histogram": {
+        "3": 1
+      }
+    },
+    "status": "certified"
+  },
+  "schema": "act.hybridz_joint_gain_probe.v1",
+  "timing": {
+    "setup_seconds": 1.802091360092163,
+    "total_seconds": 67.48018789291382,
+    "verdict_seconds": 65.67809653282166
+  },
+  "verdict_source": "ordinary_sound_dual_bab"
+}

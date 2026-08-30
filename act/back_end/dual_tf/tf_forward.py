@@ -242,6 +242,59 @@ def _store_forward_state(bounds_dict: Dict[int, Bounds],
     frame_dict[layer_id] = frame
 
 
+def _release_consumed_forward_state(
+    layer_id: int,
+    preds: List[int],
+    remaining_consumers: Dict[int, int],
+    box_state: Dict[int, Bounds],
+    lin_state: Dict[int, LinearBound],
+    frame_dict: Dict[int, Frame],
+) -> None:
+    """Release internal forward state strictly after its final DAG consumer.
+
+    ``bounds_dict`` is intentionally absent: public per-layer bounds are needed
+    by the reverse dual pass and must survive the complete forward traversal.
+    Repeated predecessor edges count as one consumer layer because the handler
+    has finished all of its reads before this helper runs.
+    """
+
+    def drop_internal_state(dead_layer_id: int) -> None:
+        missing = [
+            name
+            for name, state in (
+                ("box_state", box_state),
+                ("lin_state", lin_state),
+                ("frame_dict", frame_dict),
+            )
+            if dead_layer_id not in state
+        ]
+        if missing:
+            raise RuntimeError(
+                "compute_forward_bounds: inconsistent internal state while "
+                f"releasing layer {dead_layer_id}: missing {missing}"
+            )
+        del box_state[dead_layer_id]
+        del lin_state[dead_layer_id]
+        del frame_dict[dead_layer_id]
+
+    for pred_id in set(preds):
+        remaining = remaining_consumers.get(pred_id)
+        if remaining is None or remaining <= 0:
+            raise RuntimeError(
+                "compute_forward_bounds: invalid remaining-consumer count "
+                f"for predecessor {pred_id}: {remaining}"
+            )
+        remaining -= 1
+        remaining_consumers[pred_id] = remaining
+        if remaining == 0:
+            drop_internal_state(pred_id)
+
+    # Terminal layers have no future consumer. Dropping their internal state
+    # immediately also releases pass-through aliases such as ASSERT.
+    if remaining_consumers[layer_id] == 0:
+        drop_internal_state(layer_id)
+
+
 def _reset_forward_box(lb: torch.Tensor, ub: torch.Tensor, device, dtype
                        ) -> Tuple[LinearBound, Tuple[torch.Tensor, torch.Tensor]]:
     """Reset dual-track state on a concrete box."""
@@ -349,6 +402,15 @@ def compute_forward_bounds(net: Net, input_lb: torch.Tensor, input_ub: torch.Ten
     frame_dict: Dict[int, Tuple[torch.Tensor, torch.Tensor]] = {}
     topo_order = _topological_sort(net)
     by_id = getattr(net, "by_id", {layer.id: layer for layer in net.layers})
+    remaining_consumers: Dict[int, int] = {lid: 0 for lid in topo_order}
+    for consumer_id in topo_order:
+        for pred_id in set(net.preds.get(consumer_id, []) or []):
+            if pred_id not in remaining_consumers:
+                raise ValueError(
+                    "compute_forward_bounds: predecessor "
+                    f"{pred_id} of layer {consumer_id} is not in the DAG"
+                )
+            remaining_consumers[pred_id] += 1
     entry_box = Bounds(lb_in, ub_in)
     entry_lin = _identity_lin(B, input_dim, device, dtype)
     entry_frame = (lb_in, ub_in)
@@ -371,6 +433,10 @@ def compute_forward_bounds(net: Net, input_lb: torch.Tensor, input_ub: torch.Ten
                     bounds_dict, box_state, lin_state, frame_dict,
                     lid, stored, out, lin, frame,
                 )
+                _release_consumed_forward_state(
+                    lid, preds, remaining_consumers,
+                    box_state, lin_state, frame_dict,
+                )
                 continue
             if kind not in (LayerKind.INPUT.value, LayerKind.INPUT_SPEC.value):
                 raise ValueError(f"compute_forward_bounds: layer {lid} kind '{kind}' has no predecessors and is not INPUT / INPUT_SPEC")
@@ -384,6 +450,10 @@ def compute_forward_bounds(net: Net, input_lb: torch.Tensor, input_ub: torch.Ten
                 entry_box,
                 entry_lin,
                 entry_frame,
+            )
+            _release_consumed_forward_state(
+                lid, preds, remaining_consumers,
+                box_state, lin_state, frame_dict,
             )
             continue
 
@@ -408,6 +478,10 @@ def compute_forward_bounds(net: Net, input_lb: torch.Tensor, input_ub: torch.Ten
             )
             _store_forward_state(bounds_dict, box_state, lin_state, frame_dict,
                                  lid, stored, out, lin, frame)
+            _release_consumed_forward_state(
+                lid, preds, remaining_consumers,
+                box_state, lin_state, frame_dict,
+            )
             continue
 
         if kind == LayerKind.RELU.value and alphas is not None:
@@ -435,6 +509,15 @@ def compute_forward_bounds(net: Net, input_lb: torch.Tensor, input_ub: torch.Ten
                     lin, frame = _reset_forward_box(lb, ub, device, dtype)
             _store_forward_state(bounds_dict, box_state, lin_state, frame_dict,
                                  lid, stored, out, lin, frame)
+            _release_consumed_forward_state(
+                lid, preds, remaining_consumers,
+                box_state, lin_state, frame_dict,
+            )
+            # Loop-local references otherwise keep the predecessor's large
+            # affine matrices alive until the next alpha-specialized ReLU.
+            # The successor state is already owned by ``lin_state``; only
+            # predecessor aliases are cleared here.
+            del parent_box, parent_lin, parent_frame, new_lin
             continue
 
         handler = DualTF._FORWARD_REGISTRY.get(kind)
@@ -452,6 +535,10 @@ def compute_forward_bounds(net: Net, input_lb: torch.Tensor, input_ub: torch.Ten
         )
         _store_forward_state(bounds_dict, box_state, lin_state, frame_dict,
                              lid, stored, out, lin, frame)
+        _release_consumed_forward_state(
+            lid, preds, remaining_consumers,
+            box_state, lin_state, frame_dict,
+        )
 
     return bounds_dict
 

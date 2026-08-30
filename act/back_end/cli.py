@@ -907,10 +907,297 @@ Examples:
     verify_group.add_argument(
         "--hybridz-engine",
         type=str,
-        choices=["dense_hz_objbound", "sparse_hz_objbound"],
+        choices=[
+            "dense_hz_objbound",
+            "sparse_hz_objbound",
+            "operator_hz_objbound",
+        ],
         default=None,
         dest="hybridz_engine",
         help="Strict HybridZ verdict engine for --solver hybridz.",
+    )
+    verify_group.add_argument(
+        "--hybridz-operator-exact-budget",
+        type=int,
+        default=None,
+        dest="hybridz_operator_exact_budget",
+        help=(
+            "Operator-HZ exact ReLU budget: 0=all triangle, -1=all exact, "
+            "positive K=first K unstable neurons."
+        ),
+    )
+    verify_group.add_argument(
+        "--hybridz-operator-materialize-add",
+        action=argparse.BooleanOptionalAction,
+        default=None,
+        dest="hybridz_operator_materialize_add",
+        help="Materialize ADD outputs in fresh constrained operator-HZ frames.",
+    )
+    verify_group.add_argument(
+        "--hybridz-query-dual-feedback-targets",
+        type=str,
+        default=None,
+        dest="hybridz_query_dual_feedback_targets",
+        metavar="LID[,LID...]",
+        help=(
+            "Comma-separated nonnegative layer ids for independently "
+            "replayed query-dual feedback; may be preconfigured while off."
+        ),
+    )
+    verify_group.add_argument(
+        "--hybridz-query-dual-feedback-steps",
+        type=int,
+        default=None,
+        dest="hybridz_query_dual_feedback_steps",
+        help="Projected query-dual steps; 0 disables (maximum 64).",
+    )
+    verify_group.add_argument(
+        "--hybridz-query-dual-feedback-time-limit",
+        type=float,
+        default=None,
+        dest="hybridz_query_dual_feedback_time_limit",
+        help="Query-dual feedback wall-clock cap; 0 while disabled, max 20 s.",
+    )
+    verify_group.add_argument(
+        "--hybridz-query-dual-feedback-block-size",
+        type=int,
+        default=None,
+        dest="hybridz_query_dual_feedback_block_size",
+        help="Query block size for candidate/replay batches (1..4096).",
+    )
+    verify_group.add_argument(
+        "--hybridz-query-dual-feedback-device",
+        choices=("cpu", "cuda"),
+        default=None,
+        dest="hybridz_query_dual_feedback_device",
+        help="Device used only for query-dual candidate generation.",
+    )
+    verify_group.add_argument(
+        "--hybridz-preactivation-lp-budget",
+        type=int,
+        default=None,
+        dest="hybridz_preactivation_lp_budget",
+        help=(
+            "Maximum unstable ReLU rows whose preactivation bounds may be "
+            "tightened by independently checked LP dual certificates."
+        ),
+    )
+    verify_group.add_argument(
+        "--hybridz-preactivation-lp-time-limit",
+        type=float,
+        default=None,
+        dest="hybridz_preactivation_lp_time_limit",
+        help=(
+            "Shared wall-clock allowance for optional preactivation LP "
+            "candidates; 0 disables the mechanism."
+        ),
+    )
+    verify_group.add_argument(
+        "--hybridz-property-residual-budget",
+        type=int,
+        default=None,
+        dest="hybridz_property_residual_budget",
+        help=(
+            "Maximum property-ranked unstable ReLU rows encoded in shared "
+            "residual normal form; 0 disables."
+        ),
+    )
+    verify_group.add_argument(
+        "--hybridz-property-correlation-budget",
+        type=int,
+        default=None,
+        dest="hybridz_property_correlation_budget",
+        help=(
+            "Maximum property-ranked ReLU rows recomposed through a "
+            "materialized ADD correlation shadow; 0 disables."
+        ),
+    )
+    verify_group.add_argument(
+        "--hybridz-property-correlation-time-limit",
+        type=float,
+        default=None,
+        dest="hybridz_property_correlation_time_limit",
+        help="Wall-clock allowance for correlation target selection.",
+    )
+    verify_group.add_argument(
+        "--hybridz-residual-phase-screen",
+        action=argparse.BooleanOptionalAction,
+        default=None,
+        dest="hybridz_residual_phase_screen",
+        help=(
+            "Scan residual ADD/affine unstable rows and retain only "
+            "outward-proven active/inactive phases."
+        ),
+    )
+    verify_group.add_argument(
+        "--hybridz-residual-bound-screen",
+        action=argparse.BooleanOptionalAction,
+        default=None,
+        dest="hybridz_residual_bound_screen",
+        help=(
+            "Retain every strict residual-shadow l/u improvement, including "
+            "still-unstable ReLU rows."
+        ),
+    )
+    verify_group.add_argument(
+        "--hybridz-property-residual-time-limit",
+        type=float,
+        default=None,
+        dest="hybridz_property_residual_time_limit",
+        help="Wall-clock allowance for heuristic multi-rival target selection.",
+    )
+    verify_group.add_argument(
+        "--hybridz-property-residual-max-adjoint-cells",
+        type=int,
+        default=None,
+        dest="hybridz_property_residual_max_adjoint_cells",
+        help=(
+            "Memory stop-loss on rival-by-ReLU adjoint cells; incomplete "
+            "coverage retains both lower guards."
+        ),
+    )
+    verify_group.add_argument(
+        "--hybridz-property-residual-pool-per-rival",
+        type=int,
+        default=None,
+        dest="hybridz_property_residual_pool_per_rival",
+        help="Candidate pool retained per rival before facility selection.",
+    )
+    verify_group.add_argument(
+        "--hybridz-property-tail-upper",
+        action=argparse.BooleanOptionalAction,
+        default=None,
+        dest="hybridz_property_tail_upper",
+        help=(
+            "Enable safe-only Fraction-audited final DENSE(RELU(.)) "
+            "property upper folding."
+        ),
+    )
+    verify_group.add_argument(
+        "--hybridz-property-tail-add-source-planes",
+        action=argparse.BooleanOptionalAction,
+        default=None,
+        dest="hybridz_property_tail_add_source_planes",
+        help=(
+            "Enable candidate property-tail ADD-source planes. Requires "
+            "property-tail upper folding and materialized ADD frames."
+        ),
+    )
+    verify_group.add_argument(
+        "--hybridz-property-tail-alpha-steps",
+        type=int,
+        default=None,
+        dest="hybridz_property_tail_alpha_steps",
+        help=(
+            "Projected steps for candidate-only negative ReLU slopes in the "
+            "safe property tail; 0 disables."
+        ),
+    )
+    verify_group.add_argument(
+        "--hybridz-property-tail-alpha-time-limit",
+        type=float,
+        default=None,
+        dest="hybridz_property_tail_alpha_time_limit",
+        help="Wall-clock cap for property-tail alpha candidates.",
+    )
+    verify_group.add_argument(
+        "--hybridz-property-tail-alpha-learning-rate",
+        type=float,
+        default=None,
+        dest="hybridz_property_tail_alpha_learning_rate",
+        help="Projected Adam learning rate for property-tail alpha candidates.",
+    )
+    verify_group.add_argument(
+        "--hybridz-property-tail-alpha-max-cells",
+        type=int,
+        default=None,
+        dest="hybridz_property_tail_alpha_max_cells",
+        help="Sparse-support memory stop-loss for property-tail candidates.",
+    )
+    verify_group.add_argument(
+        "--hybridz-property-tail-alpha-device",
+        choices=("auto", "cpu", "cuda"),
+        default=None,
+        dest="hybridz_property_tail_alpha_device",
+        help="Frozen device for property-tail candidates.",
+    )
+    verify_group.add_argument(
+        "--hybridz-property-tail-mixture-grid-bits",
+        type=int,
+        default=None,
+        dest="hybridz_property_tail_mixture_grid_bits",
+        help=(
+            "Dyadic mixture-grid precision in bits for property-tail "
+            "candidates; 0 disables, maximum 24."
+        ),
+    )
+    verify_group.add_argument(
+        "--hybridz-property-tail-pairhull-budget",
+        type=int,
+        default=None,
+        dest="hybridz_property_tail_pairhull_budget",
+        help=(
+            "Maximum globally unique projected two-neuron PairHull pairs; "
+            "0 disables, maximum 8."
+        ),
+    )
+    verify_group.add_argument(
+        "--hybridz-property-tail-pairhull-time-limit",
+        type=float,
+        default=None,
+        dest="hybridz_property_tail_pairhull_time_limit",
+        help=(
+            "Shared wall-clock cap for PairHull candidates; 0 disables, "
+            "maximum 1.5 seconds."
+        ),
+    )
+    verify_group.add_argument(
+        "--hybridz-gpu-dual-steps",
+        type=int,
+        default=None,
+        dest="hybridz_gpu_dual_steps",
+        help=(
+            "Projected CUDA optimization steps for untrusted batched "
+            "original-frame dual candidates; 0 disables."
+        ),
+    )
+    verify_group.add_argument(
+        "--hybridz-gpu-dual-time-limit",
+        type=float,
+        default=None,
+        dest="hybridz_gpu_dual_time_limit",
+        help="Shared wall-clock cap for batched GPU dual candidates.",
+    )
+    verify_group.add_argument(
+        "--hybridz-gpu-dual-row-topk",
+        type=int,
+        default=None,
+        dest="hybridz_gpu_dual_row_topk",
+        help=(
+            "Per-rival absolute-magnitude top-k sparsification before "
+            "independent certificate checking; 0 keeps all rows."
+        ),
+    )
+    verify_group.add_argument(
+        "--hybridz-gpu-dual-learning-rate",
+        type=float,
+        default=None,
+        dest="hybridz_gpu_dual_learning_rate",
+        help="Learning rate for candidate-only projected CUDA optimization.",
+    )
+    verify_group.add_argument(
+        "--hybridz-lp-prefilter-fraction",
+        type=float,
+        default=None,
+        dest="hybridz_lp_prefilter_fraction",
+        help="Fraction of the one HybridZ deadline reserved for persistent LP rival filtering.",
+    )
+    verify_group.add_argument(
+        "--hybridz-lp-prefilter-max-seconds",
+        type=float,
+        default=None,
+        dest="hybridz_lp_prefilter_max_seconds",
+        help="Maximum seconds reserved for persistent LP rival filtering.",
     )
     verify_group.add_argument(
         "--hybridz-sigmoid-k",
@@ -1349,6 +1636,39 @@ _BACKEND_OVERRIDE_SPEC: list[tuple[str, str, Optional[str], Any, str]] = [
     ("gen_registry_mode",    "registry_mode",       None,             None, "user_set"),
     ("hybridz_timeout",      "hybridz_timeout",     "ACT_HYBRIDZ_TIMEOUT", float, "not_none"),
     ("hybridz_engine",       "hybridz_engine",      "ACT_HYBRIDZ_ENGINE", None, "not_none"),
+    ("hybridz_operator_exact_budget", "hybridz_operator_exact_budget", "ACT_HYBRIDZ_OPERATOR_EXACT_BUDGET", int, "not_none"),
+    ("hybridz_operator_materialize_add", "hybridz_operator_materialize_add", "ACT_HYBRIDZ_OPERATOR_MATERIALIZE_ADD", _env_bool, "not_none"),
+    ("hybridz_query_dual_feedback_targets", "hybridz_query_dual_feedback_targets", "ACT_HYBRIDZ_QUERY_DUAL_FEEDBACK_TARGETS", None, "not_none"),
+    ("hybridz_query_dual_feedback_steps", "hybridz_query_dual_feedback_steps", "ACT_HYBRIDZ_QUERY_DUAL_FEEDBACK_STEPS", int, "not_none"),
+    ("hybridz_query_dual_feedback_time_limit", "hybridz_query_dual_feedback_time_limit", "ACT_HYBRIDZ_QUERY_DUAL_FEEDBACK_TIME_LIMIT", float, "not_none"),
+    ("hybridz_query_dual_feedback_block_size", "hybridz_query_dual_feedback_block_size", "ACT_HYBRIDZ_QUERY_DUAL_FEEDBACK_BLOCK_SIZE", int, "not_none"),
+    ("hybridz_query_dual_feedback_device", "hybridz_query_dual_feedback_device", "ACT_HYBRIDZ_QUERY_DUAL_FEEDBACK_DEVICE", None, "not_none"),
+    ("hybridz_preactivation_lp_budget", "hybridz_preactivation_lp_budget", "ACT_HYBRIDZ_PREACTIVATION_LP_BUDGET", int, "not_none"),
+    ("hybridz_preactivation_lp_time_limit", "hybridz_preactivation_lp_time_limit", "ACT_HYBRIDZ_PREACTIVATION_LP_TIME_LIMIT", float, "not_none"),
+    ("hybridz_property_correlation_budget", "hybridz_property_correlation_budget", "ACT_HYBRIDZ_PROPERTY_CORRELATION_BUDGET", int, "not_none"),
+    ("hybridz_property_correlation_time_limit", "hybridz_property_correlation_time_limit", "ACT_HYBRIDZ_PROPERTY_CORRELATION_TIME_LIMIT", float, "not_none"),
+    ("hybridz_residual_phase_screen", "hybridz_residual_phase_screen", "ACT_HYBRIDZ_RESIDUAL_PHASE_SCREEN", _env_bool, "not_none"),
+    ("hybridz_residual_bound_screen", "hybridz_residual_bound_screen", "ACT_HYBRIDZ_RESIDUAL_BOUND_SCREEN", _env_bool, "not_none"),
+    ("hybridz_property_residual_budget", "hybridz_property_residual_budget", "ACT_HYBRIDZ_PROPERTY_RESIDUAL_BUDGET", int, "not_none"),
+    ("hybridz_property_residual_time_limit", "hybridz_property_residual_time_limit", "ACT_HYBRIDZ_PROPERTY_RESIDUAL_TIME_LIMIT", float, "not_none"),
+    ("hybridz_property_residual_max_adjoint_cells", "hybridz_property_residual_max_adjoint_cells", "ACT_HYBRIDZ_PROPERTY_RESIDUAL_MAX_ADJOINT_CELLS", int, "not_none"),
+    ("hybridz_property_residual_pool_per_rival", "hybridz_property_residual_pool_per_rival", "ACT_HYBRIDZ_PROPERTY_RESIDUAL_POOL_PER_RIVAL", int, "not_none"),
+    ("hybridz_property_tail_upper", "hybridz_property_tail_upper", "ACT_HYBRIDZ_PROPERTY_TAIL_UPPER", _env_bool, "not_none"),
+    ("hybridz_property_tail_add_source_planes", "hybridz_property_tail_add_source_planes", "ACT_HYBRIDZ_PROPERTY_TAIL_ADD_SOURCE_PLANES", _env_bool, "not_none"),
+    ("hybridz_property_tail_alpha_steps", "hybridz_property_tail_alpha_steps", "ACT_HYBRIDZ_PROPERTY_TAIL_ALPHA_STEPS", int, "not_none"),
+    ("hybridz_property_tail_alpha_time_limit", "hybridz_property_tail_alpha_time_limit", "ACT_HYBRIDZ_PROPERTY_TAIL_ALPHA_TIME_LIMIT", float, "not_none"),
+    ("hybridz_property_tail_alpha_learning_rate", "hybridz_property_tail_alpha_learning_rate", "ACT_HYBRIDZ_PROPERTY_TAIL_ALPHA_LEARNING_RATE", float, "not_none"),
+    ("hybridz_property_tail_alpha_max_cells", "hybridz_property_tail_alpha_max_cells", "ACT_HYBRIDZ_PROPERTY_TAIL_ALPHA_MAX_CELLS", int, "not_none"),
+    ("hybridz_property_tail_alpha_device", "hybridz_property_tail_alpha_device", "ACT_HYBRIDZ_PROPERTY_TAIL_ALPHA_DEVICE", None, "not_none"),
+    ("hybridz_property_tail_mixture_grid_bits", "hybridz_property_tail_mixture_grid_bits", "ACT_HYBRIDZ_PROPERTY_TAIL_MIXTURE_GRID_BITS", int, "not_none"),
+    ("hybridz_property_tail_pairhull_budget", "hybridz_property_tail_pairhull_budget", "ACT_HYBRIDZ_PROPERTY_TAIL_PAIRHULL_BUDGET", int, "not_none"),
+    ("hybridz_property_tail_pairhull_time_limit", "hybridz_property_tail_pairhull_time_limit", "ACT_HYBRIDZ_PROPERTY_TAIL_PAIRHULL_TIME_LIMIT", float, "not_none"),
+    ("hybridz_gpu_dual_steps", "hybridz_gpu_dual_steps", "ACT_HYBRIDZ_GPU_DUAL_STEPS", int, "not_none"),
+    ("hybridz_gpu_dual_time_limit", "hybridz_gpu_dual_time_limit", "ACT_HYBRIDZ_GPU_DUAL_TIME_LIMIT", float, "not_none"),
+    ("hybridz_gpu_dual_row_topk", "hybridz_gpu_dual_row_topk", "ACT_HYBRIDZ_GPU_DUAL_ROW_TOPK", int, "not_none"),
+    ("hybridz_gpu_dual_learning_rate", "hybridz_gpu_dual_learning_rate", "ACT_HYBRIDZ_GPU_DUAL_LEARNING_RATE", float, "not_none"),
+    ("hybridz_lp_prefilter_fraction", "hybridz_lp_prefilter_fraction", "ACT_HYBRIDZ_LP_PREFILTER_FRACTION", float, "not_none"),
+    ("hybridz_lp_prefilter_max_seconds", "hybridz_lp_prefilter_max_seconds", "ACT_HYBRIDZ_LP_PREFILTER_MAX_SECONDS", float, "not_none"),
     ("hybridz_sigmoid_k",    "hybridz_sigmoid_k",   "ACT_HYBRIDZ_SIGMOID_K", int, "not_none"),
     ("hybridz_tanh_k",       "hybridz_tanh_k",      "ACT_HYBRIDZ_TANH_K", int, "not_none"),
     ("hybridz_scurve_domain_cuts", "hybridz_scurve_domain_cuts", "ACT_HYBRIDZ_SCURVE_DOMAIN_CUTS", _env_bool, "not_none"),

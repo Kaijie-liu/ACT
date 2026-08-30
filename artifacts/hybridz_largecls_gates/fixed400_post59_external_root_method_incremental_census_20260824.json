@@ -1,0 +1,174 @@
+{
+  "schema": "act.hybridz.fixed400.post59_external_root_method_incremental_census.v1",
+  "created_at": "2026-08-24T00:29:08+10:00",
+  "status": "NO_EVIDENCE_BACKED_ADMISSIBLE_EXTERNAL_SURVIVOR",
+  "scope": "read_only_incremental_primary_paper_and_official_implementation_census_through_2026_08_24",
+  "conclusion": "The only newly identified mechanism not explicitly named in the repository closure is SART/LayerABS. It is mathematically distinct but statically inadmissible under the active goal. No other public 2025-2026 method supplies a root-only deterministic primal mechanism with evidence for both target families while avoiding the prohibited method classes.",
+  "not_a_mathematical_impossibility_claim": true,
+  "execution_and_mutation_boundary": {
+    "official_case_runs": 0,
+    "model_or_property_execution": false,
+    "gpu_or_solver_execution": false,
+    "external_repository_cloned": false,
+    "production_or_config_mutations": 0,
+    "read_only_http_and_source_inspection": true,
+    "only_file_created": "this census receipt"
+  },
+  "governing_local_evidence": {
+    "formal_ledger": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_gpu_csr_fixed400_20260814.jsonl",
+      "sha256": "749db4e400329598c23c3dd7c9b9863c291eb3d1ba556cdcfcfa879c58487b43"
+    },
+    "phase_frontier": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_post_direct_sparse_frontier_closure_20260824.json",
+      "sha256": "a0dfcd7da42d03f2bf1c63a9d3adf61f1306c8f887d08672868e31e1806b104f"
+    },
+    "repository_frontier": {
+      "path": "artifacts/hybridz_largecls_gates/fixed400_post59_full_repository_frontier_closure_20260824.json",
+      "sha256": "f7a409848d6aec224399f8a586362028fd73d28ab28e77537e5978c47e1a4bb2"
+    },
+    "gurobi_preflight": {
+      "path": "artifacts/hybridz_largecls_gates/commonpath_followup_stoploss_20260812.json",
+      "sha256": "8a7504a53a854fc421ad0732c28b109a04bbb93490a16ab2120c77d9d45eb717",
+      "fact": "The installed restricted Gurobi license rejects a synthetic 2001-variable model with error 10010, before either target model is loaded."
+    }
+  },
+  "sart_official_source_lock": {
+    "repository": "https://github.com/babutiger/SART",
+    "commit": "9557d1c04bf1dfa4eb54a2db17e4076d2130d478",
+    "commit_date_utc": "2026-04-13T18:03:01Z",
+    "paper_doi": "10.1145/3798237",
+    "supplementary_pdf_sha256": "66f83388b800af1ecc9f1b7bb241c3bf76f9621fdc0abfab006853a79e8695a5",
+    "raw_file_sha256": {
+      "README.md": "78f0773ad55c6468604a6e2e6a8d5571c41d09a2f2ab8e3a1771769179d27a8c",
+      "requirements.txt": "243c9a10b45ae2d6987a8fd901fe6c5ce0bbc6dde265b1204de5dda15c6248a6",
+      "sart/layerabs/layerabs_core/layerabs_solver_helpers.py": "00104c99ae257fda12b8b9e1431e8b88133f655806cab45d17076c715f5b4bd7",
+      "sart/layerabs/layerabs_core/layerabs_verification_runners.py": "db9aae6795a66eac3ce2c6ab143806e5f048bc905644ede166b3851285f286b6",
+      "sart/layerabs/layerabs_core/layerabs_no_abstraction_compute_kernels.py": "3d5cb391ed833d6b7787b7809724aeb1065a491a0c160bddac71732685c0a07f"
+    }
+  },
+  "sart_static_admissibility_audit": {
+    "mathematically_distinct_encoding": true,
+    "official_claimed_role": "Reduce binary variables in complete ReLU verification through sign-absolute reformulation and progressive LayerABS tightening.",
+    "pure_sart_is_solver_free": false,
+    "pure_sart_imports_gurobi": true,
+    "pure_sart_uses_exact_absolute_value_binary_encoding": true,
+    "pure_sart_uses_mip_callback_bounds": true,
+    "pure_sart_solver_sessions": "A new paired min/max Gurobi model is created and optimized for each bound query, repeated per neuron and per layer.",
+    "layerabs_stages": [
+      "Stage 1 DeepPoly filter",
+      "Stage 2 hybrid abstract SART refinement",
+      "Stage 3 complete fallback"
+    ],
+    "layerabs_uses_backward_propagation": true,
+    "implemented_primal_input_witness_export": false,
+    "implemented_result_data": "ObjVal or ObjBound intervals only; the layerabs tree contains no incumbent input extraction through Attr.X, .X, or getVars().",
+    "terminal_authority_compatible": false,
+    "target_family_evidence": {
+      "cifar100_2024_resnet": false,
+      "tinyimagenet_2024_resnet": false,
+      "cross_family_positive_pair": false,
+      "official_variants": "MNIST, VNNCOMP-ERAN MNIST, and small fully connected CIFAR-10 networks"
+    },
+    "local_license_compatible": false,
+    "prohibition_collisions": [
+      "Gurobi is a second solver",
+      "exact SART uses MIP and its internal branch-and-bound",
+      "LayerABS uses backward DeepPoly bounds",
+      "LayerABS is a staged fallback pipeline",
+      "per-neuron paired bound solves are not one root solve",
+      "no ACT-authorizable input witness is produced"
+    ],
+    "verdict": "STATIC_NO_GO_NO_SENTINEL"
+  },
+  "sart_phase_projection_math_fit": {
+    "current_owner_solver": "one deterministic HiGHS instance pinned to simplex",
+    "current_initial_lp_binary_columns": 0,
+    "current_repair_lp_binary_columns": 0,
+    "tiny143_initial_continuous_columns": 9408,
+    "tiny143_screened_phase_rows": 1154,
+    "tiny143_repair_continuous_columns_added": 57,
+    "tiny143_updated_continuous_columns": 9465,
+    "reason_binary_count_is_zero": "All ReLU phases are fixed before the selected cell is expressed as affine inequalities.",
+    "sart_compression_target": "Binary sign variables for unfixed absolute-value or unstable-ReLU relations.",
+    "structural_overlap": "NONE: a fixed sign turns each absolute value into plus or minus its linear expression; retaining an unknown sign reintroduces a nonconvex MIP relation.",
+    "tiny143_payment_seconds": {
+      "required_remaining_gap": 0.902328610420227,
+      "base_lp": 0.088592674,
+      "repair_lp": 0.106657723,
+      "both_lp_total": 0.195250397,
+      "shortfall_even_if_both_solves_are_free": 0.707078213420227,
+      "delta_expansion_model_block": 1.0455784378573298,
+      "required_block_ceiling": 0.143249825
+    },
+    "performance_conclusion": "SART does not reduce the affine delta stream, triangular expansion, selected target CSR, objective, or model construction that forms the only natural block large enough to pay the gap.",
+    "verdict": "ZERO_STRUCTURAL_AND_PAYMENT_OVERLAP"
+  },
+  "other_public_method_census": [
+    {
+      "method": "Out of the Shadows / CORA set-based falsification",
+      "primary_source": "https://openreview.net/pdf?id=cYSt0KOQDD",
+      "closest_root_mechanism": "Choose a deterministic zonotope support corner from the sign of a linear objective and execute the concrete network on it.",
+      "disposition": "The root rule is the already closed analytic support-corner class; the complete algorithm proceeds through input or ReLU splitting. Published competition totals do not isolate root-only successes on the eight ACT targets, and concrete point execution is prohibited for candidate search."
+    },
+    {
+      "method": "Clip-and-Verify",
+      "primary_source": "https://arxiv.org/abs/2512.11087",
+      "pdf_sha256": "1b72167d1d6a211753a261b5b4ac5b8c4cd0f0e605224f2fa3a05d08fe45d810",
+      "disposition": "Input or activation branch-and-bound, domain clipping, and bound tightening."
+    },
+    {
+      "method": "SDP-CROWN",
+      "primary_source": "https://arxiv.org/abs/2506.06665",
+      "official_implementation": "https://github.com/Hong-Ming/SDP-CROWN",
+      "pdf_sha256": "110fbd1c118ee1a891c9996240a26988f07e31aa81d2c002f2c53670d229094b",
+      "disposition": "SDP or Lagrangian relaxation coupled to backward bound propagation and dual optimization; it yields certificate bounds rather than an ACT-replayable primal input."
+    },
+    {
+      "method": "NeuralSAT 2025",
+      "official_implementation": "https://github.com/dynaroars/neuralsat",
+      "disposition": "DPLL(T) or CDCL activation decisions, LP abstraction, and attack paths."
+    },
+    {
+      "method": "BMiner",
+      "primary_source": "https://doi.org/10.1007/978-3-032-26204-2_4",
+      "disposition": "Explicit multi-ReLU splitting in a branch-and-bound tree."
+    },
+    {
+      "method": "NNV, nnenum, and PyRAT exact reachability",
+      "disposition": "Star or zonotope reachability coupled to ReLU or input splitting and region enumeration; some paths also begin with sampling."
+    },
+    {
+      "method": "SobolBox and Veriphi",
+      "disposition": "Sampling, PGD or attack, and cache-dependent candidate search."
+    },
+    {
+      "method": "ReLU barrier falsification",
+      "primary_source": "https://arxiv.org/abs/2511.10015",
+      "disposition": "A different barrier-certificate problem using boundary-region enumeration, random initial points, and SMT or optimization."
+    },
+    {
+      "method": "Sound Verification of Deployed Neural Networks",
+      "primary_source": "https://openreview.net/forum?id=5IHuwRwMHK",
+      "disposition": "Floating-point execution error envelopes for sound SAFE bounds, not a new counterexample primal source."
+    },
+    {
+      "method": "Incremental Certificate Learning",
+      "primary_source": "https://arxiv.org/abs/2512.24379",
+      "disposition": "Node search, global lemma cache, DPLL or branch-and-bound, dual certificates, iterative refinement, and no verified production implementation evidence."
+    }
+  ],
+  "complexity_cross_check": {
+    "primary_source": "https://proceedings.mlr.press/v291/froese25a.html",
+    "fact": "The 2025 COLT paper proves neural network verification coNP-hard for a general class of input domains and excludes constant-factor polynomial-time approximation of the relevant maximum in that setting.",
+    "interpretation": "This supports why public exact methods retain combinatorial or intractable machinery; it does not prove these particular fixed400 instances impossible."
+  },
+  "gate_decision": {
+    "unique_admissible_survivor": null,
+    "new_preregistration_created": false,
+    "new_disconnected_sentinel_authorized": false,
+    "formal_or_disconnected_score_changed": false,
+    "formal_fixed400": "59 FALSIFIED, 341 UNKNOWN, 0 ERROR",
+    "reason": "SART is statically inadmissible and has zero overlap with the current binary-free LP and its performance bottleneck; every other identified public method is either a closed local class, a prohibited method, a SAFE-only method, or lacks target-family primal evidence."
+  }
+}

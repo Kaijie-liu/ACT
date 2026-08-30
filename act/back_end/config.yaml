@@ -34,6 +34,93 @@ backend:
   hybridz:
     timeout: null
     engine: "dense_hz_objbound"
+    operator_exact_budget: 0
+    # One deterministic exact phase-cell projection and one input LP.  It is
+    # disabled by default and, when enabled, shares the global HybridZ wall
+    # budget with the ordinary all-exact root path.
+    operator_phase_projection_time_limit: 0.0
+    # Candidate-only property-focused K4 exact phase-conflict cliques.
+    # Zero is a strict identity-preserving no-op; a positive value is the
+    # complete raw-property/certificate/materialization wall-clock budget.
+    operator_phase_clique_time_limit: 0.0
+    operator_materialize_add: true
+    # Optional proof-carrying constrained bounds for at most K unstable ReLU
+    # rows.  Disabled by default; every accepted bound is independently
+    # checked against the original HZ constraints.
+    preactivation_lp_budget: 0
+    preactivation_lp_time_limit: 0.0
+    # Property-ranked row-local ADD correlation shadows.  Only selected
+    # downstream affine rows are recomposed over the pre-materialization ADD
+    # generators; disabled until the toy/build-only ladder promotes it.
+    property_correlation_budget: 0
+    property_correlation_time_limit: 0.0
+    # Scan only unstable residual-join rows and retain only outward-proven
+    # stable phases.  Disabled until its controlled and iid2 gates pass.
+    residual_phase_screen: false
+    residual_bound_screen: false
+    # Optional property-driven ReLU residual normal form.  Disabled by
+    # default; final ASSERT rivals only schedule explicit rows and never act
+    # as proof authority.
+    property_residual_budget: 0
+    property_residual_time_limit: 0.0
+    property_residual_max_adjoint_cells: 30000000
+    property_residual_pool_per_rival: 8
+    # Safe-only Fraction-audited final DENSE(RELU(.)) property folding.
+    property_tail_upper: false
+    # Bounded two-exact-ReLU factor-space micro-RLT.  Both knobs are coupled
+    # and default off; the lifted parent is queried only before exact phase
+    # enumeration, where these rows can tighten the binary relaxation.
+    property_micro_rlt_product_cap: 0
+    # `first`/`second` select one complete directed four-row RLT packet.
+    # They remain sound but candidate-only; `both` preserves the symmetric
+    # lift and is the disabled/default profile.
+    property_micro_rlt_packet_mode: both
+    property_micro_rlt_parent_prefilter_seconds: 0.0
+    # Non-authoritative single-instance diagnostic: stop after the optional
+    # SAFE-only parent prefilter and never enumerate exact phase children.
+    property_micro_rlt_parent_only_diagnostic: false
+    # Candidate extension for property-tail source planes.  It requires both
+    # property_tail_upper and operator ADD materialization, and stays off by
+    # default until its controlled gates earn promotion.
+    property_tail_add_source_planes: false
+    # Optional candidate-only negative ReLU lower-slope optimization for the
+    # folded property tail.  Exact Fraction reconstruction and grouped
+    # baseline fallback remain mandatory.
+    property_tail_alpha_steps: 0
+    property_tail_alpha_time_limit: 0.0
+    property_tail_alpha_learning_rate: 0.08
+    property_tail_alpha_max_cells: 50000000
+    property_tail_alpha_device: "auto"
+    # Candidate-only dyadic mixture grid.  Zero disables it; positive values
+    # require the safe property tail and enabled alpha optimization.
+    property_tail_mixture_grid_bits: 0
+    # Candidate-only two-neuron projected PairHull alternatives.  The budget
+    # caps the global pool of unique disjoint pairs (each rival may use at
+    # most one); budget and time limit are enabled together.  Exact Fraction
+    # reconstruction and the original property rows remain mandatory.
+    property_tail_pairhull_budget: 0
+    property_tail_pairhull_time_limit: 0.0
+    # Truncated property-dual replay to an earlier dominating residual ADD.
+    # One crosses exactly one full residual block; zero disables the candidate.
+    property_tail_suffix_blocks: 0
+    property_tail_suffix_alpha_steps: 0
+    property_tail_suffix_alpha_time_limit: 0.0
+    property_tail_suffix_alpha_device: "auto"
+    # Proof-carrying, independently replayed query-dual feedback.  Targets may
+    # be preconfigured while disabled; steps=0 requires a zero time limit.
+    query_dual_feedback_targets: []
+    query_dual_feedback_steps: 0
+    query_dual_feedback_time_limit: 0.0
+    query_dual_feedback_block_size: 1024
+    query_dual_feedback_device: "cuda"
+    # Optional batched CUDA Lagrangian candidates.  They never authorize a
+    # verdict; original-CSR long-double checking is mandatory.
+    gpu_dual_steps: 0
+    gpu_dual_time_limit: 0.0
+    gpu_dual_row_topk: 0
+    gpu_dual_learning_rate: 0.08
+    lp_prefilter_fraction: 0.20
+    lp_prefilter_max_seconds: 8.0
 
   # ── BaBVerification ────────────────────────────────────────────────────────
 

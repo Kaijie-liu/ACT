@@ -1,0 +1,156 @@
+{
+  "schema": "act.hybridz.fprime.production_retention_completion.v1",
+  "created_date": "2026-08-14",
+  "status": "COMPLETE_RETAINED59",
+  "claim_scope": {
+    "retention_gate_complete": true,
+    "timing_authority": false,
+    "formal_fixed400_changed": false,
+    "formal_score_after_this_gate": "59/400"
+  },
+  "retention_result": {
+    "attempted_unique": 69,
+    "completed_unique": 69,
+    "attempts_per_unique_case_max": 1,
+    "fixed14": {
+      "complete": true,
+      "passed": true,
+      "FALSIFIED": 5,
+      "UNKNOWN": 9,
+      "ERROR": 0
+    },
+    "retained59": {
+      "complete": true,
+      "required": 59,
+      "retained": 59,
+      "regressions": 0,
+      "ERROR": 0
+    },
+    "overall_unique69": {
+      "FALSIFIED": 60,
+      "UNKNOWN": 9,
+      "ERROR": 0
+    },
+    "new_falsified_outside_retained59": [
+      "tinyimagenet_medium_iid143"
+    ],
+    "event_ledger": {
+      "lines": 139,
+      "run_created": 1,
+      "case_attempt_started": 69,
+      "case_result": 69
+    }
+  },
+  "formal_fixed400_checkpoint": {
+    "status": "COMPLETE_UNCHANGED",
+    "FALSIFIED": 59,
+    "UNKNOWN": 341,
+    "ERROR": 0,
+    "completed": 400,
+    "jsonl": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_gpu_csr_fixed400_20260814.jsonl",
+      "sha256": "749db4e400329598c23c3dd7c9b9863c291eb3d1ba556cdcfcfa879c58487b43"
+    },
+    "summary": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_gpu_csr_fixed400_20260814.summary.json",
+      "sha256": "036a87f7005033ad8478af5dbecfce8657d3f02457f654a9b0e63e5b47e2ab41"
+    }
+  },
+  "retention_evidence": {
+    "summary": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_fprime_production_retention_gate_20260814.json",
+      "sha256": "870175a30f09fd359b743f63ca480fddc707b9ef3d6959b1b434a8765faa3567"
+    },
+    "events": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_fprime_production_retention_gate_20260814.events.jsonl",
+      "sha256": "bfc249ed95d27d9e73c0554477ad1644d879abcb3fc640f900f45c9ce1c33b43"
+    },
+    "harness": {
+      "path": "scratch_phase_projection_fprime_production_retention_gate.py",
+      "sha256": "b49abc97dad197ebac402afc21d60668e90ed60fde47d5e811e4b82c78adeb75"
+    },
+    "audited_five_case_helper": {
+      "path": "scratch_phase_projection_fprime_production_five_case_sentinel.py",
+      "sha256": "3d168c9f29fae8343d5f101794d6b829cfbdf48a30dda57cea2cfd30ac595873"
+    },
+    "manifest": {
+      "storage": "embedded at retention summary identity.manifest",
+      "schema": "act.hybridz.fprime.production_retention_manifest.v1",
+      "sha256": "3a55e4dee4345fead432641059fedd946924875cc26294212b32df2a9146afad",
+      "offline_sources": {
+        "act/pipeline/verification/hybridz_phase_projection_fixed400.py": "d3e1825b9a8f8c8bb7f83cb8f08bdabd68f0c3fa32c379cac8ce08bb4c1e24c1",
+        "artifacts/hybridz_largecls_gates/phase_projection_gpu_csr_fixed400_20260814.jsonl": "749db4e400329598c23c3dd7c9b9863c291eb3d1ba556cdcfcfa879c58487b43",
+        "artifacts/hybridz_largecls_gates/phase_projection_single_stream_float64_candidate_20260813.json": "a1323cf69ac5e9f2f7189b8ce4ac96e67cd6e0b354f1c6a044a3a5433b7e16c9"
+      }
+    }
+  },
+  "production_source_identity": {
+    "bundle_sha256": "2c990582fe20e7e880a530557d5ca9c825c3d44f3f20758cf64df8d1845f6855",
+    "files": {
+      "act/back_end/config.py": "8d94960cf4686f8d9c894cc18c1483b57092faa52e794905dce9f622c8fddf21",
+      "act/back_end/hybridz_tf/forward_exact_relu_live_row_stream_candidate.py": "d53c2335c43905097e78bef8311175d7151d7e98293a6152fce62dba00d37511",
+      "act/back_end/hybridz_tf/forward_exact_relu_phase_projection_candidate.py": "13625f452c36a1b7844e4385b884471c8a0c82abf015bf2af417257e2c96c23a",
+      "act/back_end/hybridz_tf/operator_hz.py": "2502c009d6b5d37983e3f6d072e802c7734ac9bd106bb2a252e0a562da390fd8",
+      "act/back_end/hybridz_tf/phase_projection_device_program.py": "7f0cce0e461f63ff6599ddd82ad5e61ef7c921eb489ef7bbbf4d60cda9048962",
+      "act/back_end/hybridz_tf/phase_projection_highs_owner.py": "2f5678a5b3d2b098637b27558a8bdbffcc5160ca89cb8b4947f557320d03f5b7",
+      "act/back_end/hybridz_tf/phase_projection_incremental_repair.py": "acc1a98fa47d36c3b0bea7d10bf93af33d41ee9de108b0151ca01cd4822f997e",
+      "act/back_end/verifier.py": "eb3dfc8611ee97262bf71d66b8deee58a6a2544d0934d94ca7b075424dbc3afd"
+    },
+    "supplemental_frozen_test": {
+      "path": "act/back_end/hybridz_tf/test_forward_exact_relu_phase_projection_candidate.py",
+      "sha256": "c1730ae10c5d604506998f7e62c58fa43958c2d55627a10ba3048a1da127775c"
+    }
+  },
+  "independent_live_artifact_audit": {
+    "verdict": "NO-BLOCKER",
+    "receipt_source": "in-session read-only collaboration agent /root/retention_live_audit",
+    "filesystem_artifact": null,
+    "sha256": null,
+    "reported_checks": {
+      "logical_owner_instances": 69,
+      "owners_per_request_max": 1,
+      "final_owner_state": "CLOSED",
+      "native_clear_observed_for_all_owners": true,
+      "native_clear_model_calls": 0,
+      "positive_verdicts_use_terminal_authority_only": true,
+      "all_declared_prohibition_flags_false": true
+    }
+  },
+  "declared_scope_checks": {
+    "input_sampling_used": false,
+    "onnx_input_point_execution_used": false,
+    "pgd_used": false,
+    "bab_split_or_enumeration_used": false,
+    "backward_bounds_used": false,
+    "dual_tightening_used": false,
+    "runtime_fallback_or_menu_used": false,
+    "external_labels_read_by_production": false,
+    "production_verify_once": true,
+    "strict_serial_fixed14_then_retained59": true
+  },
+  "next_gates": {
+    "paired_performance_noninferiority": {
+      "preparation_status": "IN_PROGRESS",
+      "measurement_status": "NOT_RUN",
+      "result_available": false
+    },
+    "fixed40": {
+      "status": "NOT_RUN_NOT_AUTHORIZED"
+    },
+    "fixed400": {
+      "status": "NOT_RUN_NOT_AUTHORIZED"
+    }
+  },
+  "historical_not_run_handoffs_preserved": {
+    "retention_gate_handoff": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_fprime_production_retention_gate_handoff_20260814.json",
+      "sha256": "ad2f50c0a8c51db47620232c5612e48c1d95e55c62e568672733ca4c44445ddc",
+      "superseded_for_retention_run_state_only": true
+    },
+    "stage_handoff": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_fprime_production_stage_handoff_20260814.json",
+      "sha256": "0d6be4ba75823920850ad7e3c0cb263b1a9be67ca862832295b7beee7182bb20",
+      "superseded_for_retention_run_state_only": true
+    }
+  }
+}

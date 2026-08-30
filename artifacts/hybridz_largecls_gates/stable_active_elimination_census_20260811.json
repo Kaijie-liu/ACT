@@ -1,0 +1,68 @@
+{
+  "schema": "act.hybridz.stable_active_elimination_census.v1",
+  "date": "2026-08-11",
+  "scope": "offline_existing_receipt_plus_small_conv_structure_census",
+  "source_receipt": {
+    "path": "artifacts/hybridz_largecls_gates/gate1_fairslice_baseline_v2_20260727.summary.json",
+    "sha256": "cfe8fc2bd6388e1946c92389a9bf82c53a1aefd8df023b2d0bc1f77940e3f1b1",
+    "new_real_or_large_execution": false,
+    "relu_layers": 10,
+    "stable_active_rows": 6348,
+    "unstable_rows": 2177
+  },
+  "dominant_observation": {
+    "first_relu": {
+      "rows": 14400,
+      "stable_active": 4951,
+      "unstable": 564,
+      "inactive": 8885,
+      "pre_relu_generator_nnz": 388800,
+      "pre_relu_generator_nnz_per_row": 27
+    },
+    "second_relu": {
+      "rows": 8192,
+      "stable_active": 1320,
+      "unstable": 379,
+      "inactive": 6493,
+      "pre_relu_generator_nnz": 1512832
+    },
+    "interpretation": "The active rows that dominate the removable equality count follow convolution and are not row-local factors. Passing them through directly composes adjacent convolution supports."
+  },
+  "structural_replay": {
+    "topology": "1x3x16x16 --3x3/16ch--> 1x16x14x14 --3x3/32ch--> 1x32x12x12",
+    "first_conv_shape": [3136, 768],
+    "first_conv_nnz": 84672,
+    "second_conv_shape": [4608, 3136],
+    "second_conv_nnz": 663552,
+    "active_fraction": 0.34381944444444446,
+    "unstable_fraction": 0.03916666666666667,
+    "mask_seeds": 9,
+    "baseline_accounting": "next-conv live local-factor nnz plus both stable-active equality directions",
+    "candidate_accounting": "next-conv composed active source nnz plus unstable local-factor nnz",
+    "candidate_to_baseline_total_nnz_ratios": [
+      1.1460679719795044,
+      1.1751877999145792,
+      1.1585930654650145,
+      1.1547866089956746,
+      1.1936213991769546,
+      1.1604461711993985,
+      1.150980585394698,
+      1.1833626244874047,
+      1.2236422567129568
+    ],
+    "median_ratio": 1.1604461711993985,
+    "minimum_ratio": 1.1460679719795044,
+    "maximum_ratio": 1.2236422567129568,
+    "all_candidate_structures_worse": true
+  },
+  "decision": {
+    "status": "STOP_BEFORE_IMPLEMENTATION",
+    "reason": "Dominant CIFAR stable-active rows are convolutional, while direct identity propagation widens the next convolution enough to exceed the equality/local-frame nnz it removes.",
+    "row_local_special_case_added": false,
+    "runtime_eligibility_branch_added": false,
+    "fallback_added": false,
+    "production_change": false,
+    "real_model_allowed": false,
+    "large_model_allowed": false
+  }
+}

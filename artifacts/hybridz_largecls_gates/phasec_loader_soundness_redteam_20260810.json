@@ -1,0 +1,260 @@
+{
+  "schema": "act.hybridz.phasec_loader_soundness_redteam.v1",
+  "created_at": "2026-08-10T14:40:19+10:00",
+  "verdict": "BLOCKER",
+  "audit_complete": true,
+  "scope": {
+    "mode": "read_only_independent_redteam_except_this_checkpoint",
+    "candidate": "disconnected Phase-C ConstraintProgram to native HiGHS loader",
+    "locked_files_only": true,
+    "implementation_or_test_files_edited": false,
+    "real_model_called": false,
+    "large_model_called": false,
+    "cifar100_called": false,
+    "tinyimagenet_called": false,
+    "operator_integration_called": false,
+    "backward_called": false,
+    "act_network_branch_and_bound_called": false
+  },
+  "locked_sha256": {
+    "act/back_end/solver/constraint_program_highs.py": "c63061249f86c63894ed2076988c0afea13f4d0145314ad3747c0016ef9aa2db",
+    "act/back_end/solver/test_constraint_program_highs.py": "6808a8d6cd8ff3cec7376d2a320d1d605b859314045532a4997403ebdfe2be11",
+    "act/back_end/solver/constraint_program.py": "d301ebf546cc01bfdd133a00572ca87dc7632331b81188d3812635b99f7b5ab0"
+  },
+  "environment": {
+    "highspy_version": "1.15.0",
+    "highs_git_hash": "8396001",
+    "small_matrix_value_readback_after_pin": 1e-12,
+    "large_matrix_value_readback": 1e15,
+    "infinite_bound_readback": 1e20,
+    "infinite_cost_readback": 1e20
+  },
+  "blocker_count": 3,
+  "blockers": [
+    {
+      "id": "PHASEC-SOUNDNESS-001",
+      "title": "Secondary-exception formatting can replace the primary BaseException",
+      "affected_paths": [
+        "_consume_cursor body or iterator failure plus cursor.close failure",
+        "_execute load, run, or validation failure plus Highs.clear failure",
+        "_execute any captured primary plus final handoff validation failure"
+      ],
+      "root_cause": "The cleanup/final-validation note is built with type(error).__name__ and str(error) inside an f-string before _note is entered. A secondary exception with hostile __str__, or an exception class with a hostile metaclass __name__ lookup, can throw while the note is being constructed.",
+      "reproductions": [
+        {
+          "primary": "KeyboardInterrupt",
+          "secondary": "cursor close EvilClose whose __str__ raises SystemExit",
+          "observed": "SystemExit escaped; caught object was not the primary"
+        },
+        {
+          "primary": "GeneratorExit from _load_rows",
+          "secondary": "Highs.clear EvilClose whose __str__ raises SystemExit",
+          "observed": "SystemExit escaped; caught object was not the primary"
+        },
+        {
+          "primary": "KeyboardInterrupt from _new_highs",
+          "secondary": "final handoff graph error whose __str__ raises SystemExit",
+          "observed": "SystemExit escaped; caught object was not the primary"
+        },
+        {
+          "primary": "KeyboardInterrupt",
+          "secondary": "cursor close exception whose metaclass raises on __name__",
+          "observed": "metaclass SystemExit escaped; caught object was not the primary"
+        }
+      ],
+      "required_fix": "Never call str, repr, format, or dynamically obtained type metadata on a secondary error while preserving a primary. Attach only a constant builtin-string note, and keep bounded cleanup. Apply the same rule to cursor cleanup, HiGHS cleanup, final handoff validation, and retirement cleanup.",
+      "required_regressions": [
+        "cursor primary plus hostile-secondary-__str__ preserves exact primary object",
+        "HiGHS primary plus hostile-secondary-__str__ preserves exact primary object",
+        "final handoff secondary plus hostile __str__ preserves exact primary object",
+        "hostile exception metaclass cannot replace primary"
+      ]
+    },
+    {
+      "id": "PHASEC-SOUNDNESS-002",
+      "title": "Binding-only receipt claims binary integrality was loaded before any native model exists",
+      "root_cause": "ConstraintProgramHighsHandoff.receipt calls _receipt with native_solver_run=false and rows_loaded=nnz_loaded=0, but binary_integrality_loaded is unconditionally bool(record.binary_ids).",
+      "reproduction": {
+        "operation": "bind only, then dict(handoff.receipt), with two binary factors",
+        "observed": {
+          "native_solver_run": false,
+          "rows_loaded": 0,
+          "nnz_loaded": 0,
+          "consumer_integration": false,
+          "binary_integrality_loaded": true
+        }
+      },
+      "receipt_scope_note": "The adjacent generic branch_and_bound_called=false field is also too broad for a HiGHS MIP solve. No forbidden ACT network BaB was invoked in this audit, and the receipt separately says that, but a production-facing schema must remove the generic field or explicitly scope it to ACT network BaB because HiGHS may internally branch on integer variables.",
+      "required_fix": "Pass an explicit native_model_loaded state into _receipt so a binding-only receipt reports binary_integrality_loaded=false and successful load/solve results report it according to the loaded binary frame. Remove or narrowly rename the generic branch_and_bound_called field; retain the explicit act_network_branch_and_bound_called=false distinction.",
+      "required_regressions": [
+        "binding-only receipt with binary IDs reports integrality not loaded",
+        "successful load receipt with binary IDs reports integrality loaded",
+        "successful load with no binary IDs reports integrality not applicable or false",
+        "receipt makes no unscoped claim that HiGHS internal MIP branching did not occur"
+      ]
+    },
+    {
+      "id": "PHASEC-SOUNDNESS-003",
+      "title": "Not every observed handoff graph break terminally retires the capability",
+      "root_cause": "There are direct _validate_record calls outside the consuming _handoff_record path, and the existing observed-break pop can itself be interrupted without a durable retired state.",
+      "reproductions": [
+        {
+          "path": "_bind publication",
+          "trigger": "Change an HZ stable ID during the third graph capture so final post-registry _validate_record fails; retain the exception traceback; restore the ID.",
+          "observed": "The failed _bind traceback exposes the factory-created handoff, its registry record remains, and _handoff_record succeeds after restoration. A failed bind capability is revived."
+        },
+        {
+          "path": "_execute owner retrieval",
+          "trigger": "Change an HZ stable ID after the _handoff_record validation succeeds but before the following direct _validate_record call; restore after load fails.",
+          "observed": "The second validation observes the break but does not remove the record; the handoff succeeds after restoration."
+        },
+        {
+          "path": "_handoff_record observed-break cleanup",
+          "trigger": "Interrupt the identity-pop lock acquisition with SystemExit after validation has detected an ID change; restore the ID.",
+          "observed": "The cleanup exception replaces the graph error, the registry record survives, and the handoff succeeds after restoration."
+        }
+      ],
+      "required_fix": "Give each record a durable terminal-retired state that is set before fallible registry cleanup and checked by every validation. Route bind final validation, execute owner retrieval, public lookup, and execute final validation through one consuming validation primitive. Perform identity-guarded bounded registry removal as cleanup, use constant notes, and preserve the exact triggering primary object.",
+      "required_regressions": [
+        "failed bind traceback cannot yield a usable handoff after HZ restoration",
+        "execute validation race permanently retires the handoff",
+        "retirement lock or pop BaseException preserves the graph primary and cannot revive the handoff",
+        "normal GC cleanup remains ABA identity guarded",
+        "same raw IDs in a foreign namespace remain explicitly non-producer-authenticated"
+      ]
+    }
+  ],
+  "no_blocker_findings": [
+    {
+      "area": "binary row transform",
+      "result": "PASS",
+      "evidence": "For xi=2*z-1, every audited RANGE and LE row maps to lower+sum(Ab) <= Ac*x+2*Ab*z <= upper+sum(Ab); the Ab sum is accumulated as exact Fractions of stored binary64 values."
+    },
+    {
+      "area": "directed rounding",
+      "result": "PASS",
+      "evidence": "Finite shifted lower bounds round toward minus infinity and upper bounds toward plus infinity, including a nonrepresentable 1+2^-54 check and integrated RANGE/LE checks."
+    },
+    {
+      "area": "2*Ab and objective binary costs",
+      "result": "PASS",
+      "evidence": "Doubling is checked against exact dyadic multiplication; the smallest subnormal doubles exactly and overflow above max/2 fails closed."
+    },
+    {
+      "area": "HiGHS thresholds",
+      "result": "PASS",
+      "evidence": "A_cont at small or large, 2*Ab at small or large, finite bounds at infinite_bound, continuous or doubled-binary costs at infinite_cost, and an exact-sum objective offset at infinite_cost all fail before silent reinterpretation. Immediate safe-side neighbors were accepted where HiGHS returned kOk."
+    },
+    {
+      "area": "manual CSR validation",
+      "result": "PASS",
+      "evidence": "Duplicate, descending, out-of-frame, zero, nonfinite, and malformed pointer/index cases are rejected by manual checks even when cached SciPy canonical/sorted flags are forged true."
+    },
+    {
+      "area": "mixed RANGE, LE, binary Fraction equivalence",
+      "result": "PASS",
+      "evidence": "Exhaustive dyadic continuous grid and all binary assignments matched original xi-coordinate feasibility."
+    },
+    {
+      "area": "incumbent validation",
+      "result": "PASS",
+      "evidence": "Original program rows are replayed with exact Fraction arithmetic and zero row tolerance; a one-minimum-subnormal violation was rejected even with validation_tolerance=1e308. The caller tolerance applies only to z rounding."
+    },
+    {
+      "area": "objective mapping",
+      "result": "PASS",
+      "evidence": "Mapped binary cost 2*c and offset -sum(c) matched c*xi exactly for every enumerated z assignment, including large cancellation. Returned objective is recomputed in original coordinates."
+    },
+    {
+      "area": "stream offsets and accounting",
+      "result": "PASS",
+      "evidence": "A 513-row adversarial case produced exact batches (0,256), (256,256), and (512,1), then loaded exactly 513 rows and 513 nnz without whole-program stacking."
+    },
+    {
+      "area": "ordinary cursor and HiGHS lifecycle",
+      "result": "PASS_WITH_BLOCKER_ABOVE",
+      "evidence": "Safe RuntimeError double faults preserve identity, close and clear retry four times, HiGHS warnings fail closed, and a resource cap after the first batch clears the partial model. Hostile secondary formatting remains blocking."
+    },
+    {
+      "area": "HZ content and provenance claim",
+      "result": "PASS",
+      "evidence": "In-place HZ coefficient mutation does not invalidate the handoff because coefficients are not consumed or authenticated, and the receipt explicitly says so. HZ object rebinding and stable-ID mutation are detected and terminal after the normal public lookup path. Foreign authentic programs with the same raw IDs remain explicitly non-producer-authenticated."
+    },
+    {
+      "area": "authority and forbidden algorithms",
+      "result": "PASS_WITH_RECEIPT_SCOPE_FIX_ABOVE",
+      "evidence": "The candidate, result, and receipt expose no proof, verdict, solver-status, or producer provenance authority. No triangle relaxation, ACT network BaB, backward, dual, SCIP, real model, or large model path was called."
+    }
+  ],
+  "test_evidence": [
+    {
+      "command": "timeout 120s env OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 python -m unittest act.back_end.solver.test_constraint_program_highs -v",
+      "result": "PASS",
+      "tests_run": 24,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "elapsed_seconds": 0.560
+    },
+    {
+      "command": "python inline adversarial exact-math, incumbent, CSR, and HZ-scope script",
+      "result": "PASS",
+      "named_checks": 5
+    },
+    {
+      "command": "python inline small, large, infinite_bound, and 2*Ab boundary script",
+      "result": "PASS"
+    },
+    {
+      "command": "python inline infinite_cost continuous, binary, exact-offset, and 513-row offset script",
+      "result": "PASS"
+    },
+    {
+      "command": "python inline hostile secondary formatting script",
+      "result": "BLOCKER_REPRODUCED",
+      "reproductions": 4
+    },
+    {
+      "command": "python inline failed-bind traceback ABA script",
+      "result": "BLOCKER_REPRODUCED"
+    },
+    {
+      "command": "python inline observed-break retirement interruption ABA script",
+      "result": "BLOCKER_REPRODUCED"
+    },
+    {
+      "command": "python inline execute double-validation race ABA script",
+      "result": "BLOCKER_REPRODUCED"
+    },
+    {
+      "command": "python inline binding-only receipt phase script",
+      "result": "BLOCKER_REPRODUCED"
+    },
+    {
+      "command": "git diff --check -- act/back_end/solver/constraint_program_highs.py act/back_end/solver/test_constraint_program_highs.py act/back_end/solver/constraint_program.py",
+      "result": "PASS"
+    }
+  ],
+  "not_run": [
+    "CIFAR100",
+    "TinyImageNet",
+    "any real model",
+    "any large model",
+    "production OperatorHZ consumer integration",
+    "full repository or full constraint_program.py regression suite",
+    "complete RSS-HWM promotion gate",
+    "network access"
+  ],
+  "process_state_at_checkpoint": {
+    "matching_test_or_loader_processes_running": false,
+    "background_work_left_running": false
+  },
+  "next_action": [
+    "Keep constraint_program.py frozen at d301ebf546cc01bfdd133a00572ca87dc7632331b81188d3812635b99f7b5ab0.",
+    "Modify only constraint_program_highs.py and test_constraint_program_highs.py to fix PHASEC-SOUNDNESS-001 through 003.",
+    "Add the hostile-secondary, receipt-phase, failed-bind traceback, execute-race, and retirement-interruption regressions listed above.",
+    "Run the focused Phase-C suite plus the relevant frozen core suite, then obtain two independent NO-BLOCKER reviews at the new exact SHAs.",
+    "Do not start production integration, CIFAR100, TinyImageNet, real, or large gates until the Phase-C offline audit is NO-BLOCKER."
+  ],
+  "resume_first_action": "Implement the three bounded Phase-C blocker families in the two Phase-C files only, then re-freeze exact hashes and red-team all validation and cleanup paths before any integration."
+}

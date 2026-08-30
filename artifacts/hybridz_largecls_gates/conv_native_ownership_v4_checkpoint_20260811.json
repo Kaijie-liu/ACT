@@ -1,0 +1,87 @@
+{
+  "schema": "act.hybridz.conv_native_ownership_v4_checkpoint.v1",
+  "date": "2026-08-11",
+  "scope": "disconnected_monotone_row_local_conv_synthetic",
+  "implementation": {
+    "path": "act/back_end/hybridz_tf/exact_sparse_conv_native_schedule_candidate.py",
+    "sha256": "2558ac84c15ce81c2e6d39628214b6c3f4d186269a2b2d7621e4f19949a290db"
+  },
+  "test": {
+    "path": "act/back_end/hybridz_tf/test_exact_sparse_conv_native_schedule_candidate.py",
+    "sha256": "6726698ba06b6eaf45a37b7a51bffa6f4c51cbf2afc05ec1a710a8077204522d"
+  },
+  "common_path": {
+    "eligibility": "monotone_injective_row_local_only",
+    "unsupported_action": "UNKNOWN",
+    "source_snapshot_reused_without_second_copy": true,
+    "output_ownership_transferred_without_freeze_copy": true,
+    "expanded_conv_operator_materialized": false,
+    "spgemm_used": false,
+    "runtime_fallback_count": 0,
+    "public_output_rebind_protected": false,
+    "proof_authority": false,
+    "verdict_authority": false
+  },
+  "correctness": {
+    "focused_passed": 12,
+    "adjacent_total_passed": 43,
+    "bitwise_center_generator_error_mass": true,
+    "groups_stride_padding_dilation": true,
+    "subnormal_cancellation_zero": true,
+    "factory_registry_and_aba": true,
+    "py_compile_passed": true,
+    "diff_check_passed": true
+  },
+  "warm_fixed_fixture": {
+    "input_shape": [1, 8, 12, 12],
+    "output_shape": [1, 16, 12, 12],
+    "output_generator_nnz": 125684,
+    "raw_kernel_median_ms": 0.716241,
+    "full_warm_median_ms": 0.94634,
+    "candidate_schedule_source_prepare_apply_median_ms": 1.778602,
+    "baseline_W_build_generic_affine_median_ms": 3.702112,
+    "warm_speedup": 2.0814729770909963,
+    "tracemalloc_peak_mib": 2.34963321685791,
+    "warm_compute_gate_passed": true
+  },
+  "fresh_process_first_response": {
+    "paired_repeats": 7,
+    "candidate_median_ms": 15.608246,
+    "baseline_median_ms": 5.109363,
+    "median_speedup": 0.3273502352538524,
+    "candidate_p95_ms": 15.6597932,
+    "baseline_p95_ms": 5.2043732,
+    "candidate_worst_hwm_delta_bytes": 4784128,
+    "baseline_worst_hwm_delta_bytes": 5746688,
+    "first_response_gate_required": 1.5,
+    "first_response_gate_passed": false,
+    "cause": "undeclared CFFI backend verification/load occurs inside the first request"
+  },
+  "four_thread_five_pair": {
+    "candidate_median_ms": 7.966971,
+    "baseline_median_ms": 12.753204,
+    "median_speedup": 1.6007594354240777,
+    "gate_required": 2.0,
+    "gate_passed": false
+  },
+  "memory_projection": {
+    "c89_persistent_compact_schedule_bytes": 18516504,
+    "known_large_layer_operator_nnz": 7929856,
+    "ownership_transfer_apply_buffer_lower_bound_bytes": 95453188,
+    "ownership_transfer_apply_buffer_lower_bound_mib": 91.03125381469727,
+    "previous_raw_plus_freeze_lower_bound_bytes": 190906376,
+    "c89_apply_hwm_measured": false,
+    "network_memory_gate_passed": false
+  },
+  "decision": {
+    "status": "FROZEN_NO_PROMOTION",
+    "warm_compute_gate_passed": true,
+    "first_response_gate_passed": false,
+    "four_thread_gate_passed": false,
+    "full_promotion_gate_complete": false,
+    "production_promotion_claim": false,
+    "real_model_allowed": false,
+    "large_model_allowed": false,
+    "stop_loss": "Do not add prewarm, runtime-compile fallback, or a new build system in this route."
+  }
+}

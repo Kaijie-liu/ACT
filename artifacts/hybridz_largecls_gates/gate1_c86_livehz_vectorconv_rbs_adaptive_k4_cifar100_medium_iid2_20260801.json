@@ -1,0 +1,88 @@
+{
+  "candidate_mode": "rbs_adaptive_k4",
+  "certified_edge_count": 0,
+  "completed_before_deadline": true,
+  "diagnostic_only": true,
+  "error": "Missing dependency for ONNX conversion: No module named 'onnx2torch'\nInstall with: pip install onnx onnx2torch onnx-simplifier",
+  "error_type": "ONNXConversionError",
+  "failed_stage": "parse_and_convert",
+  "fallback_reason": null,
+  "family": "cifar100_medium",
+  "fixed_environment_sha256": "3ece6a7395a51898878b002b2cf31b577f5474a62a62a924d2a21d500a1c1d94",
+  "fixed_numerical_environment": {
+    "HZ_LP_PREFILTER_FRACTION": "0.9",
+    "HZ_LP_PREFILTER_MAX_SECONDS": "60.0",
+    "HZ_LP_PREFILTER_THREADS": "5",
+    "HZ_MILP_THREADS": "5",
+    "HZ_QUERY_WORKERS": "4"
+  },
+  "ground_truth_loaded": false,
+  "hz_objbound_decide_called": false,
+  "iid": 2,
+  "implementation_integrity_error": null,
+  "implementation_integrity_error_type": null,
+  "implementation_sha256": {
+    "act/back_end/hybridz_tf/adaptive_phase_forest.py": "1783f54566c87768d67f896f6040f9d55b13687218c3cf8d02491f92e05951d7",
+    "act/back_end/hybridz_tf/operator_exact_relu_phase_clique_materializer.py": "308cf3d7f78360a82def5b59dddf8636c713a097b9624400ab5d6a0cf06d9f44",
+    "act/back_end/hybridz_tf/operator_exact_relu_phase_cliques.py": "41624d6aeaf3cafd3d4c9df6005020e70d7046bc48697643f246c35a76869cae",
+    "act/back_end/hybridz_tf/operator_exact_relu_phase_literals.py": "9dbe50c57feb36cd796d510666f5ce44bc5e3304bae84422492d26a85c07188f",
+    "act/back_end/hybridz_tf/operator_hz.py": "ac1820faa259e7a710bfd1df894c7278bfaafab1c655872d713e14a843c1a3dd",
+    "act/back_end/hybridz_tf/operator_phase_clique_pipeline.py": "e71961b1ed3f897bcb1496d192a9342e1ed8f6823b7fc7e8cc0cf6468e1ae438",
+    "act/back_end/hybridz_tf/persistent_phase_conflict_oracle.py": "c08748d3c791f3139d8d22e2c4241049ae1070a66b47eb5c5335214da5d82fd4",
+    "act/back_end/hybridz_tf/property_phase_conflict_clique.py": "d07855bb6392c2c4b1559e0e4da5c99daf19e7957c8d34ca522cc630c10c3e3b",
+    "act/back_end/hybridz_tf/property_residual_targets.py": "f3dc7b34347bcbb587009603425a2b90e7b2deff41dfc65399ab3d2d7df4c457",
+    "act/back_end/hybridz_tf/raw_vnnlib_focused_rival_bridge.py": "275086e95021e314ea374ae47db5fd0394048313730f09594e2c76161d576e98",
+    "act/back_end/hybridz_tf/raw_vnnlib_rival_adapter.py": "aeb55c5bb3da1d4b53f3ae5f523887669e02e84046376ca69d66c857df23d520",
+    "act/back_end/solver/solver_hz.py": "4daf2693b942b4eb9c33032a9d49dec4fc3a24742798ad1bec5f9b293a4ef9d6",
+    "act/pipeline/verification/hybridz_phase_clique_build_probe.py": "a219b793c0d38722c1a9b7b90bb121bfc99951a29aa31b9b5a38637d893966b3"
+  },
+  "implementation_sha256_after": {
+    "act/back_end/hybridz_tf/adaptive_phase_forest.py": "1783f54566c87768d67f896f6040f9d55b13687218c3cf8d02491f92e05951d7",
+    "act/back_end/hybridz_tf/operator_exact_relu_phase_clique_materializer.py": "308cf3d7f78360a82def5b59dddf8636c713a097b9624400ab5d6a0cf06d9f44",
+    "act/back_end/hybridz_tf/operator_exact_relu_phase_cliques.py": "41624d6aeaf3cafd3d4c9df6005020e70d7046bc48697643f246c35a76869cae",
+    "act/back_end/hybridz_tf/operator_exact_relu_phase_literals.py": "9dbe50c57feb36cd796d510666f5ce44bc5e3304bae84422492d26a85c07188f",
+    "act/back_end/hybridz_tf/operator_hz.py": "ac1820faa259e7a710bfd1df894c7278bfaafab1c655872d713e14a843c1a3dd",
+    "act/back_end/hybridz_tf/operator_phase_clique_pipeline.py": "e71961b1ed3f897bcb1496d192a9342e1ed8f6823b7fc7e8cc0cf6468e1ae438",
+    "act/back_end/hybridz_tf/persistent_phase_conflict_oracle.py": "c08748d3c791f3139d8d22e2c4241049ae1070a66b47eb5c5335214da5d82fd4",
+    "act/back_end/hybridz_tf/property_phase_conflict_clique.py": "d07855bb6392c2c4b1559e0e4da5c99daf19e7957c8d34ca522cc630c10c3e3b",
+    "act/back_end/hybridz_tf/property_residual_targets.py": "f3dc7b34347bcbb587009603425a2b90e7b2deff41dfc65399ab3d2d7df4c457",
+    "act/back_end/hybridz_tf/raw_vnnlib_focused_rival_bridge.py": "275086e95021e314ea374ae47db5fd0394048313730f09594e2c76161d576e98",
+    "act/back_end/hybridz_tf/raw_vnnlib_rival_adapter.py": "aeb55c5bb3da1d4b53f3ae5f523887669e02e84046376ca69d66c857df23d520",
+    "act/back_end/solver/solver_hz.py": "4daf2693b942b4eb9c33032a9d49dec4fc3a24742798ad1bec5f9b293a4ef9d6",
+    "act/pipeline/verification/hybridz_phase_clique_build_probe.py": "a219b793c0d38722c1a9b7b90bb121bfc99951a29aa31b9b5a38637d893966b3"
+  },
+  "implementation_unchanged": true,
+  "input_integrity_error": null,
+  "input_integrity_error_type": null,
+  "input_sha256": {
+    "instances_csv": "aa656d7a73529ba7c41b5618440f543ba4677418bb44115d384b644cc034f9ee",
+    "onnx": "aba117ad0ad4abdd630c220beca70cd58825e72e7bada5dffdda10bb725cece4",
+    "vnnlib": "33e795c8421b7b19125f32415adb9cee09b2f90cb83152c4cd3aa03810e91ec3"
+  },
+  "input_sha256_after": {
+    "instances_csv": "aa656d7a73529ba7c41b5618440f543ba4677418bb44115d384b644cc034f9ee",
+    "onnx": "aba117ad0ad4abdd630c220beca70cd58825e72e7bada5dffdda10bb725cece4",
+    "vnnlib": "33e795c8421b7b19125f32415adb9cee09b2f90cb83152c4cd3aa03810e91ec3"
+  },
+  "inputs_unchanged": true,
+  "parent_hard_deadline_monotonic": 4426714.351252591,
+  "phase_status": "error",
+  "proof_authority": false,
+  "receipt_sha256": "d3ed959c15afa6e30a0ff88fbe041c19efb969599338a6114f79aaed297ca12f",
+  "reference_label_used": false,
+  "resource_usage": {
+    "cuda_initialized": false,
+    "cuda_peak_allocated_bytes": null,
+    "cuda_peak_reserved_bytes": null,
+    "peak_rss_bytes": 730034176
+  },
+  "run_nonce": "4a0f5c35a1040eaae5bb25bb72a77ff1e94581525849e498702c1f34f182a19b",
+  "schema": "act.hybridz_phase_clique_build_probe.v1",
+  "shared_worker_deadline_met": true,
+  "shared_worker_deadline_monotonic": 4426712.351252591,
+  "timings": {
+    "total_seconds": 0.21670126356184483
+  },
+  "verdict_authority": false,
+  "wall_timeout_seconds": 60.0
+}

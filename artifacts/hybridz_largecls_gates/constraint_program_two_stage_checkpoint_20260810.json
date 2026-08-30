@@ -1,0 +1,175 @@
+{
+  "schema": "act.constraint_program.two_stage_checkpoint.v1",
+  "status": "frozen_no_blocker",
+  "created_date": "2026-08-10",
+  "scope": {
+    "implementation_files": [
+      "act/back_end/solver/constraint_program.py",
+      "act/back_end/solver/test_constraint_program.py"
+    ],
+    "no_real_large": true,
+    "operator_or_solver_modified": false
+  },
+  "freeze": {
+    "core": {
+      "path": "act/back_end/solver/constraint_program.py",
+      "sha256": "d301ebf546cc01bfdd133a00572ca87dc7632331b81188d3812635b99f7b5ab0"
+    },
+    "test": {
+      "path": "act/back_end/solver/test_constraint_program.py",
+      "sha256": "c41968e7800ed8e819a7440c32814c959fc41c096435ffc9d9833b65da37d205"
+    },
+    "handoff_document_sha256": "512a37469862689b86c50c8360723a9295ce99ac04bf28a57c978dcaacef04a8"
+  },
+  "api": {
+    "adapter": "ExternalFactorAllocatorAdapter.reserve(); adapter.initialize(...)->None",
+    "adapter_compatibility": "ExternalFactorAllocatorAdapter.bind(...) remains supported",
+    "owner": "ConstraintProgramOwner.reserve(); owner.initialize(adapter)->None",
+    "owner_compatibility": "ConstraintProgramOwner(adapter) remains supported",
+    "reservation_policy": "wrong-thread pre-begin rejection preserves RESERVED; once initialization begins, failure is terminal POISONED unless a durable intent or complete staged/main NEW must be repaired",
+    "authority_policy": "reserved, initializing, and poisoned handles reject all authority, accessor, and allocator entry points"
+  },
+  "tests": {
+    "environment": {
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "bounded_timeout_seconds": 120
+    },
+    "commands": [
+      {
+        "command": "python -m py_compile act/back_end/solver/constraint_program.py act/back_end/solver/test_constraint_program.py",
+        "count": 2,
+        "count_kind": "compiled_files",
+        "result": "pass"
+      },
+      {
+        "command": "python -m unittest -q act.back_end.solver.test_constraint_program.ConstraintProgramAllocatorTests",
+        "count": 12,
+        "result": "pass"
+      },
+      {
+        "command": "python -m unittest -q act.back_end.solver.test_constraint_program.ConstraintProgramConstructionTests",
+        "count": 8,
+        "result": "pass"
+      },
+      {
+        "command": "python -m unittest -q act.back_end.solver.test_constraint_program.ConstraintProgramHostileTests",
+        "count": 24,
+        "result": "pass"
+      },
+      {
+        "command": "python -m unittest -q act.back_end.solver.test_constraint_program.ConstraintProgramPhaseBAPITests act.back_end.solver.test_constraint_program.ConstraintProgramSemanticTests act.back_end.solver.test_constraint_program.ConstraintProgramStructureTests",
+        "count": 20,
+        "result": "pass"
+      },
+      {
+        "command": "python -m unittest -q act.back_end.solver.test_constraint_program.ConstraintProgramTransactionTests",
+        "count": 16,
+        "result": "pass"
+      },
+      {
+        "command": "python -m unittest -q act.back_end.solver.test_constraint_block_dag_candidate act.back_end.solver.test_hz_col_id_allocator",
+        "count": 21,
+        "result": "pass"
+      },
+      {
+        "command": "python -m unittest -q act.back_end.solver.test_constraint_program.ConstraintProgramAllocatorTests act.back_end.solver.test_constraint_program.ConstraintProgramHostileTests",
+        "count": 36,
+        "result": "pass",
+        "purpose": "legacy authority regression"
+      }
+    ],
+    "aggregates": {
+      "legacy_focused": {
+        "count": 72,
+        "result": "pass"
+      },
+      "extended_focused": {
+        "count": 80,
+        "result": "pass"
+      },
+      "legacy_candidate_allocator_joint": {
+        "count": 93,
+        "result": "pass"
+      },
+      "extended_candidate_allocator_joint": {
+        "count": 101,
+        "result": "pass"
+      },
+      "legacy_authority": {
+        "count": 36,
+        "result": "pass"
+      }
+    },
+    "environmental_timeout": {
+      "command": "python -m unittest -q act.back_end.solver.test_constraint_program",
+      "exit_code": 124,
+      "assertion_failures_observed": 0,
+      "diagnosis": "known futex wait in the monolithic process; all 80 tests passed in bounded single-thread class groups"
+    },
+    "orphan_test_processes_after_cleanup": false
+  },
+  "redteam": {
+    "owner": {
+      "agent": "/root/phasea_extension_fix/owner_two_phase_design",
+      "status": "no_blocker",
+      "sha256_verified": true,
+      "evidence": [
+        "owner state-machine region did not drift in the final adapter-only repairs",
+        "owner-related joint tests 36/36 passed",
+        "independent main-NEW/reservation-residue/repair-secondary injection passed",
+        "primary exception, callback exactly-once, and public new_arena-to-discard recovery passed"
+      ]
+    },
+    "adapter": {
+      "agent": "/root/adapter_final_redteam",
+      "status": "no_blocker",
+      "sha256_verified": true,
+      "fixed_findings": [
+        "post-intent pre-entry interruption plus a second repair exception could previously revoke NEW",
+        "an adapter ticket could previously lose its post-intent allocator namespace to a competing ticket",
+        "post-intent swallowed nested initialize could previously make a residual INITIALIZING sticky bit revoke NEW"
+      ],
+      "regression_evidence": [
+        "the exact allocator binding, namespace weakref, and commit token are now the first durable intent write",
+        "matching binding/token intent blocks a competing initializer and is completed without callbacks",
+        "matching intent wins over residual INITIALIZING reentrancy after the linearization point",
+        "pre-intent, post-intent, partial-read, competing-ticket, repair-secondary, and swallowed-reentrancy injections pass",
+        "independent full file: 80 tests and 103 subtests passed",
+        "independent 27-point executable line-event matrix preserved the primary exception and converged to poisoned OLD or complete READY NEW"
+      ]
+    }
+  },
+  "unfinished_items": [],
+  "phase_b_frozen_candidate": {
+    "operator": {
+      "path": "act/back_end/hybridz_tf/operator_hz.py",
+      "sha256": "71c3a87893cb5141b211c7ae36375682b41094f3ca42c1cc822062578ea69439"
+    },
+    "test": {
+      "path": "act/back_end/hybridz_tf/test_operator_constraint_program_sink.py",
+      "sha256": "3cf3f22c49b7cfd83f5d31efa73d9997ac2203d402f9bfb3e80eecc32f2ffe6b"
+    },
+    "blockers": [
+      {
+        "id": 1,
+        "description": "ExternalFactorAllocatorAdapter.bind() may register a binding and then be interrupted before the returned handle is assigned to the sink."
+      },
+      {
+        "id": 2,
+        "description": "ConstraintProgramOwner(adapter) has an analogous post-registration, pre-assignment window that can leave an open owner without a recoverable handle."
+      },
+      {
+        "id": 3,
+        "description": "A cleanup exception can replace the original build exception."
+      },
+      {
+        "id": 4,
+        "description": "A consumer-body exception during legacy replay does not deterministically close the cursor, so its registry capture can remain live at offset 256."
+      }
+    ]
+  },
+  "no_real_large": true,
+  "resume_first_action": "Phase A is frozen NO-BLOCKER. Consume it only through the public reserve/initialize APIs and retain the bounded-only fault-model caveat."
+}

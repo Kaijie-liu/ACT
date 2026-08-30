@@ -1,0 +1,130 @@
+{
+  "schema": "act.hybridz.phasec_loader_repair_checkpoint.v1",
+  "created_at_local": "2026-08-10",
+  "status": "paused_repair_focused_pass_independent_audit_pending",
+  "scope": {
+    "repair_target": "disconnected Phase-C ConstraintProgram to native HiGHS candidate",
+    "modified_implementation_files": [
+      "act/back_end/solver/constraint_program_highs.py",
+      "act/back_end/solver/test_constraint_program_highs.py"
+    ],
+    "core_modified": false,
+    "operator_modified": false,
+    "solver_hz_modified": false,
+    "verifier_modified": false,
+    "documentation_modified": false,
+    "production_integration_modified": false,
+    "real_model_run": false,
+    "large_model_run": false,
+    "cifar100_run": false,
+    "tinyimagenet_run": false,
+    "independent_audit_started": false,
+    "v2_started": false
+  },
+  "source_checkpoints": {
+    "soundness_redteam_path": "artifacts/hybridz_largecls_gates/phasec_loader_soundness_redteam_20260810.json",
+    "soundness_redteam_sha256": "6542bc84de6d015da255920ebd1d9b4239440d97c63fad205eb49907c80dd212",
+    "main_pause_checkpoint_path": "artifacts/hybridz_largecls_gates/phasec_loader_pause_checkpoint_20260810.json",
+    "main_pause_checkpoint_sha256_at_repair_freeze": "ed0fbc63bc4d7a42bbf28054047e8a1cc899a3bfde3d2ed304cddefeabddc9ed"
+  },
+  "sha256": {
+    "frozen_dependency_constraint_program.py": "d301ebf546cc01bfdd133a00572ca87dc7632331b81188d3812635b99f7b5ab0",
+    "constraint_program_highs.py_starting": "c63061249f86c63894ed2076988c0afea13f4d0145314ad3747c0016ef9aa2db",
+    "constraint_program_highs.py_final": "4856d455c7d03eced6286dafc88747aa4832386fa851c872c0347651d906f699",
+    "test_constraint_program_highs.py_starting": "6808a8d6cd8ff3cec7376d2a320d1d605b859314045532a4997403ebdfe2be11",
+    "test_constraint_program_highs.py_final": "d61d2eae67d4cb5e6c8fb687f523a59fc326afe4bdb74de3630441587a5e6e14"
+  },
+  "repair_changes": [
+    {
+      "blocker": "PHASEC-SOUNDNESS-001",
+      "local_status": "addressed_and_focused_regression_passed",
+      "summary": "Secondary cursor, HiGHS, final-validation, and retirement failures attach only constant builtin-string notes; they are never stringified, represented, dynamically type-named, or truth-tested while an exact primary BaseException is being preserved."
+    },
+    {
+      "blocker": "PHASEC-SOUNDNESS-002",
+      "local_status": "addressed_and_focused_regression_passed",
+      "summary": "Receipts now distinguish binding-only from loaded-model phases, report integrality as loaded only for a successfully loaded binary frame, and scope the forbidden-branching assertion solely to ACT network BaB without claiming that HiGHS performed no internal MIP branching."
+    },
+    {
+      "blocker": "PHASEC-SOUNDNESS-003",
+      "local_status": "addressed_and_focused_regression_passed",
+      "summary": "A unified consuming validation path durably marks a handoff retired before bounded identity-guarded registry cleanup; bind publication failure, public lookup, execute second validation, and execute final validation cannot be revived by graph restoration or interrupted retirement cleanup."
+    }
+  ],
+  "regression_coverage_added": [
+    "hostile secondary __str__ and __repr__ cannot replace cursor or HiGHS primaries",
+    "hostile exception metaclass type-name access cannot replace a primary",
+    "binding-only, binary-loaded, and continuous-only receipt phase truth",
+    "failed-bind traceback capability remains permanently stale after graph restoration",
+    "execute second-validation and final-validation races permanently retire the handoff",
+    "retirement cleanup interruption preserves exact primary identity and cannot permit ABA revival"
+  ],
+  "tests": {
+    "py_compile": {
+      "result": "PASS",
+      "files": 2
+    },
+    "diff_check": {
+      "result": "PASS",
+      "files": 2
+    },
+    "focused_loader": {
+      "command": "timeout 120s env OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 python -m unittest -q act.back_end.solver.test_constraint_program_highs",
+      "result": "PASS",
+      "passed": 32,
+      "failed": 0,
+      "elapsed_seconds": 0.597
+    },
+    "relevant_frozen_core": {
+      "command": "timeout 120s env OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 python -m unittest -q act.back_end.solver.test_constraint_program.ConstraintProgramStructureTests act.back_end.solver.test_constraint_program.ConstraintProgramHostileTests",
+      "result": "PASS",
+      "passed": 32,
+      "failed": 0,
+      "elapsed_seconds": 0.253
+    },
+    "operator_sink_plus_loader": {
+      "command": "timeout 120s env OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 python -m unittest -q act.back_end.hybridz_tf.test_operator_constraint_program_sink act.back_end.solver.test_constraint_program_highs",
+      "result": "PASS",
+      "passed": 48,
+      "failed": 0,
+      "elapsed_seconds": 2.162
+    },
+    "orphan_test_processes_at_freeze": 0
+  },
+  "self_audit": {
+    "status": "bounded_self_audit_no_known_blocker_in_three_repair_families",
+    "independent": false,
+    "independent_audit_pending": true,
+    "claim_limit": "The three red-team blocker families are locally addressed and regression-tested, but closure is not authoritative until an independent audit of these exact final SHAs passes."
+  },
+  "remaining_blockers": [
+    "Independent soundness audit of the exact final loader and test SHAs is pending.",
+    "The candidate remains disconnected and producer_authenticated=false; it has no proof, verdict, solver-status, or production authority.",
+    "Full-stage speed remains below the 1.5x promotion gate and RSS HWM was not measured.",
+    "No CIFAR100, TinyImageNet, real-model, large-model, or production-integration evidence was added in this repair."
+  ],
+  "performance": {
+    "benchmark_rerun_in_repair": false,
+    "prior_full_stage_wall_speedup": 0.11596,
+    "promotion_threshold": 1.5,
+    "rss_hwm_measured": false,
+    "full_promotion_gate_complete": false,
+    "speed_gate_passed": false,
+    "promotion": false,
+    "verdict": "NO-PROMOTION"
+  },
+  "forbidden_or_absent_paths": {
+    "triangle_relaxation_called": false,
+    "act_network_branch_and_bound_called": false,
+    "highs_internal_mip_branching_claim_made": false,
+    "backward_called": false,
+    "dual_called": false,
+    "scip_called": false
+  },
+  "pause_state": {
+    "automatic_workers_complete": true,
+    "background_work_left_running": false,
+    "files_frozen_after_checkpoint": true,
+    "next_action": "After the user explicitly resumes, independently red-team the exact final SHAs recorded here. Do not integrate, promote, run real/large, or begin V2 before that audit passes and a new scoped authorization is given."
+  }
+}

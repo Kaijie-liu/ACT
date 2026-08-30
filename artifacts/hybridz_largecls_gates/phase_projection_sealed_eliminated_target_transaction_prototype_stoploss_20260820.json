@@ -1,0 +1,77 @@
+{
+  "schema": "act.hybridz.sealed_eliminated_target_transaction.prototype_stoploss.v1",
+  "created_at": "2026-08-20T16:56:07+10:00",
+  "status": "PROTOTYPE_NOT_READY",
+  "scope": "scratch_only_performance_payment_prototype",
+  "final_review_binding": {
+    "prototype": {
+      "path": "scratch_phase_projection_sealed_eliminated_target_transaction.py",
+      "sha256": "e6c34da51091eed037c8a2d879f8f9702c29cb358ced712cd4387d164f45c8ed"
+    },
+    "tests": {
+      "path": "test_scratch_phase_projection_sealed_eliminated_target_transaction.py",
+      "sha256": "ae14973394d15f2768b2adaa6585de61c2fe29f0e68e14d389ac1ce2660c26b9"
+    },
+    "auditor_verdict": "PROTOTYPE_NOT_READY",
+    "verdict_applies_only_to_these_final4_hashes": true
+  },
+  "termination_blockers": [
+    {
+      "severity": "P1",
+      "count": 1,
+      "component": "SealedEliminatedTargetTransaction.begin_repair",
+      "failure_window": "after self._lifecycle_lock.acquire() returns and before control enters the following try statement",
+      "trigger": "an asynchronous BaseException in the acquire-to-try window",
+      "effect": "the RLock recursion level is not released; another thread can block permanently, so cleanup and termination are not guaranteed",
+      "violated_gate": "BaseException_safe_lock_lifecycle_and_cross_thread_termination",
+      "disposition": "STOP_LOSS"
+    }
+  ],
+  "passing_but_non_promoting_evidence": {
+    "unit_tests": {
+      "tests_passed": 26,
+      "reported_status": "PASS"
+    },
+    "repeated_test_rounds": {
+      "rounds_passed": 50,
+      "reported_status": "PASS"
+    },
+    "independent_audit_nonblocking_checks": {
+      "legacy_scoped_checks_passed": 5,
+      "final3_additional_checks_passed": 3,
+      "reported_status": "PASS"
+    },
+    "cannot_override_p1_hostile": true,
+    "reason": "The passing suite and repeated rounds do not exercise or prove closure of the asynchronous acquire-to-try BaseException window."
+  },
+  "historical_sha_disposition": {
+    "all_pre_final4_prototype_and_test_hashes": "INVALIDATED_DO_NOT_USE",
+    "final4_is_terminal_for_this_attempt": true,
+    "further_candidate_sha_expected": false,
+    "further_candidate_sha_authorized": false
+  },
+  "attempt_disposition": {
+    "prototype_ready": false,
+    "performance_path_payment_credit": 0,
+    "production_integration_authorized": false,
+    "production_promotion_authorized": false,
+    "gpu_benchmark_authorized": false,
+    "retry_authorized": false,
+    "next_action": "archive_only_no_further_sha"
+  },
+  "mutation_and_execution_boundary": {
+    "production_or_config_changed": false,
+    "production_files_modified_by_this_prototype_attempt": 0,
+    "gpu_used": false,
+    "gpu_process_started_by_this_prototype_attempt": false,
+    "runtime_sentinel_outputs_created": false,
+    "artifact_added_by_archive_step_only": true
+  },
+  "accounting": {
+    "formal_gain": 0,
+    "formal_fixed400_changed": false,
+    "ability_result_changed": false,
+    "performance_payment_for_any_capability_path": 0,
+    "claim": "No speedup, retention, or production-readiness credit may be derived from this stopped scratch prototype."
+  }
+}

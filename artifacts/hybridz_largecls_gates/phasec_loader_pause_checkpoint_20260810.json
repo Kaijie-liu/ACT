@@ -1,0 +1,138 @@
+{
+  "schema": "act.hybridz.phasec_loader_pause_checkpoint.v1",
+  "created_at_local": "2026-08-10",
+  "status": "paused_blocked_no_promotion",
+  "goal_scope": {
+    "datasets": [
+      "CIFAR100",
+      "TinyImageNet"
+    ],
+    "forward_only": true,
+    "all_unstable_relu_exact_required": true,
+    "triangle_relaxation_forbidden": true,
+    "network_branch_and_bound_forbidden": true,
+    "backward_propagation_forbidden": true,
+    "dual_tightening_forbidden": true,
+    "resource_failure_result": "UNKNOWN"
+  },
+  "frozen_dependencies": {
+    "constraint_program.py": "d301ebf546cc01bfdd133a00572ca87dc7632331b81188d3812635b99f7b5ab0",
+    "test_constraint_program.py": "c41968e7800ed8e819a7440c32814c959fc41c096435ffc9d9833b65da37d205",
+    "operator_hz.py": "4dff6de88b64dd583be8ff2eebc145da720ebdb31f92a3de8065edc4d1ec2d7b",
+    "test_operator_constraint_program_sink.py": "92ea98ac0da1b7d2821946995b8b90596a7b041351c9c3bf9a091fe6ba434f5c"
+  },
+  "phasec_candidate": {
+    "constraint_program_highs.py": "c63061249f86c63894ed2076988c0afea13f4d0145314ad3747c0016ef9aa2db",
+    "test_constraint_program_highs.py": "6808a8d6cd8ff3cec7376d2a320d1d605b859314045532a4997403ebdfe2be11",
+    "candidate_only": true,
+    "production_imports": false,
+    "producer_authenticated": false,
+    "proof_authority": false,
+    "verdict_authority": false,
+    "solver_status_authority": false,
+    "real_model_run": false,
+    "large_model_run": false
+  },
+  "tests": {
+    "focused_unittest": {
+      "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 python -m unittest -q act.back_end.solver.test_constraint_program_highs",
+      "passed": 24,
+      "failed": 0
+    },
+    "operator_plus_loader_reported": {
+      "passed": 40,
+      "failed": 0
+    },
+    "py_compile": true,
+    "diff_check": true,
+    "orphan_test_processes_at_pause": 0
+  },
+  "performance": {
+    "fixture": "96 native RANGE rows, 384 native nnz; 192 legacy LE rows, 768 legacy nnz",
+    "single_thread": true,
+    "fresh_ab_ba_repeats": 7,
+    "independent_median_candidate_wall_ms": 17.314,
+    "independent_median_baseline_wall_ms": 2.008,
+    "independent_wall_speedup": 0.11596,
+    "independent_balanced_8_repeat_wall_speedup": 0.11444,
+    "independent_balanced_8_repeat_cpu_speedup": 0.11440,
+    "timed_stage_coverage_lower_fraction": 0.9972,
+    "semantic_equivalence": true,
+    "candidate_includes_program_build_and_seal": true,
+    "candidate_includes_legacy_hz_replay_for_disconnected_binding": true,
+    "candidate_includes_native_transform_load_solve_exact_replay_cleanup": true,
+    "rss_hwm_measured": false,
+    "full_promotion_gate_complete": false,
+    "promotion_threshold": 1.5,
+    "promotion": false,
+    "verdict": "NO-PROMOTION",
+    "scope_note": "This closes only the disconnected route. It does not disprove a producer-owned native RANGE architecture."
+  },
+  "confirmed_soundness_audit_blockers": [
+    {
+      "id": "hostile_cleanup_stringification",
+      "summary": "Formatting a secondary cleanup/final-validation exception can invoke hostile __str__ and replace the primary BaseException."
+    },
+    {
+      "id": "binding_receipt_integrality_overclaim",
+      "summary": "A binding-only receipt reports binary_integrality_loaded=true before any HiGHS model exists."
+    },
+    {
+      "id": "failed_bind_registry_aba_revival",
+      "summary": "Final bind validation failure can leave a published handoff record; restoring the mutable HZ graph revives the failed capability."
+    },
+    {
+      "id": "terminal_invalidation_cleanup_gap",
+      "summary": "A secondary BaseException during registry retirement can preserve the record, replace the graph-break primary, and permit ABA revival."
+    },
+    {
+      "id": "execute_direct_validation_aba_revival",
+      "summary": "A direct validation failure between public handoff lookup and execute is not terminally retired, so graph restoration can revive it."
+    }
+  ],
+  "audit_state": {
+    "performance_scope_audit": "NO-BLOCKER for the declared NO-PROMOTION scope",
+    "soundness_audit": "BLOCKER; audit complete",
+    "soundness_result_path": "artifacts/hybridz_largecls_gates/phasec_loader_soundness_redteam_20260810.json",
+    "soundness_result_sha256": "6542bc84de6d015da255920ebd1d9b4239440d97c63fad205eb49907c80dd212",
+    "next_design_path": "docs/HYBRIDZ_PHASEC_SOLVER_READY_STREAM_DESIGN_20260810.md",
+    "next_design_sha256": "34b95421a5b933e18ae5d3ebbba2472b5fd9a8c907c870bc04614bcb260b3a74",
+    "repair_worker_state": "complete_focused_pass",
+    "repair_result_path": "artifacts/hybridz_largecls_gates/phasec_loader_repair_checkpoint_20260810.json",
+    "repair_result_sha256": "f8953b9e6edc95e6895e91fc836fc3ff0bc22794e82095089f37c751f1feb545",
+    "repaired_loader_sha256": "4856d455c7d03eced6286dafc88747aa4832386fa851c872c0347651d906f699",
+    "repaired_test_sha256": "d61d2eae67d4cb5e6c8fb687f523a59fc326afe4bdb74de3630441587a5e6e14",
+    "repair_scope": "constraint_program_highs.py and its test only; no independent audit or integration",
+    "repair_independent_audit": "NO_BLOCKER_FOR_REPAIRED_DISCONNECTED_SCOPE; NO-PROMOTION",
+    "repair_independent_audit_path": "artifacts/hybridz_largecls_gates/phasec_loader_repair_independent_audit_20260811.json",
+    "common_path_goal_amendment": "artifacts/hybridz_largecls_gates/goal_amendment_commonpath_latency_20260811.json",
+    "automatic_workers_complete": true,
+    "background_work_left_running": false
+  },
+  "stop_loss": {
+    "single_query_baseline_total_ms": 2.015,
+    "single_query_candidate_program_build_seal_ms": 3.596,
+    "target_total_ms_for_1_5x": 1.3433,
+    "conclusion": "Keeping the existing core build plus a solver sidecar cannot pass the Q=1 gate even if all downstream work becomes free."
+  },
+  "dataset_status": {
+    "CIFAR100": {
+      "representation_progress": "Default-off exact Operator sink and disconnected RANGE program are independently frozen; synthetic ADD source rows, nnz, payload, and streaming RSS are approximately halved.",
+      "solver_progress": "The first disconnected native HiGHS route is mathematically viable but blocked and about 8.6x slower than baseline.",
+      "new_verified_real_cases": 0
+    },
+    "TinyImageNet": {
+      "representation_progress": "No comparable exact Operator-HZ real receipt exists.",
+      "solver_progress": "No authorized real or large run was performed.",
+      "new_verified_real_cases": 0
+    }
+  },
+  "resume_order": [
+    "Read and hash-check this checkpoint, the repaired candidate checkpoint, its independent audit, the goal amendment, and the V2 design.",
+    "Keep the repaired 4856... loader only as a disconnected correctness oracle; do not integrate or add fallback machinery.",
+    "Prototype a solver-ready primary representation or a fairly amortized multi-query session; do not add a sidecar to the existing 3.596 ms core build for Q=1.",
+    "Provide a direct native-block path, especially A_bin.nnz==0, without per-row replay assembly or Fraction work.",
+    "Use producer-owned input-factor provenance and an independent rigorous forward/property witness; failure remains UNKNOWN.",
+    "Require full-stage speedup >=1.5, HWM/RSS, exact equivalence, and independent red-team before any production integration or real dataset gate."
+  ]
+}

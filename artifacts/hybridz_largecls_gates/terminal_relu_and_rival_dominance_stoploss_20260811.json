@@ -1,0 +1,64 @@
+{
+  "schema": "act.hybridz.terminal_relu_and_rival_dominance_stoploss.v1",
+  "created_at_local": "2026-08-11",
+  "status": "closed_before_implementation",
+  "goal_scope": "CIFAR100/TinyImageNet common forward exact-ReLU HybridZ path",
+  "candidate": {
+    "terminal_stable_active_deletion": "At the last ReLU only, retain y=x directly for stable-active rows because no later ReLU cube can be weakened.",
+    "rival_dominance": "Delete rival i only when the correlated final HybridZ cube proves margin_i <= margin_j everywhere for another retained rival j.",
+    "runtime_fallbacks": 0,
+    "new_representations": 0
+  },
+  "cifar100_medium_iid29": {
+    "continuous_factors": 10347,
+    "binary_phase_factors": 1052,
+    "source_rows": 15402,
+    "last_relu_layer_id": 40,
+    "last_relu_active_rows": 9,
+    "last_relu_inactive_rows": 1,
+    "last_relu_exact_rows": 90,
+    "last_relu_new_continuous_factors": 99,
+    "last_relu_new_upper_rows": 288,
+    "maximum_deletable_terminal_active_factors": 9,
+    "maximum_deletable_terminal_active_source_rows": 18,
+    "rival_rows": 99,
+    "correlated_cube_dominated_rivals": 0,
+    "smallest_pairwise_dominance_upper": 14.749701359535209,
+    "smallest_pairwise_source_rival": 97,
+    "smallest_pairwise_dominator_rival": 46
+  },
+  "tinyimagenet_medium_iid17": {
+    "candidate_attempted": false,
+    "skip_reason": "The smaller shared CIFAR100 gate deleted only nine terminal stable-active rows and zero rival queries."
+  },
+  "solver_capability_census": {
+    "highspy_version": "1.14.0",
+    "native_indicator_constraints": false,
+    "native_sos_constraints": false,
+    "available_integrality_types": [
+      "continuous",
+      "integer",
+      "semi_continuous",
+      "semi_integer",
+      "implicit_integer"
+    ],
+    "decision": "Do not add a simulated indicator/SOS encoding or another solver representation."
+  },
+  "forbidden_methods": {
+    "input_sampling": false,
+    "pgd": false,
+    "concrete_onnx_execution": false,
+    "triangle_fallback": false,
+    "branch_and_bound_in_act": false,
+    "backward_propagation": false,
+    "dual_tightening": false
+  },
+  "execution": {
+    "abstract_builds": 3,
+    "solver_executed": false,
+    "production_code_changed": false,
+    "formal_solved_count_gain": 0,
+    "note": "One first read-only dominance script completed the abstract build but stopped on a local ndarray/toarray type mistake; two corrected/structural builds produced the reported census."
+  },
+  "decision": "Stop before implementation. Nine terminal stable-active rows and zero dominated rival queries are not a material common-path reduction; the installed HiGHS API has no native indicator/SOS replacement for exact ReLU."
+}

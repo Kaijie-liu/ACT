@@ -1,0 +1,51 @@
+{
+  "schema": "act.hybridz.forward_roundoff_zero_counterfactual_stoploss.v1",
+  "date": "2026-08-11",
+  "status": "STOPLOSS_ZERO_PHASE_REDUCTION",
+  "candidate": "Remove the independent forward arithmetic-error allowance while retaining the stored center, generator matrix, stable factor order, and outward cube-bound arithmetic.",
+  "scope": {
+    "operator_exact_budget": -1,
+    "operator_materialize_add": false,
+    "solver_executed": false,
+    "concrete_onnx_execution": false,
+    "input_sampling": false,
+    "pgd": false,
+    "production_files_changed": 0
+  },
+  "cifar100_medium_iid29": {
+    "formal_build_seconds": 7.491314567625523,
+    "exact_phase_rows": 1061,
+    "zero_error_stable_rows": 0,
+    "zero_error_still_crossing_rows": 1061,
+    "stabilization_fraction": 0.0,
+    "per_layer": [
+      {"layer_id": 3, "exact_rows": 316, "zero_error_stable": 0, "error_median": 4.686192885068412e-14, "remaining_phase_distance_median": 0.022139925985752127},
+      {"layer_id": 5, "exact_rows": 242, "zero_error_stable": 0, "error_median": 4.4605949471575516e-13, "remaining_phase_distance_median": 0.028014523570861954},
+      {"layer_id": 10, "exact_rows": 202, "zero_error_stable": 0, "error_median": 4.017303248989171e-12, "remaining_phase_distance_median": 0.06928571104201091},
+      {"layer_id": 14, "exact_rows": 47, "zero_error_stable": 0, "error_median": 6.252524458265453e-12, "remaining_phase_distance_median": 0.08270835522933333},
+      {"layer_id": 22, "exact_rows": 155, "zero_error_stable": 0, "error_median": 4.867394532176913e-12, "remaining_phase_distance_median": 0.09656850722872785},
+      {"layer_id": 40, "exact_rows": 99, "zero_error_stable": 0, "error_median": 3.7943970808611853e-11, "remaining_phase_distance_median": 3.9196355345371523}
+    ]
+  },
+  "tinyimagenet_medium_iid17": {
+    "formal_build_seconds": 27.22558942064643,
+    "exact_phase_rows": 1919,
+    "zero_error_stable_rows": 0,
+    "zero_error_still_crossing_rows": 1919,
+    "stabilization_fraction": 0.0,
+    "per_layer": [
+      {"layer_id": 3, "exact_rows": 605, "zero_error_stable": 0, "error_median": 1.480186756518714e-14, "remaining_phase_distance_median": 0.009535435099183004},
+      {"layer_id": 5, "exact_rows": 529, "zero_error_stable": 0, "error_median": 7.090033582804766e-13, "remaining_phase_distance_median": 0.018992480083188504},
+      {"layer_id": 10, "exact_rows": 384, "zero_error_stable": 0, "error_median": 3.751407734782038e-12, "remaining_phase_distance_median": 0.05031103180449041},
+      {"layer_id": 18, "exact_rows": 26, "zero_error_stable": 0, "error_median": 4.102650899290324e-12, "remaining_phase_distance_median": 0.06612441996248507},
+      {"layer_id": 22, "exact_rows": 179, "zero_error_stable": 0, "error_median": 2.976607552407928e-12, "remaining_phase_distance_median": 0.05466933995741071},
+      {"layer_id": 40, "exact_rows": 196, "zero_error_stable": 0, "error_median": 1.634331361451261e-10, "remaining_phase_distance_median": 4.030223335771913}
+    ]
+  },
+  "decision": {
+    "retain_candidate": false,
+    "add_runtime_branch": false,
+    "formal_solved_count_gain": 0,
+    "reason": "Even the impossible best case of deleting every independent forward roundoff allowance stabilizes no exact ReLU in either representative formal build; the remaining phase distances exceed the recorded errors by many orders of magnitude."
+  }
+}

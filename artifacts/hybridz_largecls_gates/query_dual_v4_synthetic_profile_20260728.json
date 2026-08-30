@@ -1,0 +1,126 @@
+{
+  "schema": "act.query_dual_v4_synthetic_profile.v1",
+  "status": "rejected",
+  "proof_authority": false,
+  "controlled_toy_only": true,
+  "real_onnx_or_vnnlib_accessed": false,
+  "seed": 20260728,
+  "numeric_contract": {
+    "device": "cpu",
+    "dtype": "binary64",
+    "blas_threads": 8,
+    "guard_model": "unchanged_longdouble_higham_componentwise"
+  },
+  "candidate": {
+    "name": "nonnegative_absorb_radius_single_gemv",
+    "description": "_absorb_radius reuses radius@max_abs for nominal and absolute mass instead of evaluating three equivalent GEMVs",
+    "production_source_modified_after_gate": false,
+    "isolated_candidate_test_source": "act/back_end/hybridz_tf/test_query_dual_replay_v4.py"
+  },
+  "topology": {
+    "input_shape": [128, 8, 8],
+    "block_8x8": "two 128x128 3x3 convolutions plus identity residual ADD",
+    "downsample": "128x128 3x3 stride-2 main plus 128x128 1x1 stride-2 skip",
+    "block_4x4": "two 128x128 3x3 convolutions plus identity residual ADD",
+    "head": "flatten 128x4x4 then dense 100",
+    "weights": "deterministic synthetic Gaussian; no model weights",
+    "bounds": "synthetic [-1,1] boxes",
+    "alpha": 0.5
+  },
+  "query_schedule": {
+    "target_stage_counts": [32, 16, 48, 32],
+    "property_count": 99,
+    "total_objectives": 227
+  },
+  "alternating_runs_seconds": [
+    {
+      "order": ["legacy", "candidate"],
+      "legacy_total": 13.574899631086737,
+      "candidate_total": 12.868780454155058,
+      "legacy_stage_times": [
+        0.035220906138420105,
+        6.169176410418004,
+        2.764234545174986,
+        1.0188660519197583,
+        3.5870435717515647
+      ],
+      "candidate_stage_times": [
+        0.02746104681864381,
+        6.140286247245967,
+        2.4020276446826756,
+        0.9741662433370948,
+        3.324385202024132
+      ],
+      "all_227_lower_bounds_bit_identical": true
+    },
+    {
+      "order": ["candidate", "legacy"],
+      "candidate_total": 13.27108141221106,
+      "legacy_total": 13.030336865689605,
+      "candidate_stage_times": [
+        0.03580354107543826,
+        6.10419108113274,
+        2.771587848197669,
+        1.014341611880809,
+        3.3448000522330403
+      ],
+      "legacy_stage_times": [
+        0.027316702995449305,
+        6.129222848918289,
+        2.392064347397536,
+        1.0095310271717608,
+        3.4717580969445407
+      ],
+      "all_227_lower_bounds_bit_identical": true
+    }
+  ],
+  "median_result": {
+    "legacy_seconds": 13.302618248388171,
+    "candidate_seconds": 13.069930933183059,
+    "speedup": 1.0178032551506715,
+    "fractional_time_saving": 0.01749184339957331
+  },
+  "micro_profile": {
+    "absorb_radius_q99_width8192": {
+      "legacy_median_seconds": 0.0012734229676425457,
+      "candidate_median_seconds": 0.001112684141844511,
+      "speedup": 1.1444604265965144,
+      "bit_identical": true
+    },
+    "nonnegative_row_dot_q99_width8192": {
+      "legacy_median_seconds": 0.0009855092503130436,
+      "candidate_median_seconds": 0.00069860415533185,
+      "speedup": 1.410631310216631
+    },
+    "conv_128x8x8_q99_seconds_by_blas_threads": {
+      "1": 1.6899346113204956,
+      "4": 1.2694749720394611,
+      "8": 1.2754397820681334,
+      "20": 1.3092494453303516
+    },
+    "conv_128x8x8_q99_cprofile_seconds": {
+      "total": 1.341,
+      "matrix_product_with_error": 0.568,
+      "upper_nonnegative_sum": 0.497,
+      "upper_gamma_enclosure": 0.467,
+      "binary_add_with_error": 0.280,
+      "upper_error_from_mass": 0.131,
+      "numpy_take_geometry_work": 0.014
+    }
+  },
+  "gate": {
+    "required_speedup": 2.0,
+    "measured_speedup": 1.0178032551506715,
+    "passed": false,
+    "decision": "close V4; do not promote candidate or weaken/change guards"
+  },
+  "source_sha256": {
+    "frozen_query_dual_replay": "6e291bdd4526518496e664c14e15664bf554c1e9f089d92f65f8097081db5d7e",
+    "rejected_candidate_tests": "a2962e206c54f82259bcd30a1e893f5d2bbb8c974f30bb0089f001c0767c81a9"
+  },
+  "reproduction": {
+    "micro_tests": "/data1/Kane/miniconda3/envs/act-py312/bin/python -m unittest -v act.back_end.hybridz_tf.test_query_dual_replay_v4",
+    "production_scale_profile_method": "same-process alternating legacy/candidate monkeypatch around replay_query_lower_bounds, threadpool_limits(8), deterministic synthetic topology and seed recorded above"
+  },
+  "receipt_sha256": "1bb98912ac390fb639ee3ec1f288580b1f2c52b5dcd17a610ec451806b9652ef"
+}

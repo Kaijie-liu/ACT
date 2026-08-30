@@ -1,0 +1,71 @@
+{
+  "schema": "act.hybridz.phase_projection.performance_reference_semantics.v1",
+  "created_at": "2026-08-14T01:40:00+10:00",
+  "status": "MEASURED_ARITHMETIC_REQUIRES_POLICY_CHOICE",
+  "source": {
+    "case": "cifar100_medium_iid2",
+    "single_gate_sha256": "0580a4a04758e3b1d9b0f56ae992fe2d443d9e7645217e70c18fc4f0bcce4439",
+    "four_thread_gate_sha256": "b3c5171e2906b956985b3142d0ae73ce41f16e7dd88acb321e67360a02e9c05b",
+    "performance_rerun": false,
+    "note": "All arithmetic below reuses the frozen gate records; the narrowly passing four-thread experiment was not rerun."
+  },
+  "measured_single_request": {
+    "old_43_path_wall_median_seconds": 3.5215127281844616,
+    "current_59_path_wall_median_seconds": 1.438896358013153,
+    "current_receipt_total_median_seconds": 1.4330118615180254,
+    "terminal_proof_median_seconds": 0.4298674901947379,
+    "terminal_fraction_of_receipt_total": 0.299974830452114,
+    "current_nonterminal_wall_minus_terminal_median_seconds": 1.0090288678184152,
+    "paired_speedup_median": 2.028740601961213
+  },
+  "measured_four_thread": {
+    "old_43_path_group_wall_median_seconds": 6.373966137878597,
+    "current_59_path_group_wall_median_seconds": 3.068358832038939,
+    "current_group_max_terminal_median_seconds": 0.6198208592832088,
+    "paired_speedup_median": 2.0390893676307082,
+    "exact_paired_bootstrap_95pct_lower": 1.800903776193539
+  },
+  "fixed400_positive_terminal_diagnostic": {
+    "positive_cases": 59,
+    "all_families_receipt_total_median_seconds": 3.2120344527065754,
+    "all_families_terminal_median_seconds": 1.1101097455248237,
+    "cifar100_medium_terminal_median_seconds": 0.43322273110970855,
+    "cifar100_large_terminal_median_seconds": 1.4622931685298681,
+    "tinyimagenet_medium_terminal_median_seconds": 1.1103864321485162,
+    "warning": "The 1.11-second cross-family median is not the terminal floor of the registered iid2 performance gate, whose measured median is 0.4299 seconds."
+  },
+  "interpretation_A_ratchet_against_current_59_path": {
+    "single_required_speedup": 1.5,
+    "next_single_total_budget_seconds": 0.9592642386754354,
+    "single_budget_after_measured_terminal_median_seconds": 0.5293967484806975,
+    "single_frontend_reduction_needed_from_current_nonterminal_median_seconds": 0.4796321193377177,
+    "four_thread_required_speedup": 2.0,
+    "next_four_thread_group_budget_seconds": 1.5341794160194695,
+    "four_thread_budget_after_group_max_terminal_median_seconds": 0.9143585567362607,
+    "conclusion": "A pure additive capability step cannot pass a ratchet comparison. However, the frozen iid2 data do not prove that terminal authority alone exhausts the budget: about 0.529 seconds remains outside the median single terminal, so a future replacement that both adds ability and deletes roughly 0.480 seconds of current nonterminal work is not arithmetically impossible."
+  },
+  "interpretation_B_fixed_reference_against_old_43_path": {
+    "single_required_speedup": 1.5,
+    "single_total_budget_seconds": 2.3476751521229744,
+    "single_headroom_from_current_59_path_median_seconds": 0.9087787941098215,
+    "diagnostic_plus_0.15_second_single_total_seconds": 1.588896358013153,
+    "diagnostic_plus_0.15_second_single_speedup": 2.216326263462497,
+    "four_thread_required_speedup": 2.0,
+    "four_thread_group_budget_using_median_reference_seconds": 3.1869830689392985,
+    "four_thread_median_headroom_seconds": 0.11862423690035939,
+    "bootstrap_required_lower": 1.8,
+    "tightest_observed_pair_headroom_before_crossing_1.8_seconds": 0.0017553875222802162,
+    "conclusion": "The fixed reference leaves large isolated single-request headroom but almost no frozen four-thread bootstrap headroom. Adding 0.15 seconds to every request is not shown compliant: it would exceed the tightest observed pair's 1.8x allowance unless offset by structural savings or unless the update is not exercised by that workload. A real modified path must rerun the full gate; stage arithmetic cannot authorize promotion."
+  },
+  "conditional_negative_update_boundary": {
+    "description": "A deterministic update that executes only after the sole current LP returns a nonpositive margin would leave the positive iid2 timing control unchanged but would add latency to most UNKNOWN requests.",
+    "governance": "It may still be one algorithm rather than a fallback menu, but frontend responsiveness must be measured on a preregistered negative workload as well as on the retained positive control. Passing only the bypassed positive control would be insufficient evidence.",
+    "suggested_fixed_negative_control": "tinyimagenet_medium_iid143",
+    "reason": "It is the closest production negative margin and exercises the added cell-update path; this suggestion is a policy test design, not a prediction that the case will be solved."
+  },
+  "decision_required": {
+    "question": "Should future response gates compare against the current promoted 59 path (ratchet) or the frozen old 43 reference path?",
+    "unchanged_restrictions": "The choice does not change any prohibition or the terminal proof boundary.",
+    "no_algorithm_authorization": "No new cell update is authorized by this arithmetic record."
+  }
+}

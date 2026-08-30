@@ -1,0 +1,85 @@
+{
+  "schema": "act.hybridz.phase_projection_failure_census.v1",
+  "date": "2026-08-12",
+  "scope": "fixed14_baseline_unknowns_with_temporary_diagnostic_only_reason_split",
+  "cases": 11,
+  "outcomes": {
+    "all_phases_consistent_but_margin_nonpositive": 3,
+    "one_or_two_phase_rows_inconsistent": 3,
+    "input_lp_infeasible": 1,
+    "input_lp_time_limit": 1,
+    "live_row_fail_closed_under_four_worker_census": 3
+  },
+  "consistent_nonpositive_margin_cases": [
+    {
+      "case": "cifar100_medium_iid29",
+      "margin_lower": -0.3748274778870839
+    },
+    {
+      "case": "tinyimagenet_medium_iid93",
+      "margin_lower": -0.22503638063421352
+    },
+    {
+      "case": "tinyimagenet_medium_iid159",
+      "margin_lower": -1.1701755093969106
+    }
+  ],
+  "near_tolerance_phase_cases": [
+    {
+      "case": "tinyimagenet_medium_iid0",
+      "consistent": 1865,
+      "inconsistent": 2,
+      "total": 1867,
+      "minimum_signed_phase_safety": -1.3145790947690109e-08,
+      "original_margin_lower": -0.36755448818388203
+    },
+    {
+      "case": "tinyimagenet_medium_iid17",
+      "consistent": 1982,
+      "inconsistent": 1,
+      "total": 1983,
+      "minimum_signed_phase_safety": -3.5479811037541856e-09,
+      "original_margin_lower": -1.1653733299183178
+    },
+    {
+      "case": "tinyimagenet_medium_iid143",
+      "consistent": 1667,
+      "inconsistent": 1,
+      "total": 1668,
+      "minimum_signed_phase_safety": -1.9600600394413185e-08,
+      "original_margin_lower": -0.0010713269585698238
+    }
+  ],
+  "uniform_interior_guard_experiment": {
+    "baseline_multiplier": 16,
+    "tested_multiplier": 128,
+    "near_tolerance_phase_cases_made_phase_consistent": 3,
+    "new_falsified": 0,
+    "resulting_margin_lower": {
+      "tinyimagenet_medium_iid0": -0.3675549568986346,
+      "tinyimagenet_medium_iid17": -1.165374011302222,
+      "tinyimagenet_medium_iid143": -0.001071614431947704
+    },
+    "baseline_success_sentinels_tested": 3,
+    "baseline_success_sentinels_retained": 3,
+    "decision": "rejected_no_formal_solved_gain"
+  },
+  "single_minimal_guard_check": {
+    "multiplier": 32,
+    "case": "tinyimagenet_medium_iid143",
+    "result": "phase_inconsistent",
+    "minimum_signed_phase_safety": -3.2375570481246786e-09,
+    "decision": "stopped_without_parameter_scan"
+  },
+  "interpretation": "The combined 345-case bucket is heterogeneous. Some failures need a different globally useful phase cell or property direction; merely repairing a handful of near-tolerance phase rows does not produce a formal counterexample. Do not add per-case tolerance fallbacks.",
+  "forbidden_methods_used": {
+    "input_sampling": false,
+    "center_boundary_or_random_onnx_execution": false,
+    "pgd": false,
+    "act_bab": false,
+    "backward_bounds": false,
+    "dual_tightening": false
+  },
+  "production_candidate_sha256": "615b45516b0d4cd2a3632c4f260efffc4fc5cf451444225f8d1bb3e6a04993ba",
+  "production_candidate_restored_to_frozen_hash": true
+}

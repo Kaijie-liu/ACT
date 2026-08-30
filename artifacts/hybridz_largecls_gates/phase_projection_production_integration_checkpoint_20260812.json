@@ -1,0 +1,155 @@
+{
+  "schema": "act.hybridz.phase_projection_production_integration_checkpoint.v1",
+  "date": "2026-08-12",
+  "status": "PRODUCTION_ENTRY_FORMAL_SUCCESS_FIXED_SUCCESSES_CONFIRMED",
+  "scope": {
+    "default_enabled": false,
+    "engine": "operator_hz_objbound",
+    "operator_exact_budget": -1,
+    "single_path_when_enabled": true,
+    "root_solver_fallback_when_enabled": false,
+    "failure_policy": "UNKNOWN",
+    "input_sampling_used": false,
+    "pgd_used": false,
+    "concrete_onnx_execution_used": false,
+    "model_fn_used": false,
+    "external_counterexample_replay_used": false,
+    "act_bab_used": false,
+    "backward_bound_propagation_used": false,
+    "dual_tightening_used": false,
+    "triangle_rows": 0,
+    "phase_updates_per_case": 1,
+    "phase_retries": 0,
+    "property_rows_per_case": 1,
+    "property_row_retries": 0,
+    "input_lps_per_case": 1
+  },
+  "authority": {
+    "candidate_receipt_proof_authority": false,
+    "candidate_receipt_verdict_authority": false,
+    "verifier_owned_callsite_proof_authority": true,
+    "proof_rule": "decoded input lies in the raw BOX; a verifier-owned zero-width forward interval encloses the stored-float graph result; exact Fraction arithmetic proves the selected TOP1 margin lower bound is positive",
+    "independent_certificate_role": "auxiliary_only_not_used_by_this_path"
+  },
+  "files": {
+    "config_py": {
+      "path": "act/back_end/config.py",
+      "sha256": "8d94960cf4686f8d9c894cc18c1483b57092faa52e794905dce9f622c8fddf21"
+    },
+    "config_yaml": {
+      "path": "act/back_end/config.yaml",
+      "sha256": "8f3e4935aaca2351fb1757f6cca7f51e0a4e68202d90814cd26bf953dbbb9e77"
+    },
+    "verifier": {
+      "path": "act/back_end/verifier.py",
+      "sha256": "eb3dfc8611ee97262bf71d66b8deee58a6a2544d0934d94ca7b075424dbc3afd"
+    },
+    "candidate": {
+      "path": "act/back_end/hybridz_tf/forward_exact_relu_phase_projection_candidate.py",
+      "sha256": "615b45516b0d4cd2a3632c4f260efffc4fc5cf451444225f8d1bb3e6a04993ba"
+    },
+    "candidate_test": {
+      "path": "act/back_end/hybridz_tf/test_forward_exact_relu_phase_projection_candidate.py",
+      "sha256": "2a5cae3ee777581a01381d5d36832191713110a984ecfb3e8771d4cf3fb99214"
+    },
+    "live_row_dependency": {
+      "path": "act/back_end/hybridz_tf/forward_exact_relu_live_row_stream_candidate.py",
+      "sha256": "be00bd11ee62536a5ea31d2f5f90aff616bc15452d703a8e9e7e6e7419004e86"
+    },
+    "live_row_dependency_test": {
+      "path": "act/back_end/hybridz_tf/test_forward_exact_relu_live_row_stream_candidate.py",
+      "sha256": "a94b37a93aae37b5260a3bbc7eed239f9754c7120734dbdb9a8d0423c1c61601"
+    }
+  },
+  "tests": {
+    "focused_phase_projection": {
+      "passed": 10,
+      "failed": 0
+    },
+    "adjacent_phase0_add_residual_preactivation_micro_rlt": {
+      "passed": 95,
+      "failed": 0
+    },
+    "py_compile": true,
+    "diff_check": true,
+    "focused_integration_assertions": [
+      "FALSIFIED without model_fn or external replay",
+      "root MILP is not called after a successful projection",
+      "projection failure returns UNKNOWN without root fallback",
+      "collect_facts contract is preserved",
+      "optional phase/property/dual enhancements are mutually excluded"
+    ]
+  },
+  "performance_gate": {
+    "same_topology_single_pair_speedup": 4.0278879877390645,
+    "four_concurrent_five_pair_median_speedup": 2.1237243882995824,
+    "paired_bootstrap_95_lower": 2.0565868603512625,
+    "candidate_result_conflicts": 0,
+    "stable_id_conflicts": 0,
+    "passed": true
+  },
+  "production_entry_real_results": {
+    "successful_cases": [
+      {
+        "case": "cifar100_medium_iid2",
+        "status": "FALSIFIED",
+        "phase_rows": 2177,
+        "singleton_margin_lower": 0.09290159780434681,
+        "verify_once_seconds": 3.441465669311583
+      },
+      {
+        "case": "cifar100_medium_iid11",
+        "status": "FALSIFIED",
+        "phase_rows": 1510,
+        "singleton_margin_lower": 0.00025345571853629956,
+        "verify_once_seconds": 3.0879775462672114
+      },
+      {
+        "case": "cifar100_medium_iid64",
+        "status": "FALSIFIED",
+        "phase_rows": 2147,
+        "singleton_margin_lower": 0.014603240410815732,
+        "verify_once_seconds": 3.439663276076317
+      },
+      {
+        "case": "cifar100_large_iid118",
+        "status": "FALSIFIED",
+        "phase_rows": 2191,
+        "singleton_margin_lower": 0.5550047360054379,
+        "verify_once_seconds": 8.320623909123242
+      },
+      {
+        "case": "tinyimagenet_medium_iid193",
+        "status": "FALSIFIED",
+        "phase_rows": 2471,
+        "singleton_margin_lower": 0.03523107067518083,
+        "verify_once_seconds": 8.520979147404432
+      },
+      {
+        "case": "tinyimagenet_medium_iid1",
+        "status": "FALSIFIED",
+        "phase_rows": 2488,
+        "singleton_margin_lower": 0.7018047321672078,
+        "verify_once_seconds": 8.529571329243481
+      }
+    ],
+    "single_path_unknown_control": {
+      "case": "cifar100_medium_iid29",
+      "status": "UNKNOWN",
+      "reason": "the single LP candidate failed exact phase or margin replay",
+      "root_solver_fallback_used": false,
+      "verify_once_seconds": 2.547847244888544
+    },
+    "cifar100_confirmed_formal_successes": 4,
+    "tinyimagenet_confirmed_formal_successes": 2,
+    "confirmed_formal_successes_total": 6,
+    "full_fixed40_production_entry_rerun": false
+  },
+  "interpretation": {
+    "cifar100_progress": true,
+    "tinyimagenet_progress": true,
+    "formal_solved_count_gain_at_least": 6,
+    "claim_limit": "Six fixed-manifest successes were rerun through the production verifier entry. The remaining fixed40 cases were established as UNKNOWN by the identical disconnected algorithm but were not all rerun through verify_once after integration.",
+    "next_gate": "Freeze this single path, update the handoff, then run the preregistered fixed400 formal verifier gate without sampling, PGD, ONNX concrete execution, or auxiliary solver fallback."
+  }
+}

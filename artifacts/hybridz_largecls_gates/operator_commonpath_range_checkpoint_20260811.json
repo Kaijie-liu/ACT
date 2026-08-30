@@ -1,0 +1,163 @@
+{
+  "schema": "act.hybridz.operator_commonpath_range_checkpoint.v1",
+  "date": "2026-08-11",
+  "status": "REAL_MODEL_STRUCTURE_WIN_CONCLUSION_GATE_CLOSED",
+  "goal_constraints": {
+    "selected_runtime_algorithm_count": 1,
+    "runtime_fallback_count": 0,
+    "new_solver_backend_count": 0,
+    "rare_case_compute_branches": 0,
+    "all_unstable_relu_exact": true,
+    "triangle_or_convex_fallback": false,
+    "network_branch_and_bound": false,
+    "backward_or_dual": false,
+    "unsupported_or_resource_failure": "UNKNOWN",
+    "cold_first_response_is_a_gate": true
+  },
+  "selected_changes": [
+    {
+      "path": "act/back_end/hybridz_tf/operator_hz.py",
+      "sha256": "0f3ea83b3ad9141e59917e5574cbb3eacf4f69a81645d7d41d829d4bc4af5707",
+      "change": "stored-center outward affine prescreen before sparse W@G"
+    },
+    {
+      "path": "act/back_end/solver/solver_hz.py",
+      "sha256": "d4fe5491aec1d41819a00a6638d2ca7fd3b2d128939667f53623d8c89db4300d",
+      "change": "bitwise-verified affine-chain and stable-active ReLU forward/reverse rows load through the same native RANGE path; HiGHS validation/load/run share one bounded budget"
+    }
+  ],
+  "representation_policy": {
+    "source_hz_representation_count": 1,
+    "solver_load_passes_per_query": 1,
+    "tag_role": "locate common affine-chain blocks only",
+    "row_removal_authority": "full CSR index equality and float64 sign-bit negation for continuous and binary coefficients",
+    "mismatch_policy": "fail closed to UNKNOWN",
+    "legacy_parallel_runtime_path": false
+  },
+  "soundness_and_regression": {
+    "fraction_and_binary_shift_tests": true,
+    "source_vs_range_membership_enumerated": true,
+    "production_objbound_entry_tested": true,
+    "range_model_preserves_integrality": true,
+    "cifar100_equal_budget_final_hz_bitwise_from_prescreen_checkpoint": true,
+    "scoped_tests": "132/132",
+    "py_compile_passed": true,
+    "diff_check_passed": true,
+    "test_path": "act/back_end/solver/test_solver_hz_binary_shift.py",
+    "test_sha256": "894af568e360d4d30df1588b02733db4c9e95b43fc07e20c17eb26fddef64071"
+  },
+  "cifar100_medium_iid2": {
+    "build_speedup_vs_old_full_composition": 4.032495377208339,
+    "source_upper_rows": 34691,
+    "native_rows": 20125,
+    "row_reduction_fraction": 0.41987835461647116,
+    "source_constraint_nnz": 7730031,
+    "native_constraint_nnz": 4862325,
+    "nnz_reduction_fraction": 0.37098247083355806,
+    "ranged_pairs": 14566,
+    "affine_chain_pairs": 8192,
+    "stable_active_relu_pairs": 6374,
+    "solver_columns": 21444,
+    "thirty_second_status": "timeout",
+    "first_usable_result": false,
+    "receipt_jsonl": "artifacts/hybridz_largecls_gates/gate1_commonpath_active_range_cifar100_medium_iid2_20260811.jsonl",
+    "receipt_sha256": "8a1d6407d2854b050ab1c90672be934d4c02b2590dffc609a75195bb42c18b02",
+    "summary_sha256": "0aae2cb678ed93a8b979e440bdfa7748d172ed418c48ac3c8ff06c81f1e7bee7",
+    "worker_log_sha256": "139f2d018bfa419d3e236663b22010ac689ce808f8d5b74b7c5620678d759f81"
+  },
+  "tinyimagenet_medium_iid6": {
+    "build_speedup_vs_old_full_composition": 1.7977586223448352,
+    "source_upper_rows": 103358,
+    "native_rows": 54463,
+    "row_reduction_fraction": 0.47306449428201014,
+    "source_constraint_nnz": 23581758,
+    "native_constraint_nnz": 13669073,
+    "nnz_reduction_fraction": 0.42035394477375265,
+    "ranged_pairs": 48895,
+    "solver_columns": 62215,
+    "thirty_second_status": "timeout",
+    "first_usable_result": false,
+    "receipt_jsonl": "artifacts/hybridz_largecls_gates/gate1_commonpath_active_range_tinyimagenet_medium_iid6_py312_20260811.jsonl",
+    "receipt_sha256": "89d55114c1aebf993744fa9705626a0c5d7e58a125a0d57f8c3dcdc6cfb48707",
+    "summary_sha256": "4a087b2330441c4b1f501edce9bf2d6df9966a7f800d544104a7f31cbe581f48",
+    "worker_log_sha256": "9f1c46469402f2baff0bae795963fecb4c4c6773ebb14269a1af9da63d383919"
+  },
+  "bounded_stoplosses": {
+    "joint_or_milp": {
+      "candidate_first_query_seconds": 14.949678346514702,
+      "current_first_query_seconds": 14.7526,
+      "decision": "rejected_below_1_5x"
+    },
+    "exact_relu_auxiliary_factor": {
+      "candidate_first_query_seconds": 11.1055,
+      "speedup": 1.3284,
+      "decision": "rejected_below_1_5x"
+    },
+    "projection_direct": {
+      "cifar100_native_rows": 11933,
+      "cifar100_native_columns": 13252,
+      "cifar100_native_nnz": 2559621,
+      "tinyimagenet_native_rows": 29321,
+      "tinyimagenet_native_columns": 37092,
+      "tinyimagenet_native_nnz": 6530310,
+      "paired_full_operator_build_speedup": 0.9940448203203149,
+      "cifar100_thirty_second_status": "unknown",
+      "decision": "not_integrated_build_gate_failed_and_no_first_result"
+    },
+    "persistent_lp_disabled": {
+      "receipt_jsonl": "artifacts/hybridz_largecls_gates/gate1_commonpath_active_range_no_lp_cifar100_medium_iid2_20260811.jsonl",
+      "receipt_sha256": "2c54727f5108a597f76829aabff4c863a8515cd97de9a099d64c4ff2eedd33aa",
+      "thirty_second_status": "timeout",
+      "decision": "rejected"
+    },
+    "four_solver_threads": {
+      "receipt_jsonl": "artifacts/hybridz_largecls_gates/gate1_commonpath_active_range_4t_cifar100_medium_iid2_20260811.jsonl",
+      "receipt_sha256": "f3d865c5ccc717d45c4ae7849de5de6cf87568e178a5cc0389a5551a8f197b3f",
+      "thirty_second_status": "timeout",
+      "decision": "no_breakthrough"
+    },
+    "persistent_lp_exact_cutoff_session_reuse": {
+      "candidate_scope": "one retained HiGHS model for persistent LP and exact binary cutoff; no rebuild fallback",
+      "toy_single_highs_instance_test": true,
+      "toy_verdict": "UNSAFE",
+      "cifar100_medium_iid2_wall_timeout_seconds": 30.0,
+      "cifar100_medium_iid2_status": "timeout",
+      "first_usable_result": false,
+      "tinyimagenet_attempted": false,
+      "tinyimagenet_stop_reason": "CIFAR100 common-path gate failed first; larger target skipped by stop-loss",
+      "receipt_jsonl": "artifacts/hybridz_largecls_gates/gate1_commonpath_reused_highs_cifar100_medium_iid2_py312_20260811.jsonl",
+      "receipt_sha256": "8d90658686406ebd239bf70fff6611780387939204a47df591cbaf53a7c6dd50",
+      "summary_sha256": "ae26e959220028c121eb054386da17d7341ad43e0beb1b9911030d69c2ea2982",
+      "worker_log_sha256": "18dd28474e0054093a1429784474e0b72892029140a00aa85472d71b067f2096",
+      "environment_diagnostic": {
+        "status": "excluded_from_algorithm_result",
+        "reason": "base Python 3.13 lacked onnx2torch before model construction",
+        "receipt_sha256": "8127263e4442f6dbb291f906ef28764623b71e8e6547c1b9c2b79ac60dfd6308",
+        "summary_sha256": "a8987a2c2c16aa1440b0a8bbf20a114926eee2dd81f796237bb68ee381640003"
+      },
+      "decision": "reverted_exactly_to_frozen_solver_and_test_hashes"
+    },
+    "persistent_lp_fraction_0_20": {
+      "candidate_scope": "same single common path; reduce existing LP prefilter budget and give the remainder to exact MIP",
+      "parameter_sweep_performed": false,
+      "cifar100_medium_iid2_wall_timeout_seconds": 30.0,
+      "parent_wall_seconds": 30.292984754778445,
+      "status": "timeout",
+      "first_usable_result": false,
+      "receipt_jsonl": "artifacts/hybridz_largecls_gates/gate1_commonpath_lp20_cifar100_medium_iid2_py312_20260811.jsonl",
+      "receipt_sha256": "a50ef9e55a79a6215af8126f111d1a83bbdbef328169b875141d5178d1b8aa08",
+      "summary_sha256": "ffd0556fc83e4e0d7aba3fef879a57b4f9a68bfa060e376308145e6200002ef6",
+      "worker_log_sha256": "072f229ab44502acd6da23752e16ab7d88d3eff68c803b568fad298f1eca3eaf",
+      "decision": "rejected_without_parameter_sweep"
+    }
+  },
+  "decision": {
+    "retain_commonpath_changes": true,
+    "production_promotion": false,
+    "solved_instance_breakthrough": false,
+    "extend_timeout": false,
+    "add_solver_fallback": false,
+    "reason": "The same native RANGE path now removes stable-active equalities as well as affine-chain reverse rows, but neither real model returns a usable result within the unchanged 30-second cold request budget.",
+    "next_action": "Do not add more solver machinery or tune more LP fractions. Require one causal replacement of the LP-to-exact-MIP native work to cross the cold first-response gate before any further integration."
+  }
+}

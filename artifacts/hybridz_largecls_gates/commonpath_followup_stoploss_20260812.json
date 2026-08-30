@@ -1,0 +1,107 @@
+{
+  "schema": "act.hybridz.commonpath_followup_stoploss.v1",
+  "created_at_local": "2026-08-12",
+  "status": "ALL_BOUNDED_FOLLOWUPS_CLOSED_PRODUCTION_RESTORED",
+  "goal_scope": "CIFAR100/TinyImageNet common forward exact-ReLU HybridZ path",
+  "conv_affine_followup": {
+    "candidate": "audited direct Conv CSR plus one reused abs(W) snapshot plus removal of a same-stack duplicate finite scan",
+    "selected_runtime_algorithms": 1,
+    "runtime_fallbacks": 0,
+    "cifar100_medium_iid29": {
+      "model": "CIFAR100_resnet_medium.onnx",
+      "property": "CIFAR100_resnet_medium_prop_idx_4429_sidx_1471_eps_0.0039.vnnlib",
+      "abstract_build_only": true,
+      "exact_budget": -1,
+      "materialize_add": false,
+      "final_hz_bitwise_equal": true,
+      "single_request": {
+        "threads": 1,
+        "warmups": 2,
+        "paired_repetitions": 7,
+        "baseline_median_seconds": 3.4381050737574697,
+        "candidate_median_seconds": 1.8756880527362227,
+        "paired_speedups": [
+          1.6432129111575733,
+          1.9652540038174717,
+          1.2112573262377058,
+          1.7848148242277684,
+          1.9194681551185908,
+          1.4906623604790261,
+          1.5939334619805792
+        ],
+        "median_paired_speedup": 1.6432129111575733,
+        "required_speedup": 1.5,
+        "passed": true
+      },
+      "four_concurrent_requests": {
+        "native_threads_per_request": 1,
+        "paired_repetitions": 5,
+        "paired_speedups": [
+          1.4906535452975658,
+          1.4513419098545273,
+          1.638385744371168,
+          1.344898267838059,
+          1.3591814639400015
+        ],
+        "median_paired_speedup": 1.4513419098545273,
+        "bootstrap_seed": 20260811,
+        "bootstrap_resamples": 20000,
+        "bootstrap_95pct_lower": 1.344898267838059,
+        "individual_request_median_speedup": 1.3876147640965075,
+        "required_median_speedup": 2.0,
+        "required_bootstrap_95pct_lower": 1.8,
+        "passed": false
+      }
+    },
+    "decision": "Rejected at the mandatory concurrency gate. All tentative production edits were reverted; TinyImageNet, solver, cold-child HWM, and page-fault gates were not run."
+  },
+  "solver_capability_preflight": {
+    "gurobi_version_available": true,
+    "license_banner": "Restricted license - for non-production use only - expires 2027-11-29",
+    "synthetic_variables": 2001,
+    "error_code": 10010,
+    "error": "Model too large for size-limited license",
+    "cifar100_model_loaded": false,
+    "tinyimagenet_model_loaded": false,
+    "decision": "Do not add Gurobi as another backend; the local license rejects a model far smaller than the retained C100 exact MIP."
+  },
+  "recovered_gpu_factor_stream_assessment": {
+    "source_present": false,
+    "python312_bytecode_cache_present": true,
+    "bytecode_loaded_read_only": true,
+    "public_entrypoint": "build_forward_exact_relu_gpu_stream_candidate",
+    "already_uses_direct_conv_builder": true,
+    "phase_schedule_source": "independent interval facts before factor streaming",
+    "cifar100_binary_phase_factors": 1254,
+    "retained_correlated_binary_phase_factors": 1052,
+    "prior_median_speedup": 1.4004221595714506,
+    "decision": "Do not restore or rerun. Direct Conv is already present, and obtaining the retained correlated phase schedule would require a forbidden second factor pass or the previously slow full flat representation."
+  },
+  "cross_layer_residual_facet_assessment": {
+    "candidate_file": "act/back_end/hybridz_tf/property_cross_layer_residual_facet.py",
+    "declared_scope": "fixed scalar toy with theta in (0,1)",
+    "production_general_binding": false,
+    "operator_consumer": false,
+    "decision": "Do not generalize a toy-only fixed family into rare-case production branches. The existing K2/K3/PCOH evidence already covers the general phase-hull direction and has no real verdict gain."
+  },
+  "validation": {
+    "focused_tests": "36 passed, 11 subtests passed",
+    "py_compile": true,
+    "operator_hz_restored_sha256": "2502c009d6b5d37983e3f6d072e802c7734ac9bd106bb2a252e0a562da390fd8",
+    "test_operator_add_fusion_sha256": "129719716cf1cc598b850f3e39c1fc28fed36ca839dfb6b67296bbc6b9116933",
+    "production_candidate_retained": false
+  },
+  "method_restrictions": {
+    "input_center_boundary_random_or_grid_sampling_used": false,
+    "pgd_used": false,
+    "concrete_onnx_execution_used_for_candidate_search": false,
+    "formal_solver_run": false,
+    "tinyimagenet_run": false,
+    "triangle_or_convex_relu_fallback_used": false,
+    "act_branch_and_bound_used": false,
+    "backward_propagation_used": false,
+    "dual_tightening_used": false
+  },
+  "formal_solved_count_gain": 0,
+  "decision": "Keep only the retained projection-skip structural deletion. The follow-up frontend candidate fails the concurrency gate, the local Gurobi license cannot admit the model, the recovered GPU stream already contains direct Conv and has weaker phase scheduling, and the residual facet is toy-only. No extra backend or runtime alternative is retained."
+}

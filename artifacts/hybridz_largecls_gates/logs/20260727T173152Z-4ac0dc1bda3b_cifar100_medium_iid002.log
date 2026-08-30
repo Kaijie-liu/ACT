@@ -1,0 +1,22 @@
+[ACT] Auto-detecting project root: .
+[WARN] Gurobi license not found: modules/gurobi/gurobi.lic
+[INFO] Please place gurobi.lic in: modules/gurobi
+✅ Device Manager Initialized: device=cuda:0, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Loading ONNX model from /data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/onnx/CIFAR100_resnet_medium.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Upgrading ONNX opset 12 → 13
+INFO:act.front_end.vnnlib_loader.onnx_converter:Simplifying ONNX model
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converting ONNX to PyTorch
+INFO:act.front_end.vnnlib_loader.onnx_converter:Converted model to device=cuda:0, dtype=torch.float64
+INFO:act.front_end.vnnlib_loader.onnx_converter:Successfully converted ONNX model: CIFAR100_resnet_medium.onnx
+INFO:act.front_end.vnnlib_loader.onnx_converter:Normalized dynamic batch to 1: (1, 3, 32, 32)
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed VNNLIB: 3072 inputs, 100 outputs, type=unknown
+INFO:act.front_end.vnnlib_loader.create_specs:Generating specs for cifar100_medium/CIFAR100_resnet_medium__CIFAR100_resnet_medium_prop_idx_6232_sidx_3020_eps_0.0039
+INFO:act.front_end.vnnlib_loader.vnnlib_parser:Parsed CIFAR100_resnet_medium_prop_idx_6232_sidx_3020_eps_0.0039.vnnlib: 1 query(ies) [vnnlib 1.0 flat]
+INFO:act.front_end.vnnlib_loader.create_specs:Parsed VNNLIB specs: 1 queries, first kind=(BOX, TOP1_ROBUST)
+
+🧬 Synthesizing models from 1 spec result(s)...
+
+🎉 Synthesis Complete:
+   Total specs: 1
+   Wrapped models: 1
+WARNING:act.back_end.solver.solver_hz:HybridZ GPU dual candidate failed closed at candidate_generation: RuntimeError: element 0 of tensors does not require grad and does not have a grad_fn

@@ -1,0 +1,280 @@
+{
+  "schema": "act.hybridz.direct_sparse_initial_target.cpu_static_preregistration.v1",
+  "created_at": "2026-08-23T23:49:28+10:00",
+  "status": "PREREGISTERED_CPU_STATIC_ONLY",
+  "component_name": "request_local_direct_sparse_initial_target_compiler",
+  "authorization": {
+    "cpu_static_synthetic_sentinel": true,
+    "cuda_or_gpu_run": false,
+    "official_benchmark_input_run": false,
+    "solver_run": false,
+    "production_or_config_edit": false,
+    "fixed_four_case_gpu_component_gate": false,
+    "production_integration": false,
+    "formal_score_before": "59/400",
+    "formal_score_may_change_at_this_gate": false
+  },
+  "governance_boundary": {
+    "unique_direction": "single request-local atomic producer of one full logical canonical target CSR and one objective",
+    "fixed_column_tile_width": 64,
+    "tile_is_not_runtime_chunking": "The width-64 factor-column tile is an internal, nonconfigurable arithmetic schedule. It has no partial publish, partial solve, transaction, retry, dynamic sizing, or runtime menu.",
+    "chunking_used": false,
+    "partition_transaction_used": false,
+    "atomic_publish_count": 1,
+    "if_internal_tiling_is_governed_as_chunking": "NO_PATH_STOP_LOSS_NO_RENAME_NO_RUN",
+    "forbidden_closed_mechanisms": [
+      "chunked solver loading or direct highspy addRows",
+      "old device_preelimination implementation",
+      "old filter_tiny_rows or make_highs implementation",
+      "partition authority",
+      "lock, lease, handoff, or adapter transaction",
+      "fixed-HZ or rank-one warm walk",
+      "initial auxiliary columns",
+      "second n-factor generator stream",
+      "second target producer",
+      "runtime fallback or menu"
+    ],
+    "required_downstream_unchanged": [
+      "existing FrozenRows.from_csr",
+      "one existing SafeHighsOwner",
+      "current OPTIMAL selector",
+      "typed INFEASIBLE status-corner selector",
+      "at most one current repair",
+      "current verifier-owned terminal"
+    ]
+  },
+  "fixed_schedule": {
+    "symbols": {
+      "P": "all interval-exact ReLU phase rows",
+      "n": "input factors in ascending input_rows order",
+      "k": "initial first-to-target phase changes",
+      "o": "output/assert width",
+      "F": "first phase preactivation coefficients in global phase-row order, shape P by n",
+      "D": "sole initial phase-delta coefficients in global phase-row order, shape P by k",
+      "Fo": "first output coefficients, shape o by n",
+      "Do": "sole initial output-delta coefficients, shape o by k",
+      "rho_i": "global phase ordinal of change i"
+    },
+    "global_phase_order": "topological network layer order, then original.stream_rows position order",
+    "change_order": "strictly increasing global phase ordinal, unique, and exactly the first-to-target active-set difference",
+    "triangular_guard": "for every change i, stored D[rho_i, i:] must be exactly zero",
+    "segment_order": "J=[c0:min(c0+64,n)) for c0=0,64,...",
+    "segment_recurrence": {
+      "inactive_to_active": "U[i,J] = F[rho_i,J] + D[rho_i,:i] @ U[:i,J]",
+      "active_to_inactive": "U[i,J] = -F[rho_i,J]",
+      "phase_block": "G[J] = F[J] + D @ U[J]",
+      "output_block": "Go[J] = Fo[J] + Do @ U[J]"
+    },
+    "orientation": {
+      "active": -1.0,
+      "inactive": 1.0,
+      "row": "A[r,J] = orientation[r] * G[r,J]",
+      "rhs": "np.where(target_active, target_center, -target_center)"
+    },
+    "objective": {
+      "coefficient": "q[J] = C[[rival]] @ (Fo[:,J] + Do @ U[J])",
+      "center": "q0 = C[rival] @ target_output_center - threshold[rival]",
+      "association_lock": "Form target output rows first, then multiply by C in output-row order. Reassociation as (C@Do)@U is forbidden."
+    },
+    "no_full_dense_materialization": [
+      "U with shape k by n",
+      "G with shape P by n",
+      "Go with shape o by n",
+      "target_pre dictionary",
+      "target_output matrix"
+    ]
+  },
+  "csr_and_screen_contract": {
+    "required_outputs": [
+      "full logical canonical A for the unchanged repair builder",
+      "rhs b",
+      "phase centers",
+      "target phase booleans",
+      "physical row mapping",
+      "full row ids",
+      "strict row_max>b keep mask",
+      "screened logical CSR",
+      "objective coefficient q",
+      "objective center q0",
+      "content and resource receipt"
+    ],
+    "canonical_layout": "contiguous int32 indptr, contiguous int32 indices, contiguous float64 data; row-major; strictly increasing columns per row; no duplicate; no explicit zero",
+    "dense_to_scipy_csr_forbidden": true,
+    "sp_vstack_hstack_coo_lil_dok_forbidden": true,
+    "final_csr_constructor_count": 1,
+    "screening_rule": "keep exactly the rows whose stored-binary64 dyadic box maximum is strictly greater than the stored-binary64 rhs",
+    "screening_oracle": "Fraction.from_float over every coefficient and factor bound",
+    "drop_rule": "A row may be dropped only when exact dyadic row_max <= exact dyadic rhs",
+    "tiny_projection_owner": "existing FrozenRows.from_csr only",
+    "compiler_must_not_delete_tiny_nonzero": true,
+    "signed_zero_rule": "Both binary64 signed zeros are algebraic zero and must be absent from emitted CSR.",
+    "subnormal_rule": "Finite nonzero subnormals are logical coefficients and must be preserved for the existing FrozenRows tiny projection; they are not an automatic compiler failure.",
+    "audit_resolution": "The signed-zero/subnormal rules follow the current logical-CSR and owner semantics; NaN, infinity, overflow, duplicate, and noncanonical mappings fail closed."
+  },
+  "resource_contract": {
+    "fixed_column_tile_width": 64,
+    "segments": "ceil(n/64)",
+    "N_definition": "full_logical_nnz, never screened or loaded nnz",
+    "formula": "T_compile(N)=24*N+4*P*ceil(n/64)+8*64*(P+k+o)+4*(P+1)+8*n",
+    "preallocation_worst_case_N": "P*n",
+    "limits": {
+      "max_phase_rows": 200000,
+      "max_input_factors": 200000,
+      "max_changes": 200000,
+      "max_full_logical_nnz": 200000000,
+      "max_compile_bytes": 2000000000,
+      "max_int32": 2147483647
+    },
+    "checked_before_every_allocation": true,
+    "no_alternate_two_pass_or_dense_fallback_after_preflight": true,
+    "tiny143_diagnostic": {
+      "P": 1668,
+      "n": 9408,
+      "full_logical_nnz": 3079720,
+      "screened_logical_nnz_not_authority_for_formula": 907584,
+      "T_compile_full_bytes": 76037892,
+      "T_compile_full_mib": 72.51538467407227,
+      "T_compile_worst_mib_approx": 361.2
+    }
+  },
+  "equivalence_and_authority": {
+    "required_equivalence": "fixed mapping plus exact-real F+D@U algebra and exact dyadic screening semantics",
+    "old_dense_csr_data_bitwise_identity_required": false,
+    "reason_bitwise_not_required": "The fixed segmented floating-point schedule changes binary64 rounding shape; compiler, LP, and margins have candidate authority only.",
+    "bitwise_required": [
+      "input-factor order",
+      "global phase ordinal and physical mapping",
+      "target phase booleans",
+      "rhs sign branch",
+      "canonical CSR structural invariants",
+      "the future terminal's single stored-binary64 input identity"
+    ],
+    "verdict_authority": "none at this CPU static gate",
+    "future_only_terminal_authority": "raw BOX plus verifier-owned zero-width outward forward plus exact stored-binary64 Fraction property lower greater than zero"
+  },
+  "fixed_hostile_toys": [
+    "dyadic_k3_both_flip_directions",
+    "n65_tile_boundary_63_64",
+    "branched_add_duplicate_cancellation",
+    "screen_lt_eq_gt",
+    "tiny_and_subnormal_owner_boundary",
+    "future_or_diagonal_dependency",
+    "unsorted_or_duplicate_change",
+    "mapping_shape_dtype_and_contiguity_drift",
+    "signed_zero_canonicalization",
+    "nan_inf_and_float_overflow",
+    "integer_product_nnz_and_byte_cap_overflow",
+    "deadline_every_checkpoint",
+    "non_exception_baseexception_every_checkpoint",
+    "caller_alias_after_owned_snapshot",
+    "internal_snapshot_digest_drift"
+  ],
+  "failure_and_cleanup_contract": {
+    "unknown_on": [
+      "malformed shape, dtype, order, or mapping",
+      "non-topological or duplicate change",
+      "triangular zero violation",
+      "nonfinite or arithmetic overflow",
+      "resource or int32 cap",
+      "deadline",
+      "internal immutable snapshot digest drift",
+      "noncanonical CSR or Fraction screening disagreement"
+    ],
+    "owned_snapshot": "Every input is copied to immutable bytes ownership before compile and bound to dtype, shape, and content SHA-256.",
+    "caller_alias_after_snapshot_has_no_effect": true,
+    "locks_leases_handoffs_used": false,
+    "partial_publish_count": 0,
+    "baseexception_primary_identity_preserved": true,
+    "implementation_traceback_frames_released": true,
+    "segment_temporaries_released_on_every_exit": true,
+    "retry_or_parameter_change_after_failure": false
+  },
+  "static_ast_and_api_forbidden": [
+    "import or reference scratch_phase_projection_sealed_eliminated_target_transaction",
+    "import or reference scratch_phase_projection_chunked_target_transaction_sentinel",
+    "threading, asyncio, futures, queues, Lock, RLock, acquire, or release",
+    "highspy, a solver, owner, selector, terminal, or ONNX execution",
+    "labels, expected-result CSV, file, network, or environment runtime decision",
+    "cache or module-global mutable memo",
+    "chunk, partition, lease, handoff, transaction, retry, fallback, menu, or scan",
+    "second target producer or fixed-cell n-factor stream",
+    "sp.vstack, sp.hstack, sp.coo, sp.lil, sp.dok, or dense-to-CSR canonicalization"
+  ],
+  "static_pass_criteria": {
+    "all_fixed_toys_pass": true,
+    "independent_fraction_oracle_pass": true,
+    "canonical_full_and_screened_csr_pass": true,
+    "resource_preflight_before_allocation_pass": true,
+    "all_deadline_injections_pass": true,
+    "all_baseexception_injections_pass": true,
+    "caller_alias_isolated_and_internal_digest_drift_rejected": true,
+    "all_static_forbidden_findings_empty": true,
+    "gpu_used": false,
+    "production_or_config_mutations": 0,
+    "formal_score": "59/400",
+    "success_disposition": "AUTHORIZE_EXACTLY_ONE_PREREGISTERED_FIXED_FOUR_CASE_GPU_COMPONENT_GATE",
+    "failure_disposition": "NO_PATH_STOP_LOSS_NO_RETRY"
+  },
+  "conditional_future_gpu_gate_not_yet_authorized": {
+    "order": [
+      "tinyimagenet_medium_iid143",
+      "cifar100_medium_iid2",
+      "cifar100_large_iid166",
+      "cifar100_large_iid153"
+    ],
+    "attempts_per_case": 1,
+    "timing_boundary": "CUDA synchronize before initial delta seal through full A, exact/conservative screen, screened CSR, objective, and FrozenRows.from_csr completion followed by CUDA synchronize",
+    "hard_component_requirements": {
+      "tiny143_seconds_max": 0.143249825,
+      "iid2_seconds_max": 0.387175854,
+      "tiny143_status": "FALSIFIED",
+      "large166_status": "FALSIFIED",
+      "large153_status": "UNKNOWN_AFTER_SINGLE_REPAIR_NONPOSITIVE"
+    },
+    "four_thread_transferable_credit": 0.0,
+    "success_only_authorizes_paired_noninferiority": true
+  },
+  "planned_scratch_files": [
+    "scratch_phase_projection_direct_sparse_initial_target_compiler.py",
+    "test_scratch_phase_projection_direct_sparse_initial_target_compiler.py",
+    "scratch_phase_projection_direct_sparse_initial_target_cpu_static_sentinel.py"
+  ],
+  "source_and_evidence_locks": {
+    "payment_map": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_status_corner_payment_map_20260823.json",
+      "sha256": "0bef9eb4db032ec2739d64ad77a82ca8835a2e348d5a1d8311f1f5e955519a77"
+    },
+    "phase": {
+      "path": "act/back_end/hybridz_tf/forward_exact_relu_phase_projection_candidate.py",
+      "sha256": "13625f452c36a1b7844e4385b884471c8a0c82abf015bf2af417257e2c96c23a"
+    },
+    "device": {
+      "path": "act/back_end/hybridz_tf/phase_projection_device_program.py",
+      "sha256": "7f0cce0e461f63ff6599ddd82ad5e61ef7c921eb489ef7bbbf4d60cda9048962"
+    },
+    "live": {
+      "path": "act/back_end/hybridz_tf/forward_exact_relu_live_row_stream_candidate.py",
+      "sha256": "d53c2335c43905097e78bef8311175d7151d7e98293a6152fce62dba00d37511"
+    },
+    "owner": {
+      "path": "act/back_end/hybridz_tf/phase_projection_highs_owner.py",
+      "sha256": "2f5678a5b3d2b098637b27558a8bdbffcc5160ca89cb8b4947f557320d03f5b7"
+    },
+    "repair": {
+      "path": "act/back_end/hybridz_tf/phase_projection_incremental_repair.py",
+      "sha256": "acc1a98fa47d36c3b0bea7d10bf93af33d41ee9de108b0151ca01cd4822f997e"
+    },
+    "closed_chunked_target": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_chunked_target_transaction_iid2_20260814.json",
+      "sha256": "8caedde58b3f97841f11d3b10684471437b47258d42c3d8bf5bd3c3e93fa41b3"
+    },
+    "closed_sealed_target": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_sealed_eliminated_target_transaction_prototype_stoploss_20260820.json",
+      "sha256": "89ef3578df52d2b488f18473e3e29e8de9b49e31b06683c38764dba886babb59"
+    },
+    "closed_rank_one_walk": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_rank_one_warm_walk_elimination_stoploss_20260812.json",
+      "sha256": "0dbacea3c0c41f40f0168b20151cab982bb992e57bf2c56c706738ffa9308f1b"
+    }
+  }
+}

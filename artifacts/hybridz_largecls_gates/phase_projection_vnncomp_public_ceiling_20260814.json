@@ -1,0 +1,190 @@
+{
+  "schema": "act.hybridz.phase_projection.vnncomp_public_ceiling.v1",
+  "created_at": "2026-08-14T01:58:48+10:00",
+  "status": "COMPLETE_READ_ONLY_PUBLIC_RESULT_CENSUS",
+  "audit_complete": true,
+  "scope": "Exact basename-and-order mapping of the ACT fixed-400 manifest to official VNN-COMP 2025 benchmark manifests and published result CSVs.",
+  "sources": {
+    "benchmark_repository": {
+      "url": "https://github.com/VNN-COMP/vnncomp2025_benchmarks/tree/8b7b811b78ce6a329dc96f04ae6652da3c245948",
+      "commit": "8b7b811b78ce6a329dc96f04ae6652da3c245948"
+    },
+    "results_repository": {
+      "url": "https://github.com/VNN-COMP/vnncomp2025_results/tree/ea89fbc2518b6729f17c96eeec22c56c88e496a9",
+      "commit": "ea89fbc2518b6729f17c96eeec22c56c88e496a9"
+    },
+    "official_report": {
+      "url": "https://arxiv.org/abs/2512.19007",
+      "pdf_url": "https://arxiv.org/pdf/2512.19007",
+      "pdf_sha256": "1805e75508c02ece68b767e9c0d10c4ecc83c21963c99f00f202d72dcd2f3074"
+    },
+    "benchmark_manifests": [
+      {
+        "family": "cifar100_2024",
+        "path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/instances.csv",
+        "url": "https://raw.githubusercontent.com/VNN-COMP/vnncomp2025_benchmarks/8b7b811b78ce6a329dc96f04ae6652da3c245948/benchmarks/cifar100_2024/instances.csv",
+        "sha256": "aa656d7a73529ba7c41b5618440f543ba4677418bb44115d384b644cc034f9ee"
+      },
+      {
+        "family": "tinyimagenet_2024",
+        "path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/tinyimagenet_2024/instances.csv",
+        "url": "https://raw.githubusercontent.com/VNN-COMP/vnncomp2025_benchmarks/8b7b811b78ce6a329dc96f04ae6652da3c245948/benchmarks/tinyimagenet_2024/instances.csv",
+        "sha256": "188058624df1122f32295f99d83380485a7d736212555a5e8214204459c22b7e"
+      }
+    ],
+    "alpha_beta_crown_results": [
+      {
+        "family": "cifar100_2024",
+        "path": "alpha_beta_crown/2025_cifar100_2024/results.csv",
+        "url": "https://raw.githubusercontent.com/VNN-COMP/vnncomp2025_results/ea89fbc2518b6729f17c96eeec22c56c88e496a9/alpha_beta_crown/2025_cifar100_2024/results.csv",
+        "sha256": "0e04cbe4390d96a9f73504152956ecdaab2f896d41df19800a08a8504393ad42"
+      },
+      {
+        "family": "tinyimagenet_2024",
+        "path": "alpha_beta_crown/2025_tinyimagenet_2024/results.csv",
+        "url": "https://raw.githubusercontent.com/VNN-COMP/vnncomp2025_results/ea89fbc2518b6729f17c96eeec22c56c88e496a9/alpha_beta_crown/2025_tinyimagenet_2024/results.csv",
+        "sha256": "ebb6ad724682ee011d4c5efc7cf197005717ded5d46c9ab49e14bb482c1dfb72"
+      }
+    ],
+    "act_fixed400": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_gpu_csr_fixed400_20260814.jsonl",
+      "sha256": "749db4e400329598c23c3dd7c9b9863c291eb3d1ba556cdcfcfa879c58487b43"
+    }
+  },
+  "mapping": {
+    "official_test_nano_rows_removed": 2,
+    "instances_checked": 400,
+    "ordered_onnx_basename_matches": 400,
+    "ordered_vnnlib_basename_matches": 400,
+    "act_family_and_iid_matches": 400,
+    "mapping_ambiguous": false,
+    "indexing": {
+      "cifar100_medium": "CIFAR100 rows 0..99 map to iid0..99",
+      "cifar100_large": "CIFAR100 rows 100..199 map to iid100..199",
+      "tinyimagenet_medium": "TinyImageNet rows 0..199 map to iid0..199"
+    }
+  },
+  "public_falsification_census": {
+    "official_public_sat_union": 67,
+    "act_falsified": 59,
+    "intersection": 59,
+    "act_unknown_and_public_sat": 8,
+    "act_unknown_without_public_sat": 333,
+    "act_coverage_of_public_sat_union": 0.8805970149253731,
+    "alpha_beta_crown_alone_covers_union": true,
+    "by_family": [
+      {
+        "family": "cifar100_medium",
+        "official_public_sat_union": 14,
+        "act_falsified": 14,
+        "act_unknown_and_public_sat": 0
+      },
+      {
+        "family": "cifar100_large",
+        "official_public_sat_union": 15,
+        "act_falsified": 10,
+        "act_unknown_and_public_sat": 5
+      },
+      {
+        "family": "tinyimagenet_medium",
+        "official_public_sat_union": 38,
+        "act_falsified": 35,
+        "act_unknown_and_public_sat": 3
+      }
+    ],
+    "interpretation": "This is the set of counterexamples publicly demonstrated and scored by VNN-COMP 2025, not a mathematical falsification ceiling. Absence from this set does not imply SAFE."
+  },
+  "act_unknown_public_sat_cases": [
+    {
+      "case": "cifar100_large_iid110",
+      "vnnlib": "CIFAR100_resnet_large_prop_idx_1063_sidx_7948_eps_0.0039.vnnlib",
+      "act_reason": "strictly negative selected-cell margin",
+      "act_margin": -0.00453403149642484,
+      "official_statuses": {"alpha_beta_crown": "sat", "neuralsat": "sat", "pyrat": "timeout", "cora": "unknown", "nnv": "unsat", "rover": "unknown"}
+    },
+    {
+      "case": "cifar100_large_iid114",
+      "vnnlib": "CIFAR100_resnet_large_prop_idx_3585_sidx_3469_eps_0.0039.vnnlib",
+      "act_reason": "strictly negative selected-cell margin",
+      "act_margin": -0.020136842498330754,
+      "official_statuses": {"alpha_beta_crown": "sat", "neuralsat": "sat", "pyrat": "sat", "cora": "unknown", "nnv": "unsat", "rover": "unknown"}
+    },
+    {
+      "case": "cifar100_large_iid160",
+      "vnnlib": "CIFAR100_resnet_large_prop_idx_5162_sidx_8126_eps_0.0039.vnnlib",
+      "act_reason": "strictly negative selected-cell margin",
+      "act_margin": -0.008333114340001058,
+      "official_statuses": {"alpha_beta_crown": "sat", "neuralsat": "sat", "pyrat": "timeout", "cora": "unknown", "nnv": "unsat", "rover": "unknown"}
+    },
+    {
+      "case": "cifar100_large_iid161",
+      "vnnlib": "CIFAR100_resnet_large_prop_idx_8502_sidx_2893_eps_0.0039.vnnlib",
+      "act_reason": "strictly negative selected-cell margin",
+      "act_margin": -0.01351101621004358,
+      "official_statuses": {"alpha_beta_crown": "sat", "neuralsat": "sat", "pyrat": "timeout", "cora": "unknown", "nnv": "unsat", "rover": "unknown"}
+    },
+    {
+      "case": "cifar100_large_iid166",
+      "vnnlib": "CIFAR100_resnet_large_prop_idx_2630_sidx_1753_eps_0.0039.vnnlib",
+      "act_reason": "selected-cell LP infeasible",
+      "act_margin": null,
+      "official_statuses": {"alpha_beta_crown": "sat", "neuralsat": "sat", "pyrat": "sat", "cora": "unknown", "nnv": "unsat", "rover": "unknown"}
+    },
+    {
+      "case": "tinyimagenet_medium_iid93",
+      "vnnlib": "TinyImageNet_resnet_medium_prop_idx_3437_sidx_2708_eps_0.0039.vnnlib",
+      "act_reason": "strictly negative selected-cell margin",
+      "act_margin": -0.22503653884251973,
+      "official_statuses": {"alpha_beta_crown": "sat", "neuralsat": "sat", "pyrat": "timeout", "cora": "unknown", "nnv": "timeout", "rover": "unknown"}
+    },
+    {
+      "case": "tinyimagenet_medium_iid143",
+      "vnnlib": "TinyImageNet_resnet_medium_prop_idx_3553_sidx_3392_eps_0.0039.vnnlib",
+      "act_reason": "strictly negative selected-cell margin",
+      "act_margin": -0.0010710773153006503,
+      "official_statuses": {"alpha_beta_crown": "sat", "neuralsat": "sat", "pyrat": "timeout", "cora": "unknown", "nnv": "timeout", "rover": "unknown"}
+    },
+    {
+      "case": "tinyimagenet_medium_iid153",
+      "vnnlib": "TinyImageNet_resnet_medium_prop_idx_2493_sidx_4209_eps_0.0039.vnnlib",
+      "act_reason": "selected-cell LP infeasible",
+      "act_margin": null,
+      "official_statuses": {"alpha_beta_crown": "sat", "neuralsat": "sat", "pyrat": "sat", "cora": "unknown", "nnv": "timeout", "rover": "unknown"}
+    }
+  ],
+  "decision_relevant_cross_checks": {
+    "cifar100_large_iid153": {
+      "act_margin": -0.005464856144083763,
+      "official_result": "unsat",
+      "interpretation": "A near-zero selected-cell margin alone does not establish that a counterexample exists."
+    },
+    "most_evidence_backed_targets_if_future_policy_allows_one_update": [
+      "tinyimagenet_medium_iid143",
+      "cifar100_large_iid110",
+      "cifar100_large_iid160"
+    ]
+  },
+  "benchmark_generation_facts": {
+    "cifar100": "The 2025 report says that vanilla-CROWN-verifiable samples were filtered out, while around 18 percent of instances with known adversarial examples were intentionally retained.",
+    "tinyimagenet": "The 2025 report says TinyImageNet uses a filtering method similar to CIFAR100.",
+    "pgd_claim": "Public materials do not establish that the current 400 instances all survived a fixed PGD screen. The older 2022 small benchmark used a 100-step, 20-restart PGD screen, but that fact cannot be transferred to the current 400-instance manifest.",
+    "forbidden_inference": "Do not claim that public attack tools scored zero on this manifest or that ACT uniquely found all 59 counterexamples."
+  },
+  "authority": {
+    "public_results_are_external_reachability_evidence": true,
+    "public_results_authorize_act_verdict": false,
+    "public_counterexamples_replayed_by_this_census": false,
+    "act_terminal_authority_unchanged": "raw BOX plus verifier-owned zero-width forward plus stored-binary64 Fraction property lower bound",
+    "safe_claim_for_remaining_333": false
+  },
+  "audit": {
+    "read_only": true,
+    "model_execution": false,
+    "onnx_point_execution": false,
+    "input_sampling": false,
+    "pgd": false,
+    "bab_or_split": false,
+    "backward_or_dual_tightening": false,
+    "production_files_changed": false
+  }
+}

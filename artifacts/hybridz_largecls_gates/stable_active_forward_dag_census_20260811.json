@@ -1,0 +1,108 @@
+{
+  "schema": "act.hybridz.stable_active_forward_dag_census.v1",
+  "created_at_local": "2026-08-11",
+  "status": "structural_pass_performance_fail",
+  "goal_scope": "CIFAR100/TinyImageNet common forward exact-ReLU HybridZ path",
+  "algorithm": {
+    "stable_active": "Represent y=x by the existing preactivation affine expression instead of a fresh box factor plus equality band.",
+    "stable_inactive": "Retain exact zero.",
+    "unstable": "Retain the existing local output factor, one binary phase factor, and all three exact Big-M facets.",
+    "affine_execution": "Forward-only sparse composition; no backward pass, dual, sampled input, or solver.",
+    "runtime_fallbacks": 0,
+    "second_full_representation": false
+  },
+  "cifar100_medium_iid29": {
+    "retained_projection_skip": {
+      "continuous_factors": 10347,
+      "binary_phase_factors": 1052,
+      "source_rows": 15402,
+      "constraint_nnz": 1994878,
+      "observed_build_seconds": 2.394,
+      "timing_authority": false
+    },
+    "stable_active_alias_candidate": {
+      "allocated_continuous_columns_before_dead_column_compaction": 10120,
+      "potential_continuous_factors_after_omitting_active_allocations": 3871,
+      "binary_phase_factors": 699,
+      "source_rows": 2097,
+      "constraint_nnz": 952293,
+      "value_nnz": 358300,
+      "stable_active_rows": 6249,
+      "exact_unstable_rows": 699,
+      "triangle_rows": 0,
+      "materialization_events": 0
+    },
+    "reduction_fractions": {
+      "potential_continuous_factors": 0.6258818981347251,
+      "binary_phase_factors": 0.3355513307984791,
+      "source_rows": 0.8638488507985976,
+      "constraint_nnz": 0.5226309578831387
+    },
+    "fixed_independent_cube_control": {
+      "purpose": "Separate stable-active relation deletion from the additional phase stabilization caused by tighter correlated forward expressions.",
+      "binary_phase_factors": 1052,
+      "source_rows": 3156,
+      "constraint_nnz": 1715618,
+      "potential_continuous_factors_after_omitting_active_allocations": 4224,
+      "source_row_reduction_fraction": 0.7950915465523958,
+      "constraint_nnz_reduction_fraction": 0.13998851057558406,
+      "potential_continuous_factor_reduction_fraction": 0.5917657291968687,
+      "baseline_observed_seconds": 2.563888857141137,
+      "candidate_observed_seconds": 9.684416516683996,
+      "retained_over_candidate_speedup": 0.26474376156004376,
+      "triangle_rows": 0,
+      "materialization_events": 0,
+      "interpretation": "The phase-preserving structural case is still material in rows/factors, but only a DAG that avoids flat intermediates can make it a viable common path."
+    },
+    "cpu_full_forward_candidate": {
+      "observed_build_seconds": 10.169039170257747,
+      "retained_over_candidate_speedup": 0.2354204718772188,
+      "performance_gate_passed": false
+    },
+    "existing_survivor_prescreen_with_old_chain_cuts": {
+      "observed_build_seconds": 2.574122299440205,
+      "binary_phase_factors": 936,
+      "source_rows": 16998,
+      "constraint_nnz": 1778520,
+      "materialization_events": 6,
+      "decision": "Fast, but old chain cuts restore most rows and violate the intended no-materialization DAG representation."
+    },
+    "gpu_sparse_product_feasibility": {
+      "observed_total_seconds": 6.471934851258993,
+      "operator_build_seconds": 6.279455911368132,
+      "gpu_product_and_transfer_seconds": 1.362535742111504,
+      "retained_over_candidate_speedup": 0.3699048360374475,
+      "cuda_peak_allocated_bytes": 23660037120,
+      "cuda_peak_allocated_gib": 22.03512668609619,
+      "performance_gate_passed": false,
+      "retained": false
+    },
+    "profile": {
+      "total_profiled_seconds": 10.321,
+      "affine_total_seconds": 5.418274336494505,
+      "sparse_matmul_dispatch_seconds": 4.541,
+      "csr_matmat_numeric_seconds": 2.858,
+      "csr_matmat_symbolic_seconds": 1.426,
+      "csr_hash_seconds": 1.902,
+      "csr_sort_seconds": 1.089,
+      "largest_intermediate_source_nnz": 19580544,
+      "diagnosis": "Full intermediate residual tensors, not exact-ReLU row construction, dominate latency."
+    }
+  },
+  "tinyimagenet_medium_iid17": {
+    "candidate_attempted": false,
+    "skip_reason": "The smaller CIFAR100 candidate failed the mandatory frontend performance gate and the GPU feasibility path consumed excessive memory."
+  },
+  "validation_scope": {
+    "process_local_method_replacement_only": true,
+    "production_code_changed": false,
+    "solver_executed": false,
+    "formal_solved_count_gain": 0,
+    "input_sampling_used": false,
+    "pgd_used": false,
+    "concrete_onnx_execution": false,
+    "all_remaining_unstable_relu_exact": true,
+    "triangle_rows": 0
+  },
+  "decision": "Do not integrate the flat CPU or GPU candidate and do not run a solver or TinyImageNet. The fixed-independent-cube control still deletes 79.5 percent of source rows without changing the 1,052 phase classifications, but its flat build is 0.265x. The material structural reduction justifies only a future single forward DAG implementation which never expands the 7M-20M-nnz residual intermediates; it must first beat the retained build by at least 1.5x on the same topology."
+}

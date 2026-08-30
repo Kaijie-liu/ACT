@@ -1,0 +1,82 @@
+{
+  "schema": "act.hybridz.strict_phase_equivalence_sharing_stoploss.v1",
+  "date": "2026-08-11",
+  "status": "STOP_BEFORE_IMPLEMENTATION",
+  "candidate": "Share one exact ReLU phase/binary factor only between preactivations proven to be the same stored-real affine value, including identical stable factor IDs and compatible roundoff semantics.",
+  "method": {
+    "formal_operator_hz_build": true,
+    "operator_exact_budget": -1,
+    "operator_materialize_add": false,
+    "solver_entry_replaced_process_locally_by_immediate_unknown": true,
+    "solver_run": false,
+    "concrete_onnx_execution": false,
+    "input_sampling": false,
+    "pgd": false,
+    "production_files_changed": 0,
+    "signature_fields": [
+      "preactivation_center",
+      "ordered_stable_continuous_factor_ids",
+      "stored_float_generator_coefficients",
+      "independent_roundoff_error"
+    ],
+    "shareable_rule": "Only zero-independent-error rows were eligible for identical or exact positive-scalar phase sharing. Nonzero per-row error represents independent freedom and prevents strict phase equivalence."
+  },
+  "source_binding": {
+    "operator_hz_sha256": "0f3ea83b3ad9141e59917e5574cbb3eacf4f69a81645d7d41d829d4bc4af5707",
+    "solver_hz_sha256": "d4fe5491aec1d41819a00a6638d2ca7fd3b2d128939667f53623d8c89db4300d",
+    "verifier_sha256": "ad5184509e1f9122698e8dfb628b96b91ff102d4bb56fa54f2316c54b6cb9278"
+  },
+  "cifar100_medium_iid29": {
+    "onnx_sha256": "aba117ad0ad4abdd630c220beca70cd58825e72e7bada5dffdda10bb725cece4",
+    "vnnlib_sha256": "a0fd1008fcd127ac83840bc00c8f10e995e513bebb22aa9394b2e789d2333720",
+    "continuous_factors": 18539,
+    "binary_phase_factors": 1061,
+    "exact_rows_captured": 1061,
+    "zero_independent_error_rows": 0,
+    "strict_identical_groups": 0,
+    "strict_identical_rows_in_groups": 0,
+    "strict_positive_scaled_pairs": 0,
+    "potential_binary_savings": 0,
+    "per_layer_exact_rows": {
+      "3": 316,
+      "5": 242,
+      "10": 202,
+      "14": 47,
+      "22": 155,
+      "40": 99
+    },
+    "diagnostic_build_only_seconds": 8.849552104249597
+  },
+  "tinyimagenet_medium_iid17": {
+    "onnx_sha256": "234b04b151d640f8fc859fab00729448ba533d8feb3679427cbadb94467ec776",
+    "vnnlib_sha256": "0089ecbe47c9f4322ea8391c358e8a1dc7645e5832f6a35920434f84a07c0f8c",
+    "continuous_factors": 60097,
+    "binary_phase_factors": 1919,
+    "exact_rows_captured": 1919,
+    "zero_independent_error_rows": 0,
+    "strict_identical_groups": 0,
+    "strict_identical_rows_in_groups": 0,
+    "strict_positive_scaled_pairs": 0,
+    "potential_binary_savings": 0,
+    "per_layer_exact_rows": {
+      "3": 605,
+      "5": 529,
+      "10": 384,
+      "18": 26,
+      "22": 179,
+      "40": 196
+    },
+    "diagnostic_build_only_seconds": 33.66688864957541
+  },
+  "decision": {
+    "common_path_coverage": false,
+    "binary_reduction": 0,
+    "rows_reduction": 0,
+    "nnz_reduction": 0,
+    "runtime_detection_branch_added": false,
+    "phase_hash_table_added": false,
+    "fallback_added": false,
+    "toy_candidate_required": false,
+    "reason": "Every exact unstable ReLU in both target instances carries nonzero independent roundoff freedom, so strict phase identity cannot be established without changing the feasible set."
+  }
+}

@@ -1,0 +1,271 @@
+{
+  "schema": "act.hybridz.live_row_constraint_local_factor_checkpoint.v1",
+  "date": "2026-08-12",
+  "status": "DISCONNECTED_CANDIDATE_RETAINED_SOLVER_STOP_LOSS",
+  "objective": "one forward-only HybridZ representation with every unstable ReLU exact",
+  "scope": {
+    "production_integrated": false,
+    "candidate_authority": false,
+    "proof_authority": false,
+    "verdict_authority": false,
+    "formal_solved_count_gain": 0,
+    "input_sampling_used": false,
+    "pgd_used": false,
+    "concrete_onnx_execution_used": false,
+    "triangle_rows": 0,
+    "act_bab_used": false,
+    "backward_bound_propagation_used": false,
+    "dual_tightening_used": false,
+    "runtime_fallbacks": 0
+  },
+  "representation": {
+    "name": "constraint_local_normalized_preactivation_factor",
+    "single_representation": true,
+    "description": "Store each dense preactivation generator row once in an equality to one normalized local continuous factor; exact-ReLU and refined-active facets reference that sparse local factor.",
+    "projection_rule": "q = stored_preactivation_generator_row / outward_row_l1_scale",
+    "box_redundancy_rule": "outward scale is at least the exact dyadic row L1, hence q remains in [-1,1]",
+    "propagated_through_later_affines": false,
+    "second_hz_built": false,
+    "generator_kernel": "triton_ordered_csr_dense_v1"
+  },
+  "frozen_files": {
+    "candidate": {
+      "path": "act/back_end/hybridz_tf/forward_exact_relu_live_row_stream_candidate.py",
+      "sha256": "308728c63ee5f1271d75473b88511b25bfd3bbb5ccfde498523281af0a12ef89"
+    },
+    "test": {
+      "path": "act/back_end/hybridz_tf/test_forward_exact_relu_live_row_stream_candidate.py",
+      "sha256": "81b4bb477ce13c7ef1435748ebc9609cef8f40b34f70979bc2da36b0cdb9f447"
+    },
+    "production_operator_unchanged": {
+      "path": "act/back_end/hybridz_tf/operator_hz.py",
+      "sha256": "2502c009d6b5d37983e3f6d072e802c7734ac9bd106bb2a252e0a562da390fd8"
+    }
+  },
+  "tests": {
+    "act_py312_unittest_modules": [
+      "act.back_end.hybridz_tf.test_forward_exact_relu_live_row_stream_candidate",
+      "act.back_end.hybridz_tf.test_exact_sparse_conv_csr_candidate"
+    ],
+    "passed": 31,
+    "failed": 0,
+    "elapsed_seconds": 17.146,
+    "py_compile_passed": true,
+    "diff_check_passed": true,
+    "fraction_gates": [
+      "two-base-factor exact binary projection with equality elimination",
+      "three-ReLU residual graph all exact phase rows",
+      "refined active and inactive stored-real replay",
+      "Big-M output-factor scale preservation",
+      "outward local-link row-L1 box inclusion"
+    ]
+  },
+  "cifar100_medium_iid29": {
+    "input_artifact": "gate6_c75a_live_authority_cifar100_medium_iid29_20260729.json",
+    "retained_build_baseline": {
+      "continuous_factors": 10347,
+      "binary_factors": 1052,
+      "equalities": 0,
+      "upper_rows": 15402,
+      "constraint_nnz": 1994878,
+      "output_nnz": 10000
+    },
+    "candidate": {
+      "interval_unstable_rows": 1254,
+      "refined_stable_rows": 466,
+      "remaining_exact_rows": 788,
+      "constraint_local_factors": 885,
+      "continuous_factors": 5311,
+      "binary_factors": 788,
+      "equalities": 885,
+      "upper_rows": 2927,
+      "source_rows": 3812,
+      "constraint_nnz": 977465,
+      "output_nnz": 10100,
+      "full_affine_nnz": 74315216,
+      "streamed_affine_nnz": 3848879,
+      "incremental_cuda_peak_bytes": 94271488
+    },
+    "five_alternating_single_pairs": {
+      "baseline_seconds": [
+        3.484942470677197,
+        3.408383567817509,
+        3.3743383614346385,
+        3.85930688213557,
+        3.2526266127824783
+      ],
+      "candidate_seconds": [
+        1.316842976026237,
+        1.3295316845178604,
+        1.3338652616366744,
+        1.290261497721076,
+        1.3375520016998053
+      ],
+      "median_paired_speedup": 2.563597097765685,
+      "minimum_required": 1.5,
+      "passed": true
+    },
+    "four_concurrent_five_pairs": {
+      "baseline_group_seconds": [
+        8.714948151260614,
+        8.727807889692485,
+        8.485744955018163,
+        8.151319490745664,
+        8.669221989810467
+      ],
+      "candidate_group_seconds": [
+        3.1314795250073075,
+        3.083621091209352,
+        3.0903468476608396,
+        3.0213607540354133,
+        3.152878973633051
+      ],
+      "median_paired_speedup": 2.749620921801814,
+      "paired_bootstrap_95_lower": 2.697896793641254,
+      "required_median": 2.0,
+      "required_bootstrap_95_lower": 1.8,
+      "id_conflicts": 0,
+      "passed": true
+    },
+    "fresh_process_cold": {
+      "candidate_build_seconds": 1.5412942096590996,
+      "baseline_build_seconds": 3.090159577317536,
+      "build_speedup": 2.005,
+      "candidate_parse_plus_build_seconds": 3.4932551104575396,
+      "baseline_parse_plus_build_seconds": 4.945443048141897,
+      "parse_plus_build_speedup": 1.4157,
+      "candidate_build_stage_host_hwm_delta_bytes": 221601792,
+      "baseline_build_stage_host_hwm_delta_bytes": 382263296,
+      "host_hwm_delta_ratio": 0.5797,
+      "full_process_max_rss_candidate_kib": 1999820,
+      "full_process_max_rss_baseline_kib": 2001380
+    }
+  },
+  "fixed_six_build_only": {
+    "passed": true,
+    "formal_solver_run": false,
+    "cases": [
+      {
+        "case": "cifar100_medium_iid29",
+        "build_seconds": 1.562123728916049,
+        "continuous": 5311,
+        "binary": 788,
+        "equalities": 885,
+        "upper_rows": 2927,
+        "constraint_nnz": 977465,
+        "cuda_peak_delta_bytes": 94271488
+      },
+      {
+        "case": "cifar100_medium_iid2",
+        "build_seconds": 1.6474280171096325,
+        "continuous": 6853,
+        "binary": 1413,
+        "equalities": 1504,
+        "upper_rows": 5094,
+        "constraint_nnz": 1613577,
+        "cuda_peak_delta_bytes": 116099584
+      },
+      {
+        "case": "cifar100_large_iid118",
+        "build_seconds": 4.760877174325287,
+        "continuous": 7316,
+        "binary": 1783,
+        "equalities": 1953,
+        "upper_rows": 5927,
+        "constraint_nnz": 809062,
+        "cuda_peak_delta_bytes": 454510592
+      },
+      {
+        "case": "cifar100_large_iid113",
+        "build_seconds": 5.391747242771089,
+        "continuous": 10131,
+        "binary": 2981,
+        "equalities": 3260,
+        "upper_rows": 9940,
+        "constraint_nnz": 1193069,
+        "cuda_peak_delta_bytes": 488895488
+      },
+      {
+        "case": "tinyimagenet_medium_iid6",
+        "build_seconds": 4.4587602792307734,
+        "continuous": 13174,
+        "binary": 1462,
+        "equalities": 1618,
+        "upper_rows": 5028,
+        "constraint_nnz": 2798069,
+        "cuda_peak_delta_bytes": 321080832
+      },
+      {
+        "case": "tinyimagenet_medium_iid17",
+        "build_seconds": 4.27268027048558,
+        "continuous": 13355,
+        "binary": 1620,
+        "equalities": 1764,
+        "upper_rows": 5367,
+        "constraint_nnz": 3112953,
+        "cuda_peak_delta_bytes": 290145280
+      }
+    ]
+  },
+  "formal_stop_loss": {
+    "cifar100_medium_iid29_exact_scip": {
+      "verdict": "UNKNOWN",
+      "rows": 3812,
+      "columns": 6099,
+      "nnz": 977465,
+      "exact_rational_load_seconds": 0.263916868,
+      "solve_seconds": 61.137497408,
+      "nodes": 0,
+      "scip_status": 23
+    },
+    "cifar100_medium_iid29_existing_verifier": {
+      "verdict": "UNKNOWN",
+      "timeout_seconds": 30.0
+    },
+    "cifar100_medium_iid2_existing_verifier": {
+      "verdict": "UNKNOWN",
+      "timeout_seconds": 30.0,
+      "rows": 6598,
+      "columns": 8266,
+      "nnz": 1613577
+    },
+    "cifar100_medium_iid2_highs_observation": {
+      "cutoff_runs_observed": 2,
+      "mip_nodes_each": 0,
+      "primal_solution_valid_each": false,
+      "mip_dual_bound": "-Infinity",
+      "model_status": "Time limit reached",
+      "interpretation": "root processing or presolve is the bottleneck; no incumbent was produced or rejected"
+    },
+    "equality_substitution": "UNKNOWN; closed by stop-loss",
+    "power_of_two_local_scaling": "no solver gain and weakened the local factor box; removed",
+    "constraint_component_census": {
+      "total_variables": 6099,
+      "total_rows": 3812,
+      "giant_component_variables": 5807,
+      "giant_component_rows": 3809,
+      "giant_component_binary_variables": 788,
+      "objective_reaches_all_rows": true,
+      "interpretation": "exact component decomposition cannot materially shrink a rival cutoff"
+    },
+    "closed_directions": [
+      "exact-SCIP parameter or proof-certificate tuning",
+      "HiGHS option scans or rival-worker multiplication",
+      "solver equality substitution",
+      "power-of-two local-link scaling",
+      "constraint connected-component decomposition"
+    ]
+  },
+  "dataset_status": {
+    "cifar100_structural_progress": true,
+    "tinyimagenet_structural_progress": true,
+    "new_authoritative_cifar100_result": false,
+    "new_authoritative_tinyimagenet_result": false,
+    "new_formal_solved_instances": 0
+  },
+  "restart_point": {
+    "keep": "the disconnected v2 candidate and focused tests as the compact frontend baseline",
+    "do_not_repeat": "solver parameters, additional solver backends, input sampling, PGD, concrete ONNX candidate search, equality substitution, or component pruning",
+    "next_research_requirement": "a single new root-node algorithm that consumes the compact exact representation and produces a rigorously replayable result; candidate soundness and Conv dependency authority must be audited before any production dispatch"
+  }
+}

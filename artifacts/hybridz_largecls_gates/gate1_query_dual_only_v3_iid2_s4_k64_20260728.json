@@ -1,0 +1,151 @@
+{
+  "config": {
+    "block_size": 1024,
+    "device": "cuda",
+    "dtype": "float64",
+    "onnx_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/onnx/CIFAR100_resnet_medium.onnx",
+    "overwrite": false,
+    "pipeline_protocol": "property_sparse_sealed_replay_v3",
+    "replay_max_workspace_bytes": 536870912,
+    "selector_max_adjoint_cells": 30000000,
+    "selector_pool_per_rival": 64,
+    "selector_time_limit": 1.0,
+    "stage_quotas": [
+      16,
+      8,
+      24,
+      16
+    ],
+    "steps": 4,
+    "target_relu_ids": [
+      10,
+      14,
+      22,
+      40
+    ],
+    "time_limit_seconds": 12.0,
+    "time_semantics": "query_transaction_builder_only",
+    "transaction_time_limit_seconds": 12.0,
+    "vnnlib_path": "/data1/Kane/data/vnncomp2025_benchmarks/benchmarks/cifar100_2024/vnnlib/CIFAR100_resnet_medium_prop_idx_6232_sidx_3020_eps_0.0039.vnnlib"
+  },
+  "cpu_parallelism": {
+    "logical_cpu_count": 20,
+    "torch_interop_threads": 20,
+    "torch_intraop_threads": 20,
+    "transaction_workers": 1,
+    "worker_policy": "single_sequential_proof_worker_with_internal_tensor_parallelism"
+  },
+  "cpu_rss": {
+    "maximum_transaction_increment_bytes": 2147483648,
+    "pass": true,
+    "process_peak_bytes": 1994616832,
+    "transaction_before_bytes": 1495158784,
+    "transaction_increment_bytes": 499458048
+  },
+  "cuda_environment": {
+    "cuda_build": "12.8",
+    "device": "cuda",
+    "device_index": 0,
+    "device_name": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+    "dtype": "float64",
+    "status": "tracking"
+  },
+  "cuda_memory": {
+    "device_index": 0,
+    "device_name": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+    "peak_allocated_bytes": 146308096,
+    "peak_reserved_bytes": 203423744,
+    "status": "measured",
+    "total_bytes": 101947998208
+  },
+  "cuda_memory_stop_loss_bytes": 2684354560,
+  "diagnostic_only": true,
+  "error": {
+    "message": "DEADLINE_EXPIRED: DEADLINE_EXPIRED: query-dual replay deadline expired",
+    "type": "QueryDualPipelineTimeout"
+  },
+  "failed_stage": "query_dual_transaction",
+  "hz_solver_called": false,
+  "input_integrity_stable": true,
+  "input_sha256_after": {
+    "onnx": "aba117ad0ad4abdd630c220beca70cd58825e72e7bada5dffdda10bb725cece4",
+    "vnnlib": "33e795c8421b7b19125f32415adb9cee09b2f90cb83152c4cd3aa03810e91ec3"
+  },
+  "input_sha256_before": {
+    "onnx": "aba117ad0ad4abdd630c220beca70cd58825e72e7bada5dffdda10bb725cece4",
+    "vnnlib": "33e795c8421b7b19125f32415adb9cee09b2f90cb83152c4cd3aa03810e91ec3"
+  },
+  "operator_hz_called": false,
+  "phase_seconds": {
+    "assert_extract": 0.0002996162511408329,
+    "cuda_initialize": 0.16156155476346612,
+    "cuda_memory": 0.00022824201732873917,
+    "input_hash_before": 0.004357637371867895,
+    "parse_convert_specs": 0.8670576410368085,
+    "receipt_finalization": 9.701400995254517e-05,
+    "source_hash_after": 0.0006648432463407516,
+    "source_hash_before": 0.013935951050370932,
+    "synthesis": 0.0014538378454744816,
+    "torch2act": 0.10915938531979918
+  },
+  "produces_verdict": false,
+  "production_dependencies": true,
+  "proof_authority": false,
+  "receipt_finalization_seconds": 9.701400995254517e-05,
+  "receipt_sha256": "e26c32f1d1f6fd160edb7fe4ed4edd7ae739c41761af16690158989e20c007e6",
+  "schema": "act.query_dual_gate1_probe.v2",
+  "setup_seconds": 1.1580095351673663,
+  "source_integrity_stable": true,
+  "source_sha256": {
+    "act.back_end.hybridz_tf.property_residual_targets": "ea1720ed7be06d3e8cede9838ea524cda3c5df5eeeb7912e2e60d13bb82494c8",
+    "act.back_end.hybridz_tf.query_dual_box_certifier": "c282f22e3510bd8427daa914cd85b8a89a36974f85e283e6b04048fda2ac0708",
+    "act.back_end.hybridz_tf.query_dual_candidates": "08b8525ce582781669e2446c7f45eea29e21cd4553fdd9caf34029ea798bea6a",
+    "act.back_end.hybridz_tf.query_dual_pipeline": "c58a0e3dd7cd04efe2ab92018cd82738fd72e94cf42635b5b69ebab6730ea6e0",
+    "act.back_end.hybridz_tf.query_dual_pipeline_v3": "0961e3a58ea3ebe80ec4be63d9c08c62f4b9004de1c85726f17792062225f3b6",
+    "act.back_end.hybridz_tf.query_dual_replay": "6e291bdd4526518496e664c14e15664bf554c1e9f089d92f65f8097081db5d7e",
+    "act.back_end.solver.solver_dual": "fd6eb263d05525b107f9d10d6ec6f39a5bd367808ec50184fa0c0fd4d195ea88",
+    "act.front_end.model_synthesis": "0a4104de37653f7a11321b62c8fb0a24dd98a51ba01d546446069e8c2abeffc8",
+    "act.front_end.vnnlib_loader.create_specs": "2f0df22f69bc4f384435012832725247dd70c605bec7219b5610e5d43d322e71",
+    "act.pipeline.verification.torch2act": "84ad13bfed2565649ec3431454584f9d2ba10063c44c8a4f9762135a84375a0c",
+    "act.util.device_manager": "e58c585af28e329627061216578d5dacfb3b52365c2071b15cad69befd70c55e",
+    "query_dual_probe": "39e739f1ada378ba4bb2676ea25e2cc244c5881e2436b3e02d0673e5fe30b846"
+  },
+  "source_sha256_after": {
+    "act.back_end.hybridz_tf.property_residual_targets": "ea1720ed7be06d3e8cede9838ea524cda3c5df5eeeb7912e2e60d13bb82494c8",
+    "act.back_end.hybridz_tf.query_dual_box_certifier": "c282f22e3510bd8427daa914cd85b8a89a36974f85e283e6b04048fda2ac0708",
+    "act.back_end.hybridz_tf.query_dual_candidates": "08b8525ce582781669e2446c7f45eea29e21cd4553fdd9caf34029ea798bea6a",
+    "act.back_end.hybridz_tf.query_dual_pipeline": "c58a0e3dd7cd04efe2ab92018cd82738fd72e94cf42635b5b69ebab6730ea6e0",
+    "act.back_end.hybridz_tf.query_dual_pipeline_v3": "0961e3a58ea3ebe80ec4be63d9c08c62f4b9004de1c85726f17792062225f3b6",
+    "act.back_end.hybridz_tf.query_dual_replay": "6e291bdd4526518496e664c14e15664bf554c1e9f089d92f65f8097081db5d7e",
+    "act.back_end.solver.solver_dual": "fd6eb263d05525b107f9d10d6ec6f39a5bd367808ec50184fa0c0fd4d195ea88",
+    "act.front_end.model_synthesis": "0a4104de37653f7a11321b62c8fb0a24dd98a51ba01d546446069e8c2abeffc8",
+    "act.front_end.vnnlib_loader.create_specs": "2f0df22f69bc4f384435012832725247dd70c605bec7219b5610e5d43d322e71",
+    "act.pipeline.verification.torch2act": "84ad13bfed2565649ec3431454584f9d2ba10063c44c8a4f9762135a84375a0c",
+    "act.util.device_manager": "e58c585af28e329627061216578d5dacfb3b52365c2071b15cad69befd70c55e",
+    "query_dual_probe": "39e739f1ada378ba4bb2676ea25e2cc244c5881e2436b3e02d0673e5fe30b846"
+  },
+  "source_sha256_before": {
+    "act.back_end.hybridz_tf.property_residual_targets": "ea1720ed7be06d3e8cede9838ea524cda3c5df5eeeb7912e2e60d13bb82494c8",
+    "act.back_end.hybridz_tf.query_dual_box_certifier": "c282f22e3510bd8427daa914cd85b8a89a36974f85e283e6b04048fda2ac0708",
+    "act.back_end.hybridz_tf.query_dual_candidates": "08b8525ce582781669e2446c7f45eea29e21cd4553fdd9caf34029ea798bea6a",
+    "act.back_end.hybridz_tf.query_dual_pipeline": "c58a0e3dd7cd04efe2ab92018cd82738fd72e94cf42635b5b69ebab6730ea6e0",
+    "act.back_end.hybridz_tf.query_dual_pipeline_v3": "0961e3a58ea3ebe80ec4be63d9c08c62f4b9004de1c85726f17792062225f3b6",
+    "act.back_end.hybridz_tf.query_dual_replay": "6e291bdd4526518496e664c14e15664bf554c1e9f089d92f65f8097081db5d7e",
+    "act.back_end.solver.solver_dual": "fd6eb263d05525b107f9d10d6ec6f39a5bd367808ec50184fa0c0fd4d195ea88",
+    "act.front_end.model_synthesis": "0a4104de37653f7a11321b62c8fb0a24dd98a51ba01d546446069e8c2abeffc8",
+    "act.front_end.vnnlib_loader.create_specs": "2f0df22f69bc4f384435012832725247dd70c605bec7219b5610e5d43d322e71",
+    "act.pipeline.verification.torch2act": "84ad13bfed2565649ec3431454584f9d2ba10063c44c8a4f9762135a84375a0c",
+    "act.util.device_manager": "e58c585af28e329627061216578d5dacfb3b52365c2071b15cad69befd70c55e",
+    "query_dual_probe": "39e739f1ada378ba4bb2676ea25e2cc244c5881e2436b3e02d0673e5fe30b846"
+  },
+  "status": "error",
+  "test_only": false,
+  "total_seconds": 13.179666256997734,
+  "transaction_hard_limit_pass": false,
+  "transaction_hard_limit_seconds": 12.0,
+  "transaction_promotion_margin_seconds": 10.5,
+  "transaction_seconds": 12.015104657970369,
+  "transaction_stop_loss_pass": false,
+  "transaction_stop_loss_seconds": 10.5,
+  "validation_seconds": null
+}

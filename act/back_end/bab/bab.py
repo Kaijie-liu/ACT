@@ -14,15 +14,26 @@
 
 from __future__ import annotations
 
+import inspect
+import itertools
 import logging
 import math
 import os
 import sys
 import tempfile
 import time
-import inspect
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Union, cast
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Dict,
+    List,
+    Mapping,
+    Optional,
+    Union,
+    cast,
+)
 
 import torch
 
@@ -30,6 +41,7 @@ from act.back_end.config import BaBConfig, VALID_SOLVER_TIERS
 from act.back_end.bab.node import (
     BabNode,
     SubproblemBatch,
+    _infer_spec_axis_size,
     concat_children,
     rederive_embedding_block_eps,
     split_input,
@@ -45,6 +57,7 @@ from act.back_end.bab.branching.branching import (
     _collect_neuron_candidates,
     _multi_split_from_decision,
     _multi_split_from_groups,
+    _propose_joint_split_groups,
     enumerate_unstable_candidates,
 )
 from act.back_end.bab.branching.bounding import (
@@ -82,8 +95,48 @@ class DualSolveResult:
     bounds_dict: Optional[Dict[int, Bounds]] = None
     nu_per_layer: Optional[Dict[int, torch.Tensor]] = None
     row_slack: Optional[torch.Tensor] = None
-    """Per-spec-row slack ``[K, m]``; ``slack >= 0`` means the row is certified
-    (ALL-rows kinds). Consumed by the root spec-pruning presolve."""
+    row_certified: Optional[torch.Tensor] = None
+    """Per-spec-row slack ``[K, m]``.
+
+    For ALL-row kinds, a row is certified only when its slack is finite and
+    strictly above a dtype-aware numerical tolerance. Zero is deliberately
+    unresolved because TOP1/MARGIN ASSERT semantics treat an exact tie as a
+    concrete violation. ``row_certified`` stores the exact mask used for the
+    solve verdict so root pruning cannot recompute it with a different scale.
+    """
+    refine_audit: Optional[Dict[str, Any]] = None
+    """Non-authoritative child-local bound-refinement telemetry."""
+
+
+def _strictly_certified_slack(
+    slack: torch.Tensor,
+    reference: Optional[torch.Tensor] = None,
+) -> torch.Tensor:
+    """Return the fail-closed per-row certification mask.
+
+    A proof bound at exactly zero does not exclude a boundary violation for
+    strict robustness properties, and a non-finite proof value carries no
+    certification authority.  The positive band matches the ordinary dual
+    verifier's accumulated-rounding guard.
+    """
+
+    if not slack.is_floating_point():
+        raise TypeError("certified slack must use a floating-point dtype")
+    scale_source = slack if reference is None else reference
+    if scale_source.shape != slack.shape:
+        raise ValueError(
+            "certification reference must have the same shape as slack"
+        )
+    cert_eps = max(
+        100.0 * torch.finfo(slack.dtype).eps,
+        1e-11,
+    )
+    cert_tol = cert_eps * scale_source.abs().clamp(min=1.0)
+    return (
+        torch.isfinite(slack)
+        & torch.isfinite(scale_source)
+        & (slack > cert_tol)
+    )
 
 
 def _select_spec_rows(
@@ -97,6 +150,776 @@ def _select_spec_rows(
         lid: t.index_select(1, keep_rows.to(t.device)) if t.dim() >= 3 else t
         for lid, t in state.items()
     }
+
+
+def _expand_property_forest_root(
+    root: SubproblemBatch,
+    original_row_ids: torch.Tensor,
+) -> SubproblemBatch:
+    """Duplicate one full-domain root into one immutable tree per conjunct."""
+
+    if root.batch_size != 1:
+        raise ValueError(
+            "property-separable BaB requires a single-instance root"
+        )
+    row_ids = original_row_ids.to(
+        device=root.lb.device, dtype=torch.long
+    ).reshape(-1)
+    n_rows = int(row_ids.numel())
+    if n_rows < 1:
+        raise ValueError("property forest requires at least one row")
+    if bool((row_ids < 0).any().item()) or int(torch.unique(row_ids).numel()) != n_rows:
+        raise ValueError(
+            "property forest row ids must be nonnegative and unique"
+        )
+
+    def _expand_state(
+        state: Optional[Dict[int, torch.Tensor]],
+    ) -> Optional[Dict[int, torch.Tensor]]:
+        if state is None:
+            return None
+        expanded: Dict[int, torch.Tensor] = {}
+        for layer_id, tensor in state.items():
+            if tensor.shape[0] != 1:
+                raise ValueError(
+                    "property forest root state must have batch size one"
+                )
+            if tensor.dim() >= 3:
+                if tensor.shape[1] != n_rows:
+                    raise ValueError(
+                        f"property forest state layer {layer_id} has "
+                        f"{tensor.shape[1]} rows, expected {n_rows}"
+                    )
+                expanded[layer_id] = tensor.transpose(0, 1).contiguous()
+            else:
+                expanded[layer_id] = tensor.repeat(
+                    n_rows, *([1] * (tensor.dim() - 1))
+                )
+        return expanded
+
+    def _repeat_optional(
+        value: Optional[torch.Tensor],
+    ) -> Optional[torch.Tensor]:
+        if value is None:
+            return None
+        if value.shape[0] != 1:
+            raise ValueError(
+                "property forest root tensor state must have batch size one"
+            )
+        return value.repeat(n_rows, *([1] * (value.dim() - 1)))
+
+    return SubproblemBatch(
+        lb=root.lb.repeat(n_rows, 1),
+        ub=root.ub.repeat(n_rows, 1),
+        depths=root.depths.repeat(n_rows),
+        incremental_alpha=_expand_state(root.incremental_alpha),
+        incremental_eta=_expand_state(root.incremental_eta),
+        split_signs=_expand_state(root.split_signs),
+        parent_margins=_repeat_optional(root.parent_margins),
+        lower_bound=_repeat_optional(root.lower_bound),
+        node_id=_repeat_optional(root.node_id),
+        parent_id=_repeat_optional(root.parent_id),
+        spec_row_ids=row_ids,
+    )
+
+
+_PROPERTY_FOREST_RECEIPT_SCHEMA = (
+    "act.property_forest_node_conservation.v1"
+)
+
+
+def _is_nonnegative_int(value: object) -> bool:
+    """Receipt counters are JSON integers, never bools or float lookalikes."""
+
+    return type(value) is int and cast(int, value) >= 0
+
+
+def _validate_property_forest_receipt(
+    receipt: object,
+    *,
+    expected_row_ids: tuple[int, ...],
+    expected_processed: int,
+    expected_pool_remaining: int,
+) -> tuple[bool, tuple[str, ...]]:
+    """Independently validate a property-forest node-conservation receipt.
+
+    The receipt is deliberately non-authoritative: certification continues to
+    come from the live dual UNSAT solves.  This validator is an omission and
+    duplication firewall around that proof search.  It consumes only plain
+    receipt data plus independently observed terminal totals.
+    """
+
+    errors: list[str] = []
+    if type(receipt) is not dict:
+        return False, ("receipt_not_dict",)
+    data = cast(dict[str, object], receipt)
+    expected_top_keys = {
+        "schema",
+        "proof_authority",
+        "complete",
+        "root_rows",
+        "root_count",
+        "rows",
+        "totals",
+        "runtime_integrity_errors",
+    }
+    if set(data) != expected_top_keys:
+        errors.append("top_level_schema_mismatch")
+    if data.get("schema") != _PROPERTY_FOREST_RECEIPT_SCHEMA:
+        errors.append("schema_mismatch")
+    if data.get("proof_authority") is not False:
+        errors.append("receipt_must_not_have_proof_authority")
+
+    expected_rows = tuple(int(row_id) for row_id in expected_row_ids)
+    if (
+        not expected_rows
+        or any(row_id < 0 for row_id in expected_rows)
+        or len(set(expected_rows)) != len(expected_rows)
+    ):
+        errors.append("invalid_expected_root_rows")
+    root_rows = data.get("root_rows")
+    if (
+        type(root_rows) is not list
+        or any(type(row_id) is not int for row_id in cast(list[object], root_rows))
+        or tuple(cast(list[int], root_rows)) != expected_rows
+    ):
+        errors.append("root_rows_mismatch")
+    if (
+        not _is_nonnegative_int(data.get("root_count"))
+        or data.get("root_count") != len(expected_rows)
+    ):
+        errors.append("root_count_mismatch")
+
+    runtime_errors = data.get("runtime_integrity_errors")
+    if (
+        type(runtime_errors) is not list
+        or any(type(item) is not str for item in cast(list[object], runtime_errors))
+    ):
+        errors.append("runtime_integrity_errors_malformed")
+    elif runtime_errors:
+        errors.append("runtime_integrity_error")
+
+    rows_raw = data.get("rows")
+    expected_row_keys = {str(row_id) for row_id in expected_rows}
+    if type(rows_raw) is not dict:
+        errors.append("rows_not_dict")
+        rows: dict[str, object] = {}
+    else:
+        rows = cast(dict[str, object], rows_raw)
+        if set(rows) != expected_row_keys:
+            errors.append("row_key_set_mismatch")
+
+    counter_names = (
+        "roots",
+        "children_expected",
+        "children_minted",
+        "processed",
+        "certified",
+        "branched",
+        "active_pool",
+    )
+    summed = {name: 0 for name in counter_names}
+    summed_dropped = {"frontier_cap": 0, "max_depth": 0}
+    rows_complete = True
+    expected_row_schema = set(counter_names) | {
+        "dropped",
+        "terminal_reasons",
+        "integrity_errors",
+    }
+    for row_id in expected_rows:
+        key = str(row_id)
+        item_raw = rows.get(key)
+        if type(item_raw) is not dict:
+            errors.append(f"row_{key}_not_dict")
+            rows_complete = False
+            continue
+        item = cast(dict[str, object], item_raw)
+        if set(item) != expected_row_schema:
+            errors.append(f"row_{key}_schema_mismatch")
+        counters: dict[str, int] = {}
+        for name in counter_names:
+            value = item.get(name)
+            if not _is_nonnegative_int(value):
+                errors.append(f"row_{key}_{name}_invalid")
+                rows_complete = False
+                counters[name] = 0
+            else:
+                counters[name] = cast(int, value)
+                summed[name] += cast(int, value)
+
+        dropped_raw = item.get("dropped")
+        if (
+            type(dropped_raw) is not dict
+            or set(cast(dict[object, object], dropped_raw))
+            != {"frontier_cap", "max_depth"}
+        ):
+            errors.append(f"row_{key}_dropped_schema_mismatch")
+            rows_complete = False
+            dropped = {"frontier_cap": 0, "max_depth": 0}
+        else:
+            dropped = {}
+            for reason in ("frontier_cap", "max_depth"):
+                value = cast(dict[str, object], dropped_raw).get(reason)
+                if not _is_nonnegative_int(value):
+                    errors.append(
+                        f"row_{key}_dropped_{reason}_invalid"
+                    )
+                    rows_complete = False
+                    dropped[reason] = 0
+                else:
+                    dropped[reason] = cast(int, value)
+                    summed_dropped[reason] += cast(int, value)
+
+        integrity_raw = item.get("integrity_errors")
+        if (
+            type(integrity_raw) is not list
+            or any(
+                type(entry) is not str
+                for entry in cast(list[object], integrity_raw)
+            )
+        ):
+            errors.append(f"row_{key}_integrity_errors_malformed")
+            rows_complete = False
+            integrity_errors: list[str] = []
+        else:
+            integrity_errors = cast(list[str], integrity_raw)
+            if integrity_errors:
+                errors.append(f"row_{key}_integrity_error")
+                rows_complete = False
+
+        terminal_raw = item.get("terminal_reasons")
+        expected_terminal = {
+            "certified": counters["certified"],
+            "dropped_max_depth": dropped["max_depth"],
+            "dropped_frontier_cap": dropped["frontier_cap"],
+            "active_pool": counters["active_pool"],
+        }
+        if (
+            type(terminal_raw) is not dict
+            or set(cast(dict[object, object], terminal_raw))
+            != set(expected_terminal)
+            or any(
+                not _is_nonnegative_int(value)
+                for value in cast(dict[object, object], terminal_raw).values()
+            )
+            or cast(dict[str, object], terminal_raw) != expected_terminal
+        ):
+            errors.append(f"row_{key}_terminal_reasons_mismatch")
+            rows_complete = False
+
+        # General (also meaningful for an incomplete run) conservation:
+        # frontier eviction removes an unprocessed minted node; max-depth
+        # termination happens after processing it.
+        if (
+            counters["roots"]
+            + counters["children_minted"]
+            != counters["processed"]
+            + counters["active_pool"]
+            + dropped["frontier_cap"]
+        ):
+            errors.append(f"row_{key}_creation_conservation_failed")
+            rows_complete = False
+        if (
+            counters["processed"]
+            != counters["certified"]
+            + counters["branched"]
+            + dropped["max_depth"]
+        ):
+            errors.append(f"row_{key}_outcome_conservation_failed")
+            rows_complete = False
+        if counters["children_expected"] != counters["children_minted"]:
+            errors.append(f"row_{key}_child_partition_failed")
+            rows_complete = False
+
+        # Complete SAFE requires the two stronger equalities requested by the
+        # audit, exactly one root, and no unproved terminal disposition.
+        row_complete = (
+            counters["roots"] == 1
+            and counters["processed"]
+            == counters["certified"] + counters["branched"]
+            and counters["roots"] + counters["children_minted"]
+            == counters["processed"]
+            and counters["active_pool"] == 0
+            and dropped["frontier_cap"] == 0
+            and dropped["max_depth"] == 0
+            and not integrity_errors
+        )
+        if not row_complete:
+            errors.append(f"row_{key}_incomplete")
+            rows_complete = False
+
+    totals_raw = data.get("totals")
+    expected_totals_schema = set(counter_names) | {"dropped"}
+    if (
+        type(totals_raw) is not dict
+        or set(cast(dict[object, object], totals_raw))
+        != expected_totals_schema
+    ):
+        errors.append("totals_schema_mismatch")
+        totals: dict[str, object] = {}
+    else:
+        totals = cast(dict[str, object], totals_raw)
+    for name in counter_names:
+        value = totals.get(name)
+        if not _is_nonnegative_int(value) or value != summed[name]:
+            errors.append(f"total_{name}_mismatch")
+    totals_dropped_raw = totals.get("dropped")
+    if (
+        type(totals_dropped_raw) is not dict
+        or cast(dict[str, object], totals_dropped_raw) != summed_dropped
+        or any(
+            not _is_nonnegative_int(value)
+            for value in (
+                cast(dict[object, object], totals_dropped_raw).values()
+                if type(totals_dropped_raw) is dict
+                else ()
+            )
+        )
+    ):
+        errors.append("total_dropped_mismatch")
+
+    if summed["processed"] != expected_processed:
+        errors.append("processed_total_mismatch")
+    if summed["active_pool"] != expected_pool_remaining:
+        errors.append("active_pool_total_mismatch")
+    if (
+        summed["roots"] + summed["children_minted"]
+        != summed["processed"]
+    ):
+        errors.append("global_creation_conservation_failed")
+        rows_complete = False
+    if (
+        summed["processed"]
+        != summed["certified"] + summed["branched"]
+    ):
+        errors.append("global_outcome_conservation_failed")
+        rows_complete = False
+    if summed["roots"] != len(expected_rows):
+        errors.append("global_root_partition_failed")
+        rows_complete = False
+    if (
+        summed["active_pool"] != 0
+        or summed_dropped["frontier_cap"] != 0
+        or summed_dropped["max_depth"] != 0
+    ):
+        errors.append("global_unproved_terminal_nodes")
+        rows_complete = False
+
+    declared_complete = data.get("complete")
+    if type(declared_complete) is not bool:
+        errors.append("complete_flag_invalid")
+    elif declared_complete is not rows_complete:
+        errors.append("complete_flag_mismatch")
+    return not errors and rows_complete, tuple(sorted(set(errors)))
+
+
+def _build_property_forest_receipt(
+    *,
+    row_ids: tuple[int, ...],
+    counters: dict[str, Dict[int, int]],
+    dropped: dict[str, Dict[int, int]],
+    integrity_errors_by_row: Dict[int, list[str]],
+    runtime_integrity_errors: list[str],
+    processed: int,
+    pool_remaining: int,
+) -> dict[str, object]:
+    """Serialize counters without granting the serialization proof authority."""
+
+    counter_names = (
+        "roots",
+        "children_expected",
+        "children_minted",
+        "processed",
+        "certified",
+        "branched",
+        "active_pool",
+    )
+    rows: dict[str, object] = {}
+    provisional_complete = (
+        bool(row_ids)
+        and not runtime_integrity_errors
+        and int(pool_remaining) == 0
+    )
+    for row_id in row_ids:
+        values = {
+            name: int(counters[name].get(row_id, 0))
+            for name in counter_names
+        }
+        row_dropped = {
+            reason: int(dropped[reason].get(row_id, 0))
+            for reason in ("frontier_cap", "max_depth")
+        }
+        row_errors = sorted(
+            set(integrity_errors_by_row.get(row_id, []))
+        )
+        row_complete = (
+            values["roots"] == 1
+            and values["children_expected"]
+            == values["children_minted"]
+            and values["processed"]
+            == values["certified"] + values["branched"]
+            and values["roots"] + values["children_minted"]
+            == values["processed"]
+            and values["active_pool"] == 0
+            and row_dropped["frontier_cap"] == 0
+            and row_dropped["max_depth"] == 0
+            and not row_errors
+        )
+        provisional_complete = provisional_complete and row_complete
+        rows[str(row_id)] = {
+            **values,
+            "dropped": row_dropped,
+            "terminal_reasons": {
+                "certified": values["certified"],
+                "dropped_max_depth": row_dropped["max_depth"],
+                "dropped_frontier_cap": row_dropped["frontier_cap"],
+                "active_pool": values["active_pool"],
+            },
+            "integrity_errors": row_errors,
+        }
+
+    totals = {
+        name: sum(
+            int(counters[name].get(row_id, 0)) for row_id in row_ids
+        )
+        for name in counter_names
+    }
+    totals["dropped"] = {
+        reason: sum(
+            int(dropped[reason].get(row_id, 0)) for row_id in row_ids
+        )
+        for reason in ("frontier_cap", "max_depth")
+    }
+    provisional_complete = bool(
+        provisional_complete
+        and totals["processed"] == int(processed)
+        and totals["active_pool"] == int(pool_remaining)
+        and totals["roots"] == len(row_ids)
+        and totals["roots"] + totals["children_minted"]
+        == totals["processed"]
+        and totals["processed"]
+        == totals["certified"] + totals["branched"]
+    )
+    return {
+        "schema": _PROPERTY_FOREST_RECEIPT_SCHEMA,
+        "proof_authority": False,
+        "complete": provisional_complete,
+        "root_rows": list(row_ids),
+        "root_count": len(row_ids),
+        "rows": rows,
+        "totals": totals,
+        "runtime_integrity_errors": sorted(
+            set(runtime_integrity_errors)
+        ),
+    }
+
+
+def _validate_property_forest_child_partition(
+    parent: SubproblemBatch,
+    children: SubproblemBatch,
+    parent_index: torch.Tensor,
+    *,
+    expected_children_per_parent: int,
+) -> tuple[bool, tuple[str, ...]]:
+    """Validate the live geometric/phase partition before accepting children.
+
+    Node counts alone cannot distinguish a complete split from replacing one
+    child with a duplicate of its sibling.  Property-forest promotion therefore
+    checks the actual proof domains at the split boundary:
+
+    * input children must form one exact, contiguous axis partition of their
+      parent box and inherit every phase choice unchanged;
+    * phase children must keep the parent box, preserve all existing choices,
+      and enumerate one complete ``{-1,+1}^k`` cube of newly fixed ReLUs.
+
+    The check is deliberately exact on stored tensors.  All split constructors
+    create shared endpoints and copied state from the same tensor operations,
+    so accepting a tolerance here would only enlarge the tamper surface.
+    """
+
+    errors: list[str] = []
+    expected = int(expected_children_per_parent)
+    if expected < 2:
+        return False, ("expected_child_count_below_two",)
+    if (
+        parent_index.ndim != 1
+        or parent_index.dtype != torch.long
+        or int(parent_index.numel()) != children.batch_size
+    ):
+        return False, ("malformed_parent_index",)
+    if (
+        bool((parent_index < 0).any().item())
+        or bool((parent_index >= parent.batch_size).any().item())
+    ):
+        return False, ("parent_index_out_of_range",)
+    if (
+        parent.lb.ndim != 2
+        or parent.ub.shape != parent.lb.shape
+        or children.lb.ndim != 2
+        or children.ub.shape != children.lb.shape
+        or children.lb.shape[1:] != parent.lb.shape[1:]
+    ):
+        return False, ("box_shape_mismatch",)
+
+    def _lane_signs(
+        state: Optional[Dict[int, torch.Tensor]],
+        lane: int,
+    ) -> dict[int, torch.Tensor]:
+        if state is None:
+            return {}
+        return {
+            int(layer_id): tensor[lane].detach()
+            for layer_id, tensor in state.items()
+        }
+
+    def _input_signs_unchanged(
+        parent_lane: int,
+        child_indices: torch.Tensor,
+    ) -> bool:
+        parent_signs = _lane_signs(parent.split_signs, parent_lane)
+        child_layers = (
+            set() if children.split_signs is None
+            else {int(layer_id) for layer_id in children.split_signs}
+        )
+        if child_layers != set(parent_signs):
+            return False
+        for child_index in child_indices.tolist():
+            child_signs = _lane_signs(
+                children.split_signs, int(child_index)
+            )
+            if any(
+                not torch.equal(
+                    child_signs[layer_id],
+                    parent_signs[layer_id],
+                )
+                for layer_id in parent_signs
+            ):
+                return False
+        return True
+
+    for parent_lane in range(parent.batch_size):
+        child_indices = torch.where(parent_index == parent_lane)[0]
+        if int(child_indices.numel()) != expected:
+            errors.append(
+                f"parent_{parent_lane}_child_count:"
+                f"expected={expected},actual={int(child_indices.numel())}"
+            )
+            continue
+        parent_lb = parent.lb[parent_lane]
+        parent_ub = parent.ub[parent_lane]
+        child_lb = children.lb.index_select(
+            0, child_indices.to(children.lb.device)
+        )
+        child_ub = children.ub.index_select(
+            0, child_indices.to(children.ub.device)
+        )
+        parent_lb_rows = parent_lb.unsqueeze(0).expand_as(child_lb)
+        parent_ub_rows = parent_ub.unsqueeze(0).expand_as(child_ub)
+        boxes_unchanged = bool(
+            torch.equal(child_lb, parent_lb_rows)
+            and torch.equal(child_ub, parent_ub_rows)
+        )
+
+        depth_delta = int(math.ceil(math.log2(expected)))
+        expected_depth = parent.depths[parent_lane] + depth_delta
+        if not torch.equal(
+            children.depths.index_select(
+                0, child_indices.to(children.depths.device)
+            ),
+            expected_depth.expand(int(child_indices.numel())),
+        ):
+            errors.append(f"parent_{parent_lane}_depth_partition")
+
+        if not boxes_unchanged:
+            if not _input_signs_unchanged(parent_lane, child_indices):
+                errors.append(
+                    f"parent_{parent_lane}_input_split_changed_phase"
+                )
+                continue
+            if not bool(
+                torch.isfinite(parent_lb).all().item()
+                and torch.isfinite(parent_ub).all().item()
+                and torch.isfinite(child_lb).all().item()
+                and torch.isfinite(child_ub).all().item()
+            ):
+                errors.append(
+                    f"parent_{parent_lane}_nonfinite_input_partition"
+                )
+                continue
+            if bool((parent_lb > parent_ub).any().item()) or bool(
+                (child_lb > child_ub).any().item()
+            ):
+                errors.append(
+                    f"parent_{parent_lane}_invalid_input_box"
+                )
+                continue
+            changed = (
+                (child_lb != parent_lb_rows)
+                | (child_ub != parent_ub_rows)
+            ).any(dim=0)
+            changed_dims = torch.where(changed)[0]
+            if int(changed_dims.numel()) != 1:
+                errors.append(
+                    f"parent_{parent_lane}_input_partition_axes"
+                )
+                continue
+            split_dim = int(changed_dims[0].item())
+            other = torch.ones(
+                parent_lb.numel(),
+                dtype=torch.bool,
+                device=child_lb.device,
+            )
+            other[split_dim] = False
+            if (
+                not torch.equal(
+                    child_lb[:, other], parent_lb_rows[:, other]
+                )
+                or not torch.equal(
+                    child_ub[:, other], parent_ub_rows[:, other]
+                )
+            ):
+                errors.append(
+                    f"parent_{parent_lane}_input_partition_other_axes"
+                )
+                continue
+            intervals = sorted(
+                (
+                    float(child_lb[index, split_dim].item()),
+                    float(child_ub[index, split_dim].item()),
+                )
+                for index in range(int(child_indices.numel()))
+            )
+            if (
+                intervals[0][0] != float(parent_lb[split_dim].item())
+                or intervals[-1][1] != float(parent_ub[split_dim].item())
+                or any(lower >= upper for lower, upper in intervals)
+                or any(
+                    intervals[index][1] != intervals[index + 1][0]
+                    for index in range(len(intervals) - 1)
+                )
+            ):
+                errors.append(
+                    f"parent_{parent_lane}_input_partition_not_exact"
+                )
+            continue
+
+        # An unchanged box must be a complete ReLU phase cube.  A power-of-two
+        # child count is necessary, and the number of newly fixed coordinates
+        # must be log2(child_count).
+        if expected & (expected - 1):
+            errors.append(
+                f"parent_{parent_lane}_phase_count_not_power_of_two"
+            )
+            continue
+        phase_depth = int(math.log2(expected))
+        parent_signs = _lane_signs(parent.split_signs, parent_lane)
+        child_layers = (
+            set() if children.split_signs is None
+            else {int(layer_id) for layer_id in children.split_signs}
+        )
+        if not set(parent_signs).issubset(child_layers):
+            errors.append(
+                f"parent_{parent_lane}_phase_state_removed"
+            )
+            continue
+        layer_shapes: dict[int, torch.Size] = {}
+        malformed_state = False
+        for layer_id in child_layers:
+            child_state = cast(
+                Dict[int, torch.Tensor], children.split_signs
+            )[layer_id]
+            if (
+                child_state.shape[0] != children.batch_size
+                or child_state.ndim < 2
+            ):
+                malformed_state = True
+                break
+            lane_shape = child_state.shape[1:]
+            layer_shapes[layer_id] = lane_shape
+            if (
+                layer_id in parent_signs
+                and parent_signs[layer_id].shape != lane_shape
+            ):
+                malformed_state = True
+                break
+        if malformed_state:
+            errors.append(
+                f"parent_{parent_lane}_phase_state_shape"
+            )
+            continue
+
+        changed_coordinates: Optional[tuple[tuple[int, int], ...]] = None
+        assignments: list[tuple[int, ...]] = []
+        for raw_child_index in child_indices.tolist():
+            child_index = int(raw_child_index)
+            child_changed: list[tuple[int, int]] = []
+            child_assignment: list[int] = []
+            for layer_id in sorted(child_layers):
+                child_lane = cast(
+                    Dict[int, torch.Tensor], children.split_signs
+                )[layer_id][child_index].reshape(-1)
+                parent_lane_state = (
+                    parent_signs[layer_id].reshape(-1)
+                    if layer_id in parent_signs
+                    else torch.zeros_like(child_lane)
+                )
+                if not bool(
+                    torch.isfinite(child_lane).all().item()
+                    and torch.isfinite(parent_lane_state).all().item()
+                ):
+                    malformed_state = True
+                    break
+                inherited = parent_lane_state != 0
+                if not torch.equal(
+                    child_lane[inherited],
+                    parent_lane_state[inherited],
+                ):
+                    malformed_state = True
+                    break
+                newly_fixed = (~inherited) & (child_lane != 0)
+                if bool(
+                    (
+                        (child_lane[newly_fixed] != 1)
+                        & (child_lane[newly_fixed] != -1)
+                    ).any().item()
+                ):
+                    malformed_state = True
+                    break
+                for coordinate in torch.where(newly_fixed)[0].tolist():
+                    child_changed.append((layer_id, int(coordinate)))
+                    child_assignment.append(
+                        int(child_lane[int(coordinate)].item())
+                    )
+            if malformed_state:
+                break
+            zipped = sorted(zip(child_changed, child_assignment))
+            coordinates = tuple(item[0] for item in zipped)
+            assignment = tuple(item[1] for item in zipped)
+            if changed_coordinates is None:
+                changed_coordinates = coordinates
+            elif coordinates != changed_coordinates:
+                malformed_state = True
+                break
+            assignments.append(assignment)
+        if malformed_state:
+            errors.append(
+                f"parent_{parent_lane}_phase_assignment_malformed"
+            )
+            continue
+        if (
+            changed_coordinates is None
+            or len(changed_coordinates) != phase_depth
+            or len(set(assignments)) != expected
+            or set(assignments)
+            != set(
+                itertools.product((-1, 1), repeat=phase_depth)
+            )
+        ):
+            errors.append(
+                f"parent_{parent_lane}_phase_cube_incomplete"
+            )
+
+    return not errors, tuple(sorted(set(errors)))
 
 
 def _presplit_root(
@@ -138,7 +961,7 @@ def _presplit_root(
     top_idx = torch.topk(score, k=k).indices
     n_children = 2 ** k
     n_layer = score.shape[-1]
-    m = root.incremental_alpha[next(iter(root.incremental_alpha))].shape[1] if root.incremental_alpha else 1
+    m = _infer_spec_axis_size(root)
 
     signs = torch.zeros(n_children, m, n_layer, device=root.lb.device, dtype=root.lb.dtype)
     for j in range(n_children):
@@ -162,6 +985,11 @@ def _presplit_root(
         incremental_alpha=_rep(root.incremental_alpha),
         incremental_eta=_rep(root.incremental_eta),
         split_signs=merged_signs,
+        spec_row_ids=(
+            root.spec_row_ids.repeat(n_children)
+            if root.spec_row_ids is not None
+            else None
+        ),
     )
 
 
@@ -253,6 +1081,106 @@ def _want_babsr_neuron_branching(config: BaBConfig) -> bool:
     )
 
 
+def _branch_layers_with_unstable_successors(
+    net: Net,
+    bounds_dict: Optional[Dict[int, Bounds]],
+    nu_per_layer: Optional[Dict[int, torch.Tensor]],
+) -> set[int]:
+    """ReLU proposal layers that can affect another unstable ReLU relaxation."""
+
+    if bounds_dict is None or nu_per_layer is None:
+        return set()
+    unstable: set[int] = set()
+    for layer in net.layers:
+        kind = layer.kind.upper() if isinstance(layer.kind, str) else layer.kind
+        bounds = bounds_dict.get(layer.id)
+        if kind != "RELU" or bounds is None or layer.id not in nu_per_layer:
+            continue
+        lower = bounds.lb.flatten(start_dim=1)
+        upper = bounds.ub.flatten(start_dim=1)
+        if bool(((lower < 0) & (upper > 0)).any().item()):
+            unstable.add(int(layer.id))
+    eligible: set[int] = set()
+    for source in unstable:
+        seen: set[int] = set()
+        work = list(net.succs.get(source, []))
+        while work:
+            layer_id = int(work.pop())
+            if layer_id in seen:
+                continue
+            seen.add(layer_id)
+            if layer_id in unstable:
+                eligible.add(source)
+                break
+            work.extend(net.succs.get(layer_id, []))
+    return eligible
+
+
+def _filter_branching_state_to_unstable_successors(
+    branch_batch: SubproblemBatch,
+    net: Net,
+    bounds_dict: Optional[Dict[int, Bounds]],
+    nu_per_layer: Optional[Dict[int, torch.Tensor]],
+) -> tuple[
+    Optional[Dict[int, Bounds]],
+    Optional[Dict[int, torch.Tensor]],
+    set[int],
+    bool,
+]:
+    """Apply the long-horizon layer filter only when every lane can branch.
+
+    The filter is proposal-only: it cannot remove any proof obligation.
+    Applying a batch-wide layer subset when even one lane has no remaining
+    finite candidate would, however, let later ``topk`` code pick ``-inf``
+    entries.  In that case the complete batch fails safe to its original
+    branching state.
+    """
+
+    eligible = _branch_layers_with_unstable_successors(
+        net, bounds_dict, nu_per_layer
+    )
+    if not eligible or bounds_dict is None or nu_per_layer is None:
+        return bounds_dict, nu_per_layer, eligible, False
+    filtered_bounds = {
+        layer_id: bounds
+        for layer_id, bounds in bounds_dict.items()
+        if layer_id in eligible
+    }
+    filtered_nu = {
+        layer_id: nu
+        for layer_id, nu in nu_per_layer.items()
+        if layer_id in eligible
+    }
+    candidates = _collect_neuron_candidates(
+        branch_batch, filtered_bounds, filtered_nu
+    )
+    if candidates is None:
+        return bounds_dict, nu_per_layer, eligible, False
+    finite_per_lane = torch.isfinite(candidates[0]).sum(dim=1)
+    if bool((finite_per_lane < 1).any().item()):
+        return bounds_dict, nu_per_layer, eligible, False
+    return filtered_bounds, filtered_nu, eligible, True
+
+
+def _survival_controlled_split_depth(
+    max_levels: int,
+    survivor_rate: float,
+    target_multiplier: float,
+) -> int:
+    """Largest full phase-split depth predicted not to grow the frontier."""
+
+    if max_levels < 1:
+        raise ValueError("max_levels must be positive")
+    if not 0.0 <= survivor_rate <= 1.0:
+        raise ValueError("survivor_rate must be in [0, 1]")
+    if not 0.0 < target_multiplier <= 1.0:
+        raise ValueError("target_multiplier must be in (0, 1]")
+    for levels in range(int(max_levels), 0, -1):
+        if (2 ** levels) * float(survivor_rate) <= target_multiplier:
+            return levels
+    return 1
+
+
 def _gain_tested_decision(
     branch_batch: SubproblemBatch,
     net: Net,
@@ -264,6 +1192,7 @@ def _gain_tested_decision(
     nu_per_layer: Optional[Dict[int, torch.Tensor]],
     input_shape: tuple[int, ...],
     n_candidates: int = 3,
+    spec_row_index: Optional[torch.Tensor] = None,
 ) -> Optional[SplitDecision]:
     """Pick each lane's split by measured child bounds, not by score proxy.
 
@@ -276,11 +1205,19 @@ def _gain_tested_decision(
     kb = branch_batch.batch_size
     device = branch_batch.lb.device
 
-    cand = _collect_neuron_candidates(branch_batch, bounds_dict, nu_per_layer)
+    cand = _collect_neuron_candidates(
+        branch_batch,
+        bounds_dict,
+        nu_per_layer,
+        spec_row_index=spec_row_index,
+    )
     if cand is None:
         return None
     all_scores, all_layers, all_neurons = cand
-    n_c = min(n_candidates, all_scores.shape[1])
+    finite_per_lane = torch.isfinite(all_scores).sum(dim=1)
+    n_c = min(n_candidates, int(finite_per_lane.min().item()))
+    if n_c < 1:
+        return None
     top = torch.topk(all_scores, k=n_c, dim=1).indices
     top_layers = all_layers.gather(1, top)
     top_neurons = all_neurons.gather(1, top)
@@ -292,9 +1229,7 @@ def _gain_tested_decision(
             return None
         return {l: t.index_select(0, rep_idx.to(t.device)) for l, t in state.items()}
 
-    m_specs = 1
-    if branch_batch.incremental_alpha:
-        m_specs = int(next(iter(branch_batch.incremental_alpha.values())).shape[1])
+    m_specs = _infer_spec_axis_size(branch_batch)
     signs = _rep_state(branch_batch.split_signs) or {}
     for lid_val in torch.unique(top_layers).tolist():
         lid_int = int(lid_val)
@@ -322,6 +1257,13 @@ def _gain_tested_decision(
         incremental_alpha=_rep_state(branch_batch.incremental_alpha),
         incremental_eta=_rep_state(branch_batch.incremental_eta),
         split_signs=signs,
+        spec_row_ids=(
+            branch_batch.spec_row_ids.index_select(
+                0, rep_idx.to(branch_batch.spec_row_ids.device)
+            )
+            if branch_batch.spec_row_ids is not None
+            else None
+        ),
     )
     n_probe = probe.batch_size
     probe_bounds = Bounds(
@@ -347,6 +1289,223 @@ def _gain_tested_decision(
         kind="neuron",
         layer_id=top_layers[lane_idx, best_c],
         neuron_idx=top_neurons[lane_idx, best_c],
+    )
+
+
+def _gain_tested_multi_split(
+    branch_batch: SubproblemBatch,
+    net: Net,
+    assert_layer: Layer,
+    config: BaBConfig,
+    keep_rows: Optional[torch.Tensor],
+    root_bounds_dict: Optional[Dict[int, Bounds]],
+    bounds_dict: Optional[Dict[int, Bounds]],
+    nu_per_layer: Optional[Dict[int, torch.Tensor]],
+    input_shape: tuple[int, ...],
+    *,
+    k_levels: int,
+    max_groups: int,
+    max_probe_batch: int,
+    audit: Optional[Dict[str, Any]] = None,
+    spec_row_index: Optional[torch.Tensor] = None,
+) -> Optional[tuple[SubproblemBatch, torch.Tensor]]:
+    """Measure several joint groups through their complete child partitions.
+
+    Candidate scores only choose a small finite proposal pool.  Each proposed
+    group is expanded into every one of its ``2^k`` sign combinations and all
+    groups are evaluated in one non-optimizing dual batch.  The group with the
+    largest worst-child lower bound is selected independently for every lane.
+    This affects search order only; ``_multi_split_from_groups`` still creates
+    the complete selected partition used by the proof search.
+    """
+
+    if (
+        bounds_dict is None
+        or nu_per_layer is None
+        or k_levels < 2
+        or max_groups < 2
+    ):
+        return None
+    candidates = _collect_neuron_candidates(
+        branch_batch,
+        bounds_dict,
+        nu_per_layer,
+        spec_row_index=spec_row_index,
+    )
+    if candidates is None:
+        return None
+    all_scores, all_layers, all_neurons = candidates
+    children_per_group = 2 ** int(k_levels)
+    group_cap = min(
+        int(max_groups),
+        int(max_probe_batch)
+        // max(1, int(branch_batch.batch_size) * children_per_group),
+    )
+    if group_cap < 2:
+        return None
+    proposed = _propose_joint_split_groups(
+        all_scores,
+        all_layers,
+        all_neurons,
+        k_levels=int(k_levels),
+        max_groups=group_cap,
+    )
+    if proposed is None:
+        return None
+    group_layers, group_neurons = proposed
+    n_lanes, n_groups, _ = group_layers.shape
+    if n_groups < 2:
+        return None
+    device = branch_batch.lb.device
+    parent_index = torch.arange(n_lanes, device=device).repeat(
+        n_groups * children_per_group
+    )
+
+    def _gather(
+        state: Optional[Dict[int, torch.Tensor]],
+    ) -> Optional[Dict[int, torch.Tensor]]:
+        if state is None:
+            return None
+        return {
+            layer_id: tensor.index_select(
+                0, parent_index.to(tensor.device)
+            )
+            for layer_id, tensor in state.items()
+        }
+
+    m_specs = _infer_spec_axis_size(branch_batch)
+    signs = _gather(branch_batch.split_signs) or {}
+    for layer_value in torch.unique(group_layers).tolist():
+        layer_id = int(layer_value)
+        layer = net.by_id[layer_id]
+        n_neurons = int(layer.out_vars[-1] - layer.out_vars[0] + 1)
+        if layer_id not in signs:
+            signs[layer_id] = torch.zeros(
+                n_groups * children_per_group * n_lanes,
+                m_specs,
+                n_neurons,
+                device=device,
+                dtype=branch_batch.lb.dtype,
+            )
+        else:
+            signs[layer_id] = signs[layer_id].clone()
+        for group_index in range(n_groups):
+            for bit in range(k_levels):
+                lanes = torch.where(
+                    group_layers[:, group_index, bit] == layer_value
+                )[0]
+                if int(lanes.numel()) == 0:
+                    continue
+                neurons = group_neurons[
+                    lanes, group_index, bit
+                ].to(device=device, dtype=torch.long)
+                for assignment in range(children_per_group):
+                    sign = 1.0 if (assignment >> bit) & 1 else -1.0
+                    rows = (
+                        (group_index * children_per_group + assignment)
+                        * n_lanes
+                        + lanes
+                    )
+                    signs[layer_id][rows, :, neurons] = sign
+
+    probe = SubproblemBatch(
+        lb=branch_batch.lb.index_select(0, parent_index),
+        ub=branch_batch.ub.index_select(0, parent_index),
+        depths=branch_batch.depths.index_select(0, parent_index),
+        incremental_alpha=_gather(branch_batch.incremental_alpha),
+        incremental_eta=_gather(branch_batch.incremental_eta),
+        split_signs=signs,
+        spec_row_ids=(
+            branch_batch.spec_row_ids.index_select(
+                0, parent_index.to(branch_batch.spec_row_ids.device)
+            )
+            if branch_batch.spec_row_ids is not None
+            else None
+        ),
+    )
+    probe_count = int(probe.batch_size)
+    probe_bounds = Bounds(
+        (
+            probe.lb.reshape(probe_count, *input_shape)
+            if input_shape
+            else probe.lb
+        ),
+        (
+            probe.ub.reshape(probe_count, *input_shape)
+            if input_shape
+            else probe.ub
+        ),
+    )
+    result = _dispatch_dual_solve(
+        net=net,
+        assert_layer=assert_layer,
+        batched_bounds=probe_bounds,
+        k_actual=probe_count,
+        batch=probe,
+        config=config,
+        optimize=False,
+        keep_rows=keep_rows,
+        root_bounds_dict=root_bounds_dict,
+    )
+    child_lower = (-result.solution.max_viol).reshape(
+        n_groups, children_per_group, n_lanes
+    ).permute(2, 0, 1)
+    best_group = child_lower.min(dim=2).values.argmax(dim=1)
+    lane_index = torch.arange(n_lanes, device=device)
+    selected_layers = group_layers[lane_index, best_group]
+    selected_neurons = group_neurons[lane_index, best_group]
+    if audit is not None:
+        baseline_diversity = torch.tensor(
+            [
+                len(set(group_layers[lane, 0].tolist()))
+                for lane in range(n_lanes)
+            ],
+            device=device,
+            dtype=torch.long,
+        )
+        selected_diversity = torch.tensor(
+            [
+                len(set(selected_layers[lane].tolist()))
+                for lane in range(n_lanes)
+            ],
+            device=device,
+            dtype=torch.long,
+        )
+        audit.update(
+            {
+                "lanes": int(n_lanes),
+                "groups": int(n_groups),
+                "k_levels": int(k_levels),
+                "probe_nodes": int(probe_count),
+                "selected_nonbaseline_lanes": int(
+                    torch.count_nonzero(best_group != 0).item()
+                ),
+                "selected_more_diverse_lanes": int(
+                    torch.count_nonzero(
+                        selected_diversity > baseline_diversity
+                    ).item()
+                ),
+                "selected_group_ids": [
+                    int(value) for value in best_group.tolist()
+                ],
+                "baseline_worst_child_lb": [
+                    float(value)
+                    for value in child_lower[:, 0].min(dim=1).values.tolist()
+                ],
+                "selected_worst_child_lb": [
+                    float(value)
+                    for value in child_lower[
+                        lane_index, best_group
+                    ].min(dim=1).values.tolist()
+                ],
+            }
+        )
+    return _multi_split_from_groups(
+        branch_batch,
+        net,
+        selected_layers,
+        selected_neurons,
+        int(k_levels),
     )
 
 
@@ -421,11 +1580,7 @@ def _split_from_decision(
                 l: t.index_select(0, parent_index.to(t.device)) for l, t in state.items()
             }
 
-        m_specs = 1
-        if batch.incremental_alpha:
-            m_specs = int(next(iter(batch.incremental_alpha.values())).shape[1])
-        elif batch.split_signs:
-            m_specs = int(next(iter(batch.split_signs.values())).shape[1])
+        m_specs = _infer_spec_axis_size(batch)
 
         signs = _gather(batch.split_signs) or {}
         for lid_val in torch.unique(lids).tolist():
@@ -458,6 +1613,13 @@ def _split_from_decision(
             lower_bound=(
                 batch.lower_bound.index_select(0, parent_index)
                 if batch.lower_bound is not None
+                else None
+            ),
+            spec_row_ids=(
+                batch.spec_row_ids.index_select(
+                    0, parent_index.to(batch.spec_row_ids.device)
+                )
+                if batch.spec_row_ids is not None
                 else None
             ),
         )
@@ -764,41 +1926,135 @@ def check_violations_batched(net: object, x_batch: torch.Tensor, assert_layer: L
 
 
 def _check_input_specs_batched(x_batch: torch.Tensor, spec_layers: List[Layer]) -> torch.Tensor:
+    """Check every concrete input constraint without a fail-open kind.
+
+    This is a counterexample authority boundary: unsupported or incomplete
+    constraints must never be silently ignored.
+    """
+
     result = torch.ones(x_batch.shape[0], device=x_batch.device, dtype=torch.bool)
-    tol = 1e-7
+    n_batch = int(x_batch.shape[0])
+    x_flat = x_batch.flatten(start_dim=1)
+
+    def _as_float_tensor(value: Any) -> Optional[torch.Tensor]:
+        if isinstance(value, torch.Tensor):
+            return value.to(device=x_batch.device, dtype=x_batch.dtype)
+        if isinstance(value, (int, float, bool)):
+            return x_batch.new_tensor(value)
+        return None
+
+    def _batch_scalar(value: Any) -> Optional[torch.Tensor]:
+        tensor = _as_float_tensor(value)
+        if tensor is None:
+            return None
+        if tensor.numel() == 1:
+            return tensor.reshape(1).expand(n_batch)
+        if tensor.numel() == n_batch:
+            return tensor.reshape(n_batch)
+        return None
+
     for layer in spec_layers:
         kind = layer.params.get("kind")
-        if kind not in (InKind.BOX, InKind.LINF_BALL, InKind.LP_EMBEDDING):
+        if kind == InKind.BOX:
+            lb_t = _as_float_tensor(layer.params.get("lb"))
+            ub_t = _as_float_tensor(layer.params.get("ub"))
+            if lb_t is None or ub_t is None:
+                result &= torch.zeros_like(result)
+                continue
+            result &= (
+                (x_batch >= lb_t) & (x_batch <= ub_t)
+            ).flatten(start_dim=1).all(dim=1)
             continue
-        lb = layer.params.get("lb")
-        ub = layer.params.get("ub")
-        if isinstance(lb, torch.Tensor) and isinstance(ub, torch.Tensor):
-            lb_t = lb.to(device=x_batch.device, dtype=x_batch.dtype)
-            ub_t = ub.to(device=x_batch.device, dtype=x_batch.dtype)
-            result &= ((x_batch >= lb_t - tol) & (x_batch <= ub_t + tol)).flatten(start_dim=1).all(dim=1)
+
+        if kind == InKind.LINF_BALL:
+            center_t = _as_float_tensor(layer.params.get("center"))
+            eps_b = _batch_scalar(layer.params.get("eps"))
+            if center_t is not None and eps_b is not None:
+                delta_linf = (
+                    x_batch - center_t
+                ).abs().flatten(start_dim=1).amax(dim=1)
+                result &= torch.isfinite(delta_linf) & (
+                    delta_linf <= eps_b
+                )
+                continue
+            # Older synthesized layers may materialize only the equivalent
+            # box.  It is authoritative only when both sides are present.
+            lb_t = _as_float_tensor(layer.params.get("lb"))
+            ub_t = _as_float_tensor(layer.params.get("ub"))
+            if lb_t is None or ub_t is None:
+                result &= torch.zeros_like(result)
+                continue
+            result &= (
+                (x_batch >= lb_t) & (x_batch <= ub_t)
+            ).flatten(start_dim=1).all(dim=1)
+            continue
+
+        if kind == InKind.LIN_POLY:
+            A_t = _as_float_tensor(layer.params.get("A"))
+            b_t = _as_float_tensor(layer.params.get("b"))
+            if A_t is None or b_t is None:
+                result &= torch.zeros_like(result)
+                continue
+            if A_t.dim() == 2:
+                A_b = A_t.unsqueeze(0).expand(n_batch, -1, -1)
+            elif A_t.dim() == 3 and A_t.shape[0] in (1, n_batch):
+                A_b = (
+                    A_t.expand(n_batch, -1, -1)
+                    if A_t.shape[0] == 1
+                    else A_t
+                )
+            else:
+                result &= torch.zeros_like(result)
+                continue
+            if int(A_b.shape[-1]) != int(x_flat.shape[-1]):
+                result &= torch.zeros_like(result)
+                continue
+            n_rows = int(A_b.shape[1])
+            if b_t.numel() == n_rows:
+                b_b = b_t.reshape(1, n_rows).expand(n_batch, -1)
+            elif b_t.numel() == n_batch * n_rows:
+                b_b = b_t.reshape(n_batch, n_rows)
+            else:
+                result &= torch.zeros_like(result)
+                continue
+            lhs = torch.bmm(
+                A_b, x_flat.unsqueeze(-1)
+            ).squeeze(-1)
+            result &= (
+                torch.isfinite(lhs)
+                & torch.isfinite(b_b)
+                & (lhs <= b_b)
+            ).all(dim=1)
+            continue
+
         if kind != InKind.LP_EMBEDDING:
-            continue
-        center = layer.params.get("center")
-        eps = layer.params.get("eps")
-        p_norm = layer.params.get("p_norm")
-        if not isinstance(center, torch.Tensor) or eps is None or p_norm is None:
+            raise NotImplementedError(
+                f"unsupported INPUT_SPEC kind in counterexample replay: "
+                f"{kind!r}"
+            )
+
+        lb_t = _as_float_tensor(layer.params.get("lb"))
+        ub_t = _as_float_tensor(layer.params.get("ub"))
+        if (lb_t is None) != (ub_t is None):
             result &= torch.zeros_like(result)
             continue
-        center_t = center.to(device=x_batch.device, dtype=x_batch.dtype)
-        if isinstance(eps, torch.Tensor):
-            eps_t = eps.to(device=x_batch.device, dtype=x_batch.dtype)
-        elif isinstance(eps, (int, float, bool)):
-            eps_t = center_t.new_tensor(float(eps))
-        else:
+        if lb_t is not None and ub_t is not None:
+            result &= (
+                (x_batch >= lb_t) & (x_batch <= ub_t)
+            ).flatten(start_dim=1).all(dim=1)
+
+        center_t = _as_float_tensor(layer.params.get("center"))
+        eps_b = _batch_scalar(layer.params.get("eps"))
+        p_norm_t = _as_float_tensor(layer.params.get("p_norm"))
+        if (
+            center_t is None
+            or eps_b is None
+            or p_norm_t is None
+            or p_norm_t.numel() != 1
+        ):
             result &= torch.zeros_like(result)
             continue
-        if isinstance(p_norm, torch.Tensor):
-            p_value = float(p_norm.reshape(-1)[0].item())
-        elif isinstance(p_norm, (int, float, bool)):
-            p_value = float(p_norm)
-        else:
-            result &= torch.zeros_like(result)
-            continue
+        p_value = float(p_norm_t.reshape(-1)[0].item())
         mask = normalize_position_mask(
             layer.params.get("perturbed_positions"),
             int(center_t.shape[-2]),
@@ -814,7 +2070,14 @@ def _check_input_specs_batched(x_batch: torch.Tensor, spec_layers: List[Layer]) 
         delta = x_batch - center_b
         clean = (~mask_b).unsqueeze(-1).expand_as(delta)
         if bool(clean.any().item()):
-            clean_ok = torch.where(clean, delta.abs(), torch.zeros_like(delta)).flatten(start_dim=1).amax(dim=1) <= tol
+            clean_ok = (
+                torch.where(
+                    clean, delta.abs(), torch.zeros_like(delta)
+                )
+                .flatten(start_dim=1)
+                .amax(dim=1)
+                == 0
+            )
             result &= clean_ok
         perturbed_delta = delta[mask_b.unsqueeze(-1).expand_as(delta)].reshape(x_batch.shape[0], -1, center_t.shape[-1])
         if perturbed_delta.numel() == 0:
@@ -827,7 +2090,10 @@ def _check_input_specs_batched(x_batch: torch.Tensor, spec_layers: List[Layer]) 
             norms = torch.linalg.vector_norm(perturbed_delta, ord=2, dim=-1)
         else:
             norms = torch.linalg.vector_norm(perturbed_delta, ord=p_value, dim=-1)
-        result &= (norms <= eps_t.reshape(-1)[0] + tol).all(dim=1)
+        result &= (
+            torch.isfinite(norms)
+            & (norms <= eps_b.unsqueeze(1))
+        ).all(dim=1)
     return result
 
 
@@ -909,6 +2175,7 @@ def _dispatch_dual_solve(
     from act.back_end.solver.solver_dual import DualSolver, expand_bounds_dict
 
     solver_tier = getattr(config, "solver_tier", "lp")
+    refine_audit: Optional[Dict[str, Any]] = None
     block_eps_updates = _install_embedding_child_block_eps(net, batched_bounds, batch)
     if root_bounds_dict is not None:
         bounds_dict_dual = expand_bounds_dict(root_bounds_dict, k_actual)
@@ -924,6 +2191,9 @@ def _dispatch_dual_solve(
             psr_mode = getattr(config, "per_subproblem_refine", "none")
             psr_rows_cap = getattr(config, "per_subproblem_refine_rows_cap", 64)
             psr_iters = getattr(config, "per_subproblem_refine_iters", 0)
+            psr_layer_cap = getattr(
+                config, "per_subproblem_refine_layer_cap", 2
+            )
             if round_policy is not None:
                 if round_policy.refine_mode is not None:
                     psr_mode = round_policy.refine_mode
@@ -932,6 +2202,9 @@ def _dispatch_dual_solve(
                 if round_policy.refine_iters is not None:
                     psr_iters = round_policy.refine_iters
             if psr_mode != "none":
+                refine_started = time.monotonic()
+                before_refine = bounds_dict_dual
+                selector_audit: Dict[str, Any] = {}
                 bounds_dict_dual = DualSolver().refine_intermediate_bounds_batched(
                     net,
                     bounds_dict_dual,
@@ -939,7 +2212,49 @@ def _dispatch_dual_solve(
                     mode=psr_mode,
                     rows_cap=psr_rows_cap,
                     optimize_iters=psr_iters,
+                    layer_cap=psr_layer_cap,
+                    audit=selector_audit,
                 )
+                strict_lower = 0
+                strict_upper = 0
+                changed_layers = 0
+                for layer_id, old_bounds in before_refine.items():
+                    new_bounds = bounds_dict_dual.get(layer_id)
+                    if new_bounds is None:
+                        continue
+                    lower_count = int(
+                        torch.count_nonzero(
+                            new_bounds.lb > old_bounds.lb
+                        ).item()
+                    )
+                    upper_count = int(
+                        torch.count_nonzero(
+                            new_bounds.ub < old_bounds.ub
+                        ).item()
+                    )
+                    strict_lower += lower_count
+                    strict_upper += upper_count
+                    changed_layers += int(
+                        lower_count > 0 or upper_count > 0
+                    )
+                refine_audit = {
+                    "mode": str(psr_mode),
+                    "rows_cap": int(psr_rows_cap),
+                    "optimize_iters": int(psr_iters),
+                    "elapsed_seconds": (
+                        time.monotonic() - refine_started
+                    ),
+                    "strict_lower_entries": strict_lower,
+                    "strict_upper_entries": strict_upper,
+                    "changed_layers": changed_layers,
+                    "proof_authority": False,
+                    "selected_layer_ids": selector_audit.get(
+                        "selected_layer_ids", []
+                    ),
+                    "queried_objective_rows": int(
+                        selector_audit.get("queried_objective_rows", 0)
+                    ),
+                }
     else:
         bounds_dict_dual = compute_forward_bounds(net, batched_bounds.lb, batched_bounds.ub)
     out_kind_raw = assert_layer.params["kind"]
@@ -978,12 +2293,49 @@ def _dispatch_dual_solve(
     dual = DualSolver()
 
     if out_spec.kind == OutKind.UNSAFE_LINEAR:
+        if batch.spec_row_ids is not None:
+            raise ValueError(
+                "property-separable BaB is invalid for UNSAFE_LINEAR "
+                "(OR-row semantics)"
+            )
         c_rows = cast(torch.Tensor, encoded_spec["C"]).contiguous()
         thresholds = cast(torch.Tensor, encoded_spec["thresholds"]).contiguous()
     else:
         c_rows = -cast(torch.Tensor, encoded_spec["C"]).contiguous()
         thresholds = -cast(torch.Tensor, encoded_spec["thresholds"]).contiguous()
-        if keep_rows is not None:
+        if batch.spec_row_ids is not None:
+            if keep_rows is not None:
+                raise ValueError(
+                    "lane-specific spec rows and global keep_rows cannot "
+                    "be active together"
+                )
+            row_ids = batch.spec_row_ids.to(
+                device=device, dtype=torch.long
+            ).reshape(-1)
+            if row_ids.numel() != k_actual:
+                raise ValueError(
+                    "spec_row_ids must contain one row per BaB lane"
+                )
+            if bool(
+                ((row_ids < 0) | (row_ids >= m_specs)).any().item()
+            ):
+                raise ValueError(
+                    "spec_row_ids contains an ASSERT row outside the "
+                    f"encoded range [0, {m_specs})"
+                )
+            lane_index = torch.arange(k_actual, device=device)
+            c_rows = (
+                c_rows.view(k_actual, m_specs, n_out)[
+                    lane_index, row_ids
+                ]
+                .reshape(k_actual, n_out)
+                .contiguous()
+            )
+            thresholds = thresholds[lane_index, row_ids].reshape(
+                k_actual, 1
+            )
+            m_specs = 1
+        elif keep_rows is not None:
             idx = keep_rows.to(device=device, dtype=torch.long)
             c_rows = (
                 c_rows.view(k_actual, m_specs, n_out)
@@ -1051,15 +2403,16 @@ def _dispatch_dual_solve(
 
     margins = margins_flat.view(k_actual, m_specs)
     slack = margins - thresholds
+    strictly_certified = _strictly_certified_slack(slack, margins)
     if out_spec.kind == OutKind.UNSAFE_LINEAR:
-        certified = ((slack > 0) & active_mask).any(dim=-1)
+        certified = (strictly_certified & active_mask).any(dim=-1)
         candidate_rows = torch.zeros(k_actual, dtype=torch.long, device=device)
     else:
-        violations = (slack < 0) & active_mask
-        certified = ~violations.any(dim=-1)
+        unresolved = (~strictly_certified) & active_mask
+        certified = ~unresolved.any(dim=-1)
         candidate_rows = torch.where(
-            violations.any(dim=1),
-            violations.to(torch.int64).argmax(dim=1),
+            unresolved.any(dim=1),
+            unresolved.to(torch.int64).argmax(dim=1),
             torch.zeros(k_actual, dtype=torch.long, device=device),
         )
 
@@ -1136,6 +2489,8 @@ def _dispatch_dual_solve(
             bounds_dict=branch_bounds,
             nu_per_layer=branch_nu,
             row_slack=slack.detach(),
+            row_certified=strictly_certified.detach(),
+            refine_audit=refine_audit,
         )
     finally:
         _restore_embedding_child_block_eps(block_eps_updates)
@@ -1252,6 +2607,10 @@ def verify_bab_batched(
     time_budget_s: Optional[float] = None,
     verbose: bool = False,
     _k_log: Optional[List[int]] = None,
+    _property_forest_run_token: Optional[str] = None,
+    _property_forest_source_digests: Optional[
+        Mapping[str, str]
+    ] = None,
 ) -> VerifyResult:
     """[BATCHED-API] K-batched Branch-and-Bound verification (single instance).
 
@@ -1300,9 +2659,60 @@ def verify_bab_batched(
         effective_batch = int(cast(int, max_batch_size))
     if effective_batch < 1:
         raise ValueError(f"max_batch_size must be >= 1, got {effective_batch}")
+    initial_effective_batch = int(effective_batch)
+    requested_max_batch_size: object = (
+        max_batch_size
+        if isinstance(max_batch_size, (int, str))
+        else None
+    )
+    solver_factory_binding = (
+        f"{getattr(solver_factory, '__module__', type(solver_factory).__module__)}."
+        f"{getattr(solver_factory, '__qualname__', type(solver_factory).__qualname__)}"
+    )
     max_k_seen = 0
 
     budget_s = time_budget_s if time_budget_s is not None else 300.0
+    property_forest_live_bindings: Optional[dict[str, str]] = None
+    if _property_forest_run_token is not None:
+        if not bool(getattr(config, "property_separable_bab", False)):
+            raise ValueError(
+                "a property-forest run token requires "
+                "property_separable_bab=true"
+            )
+        if not math.isfinite(float(budget_s)) or float(budget_s) <= 0.0:
+            raise ValueError(
+                "authoritative property-forest runs require a finite "
+                "positive time budget"
+            )
+        if (
+            type(_property_forest_source_digests) is not dict
+            or set(_property_forest_source_digests)
+            != {"onnx", "vnnlib"}
+            or any(
+                type(value) is not str
+                or len(value) != 64
+                or any(
+                    character not in "0123456789abcdef"
+                    for character in value
+                )
+                for value in _property_forest_source_digests.values()
+            )
+        ):
+            raise ValueError(
+                "authoritative property-forest runs require exact "
+                "pre-run onnx/vnnlib SHA-256 digests"
+            )
+        from act.back_end.bab.property_forest_authority import (
+            property_forest_binding_digests,
+        )
+
+        property_forest_live_bindings = (
+            property_forest_binding_digests(net, config)
+        )
+    elif _property_forest_source_digests is not None:
+        raise ValueError(
+            "property-forest source digests require a run token"
+        )
 
     fsb_dual_solver = None
     if config.branching_method == "fsb":
@@ -1337,10 +2747,153 @@ def verify_bab_batched(
     node_counter = 0
     fanout = max(2, int(getattr(config, "input_split_fanout", 2)))
     frontier_cap = int(getattr(config, "frontier_cap", 0))
+    joint_gain_probe_calls = 0
+    joint_gain_probe_nodes = 0
+    joint_gain_groups_tested = 0
+    joint_gain_nonbaseline_lanes = 0
+    joint_gain_more_diverse_lanes = 0
+    joint_gain_worst_child_improvement_max = 0.0
+    split_depth_histogram: Dict[int, int] = {}
+    child_refine_calls = 0
+    child_refine_seconds = 0.0
+    child_refine_strict_lower_entries = 0
+    child_refine_strict_upper_entries = 0
+    child_refine_changed_layers = 0
+    child_refine_queried_objective_rows = 0
+    child_refine_selected_layer_ids: set[int] = set()
+    nonterminal_filter_calls = 0
+    nonterminal_filter_applied_calls = 0
+    nonterminal_filter_fallbacks = 0
+    nonterminal_filter_selected_layer_ids: set[int] = set()
+    property_forest_enabled = bool(
+        getattr(config, "property_separable_bab", False)
+    )
+    property_forest_row_ids: tuple[int, ...] = ()
+    property_forest_counters: dict[str, Dict[int, int]] = {
+        name: {}
+        for name in (
+            "roots",
+            "children_expected",
+            "children_minted",
+            "processed",
+            "certified",
+            "branched",
+            "active_pool",
+        )
+    }
+    property_forest_processed_by_row = property_forest_counters[
+        "processed"
+    ]
+    property_forest_certified_nodes_by_row = property_forest_counters[
+        "certified"
+    ]
+    property_forest_dropped: dict[str, Dict[int, int]] = {
+        "frontier_cap": {},
+        "max_depth": {},
+    }
+    property_forest_integrity_errors_by_row: Dict[int, list[str]] = {}
+    property_forest_runtime_integrity_errors: list[str] = []
+    property_forest_total_rows = 0
+    property_forest_root_certified_rows: tuple[int, ...] = ()
+    property_forest_verification_dtype: Optional[str] = None
+    property_forest_verification_device: Optional[str] = None
+
+    def _property_forest_live_facts(
+        *,
+        mode: str,
+        processed_nodes: int,
+        pool_nodes: int,
+        dropped_frontier: bool,
+        dropped_depth: bool,
+    ) -> dict[str, object]:
+        return {
+            "mode": mode,
+            "verifier_status": VerifyStatus.CERTIFIED.value,
+            "spec_rows_total": int(property_forest_total_rows),
+            "root_certified_rows": list(
+                property_forest_root_certified_rows
+            ),
+            "forest_rows": list(property_forest_row_ids),
+            "processed_nodes": int(processed_nodes),
+            "pool_remaining": int(pool_nodes),
+            "any_dropped_frontier_cap": bool(dropped_frontier),
+            "any_dropped_max_depth": bool(dropped_depth),
+            "requested_max_batch_size": requested_max_batch_size,
+            "initial_effective_max_batch_size": (
+                initial_effective_batch
+            ),
+            "time_budget_seconds": float(budget_s),
+            "solver_tier": str(getattr(config, "solver_tier", "lp")),
+            "solver_backend": (
+                "act.back_end.solver.solver_dual.DualSolver"
+            ),
+            "solver_factory": solver_factory_binding,
+            "verification_dtype": property_forest_verification_dtype,
+            "verification_device": property_forest_verification_device,
+            "torch_default_dtype": str(torch.get_default_dtype()),
+        }
+
+    def _seal_property_forest_live(
+        result: VerifyResult,
+        node_receipt: Mapping[str, object],
+        live_facts: Mapping[str, object],
+    ) -> tuple[Optional[dict[str, object]], Optional[object]]:
+        if (
+            _property_forest_run_token is None
+            or property_forest_live_bindings is None
+        ):
+            return None, None
+        from act.back_end.bab.property_forest_authority import (
+            _issue_property_forest_live_result,
+        )
+
+        return _issue_property_forest_live_result(
+            result=result,
+            run_token=_property_forest_run_token,
+            binding_digests=property_forest_live_bindings,
+            source_digests=cast(
+                Mapping[str, str],
+                _property_forest_source_digests,
+            ),
+            node_receipt=node_receipt,
+            live_facts=live_facts,
+        )
 
     spec_layers = gather_input_spec_layers(net)
     assert_layer = get_assert_layer(net)
+    if property_forest_enabled:
+        if assert_layer.params.get("kind") == OutKind.UNSAFE_LINEAR:
+            raise ValueError(
+                "property-separable BaB requires ALL-rows output semantics"
+            )
+        if getattr(config, "solver_tier", "lp") not in (
+            "dual",
+            "dual_alpha",
+            "dual_alpha_eta",
+        ):
+            raise ValueError(
+                "property-separable BaB requires a dual solver tier"
+            )
+        if not isinstance(pool, TopKBounding):
+            raise ValueError(
+                "property-separable BaB requires lossless topk bounding"
+            )
+        if int(getattr(config, "presplit_levels", 0)) != 0:
+            raise ValueError(
+                "property-separable BaB and presplit_levels cannot be "
+                "combined"
+            )
     root_bounds = seed_from_input_specs(spec_layers)
+    property_forest_verification_dtype = str(root_bounds.lb.dtype)
+    property_forest_verification_device = root_bounds.lb.device.type
+    if (
+        root_bounds.ub.dtype != root_bounds.lb.dtype
+        or root_bounds.ub.device.type
+        != property_forest_verification_device
+    ):
+        raise ValueError(
+            "root lower/upper bounds must share dtype and device"
+        )
     input_shape: tuple[int, ...] = tuple(root_bounds.lb.shape[1:])
 
     per_lane_dim = int(root_bounds.lb[0].numel())
@@ -1411,10 +2964,50 @@ def verify_bab_batched(
             root_bounds_dict=root_fwd,
         )
         if presolve.row_slack is not None:
-            unproven = (presolve.row_slack < 0).any(dim=0)
+            if (
+                presolve.row_certified is None
+                or presolve.row_certified.shape
+                != presolve.row_slack.shape
+            ):
+                raise RuntimeError(
+                    "root presolve did not return its exact row "
+                    "certification mask"
+                )
+            unproven = (~presolve.row_certified).any(dim=0)
             total_rows = int(unproven.numel())
+            if property_forest_enabled:
+                property_forest_total_rows = total_rows
+                property_forest_root_certified_rows = tuple(
+                    int(value)
+                    for value in torch.where(~unproven)[0].tolist()
+                )
             if not bool(unproven.any().item()):
-                return VerifyResult(
+                root_receipt: dict[str, object] = {
+                    "schema": (
+                        "act.property_forest_root_presolve_receipt.v1"
+                    ),
+                    "proof_authority": False,
+                    "spec_rows_total": total_rows,
+                    "strictly_certified_rows": list(
+                        property_forest_root_certified_rows
+                    ),
+                    "forest_rows": [],
+                    "complete": bool(
+                        not property_forest_enabled
+                        or len(
+                            property_forest_root_certified_rows
+                        )
+                        == total_rows
+                    ),
+                }
+                root_live_facts = _property_forest_live_facts(
+                    mode="root_presolve",
+                    processed_nodes=root_batch.batch_size,
+                    pool_nodes=0,
+                    dropped_frontier=False,
+                    dropped_depth=False,
+                )
+                root_result = VerifyResult(
                     VerifyStatus.CERTIFIED,
                     metadata={
                         "nodes": root_batch.batch_size,
@@ -1422,8 +3015,35 @@ def verify_bab_batched(
                         "spec_rows_total": total_rows,
                         "spec_rows_kept": 0,
                         "resolved_by": "root_presolve",
+                        "property_separable_bab": property_forest_enabled,
+                        "property_forest_root_rows": [],
+                        "property_forest_root_certified_rows": list(
+                            property_forest_root_certified_rows
+                        ),
+                        "property_forest_root_presolve_receipt": (
+                            root_receipt
+                        ),
+                        "property_forest_live_facts": root_live_facts,
+                        "property_forest_live_seal": None,
+                        "_property_forest_live_capability": None,
                     },
                 )
+                if property_forest_enabled:
+                    (
+                        root_live_seal,
+                        root_live_capability,
+                    ) = _seal_property_forest_live(
+                        root_result,
+                        root_receipt,
+                        root_live_facts,
+                    )
+                    root_result.metadata[
+                        "property_forest_live_seal"
+                    ] = root_live_seal
+                    root_result.metadata[
+                        "_property_forest_live_capability"
+                    ] = root_live_capability
+                return root_result
             keep = torch.where(unproven)[0]
             if int(keep.numel()) < total_rows:
                 spec_keep_rows = keep
@@ -1436,6 +3056,68 @@ def verify_bab_batched(
                 root_batch.split_signs = _select_spec_rows(
                     root_batch.split_signs, keep,
                 )
+            if property_forest_enabled:
+                property_forest_row_ids = tuple(
+                    int(value) for value in keep.tolist()
+                )
+                root_batch = _expand_property_forest_root(
+                    root_batch, keep
+                )
+                # Each lane now selects its immutable original ASSERT row;
+                # no global row slice may remain active.
+                spec_keep_rows = None
+                property_forest_counters = {
+                    name: {
+                        row_id: 0
+                        for row_id in property_forest_row_ids
+                    }
+                    for name in property_forest_counters
+                }
+                property_forest_processed_by_row = (
+                    property_forest_counters["processed"]
+                )
+                property_forest_certified_nodes_by_row = (
+                    property_forest_counters["certified"]
+                )
+                property_forest_dropped = {
+                    reason: {
+                        row_id: 0
+                        for row_id in property_forest_row_ids
+                    }
+                    for reason in property_forest_dropped
+                }
+                property_forest_integrity_errors_by_row = {
+                    row_id: [] for row_id in property_forest_row_ids
+                }
+                if root_batch.spec_row_ids is None:
+                    property_forest_runtime_integrity_errors.append(
+                        "expanded_root_missing_row_ids"
+                    )
+                else:
+                    for raw_row_id in root_batch.spec_row_ids.tolist():
+                        row_id = int(raw_row_id)
+                        if row_id not in property_forest_counters["roots"]:
+                            property_forest_runtime_integrity_errors.append(
+                                "expanded_root_contains_unknown_row"
+                            )
+                            continue
+                        property_forest_counters["roots"][row_id] += 1
+                        property_forest_counters["active_pool"][row_id] += 1
+                if provenance:
+                    n = root_batch.batch_size
+                    root_batch.node_id = torch.arange(
+                        node_counter,
+                        node_counter + n,
+                        device=root_batch.lb.device,
+                        dtype=torch.long,
+                    )
+                    root_batch.parent_id = torch.full(
+                        (n,),
+                        -1,
+                        device=root_batch.lb.device,
+                        dtype=torch.long,
+                    )
+                    node_counter += n
         presplit_k = int(getattr(config, "presplit_levels", 0))
         if (
             presplit_k > 0
@@ -1450,11 +3132,69 @@ def verify_bab_batched(
                 root_batch = presplit
                 node_counter += root_batch.batch_size
 
+    def _property_pool_row_counts() -> Dict[int, int]:
+        counts = {
+            row_id: 0 for row_id in property_forest_row_ids
+        }
+        if not property_forest_enabled:
+            return counts
+        stored_ids = getattr(pool, "_spec_row_ids", None)
+        if len(pool) == 0:
+            if stored_ids is not None and int(stored_ids.numel()) != 0:
+                property_forest_runtime_integrity_errors.append(
+                    "empty_pool_retained_row_ids"
+                )
+            return counts
+        if (
+            not isinstance(stored_ids, torch.Tensor)
+            or int(stored_ids.numel()) != len(pool)
+        ):
+            property_forest_runtime_integrity_errors.append(
+                "pool_row_id_storage_mismatch"
+            )
+            return counts
+        for raw_row_id in stored_ids.tolist():
+            row_id = int(raw_row_id)
+            if row_id not in counts:
+                property_forest_runtime_integrity_errors.append(
+                    "pool_contains_unknown_row"
+                )
+                continue
+            counts[row_id] += 1
+        return counts
+
+    def _evict_to_frontier_cap() -> int:
+        if frontier_cap <= 0 or len(pool) <= frontier_cap:
+            return 0
+        before = _property_pool_row_counts()
+        evicted = int(pool.evict_to(frontier_cap))
+        if property_forest_enabled:
+            after = _property_pool_row_counts()
+            attributed = 0
+            for row_id in property_forest_row_ids:
+                removed = before[row_id] - after[row_id]
+                if removed < 0:
+                    property_forest_runtime_integrity_errors.append(
+                        "frontier_eviction_increased_a_row"
+                    )
+                    continue
+                attributed += removed
+                property_forest_dropped["frontier_cap"][
+                    row_id
+                ] += removed
+                property_forest_counters["active_pool"][
+                    row_id
+                ] -= removed
+            if attributed != evicted:
+                property_forest_runtime_integrity_errors.append(
+                    "frontier_eviction_attribution_mismatch"
+                )
+        return evicted
+
     pool.push(root_batch)
     any_dropped_frontier_cap = False
-    if frontier_cap > 0 and len(pool) > frontier_cap:
-        if pool.evict_to(frontier_cap) > 0:
-            any_dropped_frontier_cap = True
+    if _evict_to_frontier_cap() > 0:
+        any_dropped_frontier_cap = True
 
     start = time.time()
     processed = 0
@@ -1490,6 +3230,29 @@ def verify_bab_batched(
 
         batch = pool.pop(batch_size=k_requested)
         k_actual = batch.batch_size
+        if property_forest_enabled:
+            if batch.spec_row_ids is None:
+                raise RuntimeError(
+                    "property forest pool lost its ASSERT-row identities"
+                )
+            row_values = [
+                int(value) for value in batch.spec_row_ids.tolist()
+            ]
+            allowed_rows = set(property_forest_row_ids)
+            if any(row_id not in allowed_rows for row_id in row_values):
+                raise RuntimeError(
+                    "property forest pool contains an unknown ASSERT row"
+                )
+            for row_id in row_values:
+                property_forest_counters["active_pool"][row_id] -= 1
+                if (
+                    property_forest_counters["active_pool"][row_id]
+                    < 0
+                ):
+                    property_forest_integrity_errors_by_row[
+                        row_id
+                    ].append("processed_node_was_not_active")
+                property_forest_processed_by_row[row_id] += 1
         if _k_log is not None:
             _k_log.append(k_actual)
 
@@ -1505,6 +3268,7 @@ def verify_bab_batched(
         want_neuron_branching = _want_babsr_neuron_branching(config)
         bounds_dict_for_branching: Optional[Dict[int, Bounds]] = None
         nu_per_layer_for_branching: Optional[Dict[int, torch.Tensor]] = None
+        row_slack_for_branching: Optional[torch.Tensor] = None
         if solver_tier == "lp":
             solver = solver_factory()
             solution = setup_and_solve_batch(
@@ -1540,6 +3304,36 @@ def verify_bab_batched(
             solution = dual_solve_result.solution
             bounds_dict_for_branching = dual_solve_result.bounds_dict
             nu_per_layer_for_branching = dual_solve_result.nu_per_layer
+            row_slack_for_branching = dual_solve_result.row_slack
+            if dual_solve_result.refine_audit is not None:
+                child_refine_calls += 1
+                child_refine_seconds += float(
+                    dual_solve_result.refine_audit["elapsed_seconds"]
+                )
+                child_refine_strict_lower_entries += int(
+                    dual_solve_result.refine_audit[
+                        "strict_lower_entries"
+                    ]
+                )
+                child_refine_strict_upper_entries += int(
+                    dual_solve_result.refine_audit[
+                        "strict_upper_entries"
+                    ]
+                )
+                child_refine_changed_layers += int(
+                    dual_solve_result.refine_audit["changed_layers"]
+                )
+                child_refine_queried_objective_rows += int(
+                    dual_solve_result.refine_audit[
+                        "queried_objective_rows"
+                    ]
+                )
+                child_refine_selected_layer_ids.update(
+                    int(layer_id)
+                    for layer_id in dual_solve_result.refine_audit[
+                        "selected_layer_ids"
+                    ]
+                )
         else:
             raise ValueError(
                 f"Unknown solver_tier={solver_tier!r}. Valid: {VALID_SOLVER_TIERS}."
@@ -1554,6 +3348,12 @@ def verify_bab_batched(
             node_lower_bound = torch.maximum(
                 node_lower_bound, batch.lower_bound.to(node_lower_bound.device)
             )
+        if property_forest_enabled:
+            assert batch.spec_row_ids is not None
+            for lane, status in enumerate(solution.statuses):
+                if status == SolveStatus.UNSAT:
+                    row_id = int(batch.spec_row_ids[lane].item())
+                    property_forest_certified_nodes_by_row[row_id] += 1
 
         sat_lane_idx = [
             i for i, s in enumerate(solution.statuses) if s == SolveStatus.SAT
@@ -1574,9 +3374,17 @@ def verify_bab_batched(
                 else x_input_flat
             )
             in_region = _check_input_specs_batched(x_input_shaped, spec_layers)
-            violations = check_violations_batched(net, x_input_shaped, assert_layer) & in_region
+            raw_violations = check_violations_batched(
+                net, x_input_shaped, assert_layer
+            )
+            violations = raw_violations & in_region
             for j, lane in enumerate(sat_lane_idx):
                 if bool(violations[j].item()):
+                    forest_row_id = None
+                    if batch.spec_row_ids is not None:
+                        forest_row_id = int(
+                            batch.spec_row_ids[lane].item()
+                        )
                     return VerifyResult(
                         VerifyStatus.FALSIFIED,
                         counterexample=x_input_shaped[j].detach().cpu().clone(),
@@ -1586,6 +3394,21 @@ def verify_bab_batched(
                             "K": k_actual,
                             "nodes_minted": node_counter,
                             "any_dropped_frontier_cap": any_dropped_frontier_cap,
+                            "any_dropped_max_depth": any_dropped_max_depth,
+                            "property_separable_bab": (
+                                property_forest_enabled
+                            ),
+                            "property_forest_root_rows": list(
+                                property_forest_row_ids
+                            ),
+                            "counterexample_input_spec_valid": bool(
+                                in_region[j].item()
+                            ),
+                            "counterexample_full_assert_violated": bool(
+                                raw_violations[j].item()
+                            ),
+                            "counterexample_replayed": True,
+                            "counterexample_spec_row_id": forest_row_id,
                         },
                     )
 
@@ -1631,10 +3454,34 @@ def verify_bab_batched(
                     if batch.parent_id is not None
                     else None
                 ),
+                spec_row_ids=(
+                    batch.spec_row_ids.index_select(
+                        0, unresolved_idx.to(batch.spec_row_ids.device)
+                    )
+                    if batch.spec_row_ids is not None
+                    else None
+                ),
             )
             branch_mask = unresolved.depths < int(config.max_depth)
             if bool((~branch_mask).any().item()):
                 any_dropped_max_depth = True
+                if property_forest_enabled:
+                    if unresolved.spec_row_ids is None:
+                        property_forest_runtime_integrity_errors.append(
+                            "max_depth_nodes_missing_row_ids"
+                        )
+                    else:
+                        for terminal_index in torch.where(
+                            ~branch_mask
+                        )[0].tolist():
+                            row_id = int(
+                                unresolved.spec_row_ids[
+                                    terminal_index
+                                ].item()
+                            )
+                            property_forest_dropped["max_depth"][
+                                row_id
+                            ] += 1
             branch_idx = torch.where(branch_mask)[0]
             if int(branch_idx.numel()) > 0:
                 branch_batch = SubproblemBatch(
@@ -1664,7 +3511,18 @@ def verify_bab_batched(
                         if unresolved.parent_id is not None
                         else None
                     ),
+                    spec_row_ids=(
+                        unresolved.spec_row_ids.index_select(
+                            0,
+                            branch_idx.to(
+                                unresolved.spec_row_ids.device
+                            ),
+                        )
+                        if unresolved.spec_row_ids is not None
+                        else None
+                    ),
                 )
+                expected_children_per_parent = 2
                 if want_neuron_branching:
                     full_branch_idx = unresolved_idx.index_select(
                         0, branch_idx.to(unresolved_idx.device)
@@ -1675,6 +3533,44 @@ def verify_bab_batched(
                         full_branch_idx,
                         k_actual,
                     )
+                    if getattr(
+                        config,
+                        "branch_requires_unstable_successor",
+                        False,
+                    ):
+                        nonterminal_filter_calls += 1
+                        (
+                            bd_branch,
+                            nu_branch,
+                            eligible_layers,
+                            filter_applied,
+                        ) = _filter_branching_state_to_unstable_successors(
+                            branch_batch,
+                            net,
+                            bd_branch,
+                            nu_branch,
+                        )
+                        if filter_applied:
+                            nonterminal_filter_applied_calls += 1
+                            nonterminal_filter_selected_layer_ids.update(
+                                eligible_layers
+                            )
+                        else:
+                            nonterminal_filter_fallbacks += 1
+                    spec_row_focus = None
+                    if (
+                        getattr(config, "property_branch_focus", "sum")
+                        == "worst"
+                        and row_slack_for_branching is not None
+                    ):
+                        branch_slack = row_slack_for_branching.index_select(
+                            0,
+                            full_branch_idx.to(
+                                row_slack_for_branching.device
+                            ),
+                        )
+                        if branch_slack.ndim == 2 and branch_slack.shape[1] > 0:
+                            spec_row_focus = branch_slack.argmin(dim=1)
                     multi = None
                     multi_k = int(getattr(config, "multi_split_levels", 1))
                     if llm_probe is not None and _llm is not None and llm_probe.wants_neuron:
@@ -1688,6 +3584,7 @@ def verify_bab_batched(
                             branch_batch, bd_branch, nu_branch,
                             limit=None if _neuron_topk > 0
                             else getattr(config, "llm_probe_max_candidates_total", 1024),
+                            spec_row_index=spec_row_focus,
                         )
                         if _cand_dicts:
                             _ngroups = llm_probe.advise_neuron_groups(_llm.build_frontier_stats(
@@ -1704,6 +3601,10 @@ def verify_bab_batched(
                                 if _tl is not None and _tn is not None:
                                     multi = _multi_split_from_groups(branch_batch, net, _tl, _tn, _keff)
                                     _wave_split_used = _keff
+                                    if multi is not None:
+                                        expected_children_per_parent = (
+                                            2 ** int(_keff)
+                                        )
                     if multi is None and config.branching_method == "gain" and multi_k > 1:
                         # Adaptive split depth: fan out so children roughly
                         # fill one bounding batch; n_branch lanes x 2^k <=
@@ -1723,11 +3624,106 @@ def verify_bab_batched(
                                 effective_batch=effective_batch,
                                 multi_split_levels=multi_k,
                             )
-                        _wave_split_used = k_adaptive
-                        if k_adaptive > 1:
-                            multi = _multi_split_from_decision(
-                                branch_batch, net, bd_branch, nu_branch, k_adaptive,
+                        contraction_target = float(
+                            getattr(
+                                config,
+                                "frontier_contraction_target",
+                                0.0,
                             )
+                        )
+                        if (
+                            contraction_target > 0.0
+                            and int(branch_batch.depths.min().item()) > 0
+                        ):
+                            survivor_rate = (
+                                float(branch_batch.batch_size)
+                                / float(max(1, k_actual))
+                            )
+                            k_adaptive = min(
+                                k_adaptive,
+                                _survival_controlled_split_depth(
+                                    multi_k,
+                                    survivor_rate,
+                                    contraction_target,
+                                ),
+                            )
+                        _wave_split_used = k_adaptive
+                        split_depth_histogram[k_adaptive] = (
+                            split_depth_histogram.get(k_adaptive, 0)
+                            + int(branch_batch.batch_size)
+                        )
+                        if k_adaptive > 1:
+                            joint_gain_groups = int(
+                                getattr(config, "joint_gain_groups", 1)
+                            )
+                            if joint_gain_groups > 1:
+                                joint_audit: Dict[str, Any] = {}
+                                multi = _gain_tested_multi_split(
+                                    branch_batch,
+                                    net,
+                                    assert_layer,
+                                    config,
+                                    spec_keep_rows,
+                                    node_root_fwd,
+                                    bd_branch,
+                                    nu_branch,
+                                    input_shape,
+                                    k_levels=k_adaptive,
+                                    max_groups=joint_gain_groups,
+                                    max_probe_batch=effective_batch,
+                                    audit=joint_audit,
+                                    spec_row_index=spec_row_focus,
+                                )
+                                if multi is not None:
+                                    expected_children_per_parent = (
+                                        2 ** int(k_adaptive)
+                                    )
+                                    joint_gain_probe_calls += 1
+                                    joint_gain_probe_nodes += int(
+                                        joint_audit["probe_nodes"]
+                                    )
+                                    joint_gain_groups_tested += int(
+                                        joint_audit["groups"]
+                                    ) * int(joint_audit["lanes"])
+                                    joint_gain_nonbaseline_lanes += int(
+                                        joint_audit[
+                                            "selected_nonbaseline_lanes"
+                                        ]
+                                    )
+                                    joint_gain_more_diverse_lanes += int(
+                                        joint_audit[
+                                            "selected_more_diverse_lanes"
+                                        ]
+                                    )
+                                    improvements = [
+                                        selected - baseline
+                                        for selected, baseline in zip(
+                                            joint_audit[
+                                                "selected_worst_child_lb"
+                                            ],
+                                            joint_audit[
+                                                "baseline_worst_child_lb"
+                                            ],
+                                        )
+                                    ]
+                                    if improvements:
+                                        joint_gain_worst_child_improvement_max = max(
+                                            joint_gain_worst_child_improvement_max,
+                                            max(improvements),
+                                        )
+                            if multi is None:
+                                multi = _multi_split_from_decision(
+                                    branch_batch,
+                                    net,
+                                    bd_branch,
+                                    nu_branch,
+                                    k_adaptive,
+                                    spec_row_index=spec_row_focus,
+                                )
+                                if multi is not None:
+                                    expected_children_per_parent = (
+                                        2 ** int(k_adaptive)
+                                    )
                     if multi is not None:
                         children, parent_index = multi
                     else:
@@ -1743,6 +3739,7 @@ def verify_bab_batched(
                                 bd_branch,
                                 nu_branch,
                                 input_shape,
+                                spec_row_index=spec_row_focus,
                             )
                         if decision is None:
                             scores = cast(Any, brancher).compute_scores(
@@ -1754,6 +3751,9 @@ def verify_bab_batched(
                             decision = cast(SplitDecision, cast(Any, brancher).select(scores))
                         if decision.kind == "input_axis":
                             decision.fanout = fanout
+                            expected_children_per_parent = int(fanout)
+                        else:
+                            expected_children_per_parent = 2
                         children, parent_index = _split_from_decision(branch_batch, decision, net)
                 else:
                     scores = brancher.compute_scores(branch_batch, net)
@@ -1796,8 +3796,104 @@ def verify_bab_batched(
                         children, parent_index = split_input(branch_batch, split_dims)
                     else:
                         children, parent_index = split_input_nary(branch_batch, split_dims, split_fanout)
+                    expected_children_per_parent = int(split_fanout)
 
-                if provenance:
+                accept_children = True
+                if property_forest_enabled:
+                    partition_errors: list[str] = []
+                    branch_rows = (
+                        []
+                        if branch_batch.spec_row_ids is None
+                        else [
+                            int(value)
+                            for value
+                            in branch_batch.spec_row_ids.tolist()
+                        ]
+                    )
+                    if len(branch_rows) != branch_batch.batch_size:
+                        partition_errors.append(
+                            "split_parent_missing_assert_row_identity"
+                        )
+                    partition_valid, structural_errors = (
+                        _validate_property_forest_child_partition(
+                            branch_batch,
+                            children,
+                            parent_index,
+                            expected_children_per_parent=(
+                                expected_children_per_parent
+                            ),
+                        )
+                    )
+                    if not partition_valid:
+                        partition_errors.extend(structural_errors)
+                    if children.spec_row_ids is None:
+                        partition_errors.append(
+                            "split_children_missing_assert_row_identity"
+                        )
+                    elif (
+                        parent_index.ndim == 1
+                        and parent_index.dtype == torch.long
+                        and int(parent_index.numel())
+                        == children.batch_size
+                        and not bool((parent_index < 0).any().item())
+                        and not bool(
+                            (
+                                parent_index
+                                >= branch_batch.batch_size
+                            ).any().item()
+                        )
+                        and branch_batch.spec_row_ids is not None
+                    ):
+                        expected_rows = (
+                            branch_batch.spec_row_ids.index_select(
+                                0,
+                                parent_index.to(
+                                    branch_batch.spec_row_ids.device
+                                ),
+                            )
+                        )
+                        if not torch.equal(
+                            children.spec_row_ids.to(
+                                expected_rows.device
+                            ),
+                            expected_rows,
+                        ):
+                            partition_errors.append(
+                                "split_changed_assert_row_identity"
+                            )
+                    else:
+                        partition_errors.append(
+                            "split_parent_index_not_row_bindable"
+                        )
+
+                    for row_id in branch_rows:
+                        property_forest_counters["branched"][
+                            row_id
+                        ] += 1
+                        property_forest_counters[
+                            "children_expected"
+                        ][row_id] += int(
+                            expected_children_per_parent
+                        )
+                    if partition_errors:
+                        accept_children = False
+                        for row_id in branch_rows:
+                            property_forest_integrity_errors_by_row[
+                                row_id
+                            ].extend(partition_errors)
+                    else:
+                        assert children.spec_row_ids is not None
+                        for raw_row_id in (
+                            children.spec_row_ids.tolist()
+                        ):
+                            row_id = int(raw_row_id)
+                            property_forest_counters[
+                                "children_minted"
+                            ][row_id] += 1
+                            property_forest_counters[
+                                "active_pool"
+                            ][row_id] += 1
+                if accept_children and provenance:
                     pid = branch_batch.node_id
                     assert pid is not None
                     children.parent_id = pid.index_select(0, parent_index.to(pid.device))
@@ -1809,9 +3905,9 @@ def verify_bab_batched(
                         dtype=torch.long,
                     )
                     node_counter += nc
-                pool.push(children)
-                if frontier_cap > 0 and len(pool) > frontier_cap:
-                    if pool.evict_to(frontier_cap) > 0:
+                if accept_children:
+                    pool.push(children)
+                    if _evict_to_frontier_cap() > 0:
                         any_dropped_frontier_cap = True
 
         processed += k_actual
@@ -1844,36 +3940,379 @@ def verify_bab_batched(
     elapsed_total = time.time() - start
     exhausted_time = elapsed_total >= budget_s
     exhausted_nodes = processed >= config.max_nodes
+    property_forest_receipt: Optional[dict[str, object]] = None
+    property_forest_receipt_errors: tuple[str, ...] = ()
+    property_forest_receipt_valid = False
+    if property_forest_enabled:
+        property_forest_receipt = _build_property_forest_receipt(
+            row_ids=property_forest_row_ids,
+            counters=property_forest_counters,
+            dropped=property_forest_dropped,
+            integrity_errors_by_row=(
+                property_forest_integrity_errors_by_row
+            ),
+            runtime_integrity_errors=(
+                property_forest_runtime_integrity_errors
+            ),
+            processed=processed,
+            pool_remaining=pool_remaining,
+        )
+        (
+            property_forest_receipt_valid,
+            property_forest_receipt_errors,
+        ) = _validate_property_forest_receipt(
+            property_forest_receipt,
+            expected_row_ids=property_forest_row_ids,
+            expected_processed=processed,
+            expected_pool_remaining=pool_remaining,
+        )
+
+    def _row_conservation_complete(row_id: int) -> bool:
+        if property_forest_receipt is None:
+            return False
+        item = cast(
+            dict[str, object],
+            cast(dict[str, object], property_forest_receipt["rows"])[
+                str(row_id)
+            ],
+        )
+        dropped = cast(dict[str, int], item["dropped"])
+        return bool(
+            item["roots"] == 1
+            and item["children_expected"] == item["children_minted"]
+            and item["processed"]
+            == cast(int, item["certified"]) + cast(int, item["branched"])
+            and cast(int, item["roots"])
+            + cast(int, item["children_minted"])
+            == item["processed"]
+            and item["active_pool"] == 0
+            and dropped["frontier_cap"] == 0
+            and dropped["max_depth"] == 0
+            and not item["integrity_errors"]
+        )
+
+    property_forest_coverage_by_row = {
+        str(row_id): {
+            "processed": int(
+                property_forest_processed_by_row.get(row_id, 0)
+            ),
+            "certified_nodes": int(
+                property_forest_certified_nodes_by_row.get(row_id, 0)
+            ),
+            "covered": bool(
+                _row_conservation_complete(row_id)
+            ),
+        }
+        for row_id in property_forest_row_ids
+    }
+    # This is an omission/duplication firewall, not a serialized proof.
+    # Certification still comes exclusively from the live UNSAT solves.
+    property_forest_coverage_complete = bool(
+        not property_forest_enabled
+        or property_forest_receipt_valid
+    )
+    property_forest_incomplete_terminal = bool(
+        property_forest_enabled
+        and pool_remaining == 0
+        and not property_forest_coverage_complete
+    )
+    property_forest_live_facts: Optional[dict[str, object]] = None
+    property_forest_live_seal: Optional[dict[str, object]] = None
+    property_forest_live_capability: Optional[object] = None
+    if (
+        property_forest_enabled
+        and property_forest_receipt_valid
+        and property_forest_receipt is not None
+        and not any_dropped_max_depth
+        and not any_dropped_frontier_cap
+        and pool_remaining == 0
+    ):
+        property_forest_live_facts = _property_forest_live_facts(
+            mode="complete_forest",
+            processed_nodes=processed,
+            pool_nodes=pool_remaining,
+            dropped_frontier=any_dropped_frontier_cap,
+            dropped_depth=any_dropped_max_depth,
+        )
 
     spec_rows_kept = (
-        int(spec_keep_rows.numel()) if spec_keep_rows is not None else None
+        len(property_forest_row_ids)
+        if property_forest_enabled
+        else (
+            int(spec_keep_rows.numel())
+            if spec_keep_rows is not None
+            else None
+        )
     )
 
-    if not any_dropped_max_depth and not any_dropped_frontier_cap and pool_remaining == 0:
-        return VerifyResult(
+    if (
+        not any_dropped_max_depth
+        and not any_dropped_frontier_cap
+        and pool_remaining == 0
+        and property_forest_coverage_complete
+    ):
+        certified_result = VerifyResult(
             VerifyStatus.CERTIFIED,
             metadata={
                 "nodes": processed,
+                "spec_rows_total": (
+                    property_forest_total_rows
+                    if property_forest_enabled
+                    else None
+                ),
                 "spec_rows_kept": spec_rows_kept,
                 "pool_remaining": 0,
                 "exhausted_budget_time": exhausted_time,
                 "exhausted_budget_nodes": exhausted_nodes,
                 "nodes_minted": node_counter,
                 "any_dropped_frontier_cap": any_dropped_frontier_cap,
+                "any_dropped_max_depth": any_dropped_max_depth,
+                "joint_gain_groups": int(
+                    getattr(config, "joint_gain_groups", 1)
+                ),
+                "property_branch_focus": getattr(
+                    config, "property_branch_focus", "sum"
+                ),
+                "branch_requires_unstable_successor": bool(
+                    getattr(
+                        config,
+                        "branch_requires_unstable_successor",
+                        False,
+                    )
+                ),
+                "property_separable_bab": property_forest_enabled,
+                "property_forest_root_rows": list(
+                    property_forest_row_ids
+                ),
+                "property_forest_root_count": len(
+                    property_forest_row_ids
+                ),
+                "property_forest_all_solves_single_row": bool(
+                    property_forest_enabled
+                ),
+                "property_forest_coverage_complete": (
+                    property_forest_coverage_complete
+                ),
+                "property_forest_coverage_by_row": (
+                    property_forest_coverage_by_row
+                ),
+                "property_forest_node_conservation_receipt": (
+                    property_forest_receipt
+                ),
+                "property_forest_node_conservation_valid": (
+                    property_forest_receipt_valid
+                ),
+                "property_forest_node_conservation_errors": list(
+                    property_forest_receipt_errors
+                ),
+                "property_forest_root_certified_rows": list(
+                    property_forest_root_certified_rows
+                ),
+                "property_forest_live_facts": (
+                    property_forest_live_facts
+                ),
+                "property_forest_live_seal": (
+                    property_forest_live_seal
+                ),
+                "_property_forest_live_capability": (
+                    property_forest_live_capability
+                ),
+                "property_forest_processed_by_row": {
+                    str(row_id): int(count)
+                    for row_id, count in sorted(
+                        property_forest_processed_by_row.items()
+                    )
+                },
+                "property_forest_certified_nodes_by_row": {
+                    str(row_id): int(count)
+                    for row_id, count in sorted(
+                        property_forest_certified_nodes_by_row.items()
+                    )
+                },
+                "nonterminal_filter_calls": nonterminal_filter_calls,
+                "nonterminal_filter_applied_calls": (
+                    nonterminal_filter_applied_calls
+                ),
+                "nonterminal_filter_fallbacks": (
+                    nonterminal_filter_fallbacks
+                ),
+                "nonterminal_filter_selected_layer_ids": sorted(
+                    nonterminal_filter_selected_layer_ids
+                ),
+                "frontier_contraction_target": float(
+                    getattr(config, "frontier_contraction_target", 0.0)
+                ),
+                "split_depth_histogram": {
+                    str(depth): int(count)
+                    for depth, count in sorted(
+                        split_depth_histogram.items()
+                    )
+                },
+                "child_refine_calls": child_refine_calls,
+                "child_refine_seconds": child_refine_seconds,
+                "child_refine_strict_lower_entries": (
+                    child_refine_strict_lower_entries
+                ),
+                "child_refine_strict_upper_entries": (
+                    child_refine_strict_upper_entries
+                ),
+                "child_refine_changed_layers": (
+                    child_refine_changed_layers
+                ),
+                "child_refine_queried_objective_rows": (
+                    child_refine_queried_objective_rows
+                ),
+                "child_refine_selected_layer_ids": sorted(
+                    child_refine_selected_layer_ids
+                ),
+                "joint_gain_probe_calls": joint_gain_probe_calls,
+                "joint_gain_probe_nodes": joint_gain_probe_nodes,
+                "joint_gain_groups_tested": joint_gain_groups_tested,
+                "joint_gain_nonbaseline_lanes": (
+                    joint_gain_nonbaseline_lanes
+                ),
+                "joint_gain_more_diverse_lanes": (
+                    joint_gain_more_diverse_lanes
+                ),
+                "joint_gain_worst_child_improvement_max": (
+                    joint_gain_worst_child_improvement_max
+                ),
             },
         )
+        if (
+            property_forest_enabled
+            and property_forest_receipt is not None
+            and property_forest_live_facts is not None
+        ):
+            (
+                property_forest_live_seal,
+                property_forest_live_capability,
+            ) = _seal_property_forest_live(
+                certified_result,
+                property_forest_receipt,
+                property_forest_live_facts,
+            )
+            certified_result.metadata[
+                "property_forest_live_seal"
+            ] = property_forest_live_seal
+            certified_result.metadata[
+                "_property_forest_live_capability"
+            ] = property_forest_live_capability
+        return certified_result
 
     return VerifyResult(
         VerifyStatus.UNKNOWN,
         metadata={
+            "reason": (
+                "property_forest_incomplete_coverage"
+                if property_forest_incomplete_terminal
+                else "budget_exhausted_with_unproven_subboxes"
+            ),
             "nodes": processed,
+            "spec_rows_total": (
+                property_forest_total_rows
+                if property_forest_enabled
+                else None
+            ),
             "spec_rows_kept": spec_rows_kept,
             "pool_remaining": pool_remaining,
             "exhausted_budget_time": exhausted_time,
             "exhausted_budget_nodes": exhausted_nodes,
             "nodes_minted": node_counter,
             "any_dropped_frontier_cap": any_dropped_frontier_cap,
-            "reason": "budget_exhausted_with_unproven_subboxes",
+            "any_dropped_max_depth": any_dropped_max_depth,
+            "joint_gain_groups": int(
+                getattr(config, "joint_gain_groups", 1)
+            ),
+            "property_branch_focus": getattr(
+                config, "property_branch_focus", "sum"
+            ),
+            "branch_requires_unstable_successor": bool(
+                getattr(
+                    config,
+                    "branch_requires_unstable_successor",
+                    False,
+                )
+            ),
+            "property_separable_bab": property_forest_enabled,
+            "property_forest_root_rows": list(property_forest_row_ids),
+            "property_forest_root_count": len(property_forest_row_ids),
+            "property_forest_all_solves_single_row": bool(
+                property_forest_enabled
+            ),
+            "property_forest_coverage_complete": (
+                property_forest_coverage_complete
+            ),
+            "property_forest_coverage_by_row": (
+                property_forest_coverage_by_row
+            ),
+            "property_forest_node_conservation_receipt": (
+                property_forest_receipt
+            ),
+            "property_forest_node_conservation_valid": (
+                property_forest_receipt_valid
+            ),
+            "property_forest_node_conservation_errors": list(
+                property_forest_receipt_errors
+            ),
+            "property_forest_root_certified_rows": list(
+                property_forest_root_certified_rows
+            ),
+            "property_forest_live_facts": None,
+            "property_forest_live_seal": None,
+            "_property_forest_live_capability": None,
+            "property_forest_processed_by_row": {
+                str(row_id): int(count)
+                for row_id, count in sorted(
+                    property_forest_processed_by_row.items()
+                )
+            },
+            "property_forest_certified_nodes_by_row": {
+                str(row_id): int(count)
+                for row_id, count in sorted(
+                    property_forest_certified_nodes_by_row.items()
+                )
+            },
+            "nonterminal_filter_calls": nonterminal_filter_calls,
+            "nonterminal_filter_applied_calls": (
+                nonterminal_filter_applied_calls
+            ),
+            "nonterminal_filter_fallbacks": nonterminal_filter_fallbacks,
+            "nonterminal_filter_selected_layer_ids": sorted(
+                nonterminal_filter_selected_layer_ids
+            ),
+            "frontier_contraction_target": float(
+                getattr(config, "frontier_contraction_target", 0.0)
+            ),
+            "split_depth_histogram": {
+                str(depth): int(count)
+                for depth, count in sorted(split_depth_histogram.items())
+            },
+            "child_refine_calls": child_refine_calls,
+            "child_refine_seconds": child_refine_seconds,
+            "child_refine_strict_lower_entries": (
+                child_refine_strict_lower_entries
+            ),
+            "child_refine_strict_upper_entries": (
+                child_refine_strict_upper_entries
+            ),
+            "child_refine_changed_layers": child_refine_changed_layers,
+            "child_refine_queried_objective_rows": (
+                child_refine_queried_objective_rows
+            ),
+            "child_refine_selected_layer_ids": sorted(
+                child_refine_selected_layer_ids
+            ),
+            "joint_gain_probe_calls": joint_gain_probe_calls,
+            "joint_gain_probe_nodes": joint_gain_probe_nodes,
+            "joint_gain_groups_tested": joint_gain_groups_tested,
+            "joint_gain_nonbaseline_lanes": joint_gain_nonbaseline_lanes,
+            "joint_gain_more_diverse_lanes": (
+                joint_gain_more_diverse_lanes
+            ),
+            "joint_gain_worst_child_improvement_max": (
+                joint_gain_worst_child_improvement_max
+            ),
         },
     )
 

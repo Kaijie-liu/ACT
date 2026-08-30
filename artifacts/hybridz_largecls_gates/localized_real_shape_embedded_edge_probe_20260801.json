@@ -1,0 +1,64 @@
+{
+  "schema": "act.localized_real_shape_embedded_edge_probe.v1",
+  "date": "2026-08-01",
+  "diagnostic_only": true,
+  "ground_truth_loaded": false,
+  "real_dataset_loaded": false,
+  "gpu_used": false,
+  "proof_authority": false,
+  "environment": {
+    "python": "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "HZ_MILP_THREADS": "1"
+  },
+  "source_sha256": {
+    "act/back_end/hybridz_tf/localized_phase_conflict_oracle.py": "3e3f094fb7412304f3a908655e07174568492b7c8cde6b85234e38b7a53203e7"
+  },
+  "construction": {
+    "description": "A two-row exact (++ phase) contradiction embedded in an otherwise feasible synthetic parent with the c82 parent dimensions and nonzero count.",
+    "conflict_rows": [
+      "x + s <= 0",
+      "-x + t <= 0"
+    ],
+    "pair": [
+      [1000000, 1],
+      [1000001, 1]
+    ]
+  },
+  "shape": {
+    "output_dimension": 100,
+    "upper_rows": 98974,
+    "equality_rows": 0,
+    "continuous_columns": 52657,
+    "binary_columns": 4,
+    "constraint_nonzeros": 10498234
+  },
+  "timings_seconds": {
+    "caller_parent_digest": 0.2582376077771187,
+    "localized_call": 2.127804584801197,
+    "private_snapshot": 0.4966447949409485,
+    "h0_model_build": 0.0013977624475955963,
+    "h0_solve": 0.007199656218290329,
+    "process_wall": 3.48
+  },
+  "resources": {
+    "snapshot_buffer_bytes": 127985304,
+    "maximum_resident_set_kib": 1273892
+  },
+  "result": {
+    "status": "certified_conflict",
+    "reason": "localized_ray_accepted_by_full_parent_fraction_replay",
+    "edge_accepted": true,
+    "tier_count": 1,
+    "h0_rows": 2,
+    "h0_source_nonzeros": 4,
+    "h0_model_nonzeros": 4,
+    "h0_ray_rows": 2,
+    "h0_exact_replay": "accepted",
+    "certificate_sha256": "0cec598d8dd70be01b7d4a16532ea921096119c9a9868ba0e2f077af789ea1ee",
+    "result_sha256": "a714297787d0af38378e3b246f22d2a761a97771f38cd77ef9c97e81e96cefca"
+  },
+  "promotion_scope": "Controlled synthetic/build-only evidence. This receipt does not establish a real CIFAR100 or TinyImageNet edge, margin improvement, or solved instance."
+}

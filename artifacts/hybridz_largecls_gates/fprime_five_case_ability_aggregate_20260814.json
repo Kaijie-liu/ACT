@@ -1,0 +1,316 @@
+{
+  "schema": "act.hybridz.fprime.five_case_ability_aggregate.v1",
+  "created_at": "2026-08-14",
+  "status": "DISCONNECTED_ABILITY_GAIN_2_NOT_PRODUCTION",
+  "scope": {
+    "controls_run_once_in_frozen_order": [
+      "cifar100_medium_iid2",
+      "tinyimagenet_medium_iid143",
+      "cifar100_large_iid153",
+      "cifar100_large_iid166",
+      "tinyimagenet_medium_iid153"
+    ],
+    "retries": 0,
+    "parameter_changes": 0,
+    "production_modified": false,
+    "fixed14_run": false,
+    "fixed40_run": false,
+    "fixed400_rerun": false
+  },
+  "formal_accounting": {
+    "formal_fixed400_before": 59,
+    "formal_fixed400_after": 59,
+    "disconnected_terminal_verified_gain": 2,
+    "disconnected_gain_cases": [
+      "tinyimagenet_medium_iid143",
+      "tinyimagenet_medium_iid153"
+    ],
+    "conditional_fixed400_lower_bound_if_integrated_with_full_retention": 61,
+    "conditional_count_is_not_a_formal_result": true
+  },
+  "source_lock": {
+    "probe": {
+      "path": "scratch_phase_projection_fprime_single_owner_probe.py",
+      "sha256": "6ce6ab6b208a1224ce70cfc0e4f183f5acf07fbc6d9db65ef34a8f4694602a15"
+    },
+    "cpu_owner_contract": {
+      "path": "scratch_phase_projection_highs_owner_contract.py",
+      "sha256": "fe9caab1d8452a9c3125696b067f2470050610e03a64fa8cd73e1ef855bcd9cf",
+      "receipt_path": "artifacts/hybridz_largecls_gates/phase_projection_highs_owner_contract_20260814.json",
+      "receipt_sha256": "7fd95776b7cfe07db231bf8fa69a140669afabd8b928365db0bf36d17d1f764d"
+    },
+    "frozen_phase_projection": {
+      "path": "act/back_end/hybridz_tf/forward_exact_relu_phase_projection_candidate.py",
+      "sha256": "4b66470df55edebb595e0e06c6b8a2de5c65496b8671c4d2f2552003d01ea306"
+    },
+    "frozen_live_stream": {
+      "path": "act/back_end/hybridz_tf/forward_exact_relu_live_row_stream_candidate.py",
+      "sha256": "d53c2335c43905097e78bef8311175d7151d7e98293a6152fce62dba00d37511"
+    },
+    "formal_fixed400_source": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_gpu_csr_fixed400_20260814.jsonl",
+      "sha256": "749db4e400329598c23c3dd7c9b9863c291eb3d1ba556cdcfcfa879c58487b43"
+    },
+    "inputs": {
+      "cifar100_medium_iid2": {
+        "onnx_sha256": "aba117ad0ad4abdd630c220beca70cd58825e72e7bada5dffdda10bb725cece4",
+        "vnnlib_sha256": "33e795c8421b7b19125f32415adb9cee09b2f90cb83152c4cd3aa03810e91ec3"
+      },
+      "tinyimagenet_medium_iid143": {
+        "onnx_sha256": "234b04b151d640f8fc859fab00729448ba533d8feb3679427cbadb94467ec776",
+        "vnnlib_sha256": "812bec2c0362d92d123380df161e1da6d5addbc84a27304d0a079090e814f5c7"
+      },
+      "cifar100_large_iid153": {
+        "onnx_sha256": "5747c00f20d8458b60da85c6ae446b4689409307146ca02f439277fbb7d89f16",
+        "vnnlib_sha256": "5b425e64c837085d070e219e8ac0e29012b30f2ef9f8e3af1ec7f5e00bc8e507"
+      },
+      "cifar100_large_iid166": {
+        "onnx_sha256": "5747c00f20d8458b60da85c6ae446b4689409307146ca02f439277fbb7d89f16",
+        "vnnlib_sha256": "bdbd4493fbcc15ee7518afc86491eb183da4725a0525ad4af82cebc51b121b8c"
+      },
+      "tinyimagenet_medium_iid153": {
+        "onnx_sha256": "234b04b151d640f8fc859fab00729448ba533d8feb3679427cbadb94467ec776",
+        "vnnlib_sha256": "f9c50760f284590d36366ffff8c9d4f628e554c11bc78d7e5d443b473dda8a17"
+      }
+    }
+  },
+  "cases": [
+    {
+      "case": "cifar100_medium_iid2",
+      "evidence": {
+        "raw_stdout_path": "artifacts/hybridz_largecls_gates/fprime_cifar100_medium_iid2_20260814.json",
+        "raw_stdout_sha256": "a15a10ebcd79d2f69d14a9d4d263b2d954f25bfbf547cd5906ac4f03aab11e04",
+        "raw_stdout_note": "Preserved original stdout containing ACT preamble plus final JSON line; it was not overwritten.",
+        "stderr_path": "artifacts/hybridz_largecls_gates/fprime_cifar100_medium_iid2_20260814.stderr.txt",
+        "stderr_sha256": "a727d90f2ccf14167281e5492a0bf5ff29fddeb51f0f67d0f320de17bd5bce3f",
+        "receipt_path": "artifacts/hybridz_largecls_gates/fprime_cifar100_medium_iid2_20260814.receipt.json",
+        "receipt_sha256": "a8cd5042bbac8476715684d6ad3898a7036141e45e1939d7d736b2d832dc65cc"
+      },
+      "status": "BASE_TERMINAL_VERIFIED",
+      "base": {
+        "model_status": "OPTIMAL",
+        "logical_rows": 1140,
+        "logical_nnz": 560712,
+        "loaded_nnz": 519267,
+        "objective_minimum_nonzero_abs": 1.2264943611563998e-08,
+        "objective_tiny_nonzero_count": 0
+      },
+      "update": null,
+      "terminal": {
+        "verified": true,
+        "fraction_margin_lower": 0.09290191317380003
+      },
+      "owner": {
+        "model_loads": 1,
+        "solves": 1,
+        "dual_ray_exist_calls": 0,
+        "dual_ray_calls": 0,
+        "poisoned": false,
+        "cleanup": "cleanup_ok",
+        "state": "CLOSED"
+      }
+    },
+    {
+      "case": "tinyimagenet_medium_iid143",
+      "evidence": {
+        "raw_stdout_path": "artifacts/hybridz_largecls_gates/fprime_tinyimagenet_medium_iid143_20260814.stdout.txt",
+        "raw_stdout_sha256": "583294dd156f15d2b06bc1ad61491364df4a7fe34ce1297a334ebbdbdc8370fb",
+        "stderr_path": "artifacts/hybridz_largecls_gates/fprime_tinyimagenet_medium_iid143_20260814.stderr.txt",
+        "stderr_sha256": "67323c0d567fa5c39fe7a239f8ac71734ecef8a628170dcb05a01ead507f9b21",
+        "receipt_path": "artifacts/hybridz_largecls_gates/fprime_tinyimagenet_medium_iid143_20260814.receipt.json",
+        "receipt_sha256": "663d6577cb399037092869f0de293864be01738f7cf9c76cc04d57a5b7217954"
+      },
+      "status": "UPDATED_TERMINAL_VERIFIED",
+      "base": {
+        "model_status": "OPTIMAL",
+        "margin": -0.0010710791634582773,
+        "logical_rows": 1154,
+        "objective_minimum_nonzero_abs": 9.293159666877004e-09,
+        "objective_tiny_nonzero_count": 0
+      },
+      "selection": {
+        "rule": "all tight rows with strictly negative upper-row dual",
+        "selected_flip_count": 57,
+        "dual_or_marginal_authority": false
+      },
+      "update": {
+        "model_status": "OPTIMAL",
+        "margin": 0.00021702292859093752,
+        "logical_rows": 1160,
+        "objective_minimum_nonzero_abs": 4.501382983303453e-09,
+        "objective_tiny_nonzero_count": 0
+      },
+      "terminal": {
+        "raw_box": true,
+        "zero_width_interval": true,
+        "fraction_margin_lower": 0.00021699959677867753,
+        "verified": true
+      },
+      "owner": {
+        "model_loads": 2,
+        "solves": 2,
+        "dual_ray_exist_calls": 0,
+        "dual_ray_calls": 0,
+        "poisoned": false,
+        "cleanup": "cleanup_ok",
+        "state": "CLOSED"
+      }
+    },
+    {
+      "case": "cifar100_large_iid153",
+      "evidence": {
+        "raw_stdout_path": "artifacts/hybridz_largecls_gates/fprime_cifar100_large_iid153_20260814.stdout.txt",
+        "raw_stdout_sha256": "21553a42d4229a9d2584dbda7f10909222b33c8f2b662c8bd7af662fdc59a4fd",
+        "stderr_path": "artifacts/hybridz_largecls_gates/fprime_cifar100_large_iid153_20260814.stderr.txt",
+        "stderr_sha256": "8209deb69c618f65a83413f527a96827cb14396518f8e81b7ac3196d18d1719f",
+        "receipt_path": "artifacts/hybridz_largecls_gates/fprime_cifar100_large_iid153_20260814.receipt.json",
+        "receipt_sha256": "1fcfbaaa7f756e0e1fa2eb6de86345b820cbbb0c435d6c3deb9fc872aedfed91"
+      },
+      "status": "UPDATED_NONPOSITIVE_OR_UNSOLVED",
+      "base": {
+        "model_status": "OPTIMAL",
+        "margin": -0.005464856146310426,
+        "objective_minimum_nonzero_abs": 7.269452724213655e-09,
+        "objective_tiny_nonzero_count": 0
+      },
+      "selection": {
+        "selected_flip_count": 58,
+        "dual_or_marginal_authority": false
+      },
+      "update": {
+        "model_status": "OPTIMAL",
+        "margin": -0.0036483713354179548,
+        "objective_minimum_nonzero_abs": 6.780163574191585e-09,
+        "objective_tiny_nonzero_count": 0
+      },
+      "terminal": null,
+      "owner": {
+        "model_loads": 2,
+        "solves": 2,
+        "dual_ray_exist_calls": 0,
+        "dual_ray_calls": 0,
+        "poisoned": false,
+        "cleanup": "cleanup_ok",
+        "state": "CLOSED"
+      }
+    },
+    {
+      "case": "cifar100_large_iid166",
+      "evidence": {
+        "raw_stdout_path": "artifacts/hybridz_largecls_gates/fprime_cifar100_large_iid166_20260814.stdout.txt",
+        "raw_stdout_sha256": "572159351a171350369124b10954fdaeff11f220eeaee58c28044eb610c0e851",
+        "stderr_path": "artifacts/hybridz_largecls_gates/fprime_cifar100_large_iid166_20260814.stderr.txt",
+        "stderr_sha256": "bf89d8e5d0bf92843138a6fee09de97ed1f4016f66f02041f776a2cd82686516",
+        "receipt_path": "artifacts/hybridz_largecls_gates/fprime_cifar100_large_iid166_20260814.receipt.json",
+        "receipt_sha256": "70a9c6475064d6a871f1879fc14bf54a6234f5e11b04e2826cfb89c6a45d7eaa"
+      },
+      "status": "STOP_LOSS_UNKNOWN",
+      "base": null,
+      "observed_owner_boundary": {
+        "model_loads": 1,
+        "solves": 1,
+        "dual_ray_exist_calls": 1,
+        "dual_ray_calls": 1,
+        "poisoned": true,
+        "cleanup": "cleanup_ok",
+        "state": "CLOSED"
+      },
+      "update": null,
+      "terminal": null,
+      "unknown_boundary": {
+        "reason": "Owner poisoned after the one base infeasibility-ray retrieval and before a sealed base record was returned.",
+        "receipt_retains_exception_type_only": "OwnerPoisoned",
+        "no_retry": true,
+        "no_validation_relaxation": true,
+        "no_claim_about_ray_or_instance": true,
+        "fail_closed": true
+      }
+    },
+    {
+      "case": "tinyimagenet_medium_iid153",
+      "evidence": {
+        "raw_stdout_path": "artifacts/hybridz_largecls_gates/fprime_tinyimagenet_medium_iid153_20260814.stdout.txt",
+        "raw_stdout_sha256": "5b1687fbaece24c145daa6c2d6fc9b3907c301f027a363f9e2617b416a9f6daf",
+        "stderr_path": "artifacts/hybridz_largecls_gates/fprime_tinyimagenet_medium_iid153_20260814.stderr.txt",
+        "stderr_sha256": "49c24dbe75ce83725f0e1b5849746b2d860e0a9386f4b2100a9e794ea0ce7bf2",
+        "receipt_path": "artifacts/hybridz_largecls_gates/fprime_tinyimagenet_medium_iid153_20260814.receipt.json",
+        "receipt_sha256": "9a2f401e5d21ded75e1fb66c76ada581e364a502f0b946c70104b72ce60a6646"
+      },
+      "status": "UPDATED_TERMINAL_VERIFIED",
+      "base": {
+        "model_status": "INFEASIBLE",
+        "logical_rows": 2202,
+        "objective_minimum_nonzero_abs": 7.118731083994093e-09,
+        "objective_tiny_nonzero_count": 0,
+        "dual_ray_validation_scope": "api_state_shape_finite_upper_sign_exact_nonzero_only",
+        "dual_ray_exact_nonzero_support": 5,
+        "algebraic_farkas_replay_used": false,
+        "implicit_bound_components_consumed": false
+      },
+      "selection": {
+        "rule": "all mapped rows with stored-binary64 exact-nonzero coefficient in the validated base dual ray",
+        "selected_flip_count": 5,
+        "dual_ray_authority": false
+      },
+      "update": {
+        "model_status": "OPTIMAL",
+        "margin": 0.02916583497099312,
+        "objective_minimum_nonzero_abs": 7.118731083994093e-09,
+        "objective_tiny_nonzero_count": 0
+      },
+      "terminal": {
+        "raw_box": true,
+        "zero_width_interval": true,
+        "fraction_margin_lower": 0.02916581215197489,
+        "verified": true
+      },
+      "owner": {
+        "model_loads": 2,
+        "solves": 2,
+        "dual_ray_exist_calls": 1,
+        "dual_ray_calls": 1,
+        "poisoned": false,
+        "cleanup": "cleanup_ok",
+        "state": "CLOSED"
+      }
+    }
+  ],
+  "authority": {
+    "candidate_authority": false,
+    "lp_authority": false,
+    "marginal_authority": false,
+    "dual_ray_authority": false,
+    "terminal_only": "raw BOX plus verifier-owned zero-width outward interval forward plus strictly positive stored-binary64 Fraction property lower bound"
+  },
+  "restrictions": {
+    "input_center_boundary_or_random_sampling_used": false,
+    "onnx_input_point_execution_used": false,
+    "pgd_used": false,
+    "bab_split_or_enumeration_used": false,
+    "backward_bounds_used": false,
+    "dual_tightening_used": false,
+    "fallback_or_runtime_menu_used": false,
+    "parameter_scan_used": false,
+    "external_labels_read_by_runtime_rule": false,
+    "second_solver_used": false,
+    "cross_request_cache_used": false,
+    "phase_updates_max": 1,
+    "resolves_after_base_max": 1
+  },
+  "timing": {
+    "timing_authority": false,
+    "performance_claimed": false,
+    "reason": "The five-case run is a disconnected ability sentinel under ambient external GPU context, not a promotion timing gate."
+  },
+  "next_gate": {
+    "fixed14_must_not_start_before": [
+      "single-path production integration of the frozen F-prime rule",
+      "full device-payment accounting for all request-local GPU construction, rebuild, solve, readback, and terminal work",
+      "independent source-lock and authority-boundary audit of the integrated path"
+    ],
+    "production_integration_completed": false,
+    "device_payment_completed": false,
+    "fixed14_authorized": false
+  },
+  "production_modified": false
+}

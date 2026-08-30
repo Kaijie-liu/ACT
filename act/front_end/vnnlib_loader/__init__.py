@@ -66,10 +66,14 @@ from act.front_end.vnnlib_loader.onnx_converter import (
 
 # VNNLIB parsing utilities
 from act.front_end.vnnlib_loader.vnnlib_parser import (
+    evaluate_vnnlib_2_concrete,
+    evaluate_vnnlib_concrete,
+    extract_vnnlib_concrete_layout,
     parse_vnnlib_to_tensors,
     parse_vnnlib_queries,
     validate_vnnlib_file,
-    VNNLibParseError
+    UnsupportedSpecError,
+    VNNLibParseError,
 )
 
 
@@ -94,9 +98,13 @@ __all__ = [
     'ONNXConversionError',
     
     # VNNLIB parsing
+    'evaluate_vnnlib_2_concrete',
+    'evaluate_vnnlib_concrete',
+    'extract_vnnlib_concrete_layout',
     'parse_vnnlib_to_tensors',
     'parse_vnnlib_queries',
     'validate_vnnlib_file',
+    'UnsupportedSpecError',
     'VNNLibParseError'
 ]
 

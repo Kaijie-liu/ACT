@@ -1,0 +1,208 @@
+{
+  "schema": "act.hybridz.phase_projection_fixed14_checkpoint.v1",
+  "date": "2026-08-12",
+  "status": "DISCONNECTED_CANDIDATE_STRICT_RESULTS",
+  "algorithm": {
+    "name": "one_update_exact_phase_projection_plus_input_lp",
+    "single_representation": true,
+    "phase_updates": 1,
+    "phase_retries": 0,
+    "property_rows_selected": 1,
+    "property_row_retries": 0,
+    "input_lp_count": 1,
+    "final_check": "verifier_owned_zero_width_forward_interval_with_exact_Fraction_property_lower_bound"
+  },
+  "scope": {
+    "production_integrated": false,
+    "candidate_authority": false,
+    "proof_authority": false,
+    "verdict_authority": false,
+    "input_sampling_used": false,
+    "pgd_used": false,
+    "concrete_onnx_execution_used": false,
+    "triangle_rows": 0,
+    "act_bab_used": false,
+    "backward_bound_propagation_used": false,
+    "dual_tightening_used": false,
+    "runtime_fallbacks": 0
+  },
+  "files": {
+    "candidate": {
+      "path": "act/back_end/hybridz_tf/forward_exact_relu_phase_projection_candidate.py",
+      "sha256": "615b45516b0d4cd2a3632c4f260efffc4fc5cf451444225f8d1bb3e6a04993ba"
+    },
+    "test": {
+      "path": "act/back_end/hybridz_tf/test_forward_exact_relu_phase_projection_candidate.py",
+      "sha256": "dc7d63a9be58722cc29613b74eab7fb4c17778656c2b664b8dec4bc4f1087669"
+    },
+    "live_row_dependency": {
+      "path": "act/back_end/hybridz_tf/forward_exact_relu_live_row_stream_candidate.py",
+      "sha256": "be00bd11ee62536a5ea31d2f5f90aff616bc15452d703a8e9e7e6e7419004e86"
+    },
+    "production_operator_unchanged": {
+      "path": "act/back_end/hybridz_tf/operator_hz.py",
+      "sha256": "2502c009d6b5d37983e3f6d072e802c7734ac9bd106bb2a252e0a562da390fd8"
+    }
+  },
+  "focused_gates": {
+    "phase_projection_tests": 7,
+    "phase_projection_failures": 0,
+    "adjacent_phase_projection_live_row_conv_tests": 38,
+    "adjacent_failures": 0,
+    "py_compile_passed": true,
+    "diff_check_passed": true
+  },
+  "performance_gate_cifar100_medium_iid2": {
+    "same_parsed_graph_and_forward_facts": true,
+    "per_call_deadline_seconds": 10.0,
+    "single_pair": {
+      "baseline_seconds": 13.37992639746517,
+      "candidate_seconds": 3.3218218674883246,
+      "speedup": 4.0278879877390645,
+      "required": 1.5,
+      "passed": true
+    },
+    "four_concurrent_five_pairs": {
+      "baseline_group_seconds": [
+        12.520706352777779,
+        12.301357589662075,
+        12.320483251474798,
+        12.424123062752187,
+        12.390137078240514
+      ],
+      "candidate_group_seconds": [
+        6.000050695613027,
+        5.705322294496,
+        5.990742958150804,
+        5.8149375300854445,
+        5.834154915064573
+      ],
+      "median_paired_speedup": 2.1237243882995824,
+      "paired_bootstrap_95_lower": 2.0565868603512625,
+      "required_median": 2.0,
+      "required_bootstrap_95_lower": 1.8,
+      "candidate_result_conflicts": 0,
+      "stable_id_conflicts": 0,
+      "candidate_successes": 20,
+      "candidate_attempts": 20,
+      "passed": true
+    },
+    "baseline": "constraint-local exact HybridZ build plus existing exact root solver",
+    "candidate": "one phase projection, one input LP, exact phase replay, and verifier-owned singleton interval proof"
+  },
+  "fixed14": {
+    "completed": 14,
+    "candidate_strictly_verified": 3,
+    "unknown": 11,
+    "cifar100": {
+      "strictly_verified": 3,
+      "total": 8
+    },
+    "tinyimagenet": {
+      "strictly_verified": 0,
+      "total": 6
+    },
+    "cases": [
+      {
+        "case": "cifar100_medium_iid29",
+        "status": "UNKNOWN",
+        "seconds": 3.8343364680185914,
+        "reason": "single LP candidate failed exact phase or margin replay"
+      },
+      {
+        "case": "cifar100_medium_iid2",
+        "status": "singleton_verified",
+        "seconds": 3.649829409085214,
+        "phase_rows": 2177,
+        "selected_property_row": 67,
+        "projected_margin_lower": 0.09290155117959588,
+        "singleton_margin_lower": 0.09290159780434681
+      },
+      {
+        "case": "cifar100_large_iid118",
+        "status": "singleton_verified",
+        "seconds": 8.897874094545841,
+        "phase_rows": 2191,
+        "selected_property_row": 28,
+        "projected_margin_lower": 0.5550046907268779,
+        "singleton_margin_lower": 0.5550047360054379
+      },
+      {
+        "case": "cifar100_large_iid113",
+        "status": "UNKNOWN",
+        "seconds": 9.880401101894677,
+        "reason": "single LP candidate failed exact phase or margin replay"
+      },
+      {
+        "case": "tinyimagenet_medium_iid6",
+        "status": "UNKNOWN",
+        "seconds": 10.470670716837049,
+        "reason": "single LP candidate failed exact phase or margin replay"
+      },
+      {
+        "case": "tinyimagenet_medium_iid17",
+        "status": "UNKNOWN",
+        "seconds": 10.115799651481211,
+        "reason": "single LP candidate failed exact phase or margin replay"
+      },
+      {
+        "case": "cifar100_medium_iid11",
+        "status": "singleton_verified",
+        "seconds": 3.116606429219246,
+        "phase_rows": 1510,
+        "selected_property_row": 72,
+        "projected_margin_lower": 0.00025342019890722155,
+        "singleton_margin_lower": 0.00025345571853629956
+      },
+      {
+        "case": "cifar100_medium_iid50",
+        "status": "UNKNOWN",
+        "seconds": 4.4302510395646095,
+        "reason": "single input LP infeasible"
+      },
+      {
+        "case": "cifar100_large_iid110",
+        "status": "UNKNOWN",
+        "seconds": 8.975925848819315,
+        "reason": "single LP candidate failed exact phase or margin replay"
+      },
+      {
+        "case": "cifar100_large_iid153",
+        "status": "UNKNOWN",
+        "seconds": 8.580929644405842,
+        "reason": "single LP candidate failed exact phase or margin replay"
+      },
+      {
+        "case": "tinyimagenet_medium_iid0",
+        "status": "UNKNOWN",
+        "seconds": 9.432094557210803,
+        "reason": "single LP candidate failed exact phase or margin replay"
+      },
+      {
+        "case": "tinyimagenet_medium_iid93",
+        "status": "UNKNOWN",
+        "seconds": 10.784589583054185,
+        "reason": "single LP candidate failed exact phase or margin replay"
+      },
+      {
+        "case": "tinyimagenet_medium_iid143",
+        "status": "UNKNOWN",
+        "seconds": 9.183087773621082,
+        "reason": "single LP candidate failed exact phase or margin replay"
+      },
+      {
+        "case": "tinyimagenet_medium_iid159",
+        "status": "UNKNOWN",
+        "seconds": 10.071859740652144,
+        "reason": "single LP candidate failed exact phase or margin replay"
+      }
+    ]
+  },
+  "interpretation": {
+    "cifar100_algorithmic_progress": true,
+    "tinyimagenet_algorithmic_progress": false,
+    "formal_production_solved_count_gain": 0,
+    "reason_formal_gain_is_zero": "The strict results are produced by a disconnected candidate whose production/verdict authority flags remain false pending integration audit.",
+    "next_gate": "fixed40 only after the post-hardening regression and current hashes are revalidated"
+  }
+}

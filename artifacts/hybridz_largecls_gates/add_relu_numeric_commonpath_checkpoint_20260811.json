@@ -1,0 +1,107 @@
+{
+  "schema": "act.hybridz.add_relu_numeric_commonpath_checkpoint.v1",
+  "date": "2026-08-11",
+  "scope": "disconnected_completed_add_to_sole_exact_relu_handoff",
+  "numeric_implementation": {
+    "path": "act/back_end/hybridz_tf/forward_exact_relu_numeric_candidate.py",
+    "sha256": "06f4ce831f474984df0e7e0989595ec0fe02cc983d29abf82fcddde84b595e07"
+  },
+  "numeric_test": {
+    "path": "act/back_end/hybridz_tf/test_forward_exact_relu_numeric_candidate.py",
+    "sha256": "6b44528d3ae6efe8366ef102bff8564a9e710b7d8e5d944f0513a50dac8e5c85"
+  },
+  "deferral_benchmark": {
+    "path": "act/back_end/hybridz_tf/forward_exact_add_relu_deferral.py",
+    "sha256": "1a4a6509b85b84276a3d982a8c8f2f1d4558b7177505baec78f39da2bc6c4ef5"
+  },
+  "deferral_test": {
+    "path": "act/back_end/hybridz_tf/test_forward_exact_add_relu_deferral.py",
+    "sha256": "03888ba0bf4bc1ab12eac0dd0dea62ff5f4669ec99692af445f5eb33e8b485e7"
+  },
+  "common_path": {
+    "width": 128,
+    "topology": "completed_ADD_to_sole_exact_RELU",
+    "candidate_structure": {
+      "continuous": 384,
+      "binary": 128,
+      "equalities": 128,
+      "upper_rows": 256,
+      "constraint_nnz": 1024
+    },
+    "materialized_structure": {
+      "continuous": 512,
+      "binary": 128,
+      "equalities": 128,
+      "upper_rows": 512,
+      "constraint_nnz": 1536
+    },
+    "integer_dyadic_bounds": true,
+    "python_fraction_in_candidate_hot_path": false,
+    "stored_real_graph_exact": true,
+    "triangle_relaxation": false,
+    "network_branch_and_bound": false,
+    "backward_or_dual": false
+  },
+  "correctness": {
+    "numeric_tests_passed": 17,
+    "combined_numeric_deferral_tests_passed": 32,
+    "fraction_phase_point_jacobian": true,
+    "independent_milp_both_phases": true,
+    "rounded_rhs_counterexample_closed": true,
+    "minimum_subnormal_half_free_graph": true,
+    "py_compile_passed": true,
+    "diff_check_passed": true
+  },
+  "single_thread": {
+    "paired_repeats": 31,
+    "candidate_median_ms": 2.419239,
+    "materialized_median_ms": 5.575029,
+    "median_speedup": 2.3044556573368733,
+    "candidate_p95_ms": 2.4456465,
+    "materialized_p95_ms": 5.6060235,
+    "gate_required": 1.5,
+    "gate_passed": true
+  },
+  "four_thread": {
+    "paired_repeats": 15,
+    "candidate_median_ms": 14.330579,
+    "materialized_median_ms": 34.582715,
+    "ratio_of_medians": 2.4132112875550944,
+    "paired_median_speedup": 2.3760416254108376,
+    "paired_bootstrap_95_lower": 2.194953701123727,
+    "paired_bootstrap_95_upper": 2.459098443090294,
+    "median_gate_required": 2.0,
+    "bootstrap_gate_required": 1.8,
+    "gate_passed": true
+  },
+  "fresh_process_first_response": {
+    "paired_repeats": 7,
+    "candidate_median_ms": 2.956514,
+    "materialized_median_ms": 6.211599,
+    "median_speedup": 2.10098751434967,
+    "candidate_p95_ms": 3.0531013,
+    "materialized_p95_ms": 6.4396405,
+    "p95_speedup": 2.1092128518631204,
+    "paired_bootstrap_95_lower": 2.083568689341569,
+    "paired_bootstrap_95_upper": 2.116861362591319,
+    "candidate_worst_hwm_delta_bytes": 364544,
+    "materialized_worst_hwm_delta_bytes": 471040,
+    "first_response_gate_passed": true
+  },
+  "authority_and_integration": {
+    "graph_topology_authenticated": false,
+    "producer_owned_sealed_input": false,
+    "historical_build_api_repaired": false,
+    "runtime_fallback_removed": false,
+    "production_integration": false,
+    "proof_authority": false,
+    "verdict_authority": false,
+    "real_model_allowed": false,
+    "large_model_allowed": false
+  },
+  "decision": {
+    "status": "PERFORMANCE_GATES_PASS_DISCONNECTED_HANDOFF_ONLY",
+    "production_promotion": false,
+    "next_single_path": "Graph-owned sole-consumer seal, producer-owned immutable ADD expression, numeric v2 ReLU, and UNKNOWN on any topology mismatch; no runtime materialization fallback."
+  }
+}

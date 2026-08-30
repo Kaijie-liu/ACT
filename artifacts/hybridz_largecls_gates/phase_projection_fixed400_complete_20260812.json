@@ -1,0 +1,93 @@
+{
+  "schema": "act.hybridz.phase_projection_fixed400_complete.v1",
+  "date": "2026-08-12",
+  "status": "COMPLETE",
+  "manifest_cases": 400,
+  "totals": {
+    "FALSIFIED": 43,
+    "UNKNOWN": 357,
+    "ERROR": 0
+  },
+  "families": {
+    "cifar100_medium": {
+      "completed": 100,
+      "FALSIFIED": 12,
+      "UNKNOWN": 88,
+      "successful_iids": [2, 11, 31, 43, 48, 54, 61, 64, 65, 69, 83, 97],
+      "median_falsified_seconds": 5.269819924607873,
+      "median_unknown_seconds": 4.633219804614782
+    },
+    "cifar100_large": {
+      "completed": 100,
+      "FALSIFIED": 10,
+      "UNKNOWN": 90,
+      "successful_iids": [118, 119, 124, 148, 155, 164, 181, 183, 194, 199],
+      "median_falsified_seconds": 10.390784765128046,
+      "median_unknown_seconds": 9.117035875562578
+    },
+    "tinyimagenet_medium": {
+      "completed": 200,
+      "FALSIFIED": 21,
+      "UNKNOWN": 179,
+      "successful_iids": [1, 7, 29, 38, 46, 62, 65, 69, 77, 85, 87, 90, 103, 116, 120, 125, 150, 155, 181, 189, 193],
+      "median_falsified_seconds": 11.15249469410628,
+      "median_unknown_seconds": 9.844537690281868
+    }
+  },
+  "unknown_reason_counts": {
+    "single_lp_candidate_failed_exact_phase_or_margin_replay": 345,
+    "single_input_lp_infeasible": 7,
+    "single_input_lp_time_limit": 2,
+    "live_row_stream_fail_closed": 2,
+    "deadline_at_singleton_replay": 1
+  },
+  "complete_revalidation": {
+    "unique_cases": 400,
+    "jsonl_records": 400,
+    "all_successes_have_verifier_owned_proof_authority": true,
+    "all_successes_have_one_phase_update": true,
+    "all_successes_have_zero_phase_retries": true,
+    "all_successes_have_one_property_row": true,
+    "all_successes_have_zero_property_row_retries": true,
+    "all_successes_replay_every_exact_phase": true,
+    "all_successes_have_zero_triangle_rows": true,
+    "all_cases_input_sampling_used": false,
+    "all_cases_pgd_used": false,
+    "all_cases_concrete_onnx_execution_used": false,
+    "all_cases_act_bab_used": false,
+    "all_cases_backward_used": false,
+    "all_cases_dual_tightening_used": false,
+    "all_cases_root_solver_fallback_used": false,
+    "resume_revalidation_passed": true,
+    "background_workers_after_completion": 0
+  },
+  "performance_gate": {
+    "same_topology_single_pair_speedup": 4.0278879877390645,
+    "four_concurrent_five_pair_median_speedup": 2.1237243882995824,
+    "paired_bootstrap_95_lower": 2.0565868603512625,
+    "candidate_result_conflicts": 0,
+    "stable_id_conflicts": 0,
+    "passed": true
+  },
+  "hashes": {
+    "jsonl_sha256": "0980c6e20de45516733cde3e433e08a82a742ea8b8c0ee7d362e845b73bf1b08",
+    "summary_sha256": "5e536e4fc6b538ac64416eee214d30599dca88d62b6a6b9cb8cc36dab76ce6fe",
+    "runner_sha256": "fca86078cdf41ae48f94e16442fed50377b962582938b8bb5713bbecb92cc135",
+    "candidate_sha256": "615b45516b0d4cd2a3632c4f260efffc4fc5cf451444225f8d1bb3e6a04993ba",
+    "live_row_dependency_sha256": "be00bd11ee62536a5ea31d2f5f90aff616bc15452d703a8e9e7e6e7419004e86",
+    "verifier_sha256": "eb3dfc8611ee97262bf71d66b8deee58a6a2544d0934d94ca7b075424dbc3afd",
+    "config_sha256": "8d94960cf4686f8d9c894cc18c1483b57092faa52e794905dce9f622c8fddf21"
+  },
+  "artifacts": {
+    "jsonl": "artifacts/hybridz_largecls_gates/phase_projection_fixed400_20260812.jsonl",
+    "summary": "artifacts/hybridz_largecls_gates/phase_projection_fixed400_20260812.summary.json",
+    "runner": "act/pipeline/verification/hybridz_phase_projection_fixed400.py"
+  },
+  "interpretation": {
+    "formal_verifier_solved_count": 43,
+    "cifar100_formal_solved_count": 22,
+    "tinyimagenet_formal_solved_count": 21,
+    "independent_certificate_role": "auxiliary_only_not_used",
+    "dominant_next_target": "Improve the one shared phase-cell/property objective mechanism responsible for the 345 replay failures; do not add rare-case fallback branches."
+  }
+}

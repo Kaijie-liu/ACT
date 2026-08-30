@@ -1,0 +1,294 @@
+{
+  "schema": "act.hybridz.operator_add_exact_relu_commonpath_stoploss.v1",
+  "date": "2026-08-11",
+  "scope": "synthetic_graph_owned_operator_add_to_all_exact_relu",
+  "goal_constraints": {
+    "common_path_only": true,
+    "runtime_fallbacks_added": 0,
+    "new_representations_added": 0,
+    "triangle_rows": 0,
+    "network_branch_and_bound": false,
+    "backward_or_dual": false,
+    "real_or_large_run": false
+  },
+  "implementation": {
+    "operator_hz_path": "act/back_end/hybridz_tf/operator_hz.py",
+    "operator_hz_sha256": "9ea65e9b8ea4e5acebbb467ca5e84cedb1cbc6cf5f23859328db4bc3781eb53b",
+    "focused_test_path": "act/back_end/hybridz_tf/test_operator_add_fusion.py",
+    "focused_test_sha256": "4ad75df2c90b8e7b87968eb2ca81b6953f92c90c74497e37773c15c9182201c8",
+    "changes": [
+      "Removed the per-layer full cube recomputation used only for unconsumed fact-width metadata.",
+      "Removed the per-ReLU before-fact conversion used only for two unconsumed diagnostic differences.",
+      "Replaced two identity-diagonal sparse products with one direct CSR subtraction on the dominant unscaled relation path.",
+      "Computed opposite exact relation rows once, reused the identical outward error allowance, and applied one exact CSR negation.",
+      "Canonicalized CSR once at affine and mixed-row replacement producer boundaries.",
+      "Skipped two redundant boolean CSR row copies when a relation retains its complete row block.",
+      "Used a direct all-active outward-inflation path instead of three boolean gather/scatter copies.",
+      "Avoided a boolean sparse-matrix SpMV when every source-mass column is positive.",
+      "Reduced absolute CSR data directly in canonical row order instead of cloning data, indices and indptr for row-L1 mass.",
+      "Validated fixed scalar roundoff operation counts before broadcasting, eliminating repeated row-sized finite/range reductions.",
+      "Reused canonical affine-operator indices and indptr for abs(W), allocating only absolute data when a negative stored bit exists."
+    ],
+    "semantic_change": false,
+    "fact_audit_metadata": "omitted_nonsemantic_hot_path_v1"
+  },
+  "single_block_width_128": {
+    "materialized_structure": {
+      "continuous": 384,
+      "binary": 128,
+      "upper_rows": 640,
+      "constraint_nnz": 1408
+    },
+    "fused_structure": {
+      "continuous": 256,
+      "binary": 128,
+      "upper_rows": 384,
+      "constraint_nnz": 896
+    },
+    "pre_simplification_build_median_ms": {
+      "materialized": 5.31315,
+      "fused": 3.679791,
+      "speedup": 1.4438727634259665
+    }
+  },
+  "repeated_residual_fixture": {
+    "width": 64,
+    "blocks": 8,
+    "unstable_exact_relu_rows": 512,
+    "objective": "maximize sum of final outputs",
+    "highs_threads_per_request": 1,
+    "candidate_triangle_rows": 0,
+    "before_nonsemantic_scan_removal": {
+      "materialized_full_stage_median_ms": 53.024,
+      "fused_full_stage_median_ms": 32.177,
+      "speedup": 1.6478913509643534
+    },
+    "after_hot_path_simplification": {
+      "materialized_full_stage_median_ms": 36.921573,
+      "fused_full_stage_median_ms": 21.930328,
+      "speedup": 1.683585079074057,
+      "materialized_p95_ms": 38.573191800000004,
+      "fused_p95_ms": 22.663098100000003,
+      "materialized_build_median_ms": 25.132851,
+      "fused_build_median_ms": 17.844915
+    },
+    "four_concurrent_requests": {
+      "pairs": 7,
+      "materialized_median_ms": 134.544061,
+      "fused_median_ms": 95.53854,
+      "ratio_of_medians": 1.408270013337026,
+      "paired_median_speedup": 1.482632135089711,
+      "paired_bootstrap_95_lower": 1.30726775,
+      "paired_bootstrap_95_upper": 1.70536784,
+      "materialized_p95_ms": 150.61524119999999,
+      "fused_p95_ms": 104.0512231
+    }
+  },
+  "numeric_v2_integration_stoploss": {
+    "operator_fused_width_128": {
+      "continuous": 256,
+      "binary": 128,
+      "equalities": 0,
+      "upper_rows": 384,
+      "constraint_nnz": 896
+    },
+    "numeric_v2_direct_width_128": {
+      "continuous": 384,
+      "binary": 128,
+      "equalities": 128,
+      "upper_rows": 256,
+      "constraint_nnz": 1024
+    },
+    "decision": "Do not integrate numeric-v2 as a second Operator ReLU encoding: it has the same total constraint-row count and more continuous variables/nonzeros than the existing fused Operator exact graph."
+  },
+  "common_full_block_copy_deletion": {
+    "fixture": "width-64, eight residual blocks, 512 exact unstable ReLUs",
+    "structure": {
+      "binary": 512,
+      "upper_rows": 1536,
+      "constraint_nnz": 4480
+    },
+    "single_request_build_all_three_deletions": {
+      "pairs": 15,
+      "old_median_ms": 17.03400257974863,
+      "new_median_ms": 14.295767992734909,
+      "ratio_of_medians": 1.1915416218565724,
+      "paired_median_speedup": 1.1532529695477052,
+      "old_p95_ms": 18.071221932768818,
+      "new_p95_ms": 16.479306481778615
+    },
+    "four_concurrent_all_three_deletions": {
+      "four_concurrent_pairs": 9,
+      "old_group_median_ms": 99.91340897977352,
+      "new_group_median_ms": 86.77279483526945,
+      "ratio_of_medians": 1.1514370278086625,
+      "paired_median_speedup": 1.201335341777412,
+      "old_request_p95_ms": 106.1781516764313,
+      "new_request_p95_ms": 87.86644670180976,
+      "result_conflicts": 0
+    },
+    "row_l1_bitwise_oracle": "256 focused randomized CSR cases plus 20,362 pre-test stress rows matched the prior SciPy abs(CSR).sum reduction bitwise.",
+    "decision": "Retain as a deletion-only common-path latency improvement. It adds no mode, representation, solver pass, or fallback and does not by itself authorize promotion."
+  },
+  "last_use_release_stoploss": {
+    "small_exact_residual_tracemalloc_peak_bytes": {
+      "retained": 2784018,
+      "released": 2745619,
+      "ratio": 0.9862073456325966
+    },
+    "dense_affine_tracemalloc_peak_bytes": {
+      "retained": 80893661,
+      "released": 80864893,
+      "ratio": 0.9996443738877846
+    },
+    "dense_affine_wall_ms": {
+      "retained": 144.34864465147257,
+      "released": 140.06464462727308
+    },
+    "decision": "REVERTED. Operator temporaries and final constraint assembly dominate peak memory; do not retain graph-lifetime bookkeeping or add suffix-specific bound snapshots."
+  },
+  "scalar_roundoff_and_absolute_topology_deletion": {
+    "fixture": "width-64, eight residual blocks, 512 exact unstable ReLUs, 576 continuous, 512 binary, 1536 upper rows, 3584 constraint nnz",
+    "single_request_incremental": {
+      "pairs": 31,
+      "old_median_ms": 13.563372,
+      "new_median_ms": 12.233722,
+      "ratio_of_medians": 1.1086872825784335,
+      "paired_median_speedup": 1.1073529965654192,
+      "old_p95_ms": 13.684695,
+      "new_p95_ms": 12.3493815
+    },
+    "four_concurrent_incremental": {
+      "pairs": 9,
+      "old_group_median_ms": 101.267677,
+      "new_group_median_ms": 90.848544,
+      "ratio_of_medians": 1.1146868462746085,
+      "paired_median_speedup": 1.112657221648875,
+      "old_group_p95_ms": 101.798185,
+      "new_group_p95_ms": 93.2881786,
+      "result_conflicts": 0
+    },
+    "full_build_tracemalloc": {
+      "old_median_peak_bytes": 797577,
+      "new_median_peak_bytes": 795485,
+      "new_to_old_ratio": 0.9973770557576259,
+      "interpretation": "The residual fixture has a small positive diagonal W, so full-build peak is not a Conv-memory proxy."
+    },
+    "mixed_csr_abs_operator_microcensus": {
+      "nnz": 167772,
+      "old_median_ms": 0.191548,
+      "new_median_ms": 0.184776,
+      "old_peak_bytes": 2096162,
+      "new_peak_bytes": 1408478,
+      "bitwise_equal_products": true
+    },
+    "decision": "Retain. This replaces broadcast validation and CSR topology copying on the one selected path; it adds no encoding, solver pass, or fallback."
+  },
+  "current_primary_gate_recheck": {
+    "fixture": "same width-64 eight-block exact-ReLU topology",
+    "single_request": {
+      "pairs": 15,
+      "materialized_median_ms": 16.460753,
+      "fused_median_ms": 11.807363,
+      "speedup": 1.3941091673051806,
+      "paired_median_speedup": 1.3969730582518722
+    },
+    "four_concurrent": {
+      "pairs": 9,
+      "materialized_median_ms": 102.476512,
+      "fused_median_ms": 72.965953,
+      "speedup": 1.404442863920382,
+      "paired_median_speedup": 1.3765315053179499,
+      "result_conflicts": 0
+    },
+    "decision": "FAIL: below the required 1.50x single and 2.00x four-thread gates; do not run real/large."
+  },
+  "diagnostic_full_stage_scale_census": {
+    "scope": "synthetic identity-diagonal residual DAG; complete Operator build plus hz_objbound_decide; diagnostic only because cold-process RSS/HWM/page-fault protocol is not complete",
+    "single_request": [
+      {
+        "width": 64,
+        "blocks": 8,
+        "materialized_median_ms": 33.252143,
+        "fused_median_ms": 21.001211,
+        "speedup": 1.583344074777402,
+        "paired_median_speedup": 1.5926281746381759
+      },
+      {
+        "width": 128,
+        "blocks": 8,
+        "materialized_median_ms": 50.540801,
+        "fused_median_ms": 30.214816,
+        "speedup": 1.6727158292143829,
+        "paired_median_speedup": 1.6799624779852904
+      },
+      {
+        "width": 256,
+        "blocks": 8,
+        "materialized_median_ms": 81.697123,
+        "fused_median_ms": 46.393628,
+        "speedup": 1.760955685552335,
+        "paired_median_speedup": 1.765769030353733
+      }
+    ],
+    "four_concurrent": [
+      {
+        "width": 128,
+        "pairs": 7,
+        "materialized_group_median_ms": 260.057954,
+        "fused_group_median_ms": 171.863358,
+        "speedup": 1.5131669544127027,
+        "paired_median_speedup": 1.519040992192158,
+        "paired_bootstrap_95_lower": 1.491835221657757,
+        "paired_bootstrap_95_upper": 1.585396230378753,
+        "result_conflicts": 0
+      },
+      {
+        "width": 256,
+        "pairs": 5,
+        "materialized_group_median_ms": 293.386362,
+        "fused_group_median_ms": 213.213471,
+        "speedup": 1.376021696115064,
+        "paired_median_speedup": 1.3891919528324832,
+        "paired_bootstrap_95_lower": 1.262599315901376,
+        "paired_bootstrap_95_upper": 1.9229798447975157,
+        "result_conflicts": 0
+      }
+    ],
+    "verdicts": [
+      "UNSAFE"
+    ],
+    "decision": "Single-request structural benefit grows with width, but four-concurrent latency and bootstrap gates remain decisively closed. Do not run real/large."
+  },
+  "direct_hz_objbound_full_stage_recheck": {
+    "fixture": "width-64, eight residual blocks, same exact-ReLU structure",
+    "materialized_median_ms": 41.161076,
+    "fused_median_ms": 29.337383,
+    "speedup": 1.403025,
+    "result": "UNSAFE on both paths",
+    "interpretation": "A separate direct build-plus-solve recheck is more conservative than the earlier checkpoint harness and confirms that promotion remains closed; it does not replace the earlier harness measurement."
+  },
+  "validation": {
+    "focused_operator_add_fusion": "21 passed, including scalar-vs-broadcast roundoff and topology-sharing abs(CSR) bitwise checks",
+    "adjacent_operator_regression": "60 passed, 20 subtests passed",
+    "combined_operator_and_numeric_regression": "247 passed, 102 subtests passed",
+    "py_compile": true,
+    "result_conflicts": 0,
+    "csr_canonical_postcondition": true
+  },
+  "gates": {
+    "single_topology_1_5x": false,
+    "four_concurrent_median_2_0x": false,
+    "paired_bootstrap_lower_1_8x": false,
+    "cold_first_response_complete": false,
+    "rss_hwm_complete": false,
+    "page_faults_complete": false
+  },
+  "decision": {
+    "status": "NO_PROMOTION_STOPLOSS",
+    "production_integration": false,
+    "real_model_allowed": false,
+    "large_model_allowed": false,
+    "next": "Retain only deletion/reuse changes on the existing path, including scalar roundoff validation and shared abs(W) topology. Do not add an ADD/ReLU fallback, suffix snapshot representation, or parallel encoding."
+  }
+}

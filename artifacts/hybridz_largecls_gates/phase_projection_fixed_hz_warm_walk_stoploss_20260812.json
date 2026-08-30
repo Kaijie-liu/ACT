@@ -1,0 +1,164 @@
+{
+  "schema": "act.hybridz.phase_projection_fixed_hz_warm_walk_stoploss.v1",
+  "date": "2026-08-12",
+  "status": "STOPPED_AT_SINGLE_PAIR_PERFORMANCE_GATE_AND_FIRST_UNKNOWN_CAPABILITY",
+  "goal_amendment": {
+    "proposal": "one deterministic fixed-binary constraint-local HZ LP with phase-boundary dual pivots and persistent HiGHS bound flips",
+    "incomplete_candidate_generation_is_allowed": true,
+    "resource_exhaustion_maps_to_unknown": true,
+    "final_authority_unchanged": "raw_BOX plus verifier-owned zero-width forward replay plus exact stored-binary64 property replay",
+    "restrictions_removed": false,
+    "input_sampling_used": false,
+    "onnx_point_execution_used": false,
+    "pgd_used": false,
+    "act_bab_used": false,
+    "activation_or_input_split_used": false,
+    "triangle_or_convex_verdict_fallback_used": false,
+    "backward_bounds_used": false,
+    "dual_tightening_used": false,
+    "mip_integrality_or_branching_used": false
+  },
+  "logical_screen_correction": {
+    "accepted": true,
+    "finding": "lack of a complete pivot guarantee is not by itself a rejection reason because the path is candidate-only and every failure may return UNKNOWN",
+    "remaining_admission_requirements": [
+      "one deterministic path",
+      "all fixed cells retain exact binary phase semantics",
+      "no MIP or branching",
+      "strict final verifier replay",
+      "single-pair and concurrency response gates"
+    ]
+  },
+  "representation_check": {
+    "cifar100_medium_iid2_full_operator_hz": {
+      "build_seconds": 11.970111354254186,
+      "continuous_factors": 52657,
+      "binary_factors": 2177,
+      "upper_rows": 101147,
+      "constraint_nnz": 10504751,
+      "decision": "rejected_wrong_latency_and_storage_shape"
+    },
+    "cifar100_medium_iid2_live_constraint_local_hz": {
+      "build_seconds_observed": 1.7695823507383466,
+      "continuous_factors": 6853,
+      "binary_factors": 1413,
+      "equality_rows": 1504,
+      "upper_rows": 5094,
+      "constraint_nnz": 1613577,
+      "generator_stream_seconds": 0.48691718745976686,
+      "constraint_local_preactivation_factors": 1504,
+      "decision": "only_admissible_existing_representation_for_the_sentinel"
+    },
+    "semantic_caveat": "fixed binaries make the stored HZ model one exact phase assignment, but the outward numerical-error factors and HiGHS tiny-coefficient candidate copy mean its LP polytope is not asserted bit-identical to the composed input-factor LP; it remains candidate-only and requires final replay"
+  },
+  "positive_control_cifar100_medium_iid2": {
+    "selected_property_row": 67,
+    "established_projected_cell_margin_lower": 0.09290155117959588,
+    "fixed_hz_lp_margin_nearest": 0.0929017206318914,
+    "fixed_hz_lp_optimal": true,
+    "ipm_basis_valid": true,
+    "live_hz_build_seconds": 1.4848093036562204,
+    "initial_fixed_cell_ipm_seconds": 2.23068995308131,
+    "same_process_retained_complete_path_seconds": 3.87979771848768,
+    "impossible_candidate_lower_bound_seconds": 3.7154992567375302,
+    "impossible_upper_bound_speedup": 1.044218781511573,
+    "omitted_from_candidate_lower_bound": [
+      "analytic projected-cell seed construction",
+      "phase-walk iterations",
+      "decoded-input construction",
+      "raw BOX replay",
+      "zero-width ACT forward replay",
+      "exact property proof"
+    ],
+    "required_single_pair_speedup": 1.5,
+    "passed_single_pair_gate": false
+  },
+  "first_unknown_cifar100_medium_iid0": {
+    "selected_property_row": 53,
+    "baseline_formal_outcome": "UNKNOWN",
+    "baseline_projected_cell_margin_lower": -0.03056648102799219,
+    "fixed_hz_initial_margin_nearest": -0.03056634014552424,
+    "phase_boundary_rule": "inactive phase uses a basis-active lower sign row; active phase uses the basis-active lower bound of its normalized ReLU output factor; select largest absolute dual and break ties by binary position",
+    "historical_pivot_reproduced": {
+      "binary_position": 148,
+      "relu_layer_id": 3,
+      "relu_row": 2389,
+      "old_phase": -1,
+      "rank": 1,
+      "dual_magnitude": 0.13769677648105133,
+      "warm_resolve_seconds": 0.17488985136151314,
+      "neighbor_margin_nearest": -0.030251860578157874,
+      "historical_composed_neighbor_margin_lower": -0.03025199949235557
+    },
+    "monotone_walk": [
+      {
+        "step": 0,
+        "margin": -0.03056634014552424,
+        "pivot_binary": 148,
+        "relu_key": [3, 2389],
+        "solve_seconds": 2.7265152353793383
+      },
+      {
+        "step": 1,
+        "margin": -0.030251860578158467,
+        "pivot_binary": 805,
+        "relu_key": [5, 6289],
+        "solve_seconds": 0.1626119939610362
+      },
+      {
+        "step": 2,
+        "margin": -0.029111096575224656,
+        "pivot_binary": 858,
+        "relu_key": [5, 7778],
+        "solve_seconds": 0.055480423383414745
+      },
+      {
+        "step": 3,
+        "margin": -0.02909080295555974,
+        "pivot_binary": 1097,
+        "relu_key": [18, 1567],
+        "solve_seconds": 0.05516804102808237
+      },
+      {
+        "step": 4,
+        "margin": -0.028941138722504745,
+        "pivot_binary": 647,
+        "relu_key": [5, 2466],
+        "solve_seconds": 0.07498347852379084
+      },
+      {
+        "step": 5,
+        "margin": -0.028941138722504745,
+        "solve_seconds": 0.03339796606451273,
+        "stop": "not_strictly_improved"
+      }
+    ],
+    "unique_phase_flips": 5,
+    "new_formal_verdict": false,
+    "decision": "the corrected walk is real and cheap after the first basis, but it stalls strictly negative on the first capability target"
+  },
+  "hostile_selection_control": {
+    "finding": "ranking raw Big-M branch-row or fixed-binary marginals without requiring an active phase boundary selects binary 1249 and an empty neighboring cell",
+    "empty_cell_resolve_seconds_observed": 15.664203410968184,
+    "required_guard": "basis-active phase-boundary filter",
+    "decision": "the boundary filter is semantic, not a tunable fallback"
+  },
+  "decision": {
+    "fixed14_run": false,
+    "fixed40_run": false,
+    "fixed400_run": false,
+    "production_integration": false,
+    "new_formal_falsified": 0,
+    "formal_score_after_experiment": {
+      "total": 43,
+      "denominator": 400,
+      "cifar100_medium": 12,
+      "cifar100_large": 10,
+      "tinyimagenet_medium": 21
+    },
+    "unknown_ceiling_census_run": false,
+    "unknown_ceiling_census_reason": "the single-pair performance gate and first official UNKNOWN capability gate already failed, so a 357-instance expansion could not authorize this implementation",
+    "reason": "the route validates the proposed warm bound-flip mechanism but fails the first performance gate even under an impossible lower bound and adds no verdict on the first official UNKNOWN",
+    "reopen_condition": "a representation that constructs the same fixed-cell walk model and its first usable basis below the retained path by enough margin to pass the preregistered response gates"
+  }
+}

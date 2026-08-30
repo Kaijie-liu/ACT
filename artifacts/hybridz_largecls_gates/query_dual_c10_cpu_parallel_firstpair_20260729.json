@@ -1,0 +1,87 @@
+{
+  "bit_identical_by_pair": [
+    true,
+    true,
+    true,
+    true,
+    true
+  ],
+  "controlled_toy_only": true,
+  "cpu_rss": {
+    "after_peak_bytes": 1061892096,
+    "before_bytes": 731348992,
+    "increment_bytes": 330543104,
+    "maximum_increment_bytes": 2147483648,
+    "pass": true
+  },
+  "elapsed_seconds": 15.518874748144299,
+  "first_pair_admitted": true,
+  "gates": {
+    "first_pair_minimum_speedup": 1.5,
+    "five_pair_median_minimum_speedup": 2.0,
+    "paired_bootstrap_95_lower_minimum": 1.8,
+    "zero_result_regressions": true
+  },
+  "median_speedup": 3.4277039507925866,
+  "onnx_loaded": false,
+  "paired_bootstrap_95_lower": 3.346014405407344,
+  "paired_speedups": [
+    3.4945330037563993,
+    3.4268998443871133,
+    3.457379652504539,
+    3.346014405407344,
+    3.4277039507925866
+  ],
+  "pairs_run": 5,
+  "parallel_seconds": [
+    0.5800592130981386,
+    0.5872247670777142,
+    0.5841999901458621,
+    0.5886543476954103,
+    0.5757668758742511
+  ],
+  "receipt_sha256": "8272af14a75b4d347d760d50ebcd6054dc2c0630b9cafd4e68bd24851eb66dd5",
+  "result_regressions": 0,
+  "schema": "act.query_dual_c10_cpu_parallel_audit.v1",
+  "serial_seconds": [
+    2.0270360643044114,
+    2.0123604629188776,
+    2.0198011589236557,
+    1.969645927194506,
+    1.9735583951696754
+  ],
+  "solver_verdict_called": false,
+  "source_integrity_stable": true,
+  "source_sha256_after": {
+    "act/back_end/hybridz_tf/query_dual_replay.py": "96dbaef33c89da32ce2246db23a4f94ca8b40a1dde5b4b3fb80df66f22430063",
+    "act/back_end/hybridz_tf/test_query_dual_replay_v3.py": "0c5db67ea92100fb050e6d8c40c02b58f7c1641b520110dfe29fe06101de4c55",
+    "act/pipeline/verification/query_dual_c10_cpu_parallel_audit.py": "3825d5cc18b810b87a4fb74f0917b9d837cc6c0c066897185b998d24a13bcfdf",
+    "act/pipeline/verification/query_dual_v3_toy_audit.py": "1c3e8e0b7ac12305e688818b63b6d9b62c62dc5b9330f283e85c09ef4eaf8a0e"
+  },
+  "source_sha256_before": {
+    "act/back_end/hybridz_tf/query_dual_replay.py": "96dbaef33c89da32ce2246db23a4f94ca8b40a1dde5b4b3fb80df66f22430063",
+    "act/back_end/hybridz_tf/test_query_dual_replay_v3.py": "0c5db67ea92100fb050e6d8c40c02b58f7c1641b520110dfe29fe06101de4c55",
+    "act/pipeline/verification/query_dual_c10_cpu_parallel_audit.py": "3825d5cc18b810b87a4fb74f0917b9d837cc6c0c066897185b998d24a13bcfdf",
+    "act/pipeline/verification/query_dual_v3_toy_audit.py": "1c3e8e0b7ac12305e688818b63b6d9b62c62dc5b9330f283e85c09ef4eaf8a0e"
+  },
+  "status": "pass",
+  "thread_contract": {
+    "blas_threads_required": 1,
+    "parallel_workers": 4,
+    "serial_workers": 1,
+    "taskset_cpu_count_required": 4
+  },
+  "topology": {
+    "channels": 32,
+    "classes": 100,
+    "height": 16,
+    "kind": "two_conv_residual_add",
+    "property_objectives": 99,
+    "width": 16
+  },
+  "vnnlib_loaded": false,
+  "warmup_seconds": {
+    "parallel": 0.589292623102665,
+    "serial": 1.9602753440849483
+  }
+}

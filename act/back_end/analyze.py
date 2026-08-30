@@ -12,6 +12,7 @@
 #
 #===---------------------------------------------------------------------===#
 
+import heapq
 import torch
 from collections import deque
 from dataclasses import dataclass
@@ -37,6 +38,41 @@ class AnalyzeCache:
     before: Dict[int, Fact]
     after: Dict[int, Fact]
     globalC: ConSet
+
+
+def _topological_ranks(net: Net) -> Dict[int, int]:
+    """Return deterministic worklist priorities for ``net``.
+
+    Kahn order gives every DAG predecessor a lower rank than its successors.
+    Any nodes left by a cycle receive deterministic trailing ranks; those nodes
+    can still be re-enqueued and converge with the normal change test.
+    """
+
+    indegree = {
+        layer.id: len(net.preds.get(layer.id, []))
+        for layer in net.layers
+    }
+    ready = deque(
+        layer.id for layer in net.layers
+        if indegree[layer.id] == 0
+    )
+    ranks: Dict[int, int] = {}
+    next_rank = 0
+
+    while ready:
+        lid = ready.popleft()
+        ranks[lid] = next_rank
+        next_rank += 1
+        for sid in net.succs.get(lid, []):
+            indegree[sid] -= 1
+            if indegree[sid] == 0:
+                ready.append(sid)
+
+    for layer in net.layers:
+        if layer.id not in ranks:
+            ranks[layer.id] = next_rank
+            next_rank += 1
+    return ranks
 
 
 @torch.no_grad()
@@ -122,9 +158,21 @@ def analyze(
             before[layer.id] = entry_fact
             seeds.append(layer.id)
 
-    WL = deque(seeds)
+    # A FIFO queue lets a DAG join run as soon as its first predecessor changes,
+    # then run again for every later predecessor. HybridZ makes those redundant
+    # partial dispatches especially expensive because each one rebuilds its side
+    # state. Kahn ranks ensure all affected predecessors settle before a join;
+    # ``queued`` coalesces pushes from sibling predecessors. On a DAG this means
+    # each affected layer is dispatched at most once per analyze() call.
+    topo_rank = _topological_ranks(net)
+    unique_seeds = list(dict.fromkeys(seeds))
+    WL = [(topo_rank[lid], lid) for lid in unique_seeds]
+    heapq.heapify(WL)
+    queued = set(unique_seeds)
     while WL:
-        lid = WL.popleft(); layer = net.by_id[lid]
+        _, lid = heapq.heappop(WL)
+        queued.discard(lid)
+        layer = net.by_id[lid]
 
         # merge predecessors into before[lid]
         if net.preds.get(lid):
@@ -155,6 +203,9 @@ def analyze(
             update_cache(layer, out_fact.bounds, None)
             layer.cache["prev_tf_side_state"] = side_sig
             for con in out_fact.cons: globalC.replace(con)
-            for sid in net.succs.get(lid, []): WL.append(sid)
+            for sid in net.succs.get(lid, []):
+                if sid not in queued:
+                    heapq.heappush(WL, (topo_rank[sid], sid))
+                    queued.add(sid)
 
     return before, after, globalC

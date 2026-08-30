@@ -1,0 +1,98 @@
+{
+  "schema": "act.hybridz.exact_phase_mip_start_stoploss.v1",
+  "date": "2026-08-11",
+  "status": "REJECTED_CONCURRENT_RESPONSE_GATE",
+  "candidate": {
+    "description": "use the stored exact-ReLU preactivation center sign as a binary-only partial start for the existing HiGHS cutoff MILP",
+    "additional_forward_passes": 0,
+    "additional_solver_paths": 0,
+    "additional_model_representations": 0,
+    "proof_authority": false,
+    "verdict_authority": false,
+    "solver_still_validates_every_original_row": true
+  },
+  "single_request_same_topology": [
+    {
+      "width": 128,
+      "continuous_factors": 384,
+      "binary_factors": 128,
+      "rows": 640,
+      "nnz": 1408,
+      "pairs": 9,
+      "baseline_median_seconds": 0.004497603513300419,
+      "candidate_median_seconds": 0.0024064239114522934,
+      "speedup": 1.8689988459207438,
+      "all_baseline_statuses": "witness",
+      "all_candidate_statuses": "witness"
+    },
+    {
+      "width": 256,
+      "continuous_factors": 768,
+      "binary_factors": 256,
+      "rows": 1280,
+      "nnz": 2816,
+      "pairs": 9,
+      "baseline_median_seconds": 0.00803621206432581,
+      "candidate_median_seconds": 0.003911090083420277,
+      "speedup": 2.054724358917881,
+      "all_baseline_statuses": "witness",
+      "all_candidate_statuses": "witness"
+    }
+  ],
+  "four_concurrent_width128": {
+    "requests_per_group": 4,
+    "paired_groups": 9,
+    "baseline_seconds": [
+      0.009640103206038475,
+      0.009923011064529419,
+      0.009531375020742416,
+      0.010232419706881046,
+      0.010055857710540295,
+      0.01073368452489376,
+      0.009996823035180569,
+      0.009251954033970833,
+      0.010083189234137535
+    ],
+    "candidate_seconds": [
+      0.008044303394854069,
+      0.0071922410279512405,
+      0.007590435445308685,
+      0.008176340721547604,
+      0.007972284220159054,
+      0.007596339099109173,
+      0.008172297850251198,
+      0.007459317333996296,
+      0.007399614900350571
+    ],
+    "paired_speedups": [
+      1.198376382994858,
+      1.3796827756419139,
+      1.2557085939823571,
+      1.2514668915294753,
+      1.2613521335720357,
+      1.4130075533558666,
+      1.22325730392625,
+      1.2403218176286033,
+      1.3626640534576773
+    ],
+    "median_baseline_seconds": 0.009996823035180569,
+    "median_candidate_seconds": 0.007596339099109173,
+    "ratio_of_medians": 1.3160053684745199,
+    "median_paired_speedup": 1.2557085939823571,
+    "paired_bootstrap_95_lower": 1.22325730392625,
+    "required_median_speedup": 2.0,
+    "required_bootstrap_95_lower": 1.8,
+    "all_statuses_match": true,
+    "gate_passed": false
+  },
+  "decision": {
+    "real_cifar100_run_performed": false,
+    "real_tinyimagenet_run_performed": false,
+    "reason_real_runs_skipped": "the cheaper concurrent response gate failed",
+    "production_code_retained": false,
+    "parameter_sweep_performed": false,
+    "further_variants_allowed": false,
+    "operator_sha256_restored": "0f3ea83b3ad9141e59917e5574cbb3eacf4f69a81645d7d41d829d4bc4af5707",
+    "solver_sha256_restored": "d4fe5491aec1d41819a00a6638d2ca7fd3b2d128939667f53623d8c89db4300d"
+  }
+}

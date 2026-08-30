@@ -1,0 +1,121 @@
+{
+  "schema": "act.hybridz.operator_live_affine_prescreen_checkpoint.v1",
+  "date": "2026-08-11",
+  "status": "REAL_BUILD_LATENCY_WIN_SOLVER_TIMEOUT_REMAINS",
+  "goal_constraints": {
+    "common_path_only": true,
+    "new_runtime_modes": 0,
+    "new_constraint_representations": 0,
+    "new_fallbacks": 0,
+    "rare_case_compute_branches": 0,
+    "all_unstable_relu_exact": true,
+    "triangle_or_convex_fallback": false,
+    "network_branch_and_bound": false,
+    "backward_or_dual": false,
+    "unsupported_or_resource_failure": "UNKNOWN",
+    "frontend_latency_is_a_gate": true
+  },
+  "implementation": {
+    "path": "act/back_end/hybridz_tf/operator_hz.py",
+    "sha256": "0f3ea83b3ad9141e59917e5574cbb3eacf4f69a81645d7d41d829d4bc4af5707",
+    "test_path": "act/back_end/hybridz_tf/test_operator_add_fusion.py",
+    "test_sha256": "dc0eecc43f81f46d009f9e43aabb49d0158f4df34551f41ddebfa4e8a38c2545",
+    "selected_algorithm": "stored-center outward mass prescreen before sparse W@G",
+    "behavior": [
+      "Propagate an outward radius around the stored affine center using abs(W) without constructing W@G.",
+      "Rows whose independently rechecked cube upper bound is nonpositive skip W@G because their sole successor ReLU maps them to exact zero.",
+      "All other rows retain the established sparse affine composition and collapsed-row recheck.",
+      "Preserve the established structural stop-loss population and stable-ID allocation order."
+    ]
+  },
+  "soundness": {
+    "initial_midpoint_radius_prototype_rejected": true,
+    "rejection_reason": "A midpoint radius is not necessarily a radius around the stored affine center and produced an invalid structural delta.",
+    "retained_radius": "max(outward(c-lower), outward(upper-c))",
+    "seeded_prescreen_cases": 64,
+    "seeded_output_rows": 448,
+    "fraction_exact_real_upper_enclosed": true,
+    "prescreen_upper_ge_full_composed_collapsed_upper": true,
+    "cifar100_equal_budget_final_hz_bitwise": true,
+    "cifar100_bitwise_fields": [
+      "c",
+      "b",
+      "ub",
+      "Gc",
+      "Gb",
+      "Ac",
+      "Ab",
+      "Auc",
+      "Aub"
+    ],
+    "focused_tests": "23/23",
+    "scoped_green_tests": 127,
+    "known_unrelated_red_suite": "test_operator_constraint_program_sink: 14/16 error before Operator build because constraint_program._NamespaceIdentity is type(threading.Lock()) and is not constructible",
+    "py_compile_passed": true,
+    "diff_check_passed": true
+  },
+  "cifar100_medium_iid2_build": {
+    "environment": "/data1/Kane/miniconda3/envs/act-py312",
+    "threads": 1,
+    "old_full_composition_seconds_equal_60s_candidate_budget": 10.66305,
+    "new_prescreen_seconds_equal_60s_candidate_budget": 2.761023,
+    "equal_budget_speedup": 3.8619924571436024,
+    "equal_budget_hz_shape": {
+      "continuous": 19591,
+      "binary": 1853,
+      "equality_rows": 0,
+      "upper_rows": 34691,
+      "value_nnz": 10100,
+      "constraint_nnz": 7730031
+    },
+    "default_old_observed_build_seconds": 11.963696,
+    "default_new_observed_build_seconds": 2.966822,
+    "default_observed_speedup": 4.032495377208339,
+    "default_old_continuous": 25735,
+    "default_new_continuous": 19591,
+    "default_old_upper_rows": 46979,
+    "default_new_upper_rows": 34691,
+    "reason_default_model_shrank": "The prescreen leaves enough of the existing 8-second live-affine budget for three later residual layers to complete instead of falling back to full materialization."
+  },
+  "tinyimagenet_medium_iid6_build": {
+    "environment": "/data1/Kane/miniconda3/envs/act-py312",
+    "threads": 1,
+    "old_default_build_seconds": 30.149773,
+    "new_default_build_seconds": 16.770757,
+    "speedup": 1.7977586223448352,
+    "old_shape": {
+      "continuous": 135660,
+      "binary": 1900,
+      "upper_rows": 254004,
+      "value_nnz": 40200,
+      "constraint_nnz": 26211832
+    },
+    "new_shape": {
+      "continuous": 60359,
+      "binary": 1856,
+      "upper_rows": 103358,
+      "value_nnz": 38200,
+      "constraint_nnz": 23581758
+    }
+  },
+  "bounded_real_cifar100_gate": {
+    "iid": 2,
+    "outer_timeout_seconds": 30.0,
+    "status": "timeout",
+    "first_usable_result": false,
+    "interpretation": "The request now reaches the smaller solver model about nine seconds earlier, but the first large HiGHS feasibility/objective solve still overshoots the bounded request.",
+    "receipt_jsonl": "artifacts/hybridz_largecls_gates/gate1_affine_prescreen_cifar100_medium_iid2_20260811.jsonl",
+    "receipt_jsonl_sha256": "efa2043f790a9b219e3509352ab8d14a66e740919a4f9edee93ee6a8978059a3",
+    "summary_json": "artifacts/hybridz_largecls_gates/gate1_affine_prescreen_cifar100_medium_iid2_20260811.summary.json",
+    "summary_json_sha256": "7ee98c48af66c399b013afd09dcbb0d65c1fa514e84e85258a115ae749209437",
+    "worker_log": "artifacts/hybridz_largecls_gates/logs/20260811T055157Z-621bfa571858_cifar100_medium_iid002.log",
+    "worker_log_sha256": "e9349a43e0a0f6cb87993d87566c8dd9dc9a063ca60cf064382f8a5502f80f70"
+  },
+  "decision": {
+    "retain_candidate": true,
+    "production_promotion": false,
+    "gate_6_authorized": false,
+    "reason": "Both real medium builds cross the single-request 1.5x prerequisite and CIFAR100 final HZ is bitwise equal under an equal decision budget, but no first usable real verdict is produced within 30 seconds and RSS/four-thread gates are not yet complete.",
+    "next_action": "Do not add another representation or solver fallback. Measure whether the common solver path redundantly runs base feasibility before the first property objective; accept only a single authenticated constructive-witness reuse or direct common-prefix ownership transfer, otherwise stop and return UNKNOWN earlier."
+  }
+}

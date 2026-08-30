@@ -1,0 +1,169 @@
+{
+  "schema": "act.hybridz.phase_projection.cpu_only_frontier_closure.v1",
+  "created_at": "2026-08-20T17:12:22+10:00",
+  "status": "CPU_ONLY_FRONTIER_CLOSED_PENDING_ONE_STATUS_CORNER_GPU_ATTEMPT",
+  "scope": "read_only_evidence_census_and_current_source_proof",
+  "terminal_payment_census": {
+    "verdict": "NO_EVIDENCE_BACKED_PATH",
+    "cases": {
+      "tinyimagenet_medium_iid143": {
+        "old_formal59_phase_seconds": 1.9302229192107916,
+        "current_v3_phase_seconds": 3.0301719745621085,
+        "current_minus_old_seconds": 1.0999490553513169,
+        "known_streaming_saving_seconds": 0.19762044493108988,
+        "remaining_noninferiority_gap_after_known_saving_seconds": 0.902328610420227,
+        "current_terminal_seconds": 0.14607850648462772,
+        "counterfactual_zero_terminal_device_build_unattributed_and_wrapper_additional_saving_upper_bound_seconds": 0.318163288757205,
+        "gap_after_counterfactual_upper_bound_seconds": 0.584165321663022,
+        "counterfactual_also_zero_setup_and_both_center_stages_additional_saving_upper_bound_seconds": 0.6874191025272012,
+        "gap_after_broader_counterfactual_upper_bound_seconds": 0.21490950789302588
+      },
+      "tinyimagenet_medium_iid153": {
+        "old_formal59_phase_seconds": 2.9282685881480575,
+        "current_v3_phase_seconds": 5.5788540644571185,
+        "current_minus_old_seconds": 2.650585476309061,
+        "current_repair_block_seconds": 2.1005512746050954,
+        "known_streaming_repair_seconds": 0.3138535534963012,
+        "known_streaming_saving_seconds": 1.7866977211087942,
+        "remaining_noninferiority_gap_after_known_saving_seconds": 0.8638877552002668,
+        "current_terminal_seconds": 0.14440303295850754,
+        "counterfactual_zero_terminal_device_build_unattributed_and_wrapper_additional_saving_upper_bound_seconds": 0.32185081765055656,
+        "gap_after_counterfactual_upper_bound_seconds": 0.5420369375497103,
+        "counterfactual_also_zero_setup_and_both_center_stages_additional_saving_upper_bound_seconds": 0.6881114700809121,
+        "gap_after_broader_counterfactual_upper_bound_seconds": 0.17577628511935472
+      }
+    },
+    "upper_bound_semantics": "Each counterfactual upper bound grants zero cost to the named measured blocks. The broader bound is deliberately more generous and physically unrealistic; it is not an achievable speedup claim.",
+    "conclusion": "Even the broader counterfactual leaves a strictly positive noninferiority gap on both TinyImageNet controls. Terminal optimization cannot pay for the current capability path.",
+    "terminal_only_sentinel_authorized": false,
+    "terminal_only_sentinel_started": false,
+    "performance_payment_credit": 0,
+    "source_evidence": {
+      "fixed400_ledger": {
+        "path": "artifacts/hybridz_largecls_gates/phase_projection_gpu_csr_fixed400_20260814.jsonl",
+        "sha256": "749db4e400329598c23c3dd7c9b9863c291eb3d1ba556cdcfcfa879c58487b43"
+      },
+      "current_v3_five_case_summary": {
+        "path": "artifacts/hybridz_largecls_gates/phase_projection_fprime_production_five_case_sentinel_20260814.json",
+        "sha256": "fc1471a8c41dc548a8386a34a1996fe1fdf2d91f420accdab53803153ac8c681"
+      },
+      "streaming_component": {
+        "path": "artifacts/hybridz_largecls_gates/fprime_persistent_lowrank_streaming_component_20260814.json",
+        "sha256": "da219128329e0739035001cadd402a4eb1850ad8f44aa961d7b93e76649c658f"
+      },
+      "device_component_completion": {
+        "path": "artifacts/hybridz_largecls_gates/phase_projection_device_program_v2_completion_20260814.json",
+        "sha256": "f973e44a4ab1765ba27f73a31496091b722af0512ea19f8820546b2781767f9b"
+      },
+      "sealed_transaction_stoploss": {
+        "path": "artifacts/hybridz_largecls_gates/phase_projection_sealed_eliminated_target_transaction_prototype_stoploss_20260820.json",
+        "sha256": "89ef3578df52d2b488f18473e3e29e8de9b49e31b06683c38764dba886babb59"
+      }
+    }
+  },
+  "corner_current_source_proof": {
+    "verdict": "INSUFFICIENT_EVIDENCE",
+    "case": "cifar100_large_iid166",
+    "historical_disconnected_result": {
+      "terminal_exact_margin_lower": 0.4187211701057267,
+      "terminal_verified": true,
+      "historical_phase_sha256": "4b66470df55edebb595e0e06c6b8a2de5c65496b8671c4d2f2552003d01ea306",
+      "probe": {
+        "path": "scratch_phase_projection_zero_corner_probe.py",
+        "sha256": "a94a88e3c53c1d5a49866e40bd80499d6f5f0b08e9619018391b59823ea10324"
+      },
+      "artifact": {
+        "path": "artifacts/hybridz_largecls_gates/phase_projection_zero_corner_ability_stoploss_20260814.json",
+        "sha256": "54e062c41aa2d20db84ffa1a951285581b7b277deb406f6e554620824abc72a4"
+      },
+      "accounting_role": "historical_disconnected_ability_only"
+    },
+    "same_benchmark_inputs": {
+      "onnx_sha256": "5747c00f20d8458b60da85c6ae446b4689409307146ca02f439277fbb7d89f16",
+      "vnnlib_sha256": "bdbd4493fbcc15ee7518afc86491eb183da4725a0525ad4af82cebc51b121b8c"
+    },
+    "current_implementation_locks": {
+      "canonical_phase_sha256": "13625f452c36a1b7844e4385b884471c8a0c82abf015bf2af417257e2c96c23a",
+      "status_corner_private_phase_sha256": "0f37084d3f45d8b487563777de5e66c173efaa05e95b428db90604eef51372ce",
+      "device_program_sha256": "7f0cce0e461f63ff6599ddd82ad5e61ef7c921eb489ef7bbbf4d60cda9048962",
+      "verifier_sha256": "eb3dfc8611ee97262bf71d66b8deee58a6a2544d0934d94ca7b075424dbc3afd"
+    },
+    "equivalence_gap": {
+      "historical_phase_source_snapshot_available": false,
+      "historical_artifact_missing_digests": [
+        "first_coeff",
+        "factor_vector",
+        "decoded_or_stored_binary64_input",
+        "terminal_bounds",
+        "rival_runner_up_gap"
+      ],
+      "candidate_prefix_and_operation_order_equivalence_proved": false,
+      "formula_difference_claimed": false,
+      "reason": "The historical 4b66470d source snapshot is unavailable and its artifact omitted the necessary digests, so byte-level or operation-order equivalence to the current 13625f45/0f37084d path cannot be proved."
+    },
+    "nontransferable_device_evidence": {
+      "oracle_scope": "single_iid2_only",
+      "transfer_to_cifar100_large_iid166_authorized": false
+    },
+    "current_structural_observation": {
+      "proved": "large166 reached an INFEASIBLE-origin repair branch and ended UNKNOWN",
+      "terminal_executed": false,
+      "status_corner_candidate_executed": false,
+      "raw_ledger": {
+        "path": "artifacts/hybridz_largecls_gates/phase_projection_structural_support_sentinel_20260820.raw.jsonl",
+        "sha256": "51da6e01d5a45f47c308dcd4313ad8d0f897aa88d01173cdaf85dc09978fd265"
+      },
+      "receipt_ledger": {
+        "path": "artifacts/hybridz_largecls_gates/phase_projection_structural_support_sentinel_20260820.receipts.jsonl",
+        "sha256": "98fc61249bf7de18122192eca562e029efba0dc8096280d20d04556892294d67"
+      },
+      "summary": {
+        "path": "artifacts/hybridz_largecls_gates/phase_projection_structural_support_sentinel_20260820.json",
+        "sha256": "a7d31dc4a0ab586bf9f749823f8ff1b90bb32c06ee4b3bde0072f73e6cbe217e"
+      }
+    },
+    "minimum_current_gpu_receipt_gap": {
+      "must_follow_preregistered_prefix": [
+        "cifar100_medium_iid2",
+        "tinyimagenet_medium_iid143",
+        "cifar100_large_iid166"
+      ],
+      "large166_required_receipt_facts": {
+        "base_owner_result": "typed_InfeasibleStatus",
+        "owner_solves": 1,
+        "dual_ray_exist_calls": 0,
+        "dual_ray_calls": 0,
+        "incremental_updates": 0,
+        "terminal_calls": 1,
+        "same_sealed_stored_binary64_input_for_box_and_terminal": true,
+        "raw_box_membership": true,
+        "exact_fraction_property_lower_bound": "strictly_greater_than_zero"
+      },
+      "current_receipt_available": false,
+      "historical_margin_may_substitute_for_current_receipt": false
+    },
+    "claim": "The historical +0.4187211701057267 must not be represented as a current-source gain. Only the already-preregistered status-corner attempt can close the current receipt gap."
+  },
+  "active_execution_boundary": {
+    "status_corner_handoff": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_infeasible_first_corner_waiting_for_gpu_handoff_20260820.json",
+      "sha256": "29c75e592f063a5f570f1f697f3931cd46aeae77d898877b7d69bd9d0747d32f"
+    },
+    "status_corner_waiter_state": "ACTIVE_WAITING_FOR_GPU",
+    "unique_active_waiter": true,
+    "ephemeral_root_exec_session_id_diagnostic_only": 22704,
+    "second_waiter_authorized": false,
+    "separate_terminal_sentinel_authorized": false,
+    "status_corner_runtime_outputs_absent_at_closure": true
+  },
+  "closure_accounting": {
+    "formal_fixed400_before": "59/400",
+    "formal_fixed400_after": "59/400",
+    "formal_gain": 0,
+    "performance_payment": 0,
+    "production_or_config_changed": false,
+    "gpu_used_by_this_cpu_only_closure": false,
+    "new_runtime_or_terminal_sentinel_started_by_this_closure": false,
+    "next_authorized_evidence": "existing_status_corner_waiter_outputs_only"
+  }
+}

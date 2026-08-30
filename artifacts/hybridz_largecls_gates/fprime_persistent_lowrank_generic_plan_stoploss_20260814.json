@@ -1,0 +1,223 @@
+{
+  "schema": "act.hybridz.fprime.persistent_lowrank_generic_plan_stoploss.v1",
+  "created_at": "2026-08-14",
+  "status": "GENERIC_PLAN_STOP_LOSS_MATHEMATICS_AND_ABILITY_PASS",
+  "formal_fixed400": {
+    "before": 59,
+    "after": 59,
+    "production_integrated": false,
+    "fixed14_or_fixed400_rerun": false
+  },
+  "scope": {
+    "proposed_path": "reuse the already-loaded screened composed base LP in the same request-local Highs owner; append signed low-rank ReLU corrections and one topologically ordered native RANGE definition per selected flip",
+    "oracle": "the current full target rebuild was materialized only after proposed-path timing, evaluated at the low-rank factors, and never solved",
+    "timing_authority": false,
+    "production_files_modified": []
+  },
+  "algebra": {
+    "base_preactivation": "z_r=c_r+q_r*x",
+    "delta": "D is one K-column forward influence pass under the simultaneously flipped target mask; every selected ReLU cuts incoming influence and injects one in its own column",
+    "zero_to_one": "y_i=c_i+q_i*x+sum_{j<i}D_ij*y_j",
+    "one_to_zero": "y_i=-(c_i+q_i*x)",
+    "unified_definition": "y_i-s_i*q_i*x-e_i*sum_{j<i}D_ij*y_j=s_i*c_i; s_i=+1 for 0->1 and -1 for 1->0; e_i=(1+s_i)/2",
+    "target_preactivation": "z'_r=c_r+q_r*x+sum_i D_ri*y_i",
+    "target_objective": "margin=c_obj+q_obj*x+sum_i Dobj_i*y_i",
+    "existing_flipped_row": "retain its base-oriented coefficients and change the finite upper bound to the numerically identical finite lower bound; no x coefficient mutation is needed",
+    "exact_relation": "with exact definitions the auxiliary formulation eliminates to the complete simultaneously flipped affine cell",
+    "loaded_relation": "native RANGE widening for unavoidable tiny coefficients is an outward candidate superset; candidate rows and margins have no verdict authority"
+  },
+  "row_mapping": {
+    "physical_phase_id": ["layer_id", "exact_position", "relu_row"],
+    "global_order": "network topological layer order then ascending exact position",
+    "uniqueness": "both the full tuple and (layer_id,relu_row) are globally unique",
+    "base_solver_rows": "sealed screened row position maps synchronously to the physical phase id before the base solve",
+    "updated_solver_rows": "existing sealed rows first, then missing nonredundant phase rows in global order, then K definition RANGE rows in selected topological order",
+    "selector_rows": "every selected marginal/ray row is required to be present in the sealed base screened map"
+  },
+  "tiny_contract": {
+    "threshold": 1e-12,
+    "upper_row": "b'=up(b-sum(min(a*l,a*u)))",
+    "range_lower": "L'=down(L-sum(max(a*l,a*u)))",
+    "range_upper": "U'=up(U-sum(min(a*l,a*u)))",
+    "arithmetic": "Fraction.from_float over stored binary64 terms, one final outward conversion",
+    "aux_bounds": "finite topological interval recursion over x and preceding auxiliary bounds",
+    "objective": "any nonzero coefficient with abs<=1e-12 fails closed"
+  },
+  "results": [
+    {
+      "case": "cifar100_large_iid153",
+      "role": "negative_margin_negative_control",
+      "selected_flips": 58,
+      "selection_sha256": "249a556c825e9eb57eee6aa06c67d18b51adda90c469dcd38821eb6f65bcffd3",
+      "base_status": "HighsModelStatus.kOptimal",
+      "updated_status": "HighsModelStatus.kOptimal",
+      "lowrank_margin": -0.0036483713352920073,
+      "full_rebuild_margin_at_same_factors": -0.0036483713354409364,
+      "absolute_margin_difference": 1.489290635925844e-13,
+      "full_rebuild_rows": 1722,
+      "full_rebuild_nnz": 190014,
+      "full_rebuild_violated_rows_at_lowrank_factors": 0,
+      "full_rebuild_max_upper_violation": 1.5651906853930697e-12,
+      "base_screened_rows": 1720,
+      "auxiliary_columns": 58,
+      "missing_phase_rows_appended": 3,
+      "definition_rows_appended": 58,
+      "existing_aux_nnz": 1714,
+      "appended_nnz": 4340,
+      "timing_seconds": {
+        "delta": 0.008009018376469612,
+        "generic_plan_assembly": 0.06587306130677462,
+        "mutation": 0.0007203444838523865,
+        "warm_solve": 0.017133441753685474,
+        "readback": 0.00017941836267709732,
+        "component_without_plan_assembly": 0.02604222297668457,
+        "full_incremental_through_readback": 0.09191528428345919
+      },
+      "terminal": null,
+      "owner": {
+        "instances": 1,
+        "solves": 2,
+        "basis_valid_before_warm_run": true,
+        "poisoned": false
+      }
+    },
+    {
+      "case": "tinyimagenet_medium_iid153",
+      "role": "infeasible_ray_positive_control",
+      "selected_flips": 5,
+      "selection_sha256": "b6bbf35dcaf5d762d8d1676f97b50065acd9eb2752b9532dcd49db8a8d312c4d",
+      "base_status": "HighsModelStatus.kInfeasible",
+      "updated_status": "HighsModelStatus.kOptimal",
+      "lowrank_margin": 0.029165834970771427,
+      "full_rebuild_margin_at_same_factors": 0.029165834971066396,
+      "absolute_margin_difference": 2.949689659747401e-13,
+      "terminal_fraction_margin_lower": 0.029165812152095683,
+      "terminal_verified": true,
+      "full_rebuild_rows": 2202,
+      "full_rebuild_nnz": 1359504,
+      "full_rebuild_violated_rows_at_lowrank_factors": 0,
+      "full_rebuild_max_upper_violation": 3.051062874570576e-12,
+      "base_screened_rows": 2202,
+      "auxiliary_columns": 5,
+      "missing_phase_rows_appended": 6,
+      "definition_rows_appended": 5,
+      "existing_aux_nnz": 713,
+      "appended_nnz": 14616,
+      "timing_seconds": {
+        "delta": 0.006227885372936726,
+        "generic_plan_assembly": 1.4103468544781208,
+        "mutation": 0.007650264538824558,
+        "warm_solve": 0.2999934693798423,
+        "readback": 0.00039109960198402405,
+        "component_without_plan_assembly": 0.3142627188935876,
+        "full_incremental_through_readback": 1.7246095733717084,
+        "terminal": 1.105256287381053
+      },
+      "owner": {
+        "instances": 1,
+        "solves": 2,
+        "dual_ray_exist_calls": 1,
+        "dual_ray_calls": 1,
+        "basis_valid_before_warm_run": true,
+        "poisoned": false
+      }
+    },
+    {
+      "case": "tinyimagenet_medium_iid143",
+      "role": "negative_margin_positive_control_and_K57_compatibility",
+      "selected_flips": 57,
+      "selection_sha256": "2b107af66ed3cf4c13b5b0aea4e76b9f2669b6a311dd9e3f0d2a90086e89032d",
+      "base_status": "HighsModelStatus.kOptimal",
+      "updated_status": "HighsModelStatus.kOptimal",
+      "lowrank_margin": 0.0002170229788827265,
+      "full_rebuild_margin_at_same_factors": 0.00021702292860403816,
+      "absolute_margin_difference": 5.027868834497019e-11,
+      "terminal_fraction_margin_lower": 0.0002169995966969651,
+      "terminal_verified": true,
+      "full_rebuild_rows": 1160,
+      "full_rebuild_nnz": 914226,
+      "full_rebuild_violated_rows_at_lowrank_factors": 0,
+      "full_rebuild_max_upper_violation": 2.221121075691307e-10,
+      "base_screened_rows": 1154,
+      "auxiliary_columns": 57,
+      "missing_phase_rows_appended": 17,
+      "definition_rows_appended": 57,
+      "existing_aux_nnz": 4785,
+      "appended_nnz": 63157,
+      "timing_seconds": {
+        "delta": 0.00622112862765789,
+        "generic_plan_assembly": 2.184214103035629,
+        "mutation": 0.007286852225661278,
+        "warm_solve": 0.09079284127801657,
+        "readback": 0.0003357715904712677,
+        "component_without_plan_assembly": 0.104636593721807,
+        "full_incremental_through_readback": 2.288850696757436,
+        "terminal": 1.1152325673028827
+      },
+      "owner": {
+        "instances": 1,
+        "solves": 2,
+        "basis_valid_before_warm_run": true,
+        "poisoned": false
+      }
+    }
+  ],
+  "performance": {
+    "diagnostic_component_target_seconds": 0.09717,
+    "target_is_not_fprime_promotion_authority": true,
+    "large153_component_pass": true,
+    "tiny153_component_pass": false,
+    "tiny143_component_pass": false,
+    "frozen_current_phase_seconds": {
+      "cifar100_large_iid153": 0.9946541227400303,
+      "tinyimagenet_medium_iid153": 2.9282685881480575,
+      "tinyimagenet_medium_iid143": 1.9302229192107916
+    },
+    "strict_current_generic_plan_stop_loss": "Tiny143 generic-plan incremental time 2.288850696757436 exceeds its entire frozen current phase path 1.9302229192107916 before any terminal payment; even eliminating the whole old phase path and making terminal free cannot satisfy single-request noninferiority.",
+    "four_thread_measured": false,
+    "fprime_promotion_claimed": false
+  },
+  "unique_next_representation": {
+    "status": "ONLY_ADMISSIBLE_REPLACEMENT_BEFORE_ANY_FURTHER_GATE",
+    "name": "streaming_existing_aux_only_plan",
+    "delete": "do not hstack, copy, canonicalize, or refilter the existing loaded x block",
+    "reuse": "base loaded CSR, its sealed row map, and its exact-safe loaded upper RHS",
+    "existing_unflipped": "caller reuses the base FrozenRows loaded upper unchanged; it contains base-x tiny compensation only",
+    "existing_flipped": "caller scans only the K corresponding full logical base rows to derive the x-tiny-only lower compensation, then switches upper to lower",
+    "new_column_tiny_ownership": "caller passes logical D including its tiny terms; FrozenNewColumns in the owner deletes and projects each y-tiny contribution exactly once for both unflipped and flipped rows",
+    "new_rows": "construct complete coefficient rows only for missing phase rows and K definitions",
+    "no_change": "same selector, same K, same algebra, same bounds, same tiny threshold, same owner lifecycle, no parameter or menu"
+  },
+  "restrictions": {
+    "input_sampling_used": false,
+    "onnx_input_point_execution_used": false,
+    "pgd_used": false,
+    "bab_split_or_enumeration_used": false,
+    "backward_bounds_used": false,
+    "dual_tightening_used": false,
+    "candidate_or_lp_has_authority": false,
+    "second_solver_used": false,
+    "fallback_or_menu_used": false,
+    "retry_or_parameter_scan_used": false,
+    "phase_updates": 1
+  },
+  "sources": {
+    "scratch": "scratch_phase_projection_fprime_persistent_lowrank_sentinel.py",
+    "scratch_sha256": "1f399a29be9fdf9cf2cca0b89adbb6721b307d1913d37be3bb704155458fdaeb",
+    "fprime_probe_sha256": "6ce6ab6b208a1224ce70cfc0e4f183f5acf07fbc6d9db65ef34a8f4694602a15",
+    "one_multi_helper_sha256": "9c158f7f13087fe2be93e3b67114db704cfa46432e82fda94e5162dd8da10040",
+    "phase_production_sha256": "4b66470df55edebb595e0e06c6b8a2de5c65496b8671c4d2f2552003d01ea306",
+    "live_production_sha256": "d53c2335c43905097e78bef8311175d7151d7e98293a6152fce62dba00d37511"
+  },
+  "environment_after_runs": {
+    "gpu_compute_processes": 0,
+    "gpu_memory_used_mib": 34,
+    "gpu_utilization_percent": 0
+  },
+  "notes": [
+    "A first Python 3.13 dynamic-import preflight failed before model construction, GPU work, or LP construction; the module was then registered in sys.modules and the single real run per control used the frozen scratch hash recorded above.",
+    "The three command stdout streams were returned through the session tool transcript but were not written as separate filesystem raw files. This aggregate was transcribed field-for-field from those returned JSON receipts and must not be represented as an independently captured raw receipt; the controls were not rerun merely to repair capture.",
+    "All three oracle materializations were outside proposed timing and used no solve; their only purpose was mechanical evaluation of the low-rank factors.",
+    "Formal coverage remains 59 until production integration, retention, noninferiority, fixed40/fixed400, and independent audit all pass."
+  ]
+}

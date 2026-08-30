@@ -1,0 +1,62 @@
+{
+  "schema": "act.hybridz.exact_hz_feasibility_preconditioner_stoploss.v1",
+  "date": "2026-08-11",
+  "status": "STOPLOSS_NO_PHASE_OR_PRIMAL_GAIN",
+  "scope": {
+    "family": "cifar100_medium",
+    "iid": 29,
+    "operator_exact_budget": -1,
+    "operator_materialize_add": false,
+    "input_sampling": false,
+    "pgd": false,
+    "concrete_onnx_execution": false,
+    "production_files_changed": 0
+  },
+  "power_of_two_row_scaling": {
+    "rows": 17489,
+    "columns": 19600,
+    "nnz": 3498525,
+    "highs_small_matrix_value": 1e-12,
+    "rows_with_dropped_coefficients_before": 2082,
+    "dropped_coefficients_before": 29454,
+    "exactly_scaleable_rows": 2082,
+    "unscaleable_rows": 0,
+    "required_exponent_min": 1,
+    "required_exponent_median": 5.0,
+    "required_exponent_max": 25,
+    "unscaled_add_rows_status": "HighsStatus.kWarning",
+    "scaled_add_rows_status": "HighsStatus.kOk",
+    "scaled_retained_nnz": 3498525,
+    "unscaled_fixed_phase_solve_seconds": 15.011231772601604,
+    "scaled_fixed_phase_solve_seconds": 15.265680412761867,
+    "unscaled_total_seconds": 18.2700140979141,
+    "scaled_total_seconds": 18.44859418272972,
+    "scaled_solution_value_valid": false,
+    "formal_result_gain": 0
+  },
+  "forward_fact_intersection": {
+    "cube_unstable_rows": 1061,
+    "fact_stable_rows": 0,
+    "intersection_stable_rows": 0,
+    "intersection_conflicts": 0,
+    "formal_result_gain": 0
+  },
+  "one_pass_sparse_fbbt": {
+    "elapsed_seconds": 0.48937354516237974,
+    "infeasible": false,
+    "reported_tightened_columns": 230,
+    "observed_changed_bounds": 14306,
+    "binary_columns": 1061,
+    "tightened_binary_columns": 0,
+    "fixed_binary_columns": 0,
+    "formal_result_gain": 0
+  },
+  "decision": {
+    "retain_power_of_two_scaling": false,
+    "retain_fact_intersection": false,
+    "retain_fbbt": false,
+    "add_runtime_branch": false,
+    "scan_more_solver_options": false,
+    "reason": "Exact row scaling removes HiGHS coefficient-drop warnings but produces no primal and slightly worsens wall time; forward facts stabilize no phase; one sparse FBBT pass fixes no phase binary. None addresses the exact-HZ feasibility bottleneck."
+  }
+}

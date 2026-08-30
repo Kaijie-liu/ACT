@@ -1,0 +1,199 @@
+{
+  "schema": "act.hybridz.phase_projection_support_dual_pivot_stoploss.v1",
+  "date": "2026-08-12",
+  "status": "BOUNDED_FOLLOWUPS_CLOSED_NO_PRODUCTION_CHANGE",
+  "formal_baseline": {
+    "fixed400_falsified": 43,
+    "fixed400_unknown": 357,
+    "cifar100_medium_falsified": 12,
+    "cifar100_large_falsified": 10,
+    "tinyimagenet_medium_falsified": 21,
+    "phase_projection_sha256": "615b45516b0d4cd2a3632c4f260efffc4fc5cf451444225f8d1bb3e6a04993ba",
+    "live_row_stream_sha256": "be00bd11ee62536a5ea31d2f5f90aff616bc15452d703a8e9e7e6e7419004e86"
+  },
+  "scope": {
+    "model": "CIFAR100_resnet_medium.onnx",
+    "property": "CIFAR100_resnet_medium_prop_idx_7641_sidx_1041_eps_0.0039.vnnlib",
+    "fixed_manifest_id": "cifar100_medium_iid0",
+    "baseline_outcome": "UNKNOWN",
+    "same_parsed_graph_and_forward_facts": true,
+    "input_sampling_used": false,
+    "onnx_input_execution_used": false,
+    "pgd_used": false,
+    "act_bab_used": false,
+    "backward_bounds_used": false,
+    "dual_tightening_used": false
+  },
+  "candidate_only_profile": {
+    "wall_seconds": 2.8534356020390987,
+    "profiled_cpu_seconds": 2.529,
+    "two_build_cell_cumulative_seconds": 1.4519001070000002,
+    "two_generator_stream_cumulative_seconds": 0.598,
+    "affine_support_forward_cumulative_seconds": 0.842,
+    "affine_support_forward_calls": 105,
+    "selected_affine_matrix_cumulative_seconds": 0.318,
+    "live_row_cumulative_seconds": 0.293,
+    "interpretation": "Repeated compact support traversal is real, but the two generator streams are not the dominant full-candidate cost by themselves. Python profiling overhead and CUDA synchronization make these stage figures diagnostic rather than an authoritative performance receipt."
+  },
+  "gpu_support_followups": {
+    "float64_forward_only": {
+      "support_bitwise_equal": true,
+      "median_paired_speedup": 1.3570281459950608,
+      "passed_1_50_gate": false
+    },
+    "float64_forward_and_backward": {
+      "forward_bitwise_equal": true,
+      "backward_bitwise_equal": true,
+      "paired_speedups": [
+        1.4499601182100785,
+        1.4481122660520491,
+        1.4452131687503682,
+        1.4610182073840132,
+        1.457946195627558
+      ],
+      "median_paired_speedup": 1.4499601182100785,
+      "minimum_paired_speedup": 1.4452131687503682,
+      "passed_1_50_gate": false
+    },
+    "float32_integer_sum_attempt": {
+      "maximum_connection_terms": 2048,
+      "mathematical_exact_integer_limit": 16777216,
+      "measured_median_speedup": 1.6229678562665213,
+      "forward_support_bitwise_equal": false,
+      "first_mismatch_call": 9,
+      "first_mismatch_rows": 512,
+      "tf32_disabled_recheck_still_mismatched": true,
+      "decision": "invalid_for_formal_use_despite_speed"
+    },
+    "triton_boolean_or_forward": {
+      "support_bitwise_equal": true,
+      "paired_speedups": [
+        1.498097482128102,
+        1.48643154538494,
+        1.523517316410136,
+        1.5126248471356605,
+        1.5049977876820084
+      ],
+      "median_paired_speedup": 1.5049977876820084,
+      "minimum_paired_speedup": 1.48643154538494,
+      "required_single_pair_speedup": 1.5,
+      "four_worker_gate_run": false,
+      "decision": "rejected_borderline_single_thread_result_has_no_required_concurrency_margin_and_duplicates_an_already_closed_build_local_support_cache_direction"
+    },
+    "impossible_zero_cost_all_support_upper_bound": {
+      "support_calls_replayed_from_precomputed_truth": 105,
+      "cache_mismatches": 0,
+      "paired_speedups": [
+        1.498928301202841,
+        1.4969192708566283,
+        1.4953865476319597,
+        1.481854511856397,
+        1.5182809624558824
+      ],
+      "median_paired_speedup": 1.4969192708566283,
+      "minimum_paired_speedup": 1.481854511856397,
+      "required_single_pair_speedup": 1.5,
+      "passed_1_50_gate": false,
+      "realizable_cold_request": false,
+      "interpretation": "This deliberately impossible upper bound charges zero computation, sealing, validation, or cold-population cost for every support result. Even that optimistic full-candidate bound misses the first gate, so no underflow special case, support cache, or second kernel path is justified."
+    },
+    "impossible_zero_cost_support_and_singleton_four_worker_upper_bound": {
+      "model": "CIFAR100_resnet_medium.onnx",
+      "property": "CIFAR100_resnet_medium_prop_idx_6232_sidx_3020_eps_0.0039.vnnlib",
+      "fixed_manifest_id": "cifar100_medium_iid2",
+      "baseline_formal_outcome": "FALSIFIED",
+      "requests_per_group": 4,
+      "paired_groups": 5,
+      "search_support_calls_replayed_per_request": 105,
+      "singleton_interval_forward_replayed_at_zero_cost": true,
+      "cache_mismatches": 0,
+      "all_statuses_match": true,
+      "paired_speedups": [
+        1.3168043300513559,
+        1.34412319527819,
+        1.3418222641892383,
+        1.2972333595869125,
+        1.355688412130821
+      ],
+      "median_paired_speedup": 1.3418222641892383,
+      "minimum_paired_speedup": 1.2972333595869125,
+      "required_four_worker_median_speedup": 2.0,
+      "passed_four_worker_gate": false,
+      "realizable_cold_request": false,
+      "interpretation": "Even a non-realizable upper bound that removes every search support traversal and the entire terminal singleton proof is far below the concurrency gate. The verifier-owned singleton proof remains intact and its authority boundary is not widened."
+    }
+  },
+  "full_direct_csr_reuse": {
+    "bitwise_equal_after_row_and_column_filter": true,
+    "full_conv_operator_nnz_sum": 74489216,
+    "selected_conv_nnz_sum": 4960430,
+    "median_paired_speedup": 0.8640637377383775,
+    "minimum_paired_speedup": 0.8584299864128762,
+    "decision": "rejected_full_operator_materialization_is_the_wrong_memory_and_latency_shape"
+  },
+  "single_dual_blocker_neighbor": {
+    "selection_rule": "flip exactly the phase row with the largest-magnitude active inequality marginal at the exact-cell LP optimum",
+    "selected_property_row": 53,
+    "pivot": {
+      "constraint_row": 148,
+      "layer_id": 3,
+      "relu_row": 2389,
+      "old_active_phase": false,
+      "minimize_marginal": -0.1376967735298438,
+      "slack": -6.938893903907228e-18
+    },
+    "baseline_cell": {
+      "phase_rows": 2030,
+      "lp_nnz": 2126574,
+      "replay_consistent": 2030,
+      "replay_inconsistent": 0,
+      "replay_ambiguous": 0,
+      "margin_lower": -0.03056648102799219,
+      "lp_seconds": 0.4784877449274063
+    },
+    "neighbor_cell": {
+      "lp_success": true,
+      "phase_rows": 2030,
+      "lp_nnz": 2126574,
+      "replay_consistent": 2030,
+      "replay_inconsistent": 0,
+      "replay_ambiguous": 0,
+      "margin_lower": -0.03025199949235557,
+      "stream_seconds": 0.18688907381147146,
+      "lp_seconds": 0.47935614082962275
+    },
+    "new_formal_verdict": false,
+    "decision": "rejected_first_capability_target_remains_strictly_negative_and_the_rule_adds_a_complete_stream_and_lp; no multi-pivot retry was attempted"
+  },
+  "tinyimagenet_terminal_proof_near_miss": {
+    "model": "TinyImageNet_resnet_medium.onnx",
+    "property": "TinyImageNet_resnet_medium_prop_idx_600_sidx_4087_eps_0.0039.vnnlib",
+    "fixed_manifest_id": "tinyimagenet_medium_iid60",
+    "fixed400_outcome": "UNKNOWN",
+    "fixed400_reason": "phase-projection deadline expired at singleton interval replay",
+    "extended_diagnostic_only": {
+      "status": "singleton_verified",
+      "phase_rows": 2926,
+      "replay_consistent": 2926,
+      "replay_inconsistent": 0,
+      "replay_ambiguous": 0,
+      "selected_property_row": 194,
+      "projected_margin_lower": 0.5646356418483321,
+      "singleton_margin_lower": 0.564635808653545,
+      "first_stream_seconds": 1.123704383149743,
+      "second_stream_seconds": 0.9637073101475835,
+      "lp_seconds": 3.1907768389210105,
+      "singleton_seconds": 1.1172236101701856,
+      "observed_total_seconds": 11.407804575748742
+    },
+    "formal_credit_added": false,
+    "decision": "retain as a genuine verifier-generated near miss, but do not widen the formal deadline or add a rare terminal grace path; the impossible four-worker de-duplication upper bound already fails the performance gate"
+  },
+  "cleanup": {
+    "production_files_changed": false,
+    "triton_scratch_source_retained": false,
+    "triton_scratch_bytecode_retained": false,
+    "phase_projection_probe_restored_sha256": "8295e50454b4a510d2854c355bbfe213f0f0a9b24e04d7a9e82fe3ab60eaca81"
+  },
+  "decision": "Do not integrate support kernels, full-operator CSR filtering, or dual-guided phase retries. Preserve the single responsive production path and require the next capability mechanism to change the global exact root search rather than add another cell or cache layer."
+}

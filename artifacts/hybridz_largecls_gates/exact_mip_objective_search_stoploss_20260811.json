@@ -1,0 +1,67 @@
+{
+  "schema": "act.hybridz.exact_mip_objective_search_stoploss.v1",
+  "date": "2026-08-11",
+  "status": "STOPLOSS_REVERTED",
+  "candidate": "Replace the zero-objective cutoff-feasibility search by one property-objective HiGHS search while accepting only an incumbent independently replayed against the original cutoff system.",
+  "scope": {
+    "family": "cifar100_medium",
+    "iid": 29,
+    "operator_exact_budget": -1,
+    "operator_materialize_add": false,
+    "row_workers": 1,
+    "solver_threads": 1,
+    "cold_outer_wall_seconds": 30.0,
+    "new_solver_sessions": 0,
+    "fallbacks": 0,
+    "input_sampling_used": false,
+    "pgd_used": false,
+    "concrete_onnx_candidate_search_used": false,
+    "raw_onnx_witness_replay_invoked": false
+  },
+  "correctness_boundary": {
+    "safe_from_highs_status_allowed": false,
+    "solver_infeasible_or_dual_bound_authority": false,
+    "only_validated_incumbent_or_unknown": true,
+    "toy_continuous_witness": true,
+    "toy_binary_witness": true,
+    "toy_nonwitness_returns_unknown": true,
+    "focused_regression": "19 passed, 5 subtests passed"
+  },
+  "cold_runs": [
+    {
+      "receipt": "artifacts/hybridz_largecls_gates/gate1_objective_witness_cifar100_medium_iid29_20260811.jsonl",
+      "receipt_sha256": "2a2a20d8c9d849f75522958d3b6ff4a30acc111f13778395aadf24c7b7ca0bc9",
+      "summary_sha256": "0f5506be834b44b4eaa22d7513bca058613c03d6f2f3bde260b4669c7ea74028",
+      "analysis_solver_replay_seconds": 26.508965,
+      "outer_status": "timeout",
+      "first_usable_result": false
+    },
+    {
+      "receipt": "artifacts/hybridz_largecls_gates/gate1_objective_witness_status_cifar100_medium_iid29_20260811.jsonl",
+      "receipt_sha256": "f68d1e53917c03739b809f4a98e8e9766b83390b1fdc3d2805cb282dc5d47981",
+      "summary_sha256": "504cf3d580030c8e4f80aa740d22e2911bacfd9003824a1f05c1ec9d38999475",
+      "worker_log_sha256": "eea0de344cd502207adfbc708ca919c2e5d65ef1cbd2ef2099936c68a2958b35",
+      "analysis_solver_replay_seconds": 26.469823,
+      "verifier_status_before_serialization": "unknown",
+      "has_counterexample": false,
+      "outer_wall_seconds": 30.107016840949655,
+      "outer_status": "timeout",
+      "first_usable_result": false
+    }
+  ],
+  "baseline_reference": {
+    "analysis_solver_replay_seconds": 27.094935,
+    "outer_status": "timeout",
+    "first_usable_result": false
+  },
+  "decision": {
+    "formal_solved_count_gain": 0,
+    "retain_candidate": false,
+    "add_runtime_mode": false,
+    "try_tinyimagenet": false,
+    "reason_tinyimagenet_skipped": "The smaller CIFAR100 common-path cold gate failed with UNKNOWN and no first usable result.",
+    "production_solver_restored_sha256": "d4fe5491aec1d41819a00a6638d2ca7fd3b2d128939667f53623d8c89db4300d",
+    "gate_diagnostic_removed": true,
+    "gate_restored_sha256": "45eb6536accfbaf8e30f62697f4c4f83f19f1c9a0a5d70e1dac4d4eb4a77b5a1"
+  }
+}

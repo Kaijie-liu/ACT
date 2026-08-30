@@ -1,0 +1,131 @@
+{
+  "schema": "act.hybridz.exact_mip_structural_replacement_stoploss.v1",
+  "created_at_local": "2026-08-11",
+  "status": "STOPLOSS_NO_EXACT_QUERY_GAIN",
+  "scope": {
+    "family": "cifar100_medium",
+    "iid": 29,
+    "operator_exact_budget": -1,
+    "operator_materialize_add": false,
+    "production_files_changed": 0,
+    "candidate_files_created": 0,
+    "tinyimagenet_attempted": false,
+    "concrete_onnx_execution": false,
+    "input_sampling": false,
+    "pgd": false,
+    "triangle_or_convex_fallback": false,
+    "act_branch_and_bound": false,
+    "backward_propagation": false,
+    "dual_tightening": false,
+    "runtime_fallbacks_added": 0
+  },
+  "retained_model": {
+    "continuous_factors": 10347,
+    "binary_phase_factors": 1052,
+    "source_rows": 15402,
+    "native_rows": 9279,
+    "native_nnz": 1556040,
+    "property_rows": 99,
+    "property_nnz": 9999
+  },
+  "bounded_structural_census": {
+    "continuous_constraint_degree_zero": 289,
+    "continuous_constraint_degree_one": 9,
+    "degree_one_and_property_free": 0,
+    "constraint_degree_zero_and_property_used": 100,
+    "fully_unused": 189,
+    "binary_degree_exactly_two": 1052,
+    "binary_degree_other": 0,
+    "no_fill_leaf_projection": {
+      "removable_columns": 0,
+      "rows_touched": 0,
+      "nnz_removed": 0,
+      "decision": "Closed before implementation: no property-free degree-one continuous column exists."
+    }
+  },
+  "stable_active_substitution_census": {
+    "stable_active_native_equalities": 6123,
+    "unique_candidate_pivots": 6123,
+    "pivots_used_in_prior_rows": 0,
+    "pivot_box_redundancy_exact_dyadic_checks_passed": 6123,
+    "pivot_coefficient_absolute_min": 1.9984975052622647e-07,
+    "pivot_coefficient_absolute_max": 6.144635369537913,
+    "pivot_coefficients_are_unit_or_power_of_two": false,
+    "projected_rows_if_arithmetic_were_free": 3156,
+    "projected_columns_if_arithmetic_were_free": 5276,
+    "naive_substitution_candidate_insertions": 137424041,
+    "current_native_nnz": 1556040,
+    "decision": "Closed. Non-power-of-two pivots prevent bit-exact binary64 division, while symbolic substitution has a roughly 88x candidate-fill upper bound and repeats the already-closed stable-active alias densification."
+  },
+  "replacement_solver_census": {
+    "pyscipopt_version": "6.2.1",
+    "scip_version": "10.0.2",
+    "same_big_m_model": {
+      "selected_verifier_rival_row": 69,
+      "selected_cube_upper": 36.573133953108616,
+      "front_build_seconds": 3.881649603135884,
+      "matrix_seconds": 0.03206553217023611,
+      "scip_total_seconds": 15.898790505714715,
+      "result": "unknown",
+      "candidate_found": false
+    },
+    "native_indicator_model": {
+      "selected_verifier_rival_row": 69,
+      "linear_rows_including_cutoff": 7176,
+      "indicator_rows": 2104,
+      "exact_relu_triplets": 1052,
+      "front_build_seconds": 3.978972937911749,
+      "matrix_preflight_seconds": 0.12371769733726978,
+      "scip_model_build_seconds": 0.6875597275793552,
+      "scip_solve_seconds": 15.06601166818291,
+      "nodes": 1,
+      "solutions": 0,
+      "status": "timelimit",
+      "decision": "Closed. Native indicators retain every phase binary but return no exact-HZ candidate in the bounded gate."
+    },
+    "exact_scip_mode": {
+      "python_api_exposed": true,
+      "installed_binary_support": false,
+      "enable_attempt_error": "SCIP was compiled without exact solve support",
+      "official_contract": "SCIP 10 exact mode can use rational, extended-precision, and safe floating-point computation and can emit independently checkable VIPR certificates when built with exact-solve dependencies.",
+      "official_documentation": "https://www.scipopt.org/doc-10.0.0/html/EXACT.php",
+      "decision": "Unavailable in the installed environment; ordinary SCIP infeasibility status is not promoted to proof authority."
+    }
+  },
+  "disaggregated_exact_relu_slack": {
+    "formulation": "Introduce r=y-x in [0,-l], replace the dense x-branch by r+(-l)z<=-l, keep y<=uz, and replace x-y<=0 by the equality x-y+r=0.",
+    "retains_one_binary_per_unstable_relu": true,
+    "feasible_set_preserving_algebra": true,
+    "baseline_rows_columns_nnz": [
+      9279,
+      11399,
+      1556040
+    ],
+    "candidate_rows_columns_nnz": [
+      9279,
+      12451,
+      1001121
+    ],
+    "nnz_ratio": 0.6433774196036092,
+    "continuous_column_increase": 1052,
+    "front_build_seconds": 4.037848245352507,
+    "transform_seconds": 0.24435562454164028,
+    "objective_seconds": 0.019810772500932217,
+    "exact_query_seconds": 13.519717224873602,
+    "result": "unknown",
+    "candidate_found": false,
+    "decision": "Closed before implementation. The material nnz reduction is offset by 1,052 extra continuous columns and produces neither a usable exact-HZ candidate nor a solve-time improvement."
+  },
+  "decision": {
+    "production_change_retained": false,
+    "run_tinyimagenet": false,
+    "formal_solved_count_gain": 0,
+    "add_leaf_projection": false,
+    "add_stable_active_substitution": false,
+    "replace_highs_with_ordinary_scip": false,
+    "add_indicator_formulation": false,
+    "add_disaggregated_slack_formulation": false,
+    "reason": "All four bounded replacements either have no common-path structure, create prohibitive fill, or return the same UNKNOWN without a usable exact witness. The installed SCIP build cannot provide exact solving or a checked infeasibility certificate."
+  },
+  "next_action": "Keep the retained projection-skip path. Do not add another linear ReLU reformulation or floating-point solver wrapper. A future exact-query replacement must begin with a proof-capable exact MIP build/certificate path or another independently checkable exact decision mechanism, remain a single common path, and cross the CIFAR100 bounded result gate before any TinyImageNet run."
+}

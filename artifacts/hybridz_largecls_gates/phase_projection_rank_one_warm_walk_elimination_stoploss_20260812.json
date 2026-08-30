@@ -1,0 +1,584 @@
+{
+  "schema": "act.hybridz.phase_projection_rank_one_warm_walk_elimination_stoploss.v1",
+  "date": "2026-08-12",
+  "status": "rejected_before_production",
+  "audit_complete": true,
+  "objective": "Eliminate fixed-HZ first-model and per-neighbor rebuild costs with one deterministic composed-cell low-rank phase walk while preserving the verifier's existing exact terminal authority.",
+  "scope": {
+    "production_integrated": false,
+    "production_files_modified": false,
+    "fixed14_run": false,
+    "fixed40_run": false,
+    "fixed400_rerun": false,
+    "new_formal_falsified": 0,
+    "runtime_fallbacks_added": 0,
+    "alternative_runtime_layouts_retained": 0,
+    "resource_exhaustion_maps_to_unknown": true,
+    "incomplete_candidate_generation_is_allowed": true
+  },
+  "method_restrictions": {
+    "restrictions_removed": false,
+    "input_sampling_used": false,
+    "onnx_point_execution_used": false,
+    "pgd_used": false,
+    "act_bab_used": false,
+    "activation_split_used": false,
+    "input_split_used": false,
+    "phase_enumeration_used": false,
+    "triangle_or_convex_verdict_fallback_used": false,
+    "backward_bounds_used": false,
+    "backward_sensitivity_used": false,
+    "dual_tightening_used": false,
+    "mip_integrality_used": false,
+    "mip_branching_used": false,
+    "candidate_property_row_retries": 0,
+    "candidate_phase_retries_outside_the_single_path": 0
+  },
+  "authority_boundary": {
+    "candidate_lp_has_verdict_authority": false,
+    "candidate_duals_have_verdict_authority": false,
+    "diagnostic_full_neighbor_oracle_has_verdict_authority": false,
+    "final_authority_unchanged": "raw BOX plus verifier-owned zero-width forward replay plus exact stored-binary64 property replay",
+    "fail_closed_rule": "Any infeasibility, non-improvement, deadline, arithmetic uncertainty, replay mismatch, or resource failure returns UNKNOWN."
+  },
+  "audit_classifications": {
+    "sound_pass": "The isolated candidate-only transformation was checked algebraically and with outward error accounting. The measured candidate margin was negative, so raw-BOX, zero-width forward, and exact-property terminal replay was not invoked; any future positive candidate would still require that unchanged final replay before a verdict.",
+    "diagnostic_oracle": "A full reconstructed neighbor or second stream was evaluated only after or beside the candidate to measure equality, containment, or latency; it is not part of the admissible route.",
+    "soundness_not_completed": "The full initial representation was stopped at a decisive response gate before every outward definition band and terminal replay was implemented.",
+    "performance_rejected": "The measured or optimistic route exceeds its preregistered latency budget and is not eligible for production or a larger formal gate."
+  },
+  "fixed_hz_screen_correction": {
+    "audit_class": "performance_rejected",
+    "logical_correction_accepted": true,
+    "finding": "Lack of a complete pivot guarantee is not itself a rejection reason for a fail-closed candidate-only path.",
+    "raw_big_m_dual_problem": "A fixed-binary Big-M branch equality can be basis-active even when the adjacent phase boundary is unreachable.",
+    "corrected_rule": "An inactive phase is eligible only when its lower sign row is at the basis upper bound; an active phase is eligible only when its normalized ReLU-output factor is at the basis lower bound; rank eligible coordinates by absolute dual with binary-position tie breaking.",
+    "hostile_raw_rule": {
+      "selected_binary": 1249,
+      "neighbor_cell": "empty",
+      "resolve_seconds": 15.664203410968184
+    },
+    "corrected_iid0_pivot": {
+      "selected_property_row": 53,
+      "binary_position": 148,
+      "relu_layer": 3,
+      "relu_row": 2389,
+      "base_phase": "inactive",
+      "dual_magnitude": 0.13769677648105133,
+      "fixed_hz_margin_before": -0.03056634014552424,
+      "fixed_hz_margin_after": -0.030251860578157874,
+      "warm_resolve_seconds": 0.17488985136151314,
+      "composed_neighbor_margin_lower": -0.03025199949235557
+    },
+    "corrected_monotone_walk": {
+      "unique_phase_flips": 5,
+      "final_margin": -0.028941138722504745,
+      "stop": "sixth solve did not strictly improve",
+      "new_formal_verdict": false
+    },
+    "positive_control_iid2": {
+      "live_hz_build_seconds": 1.4848093036562204,
+      "initial_fixed_cell_ipm_seconds": 2.23068995308131,
+      "impossible_candidate_lower_bound_seconds": 3.7154992567375302,
+      "retained_complete_path_seconds": 3.87979771848768,
+      "impossible_upper_bound_speedup": 1.044218781511573,
+      "required_single_pair_speedup": 1.5,
+      "passed": false
+    },
+    "source_artifact": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_fixed_hz_warm_walk_stoploss_20260812.json",
+      "sha256": "dab18650fee9fba46ad96de084b9efc140c3dc19294a73208eca1010bd519940"
+    }
+  },
+  "composed_fixed_cell_lp_screen": {
+    "audit_class": "sound_pass",
+    "benchmark_instance": "cifar100_medium_iid2",
+    "finding": "The slow first basis was a representation cost, not an intrinsic cost of the composed fixed-cell LP.",
+    "unfiltered_authoritative_matrix": {
+      "rows": 2177,
+      "columns": 3072,
+      "nnz": 2465565,
+      "highs_version": "1.14",
+      "simplex_presolve": false,
+      "load_plus_solve_seconds_approx": 0.244
+    },
+    "outward_row_l1_redundancy_screen": {
+      "rows_before": 2177,
+      "rows_after": 1140,
+      "authoritative_nnz_after": 560712,
+      "candidate_tiny_filtered_nnz": 519267,
+      "screen_seconds": 0.00485,
+      "load_plus_solve_seconds": 0.0474,
+      "objective_nearest": -1.264002037453895,
+      "objective_bit_equal": true
+    },
+    "solver_path": "one HiGHS simplex path with presolve disabled; no primal/IPM/crash fallback menu",
+    "verdict_authority": false
+  },
+  "direct_reduced_fixed_hz": {
+    "audit_class": "performance_rejected",
+    "description": "Mechanically remove binary, proxy, and output-error columns from the stored Big-M HZ, retain only input and local exact-ReLU eta columns, and express the current cell directly.",
+    "corrected_cell_shape": {
+      "continuous_columns": 5249,
+      "input_columns": 3072,
+      "local_eta_columns": 2177,
+      "binary_columns": 0,
+      "proxy_columns": 0,
+      "output_error_columns": 0,
+      "ranged_rows": 1504,
+      "movable_rows": 1413,
+      "deferred_active_rows": 91,
+      "deferred_inactive_columns_fixed": 673,
+      "semantic_correction": "Inactive deferred factors require their finite lower bound; using negative infinity would enlarge the cell."
+    },
+    "same_stream_center_selector_iid2": {
+      "selected_property_row": 67,
+      "initial_margin": -0.1543424,
+      "initial_solve_seconds": 3.698,
+      "frontend_to_first_solution_seconds": 6.112,
+      "strictly_monotone_flips_before_positive_candidate": 26,
+      "positive_candidate_step": 25,
+      "positive_candidate_margin_approx": 0.001033,
+      "elapsed_seconds": 29.884,
+      "exact_replay_consistent": 2029,
+      "exact_replay_inconsistent": 19,
+      "exact_replay_ambiguous": 129,
+      "exact_phase_rows": 2177,
+      "formal_result": "UNKNOWN"
+    },
+    "known_projected_seed_control_iid2": {
+      "selected_property_row": 67,
+      "margin_nearest_approx": 0.0929016789,
+      "first_solve_seconds_observed_range": [
+        2.85,
+        3.98
+      ],
+      "simplex_iterations": 1815,
+      "permanent_future_phase_rows_eliminated": 0,
+      "presolve_on_seconds_approx": 7.58,
+      "explicit_triangular_basis_improved_latency": false
+    },
+    "reason": "It neither meets the frontend response gate nor yields a replayable new verdict; no reduced fixed-HZ implementation was retained."
+  },
+  "single_rank_one_neighbor": {
+    "audit_class": "sound_pass_candidate_outer_single_pivot",
+    "benchmark_instance": "cifar100_medium_iid0",
+    "selected_property_row": 53,
+    "pivot": {
+      "layer": 3,
+      "row": 2389,
+      "base_active": false,
+      "direction": 1.0
+    },
+    "algebra_oracle_check": {
+      "full_neighbor_margin": -0.03025199949235557,
+      "rank_one_aux_margin": -0.030251999498029255,
+      "margin_abs_difference": 5.673683745044178e-12,
+      "generator_max_abs_difference": 1.9949319973733282e-17,
+      "center_max_abs_difference": 7.993605777301127e-15,
+      "exact_replay_consistent": 2030,
+      "exact_replay_inconsistent": 0,
+      "exact_replay_ambiguous": 0,
+      "scalar_influence_seconds": 0.003981335088610649,
+      "scratch_materialized_rank_one_assembly_seconds": 1.0969806052744389,
+      "diagnostic_full_neighbor_stream_seconds": 0.2125880140811205,
+      "diagnostic_full_neighbor_total_seconds": 0.6513547608628869,
+      "diagnostic_full_neighbor_shadow_seconds_estimate": 0.4387667467817664,
+      "diagnostic_full_neighbor_only": true
+    },
+    "outward_error_elimination": {
+      "fraction_toy_passed": true,
+      "pivot_normalizer": 0.15564107792325038,
+      "pivot_definition_radius": 6.190707268510362e-14,
+      "delta_shadow_seconds": 0.015136201865971088,
+      "discarded_preliminary_envelope": {
+        "rows": 2130,
+        "failures": 971,
+        "max_shortfall": 1.4107548433842399e-11,
+        "action": "Discarded; it omitted a required pivot-rounding/residual term and was not used by the accepted candidate."
+      },
+      "final_full_neighbor_residual_containment": {
+        "rows": 2131,
+        "failures": 0,
+        "max_shortfall": 0.0,
+        "neighbor_built_after_candidate_only": true,
+        "coverage": "empirical iid0 single-pivot check only; not a whole-suite proof"
+      },
+      "maximum_observed_full_neighbor_shadow_error_change": 1.4577260053843213e-11
+    },
+    "formula_audit_scope": {
+      "proved_candidate_relation": "The actual-y normalized native RANGE construction is an outward candidate polytope for this isolated single pivot.",
+      "verdict_authority_granted": false,
+      "whole_suite_proof_claimed": false,
+      "multi_pivot_extension_proved": false,
+      "multi_pivot_requirement": "A sequential extension must define each later auxiliary against every earlier live auxiliary cross term and must recompute downstream fixed-phase masks and their outward errors after each accepted pivot; the single-pivot audit does not license reusing the original masks."
+    },
+    "persistent_sign_oriented_direct_three_run": {
+      "candidate_assembly_seconds": [
+        0.002307349815964699,
+        0.002249813638627529,
+        0.002378239296376705
+      ],
+      "mutation_seconds": [
+        0.00957849994301796,
+        0.008406858891248703,
+        0.006833567284047604
+      ],
+      "warm_solve_seconds": [
+        0.23135361168533564,
+        0.1979308845475316,
+        0.21031971648335457
+      ],
+      "median_assembly_plus_mutation_seconds": 0.010656672529876232,
+      "median_assembly_mutation_warm_seconds": 0.21953152306377888,
+      "median_delta_through_warm_seconds": 0.23620655108243227,
+      "assembly_mutation_under_0_05_all_three": true,
+      "assembly_mutation_warm_under_0_25_all_three": true,
+      "changed_existing_phase_rows": 1,
+      "changed_existing_x_coefficients": 27,
+      "aux_column_nnz": 871,
+      "native_range_rows_added": 1,
+      "retained_runtime_layout": false
+    },
+    "persistent_unsigned_native_range": {
+      "recommended_unique_runtime_layout": true,
+      "one_native_range_row_per_phase": true,
+      "logical_unsigned_influence_retained": true,
+      "aux_column_sign": "+a",
+      "phase_flip_changes_existing_coefficients": 0,
+      "phase_flip_changes_bound_side_only": true,
+      "assembly_seconds_conservative": 0.0021052733063697815,
+      "mutation_seconds": 0.006147174164652824,
+      "warm_solve_seconds": 0.14180428069084883,
+      "solution_and_row_dual_readback_seconds": 0.0002692844718694687,
+      "definition_fraction_postcheck_seconds": 0.00021229684352874756,
+      "core_assembly_mutation_warm_seconds": 0.15005672816187143,
+      "delta_through_readback_and_definition_postcheck_seconds": 0.16615266911685467,
+      "solution_bit_equal_to_sign_oriented_and_mechanical_oracles": true,
+      "definition_fraction_postcheck_passed": true,
+      "candidate_replay_consistent": 2030,
+      "candidate_replay_inconsistent": 0,
+      "candidate_replay_ambiguous": 0
+    },
+    "candidate_outcome": {
+      "candidate_margin_lower": -0.030251997019854527,
+      "diagnostic_authoritative_margin_lower": -0.030251997041728092,
+      "formal_solved_increment": 0,
+      "reason": "The isolated update is mechanically admissible and replay-consistent, but its margin remains strictly negative."
+    }
+  },
+  "rank_one_delta_timing_diagnostic": {
+    "audit_class": "diagnostic_oracle",
+    "benchmark_instance": "cifar100_medium_iid0",
+    "selected_property_row": 53,
+    "pivot": [
+      3,
+      2389
+    ],
+    "selected_affine_layers": 21,
+    "per_affine_schedule": "two ordered selected-CSR launches: W*v and abs(W)*[coefficient_error,abs(v)]",
+    "warm_pass_seconds": [
+      0.004282,
+      0.004204,
+      0.004175,
+      0.004206,
+      0.004183,
+      0.004175,
+      0.004175
+    ],
+    "warm_median_seconds": 0.004183,
+    "one_time_abs_schedule_bytes": 40158976,
+    "one_time_abs_schedule_seconds": 0.000156,
+    "pivot_y_abs_upper": 0.15564107792324827,
+    "max_preactivation_coefficient_error": 5.661787e-13,
+    "max_preactivation_scaled_error": 8.812067e-14,
+    "max_output_coefficient_error": 1.608557e-12,
+    "max_output_scaled_error": 2.503575e-13,
+    "soundness_claimed_by_this_timing_probe": false
+  },
+  "persistent_highs_growth_diagnostic": {
+    "audit_class": "performance_rejected",
+    "benchmark_instance": "cifar100_medium_iid2",
+    "base_candidate_matrix": {
+      "rows": 2177,
+      "columns": 3072,
+      "candidate_nnz": 2275707
+    },
+    "per_auxiliary_phase": {
+      "existing_rows_connected": 2000,
+      "definition_q_nnz": 2883,
+      "rows_added": 1,
+      "columns_added": 1,
+      "nnz_added": 4884
+    },
+    "one_hundred_step_sign_oriented_probe": {
+      "final_rows": 2277,
+      "final_columns": 3172,
+      "final_nnz": 2764107,
+      "basis_valid_every_step": true,
+      "simplex_iterations_per_step": 1,
+      "median_add_column_seconds": 0.000086,
+      "first_allocation_add_column_seconds": 0.00867,
+      "median_definition_row_seconds": 0.005866,
+      "median_total_mutation_seconds": 0.005989,
+      "median_warm_solve_seconds": 0.150482,
+      "total_structure_seconds": 0.619,
+      "total_warm_solve_seconds": 15.085,
+      "rss_growth_bytes_approx": 317718528,
+      "peak_rss_growth_bytes_approx": 408944640
+    },
+    "twenty_step_native_range_probe": {
+      "one_range_row_instead_of_two_sided_rows": true,
+      "median_mutation_seconds": 0.005863,
+      "median_warm_solve_seconds": 0.133857,
+      "p95_warm_solve_seconds": 0.147309,
+      "basis_valid_every_step": true,
+      "simplex_iterations_per_step": 1
+    },
+    "decision": "Persistent warm solves are feasible, but unbounded accumulation is too slow and memory-heavy; the route was budgeted as at most five deterministic attempts."
+  },
+  "batch_seed_elimination": {
+    "purpose": "Attempt to eliminate the second projected-cell generator stream by representing every first-to-projected seed phase change as a triangular batch of normalized auxiliary variables.",
+    "iid0_diagnostic": {
+      "audit_class": "diagnostic_oracle",
+      "phase_changes": 158,
+      "up_flips": 72,
+      "down_flips": 86,
+      "phase_changes_by_layer": {
+        "3": 97,
+        "5": 35,
+        "10": 11,
+        "14": 3,
+        "18": 2,
+        "22": 6,
+        "40": 4
+      },
+      "triangular_dependency_nnz": 1089,
+      "delta_preactivation_and_output_nnz": 113511,
+      "expanded_oracle_nnz": 2414874,
+      "expanded_generator_max_abs_difference": 2.168404344971009e-17,
+      "max_delta_preactivation_error": 1.851176021639077e-12,
+      "max_delta_output_error": 6.839320865837778e-12,
+      "gpu_error_pass_warm_median_seconds": 0.04063695762306452,
+      "full_second_stream_used_only_as_diagnostic_oracle": true
+    },
+    "iid2_diagnostic": {
+      "audit_class": "diagnostic_oracle",
+      "phase_changes": 187,
+      "up_flips": 89,
+      "down_flips": 98,
+      "phase_changes_by_layer": {
+        "3": 104,
+        "5": 54,
+        "10": 21,
+        "14": 1,
+        "22": 5,
+        "40": 2
+      },
+      "triangular_dependency_nnz": 1643,
+      "delta_preactivation_and_output_nnz": 159775,
+      "expanded_oracle_nnz": 2753865,
+      "expanded_generator_max_abs_difference": 2.168404344971009e-17,
+      "max_delta_preactivation_error": 1.3698806918729489e-12,
+      "max_delta_output_error": 8.864484062991293e-12,
+      "expand_to_input_warm_seconds": 0.06625915132462978,
+      "expand_to_input_cold_dump_seconds": 0.11484776623547077,
+      "max_normalizer_without_center": 1.3681573297180227,
+      "max_propagated_definition_radius_without_base_shadow": 0.5969595290021306,
+      "normalized_definition_bands_finite": true,
+      "gpu_error_pass_warm_median_seconds": 0.03944368381053209,
+      "full_second_stream_used_only_as_diagnostic_oracle": true,
+      "receipt_metadata_correction": "The disposable script's scope.fixed_manifest_id says cifar100_medium_iid0; 187 phase changes and the invocation/output context identify this record as iid2."
+    },
+    "initial_representation_one_seed_auxiliaries": {
+      "audit_class": "performance_rejected",
+      "soundness_status": "soundness_not_completed_after_decisive_latency_failure",
+      "base_rows": 2177,
+      "base_columns": 3072,
+      "base_nnz": 2465565,
+      "auxiliary_columns": 187,
+      "auxiliary_existing_row_nnz": 159775,
+      "definition_rows": 187,
+      "definition_nnz": 540951,
+      "base_load_seconds": 0.051933133974671364,
+      "auxiliary_load_seconds": 0.0218311483040452,
+      "first_solve_seconds": 4.6345790680497885,
+      "load_plus_first_solve_seconds": 4.7083509201183915,
+      "simplex_iterations": 1331,
+      "basis_valid": true,
+      "zero_pivot_initial_path_seconds_approx": 6.09,
+      "reason": "The zero-pivot initial path alone is far outside every applicable response budget."
+    },
+    "initial_representation_two_expanded_preelimination": {
+      "audit_class": "performance_rejected",
+      "soundness_status": "soundness_not_completed_after_decisive_latency_failure",
+      "expanded_total_nnz_before_screen": 2753865,
+      "expanded_formation_warm_seconds": 0.06625915132462978,
+      "screened_rows": 1140,
+      "screened_nnz": 560712,
+      "screen_seconds": 0.00915292277932167,
+      "load_seconds": 0.012324647046625614,
+      "solve_seconds": 0.3377692187204957,
+      "screen_load_solve_seconds": 0.359246788546443,
+      "simplex_iterations": 866,
+      "basis_valid": true,
+      "rhs_source": "full_second_stream_outward_oracle_diagnostic_only",
+      "optimistic_zero_pivot_components_seconds": [
+        1.2332,
+        0.087,
+        0.0385,
+        0.0663,
+        0.3592
+      ],
+      "optimistic_zero_pivot_total_seconds": 1.7842,
+      "work_excluded_from_optimistic_total": [
+        "complete outward Y and definition-radius construction",
+        "all phase-walk attempts",
+        "decoded-input construction",
+        "raw BOX replay",
+        "zero-width forward replay",
+        "exact stored-binary64 property replay"
+      ],
+      "reason": "Even the optimistic diagnostic-oracle lower bound exceeds the preregistered zero-pivot budget for a route reserving at most five attempts; completing sound standalone RHS construction cannot improve that bound."
+    }
+  },
+  "response_budget": {
+    "route_contract": "one deterministic path with at most five phase-walk attempts; no retry menu and no parameter scan",
+    "retained_single_request_seconds": 3.321821867,
+    "required_single_request_speedup": 1.5,
+    "maximum_total_candidate_seconds": 2.214547911333333,
+    "maximum_phase_attempts": 5,
+    "median_shape_per_attempt_seconds": 0.143902982266667,
+    "zero_pivot_budget_using_median_shape_seconds": 1.495033,
+    "conservative_shape_per_attempt_seconds": 0.157354982266667,
+    "zero_pivot_budget_using_conservative_shape_seconds": 1.427773,
+    "interpretation": "The 1.495033 and 1.427773 values are budgets left for T0 after reserving five attempts, not standalone positive-control latency ceilings.",
+    "k0_caveat": "The 1.7842-second expanded preelimination diagnostic could in isolation fit the raw K=0 single-pair cap of 2.21455 seconds, but K=0 is not the proposed warm-walk route and would reserve no cell-changing attempt.",
+    "batch_seed_aux_t0_passed": false,
+    "expanded_preelimination_t0_passed_median_shape_budget": false,
+    "expanded_preelimination_t0_passed_conservative_shape_budget": false
+  },
+  "formal_score_after_audit": {
+    "total": 43,
+    "denominator": 400,
+    "cifar100_medium": 12,
+    "cifar100_large": 10,
+    "tinyimagenet_medium": 21,
+    "new_results_from_this_experiment": 0
+  },
+  "decision": {
+    "status": "rejected_before_production",
+    "single_pivot_math_error_and_mechanical_update": "PASS_candidate_only",
+    "single_pivot_capability": "negative_margin_no_formal_gain",
+    "full_seed_aux_initial_representation": "performance_rejected_before_soundness_completion",
+    "expanded_preelimination_initial_representation": "performance_rejected_before_soundness_completion",
+    "production_integration": false,
+    "larger_gate_authorized": false,
+    "reason": "Low-rank auxiliary updates successfully eliminate a single neighbor rebuild, but neither tested initial representation leaves enough response budget for the promised five-step walk. Keeping it as another fallback would violate the low-redundancy and frontend-latency requirements.",
+    "reopen_condition": "A single sound initial-cell representation must reach its first usable basis below the five-attempt T0 budget without a diagnostic second stream, then the same unsigned native-RANGE update and unchanged exact replay boundary may be reconsidered."
+  },
+  "evidence": {
+    "durable_inputs": [
+      {
+        "path": "artifacts/hybridz_largecls_gates/phase_projection_fixed_hz_warm_walk_stoploss_20260812.json",
+        "sha256": "dab18650fee9fba46ad96de084b9efc140c3dc19294a73208eca1010bd519940"
+      }
+    ],
+    "disposable_scripts_and_outputs": [
+      {
+        "path": "/tmp/reduced_fixed_hz_probe.py",
+        "sha256": "e460f1e1e941bea87ded7bd75e7cda22af66b9f041ab7c01f595b2a4ce72703a"
+      },
+      {
+        "path": "/tmp/reduced_fixed_hz_screen_probe.py",
+        "sha256": "68f028dd5782ea2bd4a5a0b8a83034fdd691b2b54adae6ea8bd28bfe0d287d1f"
+      },
+      {
+        "path": "/tmp/reduced_fixed_hz_center_probe.py",
+        "sha256": "fc5246069506b041873afb4a473a83d79e02ce0a8c8d15203d26dec93d909806"
+      },
+      {
+        "path": "/tmp/composed_rank_one_probe.py",
+        "sha256": "94d314b1a8dd105e63aece0e91f0489a89ba21e04bfa752212e5a3826300b174"
+      },
+      {
+        "path": "/tmp/composed_rank_one_probe.out",
+        "sha256": "7d5d2eabee76d4708b839475d74c28554d8a0cc7c6b82cb7e7c82cef8b90ed91"
+      },
+      {
+        "path": "/tmp/rank_one_highs_probe.py",
+        "sha256": "c964595f7bcdc37c734138092e25700ac52bf5141570f1a85e97a349a321b45c"
+      },
+      {
+        "path": "/tmp/rank_one_influence_error_profile.py",
+        "sha256": "5f0ec10ba830b96d0669b843b6e2bb7022660ca450875cb65d47d345f330a4f0"
+      },
+      {
+        "path": "/tmp/root_rank_one_error_probe.py",
+        "sha256": "d70fbdaf4c6b8bd3d8c0917831cd07012567426d5b43c8a9c631612fef09459b"
+      },
+      {
+        "path": "/tmp/root_rank_one_error_probe_latest.json",
+        "sha256": "b5d28d8069d11cb2fd3e593af84bac2e1343c5c0a6db6c084881cc0a4cb32adc"
+      },
+      {
+        "path": "/tmp/root_rank_one_error_probe_latest.out",
+        "sha256": "15aae51ce362f525906d47a3e38d926682de5986307fea23526b168bd81bcf77"
+      },
+      {
+        "path": "/tmp/persistent_rank_one_update_summary.json",
+        "sha256": "1b913caffb47d2e893a879a082d76225b7a57693fe037c423894b1f61b6c522d"
+      },
+      {
+        "path": "/tmp/seedelim_phase_profile.py",
+        "sha256": "aeae28ca17cff067d98ec8598c8420fd586b3bf4a7c2d3fd1193821e292e630c"
+      },
+      {
+        "path": "/tmp/seedelim_batch_aux_probe.py",
+        "sha256": "19134d65f17114933a02e2547994ee2b9e88776aa4fc853356d9256676617270"
+      },
+      {
+        "path": "/tmp/seedelim_batch_aux_error_gpu_iid0.out",
+        "sha256": "d757c662a0982490e3f8ef0206dbfe7551d0782692ec07cfe1fb5390639c0569"
+      },
+      {
+        "path": "/tmp/seedelim_batch_aux_expand_iid2.out",
+        "sha256": "53fc9f51431195e1eef7b27abc92208ba3111cf9822e0ef6ac3de224eb79b8fd"
+      },
+      {
+        "path": "/tmp/seedelim_batch_aux_expand_dump_iid2.out",
+        "sha256": "4b6dc53c61da628ae483fdfe626b2d3166212554c01ad084ad9b1eb8039cd93f"
+      },
+      {
+        "path": "/tmp/seedelim_batch_model_timing.py",
+        "sha256": "6ee85c3990e2de4a29a18db9154a2ba61670e13fdc39fa1e83fb804ef3a39f7f"
+      },
+      {
+        "path": "/tmp/seedelim_batch_model_timing.out",
+        "sha256": "2581ce13021a8931071e954e138eb82675c8e53568746637aa7c89edb0010627"
+      },
+      {
+        "path": "/tmp/seedelim_expanded_small_lp.py",
+        "sha256": "e6fcf09d8bb0741f53d9f29496d4a3d03326ee27706a9c815d7ee1e16894cae5"
+      },
+      {
+        "path": "/tmp/seedelim_expanded_small_lp.out",
+        "sha256": "09c2b55a64327ab6986fdd9852ed7d61895074eacfc2e5020f3d2817766487fa"
+      }
+    ],
+    "disposable_binary_captures": [
+      {
+        "path": "/tmp/iid2_composed_lp.npz",
+        "sha256": "e571a51851148e90ec58ee3ba6305dd5ee2f066490bb72b780401657e98b5400"
+      },
+      {
+        "path": "/tmp/iid2_projection_second_capture.npz",
+        "sha256": "8e5673542b9bf426c7523f3293895b98a98093493079c16a6b1f49ad27ac6410"
+      },
+      {
+        "path": "/tmp/seedelim_iid2_expanded.npz",
+        "sha256": "1736650053af1106ed39fd1f4f48e1373df41d8ae4d26a00c49ca800dbe1525c"
+      }
+    ]
+  }
+}

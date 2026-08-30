@@ -1,0 +1,117 @@
+{
+  "authority": {
+    "candidate_or_owner_signal_authority": false,
+    "formal_positive_rule": "decoded_input_in_raw_BOX;verifier_owned_zero_width_forward_interval;exact_Fraction_property_lower_bound_positive",
+    "verifier_owned_terminal_only": true
+  },
+  "execution": {
+    "fresh_worker_per_case": true,
+    "gpu_execution_requires_root_authorization_after_static_audit": true,
+    "retries": 0,
+    "runtime_receives_expected_or_public_labels": false,
+    "stage_b_requires_stage_a_success": true,
+    "worker_attempts_per_case": 1
+  },
+  "formal_accounting": {
+    "disconnected_results_are_not_formal_gain": true,
+    "fixed400_baseline": "59/400",
+    "production_or_config_changed_by_this_probe": false
+  },
+  "goal": "Test whether one structural-support phase update retains the three frozen positives and yields at least one new CIFAR100 terminal-verified counterexample without changing production.",
+  "prohibitions": {
+    "activation_or_input_split": false,
+    "bab_or_enumeration": false,
+    "backward_bounds": false,
+    "corner_or_parameter_scan": false,
+    "cross_request_cache": false,
+    "dual_sign_or_magnitude_selection": false,
+    "dual_tightening": false,
+    "fallback_or_runtime_menu": false,
+    "input_sampling": false,
+    "onnx_point_execution": false,
+    "pgd": false,
+    "second_owner_or_solver": false,
+    "second_update": false,
+    "topk_or_threshold_menu": false
+  },
+  "resource_precheck_before_repair_delta": {
+    "conservative_dense_delta_bytes_max": 2000000000,
+    "conservative_phase_rows_times_k_max": 200000000,
+    "index_dtype": "int32",
+    "k_max": 200000,
+    "policy": "all_selected_support_or_UNKNOWN"
+  },
+  "rule": {
+    "base_infeasible": {
+      "owner_api": [
+        "highspy.Highs.getDualRayExist",
+        "highspy.Highs.getDualRay"
+      ],
+      "owner_api_calls_max": 1,
+      "requirements": [
+        "api_success",
+        "one_dimensional_float64",
+        "owned_contiguous_snapshot",
+        "finite",
+        "at_least_one_exact_nonzero",
+        "sealed_row_id_mapping"
+      ],
+      "selection": "all rows whose opaque row signal is exactly != 0.0",
+      "sign_or_magnitude_consumed": false
+    },
+    "base_optimal_margin_negative": {
+      "residual": "loaded_upper - row_value",
+      "selection": "all screened phase rows satisfying residual <= 1e-9 * (1 + abs(loaded_upper))",
+      "selector_signature_receives_row_dual": false,
+      "strict_negative_row_dual": "owner-sealed ABI diagnostic only; never passed to or consumed by selector"
+    },
+    "base_optimal_margin_positive": "unchanged current candidate path",
+    "base_optimal_margin_zero": "UNKNOWN",
+    "other_or_failed_status": "UNKNOWN",
+    "repair": "exactly one simultaneous flip followed by exactly one warm re-solve in the same owner"
+  },
+  "schema": "act.hybridz.phase_projection_structural_support_preregistration.v1",
+  "scope": "disconnected_scratch_only_ability_sentinel",
+  "stage_a": {
+    "case_order": [
+      "cifar100_medium_iid2",
+      "tinyimagenet_medium_iid143",
+      "tinyimagenet_medium_iid153",
+      "cifar100_large_iid166",
+      "cifar100_large_iid153",
+      "cifar100_large_iid110",
+      "cifar100_large_iid160",
+      "cifar100_large_iid114",
+      "cifar100_large_iid161",
+      "tinyimagenet_medium_iid93"
+    ],
+    "success": {
+      "cifar100_large_iid153": "UNKNOWN",
+      "errors": 0,
+      "new_cifar100_falsified_min": 1,
+      "required_falsified": [
+        "cifar100_medium_iid2",
+        "tinyimagenet_medium_iid143",
+        "tinyimagenet_medium_iid153"
+      ],
+      "target_cifar100": [
+        "cifar100_large_iid166",
+        "cifar100_large_iid110",
+        "cifar100_large_iid160",
+        "cifar100_large_iid114",
+        "cifar100_large_iid161"
+      ]
+    }
+  },
+  "stage_b": {
+    "case_order": [
+      "cifar100_medium_iid50",
+      "cifar100_large_iid101",
+      "cifar100_large_iid120",
+      "tinyimagenet_medium_iid9",
+      "tinyimagenet_medium_iid173",
+      "tinyimagenet_medium_iid176"
+    ],
+    "role": "fixed post-success expansion; no alternate rule or tuning"
+  }
+}

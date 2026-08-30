@@ -1,0 +1,190 @@
+{
+  "schema": "act.hybridz.fprime.paired_noninferiority_stoploss_completion.v1",
+  "status": "STOP_LOSS_FAILED_CLOSED_ERROR",
+  "created_date": "2026-08-14",
+  "authority": {
+    "formal_fixed400_changed": false,
+    "formal_score": "59/400",
+    "performance_gate_passed": false,
+    "retention_gate_passed": true,
+    "timing_claim_promoted": false,
+    "verdict_authority_unchanged": true
+  },
+  "frozen_gate_identity": {
+    "harness": {
+      "path": "scratch_phase_projection_fprime_paired_noninferiority_gate.py",
+      "sha256": "50dc7eae2cdf9130b0819e66fed9395c75dd9bf02c24366867d93473c670ac9f"
+    },
+    "manifest_sha256": "895a8ae1459c9f4f02654240f4dd8d935decff16128117fe77bde69c4e149dad",
+    "production_source_bundle_sha256": "2c990582fe20e7e880a530557d5ca9c825c3d44f3f20758cf64df8d1845f6855",
+    "old59_source": {
+      "git_blob_oid": "08e9ca2cb1f91b3cfbeae86b2dd5ca0d4349d025",
+      "source_sha256": "4b66470df55edebb595e0e06c6b8a2de5c65496b8671c4d2f2552003d01ea306",
+      "loaded_from_git_blob_in_memory": true,
+      "temporary_source_written": false
+    }
+  },
+  "retention_checkpoint": {
+    "status": "COMPLETE_RETAINED59",
+    "formal_retained": 59,
+    "formal_required": 59,
+    "regressions": 0,
+    "completion": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_fprime_production_retention_completion_20260814.json",
+      "sha256": "aaf288bf66659105f122f26fa72fd1039111283fae50b754956e059facc15c56"
+    },
+    "events": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_fprime_production_retention_gate_20260814.events.jsonl",
+      "sha256": "bfc249ed95d27d9e73c0554477ad1644d879abcb3fc640f900f45c9ce1c33b43"
+    },
+    "summary": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_fprime_production_retention_gate_20260814.json",
+      "sha256": "870175a30f09fd359b743f63ca480fddc707b9ef3d6959b1b434a8765faa3567"
+    }
+  },
+  "paired_gate_result": {
+    "status": "FAILED_CLOSED_ERROR",
+    "attempted_jobs": 2,
+    "completed_jobs": 2,
+    "required_jobs": 10,
+    "retries": 0,
+    "parameter_changes": 0,
+    "first_blocker_stopped_parent": true,
+    "events": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_fprime_paired_noninferiority_20260814.events.jsonl",
+      "sha256": "b33930d37ac5ea6d95c7dd579438fd62e9945ade1ade1b985187dca954f830ac",
+      "bytes": 71399,
+      "lines": 5
+    },
+    "summary": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_fprime_paired_noninferiority_20260814.json",
+      "sha256": "08cc9bbf87a96b5a3be1d489105bc0b904daa6ad26dce7578dd66c4e228def52",
+      "bytes": 72014
+    },
+    "lock": {
+      "path": "artifacts/hybridz_largecls_gates/phase_projection_fprime_paired_noninferiority_20260814.events.jsonl.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  "passed_job": {
+    "job": "cifar100_medium_iid2__single",
+    "status": "PASSED",
+    "speedups": [
+      1.1874614582503094,
+      1.1782268668461688,
+      1.1661252248015697,
+      1.1683247845050249,
+      1.1596132014498013
+    ],
+    "median_speedup": 1.1683247845050249,
+    "paired_bootstrap_95_lower": 1.1596132014498013,
+    "median_minimum": 1.0,
+    "bootstrap_lower_minimum": 0.95,
+    "exact_bootstrap_resamples": 3125,
+    "exact_bootstrap_lower_index": 78,
+    "summary_field_paths": {
+      "speedups": "$.results[0].performance.speedups",
+      "median_speedup": "$.results[0].performance.median_speedup",
+      "paired_bootstrap_95_lower": "$.results[0].performance.paired_bootstrap_95_lower"
+    },
+    "events_field_paths": {
+      "line": 3,
+      "speedups": "$.record.performance.speedups",
+      "median_speedup": "$.record.performance.median_speedup",
+      "paired_bootstrap_95_lower": "$.record.performance.paired_bootstrap_95_lower"
+    }
+  },
+  "first_blocker": {
+    "job": "cifar100_medium_iid2__four_thread",
+    "status": "ERROR",
+    "error_type": "GateError",
+    "events_line": 5,
+    "transport": {
+      "child_wall_seconds": 5.1643056850880384,
+      "returncode": 2,
+      "timed_out": false,
+      "isolated_result_records": 1,
+      "stdout_nonempty_lines": 1,
+      "stdout_unmarked_nonempty_lines": 0,
+      "stdout_bytes": 1427,
+      "stdout_sha256": "5c5936039947779dad7e61804b6c309d9bcf39081063987415f96e8d3b5564d0",
+      "stderr_bytes": 1581,
+      "stderr_sha256": "93f8f8c5b17ba553d4f1e0042afa4a915d91a20763f6fa610ad936af196f7cf1"
+    },
+    "attribution": {
+      "certainty": "BOUNDED_NOT_UNIQUE",
+      "worker_emitted_error_record": true,
+      "parent_postvalidation_rewrite_excluded": true,
+      "transport_timeout_excluded": true,
+      "stdout_isolation_failure_excluded": true,
+      "returncode_status_conflict_excluded": true,
+      "result_conflict_exception_excluded": true,
+      "noninferiority_rejection_excluded": true,
+      "source_or_input_drift_observed": false,
+      "exact_stage": "UNRECOVERABLE_FROM_FROZEN_RECEIPT",
+      "timing_only_inference": "An early warmup failure is compatible with the 5.164-second wall time and fixed old59-first order, but this is non-authoritative and is not used as the cause.",
+      "remaining_candidates": [
+        "worker authorization or pre-timing identity/setup GateError",
+        "warmup group GateError from request binding, verify_once lane shape, old/new call authority validation, or request-index validation",
+        "later warmup/measured-group or post-measurement identity/arithmetic GateError",
+        "final cleanup or resource-receipt GateError"
+      ],
+      "evidence": [
+        "The exact reconstructed worker stdout is already represented by events line 5 after removing the parent-added transport field; its byte length and SHA-256 equal the frozen transport receipt.",
+        "The worker itself emitted status ERROR with error_type GateError and exited 2; the parent did not synthesize or rewrite this error.",
+        "ResultConflict is a distinct subclass name and therefore is not the recorded exception type.",
+        "The frozen worker catches BaseException and stores only type(exc).__name__; it stores no traceback, message, stage marker, or partial warmup group.",
+        "The failing stderr body was not persisted; only its length and SHA-256 remain. Its digest exactly equals the successful single-job stderr digest, so it contributes no distinguishable error channel.",
+        "The 5.164-second wall time and fixed first order old59 then new_production are compatible with an early warmup failure, but timing alone cannot prove or rank the exact substage."
+      ]
+    }
+  },
+  "worker_output_preservation": {
+    "stdout_records_reconstructable_exactly_from_events": true,
+    "reconstruction_rule": "RESULT_PREFIX + canonical_json(event.record without parent-added transport) + newline",
+    "verified_stdout": {
+      "cifar100_medium_iid2__single": {
+        "bytes": 60235,
+        "sha256": "b8578f63d616ca522b9f546930e4c5291b225d03cb9e276dd5a632d66de4bba4"
+      },
+      "cifar100_medium_iid2__four_thread": {
+        "bytes": 1427,
+        "sha256": "5c5936039947779dad7e61804b6c309d9bcf39081063987415f96e8d3b5564d0"
+      }
+    },
+    "stderr_body_persisted": false,
+    "stderr_digest_and_size_persisted": true
+  },
+  "not_run": [
+    "cifar100_large_iid153__single",
+    "cifar100_large_iid153__four_thread",
+    "cifar100_large_iid166__single",
+    "cifar100_large_iid166__four_thread",
+    "tinyimagenet_medium_iid153__single",
+    "tinyimagenet_medium_iid153__four_thread",
+    "tinyimagenet_medium_iid143__single",
+    "tinyimagenet_medium_iid143__four_thread"
+  ],
+  "downstream_gates": {
+    "fixed40": "FORBIDDEN_FOR_THIS_FPRIME_PROMOTION_ATTEMPT_AFTER_PAIRED_GATE_FAILED_CLOSED_ERROR",
+    "fixed400": "FORBIDDEN_FOR_THIS_FPRIME_PROMOTION_ATTEMPT_AFTER_PAIRED_GATE_FAILED_CLOSED_ERROR"
+  },
+  "gpu_release": {
+    "compute_processes_after_stop": 0,
+    "gpu_utilization_percent_after_stop": 0,
+    "observed_memory_used_mib_after_stop": 34,
+    "released": true
+  },
+  "restrictions": {
+    "input_sampling_used": false,
+    "onnx_input_point_execution_used": false,
+    "pgd_used": false,
+    "bab_split_or_enumeration_used": false,
+    "backward_bounds_used": false,
+    "dual_tightening_used": false,
+    "runtime_fallback_or_menu_used": false,
+    "external_sat_labels_used": false,
+    "rerun_for_luck_used": false
+  }
+}

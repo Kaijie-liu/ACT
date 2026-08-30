@@ -1,0 +1,64 @@
+{
+  "schema": "act.hybridz.active_goal_blocked_audit.v1",
+  "date": "2026-08-12",
+  "branch": "hybridz-fse-20260727",
+  "status": "BLOCKED_PENDING_SCOPE_CHANGE_OR_NEW_EXTERNAL_ALGORITHM",
+  "formal_result": {
+    "fixed_manifest_cases": 400,
+    "falsified": 43,
+    "unknown": 357,
+    "cifar100_medium_falsified": 12,
+    "cifar100_large_falsified": 10,
+    "tinyimagenet_medium_falsified": 21,
+    "fixed400_jsonl_sha256": "0980c6e20de45516733cde3e433e08a82a742ea8b8c0ee7d362e845b73bf1b08"
+  },
+  "requirement_audit": [
+    {
+      "requirement": "forward-only compact exact-ReLU verifier with every unstable ReLU retaining exact phase/binary semantics",
+      "state": "proved_for_current_phase_projection_path",
+      "evidence": "focused phase-projection plus live-row unittest 22/22; fixed400 has zero triangle/BaB/backward/dual/sampling flags"
+    },
+    {
+      "requirement": "rows/nnz/factors/build/native-load/solve/RSS census and compression study",
+      "state": "completed",
+      "evidence": "handoff sections cover RANGE rows, constraint-local factors, native load, solver, exact SCIP, RSS, stable elimination, phase sharing, residual/DAG, caches, and last-use behavior"
+    },
+    {
+      "requirement": "soundness and blast-radius gates before formal expansion",
+      "state": "completed_for_retained_path",
+      "evidence": "toy Fraction/point/Jacobian/raw BOX/singleton verifier gates and the complete fixed400 formal run"
+    },
+    {
+      "requirement": "significantly raise CIFAR100 and TinyImageNet solved count",
+      "state": "incomplete",
+      "evidence": "retained result is 43/400; the latest bounded directions add zero formal verdicts"
+    },
+    {
+      "requirement": "new work must pass >=1.50x single and >=2.00x four-worker response gates",
+      "state": "no_remaining_local_candidate_can_pass",
+      "evidence": "an impossible upper bound making support, the correct LP, and singleton proof all free still reaches only 1.8462316273936665x four-worker median"
+    }
+  ],
+  "same_blocking_condition_over_three_consecutive_goal_turns": {
+    "turn_1": "global root families satisfying all prohibitions were screened; feasible-pump/MIP-start/corner/line/hinge/solver wrappers were duplicate, forbidden, or unscalable",
+    "turn_2": "analytic-corner no-LP retained 0/3 positive controls; free-LP and all-local-work-free upper bounds failed concurrency gates",
+    "turn_3": "current-state completion audit and 22/22 focused regression reconfirmed that the remaining gap is the dense high-separator global exact root search, not an untested local implementation bug"
+  },
+  "blocking_condition": {
+    "description": "The remaining 357 cases require a materially different global exact phase-cell/root mechanism. The measured system is full-row-rank, one dense component, and has a treewidth lower bound of 622. Known scalable complete methods require at least one currently forbidden mechanism: activation branching/case splits, convex or triangle relaxation and bound propagation, backward sensitivity, or a slower multi-path search. All identified local work combined cannot satisfy the response gate even under impossible zero-cost assumptions.",
+    "can_progress_with_current_code_and_contract": false,
+    "resource_exhaustion_maps_to_unknown": true
+  },
+  "resume_conditions_any_one": [
+    "provide a genuinely new exact root representation or algorithm whose completeness does not use the prohibited mechanisms",
+    "authorize a narrowly bounded activation/input split or other complete combinatorial search",
+    "authorize backward sensitivity or convex-root information strictly for candidate selection while retaining exact terminal proof",
+    "change the common-response performance gate or permit a bounded terminal-proof grace for verified near misses such as tinyimagenet_medium_iid60"
+  ],
+  "frozen_state": {
+    "phase_projection_sha256": "615b45516b0d4cd2a3632c4f260efffc4fc5cf451444225f8d1bb3e6a04993ba",
+    "live_row_stream_sha256": "be00bd11ee62536a5ea31d2f5f90aff616bc15452d703a8e9e7e6e7419004e86",
+    "production_files_changed_in_blocked_audit": false,
+    "background_processes_left_running": false
+  }
+}

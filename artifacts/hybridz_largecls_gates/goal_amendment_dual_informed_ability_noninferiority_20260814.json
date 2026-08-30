@@ -1,0 +1,108 @@
+{
+  "schema": "act.hybridz.goal_amendment.dual_informed_ability_noninferiority.v1",
+  "created_at": "2026-08-14",
+  "status": "ACTIVE",
+  "policy": "F_PRIME",
+  "baseline": {
+    "formal_fixed400_falsified": 59,
+    "formal_fixed400_unknown": 341,
+    "formal_fixed400_errors": 0,
+    "production_default_enabled": false,
+    "phase_source_sha256": "4b66470df55edebb595e0e06c6b8a2de5c65496b8671c4d2f2552003d01ea306",
+    "live_source_sha256": "d53c2335c43905097e78bef8311175d7151d7e98293a6152fce62dba00d37511"
+  },
+  "objective": {
+    "formal_retention_required": 59,
+    "formal_gain_required": 1,
+    "runtime_paths": 1,
+    "phase_updates_max": 1,
+    "resolve_count_after_base_max": 1,
+    "fallbacks": 0,
+    "retries": 0
+  },
+  "single_rule": {
+    "base_owner": "one request-local HiGHS owner and one base cell LP for every admitted case",
+    "optimal_negative": "select every screened phase row that is primal-tight under the frozen tolerance and has a strictly negative upper-row marginal",
+    "infeasible": "select every mapped phase row with a finite, exact-nonzero coefficient in a validated HiGHS dual infeasibility ray; if no valid mapped support exists, return UNKNOWN",
+    "update": "flip the complete selected set simultaneously once, rebuild/reload once under the same owner contract, and solve once",
+    "positive_terminal": "raw BOX, verifier-owned zero-width outward forward, and strictly positive stored-binary64 Fraction property lower bound",
+    "all_failure": "UNKNOWN"
+  },
+  "authority": {
+    "candidate_authority": false,
+    "phase_authority": false,
+    "lp_authority": false,
+    "marginal_authority": false,
+    "dual_ray_authority": false,
+    "external_label_authority": false,
+    "terminal_only": true
+  },
+  "prohibitions": {
+    "input_center_sampling": true,
+    "input_boundary_sampling": true,
+    "random_input_sampling": true,
+    "onnx_input_point_search": true,
+    "pgd": true,
+    "bab": true,
+    "activation_split": true,
+    "input_split": true,
+    "enumeration": true,
+    "backward_bounds": true,
+    "dual_tightening": true,
+    "per_instance_runtime_rule": true,
+    "fallback_backend": true,
+    "runtime_menu": true,
+    "retry": true,
+    "parameter_scan": true,
+    "rare_edge_backend_stack": true,
+    "cross_request_cache": true,
+    "second_solver": true
+  },
+  "loader_contract": {
+    "solver": "one pinned highspy/HiGHS implementation for base status, marginals, and infeasibility ray",
+    "objective_sense": "MINIMIZE(-candidate objective)",
+    "tiny_coefficient_rule": "for a dropped term in A*x<=b, use exact stored-binary64 Fraction b' = b - sum(min(a*l,a*u)), then round toward +inf",
+    "warning_or_error": "poison owner, bounded clear, and UNKNOWN",
+    "partial_mutation": "poison owner, bounded clear, and UNKNOWN",
+    "cleanup": "a cleanup failure cannot replace the primary BaseException",
+    "deadline": "checked before every load/update stage and passed to HiGHS",
+    "postconditions": "row, column, nnz, primal, dual/ray shape, finite values, and row mapping"
+  },
+  "ability_controls": {
+    "positive_existing": "cifar100_medium_iid2",
+    "negative_margin_negative_control": "cifar100_large_iid153",
+    "negative_margin_positive_control": "tinyimagenet_medium_iid143",
+    "infeasible_controls": [
+      "cifar100_large_iid166",
+      "tinyimagenet_medium_iid153"
+    ],
+    "external_sat_labels_are_offline_strata_only": true
+  },
+  "ability_promotion_gates": {
+    "formal_retention": 59,
+    "formal_gain_min": 1,
+    "result_conflicts_max": 0,
+    "errors_max": 0,
+    "each_control_single_paired_median_speedup_min": 1.0,
+    "each_control_four_thread_paired_median_speedup_min": 1.0,
+    "each_control_bootstrap_95pct_lower_min": 0.95,
+    "fixed400_wall_median_ratio_max": 1.05,
+    "fixed400_wall_p95_ratio_max": 1.05,
+    "fixed400_rss_ratio_max": 1.05
+  },
+  "pure_performance_gates_not_required_for_this_ability_release": {
+    "single_request_speedup": 1.5,
+    "four_thread_speedup": 2.0,
+    "paired_bootstrap_lower": 1.8
+  },
+  "gate_order": [
+    "safe loader and dual-ray toy audit",
+    "five-case ability sentinel",
+    "fixed14",
+    "all 59 retention",
+    "three-stratum single and four-thread noninferiority",
+    "fixed40",
+    "fixed400 wall/RSS and formal count",
+    "independent frozen-hash audit"
+  ]
+}

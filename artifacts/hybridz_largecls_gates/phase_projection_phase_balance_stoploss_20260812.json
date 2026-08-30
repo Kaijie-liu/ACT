@@ -1,0 +1,47 @@
+{
+  "schema": "act.hybridz.phase_projection_phase_balance_stoploss.v1",
+  "date": "2026-08-12",
+  "status": "STOPPED_AFTER_FIRST_TARGET_NO_GAIN",
+  "candidate": {
+    "role": "replace the analytic-corner phase selector, not add a fallback",
+    "first_cell": "unchanged center-selected exact phase cell",
+    "property_constraint": "require the selected first-cell affine property lower envelope to reach zero",
+    "objective": "maximize one normalized minimum signed ReLU phase-safety scalar",
+    "decision_variables": "the original input factors plus one scalar",
+    "next_step": "select one phase per preactivation from the LP point, then run the unchanged single exact-cell input LP and mandatory verifier replay",
+    "parameters_scanned": 0,
+    "alternate_cells_retried": 0
+  },
+  "target_result": {
+    "case": "cifar100_medium_iid0",
+    "baseline_status": "UNKNOWN",
+    "baseline_reason": "the single LP candidate failed exact phase or margin replay",
+    "baseline_elapsed_seconds": 4.828325381502509,
+    "baseline_first_cell_positive_property_rows": 1,
+    "baseline_first_cell_maximum_upper": 0.0008754629207203982,
+    "baseline_projected_margin_lower": -0.03056648102799219,
+    "selector_lp_completed": true,
+    "candidate_status": "UNKNOWN",
+    "candidate_reason": "the single LP candidate failed exact phase or margin replay",
+    "candidate_elapsed_seconds": 5.0426026517525315,
+    "new_formal_verdicts": 0
+  },
+  "stop_loss": {
+    "tinyimagenet_run": false,
+    "fixed14_run": false,
+    "production_implementation_retained": false,
+    "reason": "The first preregistered CIFAR100 UNKNOWN target gained no formal result and the extra selector LP increased request latency; parameter tuning or model-specific dispatch is forbidden."
+  },
+  "forbidden_methods_used": {
+    "input_sampling": false,
+    "center_boundary_or_random_onnx_execution": false,
+    "pgd": false,
+    "triangle_or_convex_relu": false,
+    "act_bab": false,
+    "backward_bounds": false,
+    "dual_tightening": false
+  },
+  "production_candidate_sha256": "615b45516b0d4cd2a3632c4f260efffc4fc5cf451444225f8d1bb3e6a04993ba",
+  "production_files_changed": false,
+  "decision": "Do not add a phase-balance LP, a selector retry, or a per-family alternative."
+}
