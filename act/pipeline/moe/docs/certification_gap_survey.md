@@ -266,3 +266,23 @@ never overwrites this preregistration.
 This stage freezes the protocol only. Systematic search, author contact,
 environment creation, model training, certificate execution, N1/N2, F1, and
 baseline verification have not started.
+
+## Execution closure amendment: 2026-08-30
+
+The frozen source-native retrieval could not be completed by the execution
+cutoff, and no authorized institutional exports were supplied. The study is
+therefore closed as an **audited case series**, not a systematic prevalence
+study. This changes reporting scope rather than retroactively changing the
+search protocol.
+
+The closed case series contains eight adjudicated included paper families and
+48/48 primary-source-located evidence cells. One-hop snowballing produced 13
+non-seed candidates and no new included family under the frozen criteria. These
+facts support a qualitative statement that operational certificate gaps exist
+in the audited cases. They do not support ecosystem prevalence, search recall,
+or a claim that no other eligible work exists. The machine-readable closure is
+`act/pipeline/moe/results/survey/case_series_closure_20260830.json`.
+
+Author contact remains `NOT_PERFORMED`. A neutral RT-ER clarification draft is
+stored at `act/pipeline/moe/docs/icml2025_rt_er_author_disclosure_draft.md`, but
+it must not be sent without explicit user authorization.

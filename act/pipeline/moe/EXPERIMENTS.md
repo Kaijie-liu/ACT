@@ -1502,6 +1502,22 @@ while the sound eta compilation was too relaxed under CROWN. The immutable
 summary is
 `act/pipeline/moe/results/crown/crown_adapter_consistency_bal010_43_r2_20260829.json`.
 
+## Survey case-series closure and author clarification draft
+
+The certification-gap survey is closed as an audited case series because the
+frozen source-native retrieval remains incomplete and no authorized
+institutional exports were supplied. The eight adjudicated included families,
+48 primary-source-located cells, and one-hop saturation observation remain
+reportable, but ecosystem prevalence, recall, and “no other eligible work” are
+prohibited. The closure is
+`act/pipeline/moe/results/survey/case_series_closure_20260830.json`.
+
+A neutral clarification email about the released CIFAR-10 RT-ER router training
+is drafted at
+`act/pipeline/moe/docs/icml2025_rt_er_author_disclosure_draft.md`. Its status is
+`DRAFT_NOT_SENT`; sending still requires explicit user authorization, and any
+reply must remain in the private untracked survey directory.
+
 The geometric mechanism is formalized in
 `act/back_end/moe/proofs/guarded_box_coordinate_hull.md`. For one affine
 halfspace it gives the exact coordinate bounds and the necessary-and-sufficient
