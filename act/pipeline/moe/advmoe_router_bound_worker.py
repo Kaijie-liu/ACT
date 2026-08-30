@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import gc
 import importlib.metadata
 import json
 import os
@@ -235,6 +236,7 @@ def run(prepare_path: Path, output_path: Path) -> dict[str, Any]:
                     )
             del bounded, chunk_adapter
             if device.startswith("cuda"):
+                gc.collect()
                 torch.cuda.empty_cache()
 
     rows = []
