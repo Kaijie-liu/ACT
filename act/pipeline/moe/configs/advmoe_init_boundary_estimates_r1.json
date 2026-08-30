@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "status": "PREREGISTERED_NOT_RUN",
+  "scope": "ADV_MOE_INIT_20_SAMPLE_EMPIRICAL_BOUNDARY_ESTIMATE_DIAGNOSTIC",
+  "parent_commit_required": "7ecc0ad2f2be37ce160ececcda555e4f72f9c66c",
+  "advmoe_result_dir": "/data1/Kane/MOE/ACT/data/moe/results/advmoe_router_bracket_init20_20260830_r7_strong_crown",
+  "rt_er_radii_artifact": "/data1/Kane/MOE/ACT/data/moe/results/icml2025_rt_er/router_init_census_k20_20260830_r2/per_seed.npz",
+  "attack_epsilon": 0.03137254901960784,
+  "comparison": {
+    "advmoe_first_order": "clean route margin divided by the L1 norm of its gradient with respect to unit-pixel input",
+    "advmoe_pgd_extrapolation": "attack epsilon divided by achieved fractional margin compression",
+    "rt_er_reference": "aggregate median of the exact box-capped unit-pixel route radii over 20 official constructions and 10000 inputs"
+  },
+  "interpretation": "All AdvMoE radii are empirical local/extrapolated estimates, not reachable witnesses or certificates. The RT-ER denominator is exact in its registered pixel-box semantics. Their ratio is an architecture-regime diagnostic, not a controlled causal estimate.",
+  "output_dir": "/data1/Kane/MOE/ACT/data/moe/results/advmoe_init_boundary_estimates_20260830_r1"
+}
