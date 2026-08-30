@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "status": "PREREGISTERED_NOT_RUN",
+  "scope": "ADV_MOE_INIT_20_SAMPLE_LARGE_EPSILON_STRONG_PGD_DIAGNOSTIC",
+  "parent_commit_required": "de43669014f22515679d2425f688c42644ba0936",
+  "source_result_dir": "/data1/Kane/MOE/ACT/data/moe/results/advmoe_router_bracket_init20_20260830_r7_strong_crown",
+  "model_seed": 1234,
+  "epsilon_over_255": [16, 32, 64, 96],
+  "known_no_flip_epsilon_over_255": 8,
+  "attack": {
+    "steps": 100,
+    "restarts": 10,
+    "step_divisor": 4,
+    "seed": 20260830,
+    "schedule": "PIECEWISE_HALVING_50_75"
+  },
+  "device": "cuda",
+  "minimum_free_memory_bytes": 21474836480,
+  "output_dir": "/data1/Kane/MOE/ACT/data/moe/results/advmoe_init_large_epsilon_pgd_20260830_r1",
+  "interpretation": "A flip is a concrete empirical upper bound on route-boundary radius. Failure to flip is attack non-discovery, not a certified lower bound. The reported interval is therefore an attack-diagnostic bracket, not a formal boundary bracket."
+}
