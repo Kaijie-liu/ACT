@@ -196,6 +196,8 @@ def run(prepare_path: Path, output_path: Path) -> dict[str, Any]:
                 PerturbationLpNorm(norm=float("inf"), x_L=lower, x_U=upper),
             )
             started = time.monotonic()
+            bound_lower = None
+            bound_upper = None
             try:
                 bound_lower, bound_upper = bounded.compute_bounds(
                     x=(bounded_input,),
@@ -224,20 +226,30 @@ def run(prepare_path: Path, output_path: Path) -> dict[str, Any]:
                 if isinstance(exc, torch.OutOfMemoryError) and torch.cuda.is_available():
                     torch.cuda.empty_cache()
             row_accumulators[epsilon]["seconds"] += time.monotonic() - started
+            current_peak_memory = (
+                torch.cuda.max_memory_allocated()
+                if device.startswith("cuda")
+                else 0
+            )
+            del (
+                bounded,
+                chunk_adapter,
+                bounded_input,
+                lower,
+                upper,
+                bound_lower,
+                bound_upper,
+            )
             if device.startswith("cuda"):
-                peak_memory_bytes = max(
-                    peak_memory_bytes, torch.cuda.max_memory_allocated()
-                )
+                gc.collect()
+                torch.cuda.empty_cache()
+                peak_memory_bytes = max(peak_memory_bytes, current_peak_memory)
                 maximum_peak = worker_config.get("maximum_peak_memory_bytes")
                 if maximum_peak is not None and peak_memory_bytes > int(maximum_peak):
                     raise RuntimeError(
                         f"CROWN peak memory {peak_memory_bytes} exceeds frozen limit "
                         f"{int(maximum_peak)}"
                     )
-            del bounded, chunk_adapter
-            if device.startswith("cuda"):
-                gc.collect()
-                torch.cuda.empty_cache()
 
     rows = []
     for epsilon in epsilons:
