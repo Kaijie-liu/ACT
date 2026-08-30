@@ -192,3 +192,31 @@ directories are permanently excluded and preserved: they exposed, in order,
 bounded-graph reuse, cyclic garbage retention, and retained bound-local
 references. All three contain the same independently hashed attack endpoints
 as the accepted run, and none was overwritten.
+
+## Empirical boundary-estimate diagnostic
+
+The accepted strong-pilot artifacts also support two non-formal, per-input
+radius estimates without another model execution:
+
+1. the local first-order estimate `clean_margin / ||grad_x margin||_1`;
+2. the 8/255 attack-slope extrapolation `epsilon / fractional_compression`.
+
+The stored L1 quantity is explicitly the gradient of the clean-route margin
+`r_clean-r_competitor` with respect to the unit-pixel input, not a single-logit
+gradient. On the 20 frozen inputs, the first-order estimate has median
+`67.850/255` and range `59.261--75.800/255`; the attack extrapolation has median
+`70.644/255` and range `61.313--77.935/255`. Pearson correlation is `0.926`,
+Spearman correlation is `0.910`, 16/20 pairs agree within 5%, and 19/20 agree
+within 10%.
+
+The exact K=20 RT-ER aggregate pixel-box radius median is `0.5324/255`.
+Consequently, the corresponding architecture-regime scale ratios are `127.4x`
+and `132.7x`, which the project reports as approximately `130x` rather than a
+fixed `137x`. The AdvMoE values are local/extrapolated estimates, not route
+boundaries, witnesses, or certificates. The comparison does not isolate weight
+sharing, pooling, depth, or initialization as a causal mechanism.
+
+Raw CSV and an SVG with live text are stored under
+`data/moe/results/advmoe_init_boundary_estimates_20260830_r1`. Independent
+replay reports zero issues at
+`act/pipeline/moe/results/advmoe_init_boundary_estimates_20260830_r1.json`.

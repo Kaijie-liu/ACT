@@ -659,6 +659,34 @@ stability, and large negative relaxation bounds are not evidence of intrinsic
 router difficulty. Alpha-CROWN, beta-CROWN/BaB, the trained checkpoint, census,
 and deep-path certificate coverage remain pending.
 
+### The init diagnostics expose two router-architecture regimes
+
+The L1 diagnostic is the gradient of the selected-vs-competing route margin
+with respect to the unit-pixel input. Its per-input first-order boundary
+estimate has median `67.850/255`; independently, extrapolating the achieved
+8/255 PGD margin compression gives `70.644/255`. Across the 20 frozen inputs,
+Pearson and Spearman agreement are `0.926` and `0.910`; 16/20 estimates agree
+within 5% and 19/20 within 10%. Thus the agreement is pointwise rather than a
+quotient-of-medians coincidence.
+
+The K=20 RT-ER exact pixel-box aggregate median is `0.5324/255`, making the two
+scale ratios `127.4x` and `132.7x`. The bounded paper wording is therefore
+“approximately 130x larger empirical route-boundary scale at initialization.”
+This contrasts a deep convolutional router with a standard affine router and
+limits the affine `1/sqrt(d)` observation: it must not be extrapolated to deep
+routers. The evidence does not isolate weight sharing, pooling, depth, or any
+other architectural component as the causal mechanism, and the AdvMoE values
+are not exact boundaries or certificates.
+
+This regime also motivates a dependency inversion in the staged design. For
+the official AdvMoE `E=2` shared-route model, sound verification can, in
+principle, enumerate both static specialized pathways over the entire input
+box without requiring a router-stability proof; router bounds become optional
+pruning information. This is an implemented specialization identity but not
+yet an official-checkpoint certificate result. The route-invariance baseline,
+by contrast, still requires a positive router-margin certificate before it can
+delegate one path to the same downstream backend.
+
 ## Threats to validity
 
 ### Construct validity

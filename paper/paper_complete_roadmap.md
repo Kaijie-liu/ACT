@@ -75,6 +75,11 @@ engineering pilot has independently audited orchestration, all attack
 endpoints, BN identity, and CROWN accounting, but it does not satisfy the
 required init/final census or staged-verifier table. Alpha-CROWN and
 beta-CROWN/BaB remain closure tiers rather than silently substituted results.
+The existing pilot additionally supports two closely agreeing empirical
+boundary-scale estimates (`67.85/255` first-order and `70.64/255` PGD-slope),
+approximately `130x` the exact RT-ER K=20 aggregate median. This closes an
+architecture-regime diagnostic only; it neither closes the nonlinear-router
+bracket nor licenses a causal architecture claim.
 
 ### Tier 2: optional and non-blocking
 

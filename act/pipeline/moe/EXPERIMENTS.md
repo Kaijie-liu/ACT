@@ -1796,3 +1796,15 @@ Failed `_r4`, `_r5`, and `_r6` directories are preserved and permanently
 excluded. They exposed bounded-graph reuse, cyclic garbage retention, and
 retained bound-local references, respectively. Their attack endpoint hash is
 identical to the accepted run; no directory was overwritten.
+
+The same immutable artifacts support a separate empirical boundary-scale
+diagnostic without another model execution. Per input, it compares
+`clean_margin / ||grad_x margin||_1` with the 8/255 PGD-slope extrapolation
+`epsilon / fractional_compression`. Their medians are `67.850/255` and
+`70.644/255`; Pearson/Spearman correlations are `0.926/0.910`, 16/20 pairs are
+within 5%, and 19/20 are within 10%. The exact K=20 RT-ER unit-pixel aggregate
+median is `0.5324/255`, giving scale ratios `127.4x` and `132.7x`. This is
+reported as an approximately `130x` architecture-regime diagnostic, not a
+formal AdvMoE boundary or causal attribution to convolution, weight sharing,
+pooling, or depth. Independent audit: zero issues at
+`act/pipeline/moe/results/advmoe_init_boundary_estimates_20260830_r1.json`.
