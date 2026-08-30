@@ -1,0 +1,85 @@
+{
+  "audit": {
+    "checks": [
+      "recomputed config, checkpoint, dynamic-reference, ONNX, probe, worker-result, and log hashes",
+      "reran ONNX checker for all four expert graphs",
+      "independently classified every TopK, ArgMax, Gather, and GatherElements node by data dependency",
+      "replayed every ONNX graph on its four frozen inputs with ONNX Runtime",
+      "confirmed official loader and auto_LiRPA acceptance statuses",
+      "confirmed official and alpha-beta-CROWN clones remained clean"
+    ],
+    "issues": 0,
+    "status": "PASS"
+  },
+  "checkpoint": {
+    "epoch": 10,
+    "path": "/data1/Kane/MOE/baseline_runs/icml2025_rt_er/seed0_paper130/checkpoints/epoch_010.t7",
+    "sha256": "d30ab40efc58be6f02a1465d25a341bf5f95b822b280462e73a2ab239429788b"
+  },
+  "code_commit": "1cdcb127d",
+  "consumer": {
+    "commit": "e5c7e17bf0488843acb77b7519f59876717a49f4",
+    "repository": "/data1/Kane/MOE/baselines/alpha-beta-CROWN"
+  },
+  "dynamic_reference": {
+    "model": "complete RT-ER hard top-1 dynamic-dispatch program",
+    "overall_status": "EXISTING_VERIFIER_CANNOT_CONSUME",
+    "rejection": "NotImplementedError: Conversion not implemented for op_type=GatherElements.",
+    "result": "act/pipeline/moe/results/crown/dynamic_moe_parser_probe_20260830.json",
+    "sha256": "c92d435b33faedc102552be180d428f5f99de2c52a77d38387cb386078c542a2"
+  },
+  "excluded_engineering_artifact": {
+    "directory": "/data1/Kane/MOE/ACT/data/moe/results/parser_probe/rt_er_specialization_20260830_r1",
+    "reason": "overstrict syntactic rule classified a constant-index Shape-to-Gather dimension lookup as expert dispatch; execution stopped before CROWN",
+    "status": "PERMANENTLY_EXCLUDED"
+  },
+  "raw_result": {
+    "config_sha256": "af0e45344c281c247cca60cbf7f4f21698a0d2f18d21e7caf9083bf447f28812",
+    "directory": "/data1/Kane/MOE/ACT/data/moe/results/parser_probe/rt_er_specialization_20260830_r2",
+    "summary_sha256": "39fb16635251552d4eb480b606008e08fe795971ffc0843377a7916f27f7acd8"
+  },
+  "schema_version": 1,
+  "specialized_experts": [
+    {
+      "auto_lirpa_maximum_abs_error": 7.078051567077637e-07,
+      "expert": 0,
+      "loader_maximum_abs_error": 1.3113021850585938e-06,
+      "onnx_sha256": "b7275b12d6b57184dd15a778a89e36c46999c444e5c5aedc8363475ccb8355fb",
+      "onnxruntime_maximum_abs_error": 1.0728836059570312e-06,
+      "overall_status": "EXISTING_VERIFIER_FRONTEND_ACCEPTS"
+    },
+    {
+      "auto_lirpa_maximum_abs_error": 4.76837158203125e-07,
+      "expert": 1,
+      "loader_maximum_abs_error": 1.1920928955078125e-06,
+      "onnx_sha256": "4c322da8136442238652cec2bc81aa7f5848e3c5d59350f27a534ed141306f47",
+      "onnxruntime_maximum_abs_error": 7.152557373046875e-07,
+      "overall_status": "EXISTING_VERIFIER_FRONTEND_ACCEPTS"
+    },
+    {
+      "auto_lirpa_maximum_abs_error": 5.364418029785156e-07,
+      "expert": 2,
+      "loader_maximum_abs_error": 1.0728836059570312e-06,
+      "onnx_sha256": "e7e477c43c787dad715cbc84a2af1414c23e0e5adae2d68b87b0c9a764e6c8e7",
+      "onnxruntime_maximum_abs_error": 8.344650268554688e-07,
+      "overall_status": "EXISTING_VERIFIER_FRONTEND_ACCEPTS"
+    },
+    {
+      "auto_lirpa_maximum_abs_error": 4.76837158203125e-07,
+      "expert": 3,
+      "loader_maximum_abs_error": 6.556510925292969e-07,
+      "onnx_sha256": "caeb47e31f04d9c834abab39cf4d7cc22eb4903f9abbc6ec70b7cad1e95660c1",
+      "onnxruntime_maximum_abs_error": 4.172325134277344e-07,
+      "overall_status": "EXISTING_VERIFIER_FRONTEND_ACCEPTS"
+    }
+  ],
+  "specialization": {
+    "accepted_experts": 4,
+    "data_dependent_dispatch_nodes": 0,
+    "experts": 4,
+    "shape_bookkeeping_gathers": 4
+  },
+  "status": "COMPLETED_AUDITED",
+  "conclusion": "The same verifier frontend rejects the complete dynamic RT-ER program at GatherElements but accepts all four Route A specialized ResNet18 branches after data-dependent dispatch is removed.",
+  "claim_scope": "Frontend program-consumption closure only. Acceptance is not a robustness certificate, certified-coverage result, or runtime comparison."
+}

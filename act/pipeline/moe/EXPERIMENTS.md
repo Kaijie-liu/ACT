@@ -1137,6 +1137,17 @@ forbids data-dependent `TopK`, `ArgMax`, `Gather`, and `GatherElements`, while
 explicitly classifying only constant-index `Shape -> Gather` as non-dispatch
 bookkeeping. Unit tests require a feature-tensor `Gather` to remain forbidden.
 
+The audited r2 execution closes the program-consumption loop. The complete
+dynamic RT-ER graph remains rejected at `GatherElements`; after fixing each
+route, all four specialized ResNet18 graphs contain zero data-dependent
+dispatch nodes, match PyTorch under ONNX Runtime, and are accepted by both the
+same official CROWN loader and auto_LiRPA `BoundedModule`. Each graph retains
+one constant-index `Shape -> Gather` dimension lookup, which the independent
+audit confirms is not data dispatch. All 4/4 branches pass and the audit reports
+zero issues. This is front-end composability evidence only, not a robustness
+certificate. The compact result is
+`act/pipeline/moe/results/crown/rt_er_specialization_probe_20260830.json`.
+
 ## N1 engineering rerun code freeze
 
 The N1 performance runner freezes the original 20-row applicable-unresolved
