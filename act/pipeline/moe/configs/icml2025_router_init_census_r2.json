@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "status": "PREREGISTERED_NOT_RUN",
+  "label": "official-code router-initialization distribution; no training",
+  "supersedes": {
+    "config": "act/pipeline/moe/configs/icml2025_router_init_census.json",
+    "excluded_output": "/data1/Kane/MOE/ACT/data/moe/results/icml2025_rt_er/router_init_census_k20_20260830_r1",
+    "reason": "r1 required bitwise equality for recomputed CUDA float64 radii; 119/10000 rows differed only in the final bits with maximum error 1.0408340855860843e-17, while routes, competitors, and all five radius classifications matched exactly"
+  },
+  "official_source": {
+    "repository": "/data1/Kane/MOE/baselines/Robust-MoE-Dual-Model",
+    "commit": "30ef94d77b5451595b82e739aa8938e1f4c4521f"
+  },
+  "initialization": {
+    "environment": "/data1/Kane/MOE/envs/rt-er-blackwell",
+    "seeds": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+    "policy": "torch.manual_seed(seed), then construct the complete official MOE_Resnet18 with four experts before reading the router",
+    "seed0_bitwise_checkpoint_match_required": true
+  },
+  "seed0_reference": {
+    "checkpoint": "/data1/Kane/MOE/baseline_runs/icml2025_rt_er/seed0_paper130/checkpoints/epoch_010.t7",
+    "checkpoint_sha256": "d30ab40efc58be6f02a1465d25a341bf5f95b822b280462e73a2ab239429788b",
+    "per_input": "/data1/Kane/MOE/baseline_runs/icml2025_rt_er/seed0_paper130/telemetry/epoch_020/per_input.npz",
+    "per_input_sha256": "158cdcafba3e9c7e5e58948927286e6bdc064c3c4c626e58f20ee16d75461baa",
+    "reference_radius_atol": 1e-12,
+    "exact_fields": ["clean_experts", "boundary_competitors", "epsilon_classifications"]
+  },
+  "dataset": {
+    "name": "CIFAR10",
+    "split": "official torchvision test",
+    "ordered_samples": 10000,
+    "download": false
+  },
+  "router": {
+    "type": "affine_hard_top1",
+    "num_experts": 4,
+    "input_domain": "unit_pixels_nchw",
+    "normalization_mean_255": [125.307, 122.961, 113.8575],
+    "normalization_std_255": [51.5865, 50.847, 51.255],
+    "tie_semantics": "ANY_LEGAL_TOPK"
+  },
+  "oracle": {
+    "compute_device": "cuda",
+    "capacity_grid_steps": 255,
+    "input_lower": 0.0,
+    "input_upper": 1.0,
+    "outward_absolute": 1e-9,
+    "outward_relative": 1e-9
+  },
+  "epsilon_over_255": [0.5, 1.0, 2.0, 4.0, 8.0],
+  "reporting": {
+    "strict_point_estimate": "radius < epsilon",
+    "formal_reachable": "radius_upper <= epsilon",
+    "formal_stable": "epsilon < radius_lower",
+    "across_seed_interval": "minimum to maximum over all 20 preregistered seeds",
+    "claim_scope": "distribution of the released pipeline's untrained router initialization; not a trained-model certificate or output-robustness result"
+  }
+}

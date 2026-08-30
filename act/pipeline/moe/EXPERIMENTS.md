@@ -1063,6 +1063,14 @@ counts at `{0.5,1,2,4,8}/255`, per-seed loads and boundary pairs, and the full
 minimum--maximum range across all preregistered seeds. It is an initialization
 distribution result, not a trained-model certificate.
 
+The first census execution is retained as an excluded fail-closed engineering
+artifact. It required bitwise equality for independently recomputed CUDA
+float64 radii. The seed-0 router itself matched bit for bit, routes and boundary
+competitors matched exactly, and all five epsilon classifications matched, but
+119 radii differed by at most `1.04e-17`. The r2 gate therefore retains exact
+semantic/classification equality and uses the oracle's existing `1e-12`
+reference tolerance for scalar radii; it does not relax any census threshold.
+
 ## ICML 2025 B3 executable comparison stage
 
 The final-checkpoint B3 execution layer is implemented but not run. It freezes

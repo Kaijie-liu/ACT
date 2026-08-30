@@ -27,7 +27,7 @@ from act.pipeline.moe.icml2025_route_telemetry import (
 from act.util.path_config import get_torchvision_data_root
 
 
-DEFAULT_CONFIG = PROJECT_ROOT / "act/pipeline/moe/configs/icml2025_router_init_census.json"
+DEFAULT_CONFIG = PROJECT_ROOT / "act/pipeline/moe/configs/icml2025_router_init_census_r2.json"
 BLACKWELL_PYTHON = Path("/data1/Kane/MOE/envs/rt-er-blackwell/bin/python")
 BLACKWELL_JPEG = Path("/data1/Kane/MOE/envs/rt-er-blackwell/lib/libjpeg.so.8")
 WORKER = PROJECT_ROOT / "act/pipeline/moe/icml2025_router_init_worker.py"
@@ -210,16 +210,46 @@ def run(config_path: Path, output_dir: Path) -> dict[str, Any]:
         all_competitors.append(boundary.boundary_competitors.copy())
 
     with np.load(reference, allow_pickle=False) as seed0_reference:
+        radius_errors = {
+            "radii": float(np.max(np.abs(all_radii[0] - seed0_reference["radii"]))),
+            "radius_lowers": float(
+                np.max(np.abs(all_lowers[0] - seed0_reference["radius_lowers"]))
+            ),
+            "radius_uppers": float(
+                np.max(np.abs(all_uppers[0] - seed0_reference["radius_uppers"]))
+            ),
+        }
+        epsilon_classifications_exact = True
+        for epsilon in epsilons:
+            epsilon_classifications_exact &= bool(
+                np.array_equal(all_radii[0] < epsilon, seed0_reference["radii"] < epsilon)
+                and np.array_equal(
+                    all_uppers[0] <= epsilon,
+                    seed0_reference["radius_uppers"] <= epsilon,
+                )
+                and np.array_equal(
+                    epsilon < all_lowers[0],
+                    epsilon < seed0_reference["radius_lowers"],
+                )
+            )
         seed0_checks = {
-            "radii_exact": bool(np.array_equal(all_radii[0], seed0_reference["radii"])),
-            "radius_lowers_exact": bool(np.array_equal(all_lowers[0], seed0_reference["radius_lowers"])),
-            "radius_uppers_exact": bool(np.array_equal(all_uppers[0], seed0_reference["radius_uppers"])),
+            "radius_maximum_abs_errors": radius_errors,
+            "radius_within_atol": bool(
+                max(radius_errors.values())
+                <= float(config["seed0_reference"]["reference_radius_atol"])
+            ),
             "clean_experts_exact": bool(np.array_equal(all_routes[0], seed0_reference["clean_experts"])),
             "boundary_competitors_exact": bool(
                 np.array_equal(all_competitors[0], seed0_reference["boundary_competitors"])
             ),
+            "epsilon_classifications_exact": epsilon_classifications_exact,
         }
-    if not all(seed0_checks.values()):
+    if not (
+        seed0_checks["radius_within_atol"]
+        and seed0_checks["clean_experts_exact"]
+        and seed0_checks["boundary_competitors_exact"]
+        and seed0_checks["epsilon_classifications_exact"]
+    ):
         raise RuntimeError("seed-0 census does not reproduce immutable telemetry")
 
     per_seed_path = output_dir / "per_seed.npz"
