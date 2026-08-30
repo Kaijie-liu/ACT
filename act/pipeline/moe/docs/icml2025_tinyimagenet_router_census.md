@@ -24,18 +24,23 @@ The five registered radii are `0.5/255`, `1/255`, `2/255`, `4/255`, and
 `8/255`. Two input domains are reported separately:
 
 1. `official_post_resize_224` is the primary 150,528-dimensional unit-pixel
-   space after the released 224x224 bilinear resize.
+   space centered on the released float16-before-resize output. The subsequent
+   continuous perturbation and normalization are represented in real
+   arithmetic.
 2. `official_composed_raw_64` is a secondary analysis of the *same router* in
    the original 12,288-dimensional unit-pixel space. The deterministic
    bilinear resize is folded into the router by its exact real-arithmetic
    adjoint. It is not a separately initialized model.
 
-The released transform converts decoded pixels to float16 before resizing.
-The formal analysis uses the real-arithmetic bilinear operator and separately
-replays the literal float16 preprocessing. Consequently, the secondary domain
-is labelled `real-arithmetic preprocessing composition`; it is never described
-as a bitwise model rewrite. Route mismatches and maximum score drift against
-the literal transform are retained as audit fields.
+The released transform converts decoded pixels to float16 before resizing. An
+excluded first run incorrectly centered the primary balls on a real-arithmetic
+resize; 111 of 200,000 literal route replays differed. That run is retained as
+`tinyimagenet_router_census_k20_20260830_r1` but cannot support official-domain
+claims. The corrected primary domain uses the literal resized center. The
+secondary domain necessarily uses the real-arithmetic resize operator and is
+labelled `real-arithmetic preprocessing composition`; it is never described as
+a bitwise model rewrite. Resize drift and float16-normalization drift are
+retained separately.
 
 ## Exact fixed-radius decision
 
@@ -75,5 +80,5 @@ unchanged.
   families. Only the official 224 domain enters the main cross-dataset figure;
   the composed raw-64 analysis is secondary.
 
-The frozen configuration is
-`act/pipeline/moe/configs/icml2025_tinyimagenet_router_census.json`.
+The corrected frozen configuration is
+`act/pipeline/moe/configs/icml2025_tinyimagenet_router_census_r2.json`.

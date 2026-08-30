@@ -25,7 +25,7 @@ MOE_ROOT = Path("/data1/Kane/MOE")
 OFFICIAL_REPO = MOE_ROOT / "baselines/Robust-MoE-Dual-Model"
 OFFICIAL_COMMIT = "30ef94d77b5451595b82e739aa8938e1f4c4521f"
 DEFAULT_CONFIG = (
-    PROJECT_ROOT / "act/pipeline/moe/configs/icml2025_tinyimagenet_router_census.json"
+    PROJECT_ROOT / "act/pipeline/moe/configs/icml2025_tinyimagenet_router_census_r2.json"
 )
 
 
@@ -273,8 +273,22 @@ def run(config_path: Path, raw_dir: Path, output_path: Path) -> dict[str, Any]:
             align_corners=False,
             antialias=True,
         )[0].numpy()
+        if not torch.cuda.is_available():
+            raise RuntimeError("literal float16 resize audit requires CUDA")
+        literal_resized = functional.interpolate(
+            torch.from_numpy((raw * 255.0).astype(np.float16))[None].cuda(),
+            size=(224, 224),
+            mode="bilinear",
+            align_corners=False,
+            antialias=True,
+        )[0].double().cpu().numpy() / 255.0
         for domain, point, weight, bias in (
-            ("official_post_resize_224", resized.reshape(-1), pixel_weight, pixel_bias),
+            (
+                "official_post_resize_224",
+                literal_resized.reshape(-1),
+                pixel_weight,
+                pixel_bias,
+            ),
             ("official_composed_raw_64", raw.reshape(-1), raw_weight, raw_bias),
         ):
             clean, stable, reachable, undecided = _direct_fixed_partition(

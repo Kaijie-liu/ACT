@@ -1568,3 +1568,10 @@ Seeds 0--19 and radii `{0.5,1,2,4,8}/255` are frozen. The Stanford archive and
 and the released float16-before-resize path is replayed solely to quantify the
 real-arithmetic abstraction's finite-precision drift. See
 `docs/icml2025_tinyimagenet_router_census.md` for semantics and audit rules.
+
+The first `_r1` census is permanently excluded from official-domain claims: it
+centered the primary 150,528-dimensional balls on a real-arithmetic resize, while
+the released transform resizes float16 pixels. Literal replay changed 111 of
+200,000 clean routes. The corrected `_r2` protocol centers primary balls on
+the literal resized pixels, reports float16-normalization drift separately,
+and keeps raw-64 folding as an explicitly secondary real-arithmetic analysis.

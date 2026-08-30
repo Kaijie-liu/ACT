@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "status": "PREREGISTERED_NOT_RUN",
+  "label": "official-code TinyImageNet MOE_ViT router-initialization census; no training",
+  "supersedes": {
+    "config": "act/pipeline/moe/configs/icml2025_tinyimagenet_router_census.json",
+    "excluded_run": "tinyimagenet_router_census_k20_20260830_r1",
+    "reason": "r1 centered the primary 224-domain balls on a real-arithmetic resize rather than the released float16-before-resize output; 111/200000 literal clean-route replays differed, so r1 is retained but permanently excluded from official-semantics claims"
+  },
+  "official_source": {
+    "repository": "/data1/Kane/MOE/baselines/Robust-MoE-Dual-Model",
+    "commit": "30ef94d77b5451595b82e739aa8938e1f4c4521f",
+    "training_script": "/data1/Kane/MOE/baselines/Robust-MoE-Dual-Model/tinyimagenet_RT_ER.py",
+    "training_script_sha256": "f2ae69b926a5e29493cb59542efc111c7b5805327be44bf95f3231347ec81111",
+    "model_source": "/data1/Kane/MOE/baselines/Robust-MoE-Dual-Model/models/moe.py",
+    "model_source_sha256": "2f1159a80cc71c28f86baa5e4a2ff13feab49f80c66648dcdcd37af0ac70868b"
+  },
+  "dataset": {
+    "name": "Tiny ImageNet",
+    "archive_url": "https://cs231n.stanford.edu/tiny-imagenet-200.zip",
+    "archive_path": "/data1/Kane/MOE/datasets/tiny-imagenet-200.zip",
+    "archive_bytes": 248100043,
+    "archive_sha256": "6198c8ae015e2b3e007c7841da39ec069199b9aa3bfa943a462022fe5e43c821",
+    "root": "/data1/Kane/MOE/datasets/tiny-imagenet-200",
+    "split": "validation images",
+    "ordered_samples": 10000,
+    "labels_used": false,
+    "val_annotations_sha256": "c37765a8b40fce4f28962bf1847a2537e2781753974cbb2447eeb50ff31130a2"
+  },
+  "initialization": {
+    "environment": "/data1/Kane/MOE/envs/rt-er-blackwell",
+    "seeds": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+    "policy": "torch.manual_seed(seed), then construct the complete official MOE_ViT with four pretrained timm ViT experts before reading the router",
+    "constructor": "MOE_ViT(num_experts=4, size=224)",
+    "expert_constructor": "timm.create_model('vit_small_patch16_224', pretrained=True, img_size=(224,224))",
+    "seed0_expected_router_sha256": "de73e3c74832c8d41cb23ac70ea5ae697b5749ed42dd418b4719e2d544a5f79f",
+    "cache_root": "/data1/Kane/MOE/cache/icml2025_tinyimagenet"
+  },
+  "router": {
+    "type": "affine_hard_top1",
+    "graph": "Flatten -> Linear(150528,4) -> argmax",
+    "num_experts": 4,
+    "tie_semantics": "ANY_LEGAL_TOPK",
+    "normalization_mean_255": [122.451, 114.2655, 101.3625],
+    "normalization_std_255": [70.635, 68.6205, 71.9355]
+  },
+  "preprocessing": {
+    "decoded_shape": [3, 64, 64],
+    "model_shape": [3, 224, 224],
+    "convert_before_resize": "torch.float16",
+    "resize": {
+      "mode": "bilinear",
+      "align_corners": false,
+      "antialias": true
+    },
+    "primary_center": "literal released float16-before-bilinear-resize output converted to unit pixels",
+    "formal_perturbation_abstraction": "continuous real-valued unit-pixel ball followed by real-arithmetic affine normalization",
+    "secondary_composition": "real-arithmetic bilinear resize followed by affine normalization",
+    "literal_float16_normalization_drift_audit": true,
+    "real_vs_float16_resize_drift_audit": true
+  },
+  "domains": {
+    "official_post_resize_224": {
+      "features": 150528,
+      "description": "continuous unit-pixel perturbations centered on the released float16-resized 224x224 pixels"
+    },
+    "official_composed_raw_64": {
+      "features": 12288,
+      "description": "continuous unit-pixel perturbations before the same official bilinear resize under a real-arithmetic preprocessing abstraction; no new model",
+      "label": "real-arithmetic preprocessing composition"
+    }
+  },
+  "oracle": {
+    "compute_device": "cuda",
+    "batch_size": 128,
+    "input_lower": 0.0,
+    "input_upper": 1.0,
+    "outward_absolute": 1e-9,
+    "outward_relative": 1e-9,
+    "semantics": "fixed-epsilon exact affine support with outward gap brackets"
+  },
+  "epsilon_over_255": [0.5, 1.0, 2.0, 4.0, 8.0],
+  "reporting": {
+    "formal_reachable": "minimum route-competition gap upper bracket <= 0",
+    "formal_stable": "minimum route-competition gap lower bracket > 0",
+    "across_seed_interval": "minimum to maximum over all 20 preregistered seeds",
+    "primary_domain": "official_post_resize_224",
+    "secondary_domain": "official_composed_raw_64",
+    "claim_scope": "router applicability geometry only; no labels, expert forward pass, accuracy, training, or output certificate"
+  }
+}

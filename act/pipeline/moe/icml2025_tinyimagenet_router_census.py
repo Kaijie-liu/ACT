@@ -32,7 +32,7 @@ BLACKWELL_PYTHON = MOE_ROOT / "envs/rt-er-blackwell/bin/python"
 BLACKWELL_JPEG = MOE_ROOT / "envs/rt-er-blackwell/lib/libjpeg.so.8"
 WORKER = PROJECT_ROOT / "act/pipeline/moe/icml2025_tinyimagenet_router_worker.py"
 DEFAULT_CONFIG = (
-    PROJECT_ROOT / "act/pipeline/moe/configs/icml2025_tinyimagenet_router_census.json"
+    PROJECT_ROOT / "act/pipeline/moe/configs/icml2025_tinyimagenet_router_census_r2.json"
 )
 
 
@@ -381,6 +381,8 @@ def run(config_path: Path, output_dir: Path) -> dict[str, Any]:
     maximum_literal_score_drift = np.zeros(len(seeds), dtype=np.float64)
     fold_route_mismatches = np.zeros(len(seeds), dtype=np.int64)
     maximum_fold_score_drift = np.zeros(len(seeds), dtype=np.float64)
+    resize_route_mismatches = np.zeros(len(seeds), dtype=np.int64)
+    maximum_resize_score_drift = np.zeros(len(seeds), dtype=np.float64)
     mean = torch.as_tensor(
         config["router"]["normalization_mean_255"],
         dtype=torch.float16,
@@ -398,7 +400,7 @@ def run(config_path: Path, output_dir: Path) -> dict[str, Any]:
         stop = min(start + batch_size, len(image_paths))
         raw_uint8 = _load_image_chunk(image_paths[start:stop])
         raw_unit = torch.as_tensor(raw_uint8, dtype=torch.float64, device=device) / 255.0
-        resized_unit = functional.interpolate(
+        real_resized_unit = functional.interpolate(
             raw_unit,
             size=(224, 224),
             mode="bilinear",
@@ -413,7 +415,8 @@ def run(config_path: Path, output_dir: Path) -> dict[str, Any]:
             antialias=True,
         )
         literal_normalized = ((literal_resized_255 - mean) / std).double().flatten(1)
-        points_224 = resized_unit.flatten(1)
+        points_224 = (literal_resized_255.double() / 255.0).flatten(1)
+        real_points_224 = real_resized_unit.flatten(1)
         points_64 = raw_unit.flatten(1)
         for seed_slot in range(len(seeds)):
             result_224 = fixed_epsilon_route_partition_torch(
@@ -457,9 +460,13 @@ def run(config_path: Path, output_dir: Path) -> dict[str, Any]:
                     result["undecided"].cpu().numpy()
                 )
 
-            real_scores = points_224 @ tensor_weights_224[seed_slot].T + tensor_biases_224[
+            primary_scores = points_224 @ tensor_weights_224[seed_slot].T + tensor_biases_224[
                 seed_slot
             ]
+            real_resize_scores = (
+                real_points_224 @ tensor_weights_224[seed_slot].T
+                + tensor_biases_224[seed_slot]
+            )
             raw_scores = points_64 @ tensor_weights_64[seed_slot].T + tensor_biases_224[
                 seed_slot
             ]
@@ -469,20 +476,32 @@ def run(config_path: Path, output_dir: Path) -> dict[str, Any]:
             )
             maximum_fold_score_drift[seed_slot] = max(
                 maximum_fold_score_drift[seed_slot],
-                float(torch.max(torch.abs(real_scores - raw_scores)).item()),
+                float(torch.max(torch.abs(real_resize_scores - raw_scores)).item()),
             )
             maximum_literal_score_drift[seed_slot] = max(
                 maximum_literal_score_drift[seed_slot],
-                float(torch.max(torch.abs(real_scores - literal_scores)).item()),
+                float(torch.max(torch.abs(primary_scores - literal_scores)).item()),
+            )
+            maximum_resize_score_drift[seed_slot] = max(
+                maximum_resize_score_drift[seed_slot],
+                float(torch.max(torch.abs(primary_scores - real_resize_scores)).item()),
             )
             fold_route_mismatches[seed_slot] += int(
                 torch.count_nonzero(
-                    torch.argmax(real_scores, dim=1) != torch.argmax(raw_scores, dim=1)
+                    torch.argmax(real_resize_scores, dim=1)
+                    != torch.argmax(raw_scores, dim=1)
                 ).item()
             )
             literal_route_mismatches[seed_slot] += int(
                 torch.count_nonzero(
-                    torch.argmax(real_scores, dim=1) != torch.argmax(literal_scores, dim=1)
+                    torch.argmax(primary_scores, dim=1)
+                    != torch.argmax(literal_scores, dim=1)
+                ).item()
+            )
+            resize_route_mismatches[seed_slot] += int(
+                torch.count_nonzero(
+                    torch.argmax(primary_scores, dim=1)
+                    != torch.argmax(real_resize_scores, dim=1)
                 ).item()
             )
 
@@ -494,6 +513,8 @@ def run(config_path: Path, output_dir: Path) -> dict[str, Any]:
         "maximum_literal_score_drift": maximum_literal_score_drift,
         "fold_route_mismatches": fold_route_mismatches,
         "maximum_fold_score_drift": maximum_fold_score_drift,
+        "resize_route_mismatches": resize_route_mismatches,
+        "maximum_resize_score_drift": maximum_resize_score_drift,
     }
     for domain, arrays in domain_arrays.items():
         for name, values in arrays.items():
@@ -527,6 +548,12 @@ def run(config_path: Path, output_dir: Path) -> dict[str, Any]:
                     ),
                     "maximum_literal_float16_score_drift": float(
                         maximum_literal_score_drift[seed_slot]
+                    ),
+                    "real_vs_float16_resize_route_mismatches": int(
+                        resize_route_mismatches[seed_slot]
+                    ),
+                    "maximum_real_vs_float16_resize_score_drift": float(
+                        maximum_resize_score_drift[seed_slot]
                     ),
                 },
             }
@@ -578,6 +605,12 @@ def run(config_path: Path, output_dir: Path) -> dict[str, Any]:
             ),
             "maximum_literal_float16_score_drift": float(
                 np.max(maximum_literal_score_drift)
+            ),
+            "total_real_vs_float16_resize_route_mismatches": int(
+                np.sum(resize_route_mismatches)
+            ),
+            "maximum_real_vs_float16_resize_score_drift": float(
+                np.max(maximum_resize_score_drift)
             ),
             "literal_comparisons": len(seeds) * len(image_paths),
         },
