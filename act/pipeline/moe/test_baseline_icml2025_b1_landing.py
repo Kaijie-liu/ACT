@@ -28,6 +28,7 @@ from act.pipeline.moe.baseline_icml2025_b1_landing import (
 from act.pipeline.moe.baseline_icml2025_b1_landing_watch import (
     _attempt_rehearsal,
     _read_json_with_retries,
+    _record_hook_failure,
     _staleness_record,
 )
 from act.pipeline.moe.baseline_icml2025_b1_smoke import _sha256
@@ -182,6 +183,31 @@ class B1LandingTests(unittest.TestCase):
             self.assertEqual(failure["status"], "REHEARSAL_FAILED")
             self.assertTrue(failure["nonfatal_to_final_landing"])
             self.assertEqual(failure["attempt_count"], 2)
+
+    def test_restarted_watcher_retains_a_new_failure_history(self) -> None:
+        with tempfile.TemporaryDirectory(dir="/data1/Kane/MOE") as directory:
+            root = Path(directory)
+            legacy = root / "landing_hook_failure.json"
+            state = root / "hook_state.json"
+            legacy.write_text('{"status":"OLD"}\n', encoding="utf-8")
+            observed = _record_hook_failure(
+                legacy,
+                state,
+                {
+                    "schema_version": 1,
+                    "status": "FAILED",
+                    "error_type": "RuntimeError",
+                    "error": "new failure",
+                    "protocol_sha256": "abc",
+                },
+            )
+            self.assertTrue(observed.is_file())
+            self.assertEqual(
+                json.loads(legacy.read_text(encoding="utf-8"))["status"], "OLD"
+            )
+            current = json.loads(state.read_text(encoding="utf-8"))
+            self.assertEqual(current["status"], "FAILED")
+            self.assertEqual(current["failure_record"], str(observed))
 
     def test_completed_epoch_validates_all_hashes_and_telemetry_identity(self) -> None:
         with tempfile.TemporaryDirectory(dir="/data1/Kane/MOE") as directory:

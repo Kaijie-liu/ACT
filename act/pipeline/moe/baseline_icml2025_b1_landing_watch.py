@@ -120,6 +120,34 @@ def _attempt_rehearsal(
     return True
 
 
+def _record_hook_failure(
+    legacy_path: Path,
+    state_path: Path,
+    failure: dict,
+) -> Path:
+    """Retain every watcher failure while preserving the legacy first record."""
+    history_root = legacy_path.parent / "landing_hook_failures"
+    history_root.mkdir(parents=True, exist_ok=True)
+    stamp = int(time.time_ns())
+    history_path = history_root / f"failure_{stamp}.json"
+    _atomic_state(history_path, failure)
+    if not legacy_path.exists():
+        _atomic_state(legacy_path, failure)
+    _atomic_state(
+        state_path,
+        {
+            "schema_version": 1,
+            "status": "FAILED",
+            "protocol_sha256": failure["protocol_sha256"],
+            "error_type": failure["error_type"],
+            "error": failure["error"],
+            "failure_record": str(history_path),
+            "checked_unix_seconds": time.time(),
+        },
+    )
+    return history_path
+
+
 def watch(protocol_path: Path) -> None:
     protocol_path = _inside(protocol_path, PROJECT_ROOT)
     protocol = json.loads(protocol_path.read_text(encoding="utf-8"))
@@ -241,8 +269,7 @@ def watch(protocol_path: Path) -> None:
             "protocol_sha256": _sha256(protocol_path),
             "failed_unix_seconds": time.time(),
         }
-        if not failure_path.exists():
-            _atomic_state(failure_path, failure)
+        _record_hook_failure(failure_path, state_path, failure)
         raise
 
 

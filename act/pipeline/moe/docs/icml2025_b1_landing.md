@@ -95,6 +95,12 @@ not change the model, checkpoint, attack, endpoint, or numerical policy; the
 failed attempt remains preserved and the repaired run uses a new attempt
 directory.
 
+Watcher-level failures follow the same retention rule. The first legacy
+failure record is never overwritten; every later failure receives a unique
+history JSON and `hook_state.json` points to the newest record. A repaired
+watcher can therefore resume without erasing or masking the reason for either
+attempt.
+
 ## Post-B1 resource order
 
 After B1 lands, the GPU starts the isolated AdvMoE environment build and
