@@ -63,7 +63,12 @@ InputLayer → InputSpecLayer → Model → OutputSpecLayer
 
 from __future__ import annotations
 from dataclasses import dataclass, field
-from typing import Dict, Any, override
+from typing import Dict, Any
+
+try:
+    from typing import override
+except ImportError:  # Python 3.11 compatibility environments.
+    from typing_extensions import override
 import enum
 
 # Import Layer from core to avoid circular import issues

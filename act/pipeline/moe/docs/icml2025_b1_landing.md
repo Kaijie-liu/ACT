@@ -85,6 +85,16 @@ successful unattended landing is committed and pushed to
 `feat/moe-route-verification`, so reopening the project reveals a complete
 report without rerunning the endpoint.
 
+The retained first final-endpoint attempt exposed a compatibility-only import
+failure: the Python 3.11 Blackwell reproduction environment could not import
+`typing.override`, which ACT previously imported directly from the Python 3.12
+standard library. The schema import now uses `typing_extensions.override` only
+when the standard-library symbol is unavailable. A subprocess regression runs
+the exact reproduction interpreter against the current ACT schema. This does
+not change the model, checkpoint, attack, endpoint, or numerical policy; the
+failed attempt remains preserved and the repaired run uses a new attempt
+directory.
+
 ## Post-B1 resource order
 
 After B1 lands, the GPU starts the isolated AdvMoE environment build and

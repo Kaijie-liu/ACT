@@ -1952,6 +1952,15 @@ diagnostics. The raw rehearsal SHA-256 is
 the tracked manifest is
 `results/baseline/icml2025_rt_er_b1_landing_rehearsal_epoch050.json`.
 
+The supervisor completed all 13 frozen checkpoints through epoch 130 with
+status `PASSED`. Final endpoint attempt 001 was retained after a compatibility-
+only import failure: the Python 3.11 reproduction environment lacked
+`typing.override`, while current ACT imported that Python 3.12 symbol directly.
+The schema now falls back to `typing_extensions.override` on Python 3.11, with
+an exact-interpreter subprocess regression. No training artifact, endpoint
+configuration, attack, or tolerance changed; the repaired endpoint uses a new
+attempt directory.
+
 ## Lazy top-k enumeration and support-derived big-M
 
 The first scalability code stage replaces exhaustive route-set proposals with

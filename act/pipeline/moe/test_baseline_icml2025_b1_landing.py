@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
+import subprocess
 import tempfile
 import time
 import unittest
@@ -33,6 +34,20 @@ from act.pipeline.moe.baseline_icml2025_b1_smoke import _sha256
 
 
 class B1LandingTests(unittest.TestCase):
+    def test_rt_er_python_can_import_current_act_schema(self) -> None:
+        completed = subprocess.run(
+            [
+                "/data1/Kane/MOE/envs/rt-er-blackwell/bin/python",
+                "-c",
+                "import act.back_end.layer_schema; print('IMPORT_OK')",
+            ],
+            cwd=Path("/data1/Kane/MOE/ACT"),
+            check=True,
+            text=True,
+            capture_output=True,
+        )
+        self.assertIn("IMPORT_OK", completed.stdout)
+
     def test_endpoint_normalization_and_pixel_norm_use_official_255_domain(self) -> None:
         raw = np.zeros((1, 32, 32, 3), dtype=np.uint8)
         raw[..., 0] = 125
