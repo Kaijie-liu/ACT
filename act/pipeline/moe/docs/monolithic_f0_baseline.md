@@ -1,7 +1,7 @@
 # True monolithic weighted top-2 F0 baseline
 
-Status: implementation, correctness tests, and frozen smoke complete; 20-row
-execution pending.
+Status: implementation, correctness tests, smoke, full 20-row execution, and
+independent audit complete.
 
 ## Fair common semantics
 
@@ -57,3 +57,23 @@ deadline; every completed property returned a solver-limit UNKNOWN and the
 row returned TIMEOUT. No relaxation result was promoted to UNSAFE or SAFE.
 Independent audit reported zero issues. This passes the construction and
 fail-closed smoke gate; it is not reported as a solved-rate result.
+
+## Full common-cohort outcome
+
+The registered 20-row run completed in 11,007.57 seconds and passed an
+independent audit with zero issues. The monolithic formulation returned 6
+SAFE, 2 full-forward-validated UNSAFE, 1 UNKNOWN, and 11 TIMEOUT rows: 8/20
+rows solved. The frozen Route A reference returned 10 SAFE, 2 validated
+UNSAFE, 7 UNKNOWN, and 1 TIMEOUT: 12/20 rows solved.
+
+The paired table contains five Route-A-only solved rows and one
+monolithic-only solved row; the exact two-sided paired binomial p-value is
+0.21875. Accordingly, the supported conclusion is descriptive: Route A solves
+four more rows on this small frozen cohort, while monolithic uniquely proves
+one SAFE row. Neither result set contains the other, and the experiment does
+not establish blanket solver dominance. Runtime is also descriptive because
+the Route A reference predates this run and was not interleaved.
+
+The tracked audit manifest is
+`results/monolithic_f0_baseline_20260902_r1_audit.json`; raw solver artifacts
+remain under `data/moe/results/monolithic_f0_baseline_r1` and are hash-pinned.

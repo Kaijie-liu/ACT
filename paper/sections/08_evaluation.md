@@ -243,6 +243,15 @@ The earlier incremental property-MILP rerun remains a negative engineering resul
 model reuse accelerated LP hull construction by 15.03 times but did not speed
 search-dominated property MILPs.
 
+The true monolithic run solves 8/20 rows (6 SAFE, 2 replay-validated UNSAFE),
+whereas the frozen staged Route A reference solves 12/20 (10 SAFE, 2 replay-
+validated UNSAFE). Five rows are solved only by Route A and one only by the
+monolithic formulation (exact paired binomial p=0.21875). We therefore report
+the four-row coverage difference descriptively, not as statistically
+significant or set-inclusion dominance. The 11,007.57-second monolithic and
+5,151.10-second Route A totals are also descriptive because the runs were not
+interleaved.
+
 ## Artifact applicability [partly complete]
 
 The RT-ER artifact case study audits theorem instantiation, model semantics,

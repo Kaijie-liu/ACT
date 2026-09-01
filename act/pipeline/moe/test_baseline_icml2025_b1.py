@@ -125,6 +125,7 @@ class SupervisorIdentityTest(unittest.TestCase):
             config_path = root / f"icml2025_route_telemetry_blackwell_seed{seed}.json"
             config = json.loads(config_path.read_text(encoding="utf-8"))
             self.assertEqual(config["label"], REPRODUCTION_LABEL)
+            self.assertEqual(config["status"], "PREREGISTERED_NOT_RUN")
             self.assertEqual(config["training"]["seeds"], [seed])
             self.assertEqual(
                 config["training"]["checkpoint_epochs"], list(CHECKPOINT_EPOCHS)
@@ -159,6 +160,14 @@ class SupervisorIdentityTest(unittest.TestCase):
         self.assertTrue(observed["ready"])
         self.assertTrue(observed["worktree_clean"])
         self.assertTrue(observed["local_remote_synchronized"])
+
+    def test_seed1_attempt_logs_are_namespaced_by_run_root(self) -> None:
+        source = Path(
+            "/data1/Kane/MOE/ACT/act/pipeline/moe/"
+            "baseline_icml2025_b1_seed1_orchestrator.py"
+        ).read_text(encoding="utf-8")
+        self.assertIn('f"{run_root.name}_supervisor.log"', source)
+        self.assertIn('f"{run_root.name}_landing_watch.log"', source)
 
 
 if __name__ == "__main__":

@@ -116,8 +116,10 @@ def run(protocol_path: Path, state_path: Path) -> None:
             raise RuntimeError("seed1 launch resource wait budget exhausted")
         time.sleep(float(gate["retry_seconds"]))
 
-    supervisor_log = run_root.parent / "seed1_paper130_supervisor.log"
-    watcher_log = run_root.parent / "seed1_paper130_landing_watch.log"
+    # Derive log identities from the immutable run-root name.  A failed attempt
+    # is retained, so a repaired attempt must not collide with its sibling logs.
+    supervisor_log = run_root.parent / f"{run_root.name}_supervisor.log"
+    watcher_log = run_root.parent / f"{run_root.name}_landing_watch.log"
     for path in (supervisor_log, watcher_log):
         if path.exists():
             raise RuntimeError(f"orchestrator refuses to overwrite {path}")

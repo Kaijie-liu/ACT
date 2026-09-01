@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "status": "REPAIR_VALIDATED",
+  "scope": "B1_SEED1_ATTEMPT_IDENTITY_AND_PROTOCOL_INTEGRATION",
+  "failed_attempt": {
+    "run_root": "/data1/Kane/MOE/baseline_runs/icml2025_rt_er/seed1_paper130",
+    "failure_reason": "epoch 10 telemetry exited 1 before loading the checkpoint because the preregistered status spelling was noncanonical",
+    "completed_training_epochs_before_failure": 10,
+    "checkpoint_sha256": "0e83e35bfd899d2c36b8a870b994deed7fc8bd40168e491eab4f6b9a43477735",
+    "scientific_failure": false,
+    "retained": true
+  },
+  "repair": {
+    "telemetry_status_before": "PREREGISTERED_BEFORE_SEED1_EXECUTION",
+    "telemetry_status_after": "PREREGISTERED_NOT_RUN",
+    "attempt_logs_namespaced_by_run_root": true,
+    "scientific_fields_changed": false,
+    "new_protocol": "act/pipeline/moe/configs/icml2025_b1_landing_protocol_seed1_r2.json"
+  },
+  "real_checkpoint_replay": {
+    "output": "/data1/Kane/MOE/baseline_runs/icml2025_rt_er/seed1_protocol_repair_validation_epoch010_r1",
+    "summary_sha256": "96c8b497f3c2072a1d5519d65e93f0daac2939f021efb7099ed7ab09c5617c8e",
+    "per_input_sha256": "25ed8f64bbbc31fb12606ee8c0d71b7eb73058bd1af0856adbd716321f25d930",
+    "samples": 10000,
+    "clean_correct": 3165,
+    "computed_clean_accuracy": 0.3165,
+    "reference_crosscheck_samples": 100,
+    "reference_maximum_radius_error": 6.938893903907228e-17,
+    "probe_witnesses_checked": 200,
+    "probe_witness_failures": 0,
+    "runtime_seconds": 6.032662861049175
+  },
+  "claim_boundary": "This validates the repaired integration on the retained epoch-10 checkpoint. It is not a seed-1 endpoint result and the failed attempt is never resumed or overwritten."
+}

@@ -2071,3 +2071,23 @@ The rank-110 smoke instantiated three pair branches as one 9,660-variable,
 solver-limit UNKNOWN before the 120-second hard deadline; the row correctly
 returned TIMEOUT, with no false SAFE/UNSAFE. Independent audit reported zero
 issues, unlocking the full 20-row, 900-second execution.
+
+The full monolithic run completed all 20 frozen rows and passed independent
+audit with zero issues. It solved 8/20 rows (6 SAFE and 2 full-forward-
+validated UNSAFE), versus 12/20 for the frozen Route A reference. The paired
+discordance is five Route-A-only solved rows versus one monolithic-only solved
+row (exact two-sided binomial p=0.21875). This is a descriptive four-row
+coverage difference, not statistically significant dominance; monolithic's
+unique SAFE row also rules out a set-inclusion claim. Runtime is descriptive
+because the reference execution was not interleaved.
+
+The first seed-1 B1 attempt is retained after an epoch-10 protocol-integration
+failure: a noncanonical but semantically preregistered status spelling was
+rejected before telemetry loaded the checkpoint. The r2 retry canonicalizes
+only that status, namespaces attempt logs by run-root, and preserves all
+scientific fields and the failed r1 directory.
+The repaired telemetry was then replayed end to end on the retained epoch-10
+checkpoint: all 10,000 ordered inputs completed, the 100-input independent
+oracle crosscheck differed by at most `6.94e-17`, and 200/200 concrete
+boundary witnesses replayed. This closes the integration gate before r2 is
+allowed to launch; it is not an endpoint result.

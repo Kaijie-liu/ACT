@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "status": "PASS",
+  "scope": "TRUE_MONOLITHIC_F0_COMMON_FROZEN_20_ROW_COHORT",
+  "issue_count": 0,
+  "issues": [],
+  "raw_artifacts": {
+    "config": "data/moe/results/monolithic_f0_baseline_r1/config.json",
+    "config_sha256": "ce0846a863af7027cae60caaa935f65d8c14d53869d6ccb69e08c4ba3b981dbb",
+    "results": "data/moe/results/monolithic_f0_baseline_r1/results.jsonl",
+    "results_sha256": "d2fa2e9c6f75afaafc412612dae7ff51538613f5e49197f128f7fa5d51032dfb",
+    "summary": "data/moe/results/monolithic_f0_baseline_r1/summary.json",
+    "summary_sha256": "9bcb9e782e546bd63e13fcefb3e34f7b42c13f7210f4a669d19e03b98133b7b2",
+    "audit": "data/moe/results/monolithic_f0_baseline_r1/audit.json",
+    "audit_sha256": "b08c7f70429bc8cb3ea601cfcf1175baaca9e56e2fb581b6e22bffb79f74639a"
+  },
+  "monolithic": {
+    "rows": 20,
+    "status_counts": {"SAFE": 6, "UNSAFE": 2, "UNKNOWN": 1, "TIMEOUT": 11},
+    "solved_rows": 8,
+    "solved_rate": 0.4,
+    "unsafe_full_forward_validated": 2,
+    "total_seconds": 11007.567742723972
+  },
+  "route_a_reference": {
+    "results_sha256": "2e5914447fd555f364132e1594a7dec2b545fdc8c78c81700487a8723a1f0328",
+    "summary_sha256": "d8846122e221f7b85ddf93622242f5185003295aa26630c9434d33d214c21169",
+    "status_counts": {"SAFE": 10, "UNSAFE": 2, "UNKNOWN": 7, "TIMEOUT": 1},
+    "solved_rows": 12,
+    "solved_rate": 0.6,
+    "total_seconds": 5151.0954439928755
+  },
+  "paired_comparison": {
+    "route_a_only_solved": 5,
+    "monolithic_only_solved": 1,
+    "both_solved": 7,
+    "both_unsolved": 7,
+    "exact_two_sided_binomial_p": 0.21875,
+    "interpretation": "Route A has four more solved rows descriptively, but the paired difference is not statistically significant on n=20. Monolithic also uniquely proves one SAFE row, so no set-inclusion or blanket dominance claim is allowed."
+  },
+  "claim_boundary": "The formulations share F0 semantics and the 900-second row deadline. Runtime is descriptive because the Route A reference predates this run and timing was not interleaved."
+}

@@ -76,6 +76,23 @@ nonambiguous phrase anchors; no scientific value or threshold changed.
 - Tier 1: `results/baseline/icml2025_rt_er_b1_hyperparameter_audit.json`
 - independent audit: `results/baseline/icml2025_rt_er_b1_diagnostics_audit.json`
 - seed-1 telemetry config: `configs/icml2025_route_telemetry_blackwell_seed1.json`
-- seed-1 landing protocol: `configs/icml2025_b1_landing_protocol_seed1_r1.json`
+- retained failed landing protocol: `configs/icml2025_b1_landing_protocol_seed1_r1.json`
+- repaired landing protocol: `configs/icml2025_b1_landing_protocol_seed1_r2.json`
+
+The first seed-1 attempt trained through epoch 10 and then failed closed before
+telemetry read the checkpoint. Its config used the semantically preregistered
+status `PREREGISTERED_BEFORE_SEED1_EXECUTION`, while the telemetry entrypoint
+accepted only the canonical `PREREGISTERED_NOT_RUN`. The failed run root,
+checkpoint, metrics, and logs are retained. The repaired r2 attempt changes
+only that protocol spelling and attempt/log identities; model, data,
+objective, seed, epochs, telemetry, endpoint, thresholds, and tolerances are
+unchanged.
+
+Before relaunch, the repaired entrypoint replayed the retained epoch-10
+checkpoint over all 10,000 ordered test inputs. The affine-oracle reference
+crosscheck covered 100 inputs with maximum radius error `6.94e-17`, and all
+200 concrete route-boundary witnesses replayed. The six-second integration
+result and hashes are tracked in
+`results/baseline/icml2025_rt_er_b1_seed1_attempt1_failure_and_repair.json`.
 
 The independent diagnostic audit reports zero issues.
