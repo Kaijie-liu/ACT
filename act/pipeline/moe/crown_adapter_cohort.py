@@ -31,14 +31,11 @@ import platform
 import statistics
 import sys
 import time
-import typing
 from typing import Any, Sequence
 
-from typing_extensions import override
+from act.util.typing_compat import install_typing_override
 
-# The pinned CROWN environment is Python 3.11 while ACT uses typing.override.
-if not hasattr(typing, "override"):
-    typing.override = override  # type: ignore[attr-defined]
+install_typing_override()
 
 import numpy as np
 import torch

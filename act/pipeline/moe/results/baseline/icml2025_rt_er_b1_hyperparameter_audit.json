@@ -1,0 +1,181 @@
+{
+  "conclusion": "The located paper text does not specify optimizer family, weight decay, mixed precision, or exact augmentation transforms. These are artifact underspecification, not proven contradictions. The cyclic-LR wording and released initial optimizer rate differ semantically and remain labeled an ambiguity. The router parameter-scope gap is independently supported by frozen tensor and optimizer-state evidence.",
+  "items": [
+    {
+      "anchors": [
+        {
+          "line": 54,
+          "path": "/data1/Kane/MOE/baselines/Robust-MoE-Dual-Model/cifar10_RT_ER.py",
+          "text": "parser.add_argument('--n_epochs', type=int, default='200')"
+        }
+      ],
+      "classification": "RECONCILED_BY_DISCLOSED_PAPER_CONFIG_ARGUMENT",
+      "executed": "launcher explicitly passes 130 epochs",
+      "field": "epochs",
+      "paper": "130 epochs for CIFAR-10",
+      "released_script": "default 200 epochs"
+    },
+    {
+      "anchors": [
+        {
+          "line": 287,
+          "path": "/data1/Kane/MOE/baselines/Robust-MoE-Dual-Model/cifar10_RT_ER.py",
+          "text": "optimizer = optim.Adam(net.parameters(), lr=args.lr)"
+        }
+      ],
+      "classification": "PAPER_UNDERSPECIFIED",
+      "executed": "Adam with lr=1e-4",
+      "field": "optimizer",
+      "paper": "optimizer family not specified in the located experiment setup",
+      "released_script": "Adam"
+    },
+    {
+      "anchors": [
+        {
+          "line": 292,
+          "path": "/data1/Kane/MOE/baselines/Robust-MoE-Dual-Model/cifar10_RT_ER.py",
+          "text": "scheduler = torch.optim.lr_scheduler.CyclicLR(optimizer, base_lr=0.00005, step_size_up=500, max_lr=args.lr)"
+        }
+      ],
+      "classification": "TEXT_CODE_SEMANTIC_AMBIGUITY",
+      "executed": "PyTorch initializes the optimizer group at 5e-5; all 130 logged values are retained",
+      "field": "learning_rate_schedule",
+      "paper": "cyclic learning rate described as starting at 1e-4",
+      "released_script": "CyclicLR(base_lr=5e-5, max_lr=1e-4, step_size_up=500)"
+    },
+    {
+      "anchors": [
+        {
+          "line": 287,
+          "path": "/data1/Kane/MOE/baselines/Robust-MoE-Dual-Model/cifar10_RT_ER.py",
+          "text": "optimizer = optim.Adam(net.parameters(), lr=args.lr)"
+        }
+      ],
+      "classification": "PAPER_UNDERSPECIFIED",
+      "executed": "0",
+      "field": "weight_decay",
+      "paper": "not specified in the located experiment setup",
+      "released_script": "Adam default weight_decay=0"
+    },
+    {
+      "anchors": [
+        {
+          "line": 58,
+          "path": "/data1/Kane/MOE/baselines/Robust-MoE-Dual-Model/cifar10_RT_ER.py",
+          "text": "parser.add_argument('--beta', default='6', type=int, help=\"parameter for the proportion of experts specification\")"
+        }
+      ],
+      "classification": "CONSISTENT",
+      "executed": "launcher passes beta=6",
+      "field": "rt_er_beta",
+      "paper": "Table 9 includes beta=6 for the reported 77.81/69.09 result",
+      "released_script": "default beta=6"
+    },
+    {
+      "anchors": [
+        {
+          "line": 117,
+          "path": "/data1/Kane/MOE/baselines/Robust-MoE-Dual-Model/cifar10_RT_ER.py",
+          "text": "RandomHorizontalFlip(),"
+        },
+        {
+          "line": 118,
+          "path": "/data1/Kane/MOE/baselines/Robust-MoE-Dual-Model/cifar10_RT_ER.py",
+          "text": "RandomTranslate(padding=2),"
+        },
+        {
+          "line": 119,
+          "path": "/data1/Kane/MOE/baselines/Robust-MoE-Dual-Model/cifar10_RT_ER.py",
+          "text": "Cutout(8, tuple(map(int, CIFAR_MEAN))),  # Note Cutout is done before normalization."
+        }
+      ],
+      "classification": "PAPER_UNDERSPECIFIED_SOURCE_PATH_CONFIRMED",
+      "executed": "unchanged source path; launcher does not disable augmentation",
+      "field": "augmentation",
+      "paper": "states data augmentation and cites Rebuffi et al.; exact transforms not specified",
+      "released_script": "horizontal flip, translate padding 2, cutout 8"
+    },
+    {
+      "anchors": [
+        {
+          "line": 296,
+          "path": "/data1/Kane/MOE/baselines/Robust-MoE-Dual-Model/cifar10_RT_ER.py",
+          "text": "epsilon = 8 / 255"
+        },
+        {
+          "line": 297,
+          "path": "/data1/Kane/MOE/baselines/Robust-MoE-Dual-Model/cifar10_RT_ER.py",
+          "text": "step_size = 2 / 255"
+        },
+        {
+          "line": 298,
+          "path": "/data1/Kane/MOE/baselines/Robust-MoE-Dual-Model/cifar10_RT_ER.py",
+          "text": "num_step_train = 10"
+        },
+        {
+          "line": 299,
+          "path": "/data1/Kane/MOE/baselines/Robust-MoE-Dual-Model/cifar10_RT_ER.py",
+          "text": "num_step_val = 50"
+        }
+      ],
+      "classification": "CONSISTENT_WITH_ADDITIONAL_CODE_ONLY_STEP_SIZE_DETAIL",
+      "executed": "same released path",
+      "field": "attack",
+      "paper": "epsilon=8/255, PGD-10 training, PGD-50 evaluation",
+      "released_script": "epsilon=8/255, step=2/255, 10/50 steps"
+    },
+    {
+      "anchors": [
+        {
+          "line": 75,
+          "path": "/data1/Kane/MOE/baselines/Robust-MoE-Dual-Model/cifar10_RT_ER.py",
+          "text": "use_amp = not args.noamp"
+        }
+      ],
+      "classification": "PAPER_UNDERSPECIFIED",
+      "executed": "AMP enabled",
+      "field": "mixed_precision",
+      "paper": "not specified in the located experiment setup",
+      "released_script": "AMP enabled unless --noamp is passed"
+    },
+    {
+      "anchors": [
+        {
+          "line": 287,
+          "path": "/data1/Kane/MOE/baselines/Robust-MoE-Dual-Model/cifar10_RT_ER.py",
+          "text": "optimizer = optim.Adam(net.parameters(), lr=args.lr)"
+        }
+      ],
+      "classification": "MODEL_PARAMETER_SCOPE_GAP",
+      "executed": "router tensors remain bitwise fixed and have no Adam state",
+      "field": "router_parameter_scope",
+      "paper": "Equation (2) writes minimization over robust-MoE parameters Theta_R without a router exception",
+      "released_script": "hard argmax prevents the released loss from updating router tensors"
+    }
+  ],
+  "learning_rate_observation": {
+    "first_logged_epoch": {
+      "epoch": 1,
+      "epoch_time_seconds": 1110.0041391849518,
+      "learning_rate": 5.97e-05,
+      "robust_accuracy_percent": 12.083199097938145,
+      "standard_accuracy_percent": 17.320393041237114,
+      "train_loss": 2.505203903335886
+    },
+    "important_scope": "checkpoint logs alone undersample the within-cycle schedule; all 130 epoch-end values are retained",
+    "maximum_logged": 9.989999999999996e-05,
+    "minimum_logged": 5.069999999999997e-05
+  },
+  "official_source": {
+    "commit": "30ef94d77b5451595b82e739aa8938e1f4c4521f",
+    "path": "/data1/Kane/MOE/baselines/Robust-MoE-Dual-Model/cifar10_RT_ER.py",
+    "sha256": "6ca3664e1fbb21c8dd6086a61bbe986708ccb608ccd94fc152e5c7883825512e"
+  },
+  "paper": {
+    "path": "/data1/Kane/MOE/ACT/data/moe/papers/icml2025/zhang25cj.pdf",
+    "sha256": "7eb99a26a7a2a83608c128fe6ef971cf82a27dda6ec652e401288f2d37949c20"
+  },
+  "schema_version": 1,
+  "scope": "PAPER_VS_RELEASED_CIFAR10_RT_ER_CONFIGURATION_AUDIT",
+  "status": "COMPLETED"
+}

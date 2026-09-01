@@ -123,9 +123,21 @@ solves 68, a difference of 56 inputs. All 36 route-changing certificates are
 unique to Route A. The baseline is cheaper because it abandons 76 unstable
 inputs, so this is a coverage comparison rather than a speedup claim.
 
-The official-scale comparison remains gated on the completed 130-epoch
-official-code reproduction and B3 expert verification. The case-study findings
-do not substitute an interim accuracy or router census for that table. B3 will
+The seed-0 130-epoch official-code compatibility reproduction has now landed.
+Ordered full-test SA is 34.22% and independently replayed PGD-50 RA is 32.70%,
+versus paper values 77.81% and 69.09%; all 10,000 adversarial endpoints replay
+and the audit reports zero issues. The complete trajectory peaks at 37.40% SA
+at epoch 30 and remains within 32.96%--37.40% from epoch 20 onward. Its endpoint
+RA/SA ratio is 0.95558. These are diagnostics of a run that learned little, not
+a causal attribution. The paper/source comparison additionally finds that
+optimizer family, weight decay, mixed precision, and exact augmentation are
+underspecified, while the cyclic-LR wording and released initial rate are
+semantically ambiguous. Per the frozen asymmetric rule, seed 1 must land before
+any pipeline-level insufficiency wording.
+
+The official-scale comparison remains gated on B3 expert verification. The
+case-study findings do not substitute low accuracy or router census for that
+table. B3 will
 report, at every registered radius, the exact applicability fraction,
 route-invariance plus the common expert backend, route-conditioned coverage,
 the theorem-instantiation state under each constant provider, and an attack

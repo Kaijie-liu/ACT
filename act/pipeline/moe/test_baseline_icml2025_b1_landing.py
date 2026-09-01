@@ -49,6 +49,48 @@ class B1LandingTests(unittest.TestCase):
         )
         self.assertIn("IMPORT_OK", completed.stdout)
 
+    def test_rt_er_python_imports_every_blackwell_b1_entrypoint(self) -> None:
+        modules = [
+            "act.pipeline.moe.baseline_icml2025_official_launcher",
+            "act.pipeline.moe.baseline_icml2025_b1_endpoint",
+            "act.pipeline.moe.audit_baseline_icml2025_b1_endpoint",
+        ]
+        statement = "; ".join(f"import {module}" for module in modules)
+        completed = subprocess.run(
+            [
+                "/data1/Kane/MOE/envs/rt-er-blackwell/bin/python",
+                "-c",
+                statement + "; print('B1_ENTRYPOINTS_IMPORT_OK')",
+            ],
+            cwd=Path("/data1/Kane/MOE/ACT"),
+            check=True,
+            text=True,
+            capture_output=True,
+        )
+        self.assertIn("B1_ENTRYPOINTS_IMPORT_OK", completed.stdout)
+
+    def test_act_python_imports_control_and_telemetry_entrypoints(self) -> None:
+        modules = [
+            "act.pipeline.moe.baseline_icml2025_b1_supervisor",
+            "act.pipeline.moe.icml2025_route_telemetry",
+            "act.pipeline.moe.baseline_icml2025_b1_landing",
+            "act.pipeline.moe.baseline_icml2025_b1_landing_watch",
+            "act.pipeline.moe.baseline_icml2025_b1_seed1_orchestrator",
+        ]
+        statement = "; ".join(f"import {module}" for module in modules)
+        completed = subprocess.run(
+            [
+                "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+                "-c",
+                statement + "; print('B1_CONTROL_ENTRYPOINTS_IMPORT_OK')",
+            ],
+            cwd=Path("/data1/Kane/MOE/ACT"),
+            check=True,
+            text=True,
+            capture_output=True,
+        )
+        self.assertIn("B1_CONTROL_ENTRYPOINTS_IMPORT_OK", completed.stdout)
+
     def test_endpoint_normalization_and_pixel_norm_use_official_255_domain(self) -> None:
         raw = np.zeros((1, 32, 32, 3), dtype=np.uint8)
         raw[..., 0] = 125
@@ -96,6 +138,21 @@ class B1LandingTests(unittest.TestCase):
         self.assertEqual(
             failed["pipeline_claim_status"],
             "SEED1_REQUIRED_BEFORE_PIPELINE_LEVEL_FAILURE_WORDING",
+        )
+        second_failure = endpoint_decisions(
+            50.0, 20.0, interpretation, seed=1
+        )
+        self.assertFalse(second_failure["seed1_followup_required"])
+        self.assertEqual(
+            second_failure["pipeline_claim_status"],
+            "TWO_REGISTERED_RUNS_MISS_SA_INTERVAL_PIPELINE_LEVEL_WORDING_ALLOWED",
+        )
+        second_pass = endpoint_decisions(
+            75.0, 70.0, interpretation, seed=1
+        )
+        self.assertEqual(
+            second_pass["pipeline_claim_status"],
+            "EXISTENCE_SUPPORTED_BY_SEED1_AFTER_SEED0_MISS",
         )
 
     def test_gpu_resource_gate_waits_below_frozen_minimum(self) -> None:

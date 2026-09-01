@@ -5,7 +5,9 @@ from __future__ import annotations
 import json
 from pathlib import Path
 import tempfile
+from types import SimpleNamespace
 import unittest
+from unittest import mock
 
 import torch
 
@@ -21,6 +23,7 @@ from act.pipeline.moe.baseline_icml2025_b1_supervisor import (
     telemetry_command,
 )
 from act.pipeline.moe.baseline_icml2025_official_launcher import author_arguments
+from act.pipeline.moe.baseline_icml2025_b1_seed1_orchestrator import resource_snapshot
 
 
 class OfficialLauncherTest(unittest.TestCase):
@@ -116,16 +119,46 @@ class SupervisorIdentityTest(unittest.TestCase):
         self.assertEqual(command[command.index("--seed") + 1], "0")
         self.assertEqual(command[command.index("--device") + 1], "cuda")
 
-    def test_blackwell_telemetry_config_is_seed0_only(self) -> None:
-        config_path = (
-            Path("/data1/Kane/MOE/ACT")
-            / "act/pipeline/moe/configs/icml2025_route_telemetry_blackwell_seed0.json"
-        )
-        config = json.loads(config_path.read_text(encoding="utf-8"))
-        self.assertEqual(config["label"], REPRODUCTION_LABEL)
-        self.assertEqual(config["training"]["seeds"], [0])
-        self.assertEqual(config["training"]["checkpoint_epochs"], list(CHECKPOINT_EPOCHS))
-        self.assertFalse(config["execution_gate"]["substituted_data_pipeline"])
+    def test_blackwell_telemetry_configs_are_single_seed_registered(self) -> None:
+        root = Path("/data1/Kane/MOE/ACT") / "act/pipeline/moe/configs"
+        for seed in (0, 1):
+            config_path = root / f"icml2025_route_telemetry_blackwell_seed{seed}.json"
+            config = json.loads(config_path.read_text(encoding="utf-8"))
+            self.assertEqual(config["label"], REPRODUCTION_LABEL)
+            self.assertEqual(config["training"]["seeds"], [seed])
+            self.assertEqual(
+                config["training"]["checkpoint_epochs"], list(CHECKPOINT_EPOCHS)
+            )
+            self.assertFalse(config["execution_gate"]["substituted_data_pipeline"])
+
+    def test_seed1_launch_gate_requires_resources_clean_branch_and_sync(self) -> None:
+        protocol = {
+            "branch": "feat/moe-route-verification",
+            "remote": "origin",
+            "launch_resource_gate": {
+                "device_index": 0,
+                "minimum_free_memory_bytes": 30,
+                "minimum_free_disk_bytes": 60,
+            },
+        }
+        with (
+            mock.patch(
+                "act.pipeline.moe.baseline_icml2025_b1_seed1_orchestrator.gpu_memory_bytes",
+                return_value=(31, 100),
+            ),
+            mock.patch(
+                "act.pipeline.moe.baseline_icml2025_b1_seed1_orchestrator.os.statvfs",
+                return_value=SimpleNamespace(f_bavail=70, f_frsize=1),
+            ),
+            mock.patch(
+                "act.pipeline.moe.baseline_icml2025_b1_seed1_orchestrator._git",
+                side_effect=["feat/moe-route-verification", "", "abc", "abc"],
+            ),
+        ):
+            observed = resource_snapshot(protocol)
+        self.assertTrue(observed["ready"])
+        self.assertTrue(observed["worktree_clean"])
+        self.assertTrue(observed["local_remote_synchronized"])
 
 
 if __name__ == "__main__":

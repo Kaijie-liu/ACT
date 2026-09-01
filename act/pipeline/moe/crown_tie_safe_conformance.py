@@ -14,14 +14,9 @@ import json
 from pathlib import Path
 import platform
 import sys
-import typing
+from act.util.typing_compat import install_typing_override
 
-from typing_extensions import override
-
-# ACT uses typing.override (Python 3.12), while the pinned CROWN environment is
-# Python 3.11. Keep this compatibility shim local and disclose it in output.
-if not hasattr(typing, "override"):
-    typing.override = override  # type: ignore[attr-defined]
+install_typing_override()
 
 import torch
 from torch import nn

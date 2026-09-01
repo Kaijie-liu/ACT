@@ -169,6 +169,15 @@ that retains the path constraint.
 
 ## Table 1: official RT-ER comparison [pending]
 
+The official-code compatibility target is now concrete. Seed 0 completes all
+130 epochs but lands at 34.22% ordered-test SA and 32.70% independently replayed
+PGD-50 RA, missing the frozen paper-reference intervals by 43.59 and 36.39
+percentage points. The endpoint audit has zero issues. The full trajectory and
+paper/source configuration audit are reported separately because neither low
+accuracy nor a configuration ambiguity is an output certificate. Seed 1 is the
+registered follow-up required before pipeline-level reproduction wording; B3
+retains seed 0 as the released-pipeline product regardless of that outcome.
+
 The main official-scale table has one row per registered radius and the
 following columns. A row is complete only when every count has an independent
 audit, all unsafe outputs replay, and the common expert backend and budget are

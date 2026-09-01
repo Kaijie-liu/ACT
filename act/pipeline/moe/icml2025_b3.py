@@ -20,13 +20,11 @@ import platform
 import subprocess
 import sys
 import time
-import typing
 from typing import Any, Sequence
 
-from typing_extensions import override
+from act.util.typing_compat import install_typing_override
 
-if not hasattr(typing, "override"):
-    typing.override = override  # type: ignore[attr-defined]
+install_typing_override()
 
 import numpy as np
 import torch

@@ -24,11 +24,12 @@ import hashlib
 import logging
 from pathlib import Path
 import re
-from typing import cast, override
+from typing import cast
 
 import torch
 import torch.nn as nn
 
+from act.util.typing_compat import override
 from act.util.path_config import get_data_root
 
 logger = logging.getLogger(__name__)

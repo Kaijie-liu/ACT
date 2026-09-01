@@ -453,7 +453,7 @@ cohort, while the sound eta output reduction was too loose under CROWN. The
 artifact is
 `act/pipeline/moe/results/crown/crown_adapter_consistency_bal010_43_r2_20260829.json`.
 
-### B1: official-code RT-ER reproduction — training running, endpoint pending
+### B1: official-code RT-ER reproduction — seed 0 landed, seed 1 required
 
 Before final expert checkpoints are available, the frozen affine router admits
 an exact initialization-distribution study. For seeds 0--19, the census builds
@@ -485,6 +485,18 @@ The audited census and paper-figure records are
 `act/pipeline/moe/results/icml2025_rt_er/router_init_census_k20_20260830.json`
 and
 `act/pipeline/moe/results/icml2025_rt_er/router_init_figures_k20_20260830.json`.
+
+The seed-0 compatibility reproduction completes all 130 epochs and passes the
+ordered endpoint identity/replay audit with zero issues. It lands at 34.22% SA
+and 32.70% PGD-50 RA, outside the preregistered paper-reference intervals. The
+complete training log has 130 rows; clean test accuracy peaks at 37.40% at
+epoch 30 and stays in 32.96%--37.40% from epoch 20 onward. Endpoint RA/SA is
+0.95558. These values support a scoped underlearning diagnostic, not a causal
+claim. A source-to-execution check confirms that the pinned augmentation path
+was configured, but no tensor-level transform trace exists. The nine-field
+paper/source audit distinguishes underspecification from contradiction and
+retains the cyclic-LR wording as semantic ambiguity. The asymmetric gate
+requires seed 1 before pipeline-level insufficiency wording.
 
 The same official-construction census was independently repeated on the
 released TinyImageNet `MOE_ViT` pipeline, using its 150,528-feature hard router

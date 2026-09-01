@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "status": "FROZEN_BEFORE_SEED1_EXECUTION",
+  "scope": "ICML2025_RT_ER_B1_SEED1_UNATTENDED_LANDING",
+  "label": "official-code, Blackwell-compatible deps + FFCV, seed1",
+  "seed": 1,
+  "run_root": "/data1/Kane/MOE/baseline_runs/icml2025_rt_er/seed1_paper130",
+  "branch": "feat/moe-route-verification",
+  "remote": "origin",
+  "rehearsal_epoch": 50,
+  "final_epoch": 130,
+  "poll_seconds": 60,
+  "progress_read_retry": {
+    "attempts": 3,
+    "delay_seconds": 2,
+    "interpretation": "A single partial or transient progress.json read cannot terminate the unattended hook."
+  },
+  "staleness_detection": {
+    "epoch_duration_multiplier": 3,
+    "fallback_epoch_seconds": 2400,
+    "minimum_staleness_seconds": 7200,
+    "heartbeat_paths": [
+      "/data1/Kane/MOE/baseline_runs/icml2025_rt_er/seed1_paper130/progress.json",
+      "/data1/Kane/MOE/baseline_runs/icml2025_rt_er/seed1_paper130/logs/official_training.log",
+      "/data1/Kane/MOE/baseline_runs/icml2025_rt_er/seed1_paper130/logs/wandb.jsonl"
+    ],
+    "interpretation": "STALLED_SUSPECTED is diagnostic, never a FAILED verdict."
+  },
+  "rehearsal_retry_seconds": 600,
+  "gpu_resource_gate": {
+    "device_index": 0,
+    "minimum_free_memory_bytes": 32212254720,
+    "retry_seconds": 600,
+    "maximum_wait_seconds": 604800,
+    "retryable_failures": [
+      "resource gate below minimum free memory",
+      "CUDA out of memory during endpoint evaluation or independent replay"
+    ]
+  },
+  "launch_resource_gate": {
+    "device_index": 0,
+    "minimum_free_memory_bytes": 32212254720,
+    "retry_seconds": 600,
+    "maximum_wait_seconds": 604800,
+    "minimum_free_disk_bytes": 64424509440
+  },
+  "supervisor": {
+    "smoke_summary": "/data1/Kane/MOE/baseline_runs/icml2025_rt_er/seed0_paper130_smoke_r3/smoke/summary.json",
+    "smoke_summary_sha256": "33af377e95ca0022336877990f9d239919d57edbe165f315498d072c1ec2576e",
+    "telemetry_config": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/icml2025_route_telemetry_blackwell_seed1.json",
+    "epochs": 130,
+    "interpretation": "The smoke is an objective/path readiness test; stochastic state is freshly fixed to seed 1 by the unchanged launcher."
+  },
+  "endpoint": {
+    "dataset": "official ordered torchvision CIFAR-10 test set",
+    "samples": 10000,
+    "batch_size": 512,
+    "attack_seed": 0,
+    "epsilon": 0.03137254901960784,
+    "step_size": 0.00784313725490196,
+    "steps": 50,
+    "random_start": true,
+    "input_pipeline": "uint8 pixels -> CUDA float16 -> torchvision Normalize using official mean/std",
+    "full_endpoint_replay_required": true
+  },
+  "endpoint_interpretation": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/icml2025_b1_endpoint_interpretation.json",
+  "prior_seed0_landing": {
+    "path": "/data1/Kane/MOE/ACT/act/pipeline/moe/results/baseline/icml2025_rt_er_b1_landed_seed0.json",
+    "sha256": "e9b9551f24c821596e009cdcecde1cb8b1e939b95ff7f89a2c9bd910f29fb7e7"
+  },
+  "rehearsal_exclusions": [
+    "ordered full-test endpoint evaluation",
+    "SA/PGD50 preregistered gate decision",
+    "Git commit and push"
+  ],
+  "rehearsal_failure_policy": "Record REHEARSAL_FAILED and continue watching.",
+  "asymmetric_reproduction_gate": {
+    "seed1_inside_standard_accuracy_interval": "supports an existential reproduction statement despite the seed0 miss",
+    "seed1_outside_standard_accuracy_interval": "permits pipeline-level wording only for these two disclosed compatibility reproductions",
+    "unchanged_endpoint": "epoch130 ordered full-test SA plus independently replayed official PGD50; thresholds remain frozen"
+  },
+  "failure_policy": "fail closed, preserve every failure and never modify the registered endpoint"
+}

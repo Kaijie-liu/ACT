@@ -65,10 +65,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Dict, Any
 
-try:
-    from typing import override
-except ImportError:  # Python 3.11 compatibility environments.
-    from typing_extensions import override
+from act.util.typing_compat import override
 import enum
 
 # Import Layer from core to avoid circular import issues

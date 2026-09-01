@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "status": "FAILED_RETAINED",
+  "scope": "B1_TIER0_TIER1_REPORT_GENERATION_ATTEMPT001",
+  "completed_before_failure": [
+    "tier0 trajectory JSON",
+    "training-trajectory SVG"
+  ],
+  "failed_stage": "paper text anchor validation before Tier1 JSON",
+  "error_type": "RuntimeError",
+  "error": "two-column PDF extraction separated the long 130-epoch sentence anchor",
+  "retained_artifacts": [
+    "act/pipeline/moe/results/baseline/icml2025_rt_er_b1_seed0_tier0_diagnostics.failed_attempt001.json",
+    "paper/figures/icml2025_rt_er_b1_seed0_training_trajectory.failed_attempt001.svg"
+  ],
+  "repair": "replace one long extraction-sensitive phrase with two local nonambiguous phrase anchors",
+  "scientific_configuration_changed": false,
+  "thresholds_changed": false,
+  "successful_rerun_suffix": "unsuffixed canonical artifacts"
+}

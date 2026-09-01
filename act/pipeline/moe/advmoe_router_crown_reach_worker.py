@@ -14,17 +14,15 @@ import os
 from pathlib import Path
 import sys
 import time
-import typing
 from typing import Any
-
-from typing_extensions import override
-
-if not hasattr(typing, "override"):
-    typing.override = override  # type: ignore[attr-defined]
 
 PROJECT_ROOT_BOOTSTRAP = Path(__file__).resolve().parents[3]
 if str(PROJECT_ROOT_BOOTSTRAP) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT_BOOTSTRAP))
+
+from act.util.typing_compat import install_typing_override
+
+install_typing_override()
 
 import numpy as np
 import torch

@@ -1961,6 +1961,34 @@ an exact-interpreter subprocess regression. No training artifact, endpoint
 configuration, attack, or tolerance changed; the repaired endpoint uses a new
 attempt directory.
 
+The repaired second attempt landed the ordered endpoint at SA `34.22%` and
+PGD-50 RA `32.70%`; all 10,000 endpoints replayed and the independent audit
+reported zero issues. The ratio `RA/SA=0.95558`, the `43.59`-point SA gap, and
+the full 130-row training/13-row checkpoint trajectory are frozen in
+`results/baseline/icml2025_rt_er_b1_seed0_tier0_diagnostics.json`. Clean test
+accuracy peaks at `37.40%` at epoch 30 and stays in `32.96%--37.40%` from epoch
+20 onward. The source-to-execution audit confirms the unchanged FFCV flip,
+translation, and cutout path, while explicitly recording the absence of a
+tensor-level augmentation trace.
+
+A nine-field paper/source configuration audit separates consistency,
+underspecification, and ambiguity. The paper does not locate optimizer family,
+weight decay, AMP, or exact transforms. Its cyclic-LR wording says "starting at
+0.0001", while the released scheduler initializes at `5e-5` and has maximum
+`1e-4`; this is retained as a semantic ambiguity, not promoted to a definite
+contradiction. Independent Tier-0/Tier-1 audit reports zero issues. The first
+report-generation attempt failed on a two-column PDF extraction anchor and is
+retained under `.failed_attempt001` names.
+
+The preregistered miss unlocks exactly one seed-1 follow-up. Its separate
+telemetry and landing configs keep the model, objective, data, 130-epoch
+schedule, endpoint attack seed, and intervals unchanged. A resource-gated
+orchestrator waits for 30 GiB free GPU memory, 60 GiB free disk, a clean feature
+branch, and exact local/remote synchronization before starting. Python 3.11
+compatibility is centralized in `act.util.typing_compat`; subprocess tests now
+exercise the actual Blackwell entry points separately from the `act-py312`
+control and SciPy/HiGHS telemetry entry points.
+
 ## Lazy top-k enumeration and support-derived big-M
 
 The first scalability code stage replaces exhaustive route-set proposals with

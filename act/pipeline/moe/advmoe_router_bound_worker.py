@@ -11,21 +11,18 @@ from pathlib import Path
 import platform
 import sys
 import time
-import typing
 from typing import Any
 
-from typing_extensions import override
-
-if not hasattr(typing, "override"):
-    typing.override = override  # type: ignore[attr-defined]
-
-# This worker is intentionally launched as a file so that the Python 3.11
-# compatibility shim above runs before importing ``act.pipeline``.  Direct
-# file execution places this module's directory, rather than the repository
-# root, on sys.path; establish the latter explicitly before any ACT import.
+# This worker is intentionally launched as a file. Direct file execution places
+# this module's directory, rather than the repository root, on sys.path; make
+# ACT importable before loading the centralized Python compatibility helper.
 PROJECT_ROOT_BOOTSTRAP = Path(__file__).resolve().parents[3]
 if str(PROJECT_ROOT_BOOTSTRAP) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT_BOOTSTRAP))
+
+from act.util.typing_compat import install_typing_override
+
+install_typing_override()
 
 import numpy as np
 import torch

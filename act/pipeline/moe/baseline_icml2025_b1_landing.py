@@ -119,6 +119,8 @@ def endpoint_decisions(
     standard_accuracy: float,
     pgd50_accuracy: float,
     interpretation: dict[str, Any],
+    *,
+    seed: int = 0,
 ) -> dict[str, Any]:
     standard_rule = interpretation["primary_standard_accuracy_rule"]
     robust_rule = interpretation["secondary_pgd50_rule"]
@@ -132,18 +134,30 @@ def endpoint_decisions(
         <= pgd50_accuracy
         <= float(robust_rule["inclusive_interval_percent"][1])
     )
-    pipeline_claim_status = (
-        "EXISTENCE_SUPPORTED_BY_SEED0_NO_SEED1_REQUIRED"
-        if standard_inside
-        else "SEED1_REQUIRED_BEFORE_PIPELINE_LEVEL_FAILURE_WORDING"
-    )
+    if int(seed) == 0:
+        pipeline_claim_status = (
+            "EXISTENCE_SUPPORTED_BY_SEED0_NO_SEED1_REQUIRED"
+            if standard_inside
+            else "SEED1_REQUIRED_BEFORE_PIPELINE_LEVEL_FAILURE_WORDING"
+        )
+        seed1_followup_required = not standard_inside
+    elif int(seed) == 1:
+        pipeline_claim_status = (
+            "EXISTENCE_SUPPORTED_BY_SEED1_AFTER_SEED0_MISS"
+            if standard_inside
+            else "TWO_REGISTERED_RUNS_MISS_SA_INTERVAL_PIPELINE_LEVEL_WORDING_ALLOWED"
+        )
+        seed1_followup_required = False
+    else:
+        raise ValueError("B1 endpoint decisions are registered only for seeds 0 and 1")
     return {
+        "seed": int(seed),
         "standard_accuracy_percent": standard_accuracy,
         "standard_accuracy_branch": standard_rule["inside"] if standard_inside else standard_rule["outside"],
         "pgd50_accuracy_percent": pgd50_accuracy,
         "pgd50_accuracy_branch": robust_rule["inside"] if robust_inside else robust_rule["outside"],
         "pipeline_claim_status": pipeline_claim_status,
-        "seed1_followup_required": not standard_inside,
+        "seed1_followup_required": seed1_followup_required,
         "thresholds_changed_after_observation": False,
     }
 
@@ -264,7 +278,20 @@ def _run_endpoint(
 def _render_report(landing: dict[str, Any]) -> str:
     decisions = landing["endpoint_decisions"]
     endpoint = landing["endpoint"]
-    return f"""# B1 landed: official-code RT-ER seed 0
+    seed = int(decisions["seed"])
+    prior = landing.get("prior_seed0_landing")
+    prior_line = (
+        f"- Frozen seed-0 landing SHA-256: `{prior['sha256']}`\n" if prior else ""
+    )
+    conclusion = (
+        "If seed 0 misses the SA interval, seed 1 is required before any "
+        "pipeline-level failure wording."
+        if seed == 0
+        else "Seed 1 is the frozen follow-up required by the seed-0 miss; the "
+        "pipeline-level branch follows the two registered outcomes without "
+        "changing the endpoint or thresholds."
+    )
+    return f"""# B1 landed: official-code RT-ER seed {seed}
 
 The frozen 130-epoch official-code, Blackwell-compatible dependency
 reproduction completed and passed the unattended identity and endpoint audit.
@@ -278,11 +305,11 @@ reproduction completed and passed the unattended identity and endpoint audit.
 - Endpoint audit issues: `{landing['endpoint_audit']['issue_count']}`
 - Epoch-130 checkpoint SHA-256: `{landing['epoch130']['checkpoint_sha256']}`
 - Endpoint summary SHA-256: `{endpoint['summary_sha256']}`
+{prior_line}
 
 The original thresholds remain unchanged. Matching or missing them is a
 single-seed reproduction outcome under the disclosed compatibility environment.
-If seed 0 misses the SA interval, seed 1 is required before any pipeline-level
-failure wording. This result does not establish author-checkpoint identity,
+{conclusion} This result does not establish author-checkpoint identity,
 theorem applicability, or a general claim about the paper's method.
 """
 
@@ -299,8 +326,11 @@ def _commit_and_push(protocol: dict[str, Any], landing: dict[str, Any]) -> dict[
     )
     if _git("rev-parse", "HEAD") != _git("rev-parse", f"{remote}/{branch}"):
         raise RuntimeError("landing hook refuses a local/remote branch divergence")
-    tracked_json = PROJECT_ROOT / "act/pipeline/moe/results/baseline/icml2025_rt_er_b1_landed_seed0.json"
-    report = PROJECT_ROOT / "paper/results/b1_landed_seed0.md"
+    seed = int(protocol.get("seed", 0))
+    tracked_json = PROJECT_ROOT / (
+        f"act/pipeline/moe/results/baseline/icml2025_rt_er_b1_landed_seed{seed}.json"
+    )
+    report = PROJECT_ROOT / f"paper/results/b1_landed_seed{seed}.md"
     _write_json(tracked_json, landing)
     report.parent.mkdir(parents=True, exist_ok=True)
     if report.exists():
@@ -322,7 +352,7 @@ def _commit_and_push(protocol: dict[str, Any], landing: dict[str, Any]) -> dict[
         check=True,
     )
     subprocess.run(
-        ["git", "commit", "-m", "Record landed RT-ER B1 endpoint"],
+        ["git", "commit", "-m", f"Record landed RT-ER B1 seed {seed} endpoint"],
         cwd=PROJECT_ROOT,
         check=True,
     )
@@ -345,6 +375,7 @@ def _commit_and_push(protocol: dict[str, Any], landing: dict[str, Any]) -> dict[
 def run_final(protocol_path: Path) -> dict[str, Any]:
     protocol_path = _inside(protocol_path, PROJECT_ROOT)
     protocol = json.loads(protocol_path.read_text(encoding="utf-8"))
+    seed = int(protocol.get("seed", 0))
     run_root = _inside(Path(protocol["run_root"]))
     supervisor_summary_path = run_root / "summary.json"
     supervisor = json.loads(supervisor_summary_path.read_text(encoding="utf-8"))
@@ -367,10 +398,23 @@ def run_final(protocol_path: Path) -> dict[str, Any]:
         raise RuntimeError("B1 endpoint independent audit failed")
     interpretation_path = _inside(Path(protocol["endpoint_interpretation"]), PROJECT_ROOT)
     interpretation = json.loads(interpretation_path.read_text(encoding="utf-8"))
+    prior_seed0_landing = None
+    if seed == 1:
+        prior_spec = protocol.get("prior_seed0_landing")
+        if not isinstance(prior_spec, dict):
+            raise RuntimeError("seed1 landing requires the frozen seed0 landing identity")
+        prior_path = _inside(Path(prior_spec["path"]), PROJECT_ROOT)
+        if _sha256(prior_path) != prior_spec.get("sha256"):
+            raise RuntimeError("frozen seed0 landing identity changed")
+        prior_value = json.loads(prior_path.read_text(encoding="utf-8"))
+        if not prior_value.get("endpoint_decisions", {}).get("seed1_followup_required"):
+            raise RuntimeError("seed0 landing did not require the registered seed1 follow-up")
+        prior_seed0_landing = {"path": str(prior_path), "sha256": _sha256(prior_path)}
     decisions = endpoint_decisions(
         float(endpoint["standard_accuracy_percent"]),
         float(endpoint["pgd50_accuracy_percent"]),
         interpretation,
+        seed=seed,
     )
     rehearsal_path = run_root / "landing/rehearsal_epoch050/B1_LANDING_REHEARSAL.json"
     rehearsal_failure_path = run_root / "landing/rehearsal_epoch050/REHEARSAL_FAILED.json"
@@ -386,7 +430,7 @@ def run_final(protocol_path: Path) -> dict[str, Any]:
     landing = {
         "schema_version": 1,
         "status": "PASSED",
-        "scope": "B1_LANDED_OFFICIAL_RT_ER_SEED0",
+        "scope": f"B1_LANDED_OFFICIAL_RT_ER_SEED{seed}",
         "protocol": {"path": str(protocol_path), "sha256": _sha256(protocol_path)},
         "supervisor_summary": {
             "path": str(supervisor_summary_path),
@@ -407,6 +451,7 @@ def run_final(protocol_path: Path) -> dict[str, Any]:
             "sha256": _sha256(interpretation_path),
         },
         "endpoint_decisions": decisions,
+        "prior_seed0_landing": prior_seed0_landing,
         "thresholds_modified": False,
         "generated_unix_seconds": time.time(),
     }

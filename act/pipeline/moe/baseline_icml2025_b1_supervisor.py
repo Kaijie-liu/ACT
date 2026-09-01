@@ -1,4 +1,4 @@
-"""Supervise the immutable-checkpoint B1 RT-ER seed-0 reproduction.
+"""Supervise an immutable-checkpoint B1 RT-ER registered reproduction.
 
 The author script remains byte-for-byte unchanged.  This process launches it in
 an isolated run directory, freezes its process group after every scheduled
@@ -267,8 +267,8 @@ def run(
     act_python = _allowed_readonly_python(act_python)
     if run_root.exists():
         raise RuntimeError(f"B1 supervisor refuses to overwrite {run_root}")
-    if int(seed) != 0 or int(epochs) != 130:
-        raise RuntimeError("current B1 gate is frozen to seed 0 and 130 epochs")
+    if int(seed) not in (0, 1) or int(epochs) != 130:
+        raise RuntimeError("current B1 gate is frozen to registered seeds 0/1 and 130 epochs")
     if _repo_value("rev-parse", "HEAD") != OFFICIAL_COMMIT:
         raise RuntimeError("official repository commit changed")
     if _repo_value("status", "--porcelain"):
@@ -281,8 +281,8 @@ def run(
     config = json.loads(telemetry_config.read_text(encoding="utf-8"))
     if config.get("label") != REPRODUCTION_LABEL:
         raise RuntimeError("telemetry config does not carry the Blackwell reproduction label")
-    if config.get("training", {}).get("seeds") != [0]:
-        raise RuntimeError("telemetry config is not frozen to seed 0")
+    if config.get("training", {}).get("seeds") != [int(seed)]:
+        raise RuntimeError("telemetry config is not frozen to the requested seed")
     smoke = _validate_smoke(smoke_summary)
 
     run_root.mkdir(parents=True)
@@ -328,6 +328,17 @@ def run(
         ),
     }
     _atomic_json(run_root / "supervisor_manifest.json", manifest, overwrite=False)
+    _atomic_json(
+        progress_path,
+        {
+            "schema_version": 1,
+            "status": "RUNNING",
+            "completed": [],
+            "next_epoch": CHECKPOINT_EPOCHS[0],
+            "elapsed_seconds": 0.0,
+        },
+        overwrite=False,
+    )
     command = official_launcher_command(
         blackwell_python,
         seed=seed,
@@ -498,6 +509,18 @@ def run(
             "official_return_code": process.poll() if process is not None else None,
         }
         _atomic_json(run_root / "failure.json", failure, overwrite=False)
+        _atomic_json(
+            progress_path,
+            {
+                "schema_version": 1,
+                "status": "FAILED",
+                "completed": completed,
+                "error_type": type(error).__name__,
+                "error": str(error),
+                "elapsed_seconds": time.monotonic() - started,
+            },
+            overwrite=True,
+        )
         raise
     finally:
         log_handle.close()
