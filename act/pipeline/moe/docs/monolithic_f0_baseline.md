@@ -1,7 +1,7 @@
 # True monolithic weighted top-2 F0 baseline
 
-Status: implementation and correctness tests complete; frozen smoke and
-20-row execution pending.
+Status: implementation, correctness tests, and frozen smoke complete; 20-row
+execution pending.
 
 ## Fair common semantics
 
@@ -47,3 +47,13 @@ paired microbenchmark.
 
 The old `monolithic_hz_status` field remains a route-unguarded decomposed
 reference and is not renamed or used as this baseline.
+
+## Smoke outcome
+
+Rank 110 has three feasible pair branches. Its single formulation contains
+9,660 variables, 148 binaries, and 19,798 constraints per property. The
+120-second smoke completed five of nine properties before the external hard
+deadline; every completed property returned a solver-limit UNKNOWN and the
+row returned TIMEOUT. No relaxation result was promoted to UNSAFE or SAFE.
+Independent audit reported zero issues. This passes the construction and
+fail-closed smoke gate; it is not reported as a solved-rate result.

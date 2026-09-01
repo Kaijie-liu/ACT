@@ -2065,3 +2065,9 @@ incumbents remain UNKNOWN; only full-model replay may establish UNSAFE.
 The baseline uses the immutable 20-row Experiment 1D cohort and the same
 900-second row deadline. The historical `monolithic_hz_status` field is still
 explicitly decomposed and is not relabelled as this new baseline.
+
+The rank-110 smoke instantiated three pair branches as one 9,660-variable,
+148-binary, 19,798-row MILP per property. Five properties completed with
+solver-limit UNKNOWN before the 120-second hard deadline; the row correctly
+returned TIMEOUT, with no false SAFE/UNSAFE. Independent audit reported zero
+issues, unlocking the full 20-row, 900-second execution.
