@@ -2016,3 +2016,22 @@ separately rebuilt MIP-start-off/on sessions in alternating order. Exhaustive
 differentials remain mandatory for `E<=8`; timeout at larger E is retained as
 incomplete rather than censored. The all-tied family is explicitly a
 combinatorial worst case, not a natural-model prevalence claim.
+
+The paired exact-support big-M study is separately frozen in
+`configs/exact_big_m_engineering_r1.json`. It reuses the 20 immutable
+Experiment 1D sample/radius identities but measures only router membership
+feasibility, where selector big-M is actually consumed. Fast and exact modes
+share the same propagated exact router HZ and alternate order. The study may
+report selector, node, and time changes; it is forbidden from attributing a
+property solved-rate change because Experiment 1D's fixed-pair guards contain
+no selector big-M.
+
+The lazy E-scaling run completed all 30 registered conditions and passed its
+independent audit with zero issues. The all-tied no-start condition enumerated
+`6, 28, 120, 496, 2016` legal top-2 sets for `E=4,8,16,32,64`, taking
+`0.0053, 0.0569, 0.4719, 3.6897, 50.2289` seconds. At E=64 the one-set stable
+control took only 0.0616 seconds, so the supported scaling statement is tied
+to feasible route-set count rather than E alone. Partial MIP-start submission
+had median paired wall-time ratio 1.1280 (range 0.9978--1.4265): accepted
+submission produced no observed speedup and was usually slower. This negative
+result does not speculate about unobservable solver-internal use.

@@ -1,7 +1,7 @@
 # Lazy tie-inclusive top-k enumeration and support-derived big-M
 
-Status: correctness implemented; E-scaling preregistered; timed exact-big-M
-property rerun remains pending.
+Status: correctness and E-scaling complete; paired exact-big-M
+membership-feasibility study preregistered.
 
 ## Semantic contract
 
@@ -73,8 +73,8 @@ The correctness stage does not establish scalability. The registered scaling
 study remains `E in {4,8,16,32,64}` on frozen model families, with exhaustive
 comparison only where tractable. It must report set count, completeness,
 model builds, cuts, solves, support cost, solve cost, and total wall time.
-The timed exact-support big-M engineering rerun remains deferred until B1 ends
-so it does not contaminate training or paired runtime measurements.
+The exact-support big-M engineering study uses a separate frozen
+membership-feasibility scope described below.
 
 ## Frozen E-scaling execution
 
@@ -92,3 +92,18 @@ observation. Raw rows flush after every condition under
 `data/moe/results/lazy_topk_scaling_r1`, so a long worst-case run cannot erase
 earlier rows. Thread counts are externally fixed to one and HiGHS parallelism
 remains disabled.
+
+## Exact-support big-M engineering study
+
+`configs/exact_big_m_engineering_r1.json` freezes a paired fast-versus-exact
+study on the 20 immutable Experiment 1D sample/radius identities. Its scope is
+only the top-k membership feasibility MILP. Each pair reuses the identical
+exact router HZ, alternates execution order, and records selector width, every
+competitor big-M, support fallback, feasibility nodes, and time.
+
+This scope restriction is essential: Experiment 1D property solving already
+conditions on an explicit feasible top-k pair via `condition_topk_set`; that
+path has no selector big-M. Consequently this study cannot change, backfill,
+or explain the confirmatory or Experiment 1D property solved rate.
+Constraint-aware support that does not finish falls back to the sound fast
+generator bound and is recorded rather than silently treated as exact.
