@@ -172,16 +172,23 @@ def _linear_upper_support(
         if isinstance(hz, SparseHZono)
         else hz_multiply(hz, A.to(hz.c))
     )
+    fast_upper = _fast_linear_upper(hz, A).reshape(-1).double()
     support = hz_support_bounds(
         transformed,
         range(int(A.shape[0])),
         time_limit=float(time_limit),
         relax_binaries=normalized == "lp",
     )
+    support_upper = support.bounds.ub.reshape(-1).detach().cpu().double()
+    capped = support_upper > fast_upper
+    upper_status = tuple(
+        f"{status}_capped_by_fast" if bool(capped[index]) else status
+        for index, status in enumerate(support.upper_status)
+    )
     return (
-        support.bounds.ub.reshape(-1).detach().cpu().double(),
+        torch.minimum(support_upper, fast_upper),
         bool(support.exact),
-        tuple(support.upper_status),
+        upper_status,
     )
 
 

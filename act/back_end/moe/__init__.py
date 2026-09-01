@@ -99,6 +99,14 @@ from act.back_end.moe.weighted_top2 import (
     shared_input_pair_hz,
     solve_weighted_top2_f0,
 )
+from act.back_end.moe.monolithic_f0 import (
+    MonolithicF0Decision,
+    SAFE_MONOLITHIC_WEIGHTED_RANGE,
+    UNKNOWN_MONOLITHIC_NUMERICAL,
+    UNKNOWN_MONOLITHIC_RELAXATION,
+    UNKNOWN_MONOLITHIC_SOLVER_LIMIT,
+    solve_monolithic_weighted_top2_f0,
+)
 from act.back_end.moe.weighted_topk import (
     NormalizedTopKGateBox,
     SharedInputExpertsHZ,
@@ -208,6 +216,12 @@ __all__ = [
     "segmented_affine_conditioned_support",
     "solve_weighted_topk_range",
     "solve_weighted_top2_f0",
+    "MonolithicF0Decision",
+    "SAFE_MONOLITHIC_WEIGHTED_RANGE",
+    "UNKNOWN_MONOLITHIC_NUMERICAL",
+    "UNKNOWN_MONOLITHIC_RELAXATION",
+    "UNKNOWN_MONOLITHIC_SOLVER_LIMIT",
+    "solve_monolithic_weighted_top2_f0",
     "solve_segmented_weighted_top2_f0",
     "top1_branch_guard_values",
     "verify_output_gate_elimination",

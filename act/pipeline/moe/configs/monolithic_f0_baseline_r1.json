@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "status": "PREREGISTERED_NOT_RUN",
+  "scope": "TRUE_SINGLE_FORMULATION_DISJUNCTIVE_WEIGHTED_TOP2_F0_BASELINE_R1",
+  "checkpoint": "/data1/Kane/MOE/ACT/data/moe/checkpoints/cifar10_top2_e8_seed0_bal010.pt",
+  "selection_source_config": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/experiment1d_bal010_r2.json",
+  "selection_source_config_sha256": "e12ced82959d52120791791bc3daa0946814eb8e24f631f8f9c7cd14d5b72bcc",
+  "route_a_reference_results": "/data1/Kane/MOE/ACT/data/moe/results/experiment1d_bal010_d0_r2/results.jsonl",
+  "route_a_reference_results_sha256": "2e5914447fd555f364132e1594a7dec2b545fdc8c78c81700487a8723a1f0328",
+  "output_dir": "/data1/Kane/MOE/ACT/data/moe/results/monolithic_f0_baseline_r1",
+  "smoke_output_dir": "/data1/Kane/MOE/ACT/data/moe/results/monolithic_f0_baseline_smoke_r1",
+  "expected_sample_ranks": 20,
+  "instance_timeout_seconds": 900.0,
+  "smoke_timeout_seconds": 120.0,
+  "f0": {
+    "margin_support_seconds": 5.0,
+    "difference_support_seconds": 5.0,
+    "safety_tolerance": 1e-7
+  },
+  "formulation": {
+    "route_semantics": "all exact feasible unordered tie-inclusive top-2 pairs",
+    "pair_branch": "guarded shared-input two-expert F0 range-only McCormick relaxation",
+    "union": "one pair selector per branch and bounded homogenization of every branch HZ",
+    "new_arbitrary_big_m": false,
+    "single_solver_call_per_property": true,
+    "nonlinear_gate_encoding": "no exp, division, or symbolic sigmoid; same guarded scalar gate range as Route A F0"
+  },
+  "budget_schedule": "natural property order; after shared pair propagation, each remaining property receives an equal share of the remaining 900-second row deadline",
+  "execution": {
+    "environment": "/data1/Kane/miniconda3/envs/act-py312",
+    "device": "cpu",
+    "workers": 1,
+    "thread_isolation": 1,
+    "hard_deadline_per_row": true,
+    "rows_flushed_incrementally": true
+  },
+  "numerical_safety": {
+    "solver": "scipy.optimize.milp/HiGHS",
+    "require_solver_success": true,
+    "require_optimal_status": 0,
+    "require_finite_dual_bound": true,
+    "mip_relative_gap": 0.0,
+    "feasibility_tolerance": 1e-7,
+    "integrality_tolerance": 1e-7,
+    "outward_rounding": "nextafter after absolute-plus-relative correction",
+    "outward_absolute": 1e-9,
+    "outward_relative": 1e-9,
+    "safe_positive_margin": 1e-7,
+    "certifying_objective": "finite mip_dual_bound for MILP; status-0 optimum for pure LP; never a non-optimal primal incumbent"
+  },
+  "claim_boundary": [
+    "Monolithic means one disjunctive MILP per property over every feasible pair and both experts in each pair.",
+    "The formulation is exact for the union of supplied F0 relaxations, not an exact symbolic sigmoid graph.",
+    "F0 semantics and support-derived bounds are shared with the Route A comparator.",
+    "A negative relaxation incumbent is UNKNOWN unless its recovered input violates the full selected-softmax model.",
+    "Runtime is descriptive on a common frozen cohort; the pre-existing Route A reference was not interleaved in this run.",
+    "The immutable Route A reference and prior artifacts are never overwritten."
+  ]
+}

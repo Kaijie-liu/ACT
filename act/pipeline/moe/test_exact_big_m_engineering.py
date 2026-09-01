@@ -33,6 +33,7 @@ def _expert(rank, mode, expert, value):
 class ExactBigMEngineeringTests(unittest.TestCase):
     def test_support_status_accounting_matches_backend_labels(self):
         self.assertFalse(_support_side_fell_back("milp_optimal"))
+        self.assertFalse(_support_side_fell_back("milp_optimal_capped_by_fast"))
         self.assertFalse(_support_side_fell_back("lp_optimal"))
         self.assertTrue(_support_side_fell_back("fallback_generator"))
 

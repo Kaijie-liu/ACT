@@ -1,6 +1,7 @@
 # ===- act/back_end/moe/test_moe.py - MoE Route-A Tests ----------------====#
 
 import unittest
+from unittest import mock
 
 import torch
 import torch.nn as nn
@@ -14,6 +15,7 @@ from act.back_end.moe.factory import (
     build_output_moe,
 )
 from act.back_end.moe.hz_routing import (
+    _linear_upper_support,
     analyze_candidates,
     analyze_topk_sets,
     condition_topk_membership,
@@ -29,6 +31,7 @@ from act.back_end.moe.routing import (
 from act.back_end.moe.schema import GateKind, OutputLevelMoESpec
 from act.back_end.moe.verifier import verify_output_gate_elimination
 from act.back_end.solver.solver_hz import (
+    HZSupportBoundsResult,
     hz_add_const,
     hz_add_output_inequalities,
     hz_compute_bounds,
@@ -190,6 +193,35 @@ class HZRoutingTests(unittest.TestCase):
         self.assertTrue(
             all(status == "milp_optimal" for status in exact.big_m_upper_status)
         )
+
+    def test_constraint_support_is_capped_by_sound_fast_bound(self):
+        domain = sparse_hz_from_bounds(
+            Bounds(torch.tensor([[-1.0]]), torch.tensor([[1.0]])),
+            frame_id=32,
+        )
+        artificial = HZSupportBoundsResult(
+            rows=(0,),
+            bounds=Bounds(torch.tensor([[-99.0]]), torch.tensor([[99.0]])),
+            lower_status=("milp_optimal",),
+            upper_status=("milp_optimal",),
+            solver_gap=(0.0,),
+            elapsed=0.0,
+            solves=2,
+            exact=True,
+        )
+        with mock.patch(
+            "act.back_end.moe.hz_routing.hz_support_bounds",
+            return_value=artificial,
+        ):
+            upper, exact, statuses = _linear_upper_support(
+                domain,
+                torch.tensor([[1.0]], dtype=torch.float64),
+                mode="exact",
+                time_limit=1.0,
+            )
+        self.assertTrue(exact)
+        self.assertAlmostEqual(float(upper.item()), 1.0)
+        self.assertEqual(statuses, ("milp_optimal_capped_by_fast",))
 
     def test_lazy_e8_top2_matches_exhaustive_tie_enumeration(self):
         domain = sparse_hz_from_bounds(

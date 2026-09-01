@@ -225,13 +225,18 @@ frozen top-(k), router geometry, and budgets. Each row records feasible sets,
 completeness, model builds, solves, no-good cuts, MIP-start submissions,
 selector binaries after exact-support tightening, wall time, and peak memory.
 Paired start/no-start runs measure observed effect without claiming that HiGHS
-internally used an accepted start. The existing E=8 differential establishes
-set equality with exhaustive enumeration but is not a scaling result.
+internally used an accepted start. All 30 registered conditions completed and
+passed independent audit. The all-tied no-start family scales from 6 sets in
+0.0053 seconds at E=4 to 2,016 sets in 50.23 seconds at E=64, while the E=64
+one-set control takes 0.0616 seconds. Partial MIP-start submission has median
+paired ratio 1.128 and therefore provides no observed speedup.
 
-The exact-support big-M rerun and monolithic baseline use the frozen 20-row
-cohort after B1 releases the shared resource. They report before/after binaries,
-LP relaxation, branch-and-bound nodes, solved states, and paired time. The
-earlier incremental property-MILP rerun remains a negative engineering result:
+The exact-support big-M study and monolithic baseline use the frozen 20-row
+cohort. Big-M is evaluated only where it is consumed: router membership
+feasibility. The true monolithic baseline uses one bounded-homogenized
+disjunctive MILP per property over all feasible guarded F0 pair branches; it
+shares Route A's gate-range/McCormick semantics and changes only decomposition.
+The earlier incremental property-MILP rerun remains a negative engineering result:
 model reuse accelerated LP hull construction by 15.03 times but did not speed
 search-dominated property MILPs.
 

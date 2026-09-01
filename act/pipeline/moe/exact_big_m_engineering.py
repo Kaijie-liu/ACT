@@ -75,7 +75,8 @@ def _median(values: Sequence[float]) -> float | None:
 
 
 def _support_side_fell_back(status: str) -> bool:
-    return str(status) not in {
+    normalized = str(status).removesuffix("_capped_by_fast")
+    return normalized not in {
         "fast_generator",
         "optimal",
         "lp_optimal",

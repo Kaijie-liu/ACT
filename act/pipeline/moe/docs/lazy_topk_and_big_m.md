@@ -107,3 +107,11 @@ path has no selector big-M. Consequently this study cannot change, backfill,
 or explain the confirmatory or Experiment 1D property solved rate.
 Constraint-aware support that does not finish falls back to the sound fast
 generator bound and is recorded rather than silently treated as exact.
+
+The first timed execution (`exact_big_m_engineering_r1`) is retained as a
+failed audit. Although all 20 pairs completed with identical candidate
+semantics, three solver-derived upper bounds were numerically looser than the
+independent fast sound bound (maximum excess about `4.96e-6`). The repair caps
+every constraint-aware upper bound by the fast sound upper bound and labels
+the affected side. `exact_big_m_engineering_r2.json` freezes the fresh run;
+the failed r1 directory is never edited or reported as a result.

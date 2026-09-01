@@ -2026,6 +2026,13 @@ report selector, node, and time changes; it is forbidden from attributing a
 property solved-rate change because Experiment 1D's fixed-pair guards contain
 no selector big-M.
 
+The first exact-big-M timed directory is retained with a failed independent
+audit: three solver-derived support upper bounds were numerically looser than
+the independent fast generator upper bound, by at most about `4.96e-6`. Both
+were sound, but the registered non-increase invariant correctly failed. The
+r2 implementation takes the minimum of both sound bounds, labels fast-capped
+sides, and writes to a new directory. No r1 file is overwritten.
+
 The lazy E-scaling run completed all 30 registered conditions and passed its
 independent audit with zero issues. The all-tied no-start condition enumerated
 `6, 28, 120, 496, 2016` legal top-2 sets for `E=4,8,16,32,64`, taking
@@ -2035,3 +2042,18 @@ to feasible route-set count rather than E alone. Partial MIP-start submission
 had median paired wall-time ratio 1.1280 (range 0.9978--1.4265): accepted
 submission produced no observed speedup and was usually slower. This negative
 result does not speculate about unobservable solver-internal use.
+
+## True monolithic weighted top-2 baseline
+
+The first executable monolithic baseline is frozen in
+`configs/monolithic_f0_baseline_r1.json`. For each property it builds one
+disjunctive MILP over every exact feasible top-2 pair and both guarded experts
+in that pair. Bounded homogenization activates exactly one pair branch and
+introduces no new arbitrary big-M. The pair branches use the same F0
+gate-range/McCormick relaxation as Route A, so the comparison changes solver
+decomposition rather than nonlinear gate semantics. Negative relaxation
+incumbents remain UNKNOWN; only full-model replay may establish UNSAFE.
+
+The baseline uses the immutable 20-row Experiment 1D cohort and the same
+900-second row deadline. The historical `monolithic_hz_status` field is still
+explicitly decomposed and is not relabelled as this new baseline.

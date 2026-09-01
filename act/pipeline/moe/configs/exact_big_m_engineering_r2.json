@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "status": "PREREGISTERED_NOT_RUN",
+  "scope": "PAIRED_CONSTRAINT_AWARE_EXACT_BIG_M_MEMBERSHIP_FEASIBILITY_R2",
+  "checkpoint": "/data1/Kane/MOE/ACT/data/moe/checkpoints/cifar10_top2_e8_seed0_bal010.pt",
+  "selection_source_config": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/experiment1d_bal010_r2.json",
+  "selection_source_config_sha256": "e12ced82959d52120791791bc3daa0946814eb8e24f631f8f9c7cd14d5b72bcc",
+  "output_dir": "/data1/Kane/MOE/ACT/data/moe/results/exact_big_m_engineering_r2",
+  "expected_sample_ranks": 20,
+  "modes": ["fast", "exact"],
+  "pair_order": "alternate by frozen sample position; both modes reuse the identical propagated exact router HZ",
+  "support_time_limit_seconds": 10.0,
+  "feasibility_time_limit_seconds": 10.0,
+  "support_cap": "constraint-aware upper bound is capped by the independent sound fast generator upper bound; capped sides are labelled",
+  "supersedes_failed_run": {
+    "path": "/data1/Kane/MOE/ACT/data/moe/results/exact_big_m_engineering_r1",
+    "audit_status": "FAIL",
+    "issue_count": 3,
+    "reason": "three exact-support bounds were numerically looser than the independent fast sound bound; r1 is retained and never reported"
+  },
+  "execution": {
+    "environment": "/data1/Kane/miniconda3/envs/act-py312",
+    "device": "cpu",
+    "thread_isolation": 1,
+    "rows_flushed_incrementally": true
+  },
+  "numerical_safety": {
+    "solver": "scipy.optimize.milp/HiGHS",
+    "require_solver_success": true,
+    "require_optimal_status": 0,
+    "require_finite_dual_bound": true,
+    "mip_relative_gap": 0.0,
+    "feasibility_tolerance": 1e-7,
+    "integrality_tolerance": 1e-7,
+    "outward_rounding": "nextafter after absolute-plus-relative correction",
+    "outward_absolute": 1e-9,
+    "outward_relative": 1e-9,
+    "safe_positive_margin": 1e-7,
+    "certifying_objective": "finite mip_dual_bound for MILP; status-0 optimum for pure LP; never a non-optimal primal incumbent"
+  },
+  "required_metrics": [
+    "candidate_experts_and_unresolved_experts",
+    "selector_binary_count",
+    "per_competitor_big_m",
+    "support_exactness_fallback_and_fast_cap_sides",
+    "membership_support_seconds",
+    "feasibility_seconds_and_nodes",
+    "paired_exact_over_fast_time"
+  ],
+  "claim_boundary": [
+    "This experiment measures top-k membership feasibility only.",
+    "Experiment 1D property rows use fixed route-set guards and do not consume selector big-M constants.",
+    "No property solved-rate or certificate result is attributed to this experiment.",
+    "An exact-support timeout falls back to a sound generator bound and is counted explicitly.",
+    "Constraint-aware support is never allowed to be looser than the independently sound fast bound.",
+    "Candidate semantics are compared only when both paired encodings complete.",
+    "The immutable confirmatory, Experiment 1D, and failed r1 artifacts are never overwritten."
+  ]
+}
