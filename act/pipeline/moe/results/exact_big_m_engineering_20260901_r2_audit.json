@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "status": "PASS",
+  "scope": "INDEPENDENT_EXACT_BIG_M_ENGINEERING_R2_AUDIT",
+  "issue_count": 0,
+  "condition_rows": 40,
+  "paired_sample_ranks": 20,
+  "both_complete_pairs": 20,
+  "candidate_semantic_mismatches": 0,
+  "pairs_with_selector_binary_reduction": 12,
+  "fast_selector_binaries": 657,
+  "exact_selector_binaries": 631,
+  "total_selector_binary_reduction": 26,
+  "relative_selector_binary_reduction": 0.0395738203957382,
+  "exact_experts_with_fast_cap": 52,
+  "exact_capped_sides": 124,
+  "median_exact_over_fast_total_time": 7.141868279787127,
+  "median_exact_over_fast_feasibility_time": 1.0094654813838067,
+  "node_reduction_pairs": 0,
+  "raw_hashes": {
+    "conditions.jsonl": "33fc8ca3d1a57e25e8e604d6bcdbbaf04db6ccd6728a6ac46ce611e4a2de7bef",
+    "experts.jsonl": "76581a6140d18273e47260f51bebce710d05c6c55efd5606fa8c0afb1befca37",
+    "summary.json": "8f6dac5c49e5c26bba787407b287c361b6451e4d4ab82663ef0a547b04f0febb",
+    "audit.json": "da36a6fb87639473869f6ef5f77f8b810052da1205d637136e5a708e8173f8a2"
+  },
+  "decision": "Constraint-aware exact support is a valid tightening ablation but is not the default membership path: selector width falls about 4.0 percent, while feasibility time and nodes do not improve and total time rises about 7.14 times at the paired median."
+}

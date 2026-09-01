@@ -236,6 +236,9 @@ cohort. Big-M is evaluated only where it is consumed: router membership
 feasibility. The true monolithic baseline uses one bounded-homogenized
 disjunctive MILP per property over all feasible guarded F0 pair branches; it
 shares Route A's gate-range/McCormick semantics and changes only decomposition.
+Exact support reduces membership selector width from 657 to 631 on the frozen
+20-row cohort, but its median total-time ratio is 7.142 and it produces no node
+reduction; the fast sound bound therefore remains the default.
 The earlier incremental property-MILP rerun remains a negative engineering result:
 model reuse accelerated LP hull construction by 15.03 times but did not speed
 search-dominated property MILPs.

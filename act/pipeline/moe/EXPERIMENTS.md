@@ -2033,6 +2033,14 @@ were sound, but the registered non-increase invariant correctly failed. The
 r2 implementation takes the minimum of both sound bounds, labels fast-capped
 sides, and writes to a new directory. No r1 file is overwritten.
 
+The repaired r2 run completed all 20 pairs and passed independent audit with
+zero issues. Exact support reduced selector width from 657 to 631 on aggregate
+(26 binaries, 3.96%; 12/20 samples), but reduced no feasibility node count.
+Median exact/fast feasibility time was 1.009 and median total time including
+support was 7.142. Fast bounds therefore remain the default; exact support is
+retained as a tightening ablation. This result does not change any property
+certificate or prior solved-rate endpoint.
+
 The lazy E-scaling run completed all 30 registered conditions and passed its
 independent audit with zero issues. The all-tied no-start condition enumerated
 `6, 28, 120, 496, 2016` legal top-2 sets for `E=4,8,16,32,64`, taking
