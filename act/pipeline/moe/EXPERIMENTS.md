@@ -2091,3 +2091,9 @@ checkpoint: all 10,000 ordered inputs completed, the 100-input independent
 oracle crosscheck differed by at most `6.94e-17`, and 200/200 concrete
 boundary witnesses replayed. This closes the integration gate before r2 is
 allowed to launch; it is not an endpoint result.
+That manual replay generated three untracked `cpython-312` bytecode caches in
+the official clone. The r2 supervisor's clean-clone gate rejected them before
+training. They were moved to a hash-recorded, recoverable quarantine inside
+`/data1/Kane/MOE/baseline_runs`; the official clone is clean. The new r3
+attempt retains r1/r2 and changes no model, data, objective, endpoint, or
+tolerance.

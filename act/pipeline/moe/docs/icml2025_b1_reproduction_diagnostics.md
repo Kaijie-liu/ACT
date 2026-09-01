@@ -78,6 +78,7 @@ nonambiguous phrase anchors; no scientific value or threshold changed.
 - seed-1 telemetry config: `configs/icml2025_route_telemetry_blackwell_seed1.json`
 - retained failed landing protocol: `configs/icml2025_b1_landing_protocol_seed1_r1.json`
 - repaired landing protocol: `configs/icml2025_b1_landing_protocol_seed1_r2.json`
+- clean-clone retry protocol: `configs/icml2025_b1_landing_protocol_seed1_r3.json`
 
 The first seed-1 attempt trained through epoch 10 and then failed closed before
 telemetry read the checkpoint. Its config used the semantically preregistered
@@ -94,5 +95,14 @@ crosscheck covered 100 inputs with maximum radius error `6.94e-17`, and all
 200 concrete route-boundary witnesses replayed. The six-second integration
 result and hashes are tracked in
 `results/baseline/icml2025_rt_er_b1_seed1_attempt1_failure_and_repair.json`.
+
+The explicit replay was launched without the supervisor's
+`PYTHONDONTWRITEBYTECODE=1` environment and generated three untracked Python
+bytecode files in the official clone. The r2 supervisor correctly failed its
+clean-clone gate before creating a training run. Those three replay-generated
+files were moved, with hashes, to a recoverable quarantine under
+`/data1/Kane/MOE/baseline_runs`; no source or user artifact was deleted. The
+official clone is clean again. The r3 protocol retains both failed attempts
+and changes no scientific field.
 
 The independent diagnostic audit reports zero issues.
