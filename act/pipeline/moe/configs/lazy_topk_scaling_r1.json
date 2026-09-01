@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "status": "PREREGISTERED_NOT_RUN",
+  "scope": "LAZY_TOP2_E_SCALING_AND_PARTIAL_MIP_START_PAIRED_ENGINEERING_R1",
+  "output_dir": "/data1/Kane/MOE/ACT/data/moe/results/lazy_topk_scaling_r1",
+  "num_experts": [4, 8, 16, 32, 64],
+  "top_k": 2,
+  "families": ["all_tied_worst_case", "strictly_stable", "random_affine_box"],
+  "input_dimension": 8,
+  "random_seed": 20260901,
+  "random_box_radius": 0.25,
+  "big_m_support_mode": "fast",
+  "big_m_padding": 1e-9,
+  "time_limits_seconds": {
+    "4": 60,
+    "8": 120,
+    "16": 300,
+    "32": 900,
+    "64": 3600
+  },
+  "paired_partial_mip_start": [false, true],
+  "pair_order": "alternate by (expert-count index + family index); the first condition changes but both use separately rebuilt identical models",
+  "exhaustive_differential_max_experts": 8,
+  "execution": {
+    "environment": "/data1/Kane/miniconda3/envs/act-py312",
+    "device": "cpu",
+    "highs_parallel": "off inside IncrementalHZBranchSolver",
+    "external_thread_limits": 1,
+    "rows_flushed_incrementally": true
+  },
+  "required_metrics": [
+    "route_set_count",
+    "complete_flag",
+    "status_and_reason",
+    "model_builds",
+    "no_good_cuts",
+    "solves",
+    "selector_binaries",
+    "pairwise_order_constraints",
+    "partial_mip_start_attempts_and_accepts",
+    "mip_nodes",
+    "support_seconds",
+    "solve_seconds",
+    "total_wall_seconds",
+    "paired_start_vs_no_start_ratio"
+  ],
+  "claim_boundary": [
+    "all-tied is an explicit worst-case route-set family, not a natural-model distribution",
+    "strictly-stable and random-affine families prevent a one-family scaling claim",
+    "accepted MIP-start submission never implies solver-internal use",
+    "a paired timing difference is empirical and not attributed to an unobservable internal mechanism",
+    "timeouts remain incomplete and are never converted to exact enumeration"
+  ]
+}

@@ -1,6 +1,7 @@
 # Lazy tie-inclusive top-k enumeration and support-derived big-M
 
-Status: implemented correctness stage; E-scaling and timed solver rerun pending.
+Status: correctness implemented; E-scaling preregistered; timed exact-big-M
+property rerun remains pending.
 
 ## Semantic contract
 
@@ -74,3 +75,20 @@ comparison only where tractable. It must report set count, completeness,
 model builds, cuts, solves, support cost, solve cost, and total wall time.
 The timed exact-support big-M engineering rerun remains deferred until B1 ends
 so it does not contaminate training or paired runtime measurements.
+
+## Frozen E-scaling execution
+
+`configs/lazy_topk_scaling_r1.json` freezes `E={4,8,16,32,64}`, top-2, and
+three deterministic router families: an all-tied worst case, a strictly stable
+one-set control, and a fixed random affine box. Each instance is rebuilt twice,
+once with partial MIP-start submission disabled and once enabled. Pair order
+alternates across `(E,family)` to avoid placing one condition systematically
+first. The study reports paired elapsed time but never claims that an accepted
+start was used internally by HiGHS.
+
+Small `E<=8` rows must match exhaustive tie-inclusive enumeration. Large rows
+may time out; a timeout remains incomplete and is still a valid scaling
+observation. Raw rows flush after every condition under
+`data/moe/results/lazy_topk_scaling_r1`, so a long worst-case run cannot erase
+earlier rows. Thread counts are externally fixed to one and HiGHS parallelism
+remains disabled.

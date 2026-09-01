@@ -214,6 +214,23 @@ class HZRoutingTests(unittest.TestCase):
         self.assertEqual(lazy.telemetry["partial_mip_starts_accepted"], 28)
         self.assertFalse(lazy.telemetry["partial_mip_start_internal_use_claimed"])
 
+    def test_lazy_enumeration_can_disable_partial_mip_starts(self):
+        domain = sparse_hz_from_bounds(
+            Bounds(torch.tensor([[-1.0]]), torch.tensor([[1.0]])),
+            frame_id=39,
+        )
+        router = sparse_hz_linear(domain, torch.ones(4, 1, dtype=torch.float64))
+        without_starts = enumerate_topk_sets_lazy(
+            router,
+            2,
+            time_limit=10.0,
+            submit_mip_starts=False,
+        )
+        self.assertTrue(without_starts.complete, without_starts.reason)
+        self.assertEqual(len(without_starts.route_sets), 6)
+        self.assertEqual(without_starts.telemetry["partial_mip_start_attempts"], 0)
+        self.assertEqual(without_starts.telemetry["partial_mip_starts_accepted"], 0)
+
     def test_sparse_guard_preserves_exact_frame(self):
         input_hz = sparse_hz_from_bounds(
             Bounds(torch.tensor([[-1.0]]), torch.tensor([[1.0]])),

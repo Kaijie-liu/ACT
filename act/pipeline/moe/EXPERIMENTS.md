@@ -2008,3 +2008,11 @@ selection binaries from `2` with fast support to `0` with exact support.
 Independent audit reports zero issues at
 `act/pipeline/moe/results/lazy_topk_e8_correctness_20260830_r2.json`. These are
 correctness and tightening results, not the pending E-scaling/runtime result.
+
+The first E-scaling study is frozen before execution in
+`configs/lazy_topk_scaling_r1.json`. It crosses `E={4,8,16,32,64}` with
+all-tied, strictly-stable, and fixed random-affine router families, then pairs
+separately rebuilt MIP-start-off/on sessions in alternating order. Exhaustive
+differentials remain mandatory for `E<=8`; timeout at larger E is retained as
+incomplete rather than censored. The all-tied family is explicitly a
+combinatorial worst case, not a natural-model prevalence claim.

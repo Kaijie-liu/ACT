@@ -569,6 +569,7 @@ def enumerate_topk_sets_lazy(
     big_m_padding: float = 1e-9,
     big_m_support_mode: str = "fast",
     big_m_support_time_limit: float = 30.0,
+    submit_mip_starts: bool = True,
 ) -> LazyTopKSetReport:
     """Enumerate feasible top-k sets with one incremental HiGHS session.
 
@@ -641,12 +642,12 @@ def enumerate_topk_sets_lazy(
             extra_ub=extra_ub,
             mip_start_indices=(
                 np.arange(selector_start, dtype=np.int32)
-                if previous_point is not None and selector_start
+                if submit_mip_starts and previous_point is not None and selector_start
                 else None
             ),
             mip_start_values=(
                 previous_point[:selector_start]
-                if previous_point is not None and selector_start
+                if submit_mip_starts and previous_point is not None and selector_start
                 else None
             ),
         )
