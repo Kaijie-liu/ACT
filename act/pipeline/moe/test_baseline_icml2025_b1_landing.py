@@ -21,6 +21,7 @@ from act.pipeline.moe.baseline_icml2025_b1_endpoint import (
 )
 from act.pipeline.moe.baseline_icml2025_b1_landing import (
     RetryableGpuLandingError,
+    _artifact_subprocess_environment,
     endpoint_decisions,
     require_gpu_resource,
     validate_completed_epoch,
@@ -35,6 +36,11 @@ from act.pipeline.moe.baseline_icml2025_b1_smoke import _sha256
 
 
 class B1LandingTests(unittest.TestCase):
+    def test_endpoint_and_audit_subprocesses_disable_bytecode_writes(self) -> None:
+        with mock.patch.dict(os.environ, {"PYTHONDONTWRITEBYTECODE": "0"}):
+            environment = _artifact_subprocess_environment()
+        self.assertEqual(environment["PYTHONDONTWRITEBYTECODE"], "1")
+
     def test_rt_er_python_can_import_current_act_schema(self) -> None:
         completed = subprocess.run(
             [

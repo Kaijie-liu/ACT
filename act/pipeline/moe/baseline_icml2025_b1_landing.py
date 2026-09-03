@@ -26,6 +26,11 @@ class RetryableGpuLandingError(RuntimeError):
     """A transient GPU-capacity failure that the watcher may retry."""
 
 
+def _artifact_subprocess_environment() -> dict[str, str]:
+    """Keep read-only imports from dirtying the pinned official clone."""
+    return {**os.environ, "PYTHONDONTWRITEBYTECODE": "1"}
+
+
 def gpu_memory_bytes(device_index: int = 0) -> tuple[int, int]:
     result = subprocess.run(
         [
@@ -235,6 +240,7 @@ def _run_endpoint(
             subprocess.run(
                 command,
                 cwd=PROJECT_ROOT,
+                env=_artifact_subprocess_environment(),
                 stdout=handle,
                 stderr=subprocess.STDOUT,
                 check=True,
@@ -262,6 +268,7 @@ def _run_endpoint(
             subprocess.run(
                 audit_command,
                 cwd=PROJECT_ROOT,
+                env=_artifact_subprocess_environment(),
                 stdout=handle,
                 stderr=subprocess.STDOUT,
                 check=True,

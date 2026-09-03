@@ -2097,3 +2097,12 @@ training. They were moved to a hash-recorded, recoverable quarantine inside
 `/data1/Kane/MOE/baseline_runs`; the official clone is clean. The new r3
 attempt retains r1/r2 and changes no model, data, objective, endpoint, or
 tolerance.
+
+Seed-1 r3 completed all 130 epochs and all 13 scheduled checkpoint/telemetry
+chains. Its first final endpoint attempt computed ordered SA `32.01%` and
+PGD-50 RA `30.51%`, but remains explicitly unaudited: the endpoint subprocess
+created six bytecode cache files in the pinned official clone, so the
+independent replay failed the clean-clone gate before model loading. The files
+were moved to a recoverable, hash-recorded quarantine. Endpoint and audit
+subprocesses now disable bytecode writes, and a fresh attempt directory must
+pass replay before either number becomes a landed result.

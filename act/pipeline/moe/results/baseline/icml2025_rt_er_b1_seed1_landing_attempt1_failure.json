@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "status": "RETAINED_FAIL_CLOSED_ENDPOINT_AUDIT",
+  "scope": "B1_SEED1_FINAL_ENDPOINT_ATTEMPT_001",
+  "training": {
+    "status": "PASSED",
+    "epochs": 130,
+    "checkpoint_count": 13,
+    "epoch130_checkpoint_sha256": "05f33bf0c24376dbcf31e61380d81b48cee0c08b1632b662caeaff49daf72896",
+    "supervisor_runtime_seconds": 174261.8349517947,
+    "official_repository_clean_after": true
+  },
+  "endpoint_attempt": {
+    "summary_sha256": "288eeb132dd4edd2b33572df90c0e97d1798100a12c458d2ed42781fa7ca5d3d",
+    "replay_artifact_sha256": "6d23cc2293a9dfecbe4522b1f2c588f234c64d86b2285d9173806b9bb3a06516",
+    "standard_accuracy_percent": 32.01,
+    "pgd50_accuracy_percent": 30.51,
+    "samples": 10000,
+    "route_flip_count": 494,
+    "runtime_seconds": 822.8359959246591,
+    "scientific_status": "COMPLETED_NOT_INDEPENDENTLY_AUDITED"
+  },
+  "audit_failure": {
+    "reason": "endpoint subprocess generated six untracked Python bytecode files in the pinned official clone; the subsequent clean-clone gate rejected replay before loading the checkpoint",
+    "scientific_fields_changed": false,
+    "endpoint_reuse_claimed": false,
+    "failed_attempt_retained": true
+  },
+  "quarantined_endpoint_cache": {
+    "directory": "/data1/Kane/MOE/baseline_runs/icml2025_rt_er/quarantine_seed1_endpoint_attempt001_pycache_20260904",
+    "recoverable": true,
+    "sha256": {
+      "attack/PGD.cpython-311.pyc": "5fb5a62888fcfd07007ff33123585e47fccda80a70e1811d8a3f2c752c8e7601",
+      "models/__init__.cpython-311.pyc": "da912cc9c214f4c9a189d54a369f3dc5ac3518f3d913f3bfcc974995cb6adaa1",
+      "models/moe.cpython-311.pyc": "d7bcdd688ac6a725daa75698a74cb475ee63fadce06381b772a52d0567baf7f1",
+      "models/resnet.cpython-311.pyc": "95b59b94d6af61c3e9c20f1a04dde48d00500cc84035741f96ff76128a02d15b",
+      "models/vgg.cpython-311.pyc": "f9254421ed395e6f10bd48f8367079188d69f1d665d83c468b0fb1e8cd77cb98",
+      "models/vit_small.cpython-311.pyc": "78bae5ed12403ea8f14d94e98024619df0b8cadca20d7ca85e48e4ce5ec440a7"
+    }
+  },
+  "repair": "Both endpoint and independent-audit subprocesses receive PYTHONDONTWRITEBYTECODE=1. A new attempt directory is required; training is never rerun."
+}

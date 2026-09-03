@@ -105,4 +105,13 @@ files were moved, with hashes, to a recoverable quarantine under
 official clone is clean again. The r3 protocol retains both failed attempts
 and changes no scientific field.
 
+Seed-1 r3 subsequently completed all 130 epochs and all 13 telemetry points.
+Final endpoint attempt 001 computed SA `32.01%` and PGD-50 RA `30.51%`, but is
+not a landed result: its subprocess wrote six bytecode cache files and the
+independent replay correctly rejected the dirty official clone. The attempt
+and endpoint are retained, the generated caches are recoverably quarantined,
+and the subprocess environment repair is recorded in
+`results/baseline/icml2025_rt_er_b1_seed1_landing_attempt1_failure.json`.
+Only a new, independently replayed endpoint attempt may land.
+
 The independent diagnostic audit reports zero issues.

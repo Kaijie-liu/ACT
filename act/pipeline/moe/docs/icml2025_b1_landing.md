@@ -101,6 +101,15 @@ history JSON and `hook_state.json` points to the newest record. A repaired
 watcher can therefore resume without erasing or masking the reason for either
 attempt.
 
+The seed-1 endpoint attempt 001 completed the ordered SA/PGD-50 computation,
+but its Python 3.11 process wrote six bytecode cache files into the pinned
+official clone. The subsequent independent replay correctly failed the
+clean-clone gate before loading the checkpoint. The caches were moved to a
+hash-recorded, recoverable quarantine; no source or user artifact was deleted.
+Both endpoint and audit subprocesses now force `PYTHONDONTWRITEBYTECODE=1`.
+The repair changes no checkpoint, attack, endpoint, tolerance, or threshold;
+attempt 001 remains unaudited and a new attempt directory is mandatory.
+
 ## Post-B1 resource order
 
 After B1 lands, the GPU starts the isolated AdvMoE environment build and
