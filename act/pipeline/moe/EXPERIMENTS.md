@@ -1189,7 +1189,8 @@ error is at most `5.09e-5`; predictions agree on every B3-semantics input. All
 80 BatchNorm2d layers are in eval mode. The audit manifest is
 `results/baseline/icml2025_rt_er_b2_seed0_r3_audit.json`.
 
-The final-checkpoint B3 execution layer is implemented but not run. It freezes
+The final-checkpoint B3 r2 execution layer is implemented but not run. It hard
+gates on the zero-issue B2 r3 audit and freezes
 the first 20 deterministic clean-correct test indices whose exact affine route
 upper bracket remains within the 8/255 cap after multiplication by 1.05. For
 each input it builds every tie-inclusive hard-top1 guard, decides candidate
@@ -1198,6 +1199,14 @@ backend, and serializes immutable boxes for a separate CROWN-environment worker.
 The route-invariance baseline and Route A therefore use the same expert backend;
 their applicability difference comes only from the former's route-stability
 precondition.
+
+In addition to the boundary-adaptive row per sample, r2 executes the already
+registered `{0.5,1,2,4,8}/255` grid on those same 20 indices. This produces 100
+fixed-radius rows and 480 route-feasibility branch attempts in total. Every
+route-stable baseline result reuses the identical fixed-expert CROWN obligation
+used by Route A; route-unstable rows are reported as baseline-not-applicable,
+not unsafe. The all-test-set route-applicability denominator remains separate
+from the 20-sample expert-comparison denominator.
 
 The same runner instantiates Equation (8) under three provenance-preserving
 families: sound global constants for a continuous-softmax/probability reading,

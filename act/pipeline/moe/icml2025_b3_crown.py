@@ -102,13 +102,15 @@ def run(prepare_path: Path, output_path: Path) -> dict[str, Any]:
     rows_path = output_path.with_suffix(output_path.suffix + ".rows.jsonl")
     started = time.monotonic()
     branch_results: list[dict[str, Any]] = []
-    by_sample: dict[int, list[dict[str, Any]]] = {}
+    by_row: dict[str, list[dict[str, Any]]] = {}
     with rows_path.open("x", encoding="utf-8") as rows_handle:
         for branch in prepare["branches"]:
             if branch["feasibility"] == "infeasible":
                 continue
             slot = int(branch["sample_slot"])
             expert_index = int(branch["expert"])
+            cohort = str(branch.get("cohort", "boundary_adaptive"))
+            row_id = str(branch.get("row_id", f"adaptive:{slot}"))
             hull_artifact = _inside(Path(branch["hull_artifact"]), WRITE_ROOT)
             if _sha256(hull_artifact) != branch["hull_artifact_sha256"]:
                 raise RuntimeError("prepared guarded-hull artifact changed")
@@ -129,6 +131,8 @@ def run(prepare_path: Path, output_path: Path) -> dict[str, Any]:
                 method=method,
             )
             record = {
+                "cohort": cohort,
+                "row_id": row_id,
                 "sample_slot": slot,
                 "dataset_index": int(branch["dataset_index"]),
                 "expert": expert_index,
@@ -143,12 +147,11 @@ def run(prepare_path: Path, output_path: Path) -> dict[str, Any]:
                 ),
             }
             branch_results.append(record)
-            by_sample.setdefault(slot, []).append(record)
+            by_row.setdefault(row_id, []).append(record)
             _append_json(rows_handle, record)
 
-    sample_results: list[dict[str, Any]] = []
-    for slot, prepared_row in enumerate(prepare["rows"]):
-        records = by_sample.get(slot, [])
+    def aggregate_route_a(prepared_row: dict[str, Any]) -> tuple[str, bool, set[int], set[int]]:
+        records = by_row.get(str(prepared_row["row_id"]), [])
         expected = set(int(value) for value in prepared_row["candidate_experts"])
         observed = {int(record["expert"]) for record in records}
         all_filtered = bool(records) and all(
@@ -161,6 +164,12 @@ def run(prepare_path: Path, output_path: Path) -> dict[str, Any]:
             if complete and all_filtered
             else "UNKNOWN"
         )
+        return route_a, complete, expected, observed
+
+    sample_results: list[dict[str, Any]] = []
+    for slot, prepared_row in enumerate(prepare["rows"]):
+        prepared_row = {"row_id": f"adaptive:{slot}", **prepared_row}
+        route_a, complete, expected, observed = aggregate_route_a(prepared_row)
         sample_results.append(
             {
                 "sample_slot": slot,
@@ -179,6 +188,62 @@ def run(prepare_path: Path, output_path: Path) -> dict[str, Any]:
                 ),
             }
         )
+    fixed_radius_results: list[dict[str, Any]] = []
+    for prepared_row in prepare.get("fixed_radius_rows", []):
+        route_a, complete, expected, observed = aggregate_route_a(prepared_row)
+        route_status = str(prepared_row["route_status"])
+        if route_status == "PROVEN_ROUTE_STABLE":
+            clean_route = int(prepared_row["clean_route"])
+            clean_records = [
+                record
+                for record in by_row.get(str(prepared_row["row_id"]), [])
+                if int(record["expert"]) == clean_route
+            ]
+            route_invariance = (
+                "CERTIFIED_MARGIN_FILTER_NOT_FORMAL_SAFE"
+                if complete
+                and len(clean_records) == 1
+                and clean_records[0]["crown"]["status"]
+                == "CERTIFIED_MARGIN_FILTER"
+                else "UNKNOWN_EXPERT_PROPERTY"
+            )
+        elif route_status == "PROVEN_ROUTE_UNSTABLE":
+            route_invariance = "NOT_APPLICABLE_ROUTE_UNSTABLE"
+        else:
+            route_invariance = "UNKNOWN_ROUTE_STABILITY"
+        fixed_radius_results.append(
+            {
+                **prepared_row,
+                "candidate_experts": sorted(expected),
+                "observed_experts": sorted(observed),
+                "candidate_coverage_complete": complete,
+                "route_invariance_crown": route_invariance,
+                "route_invariance_formal_safe": False,
+                "route_a_crown": route_a,
+                "route_a_formal_safe": False,
+                "numerical_scope": (
+                    "positive-margin filter only; no outward-rounded formal SAFE"
+                ),
+            }
+        )
+    fixed_table: dict[str, Any] = {}
+    for numerator in config["primary_table_epsilon_over_255"]:
+        rows = [
+            row
+            for row in fixed_radius_results
+            if float(row["epsilon_over_255"]) == float(numerator)
+        ]
+        fixed_table[str(numerator)] = {
+            "samples": len(rows),
+            "route_status_counts": dict(Counter(row["route_status"] for row in rows)),
+            "route_invariance_status_counts": dict(
+                Counter(row["route_invariance_crown"] for row in rows)
+            ),
+            "route_a_status_counts": dict(
+                Counter(row["route_a_crown"] for row in rows)
+            ),
+            "formal_safe_count": 0,
+        }
     summary = {
         "schema_version": 1,
         "status": "COMPLETED_NUMERICAL_CONFORMANCE_ONLY",
@@ -186,6 +251,8 @@ def run(prepare_path: Path, output_path: Path) -> dict[str, Any]:
         "checkpoint": prepare["checkpoint"],
         "rows_artifact": {"path": str(rows_path), "sha256": _sha256(rows_path)},
         "samples": sample_results,
+        "fixed_radius_samples": fixed_radius_results,
+        "fixed_radius_table": fixed_table,
         "branches": len(branch_results),
         "branch_crown_status_counts": dict(
             Counter(record["crown"]["status"] for record in branch_results)

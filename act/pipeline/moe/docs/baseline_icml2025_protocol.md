@@ -244,14 +244,20 @@ still agree across both identities before execution.
 
 ## B3 verification comparison
 
-The first frozen comparison uses 20 deterministic clean-correct samples from the
-same converted checkpoint:
+The r2 comparison hard-gates on the audited B2 conversion result and uses 20
+deterministic clean-correct samples from the same converted checkpoint:
 
 1. explicit route-invariance baseline;
 2. exact route analysis plus route-conditioned expert verification;
 3. true monolithic router/dispatch/all-expert formulation where executable;
 4. author-paper analytic formula reimplementation with an applicability status;
 5. a scalable expert-backend adapter, separately scoped from route handling.
+
+The expert comparison includes one boundary-adaptive radius per sample and the
+same 20 samples at each frozen radius in `{0.5,1,2,4,8}/255`. Full-test route
+applicability and 20-sample expert coverage are distinct denominators. The
+route-invariance baseline and Route A share the exact same CROWN branch result
+whenever the affine oracle proves the route stable.
 
 Because the official router is affine, minimum hard-route-change radius should be
 computed by exact box-constrained linear feasibility (or an equivalent analytic

@@ -64,7 +64,7 @@ from act.pipeline.moe.icml2025_route_telemetry import (
 from act.util.path_config import get_torchvision_data_root
 
 
-DEFAULT_CONFIG = PROJECT_ROOT / "act/pipeline/moe/configs/icml2025_b3_seed0.json"
+DEFAULT_CONFIG = PROJECT_ROOT / "act/pipeline/moe/configs/icml2025_b3_seed0_r2.json"
 CROWN_PYTHON = Path("/data1/Kane/MOE/envs/alpha-beta-crown/bin/python")
 CROWN_WORKER = PROJECT_ROOT / "act/pipeline/moe/icml2025_b3_crown.py"
 
@@ -328,6 +328,18 @@ def route_applicability_census(
     return result
 
 
+def route_status_at_epsilon(
+    radius_lower: float, radius_upper: float, epsilon: float
+) -> str:
+    """Classify one radius against a disjoint outward-safe route bracket."""
+
+    if float(epsilon) < float(radius_lower):
+        return "PROVEN_ROUTE_STABLE"
+    if float(radius_upper) <= float(epsilon):
+        return "PROVEN_ROUTE_UNSTABLE"
+    return "UNDECIDED_NUMERICAL_ROUTE_BRACKET"
+
+
 def top1_guard(
     weight: np.ndarray,
     bias: np.ndarray,
@@ -583,6 +595,21 @@ def prepare(config_path: Path, checkpoint: Path, telemetry_dir: Path, output_dir
     config = json.loads(config_path.read_text(encoding="utf-8"))
     if config.get("status") != "PREREGISTERED_NOT_RUN":
         raise RuntimeError("B3 config is not frozen")
+    b2_gate = config.get("b2_gate")
+    if not isinstance(b2_gate, dict):
+        raise RuntimeError("B3 requires an explicit B2 audit gate")
+    b2_path = _inside(Path(b2_gate["path"]), PROJECT_ROOT)
+    if _sha256(b2_path) != b2_gate["sha256"]:
+        raise RuntimeError("B3 B2 audit identity changed")
+    b2 = json.loads(b2_path.read_text(encoding="utf-8"))
+    if b2.get("status") != b2_gate["required_status"]:
+        raise RuntimeError("B3 B2 stage is not completed")
+    if b2.get("audit", {}).get("status") != b2_gate["required_audit_status"]:
+        raise RuntimeError("B3 B2 audit did not pass")
+    if int(b2.get("audit", {}).get("issues", -1)) != int(
+        b2_gate["required_issue_count"]
+    ):
+        raise RuntimeError("B3 B2 audit has issues")
     if _repo_value("rev-parse", "HEAD") != OFFICIAL_COMMIT or _repo_value(
         "status", "--porcelain"
     ):
@@ -704,6 +731,7 @@ def prepare(config_path: Path, checkpoint: Path, telemetry_dir: Path, output_dir
     hull_dir.mkdir()
     branches_path = output_dir / "branches.jsonl"
     branches: list[dict[str, Any]] = []
+    fixed_radius_rows: list[dict[str, Any]] = []
     with branches_path.open("x", encoding="utf-8") as branches_handle:
         for slot, dataset_index in enumerate(indices.tolist()):
             input_hz = sparse_hz_from_bounds(
@@ -727,6 +755,8 @@ def prepare(config_path: Path, checkpoint: Path, telemetry_dir: Path, output_dir
                     time_limit=float(config["routing"]["feasibility_time_limit_seconds"]),
                 )
                 record: dict[str, Any] = {
+                    "cohort": "boundary_adaptive",
+                    "row_id": f"adaptive:{slot}",
                     "sample_slot": slot,
                     "dataset_index": int(dataset_index),
                     "expert": expert,
@@ -776,11 +806,117 @@ def prepare(config_path: Path, checkpoint: Path, telemetry_dir: Path, output_dir
                     "candidate_set_exact": not unresolved,
                 }
             )
+        for epsilon_slot, numerator in enumerate(
+            config["primary_table_epsilon_over_255"]
+        ):
+            epsilon = float(numerator) / 255.0
+            for slot, dataset_index in enumerate(indices.tolist()):
+                row_id = f"fixed:{epsilon_slot}:{slot}"
+                row_lower = np.maximum(0.0, centers[slot] - epsilon)
+                row_upper = np.minimum(1.0, centers[slot] + epsilon)
+                input_hz = sparse_hz_from_bounds(
+                    Bounds(
+                        torch.from_numpy(row_lower.reshape(1, -1)),
+                        torch.from_numpy(row_upper.reshape(1, -1)),
+                    ),
+                    frame_id=20_000_000 + epsilon_slot * 100_000 + int(dataset_index),
+                )
+                candidates: list[int] = []
+                unresolved: list[int] = []
+                for expert in range(folded_weight.shape[0]):
+                    guard_matrix, guard_rhs = top1_guard(
+                        folded_weight, folded_bias, expert
+                    )
+                    guarded = hz_add_output_inequalities(
+                        input_hz,
+                        torch.from_numpy(guard_matrix),
+                        torch.from_numpy(guard_rhs),
+                    )
+                    feasibility = hz_check_feasibility(
+                        guarded,
+                        time_limit=float(
+                            config["routing"]["feasibility_time_limit_seconds"]
+                        ),
+                    )
+                    record = {
+                        "cohort": "fixed_radius",
+                        "row_id": row_id,
+                        "fixed_row_slot": len(fixed_radius_rows),
+                        "epsilon_slot": epsilon_slot,
+                        "epsilon_over_255": float(numerator),
+                        "sample_slot": slot,
+                        "dataset_index": int(dataset_index),
+                        "expert": expert,
+                        "feasibility": feasibility.status,
+                        "feasibility_seconds": feasibility.elapsed,
+                        "feasibility_nodes": feasibility.nodes,
+                        "guard_semantics": "tie-inclusive r_j-r_i <= 0 for every j != i",
+                    }
+                    if feasibility.status != "infeasible":
+                        candidates.append(expert)
+                        if feasibility.status == "unknown":
+                            unresolved.append(expert)
+                        hull = guarded_hz_box_hull_highs(
+                            guarded,
+                            time_limit=float(
+                                config["routing"]["hull_time_limit_seconds"]
+                            ),
+                        )
+                        hull_path = hull_dir / (
+                            f"fixed_{epsilon_slot:02d}_sample_{slot:03d}_expert_{expert}.npz"
+                        )
+                        hull_hash = _save_npz(
+                            hull_path,
+                            lower=hull.bounds.lb.numpy().reshape(3, 32, 32),
+                            upper=hull.bounds.ub.numpy().reshape(3, 32, 32),
+                        )
+                        record.update(
+                            {
+                                "hull_artifact": str(hull_path),
+                                "hull_artifact_sha256": hull_hash,
+                                "hull_complete": hull.complete,
+                                "hull_exact": hull.exact,
+                                "hull_domain_status": hull.domain_status,
+                                "hull_telemetry": hull.telemetry.as_dict(),
+                            }
+                        )
+                    branches.append(record)
+                    _append_json(branches_handle, record)
+                route_status = route_status_at_epsilon(
+                    float(route_lowers[slot]),
+                    float(route_uppers[slot]),
+                    epsilon,
+                )
+                fixed_radius_rows.append(
+                    {
+                        "row_id": row_id,
+                        "fixed_row_slot": len(fixed_radius_rows),
+                        "epsilon_slot": epsilon_slot,
+                        "epsilon_over_255": float(numerator),
+                        "epsilon": epsilon,
+                        "sample_slot": slot,
+                        "dataset_index": int(dataset_index),
+                        "label": int(labels[slot]),
+                        "clean_prediction": int(formula_rows[slot]["hard_prediction"]),
+                        "clean_route": int(formula_rows[slot]["hard_route"]),
+                        "route_status": route_status,
+                        "candidate_experts": candidates,
+                        "candidate_feasibility_unresolved": unresolved,
+                        "candidate_set_exact": not unresolved,
+                    }
+                )
     result = {
         "schema_version": 1,
         "status": "PREPARED_CROWN_NOT_RUN",
         "label": telemetry["label"],
         "official_source": {"commit": OFFICIAL_COMMIT, "clone_clean": True},
+        "b2_gate": {
+            "path": str(b2_path),
+            "sha256": _sha256(b2_path),
+            "status": b2["status"],
+            "audit_status": b2["audit"]["status"],
+            "issues": b2["audit"]["issues"],
+        },
         "checkpoint": {
             "path": str(checkpoint),
             "sha256": _sha256(checkpoint),
@@ -821,6 +957,7 @@ def prepare(config_path: Path, checkpoint: Path, telemetry_dir: Path, output_dir
             "author_unspecified": _constant_manifest(constants["author_unspecified"]),
         },
         "rows": formula_rows,
+        "fixed_radius_rows": fixed_radius_rows,
         "branches": branches,
         "artifact": {"path": str(artifact_path), "sha256": artifact_hash},
         "branches_artifact": {

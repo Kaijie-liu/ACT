@@ -16,6 +16,7 @@ from act.pipeline.moe.icml2025_b3 import (
     audit_router_optimizer_state,
     formula_leaf,
     route_applicability_census,
+    route_status_at_epsilon,
     select_boundary_cohort,
     top1_guard,
 )
@@ -59,6 +60,20 @@ class BoundaryCohortTest(unittest.TestCase):
             "route_unstable": 0,
             "numerically_undecided": 0,
         })
+
+    def test_fixed_radius_status_respects_outward_bracket(self) -> None:
+        self.assertEqual(
+            route_status_at_epsilon(0.02, 0.021, 0.019),
+            "PROVEN_ROUTE_STABLE",
+        )
+        self.assertEqual(
+            route_status_at_epsilon(0.02, 0.021, 0.0205),
+            "UNDECIDED_NUMERICAL_ROUTE_BRACKET",
+        )
+        self.assertEqual(
+            route_status_at_epsilon(0.02, 0.021, 0.021),
+            "PROVEN_ROUTE_UNSTABLE",
+        )
 
 
 class TieInclusiveGuardTest(unittest.TestCase):
@@ -114,7 +129,7 @@ class PixelNormalizationTest(unittest.TestCase):
 
     def test_config_freezes_final_seed0_endpoint(self) -> None:
         path = Path(
-            "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/icml2025_b3_seed0.json"
+            "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/icml2025_b3_seed0_r2.json"
         )
         config = json.loads(path.read_text(encoding="utf-8"))
         self.assertEqual(config["checkpoint"], {
@@ -124,6 +139,8 @@ class PixelNormalizationTest(unittest.TestCase):
         })
         self.assertFalse(config["numerical"]["outward_rounded_crown_safe_enabled"])
         self.assertFalse(config["monolithic"]["enabled_in_this_runner"])
+        self.assertEqual(config["fixed_radius_expert_cohort"]["rows"], 100)
+        self.assertEqual(config["b2_gate"]["required_issue_count"], 0)
         self.assertEqual(
             config["primary_table_epsilon_over_255"],
             [0.5, 1.0, 2.0, 4.0, 8.0],
