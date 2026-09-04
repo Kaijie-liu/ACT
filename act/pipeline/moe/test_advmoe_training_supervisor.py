@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest import mock
 
 import torch
 
@@ -31,6 +32,17 @@ class AdvMoETrainingSupervisorTest(unittest.TestCase):
         ):
             self.assertIn(fragment, joined)
         self.assertNotIn("--normalize", command)
+
+    def test_successor_command_changes_only_run_identity(self) -> None:
+        configs = Path(__file__).parent / "configs"
+        r1 = json.loads((configs / "advmoe_training_seed0_r1.json").read_text(encoding="utf-8"))
+        r2 = json.loads((configs / "advmoe_training_seed0_r2.json").read_text(encoding="utf-8"))
+        command_r1 = build_training_command(r1)
+        command_r2 = build_training_command(r2)
+        for command in (command_r1, command_r2):
+            command[command.index("--data-dir") + 1] = "<RUN_DATA_ROOT>"
+            command[command.index("--exp-identifier") + 1] = "<RUN_IDENTITY>"
+        self.assertEqual(command_r1, command_r2)
 
     def test_snapshot_is_immutable_and_epoch_addressed(self) -> None:
         with tempfile.TemporaryDirectory(dir="/data1/Kane/MOE") as directory:
@@ -63,6 +75,32 @@ class AdvMoETrainingSupervisorTest(unittest.TestCase):
             live.write_bytes(b"partial")
             self.assertIsNone(snapshot_checkpoint(live, root / "snapshots"))
 
+    def test_source_change_during_snapshot_is_retryable(self) -> None:
+        with tempfile.TemporaryDirectory(dir="/data1/Kane/MOE") as directory:
+            root = Path(directory)
+            live = root / "checkpoint.pth.tar"
+            snapshots = root / "snapshots"
+            payload = {
+                "epoch": 3,
+                "state_dict": {"x": torch.tensor([1.0])},
+                "router": {"x": torch.tensor([2.0])},
+                "optimizer": {},
+                "router_optimizer": {},
+            }
+            torch.save(payload, live)
+            original_copy2 = __import__("shutil").copy2
+
+            def copy_then_rewrite(source: Path, destination: Path) -> None:
+                original_copy2(source, destination)
+                payload["epoch"] = 4
+                torch.save(payload, source)
+
+            with mock.patch(
+                "act.pipeline.moe.advmoe_training_supervisor.shutil.copy2",
+                side_effect=copy_then_rewrite,
+            ):
+                self.assertIsNone(snapshot_checkpoint(live, snapshots))
+            self.assertFalse((snapshots / "epoch_003.pth.tar").exists())
 
 if __name__ == "__main__":
     unittest.main()

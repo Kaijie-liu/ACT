@@ -2256,3 +2256,25 @@ memory is 3.56 GiB, and checkpoint resume reproduces logits and router scores
 bit exactly. The independent audit reports `PASS` with zero issues, unlocking
 the full seed-0 run. The tracked record is
 `results/baseline/advmoe_training_smoke_seed0_r1.json`.
+
+The first full attempt, `seed0_r1`, is retained as an excluded engineering
+failure. It completed 27 immutable checkpoints and reported epoch-27
+`SA=86.23%` and `RA=83.09%`, but the supervisor inspected the released
+`checkpoint.pth.tar` while the next save was truncating and replacing that
+same path. The old implementation loaded the previous epoch identifier and
+then hashed a changing source; it therefore raised a false immutable-rewrite
+alarm and terminated the trainer while the live file was empty. The last
+valid immutable snapshot is epoch 27 (the state after epoch 26), SHA-256
+`030fe418b195d308a187bc21c85463252d35b47414eda0c08089e1c682cdd2e5`.
+
+The snapshot path now copies the live file to a private temporary file, checks
+the source device/inode/size/mtime signature before and after the copy, and
+only then loads and hashes the stable copy. A regression test forces a source
+rewrite during copying and requires a retry without publishing a snapshot.
+Although the released checkpoint contains model, router, and both optimizer
+states, it omits Python, NumPy, PyTorch CPU, and CUDA RNG states. Resuming
+would therefore change shuffled data order and adversarial random starts. The
+successor `configs/advmoe_training_seed0_r2.json` consequently freezes no
+scientific change and restarts from epoch zero in a new directory. The r1
+record is `results/baseline/advmoe_training_seed0_r1_failure.json`; neither its
+partial metrics nor its best checkpoint may be used as a scientific endpoint.

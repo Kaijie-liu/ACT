@@ -9,6 +9,7 @@ import pickle
 import shutil
 import subprocess
 import sys
+import tempfile
 import time
 from typing import Any, Mapping
 
@@ -45,7 +46,7 @@ def build_training_command(config: Mapping[str, Any]) -> list[str]:
     run = config["run"]
     source = Path(config["official_source"]["repository"])
     environment = Path(config["environment"]["path"])
-    return [
+    command = [
         str(environment / "bin" / "python"),
         str(source / "train_moe.py"),
         "--dataset",
@@ -101,8 +102,9 @@ def build_training_command(config: Mapping[str, Any]) -> list[str]:
         "--data-dir",
         config["dataset"]["run_data_root"],
         "--exp-identifier",
-        "official_seed0_r1",
+        run.get("experiment_identifier", "official_seed0_r1"),
     ]
+    return command
 
 
 def _find_live_checkpoint(run_root: Path) -> Path | None:
@@ -124,15 +126,34 @@ def _checkpoint_epoch(path: Path) -> int:
 
 
 def snapshot_checkpoint(live: Path, snapshots: Path) -> dict[str, Any] | None:
+    snapshots.mkdir(parents=True, exist_ok=True)
     try:
-        epoch = _checkpoint_epoch(live)
+        before = live.stat()
+        with tempfile.NamedTemporaryFile(
+            dir=snapshots,
+            prefix=".live-checkpoint-",
+            suffix=".tmp",
+            delete=False,
+        ) as handle:
+            temporary = Path(handle.name)
+        shutil.copy2(live, temporary)
+        after = live.stat()
+        signature_before = (before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns)
+        signature_after = (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns)
+        if signature_before != signature_after:
+            temporary.unlink(missing_ok=True)
+            return None
+        epoch = _checkpoint_epoch(temporary)
+        copied_hash = _sha256(temporary)
     except (EOFError, OSError, RuntimeError, KeyError, ValueError, pickle.UnpicklingError):
+        if "temporary" in locals():
+            temporary.unlink(missing_ok=True)
         return None
     destination = snapshots / f"epoch_{epoch:03d}.pth.tar"
     if destination.exists():
-        live_hash = _sha256(live)
         existing_hash = _sha256(destination)
-        if live_hash != existing_hash:
+        temporary.unlink(missing_ok=True)
+        if copied_hash != existing_hash:
             raise RuntimeError(
                 f"epoch {epoch} was rewritten with different checkpoint content"
             )
@@ -142,18 +163,11 @@ def snapshot_checkpoint(live: Path, snapshots: Path) -> dict[str, Any] | None:
             "sha256": existing_hash,
             "existing": True,
         }
-    snapshots.mkdir(parents=True, exist_ok=True)
-    temporary = destination.with_suffix(destination.suffix + ".tmp")
-    shutil.copy2(live, temporary)
-    copied_epoch = _checkpoint_epoch(temporary)
-    if copied_epoch != epoch:
-        temporary.unlink(missing_ok=True)
-        return None
     os.replace(temporary, destination)
     return {
         "epoch": epoch,
         "path": str(destination),
-        "sha256": _sha256(destination),
+        "sha256": copied_hash,
         "size_bytes": destination.stat().st_size,
         "existing": False,
     }
