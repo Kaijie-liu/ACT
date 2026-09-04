@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "status": "CREATED_IMPORT_AND_CLI_CHECK_PASSED",
+  "label": "official-code, Blackwell-compatible dependency reproduction",
+  "environment": "/data1/Kane/MOE/envs/advmoe-blackwell",
+  "construction": "Python 3.12 venv with system-site-packages derived from act-py312; missing imports installed only in the isolated prefix",
+  "size_mib": 265,
+  "base": {
+    "python": "3.12.12",
+    "torch": "2.9.1+cu128",
+    "torchvision": "0.24.1+cu128",
+    "cuda": "12.8",
+    "numpy": "2.3.5",
+    "scipy": "1.16.3",
+    "pillow": "12.0.0",
+    "pyyaml": "6.0.3",
+    "tqdm": "4.67.1"
+  },
+  "installed_into_prefix": {
+    "h5py": "3.16.0",
+    "lmdb": "2.3.0",
+    "datasets": "5.0.1",
+    "tensorboard": "2.21.0",
+    "easydict": "1.13"
+  },
+  "cuda_probe": {
+    "available": true,
+    "device": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+    "capability": [12, 0]
+  },
+  "official_entrypoint_help": "PASS",
+  "official_clone_clean_after_probe": true,
+  "compatibility_substitution": "The released scipy==1.6.0 pin is not installable on Python 3.12; inherited scipy 1.16.3 is recorded without claiming exact author-environment reproduction.",
+  "artifacts": {
+    "config_sha256": "1d2f44da685c06661ac7b82cbc15e5cf58de0a093dece4c7baaefc1a7a002a96",
+    "pip_freeze": "/data1/Kane/MOE/ACT/data/moe/results/advmoe_environment_seed0_r1/pip_freeze.txt",
+    "pip_freeze_sha256": "620b2f97cc6c9606ced27d2ff7aa63ebc29a98791ebe7739e300e5998762a602",
+    "pyvenv_cfg_sha256": "5c156ace79e2c1bc3cedc721fb4dba99185464179d46a7ac18cc518683f81125"
+  }
+}

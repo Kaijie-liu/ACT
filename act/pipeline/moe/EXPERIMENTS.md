@@ -2244,3 +2244,15 @@ Training is forbidden until the isolated environment passes import, real
 CIFAR-10 loader, one-batch expert/router update, optimizer-state, checkpoint-
 resume, and finite `sm_120` smoke checks. All caches, data links, logs,
 checkpoints, telemetry, and failure artifacts remain under `/data1/Kane/MOE`.
+
+The isolated 265-MiB environment imports every declared dependency and the
+released training CLI on `sm_120`. Smoke attempt 001 is retained after a
+harness-only container mismatch: it supplied a tuple to the released helper,
+which defines only dict/list branches. Attempt 002 changes only the harness
+container to the list emitted by current PyTorch collation. On one real 128-
+sample CIFAR-10 batch, all 65 expert optimizer parameter tensors and all 59
+router tensors update, both optimizer states populate, peak allocated GPU
+memory is 3.56 GiB, and checkpoint resume reproduces logits and router scores
+bit exactly. The independent audit reports `PASS` with zero issues, unlocking
+the full seed-0 run. The tracked record is
+`results/baseline/advmoe_training_smoke_seed0_r1.json`.

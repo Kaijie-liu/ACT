@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "status": "RETAINED_HARNESS_FAILURE",
+  "scope": "ADV_MOE_OFFICIAL_CODE_REAL_BATCH_UPDATE_AND_RESUME_SMOKE_ATTEMPT_001",
+  "config": "act/pipeline/moe/configs/advmoe_training_seed0_r1.json",
+  "environment": "/data1/Kane/MOE/envs/advmoe-blackwell",
+  "failure_stage": "before first optimizer update",
+  "exception": "UnboundLocalError: cannot access local variable 'results' where it is not associated with a value",
+  "root_cause": "The smoke harness wrapped the real DataLoader tensors in a tuple, while the released split_data_and_move_to_device helper defines only dict and list branches. Current PyTorch DataLoader collation supplies the released trainer with a list.",
+  "repair_scope": "Change only the harness one-batch container from tuple to list and add a regression test. No upstream source, model, data, optimizer, attack, or training configuration changes.",
+  "scientific_use": "none",
+  "output_written": false
+}

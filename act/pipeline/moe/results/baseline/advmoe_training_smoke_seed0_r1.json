@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "PASS",
+  "scope": "ADV_MOE_OFFICIAL_CODE_BLACKWELL_TRAINING_PREFLIGHT",
+  "label": "official-code, Blackwell-compatible dependency reproduction",
+  "official_source": {
+    "commit": "c50796fb8284512b6f6ad8e843f95182cec527cf",
+    "tree": "153d4ff9f30f34eb7fdd4caf670495122c5836e0",
+    "clean_after_smoke": true
+  },
+  "environment": {
+    "manifest": "act/pipeline/moe/results/environments/advmoe_blackwell_seed0_r1.json",
+    "path": "/data1/Kane/MOE/envs/advmoe-blackwell",
+    "device": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+    "capability": [12, 0]
+  },
+  "attempts": {
+    "attempt_001": {
+      "status": "RETAINED_HARNESS_FAILURE",
+      "failure_stage": "before first optimizer update",
+      "tracked_record": "act/pipeline/moe/results/advmoe_training_smoke_seed0_r1_attempt001_failure.json",
+      "scientific_use": "none"
+    },
+    "attempt_002": {
+      "status": "PASS",
+      "real_batch_size": 128,
+      "expert_parameters_changed": 65,
+      "router_parameters_changed": 59,
+      "expert_optimizer_state_entries": 65,
+      "router_optimizer_state_entries": 59,
+      "peak_allocated_gpu_memory_gib": 3.564380645751953,
+      "smoke_seconds": 1.0065533174201846,
+      "maximum_resumed_logit_error": 0.0,
+      "maximum_resumed_router_score_error": 0.0,
+      "independent_audit_status": "PASS",
+      "independent_audit_issues": 0
+    }
+  },
+  "artifacts": {
+    "config_sha256": "1d2f44da685c06661ac7b82cbc15e5cf58de0a093dece4c7baaefc1a7a002a96",
+    "result_sha256": "50f292e636d2d64794ac8c76f5ea2ee25b7c4b0ce2b21e433f9b8a5056aae2f6",
+    "checkpoint_sha256": "2f9440c8e806d8fd84cc07f3f701c681c709afb4747da1dcfd03bb95d1fd2b3c",
+    "audit_sha256": "4ab3be5a4180de8b9fa477747071dd6229a317e93a4f6a1adebb18646417393e"
+  },
+  "training_unlocked": true,
+  "claim_boundary": "This proves environment and one-batch update/resume executability only. It is not a training result, accuracy result, robustness result, or certificate."
+}
