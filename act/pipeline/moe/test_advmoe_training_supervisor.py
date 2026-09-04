@@ -66,6 +66,11 @@ class AdvMoETrainingSupervisorTest(unittest.TestCase):
             self.assertEqual(first["epoch"], 3)
             self.assertFalse(first["existing"])
             self.assertEqual(_checkpoint_epoch(Path(first["path"])), 3)
+            existing = snapshot_checkpoint(live, snapshots)
+            self.assertIsNotNone(existing)
+            assert existing is not None
+            self.assertTrue(existing["existing"])
+            self.assertEqual(existing["size_bytes"], Path(existing["path"]).stat().st_size)
             payload["state_dict"]["x"] = torch.tensor([9.0])
             torch.save(payload, live)
             with self.assertRaisesRegex(RuntimeError, "rewritten with different"):

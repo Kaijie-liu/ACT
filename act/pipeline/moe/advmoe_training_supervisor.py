@@ -161,6 +161,7 @@ def snapshot_checkpoint(live: Path, snapshots: Path) -> dict[str, Any] | None:
             "epoch": epoch,
             "path": str(destination),
             "sha256": existing_hash,
+            "size_bytes": destination.stat().st_size,
             "existing": True,
         }
     os.replace(temporary, destination)

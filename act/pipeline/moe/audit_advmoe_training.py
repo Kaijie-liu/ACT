@@ -84,6 +84,7 @@ def audit(config_path: Path, progress_path: Path) -> dict[str, Any]:
         issues.append("checkpoint record epochs are not exactly consecutive")
 
     verified_records: list[dict[str, Any]] = []
+    recovered_metadata: list[dict[str, Any]] = []
     snapshot_root = run_root / "checkpoint_snapshots"
     for record in records:
         epoch = int(record["epoch"])
@@ -99,7 +100,16 @@ def audit(config_path: Path, progress_path: Path) -> dict[str, Any]:
         actual_size = path.stat().st_size
         if actual_hash != record.get("sha256"):
             issues.append(f"epoch {epoch}: snapshot hash mismatch")
-        if actual_size != record.get("size_bytes"):
+        if record.get("size_bytes") is None and record.get("existing") is True:
+            recovered_metadata.append(
+                {
+                    "epoch": epoch,
+                    "field": "size_bytes",
+                    "value": actual_size,
+                    "reason": "legacy final existing-snapshot record omitted size; hash and file were independently verified",
+                }
+            )
+        elif actual_size != record.get("size_bytes"):
             issues.append(f"epoch {epoch}: snapshot size mismatch")
         try:
             payload = torch.load(path, map_location="cpu", weights_only=False)
@@ -191,6 +201,7 @@ def audit(config_path: Path, progress_path: Path) -> dict[str, Any]:
         },
         "checkpoint_count": len(records),
         "verified_checkpoint_count": len(verified_records),
+        "recovered_metadata": recovered_metadata,
         "final_checkpoint_sha256": final_hash,
         "best_checkpoint_sha256": best_hash,
         "best_checkpoint_epoch": best_snapshot_epochs[0] if len(best_snapshot_epochs) == 1 else None,
