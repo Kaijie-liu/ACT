@@ -132,8 +132,11 @@ RA/SA ratio is 0.95558. These are diagnostics of a run that learned little, not
 a causal attribution. The paper/source comparison additionally finds that
 optimizer family, weight decay, mixed precision, and exact augmentation are
 underspecified, while the cyclic-LR wording and released initial rate are
-semantically ambiguous. Per the frozen asymmetric rule, seed 1 must land before
-any pipeline-level insufficiency wording.
+semantically ambiguous. The frozen seed-1 follow-up subsequently lands at
+32.01% SA and 30.51% PGD-50 RA with 10,000/10,000 endpoint replays and zero
+audit issues. Both registered runs therefore miss the unchanged intervals,
+permitting only the preregistered pipeline-level wording scoped to these two
+compatibility reproductions.
 
 The official-scale B3 r5 execution now completes all 318 feasible expert
 branches with zero backend errors, zero incomplete bounds, and a zero-issue

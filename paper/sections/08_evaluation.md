@@ -172,11 +172,14 @@ that retains the path constraint.
 The official-code compatibility target is now concrete. Seed 0 completes all
 130 epochs but lands at 34.22% ordered-test SA and 32.70% independently replayed
 PGD-50 RA, missing the frozen paper-reference intervals by 43.59 and 36.39
-percentage points. The endpoint audit has zero issues. The full trajectory and
-paper/source configuration audit are reported separately because neither low
-accuracy nor a configuration ambiguity is an output certificate. Seed 1 is the
-registered follow-up required before pipeline-level reproduction wording; B3
-retains seed 0 as the released-pipeline product regardless of that outcome.
+percentage points. The endpoint audit has zero issues. The registered seed-1
+follow-up also lands outside the frozen intervals at 32.01% SA and 30.51%
+PGD-50 RA, with all 10,000 endpoints independently replayed and zero audit
+issues. The full trajectories and paper/source configuration audit are reported
+separately because neither low accuracy nor a configuration ambiguity is an
+output certificate. Under the frozen asymmetric rule, the two misses permit
+pipeline-level wording scoped to these two compatibility reproductions; B3
+retains seed 0 as its frozen target.
 
 The fail-closed r5 run completes all 318 exact-feasible branches with zero
 backend errors, zero incomplete bounds, and an independent zero-issue audit.

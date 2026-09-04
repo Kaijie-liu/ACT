@@ -34,7 +34,7 @@ above. No submission date can redefine `PAPER_COMPLETE`.
 
 | Work item | Evidence bought | Current status |
 |---|---|---|
-| Official RT-ER B1 and B3 | Official-scale end-to-end comparison | B1 seed 0 landed; B3 r5 completed as audited numerical conformance, with the formal endpoint still gated on outward-rounded CROWN bounds |
+| Official RT-ER B1 and B3 | Official-scale end-to-end comparison | B1 seeds 0 and 1 landed outside the frozen reference intervals; B3 r5 completed as audited numerical conformance, with the formal endpoint still gated on outward-rounded CROWN bounds |
 | Router-gradient audits of RT-ER, robust-moe-cnn, and V-MoE | Multiple-pipeline external-validity map | Source audit complete, independently audited |
 | AdvMoE official third-party learned deep-path target | Learned-router and non-output-layer external validity | Architecture/dependency audits plus strong-PGD/sparse-CROWN init pilot complete; K=20 dual-BN init census complete and init line sealed; alpha/beta closure, training, and Route A wait for B1/B3 |
 | Lazy route-set enumeration plus no-good cuts; exact-support big-M | `E` scalability and search-relaxation defense | Implemented; E=4--64 scaling and exact-support timed rerun completed with zero-issue audits |

@@ -2178,6 +2178,15 @@ were moved to a recoverable, hash-recorded quarantine. Endpoint and audit
 subprocesses now disable bytecode writes, and a fresh attempt directory must
 pass replay before either number becomes a landed result.
 
+The fresh seed-1 endpoint attempt then passed. Ordered full-test SA is `32.01%`
+and independently replayed PGD-50 RA is `30.51%`; all 10,000 attack endpoints
+replay and the independent audit reports zero issues. Together with seed 0
+(`34.22%` SA, `32.70%` RA), both registered runs miss the frozen paper-reference
+intervals without changing any threshold. The preregistered asymmetric rule
+therefore permits pipeline-level wording scoped to these two official-code,
+Blackwell-compatible dependency reproductions; it does not establish author-
+checkpoint identity or a universal claim about the method.
+
 ## B3 official-scale numerical conformance
 
 The accepted seed-0 B3 execution is `icml2025_rt_er_b3_seed0_r5`. Two earlier
