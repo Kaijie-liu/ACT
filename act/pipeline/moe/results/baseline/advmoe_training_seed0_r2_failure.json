@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "status": "EXCLUDED_EXTERNAL_SESSION_SCOPE_TERMINATION_PRESERVED",
+  "scope": "ADV_MOE_OFFICIAL_CODE_BLACKWELL_COMPATIBLE_DEPENDENCY_REPRODUCTION_SEED0_R2",
+  "failure_class": "EXTERNAL_CODEX_TMUX_SCOPE_TERMINATION",
+  "scientific_interpretation_allowed": false,
+  "run_root": "/data1/Kane/MOE/baseline_runs/advmoe/seed0_r2",
+  "progress": "/data1/Kane/MOE/baseline_runs/advmoe/seed0_r2/progress.json",
+  "log": "/data1/Kane/MOE/ACT/data/moe/logs/advmoe_official_seed0_r2.log",
+  "last_immutable_checkpoint": {
+    "epoch": 70,
+    "path": "/data1/Kane/MOE/baseline_runs/advmoe/seed0_r2/checkpoint_snapshots/epoch_070.pth.tar",
+    "sha256": "65d4325f75e2ea004b90c7df41ed0646a519d1193a87a258205b4f18aec92eb4",
+    "size_bytes": 47141475,
+    "semantic_state": "after completed epoch 69; official saved epoch field is next start epoch"
+  },
+  "termination_evidence": {
+    "last_reported_epoch": 69,
+    "last_reported_sa_percent": 91.51,
+    "last_reported_ra_percent": 88.54,
+    "log_ends_during_training_epoch": 70,
+    "log_ends_near_batch": 129,
+    "python_traceback": false,
+    "machine_reboot": false,
+    "kernel_oom_or_cuda_xid_record": false,
+    "systemd_record": "tmux-spawn-349f8277-4108-4675-885b-7f1e54f15dd5.scope ended at 2026-09-04T23:28:44+10:00",
+    "live_checkpoint_matches_snapshot": true
+  },
+  "recovery_decision": {
+    "resume_rejected": true,
+    "reason": "the released checkpoint omits Python, NumPy, PyTorch CPU, and CUDA RNG states, so resume cannot reproduce the uninterrupted data order and adversarial random starts",
+    "successor_config": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/advmoe_training_seed0_r3.json",
+    "policy": "restart from epoch zero with unchanged scientific settings under a persistent systemd user service"
+  },
+  "preserved_checkpoint_count": 70,
+  "official_source_modified": false,
+  "main_modified": false
+}

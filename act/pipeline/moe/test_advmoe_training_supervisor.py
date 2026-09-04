@@ -36,13 +36,16 @@ class AdvMoETrainingSupervisorTest(unittest.TestCase):
     def test_successor_command_changes_only_run_identity(self) -> None:
         configs = Path(__file__).parent / "configs"
         r1 = json.loads((configs / "advmoe_training_seed0_r1.json").read_text(encoding="utf-8"))
-        r2 = json.loads((configs / "advmoe_training_seed0_r2.json").read_text(encoding="utf-8"))
-        command_r1 = build_training_command(r1)
-        command_r2 = build_training_command(r2)
-        for command in (command_r1, command_r2):
+        successors = [
+            json.loads((configs / name).read_text(encoding="utf-8"))
+            for name in ("advmoe_training_seed0_r2.json", "advmoe_training_seed0_r3.json")
+        ]
+        commands = [build_training_command(config) for config in (r1, *successors)]
+        for command in commands:
             command[command.index("--data-dir") + 1] = "<RUN_DATA_ROOT>"
             command[command.index("--exp-identifier") + 1] = "<RUN_IDENTITY>"
-        self.assertEqual(command_r1, command_r2)
+        for command in commands[1:]:
+            self.assertEqual(commands[0], command)
 
     def test_snapshot_is_immutable_and_epoch_addressed(self) -> None:
         with tempfile.TemporaryDirectory(dir="/data1/Kane/MOE") as directory:

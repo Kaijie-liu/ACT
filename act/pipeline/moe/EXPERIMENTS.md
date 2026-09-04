@@ -2278,3 +2278,18 @@ successor `configs/advmoe_training_seed0_r2.json` consequently freezes no
 scientific change and restarts from epoch zero in a new directory. The r1
 record is `results/baseline/advmoe_training_seed0_r1_failure.json`; neither its
 partial metrics nor its best checkpoint may be used as a scientific endpoint.
+
+The unchanged `seed0_r2` restart then produced 70 consecutive immutable
+checkpoints before the enclosing Codex-created tmux systemd scope disappeared.
+There was no Python traceback, reboot, kernel OOM, CUDA Xid, disk exhaustion,
+or corrupted checkpoint. The log stops during epoch 70, while the epoch-70
+immutable and live checkpoints match at SHA-256
+`65d4325f75e2ea004b90c7df41ed0646a519d1193a87a258205b4f18aec92eb4`.
+The last completed evaluation (epoch 69) reports `SA=91.51%` and `RA=88.54%`,
+but r2 remains excluded because it is incomplete. The preserved record is
+`results/baseline/advmoe_training_seed0_r2_failure.json`.
+
+The `seed0_r3` successor again changes no scientific setting and restarts from
+epoch zero because the upstream checkpoint still lacks RNG state. Its sole
+operational change is to run the already tested supervisor as a persistent
+systemd user service, outside the lifecycle of the Codex execution scope.
