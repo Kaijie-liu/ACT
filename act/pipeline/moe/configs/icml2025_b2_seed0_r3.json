@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "status": "PREREGISTERED_NOT_RUN",
+  "label": "official-code checkpoint, explicitly scoped real-float32 verification semantics",
+  "scope": "B2 checkpoint-to-Route-A-and-auto_LiRPA semantic conformance",
+  "supersedes": {
+    "config": "act/pipeline/moe/configs/icml2025_b2_seed0_r2.json",
+    "failure": "act/pipeline/moe/results/baseline/icml2025_rt_er_b2_seed0_r2_failure.json",
+    "reason": "r2 incorrectly required the real-float32 B3 program to have identical labels to the released literal-fp16-plus-autocast evaluation program; r3 treats their observed differences as artifact-identity evidence and verifies the explicitly scoped B3 graph"
+  },
+  "checkpoint": {
+    "path": "/data1/Kane/MOE/baseline_runs/icml2025_rt_er/seed0_paper130/checkpoints/epoch_130.t7",
+    "sha256": "6954f7a4d0768c86853f1353e8f17c972dc41369d40c5fb7c5065da2a8b3dbd1",
+    "epoch": 130
+  },
+  "endpoint": {
+    "path": "/data1/Kane/MOE/baseline_runs/icml2025_rt_er/seed0_paper130/landing/final_endpoint_attempts/attempt_002/endpoint/ordered_endpoint_replay.npz",
+    "sha256": "43176c9c8286997e5855f49f9953339bb057819a6d01214c42cc8d2a169381a2",
+    "identity": "independently audited ordered official PGD-50 endpoint artifact"
+  },
+  "b3_cohort_identity": {
+    "config": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/icml2025_b3_seed0.json",
+    "config_sha256": "68766a7e288ddc0224c2a3e9829df7ffbd10d28d16d906847f47173071eb205c",
+    "telemetry": "/data1/Kane/MOE/baseline_runs/icml2025_rt_er/seed0_paper130/telemetry/epoch_130/per_input.npz",
+    "telemetry_sha256": "221b35c6cc2ea08028fb86c3481f3f3d5e45648224a4ac53b5bef4e3f21110f4",
+    "required_clean_route_and_prediction_agreement": 1.0
+  },
+  "selection": {
+    "dataset": "official torchvision CIFAR10 test order",
+    "policy": "first 1000 ordered inputs; no correctness or route filtering",
+    "start": 0,
+    "samples": 1000,
+    "probe_families": [
+      "clean_uint8",
+      "official_pgd50_endpoint"
+    ]
+  },
+  "semantics": {
+    "reference": "official checkpoint modules in eval mode under the B3 real-float32 program",
+    "route_a": "unit-pixel input, real-affine normalization, folded affine router, fixed expert specialization",
+    "consumer": "auto_LiRPA BoundedModule concrete forward in the pinned alpha-beta-CROWN environment",
+    "dispatch_batch_shape": "one input per expert call, matching released MOE_Resnet18.forward",
+    "literal_runtime_comparison": "the released B1 float16 preprocessing plus autocast labels are reported but are not silently equated with the explicitly scoped real-float32 B3 program",
+    "tie": "route mismatch is waived only when either compared score vector has top1-top2 margin <= tie_tolerance"
+  },
+  "tolerances": {
+    "tie_tolerance": 1e-07,
+    "folded_router_atol": 2e-05,
+    "route_a_logit_atol": 0.0001,
+    "cross_runtime_direct_logit_atol": 0.001,
+    "auto_lirpa_logit_atol": 0.001,
+    "literal_preprocessing_logit_atol": 0.02,
+    "rtol": 1e-05,
+    "required_prediction_agreement": 1.0,
+    "required_nontie_route_agreement": 1.0
+  },
+  "execution": {
+    "act_environment": "act-py312",
+    "crown_python": "/data1/Kane/MOE/envs/alpha-beta-crown/bin/python",
+    "device": "cuda",
+    "batch_size": 1,
+    "pythonhashseed": 0,
+    "write_bytecode": false
+  },
+  "required_outcome": {
+    "prepared_reference": "PASS",
+    "crown_worker": "PASS",
+    "independent_audit": "PASS",
+    "samples_per_family": 1000,
+    "expert_count": 4,
+    "class_count": 10
+  },
+  "claim_scope": "Semantic conformance of the explicitly identified B3 real-float32 program only. The literal B1 runtime is a distinct measured artifact. This stage is not a robustness certificate, accuracy experiment, or CROWN coverage result."
+}

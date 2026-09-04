@@ -233,10 +233,14 @@ explicit tie cases, and a preregistered maximum logit error. A route disagreemen
 blocks verification.
 
 The frozen config, executable reference/worker/auditor, and exact scope are in
-`configs/icml2025_b2_seed0_r2.json`, `icml2025_b2_conformance.py`,
+`configs/icml2025_b2_seed0_r3.json`, `icml2025_b2_conformance.py`,
 `icml2025_b2_crown.py`, `audit_icml2025_b2_conformance.py`, and
 `docs/icml2025_b2_conformance.md`. B2 checks only the conversion boundary that
 B3 actually consumes; it does not claim a generic whole-program ACT conversion.
+The B1 literal-fp16/autocast program and B3 real-float32 program are distinct
+certificate identities. Their measured label drift is reported explicitly, and
+B3 claims are scoped only to the latter; the frozen 20-sample B3 cohort must
+still agree across both identities before execution.
 
 ## B3 verification comparison
 

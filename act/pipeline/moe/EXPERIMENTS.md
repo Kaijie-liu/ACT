@@ -1166,7 +1166,7 @@ equivalence.
 ## ICML 2025 B3 executable comparison stage
 
 The previously textual B2 gate now has a frozen executable protocol in
-`configs/icml2025_b2_seed0_r2.json`. It compares the epoch-130 checkpoint on the
+`configs/icml2025_b2_seed0_r3.json`. It compares the epoch-130 checkpoint on the
 first 1,000 ordered clean inputs and their audited PGD-50 endpoints across the
 folded-router, fixed-expert, and concrete auto_LiRPA conversion boundaries.
 Complete converted logits are retained for independent recomputation. B2 is a
@@ -1175,6 +1175,12 @@ The excluded r1 run used batch-40 all-expert evaluation and failed its frozen
 `1e-4` selected-logit tolerance because the released program invokes experts
 one input at a time. r2 restores that batch-1 execution identity and retains all
 original tolerances; the r1 log and observed errors remain hash-pinned.
+The excluded r2 run correctly detected that B1's literal float16/autocast
+program is not label-identical to B3's explicit real-float32 program (four clean
+prediction and one clean-route differences over 10,000 inputs). r3 treats this
+as an artifact-identity boundary, reports it without relabeling either runtime,
+and requires exact cross-identity agreement on the independently frozen B3
+20-sample cohort.
 
 The final-checkpoint B3 execution layer is implemented but not run. It freezes
 the first 20 deterministic clean-correct test indices whose exact affine route

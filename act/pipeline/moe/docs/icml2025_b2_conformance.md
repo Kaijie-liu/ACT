@@ -1,6 +1,6 @@
 # ICML 2025 RT-ER B2 semantic conformance
 
-Status: r1 retained as a failed preregistered run; r2 frozen and pending.
+Status: r1/r2 retained as failed preregistered runs; r3 frozen and pending.
 
 B2 closes the semantic boundary between the released epoch-130 checkpoint and
 the interfaces used by B3. It is not an accuracy or robustness experiment. The
@@ -32,10 +32,19 @@ threshold. That run is permanently excluded and recorded in
 `results/baseline/icml2025_rt_er_b2_seed0_r1_failure.json`. The r2 protocol
 restores released batch-1 dispatch semantics without relaxing any tolerance.
 
+The r2 run then exposed a separate identity boundary: the real-float32 B3 graph
+and the released B1 literal-fp16-plus-autocast graph differ on four clean
+predictions and one clean route over all 10,000 inputs. They are different
+floating-point programs, so r3 reports the drift and forbids describing B3 as
+certifying the literal mixed-precision execution. The independently frozen B3
+20-sample cohort has exact clean route and prediction agreement across both
+identities.
+
 The current frozen config is
-`act/pipeline/moe/configs/icml2025_b2_seed0_r2.json`. Passing requires exact
+`act/pipeline/moe/configs/icml2025_b2_seed0_r3.json`. Passing requires exact
 non-tie route and prediction agreement, finite errors below the registered
 tolerances, all BatchNorm layers in deployment eval mode, unchanged official
 source/checkpoint/endpoint identities, and an independent zero-issue audit.
 Positive conformance does not imply a robustness certificate or validate any
-CROWN lower bound.
+CROWN lower bound. It establishes conformance only for the explicitly identified
+real-float32 B3 program.

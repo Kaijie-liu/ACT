@@ -17,7 +17,7 @@ from act.pipeline.moe.icml2025_b2_conformance import (
 
 
 CONFIG = Path(
-    "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/icml2025_b2_seed0_r2.json"
+    "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/icml2025_b2_seed0_r3.json"
 )
 
 
@@ -83,6 +83,11 @@ class ComparisonSummaryTest(unittest.TestCase):
             ["clean_uint8", "official_pgd50_endpoint"],
         )
         self.assertEqual(config["required_outcome"]["independent_audit"], "PASS")
+        self.assertIn("b3_cohort_identity", config)
+        self.assertIn(
+            "not silently equated",
+            config["semantics"]["literal_runtime_comparison"],
+        )
 
 
 if __name__ == "__main__":

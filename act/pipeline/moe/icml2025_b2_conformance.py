@@ -39,7 +39,7 @@ from act.pipeline.moe.icml2025_route_telemetry import (
 from act.util.path_config import get_torchvision_data_root
 
 
-DEFAULT_CONFIG = PROJECT_ROOT / "act/pipeline/moe/configs/icml2025_b2_seed0_r2.json"
+DEFAULT_CONFIG = PROJECT_ROOT / "act/pipeline/moe/configs/icml2025_b2_seed0_r3.json"
 CROWN_WORKER = PROJECT_ROOT / "act/pipeline/moe/icml2025_b2_crown.py"
 
 
@@ -304,18 +304,98 @@ def prepare(config_path: Path, output_dir: Path) -> dict[str, Any]:
             == stored_adversarial_routes
         )
     )
-    required_prediction = float(
-        config["tolerances"]["required_prediction_agreement"]
-    )
-    required_route = float(
-        config["tolerances"]["required_nontie_route_agreement"]
-    )
-    if clean_prediction_agreement < required_prediction:
-        raise RuntimeError("B2 clean predictions differ from audited B1 endpoint")
-    if adversarial_prediction_agreement < required_prediction:
-        raise RuntimeError("B2 adversarial predictions differ from audited B1 endpoint")
-    if clean_route_agreement < required_route or adversarial_route_agreement < required_route:
-        raise RuntimeError("B2 routes differ from audited B1 endpoint")
+    literal_differences = {
+        "clean_prediction_indices": np.flatnonzero(
+            references["clean_uint8"]["predictions"] != stored_clean_predictions
+        ).astype(int).tolist(),
+        "clean_route_indices": np.flatnonzero(
+            references["clean_uint8"]["routes"] != stored_clean_routes
+        ).astype(int).tolist(),
+        "adversarial_prediction_indices": np.flatnonzero(
+            references["official_pgd50_endpoint"]["predictions"]
+            != stored_adversarial_predictions
+        ).astype(int).tolist(),
+        "adversarial_route_indices": np.flatnonzero(
+            references["official_pgd50_endpoint"]["routes"]
+            != stored_adversarial_routes
+        ).astype(int).tolist(),
+    }
+    b3_identity = config.get("b3_cohort_identity")
+    b3_cohort_agreement: dict[str, Any] | None = None
+    if b3_identity is None:
+        required_prediction = float(
+            config["tolerances"]["required_prediction_agreement"]
+        )
+        required_route = float(
+            config["tolerances"]["required_nontie_route_agreement"]
+        )
+        if clean_prediction_agreement < required_prediction:
+            raise RuntimeError("B2 clean predictions differ from audited B1 endpoint")
+        if adversarial_prediction_agreement < required_prediction:
+            raise RuntimeError("B2 adversarial predictions differ from audited B1 endpoint")
+        if clean_route_agreement < required_route or adversarial_route_agreement < required_route:
+            raise RuntimeError("B2 routes differ from audited B1 endpoint")
+    else:
+        b3_config_path = _inside(Path(b3_identity["config"]), PROJECT_ROOT)
+        telemetry_path = _inside(Path(b3_identity["telemetry"]), WRITE_ROOT)
+        if _sha256(b3_config_path) != b3_identity["config_sha256"]:
+            raise RuntimeError("B3 cohort config identity changed")
+        if _sha256(telemetry_path) != b3_identity["telemetry_sha256"]:
+            raise RuntimeError("B3 telemetry identity changed")
+        b3_config = json.loads(b3_config_path.read_text(encoding="utf-8"))
+        from act.pipeline.moe.icml2025_b3 import select_boundary_cohort
+
+        with np.load(
+            telemetry_path, allow_pickle=False
+        ) as telemetry_arrays, np.load(endpoint, allow_pickle=False) as literal_arrays:
+            b3_selection = b3_config["selection"]
+            b3_indices = select_boundary_cohort(
+                telemetry_arrays["clean_correct"],
+                telemetry_arrays["radius_uppers"],
+                samples=int(b3_selection["samples"]),
+                multiplier=float(b3_selection["route_radius_multiplier"]),
+                cap=float(b3_selection["route_radius_cap_over_255"]) / 255.0,
+            )
+            full_literal_clean_prediction = literal_arrays[
+                "clean_predictions"
+            ].astype(np.int64)
+            full_literal_clean_route = literal_arrays["clean_routes"].astype(
+                np.int64
+            )
+            full_prediction_differences = np.flatnonzero(
+                telemetry_arrays["predictions"].astype(np.int64)
+                != full_literal_clean_prediction
+            )
+            full_route_differences = np.flatnonzero(
+                telemetry_arrays["clean_experts"].astype(np.int64)
+                != full_literal_clean_route
+            )
+            selected_prediction_agreement = float(
+                np.mean(
+                    telemetry_arrays["predictions"][b3_indices].astype(np.int64)
+                    == full_literal_clean_prediction[b3_indices]
+                )
+            )
+            selected_route_agreement = float(
+                np.mean(
+                    telemetry_arrays["clean_experts"][b3_indices].astype(np.int64)
+                    == full_literal_clean_route[b3_indices]
+                )
+            )
+        required = float(b3_identity["required_clean_route_and_prediction_agreement"])
+        if selected_prediction_agreement < required or selected_route_agreement < required:
+            raise RuntimeError("frozen B3 cohort differs across certified-artifact identities")
+        b3_cohort_agreement = {
+            "config": str(b3_config_path),
+            "config_sha256": _sha256(b3_config_path),
+            "telemetry": str(telemetry_path),
+            "telemetry_sha256": _sha256(telemetry_path),
+            "indices": b3_indices.astype(int).tolist(),
+            "clean_prediction_agreement": selected_prediction_agreement,
+            "clean_route_agreement": selected_route_agreement,
+            "full_clean_10000_prediction_difference_indices": full_prediction_differences.astype(int).tolist(),
+            "full_clean_10000_route_difference_indices": full_route_differences.astype(int).tolist(),
+        }
     output_dir.mkdir(parents=True)
     artifact = output_dir / "reference.npz"
     arrays: dict[str, np.ndarray] = {
@@ -324,6 +404,10 @@ def prepare(config_path: Path, output_dir: Path) -> dict[str, Any]:
         "clean_uint8_pixels": clean_pixels,
         "official_pgd50_endpoint_pixels": endpoint_pixels,
         "official_pgd50_endpoint_normalized": endpoint_normalized,
+        "clean_uint8__literal_predictions": stored_clean_predictions,
+        "clean_uint8__literal_routes": stored_clean_routes,
+        "official_pgd50_endpoint__literal_predictions": stored_adversarial_predictions,
+        "official_pgd50_endpoint__literal_routes": stored_adversarial_routes,
     }
     for family, reference in references.items():
         for name, value in reference.items():
@@ -351,7 +435,10 @@ def prepare(config_path: Path, output_dir: Path) -> dict[str, Any]:
             "clean_route": clean_route_agreement,
             "adversarial_prediction": adversarial_prediction_agreement,
             "adversarial_route": adversarial_route_agreement,
+            "difference_indices": literal_differences,
+            "interpretation": "measured identity drift between distinct literal-fp16/autocast and real-float32 programs; not silently treated as a B3 conversion failure",
         },
+        "b3_cohort_cross_identity_agreement": b3_cohort_agreement,
         "model_identity": {
             "model_state_sha256": _module_state_sha256(model),
             "router_state_sha256": _module_state_sha256(model.router),

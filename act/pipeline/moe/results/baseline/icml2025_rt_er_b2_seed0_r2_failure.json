@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "status": "PERMANENTLY_EXCLUDED_FAILED_PREREGISTERED_RUN",
+  "config": "act/pipeline/moe/configs/icml2025_b2_seed0_r2.json",
+  "code_commit": "e938d8c70",
+  "execution": {
+    "started_at_local": "2026-09-04T10:23:02+10:00",
+    "session": "moe-rt-er-b2-s0-r2",
+    "log": "/data1/Kane/MOE/ACT/data/moe/logs/icml2025_rt_er_b2_seed0_r2_prepare.log",
+    "log_sha256": "26fbda993078f914c151ec11dc4f66c639368c4b123c78fec64f7b8052cc25e1",
+    "result_directory_created": false
+  },
+  "observed_first_1000": {
+    "clean_prediction_differences": 1,
+    "clean_prediction_indices": [659],
+    "clean_route_differences": 0,
+    "adversarial_prediction_differences": 1,
+    "adversarial_prediction_indices": [584],
+    "adversarial_route_differences": 2,
+    "adversarial_route_indices": [425, 584],
+    "literal_clean_replay_matches_stored_on_difference": true
+  },
+  "observed_full_clean_10000": {
+    "prediction_differences": 4,
+    "prediction_indices": [659, 2316, 4604, 9957],
+    "route_differences": 1,
+    "route_indices": [9604]
+  },
+  "failure": "The real-float32 B3 program did not have 100% label identity with the released B1 literal-fp16-plus-autocast runtime.",
+  "diagnosis": "The two executions are distinct floating-point programs. r3 explicitly scopes verification to the B3 real-float32 artifact, reports rather than hides literal-runtime drift, and requires identity on the independently frozen 20-sample B3 cohort.",
+  "claim_scope": "Excluded artifact-identity result. It forbids describing future B3 certificates as certificates of the literal mixed-precision B1 execution."
+}
