@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "status": "COMPLETED_AUDITED",
+  "audit": {
+    "status": "PASS",
+    "issues": 0,
+    "path": "data/moe/results/icml2025_rt_er_b2_seed0_r3/audit.json",
+    "sha256": "c74ead2ab0a0677e3b93038d2f052c0ec676509a605e77ec38897bc8ca0dc030"
+  },
+  "code_commit": "edb708381",
+  "config": {
+    "path": "act/pipeline/moe/configs/icml2025_b2_seed0_r3.json",
+    "sha256": "791dca4dbe0ecedd964cbe0d83d9154b006991b7c8499961fdc94c7f43b28f9c"
+  },
+  "raw_artifacts": {
+    "prepare": {
+      "path": "data/moe/results/icml2025_rt_er_b2_seed0_r3/prepare.json",
+      "sha256": "bec773268cc6de903f00e0a259016bc32c5754448068faaab85346db059e524a"
+    },
+    "reference_arrays": {
+      "path": "data/moe/results/icml2025_rt_er_b2_seed0_r3/reference.npz",
+      "sha256": "16c0ba6f8ad40e77050ccd71876a67d99740585d8546f97cf58d20292746d694"
+    },
+    "crown": {
+      "path": "data/moe/results/icml2025_rt_er_b2_seed0_r3/crown.json",
+      "sha256": "8b0b3426266e4154f10c3cb7563c60ebfb22830bda244c03816b7abf9252ff27"
+    },
+    "crown_arrays": {
+      "path": "data/moe/results/icml2025_rt_er_b2_seed0_r3/crown.json.npz",
+      "sha256": "e76da376561b2065fae39d897ec8ee8c7859aac33ac3e25c514c1b41c4ea82c4"
+    }
+  },
+  "cohort": {
+    "ordered_test_indices": "0--999",
+    "samples_per_family": 1000,
+    "families": ["clean_uint8", "official_pgd50_endpoint"],
+    "experts": 4,
+    "classes": 10
+  },
+  "conformance": {
+    "folded_router_maximum_abs_error": 4.846367112065764e-07,
+    "specialized_wrapper_maximum_abs_error": 0.0,
+    "selected_gather_maximum_abs_error": 0.0,
+    "cross_runtime_direct_maximum_abs_error": 0.000125885009765625,
+    "auto_lirpa_concrete_maximum_abs_error": 0.000050902366638183594,
+    "prediction_agreement_by_family": {
+      "clean_uint8": 1.0,
+      "official_pgd50_endpoint": 1.0
+    },
+    "nontie_route_agreement_by_family": {
+      "clean_uint8": 1.0,
+      "official_pgd50_endpoint": 1.0
+    },
+    "batchnorm2d_layers": 80,
+    "batchnorm_all_eval": true
+  },
+  "artifact_identity": {
+    "literal_b1_vs_real_b3_first_1000": {
+      "clean_prediction_differences": 1,
+      "clean_route_differences": 0,
+      "adversarial_prediction_differences": 1,
+      "adversarial_route_differences": 2
+    },
+    "literal_b1_vs_real_b3_full_clean_10000": {
+      "prediction_differences": 4,
+      "route_differences": 1
+    },
+    "frozen_b3_20_cross_identity": {
+      "prediction_agreement": 1.0,
+      "route_agreement": 1.0
+    },
+    "interpretation": "B3 verifies the explicitly identified real-float32 graph, not the distinct literal-fp16-plus-autocast B1 execution."
+  },
+  "excluded_runs": [
+    "act/pipeline/moe/results/baseline/icml2025_rt_er_b2_seed0_r1_failure.json",
+    "act/pipeline/moe/results/baseline/icml2025_rt_er_b2_seed0_r2_failure.json"
+  ],
+  "claim_scope": "Semantic conformance only; not a robustness certificate, accuracy result, or CROWN coverage result."
+}

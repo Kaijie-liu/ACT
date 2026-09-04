@@ -1182,6 +1182,13 @@ as an artifact-identity boundary, reports it without relabeling either runtime,
 and requires exact cross-identity agreement on the independently frozen B3
 20-sample cohort.
 
+B2 r3 completed on both 1,000-sample families and passed independent audit with
+zero issues. Folded-router error is at most `4.85e-7`, cross-runtime direct
+expert-logit error is at most `1.26e-4`, and concrete auto_LiRPA conversion
+error is at most `5.09e-5`; predictions agree on every B3-semantics input. All
+80 BatchNorm2d layers are in eval mode. The audit manifest is
+`results/baseline/icml2025_rt_er_b2_seed0_r3_audit.json`.
+
 The final-checkpoint B3 execution layer is implemented but not run. It freezes
 the first 20 deterministic clean-correct test indices whose exact affine route
 upper bracket remains within the 8/255 cap after multiplication by 1.05. For

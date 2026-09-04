@@ -103,3 +103,13 @@ The excluded and accepted evidence is anchored by
 The B3 manifest schema is frozen in
 `act/pipeline/moe/configs/icml2025_b3_seed0.json` and is materialized by the
 prepare and CROWN workers rather than reconstructed after verification.
+
+The B2 conformance gate exposes one further identity boundary on the final
+checkpoint. The released B1 evaluation uses literal float16 preprocessing and
+autocast, whereas B3 explicitly uses a real-affine normalization represented
+in float32. They differ on four clean predictions and one clean route over the
+ordered 10,000-image test set. Neither result is silently relabeled: B3 claims
+refer only to the real-float32 program, and the independently frozen 20-sample
+B3 cohort must agree under both identities. On that cohort, routes and
+predictions agree exactly. The complete cross-runtime expert conversion then
+passes on 2,000 clean/adversarial inputs with independent audit and zero issues.

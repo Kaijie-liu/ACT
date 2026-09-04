@@ -1,6 +1,7 @@
 # ICML 2025 RT-ER B2 semantic conformance
 
-Status: r1/r2 retained as failed preregistered runs; r3 frozen and pending.
+Status: r1/r2 retained as failed preregistered runs; r3 completed and
+independently audited with zero issues.
 
 B2 closes the semantic boundary between the released epoch-130 checkpoint and
 the interfaces used by B3. It is not an accuracy or robustness experiment. The
@@ -48,3 +49,21 @@ source/checkpoint/endpoint identities, and an independent zero-issue audit.
 Positive conformance does not imply a robustness certificate or validate any
 CROWN lower bound. It establishes conformance only for the explicitly identified
 real-float32 B3 program.
+
+## Audited r3 result
+
+Both 1,000-sample families pass. The maximum folded-router error is
+`4.85e-7`; fixed-expert wrapping and selected gathering are exact under the
+released batch-1 execution shape. Across PyTorch 2.9.1/CUDA 12.8 and PyTorch
+2.11.0/CUDA 13.0, the maximum direct expert-logit difference is `1.26e-4`.
+The concrete auto_LiRPA conversion differs from its direct PyTorch module by at
+most `5.09e-5`, and predictions agree on all 2,000 inputs. All 80 BatchNorm2d
+layers are in eval mode. The independent audit recomputed every error from the
+saved logits and found zero issues.
+
+The result preserves the literal-runtime differences instead of hiding them:
+among the first 1,000 inputs, one clean and one adversarial prediction differ,
+while two adversarial routes differ. Across all 10,000 clean inputs, four
+predictions and one route differ. None intersects the frozen B3 cohort. The
+tracked audit manifest is
+`results/baseline/icml2025_rt_er_b2_seed0_r3_audit.json`.
