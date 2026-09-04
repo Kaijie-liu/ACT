@@ -233,7 +233,7 @@ explicit tie cases, and a preregistered maximum logit error. A route disagreemen
 blocks verification.
 
 The frozen config, executable reference/worker/auditor, and exact scope are in
-`configs/icml2025_b2_seed0_r1.json`, `icml2025_b2_conformance.py`,
+`configs/icml2025_b2_seed0_r2.json`, `icml2025_b2_conformance.py`,
 `icml2025_b2_crown.py`, `audit_icml2025_b2_conformance.py`, and
 `docs/icml2025_b2_conformance.md`. B2 checks only the conversion boundary that
 B3 actually consumes; it does not claim a generic whole-program ACT conversion.

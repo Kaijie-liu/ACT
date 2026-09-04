@@ -17,7 +17,7 @@ from act.pipeline.moe.icml2025_b2_conformance import (
 
 
 CONFIG = Path(
-    "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/icml2025_b2_seed0_r1.json"
+    "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/icml2025_b2_seed0_r2.json"
 )
 
 
@@ -75,6 +75,8 @@ class ComparisonSummaryTest(unittest.TestCase):
     def test_config_freezes_first_1000_and_both_probe_families(self) -> None:
         config = self._config()
         self.assertEqual(config["status"], "PREREGISTERED_NOT_RUN")
+        self.assertEqual(config["execution"]["batch_size"], 1)
+        self.assertIn("released MOE_Resnet18.forward", config["semantics"]["dispatch_batch_shape"])
         self.assertEqual(config["selection"]["samples"], 1000)
         self.assertEqual(
             config["selection"]["probe_families"],

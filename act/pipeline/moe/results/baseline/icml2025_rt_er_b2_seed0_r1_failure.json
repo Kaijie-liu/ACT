@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "status": "PERMANENTLY_EXCLUDED_FAILED_PREREGISTERED_RUN",
+  "config": "act/pipeline/moe/configs/icml2025_b2_seed0_r1.json",
+  "code_commit": "c93b50876",
+  "execution": {
+    "started_at_local": "2026-09-04T10:20:59+10:00",
+    "session": "moe-rt-er-b2-s0",
+    "log": "/data1/Kane/MOE/ACT/data/moe/logs/icml2025_rt_er_b2_seed0_r1_prepare.log",
+    "log_sha256": "4f3c9d3628325d7639acc2ada8ed3b8981bd00edb7200a1980b3da99dd177ad9",
+    "result_directory_created": false
+  },
+  "observed": {
+    "clean_uint8": {
+      "folded_router_maximum_abs_error": 1.0882384291477365e-06,
+      "specialized_wrapper_maximum_abs_error": 0.0,
+      "selected_gather_maximum_abs_error": 0.00028853118419647217,
+      "tie_cases": 0,
+      "nontie_route_agreement": 1.0
+    },
+    "official_pgd50_endpoint": {
+      "folded_router_maximum_abs_error": 8.76042689057499e-07,
+      "specialized_wrapper_maximum_abs_error": 0.0,
+      "selected_gather_maximum_abs_error": 0.0003342628479003906,
+      "tie_cases": 0,
+      "nontie_route_agreement": 1.0
+    }
+  },
+  "failure": "The batch-40 all-expert evaluation and route-grouped selected evaluation exceeded the frozen 1e-4 selected-logit tolerance.",
+  "diagnosis": "The released MOE_Resnet18 forward invokes an expert separately for every input. CUDA convolution results depend slightly on batch shape. r2 restores released batch-1 dispatch semantics and does not relax any numerical tolerance.",
+  "claim_scope": "Excluded engineering result retained for numerical provenance; it is not evidence of a route or model semantic mismatch."
+}

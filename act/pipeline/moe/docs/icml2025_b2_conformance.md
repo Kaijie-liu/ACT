@@ -1,6 +1,6 @@
 # ICML 2025 RT-ER B2 semantic conformance
 
-Status: protocol and executable stage frozen; result pending.
+Status: r1 retained as a failed preregistered run; r2 frozen and pending.
 
 B2 closes the semantic boundary between the released epoch-130 checkpoint and
 the interfaces used by B3. It is not an accuracy or robustness experiment. The
@@ -24,8 +24,16 @@ reference. Saving the complete 1,000 x 2 x 4 x 10 output arrays lets the
 independent auditor recompute every maximum error and prediction agreement
 without trusting worker summaries.
 
-The frozen config is
-`act/pipeline/moe/configs/icml2025_b2_seed0_r1.json`. Passing requires exact
+The r1 configuration evaluated all experts in batches of 40 while the released
+hard-dispatch program calls one expert per input. Although routes agreed exactly
+and the raw-pixel wrapper had zero error, CUDA batch-shape rounding produced a
+maximum selected-logit difference of `3.34e-4`, exceeding the frozen `1e-4`
+threshold. That run is permanently excluded and recorded in
+`results/baseline/icml2025_rt_er_b2_seed0_r1_failure.json`. The r2 protocol
+restores released batch-1 dispatch semantics without relaxing any tolerance.
+
+The current frozen config is
+`act/pipeline/moe/configs/icml2025_b2_seed0_r2.json`. Passing requires exact
 non-tie route and prediction agreement, finite errors below the registered
 tolerances, all BatchNorm layers in deployment eval mode, unchanged official
 source/checkpoint/endpoint identities, and an independent zero-issue audit.
