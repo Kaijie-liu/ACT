@@ -2293,3 +2293,24 @@ The `seed0_r3` successor again changes no scientific setting and restarts from
 epoch zero because the upstream checkpoint still lacks RNG state. Its sole
 operational change is to run the already tested supervisor as a persistent
 systemd user service, outside the lifecycle of the Codex execution scope.
+
+The r3 run completed all 100 epochs in 6,546.53 seconds with return code zero,
+100 consecutive loadable snapshots, and no missing epoch. The released
+best-adversarial checkpoint is snapshot 90: clean accuracy `93.79%`, released
+10-step adversarial accuracy `91.34%`, and SHA-256
+`2b764ba110d110a6e9f17e8ff76f4dfd951c5947d84bb4fde865eab997e642c1`.
+The final snapshot reports `93.88%` and `90.59%` and has SHA-256
+`4ba196d18044b23716ca884c763bd1322154cb0d6375af520371a3d57ba8365a`.
+The accepted independent audit loads and hashes all 100 snapshots, matches the
+best and final identities, confirms the official clone stayed clean, and
+reports `PASS` with zero issues. Its first attempt is preserved because it
+correctly exposed a missing final-record size field; the accepted audit
+independently recovers that metadata without changing checkpoint bytes. See
+`docs/advmoe_training_seed0.md` and
+`results/baseline/advmoe_training_seed0_r3_audit.json`.
+
+These are empirical released-path metrics, not certificates. The upstream
+best-checkpoint rule uses test adversarial accuracy, and the no-license source
+keeps checkpoint redistribution disabled. Training landing unlocks the frozen
+router telemetry and two-path verification protocol; it does not predetermine
+their outcomes.

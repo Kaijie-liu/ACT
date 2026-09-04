@@ -132,7 +132,7 @@ or manuscript closure.
 
 | Attack | Required defense | Status |
 |---|---|---|
-| “The 49%-accuracy model is a toy.” | Official-scale B3 plus an official third-party learned-router model if executable. | B3 numerical conformance complete on all 318 branches with a zero-issue audit, but formal SAFE is deliberately zero pending outward-rounded bounds; AdvMoE r1 and r2 are preserved as excluded supervisor-race and external-session-scope failures, and unchanged r3 restarts under a persistent user service because upstream checkpoints omit RNG states |
+| “The 49%-accuracy model is a toy.” | Official-scale B3 plus an official third-party learned-router model if executable. | B3 numerical conformance complete on all 318 branches with a zero-issue audit, but formal SAFE is deliberately zero pending outward-rounded bounds; accepted AdvMoE seed-0 r3 lands at 93.79% clean and 91.34% released 10-step adversarial accuracy at its best checkpoint, with 100/100 snapshots and a zero-issue audit; route telemetry and two-path verification remain open |
 | “Enumeration cannot scale beyond E=8.” | Lazy enumeration/no-good cuts and `E={4,8,16,32,64}` data. | Pending |
 | “The method only covers output-layer MoE.” | Official AdvMoE deep route-specialized pathway or explicit limitation. | Both static paths specialize exactly in tests; init router bracket remains unresolved and property verification remains pending after B3 |
 | “The route-invariance baseline is self-serving.” | Exact definition-level applicability plus identical downstream backend and public implementation. | Verification-scale formal comparison and official-scale numerical-conformance comparison complete; official formal CROWN endpoint remains open |
