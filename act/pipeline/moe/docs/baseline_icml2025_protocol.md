@@ -213,23 +213,30 @@ succeeds. The seed-0-only config is
 labeled `official-code, Blackwell-compatible deps + FFCV`. Missing telemetry is
 a run failure; it is never filled after training or silently omitted.
 
-## B2 PyTorch-to-ACT conformance
+## B2 checkpoint-to-Route-A/CROWN conformance
 
-Conversion starts only after B1 passes. For at least 1000 frozen test inputs it
-must compare:
+Conversion starts only after B1 lands and passes its independent endpoint
+audit. The executable B2 stage freezes the first 1,000 ordered test inputs and
+their independently audited PGD-50 endpoints. It compares:
 
 - normalized inputs and pixel-space perturbation conversion;
 - router logits and deterministic concrete route;
 - all-legal tie routes when margins are within the frozen tolerance;
 - every expert's logits and the selected full-model logits;
 - top-1 prediction;
-- convolution, residual addition, BatchNorm running statistics/folding, and
-  normalization;
+- convolution, residual addition, BatchNorm running statistics/eval semantics,
+  and normalization after concrete auto_LiRPA graph conversion;
 - clean and adversarial inputs.
 
 Required outcomes are 100% prediction agreement, 100% route agreement outside
 explicit tie cases, and a preregistered maximum logit error. A route disagreement
 blocks verification.
+
+The frozen config, executable reference/worker/auditor, and exact scope are in
+`configs/icml2025_b2_seed0_r1.json`, `icml2025_b2_conformance.py`,
+`icml2025_b2_crown.py`, `audit_icml2025_b2_conformance.py`, and
+`docs/icml2025_b2_conformance.md`. B2 checks only the conversion boundary that
+B3 actually consumes; it does not claim a generic whole-program ACT conversion.
 
 ## B3 verification comparison
 

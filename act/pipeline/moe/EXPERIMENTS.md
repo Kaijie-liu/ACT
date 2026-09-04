@@ -1165,6 +1165,13 @@ equivalence.
 
 ## ICML 2025 B3 executable comparison stage
 
+The previously textual B2 gate now has a frozen executable protocol in
+`configs/icml2025_b2_seed0_r1.json`. It compares the epoch-130 checkpoint on the
+first 1,000 ordered clean inputs and their audited PGD-50 endpoints across the
+folded-router, fixed-expert, and concrete auto_LiRPA conversion boundaries.
+Complete converted logits are retained for independent recomputation. B2 is a
+semantic-conformance gate only and cannot be reported as certified coverage.
+
 The final-checkpoint B3 execution layer is implemented but not run. It freezes
 the first 20 deterministic clean-correct test indices whose exact affine route
 upper bracket remains within the 8/255 cap after multiplication by 1.05. For
