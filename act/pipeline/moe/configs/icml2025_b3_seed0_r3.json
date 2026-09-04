@@ -1,0 +1,124 @@
+{
+  "schema_version": 3,
+  "status": "PREREGISTERED_NOT_RUN",
+  "label": "official-code checkpoint, explicitly scoped real-float32 verification semantics",
+  "supersedes": {
+    "config": "act/pipeline/moe/configs/icml2025_b3_seed0_r2.json",
+    "reason": "r2 exposed an auto_LiRPA 0.7.2 broadcast-multiply assertion before any expert bound completed; r3 preserves every scientific setting and maps the guarded pixel box exactly through the positive diagonal normalization before constructing the bound graph"
+  },
+  "excluded_predecessor": {
+    "result_directory": "/data1/Kane/MOE/ACT/data/moe/results/icml2025_rt_er_b3_seed0_r2",
+    "reason": "318/318 feasible branches returned backend ERROR; the original r2 audit omitted this failure condition and is superseded by the hardened audit"
+  },
+  "b2_gate": {
+    "path": "/data1/Kane/MOE/ACT/act/pipeline/moe/results/baseline/icml2025_rt_er_b2_seed0_r3_audit.json",
+    "sha256": "5b744c5db3fd0ec45156aaafaa214cf8c28220c6e351fcf69097dc9de9cfadcd",
+    "required_status": "COMPLETED_AUDITED",
+    "required_audit_status": "PASS",
+    "required_issue_count": 0
+  },
+  "checkpoint": {
+    "seed": 0,
+    "epoch": 130,
+    "selection": "final scheduled checkpoint; no best-epoch selection"
+  },
+  "training_provenance": {
+    "router_reference_checkpoint": {
+      "path": "/data1/Kane/MOE/baseline_runs/icml2025_rt_er/seed0_paper130/checkpoints/epoch_010.t7",
+      "sha256": "d30ab40efc58be6f02a1465d25a341bf5f95b822b280462e73a2ab239429788b",
+      "epoch": 10
+    },
+    "require_zero_router_optimizer_state": true,
+    "require_router_equal_reference": true,
+    "scope": "audit-only provenance gate; no selection, radius, solver, or numerical policy changed"
+  },
+  "selection": {
+    "dataset": "official torchvision CIFAR10 test",
+    "samples": 20,
+    "policy": "first deterministic clean-correct indices with a finite exact route boundary and 1.05 times upper bracket within cap",
+    "route_radius_multiplier": 1.05,
+    "route_radius_cap_over_255": 8.0,
+    "denominator": "all 20 selected route-boundary samples"
+  },
+  "applicability_epsilon_over_255": [0.25, 0.5, 1.0, 2.0, 4.0, 8.0],
+  "primary_table_epsilon_over_255": [0.5, 1.0, 2.0, 4.0, 8.0],
+  "fixed_radius_expert_cohort": {
+    "selection": "reuse the frozen 20 boundary-cohort indices without further filtering",
+    "rows": 100,
+    "reporting_denominator": "20 samples independently at each radius",
+    "route_invariance": "applicable only when exact affine radius proves the route stable; uses the identical branch CROWN result as Route A",
+    "route_a": "all exact feasible tie-inclusive routes must pass the same CROWN filter"
+  },
+  "primary_table_interpretation": {
+    "route_stability_denominator": "all ordered official CIFAR10 test inputs",
+    "expert_comparison_denominator": "the same frozen 20-sample boundary cohort at every radius",
+    "absolute_certification_expectation": "PGD-trained ResNet18 is not assumed certifiable at 8/255; small or zero absolute coverage is an admissible result",
+    "comparison_claim": "report identical-backend route-invariance and Route A coverage at every grid point; 8/255 may be a degenerate applicability limit and is never the only comparison"
+  },
+  "routing": {
+    "router": "folded affine 3072-to-4",
+    "tie_semantics": "ANY_LEGAL_TOPK",
+    "feasibility_time_limit_seconds": 30.0,
+    "hull_backend": "highspy incremental coordinate support",
+    "hull_time_limit_seconds": 120.0,
+    "incomplete_hull_policy": "sound unconditioned generator fallback per incomplete coordinate"
+  },
+  "formula": {
+    "implementation": "ACT reimplementation of author-paper Theorem 5.4 Equation (8)",
+    "providers": ["SOUND_GLOBAL_SPECTRAL", "AUTHOR_UNSPECIFIED"],
+    "readings": [
+      "continuous softmax router plus expert probabilities",
+      "released hard argmax router plus raw expert logits"
+    ],
+    "smallest_radius_over_255": 0.25,
+    "empirical_gradients_enabled": false
+  },
+  "crown": {
+    "environment": "/data1/Kane/MOE/envs/alpha-beta-crown",
+    "method": "CROWN",
+    "device": "cuda",
+    "input": "exact positive-diagonal affine image of the guarded coordinate box hull",
+    "normalization_graph_policy": "normalization is applied exactly to box endpoints before auto_LiRPA graph construction; the expert graph receives normalized inputs",
+    "negative_bound_semantics": "UNKNOWN_NEVER_UNSAFE",
+    "positive_bound_semantics": "CERTIFIED_MARGIN_FILTER_NOT_FORMAL_SAFE",
+    "resource_gate": {
+      "minimum_free_gib": 36.0,
+      "poll_seconds": 300.0,
+      "max_wait_hours": 24.0
+    }
+  },
+  "numerical": {
+    "safe_positive_margin": 1e-07,
+    "outward_rounded_crown_safe_enabled": false,
+    "full_forward_replay_required_for_unsafe": true
+  },
+  "certificate_identity": {
+    "schema_version": 3,
+    "required_manifest_fields": [
+      "python_version", "torch_import_version", "torchvision_import_version",
+      "torchvision_metadata_version", "numpy_version", "cuda_runtime_version",
+      "nvidia_driver_version", "official_source_commit", "checkpoint_sha256",
+      "dataset_archive_sha256", "ordered_input_identity", "preprocessing_graph",
+      "preprocessing_dtypes", "normalization_constants", "input_domain",
+      "router_sha256", "solver_and_outward_rounding_policy"
+    ],
+    "preprocessing_graph": "ordered torchvision CIFAR10 uint8 test image -> float64 unit pixels -> exact positive diagonal channel-affine image of the guarded box -> float32 normalized expert input",
+    "preprocessing_dtypes": {
+      "decoded": "uint8",
+      "route_analysis": "float64",
+      "box_normalization": "torch.float32 endpoint transform",
+      "expert_input": "torch.float32"
+    },
+    "input_domain": "continuous unit-pixel box intersected with the registered L-infinity ball, then mapped exactly as a box through positive channel normalization",
+    "policy": "missing or changed identity fields fail closed; transform names without exact runtime, dtype, ordering, and constants are insufficient; scope excludes the distinct literal-fp16/autocast B1 execution"
+  },
+  "comparisons": [
+    "route-invariance baseline with identical CROWN expert backend",
+    "exact route candidates plus per-expert guarded-hull CROWN",
+    "paper formula with provider and semantic-reading labels"
+  ],
+  "monolithic": {
+    "enabled_in_this_runner": false,
+    "reason": "separate frozen CPU experiment completed before B3"
+  }
+}

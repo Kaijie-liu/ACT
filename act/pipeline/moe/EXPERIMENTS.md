@@ -1189,7 +1189,27 @@ error is at most `5.09e-5`; predictions agree on every B3-semantics input. All
 80 BatchNorm2d layers are in eval mode. The audit manifest is
 `results/baseline/icml2025_rt_er_b2_seed0_r3_audit.json`.
 
-The final-checkpoint B3 r2 execution layer is implemented but not run. It hard
+The final-checkpoint B3 r2 execution attempted all 480 route branches, of which
+318 were feasible, but every CROWN branch failed before producing a bound.
+The failure was an auto_LiRPA 0.7.2 assertion while back-propagating through
+the broadcast scalar multiplication in the in-graph pixel normalization. The
+original identity-only audit incorrectly passed because it did not treat
+backend `ERROR` as an audit issue. A hardened independent audit now fails the
+retained r2 artifacts with four issues: 318 backend errors, 318 incomplete
+bounds, and two missing summary counters. r2 is permanently excluded and no
+expert table from it is used.
+
+B3 r3 preserves the sample selection, radii, route feasibility, expert
+property, CROWN method, and numerical verdict semantics. It maps each guarded
+unit-pixel box through the positive diagonal channel normalization before graph
+construction; this is the exact affine image of a box, not a relaxation. The
+expert graph consequently starts at normalized input and avoids the backend's
+broadcast-multiply bug. A real `compute_bounds` smoke runs in the isolated
+CROWN environment, and the auditor now fails on any backend error or incomplete
+branch. The worker also waits for 36 GiB of free GPU memory rather than turning
+shared-GPU pressure into an OOM-shaped scientific result.
+
+The B3 execution hard
 gates on the zero-issue B2 r3 audit and freezes
 the first 20 deterministic clean-correct test indices whose exact affine route
 upper bracket remains within the 8/255 cap after multiplication by 1.05. For
@@ -1200,7 +1220,7 @@ The route-invariance baseline and Route A therefore use the same expert backend;
 their applicability difference comes only from the former's route-stability
 precondition.
 
-In addition to the boundary-adaptive row per sample, r2 executes the already
+In addition to the boundary-adaptive row per sample, it executes the already
 registered `{0.5,1,2,4,8}/255` grid on those same 20 indices. This produces 100
 fixed-radius rows and 480 route-feasibility branch attempts in total. Every
 route-stable baseline result reuses the identical fixed-expert CROWN obligation

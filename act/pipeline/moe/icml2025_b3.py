@@ -64,7 +64,7 @@ from act.pipeline.moe.icml2025_route_telemetry import (
 from act.util.path_config import get_torchvision_data_root
 
 
-DEFAULT_CONFIG = PROJECT_ROOT / "act/pipeline/moe/configs/icml2025_b3_seed0_r2.json"
+DEFAULT_CONFIG = PROJECT_ROOT / "act/pipeline/moe/configs/icml2025_b3_seed0_r3.json"
 CROWN_PYTHON = Path("/data1/Kane/MOE/envs/alpha-beta-crown/bin/python")
 CROWN_WORKER = PROJECT_ROOT / "act/pipeline/moe/icml2025_b3_crown.py"
 
@@ -84,6 +84,35 @@ class PixelNormalizedExpert(nn.Module):
 
     def forward(self, pixels: torch.Tensor) -> torch.Tensor:
         return self.expert((pixels * 255.0 - self.mean) / self.std)
+
+
+def normalize_unit_pixel_box(
+    lower: torch.Tensor, upper: torch.Tensor
+) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+    """Map a unit-pixel box through the positive channel-affine normalization.
+
+    The map is kept outside the auto_LiRPA graph because auto_LiRPA 0.7.2
+    cannot back-propagate this broadcast scalar expression.  A positive
+    diagonal affine map sends a box to exactly the returned box, so this is a
+    representation change rather than an input-set relaxation.
+    """
+
+    if lower.shape != upper.shape or lower.ndim != 4 or lower.shape[1] != 3:
+        raise ValueError("expected matching NCHW RGB box endpoints")
+    if lower.dtype != upper.dtype or lower.device != upper.device:
+        raise ValueError("box endpoints must share dtype and device")
+    if bool(torch.any(lower > upper).item()):
+        raise ValueError("box lower endpoint exceeds upper endpoint")
+    mean = torch.as_tensor(
+        CIFAR_MEAN_255, dtype=lower.dtype, device=lower.device
+    )[None, :, None, None]
+    std = torch.as_tensor(
+        CIFAR_STD_255, dtype=lower.dtype, device=lower.device
+    )[None, :, None, None]
+    normalized_lower = (lower * 255.0 - mean) / std
+    normalized_upper = (upper * 255.0 - mean) / std
+    normalized_center = (normalized_lower + normalized_upper) / 2.0
+    return normalized_center, normalized_lower, normalized_upper
 
 
 def _module_sha256(module: nn.Module) -> str:

@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "status": "PERMANENTLY_EXCLUDED_BACKEND_FAILURE",
+  "result_directory": "/data1/Kane/MOE/ACT/data/moe/results/icml2025_rt_er_b3_seed0_r2",
+  "branch_attempts": 480,
+  "feasible_branches": 318,
+  "crown_backend_status_counts": {
+    "ERROR": 318
+  },
+  "error_counts": {
+    "AssertionError: ": 318
+  },
+  "root_cause": "auto_LiRPA 0.7.2 backward CROWN asserts that a broadcast multiplication constant has rank four while traversing the in-graph pixel-normalization scalar multiplication",
+  "scientific_use": "none; exact route-analysis artifacts remain retained for provenance but no B3 expert result or table from r2 is accepted",
+  "audit_correction": "the original r2 audit incorrectly passed because it checked artifact identity and verdict promotion but omitted backend ERROR and incomplete-bound counts; the hardened auditor rejects this run",
+  "artifacts": {
+    "prepare_sha256": "641273a5f1fd191eb4f501c21d7247265d1dbe9156f16b845dba5a5c8292b73a",
+    "crown_sha256": "31cd59739b0fa591db59035db662d80ec3ad19008a588007051d72254dc08e14",
+    "crown_rows_sha256": "bc9952cfa8c30bb45073f23fcf04ffb3b61639e51fc4a6a1915d5c7e3f6564dd",
+    "original_audit_sha256": "c4e6d8031d0fd743f53710e2ba5156502e8f172b559396a268d996a342cfca01",
+    "hardened_audit_sha256": "9d51b05c43b3838ec4555466ff93b5b04453b6c2c90d6304f2289fdaf8a94e87",
+    "hardened_audit_status": "FAIL_WITH_4_ISSUES"
+  },
+  "successor": "icml2025_b3_seed0_r3.json",
+  "successor_change_scope": "backend representation and audit hardening only; sample selection, radii, route feasibility, expert property, method, and numerical verdict semantics are unchanged"
+}

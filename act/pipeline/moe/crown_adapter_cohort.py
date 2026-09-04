@@ -460,7 +460,7 @@ def _crown_bounds(
         lower = lower.to(device=device, dtype=dtype)
         upper = upper.to(device=device, dtype=dtype)
         build_started = time.monotonic()
-        bounded = BoundedModule(module, center, device=device)
+        bounded = BoundedModule(module, center, device=device, verbose=False)
         build_seconds = time.monotonic() - build_started
         bounded_input = BoundedTensor(
             center,

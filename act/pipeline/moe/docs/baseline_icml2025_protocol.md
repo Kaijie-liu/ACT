@@ -244,7 +244,16 @@ still agree across both identities before execution.
 
 ## B3 verification comparison
 
-The r2 comparison hard-gates on the audited B2 conversion result and uses 20
+The r2 attempt is permanently excluded: all 318 feasible branches hit the same
+auto_LiRPA 0.7.2 broadcast-multiply assertion in the pixel-normalization graph,
+and the original audit failed to count backend errors. The hardened auditor
+rejects that artifact with four issues. The r3 comparison moves the positive
+diagonal normalization outside the bound graph by mapping both box endpoints;
+the represented real set is unchanged. Any backend error or incomplete branch
+now fails the audit, and a 36-GiB free-memory gate prevents shared-GPU OOM from
+being misclassified as an expert result.
+
+The r3 comparison hard-gates on the audited B2 conversion result and uses 20
 deterministic clean-correct samples from the same converted checkpoint:
 
 1. explicit route-invariance baseline;

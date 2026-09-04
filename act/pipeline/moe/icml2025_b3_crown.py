@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 from collections import Counter
 import copy
+import gc
 import importlib.metadata
 import json
 import os
@@ -25,9 +26,9 @@ import torch
 from act.pipeline.moe.crown_adapter_cohort import _crown_bounds
 from act.pipeline.moe.experiment1 import PROJECT_ROOT, WRITE_ROOT, _inside, _sha256
 from act.pipeline.moe.icml2025_b3 import (
-    PixelNormalizedExpert,
     _nvidia_driver_version,
     _package_version_or_unavailable,
+    normalize_unit_pixel_box,
 )
 from act.pipeline.moe.icml2025_route_telemetry import (
     OFFICIAL_COMMIT,
@@ -54,6 +55,51 @@ def _repo_value(*args: str) -> str:
     return subprocess.run(
         ["git", *args], cwd=OFFICIAL_REPO, check=True, text=True, capture_output=True
     ).stdout.strip()
+
+
+def _gpu_free_gib() -> float:
+    completed = subprocess.run(
+        [
+            "nvidia-smi",
+            "--query-gpu=memory.free",
+            "--format=csv,noheader,nounits",
+        ],
+        check=True,
+        text=True,
+        capture_output=True,
+    )
+    values = [float(row.strip()) / 1024.0 for row in completed.stdout.splitlines()]
+    if len(values) != 1:
+        raise RuntimeError("B3 requires exactly one visible GPU")
+    return values[0]
+
+
+def _wait_for_gpu_memory(
+    *, minimum_free_gib: float, poll_seconds: float, max_wait_seconds: float
+) -> dict[str, Any]:
+    started = time.monotonic()
+    observations = 0
+    minimum_observed = float("inf")
+    while True:
+        free_gib = _gpu_free_gib()
+        observations += 1
+        minimum_observed = min(minimum_observed, free_gib)
+        elapsed = time.monotonic() - started
+        if free_gib >= minimum_free_gib:
+            return {
+                "status": "PASSED",
+                "minimum_free_gib": minimum_free_gib,
+                "free_gib_at_release": free_gib,
+                "minimum_observed_free_gib": minimum_observed,
+                "observations": observations,
+                "wait_seconds": elapsed,
+            }
+        if elapsed >= max_wait_seconds:
+            raise RuntimeError(
+                f"GPU resource gate timed out with {free_gib:.3f} GiB free; "
+                f"required {minimum_free_gib:.3f} GiB"
+            )
+        time.sleep(poll_seconds)
 
 
 def _top1_property_rows(prediction: int, classes: int = 10):
@@ -98,6 +144,12 @@ def run(prepare_path: Path, output_path: Path) -> dict[str, Any]:
     method = str(config["crown"]["method"])
     device = str(config["crown"]["device"])
     tolerance = float(config["numerical"]["safe_positive_margin"])
+    gate_config = config["crown"].get("resource_gate", {})
+    resource_gate = _wait_for_gpu_memory(
+        minimum_free_gib=float(gate_config.get("minimum_free_gib", 36.0)),
+        poll_seconds=float(gate_config.get("poll_seconds", 300.0)),
+        max_wait_seconds=float(gate_config.get("max_wait_hours", 24.0)) * 3600.0,
+    )
     output_path.parent.mkdir(parents=True, exist_ok=True)
     rows_path = output_path.with_suffix(output_path.suffix + ".rows.jsonl")
     started = time.monotonic()
@@ -117,9 +169,9 @@ def run(prepare_path: Path, output_path: Path) -> dict[str, Any]:
             with np.load(hull_artifact, allow_pickle=False) as hull_arrays:
                 lower = torch.from_numpy(hull_arrays["lower"].copy()).unsqueeze(0)
                 upper = torch.from_numpy(hull_arrays["upper"].copy()).unsqueeze(0)
-            center = (lower + upper) / 2.0
+            center, lower, upper = normalize_unit_pixel_box(lower, upper)
             prediction = int(prepare["rows"][slot]["hard_prediction"])
-            expert = PixelNormalizedExpert(copy.deepcopy(model.experts[expert_index]))
+            expert = copy.deepcopy(model.experts[expert_index])
             crown = _crown_bounds(
                 expert,
                 center,
@@ -149,6 +201,10 @@ def run(prepare_path: Path, output_path: Path) -> dict[str, Any]:
             branch_results.append(record)
             by_row.setdefault(row_id, []).append(record)
             _append_json(rows_handle, record)
+            del expert
+            gc.collect()
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
 
     def aggregate_route_a(prepared_row: dict[str, Any]) -> tuple[str, bool, set[int], set[int]]:
         records = by_row.get(str(prepared_row["row_id"]), [])
@@ -244,9 +300,19 @@ def run(prepare_path: Path, output_path: Path) -> dict[str, Any]:
             ),
             "formal_safe_count": 0,
         }
+    backend_error_count = sum(
+        record["crown"]["status"] == "ERROR" for record in branch_results
+    )
+    incomplete_bound_count = sum(
+        not bool(record["crown"].get("complete", False)) for record in branch_results
+    )
     summary = {
         "schema_version": 1,
-        "status": "COMPLETED_NUMERICAL_CONFORMANCE_ONLY",
+        "status": (
+            "COMPLETED_NUMERICAL_CONFORMANCE_ONLY"
+            if backend_error_count == 0 and incomplete_bound_count == 0
+            else "FAILED_BACKEND_INCOMPLETE"
+        ),
         "prepare": {"path": str(prepare_path), "sha256": _sha256(prepare_path)},
         "checkpoint": prepare["checkpoint"],
         "rows_artifact": {"path": str(rows_path), "sha256": _sha256(rows_path)},
@@ -254,6 +320,9 @@ def run(prepare_path: Path, output_path: Path) -> dict[str, Any]:
         "fixed_radius_samples": fixed_radius_results,
         "fixed_radius_table": fixed_table,
         "branches": len(branch_results),
+        "backend_error_count": backend_error_count,
+        "incomplete_bound_count": incomplete_bound_count,
+        "resource_gate": resource_gate,
         "branch_crown_status_counts": dict(
             Counter(record["crown"]["status"] for record in branch_results)
         ),

@@ -15,11 +15,13 @@ from act.pipeline.moe.icml2025_b3 import (
     PixelNormalizedExpert,
     audit_router_optimizer_state,
     formula_leaf,
+    normalize_unit_pixel_box,
     route_applicability_census,
     route_status_at_epsilon,
     select_boundary_cohort,
     top1_guard,
 )
+from act.pipeline.moe.audit_icml2025_b3 import crown_backend_failure_counts
 
 
 class BoundaryCohortTest(unittest.TestCase):
@@ -127,9 +129,30 @@ class PixelNormalizationTest(unittest.TestCase):
         ) / torch.tensor([51.5865, 50.847, 51.255])[None, :, None, None]
         torch.testing.assert_close(wrapper(pixels), expected.flatten(1))
 
+    def test_external_box_transform_is_exact_for_positive_affine_map(self) -> None:
+        lower = torch.tensor(
+            [[[[0.0, 0.2]], [[0.1, 0.3]], [[0.4, 0.8]]]],
+            dtype=torch.float32,
+        )
+        upper = lower + 0.1
+        center, normalized_lower, normalized_upper = normalize_unit_pixel_box(
+            lower, upper
+        )
+        explicit_lower = PixelNormalizedExpert(nn.Identity())(lower)
+        explicit_upper = PixelNormalizedExpert(nn.Identity())(upper)
+        torch.testing.assert_close(normalized_lower, explicit_lower)
+        torch.testing.assert_close(normalized_upper, explicit_upper)
+        torch.testing.assert_close(center, (explicit_lower + explicit_upper) / 2.0)
+
+    def test_external_box_transform_rejects_invalid_box(self) -> None:
+        lower = torch.ones(1, 3, 1, 1)
+        upper = torch.zeros(1, 3, 1, 1)
+        with self.assertRaises(ValueError):
+            normalize_unit_pixel_box(lower, upper)
+
     def test_config_freezes_final_seed0_endpoint(self) -> None:
         path = Path(
-            "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/icml2025_b3_seed0_r2.json"
+            "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/icml2025_b3_seed0_r3.json"
         )
         config = json.loads(path.read_text(encoding="utf-8"))
         self.assertEqual(config["checkpoint"], {
@@ -154,6 +177,16 @@ class PixelNormalizationTest(unittest.TestCase):
         self.assertIn("nvidia_driver_version", identity["required_manifest_fields"])
         self.assertIn("preprocessing_graph", identity["required_manifest_fields"])
         self.assertIn("missing or changed identity fields fail closed", identity["policy"])
+
+
+class B3AuditHardeningTest(unittest.TestCase):
+    def test_backend_errors_and_incomplete_bounds_fail_closed(self) -> None:
+        rows = [
+            {"crown": {"status": "ERROR", "complete": False}},
+            {"crown": {"status": "UNKNOWN", "complete": False}},
+            {"crown": {"status": "CERTIFIED_MARGIN_FILTER", "complete": True}},
+        ]
+        self.assertEqual(crown_backend_failure_counts(rows), (1, 2))
 
 
 class RouterOptimizerProvenanceTest(unittest.TestCase):

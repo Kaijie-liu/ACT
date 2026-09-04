@@ -19,6 +19,20 @@ from act.pipeline.moe.icml2025_b3 import (
 )
 
 
+def crown_backend_failure_counts(
+    rows: list[dict[str, Any]],
+) -> tuple[int, int]:
+    """Count backend exceptions and all branches lacking finite complete bounds."""
+
+    backend_errors = sum(
+        row.get("crown", {}).get("status") == "ERROR" for row in rows
+    )
+    incomplete_bounds = sum(
+        not bool(row.get("crown", {}).get("complete", False)) for row in rows
+    )
+    return backend_errors, incomplete_bounds
+
+
 def _write_json(path: Path, value: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("x", encoding="utf-8") as handle:
@@ -130,6 +144,15 @@ def run(prepare_path: Path, crown_path: Path, output_path: Path) -> dict[str, An
     )
     if len(crown_branches) != expected_feasible or crown["branches"] != expected_feasible:
         issues.append("CROWN feasible-branch count changed")
+    backend_errors, incomplete_bounds = crown_backend_failure_counts(crown_branches)
+    if backend_errors:
+        issues.append(f"CROWN backend errors are nonzero: {backend_errors}")
+    if incomplete_bounds:
+        issues.append(f"CROWN incomplete branch bounds are nonzero: {incomplete_bounds}")
+    if int(crown.get("backend_error_count", -1)) != backend_errors:
+        issues.append("CROWN backend-error summary failed recomputation")
+    if int(crown.get("incomplete_bound_count", -1)) != incomplete_bounds:
+        issues.append("CROWN incomplete-bound summary failed recomputation")
     if int(crown.get("formal_safe_count", -1)) != 0:
         issues.append("non-outward CROWN result was promoted to formal SAFE")
     prohibited = {"SAFE", "UNSAFE"}
@@ -172,6 +195,8 @@ def run(prepare_path: Path, crown_path: Path, output_path: Path) -> dict[str, An
         "fixed_radius_rows": len(fixed_rows),
         "branch_attempts": len(branches),
         "feasible_branches": expected_feasible,
+        "backend_errors": backend_errors,
+        "incomplete_bounds": incomplete_bounds,
         "fixed_radius_table": recomputed_table,
         "formal_safe_count": int(crown.get("formal_safe_count", -1)),
         "claim_scope": (
