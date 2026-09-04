@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "status": "PERMANENTLY_EXCLUDED_PARTIAL_RESOURCE_FAILURE",
+  "result_directory": "/data1/Kane/MOE/ACT/data/moe/results/icml2025_rt_er_b3_seed0_r4",
+  "prepare_status": "COMPLETED",
+  "branch_attempts": 480,
+  "feasible_branches": 318,
+  "crown_rows_written": 107,
+  "crown_status_counts": {
+    "CERTIFIED_MARGIN_FILTER": 81,
+    "UNKNOWN_RELAXATION": 25,
+    "ERROR": 1
+  },
+  "first_error": {
+    "row_id": "fixed:1:11",
+    "dataset_index": 21,
+    "expert": 3,
+    "type": "CUDA_OUT_OF_MEMORY",
+    "allocated_gib_before_failed_allocation": 23.92,
+    "failed_allocation_gib": 3.41,
+    "free_gib": 2.09
+  },
+  "maximum_completed_branch_peak_cuda_memory_gib": 25.034132957458496,
+  "scientific_use": "none; partial positive filters are retained but cannot enter an aggregate B3 table",
+  "stop_reason": "the first backend error makes the final fail-closed audit impossible; the run was stopped to avoid further contention with external GPU processes",
+  "artifacts": {
+    "prepare_sha256": "22123fa247639ff6902276805b40ee5b677cc4c25afbeabe27f8c7150c54aab0",
+    "partial_crown_rows_sha256": "c2b5c3286b24f935330c1adab0535ecdbb7edc55fec1cf7a48bfd74e689f3342",
+    "log_sha256": "52229c4e51a9a3d5c087e23f9bca9190d0067a6e634bfd7c0d4d274a65d49a01"
+  },
+  "successor": "icml2025_b3_seed0_r5.json",
+  "successor_change_scope": "48-GiB initial and per-branch resource gates only; method remains no-gradient plain CROWN and all scientific settings remain unchanged"
+}

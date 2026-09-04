@@ -64,7 +64,7 @@ from act.pipeline.moe.icml2025_route_telemetry import (
 from act.util.path_config import get_torchvision_data_root
 
 
-DEFAULT_CONFIG = PROJECT_ROOT / "act/pipeline/moe/configs/icml2025_b3_seed0_r4.json"
+DEFAULT_CONFIG = PROJECT_ROOT / "act/pipeline/moe/configs/icml2025_b3_seed0_r5.json"
 CROWN_PYTHON = Path("/data1/Kane/MOE/envs/alpha-beta-crown/bin/python")
 CROWN_WORKER = PROJECT_ROOT / "act/pipeline/moe/icml2025_b3_crown.py"
 

@@ -152,7 +152,7 @@ class PixelNormalizationTest(unittest.TestCase):
 
     def test_config_freezes_final_seed0_endpoint(self) -> None:
         path = Path(
-            "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/icml2025_b3_seed0_r4.json"
+            "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/icml2025_b3_seed0_r5.json"
         )
         config = json.loads(path.read_text(encoding="utf-8"))
         self.assertEqual(config["checkpoint"], {
@@ -166,6 +166,7 @@ class PixelNormalizationTest(unittest.TestCase):
         self.assertEqual(config["b2_gate"]["required_issue_count"], 0)
         self.assertFalse(config["crown"]["gradient_tracking"])
         self.assertEqual(config["crown"]["method"], "CROWN")
+        self.assertEqual(config["crown"]["resource_gate"]["minimum_free_gib"], 48.0)
         self.assertEqual(
             config["primary_table_epsilon_over_255"],
             [0.5, 1.0, 2.0, 4.0, 8.0],

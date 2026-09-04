@@ -1219,6 +1219,14 @@ completed the same plain-CROWN call in 5.49 seconds with nine finite lower
 bounds; CROWN-IBP was tested only as a diagnostic and did not replace the
 registered method.
 
+r4 then completed 106/318 branch bounds under shared-GPU pressure before
+`fixed:1:11` required a further 3.41 GiB while only 2.09 GiB remained. The
+107-row partial artifact contains 81 positive filters, 25 relaxation UNKNOWNs,
+and one CUDA OOM; it is permanently excluded from aggregate reporting. r5
+retains no-gradient plain CROWN, raises the resource gate to 48 GiB, and applies
+the gate before every feasible branch so an external allocation cannot silently
+invalidate a later row. No r4 partial count is carried into r5.
+
 The B3 execution hard
 gates on the zero-issue B2 r3 audit and freezes
 the first 20 deterministic clean-correct test indices whose exact affine route

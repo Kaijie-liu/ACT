@@ -164,6 +164,26 @@ def run(prepare_path: Path, crown_path: Path, output_path: Path) -> dict[str, An
         for branch in crown_branches
     ):
         issues.append("CROWN branch gradient-tracking policy changed")
+    expected_free_gib = float(
+        config.get("crown", {}).get("resource_gate", {}).get(
+            "minimum_free_gib", 36.0
+        )
+    )
+    initial_gate = crown.get("resource_gate", {})
+    if initial_gate.get("status") != "PASSED" or float(
+        initial_gate.get("minimum_free_gib", -1.0)
+    ) != expected_free_gib:
+        issues.append("CROWN initial resource gate changed")
+    bad_branch_gates = sum(
+        branch.get("resource_gate", {}).get("status") != "PASSED"
+        or float(
+            branch.get("resource_gate", {}).get("minimum_free_gib", -1.0)
+        )
+        != expected_free_gib
+        for branch in crown_branches
+    )
+    if bad_branch_gates:
+        issues.append(f"CROWN branch resource gates invalid: {bad_branch_gates}")
     if int(crown.get("formal_safe_count", -1)) != 0:
         issues.append("non-outward CROWN result was promoted to formal SAFE")
     prohibited = {"SAFE", "UNSAFE"}

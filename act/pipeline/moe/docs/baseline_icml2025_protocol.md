@@ -261,6 +261,12 @@ r4 records this execution identity explicitly, retains method `CROWN`, and uses
 an 18-GiB gate. CROWN-IBP remains a separately observed diagnostic and is not a
 substitute for the registered backend.
 
+The 18-GiB r4 gate was empirically insufficient: after 106 complete bounds,
+one branch needed 3.41 GiB beyond its 23.92-GiB current allocation while only
+2.09 GiB was free. The partial run is excluded. r5 uses a 48-GiB gate before
+the run and before each feasible branch; it retains the same no-gradient plain
+CROWN computation and must restart from a fresh result directory.
+
 The r3 comparison hard-gates on the audited B2 conversion result and uses 20
 deterministic clean-correct samples from the same converted checkpoint:
 

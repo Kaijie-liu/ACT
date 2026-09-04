@@ -156,10 +156,20 @@ def run(prepare_path: Path, output_path: Path) -> dict[str, Any]:
     started = time.monotonic()
     branch_results: list[dict[str, Any]] = []
     by_row: dict[str, list[dict[str, Any]]] = {}
+    branch_resource_wait_seconds = 0.0
     with rows_path.open("x", encoding="utf-8") as rows_handle:
         for branch in prepare["branches"]:
             if branch["feasibility"] == "infeasible":
                 continue
+            branch_resource_gate = _wait_for_gpu_memory(
+                minimum_free_gib=float(gate_config.get("minimum_free_gib", 36.0)),
+                poll_seconds=float(gate_config.get("poll_seconds", 300.0)),
+                max_wait_seconds=float(gate_config.get("max_wait_hours", 24.0))
+                * 3600.0,
+            )
+            branch_resource_wait_seconds += float(
+                branch_resource_gate["wait_seconds"]
+            )
             slot = int(branch["sample_slot"])
             expert_index = int(branch["expert"])
             cohort = str(branch.get("cohort", "boundary_adaptive"))
@@ -199,6 +209,7 @@ def run(prepare_path: Path, output_path: Path) -> dict[str, Any]:
                     if crown["status"] == "CERTIFIED_MARGIN_FILTER"
                     else "UNKNOWN"
                 ),
+                "resource_gate": branch_resource_gate,
             }
             branch_results.append(record)
             by_row.setdefault(row_id, []).append(record)
@@ -325,6 +336,7 @@ def run(prepare_path: Path, output_path: Path) -> dict[str, Any]:
         "backend_error_count": backend_error_count,
         "incomplete_bound_count": incomplete_bound_count,
         "resource_gate": resource_gate,
+        "branch_resource_wait_seconds": branch_resource_wait_seconds,
         "gradient_tracking_enabled": track_gradients,
         "branch_crown_status_counts": dict(
             Counter(record["crown"]["status"] for record in branch_results)
