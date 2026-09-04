@@ -360,6 +360,8 @@ def main() -> None:
     args = parser.parse_args()
     result = run(args.prepare, args.output)
     print(json.dumps(result, indent=2, sort_keys=True))
+    if result["status"] != "COMPLETED_NUMERICAL_CONFORMANCE_ONLY":
+        raise SystemExit(1)
 
 
 if __name__ == "__main__":
