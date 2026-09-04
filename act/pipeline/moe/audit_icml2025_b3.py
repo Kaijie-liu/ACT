@@ -153,6 +153,17 @@ def run(prepare_path: Path, crown_path: Path, output_path: Path) -> dict[str, An
         issues.append("CROWN backend-error summary failed recomputation")
     if int(crown.get("incomplete_bound_count", -1)) != incomplete_bounds:
         issues.append("CROWN incomplete-bound summary failed recomputation")
+    expected_gradient_tracking = bool(
+        config.get("crown", {}).get("gradient_tracking", True)
+    )
+    if bool(crown.get("gradient_tracking_enabled")) != expected_gradient_tracking:
+        issues.append("CROWN gradient-tracking summary changed")
+    if any(
+        bool(branch.get("crown", {}).get("gradient_tracking_enabled"))
+        != expected_gradient_tracking
+        for branch in crown_branches
+    ):
+        issues.append("CROWN branch gradient-tracking policy changed")
     if int(crown.get("formal_safe_count", -1)) != 0:
         issues.append("non-outward CROWN result was promoted to formal SAFE")
     prohibited = {"SAFE", "UNSAFE"}

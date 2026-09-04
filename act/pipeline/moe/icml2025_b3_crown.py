@@ -143,6 +143,7 @@ def run(prepare_path: Path, output_path: Path) -> dict[str, Any]:
     config = prepare["config"]["value"]
     method = str(config["crown"]["method"])
     device = str(config["crown"]["device"])
+    track_gradients = bool(config["crown"].get("gradient_tracking", True))
     tolerance = float(config["numerical"]["safe_positive_margin"])
     gate_config = config["crown"].get("resource_gate", {})
     resource_gate = _wait_for_gpu_memory(
@@ -181,6 +182,7 @@ def run(prepare_path: Path, output_path: Path) -> dict[str, Any]:
                 device=device,
                 tolerance=tolerance,
                 method=method,
+                track_gradients=track_gradients,
             )
             record = {
                 "cohort": cohort,
@@ -323,6 +325,7 @@ def run(prepare_path: Path, output_path: Path) -> dict[str, Any]:
         "backend_error_count": backend_error_count,
         "incomplete_bound_count": incomplete_bound_count,
         "resource_gate": resource_gate,
+        "gradient_tracking_enabled": track_gradients,
         "branch_crown_status_counts": dict(
             Counter(record["crown"]["status"] for record in branch_results)
         ),

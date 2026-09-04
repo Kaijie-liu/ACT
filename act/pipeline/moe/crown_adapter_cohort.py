@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import argparse
 from collections import Counter
+from contextlib import nullcontext
 import copy
 import hashlib
 import importlib.metadata
@@ -448,6 +449,7 @@ def _crown_bounds(
     device: str,
     tolerance: float,
     method: str,
+    track_gradients: bool = True,
 ) -> dict[str, Any]:
     started = time.monotonic()
     try:
@@ -459,6 +461,8 @@ def _crown_bounds(
         center = center.to(device=device, dtype=dtype)
         lower = lower.to(device=device, dtype=dtype)
         upper = upper.to(device=device, dtype=dtype)
+        if str(device).startswith("cuda"):
+            torch.cuda.reset_peak_memory_stats(device=device)
         build_started = time.monotonic()
         bounded = BoundedModule(module, center, device=device, verbose=False)
         build_seconds = time.monotonic() - build_started
@@ -480,9 +484,11 @@ def _crown_bounds(
                 dtype=dtype,
             )
         solve_started = time.monotonic()
-        bound_lower, bound_upper = bounded.compute_bounds(
-            x=(bounded_input,), C=C, method=method
-        )
+        gradient_context = nullcontext() if track_gradients else torch.no_grad()
+        with gradient_context:
+            bound_lower, bound_upper = bounded.compute_bounds(
+                x=(bounded_input,), C=C, method=method
+            )
         solve_seconds = time.monotonic() - solve_started
         lower_values = bound_lower.reshape(-1)
         upper_values = bound_upper.reshape(-1)
@@ -507,12 +513,18 @@ def _crown_bounds(
             "lower_bounds": lower_np.tolist(),
             "upper_bounds": upper_np.tolist(),
             "property_rows": int(lower_np.size),
+            "gradient_tracking_enabled": track_gradients,
             "graph_build_seconds": build_seconds,
             "solve_seconds": solve_seconds,
             "seconds": time.monotonic() - started,
             "method": method,
             "dtype": str(dtype),
             "device": device,
+            "peak_cuda_memory_gib": (
+                float(torch.cuda.max_memory_allocated(device=device) / (1024**3))
+                if str(device).startswith("cuda")
+                else None
+            ),
             "acceptance_rule": f"finite CROWN lower bound >= {tolerance}",
             "numerical_soundness_status": (
                 "POSITIVE_MARGIN_FILTER_NOT_OUTWARD_ROUNDED"
@@ -532,6 +544,12 @@ def _crown_bounds(
             "seconds": time.monotonic() - started,
             "method": method,
             "device": device,
+            "gradient_tracking_enabled": track_gradients,
+            "peak_cuda_memory_gib": (
+                float(torch.cuda.max_memory_allocated(device=device) / (1024**3))
+                if str(device).startswith("cuda") and torch.cuda.is_available()
+                else None
+            ),
             "negative_bound_semantics": "UNKNOWN_NEVER_UNSAFE",
             "full_model_witness_valid": None,
             "error": f"{type(error).__name__}: {error}",

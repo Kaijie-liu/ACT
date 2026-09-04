@@ -26,19 +26,27 @@ class B3CrownBackendTest(unittest.TestCase):
         )
         torch.manual_seed(0)
         module = nn.Sequential(nn.Flatten(), nn.Linear(12, 2))
-        result = _crown_bounds(
-            module,
-            center,
-            normalized_lower,
-            normalized_upper,
+        kwargs = dict(
+            center=center,
+            lower=normalized_lower,
+            upper=normalized_upper,
             property_rows=((np.asarray([1.0, -1.0]), 0.0),),
             device="cpu",
             tolerance=1e-7,
             method="CROWN",
         )
+        tracked = _crown_bounds(module, track_gradients=True, **kwargs)
+        result = _crown_bounds(
+            module,
+            track_gradients=False,
+            **kwargs,
+        )
         self.assertNotEqual(result["status"], "ERROR")
         self.assertTrue(result["complete"])
         self.assertEqual(result["property_rows"], 1)
+        self.assertFalse(result["gradient_tracking_enabled"])
+        np.testing.assert_allclose(result["lower_bounds"], tracked["lower_bounds"])
+        np.testing.assert_allclose(result["upper_bounds"], tracked["upper_bounds"])
 
 
 if __name__ == "__main__":

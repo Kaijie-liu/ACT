@@ -1209,6 +1209,16 @@ CROWN environment, and the auditor now fails on any backend error or incomplete
 branch. The worker also waits for 36 GiB of free GPU memory rather than turning
 shared-GPU pressure into an OOM-shaped scientific result.
 
+The r3 prepare stage completed all 480 branch attempts and independently
+reproduced 318 feasible hulls. Its CROWN stage then waited at the frozen
+36-GiB resource gate without writing a branch result. A real official branch
+diagnostic established that autograd recording, which plain CROWN does not
+use, raised peak memory from 13.27 GiB to roughly 26.4 GiB. r4 therefore
+freezes `gradient_tracking=false` and an 18-GiB gate. The first official branch
+completed the same plain-CROWN call in 5.49 seconds with nine finite lower
+bounds; CROWN-IBP was tested only as a diagnostic and did not replace the
+registered method.
+
 The B3 execution hard
 gates on the zero-issue B2 r3 audit and freezes
 the first 20 deterministic clean-correct test indices whose exact affine route

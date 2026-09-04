@@ -253,6 +253,14 @@ the represented real set is unchanged. Any backend error or incomplete branch
 now fails the audit, and a 36-GiB free-memory gate prevents shared-GPU OOM from
 being misclassified as an expert result.
 
+r3 completed its 480-attempt prepare stage but was stopped while waiting at the
+36-GiB memory gate, before any CROWN row was written. A real branch showed that
+plain CROWN is gradient-free: disabling unused autograd recording preserved the
+bound computation while reducing peak memory from about 26.4 GiB to 13.27 GiB.
+r4 records this execution identity explicitly, retains method `CROWN`, and uses
+an 18-GiB gate. CROWN-IBP remains a separately observed diagnostic and is not a
+substitute for the registered backend.
+
 The r3 comparison hard-gates on the audited B2 conversion result and uses 20
 deterministic clean-correct samples from the same converted checkpoint:
 
