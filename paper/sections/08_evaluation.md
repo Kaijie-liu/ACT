@@ -167,7 +167,7 @@ produce the same certified set, while eta reduction certifies none. The result
 supports the narrower statement that guard value depends on a representation
 that retains the path constraint.
 
-## Table 1: official RT-ER comparison [pending]
+## Table 1: official RT-ER numerical conformance result
 
 The official-code compatibility target is now concrete. Seed 0 completes all
 130 epochs but lands at 34.22% ordered-test SA and 32.70% independently replayed
@@ -178,23 +178,30 @@ accuracy nor a configuration ambiguity is an output certificate. Seed 1 is the
 registered follow-up required before pipeline-level reproduction wording; B3
 retains seed 0 as the released-pipeline product regardless of that outcome.
 
-The main official-scale table has one row per registered radius and the
-following columns. A row is complete only when every count has an independent
-audit, all unsafe outputs replay, and the common expert backend and budget are
-identical between the first two method columns.
+The fail-closed r5 run completes all 318 exact-feasible branches with zero
+backend errors, zero incomplete bounds, and an independent zero-issue audit.
+The installed backward-CROWN path is not outward rounded. Consequently the
+table reports positive-margin *filters*, never formal SAFE certificates; all
+formal SAFE counts remain zero and every negative relaxation bound remains
+UNKNOWN. Times are summed expert-branch CROWN time on the same frozen 20 clean-
+correct inputs, excluding the one-time resource wait.
 
-| Radius | Exact route-stable fraction | Route invariance + CROWN: certified / time | Route A + CROWN: certified / time | HZ reference subset | Theorem 5.4 sound / empirical provider state | PGD-50 upper bound |
-|---:|---:|---:|---:|---:|---:|---:|
-| 0.5/255 | pending | pending | pending | pending | pending | pending |
-| 1/255 | pending | pending | pending | pending | pending | pending |
-| 2/255 | pending | pending | pending | pending | pending | pending |
-| 4/255 | pending | pending | pending | pending | pending | pending |
-| 8/255 | pending | pending | pending | pending | pending | pending |
+| Radius | Full-test exact route-stable | Route invariance filter / branch s | Route A filter / branch s | Route A candidate-count distribution |
+|---:|---:|---:|---:|---:|
+| 0.5/255 | 5,915/10,000 | 12/20 / 23.59 | 17/20 / 55.87 | 1:13, 2:6, 3:1 |
+| 1/255 | 3,361/10,000 | 8/20 / 15.68 | 14/20 / 86.43 | 1:8, 2:7, 3:4, 4:1 |
+| 2/255 | 883/10,000 | 3/20 / 2.25 | 7/20 / 156.92 | 1:3, 2:4, 3:5, 4:8 |
+| 4/255 | 32/10,000 | 0/20 / 0 | 2/20 / 240.29 | 2:1, 3:4, 4:15 |
+| 8/255 | 0/10,000 | 0/20 / 0 | 0/20 / 328.51 | 4:20 |
 
-The table must additionally report candidate-count distributions and the cost
-of verifying all feasible experts. The 8/255 row is an applicability extreme,
-not the sole headline; the non-degenerate comparison is expected at smaller
-radii. Interim B1 accuracy and router census values cannot populate this table.
+The boundary-adaptive complement contains 20/20 exactly route-unstable inputs,
+each with two feasible experts. Route invariance is therefore inapplicable on
+all 20, while Route A obtains nine numerical positive-margin filters and leaves
+eleven UNKNOWN. This is the official-scale comparison's numerical-conformance
+shape, not yet its formal-certificate endpoint. The released hard/raw Theorem
+5.4 reading is not applicable on all 20 adaptive rows; the continuous surrogate
+is not applicable on 19 and vacuous at registered radii on one. The author-
+unspecified provider is likewise not a runnable baseline.
 
 ## AdvMoE two-path evaluation [pending]
 

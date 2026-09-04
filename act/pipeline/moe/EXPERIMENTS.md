@@ -2177,3 +2177,38 @@ independent replay failed the clean-clone gate before model loading. The files
 were moved to a recoverable, hash-recorded quarantine. Endpoint and audit
 subprocesses now disable bytecode writes, and a fresh attempt directory must
 pass replay before either number becomes a landed result.
+
+## B3 official-scale numerical conformance
+
+The accepted seed-0 B3 execution is `icml2025_rt_er_b3_seed0_r5`. Two earlier
+executions remain excluded: r2 exposed an auto_LiRPA broadcast-normalization
+assertion on every expert branch, while r4 stopped after one CUDA OOM among 107
+partial rows. The r5 successor changes only execution safety: normalization is
+folded exactly into the pixel-box endpoints, CROWN runs without autograd
+recording, and an initial plus per-branch 48-GiB free-memory gate prevents
+resource contention. The exact route analysis, sample identities, radii,
+candidate branches, expert properties, and CROWN method are unchanged.
+
+After waiting 23,102.06 seconds for the resource gate, r5 completed all 318
+feasible expert branches in 1,022.08 seconds with zero backend errors and zero
+incomplete bounds. Numerical backward CROWN produced 134 positive-margin
+filters and 184 relaxation-unknown branches. Median branch time was 2.94
+seconds; median and maximum peak CUDA memory were 20.17 and 36.38 GiB. The
+independent audit reports `PASS` with zero issues.
+
+On the frozen 20-sample fixed-radius cohort, Route A versus route-invariance
+positive-filter counts are `17/12`, `14/8`, `7/3`, `2/0`, and `0/0` at
+`0.5,1,2,4,8/255`. Route A verifies every exact feasible expert, so its branch
+times are correspondingly larger: 55.87, 86.43, 156.92, 240.29, and 328.51
+seconds versus 23.59, 15.68, 2.25, 0, and 0 seconds for the applicability-
+limited baseline. On the boundary-adaptive cohort, all 20 samples are exactly
+route-unstable; Route A produces nine positive filters and eleven UNKNOWN,
+while route invariance is inapplicable on all 20.
+
+These are deliberately not formal SAFE counts. The installed CROWN backend is
+not outward rounded, so every positive result is labeled
+`CERTIFIED_MARGIN_FILTER_NOT_FORMAL_SAFE`; formal SAFE remains exactly zero.
+Negative relaxation bounds remain UNKNOWN and never become UNSAFE. The tracked
+audit record is
+`results/baseline/icml2025_rt_er_b3_seed0_r5_audit.json`; raw prepare, row,
+CROWN, and audit artifacts remain under the immutable r5 result directory.

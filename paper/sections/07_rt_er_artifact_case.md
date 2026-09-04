@@ -135,15 +135,17 @@ underspecified, while the cyclic-LR wording and released initial rate are
 semantically ambiguous. Per the frozen asymmetric rule, seed 1 must land before
 any pipeline-level insufficiency wording.
 
-The official-scale comparison remains gated on B3 expert verification. The
-case-study findings do not substitute low accuracy or router census for that
-table. B3 will
-report, at every registered radius, the exact applicability fraction,
-route-invariance plus the common expert backend, route-conditioned coverage,
-the theorem-instantiation state under each constant provider, and an attack
-ceiling. Until those rows are independently audited, we claim an applicability
-gap and an executed verification-scale coverage advantage, not superiority on
-the official RT-ER model.
+The official-scale B3 r5 execution now completes all 318 feasible expert
+branches with zero backend errors, zero incomplete bounds, and a zero-issue
+independent audit. Its fixed-radius positive-filter counts favor Route A over
+the same applicability-limited expert backend at every nonzero-coverage radius:
+`17/12`, `14/8`, `7/3`, `2/0`, and `0/0` from 0.5 through 8/255. On 20 exact
+route-boundary inputs, Route A filters nine while route invariance is
+inapplicable on all 20. This closes the official-scale *numerical conformance*
+comparison, but not a formal certificate comparison: the installed CROWN path
+is not outward rounded, so formal SAFE remains zero by construction. We claim
+an audited applicability and numerical-coverage gap, not formal superiority on
+the official model.
 
 ## Responsible scope
 

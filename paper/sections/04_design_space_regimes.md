@@ -154,8 +154,10 @@ model.
 The three regimes do not cover token-level transformer MoE, capacity dropping,
 stateful routers, or unbounded expert families. The current top-(k) result
 assumes normalized non-negative selected gates, and the exact label applies
-only while the reachable router HZ has not been relaxed. Large-(E) evidence
-requires the pending lazy-enumeration scaling study. AdvMoE's official trained
-checkpoint and RT-ER B3 are pending; initialization diagnostics cannot stand in
-for either result. These boundaries are part of the method definition rather
-than post-hoc threats.
+only while the reachable router HZ has not been relaxed. The completed
+`E=4--64,k=2` lazy-enumeration study is synthetic scaling evidence, not a claim
+about arbitrary `k` or natural route-set prevalence. AdvMoE's official trained
+checkpoint remains pending. RT-ER B3 now supplies audited official-scale
+numerical conformance, but its non-outward-rounded CROWN filters are not formal
+certificates. These boundaries are part of the method definition rather than
+post-hoc threats.

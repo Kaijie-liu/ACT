@@ -1,0 +1,153 @@
+{
+  "schema_version": 1,
+  "status": "COMPLETED_AUDITED_NUMERICAL_CONFORMANCE_ONLY",
+  "result_directory": "/data1/Kane/MOE/ACT/data/moe/results/icml2025_rt_er_b3_seed0_r5",
+  "claim_scope": "Exact route analysis plus non-outward-rounded numerical CROWN positive-margin filters. No CROWN result is promoted to formal SAFE or UNSAFE.",
+  "checkpoint_identity": {
+    "label": "official-code, paper-config, Blackwell-compatible dependency reproduction, seed 0, epoch 130",
+    "clean_correct_samples": 3421,
+    "router_equal_epoch_10": true,
+    "router_parameters_with_optimizer_state": 0
+  },
+  "execution": {
+    "branch_attempts": 480,
+    "feasible_branches": 318,
+    "crown_rows": 318,
+    "backend_errors": 0,
+    "incomplete_bounds": 0,
+    "formal_safe_count": 0,
+    "crown_status_counts": {
+      "CERTIFIED_MARGIN_FILTER": 134,
+      "UNKNOWN_RELAXATION": 184
+    },
+    "crown_runtime_seconds": 1022.0799920279533,
+    "branch_compute_seconds": 949.2739084279165,
+    "median_branch_seconds": 2.9418828692287207,
+    "initial_resource_wait_seconds": 23102.055019985884,
+    "per_branch_resource_wait_seconds": 6.017156119458377,
+    "minimum_free_gpu_memory_gib": 48.0,
+    "free_gpu_memory_at_release_gib": 71.2841796875,
+    "median_peak_cuda_memory_gib": 20.168394088745117,
+    "maximum_peak_cuda_memory_gib": 36.37714147567749,
+    "gradient_tracking_enabled": false
+  },
+  "full_test_route_applicability": {
+    "0.5": {
+      "route_stable": 5915,
+      "route_unstable": 4085,
+      "denominator": 10000
+    },
+    "1.0": {
+      "route_stable": 3361,
+      "route_unstable": 6639,
+      "denominator": 10000
+    },
+    "2.0": {
+      "route_stable": 883,
+      "route_unstable": 9117,
+      "denominator": 10000
+    },
+    "4.0": {
+      "route_stable": 32,
+      "route_unstable": 9968,
+      "denominator": 10000
+    },
+    "8.0": {
+      "route_stable": 0,
+      "route_unstable": 10000,
+      "denominator": 10000
+    }
+  },
+  "fixed_radius_numerical_table": {
+    "0.5": {
+      "samples": 20,
+      "route_stable_samples": 13,
+      "feasible_branches": 28,
+      "candidate_count_distribution": {"1": 13, "2": 6, "3": 1},
+      "route_invariance_positive_filters": 12,
+      "route_a_positive_filters": 17,
+      "route_invariance_branch_seconds": 23.594940322451293,
+      "route_a_branch_seconds": 55.87099974602461
+    },
+    "1.0": {
+      "samples": 20,
+      "route_stable_samples": 8,
+      "feasible_branches": 38,
+      "candidate_count_distribution": {"1": 8, "2": 7, "3": 4, "4": 1},
+      "route_invariance_positive_filters": 8,
+      "route_a_positive_filters": 14,
+      "route_invariance_branch_seconds": 15.684763970784843,
+      "route_a_branch_seconds": 86.4289094209671
+    },
+    "2.0": {
+      "samples": 20,
+      "route_stable_samples": 3,
+      "feasible_branches": 58,
+      "candidate_count_distribution": {"1": 3, "2": 4, "3": 5, "4": 8},
+      "route_invariance_positive_filters": 3,
+      "route_a_positive_filters": 7,
+      "route_invariance_branch_seconds": 2.247135321609676,
+      "route_a_branch_seconds": 156.91640532109886
+    },
+    "4.0": {
+      "samples": 20,
+      "route_stable_samples": 0,
+      "feasible_branches": 74,
+      "candidate_count_distribution": {"2": 1, "3": 4, "4": 15},
+      "route_invariance_positive_filters": 0,
+      "route_a_positive_filters": 2,
+      "route_invariance_branch_seconds": 0.0,
+      "route_a_branch_seconds": 240.2862366763875
+    },
+    "8.0": {
+      "samples": 20,
+      "route_stable_samples": 0,
+      "feasible_branches": 80,
+      "candidate_count_distribution": {"4": 20},
+      "route_invariance_positive_filters": 0,
+      "route_a_positive_filters": 0,
+      "route_invariance_branch_seconds": 0.0,
+      "route_a_branch_seconds": 328.51168099138886
+    }
+  },
+  "boundary_adaptive_numerical_result": {
+    "samples": 20,
+    "all_samples_proven_route_unstable": true,
+    "all_samples_candidate_count": 2,
+    "route_invariance_status_counts": {"UNKNOWN_ROUTE_UNSTABLE": 20},
+    "route_a_status_counts": {
+      "CERTIFIED_MARGIN_FILTER_NOT_FORMAL_SAFE": 9,
+      "UNKNOWN": 11
+    },
+    "formal_safe_count": 0
+  },
+  "theorem_5_4_boundary_adaptive_leaves": {
+    "released_hard_raw": {"L1_NOT_APPLICABLE": 20},
+    "continuous_probability": {
+      "L1_NOT_APPLICABLE": 19,
+      "L2_VACUOUS_AT_REGISTERED_RADII": 1
+    },
+    "author_unspecified": {
+      "L1_NOT_APPLICABLE": 19,
+      "L1_NOT_FORMALLY_INSTANTIATED": 1
+    }
+  },
+  "audit": {
+    "status": "PASS",
+    "issue_count": 0,
+    "backend_errors": 0,
+    "incomplete_bounds": 0
+  },
+  "artifacts": {
+    "config_sha256": "dc855d561217089e019371cbc03f7f4c3939c61f010b0a1070bdf83518aa1e1f",
+    "prepare_sha256": "366437230b4605de32ef877b7dde6755f89cf6381ab0e9dc785c7803b0881594",
+    "crown_sha256": "ae3b8083aca015c1f3d8b22c254954f2b826eceb77a60719d01d147a3fbd771b",
+    "rows_sha256": "6b09b7c1dd77cef1685ee0c6d4fb20edf5102a0c4990452278743459229a757a",
+    "audit_sha256": "83c884bc5237258654d141a046986475be29dcfe0092f0f7d108f8200098e38b"
+  },
+  "excluded_predecessors": [
+    "icml2025_rt_er_b3_seed0_r2",
+    "icml2025_rt_er_b3_seed0_r4"
+  ],
+  "interpretation": "The exact route layer exposes a numerical coverage difference on the common CROWN expert filter, including 9/20 boundary-adaptive samples versus 0/20 for route invariance. Because the installed CROWN bounds are not outward rounded, these counts are numerical conformance evidence and not formal certificates."
+}

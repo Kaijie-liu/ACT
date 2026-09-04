@@ -788,13 +788,14 @@ bound on the true reachable margin.
   It cannot establish scaling to ResNet experts, token routing, intermediate
   MoE layers, larger expert counts, or other datasets.
 - The official-construction K=20 result studies exact affine-router geometry
-  only. It strengthens artifact applicability evidence but does not substitute
-  for B1/B3 expert verification.
-- Exact route-set enumeration is combinatorial in \(E\) and \(k\); the present
-  `E=8,k=2` implementation is not an expert-count scalability result.
-- P0a and P0b are complete. A true monolithic solver comparison and official
-  RT-ER B3 expert verification remain pending before official-scale certificate
-  claims.
+  only. B3 now adds official-scale numerical CROWN conformance, but its
+  non-outward-rounded filters are not formal certificates.
+- Lazy enumeration now has an audited `E=4--64,k=2` synthetic scaling result.
+  The all-tied worst case reaches 2,016 sets at E=64; this is not natural-model
+  prevalence or evidence for arbitrary `k`.
+- P0a, P0b, the monolithic comparison, and B3 r5 numerical conformance are
+  complete. Official-scale formal CROWN certificate claims remain gated on
+  outward-rounded or otherwise validated numerical bounds.
 - The AdvMoE init pilot still has a 100/100 sample-radius undecided band after
   100-step, 10-restart PGD and sparse backward CROWN. This is an init engineering
   result, not nonlinear-router applicability, stability, prevalence, or
