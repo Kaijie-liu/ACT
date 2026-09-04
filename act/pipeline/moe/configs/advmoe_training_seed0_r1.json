@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "status": "FROZEN_BEFORE_ENVIRONMENT_AND_EXECUTION",
+  "scope": "ADV_MOE_OFFICIAL_CODE_BLACKWELL_COMPATIBLE_DEPENDENCY_REPRODUCTION_SEED0",
+  "label": "official-code, Blackwell-compatible dependency reproduction",
+  "workspace_boundary": "/data1/Kane/MOE",
+  "official_source": {
+    "repository": "/data1/Kane/MOE/baselines/robust-moe-cnn",
+    "url": "https://github.com/optml-group/robust-moe-cnn.git",
+    "branch": "master",
+    "commit": "c50796fb8284512b6f6ad8e843f95182cec527cf",
+    "tree": "153d4ff9f30f34eb7fdd4caf670495122c5836e0",
+    "license": "NO_LICENSE_FILE",
+    "source_policy": "read and execute in place; do not copy source into ACT and do not modify the official clone"
+  },
+  "environment": {
+    "path": "/data1/Kane/MOE/envs/advmoe-blackwell",
+    "construction": "Python venv derived from act-py312 with system-site-packages; only missing official imports are installed into the isolated prefix",
+    "base_python": "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+    "base_versions": {
+      "python": "3.12.12",
+      "torch": "2.9.1+cu128",
+      "torchvision": "0.24.1+cu128",
+      "cuda": "12.8",
+      "numpy": "2.3.5",
+      "scipy": "1.16.3",
+      "pillow": "12.0.0",
+      "pyyaml": "6.0.3",
+      "tqdm": "4.67.1"
+    },
+    "additional_pins": {
+      "h5py": "3.16.0",
+      "lmdb": "2.3.0",
+      "datasets": "5.0.1",
+      "tensorboard": "2.21.0",
+      "easydict": "1.13"
+    },
+    "cache_roots": {
+      "pip": "/data1/Kane/MOE/cache/pip",
+      "huggingface": "/data1/Kane/MOE/cache/huggingface",
+      "torch": "/data1/Kane/MOE/cache/torch"
+    },
+    "declared_scipy_1_6_0": "not installed: incompatible with the frozen Python/Blackwell stack; resolved scipy 1.16.3 is recorded as a compatibility substitution"
+  },
+  "dataset": {
+    "name": "CIFAR10",
+    "interface": "official torchvision CIFAR10 used by the released source",
+    "source_root": "/data1/Kane/MOE/ACT/data/torchvision/CIFAR10/raw/cifar-10-batches-py",
+    "archive": "/data1/Kane/MOE/ACT/data/torchvision/CIFAR10/raw/cifar-10-python.tar.gz",
+    "archive_sha256": "6d958be074577803d12ecdefd02955f39262c83c16fe9348329d7fe0b5c001ce",
+    "run_data_root": "/data1/Kane/MOE/baseline_runs/advmoe/seed0_r1/data",
+    "download_allowed": false
+  },
+  "run": {
+    "root": "/data1/Kane/MOE/baseline_runs/advmoe/seed0_r1",
+    "log": "/data1/Kane/MOE/ACT/data/moe/logs/advmoe_official_seed0_r1.log",
+    "tmux_session": "moe-advmoe-official-s0-r1",
+    "seed": 0,
+    "dataset": "CIFAR10",
+    "arch": "resnet18_cifar_moe",
+    "n_expert": 2,
+    "ratio": 0.5,
+    "epochs": 100,
+    "batch_size": 128,
+    "test_batch_size": 128,
+    "num_workers_argument": 2,
+    "normalize": false,
+    "optimizer": "sgd",
+    "momentum": 0.9,
+    "weight_decay": 0.0005,
+    "learning_rate": 0.1,
+    "learning_rate_schedule": "cosine",
+    "router_optimizer_argument": "sgd",
+    "router_learning_rate_argument": 0.1,
+    "router_learning_rate_schedule_argument": "cosine",
+    "source_behavior_note": "released train_moe.py constructs and schedules the router optimizer from the main optimizer/lr fields, not the router-specific argument fields",
+    "epsilon": 0.03137254901960784,
+    "train_attack_steps": 2,
+    "train_attack_step_size": 0.0196078431372549,
+    "test_epsilon": 0.03137254901960784,
+    "test_attack_steps": 10,
+    "test_attack_step_size": 0.00784313725490196,
+    "alpha": 6.0,
+    "beta": 6.0,
+    "checkpoint_selection": "released code: best adversarial accuracy; test set participates in released checkpoint selection and is recorded as an artifact limitation",
+    "telemetry_config": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/advmoe_training_router_telemetry_r1.json"
+  },
+  "preflight_gates": {
+    "minimum_free_gpu_memory_gib": 48.0,
+    "minimum_free_disk_gib": 80.0,
+    "official_clone_clean": true,
+    "act_feature_branch_clean_and_synced": true,
+    "required_smoke_checks": [
+      "all declared imports",
+      "official CIFAR10 loader",
+      "one real batch forward and backward",
+      "expert parameter update",
+      "router parameter update",
+      "both optimizer states populated",
+      "checkpoint save and resume identity",
+      "sm_120 finite CUDA execution"
+    ]
+  },
+  "artifact_policy": {
+    "preserve_every_failure": true,
+    "do_not_overwrite_existing_run": true,
+    "checkpoint_redistribution": "hash and reproduction instructions only pending legal review because the source repository has no license file",
+    "no_silent_dependency_fallback": true,
+    "no_training_before_smoke_pass": true
+  }
+}

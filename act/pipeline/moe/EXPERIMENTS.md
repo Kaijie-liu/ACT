@@ -2221,3 +2221,26 @@ Negative relaxation bounds remain UNKNOWN and never become UNSAFE. The tracked
 audit record is
 `results/baseline/icml2025_rt_er_b3_seed0_r5_audit.json`; raw prepare, row,
 CROWN, and audit artifacts remain under the immutable r5 result directory.
+
+## AdvMoE official training seed 0
+
+With B3 r5 complete, the frozen third-party learned-router line advances to
+official CIFAR-10 training. `configs/advmoe_training_seed0_r1.json` fixes the
+official source at commit `c50796fb8`, the README's ResNet-18 MoE configuration
+(`E=2`, ratio 0.5), every released training default, seed 0, data/archive
+identity, resource gates, and telemetry linkage before any environment is
+created or training starts.
+
+The upstream repository has no license file and no executable environment pin.
+Its only pinned dependency, SciPy 1.6.0, is incompatible with the Python 3.12
+Blackwell stack. The run is therefore labeled `official-code, Blackwell-
+compatible dependency reproduction`: an isolated environment under
+`/data1/Kane/MOE/envs` inherits the already audited PyTorch 2.9.1/CUDA 12.8
+stack and pins only the missing imports. The official clone remains unmodified,
+external source is not copied into ACT, and checkpoint redistribution is
+withheld pending legal review.
+
+Training is forbidden until the isolated environment passes import, real
+CIFAR-10 loader, one-batch expert/router update, optimizer-state, checkpoint-
+resume, and finite `sm_120` smoke checks. All caches, data links, logs,
+checkpoints, telemetry, and failure artifacts remain under `/data1/Kane/MOE`.
