@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "status": "PREREGISTERED_NOT_RUN",
+  "scope": "ADV_MOE_SEED0_INIT_BEST_FINAL_ENDPOINT_TELEMETRY",
+  "workspace_boundary": "/data1/Kane/MOE",
+  "act_repository": "/data1/Kane/MOE/ACT",
+  "required_branch": "feat/moe-route-verification",
+  "official_source": {
+    "repository": "/data1/Kane/MOE/baselines/robust-moe-cnn",
+    "commit": "c50796fb8284512b6f6ad8e843f95182cec527cf",
+    "tree": "153d4ff9f30f34eb7fdd4caf670495122c5836e0"
+  },
+  "training_config": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/advmoe_training_seed0_r3.json",
+  "training_audit": "/data1/Kane/MOE/ACT/act/pipeline/moe/results/baseline/advmoe_training_seed0_r3_audit.json",
+  "dataset_archive": "/data1/Kane/MOE/ACT/data/torchvision/CIFAR10/raw/cifar-10-python.tar.gz",
+  "dataset_archive_sha256": "6d958be074577803d12ecdefd02955f39262c83c16fe9348329d7fe0b5c001ce",
+  "output_dir": "/data1/Kane/MOE/ACT/data/moe/results/advmoe_training_endpoint_telemetry_seed0_r1",
+  "model_states": [
+    {
+      "label": "INIT_SEED0",
+      "kind": "OFFICIAL_CONSTRUCTION_ORDER_INIT",
+      "seed": 0
+    },
+    {
+      "label": "BEST_RELEASED_RA",
+      "kind": "CHECKPOINT",
+      "epoch": 90,
+      "path": "/data1/Kane/MOE/baseline_runs/advmoe/seed0_r3/results/training/train_moe/official_seed0_r3_CIFAR10-resnet18_cifar_moe-ratio0.5-epochs100-lr0.1-eps8-steps2-beta6.0-expert2--seed0/checkpoint/model_best.pth.tar",
+      "sha256": "2b764ba110d110a6e9f17e8ff76f4dfd951c5947d84bb4fde865eab997e642c1"
+    },
+    {
+      "label": "FINAL",
+      "kind": "CHECKPOINT",
+      "epoch": 100,
+      "path": "/data1/Kane/MOE/baseline_runs/advmoe/seed0_r3/results/training/train_moe/official_seed0_r3_CIFAR10-resnet18_cifar_moe-ratio0.5-epochs100-lr0.1-eps8-steps2-beta6.0-expert2--seed0/checkpoint/checkpoint.pth.tar",
+      "sha256": "4ba196d18044b23716ca884c763bd1322154cb0d6375af520371a3d57ba8365a"
+    }
+  ],
+  "batch_norm_semantics": [
+    "EVAL_CURRENT_RUNNING_STATS",
+    "TRAIN_ORDERED_TEST_BATCH_STATS"
+  ],
+  "batch_size": 128,
+  "device": "cuda:0",
+  "torch_threads": 2,
+  "minimum_free_gpu_memory_gib": 48.0,
+  "diagnostic_subset_indices": [
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+    10, 11, 12, 13, 14, 15, 16, 17, 18, 19
+  ],
+  "strong_pgd": {
+    "epsilon": 0.03137254901960784,
+    "steps": 100,
+    "restarts": 10,
+    "step_divisor": 4.0,
+    "seed": 20260905
+  },
+  "interpretation": {
+    "eval_semantics": "single-input deployment function using checkpoint running statistics",
+    "train_semantics": "ordered-test co-batch diagnostic only; not a single-input verification function",
+    "attack": "empirical route witness search, never a stability certificate",
+    "formal_claims": "none; endpoint telemetry and attack diagnostics only"
+  }
+}
