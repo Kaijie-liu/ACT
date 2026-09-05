@@ -17,6 +17,9 @@ from typing import Any, Iterable
 import torch
 
 from act.pipeline.moe.advmoe_training_smoke import build_official_args
+from act.pipeline.moe.advmoe_softmax_underflow_bridge import (
+    SoftmaxUnderflowGradientBridge,
+)
 from act.pipeline.moe.audit_advmoe_training import floating_tensor_summary
 
 
@@ -357,13 +360,19 @@ def run(config_path: Path) -> dict[str, Any]:
     started = time.monotonic()
     caught = None
     runtime_failure = None
+    bridge = None
     try:
         anomaly_context = (
             torch.autograd.detect_anomaly(check_nan=True)
             if config.get("autograd_anomaly_detection") is True
             else nullcontext()
         )
-        with anomaly_context:
+        bridge_context = (
+            SoftmaxUnderflowGradientBridge()
+            if config.get("softmax_underflow_gradient_bridge") is True
+            else nullcontext()
+        )
+        with anomaly_context, bridge_context as bridge:
             trainer(
                 model,
                 router,
@@ -427,6 +436,12 @@ def run(config_path: Path) -> dict[str, Any]:
         "router_forward_log": forward_log,
         "first_nonfinite": failure,
         "final_main_without_router": floating_tensor_summary(main_without_router),
+        "final_router": _router_failure_details(router, router_optimizer),
+        "softmax_underflow_gradient_bridge": (
+            bridge.summary()
+            if isinstance(bridge, SoftmaxUnderflowGradientBridge)
+            else None
+        ),
         "interpretation": config["interpretation"],
     }
     output.parent.mkdir(parents=True, exist_ok=True)

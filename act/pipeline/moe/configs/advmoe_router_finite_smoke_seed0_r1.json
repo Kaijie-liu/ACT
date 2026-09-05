@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "status": "PREREGISTERED_NOT_RUN",
+  "scope": "ADV_MOE_COMPATIBILITY_VARIANT_SOFTMAX_UNDERFLOW_BRIDGE_FINITE_SMOKE",
+  "label": "official-code numerical-compatibility variant; softmax-underflow gradient bridge",
+  "workspace_boundary": "/data1/Kane/MOE",
+  "act_repository": "/data1/Kane/MOE/ACT",
+  "required_branch": "feat/moe-route-verification",
+  "official_source": {
+    "repository": "/data1/Kane/MOE/baselines/robust-moe-cnn",
+    "commit": "c50796fb8284512b6f6ad8e843f95182cec527cf",
+    "tree": "153d4ff9f30f34eb7fdd4caf670495122c5836e0"
+  },
+  "training_config": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/advmoe_training_seed0_r3.json",
+  "training_config_sha256": "bae43ec28916f42cd569cd7843d7908f924d4d300c3b9f2d07587d269360d37a",
+  "numerical_exclusion": "/data1/Kane/MOE/ACT/act/pipeline/moe/results/baseline/advmoe_training_seed0_r3_numerical_exclusion.json",
+  "dataset_root": "/data1/Kane/MOE/baseline_runs/advmoe/seed0_r3/data",
+  "output": "/data1/Kane/MOE/ACT/data/moe/results/advmoe_router_finite_smoke_seed0_r1.json",
+  "environment": "/data1/Kane/MOE/envs/advmoe-blackwell",
+  "device": "cuda:0",
+  "minimum_free_gpu_memory_gib": 48.0,
+  "torch_threads": 2,
+  "maximum_batches": 16,
+  "stop_at_first_nonfinite": true,
+  "autograd_anomaly_detection": true,
+  "softmax_underflow_gradient_bridge": true,
+  "stages": [
+    "BEFORE_MAIN_OPTIMIZER_STEP",
+    "AFTER_MAIN_OPTIMIZER_STEP",
+    "BEFORE_ROUTER_OPTIMIZER_STEP",
+    "AFTER_ROUTER_OPTIMIZER_STEP"
+  ],
+  "predecessor": {
+    "path": "/data1/Kane/MOE/ACT/data/moe/results/advmoe_router_nonfinite_diagnosis_seed0_r3.json",
+    "sha256": "918e9c4a74d1d4004f96c349380d2939882dbd63f8e58c4499468ddf8fb8ccfd",
+    "finding": "the released KL target softmax first underflows 16 entries to exact zero before XlogyBackward0 emits NaN on zero-based batch 2"
+  },
+  "interpretation": {
+    "purpose": "test a fail-closed numerical compatibility bridge beyond the first failing batch while executing the otherwise unchanged released trainer",
+    "equivalence": "finite-regime forward values and gradients must match the native expression; underflow-regime gradients must match the stable logit-space KL limit",
+    "scientific_endpoint": "engineering smoke only; no accuracy, robustness, route-stability, or certificate claim",
+    "official_identity": "must not be labeled as unchanged official training",
+    "full_training": "forbidden until this smoke and its independent audit pass"
+  }
+}
