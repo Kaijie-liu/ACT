@@ -90,3 +90,11 @@ This is an executed-float diagnostic, not an outward-rounded real-arithmetic
 proof, and it does not establish that the guarded property is safe.  A
 route-consistent negative property point becomes `UNSAFE` only after the full
 dynamic model independently reproduces the changed prediction.
+
+The first Stage-B audit attempt is retained as a failed audit.  It replayed
+CUDA-generated convolution outputs on CPU and found safety differences up to
+`1.58e-3` and router-margin differences up to `9.91e-4`.  A direct check on
+the registered CUDA device reproduced every stored value bit exactly.  The
+auditor repair therefore changes only the replay device to the one frozen in
+the targeted-search configuration; it does not change the runner output,
+points, classification rules, or tolerances.

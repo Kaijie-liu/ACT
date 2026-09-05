@@ -117,6 +117,10 @@ def audit(config_path: Path, summary_path: Path) -> dict[str, Any]:
     parent_by_id = {row["row_id"]: row for row in parent_rows}
     model, router, moe_type, _checkpoint = _load_model(parent_config, WORKSPACE)
     specialized = [specialize_advmoe_path(model, route, moe_type)[0].eval() for route in (0, 1)]
+    replay_device = str(config["targeted_search"]["device"])
+    model = model.to(replay_device).eval()
+    router = router.to(replay_device).eval()
+    specialized = [path.to(replay_device).eval() for path in specialized]
     tolerance = float(config["numerical"]["safe_positive_margin"])
     counts: dict[str, int] = {}
     for index, row in enumerate(rows):
@@ -124,7 +128,7 @@ def audit(config_path: Path, summary_path: Path) -> dict[str, Any]:
         route = int(row["route"])
         properties = top1_property_rows(int(parent["clean_prediction"]))
         property_row = properties[int(row["property_index"])][0]
-        tensor = torch.from_numpy(points[index])
+        tensor = torch.from_numpy(points[index]).to(replay_device)
         lower = torch.clamp(tensor[0:1] - float(parent["epsilon"]), 0.0, 1.0)
         upper = torch.clamp(tensor[0:1] + float(parent["epsilon"]), 0.0, 1.0)
         if bool(torch.any(tensor < lower - 1e-7) or torch.any(tensor > upper + 1e-7)):
@@ -133,10 +137,10 @@ def audit(config_path: Path, summary_path: Path) -> dict[str, Any]:
             safety_tensor, margin_tensor = _scalar_values(
                 router, specialized[route], tensor, route=route, property_row=property_row
             )
-            predictions = model(tensor).argmax(dim=1).numpy()
-            routes = router(tensor).argmax(dim=1).numpy()
-        safety = safety_tensor.numpy().astype(np.float64)
-        margin = margin_tensor.numpy().astype(np.float64)
+            predictions = model(tensor).argmax(dim=1).cpu().numpy()
+            routes = router(tensor).argmax(dim=1).cpu().numpy()
+        safety = safety_tensor.cpu().numpy().astype(np.float64)
+        margin = margin_tensor.cpu().numpy().astype(np.float64)
         recorded_values = row["point_values"]
         if not np.allclose(safety, recorded_values["safety"], rtol=0.0, atol=1e-6):
             issues.append(f"safety replay mismatch: {row['row_id']}")
@@ -192,6 +196,7 @@ def audit(config_path: Path, summary_path: Path) -> dict[str, Any]:
         "result": {"path": str(summary_path), "sha256": _sha256(summary_path)},
         "rows": {"path": str(rows_path), "sha256": _sha256(rows_path)},
         "diagnostic_points": {"path": str(points_path), "sha256": _sha256(points_path)},
+        "replay_device": replay_device,
         "classifications": counts,
         "issues": issues,
     }
