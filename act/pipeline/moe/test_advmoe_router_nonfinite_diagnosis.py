@@ -8,6 +8,7 @@ import torch
 
 from act.pipeline.moe.advmoe_router_nonfinite_diagnosis import (
     _named_details,
+    _tensor_observation,
     all_finite,
 )
 
@@ -37,6 +38,16 @@ class AdvMoeRouterNonfiniteDiagnosisTests(unittest.TestCase):
         self.assertEqual(empty["elements"], 0)
         self.assertTrue(finite["all_finite"])
         self.assertEqual(finite["finite_elements"], 2)
+
+    def test_tensor_observation_separates_finite_nan_and_inf(self) -> None:
+        observation = _tensor_observation(
+            torch.tensor([-2.0, 1.0, float("nan"), float("inf")])
+        )
+        self.assertFalse(observation["all_finite"])
+        self.assertEqual(observation["finite_elements"], 2)
+        self.assertEqual(observation["nan_elements"], 1)
+        self.assertEqual(observation["inf_elements"], 1)
+        self.assertEqual(observation["finite_max_abs"], 2.0)
 
 
 if __name__ == "__main__":

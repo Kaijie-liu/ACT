@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+from contextlib import nullcontext
 import hashlib
 import json
 import os
@@ -10,6 +11,7 @@ from pathlib import Path
 import subprocess
 import sys
 import time
+import traceback
 from typing import Any, Iterable
 
 import torch
@@ -141,6 +143,30 @@ def _tensor_hash(tensor: torch.Tensor) -> str:
     return digest.hexdigest()
 
 
+def _tensor_observation(tensor: torch.Tensor) -> dict[str, Any]:
+    value = tensor.detach()
+    finite = torch.isfinite(value)
+    finite_count = int(finite.sum().item())
+    observation: dict[str, Any] = {
+        "shape": list(value.shape),
+        "elements": value.numel(),
+        "finite_elements": finite_count,
+        "nan_elements": int(torch.isnan(value).sum().item()),
+        "inf_elements": int(torch.isinf(value).sum().item()),
+        "all_finite": finite_count == value.numel(),
+    }
+    if finite_count:
+        finite_values = value[finite]
+        observation.update(
+            {
+                "finite_min": float(finite_values.min().item()),
+                "finite_max": float(finite_values.max().item()),
+                "finite_max_abs": float(finite_values.abs().max().item()),
+            }
+        )
+    return observation
+
+
 class TrackingLoader:
     def __init__(self, loader: Any, maximum_batches: int):
         self.loader = loader
@@ -207,6 +233,11 @@ def run(config_path: Path) -> dict[str, Any]:
         raise RuntimeError("official source tree mismatch")
     if _sha256(training_config_path) != config["training_config_sha256"]:
         raise RuntimeError("training config hash mismatch")
+    predecessor = config.get("predecessor")
+    if predecessor is not None:
+        predecessor_path = _inside(Path(predecessor["path"]), workspace)
+        if _sha256(predecessor_path) != predecessor["sha256"]:
+            raise RuntimeError("predecessor diagnosis hash mismatch")
     exclusion_payload = json.loads(exclusion.read_text(encoding="utf-8"))
     if exclusion_payload.get("status") != "EXCLUDED_NONFINITE_ROUTER":
         raise RuntimeError("numerical exclusion gate is missing")
@@ -248,6 +279,7 @@ def run(config_path: Path) -> dict[str, Any]:
     tracked_loader = TrackingLoader(train_loader, int(config["maximum_batches"]))
 
     phase_log: list[dict[str, Any]] = []
+    forward_log: list[dict[str, Any]] = []
     failure: dict[str, Any] | None = None
     counters = {"main": 0, "router": 0}
 
@@ -282,11 +314,27 @@ def run(config_path: Path) -> dict[str, Any]:
         inspect("AFTER_ROUTER_OPTIMIZER_STEP", "router")
         counters["router"] += 1
 
+    def record_router_forward(_module, inputs, output):
+        forward_log.append(
+            {
+                "call_index": len(forward_log),
+                "zero_based_batch_index": (
+                    tracked_loader.current["zero_based_batch_index"]
+                    if tracked_loader.current is not None
+                    else None
+                ),
+                "training": bool(router.training),
+                "input": _tensor_observation(inputs[0]),
+                "output": _tensor_observation(output),
+            }
+        )
+
     handles = [
         optimizer.register_step_pre_hook(main_pre),
         optimizer.register_step_post_hook(main_post),
         router_optimizer.register_step_pre_hook(router_pre),
         router_optimizer.register_step_post_hook(router_post),
+        router.register_forward_hook(record_router_forward),
     ]
     initial = _router_failure_details(router, router_optimizer)
     if not all(group["all_finite"] for group in initial.values()):
@@ -295,19 +343,32 @@ def run(config_path: Path) -> dict[str, Any]:
         raise RuntimeError("router state is non-finite before the official trainer starts")
     started = time.monotonic()
     caught = None
+    runtime_failure = None
     try:
-        trainer(
-            model,
-            router,
-            device,
-            tracked_loader,
-            0,
-            optimizer,
-            router_optimizer,
-            arguments,
+        anomaly_context = (
+            torch.autograd.detect_anomaly(check_nan=True)
+            if config.get("autograd_anomaly_detection") is True
+            else nullcontext()
         )
+        with anomaly_context:
+            trainer(
+                model,
+                router,
+                device,
+                tracked_loader,
+                0,
+                optimizer,
+                router_optimizer,
+                arguments,
+            )
     except NonfiniteDetected as error:
         caught = str(error)
+    except RuntimeError as error:
+        runtime_failure = {
+            "type": type(error).__name__,
+            "message": str(error),
+            "traceback": traceback.format_exc(),
+        }
     finally:
         for handle in handles:
             handle.remove()
@@ -324,7 +385,11 @@ def run(config_path: Path) -> dict[str, Any]:
         "status": (
             "COMPLETED_NONFINITE_DETECTED"
             if failure is not None
-            else "COMPLETED_NO_NONFINITE_WITHIN_BUDGET"
+            else (
+                "COMPLETED_AUTOGRAD_ANOMALY"
+                if runtime_failure is not None
+                else "COMPLETED_NO_NONFINITE_WITHIN_BUDGET"
+            )
         ),
         "scope": config["scope"],
         "config": {"path": str(config_path), "sha256": _sha256(config_path)},
@@ -342,9 +407,11 @@ def run(config_path: Path) -> dict[str, Any]:
             "completed_main_steps": counters["main"],
             "completed_router_steps": counters["router"],
             "caught": caught,
+            "runtime_failure": runtime_failure,
         },
         "initial_router": initial,
         "phase_log": phase_log,
+        "router_forward_log": forward_log,
         "first_nonfinite": failure,
         "final_main_without_router": floating_tensor_summary(main_without_router),
         "interpretation": config["interpretation"],

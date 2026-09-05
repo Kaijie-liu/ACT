@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "status": "PREREGISTERED_NOT_RUN",
+  "scope": "ADV_MOE_OFFICIAL_TRAINER_ROUTER_AUTOGRAD_ANOMALY_DIAGNOSIS",
+  "workspace_boundary": "/data1/Kane/MOE",
+  "act_repository": "/data1/Kane/MOE/ACT",
+  "required_branch": "feat/moe-route-verification",
+  "official_source": {
+    "repository": "/data1/Kane/MOE/baselines/robust-moe-cnn",
+    "commit": "c50796fb8284512b6f6ad8e843f95182cec527cf",
+    "tree": "153d4ff9f30f34eb7fdd4caf670495122c5836e0"
+  },
+  "training_config": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/advmoe_training_seed0_r3.json",
+  "training_config_sha256": "bae43ec28916f42cd569cd7843d7908f924d4d300c3b9f2d07587d269360d37a",
+  "numerical_exclusion": "/data1/Kane/MOE/ACT/act/pipeline/moe/results/baseline/advmoe_training_seed0_r3_numerical_exclusion.json",
+  "dataset_root": "/data1/Kane/MOE/baseline_runs/advmoe/seed0_r3/data",
+  "output": "/data1/Kane/MOE/ACT/data/moe/results/advmoe_router_nonfinite_diagnosis_seed0_r2.json",
+  "environment": "/data1/Kane/MOE/envs/advmoe-blackwell",
+  "device": "cuda:0",
+  "minimum_free_gpu_memory_gib": 48.0,
+  "torch_threads": 2,
+  "maximum_batches": 3,
+  "stop_at_first_nonfinite": true,
+  "autograd_anomaly_detection": true,
+  "stages": [
+    "BEFORE_MAIN_OPTIMIZER_STEP",
+    "AFTER_MAIN_OPTIMIZER_STEP",
+    "BEFORE_ROUTER_OPTIMIZER_STEP",
+    "AFTER_ROUTER_OPTIMIZER_STEP"
+  ],
+  "predecessor": {
+    "path": "/data1/Kane/MOE/ACT/data/moe/results/advmoe_router_nonfinite_diagnosis_seed0_r1.json",
+    "sha256": "faaaeb3e1df178e8651099ff44995fb8055b45eeed0211c18538479ebffe5ba2",
+    "finding": "first non-finite state occurs before the third router optimizer step; parameters, buffers, and optimizer state remain finite while all router gradients are NaN"
+  },
+  "interpretation": {
+    "purpose": "identify the autograd operation producing the first non-finite router gradient and record all router forward ranges",
+    "scientific_endpoint": "diagnostic only; no accuracy, robustness, route-stability, or certificate claim",
+    "replacement_training": "forbidden until this diagnostic and a successor finite-state smoke are audited"
+  }
+}
