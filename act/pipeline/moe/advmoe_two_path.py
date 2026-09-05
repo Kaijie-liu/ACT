@@ -168,6 +168,8 @@ def aggregate_filters(
     eta_statuses: list[str],
     attack_prediction_flip: bool,
     lagrangian_statuses: list[str] | None = None,
+    graph_matched_mu0_statuses: list[str] | None = None,
+    separate_interval_statuses: list[str] | None = None,
 ) -> dict[str, str]:
     filtered = "CERTIFIED_MARGIN_FILTER"
     route_invariance = (
@@ -192,6 +194,20 @@ def aggregate_filters(
         and all(value == filtered for value in lagrangian_statuses)
         else "UNKNOWN"
     )
+    graph_matched_mu0_statuses = graph_matched_mu0_statuses or []
+    graph_matched_mu0 = (
+        "CERTIFIED_MARGIN_FILTER_NOT_FORMAL_SAFE"
+        if len(graph_matched_mu0_statuses) == 2
+        and all(value == filtered for value in graph_matched_mu0_statuses)
+        else "UNKNOWN"
+    )
+    separate_interval_statuses = separate_interval_statuses or []
+    separate_interval = (
+        "CERTIFIED_MARGIN_FILTER_NOT_FORMAL_SAFE"
+        if len(separate_interval_statuses) == 2
+        and all(value == filtered for value in separate_interval_statuses)
+        else "UNKNOWN"
+    )
     portfolio = (
         "CERTIFIED_MARGIN_FILTER_NOT_FORMAL_SAFE"
         if any(
@@ -211,6 +227,8 @@ def aggregate_filters(
         "route_a_two_path": route_a,
         "eta_guard_ablation": eta,
         "lagrangian_guard_ablation": lagrangian,
+        "lagrangian_mu0_graph_matched": graph_matched_mu0,
+        "lagrangian_separate_interval": separate_interval,
         "portfolio": portfolio,
         "endpoint": endpoint,
     }
@@ -316,6 +334,220 @@ def aggregate_lagrangian_grid_calls(
     }
 
 
+def lagrangian_mu0_call(branch: dict[str, Any]) -> dict[str, Any]:
+    """Return the unique graph-matched mu=0 call from one frozen grid."""
+
+    matches = [
+        call
+        for call in branch.get("calls", [])
+        if float(call.get("lagrangian_multiplier", math.nan)) == 0.0
+    ]
+    if len(matches) != 1:
+        return {
+            "status": "UNKNOWN_INCOMPLETE",
+            "complete": False,
+            "lower_bounds": [],
+            "upper_bounds": [],
+            "minimum_lower_bound": None,
+            "error": "frozen multiplier grid does not contain exactly one mu=0",
+        }
+    return matches[0]
+
+
+def validate_lagrangian_multiplier_protocol(
+    lagrangian_config: dict[str, Any],
+) -> dict[str, Any]:
+    """Validate a frozen raw or router-scale-normalized multiplier grid."""
+
+    multipliers = [
+        float(value) for value in lagrangian_config.get("multipliers", [])
+    ]
+    if not multipliers:
+        raise ValueError("enabled Lagrangian guard ablation needs multipliers")
+    if any(not math.isfinite(value) or value < 0.0 for value in multipliers):
+        raise ValueError("Lagrangian guard multipliers must be finite and nonnegative")
+    if multipliers.count(0.0) != 1:
+        raise ValueError("Lagrangian grid must contain exactly one graph-matched mu=0")
+
+    normalization = lagrangian_config.get(
+        "scale_normalization", {"rule": "NONE_RAW_GRID"}
+    )
+    rule = normalization.get("rule")
+    if rule == "NONE_RAW_GRID":
+        return {
+            "rule": rule,
+            "resolved_multipliers": multipliers,
+        }
+    if rule != "DEVELOPMENT_MEDIAN_CLEAN_ABS_ROUTER_MARGIN":
+        raise ValueError("unsupported Lagrangian multiplier normalization rule")
+    scale = float(normalization.get("scale", math.nan))
+    coefficients = [
+        float(value) for value in normalization.get("normalized_coefficients", [])
+    ]
+    if not math.isfinite(scale) or scale <= 0.0:
+        raise ValueError("Lagrangian router-margin scale must be finite and positive")
+    if len(coefficients) != len(multipliers) or any(
+        not math.isfinite(value) or value < 0.0 for value in coefficients
+    ):
+        raise ValueError("normalized multiplier coefficients are malformed")
+    expected = [value / scale for value in coefficients]
+    if any(
+        not math.isclose(observed, target, rel_tol=1e-12, abs_tol=1e-15)
+        for observed, target in zip(multipliers, expected)
+    ):
+        raise ValueError("resolved multipliers do not match the frozen scale")
+    if not normalization.get("development_source_sha256"):
+        raise ValueError("normalized multiplier grid lacks development provenance")
+    return {
+        "rule": rule,
+        "scale": scale,
+        "normalized_coefficients": coefficients,
+        "resolved_multipliers": multipliers,
+        "development_source": normalization.get("development_source"),
+        "development_source_sha256": normalization["development_source_sha256"],
+    }
+
+
+def separate_interval_lagrangian_grid(
+    path_bound: dict[str, Any],
+    *,
+    margin_lower: float,
+    margin_upper: float,
+    multipliers: list[float],
+    tolerance: float,
+) -> dict[str, Any]:
+    """Combine separately bounded safety and router-margin intervals."""
+
+    if any(not math.isfinite(value) or value < 0.0 for value in multipliers):
+        raise ValueError("lagrangian multipliers must be finite and nonnegative")
+    if not multipliers:
+        raise ValueError("separate-interval control needs a multiplier grid")
+    if (
+        path_bound.get("status") == "ERROR"
+        or not bool(path_bound.get("complete"))
+        or not math.isfinite(float(margin_lower))
+        or not math.isfinite(float(margin_upper))
+        or float(margin_lower) > float(margin_upper)
+    ):
+        return {
+            "status": "UNKNOWN_INCOMPLETE",
+            "complete": False,
+            "lower_bounds": [],
+            "selected_multipliers": [],
+            "minimum_lower_bound": None,
+            "grid_lower_bounds": [],
+        }
+    safety_lower = np.asarray(path_bound.get("lower_bounds", []), dtype=np.float64)
+    if safety_lower.ndim != 1 or not safety_lower.size or not np.isfinite(
+        safety_lower
+    ).all():
+        return {
+            "status": "UNKNOWN_INCOMPLETE",
+            "complete": False,
+            "lower_bounds": [],
+            "selected_multipliers": [],
+            "minimum_lower_bound": None,
+            "grid_lower_bounds": [],
+        }
+    grid = np.stack(
+        [safety_lower - float(multiplier) * float(margin_upper)
+         for multiplier in multipliers],
+        axis=0,
+    )
+    selected = np.argmax(grid, axis=0)
+    best = grid[selected, np.arange(safety_lower.size)]
+    status = (
+        "CERTIFIED_MARGIN_FILTER"
+        if bool(np.all(best >= float(tolerance)))
+        else "UNKNOWN_RELAXATION"
+    )
+    return {
+        "status": status,
+        "complete": True,
+        "lower_bounds": best.tolist(),
+        "selected_multipliers": [float(multipliers[index]) for index in selected],
+        "minimum_lower_bound": float(best.min()),
+        "grid_lower_bounds": grid.tolist(),
+        "margin_interval": [float(margin_lower), float(margin_upper)],
+        "formula": "lower(safety)-mu*upper(selected_margin)",
+        "numerical_soundness_status": "COMPOSED_NUMERICAL_FILTER_NOT_OUTWARD_ROUNDED",
+    }
+
+
+def comparison_budget_ledger(
+    *,
+    clean_route: int,
+    router_bound: dict[str, Any],
+    path_bounds: list[dict[str, Any]],
+    eta_bounds: list[dict[str, Any]],
+    lagrangian_bounds: list[dict[str, Any]],
+    statuses: dict[str, str],
+    total_wall_budget_seconds: float,
+) -> dict[str, Any]:
+    """Apply a common evidence cutoff to fully completed method executions."""
+
+    budget = float(total_wall_budget_seconds)
+    if not math.isfinite(budget) or budget <= 0.0:
+        raise ValueError("comparison wall budget must be finite and positive")
+
+    def call_seconds(record: dict[str, Any]) -> float:
+        value = float(record.get("accounted_wall_seconds", math.nan))
+        if not math.isfinite(value) or value < 0.0:
+            raise ValueError("bound call lacks finite accounted wall time")
+        return value
+
+    mu0_calls = [lagrangian_mu0_call(branch) for branch in lagrangian_bounds]
+    method_costs = {
+        "route_invariance": (
+            call_seconds(router_bound) + call_seconds(path_bounds[int(clean_route)])
+        ),
+        "unguarded_two_path": sum(call_seconds(value) for value in path_bounds),
+        "eta_guard": sum(call_seconds(value) for value in eta_bounds),
+        "lagrangian_mu0_graph_matched": sum(
+            call_seconds(value) for value in mu0_calls
+        ),
+        "lagrangian_grid": sum(
+            call_seconds(call)
+            for branch in lagrangian_bounds
+            for call in branch.get("calls", [])
+        ),
+        "lagrangian_separate_interval": (
+            call_seconds(router_bound)
+            + sum(call_seconds(value) for value in path_bounds)
+        ),
+    }
+    status_names = {
+        "route_invariance": "route_invariance",
+        "unguarded_two_path": "route_a_two_path",
+        "eta_guard": "eta_guard_ablation",
+        "lagrangian_mu0_graph_matched": "lagrangian_mu0_graph_matched",
+        "lagrangian_grid": "lagrangian_guard_ablation",
+        "lagrangian_separate_interval": "lagrangian_separate_interval",
+    }
+    methods: dict[str, Any] = {}
+    for method, cost in method_costs.items():
+        within = bool(cost <= budget)
+        mechanism_status = statuses[status_names[method]]
+        methods[method] = {
+            "accounted_wall_seconds": float(cost),
+            "within_budget": within,
+            "mechanism_status": mechanism_status,
+            "budget_status": (
+                mechanism_status if within else "UNKNOWN_BUDGET_EXHAUSTED"
+            ),
+        }
+    return {
+        "total_wall_budget_seconds": budget,
+        "acceptance_semantics": (
+            "A method contributes only if every required call completed and its "
+            "sum of call-level graph/build/solve orchestration wall time is within "
+            "the common cutoff. Overshooting results are retained but excluded."
+        ),
+        "attack_time_included": False,
+        "methods": methods,
+    }
+
+
 def evaluate_lagrangian_guard_grid(
     router: torch.nn.Module,
     expert: torch.nn.Module,
@@ -334,6 +566,7 @@ def evaluate_lagrangian_guard_grid(
 ) -> dict[str, Any]:
     """Run a shared-input Lagrangian guard compiler over a frozen grid."""
 
+    branch_started = time.monotonic()
     matrix = np.stack([row for row, _offset in property_rows])
     offset = np.asarray([value for _row, value in property_rows])
     # This runner is intentionally scoped to the audited AdvMoE E=2 model.
@@ -342,6 +575,7 @@ def evaluate_lagrangian_guard_grid(
     outside_experts = 1
     calls: list[dict[str, Any]] = []
     for multiplier in multipliers:
+        call_started = time.monotonic()
         compiled = LagrangianTop1GuardedProperty(
             copy.deepcopy(router),
             copy.deepcopy(expert),
@@ -363,14 +597,17 @@ def evaluate_lagrangian_guard_grid(
             bound_options=bound_options,
         )
         call["lagrangian_multiplier"] = float(multiplier)
-        calls.append(call)
         _cleanup_cuda()
-    return aggregate_lagrangian_grid_calls(
+        call["accounted_wall_seconds"] = time.monotonic() - call_started
+        calls.append(call)
+    result = aggregate_lagrangian_grid_calls(
         calls,
         multipliers,
         property_rows=len(property_rows),
         tolerance=tolerance,
     )
+    result["accounted_wall_seconds"] = time.monotonic() - branch_started
+    return result
 
 
 def evaluate_path_lowering_equivalence(
@@ -529,16 +766,29 @@ def run(config_path: Path) -> dict[str, Any]:
     )
     lagrangian_config = config.get("lagrangian_guard_ablation", {"enabled": False})
     lagrangian_enabled = bool(lagrangian_config.get("enabled", False))
-    lagrangian_multipliers = [
-        float(value) for value in lagrangian_config.get("multipliers", [])
-    ]
-    if lagrangian_enabled and not lagrangian_multipliers:
-        raise ValueError("enabled Lagrangian guard ablation needs multipliers")
-    if any(
-        not math.isfinite(value) or value < 0.0
-        for value in lagrangian_multipliers
-    ):
-        raise ValueError("Lagrangian guard multipliers must be finite and nonnegative")
+    lagrangian_multipliers = []
+    multiplier_protocol = {"rule": "DISABLED", "resolved_multipliers": []}
+    if lagrangian_enabled:
+        multiplier_protocol = validate_lagrangian_multiplier_protocol(
+            lagrangian_config
+        )
+        lagrangian_multipliers = multiplier_protocol["resolved_multipliers"]
+    comparison_config = config.get("comparison", {"enabled": False})
+    comparison_enabled = bool(comparison_config.get("enabled", False))
+    if comparison_enabled:
+        if not lagrangian_enabled or not bool(config["guard_ablation"]["enabled"]):
+            raise ValueError("comparison requires eta and Lagrangian methods")
+        if comparison_config.get("execution_order") != (
+            "SAMPLE_RADIUS_BRANCH_BLOCKED_METHOD_INTERLEAVED"
+        ):
+            raise ValueError("unsupported comparison execution order")
+        comparison_budget = float(
+            comparison_config["total_wall_budget_seconds_per_sample_radius_method"]
+        )
+        if not math.isfinite(comparison_budget) or comparison_budget <= 0.0:
+            raise ValueError("comparison wall budget must be finite and positive")
+    else:
+        comparison_budget = math.inf
     for gate in config["accepted_audits"]:
         path = _inside(Path(gate["path"]), workspace)
         if _sha256(path) != gate["sha256"]:
@@ -614,6 +864,7 @@ def run(config_path: Path) -> dict[str, Any]:
                     [1.0, -1.0] if clean_route == 0 else [-1.0, 1.0],
                     dtype=np.float64,
                 )
+                call_started = time.monotonic()
                 route_bound = _crown_bounds(
                     copy.deepcopy(router_adapter), center, lower, upper,
                     property_rows=((route_row, 0.0),),
@@ -623,10 +874,14 @@ def run(config_path: Path) -> dict[str, Any]:
                     bound_options=crown_bound_options,
                 )
                 _cleanup_cuda()
+                route_bound["accounted_wall_seconds"] = (
+                    time.monotonic() - call_started
+                )
                 path_bounds = []
                 eta_bounds = []
                 lagrangian_bounds = []
                 for route in (0, 1):
+                    call_started = time.monotonic()
                     bound = _crown_bounds(
                         copy.deepcopy(path_adapters[route]), center, lower, upper,
                         property_rows=properties,
@@ -635,9 +890,13 @@ def run(config_path: Path) -> dict[str, Any]:
                         track_gradients=crown_gradient_tracking,
                         bound_options=crown_bound_options,
                     )
-                    path_bounds.append(bound)
                     _cleanup_cuda()
+                    bound["accounted_wall_seconds"] = (
+                        time.monotonic() - call_started
+                    )
+                    path_bounds.append(bound)
                     if config["guard_ablation"]["enabled"]:
+                        call_started = time.monotonic()
                         matrix = np.stack([row for row, _offset in properties])
                         offset = np.asarray([offset for _row, offset in properties])
                         implication = TieSafeTop1Implication(
@@ -656,8 +915,11 @@ def run(config_path: Path) -> dict[str, Any]:
                             track_gradients=crown_gradient_tracking,
                             bound_options=crown_bound_options,
                         )
-                        eta_bounds.append(eta_bound)
                         _cleanup_cuda()
+                        eta_bound["accounted_wall_seconds"] = (
+                            time.monotonic() - call_started
+                        )
+                        eta_bounds.append(eta_bound)
                     if lagrangian_enabled:
                         lagrangian_bounds.append(
                             evaluate_lagrangian_guard_grid(
@@ -676,6 +938,44 @@ def run(config_path: Path) -> dict[str, Any]:
                                 bound_options=crown_bound_options,
                             )
                         )
+                graph_matched_mu0_bounds = [
+                    lagrangian_mu0_call(branch) for branch in lagrangian_bounds
+                ]
+                separate_interval_bounds = []
+                if lagrangian_enabled:
+                    route_lower = np.asarray(
+                        route_bound.get("lower_bounds", []), dtype=np.float64
+                    )
+                    route_upper = np.asarray(
+                        route_bound.get("upper_bounds", []), dtype=np.float64
+                    )
+                    route_interval_complete = bool(
+                        route_bound.get("complete")
+                        and route_lower.shape == (1,)
+                        and route_upper.shape == (1,)
+                        and np.isfinite(route_lower).all()
+                        and np.isfinite(route_upper).all()
+                    )
+                    for route in (0, 1):
+                        if route_interval_complete:
+                            if route == clean_route:
+                                margin_lower = float(route_lower[0])
+                                margin_upper = float(route_upper[0])
+                            else:
+                                margin_lower = -float(route_upper[0])
+                                margin_upper = -float(route_lower[0])
+                        else:
+                            margin_lower = math.nan
+                            margin_upper = math.nan
+                        separate_interval_bounds.append(
+                            separate_interval_lagrangian_grid(
+                                path_bounds[route],
+                                margin_lower=margin_lower,
+                                margin_upper=margin_upper,
+                                multipliers=lagrangian_multipliers,
+                                tolerance=tolerance,
+                            )
+                        )
                 attack = _prediction_attack(
                     model, center, lower, upper, prediction,
                     steps=int(config["attack"]["steps"]),
@@ -691,7 +991,26 @@ def run(config_path: Path) -> dict[str, Any]:
                     path_statuses=[row["status"] for row in path_bounds],
                     eta_statuses=[row["status"] for row in eta_bounds],
                     lagrangian_statuses=[row["status"] for row in lagrangian_bounds],
+                    graph_matched_mu0_statuses=[
+                        row["status"] for row in graph_matched_mu0_bounds
+                    ],
+                    separate_interval_statuses=[
+                        row["status"] for row in separate_interval_bounds
+                    ],
                     attack_prediction_flip=bool(attack["prediction_flip"]),
+                )
+                comparison = (
+                    comparison_budget_ledger(
+                        clean_route=clean_route,
+                        router_bound=route_bound,
+                        path_bounds=path_bounds,
+                        eta_bounds=eta_bounds,
+                        lagrangian_bounds=lagrangian_bounds,
+                        statuses=statuses,
+                        total_wall_budget_seconds=comparison_budget,
+                    )
+                    if comparison_enabled
+                    else None
                 )
                 route_flip = int(attack["attacked_route"]) != clean_route
                 witness_conflicts = filter_witness_conflicts(
@@ -713,6 +1032,11 @@ def run(config_path: Path) -> dict[str, Any]:
                     "path_crown": path_bounds,
                     "eta_crown": eta_bounds,
                     "lagrangian_guard_crown": lagrangian_bounds,
+                    "lagrangian_mu0_graph_matched_crown": (
+                        graph_matched_mu0_bounds
+                    ),
+                    "lagrangian_separate_interval": separate_interval_bounds,
+                    "comparison": comparison,
                     "attack": attack,
                     "statuses": statuses,
                     "filter_witness_conflicts": witness_conflicts,
@@ -756,6 +1080,8 @@ def run(config_path: Path) -> dict[str, Any]:
             "route_a_two_path": dict(Counter(row["statuses"]["route_a_two_path"] for row in selected)),
             "eta_guard_ablation": dict(Counter(row["statuses"]["eta_guard_ablation"] for row in selected)),
             "lagrangian_guard_ablation": dict(Counter(row["statuses"]["lagrangian_guard_ablation"] for row in selected)),
+            "lagrangian_mu0_graph_matched": dict(Counter(row["statuses"]["lagrangian_mu0_graph_matched"] for row in selected)),
+            "lagrangian_separate_interval": dict(Counter(row["statuses"]["lagrangian_separate_interval"] for row in selected)),
             "portfolio": dict(Counter(row["statuses"]["portfolio"] for row in selected)),
             "endpoint": dict(Counter(row["statuses"]["endpoint"] for row in selected)),
             "prediction_flip_witnesses": sum(prediction_flips),
@@ -786,6 +1112,8 @@ def run(config_path: Path) -> dict[str, Any]:
         "attack_endpoints": {"path": str(attack_path), "sha256": _sha256(attack_path)},
         "tables": tables,
         "backend_configuration": crown_configuration,
+        "lagrangian_multiplier_protocol": multiplier_protocol,
+        "comparison_configuration": comparison_config,
         "backend_error_rows": errors,
         "filter_witness_conflicts": conflicts,
         "formal_safe_count": 0,

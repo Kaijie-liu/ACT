@@ -1,0 +1,80 @@
+{
+  "comparison_tolerance": 5e-09,
+  "evidence_boundary": "This exact one-dimensional control isolates incompleteness of the fixed nonnegative multiplier sufficient reduction. It contains no CROWN relaxation and does not estimate official-scale prevalence.",
+  "fixed_multiplier_compiler": {
+    "exact_optimum_multiplier": 1.0,
+    "grid_controls": [
+      {
+        "absolute_error": 0.0,
+        "analytic_full_box_minimum": -1.9,
+        "concrete_grid_minimum": -1.9,
+        "multiplier": 0.0,
+        "status": "UNKNOWN_REDUCTION_GAP"
+      },
+      {
+        "absolute_error": 0.0,
+        "analytic_full_box_minimum": -1.4,
+        "concrete_grid_minimum": -1.4,
+        "multiplier": 0.5,
+        "status": "UNKNOWN_REDUCTION_GAP"
+      },
+      {
+        "absolute_error": 0.0,
+        "analytic_full_box_minimum": -0.9,
+        "concrete_grid_minimum": -0.9,
+        "multiplier": 1.0,
+        "status": "UNKNOWN_REDUCTION_GAP"
+      },
+      {
+        "absolute_error": 0.0,
+        "analytic_full_box_minimum": -1.4,
+        "concrete_grid_minimum": -1.4,
+        "multiplier": 1.5,
+        "status": "UNKNOWN_REDUCTION_GAP"
+      },
+      {
+        "absolute_error": 0.0,
+        "analytic_full_box_minimum": -1.9,
+        "concrete_grid_minimum": -1.9,
+        "multiplier": 2.0,
+        "status": "UNKNOWN_REDUCTION_GAP"
+      },
+      {
+        "absolute_error": 0.0,
+        "analytic_full_box_minimum": -3.9,
+        "concrete_grid_minimum": -3.9,
+        "multiplier": 4.0,
+        "status": "UNKNOWN_REDUCTION_GAP"
+      }
+    ],
+    "proof": "For mu<=2 the endpoint minima are mu-1.9 at x=-1 and 0.1-mu at x=1; their maximum intersection is mu=1 with value -0.9. For mu>2, 0.1-mu is smaller.",
+    "status": "UNKNOWN_INTRINSIC_SUFFICIENT_REDUCTION_GAP",
+    "supremum_of_exact_full_box_minimum": -0.9
+  },
+  "problem": {
+    "domain": "x in [-1,1]",
+    "guarded_exact_minimum": 0.1,
+    "legal_branch": "route 0 iff x>=0 under tie-inclusive semantics",
+    "router": [
+      "r0=x",
+      "r1=0"
+    ],
+    "safety": "s(x)=0.1-2*ReLU(-x)"
+  },
+  "retained_hz": {
+    "conservative_safety_lower": 0.099999998,
+    "guarded_domain_exact": true,
+    "negative_x_support": {
+      "exact": true,
+      "lower": -1.0000000020000002,
+      "lower_status": "milp_optimal",
+      "upper": 1.0000000000000003e-09,
+      "upper_status": "milp_optimal"
+    },
+    "selection_binaries": 0,
+    "status": "CERTIFIED_POSITIVE"
+  },
+  "schema_version": 1,
+  "scope": "FIXED_MULTIPLIER_LAGRANGIAN_REDUCTION_GAP_CONTROL",
+  "status": "PASS"
+}

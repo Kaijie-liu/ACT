@@ -2493,3 +2493,13 @@ development-exclusion sources. The independent auditor reconstructs the
 ordered clean-correct population from the frozen checkpoint and dataset and
 checks disjointness. Frozen schema-v1 r3 retains its historical first-N
 selection unchanged.
+
+Before running a new endpoint cohort, schema v2 was further extended with a
+graph-matched `mu=0` control, a separate-interval relation-loss control, and a
+common-total-wall evidence cutoff distinct from unrestricted mechanism
+results. Multiplier scales and normalized coefficients are hash-bound to their
+development source. The exact negative control
+`lagrangian_guard_incompleteness_control_20260906.json` records a guarded-safe
+case whose best exact fixed nonnegative multiplier value is `-0.9`; no-gain
+results therefore cannot be assigned to CROWN without separating backend,
+finite-search, and intrinsic reduction gaps.

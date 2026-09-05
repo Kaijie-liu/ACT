@@ -174,3 +174,22 @@ selection and remains auditable. The new interface prevents a future config
 from claiming fresh ranks while silently reusing those first 20 inputs. The
 appropriate claim for a later holdout is endpoint-level exclusion from method
 selection, not that the images were absent from full-test telemetry.
+
+## Schema-v2 mechanism controls and common budget
+
+Schema-v2 comparison rows preserve both an unrestricted mechanism outcome and
+a common-total-wall evidence cutoff. The cutoff is not process preemption: an
+overshooting call is retained for diagnosis but contributes
+`UNKNOWN_BUDGET_EXHAUSTED` to the cost-matched comparison. Call accounting
+includes construction of copied/compiled graphs, backend graph build,
+optimization, cleanup, and orchestration for each method's required calls.
+Route attacks remain separate witness searches and are not charged to a
+positive filter.
+
+The Lagrangian comparison records a graph-matched `mu=0` control and a
+separate-interval relation-loss control. Neither enters the staged portfolio;
+they identify whether an observed change comes from a nonzero route term,
+graph/property rewriting, or exploitable shared-input dependence. The
+multiplier grid may be normalized by a development-only router-margin scale,
+but both the scale source and resolved raw grid are hash-bound and independently
+recomputed.

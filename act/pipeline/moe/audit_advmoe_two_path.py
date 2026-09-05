@@ -230,6 +230,146 @@ def selection_manifest_issues(
     return expected, issues
 
 
+def expected_separate_interval_control(
+    path_bound: dict[str, Any],
+    *,
+    margin_lower: float,
+    margin_upper: float,
+    multipliers: list[float],
+    tolerance: float,
+) -> dict[str, Any]:
+    """Independently rebuild the intervalized relation-loss control."""
+
+    if (
+        not multipliers
+        or path_bound.get("status") == "ERROR"
+        or not bool(path_bound.get("complete"))
+        or not math.isfinite(float(margin_lower))
+        or not math.isfinite(float(margin_upper))
+        or float(margin_lower) > float(margin_upper)
+    ):
+        return {
+            "status": "UNKNOWN_INCOMPLETE",
+            "complete": False,
+            "lower_bounds": [],
+            "selected_multipliers": [],
+            "minimum_lower_bound": None,
+            "grid_lower_bounds": [],
+        }
+    safety = np.asarray(path_bound.get("lower_bounds", []), dtype=np.float64)
+    if safety.ndim != 1 or not safety.size or not np.isfinite(safety).all():
+        return {
+            "status": "UNKNOWN_INCOMPLETE",
+            "complete": False,
+            "lower_bounds": [],
+            "selected_multipliers": [],
+            "minimum_lower_bound": None,
+            "grid_lower_bounds": [],
+        }
+    grid = np.stack(
+        [safety - float(value) * float(margin_upper) for value in multipliers],
+        axis=0,
+    )
+    selected = np.argmax(grid, axis=0)
+    best = grid[selected, np.arange(safety.size)]
+    return {
+        "status": (
+            "CERTIFIED_MARGIN_FILTER"
+            if bool(np.all(best >= float(tolerance)))
+            else "UNKNOWN_RELAXATION"
+        ),
+        "complete": True,
+        "lower_bounds": best.tolist(),
+        "selected_multipliers": [float(multipliers[index]) for index in selected],
+        "minimum_lower_bound": float(best.min()),
+        "grid_lower_bounds": grid.tolist(),
+        "margin_interval": [float(margin_lower), float(margin_upper)],
+        "formula": "lower(safety)-mu*upper(selected_margin)",
+        "numerical_soundness_status": "COMPOSED_NUMERICAL_FILTER_NOT_OUTWARD_ROUNDED",
+    }
+
+
+def comparison_ledger_issues(
+    row: dict[str, Any], comparison_config: dict[str, Any]
+) -> list[str]:
+    """Recompute the common wall-budget evidence cutoff from raw calls."""
+
+    enabled = bool(comparison_config.get("enabled", False))
+    recorded = row.get("comparison")
+    if not enabled:
+        return [] if recorded is None else ["disabled comparison retains a ledger"]
+    if not isinstance(recorded, dict):
+        return ["enabled comparison has no ledger"]
+    budget = float(
+        comparison_config["total_wall_budget_seconds_per_sample_radius_method"]
+    )
+
+    def seconds(value: dict[str, Any]) -> float:
+        return float(value.get("accounted_wall_seconds", math.nan))
+
+    lagrangian = row.get("lagrangian_guard_crown", [])
+    mu0 = []
+    for branch in lagrangian:
+        matches = [
+            call
+            for call in branch.get("calls", [])
+            if float(call.get("lagrangian_multiplier", math.nan)) == 0.0
+        ]
+        if len(matches) == 1:
+            mu0.append(matches[0])
+    issues: list[str] = []
+    if len(mu0) != len(lagrangian):
+        issues.append("graph-matched mu=0 control is missing or non-unique")
+    clean_route = int(row["clean_route"])
+    costs = {
+        "route_invariance": seconds(row["router_crown"])
+        + seconds(row["path_crown"][clean_route]),
+        "unguarded_two_path": sum(seconds(value) for value in row["path_crown"]),
+        "eta_guard": sum(seconds(value) for value in row["eta_crown"]),
+        "lagrangian_mu0_graph_matched": sum(seconds(value) for value in mu0),
+        "lagrangian_grid": sum(
+            seconds(call)
+            for branch in lagrangian
+            for call in branch.get("calls", [])
+        ),
+        "lagrangian_separate_interval": seconds(row["router_crown"])
+        + sum(seconds(value) for value in row["path_crown"]),
+    }
+    status_names = {
+        "route_invariance": "route_invariance",
+        "unguarded_two_path": "route_a_two_path",
+        "eta_guard": "eta_guard_ablation",
+        "lagrangian_mu0_graph_matched": "lagrangian_mu0_graph_matched",
+        "lagrangian_grid": "lagrangian_guard_ablation",
+        "lagrangian_separate_interval": "lagrangian_separate_interval",
+    }
+    if recorded.get("total_wall_budget_seconds") != budget:
+        issues.append("comparison budget mismatch")
+    methods = recorded.get("methods", {})
+    for method, cost in costs.items():
+        value = methods.get(method, {})
+        if not math.isfinite(cost) or cost < 0.0:
+            issues.append(f"{method} has invalid accounted wall time")
+            continue
+        if not math.isclose(
+            float(value.get("accounted_wall_seconds", math.nan)),
+            cost,
+            rel_tol=0.0,
+            abs_tol=1e-12,
+        ):
+            issues.append(f"{method} accounted wall time mismatch")
+        within = bool(cost <= budget)
+        mechanism = row["statuses"][status_names[method]]
+        budget_status = mechanism if within else "UNKNOWN_BUDGET_EXHAUSTED"
+        if value.get("within_budget") != within:
+            issues.append(f"{method} within-budget flag mismatch")
+        if value.get("mechanism_status") != mechanism:
+            issues.append(f"{method} mechanism status mismatch")
+        if value.get("budget_status") != budget_status:
+            issues.append(f"{method} budget status mismatch")
+    return issues
+
+
 def _aggregate(row: dict[str, Any], schema_version: int) -> dict[str, str]:
     filtered = "CERTIFIED_MARGIN_FILTER"
     clean_route = int(row["clean_route"])
@@ -257,6 +397,24 @@ def _aggregate(row: dict[str, Any], schema_version: int) -> dict[str, str]:
         "CERTIFIED_MARGIN_FILTER_NOT_FORMAL_SAFE"
         if len(lagrangian) == 2
         and all(value == filtered for value in lagrangian)
+        else "UNKNOWN"
+    )
+    graph_matched = [
+        value["status"]
+        for value in row.get("lagrangian_mu0_graph_matched_crown", [])
+    ]
+    graph_matched_result = (
+        "CERTIFIED_MARGIN_FILTER_NOT_FORMAL_SAFE"
+        if len(graph_matched) == 2
+        and all(value == filtered for value in graph_matched)
+        else "UNKNOWN"
+    )
+    separate = [
+        value["status"] for value in row.get("lagrangian_separate_interval", [])
+    ]
+    separate_result = (
+        "CERTIFIED_MARGIN_FILTER_NOT_FORMAL_SAFE"
+        if len(separate) == 2 and all(value == filtered for value in separate)
         else "UNKNOWN"
     )
     portfolio = (
@@ -287,6 +445,8 @@ def _aggregate(row: dict[str, Any], schema_version: int) -> dict[str, str]:
     if schema_version >= 2:
         statuses["portfolio"] = portfolio
         statuses["lagrangian_guard_ablation"] = lagrangian_result
+        statuses["lagrangian_mu0_graph_matched"] = graph_matched_result
+        statuses["lagrangian_separate_interval"] = separate_result
     return statuses
 
 
@@ -348,6 +508,12 @@ def summary_table_issues(
         ):
             issues.append("summary table lagrangian_guard_ablation mismatch")
         for key in (
+            "lagrangian_mu0_graph_matched",
+            "lagrangian_separate_interval",
+        ):
+            if recorded.get(key) != expected[key]:
+                issues.append(f"summary table {key} mismatch")
+        for key in (
             "portfolio",
             "prediction_flip_witnesses",
             "route_flip_witnesses",
@@ -390,6 +556,18 @@ def independent_tables(
             "lagrangian_guard_ablation": dict(
                 Counter(
                     row["statuses"].get("lagrangian_guard_ablation", "UNKNOWN")
+                    for row in selected
+                )
+            ),
+            "lagrangian_mu0_graph_matched": dict(
+                Counter(
+                    row["statuses"].get("lagrangian_mu0_graph_matched", "UNKNOWN")
+                    for row in selected
+                )
+            ),
+            "lagrangian_separate_interval": dict(
+                Counter(
+                    row["statuses"].get("lagrangian_separate_interval", "UNKNOWN")
                     for row in selected
                 )
             ),
@@ -464,6 +642,66 @@ def audit(config_path: Path, result_path: Path) -> dict[str, Any]:
         for value in lagrangian_multipliers
     ):
         issues.append("Lagrangian multiplier grid is not finite and nonnegative")
+    expected_protocol: dict[str, Any] = {
+        "rule": "DISABLED",
+        "resolved_multipliers": [],
+    }
+    if lagrangian_enabled:
+        if lagrangian_multipliers.count(0.0) != 1:
+            issues.append("Lagrangian grid lacks exactly one graph-matched mu=0")
+        normalization = lagrangian_config.get(
+            "scale_normalization", {"rule": "NONE_RAW_GRID"}
+        )
+        rule = normalization.get("rule")
+        if rule == "NONE_RAW_GRID":
+            expected_protocol = {
+                "rule": rule,
+                "resolved_multipliers": lagrangian_multipliers,
+            }
+        elif rule == "DEVELOPMENT_MEDIAN_CLEAN_ABS_ROUTER_MARGIN":
+            scale = float(normalization.get("scale", math.nan))
+            coefficients = [
+                float(value)
+                for value in normalization.get("normalized_coefficients", [])
+            ]
+            if (
+                not math.isfinite(scale)
+                or scale <= 0.0
+                or len(coefficients) != len(lagrangian_multipliers)
+                or any(not math.isfinite(value) or value < 0.0 for value in coefficients)
+            ):
+                issues.append("normalized Lagrangian multiplier protocol is malformed")
+            else:
+                expected = [value / scale for value in coefficients]
+                if any(
+                    not math.isclose(
+                        observed, target, rel_tol=1e-12, abs_tol=1e-15
+                    )
+                    for observed, target in zip(lagrangian_multipliers, expected)
+                ):
+                    issues.append("normalized Lagrangian multipliers do not recompute")
+            if not normalization.get("development_source_sha256"):
+                issues.append("normalized multiplier protocol lacks development provenance")
+            expected_protocol = {
+                "rule": rule,
+                "scale": scale,
+                "normalized_coefficients": coefficients,
+                "resolved_multipliers": lagrangian_multipliers,
+                "development_source": normalization.get("development_source"),
+                "development_source_sha256": normalization.get(
+                    "development_source_sha256"
+                ),
+            }
+        else:
+            issues.append("unsupported Lagrangian multiplier normalization rule")
+    if (
+        schema_version >= 2
+        and result.get("lagrangian_multiplier_protocol") != expected_protocol
+    ):
+        issues.append("top-level Lagrangian multiplier protocol mismatch")
+    comparison_config = config.get("comparison", {"enabled": False})
+    if result.get("comparison_configuration", {"enabled": False}) != comparison_config:
+        issues.append("top-level comparison configuration mismatch")
     recomputed_conflict_count = 0
     for row in rows:
         bounds = [row["router_crown"], *row["path_crown"], *row["eta_crown"]]
@@ -487,6 +725,61 @@ def audit(config_path: Path, result_path: Path) -> dict[str, Any]:
                     tolerance=tolerance,
                 )
             )
+        graph_matched = row.get("lagrangian_mu0_graph_matched_crown", [])
+        expected_graph_matched = []
+        for branch in lagrangian_branches:
+            matches = [
+                call
+                for call in branch.get("calls", [])
+                if float(call.get("lagrangian_multiplier", math.nan)) == 0.0
+            ]
+            if len(matches) == 1:
+                expected_graph_matched.append(matches[0])
+        if graph_matched != expected_graph_matched:
+            issues.append(f"{row['row_id']}: graph-matched mu=0 control mismatch")
+
+        separate = row.get("lagrangian_separate_interval", [])
+        expected_separate = []
+        route_lower = np.asarray(
+            row["router_crown"].get("lower_bounds", []), dtype=np.float64
+        )
+        route_upper = np.asarray(
+            row["router_crown"].get("upper_bounds", []), dtype=np.float64
+        )
+        route_complete = bool(
+            row["router_crown"].get("complete")
+            and route_lower.shape == (1,)
+            and route_upper.shape == (1,)
+            and np.isfinite(route_lower).all()
+            and np.isfinite(route_upper).all()
+        )
+        if lagrangian_enabled:
+            for route in (0, 1):
+                if route_complete:
+                    if route == int(row["clean_route"]):
+                        margin_lower = float(route_lower[0])
+                        margin_upper = float(route_upper[0])
+                    else:
+                        margin_lower = -float(route_upper[0])
+                        margin_upper = -float(route_lower[0])
+                else:
+                    margin_lower = math.nan
+                    margin_upper = math.nan
+                expected_separate.append(
+                    expected_separate_interval_control(
+                        row["path_crown"][route],
+                        margin_lower=margin_lower,
+                        margin_upper=margin_upper,
+                        multipliers=lagrangian_multipliers,
+                        tolerance=tolerance,
+                    )
+                )
+        if separate != expected_separate:
+            issues.append(f"{row['row_id']}: separate-interval control mismatch")
+        issues.extend(
+            f"{row['row_id']}: {issue}"
+            for issue in comparison_ledger_issues(row, comparison_config)
+        )
         if row.get("statuses") != _aggregate(row, schema_version):
             issues.append(f"{row['row_id']}: aggregate statuses do not recompute")
         expected_conflicts = expected_filter_witness_conflicts(row)

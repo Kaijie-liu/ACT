@@ -14,23 +14,41 @@ from torch import nn
 from act.pipeline.moe.advmoe_two_path import (
     aggregate_lagrangian_grid_calls,
     aggregate_filters,
+    comparison_budget_ledger,
     evaluate_path_lowering_equivalence,
     filter_witness_conflicts,
+    lagrangian_mu0_call,
     resolve_selection_manifest,
     select_batched_static_path_logits,
+    separate_interval_lagrangian_grid,
     top1_property_rows,
+    validate_lagrangian_multiplier_protocol,
 )
 from act.pipeline.moe.audit_advmoe_two_path import (
     expected_crown_status,
     expected_filter_witness_conflicts,
+    expected_separate_interval_control,
     independent_tables,
     lagrangian_branch_issues,
     selection_manifest_issues,
     summary_table_issues,
 )
+from act.pipeline.moe.lagrangian_guard_incompleteness_control import (
+    fixed_multiplier_exact_minimum,
+)
 
 
 class AdvMoeTwoPathTests(unittest.TestCase):
+    def test_fixed_multiplier_reduction_has_intrinsic_safe_gap(self) -> None:
+        grid = np.linspace(0.0, 4.0, 4001)
+        values = np.asarray(
+            [fixed_multiplier_exact_minimum(value) for value in grid]
+        )
+        self.assertAlmostEqual(float(grid[np.argmax(values)]), 1.0, places=12)
+        self.assertAlmostEqual(float(values.max()), -0.9, places=12)
+        self.assertEqual(fixed_multiplier_exact_minimum(0.0), -1.9)
+        self.assertEqual(fixed_multiplier_exact_minimum(2.0), -1.9)
+
     def test_selection_manifest_resolves_ranks_and_exclusion_independently(self):
         predictions = np.asarray([0, 1, 1, 0])
         labels = np.asarray([0, 0, 1, 1])
@@ -138,6 +156,113 @@ class AdvMoeTwoPathTests(unittest.TestCase):
         self.assertEqual(result["status"], "UNKNOWN_INCOMPLETE")
         self.assertFalse(result["complete"])
         self.assertEqual(result["lower_bounds"], [])
+
+    def test_graph_matched_mu0_is_unique(self) -> None:
+        call = {"lagrangian_multiplier": 0.0, "status": "UNKNOWN_RELAXATION"}
+        self.assertIs(lagrangian_mu0_call({"calls": [call]}), call)
+        missing = lagrangian_mu0_call(
+            {"calls": [{"lagrangian_multiplier": 1.0}]}
+        )
+        self.assertEqual(missing["status"], "UNKNOWN_INCOMPLETE")
+
+    def test_router_scale_normalized_multiplier_grid_is_bound(self) -> None:
+        protocol = validate_lagrangian_multiplier_protocol(
+            {
+                "multipliers": [0.0, 0.5, 1.0],
+                "scale_normalization": {
+                    "rule": "DEVELOPMENT_MEDIAN_CLEAN_ABS_ROUTER_MARGIN",
+                    "scale": 2.0,
+                    "normalized_coefficients": [0.0, 1.0, 2.0],
+                    "development_source": "/data1/Kane/MOE/ACT/dev.json",
+                    "development_source_sha256": "abc",
+                },
+            }
+        )
+        self.assertEqual(protocol["resolved_multipliers"], [0.0, 0.5, 1.0])
+        with self.assertRaisesRegex(ValueError, "frozen scale"):
+            validate_lagrangian_multiplier_protocol(
+                {
+                    "multipliers": [0.0, 0.6],
+                    "scale_normalization": {
+                        "rule": "DEVELOPMENT_MEDIAN_CLEAN_ABS_ROUTER_MARGIN",
+                        "scale": 2.0,
+                        "normalized_coefficients": [0.0, 1.0],
+                        "development_source_sha256": "abc",
+                    },
+                }
+            )
+
+    def test_separate_interval_control_loses_shared_relation(self) -> None:
+        path = {
+            "status": "UNKNOWN_RELAXATION",
+            "complete": True,
+            "lower_bounds": [-0.9],
+        }
+        observed = separate_interval_lagrangian_grid(
+            path,
+            margin_lower=-1.0,
+            margin_upper=1.0,
+            multipliers=[0.0, 1.0],
+            tolerance=1e-7,
+        )
+        self.assertEqual(observed["status"], "UNKNOWN_RELAXATION")
+        self.assertEqual(observed["lower_bounds"], [-0.9])
+        expected = expected_separate_interval_control(
+            path,
+            margin_lower=-1.0,
+            margin_upper=1.0,
+            multipliers=[0.0, 1.0],
+            tolerance=1e-7,
+        )
+        self.assertEqual(observed, expected)
+
+    def test_common_budget_excludes_slow_complete_grid(self) -> None:
+        def call(seconds: float, multiplier: float | None = None):
+            value = {
+                "status": "CERTIFIED_MARGIN_FILTER",
+                "complete": True,
+                "accounted_wall_seconds": seconds,
+            }
+            if multiplier is not None:
+                value["lagrangian_multiplier"] = multiplier
+            return value
+
+        router = call(0.2)
+        paths = [call(0.3), call(0.3)]
+        eta = [call(0.4), call(0.4)]
+        lagrangian = [
+            {"calls": [call(0.3, 0.0), call(0.3, 1.0)]},
+            {"calls": [call(0.3, 0.0), call(0.3, 1.0)]},
+        ]
+        statuses = {
+            "route_invariance": "CERTIFIED_MARGIN_FILTER_NOT_FORMAL_SAFE",
+            "route_a_two_path": "CERTIFIED_MARGIN_FILTER_NOT_FORMAL_SAFE",
+            "eta_guard_ablation": "CERTIFIED_MARGIN_FILTER_NOT_FORMAL_SAFE",
+            "lagrangian_mu0_graph_matched": (
+                "CERTIFIED_MARGIN_FILTER_NOT_FORMAL_SAFE"
+            ),
+            "lagrangian_guard_ablation": (
+                "CERTIFIED_MARGIN_FILTER_NOT_FORMAL_SAFE"
+            ),
+            "lagrangian_separate_interval": (
+                "CERTIFIED_MARGIN_FILTER_NOT_FORMAL_SAFE"
+            ),
+        }
+        ledger = comparison_budget_ledger(
+            clean_route=0,
+            router_bound=router,
+            path_bounds=paths,
+            eta_bounds=eta,
+            lagrangian_bounds=lagrangian,
+            statuses=statuses,
+            total_wall_budget_seconds=1.0,
+        )
+        self.assertTrue(ledger["methods"]["unguarded_two_path"]["within_budget"])
+        self.assertFalse(ledger["methods"]["lagrangian_grid"]["within_budget"])
+        self.assertEqual(
+            ledger["methods"]["lagrangian_grid"]["budget_status"],
+            "UNKNOWN_BUDGET_EXHAUSTED",
+        )
 
     def test_independent_lagrangian_audit_binds_frozen_grid(self) -> None:
         branch = {
@@ -378,6 +503,8 @@ class AdvMoeTwoPathTests(unittest.TestCase):
             "route_a_two_path": {"UNKNOWN": 2},
             "eta_guard_ablation": {"UNKNOWN": 2},
             "lagrangian_guard_ablation": {"UNKNOWN": 2},
+            "lagrangian_mu0_graph_matched": {"UNKNOWN": 2},
+            "lagrangian_separate_interval": {"UNKNOWN": 2},
             "portfolio": {"UNKNOWN": 2},
             "endpoint": {"UNKNOWN": 2},
             "prediction_flip_witnesses": 1,

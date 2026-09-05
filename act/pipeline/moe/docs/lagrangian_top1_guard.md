@@ -68,10 +68,48 @@ CROWN conformance, and a verification-scale exact-HZ differential. They do not
 establish official-scale benefit, a formal CROWN certificate, or generic
 novelty.
 
+The exact negative control in
+`act/pipeline/moe/results/crown/lagrangian_guard_incompleteness_control_20260906.json`
+separates compiler incompleteness from backend relaxation. On `X=[-1,1]`, let
+the legal branch be `x>=0` and let `s(x)=0.1-2*ReLU(-x)`. Retained-guard exact
+HZ support proves the property positive on the legal half interval. For every
+fixed `mu>=0`, however, `min_X(s-mu*x)<0`; the best exact value is `-0.9` at
+`mu=1`. An official-scale non-improvement therefore cannot be attributed to
+CROWN without a diagnostic that separates backend error, finite multiplier
+search, and this intrinsic sufficient-reduction gap.
+
+## Development controls and cost semantics
+
+New schema-v2 executions include two diagnostic controls:
+
+- `lagrangian_mu0_graph_matched` uses the same compiled property graph with
+  exactly one frozen `mu=0` call. It distinguishes nonzero guard information
+  from graph/property lowering effects.
+- `lagrangian_separate_interval` combines independently computed safety and
+  router-margin intervals as `lower(s)-mu*upper(m)`. Comparing it with the
+  shared-input graph measures whether the backend exploited shared dependence;
+  merely placing both computations in one graph does not guarantee that it did.
+
+Mechanism and budget claims are separate. The mechanism result retains every
+complete frozen-grid execution. The budget result accepts a method only when
+the sum of its required graph construction and bound-call wall times fits the
+same per-sample/radius cutoff. A completed overshoot remains in the raw
+artifact but is labelled `UNKNOWN_BUDGET_EXHAUSTED` for the cost-matched
+comparison. Attack time is excluded from positive acceptance.
+
+Multiplier scale is also part of experiment identity. A normalized grid is
+resolved once from the development cohort's median absolute clean router
+margin, stored with its source hash, and then frozen. The runner and auditor
+reject any mismatch between normalized coefficients, scale, and raw
+multipliers. This prevents both silent routing-logit rescaling and post-holdout
+grid expansion.
+
 ## Remaining experiment gates
 
-1. Freeze the multiplier-selection protocol on an explicitly manifested
-   development cohort without observing the later endpoint-excluded cohort.
-2. Run a paired official-scale comparison with identical expert backend,
+1. Execute the frozen, explicitly manifested 20-input development cohort and
+   choose no settings after inspecting a later endpoint-excluded cohort.
+2. Freeze a disjoint holdout manifest only after development and its budget
+   behavior have been audited.
+3. Run a paired official-scale comparison with identical expert backend,
    budget, samples, radii, and preprocessing.
-3. Keep formal and numerical-filter endpoints separate in every table.
+4. Keep formal and numerical-filter endpoints separate in every table.
