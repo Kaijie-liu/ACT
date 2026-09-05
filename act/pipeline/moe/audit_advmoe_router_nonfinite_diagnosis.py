@@ -35,12 +35,17 @@ def audit(
     config_r2_path: Path,
     result_r2_path: Path,
     log_r2_path: Path,
+    config_r3_path: Path,
+    result_r3_path: Path,
+    log_r3_path: Path,
     output_path: Path,
 ) -> dict[str, Any]:
     config_r1 = _load(config_r1_path)
     result_r1 = _load(result_r1_path)
     config_r2 = _load(config_r2_path)
     result_r2 = _load(result_r2_path)
+    config_r3 = _load(config_r3_path)
+    result_r3 = _load(result_r3_path)
     workspace = Path(config_r1["workspace_boundary"]).resolve()
     repository = Path(config_r1["act_repository"]).resolve()
     source = Path(config_r1["official_source"]["repository"]).resolve()
@@ -50,6 +55,9 @@ def audit(
         config_r2_path,
         result_r2_path,
         log_r2_path,
+        config_r3_path,
+        result_r3_path,
+        log_r3_path,
         output_path,
         repository,
         source,
@@ -129,6 +137,37 @@ def audit(
     if not batch_two_abs or max(batch_two_abs) < 1000.0:
         issues.append("r2 does not reproduce the extreme finite batch-2 logits")
 
+    if config_r3.get("predecessor", {}).get("sha256") != _sha256(result_r2_path):
+        issues.append("r3 does not bind the observed r2 result")
+    if result_r3.get("status") != "COMPLETED_AUTOGRAD_ANOMALY":
+        issues.append("r3 did not reproduce the autograd anomaly")
+    log_r3 = log_r3_path.read_text(encoding="utf-8")
+    if "XlogyBackward0" not in log_r3 or "train_moe.py\", line 143" not in log_r3:
+        issues.append("r3 log does not reproduce the Xlogy router-KL failure")
+    forward_r3 = result_r3.get("router_forward_log", [])
+    if not forward_r3 or not all(
+        row.get("output", {}).get("all_finite") is True for row in forward_r3
+    ):
+        issues.append("r3 has a non-finite router forward before the KL failure")
+    zero_rows = [
+        row
+        for row in forward_r3
+        if int(row.get("output", {}).get("softmax_zero_elements", 0)) > 0
+    ]
+    if not zero_rows:
+        issues.append("r3 does not observe exact softmax underflow")
+        first_zero = None
+    else:
+        first_zero = zero_rows[0]
+        if first_zero.get("zero_based_batch_index") != 2:
+            issues.append("r3 softmax underflow does not first occur on batch 2")
+        earlier_rows = forward_r3[: int(first_zero.get("call_index", 0))]
+        if any(
+            int(row.get("output", {}).get("softmax_zero_elements", 0)) > 0
+            for row in earlier_rows
+        ):
+            issues.append("r3 reports softmax underflow before its first-zero row")
+
     result = {
         "schema_version": 1,
         "status": "PASS" if not issues else "FAIL",
@@ -139,6 +178,9 @@ def audit(
             "config_r2": {"path": str(config_r2_path), "sha256": _sha256(config_r2_path)},
             "result_r2": {"path": str(result_r2_path), "sha256": _sha256(result_r2_path)},
             "log_r2": {"path": str(log_r2_path), "sha256": _sha256(log_r2_path)},
+            "config_r3": {"path": str(config_r3_path), "sha256": _sha256(config_r3_path)},
+            "result_r3": {"path": str(result_r3_path), "sha256": _sha256(result_r3_path)},
+            "log_r3": {"path": str(log_r3_path), "sha256": _sha256(log_r3_path)},
         },
         "act": {
             "branch": _git(repository, "branch", "--show-current"),
@@ -163,6 +205,19 @@ def audit(
             "maximum_absolute_finite_router_logit": max(batch_two_abs)
             if batch_two_abs
             else None,
+            "first_softmax_underflow_call": (
+                int(first_zero["call_index"]) if first_zero is not None else None
+            ),
+            "first_softmax_underflow_zero_elements": (
+                int(first_zero["output"]["softmax_zero_elements"])
+                if first_zero is not None
+                else None
+            ),
+            "first_softmax_underflow_pair_gap": (
+                float(first_zero["output"]["maximum_pair_gap"])
+                if first_zero is not None
+                else None
+            ),
         },
         "issues": issues,
     }
@@ -182,6 +237,9 @@ def main() -> None:
     parser.add_argument("--config-r2", type=Path, required=True)
     parser.add_argument("--result-r2", type=Path, required=True)
     parser.add_argument("--log-r2", type=Path, required=True)
+    parser.add_argument("--config-r3", type=Path, required=True)
+    parser.add_argument("--result-r3", type=Path, required=True)
+    parser.add_argument("--log-r3", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     arguments = parser.parse_args()
     result = audit(
@@ -190,6 +248,9 @@ def main() -> None:
         arguments.config_r2,
         arguments.result_r2,
         arguments.log_r2,
+        arguments.config_r3,
+        arguments.result_r3,
+        arguments.log_r3,
         arguments.output,
     )
     print(json.dumps(result, indent=2, sort_keys=True))
