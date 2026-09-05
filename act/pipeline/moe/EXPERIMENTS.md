@@ -2480,3 +2480,9 @@ while an unsafe tie remains unresolved near `-0.1`. This is toy numerical
 conformance, not an official-scale effect or a formal CROWN certificate. See
 `docs/lagrangian_top1_guard.md` and
 `results/crown/lagrangian_guard_toy_conformance_20260906.json`.
+
+The exact retained-HZ differential subsequently passes both linear controls:
+the safe guarded half interval and unsafe tie agree with the compiled property
+within `5e-9`, with complete support and zero selector binaries. The initial
+`1e-9` comparison failure is retained rather than overwritten. This closes a
+verification-scale correctness gate, not the official-scale effect gate.

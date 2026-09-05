@@ -173,6 +173,20 @@ class TieSafeImplicationTests(unittest.TestCase):
         torch.testing.assert_close(compiled, expected_compiled)
         torch.testing.assert_close(module(inputs), expected_compiled)
 
+    def test_lagrangian_exact_hz_differential_controls(self):
+        from act.pipeline.moe.lagrangian_guard_exact_hz_differential import run
+
+        result = run()
+        self.assertEqual(result["status"], "PASS")
+        self.assertEqual(len(result["cases"]), 2)
+        for case in result["cases"]:
+            self.assertTrue(case["guarded_hz_exact"])
+            self.assertEqual(case["selection_binaries"], 0)
+            self.assertAlmostEqual(
+                case["retained_guard_safety_support"]["lower"],
+                case["compiled_phi_support"]["lower"],
+            )
+
 
 if __name__ == "__main__":
     unittest.main()

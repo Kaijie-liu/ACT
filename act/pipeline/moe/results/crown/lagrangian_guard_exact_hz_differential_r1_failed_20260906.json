@@ -1,0 +1,70 @@
+{
+  "cases": [
+    {
+      "compiled_phi_support": {
+        "exact": true,
+        "lower": 0.1,
+        "lower_status": "constant_exact",
+        "upper": 0.1,
+        "upper_status": "constant_exact"
+      },
+      "guard": "r_0-r_1=x>=0",
+      "guarded_hz_exact": true,
+      "maximum_formula_error": 8.326672684688674e-17,
+      "maximum_legal_domination_error": 0.0,
+      "name": "safe_guarded_half_interval",
+      "passed": false,
+      "retained_guard_safety_support": {
+        "exact": true,
+        "lower": 0.0999999989,
+        "lower_status": "milp_optimal",
+        "upper": 1.1000000020000003,
+        "upper_status": "milp_optimal"
+      },
+      "safety_bias": 0.1,
+      "selection_binaries": 0,
+      "unguarded_safety_support": {
+        "exact": true,
+        "lower": -0.9000000020000002,
+        "lower_status": "milp_optimal",
+        "upper": 1.1000000020000003,
+        "upper_status": "milp_optimal"
+      }
+    },
+    {
+      "compiled_phi_support": {
+        "exact": true,
+        "lower": -0.1,
+        "lower_status": "constant_exact",
+        "upper": -0.1,
+        "upper_status": "constant_exact"
+      },
+      "guard": "r_0-r_1=x>=0",
+      "guarded_hz_exact": true,
+      "maximum_formula_error": 8.326672684688674e-17,
+      "maximum_legal_domination_error": 0.0,
+      "name": "unsafe_tie",
+      "passed": false,
+      "retained_guard_safety_support": {
+        "exact": true,
+        "lower": -0.10000000110000001,
+        "lower_status": "milp_optimal",
+        "upper": 0.9000000020000002,
+        "upper_status": "milp_optimal"
+      },
+      "safety_bias": -0.1,
+      "selection_binaries": 0,
+      "unguarded_safety_support": {
+        "exact": true,
+        "lower": -1.1000000020000003,
+        "lower_status": "milp_optimal",
+        "upper": 0.9000000020000002,
+        "upper_status": "milp_optimal"
+      }
+    }
+  ],
+  "evidence_boundary": "Exact one-dimensional linear differential only. It validates the compiler against retained-guard HZ on two analytic controls; it does not establish official-scale effect or CROWN formal soundness.",
+  "schema_version": 1,
+  "scope": "EXACT_RETAINED_HZ_VS_LAGRANGIAN_TOP1_TOY_DIFFERENTIAL",
+  "status": "FAIL"
+}

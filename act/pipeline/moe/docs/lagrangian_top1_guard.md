@@ -52,16 +52,26 @@ compiled row is the constant `0.1`. Replacing the safety offset by `-0.1`
 keeps the tie unsafe and the compiled lower bound negative. Concrete grid
 evaluation confirms `phi <= s` on every legal point.
 
-This establishes the real-arithmetic reduction and executable CROWN
-conformance only. It does not establish official-scale benefit, a formal CROWN
-certificate, or generic novelty.
+An exact retained-HZ differential is recorded in
+`act/pipeline/moe/results/crown/lagrangian_guard_exact_hz_differential_r2_20260906.json`.
+For both the safe `s=x+0.1` and unsafe-tie `s=x-0.1` controls, exact guarded HZ
+and the compiled `mu=1` property agree on the analytic lower bound within the
+explicit `5e-9` comparison tolerance. The first execution used `1e-9` and
+failed by about `1.1e-9` because the complete HZ support result includes
+conservative numerical padding. That failure is preserved as
+`lagrangian_guard_exact_hz_differential_r1_failed_20260906.json`; r2 changes
+only the disclosed comparison tolerance, which remains below the project's
+`1e-7` positive-margin threshold.
+
+Together these controls establish the real-arithmetic reduction, executable
+CROWN conformance, and a verification-scale exact-HZ differential. They do not
+establish official-scale benefit, a formal CROWN certificate, or generic
+novelty.
 
 ## Remaining experiment gates
 
-1. Differentially compare the compiler with exact retained-guard HZ on a
-   frozen verification-scale cohort.
-2. Freeze the multiplier-selection protocol without observing the official
+1. Freeze the multiplier-selection protocol without observing the official
    test endpoint.
-3. Run a paired official-scale comparison with identical expert backend,
+2. Run a paired official-scale comparison with identical expert backend,
    budget, samples, radii, and preprocessing.
-4. Keep formal and numerical-filter endpoints separate in every table.
+3. Keep formal and numerical-filter endpoints separate in every table.

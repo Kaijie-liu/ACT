@@ -69,7 +69,9 @@ constraint-propagation ideas and must be positioned as a routed-program
 specialization, not a generic invention. Until its numerical backend is
 outward validated, its endpoint remains a filter even if coverage improves.
 
-The first two gates are now closed for the Lagrangian construction: the proof
-and concrete/CROWN toy conformance are committed. The exact retained-HZ
-differential and a preregistered official-scale paired experiment remain open.
-No official-scale benefit or formal certificate is claimed by this code stage.
+The proof, concrete/CROWN toy conformance, and exact retained-HZ linear
+differential are now committed. The first exact-differential attempt missed its
+`1e-9` comparison tolerance by about `1.1e-9`; it is preserved, and r2 passes
+with an explicit `5e-9` tolerance still below the registered positive-margin
+threshold. A preregistered official-scale paired experiment remains open. No
+official-scale benefit or formal certificate is claimed by this code stage.
