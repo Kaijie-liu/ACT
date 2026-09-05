@@ -2403,3 +2403,14 @@ input, and `0.5/255`. Plain CROWN positive bounds remain numerical filters, not
 formal SAFE results; only full dynamic-model replay may emit UNSAFE. See
 `configs/advmoe_two_path_seed0_compat_smoke_r1.json` and
 `docs/advmoe_two_path.md`.
+
+Smoke r1 completes in 14.30 seconds and independently audits `PASS` with zero
+issues. The router bound is a positive numerical filter, both plain static
+paths remain unresolved, and the eta implication filters only the inapplicable
+branch; the aggregate correctly remains UNKNOWN. No backend errors, positive-
+filter/witness conflicts, or formal SAFE counts occur. Full-test cohort replay,
+artifact hashes, CROWN status recomputation, and full-model endpoint replay all
+pass. The accepted record is
+`results/baseline/advmoe_two_path_seed0_compat_smoke_r1_audit.json`. It unlocks
+the unchanged-method 20-input, five-radius config
+`configs/advmoe_two_path_seed0_compat_full_r1.json`.

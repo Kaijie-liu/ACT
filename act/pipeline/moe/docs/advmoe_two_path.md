@@ -46,3 +46,22 @@ recomputes the staged aggregations without calling the runner helper, verifies
 the first-clean-correct selection, replays every attack endpoint through the
 literal dynamic model, and checks its box membership and perturbation norm. It
 also enforces zero formal SAFE counts for this non-outward-rounded backend.
+
+Smoke r1 completes in 14.30 seconds and independently audits `PASS` with zero
+issues. The router margin is a positive numerical filter (`0.95591`), while
+both unguarded static paths remain unresolved (`-291.25` and `-774.83` minimum
+property bounds). The eta implication filters the inapplicable route-0 branch
+and remains unresolved on the clean route, which is the expected tie-safe
+implication behavior. The full-model attack does not flip the prediction and
+the aggregate endpoint remains `UNKNOWN`; no negative relaxation value is
+promoted to UNSAFE. The path adapters agree with their literal static paths
+within `2.39e-7`, the dynamic selected-path error is `2.39e-7`, and the router
+adapter is bit exact. Independent full-test selection replay, endpoint replay,
+box containment, status recomputation, and artifact hashes all pass. The audit
+is `act/pipeline/moe/results/baseline/advmoe_two_path_seed0_compat_smoke_r1_audit.json`.
+
+The accepted smoke unlocks
+`act/pipeline/moe/configs/advmoe_two_path_seed0_compat_full_r1.json`: the same
+frozen method on the first 20 clean-correct ordered inputs and
+`{0.5,1,2,4,8}/255`. The full run retains all-sample denominators and does not
+change the backend, attack, guard ablation, or numerical semantics.
