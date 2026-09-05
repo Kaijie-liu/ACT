@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "status": "PREREGISTERED_NOT_RUN",
+  "scope": "ADV_MOE_LAGRANGIAN_ATTRIBUTION_GRID_EXTENSION_R1",
+  "label": "attribution-only development diagnostic; not a holdout or coverage estimate",
+  "workspace_boundary": "/data1/Kane/MOE",
+  "act_repository": "/data1/Kane/MOE/ACT",
+  "required_branch": "feat/moe-route-verification",
+  "parent_development": {
+    "config": {
+      "path": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/advmoe_lagrangian_development_r1.json",
+      "sha256": "7a9257afc071a29d289cf09dc0da1996005d76689ea543ab435a1dc1595865b2"
+    },
+    "summary": {
+      "path": "/data1/Kane/MOE/ACT/data/moe/results/advmoe_lagrangian_development_r1/summary.json",
+      "sha256": "3d51a53bface1310a69ce287154cb1495893492205c5fe47d304527a0f6741c6"
+    },
+    "audit": {
+      "path": "/data1/Kane/MOE/ACT/act/pipeline/moe/results/baseline/advmoe_lagrangian_development_r1_audit.json",
+      "sha256": "2770b5f99efb0623223df7033422206d25a716a7945f215d42300d6f473efc14"
+    },
+    "analysis": {
+      "path": "/data1/Kane/MOE/ACT/act/pipeline/moe/results/baseline/advmoe_lagrangian_development_r1_analysis.json",
+      "sha256": "06920e5a04426c6ff04158151635d11191125aa997ab12416ae8ced72882e90a"
+    },
+    "rows": {
+      "path": "/data1/Kane/MOE/ACT/data/moe/results/advmoe_lagrangian_development_r1/rows.jsonl",
+      "sha256": "26c65f2eaf88eea81691a8d482bb501facac2b71ffb80b12ac74ebd31002412b"
+    }
+  },
+  "output_dir": "/data1/Kane/MOE/ACT/data/moe/results/advmoe_lagrangian_attribution_grid_r1",
+  "selection": {
+    "parent_rows": 100,
+    "rows": 5,
+    "rule": "among parent Lagrangian-negative rows without a replayed prediction flip, sort by descending row-level minimum compiled lower bound and then row_id",
+    "expected_row_ids": [
+      "sample6:eps0.5",
+      "sample16:eps0.5",
+      "sample11:eps0.5",
+      "sample3:eps0.5",
+      "sample10:eps0.5"
+    ],
+    "claim_scope": "closest-to-completion development residuals only; no prevalence or holdout claim"
+  },
+  "multiplier_extension": {
+    "normalization_scale": 2.580275058746338,
+    "normalized_coefficients": [8.0, 16.0, 32.0],
+    "multipliers": [
+      3.100444649450245,
+      6.20088929890049,
+      12.40177859780098
+    ],
+    "execution": "only parent-negative branches; immutable parent calls are merged before row-wise aggregation"
+  },
+  "crown": {
+    "environment": "/data1/Kane/MOE/envs/alpha-beta-crown",
+    "method": "CROWN",
+    "device": "cuda:0",
+    "minimum_free_gpu_memory_gib": 48.0,
+    "gradient_tracking": false,
+    "bound_options": null
+  },
+  "numerical": {
+    "safe_positive_margin": 1e-7,
+    "negative_bound_semantics": "UNKNOWN_NEVER_UNSAFE",
+    "formal_safe_enabled": false
+  },
+  "stopping_rule": {
+    "if_any_complete_endpoint_gain": "attribute at least one selected endpoint failure to finite-grid truncation and stop",
+    "if_property_only_or_no_gain": "finite grid is not a sufficient endpoint explanation; run the separately frozen fixed-multiplier-family diagnostic",
+    "prohibited_inference": "this stage alone cannot distinguish backend relaxation from intrinsic fixed-multiplier certificate-family limits"
+  }
+}

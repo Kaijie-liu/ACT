@@ -2523,3 +2523,13 @@ bounds were mixed (558 better, 444 worse, 798 tied), so no consistent relation-
 retention claim is made. The one route-flip witness had no positive compiled
 output filter, formal SAFE remains zero, and the holdout remains locked pending
 a method decision rather than being spent automatically after a null endpoint.
+
+The next attribution stage is preregistered without spending a holdout.  It
+selects the five closest unresolved development rows without a replayed
+prediction flip and extends only their unresolved branches from normalized
+coefficient `4` to `{8,16,32}`.  Parent calls are immutable and re-aggregated
+with the new calls.  Complete endpoint gain attributes at least that selected
+failure to grid truncation; property-only or null gain triggers a separate
+fixed-multiplier-family diagnostic and cannot by itself be blamed on CROWN.
+See `configs/advmoe_lagrangian_attribution_grid_r1.json` and
+`docs/advmoe_lagrangian_attribution.md`.

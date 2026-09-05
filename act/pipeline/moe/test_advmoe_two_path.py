@@ -40,9 +40,83 @@ from act.pipeline.moe.analyze_advmoe_lagrangian_development import (
     _cluster_bootstrap,
     _paired_counts,
 )
+from act.pipeline.moe.advmoe_lagrangian_attribution import (
+    combine_parent_and_extension,
+    select_closest_residual_rows,
+)
 
 
 class AdvMoeTwoPathTests(unittest.TestCase):
+    def test_attribution_selection_is_closest_residual_without_witness(self) -> None:
+        def row(name, minimum, *, positive=False, prediction_flip=False):
+            return {
+                "row_id": name,
+                "statuses": {
+                    "lagrangian_guard_ablation": (
+                        "CERTIFIED_MARGIN_FILTER_NOT_FORMAL_SAFE"
+                        if positive else "UNKNOWN"
+                    )
+                },
+                "attack": {"prediction_flip": prediction_flip},
+                "lagrangian_guard_crown": [
+                    {"minimum_lower_bound": minimum},
+                    {"minimum_lower_bound": minimum + 1.0},
+                ],
+            }
+
+        rows = [
+            row("far", -10.0),
+            row("near", -1.0),
+            row("witness", -0.1, prediction_flip=True),
+            row("positive", 0.2, positive=True),
+        ]
+        self.assertEqual(
+            [value["row_id"] for value in select_closest_residual_rows(rows, 2)],
+            ["near", "far"],
+        )
+
+    def test_attribution_combines_parent_and_extension_rowwise(self) -> None:
+        parent = aggregate_lagrangian_grid_calls(
+            [
+                {
+                    "complete": True,
+                    "status": "UNKNOWN_RELAXATION",
+                    "lower_bounds": [-1.0, 0.5],
+                },
+                {
+                    "complete": True,
+                    "status": "UNKNOWN_RELAXATION",
+                    "lower_bounds": [-0.5, 0.4],
+                },
+            ],
+            [0.0, 1.0],
+            property_rows=2,
+            tolerance=1e-7,
+        )
+        extension = aggregate_lagrangian_grid_calls(
+            [
+                {
+                    "complete": True,
+                    "status": "CERTIFIED_MARGIN_FILTER",
+                    "lower_bounds": [0.2, 0.3],
+                }
+            ],
+            [2.0],
+            property_rows=2,
+            tolerance=1e-7,
+        )
+        combined = combine_parent_and_extension(
+            parent,
+            extension,
+            parent_multipliers=[0.0, 1.0],
+            extension_multipliers=[2.0],
+            property_rows=2,
+            tolerance=1e-7,
+        )
+        self.assertEqual(combined["status"], "CERTIFIED_MARGIN_FILTER")
+        self.assertEqual(combined["lower_bounds"], [0.2, 0.5])
+        self.assertEqual(combined["selected_multipliers"], [2.0, 0.0])
+
     def test_development_analysis_uses_input_clusters(self) -> None:
         summary = _cluster_bootstrap([0.2, -0.2, 0.0])
         self.assertEqual(summary["clusters"], 3)
