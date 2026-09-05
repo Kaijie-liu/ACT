@@ -34,6 +34,7 @@ def audit(
     result_r1_path: Path,
     config_r2_path: Path,
     result_r2_path: Path,
+    log_r2_path: Path,
     output_path: Path,
 ) -> dict[str, Any]:
     config_r1 = _load(config_r1_path)
@@ -48,6 +49,7 @@ def audit(
         result_r1_path,
         config_r2_path,
         result_r2_path,
+        log_r2_path,
         output_path,
         repository,
         source,
@@ -107,8 +109,11 @@ def audit(
     runtime_failure = result_r2.get("execution", {}).get("runtime_failure") or {}
     if "XlogyBackward0" not in runtime_failure.get("message", ""):
         issues.append("r2 anomaly is not localized to XlogyBackward0")
-    if "train_moe.py\", line 143" not in runtime_failure.get("traceback", ""):
-        issues.append("r2 traceback does not bind the anomaly to router KL construction")
+    log_r2 = log_r2_path.read_text(encoding="utf-8")
+    if "XlogyBackward0" not in log_r2 or "train_moe.py\", line 143" not in log_r2:
+        issues.append("r2 log does not bind XlogyBackward0 to router KL construction")
+    if "train_moe.py\", line 156" not in runtime_failure.get("traceback", ""):
+        issues.append("r2 traceback does not bind the anomaly to router loss backward")
     forward_rows = result_r2.get("router_forward_log", [])
     if not forward_rows or not all(
         row.get("input", {}).get("all_finite") is True
@@ -133,6 +138,7 @@ def audit(
             "result_r1": {"path": str(result_r1_path), "sha256": _sha256(result_r1_path)},
             "config_r2": {"path": str(config_r2_path), "sha256": _sha256(config_r2_path)},
             "result_r2": {"path": str(result_r2_path), "sha256": _sha256(result_r2_path)},
+            "log_r2": {"path": str(log_r2_path), "sha256": _sha256(log_r2_path)},
         },
         "act": {
             "branch": _git(repository, "branch", "--show-current"),
@@ -175,6 +181,7 @@ def main() -> None:
     parser.add_argument("--result-r1", type=Path, required=True)
     parser.add_argument("--config-r2", type=Path, required=True)
     parser.add_argument("--result-r2", type=Path, required=True)
+    parser.add_argument("--log-r2", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     arguments = parser.parse_args()
     result = audit(
@@ -182,6 +189,7 @@ def main() -> None:
         arguments.result_r1,
         arguments.config_r2,
         arguments.result_r2,
+        arguments.log_r2,
         arguments.output,
     )
     print(json.dumps(result, indent=2, sort_keys=True))
