@@ -36,9 +36,27 @@ from act.pipeline.moe.audit_advmoe_two_path import (
 from act.pipeline.moe.lagrangian_guard_incompleteness_control import (
     fixed_multiplier_exact_minimum,
 )
+from act.pipeline.moe.analyze_advmoe_lagrangian_development import (
+    _cluster_bootstrap,
+    _paired_counts,
+)
 
 
 class AdvMoeTwoPathTests(unittest.TestCase):
+    def test_development_analysis_uses_input_clusters(self) -> None:
+        summary = _cluster_bootstrap([0.2, -0.2, 0.0])
+        self.assertEqual(summary["clusters"], 3)
+        self.assertAlmostEqual(summary["point_estimate"], 0.0)
+        self.assertEqual(
+            _paired_counts([False, False, True, True], [False, True, False, True]),
+            {
+                "both_negative": 1,
+                "right_only": 1,
+                "left_only": 1,
+                "both_positive": 1,
+            },
+        )
+
     def test_fixed_multiplier_reduction_has_intrinsic_safe_gap(self) -> None:
         grid = np.linspace(0.0, 4.0, 4001)
         values = np.asarray(

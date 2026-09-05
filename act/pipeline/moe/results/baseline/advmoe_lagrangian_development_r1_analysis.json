@@ -1,0 +1,228 @@
+{
+  "attribution": {
+    "outcome": "NO_COMPLETE_COVERAGE_GAIN_UNDER_FROZEN_PROTOCOL",
+    "permitted_statement": "Under the frozen multiplier protocol and common budget, the Lagrangian compiler did not add complete numerical-filter coverage.",
+    "prohibited_inference": "This result alone cannot distinguish CROWN relaxation error, finite multiplier search, and intrinsic fixed-multiplier sufficient-reduction gap."
+  },
+  "complete_sample_radius_effect": {
+    "cluster_primary_lagrangian_minus_unguarded": {
+      "bootstrap_replicates": 10000,
+      "bootstrap_seed": 20260906,
+      "clusters": 20,
+      "percentile_95_interval": [
+        0.0,
+        0.0
+      ],
+      "point_estimate": 0.0,
+      "unit": "input sample with five radii retained as one cluster"
+    },
+    "lagrangian_vs_graph_matched_mu0": {
+      "both_negative": 98,
+      "both_positive": 2,
+      "left_only": 0,
+      "right_only": 0
+    },
+    "lagrangian_vs_separate_interval": {
+      "both_negative": 98,
+      "both_positive": 2,
+      "left_only": 0,
+      "right_only": 0
+    },
+    "lagrangian_vs_unguarded": {
+      "both_negative": 98,
+      "both_positive": 2,
+      "left_only": 0,
+      "right_only": 0
+    },
+    "mechanism_positive_counts": {
+      "eta_guard": 0,
+      "lagrangian_grid": 2,
+      "lagrangian_mu0_graph_matched": 2,
+      "lagrangian_separate_interval": 2,
+      "route_invariance": 2,
+      "unguarded_two_path": 2
+    }
+  },
+  "core_endpoint": {
+    "formal_safe": 0,
+    "positive_semantics": "CERTIFIED_MARGIN_FILTER_NOT_FORMAL_SAFE",
+    "prediction_flip_witness_rows": 17,
+    "route_changing_lagrangian_positive_filters": 0,
+    "route_flip_witness_rows": 1
+  },
+  "cost_matched_effect": {
+    "accounted_wall_seconds": {
+      "eta_guard": {
+        "count": 100,
+        "maximum": 8.311665382236242,
+        "mean": 7.557785956496373,
+        "median": 7.841605697758496,
+        "minimum": 5.843057782389224,
+        "p90": 8.122941380552948,
+        "q25": 7.293267417233437,
+        "q75": 8.064833821030334
+      },
+      "lagrangian_grid": {
+        "count": 100,
+        "maximum": 50.02458352781832,
+        "mean": 45.57034692511894,
+        "median": 47.21607147715986,
+        "minimum": 34.975792485289276,
+        "p90": 49.044064714945854,
+        "q25": 44.01404467574321,
+        "q75": 48.65720610367134
+      },
+      "lagrangian_mu0_graph_matched": {
+        "count": 100,
+        "maximum": 8.360626496374607,
+        "mean": 7.6193985156901185,
+        "median": 7.899320107419044,
+        "minimum": 5.827490095980465,
+        "p90": 8.199931022524833,
+        "q25": 7.336519695352763,
+        "q75": 8.142369729466736
+      },
+      "lagrangian_separate_interval": {
+        "count": 100,
+        "maximum": 6.882072544656694,
+        "mean": 6.384213769584894,
+        "median": 6.566750675439835,
+        "minimum": 5.099200100637972,
+        "p90": 6.706664657592773,
+        "q25": 6.2710952940396965,
+        "q75": 6.660980267217383
+      },
+      "route_invariance": {
+        "count": 100,
+        "maximum": 4.328049120493233,
+        "mean": 3.9317763891723008,
+        "median": 4.0543407285586,
+        "minimum": 3.087047099135816,
+        "p90": 4.1999970121309165,
+        "q25": 3.8074355614371598,
+        "q75": 4.168418989516795
+      },
+      "unguarded_two_path": {
+        "count": 100,
+        "maximum": 5.309176880866289,
+        "mean": 4.908990369588136,
+        "median": 4.986655371263623,
+        "minimum": 4.048738437704742,
+        "p90": 5.07153730392456,
+        "q25": 4.955267898505554,
+        "q75": 5.019209112273529
+      }
+    },
+    "budget_overshoots": {
+      "eta_guard": 0,
+      "lagrangian_grid": 0,
+      "lagrangian_mu0_graph_matched": 0,
+      "lagrangian_separate_interval": 0,
+      "route_invariance": 0,
+      "unguarded_two_path": 0
+    },
+    "common_budget_seconds": 60.0,
+    "lagrangian_vs_unguarded": {
+      "both_negative": 98,
+      "both_positive": 2,
+      "left_only": 0,
+      "right_only": 0
+    },
+    "positive_counts": {
+      "eta_guard": 0,
+      "lagrangian_grid": 2,
+      "lagrangian_mu0_graph_matched": 2,
+      "lagrangian_separate_interval": 2,
+      "route_invariance": 2,
+      "unguarded_two_path": 2
+    }
+  },
+  "denominator": {
+    "development_not_holdout": true,
+    "input_clusters": 20,
+    "property_rows": 1800,
+    "radii_over_255": [
+      0.5,
+      1.0,
+      2.0,
+      4.0,
+      8.0
+    ],
+    "sample_radius_rows": 100
+  },
+  "identity": {
+    "audit": {
+      "path": "/data1/Kane/MOE/ACT/act/pipeline/moe/results/baseline/advmoe_lagrangian_development_r1_audit.json",
+      "sha256": "2770b5f99efb0623223df7033422206d25a716a7945f215d42300d6f473efc14"
+    },
+    "config": {
+      "path": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/advmoe_lagrangian_development_r1.json",
+      "sha256": "7a9257afc071a29d289cf09dc0da1996005d76689ea543ab435a1dc1595865b2"
+    },
+    "rows": {
+      "path": "/data1/Kane/MOE/ACT/data/moe/results/advmoe_lagrangian_development_r1/rows.jsonl",
+      "sha256": "26c65f2eaf88eea81691a8d482bb501facac2b71ffb80b12ac74ebd31002412b"
+    },
+    "summary": {
+      "path": "/data1/Kane/MOE/ACT/data/moe/results/advmoe_lagrangian_development_r1/summary.json",
+      "sha256": "3d51a53bface1310a69ce287154cb1495893492205c5fe47d304527a0f6741c6"
+    }
+  },
+  "property_row_effect": {
+    "lagrangian_vs_graph_matched_mu0": {
+      "delta_distribution": {
+        "count": 1800,
+        "maximum": 122.0625,
+        "mean": 1.8261864335338274,
+        "median": 0.0,
+        "minimum": 0.0,
+        "p90": 1.9225891113281255,
+        "q25": 0.0,
+        "q75": 0.0
+      },
+      "equal_within_tolerance": 1559,
+      "strictly_improved_over_tolerance": 241,
+      "strictly_worse_over_tolerance": 0
+    },
+    "lagrangian_vs_unguarded_C_matrix": {
+      "delta_distribution": {
+        "count": 1800,
+        "maximum": 99328.0,
+        "mean": 456.4043262304862,
+        "median": 0.0,
+        "minimum": -2048.0,
+        "p90": 8.7542724609375,
+        "q25": 0.0,
+        "q75": 0.453277587890625
+      },
+      "equal_within_tolerance": 798,
+      "strictly_improved_over_tolerance": 591,
+      "strictly_worse_over_tolerance": 411
+    },
+    "nonzero_selected_property_rows": 241,
+    "selected_multiplier_counts": {
+      "0.0": 1559,
+      "0.09688889529532016": 36,
+      "0.19377779059064032": 34,
+      "1.5502223247251226": 171
+    },
+    "shared_graph_vs_separate_intervals": {
+      "delta_distribution": {
+        "count": 1800,
+        "maximum": 99328.0,
+        "mean": 455.97312343718374,
+        "median": 0.0,
+        "minimum": -2048.0,
+        "p90": 4.012500000000017,
+        "q25": 0.0,
+        "q75": 0.06292754672843981
+      },
+      "equal_within_tolerance": 798,
+      "strictly_improved_over_tolerance": 558,
+      "strictly_worse_over_tolerance": 444
+    }
+  },
+  "schema_version": 1,
+  "scope": "ADV_MOE_LAGRANGIAN_DEVELOPMENT_PAIRED_ANALYSIS_R1",
+  "status": "PASS"
+}

@@ -2511,3 +2511,15 @@ five registered radii, normalized coefficient grid
 60-second common total-wall cutoff. This is method-development evidence only.
 A later confirmatory manifest must exclude the 20 frozen dataset indices and
 bind the development manifest by hash.
+
+Development r1 subsequently completed all 100 rows and independently audited
+`PASS` with zero issues. Nonzero multipliers improved 241/1,800 graph-matched
+property-row bounds and worsened none, but complete positive-filter coverage
+remained exactly 2/100 for the Lagrangian grid, graph-matched `mu=0`, separate-
+interval control, and unguarded two-path baseline. All methods fit the common
+60-second cutoff; median accounted time was 47.22 seconds for the grid and
+4.99 seconds for unguarded two-path. Shared-graph versus separate-interval
+bounds were mixed (558 better, 444 worse, 798 tied), so no consistent relation-
+retention claim is made. The one route-flip witness had no positive compiled
+output filter, formal SAFE remains zero, and the holdout remains locked pending
+a method decision rather than being spent automatically after a null endpoint.

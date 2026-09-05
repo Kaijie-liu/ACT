@@ -121,3 +121,38 @@ selection and scale are separate hash-bound artifacts.
 3. Run a paired official-scale comparison with identical expert backend,
    budget, samples, radii, and preprocessing.
 4. Keep formal and numerical-filter endpoints separate in every table.
+
+## Development r1 result
+
+The frozen development run completed all 100 sample-radius rows in 6,000.45
+seconds and independently audited `PASS` with zero issues. All grid executions
+fit the common 60-second cutoff; the grid's median accounted time was 47.22
+seconds versus 4.99 seconds for unguarded two-path CROWN.
+
+Relative to the graph-matched `mu=0` call, a nonzero multiplier strictly
+improved 241/1,800 property-row lower bounds (13.4%), tied 1,559, and worsened
+none because the exact `mu=0` call is a member of the fail-closed grid. This
+property-level effect did not cross the complete obligation: Lagrangian,
+graph-matched `mu=0`, separate intervals, and unguarded two-path each filtered
+the same 2/100 sample-radius rows, both at `0.5/255`. The paired input-cluster
+difference is exactly zero in this development cohort.
+
+The shared graph also did not dominate the separately intervalized control:
+558 rows improved, 444 worsened, and 798 tied within `1e-7`. This is evidence
+that graph/relaxation form materially changes the computed lower bound, not
+evidence that CROWN consistently preserves the intended relation. One route
+flip witness occurred, but no route-changing row had a positive Lagrangian
+filter. Formal SAFE remains zero by construction, while all 17 prediction-flip
+UNSAFE outcomes were full-model replays.
+
+The frozen interpretation is therefore:
+
+> Under the registered multiplier protocol and common budget, Lagrangian
+> compilation changed property-level bounds but added no complete numerical-
+> filter coverage.
+
+It is not permissible to infer from this run alone whether the endpoint gap is
+caused by backend relaxation, finite multiplier search, or intrinsic fixed-
+multiplier reduction incompleteness. The confirmatory holdout remains locked;
+running it without a development-level endpoint signal would spend a fresh
+cohort only to test an unchanged negative configuration.
