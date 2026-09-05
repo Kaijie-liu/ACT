@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "status": "FROZEN_AFTER_FINITE_SMOKE_PASS",
+  "scope": "ADV_MOE_OFFICIAL_CODE_NUMERICAL_COMPATIBILITY_VARIANT_SEED0_R1",
+  "label": "official-code numerical-compatibility variant; softmax-underflow gradient bridge",
+  "workspace_boundary": "/data1/Kane/MOE",
+  "lineage": {
+    "predecessor_config": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/advmoe_training_seed0_r3.json",
+    "predecessor_run": "/data1/Kane/MOE/baseline_runs/advmoe/seed0_r3",
+    "predecessor_status": "EXCLUDED_NONFINITE_ROUTER",
+    "scientific_configuration_change": "replace only non-finite KL target gradients at exact-zero softmax probabilities with the finite composite softmax-KL limit",
+    "restart_policy": "restart from epoch zero; the excluded checkpoint is not a valid continuation state",
+    "identity_policy": "never label this run as unchanged official training"
+  },
+  "official_source": {
+    "repository": "/data1/Kane/MOE/baselines/robust-moe-cnn",
+    "url": "https://github.com/optml-group/robust-moe-cnn.git",
+    "branch": "master",
+    "commit": "c50796fb8284512b6f6ad8e843f95182cec527cf",
+    "tree": "153d4ff9f30f34eb7fdd4caf670495122c5836e0",
+    "license": "NO_LICENSE_FILE",
+    "source_policy": "read and execute in place; do not copy source into ACT and do not modify the official clone"
+  },
+  "compatibility_variant": {
+    "softmax_underflow_gradient_bridge": true,
+    "finite_smoke_audit": "/data1/Kane/MOE/ACT/act/pipeline/moe/results/baseline/advmoe_router_finite_smoke_seed0_r2_audit.json",
+    "finite_smoke_audit_sha256": "f2eaa504f2cac1db2e457988fd56dced342e6d5e4f58e7a183bedcb3506548e4",
+    "finite_regime_policy": "native forward values and gradients are unchanged",
+    "underflow_policy": "replace a non-finite incoming gradient only at an exact-zero softmax probability",
+    "failure_policy": "a non-finite gradient at any positive probability or any non-finite checkpoint state terminates the run"
+  },
+  "environment": {
+    "path": "/data1/Kane/MOE/envs/advmoe-blackwell",
+    "construction": "Python venv derived from act-py312 with system-site-packages; only missing official imports are installed into the isolated prefix",
+    "base_python": "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+    "base_versions": {
+      "python": "3.12.12",
+      "torch": "2.9.1+cu128",
+      "torchvision": "0.24.1+cu128",
+      "cuda": "12.8",
+      "numpy": "2.3.5",
+      "scipy": "1.16.3"
+    }
+  },
+  "dataset": {
+    "name": "CIFAR10",
+    "interface": "official torchvision CIFAR10 used by the released source",
+    "source_root": "/data1/Kane/MOE/ACT/data/torchvision/CIFAR10/raw/cifar-10-batches-py",
+    "archive": "/data1/Kane/MOE/ACT/data/torchvision/CIFAR10/raw/cifar-10-python.tar.gz",
+    "archive_sha256": "6d958be074577803d12ecdefd02955f39262c83c16fe9348329d7fe0b5c001ce",
+    "run_data_root": "/data1/Kane/MOE/baseline_runs/advmoe/seed0_compat_r1/data",
+    "download_allowed": false
+  },
+  "run": {
+    "root": "/data1/Kane/MOE/baseline_runs/advmoe/seed0_compat_r1",
+    "log": "/data1/Kane/MOE/ACT/data/moe/logs/advmoe_compat_seed0_r1.log",
+    "launcher": "systemd_user_transient_service",
+    "launcher_unit": "moe-advmoe-compat-s0-r1.service",
+    "experiment_identifier": "compat_softmax_bridge_seed0_r1",
+    "seed": 0,
+    "dataset": "CIFAR10",
+    "arch": "resnet18_cifar_moe",
+    "n_expert": 2,
+    "ratio": 0.5,
+    "epochs": 100,
+    "batch_size": 128,
+    "test_batch_size": 128,
+    "num_workers_argument": 2,
+    "normalize": false,
+    "optimizer": "sgd",
+    "momentum": 0.9,
+    "weight_decay": 0.0005,
+    "learning_rate": 0.1,
+    "learning_rate_schedule": "cosine",
+    "router_optimizer_argument": "sgd",
+    "router_learning_rate_argument": 0.1,
+    "router_learning_rate_schedule_argument": "cosine",
+    "source_behavior_note": "released train_moe.py constructs and schedules the router optimizer from the main optimizer/lr fields, not the router-specific argument fields",
+    "epsilon": 0.03137254901960784,
+    "train_attack_steps": 2,
+    "train_attack_step_size": 0.0196078431372549,
+    "test_epsilon": 0.03137254901960784,
+    "test_attack_steps": 10,
+    "test_attack_step_size": 0.00784313725490196,
+    "alpha": 6.0,
+    "beta": 6.0,
+    "checkpoint_selection": "released code: best adversarial accuracy; test set participates in released checkpoint selection and is recorded as an artifact limitation",
+    "telemetry_config": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/advmoe_training_router_telemetry_r1.json"
+  },
+  "preflight_gates": {
+    "minimum_free_gpu_memory_gib": 48.0,
+    "minimum_free_disk_gib": 80.0,
+    "official_clone_clean": true,
+    "act_feature_branch_clean_and_synced": true,
+    "checkpoint_finiteness": "every floating state in model, router, and both optimizers must be finite before snapshot publication"
+  },
+  "artifact_policy": {
+    "preserve_every_failure": true,
+    "do_not_overwrite_existing_run": true,
+    "checkpoint_redistribution": "hash and reproduction instructions only pending legal review because the source repository has no license file",
+    "no_silent_dependency_fallback": true,
+    "no_training_before_smoke_pass": true
+  }
+}

@@ -19,6 +19,10 @@ import torch
 GIB = 1024**3
 
 
+class NonfiniteCheckpointError(RuntimeError):
+    pass
+
+
 def _load(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
@@ -46,9 +50,7 @@ def build_training_command(config: Mapping[str, Any]) -> list[str]:
     run = config["run"]
     source = Path(config["official_source"]["repository"])
     environment = Path(config["environment"]["path"])
-    command = [
-        str(environment / "bin" / "python"),
-        str(source / "train_moe.py"),
+    official_arguments = [
         "--dataset",
         run["dataset"],
         "--arch",
@@ -104,7 +106,28 @@ def build_training_command(config: Mapping[str, Any]) -> list[str]:
         "--exp-identifier",
         run.get("experiment_identifier", "official_seed0_r1"),
     ]
-    return command
+    compatibility = config.get("compatibility_variant")
+    if compatibility is None:
+        return [
+            str(environment / "bin" / "python"),
+            str(source / "train_moe.py"),
+            *official_arguments,
+        ]
+    if compatibility.get("softmax_underflow_gradient_bridge") is not True:
+        raise RuntimeError("unknown compatibility variant")
+    return [
+        str(environment / "bin" / "python"),
+        "-m",
+        "act.pipeline.moe.advmoe_compatibility_train",
+        "--workspace",
+        config["workspace_boundary"],
+        "--official-source",
+        str(source),
+        "--summary",
+        str(Path(run["root"]) / "compatibility_bridge_summary.json"),
+        "--",
+        *official_arguments,
+    ]
 
 
 def _find_live_checkpoint(run_root: Path) -> Path | None:
@@ -112,6 +135,18 @@ def _find_live_checkpoint(run_root: Path) -> Path | None:
     if len(matches) > 1:
         raise RuntimeError(f"multiple live checkpoints found: {matches}")
     return matches[0] if matches else None
+
+
+def _all_floating_tensors_finite(value: Any) -> bool:
+    if torch.is_tensor(value):
+        if value.is_floating_point() or value.is_complex():
+            return bool(torch.isfinite(value).all().item())
+        return True
+    if isinstance(value, dict):
+        return all(_all_floating_tensors_finite(child) for child in value.values())
+    if isinstance(value, (list, tuple)):
+        return all(_all_floating_tensors_finite(child) for child in value)
+    return True
 
 
 def _checkpoint_epoch(path: Path) -> int:
@@ -122,6 +157,10 @@ def _checkpoint_epoch(path: Path) -> int:
     for key in ("state_dict", "router", "optimizer", "router_optimizer"):
         if key not in payload:
             raise RuntimeError(f"checkpoint missing {key}")
+        if not _all_floating_tensors_finite(payload[key]):
+            raise NonfiniteCheckpointError(
+                f"checkpoint epoch {epoch} contains non-finite {key} state"
+            )
     return epoch
 
 
@@ -145,6 +184,10 @@ def snapshot_checkpoint(live: Path, snapshots: Path) -> dict[str, Any] | None:
             return None
         epoch = _checkpoint_epoch(temporary)
         copied_hash = _sha256(temporary)
+    except NonfiniteCheckpointError:
+        if "temporary" in locals():
+            temporary.unlink(missing_ok=True)
+        raise
     except (EOFError, OSError, RuntimeError, KeyError, ValueError, pickle.UnpicklingError):
         if "temporary" in locals():
             temporary.unlink(missing_ok=True)
@@ -163,6 +206,7 @@ def snapshot_checkpoint(live: Path, snapshots: Path) -> dict[str, Any] | None:
             "sha256": existing_hash,
             "size_bytes": destination.stat().st_size,
             "existing": True,
+            "floating_state_finite": True,
         }
     os.replace(temporary, destination)
     return {
@@ -171,6 +215,7 @@ def snapshot_checkpoint(live: Path, snapshots: Path) -> dict[str, Any] | None:
         "sha256": copied_hash,
         "size_bytes": destination.stat().st_size,
         "existing": False,
+        "floating_state_finite": True,
     }
 
 
@@ -196,10 +241,19 @@ def _preflight(config_path: Path, config: Mapping[str, Any]) -> dict[str, Any]:
     environment_python = Path(config["environment"]["path"]) / "bin" / "python"
     if not environment_python.is_file():
         raise RuntimeError("isolated environment is missing")
-    smoke = act_repo / "act/pipeline/moe/results/baseline/advmoe_training_smoke_seed0_r1.json"
+    compatibility = config.get("compatibility_variant")
+    if compatibility is None:
+        smoke = act_repo / "act/pipeline/moe/results/baseline/advmoe_training_smoke_seed0_r1.json"
+    else:
+        smoke = Path(compatibility["finite_smoke_audit"])
+        smoke.resolve().relative_to(workspace)
+        if _sha256(smoke) != compatibility["finite_smoke_audit_sha256"]:
+            raise RuntimeError("compatibility smoke audit hash mismatch")
     smoke_payload = _load(smoke)
-    if smoke_payload.get("status") != "PASS" or smoke_payload.get("training_unlocked") is not True:
+    if smoke_payload.get("status") != "PASS":
         raise RuntimeError("training smoke gate is not PASS")
+    if compatibility is None and smoke_payload.get("training_unlocked") is not True:
+        raise RuntimeError("official training smoke does not unlock training")
     data_link = Path(config["dataset"]["run_data_root"]) / "CIFAR10/cifar-10-batches-py"
     if data_link.resolve() != Path(config["dataset"]["source_root"]).resolve():
         raise RuntimeError("CIFAR10 data identity mismatch")
@@ -240,6 +294,7 @@ def run_supervisor(config_path: Path, progress_path: Path) -> dict[str, Any]:
             "PYTORCH_ALLOC_CONF": "expandable_segments:True",
             "OMP_NUM_THREADS": "2",
             "MKL_NUM_THREADS": "2",
+            "PYTHONPATH": str(Path(__file__).resolve().parents[3]),
         }
     )
     started = time.time()
@@ -276,7 +331,32 @@ def run_supervisor(config_path: Path, progress_path: Path) -> dict[str, Any]:
                 recorded[snapshot["epoch"]] = snapshot
         expected_epochs = set(range(1, int(config["run"]["epochs"]) + 1))
         observed_epochs = set(recorded)
-        status = "PASSED" if return_code == 0 and observed_epochs == expected_epochs else "FAILED"
+        compatibility_summary = None
+        compatibility_ok = True
+        if config.get("compatibility_variant") is not None:
+            compatibility_path = run_root / "compatibility_bridge_summary.json"
+            if compatibility_path.is_file():
+                compatibility_summary = _load(compatibility_path)
+                compatibility_ok = (
+                    compatibility_summary.get("status") == "PASSED"
+                    and compatibility_summary.get("official_source", {}).get("clean_after")
+                    is True
+                    and int(
+                        compatibility_summary.get("bridge", {}).get(
+                            "replaced_elements", 0
+                        )
+                    )
+                    > 0
+                )
+            else:
+                compatibility_ok = False
+        status = (
+            "PASSED"
+            if return_code == 0
+            and observed_epochs == expected_epochs
+            and compatibility_ok
+            else "FAILED"
+        )
         summary = {
             **progress,
             "status": status,
@@ -285,6 +365,7 @@ def run_supervisor(config_path: Path, progress_path: Path) -> dict[str, Any]:
             "runtime_seconds": time.time() - started,
             "checkpoints": [recorded[key] for key in sorted(recorded)],
             "missing_checkpoint_epochs": sorted(expected_epochs - observed_epochs),
+            "compatibility_bridge": compatibility_summary,
             "official_clone_clean_after": not bool(
                 _git(Path(config["official_source"]["repository"]), "status", "--porcelain=v1")
             ),
@@ -293,7 +374,8 @@ def run_supervisor(config_path: Path, progress_path: Path) -> dict[str, Any]:
         if status != "PASSED":
             raise RuntimeError(
                 f"training failed: return_code={return_code}, "
-                f"missing_epochs={summary['missing_checkpoint_epochs']}"
+                f"missing_epochs={summary['missing_checkpoint_epochs']}, "
+                f"compatibility_ok={compatibility_ok}"
             )
         return summary
     except BaseException as error:
