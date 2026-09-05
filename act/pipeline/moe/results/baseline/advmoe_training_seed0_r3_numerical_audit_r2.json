@@ -1,0 +1,5572 @@
+{
+  "act": {
+    "branch": "feat/moe-route-verification",
+    "head": "4df1d673b1a08e40c3e43aba11357719b957dcbb",
+    "worktree_clean": true
+  },
+  "best_checkpoint_epoch": 90,
+  "best_checkpoint_sha256": "2b764ba110d110a6e9f17e8ff76f4dfd951c5947d84bb4fde865eab997e642c1",
+  "best_metric": {
+    "best_ra_percent": 91.34,
+    "best_sa_percent": 93.79,
+    "epoch": 89,
+    "ra_percent": 91.34,
+    "sa_percent": 93.79
+  },
+  "checkpoint_count": 100,
+  "checkpoint_finiteness": {
+    "all_finite": false,
+    "nonfinite_epochs_by_group": {
+      "embedded_router": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99,
+        100
+      ],
+      "main_without_router": [],
+      "optimizer": [],
+      "router": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99,
+        100
+      ],
+      "router_optimizer": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99,
+        100
+      ]
+    },
+    "records": [
+      {
+        "epoch": 1,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "86d30fad053dcd1d71e5b94166c4011355a4fd7a57252104342bb520b01c11d4",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 2,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "fec5bda42919eb5785b59890332151fa964f7a4580d05d0573f8e2d8fa4e0c23",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 3,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "84448c38a42735a9e7ab5b804729e36c3f0ccf250f3bdd94b5742a80ead3c0b2",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 4,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "ee9e686c29fe642db555a45bd89f7fbfb5b839c7b9243f5c665e591fa93a35a1",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 5,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "b7904a9785be65717180539dceef62a895e32a6ab97013545677bb4508131636",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 6,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "8edc485710d264b209f7f6e4736e1594af3925170c8f673f6146e74d34591938",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 7,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "5e94903012efd19130c4431be02b4f6a610de47355f5ae49346eddd686ddc67c",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 8,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "575680d2ddd4df53b755350480258bd1b70b934deb5ffbd256608ace3206d391",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 9,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "0cc375251d809ed29ff411c35504bbe68669f5d43814b2fc6ea55eecf7f6c959",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 10,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "7b83a7cd43d5a1b97b691e29b7383d3b758393ee0de12b688a93937569eed3b3",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 11,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "08df410b86cdcce8467744d65517a35ca94623f375a8fab7fd7b0487c7ba4566",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 12,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "9e82084df88243dec3d53c713aa7188fc452d5cbd33ed0537e8d4cdc9f2b5f34",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 13,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "466fd12d3f8cecf3e7d8dd476ba12c029fda1810a0bcc6f9b3f659c1bd273d81",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 14,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "47f368128115c6c7e1131484db52c20ceb1c5443e602fe8f47af444b1e61d75a",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 15,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "3b42888359c8cfd0adf08e7db0eaad126cac6aa1dee6c71b1be253c480ee8b16",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 16,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "f3f6b381505797baad9b1d79dac90cdee640d7774e835b6b602478c814edbb5e",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 17,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "e0002b7eb804cc28de83829f2a4dc38a523f79b5a9faff443c669415a9e746f1",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 18,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "4c9d57ca24cb2e83fd4d730af4a87df77913bbda2e82b7f140d1909d36c2c001",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 19,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "92aec18fbd39cd989470acb07b190fc9fd01e453cb23fb1045f75160bbd35749",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 20,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "d6c91a7fd60c0c4e2f602a86b7ed9374fb700abd70cffa6d1f2de3def4e024ea",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 21,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "5c5879d7ef4a9db052a1a87b9a75ddad16794d9cf72ba7b23b4acdf87883f5bc",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 22,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "f21502d55a0f78a33ed484f2460ede3c80aa7d62391eed7f163d948b08b60517",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 23,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "afc7858ac827a655e7800ebbe8f370ce642f20c82bd70a091717cc9b7cd08937",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 24,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "38a8b34a8ca42a61af3d9ecf8b3e1da1c4522ccde093a000e01691824e8471a6",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 25,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "41bfd3e9ef334c55f4128adb1e7d5b68f41df171ce4501d1a7a7a532d0161950",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 26,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "ff8bca619da561ed3abb04b53098c439175d503cec88d555a22b2f033e58b0d2",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 27,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "3c1ee6ee80338ac124d855216f986758465d61e89401f558748e4fe977f22d73",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 28,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "61d48acacd6145b5a82114677a264f294b6e593d5b5d2b927dd282a77264c71c",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 29,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "c437e3c936c5340f7a01ccc37f29dfbeeac04bf7d3305eb91a7d70fdc4626e3b",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 30,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "99b803eb30cdd4a84babbc583053d26865951e8e1628c8fe1d90d0a1443f4047",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 31,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "83fe7ab9c64336cf6db352341f50be92a4565244680dea784b2efb846d0925a5",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 32,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "0c7602d08e6d7967e311d36c43c66a7406b2aba9d1324436da032a5a48164e9c",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 33,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "c51a2bcb7bd78f10b9ddfd271e4c88c9aaa99bfcb6ea6283a18cb31d16f8d2f6",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 34,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "7ed4fdbd4b0352a9292e8e148fbcafc1230e53f4197f6de3d7e28ca842f768a0",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 35,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "fd28f56552f78d0c8766ddfcc3956af984c1a26870ef0bf6e3afd6a936b3065e",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 36,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "f00f0dc78e4e7f426d556cde2dc9fa55a448a4b4e4c7ab30ac3e5d62fbb46afe",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 37,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "ff7ebb698478446dd910a45b485eb4e2f08b6dbe944172fd5410d25a9cfa532f",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 38,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "18f797562c0e5255c8bb5af0ccd65be310936745a595687f237a182343a3e8c6",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 39,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "f78538072fdca4d03a387d8ef882d4448b3d144172ee6daefe423db7c3afb504",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 40,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "eecc214a8a1bacaa48ad43500258d44b219c35ea72ef53a11fc23f59f4033e4b",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 41,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "acf467a346f84ef33ad94c4b848f7c478797a09b492032e763e07e742752c29d",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 42,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "e26fe21c64c6df73eb927888a014b5e11e48ee1c0625e3c4b28201f5436a355a",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 43,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "8e490d76f8912f24b800e862ece87b6bcdaa3feddd601f93d99e1698db8f20a1",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 44,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "1b3bd518219444fd1d336b798d56adf3c661a1e765bed1202bc9f30a52b5980a",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 45,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "9802d9196add03b721b5090734a1301beba0f6b35b4fda9bc60e3b621155b613",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 46,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "13164c99c7b7213a33d395dc2407f1b469434650f44da0c610ec7ad0bfc0c3f9",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 47,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "eefcd52b5c2c9c66454650dda18e4ce54e0d84ce9ecb4f35e0a13f542225d69c",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 48,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "d806b90585d516c0d8cc58ec22e36124d1a016dd9a33dbbc89762564296139e0",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 49,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "5a8c3ac9d9fa679f7da54f559578cb5194e6b688fc14ac2556808325232d783f",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 50,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "bfa05d34c9a221614a60c4c443f17145792890626d472a5ea0fe58e665aafd9d",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 51,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "e59a2e09f058ff59e981435788b0697f9450658e1bce27d4049d7a0cbc059d89",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 52,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "17ea6b2a9a2734e120a6f1b8ad1f9d01f6b209b75e789cbdf07da11248a4f6f8",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 53,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "10ad0547d5190b36538a3dc9a48d1cd839f13f9afc4b518430a6171dc5795769",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 54,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "e3ad379992caba56dcf5be9efa9151835d14936dcd504a4af23020d2e49f5d09",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 55,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "6526154bfc99134047f50e5edfc7dbf2b16903af48b294c054571dfc445644c9",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 56,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "9f8587cf546b29993c8633f03cbd5f4b014f3eafd013a116c1cf00abf1c5f4de",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 57,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "ea730a7eede1c12f9efbbf67ae2a9d5f04dd4817016954825ad865e058db8b3a",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 58,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "586f11ec106a629d61fbff50b3fb39028a6c66347a00201e9b6e5fc8b4a363ac",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 59,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "9e5dd0af03b560e5fcddb51aa771bd15f0f2050ab14a02f859b4784fe2d6ffec",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 60,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "97920d38fd6c09660fe8559b7be9bf8269881d158d3076c17bd7e3f2c451a392",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 61,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "2ea26b2882fa73a7218971ff80a2885345c039296e78fe9dbdbb7273e37d2022",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 62,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "210ba7db9e16c3f323b69e69b037dfce16243688980dfbf32198aef769fa826d",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 63,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "6326e684c66572ae388694e02a78cd585748c4216ef5b7f192e973e5f8bf331e",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 64,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "c49dd1504296b7d803592924595152b03232cb05394f1a6e598eac262dadf61c",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 65,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "fb021ba3c5d5445f27317b359adb50441c9d68d6916ef9797cbe1da8053bc5a9",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 66,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "771cf7a65d2699c6f128dd009b06a5fd62d6d3e4e1d3dd2b418e8f79ef933a2c",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 67,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "583fc8e3dbff368ee8fa55e3cc48635aeb2ff1a9b1826bb171198c81666ab8c2",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 68,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "f85ef91f60172ffff4a971a62de024a649a74bccdce6e3e450d1d00c9c3a1659",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 69,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "776ff5fde8e10941fb21b6325cbd58d9cab4ed0b6fdc8641812458e069b1d1af",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 70,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "24558e17ebc702b074f63c2a1048a3ff2b7cb0976546762432011d0d7a3293cc",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 71,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "0aad9354241ecd7c677ac9884dc5ef4815611b97e79e3141d47ba9ac7bc8503b",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 72,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "b6db88da0398e5a229fd214ba46f1c8769a63e2eb4710c42f52bd2b8b871b515",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 73,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "fee60519266760b865ca7c68e6677f704005468955f5df817e4bb8f7ff212f85",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 74,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "3ff7905a3ccd4e6b72b8043f407ed00cc469e7fb29b9f6f46ed9e4c45646bb89",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 75,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "517d30dae0c07b812ff2ad83b4b034f6751c91fec221b3d424dfd728366de805",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 76,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "08e98b77384f3379690856130dba4f2bdeb05aa07edd67db4e0cb18a4460a09d",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 77,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "b8ddddb374bef4b5eb66065c94ac66cb444e2f212a392544cf03275b3c2658d7",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 78,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "fdf0bed13aee062b157ecd2d993ace13bb6c34c353fa701a3836ce263bc4934e",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 79,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "b45a765428f720583c619e30fa93ef7e227f1c9c5c9ba3596b9cd85a8db5d90c",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 80,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "e8d4dc5ddbc37509423cc7d6b926ddea65a7c9bff0ea57071912e031070e02fd",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 81,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "1a1004d85bc335db9cf4cda25cc6d6b9841eba6d70f8913b7a5219c35a0090e4",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 82,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "2b63bb49cb1da229c8fb8f1793289119f7454d5dcd809e213967431ca1fbe684",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 83,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "b246bb53e24d192ef3cc41a0f989cc5c09d020582e4cc6270ac42e039692e092",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 84,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "ab9f84570f15fc3cf84aaddb0d60ead96f9fb3f425c3657a52e9c0c06086832c",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 85,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "8f3004470a86fa24744efe3d6a15744c698014db6fd84da48d41596051866d96",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 86,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "146cb00a20b9b3ef170815283f37ffa74fb5603a9a0a14655ca6081e88811395",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 87,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "2255dfab80e90a2b083f207d615fa7f73fc34b83edc64c7e0e5bd30321004a54",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 88,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "c4572e5477243fb9d28da323e7c9c6a6747dffb2e9a84a131f8042b0d308631a",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 89,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "16b8ae8227b3748891bfbbf3e4ffabd47104517137e4d13e0e54b27398a64f5c",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 90,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "2b764ba110d110a6e9f17e8ff76f4dfd951c5947d84bb4fde865eab997e642c1",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 91,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "2c7fa384b3b5c12bef5a2d3903e9a7fdc09a51a66f9da18f67f491c9f636e49e",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 92,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "68abb543f02aa8fd7df66331da4425236196171c973762f9f7b3897eecd1b4ee",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 93,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "5875b2999df78d891bf0dbb3e453b943162cef40a6ab13af65cdfcac1aa0e883",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 94,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "b0db3860a414a28d631114c1d13b372f44d0aab67d18eea480c694f915c047a7",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 95,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "8af0a3fd87a42d4c8852e66977cbdd552f14552dd60b6c4725cf1ec1b6acf787",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 96,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "cbe22fb722e2eaa77dffc009d2cbf05ab1e920654edadf88be051d5d5a77c0ba",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 97,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "011a361769c07f0a0c76f5180cc0640e49b8714975999de6a052fdfb73895f1b",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 98,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "84b54079fd41765c7f940acc7122a27babb18cc8ed9518ee1c4d8c761d72cee3",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 99,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "17d179892aec09e05eecc2ab27bace6173c50dc76cbeaf67c9fa238e208e5b3c",
+        "size_bytes": 47141475
+      },
+      {
+        "epoch": 100,
+        "finiteness": {
+          "embedded_router": {
+            "all_finite": false,
+            "elements": 4599826,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 4599826,
+            "nonfinite_tensors": 1649,
+            "tensors": 1649
+          },
+          "main_without_router": {
+            "all_finite": true,
+            "elements": 5570378,
+            "finite_elements": 5570378,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 107
+          },
+          "optimizer": {
+            "all_finite": true,
+            "elements": 5565450,
+            "finite_elements": 5565450,
+            "inf_elements": 0,
+            "nan_elements": 0,
+            "nonfinite_tensors": 0,
+            "tensors": 65
+          },
+          "router": {
+            "all_finite": false,
+            "elements": 270578,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 270578,
+            "nonfinite_tensors": 97,
+            "tensors": 97
+          },
+          "router_optimizer": {
+            "all_finite": false,
+            "elements": 269202,
+            "finite_elements": 0,
+            "inf_elements": 0,
+            "nan_elements": 269202,
+            "nonfinite_tensors": 59,
+            "tensors": 59
+          }
+        },
+        "sha256": "4ba196d18044b23716ca884c763bd1322154cb0d6375af520371a3d57ba8365a",
+        "size_bytes": 47141475
+      }
+    ]
+  },
+  "config": {
+    "path": "act/pipeline/moe/configs/advmoe_training_seed0_r3.json",
+    "sha256": "bae43ec28916f42cd569cd7843d7908f924d4d300c3b9f2d07587d269360d37a"
+  },
+  "final_checkpoint_sha256": "4ba196d18044b23716ca884c763bd1322154cb0d6375af520371a3d57ba8365a",
+  "issues": [
+    "embedded_router contains non-finite tensors in 100 checkpoints (first epoch 1, last epoch 100)",
+    "router contains non-finite tensors in 100 checkpoints (first epoch 1, last epoch 100)",
+    "router_optimizer contains non-finite tensors in 100 checkpoints (first epoch 1, last epoch 100)"
+  ],
+  "last_metric": {
+    "best_ra_percent": 91.34,
+    "best_sa_percent": 93.79,
+    "epoch": 99,
+    "ra_percent": 90.59,
+    "sa_percent": 93.88
+  },
+  "metric_row_count": 100,
+  "official_source": {
+    "clean": true,
+    "commit": "c50796fb8284512b6f6ad8e843f95182cec527cf",
+    "tree": "153d4ff9f30f34eb7fdd4caf670495122c5836e0"
+  },
+  "progress": {
+    "path": "/data1/Kane/MOE/baseline_runs/advmoe/seed0_r3/progress.json",
+    "sha256": "962a860b02ca95fc6b48e3c4f8dedf61c6f560134a86ecd8a469275c7b43cb82"
+  },
+  "recovered_metadata": [
+    {
+      "epoch": 100,
+      "field": "size_bytes",
+      "reason": "legacy final existing-snapshot record omitted size; hash and file were independently verified",
+      "value": 47141475
+    }
+  ],
+  "runtime_seconds": 6546.52879691124,
+  "schema_version": 1,
+  "scope": "ADV_MOE_OFFICIAL_CODE_BLACKWELL_COMPATIBLE_DEPENDENCY_REPRODUCTION_SEED0_R3",
+  "status": "FAIL",
+  "verified_checkpoint_count": 100
+}

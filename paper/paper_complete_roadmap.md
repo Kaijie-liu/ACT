@@ -12,10 +12,12 @@ is published and this project reaches `PAPER_COMPLETE`.
 1. The official-scale B3 table is complete and independently audited across the
    frozen radius grid, including route applicability, identical-backend
    route-invariance, Route A, theorem-instantiation status, and attack ceiling.
-2. The official third-party AdvMoE target has a completed official-code
-   reproduction, frozen sampled input-space route census, and hidden-computation
-   Route A results. A separately labelled learned-router RT-ER variant is a
-   fallback only if this execution proves infeasible.
+2. The official third-party AdvMoE target has a numerically finite completed
+   official-code reproduction, frozen sampled input-space route census, and
+   hidden-computation Route A results. The completed seed-0 r3 execution fails
+   this gate because every saved router state is NaN. A separately labelled
+   learned-router RT-ER variant remains the fallback if a finite faithful
+   AdvMoE execution proves infeasible.
 3. Expert-count scaling is evaluated at `E in {4, 8, 16, 32, 64}` using the
    frozen lazy route-set enumeration/no-good-cut design and tightened big-M
    bounds.
@@ -36,7 +38,7 @@ above. No submission date can redefine `PAPER_COMPLETE`.
 |---|---|---|
 | Official RT-ER B1 and B3 | Official-scale end-to-end comparison | B1 seeds 0 and 1 landed outside the frozen reference intervals; B3 r5 completed as audited numerical conformance, with the formal endpoint still gated on outward-rounded CROWN bounds |
 | Router-gradient audits of RT-ER, robust-moe-cnn, and V-MoE | Multiple-pipeline external-validity map | Source audit complete, independently audited |
-| AdvMoE official third-party learned deep-path target | Learned-router and non-output-layer external validity | Architecture/dependency audits plus strong-PGD/sparse-CROWN init pilot complete; K=20 dual-BN init census complete and init line sealed; alpha/beta closure, training, and Route A wait for B1/B3 |
+| AdvMoE official third-party learned deep-path target | Learned-router and non-output-layer external validity | Init audits/pilots are complete, but seed-0 r3 is scientifically excluded: all 100 saved routers and router-optimizer states are NaN while the main network remains finite. First-failure diagnosis and a finite replacement are required before telemetry or Route A. |
 | Lazy route-set enumeration plus no-good cuts; exact-support big-M | `E` scalability and search-relaxation defense | Implemented; E=4--64 scaling and exact-support timed rerun completed with zero-issue audits |
 | Dimension-law simulation grid | Defense against two-point-fit criticism | Executed and audited: both point slopes near -1/2, but one of two frozen bootstrap-interval rules misses by 8.6e-5; composite endpoint retained as failed |
 | Source-native survey retrieval | Recall-qualified survey if retrieval succeeds | Pending institutional retrieval |
@@ -132,7 +134,7 @@ or manuscript closure.
 
 | Attack | Required defense | Status |
 |---|---|---|
-| “The 49%-accuracy model is a toy.” | Official-scale B3 plus an official third-party learned-router model if executable. | B3 numerical conformance complete on all 318 branches with a zero-issue audit, but formal SAFE is deliberately zero pending outward-rounded bounds; accepted AdvMoE seed-0 r3 lands at 93.79% clean and 91.34% released 10-step adversarial accuracy at its best checkpoint, with 100/100 snapshots and a zero-issue audit; route telemetry and two-path verification remain open |
+| “The 49%-accuracy model is a toy.” | Official-scale B3 plus an official third-party learned-router model if executable. | B3 numerical conformance is complete. AdvMoE r3 executes all 100 epochs and reports high released-path accuracy, but is excluded because every saved router is NaN; it supplies no learned-router defense. A finite faithful rerun or the labelled RT-ER learned-router fallback remains open. |
 | “Enumeration cannot scale beyond E=8.” | Lazy enumeration/no-good cuts and `E={4,8,16,32,64}` data. | Pending |
 | “The method only covers output-layer MoE.” | Official AdvMoE deep route-specialized pathway or explicit limitation. | Both static paths specialize exactly in tests; init router bracket remains unresolved and property verification remains pending after B3 |
 | “The route-invariance baseline is self-serving.” | Exact definition-level applicability plus identical downstream backend and public implementation. | Verification-scale formal comparison and official-scale numerical-conformance comparison complete; official formal CROWN endpoint remains open |

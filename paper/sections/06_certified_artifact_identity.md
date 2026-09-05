@@ -4,8 +4,9 @@ A robustness claim binds a mathematical property to an executable artifact.
 That identity is often described by a model checkpoint and a perturbation
 radius. Our audits show that this is insufficient for routed models: the input
 transform, the runtime implementation of that transform, the numerical set
-actually passed to a verifier, and stateful-layer evaluation semantics can
-each change the program being certified.
+actually passed to a verifier, stateful-layer evaluation semantics, and the
+finiteness of every dispatch-defining state can each change—or destroy—the
+program being certified.
 
 ## Finding 1: preprocessing is part of the routed program
 
@@ -123,19 +124,49 @@ certification consequence: an initial router may have no meaningful partition
 to certify, while the function seen during training can differ from the
 single-input function later presented to a verifier.
 
+## Finding 5: loadable state is not necessarily numerical state
+
+The completed AdvMoE seed-0 run illustrates a final identity failure. Its
+training process exits normally, its 100 consecutive checkpoints all decode,
+the best and final hashes match immutable snapshots, and the released
+evaluation reports high clean and adversarial accuracy. Those gates initially
+passed an independent structural audit. Endpoint telemetry then produced NaN
+router scores, prompting a full numerical reaudit.
+
+Every checkpoint from 1 through 100 contains NaN in every one of the
+standalone router's 270,578 floating elements and every one of the router
+optimizer's 269,202 floating elements. Model-embedded references to that
+router are likewise NaN. At the same time, all 5,570,378 non-router model
+elements and all 5,565,450 main-optimizer elements are finite. The divergence
+therefore affects the component that defines dispatch while leaving the
+selected expert path trainable and accurate. Because `argmax([NaN,NaN])`
+returns index zero in the deployed PyTorch behavior, task accuracy alone does
+not reveal the invalid state.
+
+We retain the original structural audit as an honest record of what it did
+establish, but supersede it for scientific acceptance with the numerical
+audit. The apparent 10,000:0 route count and zero route-attack flips from the
+failed endpoint run are not collapse or stability results: their margins and
+gradients are non-finite. This case turns finiteness from a generic defensive
+check into a certificate-identity requirement. Every parameter, buffer, and
+optimizer state that defines or trains dispatch must be finite before a routed
+checkpoint can enter a verification experiment.
+
 ## Certificate identity and fail-closed use
 
-Every final result binds six groups of fields: source and checkpoint hashes;
+Every final result binds seven groups of fields: source and checkpoint hashes;
 ordered dataset and preprocessing identities; exact runtime and device
 versions; requested and represented perturbation sets; solver tolerances,
 integrality, positive-margin, and outward-rounding policies; and stateful-layer
-mode plus stored or batch-derived statistics. A missing or changed field
-invalidates reuse of the certificate. This policy turns the four observations
+mode plus stored or batch-derived statistics; and numerical-finiteness summaries
+for all model, router, buffer, and optimizer tensors. A missing or changed field
+invalidates reuse of the certificate. This policy turns the five observations
 into a constructive requirement rather than a post-hoc warning.
 
 The same discipline changes how negative results are handled. The continuous
 TinyImageNet run, the out-of-range resize run, and the microscopic CROWN
-positive-bound probe are preserved as auditable evidence but excluded from
+positive-bound probe, together with the non-finite AdvMoE training and
+telemetry runs, are preserved as auditable evidence but excluded from
 scientific endpoints they cannot support. The compliant AdvMoE gap figure uses
 ordinary radii and a dimensionless relaxation-inflation statistic instead of a
 ULP-sensitive radius axis. Its approximately (10^{11}) values compare the

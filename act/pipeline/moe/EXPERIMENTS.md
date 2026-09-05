@@ -2314,3 +2314,19 @@ best-checkpoint rule uses test adversarial accuracy, and the no-license source
 keeps checkpoint redistribution disabled. Training landing unlocks the frozen
 router telemetry and two-path verification protocol; it does not predetermine
 their outcomes.
+
+**Superseding numerical audit (2026-09-05).** Endpoint telemetry exposed NaN
+router scores in both trained checkpoints. A strengthened audit then reloaded,
+rehash-checked, and scanned all 100 immutable snapshots. Every snapshot from
+epoch 1 through 100 has zero finite elements among the standalone router's
+270,578 floating elements and the router optimizer's 269,202 floating
+elements. All 5,570,378 non-router model elements and 5,565,450 main-optimizer
+elements remain finite. The earlier zero-issue audit established structure,
+identity, and loadability only; it is superseded for scientific acceptance.
+The run is now `EXCLUDED_NONFINITE_ROUTER`, its 93.79%/91.34% released metrics
+are retained only as diagnostics of a finite main network under NaN routing,
+and the apparent 10,000:0 routes from telemetry r1 are invalid NaN-argmax
+artifacts. No trained AdvMoE telemetry or two-path result is unlocked. See
+`docs/advmoe_training_seed0.md`,
+`results/baseline/advmoe_training_seed0_r3_numerical_audit_r2.json`, and
+`results/baseline/advmoe_training_seed0_r3_numerical_exclusion.json`.

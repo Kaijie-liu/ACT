@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "status": "EXCLUDED_NONFINITE_ROUTER",
+  "scope": "ADV_MOE_OFFICIAL_CODE_BLACKWELL_COMPATIBLE_DEPENDENCY_REPRODUCTION_SEED0_R3",
+  "execution": {
+    "return_code": 0,
+    "epochs": 100,
+    "checkpoint_count": 100,
+    "runtime_seconds": 6546.52879691124
+  },
+  "structural_audit": {
+    "path": "act/pipeline/moe/results/baseline/advmoe_training_seed0_r3_audit.json",
+    "sha256": "dc5723bc3634f7f34acf807df4e53e3e2615302813f951a4cc43a35a0be5bffa",
+    "historical_status": "PASS",
+    "superseded_for_scientific_acceptance": true,
+    "reason": "the structural audit checked identity and loadability but omitted tensor finiteness"
+  },
+  "numerical_audit": {
+    "path": "act/pipeline/moe/results/baseline/advmoe_training_seed0_r3_numerical_audit_r2.json",
+    "sha256": "3baffe699dbdb1351d98cafcd90ee526f7ab22a9be1c2cc24e9a19237b5e1169",
+    "status": "FAIL",
+    "nonfinite_epoch_range": [1, 100],
+    "nonfinite_checkpoint_count": 100,
+    "router_elements": 270578,
+    "router_finite_elements": 0,
+    "router_optimizer_elements": 269202,
+    "router_optimizer_finite_elements": 0,
+    "main_without_router_elements": 5570378,
+    "main_without_router_finite_elements": 5570378,
+    "main_optimizer_elements": 5565450,
+    "main_optimizer_finite_elements": 5565450
+  },
+  "endpoint_telemetry": {
+    "result_sha256": "b4a922316167aa98750d7a7c845a70fcad3756aa1825eabe25aa71fc2bcb1988",
+    "audit_path": "act/pipeline/moe/results/baseline/advmoe_training_endpoint_telemetry_seed0_r1_audit.json",
+    "audit_sha256": "dc9681fd8379765c9e2da4bd720218697c95db2257fbe44276ecca5b1078b176",
+    "audit_status": "FAIL",
+    "scientific_use": "none"
+  },
+  "interpretation": {
+    "accuracy": "retained only as a released-path diagnostic of the finite main network under NaN routing; not a learned-MoE result",
+    "route_counts": "invalid because argmax over NaN scores returns index zero",
+    "route_attack": "invalid because margins and gradients are NaN",
+    "next_gate": "locate the first non-finite router update and require a multi-batch finite-state smoke before replacement training"
+  }
+}

@@ -206,7 +206,16 @@ shape, not yet its formal-certificate endpoint. The released hard/raw Theorem
 is not applicable on 19 and vacuous at registered radii on one. The author-
 unspecified provider is likewise not a runnable baseline.
 
-## AdvMoE two-path evaluation [pending]
+## AdvMoE two-path evaluation [blocked by non-finite released training]
+
+The first complete official-code seed-0 execution cannot supply this table.
+Although its finite main network reports 93.79% clean accuracy at the released
+best checkpoint, every saved standalone router tensor and router-optimizer
+state is NaN from checkpoint 1 through 100. A later endpoint run correctly
+fails independent audit; its apparent all-expert-0 routing is NaN `argmax`
+behavior, not a route statistic. The earlier structural checkpoint audit is
+retained but superseded for scientific acceptance by the numerical audit. The
+table below remains a frozen delivery specification, not a reported result.
 
 The final AdvMoE checkpoint evaluation records clean accuracy, route share,
 signed router-score offset, selected-margin distribution, and load entropy.

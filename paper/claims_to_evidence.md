@@ -756,6 +756,32 @@ benefit of the bound tier and its large residual distance from the strongest
 observed margin drop, without claiming a certified approximation ratio or a
 bound on the true reachable margin.
 
+### The completed AdvMoE seed-0 execution is numerically excluded
+
+The official-code, Blackwell-compatible seed-0 execution returns normally and
+preserves 100 consecutive loadable checkpoints. Its released evaluation path
+reports 93.79% clean and 91.34% ten-step adversarial accuracy at the selected
+checkpoint. These numbers initially passed an identity/loadability audit, but
+endpoint telemetry exposed non-finite router scores. A superseding audit then
+rehashes and reloads every checkpoint and checks every floating tensor.
+
+All 100 checkpoints, beginning with snapshot 1, contain zero finite values in
+the standalone router's 270,578 floating elements and zero finite values in
+the router optimizer's 269,202 floating elements. Every embedded router copy
+is likewise NaN. In contrast, every one of the 5,570,378 non-router model
+elements and 5,565,450 main-optimizer elements is finite at every snapshot.
+The telemetry audit independently finds 724 non-finite summary values and nine
+non-finite raw arrays at each trained endpoint.
+
+The scientific status is therefore `EXCLUDED_NONFINITE_ROUTER`, not accepted
+training. PyTorch `argmax` selects index zero for the all-NaN score vectors, so
+the released accuracy is retained only as a diagnostic of a finite main
+network operating on that degenerate path. It is not a learned-router MoE
+result, and the apparent all-expert-0 route count is not route-collapse
+evidence. This finding also strengthens the artifact-identity rule: successful
+exit, loadability, hashes, and high task accuracy do not substitute for a
+numerical-finiteness gate on every state that defines dynamic dispatch.
+
 ## Threats to validity
 
 ### Construct validity
@@ -805,6 +831,10 @@ bound on the true reachable margin.
   train-mode batches are not a literal replay of the augmented shuffled
   training stream, and neither semantic substitutes for trained-checkpoint
   results.
+- The first complete AdvMoE seed-0 execution is excluded because every saved
+  router and router-optimizer state is NaN. Its high released-path accuracy
+  cannot close learned-router or deep-path external validity; a finite faithful
+  replacement or the separately labelled fallback is still required.
 
 ### Statistical conclusion validity
 
