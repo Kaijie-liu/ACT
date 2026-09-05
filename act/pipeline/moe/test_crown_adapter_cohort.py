@@ -17,6 +17,7 @@ from act.pipeline.moe.crown_adapter_cohort import (
     _validate_frozen_pairs,
     validate_crown_configuration,
 )
+from act.back_end.moe.tie_safe_implication import LagrangianTop1GuardedProperty
 
 
 def _constant_affine(outputs):
@@ -56,6 +57,37 @@ class CrownAdapterCohortTests(unittest.TestCase):
             bound_options=None,
         )
         self.assertFalse(validated["optimized_method"])
+
+    @unittest.skipUnless(
+        importlib.util.find_spec("auto_LiRPA") is not None,
+        "requires the isolated alpha-beta-CROWN environment",
+    )
+    def test_lagrangian_guard_compiler_recovers_linear_toy(self):
+        router = nn.Linear(1, 2)
+        expert = nn.Linear(1, 1)
+        with torch.no_grad():
+            router.weight.copy_(torch.tensor([[1.0], [0.0]]))
+            router.bias.zero_()
+            expert.weight.fill_(1.0)
+            expert.bias.fill_(0.1)
+        module = LagrangianTop1GuardedProperty(
+            router, expert, 0, [[1.0]], [0.0], [[1.0]]
+        )
+        center = torch.zeros((1, 1))
+        result = _crown_bounds(
+            module,
+            center,
+            center - 1.0,
+            center + 1.0,
+            property_rows=None,
+            device="cpu",
+            tolerance=1e-7,
+            method="CROWN",
+            track_gradients=False,
+        )
+        self.assertIsNone(result["error"])
+        self.assertEqual(result["status"], "CERTIFIED_MARGIN_FILTER")
+        self.assertAlmostEqual(result["minimum_lower_bound"], 0.1, places=6)
 
     def _implication(self, scores, safety, eta=1e-7):
         return TieSafeTopKSetImplication(

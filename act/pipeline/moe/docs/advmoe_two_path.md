@@ -18,6 +18,15 @@ CROWN backend:
 3. a tie-safe eta implication for each path as a bounded guard-representation
    ablation.
 
+Future schema-v2 runs can additionally enable a tie-safe Lagrangian guard
+ablation. For each route and property row it compiles the router and static
+path into one shared-input graph and bounds
+`s - sum(mu * selected_margin)` over a frozen nonnegative multiplier grid.
+The row-wise strongest complete bound is retained. Any incomplete grid member
+fails the branch closed; a negative bound is `UNKNOWN`, never `UNSAFE`.
+This option was added after full r3 and does not alter or relabel that frozen
+artifact. No multiplier grid or official-scale result is frozen here.
+
 AdvMoE has one global hard route shared by all 16 MoE convolutions. Replacing
 each routed convolution with the selected contiguous weight slice therefore
 produces exactly two static networks, not `2^16` paths. The CROWN adapter also
@@ -142,3 +151,9 @@ another optimized method requires gradient tracking, explicit optimization
 arguments, and a positive iteration count. Plain CROWN remains valid without
 autograd. This closes a method-label ambiguity; it does not add outward
 rounding or promote any numerical filter to formal SAFE.
+
+The post-r3 Lagrangian compiler passes a two-case analytic CROWN conformance:
+it recovers a safe guarded half interval that the unguarded box misses, and it
+does not discharge an unsafe tie. This is code/toy evidence only. A later
+official-scale run must use a separately preregistered configuration and new
+result directory.

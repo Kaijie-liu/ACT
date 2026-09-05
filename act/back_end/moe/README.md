@@ -27,6 +27,8 @@ gate-family-general public engine that hides both stages behind `run()`.
 - exact candidate feasibility through the open SciPy/HiGHS MILP path;
 - propagation of the route guard back to the input HZ and into a separately
   analysed expert;
+- a shared-input, tie-safe Lagrangian compiler for hard-top1 guarded
+  properties (a sufficient reduction, not an exact guard encoding);
 - output-level gate-elimination aggregation with the correct incomplete result
   for weighted MoEs;
 - hard top-1 counterexamples are reported only after the concrete full model

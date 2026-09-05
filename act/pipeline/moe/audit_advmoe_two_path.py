@@ -67,6 +67,84 @@ def expected_crown_status(record: dict[str, Any], tolerance: float) -> str:
     return "UNKNOWN_RELAXATION"
 
 
+def lagrangian_branch_issues(
+    branch: dict[str, Any],
+    *,
+    expected_multipliers: list[float],
+    property_rows: int,
+    tolerance: float,
+) -> list[str]:
+    """Independently validate one frozen multiplier-grid aggregation."""
+
+    issues: list[str] = []
+    calls = branch.get("calls", [])
+    if len(calls) != len(expected_multipliers) or not calls:
+        return ["Lagrangian grid call count mismatch"]
+    for index, (call, expected_multiplier) in enumerate(
+        zip(calls, expected_multipliers)
+    ):
+        if call.get("lagrangian_multiplier") != float(expected_multiplier):
+            issues.append(f"Lagrangian call {index} multiplier mismatch")
+        expected_call_status = expected_crown_status(call, tolerance)
+        if call.get("status") != expected_call_status:
+            issues.append(f"Lagrangian call {index} CROWN status mismatch")
+
+    if any(call.get("status") == "ERROR" for call in calls):
+        expected_status = "ERROR"
+        expected_complete = False
+        best: np.ndarray | None = None
+        selected_multipliers: list[float] = []
+    elif any(not bool(call.get("complete")) for call in calls):
+        expected_status = "UNKNOWN_INCOMPLETE"
+        expected_complete = False
+        best = None
+        selected_multipliers = []
+    else:
+        values = np.asarray(
+            [call.get("lower_bounds", []) for call in calls], dtype=np.float64
+        )
+        expected_complete = bool(
+            values.shape == (len(calls), int(property_rows))
+            and np.isfinite(values).all()
+        )
+        if expected_complete:
+            best = values.max(axis=0)
+            expected_status = (
+                "CERTIFIED_MARGIN_FILTER"
+                if bool(np.all(best >= float(tolerance)))
+                else "UNKNOWN_RELAXATION"
+            )
+            selected = values.argmax(axis=0)
+            selected_multipliers = [
+                float(expected_multipliers[index]) for index in selected
+            ]
+        else:
+            expected_status = "UNKNOWN_INCOMPLETE"
+            best = None
+            selected_multipliers = []
+
+    if branch.get("status") != expected_status:
+        issues.append("Lagrangian aggregate status mismatch")
+    if bool(branch.get("complete")) != expected_complete:
+        issues.append("Lagrangian completeness mismatch")
+    if best is None:
+        if branch.get("lower_bounds") not in (None, []):
+            issues.append("incomplete Lagrangian aggregate retains lower bounds")
+        if branch.get("selected_multipliers") not in (None, []):
+            issues.append("incomplete Lagrangian aggregate retains multiplier selection")
+        if branch.get("minimum_lower_bound") is not None:
+            issues.append("incomplete Lagrangian aggregate retains minimum bound")
+    else:
+        recorded = np.asarray(branch.get("lower_bounds", []), dtype=np.float64)
+        if recorded.shape != best.shape or not np.array_equal(recorded, best):
+            issues.append("Lagrangian best bounds mismatch")
+        if branch.get("selected_multipliers") != selected_multipliers:
+            issues.append("Lagrangian selected multipliers mismatch")
+        if branch.get("minimum_lower_bound") != float(best.min()):
+            issues.append("Lagrangian minimum lower bound mismatch")
+    return issues
+
+
 def _aggregate(row: dict[str, Any], schema_version: int) -> dict[str, str]:
     filtered = "CERTIFIED_MARGIN_FILTER"
     clean_route = int(row["clean_route"])
@@ -87,11 +165,25 @@ def _aggregate(row: dict[str, Any], schema_version: int) -> dict[str, str]:
         if len(eta) == 2 and all(value == filtered for value in eta)
         else "UNKNOWN"
     )
+    lagrangian = [
+        value["status"] for value in row.get("lagrangian_guard_crown", [])
+    ]
+    lagrangian_result = (
+        "CERTIFIED_MARGIN_FILTER_NOT_FORMAL_SAFE"
+        if len(lagrangian) == 2
+        and all(value == filtered for value in lagrangian)
+        else "UNKNOWN"
+    )
     portfolio = (
         "CERTIFIED_MARGIN_FILTER_NOT_FORMAL_SAFE"
         if any(
             value == "CERTIFIED_MARGIN_FILTER_NOT_FORMAL_SAFE"
-            for value in (route_invariance, route_a, eta_result)
+            for value in (
+                route_invariance,
+                route_a,
+                eta_result,
+                lagrangian_result,
+            )
         )
         else "UNKNOWN"
     )
@@ -109,6 +201,7 @@ def _aggregate(row: dict[str, Any], schema_version: int) -> dict[str, str]:
     }
     if schema_version >= 2:
         statuses["portfolio"] = portfolio
+        statuses["lagrangian_guard_ablation"] = lagrangian_result
     return statuses
 
 
@@ -128,6 +221,7 @@ def expected_filter_witness_conflicts(row: dict[str, Any]) -> dict[str, bool]:
             "route_invariance",
             "route_a_two_path",
             "eta_guard_ablation",
+            "lagrangian_guard_ablation",
             "portfolio",
         )
     )
@@ -163,6 +257,11 @@ def summary_table_issues(
         ):
             issues.append("legacy witness count mismatch")
     else:
+        if (
+            recorded.get("lagrangian_guard_ablation")
+            != expected["lagrangian_guard_ablation"]
+        ):
+            issues.append("summary table lagrangian_guard_ablation mismatch")
         for key in (
             "portfolio",
             "prediction_flip_witnesses",
@@ -202,6 +301,12 @@ def independent_tables(
             ),
             "eta_guard_ablation": dict(
                 Counter(row["statuses"]["eta_guard_ablation"] for row in selected)
+            ),
+            "lagrangian_guard_ablation": dict(
+                Counter(
+                    row["statuses"].get("lagrangian_guard_ablation", "UNKNOWN")
+                    for row in selected
+                )
             ),
             "portfolio": dict(
                 Counter(row["statuses"].get("portfolio", "UNKNOWN") for row in selected)
@@ -262,6 +367,18 @@ def audit(config_path: Path, result_path: Path) -> dict[str, Any]:
         issues.append("duplicate row identifier")
 
     tolerance = float(config["numerical"]["safe_positive_margin"])
+    lagrangian_config = config.get("lagrangian_guard_ablation", {"enabled": False})
+    lagrangian_enabled = bool(lagrangian_config.get("enabled", False))
+    lagrangian_multipliers = [
+        float(value) for value in lagrangian_config.get("multipliers", [])
+    ]
+    if lagrangian_enabled and not lagrangian_multipliers:
+        issues.append("enabled Lagrangian audit has no frozen multiplier grid")
+    if any(
+        not math.isfinite(value) or value < 0.0
+        for value in lagrangian_multipliers
+    ):
+        issues.append("Lagrangian multiplier grid is not finite and nonnegative")
     recomputed_conflict_count = 0
     for row in rows:
         bounds = [row["router_crown"], *row["path_crown"], *row["eta_crown"]]
@@ -271,6 +388,20 @@ def audit(config_path: Path, result_path: Path) -> dict[str, Any]:
             expected = expected_crown_status(bound, tolerance)
             if bound.get("status") != expected:
                 issues.append(f"{row['row_id']}: CROWN status does not recompute")
+        lagrangian_branches = row.get("lagrangian_guard_crown", [])
+        expected_branch_count = 2 if lagrangian_enabled else 0
+        if len(lagrangian_branches) != expected_branch_count:
+            issues.append(f"{row['row_id']}: Lagrangian branch count mismatch")
+        for branch in lagrangian_branches:
+            issues.extend(
+                f"{row['row_id']}: {issue}"
+                for issue in lagrangian_branch_issues(
+                    branch,
+                    expected_multipliers=lagrangian_multipliers,
+                    property_rows=9,
+                    tolerance=tolerance,
+                )
+            )
         if row.get("statuses") != _aggregate(row, schema_version):
             issues.append(f"{row['row_id']}: aggregate statuses do not recompute")
         expected_conflicts = expected_filter_witness_conflicts(row)

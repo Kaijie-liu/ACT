@@ -2468,3 +2468,15 @@ checkpoint retains its original global-bridge identity. The public
 `RouteAEngine` is now explicitly documented as Tier 1; selected-softmax top-2
 F0 remains the separately audited Tier 2. Full details and the scientific next
 gate are in `docs/evidence_semantics_hardening_20260906.md`.
+
+## Tie-safe hard-top1 Lagrangian guard compiler (2026-09-06)
+
+The shared-input compiler and optional AdvMoE schema-v2 ablation are
+implemented. The multiplier-grid aggregation is fail closed on incomplete or
+erroneous backend calls and is independently recomputed by the result auditor.
+An analytic two-case CROWN conformance passes: retained guard dependence turns
+an unguarded lower bound near `-0.9` into a compiled lower bound near `+0.1`,
+while an unsafe tie remains unresolved near `-0.1`. This is toy numerical
+conformance, not an official-scale effect or a formal CROWN certificate. See
+`docs/lagrangian_top1_guard.md` and
+`results/crown/lagrangian_guard_toy_conformance_20260906.json`.

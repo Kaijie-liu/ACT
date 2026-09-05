@@ -1,0 +1,43 @@
+{
+  "cases": [
+    {
+      "compiled_lower": 0.10000000149011612,
+      "compiled_no_greater_than_safety_on_legal_grid": true,
+      "exact_compiled_lower": 0.1,
+      "expected_filter": true,
+      "legal_grid_points": 500,
+      "name": "guard_recovers_safe_half_interval",
+      "observed_filter": true,
+      "original_box_lower": -0.8999999761581421,
+      "passed": true,
+      "safety_bias": 0.1,
+      "tie_compiled": 0.10000000149011612,
+      "tie_margin": 0.0,
+      "tie_safety": 0.10000000149011612
+    },
+    {
+      "compiled_lower": -0.10000000149011612,
+      "compiled_no_greater_than_safety_on_legal_grid": true,
+      "exact_compiled_lower": -0.1,
+      "expected_filter": false,
+      "legal_grid_points": 500,
+      "name": "unsafe_tie_remains_unresolved",
+      "observed_filter": false,
+      "original_box_lower": -1.100000023841858,
+      "passed": true,
+      "safety_bias": -0.1,
+      "tie_compiled": -0.10000000149011612,
+      "tie_margin": 0.0,
+      "tie_safety": -0.10000000149011612
+    }
+  ],
+  "environment": {
+    "auto_lirpa": "0.7.2",
+    "python": "3.11.16",
+    "torch": "2.11.0+cu130"
+  },
+  "evidence_boundary": "Analytic shared-input toy conformance only. Positive CROWN margins are numerical filters, not outward-rounded formal certificates.",
+  "schema_version": 1,
+  "scope": "TOY_LAGRANGIAN_TOP1_GUARD_CROWN_CONFORMANCE",
+  "status": "PASS"
+}

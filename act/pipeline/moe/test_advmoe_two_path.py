@@ -7,6 +7,7 @@ import torch
 from torch import nn
 
 from act.pipeline.moe.advmoe_two_path import (
+    aggregate_lagrangian_grid_calls,
     aggregate_filters,
     evaluate_path_lowering_equivalence,
     filter_witness_conflicts,
@@ -17,11 +18,103 @@ from act.pipeline.moe.audit_advmoe_two_path import (
     expected_crown_status,
     expected_filter_witness_conflicts,
     independent_tables,
+    lagrangian_branch_issues,
     summary_table_issues,
 )
 
 
 class AdvMoeTwoPathTests(unittest.TestCase):
+    def test_lagrangian_grid_selects_multiplier_per_property_row(self) -> None:
+        calls = [
+            {
+                "status": "UNKNOWN_RELAXATION",
+                "complete": True,
+                "lower_bounds": [0.2, -0.4],
+            },
+            {
+                "status": "UNKNOWN_RELAXATION",
+                "complete": True,
+                "lower_bounds": [-0.1, 0.3],
+            },
+        ]
+        result = aggregate_lagrangian_grid_calls(
+            calls, [0.0, 2.0], property_rows=2, tolerance=0.1
+        )
+        self.assertEqual(result["status"], "CERTIFIED_MARGIN_FILTER")
+        self.assertEqual(result["lower_bounds"], [0.2, 0.3])
+        self.assertEqual(result["selected_multipliers"], [0.0, 2.0])
+
+    def test_lagrangian_grid_fails_closed_on_backend_error(self) -> None:
+        result = aggregate_lagrangian_grid_calls(
+            [{"status": "ERROR", "lower_bounds": []}],
+            [0.0],
+            property_rows=1,
+            tolerance=1e-7,
+        )
+        self.assertEqual(result["status"], "ERROR")
+        self.assertFalse(result["complete"])
+
+    def test_lagrangian_grid_fails_closed_on_incomplete_call(self) -> None:
+        result = aggregate_lagrangian_grid_calls(
+            [
+                {
+                    "status": "CERTIFIED_MARGIN_FILTER",
+                    "complete": False,
+                    "lower_bounds": [1.0],
+                }
+            ],
+            [0.0],
+            property_rows=1,
+            tolerance=1e-7,
+        )
+        self.assertEqual(result["status"], "UNKNOWN_INCOMPLETE")
+        self.assertFalse(result["complete"])
+        self.assertEqual(result["lower_bounds"], [])
+
+    def test_independent_lagrangian_audit_binds_frozen_grid(self) -> None:
+        branch = {
+            "status": "CERTIFIED_MARGIN_FILTER",
+            "complete": True,
+            "lower_bounds": [0.2, 0.3],
+            "selected_multipliers": [0.0, 2.0],
+            "minimum_lower_bound": 0.2,
+            "calls": [
+                {
+                    "status": "UNKNOWN_RELAXATION",
+                    "complete": True,
+                    "lower_bounds": [0.2, -0.4],
+                    "upper_bounds": [1.0, 1.0],
+                    "lagrangian_multiplier": 0.0,
+                },
+                {
+                    "status": "UNKNOWN_RELAXATION",
+                    "complete": True,
+                    "lower_bounds": [-0.1, 0.3],
+                    "upper_bounds": [1.0, 1.0],
+                    "lagrangian_multiplier": 2.0,
+                },
+            ],
+        }
+        self.assertEqual(
+            lagrangian_branch_issues(
+                branch,
+                expected_multipliers=[0.0, 2.0],
+                property_rows=2,
+                tolerance=0.1,
+            ),
+            [],
+        )
+        branch["calls"][1]["lagrangian_multiplier"] = 3.0
+        self.assertIn(
+            "Lagrangian call 1 multiplier mismatch",
+            lagrangian_branch_issues(
+                branch,
+                expected_multipliers=[0.0, 2.0],
+                property_rows=2,
+                tolerance=0.1,
+            ),
+        )
+
     def test_top1_rows_cover_every_competitor(self) -> None:
         rows = top1_property_rows(3)
         self.assertEqual(len(rows), 9)
@@ -61,6 +154,24 @@ class AdvMoeTwoPathTests(unittest.TestCase):
             "CERTIFIED_MARGIN_FILTER_NOT_FORMAL_SAFE",
         )
         self.assertEqual(result["route_a_two_path"], "UNKNOWN")
+        self.assertEqual(result["endpoint"], result["portfolio"])
+
+    def test_portfolio_accepts_lagrangian_guard_filter(self) -> None:
+        result = aggregate_filters(
+            clean_route=0,
+            router_status="UNKNOWN_RELAXATION",
+            path_statuses=["UNKNOWN_RELAXATION", "UNKNOWN_RELAXATION"],
+            eta_statuses=["UNKNOWN_RELAXATION", "UNKNOWN_RELAXATION"],
+            lagrangian_statuses=[
+                "CERTIFIED_MARGIN_FILTER",
+                "CERTIFIED_MARGIN_FILTER",
+            ],
+            attack_prediction_flip=False,
+        )
+        self.assertEqual(
+            result["lagrangian_guard_ablation"],
+            "CERTIFIED_MARGIN_FILTER_NOT_FORMAL_SAFE",
+        )
         self.assertEqual(result["endpoint"], result["portfolio"])
 
     def test_concrete_prediction_flip_controls_endpoint(self) -> None:
@@ -198,6 +309,7 @@ class AdvMoeTwoPathTests(unittest.TestCase):
             "route_invariance": {"UNKNOWN": 2},
             "route_a_two_path": {"UNKNOWN": 2},
             "eta_guard_ablation": {"UNKNOWN": 2},
+            "lagrangian_guard_ablation": {"UNKNOWN": 2},
             "portfolio": {"UNKNOWN": 2},
             "endpoint": {"UNKNOWN": 2},
             "prediction_flip_witnesses": 1,

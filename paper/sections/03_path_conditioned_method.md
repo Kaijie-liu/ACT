@@ -95,6 +95,36 @@ not recover certificates on the frozen adapter cohort. The comparison does not
 show that guards are intrinsically powerful; it shows that their value is
 coupled to a representation capable of retaining them.
 
+### Compiling a hard-top1 guard into a static backend
+
+Some static-network verifiers cannot accept input-side route halfspaces. For a
+hard-top1 branch \(i\), write its tie-inclusive guard as
+\(m_{ij}(x)=r_i(x)-r_j(x)\ge 0\) for all \(j\ne i\). For safety row
+\(s_\ell(x)\ge0\), choose fixed nonnegative multipliers
+\(\mu_{\ell j}\) and compile the shared-input router and expert graph to
+
+\[
+  \phi_\ell(x)=s_\ell(x)-\sum_{j\ne i}\mu_{\ell j}m_{ij}(x).
+\]
+
+On a legal branch, \(\phi_\ell(x)\le s_\ell(x)\). A sound lower bound
+\(\phi_\ell\ge0\) over the original box is therefore a sufficient proof of
+the expert property on the guarded cell. A tied competitor contributes zero,
+so it cannot discharge its own branch obligation (although margins to other
+competitors can still make the sufficient condition conservative). It also
+avoids the unsound shortcut
+\(\max(g_i,s_i)\ge0\), which can pass vacuously when \(g_i=0\).
+
+The multipliers may be selected per property row from a finite, preregistered
+grid: taking the largest of independently sound lower bounds is sound. A failed
+compiled bound remains `UNKNOWN`. This is a standard Lagrangian sufficient
+reduction specialized to routed programs, not an exact representation of the
+guard and not a claim of a new generic Lagrangian method. Its possible benefit
+comes from preserving router--expert input dependence in one graph; separately
+intervalizing the two sides would discard that dependence. Our current CROWN
+implementation records only a numerical filter because that backend lacks an
+outward-rounding contract.
+
 ## A staged verifier for normalized weighted gates
 
 For normalized non-negative gates, the first tier avoids gate modelling. If

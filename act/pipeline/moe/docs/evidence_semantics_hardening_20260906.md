@@ -22,6 +22,12 @@ frozen experiment, checkpoint, radius, or historical result directory.
    method remains a compatibility alias for `run_tier1()`; F0 remains a
    separately exposed and audited selected-softmax top-2 fallback rather than
    a silently invoked public stage.
+6. A tie-safe hard-top1 Lagrangian guard compiler now preserves router and
+   expert dependence in one shared-input graph. For nonnegative frozen
+   multipliers it emits `s - sum(mu * selected_margin)`. The grid aggregator
+   fails closed on every backend error, incomplete call, malformed shape, or
+   non-finite bound. The independent AdvMoE auditor recomputes its row-wise
+   multiplier selection rather than trusting runner summaries.
 
 ## Soundness boundary
 
@@ -40,6 +46,10 @@ CROWN margins remain numerical filters and formal SAFE stays zero.
   two-iteration alpha-CROWN smoke with gradients and optimization arguments.
 - frozen AdvMoE full-r3 schema-v1 artifact: complete independent replay audit,
   `PASS`, zero issues.
+- isolated CROWN toy conformance for the Lagrangian compiler: an unguarded
+  lower bound of about `-0.9` becomes about `+0.1` on the legal half interval,
+  while an unsafe tie remains negative; concrete legal points satisfy the
+  compiled-to-original implication throughout the grid.
 
 ## Scientific decision
 
@@ -58,3 +68,8 @@ small-model differential against retained HZ. It is related to existing
 constraint-propagation ideas and must be positioned as a routed-program
 specialization, not a generic invention. Until its numerical backend is
 outward validated, its endpoint remains a filter even if coverage improves.
+
+The first two gates are now closed for the Lagrangian construction: the proof
+and concrete/CROWN toy conformance are committed. The exact retained-HZ
+differential and a preregistered official-scale paired experiment remain open.
+No official-scale benefit or formal certificate is claimed by this code stage.

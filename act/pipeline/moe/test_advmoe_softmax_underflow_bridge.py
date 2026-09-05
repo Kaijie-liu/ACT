@@ -37,8 +37,18 @@ def _native_target_callsite() -> tuple[Path, int]:
 
 class AdvMoeSoftmaxUnderflowBridgeTests(unittest.TestCase):
     def test_finite_regime_value_and_gradients_match_native(self) -> None:
-        p_native = torch.tensor([[1.5, -0.5], [-0.2, 0.3]], requires_grad=True)
-        q_native = torch.tensor([[0.1, 0.2], [0.7, -0.1]], requires_grad=True)
+        p_native = torch.tensor(
+            [[1.5, -0.5], [-0.2, 0.3]],
+            device="cpu",
+            dtype=torch.float32,
+            requires_grad=True,
+        )
+        q_native = torch.tensor(
+            [[0.1, 0.2], [0.7, -0.1]],
+            device="cpu",
+            dtype=torch.float32,
+            requires_grad=True,
+        )
         native_value = _native_kl(p_native, q_native)
         native_gradients = torch.autograd.grad(native_value, (p_native, q_native))
 
@@ -55,8 +65,15 @@ class AdvMoeSoftmaxUnderflowBridgeTests(unittest.TestCase):
         self.assertEqual(bridge.replaced_elements, 0)
 
     def test_extreme_regime_matches_stable_logit_expression(self) -> None:
-        p_bridge = torch.tensor([[200.0, -200.0]], requires_grad=True)
-        q_bridge = torch.tensor([[0.0, 0.0]], requires_grad=True)
+        p_bridge = torch.tensor(
+            [[200.0, -200.0]],
+            device="cpu",
+            dtype=torch.float32,
+            requires_grad=True,
+        )
+        q_bridge = torch.tensor(
+            [[0.0, 0.0]], device="cpu", dtype=torch.float32, requires_grad=True
+        )
         with SoftmaxUnderflowGradientBridge(
             allowed_callsites=(_native_target_callsite(),)
         ) as bridge:
@@ -79,8 +96,15 @@ class AdvMoeSoftmaxUnderflowBridgeTests(unittest.TestCase):
         self.assertEqual(bridge.skipped_softmax_calls, 0)
 
     def test_allowlist_leaves_unrelated_softmax_unmodified(self) -> None:
-        p_logits = torch.tensor([[200.0, -200.0]], requires_grad=True)
-        q_logits = torch.tensor([[0.0, 0.0]], requires_grad=True)
+        p_logits = torch.tensor(
+            [[200.0, -200.0]],
+            device="cpu",
+            dtype=torch.float32,
+            requires_grad=True,
+        )
+        q_logits = torch.tensor(
+            [[0.0, 0.0]], device="cpu", dtype=torch.float32, requires_grad=True
+        )
         with SoftmaxUnderflowGradientBridge(
             allowed_callsites=((Path(__file__).resolve(), 1),)
         ) as bridge:
@@ -93,17 +117,32 @@ class AdvMoeSoftmaxUnderflowBridgeTests(unittest.TestCase):
         self.assertEqual(bridge.replaced_elements, 0)
 
     def test_unbridged_mutation_control_produces_nan(self) -> None:
-        p_logits = torch.tensor([[200.0, -200.0]], requires_grad=True)
-        q_logits = torch.tensor([[0.0, 0.0]], requires_grad=True)
+        p_logits = torch.tensor(
+            [[200.0, -200.0]],
+            device="cpu",
+            dtype=torch.float32,
+            requires_grad=True,
+        )
+        q_logits = torch.tensor(
+            [[0.0, 0.0]], device="cpu", dtype=torch.float32, requires_grad=True
+        )
         gradients = torch.autograd.grad(_native_kl(p_logits, q_logits), p_logits)
         self.assertTrue(torch.isnan(gradients[0]).all())
 
     def test_nonfinite_gradient_at_positive_probability_fails_closed(self) -> None:
-        logits = torch.tensor([[0.0, 0.0]], requires_grad=True)
+        logits = torch.tensor(
+            [[0.0, 0.0]], device="cpu", dtype=torch.float32, requires_grad=True
+        )
         with SoftmaxUnderflowGradientBridge():
             probabilities = F.softmax(logits, dim=1)
             with self.assertRaisesRegex(RuntimeError, "positive probability"):
-                probabilities.backward(torch.tensor([[float("nan"), 0.0]]))
+                probabilities.backward(
+                    torch.tensor(
+                        [[float("nan"), 0.0]],
+                        device="cpu",
+                        dtype=torch.float32,
+                    )
+                )
 
 
 if __name__ == "__main__":

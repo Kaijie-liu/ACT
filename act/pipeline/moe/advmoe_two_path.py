@@ -18,7 +18,10 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 
-from act.back_end.moe.tie_safe_implication import TieSafeTop1Implication
+from act.back_end.moe.tie_safe_implication import (
+    LagrangianTop1GuardedProperty,
+    TieSafeTop1Implication,
+)
 from act.pipeline.moe.advmoe_adapter import (
     CrownCompatibleAdvMoePath,
     CrownCompatibleAdvMoeRouter,
@@ -83,6 +86,7 @@ def aggregate_filters(
     path_statuses: list[str],
     eta_statuses: list[str],
     attack_prediction_flip: bool,
+    lagrangian_statuses: list[str] | None = None,
 ) -> dict[str, str]:
     filtered = "CERTIFIED_MARGIN_FILTER"
     route_invariance = (
@@ -100,11 +104,18 @@ def aggregate_filters(
         if len(eta_statuses) == 2 and all(value == filtered for value in eta_statuses)
         else "UNKNOWN"
     )
+    lagrangian_statuses = lagrangian_statuses or []
+    lagrangian = (
+        "CERTIFIED_MARGIN_FILTER_NOT_FORMAL_SAFE"
+        if len(lagrangian_statuses) == 2
+        and all(value == filtered for value in lagrangian_statuses)
+        else "UNKNOWN"
+    )
     portfolio = (
         "CERTIFIED_MARGIN_FILTER_NOT_FORMAL_SAFE"
         if any(
             value == "CERTIFIED_MARGIN_FILTER_NOT_FORMAL_SAFE"
-            for value in (route_invariance, route_a, eta)
+            for value in (route_invariance, route_a, eta, lagrangian)
         )
         else "UNKNOWN"
     )
@@ -118,6 +129,7 @@ def aggregate_filters(
         "route_invariance": route_invariance,
         "route_a_two_path": route_a,
         "eta_guard_ablation": eta,
+        "lagrangian_guard_ablation": lagrangian,
         "portfolio": portfolio,
         "endpoint": endpoint,
     }
@@ -145,6 +157,7 @@ def filter_witness_conflicts(
             "route_invariance",
             "route_a_two_path",
             "eta_guard_ablation",
+            "lagrangian_guard_ablation",
             "portfolio",
         )
     )
@@ -157,6 +170,126 @@ def filter_witness_conflicts(
         "output_filter_prediction_conflict": output_filter_prediction_conflict,
         "any": router_filter_route_conflict or output_filter_prediction_conflict,
     }
+
+
+def aggregate_lagrangian_grid_calls(
+    calls: list[dict[str, Any]],
+    multipliers: list[float],
+    *,
+    property_rows: int,
+    tolerance: float,
+) -> dict[str, Any]:
+    """Select the strongest row-wise bound from a frozen multiplier grid."""
+
+    if len(calls) != len(multipliers) or not calls:
+        raise ValueError("one non-empty CROWN call is required per multiplier")
+    if property_rows < 1:
+        raise ValueError("property_rows must be positive")
+    if any(not math.isfinite(value) or value < 0.0 for value in multipliers):
+        raise ValueError("lagrangian multipliers must be finite and nonnegative")
+    if any(call.get("status") == "ERROR" for call in calls):
+        return {
+            "status": "ERROR",
+            "complete": False,
+            "lower_bounds": [],
+            "selected_multipliers": [],
+            "minimum_lower_bound": None,
+            "calls": calls,
+        }
+    if any(not bool(call.get("complete")) for call in calls):
+        return {
+            "status": "UNKNOWN_INCOMPLETE",
+            "complete": False,
+            "lower_bounds": [],
+            "selected_multipliers": [],
+            "minimum_lower_bound": None,
+            "calls": calls,
+        }
+    lower = np.asarray([call.get("lower_bounds", []) for call in calls], dtype=np.float64)
+    if lower.shape != (len(calls), int(property_rows)) or not np.isfinite(lower).all():
+        return {
+            "status": "UNKNOWN_INCOMPLETE",
+            "complete": False,
+            "lower_bounds": [],
+            "selected_multipliers": [],
+            "minimum_lower_bound": None,
+            "calls": calls,
+        }
+    selected = np.argmax(lower, axis=0)
+    best = lower[selected, np.arange(property_rows)]
+    status = (
+        "CERTIFIED_MARGIN_FILTER"
+        if bool(np.all(best >= float(tolerance)))
+        else "UNKNOWN_RELAXATION"
+    )
+    return {
+        "status": status,
+        "complete": True,
+        "lower_bounds": best.tolist(),
+        "selected_multipliers": [float(multipliers[index]) for index in selected],
+        "minimum_lower_bound": float(best.min()),
+        "calls": calls,
+        "selection_semantics": "row-wise maximum over frozen nonnegative multiplier grid",
+        "negative_bound_semantics": "UNKNOWN_NEVER_UNSAFE",
+        "numerical_soundness_status": "POSITIVE_MARGIN_FILTER_NOT_OUTWARD_ROUNDED",
+    }
+
+
+def evaluate_lagrangian_guard_grid(
+    router: torch.nn.Module,
+    expert: torch.nn.Module,
+    expert_index: int,
+    center: torch.Tensor,
+    lower: torch.Tensor,
+    upper: torch.Tensor,
+    *,
+    property_rows: tuple[tuple[np.ndarray, float], ...],
+    multipliers: list[float],
+    device: str,
+    tolerance: float,
+    method: str,
+    track_gradients: bool,
+    bound_options: dict[str, Any] | None,
+) -> dict[str, Any]:
+    """Run a shared-input Lagrangian guard compiler over a frozen grid."""
+
+    matrix = np.stack([row for row, _offset in property_rows])
+    offset = np.asarray([value for _row, value in property_rows])
+    # This runner is intentionally scoped to the audited AdvMoE E=2 model.
+    # The compiler itself supports arbitrary E; the official-scale experiment
+    # has exactly one outside expert for each hard-top1 branch.
+    outside_experts = 1
+    calls: list[dict[str, Any]] = []
+    for multiplier in multipliers:
+        compiled = LagrangianTop1GuardedProperty(
+            copy.deepcopy(router),
+            copy.deepcopy(expert),
+            int(expert_index),
+            matrix,
+            offset,
+            np.full((len(property_rows), outside_experts), float(multiplier)),
+        )
+        call = _crown_bounds(
+            compiled,
+            center,
+            lower,
+            upper,
+            property_rows=None,
+            device=device,
+            tolerance=tolerance,
+            method=method,
+            track_gradients=track_gradients,
+            bound_options=bound_options,
+        )
+        call["lagrangian_multiplier"] = float(multiplier)
+        calls.append(call)
+        _cleanup_cuda()
+    return aggregate_lagrangian_grid_calls(
+        calls,
+        multipliers,
+        property_rows=len(property_rows),
+        tolerance=tolerance,
+    )
 
 
 def evaluate_path_lowering_equivalence(
@@ -313,6 +446,18 @@ def run(config_path: Path) -> dict[str, Any]:
         track_gradients=crown_gradient_tracking,
         bound_options=crown_bound_options,
     )
+    lagrangian_config = config.get("lagrangian_guard_ablation", {"enabled": False})
+    lagrangian_enabled = bool(lagrangian_config.get("enabled", False))
+    lagrangian_multipliers = [
+        float(value) for value in lagrangian_config.get("multipliers", [])
+    ]
+    if lagrangian_enabled and not lagrangian_multipliers:
+        raise ValueError("enabled Lagrangian guard ablation needs multipliers")
+    if any(
+        not math.isfinite(value) or value < 0.0
+        for value in lagrangian_multipliers
+    ):
+        raise ValueError("Lagrangian guard multipliers must be finite and nonnegative")
     for gate in config["accepted_audits"]:
         path = _inside(Path(gate["path"]), workspace)
         if _sha256(path) != gate["sha256"]:
@@ -396,6 +541,7 @@ def run(config_path: Path) -> dict[str, Any]:
                 _cleanup_cuda()
                 path_bounds = []
                 eta_bounds = []
+                lagrangian_bounds = []
                 for route in (0, 1):
                     bound = _crown_bounds(
                         copy.deepcopy(path_adapters[route]), center, lower, upper,
@@ -428,6 +574,24 @@ def run(config_path: Path) -> dict[str, Any]:
                         )
                         eta_bounds.append(eta_bound)
                         _cleanup_cuda()
+                    if lagrangian_enabled:
+                        lagrangian_bounds.append(
+                            evaluate_lagrangian_guard_grid(
+                                router_adapter,
+                                path_adapters[route],
+                                route,
+                                center,
+                                lower,
+                                upper,
+                                property_rows=properties,
+                                multipliers=lagrangian_multipliers,
+                                device=config["crown"]["device"],
+                                tolerance=tolerance,
+                                method=config["crown"]["method"],
+                                track_gradients=crown_gradient_tracking,
+                                bound_options=crown_bound_options,
+                            )
+                        )
                 attack = _prediction_attack(
                     model, center, lower, upper, prediction,
                     steps=int(config["attack"]["steps"]),
@@ -442,6 +606,7 @@ def run(config_path: Path) -> dict[str, Any]:
                     router_status=route_bound["status"],
                     path_statuses=[row["status"] for row in path_bounds],
                     eta_statuses=[row["status"] for row in eta_bounds],
+                    lagrangian_statuses=[row["status"] for row in lagrangian_bounds],
                     attack_prediction_flip=bool(attack["prediction_flip"]),
                 )
                 route_flip = int(attack["attacked_route"]) != clean_route
@@ -463,6 +628,7 @@ def run(config_path: Path) -> dict[str, Any]:
                     "router_crown": route_bound,
                     "path_crown": path_bounds,
                     "eta_crown": eta_bounds,
+                    "lagrangian_guard_crown": lagrangian_bounds,
                     "attack": attack,
                     "statuses": statuses,
                     "filter_witness_conflicts": witness_conflicts,
@@ -485,6 +651,7 @@ def run(config_path: Path) -> dict[str, Any]:
         row["router_crown"]["status"] == "ERROR"
         or any(value["status"] == "ERROR" for value in row["path_crown"])
         or any(value["status"] == "ERROR" for value in row["eta_crown"])
+        or any(value["status"] == "ERROR" for value in row["lagrangian_guard_crown"])
         for row in row_records
     )
     conflicts = sum(row["filter_witness_conflicts"]["any"] for row in row_records)
@@ -504,6 +671,7 @@ def run(config_path: Path) -> dict[str, Any]:
             "route_invariance": dict(Counter(row["statuses"]["route_invariance"] for row in selected)),
             "route_a_two_path": dict(Counter(row["statuses"]["route_a_two_path"] for row in selected)),
             "eta_guard_ablation": dict(Counter(row["statuses"]["eta_guard_ablation"] for row in selected)),
+            "lagrangian_guard_ablation": dict(Counter(row["statuses"]["lagrangian_guard_ablation"] for row in selected)),
             "portfolio": dict(Counter(row["statuses"]["portfolio"] for row in selected)),
             "endpoint": dict(Counter(row["statuses"]["endpoint"] for row in selected)),
             "prediction_flip_witnesses": sum(prediction_flips),

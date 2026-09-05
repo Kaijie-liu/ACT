@@ -4,6 +4,7 @@ import torch
 import torch.nn as nn
 
 from act.back_end.moe.tie_safe_implication import (
+    LagrangianTop1GuardedProperty,
     TieSafeTop1Implication,
     audit_eta_overcheck_band,
     relu_pairwise_max,
@@ -106,6 +107,71 @@ class TieSafeImplicationTests(unittest.TestCase):
         torch.testing.assert_close(safety, expected_safety)
         torch.testing.assert_close(compiled, expected)
         torch.testing.assert_close(module(x).squeeze(1), expected)
+
+    def test_lagrangian_compiler_is_tie_exact(self):
+        router = nn.Linear(1, 2).double()
+        expert = nn.Linear(1, 1).double()
+        with torch.no_grad():
+            router.weight.zero_()
+            router.bias.zero_()
+            expert.weight.zero_()
+            expert.bias.fill_(-1.0)
+        module = LagrangianTop1GuardedProperty(
+            router, expert, 0, [[1.0]], [0.0], [[17.0]]
+        )
+        margins, safety, compiled = module.forward_components(
+            torch.tensor([[0.0]], dtype=torch.double)
+        )
+        torch.testing.assert_close(margins, torch.zeros_like(margins))
+        torch.testing.assert_close(compiled, safety)
+        self.assertLess(float(compiled.item()), 0.0)
+
+    def test_lagrangian_compiled_rows_lower_bound_safety_on_legal_branch(self):
+        torch.manual_seed(91)
+        router = nn.Linear(3, 4).double()
+        expert = nn.Linear(3, 2).double()
+        matrix = torch.randn(5, 2, dtype=torch.double)
+        offset = torch.randn(5, dtype=torch.double)
+        multipliers = torch.rand(5, 3, dtype=torch.double)
+        module = LagrangianTop1GuardedProperty(
+            router, expert, 2, matrix, offset, multipliers
+        )
+        inputs = torch.randn(200, 3, dtype=torch.double)
+        margins, safety, compiled = module.forward_components(inputs)
+        legal = torch.all(margins >= 0.0, dim=1)
+        self.assertTrue(bool(torch.all(compiled[legal] <= safety[legal])))
+
+    def test_lagrangian_compiler_rejects_negative_multiplier(self):
+        with self.assertRaisesRegex(ValueError, "nonnegative"):
+            LagrangianTop1GuardedProperty(
+                nn.Linear(1, 2),
+                nn.Linear(1, 1),
+                0,
+                [[1.0]],
+                [0.0],
+                [[-1.0]],
+            )
+
+    def test_lagrangian_forward_matches_direct_formula(self):
+        torch.manual_seed(92)
+        router = nn.Linear(2, 3).double()
+        expert = nn.Linear(2, 2).double()
+        matrix = torch.tensor([[1.0, -1.0], [0.5, 2.0]], dtype=torch.double)
+        offset = torch.tensor([0.1, -0.2], dtype=torch.double)
+        multipliers = torch.tensor([[0.3, 0.7], [1.0, 0.0]], dtype=torch.double)
+        module = LagrangianTop1GuardedProperty(
+            router, expert, 1, matrix, offset, multipliers
+        )
+        inputs = torch.randn(11, 2, dtype=torch.double)
+        margins, safety, compiled = module.forward_components(inputs)
+        scores = router(inputs)
+        expected_margins = scores[:, 1:2] - scores[:, [0, 2]]
+        expected_safety = expert(inputs) @ matrix.T + offset
+        expected_compiled = expected_safety - expected_margins @ multipliers.T
+        torch.testing.assert_close(margins, expected_margins)
+        torch.testing.assert_close(safety, expected_safety)
+        torch.testing.assert_close(compiled, expected_compiled)
+        torch.testing.assert_close(module(inputs), expected_compiled)
 
 
 if __name__ == "__main__":

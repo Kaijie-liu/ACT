@@ -197,3 +197,92 @@ class TieSafeTop1Implication(nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.forward_components(x)[2].unsqueeze(1)
+
+
+class LagrangianTop1GuardedProperty(nn.Module):
+    """Compile a hard-top1 guarded property into ordinary network outputs.
+
+    For branch ``i``, define each selected margin
+    ``m_j = r_i - r_j``. The branch is legal, including ties, exactly when all
+    ``m_j >= 0``. For safety row ``s_l >= 0`` and registered nonnegative
+    multipliers ``mu_lj``, this module emits
+
+    ``phi_l = s_l - sum_j mu_lj * m_j``.
+
+    On the legal branch ``phi_l <= s_l``. Therefore proving every compiled row
+    nonnegative over the original input box is a sound sufficient proof of the
+    expert property on the guarded cell. A tied competitor contributes exactly
+    zero, so its obligation cannot be discharged by the reduction. Other
+    strictly lower competitors may still make the sufficient condition
+    conservative. It is intentionally not an exact encoding of the guarded
+    optimization problem.
+    """
+
+    def __init__(
+        self,
+        router_logits: nn.Module,
+        expert: nn.Module,
+        expert_index: int,
+        property_matrix: torch.Tensor | Sequence[Sequence[float]],
+        property_offset: torch.Tensor | Sequence[float],
+        multipliers: torch.Tensor | Sequence[Sequence[float]],
+    ) -> None:
+        super().__init__()
+        matrix = torch.as_tensor(property_matrix)
+        offset = torch.as_tensor(property_offset)
+        multiplier_tensor = torch.as_tensor(multipliers)
+        if matrix.ndim != 2 or matrix.shape[0] < 1:
+            raise ValueError("property_matrix must be non-empty and two-dimensional")
+        if offset.ndim != 1 or offset.shape[0] != matrix.shape[0]:
+            raise ValueError("property_offset must match property rows")
+        if multiplier_tensor.ndim != 2:
+            raise ValueError("multipliers must be [property rows, outside experts]")
+        if multiplier_tensor.shape[0] != matrix.shape[0]:
+            raise ValueError("multipliers must have one row per property")
+        if multiplier_tensor.shape[1] < 1:
+            raise ValueError("multipliers require at least one outside expert")
+        if not matrix.is_floating_point():
+            matrix = matrix.double()
+        if not offset.is_floating_point():
+            offset = offset.double()
+        multiplier_tensor = multiplier_tensor.to(dtype=matrix.dtype)
+        if not bool(torch.isfinite(multiplier_tensor).all()):
+            raise ValueError("multipliers must be finite")
+        if bool(torch.any(multiplier_tensor < 0)):
+            raise ValueError("multipliers must be nonnegative")
+        self.router_logits = router_logits
+        self.expert = expert
+        self.expert_index = int(expert_index)
+        self.register_buffer("property_matrix", matrix)
+        self.register_buffer("property_offset", offset)
+        self.register_buffer("multipliers", multiplier_tensor)
+
+    def forward_components(
+        self, x: torch.Tensor
+    ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+        scores = self.router_logits(x)
+        output = self.expert(x)
+        if scores.ndim != 2 or scores.shape[1] < 2:
+            raise ValueError("router_logits must return [batch, experts], E >= 2")
+        if not 0 <= self.expert_index < scores.shape[1]:
+            raise IndexError("expert_index is outside router output")
+        outside_width = scores.shape[1] - 1
+        if self.multipliers.shape[1] != outside_width:
+            raise ValueError("multiplier width differs from outside expert count")
+        if output.ndim != 2 or output.shape[1] != self.property_matrix.shape[1]:
+            raise ValueError("expert output width differs from property matrix")
+        selected = scores[:, self.expert_index : self.expert_index + 1]
+        outside = torch.cat(
+            [scores[:, : self.expert_index], scores[:, self.expert_index + 1 :]],
+            dim=1,
+        )
+        selected_margins = selected - outside
+        matrix = self.property_matrix.to(dtype=output.dtype, device=output.device)
+        offset = self.property_offset.to(dtype=output.dtype, device=output.device)
+        multipliers = self.multipliers.to(dtype=output.dtype, device=output.device)
+        safety_rows = output @ matrix.transpose(0, 1) + offset
+        compiled_rows = safety_rows - selected_margins @ multipliers.transpose(0, 1)
+        return selected_margins, safety_rows, compiled_rows
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return self.forward_components(x)[2]

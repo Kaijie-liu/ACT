@@ -71,6 +71,7 @@ from act.back_end.moe.conditioned_difference_support import (
 )
 from act.back_end.moe.tie_safe_implication import (
     EtaBandAudit,
+    LagrangianTop1GuardedProperty,
     TieSafeTop1Implication,
     audit_eta_overcheck_band,
     relu_pairwise_max,
@@ -139,6 +140,7 @@ __all__ = [
     "IncrementalHZFeasibilityResult",
     "IncrementalHZTelemetry",
     "EtaBandAudit",
+    "LagrangianTop1GuardedProperty",
     "AffineCompetitorBoundary",
     "AffineTop1RouteBoundary",
     "AffineTop1RouteBoundaryBatch",

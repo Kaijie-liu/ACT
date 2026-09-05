@@ -6,6 +6,7 @@ from collections import Counter
 from contextlib import AbstractContextManager
 import inspect
 from pathlib import Path
+import threading
 from typing import Any, Iterable
 
 import torch
@@ -44,6 +45,7 @@ class SoftmaxUnderflowGradientBridge(AbstractContextManager):
         self.replaced_elements = 0
         self.observed_callsites: Counter[str] = Counter()
         self._resolved_caller_paths: dict[str, str] = {}
+        self._dispatch_state = threading.local()
 
     def __enter__(self) -> "SoftmaxUnderflowGradientBridge":
         if self._original is not None:
@@ -57,9 +59,22 @@ class SoftmaxUnderflowGradientBridge(AbstractContextManager):
             _stacklevel: int = 3,
             dtype: torch.dtype | None = None,
         ) -> torch.Tensor:
-            output = original(
-                input, dim=dim, _stacklevel=_stacklevel, dtype=dtype
-            )
+            # ``torch.set_default_device`` installs a TorchFunctionMode that
+            # redispatches the Python callable once from torch.utils._device.
+            # Treat that internal redispatch as part of the same source call:
+            # otherwise allowlist telemetry double-counts it and may attach a
+            # second hook outside the validated source callsite.
+            if bool(getattr(self._dispatch_state, "inside_original", False)):
+                return original(
+                    input, dim=dim, _stacklevel=_stacklevel, dtype=dtype
+                )
+            self._dispatch_state.inside_original = True
+            try:
+                output = original(
+                    input, dim=dim, _stacklevel=_stacklevel, dtype=dtype
+                )
+            finally:
+                self._dispatch_state.inside_original = False
             self.softmax_calls += 1
             frame = inspect.currentframe()
             caller = None if frame is None else frame.f_back
