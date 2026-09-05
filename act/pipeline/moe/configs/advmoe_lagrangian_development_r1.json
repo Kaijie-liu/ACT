@@ -1,0 +1,119 @@
+{
+  "schema_version": 2,
+  "status": "PREREGISTERED_NOT_RUN",
+  "scope": "ADV_MOE_LAGRANGIAN_COMPILER_DEVELOPMENT_R1",
+  "label": "official-code numerical-compatibility checkpoint; frozen 20-input Lagrangian relation-transfer development comparison",
+  "workspace_boundary": "/data1/Kane/MOE",
+  "act_repository": "/data1/Kane/MOE/ACT",
+  "required_branch": "feat/moe-route-verification",
+  "official_source": {
+    "repository": "/data1/Kane/MOE/baselines/robust-moe-cnn",
+    "commit": "c50796fb8284512b6f6ad8e843f95182cec527cf",
+    "tree": "153d4ff9f30f34eb7fdd4caf670495122c5836e0",
+    "license": "NO_LICENSE_FILE_READ_EXECUTE_ONLY"
+  },
+  "accepted_audits": [
+    {
+      "label": "training",
+      "path": "/data1/Kane/MOE/ACT/act/pipeline/moe/results/baseline/advmoe_training_seed0_compat_r1_audit.json",
+      "sha256": "f78dee8c5a54f481773277abab3567a6e57ffaf5b5426eaac1e2de3cfbd23b5e"
+    },
+    {
+      "label": "endpoint_telemetry",
+      "path": "/data1/Kane/MOE/ACT/act/pipeline/moe/results/baseline/advmoe_training_endpoint_telemetry_seed0_compat_r2_audit.json",
+      "sha256": "0c6b8fb62a833426353999df5ed24cc3e77bc0e59fc7fde68ba5589065d0ca6e"
+    },
+    {
+      "label": "historical_two_path_full",
+      "path": "/data1/Kane/MOE/ACT/act/pipeline/moe/results/baseline/advmoe_two_path_seed0_compat_full_r3_audit_r2.json",
+      "sha256": "619bf7d8afdf23862a391b355fa621de22128e2c94d7ec0677b593193c8763c8"
+    }
+  ],
+  "checkpoint": {
+    "selection": "final epoch; no test-set best-checkpoint selection",
+    "seed": 0,
+    "epoch": 100,
+    "path": "/data1/Kane/MOE/baseline_runs/advmoe/seed0_compat_r1/results/training/train_moe/compat_softmax_bridge_seed0_r1_CIFAR10-resnet18_cifar_moe-ratio0.5-epochs100-lr0.1-eps8-steps2-beta6.0-expert2--seed0/checkpoint/checkpoint.pth.tar",
+    "sha256": "e2d93896e5be1fdbb1c9538f9f09014bdc6d3067ac5501352f61475b5294b49e"
+  },
+  "dataset_archive": "/data1/Kane/MOE/ACT/data/torchvision/CIFAR10/raw/cifar-10-python.tar.gz",
+  "dataset_archive_sha256": "6d958be074577803d12ecdefd02955f39262c83c16fe9348329d7fe0b5c001ce",
+  "selection_manifest": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/advmoe_lagrangian_development_selection_r1.json",
+  "selection_manifest_sha256": "cbd769cd27d5f87f67f0fdc4ecc7f479780730729b590cc97954aa4523309def",
+  "output_dir": "/data1/Kane/MOE/ACT/data/moe/results/advmoe_lagrangian_development_r1",
+  "selection": {
+    "samples": 20,
+    "policy": "frozen development clean-correct ranks 0-19; historical r3 endpoints reused only for method configuration",
+    "denominator": "all 20 samples independently at every radius; no solved-only denominator",
+    "claim_scope": "development mechanism and cost evidence; not a confirmatory holdout"
+  },
+  "radii_over_255": [0.5, 1.0, 2.0, 4.0, 8.0],
+  "batch_size": 128,
+  "torch_threads": 2,
+  "crown": {
+    "environment": "/data1/Kane/MOE/envs/alpha-beta-crown",
+    "method": "CROWN",
+    "device": "cuda:0",
+    "minimum_free_gpu_memory_gib": 48.0,
+    "gradient_tracking": false,
+    "positive_bound_semantics": "CERTIFIED_MARGIN_FILTER_NOT_FORMAL_SAFE",
+    "reason": "installed backend is not outward rounded; mechanism comparison uses the same plain CROWN call configuration"
+  },
+  "attack": {
+    "device": "cuda:0",
+    "steps": 20,
+    "restarts": 2,
+    "step_divisor": 4.0,
+    "seed": 20260905,
+    "status_semantics": "only a full dynamic-model replayed prediction flip is UNSAFE"
+  },
+  "guard_ablation": {
+    "enabled": true,
+    "method": "tie-safe eta implication over original box",
+    "expected_advantage": "none preregistered"
+  },
+  "lagrangian_guard_ablation": {
+    "enabled": true,
+    "method": "shared-input fixed-nonnegative-multiplier sufficient reduction",
+    "multipliers": [
+      0.0,
+      0.09688889529532016,
+      0.19377779059064032,
+      0.38755558118128064,
+      0.7751111623625613,
+      1.5502223247251226
+    ],
+    "scale_normalization": {
+      "rule": "DEVELOPMENT_MEDIAN_CLEAN_ABS_ROUTER_MARGIN",
+      "scale": 2.580275058746338,
+      "normalized_coefficients": [0.0, 0.25, 0.5, 1.0, 2.0, 4.0],
+      "development_source": "/data1/Kane/MOE/ACT/act/pipeline/moe/results/baseline/advmoe_lagrangian_multiplier_scale_r1.json",
+      "development_source_sha256": "0c572598a13abe668a90ae76e13caa3db370cf746e6696b3601cc891f295479b"
+    },
+    "selection_semantics": "each property row may select its strongest complete bound from the frozen grid; every multiplier is fixed over the full input box",
+    "failure_semantics": "any incomplete or erroneous grid call fails the entire branch closed"
+  },
+  "comparison": {
+    "enabled": true,
+    "execution_order": "SAMPLE_RADIUS_BRANCH_BLOCKED_METHOD_INTERLEAVED",
+    "total_wall_budget_seconds_per_sample_radius_method": 60.0,
+    "mechanism_question": "with identical per-call CROWN configuration, does relation compilation improve bounds when the full frozen grid is executed?",
+    "budget_question": "which complete sample-radius obligations are resolved within the same 60-second total method cutoff?",
+    "overshoot_policy": "retain mechanism result and raw timing but mark budget status UNKNOWN_BUDGET_EXHAUSTED",
+    "attack_time_included": false
+  },
+  "numerical": {
+    "safe_positive_margin": 1e-7,
+    "equivalence_atol": 1e-6,
+    "equivalence_rtol": 0.0,
+    "full_forward_replay_required_for_unsafe": true,
+    "negative_bound_semantics": "UNKNOWN_NEVER_UNSAFE",
+    "formal_safe_enabled": false
+  },
+  "preregistered_interpretation": {
+    "primary_unit": "input sample; five radii are a correlated within-input grid",
+    "no_gain_statement": "Under the frozen multiplier protocol and cost budget, Lagrangian compilation added no complete numerical-filter coverage.",
+    "no_gain_attribution_limit": "No gain alone does not identify CROWN relaxation, finite-grid search, or intrinsic fixed-multiplier reduction gap.",
+    "holdout_gate": "No disjoint holdout is started until this development execution and independent audit are complete."
+  }
+}

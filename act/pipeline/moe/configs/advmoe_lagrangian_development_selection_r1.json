@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "status": "FROZEN_NOT_RUN",
+  "scope": "ADV_MOE_LAGRANGIAN_COMPILER_DEVELOPMENT_SELECTION_R1",
+  "purpose": "method and multiplier development only; never a confirmatory holdout",
+  "dataset_archive_sha256": "6d958be074577803d12ecdefd02955f39262c83c16fe9348329d7fe0b5c001ce",
+  "checkpoint_sha256": "e2d93896e5be1fdbb1c9538f9f09014bdc6d3067ac5501352f61475b5294b49e",
+  "clean_correct_ranks": [
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+    10, 11, 12, 13, 14, 15, 16, 17, 18, 19
+  ],
+  "ordered_dataset_indices": [
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+    10, 11, 12, 13, 14, 15, 16, 17, 18, 19
+  ],
+  "development_exclusion": {
+    "ordered_dataset_indices": [],
+    "sources": [],
+    "note": "This is the development cohort itself. A later holdout manifest must list these 20 indices as exclusions and bind this manifest by hash."
+  },
+  "telemetry_disclosure": "The ordered CIFAR-10 test set was previously used for aggregate telemetry. These 20 verification endpoints were also the historical full-r3 development cohort; no untouched-image claim is made."
+}

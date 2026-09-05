@@ -692,6 +692,16 @@ def audit(config_path: Path, result_path: Path) -> dict[str, Any]:
                     "development_source_sha256"
                 ),
             }
+            source_value = normalization.get("development_source")
+            if source_value:
+                try:
+                    scale_source = _inside(Path(source_value), workspace)
+                    if _sha256(scale_source) != normalization.get(
+                        "development_source_sha256"
+                    ):
+                        issues.append("Lagrangian development-scale source hash mismatch")
+                except (KeyError, ValueError):
+                    issues.append("Lagrangian development-scale source leaves workspace")
         else:
             issues.append("unsupported Lagrangian multiplier normalization rule")
     if (
@@ -850,6 +860,37 @@ def audit(config_path: Path, result_path: Path) -> dict[str, Any]:
     issues.extend(selection_issues)
     if not np.array_equal(indices, expected_indices):
         issues.append("selected indices do not match independently rebuilt cohort")
+
+    normalization = lagrangian_config.get(
+        "scale_normalization", {"rule": "NONE_RAW_GRID"}
+    )
+    if normalization.get("rule") == "DEVELOPMENT_MEDIAN_CLEAN_ABS_ROUTER_MARGIN":
+        scale_source = _inside(Path(normalization["development_source"]), workspace)
+        scale_record = json.loads(scale_source.read_text(encoding="utf-8"))
+        source_indices = np.asarray(
+            scale_record.get("development_source", {}).get(
+                "ordered_dataset_indices", []
+            ),
+            dtype=np.int64,
+        )
+        if not np.array_equal(source_indices, expected_indices):
+            issues.append("multiplier scale source differs from development cohort")
+        with torch.no_grad():
+            source_scores = router(torch.from_numpy(inputs[source_indices])).numpy()
+        source_margins = np.abs(source_scores[:, 0] - source_scores[:, 1])
+        recorded_margins = np.asarray(
+            scale_record.get("clean_absolute_router_margins", []), dtype=np.float64
+        )
+        if not np.array_equal(source_margins, recorded_margins):
+            issues.append("clean router margins do not reproduce scale source")
+        recomputed_scale = float(np.median(source_margins))
+        if not math.isclose(
+            recomputed_scale,
+            float(normalization["scale"]),
+            rel_tol=0.0,
+            abs_tol=1e-12,
+        ):
+            issues.append("development median router-margin scale does not reproduce")
 
     replay_rows = []
     for row_index, row in enumerate(rows):

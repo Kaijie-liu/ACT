@@ -106,6 +106,14 @@ grid expansion.
 
 ## Remaining experiment gates
 
+The development execution is frozen in
+`act/pipeline/moe/configs/advmoe_lagrangian_development_r1.json`. It reuses the
+historical first 20 clean-correct inputs strictly as a development cohort,
+uses normalized coefficients `{0,0.25,0.5,1,2,4}` divided by the frozen median
+clean router margin `2.580275058746338`, and applies a 60-second total-wall
+evidence cutoff independently to each method and sample-radius pair. The
+selection and scale are separate hash-bound artifacts.
+
 1. Execute the frozen, explicitly manifested 20-input development cohort and
    choose no settings after inspecting a later endpoint-excluded cohort.
 2. Freeze a disjoint holdout manifest only after development and its budget

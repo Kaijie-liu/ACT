@@ -2503,3 +2503,11 @@ development source. The exact negative control
 case whose best exact fixed nonnegative multiplier value is `-0.9`; no-gain
 results therefore cannot be assigned to CROWN without separating backend,
 finite-search, and intrinsic reduction gaps.
+
+The development configuration was then frozen without executing a new
+endpoint: first-20 clean-correct ranks, the existing accepted checkpoint, all
+five registered radii, normalized coefficient grid
+`{0,0.25,0.5,1,2,4}`, median clean-margin scale `2.580275058746338`, and a
+60-second common total-wall cutoff. This is method-development evidence only.
+A later confirmatory manifest must exclude the 20 frozen dataset indices and
+bind the development manifest by hash.

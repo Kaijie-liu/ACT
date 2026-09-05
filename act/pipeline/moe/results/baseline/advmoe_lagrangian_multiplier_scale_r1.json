@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "status": "FROZEN_BEFORE_LAGRANGIAN_DEVELOPMENT_EXECUTION",
+  "scope": "ADV_MOE_LAGRANGIAN_MULTIPLIER_SCALE_DEVELOPMENT_R1",
+  "checkpoint_sha256": "e2d93896e5be1fdbb1c9538f9f09014bdc6d3067ac5501352f61475b5294b49e",
+  "dataset_archive_sha256": "6d958be074577803d12ecdefd02955f39262c83c16fe9348329d7fe0b5c001ce",
+  "development_source": {
+    "summary_path": "/data1/Kane/MOE/ACT/data/moe/results/advmoe_two_path_seed0_compat_full_r3/summary.json",
+    "summary_sha256": "e9d8b638bf6c31bcfebba56ead04a2af02664e250f71ec3910f9a0816f5187b8",
+    "audit_path": "/data1/Kane/MOE/ACT/act/pipeline/moe/results/baseline/advmoe_two_path_seed0_compat_full_r3_audit_r2.json",
+    "audit_sha256": "619bf7d8afdf23862a391b355fa621de22128e2c94d7ec0677b593193c8763c8",
+    "clean_correct_ranks": [
+      0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+      10, 11, 12, 13, 14, 15, 16, 17, 18, 19
+    ],
+    "ordered_dataset_indices": [
+      0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+      10, 11, 12, 13, 14, 15, 16, 17, 18, 19
+    ]
+  },
+  "clean_absolute_router_margins": [
+    1.4026319980621338,
+    3.7558257579803467,
+    2.034644603729248,
+    4.698975563049316,
+    3.003938913345337,
+    2.8478081226348877,
+    5.74907112121582,
+    2.329080581665039,
+    1.5918242931365967,
+    2.392481803894043,
+    0.9689531326293945,
+    5.6943769454956055,
+    0.621507465839386,
+    6.8285369873046875,
+    4.493062973022461,
+    2.7370193004608154,
+    4.157589912414551,
+    1.9506685733795166,
+    2.31085467338562,
+    2.4235310554504395
+  ],
+  "normalization": {
+    "rule": "DEVELOPMENT_MEDIAN_CLEAN_ABS_ROUTER_MARGIN",
+    "scale": 2.580275058746338,
+    "normalized_coefficients": [0.0, 0.25, 0.5, 1.0, 2.0, 4.0],
+    "resolved_multipliers": [
+      0.0,
+      0.09688889529532016,
+      0.19377779059064032,
+      0.38755558118128064,
+      0.7751111623625613,
+      1.5502223247251226
+    ],
+    "equivariance_scope": "For a positive global rescaling of router logits, the development median margin rescales identically and the resolved multiplier grid rescales inversely."
+  },
+  "selection_rule": "The coefficient grid and scale statistic were fixed before executing the Lagrangian development comparison. Per-property rows may choose different multipliers from this frozen grid; no multiplier depends on x within a verified box.",
+  "evidence_boundary": "Development configuration artifact only. It is not a robustness result and must not be retuned after observing a later holdout."
+}

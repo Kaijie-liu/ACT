@@ -773,6 +773,12 @@ def run(config_path: Path) -> dict[str, Any]:
             lagrangian_config
         )
         lagrangian_multipliers = multiplier_protocol["resolved_multipliers"]
+        if multiplier_protocol["rule"] != "NONE_RAW_GRID":
+            scale_source = _inside(
+                Path(multiplier_protocol["development_source"]), workspace
+            )
+            if _sha256(scale_source) != multiplier_protocol["development_source_sha256"]:
+                raise RuntimeError("Lagrangian development-scale source hash mismatch")
     comparison_config = config.get("comparison", {"enabled": False})
     comparison_enabled = bool(comparison_config.get("enabled", False))
     if comparison_enabled:
