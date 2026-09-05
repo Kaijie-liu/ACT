@@ -191,7 +191,7 @@ def audit(config_path: Path, summary_path: Path) -> dict[str, Any]:
     return {
         "schema_version": 1,
         "status": "PASS" if not issues else "FAIL",
-        "scope": "ADV_MOE_LAGRANGIAN_FAMILY_DIAGNOSIS_AUDIT_R1",
+        "scope": f"{config['scope']}_AUDIT",
         "config": {"path": str(config_path), "sha256": _sha256(config_path)},
         "result": {"path": str(summary_path), "sha256": _sha256(summary_path)},
         "rows": {"path": str(rows_path), "sha256": _sha256(rows_path)},

@@ -124,3 +124,8 @@ The r2 resource repair is preregistered with the same five obligations and
 the previously used sparse-alpha settings: sparse feature/specification and
 intermediate bounds, no full convolution alpha tensor, CROWN batches of 128,
 and 20 shared-alpha iterations.  No endpoint or scientific threshold changes.
+
+The first r2 audit output is retained because its generic hard-coded scope
+ended in `R1` even though all identities and replay checks referred to r2.
+The auditor now derives its scope from the hashed configuration; no audit
+calculation, tolerance, result row, or classification changes.
