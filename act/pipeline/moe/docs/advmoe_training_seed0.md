@@ -131,6 +131,8 @@ SAFE result.
 
 ## Compatibility-bridge finite-state smoke
 
+The accepted compatibility smoke and full run used the original globally
+scoped bridge and retain that identity; they are not retroactively relabelled.
 The compatibility bridge leaves every finite native softmax gradient unchanged
 and replaces a non-finite incoming gradient only where the corresponding
 softmax probability is exactly zero. A non-finite gradient at any positive
@@ -176,6 +178,13 @@ It reports clean accuracy 85.67% and released 10-step adversarial accuracy
 61.14%. The released best-adversarial checkpoint is snapshot 95, SHA-256
 `143f5d0db191dc74be5d77d5ff10d0e320709a0718a11ac0e3c6668e382a63db`;
 its clean and released adversarial accuracies are 85.36% and 61.80%.
+
+Future executions narrow this compatibility surface to the unique released
+router-KL target callsite (`train_moe.py:144` at the pinned source tree). The
+entrypoint validates that source line before execution and records exact
+eligible, skipped, hooked, and replaced call counts. Other softmax calls retain
+native behavior. This implementation hardening does not alter or replace the
+accepted globally scoped checkpoint.
 
 These are empirical released-path metrics, not formal certificates. The
 released test set participates in checkpoint selection, and the repository's

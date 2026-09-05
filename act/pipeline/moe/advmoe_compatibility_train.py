@@ -33,6 +33,24 @@ def _atomic_json(path: Path, payload: dict[str, Any]) -> None:
     os.replace(temporary, path)
 
 
+def _router_kl_target_softmax_callsite(script: Path) -> tuple[Path, int]:
+    """Bind the bridge to the released router-KL target and nothing else."""
+
+    needle = "F.log_softmax(adv_scores, dim=1), F.softmax(scores, dim=1)"
+    matches = [
+        line_number
+        for line_number, line in enumerate(
+            script.read_text(encoding="utf-8").splitlines(), 1
+        )
+        if needle in line
+    ]
+    if len(matches) != 1:
+        raise RuntimeError(
+            "released router-KL softmax callsite is absent or ambiguous"
+        )
+    return script.resolve(), matches[0]
+
+
 def run(
     workspace: Path,
     official_source: Path,
@@ -55,7 +73,10 @@ def run(
     sys.dont_write_bytecode = True
     sys.path.insert(0, str(official_source))
     sys.argv = [str(script), *official_arguments]
-    bridge = SoftmaxUnderflowGradientBridge()
+    target_callsite = _router_kl_target_softmax_callsite(script)
+    bridge = SoftmaxUnderflowGradientBridge(
+        allowed_callsites=(target_callsite,)
+    )
     started = time.time()
     status = "RUNNING"
     error = None
@@ -71,9 +92,9 @@ def run(
         _atomic_json(
             summary,
             {
-                "schema_version": 1,
+                "schema_version": 2,
                 "status": status,
-                "label": "official-code numerical-compatibility variant; softmax-underflow gradient bridge",
+                "label": "official-code numerical-compatibility variant; callsite-scoped softmax-underflow gradient bridge",
                 "official_source": {
                     "commit": _git(official_source, "rev-parse", "HEAD"),
                     "tree": _git(official_source, "rev-parse", "HEAD^{tree}"),

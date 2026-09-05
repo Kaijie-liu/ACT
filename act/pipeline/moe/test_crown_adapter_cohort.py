@@ -15,6 +15,7 @@ from act.pipeline.moe.crown_adapter_cohort import (
     _safe_status,
     _summary,
     _validate_frozen_pairs,
+    validate_crown_configuration,
 )
 
 
@@ -27,6 +28,35 @@ def _constant_affine(outputs):
 
 
 class CrownAdapterCohortTests(unittest.TestCase):
+    def test_optimized_method_requires_gradients_and_options(self):
+        options = {"optimize_bound_args": {"iteration": 10}}
+        with self.assertRaisesRegex(ValueError, "gradient tracking"):
+            validate_crown_configuration(
+                method="alpha-CROWN",
+                track_gradients=False,
+                bound_options=options,
+            )
+        with self.assertRaisesRegex(ValueError, "optimize_bound_args"):
+            validate_crown_configuration(
+                method="CROWN-Optimized",
+                track_gradients=True,
+                bound_options=None,
+            )
+        validated = validate_crown_configuration(
+            method="alpha_CROWN",
+            track_gradients=True,
+            bound_options=options,
+        )
+        self.assertTrue(validated["optimized_method"])
+
+    def test_plain_crown_allows_no_grad_without_bound_options(self):
+        validated = validate_crown_configuration(
+            method="CROWN",
+            track_gradients=False,
+            bound_options=None,
+        )
+        self.assertFalse(validated["optimized_method"])
+
     def _implication(self, scores, safety, eta=1e-7):
         return TieSafeTopKSetImplication(
             _constant_affine(scores),
@@ -85,6 +115,36 @@ class CrownAdapterCohortTests(unittest.TestCase):
         self.assertTrue(result["complete"])
         self.assertEqual(result["status"], "UNKNOWN_RELAXATION")
         self.assertLess(result["minimum_lower_bound"], 0.0)
+
+    @unittest.skipUnless(
+        importlib.util.find_spec("auto_LiRPA") is not None,
+        "requires the isolated alpha-beta-CROWN environment",
+    )
+    def test_installed_alpha_crown_executes_optimized_path(self):
+        torch.manual_seed(0)
+        module = nn.Sequential(nn.Linear(2, 4), nn.ReLU(), nn.Linear(4, 2))
+        center = torch.zeros((1, 2))
+        result = _crown_bounds(
+            module,
+            center,
+            center - 0.1,
+            center + 0.1,
+            property_rows=((np.asarray([1.0, -1.0]), 0.0),),
+            device="cpu",
+            tolerance=1e-7,
+            method="alpha-CROWN",
+            track_gradients=True,
+            bound_options={
+                "optimize_bound_args": {
+                    "iteration": 2,
+                    "lr_alpha": 0.1,
+                    "keep_best": True,
+                }
+            },
+        )
+        self.assertIsNone(result["error"])
+        self.assertTrue(result["complete"])
+        self.assertTrue(result["backend_configuration"]["optimized_method"])
 
     def test_negative_relaxation_never_becomes_unsafe(self):
         self.assertEqual(

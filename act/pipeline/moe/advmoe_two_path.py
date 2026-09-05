@@ -28,7 +28,10 @@ from act.pipeline.moe.advmoe_adapter import (
     specialize_advmoe_path,
 )
 from act.pipeline.moe.advmoe_router_bracket import load_cifar10_test_archive
-from act.pipeline.moe.crown_adapter_cohort import _crown_bounds
+from act.pipeline.moe.crown_adapter_cohort import (
+    _crown_bounds,
+    validate_crown_configuration,
+)
 from act.pipeline.moe.published_moe_router_gradient_audit import _sha256
 
 
@@ -97,17 +100,62 @@ def aggregate_filters(
         if len(eta_statuses) == 2 and all(value == filtered for value in eta_statuses)
         else "UNKNOWN"
     )
+    portfolio = (
+        "CERTIFIED_MARGIN_FILTER_NOT_FORMAL_SAFE"
+        if any(
+            value == "CERTIFIED_MARGIN_FILTER_NOT_FORMAL_SAFE"
+            for value in (route_invariance, route_a, eta)
+        )
+        else "UNKNOWN"
+    )
     if attack_prediction_flip:
         endpoint = "UNSAFE_FULL_FORWARD_REPLAY"
-    elif route_a == "CERTIFIED_MARGIN_FILTER_NOT_FORMAL_SAFE":
-        endpoint = route_a
+    elif portfolio == "CERTIFIED_MARGIN_FILTER_NOT_FORMAL_SAFE":
+        endpoint = portfolio
     else:
         endpoint = "UNKNOWN"
     return {
         "route_invariance": route_invariance,
         "route_a_two_path": route_a,
         "eta_guard_ablation": eta,
+        "portfolio": portfolio,
         "endpoint": endpoint,
+    }
+
+
+def filter_witness_conflicts(
+    *,
+    router_status: str,
+    statuses: dict[str, str],
+    prediction_flip: bool,
+    route_flip: bool,
+) -> dict[str, bool]:
+    """Return every concrete-witness contradiction checked by schema v2.
+
+    CROWN margins in this runner are numerical filters rather than formal SAFE
+    results.  They must nevertheless agree with replayed concrete witnesses.
+    Keeping router and output contradictions separate prevents either kind of
+    failure from being hidden behind a single runner-supplied boolean.
+    """
+
+    positive = "CERTIFIED_MARGIN_FILTER_NOT_FORMAL_SAFE"
+    output_filter_positive = any(
+        statuses.get(name) == positive
+        for name in (
+            "route_invariance",
+            "route_a_two_path",
+            "eta_guard_ablation",
+            "portfolio",
+        )
+    )
+    router_filter_route_conflict = bool(route_flip) and (
+        router_status == "CERTIFIED_MARGIN_FILTER"
+    )
+    output_filter_prediction_conflict = bool(prediction_flip) and output_filter_positive
+    return {
+        "router_filter_route_conflict": router_filter_route_conflict,
+        "output_filter_prediction_conflict": output_filter_prediction_conflict,
+        "any": router_filter_route_conflict or output_filter_prediction_conflict,
     }
 
 
@@ -258,6 +306,13 @@ def run(config_path: Path) -> dict[str, Any]:
         raise RuntimeError("official source clone is dirty")
     if _sha256(archive) != config["dataset_archive_sha256"]:
         raise RuntimeError("dataset archive hash mismatch")
+    crown_gradient_tracking = bool(config["crown"].get("gradient_tracking", True))
+    crown_bound_options = config["crown"].get("bound_options")
+    crown_configuration = validate_crown_configuration(
+        method=config["crown"]["method"],
+        track_gradients=crown_gradient_tracking,
+        bound_options=crown_bound_options,
+    )
     for gate in config["accepted_audits"]:
         path = _inside(Path(gate["path"]), workspace)
         if _sha256(path) != gate["sha256"]:
@@ -334,7 +389,9 @@ def run(config_path: Path) -> dict[str, Any]:
                     copy.deepcopy(router_adapter), center, lower, upper,
                     property_rows=((route_row, 0.0),),
                     device=config["crown"]["device"], tolerance=tolerance,
-                    method=config["crown"]["method"], track_gradients=False,
+                    method=config["crown"]["method"],
+                    track_gradients=crown_gradient_tracking,
+                    bound_options=crown_bound_options,
                 )
                 _cleanup_cuda()
                 path_bounds = []
@@ -344,7 +401,9 @@ def run(config_path: Path) -> dict[str, Any]:
                         copy.deepcopy(path_adapters[route]), center, lower, upper,
                         property_rows=properties,
                         device=config["crown"]["device"], tolerance=tolerance,
-                        method=config["crown"]["method"], track_gradients=False,
+                        method=config["crown"]["method"],
+                        track_gradients=crown_gradient_tracking,
+                        bound_options=crown_bound_options,
                     )
                     path_bounds.append(bound)
                     _cleanup_cuda()
@@ -363,7 +422,9 @@ def run(config_path: Path) -> dict[str, Any]:
                             implication, center, lower, upper,
                             property_rows=None,
                             device=config["crown"]["device"], tolerance=tolerance,
-                            method=config["crown"]["method"], track_gradients=False,
+                            method=config["crown"]["method"],
+                            track_gradients=crown_gradient_tracking,
+                            bound_options=crown_bound_options,
                         )
                         eta_bounds.append(eta_bound)
                         _cleanup_cuda()
@@ -383,11 +444,12 @@ def run(config_path: Path) -> dict[str, Any]:
                     eta_statuses=[row["status"] for row in eta_bounds],
                     attack_prediction_flip=bool(attack["prediction_flip"]),
                 )
-                positive_conflict = bool(attack["prediction_flip"]) and (
-                    statuses["route_a_two_path"]
-                    == "CERTIFIED_MARGIN_FILTER_NOT_FORMAL_SAFE"
-                    or statuses["eta_guard_ablation"]
-                    == "CERTIFIED_MARGIN_FILTER_NOT_FORMAL_SAFE"
+                route_flip = int(attack["attacked_route"]) != clean_route
+                witness_conflicts = filter_witness_conflicts(
+                    router_status=route_bound["status"],
+                    statuses=statuses,
+                    prediction_flip=bool(attack["prediction_flip"]),
+                    route_flip=route_flip,
                 )
                 record = {
                     "row_id": f"sample{slot}:eps{numerator}",
@@ -403,7 +465,7 @@ def run(config_path: Path) -> dict[str, Any]:
                     "eta_crown": eta_bounds,
                     "attack": attack,
                     "statuses": statuses,
-                    "positive_filter_witness_conflict": positive_conflict,
+                    "filter_witness_conflicts": witness_conflicts,
                 }
                 row_records.append(record)
                 _append_json(rows_handle, record)
@@ -425,7 +487,7 @@ def run(config_path: Path) -> dict[str, Any]:
         or any(value["status"] == "ERROR" for value in row["eta_crown"])
         for row in row_records
     )
-    conflicts = sum(row["positive_filter_witness_conflict"] for row in row_records)
+    conflicts = sum(row["filter_witness_conflicts"]["any"] for row in row_records)
     tables = {}
     for numerator in config["radii_over_255"]:
         selected = [
@@ -442,6 +504,7 @@ def run(config_path: Path) -> dict[str, Any]:
             "route_invariance": dict(Counter(row["statuses"]["route_invariance"] for row in selected)),
             "route_a_two_path": dict(Counter(row["statuses"]["route_a_two_path"] for row in selected)),
             "eta_guard_ablation": dict(Counter(row["statuses"]["eta_guard_ablation"] for row in selected)),
+            "portfolio": dict(Counter(row["statuses"]["portfolio"] for row in selected)),
             "endpoint": dict(Counter(row["statuses"]["endpoint"] for row in selected)),
             "prediction_flip_witnesses": sum(prediction_flips),
             "route_flip_witnesses": sum(route_flips),
@@ -451,7 +514,7 @@ def run(config_path: Path) -> dict[str, Any]:
             ),
         }
     result = {
-        "schema_version": 1,
+        "schema_version": 2,
         "status": "COMPLETED_NOT_INDEPENDENTLY_AUDITED" if errors == 0 and conflicts == 0 else "FAILED",
         "scope": config["scope"],
         "config": {"path": str(config_path), "sha256": _sha256(config_path)},
@@ -466,8 +529,9 @@ def run(config_path: Path) -> dict[str, Any]:
         "rows": {"path": str(rows_path), "sha256": _sha256(rows_path), "count": len(row_records)},
         "attack_endpoints": {"path": str(attack_path), "sha256": _sha256(attack_path)},
         "tables": tables,
+        "backend_configuration": crown_configuration,
         "backend_error_rows": errors,
-        "positive_filter_witness_conflicts": conflicts,
+        "filter_witness_conflicts": conflicts,
         "formal_safe_count": 0,
         "numerical_scope": "positive CROWN margins are filters, never formal SAFE, because the backend is not outward rounded",
         "runtime_seconds": time.monotonic() - started,

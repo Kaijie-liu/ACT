@@ -2394,7 +2394,7 @@ path independently obtains ordered-archive clean accuracies of 85.37% and
 This closes the trained-router collapse question and supplies the accepted
 checkpoint identities for the frozen two-path evaluation.
 
-**AdvMoE two-path correctness smoke (frozen, not yet run).** The new runner
+**AdvMoE two-path correctness smoke (historical code freeze).** The new runner
 specializes all 16 hidden MoE convolutions into each of the two global paths,
 lowers their fixed output pooling for CROWN, and compares route invariance,
 router-independent two-path filtering, and the tie-safe eta implication. The
@@ -2452,3 +2452,19 @@ joint flip at `8/255`. Plain CROWN therefore executes the decomposition but is
 too loose for a formal official-scale certificate claim. See
 `docs/advmoe_two_path.md` and
 `results/baseline/advmoe_two_path_seed0_compat_full_r3_audit_r2.json`.
+
+## Evidence-semantics hardening after official-scale review (2026-09-06)
+
+No frozen result is rewritten. AdvMoE two-path schema v2 now has an explicit
+numerical-filter portfolio, unambiguous route/prediction/joint witness fields,
+and independently recomputed router/output conflict checks. The version-aware
+auditor replays frozen schema-v1 r3 as `PASS` with zero issues.
+
+Optimized CROWN names now require autograd plus explicit positive optimization
+iterations; a real isolated-environment alpha-CROWN smoke confirms that path.
+Future AdvMoE numerical-compatibility executions scope the underflow bridge to
+the source-validated router-KL target softmax only. The accepted compatibility
+checkpoint retains its original global-bridge identity. The public
+`RouteAEngine` is now explicitly documented as Tier 1; selected-softmax top-2
+F0 remains the separately audited Tier 2. Full details and the scientific next
+gate are in `docs/evidence_semantics_hardening_20260906.md`.

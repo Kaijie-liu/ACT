@@ -119,3 +119,26 @@ The raw r3 summary used a legacy field name,
 enhanced audit explicitly separates prediction, route, and joint witnesses;
 future runner output uses the corrected three fields. The accepted audit is
 `results/baseline/advmoe_two_path_seed0_compat_full_r3_audit_r2.json`.
+
+## Post-r3 evidence-semantics hardening
+
+Frozen r3 remains schema v1 and is not rewritten. The current runner emits
+schema v2. It separates prediction-, route-, and joint-flip counts; adds an
+explicit portfolio that accepts any of route invariance, two-path filtering,
+or eta filtering without changing their numerical-only evidence class; and
+records router-filter/route-witness and output-filter/prediction-witness
+conflicts separately. A concrete replayed prediction flip still overrides
+every positive filter and is the only route to `UNSAFE` in this runner.
+
+The independent auditor is version-aware. It re-audits frozen schema-v1 r3
+without changing its historical aggregate, while schema v2 is recomputed with
+the portfolio endpoint and the three unambiguous witness fields. The auditor
+derives both conflict types from raw rows rather than trusting the runner's
+boolean. The full frozen r3 artifact passes this compatibility audit with zero
+issues.
+
+Optimized CROWN labels now pass a fail-fast configuration gate: alpha-CROWN or
+another optimized method requires gradient tracking, explicit optimization
+arguments, and a positive iteration count. Plain CROWN remains valid without
+autograd. This closes a method-label ambiguity; it does not add outward
+rounding or promote any numerical filter to formal SAFE.

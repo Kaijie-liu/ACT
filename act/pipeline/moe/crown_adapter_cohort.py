@@ -85,6 +85,52 @@ VARIANTS = (
     "crown_tie_safe_eta",
 )
 
+OPTIMIZED_CROWN_METHODS = frozenset(
+    {"alpha-crown", "crown-optimized", "forward-optimized"}
+)
+
+
+def validate_crown_configuration(
+    *,
+    method: str,
+    track_gradients: bool,
+    bound_options: dict[str, Any] | None,
+) -> dict[str, Any]:
+    """Fail closed when a method label cannot activate its promised algorithm.
+
+    auto_LiRPA's optimized CROWN modes require autograd and explicit
+    optimization controls.  Merely changing the method string while keeping a
+    ``no_grad`` context silently turns an experimental claim into a
+    configuration error.  This validator is deliberately backend-facing and
+    does not claim that alpha-CROWN is a formal, outward-rounded certificate.
+    """
+
+    normalized = str(method).strip().lower().replace("_", "-")
+    optimized = normalized in OPTIMIZED_CROWN_METHODS
+    if optimized and not bool(track_gradients):
+        raise ValueError(
+            f"optimized CROWN method {method!r} requires gradient tracking"
+        )
+    optimize_arguments = (
+        bound_options.get("optimize_bound_args")
+        if isinstance(bound_options, dict)
+        else None
+    )
+    if optimized and not isinstance(optimize_arguments, dict):
+        raise ValueError(
+            f"optimized CROWN method {method!r} requires optimize_bound_args"
+        )
+    if optimized and int(optimize_arguments.get("iteration", 0)) <= 0:
+        raise ValueError("optimized CROWN requires a positive iteration count")
+    return {
+        "method_requested": str(method),
+        "method_normalized": normalized,
+        "optimized_method": optimized,
+        "gradient_tracking_enabled": bool(track_gradients),
+        "bound_options_supplied": bound_options is not None,
+        "optimize_bound_args_supplied": isinstance(optimize_arguments, dict),
+    }
+
 
 def _append_json(handle, value: dict[str, Any]) -> None:
     handle.write(json.dumps(value, sort_keys=True) + "\n")
@@ -450,7 +496,13 @@ def _crown_bounds(
     tolerance: float,
     method: str,
     track_gradients: bool = True,
+    bound_options: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
+    backend_configuration = validate_crown_configuration(
+        method=method,
+        track_gradients=track_gradients,
+        bound_options=bound_options,
+    )
     started = time.monotonic()
     try:
         from auto_LiRPA import BoundedModule, BoundedTensor
@@ -464,7 +516,13 @@ def _crown_bounds(
         if str(device).startswith("cuda"):
             torch.cuda.reset_peak_memory_stats(device=device)
         build_started = time.monotonic()
-        bounded = BoundedModule(module, center, device=device, verbose=False)
+        bounded_arguments: dict[str, Any] = {
+            "device": device,
+            "verbose": False,
+        }
+        if bound_options is not None:
+            bounded_arguments["bound_opts"] = bound_options
+        bounded = BoundedModule(module, center, **bounded_arguments)
         build_seconds = time.monotonic() - build_started
         bounded_input = BoundedTensor(
             center,
@@ -514,6 +572,7 @@ def _crown_bounds(
             "upper_bounds": upper_np.tolist(),
             "property_rows": int(lower_np.size),
             "gradient_tracking_enabled": track_gradients,
+            "backend_configuration": backend_configuration,
             "graph_build_seconds": build_seconds,
             "solve_seconds": solve_seconds,
             "seconds": time.monotonic() - started,
@@ -545,6 +604,7 @@ def _crown_bounds(
             "method": method,
             "device": device,
             "gradient_tracking_enabled": track_gradients,
+            "backend_configuration": backend_configuration,
             "peak_cuda_memory_gib": (
                 float(torch.cuda.max_memory_allocated(device=device) / (1024**3))
                 if str(device).startswith("cuda") and torch.cuda.is_available()

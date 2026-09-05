@@ -5,9 +5,14 @@ verification on top of ACT/HyZor. It deliberately keeps the router and experts a
 separate ACT `Net` objects so the solver never instantiates every expert's unstable
 ReLU binaries in one monolithic model.
 
-The restricted selected-softmax top-2 fallback has a separate frozen soundness
-contract in
+`RouteAEngine` is the public **Tier-1 gate-elimination** engine. It does not
+silently invoke the restricted selected-softmax top-2 fallback. That Tier-2 F0
+fallback has a separate frozen soundness contract in
 [`../../pipeline/moe/docs/weighted_top2_fallback.md`](../../pipeline/moe/docs/weighted_top2_fallback.md).
+The complete staged experiments invoke the lower-level
+`build_weighted_top2_f0` and `solve_weighted_top2_f0` APIs only after Tier 1
+returns the registered semantic-incompleteness reasons. There is not yet one
+gate-family-general public engine that hides both stages behind `run()`.
 
 ## Implemented scope
 
@@ -69,7 +74,7 @@ ACT already exposes more TorchVision datasets and VNN-COMP categories. TinyImage
 is a sensible later scaling experiment, but should not gate Route A because it makes
 the expert binary wall dominate the routing contribution.
 
-## Programmatic verification
+## Programmatic Tier-1 verification
 
 ```python
 import torch
@@ -97,9 +102,16 @@ report = RouteAEngine(
     program,
     concrete_model=model,
     expert_models=tuple(model.experts),
-).run()
+).run_tier1()
 print(report.result.status, report.router.candidates.candidates)
 ```
+
+For selected-softmax top-2, a Tier-1 `UNKNOWN` caused by gate-sufficiency or an
+expert witness that cannot be lifted is eligible for the separately audited F0
+portfolio. A negative F0 relaxation is still `UNKNOWN`; only a concrete input
+replayed through the full weighted model can be `UNSAFE`. The current staged
+orchestration is visible in `act.pipeline.moe.experiment1_confirmatory` and
+`act.pipeline.moe.experiment1f0` rather than being implied by this example.
 
 Run the regression suite with:
 

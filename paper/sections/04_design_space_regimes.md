@@ -8,8 +8,8 @@ weaker for reasons unrelated to its central abstraction. We therefore organize
 the evaluation around three regimes that place the bottleneck in different
 parts of the program.
 
-The first axis is route combinatorics. With (E) experts and unordered top-
-(k) dispatch, as many as (inom{E}{k}) route sets can be legal. The second
+The first axis is route combinatorics. With \(E\) experts and unordered top-
+\(k\) dispatch, as many as \(\binom{E}{k}\) route sets can be legal. The second
 axis is router geometry. An affine router admits exact support and, for hard
 top-1 dispatch over a pixel box, a closed-form boundary oracle. A shallow
 piecewise-linear router can remain exact in a hybrid-zonotope frame, whereas a
@@ -31,7 +31,7 @@ The verification-scale bal010 model isolates the route-set and weighted-gate
 problems. Its router is nonlinear, its eight experts are independent output-
 level MLPs, and the selected-softmax top-2 output depends on both expert
 predictions. Requiring route invariance discards precisely the regions of
-interest. Exhaustively treating all pairs is possible at (E=8), but it does
+interest. Exhaustively treating all pairs is possible at \(E=8\), but it does
 not explain how candidate correlation, path constraints, or gate modelling
 affect verification.
 
@@ -49,8 +49,10 @@ The regime establishes mechanism evidence rather than scale by itself. The
 independent cohort shows candidate reduction, conditional binary-width
 separation, guard-dependent coverage, and route-changing certificates. Lazy
 no-good-cut enumeration and support-derived big-M tightening extend the same
-semantics beyond exhaustive (E=8) proposals; their timed (E)-scaling study
-remains a separately identified endpoint.
+semantics beyond exhaustive \(E=8\) proposals. The completed synthetic
+\(E=4\ldots64\) study is worst-case/controlled scaling evidence, not natural
+route-set prevalence; accepted MIP-start submission is not treated as evidence
+that the solver used the start internally.
 
 ## Regime II: affine hard routing at official scale
 
@@ -69,9 +71,9 @@ invariance baseline can invoke it only after proving a single route; Route A
 can cover every feasible route and aggregate only after every corresponding
 property is established. At verification scale, this change alone accounts
 for 56 additional solved samples and all 36 route-changing certificates. The
-official-scale B3 table is the required external validation and remains
-explicitly pending until the 130-epoch reproduction and downstream expert
-checks are complete.
+official-scale B3 table completes the external numerical-conformance check. Its
+positive backward-CROWN margins preserve the coverage shape but are not
+promoted to formal SAFE because the backend is not outward rounded.
 
 This regime also exposes certificate applicability as a measurable object.
 The exact (A(\epsilon)) curve reports how many inputs satisfy a route-

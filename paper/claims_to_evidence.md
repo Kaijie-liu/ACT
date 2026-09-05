@@ -21,15 +21,16 @@ rows and route conditioning yields a median structural-width ratio of 0.430.
 The immutable preregistered overall solved endpoint is 56/100 and fails its 60%
 gate; boundary applicability is 76/100 and conditional coverage is 56/76. We
 separately report follow-up closure and engineering results without rewriting
-that endpoint. Official-scale expert certification remains pending while the
-official-code reproduction runs. The follow-up explicit end-to-end
-route-invariance comparison is complete and independently audited.
+that endpoint. Official-scale RT-ER and AdvMoE numerical-conformance runs are
+complete, but their CROWN margins are not outward rounded and therefore yield
+zero formal SAFE results. The follow-up explicit end-to-end route-invariance
+comparison is complete and independently audited.
 
 ## Draft status and evidence boundary
 
 This is a claims-to-evidence paper draft, not a new experimental protocol. It
-is grounded in the repository state at
-`7ef324e18`. The frozen scientific endpoint,
+is grounded in the evidence identities enumerated in
+`paper/evidence_table.md`. The frozen scientific endpoint,
 follow-up closure experiments, and engineering reruns are reported separately.
 No pending result is inferred from an implementation, a protocol, or a smoke
 test.
@@ -640,9 +641,10 @@ released router update.
 The independent replay reports zero issues over 34 hashed source anchors and
 confirms router input/output shapes, 16 routed layers, one shared router, and
 literal first-max tie behavior:
-`act/pipeline/moe/results/advmoe_architecture_audit_20260830.json`. This is an
-architecture/training-semantics result only. Training, sampled input-space
-route census, and deep-path certificates remain pending after RT-ER B3.
+`act/pipeline/moe/results/advmoe_architecture_audit_20260830.json`. This source
+audit is architecture/training-semantics evidence only. The later labelled
+compatibility run, trained-router telemetry, and two-path table are separate
+executed artifacts; none turns the source audit itself into a certificate.
 
 ### Two dependency failure modes are distinguished
 
@@ -650,10 +652,10 @@ The official RT-ER reproduction is `pinned-but-rotted`: the released dependency
 pin is concrete but cannot execute its first CUDA kernel on the registered
 Blackwell device. AdvMoE is `unpinned`: its requirements do not specify Python,
 PyTorch, torchvision, or CUDA, the README names a missing requirements file,
-and the training entry point stops at undeclared packages. These labels describe
-artifact reproducibility failure modes, not method accuracy or quality. No
-dependency was installed and no AdvMoE training environment was created in the
-current stage.
+and the training entry point initially stops at undeclared packages. These
+labels describe artifact reproducibility failure modes, not method accuracy or
+quality. A later isolated Blackwell-compatible environment is fully pinned as
+our reproduction environment; it is not presented as an upstream specification.
 
 ### AdvMoE init bracket remains fully undecided after stronger tools
 
@@ -679,8 +681,9 @@ and CROWN/accounting identities:
 The paper-safe conclusion is that a materially stronger two-sided engineering
 bracket remains unresolved at initialization. Zero attack flips are not formal
 stability, and large negative relaxation bounds are not evidence of intrinsic
-router difficulty. Alpha-CROWN, beta-CROWN/BaB, the trained checkpoint, census,
-and deep-path certificate coverage remain pending.
+router difficulty. Alpha-CROWN and beta-CROWN/BaB remain unexecuted closure
+tiers. The trained compatibility checkpoint and deep-path numerical-
+conformance table are now complete but supply no formal SAFE result.
 
 ### The init diagnostics expose an initialization confound
 
@@ -852,9 +855,10 @@ already excluded official run.
   training stream, and neither semantic substitutes for trained-checkpoint
   results.
 - The first complete AdvMoE seed-0 execution is excluded because every saved
-  router and router-optimizer state is NaN. Its high released-path accuracy
-  cannot close learned-router or deep-path external validity; a finite faithful
-  replacement or the separately labelled fallback is still required.
+  router and router-optimizer state is NaN. The separately labelled
+  compatibility execution is finite and supplies telemetry plus a deep-path
+  numerical-conformance table; it is not an unchanged official checkpoint and
+  its non-outward-rounded positive margins are not formal certificates.
 
 ### Statistical conclusion validity
 
@@ -885,9 +889,12 @@ The current evidence supports the following bounded conclusion:
 > conditioning separates structural binary width when multiple experts are
 > feasible, and a staged gate-elimination plus gate-range McCormick verifier
 > certifies route-changing regions that a route-invariance precondition rejects.
-> Guard-aware support improves paired branch coverage. These results do not yet
-> establish official-scale expert verification, a monolithic runtime advantage,
-> or ecosystem prevalence. Separately, exact official-construction router
+> Guard-aware support improves paired branch coverage. Official-scale RT-ER and
+> AdvMoE runs demonstrate executable specialization and preserve the expected
+> numerical-filter coverage shape, but establish zero formal SAFE results under
+> the non-outward-rounded CROWN backend. The evidence does not establish a
+> monolithic runtime advantage or ecosystem prevalence. Separately, exact
+> official-construction router
 > geometry shows that route-invariance applicability is nearly empty at
 > \(8/255\) and varies 10.384x across initializations at \(2/255\); this is an
 > applicability finding, not an output certificate.  Across the two official

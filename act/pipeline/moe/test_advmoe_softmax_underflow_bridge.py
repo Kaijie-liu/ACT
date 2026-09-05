@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import inspect
+from pathlib import Path
 import unittest
 
 import torch
@@ -23,6 +25,14 @@ def _native_kl(p_logits: torch.Tensor, q_logits: torch.Tensor) -> torch.Tensor:
 def _stable_logit_kl(p_logits: torch.Tensor, q_logits: torch.Tensor) -> torch.Tensor:
     log_p = F.log_softmax(p_logits, dim=1)
     return (log_p.exp() * (log_p - F.log_softmax(q_logits, dim=1))).sum()
+
+
+def _native_target_callsite() -> tuple[Path, int]:
+    lines, start = inspect.getsourcelines(_native_kl)
+    offsets = [index for index, line in enumerate(lines) if "F.softmax(p_logits" in line]
+    if len(offsets) != 1:
+        raise AssertionError("test helper softmax callsite is ambiguous")
+    return Path(inspect.getsourcefile(_native_kl)).resolve(), start + offsets[0]
 
 
 class AdvMoeSoftmaxUnderflowBridgeTests(unittest.TestCase):
@@ -47,7 +57,9 @@ class AdvMoeSoftmaxUnderflowBridgeTests(unittest.TestCase):
     def test_extreme_regime_matches_stable_logit_expression(self) -> None:
         p_bridge = torch.tensor([[200.0, -200.0]], requires_grad=True)
         q_bridge = torch.tensor([[0.0, 0.0]], requires_grad=True)
-        with SoftmaxUnderflowGradientBridge() as bridge:
+        with SoftmaxUnderflowGradientBridge(
+            allowed_callsites=(_native_target_callsite(),)
+        ) as bridge:
             bridge_value = _native_kl(p_bridge, q_bridge)
             bridge_gradients = torch.autograd.grad(
                 bridge_value, (p_bridge, q_bridge)
@@ -63,6 +75,22 @@ class AdvMoeSoftmaxUnderflowBridgeTests(unittest.TestCase):
         self.assertTrue(torch.allclose(bridge_gradients[0], stable_gradients[0]))
         self.assertTrue(torch.allclose(bridge_gradients[1], stable_gradients[1]))
         self.assertEqual(bridge.replaced_elements, 1)
+        self.assertEqual(bridge.eligible_softmax_calls, 1)
+        self.assertEqual(bridge.skipped_softmax_calls, 0)
+
+    def test_allowlist_leaves_unrelated_softmax_unmodified(self) -> None:
+        p_logits = torch.tensor([[200.0, -200.0]], requires_grad=True)
+        q_logits = torch.tensor([[0.0, 0.0]], requires_grad=True)
+        with SoftmaxUnderflowGradientBridge(
+            allowed_callsites=((Path(__file__).resolve(), 1),)
+        ) as bridge:
+            gradients = torch.autograd.grad(
+                _native_kl(p_logits, q_logits), p_logits
+            )
+        self.assertTrue(torch.isnan(gradients[0]).all())
+        self.assertEqual(bridge.eligible_softmax_calls, 0)
+        self.assertEqual(bridge.skipped_softmax_calls, 1)
+        self.assertEqual(bridge.replaced_elements, 0)
 
     def test_unbridged_mutation_control_produces_nan(self) -> None:
         p_logits = torch.tensor([[200.0, -200.0]], requires_grad=True)

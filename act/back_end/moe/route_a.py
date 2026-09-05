@@ -53,6 +53,7 @@ class RouteAVerificationReport:
     result: VerifyResult
     router: RouterAnalysis
     expert_results: tuple[tuple[int, VerifyResult], ...]
+    stage: str = "TIER1_GATE_ELIMINATION"
 
 
 def _component_output_hz(net, tf: HybridzTF) -> HZ:
@@ -149,7 +150,15 @@ def _router_net_is_exact(net) -> bool:
 
 
 class RouteAEngine:
-    """End-to-end output-level route-conditioned verifier for ACT components."""
+    """Tier-1 gate-elimination verifier for output-level ACT components.
+
+    This public engine performs exact candidate analysis, retains each route
+    guard while propagating the corresponding expert, and aggregates the
+    expert-wise sufficient condition.  It does *not* silently invoke the
+    selected-softmax top-2 F0 fallback.  F0 is exposed by
+    :mod:`act.back_end.moe.weighted_top2` and is orchestrated by the staged
+    experiment runners after Tier 1 returns semantic incompleteness.
+    """
 
     def __init__(
         self,
@@ -172,7 +181,8 @@ class RouteAEngine:
         self.hybridz_config = hybridz_config
         self.property_is_convex_cone = bool(property_is_convex_cone)
 
-    def run(self) -> RouteAVerificationReport:
+    def run_tier1(self) -> RouteAVerificationReport:
+        """Run candidate analysis and the gate-elimination sufficient test."""
         previous_solver = get_solver_mode()
         try:
             previous_tf = get_transfer_function()
@@ -258,3 +268,12 @@ class RouteAEngine:
             set_solver_mode(previous_solver)
             if previous_tf is not None:
                 set_transfer_function(previous_tf)
+
+    def run(self) -> RouteAVerificationReport:
+        """Backward-compatible alias for :meth:`run_tier1`.
+
+        The explicit alias prevents the historical method name from being
+        interpreted as the complete Tier-1-plus-F0 staged portfolio.
+        """
+
+        return self.run_tier1()

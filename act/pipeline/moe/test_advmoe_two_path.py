@@ -9,12 +9,15 @@ from torch import nn
 from act.pipeline.moe.advmoe_two_path import (
     aggregate_filters,
     evaluate_path_lowering_equivalence,
+    filter_witness_conflicts,
     select_batched_static_path_logits,
     top1_property_rows,
 )
 from act.pipeline.moe.audit_advmoe_two_path import (
     expected_crown_status,
+    expected_filter_witness_conflicts,
     independent_tables,
+    summary_table_issues,
 )
 
 
@@ -40,6 +43,25 @@ class AdvMoeTwoPathTests(unittest.TestCase):
             result["route_a_two_path"],
             "CERTIFIED_MARGIN_FILTER_NOT_FORMAL_SAFE",
         )
+        self.assertEqual(
+            result["portfolio"], "CERTIFIED_MARGIN_FILTER_NOT_FORMAL_SAFE"
+        )
+        self.assertEqual(result["endpoint"], result["portfolio"])
+
+    def test_portfolio_accepts_route_invariance_without_two_path_filter(self) -> None:
+        result = aggregate_filters(
+            clean_route=0,
+            router_status="CERTIFIED_MARGIN_FILTER",
+            path_statuses=["CERTIFIED_MARGIN_FILTER", "UNKNOWN_RELAXATION"],
+            eta_statuses=["UNKNOWN_RELAXATION", "UNKNOWN_RELAXATION"],
+            attack_prediction_flip=False,
+        )
+        self.assertEqual(
+            result["route_invariance"],
+            "CERTIFIED_MARGIN_FILTER_NOT_FORMAL_SAFE",
+        )
+        self.assertEqual(result["route_a_two_path"], "UNKNOWN")
+        self.assertEqual(result["endpoint"], result["portfolio"])
 
     def test_concrete_prediction_flip_controls_endpoint(self) -> None:
         result = aggregate_filters(
@@ -50,6 +72,37 @@ class AdvMoeTwoPathTests(unittest.TestCase):
             attack_prediction_flip=True,
         )
         self.assertEqual(result["endpoint"], "UNSAFE_FULL_FORWARD_REPLAY")
+
+    def test_conflicts_cover_router_and_every_output_filter(self) -> None:
+        statuses = {
+            "route_invariance": "CERTIFIED_MARGIN_FILTER_NOT_FORMAL_SAFE",
+            "route_a_two_path": "UNKNOWN",
+            "eta_guard_ablation": "UNKNOWN",
+            "portfolio": "CERTIFIED_MARGIN_FILTER_NOT_FORMAL_SAFE",
+        }
+        conflicts = filter_witness_conflicts(
+            router_status="CERTIFIED_MARGIN_FILTER",
+            statuses=statuses,
+            prediction_flip=True,
+            route_flip=True,
+        )
+        self.assertEqual(
+            conflicts,
+            {
+                "router_filter_route_conflict": True,
+                "output_filter_prediction_conflict": True,
+                "any": True,
+            },
+        )
+        independently_rebuilt = expected_filter_witness_conflicts(
+            {
+                "clean_route": 0,
+                "router_crown": {"status": "CERTIFIED_MARGIN_FILTER"},
+                "statuses": statuses,
+                "attack": {"prediction_flip": True, "attacked_route": 1},
+            }
+        )
+        self.assertEqual(independently_rebuilt, conflicts)
 
     def test_independent_crown_status_recomputation(self) -> None:
         record = {
@@ -138,6 +191,34 @@ class AdvMoeTwoPathTests(unittest.TestCase):
         self.assertEqual(table["prediction_flip_witnesses"], 1)
         self.assertEqual(table["route_flip_witnesses"], 1)
         self.assertEqual(table["both_flip_witnesses"], 0)
+
+    def test_summary_schema_v1_and_v2_are_validated_separately(self) -> None:
+        expected = {
+            "samples": 2,
+            "route_invariance": {"UNKNOWN": 2},
+            "route_a_two_path": {"UNKNOWN": 2},
+            "eta_guard_ablation": {"UNKNOWN": 2},
+            "portfolio": {"UNKNOWN": 2},
+            "endpoint": {"UNKNOWN": 2},
+            "prediction_flip_witnesses": 1,
+            "route_flip_witnesses": 1,
+            "both_flip_witnesses": 0,
+        }
+        v1 = {
+            **{key: expected[key] for key in (
+                "samples", "route_invariance", "route_a_two_path",
+                "eta_guard_ablation", "endpoint",
+            )},
+            "route_attack_or_prediction_witnesses": 1,
+        }
+        self.assertEqual(summary_table_issues(v1, expected, 1), [])
+        v2 = {**expected}
+        self.assertEqual(summary_table_issues(v2, expected, 2), [])
+        v2["route_flip_witnesses"] = 0
+        self.assertIn(
+            "summary table route_flip_witnesses mismatch",
+            summary_table_issues(v2, expected, 2),
+        )
 
 
 if __name__ == "__main__":

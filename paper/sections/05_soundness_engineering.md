@@ -53,14 +53,26 @@ generator constraints and rejects a bound from a different frame, route pair,
 or width. The implementation records which support tier produced every
 constant.
 
-Solver objectives are floating-point results. Before a support lower bound can
-be consumed by a `SAFE` decision, ACT applies the frozen absolute-plus-relative
-slack and moves the result with `nextafter` toward the unsafe direction. SAFE
-also requires optimal solver status, the registered feasibility and
-integrality tolerances, and a corrected lower bound above the frozen positive
-margin. A primal incumbent is never substituted for a proof bound. Numerical
-failure is reported as `UNKNOWN_NUMERICAL`, not retried with an undisclosed
-tolerance.
+The real-arithmetic reduction and the numerical backend are separate soundness
+layers. The first proves that complete branch coverage, guarded propagation,
+and the McCormick outer relaxation imply the original routed property. The
+second asks whether a concrete solver execution supplies a trustworthy lower
+bound for that reduction. Passing the first layer does not validate the second.
+
+For the registered HZ/HiGHS path, ACT consumes a support lower bound only after
+optimal status, the frozen feasibility and integrality tolerances, an explicit
+absolute-plus-relative correction, and `nextafter` toward the unsafe direction.
+A primal incumbent is never substituted for a proof bound. These checks form a
+fail-closed policy for the pinned backend; they are not a universal proof about
+arbitrary native floating-point solver implementations. A result that does not
+satisfy the registered policy is `UNKNOWN_NUMERICAL`.
+
+The installed CROWN/auto_LiRPA path is treated more conservatively. It has no
+outward-rounding contract in this artifact, so even a finite positive lower
+margin is only `CERTIFIED_MARGIN_FILTER_NOT_FORMAL_SAFE`. Changing a method
+string to alpha-CROWN is insufficient: optimized modes must pass a configuration
+gate requiring autograd and explicit optimization iterations. Negative CROWN
+bounds remain UNKNOWN, and no CROWN filter is merged into formal SAFE counts.
 
 The guard-accounting audit enforces a separate conservation law:
 
@@ -128,6 +140,13 @@ counts and unique sample ranks, separate fixed-radius from boundary-adaptive
 cohorts, and use clean sample rather than sample-radius rows as the statistical
 cluster. A result is publishable only when its independent audit reports zero
 issues.
+
+The independent auditor also rebuilds the evidence portfolio rather than
+trusting a runner-supplied aggregate. Concrete prediction flips are checked
+against route-invariance, route-conditioned, eta, and portfolio output filters;
+concrete route flips are checked against positive router filters. Result schema
+v2 separates route, prediction, and joint witness counts, while the auditor
+retains an explicit compatibility path for frozen schema-v1 artifacts.
 
 ## Negative runs are evidence, not debris
 

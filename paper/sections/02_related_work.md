@@ -27,8 +27,11 @@ uses the same exact router feasibility analysis as Route A. On applicable
 inputs, both methods invoke the identical downstream verifier with the same
 budget. This controls for expert-backend strength and isolates the cost of the
 route-invariance precondition. At verification scale Route A resolves 56
-additional samples and produces 36 route-changing certificates; the official-
-scale B3 comparison remains required before we generalize that difference.
+additional samples and produces 36 route-changing certificates. The official-
+scale B3 run preserves the same comparison shape: Route A produces more
+positive numerical CROWN filters at four of five registered radii and on the
+route-boundary cohort. Because the installed backend is not outward rounded,
+this is conformance evidence rather than formal certificate dominance.
 
 Other paper families, including SpecSphere, enter the reproducibility case
 series when source or checkpoints cannot be executed. They are evidence about
@@ -131,9 +134,9 @@ deep shared-path regimes.
 
 We do not claim a universal verifier, a dominance result over CROWN, or a
 formal prevalence estimate for papers without complete source-native survey
-retrieval. We also do not yet claim superiority on the official RT-ER model:
-that statement is gated on the frozen B3 table. The current evidence supports a
-narrower statement: route-invariance excludes certifiable route-changing
-regions by construction, while a staged path-conditioned layer can expose
-those regions to the same expert backend without weakening unsafe replay or tie
-semantics.
+retrieval. We also do not claim formal superiority on the official RT-ER
+model: B3 is complete, but every positive CROWN result remains a numerical
+filter. The current evidence supports a narrower statement: route invariance
+excludes route-changing regions by construction, while a staged path-
+conditioned layer exposes those regions to the same expert backend without
+weakening unsafe replay or tie semantics.
