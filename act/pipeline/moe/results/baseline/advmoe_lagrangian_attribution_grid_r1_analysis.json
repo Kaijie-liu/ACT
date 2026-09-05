@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "status": "PASS",
+  "scope": "ADV_MOE_LAGRANGIAN_ATTRIBUTION_GRID_EXTENSION_ANALYSIS_R1",
+  "identity": {
+    "config": {
+      "path": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/advmoe_lagrangian_attribution_grid_r1.json",
+      "sha256": "c89a4e68bcdd300c7ad774ab92be3df803a31204b8b7a50f5de7e00863ecab7d"
+    },
+    "summary": {
+      "path": "/data1/Kane/MOE/ACT/data/moe/results/advmoe_lagrangian_attribution_grid_r1/summary.json",
+      "sha256": "9a346113abf4157175fb192205843a53b61b273d0414b3929593780317def328"
+    },
+    "rows": {
+      "path": "/data1/Kane/MOE/ACT/data/moe/results/advmoe_lagrangian_attribution_grid_r1/rows.jsonl",
+      "sha256": "d77f7bd95950f3bc38e113c8801608be185d1671bf975b24df056318ad42e0f5"
+    },
+    "audit": {
+      "path": "/data1/Kane/MOE/ACT/act/pipeline/moe/results/baseline/advmoe_lagrangian_attribution_grid_r1_audit.json",
+      "sha256": "c52925faffb237b793ecb08c4fdc5477d2ecec29d864ad6b4dc4960359859ce0"
+    }
+  },
+  "denominator": {
+    "selected_parent_rows": 5,
+    "selection": "closest unresolved development rows without a replayed prediction flip",
+    "development_not_holdout": true
+  },
+  "result": {
+    "complete_endpoint_gains": 0,
+    "strict_property_improvements": 18,
+    "rows_with_any_property_improvement": 2,
+    "rows_with_blocking_branch_still_selecting_mu_zero": 5,
+    "runtime_seconds": 163.54900464229286
+  },
+  "attribution": {
+    "classification": "FINITE_GRID_CONTRIBUTES_WITHOUT_ENDPOINT_GAIN",
+    "permitted_statement": "The original grid truncated some nonblocking property bounds, but grid truncation did not explain any complete endpoint failure among the five closest residual development rows.",
+    "next_stage": "FIXED_MULTIPLIER_FAMILY_DIAGNOSTIC_REQUIRED",
+    "prohibited_inference": "This result does not yet distinguish CROWN relaxation error from an intrinsic fixed-multiplier certificate-family limit."
+  }
+}

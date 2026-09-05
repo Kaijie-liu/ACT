@@ -52,3 +52,19 @@ Stage A; parent rows with a replayed prediction flip are excluded.
 Raw results are written to a new directory under
 `data/moe/results/advmoe_lagrangian_attribution_grid_r1` and never overwrite
 development r1.
+
+## Stage A result (2026-09-06)
+
+The run completed in 163.55 seconds and the independent audit passed with zero
+issues.  Extending the normalized coefficients to `{8,16,32}` strictly
+improved 18 property bounds but produced zero complete endpoint gains.  All 18
+improvements occur on one branch of `sample3:eps0.5` and one branch of
+`sample10:eps0.5`; neither is sufficient to close its companion blocking
+branch.  Across all five selected rows, the final row-blocking branch still
+selects `mu=0` for its worst property.
+
+The registered classification is therefore
+`FINITE_GRID_CONTRIBUTES_WITHOUT_ENDPOINT_GAIN`.  The old grid did truncate
+some nonblocking bounds, but finite-grid truncation is not an endpoint-level
+explanation on the closest residuals.  Stage B is required to distinguish
+backend relaxation from a fixed-multiplier certificate-family limitation.

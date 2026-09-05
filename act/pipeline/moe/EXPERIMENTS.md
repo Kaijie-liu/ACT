@@ -2533,3 +2533,11 @@ failure to grid truncation; property-only or null gain triggers a separate
 fixed-multiplier-family diagnostic and cannot by itself be blamed on CROWN.
 See `configs/advmoe_lagrangian_attribution_grid_r1.json` and
 `docs/advmoe_lagrangian_attribution.md`.
+
+The Stage-A extension completed and independently audited `PASS` with zero
+issues.  It improved 18 property bounds on two of five selected rows but added
+zero complete endpoints; every row's blocking branch remained best at
+`mu=0`.  Thus finite-grid truncation affected nonblocking bounds but did not
+explain the null endpoint on these closest residuals.  The frozen stopping
+rule triggers a fixed-multiplier-family diagnostic; no CROWN-specific blame is
+assigned yet.
