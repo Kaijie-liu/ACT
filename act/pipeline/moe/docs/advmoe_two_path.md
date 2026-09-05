@@ -157,3 +157,20 @@ it recovers a safe guarded half interval that the unguarded box misses, and it
 does not discharge an unsafe tie. This is code/toy evidence only. A later
 official-scale run must use a separately preregistered configuration and new
 result directory.
+
+## Cohort identity after r3
+
+Every new schema-v2 execution requires a hashed selection manifest. The
+manifest binds the dataset archive and checkpoint hashes, ordered
+clean-correct ranks, their exact dataset indices, and an explicit development
+exclusion. Runner-side validation rejects an index/rank mismatch or overlap.
+The independent auditor reloads the frozen model and ordered test archive,
+recomputes the complete clean-correct sequence, and reconstructs the expected
+indices without calling the runner helper. Exclusion source artifacts are also
+bound by path and hash.
+
+The historical schema-v1 r3 artifact retains its first-20-clean-correct
+selection and remains auditable. The new interface prevents a future config
+from claiming fresh ranks while silently reusing those first 20 inputs. The
+appropriate claim for a later holdout is endpoint-level exclusion from method
+selection, not that the images were absent from full-test telemetry.

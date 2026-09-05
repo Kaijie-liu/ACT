@@ -2486,3 +2486,10 @@ the safe guarded half interval and unsafe tie agree with the compiled property
 within `5e-9`, with complete support and zero selector binaries. The initial
 `1e-9` comparison failure is retained rather than overwritten. This closes a
 verification-scale correctness gate, not the official-scale effect gate.
+
+Future AdvMoE schema-v2 executions now require a hashed selection manifest
+that binds clean-correct ranks to exact dataset indices and records hashed
+development-exclusion sources. The independent auditor reconstructs the
+ordered clean-correct population from the frozen checkpoint and dataset and
+checks disjointness. Frozen schema-v1 r3 retains its historical first-N
+selection unchanged.

@@ -70,8 +70,8 @@ novelty.
 
 ## Remaining experiment gates
 
-1. Freeze the multiplier-selection protocol without observing the official
-   test endpoint.
+1. Freeze the multiplier-selection protocol on an explicitly manifested
+   development cohort without observing the later endpoint-excluded cohort.
 2. Run a paired official-scale comparison with identical expert backend,
    budget, samples, radii, and preprocessing.
 3. Keep formal and numerical-filter endpoints separate in every table.

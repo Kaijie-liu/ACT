@@ -1,8 +1,13 @@
 from __future__ import annotations
 
+import hashlib
+import json
+from pathlib import Path
+import tempfile
 import unittest
 from unittest.mock import patch
 
+import numpy as np
 import torch
 from torch import nn
 
@@ -11,6 +16,7 @@ from act.pipeline.moe.advmoe_two_path import (
     aggregate_filters,
     evaluate_path_lowering_equivalence,
     filter_witness_conflicts,
+    resolve_selection_manifest,
     select_batched_static_path_logits,
     top1_property_rows,
 )
@@ -19,11 +25,73 @@ from act.pipeline.moe.audit_advmoe_two_path import (
     expected_filter_witness_conflicts,
     independent_tables,
     lagrangian_branch_issues,
+    selection_manifest_issues,
     summary_table_issues,
 )
 
 
 class AdvMoeTwoPathTests(unittest.TestCase):
+    def test_selection_manifest_resolves_ranks_and_exclusion_independently(self):
+        predictions = np.asarray([0, 1, 1, 0])
+        labels = np.asarray([0, 0, 1, 1])
+        with tempfile.TemporaryDirectory(dir="/data1/Kane/MOE/ACT") as temporary:
+            root = Path(temporary)
+            source = root / "development.json"
+            source.write_text("{}\n", encoding="utf-8")
+            source_hash = hashlib.sha256(source.read_bytes()).hexdigest()
+            manifest = {
+                "schema_version": 1,
+                "status": "FROZEN_NOT_RUN",
+                "dataset_archive_sha256": "dataset",
+                "checkpoint_sha256": "checkpoint",
+                "clean_correct_ranks": [1],
+                "ordered_dataset_indices": [2],
+                "development_exclusion": {
+                    "ordered_dataset_indices": [0],
+                    "sources": [{"path": str(source), "sha256": source_hash}],
+                },
+            }
+            manifest_path = root / "selection.json"
+            manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+            manifest_hash = hashlib.sha256(manifest_path.read_bytes()).hexdigest()
+            config = {
+                "schema_version": 2,
+                "selection": {"samples": 1},
+                "selection_manifest": str(manifest_path),
+                "selection_manifest_sha256": manifest_hash,
+            }
+            indices, identity = resolve_selection_manifest(
+                config,
+                Path("/data1/Kane/MOE"),
+                predictions,
+                labels,
+                checkpoint_sha256="checkpoint",
+                dataset_sha256="dataset",
+            )
+            np.testing.assert_array_equal(indices, np.asarray([2]))
+            expected, issues = selection_manifest_issues(
+                config,
+                Path("/data1/Kane/MOE"),
+                {**identity, "dataset_indices": [2]},
+                predictions,
+                labels,
+                checkpoint_sha256="checkpoint",
+                dataset_sha256="dataset",
+            )
+            np.testing.assert_array_equal(expected, indices)
+            self.assertEqual(issues, [])
+
+    def test_schema_v2_refuses_implicit_first_n_selection(self):
+        with self.assertRaisesRegex(ValueError, "selection manifest"):
+            resolve_selection_manifest(
+                {"schema_version": 2, "selection": {"samples": 1}},
+                Path("/data1/Kane/MOE"),
+                np.asarray([0]),
+                np.asarray([0]),
+                checkpoint_sha256="checkpoint",
+                dataset_sha256="dataset",
+            )
+
     def test_lagrangian_grid_selects_multiplier_per_property_row(self) -> None:
         calls = [
             {

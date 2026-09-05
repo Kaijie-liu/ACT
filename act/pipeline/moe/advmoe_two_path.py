@@ -67,6 +67,87 @@ def _append_json(handle, value: dict[str, Any]) -> None:
     os.fsync(handle.fileno())
 
 
+def resolve_selection_manifest(
+    config: dict[str, Any],
+    workspace: Path,
+    predictions: np.ndarray,
+    labels: np.ndarray,
+    *,
+    checkpoint_sha256: str,
+    dataset_sha256: str,
+) -> tuple[np.ndarray, dict[str, Any]]:
+    """Resolve an explicit clean-correct cohort and bind its exclusions.
+
+    Schema-v1 frozen configurations retain their historical first-N fallback.
+    Every new schema-v2 experiment must provide a hashed selection manifest.
+    """
+
+    manifest_value = config.get("selection_manifest")
+    if manifest_value is None:
+        if int(config.get("schema_version", 1)) >= 2:
+            raise ValueError("schema-v2 execution requires a selection manifest")
+        eligible = np.flatnonzero(predictions == labels)
+        samples = int(config["selection"]["samples"])
+        if len(eligible) < samples:
+            raise RuntimeError("insufficient clean-correct samples")
+        return eligible[:samples], {
+            "mode": "LEGACY_FIRST_N_CLEAN_CORRECT",
+            "clean_correct_ranks": list(range(samples)),
+            "development_exclusion_dataset_indices": [],
+        }
+
+    manifest_path = _inside(Path(manifest_value), workspace)
+    expected_manifest_hash = str(config.get("selection_manifest_sha256", ""))
+    observed_manifest_hash = _sha256(manifest_path)
+    if observed_manifest_hash != expected_manifest_hash:
+        raise RuntimeError("selection manifest hash mismatch")
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    if manifest.get("status") != "FROZEN_NOT_RUN":
+        raise RuntimeError("selection manifest is not frozen")
+    if manifest.get("dataset_archive_sha256") != dataset_sha256:
+        raise RuntimeError("selection manifest dataset hash mismatch")
+    if manifest.get("checkpoint_sha256") != checkpoint_sha256:
+        raise RuntimeError("selection manifest checkpoint hash mismatch")
+
+    ranks = [int(value) for value in manifest.get("clean_correct_ranks", [])]
+    indices = np.asarray(manifest.get("ordered_dataset_indices", []), dtype=np.int64)
+    if not ranks or len(ranks) != len(indices):
+        raise ValueError("selection manifest ranks/indices are empty or mismatched")
+    if len(set(ranks)) != len(ranks) or any(value < 0 for value in ranks):
+        raise ValueError("selection manifest clean-correct ranks must be unique")
+    if len(set(indices.tolist())) != len(indices):
+        raise ValueError("selection manifest dataset indices must be unique")
+    eligible = np.flatnonzero(predictions == labels)
+    if max(ranks) >= len(eligible):
+        raise ValueError("selection manifest rank exceeds clean-correct population")
+    expected_indices = eligible[np.asarray(ranks, dtype=np.int64)]
+    if not np.array_equal(indices, expected_indices):
+        raise RuntimeError("selection manifest indices do not match frozen ranks")
+    if int(config["selection"]["samples"]) != len(indices):
+        raise RuntimeError("selection manifest count differs from configuration")
+
+    exclusion = manifest.get("development_exclusion", {})
+    excluded_indices = {
+        int(value) for value in exclusion.get("ordered_dataset_indices", [])
+    }
+    exclusion_sources = exclusion.get("sources", [])
+    for source in exclusion_sources:
+        source_path = _inside(Path(source["path"]), workspace)
+        if _sha256(source_path) != source["sha256"]:
+            raise RuntimeError("development-exclusion source hash mismatch")
+    overlap = sorted(excluded_indices.intersection(indices.tolist()))
+    if overlap:
+        raise RuntimeError("selection manifest overlaps development exclusion")
+    return indices, {
+        "mode": "FROZEN_SELECTION_MANIFEST",
+        "manifest_path": str(manifest_path),
+        "manifest_sha256": observed_manifest_hash,
+        "clean_correct_ranks": ranks,
+        "development_exclusion_dataset_indices": sorted(excluded_indices),
+        "development_exclusion_sources": exclusion_sources,
+    }
+
+
 def top1_property_rows(prediction: int, classes: int = 10):
     rows = []
     for competitor in range(classes):
@@ -474,11 +555,14 @@ def run(config_path: Path) -> dict[str, Any]:
     inputs, labels = load_cifar10_test_archive(archive)
     model, router, moe_type, checkpoint = _load_model(config, workspace)
     predictions = _predict(model, inputs, int(config["batch_size"]))
-    eligible = np.flatnonzero(predictions == labels)
-    samples = int(config["selection"]["samples"])
-    if len(eligible) < samples:
-        raise RuntimeError("insufficient clean-correct samples")
-    indices = eligible[:samples]
+    indices, selection_identity = resolve_selection_manifest(
+        config,
+        workspace,
+        predictions,
+        labels,
+        checkpoint_sha256=_sha256(checkpoint),
+        dataset_sha256=_sha256(archive),
+    )
     centers = torch.from_numpy(inputs[indices])
     with torch.no_grad():
         clean_routes = router(centers).argmax(dim=1).numpy().astype(np.int64)
@@ -688,7 +772,11 @@ def run(config_path: Path) -> dict[str, Any]:
         "config": {"path": str(config_path), "sha256": _sha256(config_path)},
         "checkpoint": {"path": str(checkpoint), "sha256": _sha256(checkpoint)},
         "dataset": {"archive": str(archive), "sha256": _sha256(archive)},
-        "selection": {"dataset_indices": indices.tolist(), "clean_correct": True},
+        "selection": {
+            "dataset_indices": indices.tolist(),
+            "clean_correct": True,
+            **selection_identity,
+        },
         "equivalence": {
             "router": router_equivalence,
             "paths": path_equivalence,

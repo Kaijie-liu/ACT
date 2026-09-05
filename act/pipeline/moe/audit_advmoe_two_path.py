@@ -145,6 +145,91 @@ def lagrangian_branch_issues(
     return issues
 
 
+def selection_manifest_issues(
+    config: dict[str, Any],
+    workspace: Path,
+    result_selection: dict[str, Any],
+    predictions: np.ndarray,
+    labels: np.ndarray,
+    *,
+    checkpoint_sha256: str,
+    dataset_sha256: str,
+) -> tuple[np.ndarray, list[str]]:
+    """Rebuild manifest selection without using the runner helper."""
+
+    issues: list[str] = []
+    eligible = np.flatnonzero(predictions == labels)
+    manifest_value = config.get("selection_manifest")
+    if manifest_value is None:
+        samples = int(config["selection"]["samples"])
+        if int(config.get("schema_version", 1)) >= 2:
+            issues.append("schema-v2 configuration has no selection manifest")
+        expected = eligible[:samples]
+        if result_selection.get("mode") not in (
+            None,
+            "LEGACY_FIRST_N_CLEAN_CORRECT",
+        ):
+            issues.append("legacy result reports unexpected selection mode")
+        return expected, issues
+
+    manifest_path = _inside(Path(manifest_value), workspace)
+    observed_hash = _sha256(manifest_path)
+    if observed_hash != config.get("selection_manifest_sha256"):
+        issues.append("selection manifest hash mismatch")
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    if manifest.get("status") != "FROZEN_NOT_RUN":
+        issues.append("selection manifest is not frozen")
+    if manifest.get("dataset_archive_sha256") != dataset_sha256:
+        issues.append("selection manifest dataset hash mismatch")
+    if manifest.get("checkpoint_sha256") != checkpoint_sha256:
+        issues.append("selection manifest checkpoint hash mismatch")
+
+    ranks = [int(value) for value in manifest.get("clean_correct_ranks", [])]
+    recorded_indices = np.asarray(
+        manifest.get("ordered_dataset_indices", []), dtype=np.int64
+    )
+    if not ranks or len(ranks) != len(recorded_indices):
+        issues.append("selection manifest ranks/indices are empty or mismatched")
+        expected = np.asarray([], dtype=np.int64)
+    elif len(set(ranks)) != len(ranks) or any(value < 0 for value in ranks):
+        issues.append("selection manifest ranks are not unique nonnegative values")
+        expected = np.asarray([], dtype=np.int64)
+    elif max(ranks) >= len(eligible):
+        issues.append("selection manifest rank exceeds clean-correct population")
+        expected = np.asarray([], dtype=np.int64)
+    else:
+        expected = eligible[np.asarray(ranks, dtype=np.int64)]
+        if not np.array_equal(recorded_indices, expected):
+            issues.append("selection manifest indices do not match ranks")
+    if len(set(recorded_indices.tolist())) != len(recorded_indices):
+        issues.append("selection manifest dataset indices are duplicated")
+    if len(recorded_indices) != int(config["selection"]["samples"]):
+        issues.append("selection manifest count differs from configuration")
+
+    exclusion = manifest.get("development_exclusion", {})
+    excluded = {int(value) for value in exclusion.get("ordered_dataset_indices", [])}
+    if excluded.intersection(recorded_indices.tolist()):
+        issues.append("selection overlaps development exclusion")
+    for source in exclusion.get("sources", []):
+        source_path = _inside(Path(source["path"]), workspace)
+        if _sha256(source_path) != source.get("sha256"):
+            issues.append("development-exclusion source hash mismatch")
+
+    if result_selection.get("mode") != "FROZEN_SELECTION_MANIFEST":
+        issues.append("result selection mode mismatch")
+    if result_selection.get("manifest_path") != str(manifest_path):
+        issues.append("result selection manifest path mismatch")
+    if result_selection.get("manifest_sha256") != observed_hash:
+        issues.append("result selection manifest hash mismatch")
+    if result_selection.get("clean_correct_ranks") != ranks:
+        issues.append("result clean-correct ranks mismatch")
+    if result_selection.get("development_exclusion_dataset_indices") != sorted(
+        excluded
+    ):
+        issues.append("result development exclusion mismatch")
+    return expected, issues
+
+
 def _aggregate(row: dict[str, Any], schema_version: int) -> dict[str, str]:
     filtered = "CERTIFIED_MARGIN_FILTER"
     clean_route = int(row["clean_route"])
@@ -460,9 +545,18 @@ def audit(config_path: Path, result_path: Path) -> dict[str, Any]:
                 .numpy()
             )
         all_predictions = np.concatenate(all_predictions)
-    expected_indices = np.flatnonzero(all_predictions == labels)[: int(config["selection"]["samples"])]
+    expected_indices, selection_issues = selection_manifest_issues(
+        config,
+        workspace,
+        result.get("selection", {}),
+        all_predictions,
+        labels,
+        checkpoint_sha256=_sha256(checkpoint),
+        dataset_sha256=_sha256(archive),
+    )
+    issues.extend(selection_issues)
     if not np.array_equal(indices, expected_indices):
-        issues.append("selection is not the first deterministic clean-correct cohort")
+        issues.append("selected indices do not match independently rebuilt cohort")
 
     replay_rows = []
     for row_index, row in enumerate(rows):
