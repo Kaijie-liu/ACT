@@ -183,3 +183,10 @@ missing license keeps checkpoint redistribution disabled. The accepted audit
 is `act/pipeline/moe/results/baseline/advmoe_training_seed0_compat_r1_audit.json`.
 This result unlocks trained-router endpoint telemetry and the frozen two-path
 evaluation; it does not predetermine either result.
+
+Endpoint telemetry is preregistered separately in
+`act/pipeline/moe/configs/advmoe_training_endpoint_telemetry_seed0_compat_r2.json`.
+It binds the accepted training audit and exact best/final hashes, retains the
+compatibility label, and compares initialization, best, and final states under
+both registered BatchNorm semantics. Its strong PGD row remains empirical
+witness search and cannot establish route stability.

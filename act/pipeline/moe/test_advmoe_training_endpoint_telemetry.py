@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import unittest
+from pathlib import Path
 
 import numpy as np
 import torch
@@ -11,6 +12,7 @@ from torch import nn
 from act.pipeline.moe.advmoe_training_endpoint_telemetry import (
     _clean_accuracy,
     _distribution,
+    _resolve_recorded_path,
 )
 from act.pipeline.moe.audit_advmoe_training_endpoint_telemetry import (
     json_nonfinite_paths,
@@ -54,6 +56,14 @@ class AdvMoeTrainingEndpointTelemetryTests(unittest.TestCase):
             batch_size=3,
         )
         self.assertEqual(accuracy, 0.75)
+
+    def test_audit_path_identity_accepts_relative_repository_record(self) -> None:
+        repository = Path("/data1/Kane/MOE/ACT")
+        recorded = "act/pipeline/moe/configs/example.json"
+        self.assertEqual(
+            _resolve_recorded_path(recorded, repository),
+            repository / recorded,
+        )
 
 
 if __name__ == "__main__":

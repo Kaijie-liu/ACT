@@ -33,6 +33,14 @@ def _inside(path: Path, root: Path) -> Path:
     return resolved
 
 
+def _resolve_recorded_path(path: str, repository: Path) -> Path:
+    """Resolve an audit-recorded path without weakening its workspace gate."""
+    recorded = Path(path)
+    if not recorded.is_absolute():
+        recorded = repository / recorded
+    return recorded.resolve()
+
+
 def _write_json(path: Path, payload: dict[str, Any]) -> None:
     if path.exists():
         raise FileExistsError(path)
@@ -247,7 +255,10 @@ def run(config_path: Path) -> dict[str, Any]:
     training_audit = json.loads(training_audit_path.read_text(encoding="utf-8"))
     if training_audit.get("status") != "PASS" or training_audit.get("issues") != []:
         raise RuntimeError("training audit gate is not PASS with zero issues")
-    if training_audit.get("config", {}).get("path") != str(training_config):
+    recorded_training_config = training_audit.get("config", {}).get("path")
+    if not isinstance(recorded_training_config, str) or _resolve_recorded_path(
+        recorded_training_config, act_repository
+    ) != training_config.resolve():
         raise RuntimeError("training audit points to a different training config")
     if training_audit.get("config", {}).get("sha256") != _sha256(training_config):
         raise RuntimeError("training config hash differs from accepted audit")
