@@ -1,0 +1,64 @@
+{
+  "act": {
+    "branch": "feat/moe-route-verification",
+    "head": "260f27fd6782b3339b76780473b1a7136c04ddae"
+  },
+  "artifacts": {
+    "config_r1": {
+      "path": "act/pipeline/moe/configs/advmoe_router_nonfinite_diagnosis_seed0_r1.json",
+      "sha256": "cc3b618acd32a0c04be45f6a7d57ab95d6d719c64533c27a12fab899f1d2da4a"
+    },
+    "config_r2": {
+      "path": "act/pipeline/moe/configs/advmoe_router_nonfinite_diagnosis_seed0_r2.json",
+      "sha256": "32948da7e20fbb93e3dd27ddf7dd611944d6d1adef246e9898a68c4b5a21c380"
+    },
+    "config_r3": {
+      "path": "act/pipeline/moe/configs/advmoe_router_nonfinite_diagnosis_seed0_r3.json",
+      "sha256": "04c330686e9a9958ad3b9d567d7da0b6a61bc8ac1da806430356bca79c40bcac"
+    },
+    "log_r2": {
+      "path": "data/moe/logs/advmoe_router_nonfinite_diagnosis_seed0_r2.log",
+      "sha256": "ef0f5e988b8275395f2dc549d7009d4894b5985f9d435be83c8fe06b7b1db2c3"
+    },
+    "log_r3": {
+      "path": "data/moe/logs/advmoe_router_nonfinite_diagnosis_seed0_r3.log",
+      "sha256": "98cf325d82945226ab750362076c758126948e62a598f76081ec71f28ed20998"
+    },
+    "result_r1": {
+      "path": "data/moe/results/advmoe_router_nonfinite_diagnosis_seed0_r1.json",
+      "sha256": "faaaeb3e1df178e8651099ff44995fb8055b45eeed0211c18538479ebffe5ba2"
+    },
+    "result_r2": {
+      "path": "data/moe/results/advmoe_router_nonfinite_diagnosis_seed0_r2.json",
+      "sha256": "1872f9da564742255be324a72577a0c0472fcabd665ad6c0937a466ed9c8f937"
+    },
+    "result_r3": {
+      "path": "data/moe/results/advmoe_router_nonfinite_diagnosis_seed0_r3.json",
+      "sha256": "918e9c4a74d1d4004f96c349380d2939882dbd63f8e58c4499468ddf8fb8ccfd"
+    }
+  },
+  "finding": {
+    "all_router_forwards_finite": true,
+    "autograd_operation": "XlogyBackward0",
+    "buffers_finite_before_step": true,
+    "finite_router_gradient_elements": 0,
+    "first_softmax_underflow_call": 32,
+    "first_softmax_underflow_pair_gap": 320.2816162109375,
+    "first_softmax_underflow_zero_elements": 16,
+    "maximum_absolute_finite_router_logit": 30827.677734375,
+    "optimizer_state_finite_before_step": true,
+    "parameters_finite_before_step": true,
+    "router_gradient_elements": 269202,
+    "stage": "BEFORE_ROUTER_OPTIMIZER_STEP",
+    "zero_based_batch_index": 2
+  },
+  "issues": [],
+  "official_source": {
+    "clean": true,
+    "commit": "c50796fb8284512b6f6ad8e843f95182cec527cf",
+    "tree": "153d4ff9f30f34eb7fdd4caf670495122c5836e0"
+  },
+  "schema_version": 1,
+  "scope": "ADV_MOE_OFFICIAL_TRAINER_FIRST_NONFINITE_DIAGNOSIS_AUDIT",
+  "status": "PASS"
+}

@@ -152,6 +152,18 @@ check into a certificate-identity requirement. Every parameter, buffer, and
 optimizer state that defines or trains dispatch must be finite before a routed
 checkpoint can enter a verification experiment.
 
+A bounded first-failure experiment closes the causal location without editing
+the released source. The first two real batches remain finite. On the third,
+all router parameters, buffers, and optimizer state are finite immediately
+before the router update, while all 269,202 router gradients are NaN. Anomaly
+tracing identifies `XlogyBackward0` in the released router KL expression as
+the first invalid derivative. The preceding router outputs are finite but
+have a within-example score gap of 320.282, and the float32 target softmax
+contains 16 exact zeros for the first time. Thus a loadable finite forward can
+still define a non-finite training derivative through an underflowed
+probability target. The accepted audit has zero issues and the official source
+remains byte-for-byte unchanged.
+
 ## Certificate identity and fail-closed use
 
 Every final result binds seven groups of fields: source and checkpoint hashes;

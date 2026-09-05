@@ -782,6 +782,17 @@ evidence. This finding also strengthens the artifact-identity rule: successful
 exit, loadability, hashes, and high task accuracy do not substitute for a
 numerical-finiteness gate on every state that defines dynamic dispatch.
 
+The bounded root-cause diagnosis further shows that the first invalid state is
+not produced by the router optimizer. On zero-based batch 2, all router
+parameters, buffers, and optimizer state remain finite before the step, but
+all 269,202 gradients are NaN. Every router forward is finite; its maximum
+within-example score gap reaches 320.282 and the float32 target softmax first
+underflows 16 entries to exact zero. PyTorch anomaly tracing binds the first
+invalid derivative to `XlogyBackward0` in the released router KL expression.
+The independent r4 audit reports zero issues. This supports the narrow claim
+of a released numerical-expression failure; it does not authorize presenting
+a future stable-expression compatibility variant as unchanged official code.
+
 ## Threats to validity
 
 ### Construct validity

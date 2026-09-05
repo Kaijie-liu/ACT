@@ -217,6 +217,15 @@ behavior, not a route statistic. The earlier structural checkpoint audit is
 retained but superseded for scientific acceptance by the numerical audit. The
 table below remains a frozen delivery specification, not a reported result.
 
+The follow-up bounded diagnosis locates the first invalid derivative on the
+third real training batch. Router parameters, buffers, optimizer state, and
+all router forward values are finite immediately before the failure; all
+269,202 router gradients become NaN in `XlogyBackward0` for the released
+router KL term after its float32 target softmax first underflows 16 entries to
+zero. The independent audit reports zero issues. A successor run is permitted
+only as a clearly labeled compatibility variant after finite-regime value and
+gradient equivalence tests and a smoke run that crosses this batch.
+
 The final AdvMoE checkpoint evaluation records clean accuracy, route share,
 signed router-score offset, selected-margin distribution, and load entropy.
 Intermediate checkpoints use the same fields under both eval/current-running-

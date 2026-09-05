@@ -2330,3 +2330,19 @@ artifacts. No trained AdvMoE telemetry or two-path result is unlocked. See
 `docs/advmoe_training_seed0.md`,
 `results/baseline/advmoe_training_seed0_r3_numerical_audit_r2.json`, and
 `results/baseline/advmoe_training_seed0_r3_numerical_exclusion.json`.
+
+**First-nonfinite closure (2026-09-05).** Three bounded runs execute the
+unchanged released trainer and stop within three real CIFAR-10 batches. The
+first invalid state occurs on zero-based batch 2, before the router optimizer
+step: all 269,202 router gradients are NaN, while router parameters, buffers,
+optimizer state, and the non-router model are finite. Anomaly tracing binds
+the first invalid derivative to `XlogyBackward0` in the router KL term. All
+router forwards are finite, but the maximum within-example logit gap reaches
+`320.2816`; the target softmax first contains 16 exact zeros on that batch.
+The r4 independent audit reports `PASS` with zero issues. This is a numerical
+underflow/backward failure in the released expression, not an optimizer-first
+failure or a non-finite forward. Any successor must be labeled as a
+compatibility variant, demonstrate finite-regime value/gradient equivalence,
+and pass a multi-batch finiteness smoke before training. See
+`docs/advmoe_training_seed0.md` and
+`results/baseline/advmoe_router_nonfinite_diagnosis_seed0_r4_audit.json`.

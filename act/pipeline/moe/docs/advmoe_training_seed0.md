@@ -70,6 +70,34 @@ for each trained endpoint, and non-finite checkpoint routers. The apparent
 behavior and are not route-collapse or stability measurements. The record is
 `act/pipeline/moe/results/baseline/advmoe_training_endpoint_telemetry_seed0_r1_audit.json`.
 
+## First-nonfinite diagnosis
+
+Three bounded reproductions use the unchanged released trainer and stop within
+the first three real CIFAR-10 batches. Batches 0 and 1 remain finite. On
+zero-based batch 2, all 269,202 router gradient elements are NaN immediately
+before the router optimizer step, while every router parameter and buffer and
+every existing router-optimizer state element is still finite. The non-router
+model remains finite. This excludes the optimizer step itself as the first
+source.
+
+PyTorch anomaly tracing localizes the first invalid derivative to
+`XlogyBackward0` in the released router KL term at `train_moe.py:143`, reached
+by `loss.backward()` at line 156. Every recorded router input and output before
+that backward call remains finite. The maximum within-example router-score gap
+grows from 0.862 on the first batch to 25.827 on the second and 320.282 on the
+third. On the third batch, the float32 softmax of the clean router scores
+contains 16 exact zeros; no earlier recorded call contains a zero. Because the
+KL target remains differentiable, its `xlogy` target derivative is active at
+those underflowed zeros and emits NaN.
+
+The independent r4 audit binds all configs, raw results, logs, official source
+identity, batch position, forward finiteness, first softmax underflow, and
+autograd traceback. It reports `PASS` with zero issues at
+`act/pipeline/moe/results/baseline/advmoe_router_nonfinite_diagnosis_seed0_r4_audit.json`.
+The earlier r2 audit failure is intentionally preserved because that auditor
+omitted the console log required to bind the anomaly's forward traceback. No
+official-source file was modified.
+
 ## Excluded predecessors
 
 - `seed0_r1` stopped after 27 snapshots because the original monitor read and
@@ -91,9 +119,12 @@ They have not been promoted by the r3 numerical failure.
 The upstream repository has no license file. ACT therefore records checkpoint
 hashes and reproduction instructions but does not redistribute the checkpoint
 pending legal review. This execution does not unlock trained-checkpoint router
-telemetry or the five-radius two-path staged-verification table. Before any
-replacement training, a bounded diagnostic must locate the first non-finite
-router update and establish a finite-state smoke gate spanning enough real
-batches to cover that failure. No current AdvMoE checkpoint establishes route
+telemetry or the five-radius two-path staged-verification table. The bounded
+diagnostic has located the first invalid derivative. Before any replacement
+training, a separately labeled compatibility variant must express the same
+router KL without the underflow-singular target derivative, prove value and
+gradient agreement on the finite regime, and pass a finite-state smoke gate
+beyond the third real batch. It must not be described as unchanged official
+training. No current AdvMoE checkpoint establishes route
 stability, Route A coverage, learned-router external validity, or any formal
 SAFE result.
