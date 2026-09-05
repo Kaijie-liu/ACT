@@ -40,3 +40,9 @@ implications, a two-restart 20-step full-model attack, lowering equivalence,
 incremental row persistence, and artifact hashing. It is an engineering smoke,
 not a prevalence or certification result. Only a zero-error, zero-conflict
 independent audit may unlock the 20-sample five-radius execution.
+
+The independent auditor recomputes every CROWN status from stored lower bounds,
+recomputes the staged aggregations without calling the runner helper, verifies
+the first-clean-correct selection, replays every attack endpoint through the
+literal dynamic model, and checks its box membership and perturbation norm. It
+also enforces zero formal SAFE counts for this non-outward-rounded backend.

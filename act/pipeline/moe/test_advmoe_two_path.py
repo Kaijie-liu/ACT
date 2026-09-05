@@ -6,6 +6,7 @@ from act.pipeline.moe.advmoe_two_path import (
     aggregate_filters,
     top1_property_rows,
 )
+from act.pipeline.moe.audit_advmoe_two_path import expected_crown_status
 
 
 class AdvMoeTwoPathTests(unittest.TestCase):
@@ -40,6 +41,20 @@ class AdvMoeTwoPathTests(unittest.TestCase):
             attack_prediction_flip=True,
         )
         self.assertEqual(result["endpoint"], "UNSAFE_FULL_FORWARD_REPLAY")
+
+    def test_independent_crown_status_recomputation(self) -> None:
+        record = {
+            "complete": True,
+            "lower_bounds": [0.1, 0.2],
+            "upper_bounds": [0.3, 0.4],
+        }
+        self.assertEqual(
+            expected_crown_status(record, 1e-7), "CERTIFIED_MARGIN_FILTER"
+        )
+        record["lower_bounds"][0] = -0.1
+        self.assertEqual(
+            expected_crown_status(record, 1e-7), "UNKNOWN_RELAXATION"
+        )
 
 
 if __name__ == "__main__":
