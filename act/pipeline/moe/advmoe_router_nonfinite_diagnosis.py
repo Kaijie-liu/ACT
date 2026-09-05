@@ -164,6 +164,19 @@ def _tensor_observation(tensor: torch.Tensor) -> dict[str, Any]:
                 "finite_max_abs": float(finite_values.abs().max().item()),
             }
         )
+    if value.ndim == 2 and value.shape[1] == 2 and observation["all_finite"]:
+        probabilities = torch.softmax(value, dim=1)
+        observation.update(
+            {
+                "softmax_zero_elements": int((probabilities == 0).sum().item()),
+                "softmax_minimum_positive": (
+                    float(probabilities[probabilities > 0].min().item())
+                    if bool((probabilities > 0).any().item())
+                    else None
+                ),
+                "maximum_pair_gap": float((value[:, 0] - value[:, 1]).abs().max().item()),
+            }
+        )
     return observation
 
 

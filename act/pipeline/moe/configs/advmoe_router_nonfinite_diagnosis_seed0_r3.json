@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "status": "PREREGISTERED_NOT_RUN",
+  "scope": "ADV_MOE_OFFICIAL_TRAINER_ROUTER_SOFTMAX_UNDERFLOW_DIAGNOSIS",
+  "workspace_boundary": "/data1/Kane/MOE",
+  "act_repository": "/data1/Kane/MOE/ACT",
+  "required_branch": "feat/moe-route-verification",
+  "official_source": {
+    "repository": "/data1/Kane/MOE/baselines/robust-moe-cnn",
+    "commit": "c50796fb8284512b6f6ad8e843f95182cec527cf",
+    "tree": "153d4ff9f30f34eb7fdd4caf670495122c5836e0"
+  },
+  "training_config": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/advmoe_training_seed0_r3.json",
+  "training_config_sha256": "bae43ec28916f42cd569cd7843d7908f924d4d300c3b9f2d07587d269360d37a",
+  "numerical_exclusion": "/data1/Kane/MOE/ACT/act/pipeline/moe/results/baseline/advmoe_training_seed0_r3_numerical_exclusion.json",
+  "dataset_root": "/data1/Kane/MOE/baseline_runs/advmoe/seed0_r3/data",
+  "output": "/data1/Kane/MOE/ACT/data/moe/results/advmoe_router_nonfinite_diagnosis_seed0_r3.json",
+  "environment": "/data1/Kane/MOE/envs/advmoe-blackwell",
+  "device": "cuda:0",
+  "minimum_free_gpu_memory_gib": 48.0,
+  "torch_threads": 2,
+  "maximum_batches": 3,
+  "stop_at_first_nonfinite": true,
+  "autograd_anomaly_detection": true,
+  "stages": [
+    "BEFORE_MAIN_OPTIMIZER_STEP",
+    "AFTER_MAIN_OPTIMIZER_STEP",
+    "BEFORE_ROUTER_OPTIMIZER_STEP",
+    "AFTER_ROUTER_OPTIMIZER_STEP"
+  ],
+  "predecessor": {
+    "path": "/data1/Kane/MOE/ACT/data/moe/results/advmoe_router_nonfinite_diagnosis_seed0_r2.json",
+    "sha256": "1872f9da564742255be324a72577a0c0472fcabd665ad6c0937a466ed9c8f937",
+    "finding": "XlogyBackward0 in the released router KL term is the first autograd operation to emit NaN; all preceding router forwards are finite but have extreme logits"
+  },
+  "interpretation": {
+    "purpose": "measure whether finite router logits make the released KL target softmax underflow to exact zeros before XlogyBackward0 fails",
+    "scientific_endpoint": "diagnostic only; no accuracy, robustness, route-stability, or certificate claim",
+    "replacement_training": "forbidden until this diagnostic and a successor finite-state smoke are audited"
+  }
+}

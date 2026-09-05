@@ -49,6 +49,11 @@ class AdvMoeRouterNonfiniteDiagnosisTests(unittest.TestCase):
         self.assertEqual(observation["inf_elements"], 1)
         self.assertEqual(observation["finite_max_abs"], 2.0)
 
+    def test_tensor_observation_counts_softmax_underflow(self) -> None:
+        observation = _tensor_observation(torch.tensor([[0.0, -200.0], [1.0, 1.0]]))
+        self.assertEqual(observation["softmax_zero_elements"], 1)
+        self.assertEqual(observation["maximum_pair_gap"], 200.0)
+
 
 if __name__ == "__main__":
     unittest.main()
