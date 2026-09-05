@@ -2541,3 +2541,12 @@ zero complete endpoints; every row's blocking branch remained best at
 explain the null endpoint on these closest residuals.  The frozen stopping
 rule triggers a fixed-multiplier-family diagnostic; no CROWN-specific blame is
 assigned yet.
+
+Stage B is now preregistered on exactly one still-negative `mu=0` obligation
+per Stage-A row. It combines 20-iteration alpha-CROWN, targeted minimum-phi
+search across all nine combined multipliers, literal full-model replay, and an
+exact one-dimensional finite-point dual upper bound. The registered outcome
+taxonomy separates a replayed true counterexample, an executed-float
+fixed-multiplier-family obstruction, optimized-backend closure or improvement,
+and a remaining unresolved case. This diagnostic remains development-only and
+cannot establish guarded safety or formal CROWN certification.

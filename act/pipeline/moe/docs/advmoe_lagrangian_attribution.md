@@ -68,3 +68,25 @@ The registered classification is therefore
 some nonblocking bounds, but finite-grid truncation is not an endpoint-level
 explanation on the closest residuals.  Stage B is required to distinguish
 backend relaxation from a fixed-multiplier certificate-family limitation.
+
+## Stage B preregistration
+
+Stage B freezes one necessary property per selected row: the most negative
+property that still selects `mu=0` after Stage A.  For each obligation it runs
+20-iteration alpha-CROWN on the graph-matched `mu=0` compiler, performs a
+50-step, three-restart minimum-phi search at all nine combined multipliers, and
+replays every concrete point through the literal router, static path, and full
+dynamic model.
+
+The concrete pairs `(s_t,m_t)` also define the exactly solvable finite problem
+
+`sup_{mu>=0} min_t (s_t - mu m_t)`.
+
+Because the finite points are a subset of the input box, this value is an
+upper bound on the exact fixed-multiplier certificate-family value.  A
+strictly negative upper bound therefore shows that no scalar fixed multiplier
+can certify that recorded obligation, independently of CROWN and grid density.
+This is an executed-float diagnostic, not an outward-rounded real-arithmetic
+proof, and it does not establish that the guarded property is safe.  A
+route-consistent negative property point becomes `UNSAFE` only after the full
+dynamic model independently reproduces the changed prediction.

@@ -44,9 +44,46 @@ from act.pipeline.moe.advmoe_lagrangian_attribution import (
     combine_parent_and_extension,
     select_closest_residual_rows,
 )
+from act.pipeline.moe.advmoe_lagrangian_family_diagnosis import (
+    finite_point_dual_upper,
+    select_mu0_blocking_obligation,
+)
 
 
 class AdvMoeTwoPathTests(unittest.TestCase):
+    def test_finite_points_can_rule_out_fixed_multiplier_family(self) -> None:
+        result = finite_point_dual_upper(
+            np.asarray([-1.9, 0.1]),
+            np.asarray([-1.0, 1.0]),
+        )
+        self.assertTrue(result["bounded"])
+        self.assertAlmostEqual(result["selected_multiplier"], 1.0)
+        self.assertAlmostEqual(result["upper_bound"], -0.9)
+
+    def test_family_diagnosis_freezes_mu0_blocker(self) -> None:
+        row = {
+            "row_id": "row",
+            "branches": [
+                {
+                    "route": 0,
+                    "combined": {
+                        "lower_bounds": [-2.0, -5.0],
+                        "selected_multipliers": [0.0, 1.0],
+                    },
+                },
+                {
+                    "route": 1,
+                    "combined": {
+                        "lower_bounds": [-3.0, 1.0],
+                        "selected_multipliers": [0.0, 0.0],
+                    },
+                },
+            ],
+        }
+        self.assertEqual(
+            select_mu0_blocking_obligation(row, 1e-7),
+            {"route": 1, "property_index": 0, "plain_crown_lower_bound": -3.0},
+        )
     def test_attribution_selection_is_closest_residual_without_witness(self) -> None:
         def row(name, minimum, *, positive=False, prediction_flip=False):
             return {
