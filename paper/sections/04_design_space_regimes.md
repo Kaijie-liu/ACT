@@ -121,8 +121,13 @@ initial partition. The shallow bal010 router supplies the third case: after
 training it exhibits a rich multi-expert route geometry. These regimes answer
 the same question differently—RT-ER preserves degeneracy, AdvMoE is born
 degenerate and must escape it, and bal010 develops nontrivial geometry. The
-checkpoint trajectory tests whether and when that escape occurs;
-initialization alone cannot answer it.
+accepted compatibility checkpoint establishes that escape at the endpoint.
+Under deployment BatchNorm semantics, the official-order seed-0 initialization
+routes all 10,000 ordered test inputs to one expert. The final trained router
+splits them 5,012/4,988, with effective route count 2.000; the registered train-
+mode co-batch diagnostic is similarly balanced. Strong route attacks also find
+changes on 8/20 frozen inputs at 8/255. The training endpoint therefore has a
+nontrivial learned partition rather than preserving initialization collapse.
 
 The AdvMoE trajectory also separates functions. Eval mode with stored running
 statistics defines the single-input router that can be verified. Train-mode
@@ -156,8 +161,9 @@ stateful routers, or unbounded expert families. The current top-(k) result
 assumes normalized non-negative selected gates, and the exact label applies
 only while the reachable router HZ has not been relaxed. The completed
 `E=4--64,k=2` lazy-enumeration study is synthetic scaling evidence, not a claim
-about arbitrary `k` or natural route-set prevalence. AdvMoE's official trained
-checkpoint remains pending. RT-ER B3 now supplies audited official-scale
+about arbitrary `k` or natural route-set prevalence. AdvMoE supplies a labeled
+and audited numerical-compatibility checkpoint rather than an unchanged
+official checkpoint. RT-ER B3 now supplies audited official-scale
 numerical conformance, but its non-outward-rounded CROWN filters are not formal
 certificates. These boundaries are part of the method definition rather than
 post-hoc threats.

@@ -2377,3 +2377,19 @@ checkpoint selection and the no-license redistribution restriction remain in
 force. The authoritative record is
 `results/baseline/advmoe_training_seed0_compat_r1_audit.json`. Trained-router
 telemetry and the frozen two-path evaluation are now unlocked.
+
+**Accepted endpoint telemetry (2026-09-05).** R2 compares official-order seed-0
+initialization with the accepted compatibility best and final checkpoints.
+The independent audit reports `PASS` with zero issues and recomputes all route
+counts, attack-success counts, and maximum perturbation norms from finite raw
+arrays. Eval/current-running-statistics routing changes from `10000:0` at
+initialization to `4718:5282` at the best checkpoint and `5012:4988` at the
+final checkpoint (effective route counts 1.997 and 2.000). Registered train-
+mode ordered co-batch counts are likewise balanced after training. At 8/255,
+10-restart 100-step route PGD finds 7/20 and 8/20 route flips at best and final;
+these are witness discoveries, never stability certificates. The telemetry
+path independently obtains ordered-archive clean accuracies of 85.37% and
+85.67%. See
+`results/baseline/advmoe_training_endpoint_telemetry_seed0_compat_r2_audit.json`.
+This closes the trained-router collapse question and supplies the accepted
+checkpoint identities for the frozen two-path evaluation.

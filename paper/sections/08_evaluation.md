@@ -245,6 +245,16 @@ set checkpoint selection remains an artifact limitation. This checkpoint now
 unlocks, but does not substitute for, the trained-router telemetry and
 two-path verification table below.
 
+Endpoint telemetry independently confirms that the accepted router is both
+finite and nontrivial. Eval-mode route counts move from 10,000/0 at
+initialization to 4,718/5,282 at the best checkpoint and 5,012/4,988 at the
+final checkpoint. The corresponding effective route counts are 1.997 and
+2.000; train-mode ordered co-batch diagnostics are also balanced. Ten-restart,
+100-step route attacks at 8/255 find route changes on 7/20 and 8/20 frozen
+inputs. These attack discoveries refute invariance for those inputs but do not
+certify stability for the remainder. The telemetry audit recomputes all counts
+from finite raw arrays and reports zero issues.
+
 The final AdvMoE checkpoint evaluation records clean accuracy, route share,
 signed router-score offset, selected-margin distribution, and load entropy.
 Intermediate checkpoints use the same fields under both eval/current-running-

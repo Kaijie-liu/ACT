@@ -190,3 +190,21 @@ It binds the accepted training audit and exact best/final hashes, retains the
 compatibility label, and compares initialization, best, and final states under
 both registered BatchNorm semantics. Its strong PGD row remains empirical
 witness search and cannot establish route stability.
+
+The r2 telemetry run completes and independently audits with `PASS` and zero
+issues. Under deployment/eval BatchNorm semantics, initialization routes all
+10,000 ordered test inputs to expert 0. The accepted best checkpoint routes
+4,718/5,282 inputs and the final checkpoint routes 5,012/4,988; their effective
+route counts are 1.997 and 2.000. Train-mode ordered co-batch diagnostics are
+also balanced at 4,782/5,218 and 4,889/5,111, respectively. Thus the released
+supervised router objective escapes the initial one-route collapse under both
+registered semantics.
+
+On the frozen 20-input diagnostic subset, the 10-restart, 100-step attack at
+8/255 finds route changes for 7 best-checkpoint inputs and 8 final-checkpoint
+inputs. These are concrete attack discoveries, not route-stability estimates
+or formal certificates. The ordered-archive clean accuracies recomputed by the
+telemetry path are 85.37% and 85.67%. The audit recomputes all route counts,
+attack-success counts, and perturbation norms from finite raw arrays and
+rehashes both checkpoint routers. The tracked record is
+`act/pipeline/moe/results/baseline/advmoe_training_endpoint_telemetry_seed0_compat_r2_audit.json`.
