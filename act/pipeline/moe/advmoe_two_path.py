@@ -432,13 +432,23 @@ def run(config_path: Path) -> dict[str, Any]:
             row for row in row_records
             if row["epsilon_over_255"] == float(numerator)
         ]
+        prediction_flips = [bool(row["attack"]["prediction_flip"]) for row in selected]
+        route_flips = [
+            int(row["attack"]["attacked_route"]) != int(row["clean_route"])
+            for row in selected
+        ]
         tables[str(numerator)] = {
             "samples": len(selected),
             "route_invariance": dict(Counter(row["statuses"]["route_invariance"] for row in selected)),
             "route_a_two_path": dict(Counter(row["statuses"]["route_a_two_path"] for row in selected)),
             "eta_guard_ablation": dict(Counter(row["statuses"]["eta_guard_ablation"] for row in selected)),
             "endpoint": dict(Counter(row["statuses"]["endpoint"] for row in selected)),
-            "route_attack_or_prediction_witnesses": sum(row["attack"]["prediction_flip"] for row in selected),
+            "prediction_flip_witnesses": sum(prediction_flips),
+            "route_flip_witnesses": sum(route_flips),
+            "both_flip_witnesses": sum(
+                prediction and route
+                for prediction, route in zip(prediction_flips, route_flips)
+            ),
         }
     result = {
         "schema_version": 1,

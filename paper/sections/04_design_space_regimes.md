@@ -129,6 +129,16 @@ mode co-batch diagnostic is similarly balanced. Strong route attacks also find
 changes on 8/20 frozen inputs at 8/255. The training endpoint therefore has a
 nontrivial learned partition rather than preserving initialization collapse.
 
+The registered two-path evaluation confirms the corresponding compilation
+path but also exposes the expert-backend limit. Both static paths pass their
+plain-CROWN property filters on 2/20 inputs at `0.5/255` and on none at larger
+radii; because that backend is not outward rounded, these are not formal SAFE
+certificates. Prediction attacks yield 1, 1, 3, 4, and 8 replay-validated
+counterexamples across the five radii, while only one `8/255` endpoint also
+changes route. The result supports backend composability and the separation of
+routing from prediction failure, but it does not establish an official-scale
+certificate-yield advantage for plain CROWN.
+
 The AdvMoE trajectory also separates functions. Eval mode with stored running
 statistics defines the single-input router that can be verified. Train-mode
 BatchNorm defines a co-batch-dependent mapping and is reported only as a

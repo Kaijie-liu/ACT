@@ -206,7 +206,7 @@ shape, not yet its formal-certificate endpoint. The released hard/raw Theorem
 is not applicable on 19 and vacuous at registered radii on one. The author-
 unspecified provider is likewise not a runnable baseline.
 
-## AdvMoE two-path evaluation [compatibility checkpoint accepted; table pending]
+## AdvMoE two-path evaluation
 
 The first complete official-code seed-0 execution cannot supply this table.
 Although its finite main network reports 93.79% clean accuracy at the released
@@ -215,7 +215,8 @@ state is NaN from checkpoint 1 through 100. A later endpoint run correctly
 fails independent audit; its apparent all-expert-0 routing is NaN `argmax`
 behavior, not a route statistic. The earlier structural checkpoint audit is
 retained but superseded for scientific acceptance by the numerical audit. The
-table below remains a frozen delivery specification, not a reported result.
+excluded run remains evidence about the released numerical expression, not an
+evaluated checkpoint.
 
 The follow-up bounded diagnosis locates the first invalid derivative on the
 third real training batch. Router parameters, buffers, optimizer state, and
@@ -241,9 +242,9 @@ best released PGD-10 checkpoint reports 85.36% clean accuracy and 61.80%
 adversarial accuracy; the final checkpoint reports 85.67% and 61.14%. Only 18
 exact-zero target-gradient elements require the bridge during the full run.
 These values are empirical released-path metrics, not certificates, and test-
-set checkpoint selection remains an artifact limitation. This checkpoint now
-unlocks, but does not substitute for, the trained-router telemetry and
-two-path verification table below.
+set checkpoint selection remains an artifact limitation. The final checkpoint
+supplies the separately labeled subject for trained-router telemetry and the
+two-path numerical-conformance table below.
 
 Endpoint telemetry independently confirms that the accepted router is both
 finite and nontrivial. Eval-mode route counts move from 10,000/0 at
@@ -266,14 +267,31 @@ cover the full test set; strong PGD uses a frozen deterministic subset; CROWN,
 alpha-CROWN, or beta-CROWN closure is restricted to the final checkpoint and a
 registered subset.
 
-The end-to-end table verifies route-stable inputs through one static path and
-route-uncertain inputs through both static paths. A router-independent two-path
-row is always included because (E=2). Each radius reports route-invariance
-coverage, two-path Route A coverage, full-model attack witnesses, per-path
-runtime, and the guarded-cell ablation. The table is complete only after the
-literal dynamic model rejects or accepts under the recorded frontend, both
-specialized paths are accepted, all concrete equivalence tests pass, and every
-unsafe result replays through the original routed model.
+The final-checkpoint run uses the first 20 ordered clean-correct inputs and all
+five registered radii. Both fixed paths are evaluated for every row,
+independent of whether the nonlinear router bound closes. The installed plain-
+CROWN backend is not outward rounded, so positive margins are numerical
+filters rather than formal SAFE results.
+
+| epsilon | router filter | route-invariance filter | two-path filter | eta filter | prediction flip | route flip |
+|---:|---:|---:|---:|---:|---:|---:|
+| 0.5/255 | 18/20 | 2/20 | 2/20 | 0/20 | 1/20 | 0/20 |
+| 1/255 | 1/20 | 0/20 | 0/20 | 0/20 | 1/20 | 0/20 |
+| 2/255 | 0/20 | 0/20 | 0/20 | 0/20 | 3/20 | 0/20 |
+| 4/255 | 0/20 | 0/20 | 0/20 | 0/20 | 4/20 | 0/20 |
+| 8/255 | 0/20 | 0/20 | 0/20 | 0/20 | 8/20 | 1/20 |
+
+The run completes in 1,437.56 seconds with zero backend errors and zero
+positive-filter/witness conflicts. The enhanced independent audit replays all
+100 endpoints, checks their boxes and perturbation norms, rebuilds the table,
+and reports zero issues. Only concrete prediction flips receive UNSAFE status;
+the 2/20 two-path positives at `0.5/255` remain explicitly non-formal filters.
+No static-path filter closes above `0.5/255`, and the tie-safe eta reduction
+does not close both obligations on any row. Thus specialization makes the
+third-party dynamic program consumable, but plain CROWN does not deliver useful
+official-scale formal coverage. This negative backend result bounds the claim:
+route conditioning removes dynamic dispatch; it does not make a loose expert
+abstraction complete.
 
 ## Scaling and solver engineering [pending]
 

@@ -85,3 +85,37 @@ predictions. Evaluating both static paths at the same registered batch shape
 and then selecting the routed rows is bit exact against the dynamic forward.
 R3 freezes that like-for-like execution schedule without changing any
 scientific method or denominator; the r2 failure remains separately recorded.
+
+## Full r3 result
+
+Full r3 completes all 100 registered rows in 1,437.56 seconds. The enhanced
+independent audit reports `PASS` with zero issues after rebuilding every
+per-radius table, replaying the first-clean-correct selection over the full
+test archive, and replaying all 100 attack endpoints through the literal
+dynamic model. All 500 CROWN calls complete, backend errors and positive-
+filter/witness conflicts are zero, the official no-license clone remains
+clean, and the formal SAFE count is deliberately zero.
+
+| epsilon | router positive filter | route-invariance filter | two-path filter | eta filter | prediction-flip witness | route-flip witness | both |
+|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0.5/255 | 18/20 | 2/20 | 2/20 | 0/20 | 1/20 | 0/20 | 0/20 |
+| 1/255 | 1/20 | 0/20 | 0/20 | 0/20 | 1/20 | 0/20 | 0/20 |
+| 2/255 | 0/20 | 0/20 | 0/20 | 0/20 | 3/20 | 0/20 | 0/20 |
+| 4/255 | 0/20 | 0/20 | 0/20 | 0/20 | 4/20 | 0/20 | 0/20 |
+| 8/255 | 0/20 | 0/20 | 0/20 | 0/20 | 8/20 | 1/20 | 1/20 |
+
+Every “filter” entry is numerical conformance only, not a formal certificate.
+At `0.5/255`, the individual static paths filter 3/20 and 2/20 inputs and both
+filter the same 2/20. Plain CROWN resolves no static path at larger radii; the
+eta encoding resolves no complete two-branch obligation at any radius. This
+shows that route-independent decomposition is executable on the third-party
+learned-router architecture, but plain CROWN is too loose to establish the
+desired official-scale certificate yield. It is not evidence against the
+staged semantics, and it does not license replacing UNKNOWN with UNSAFE. The
+only UNSAFE rows are independently replayed prediction flips.
+
+The raw r3 summary used a legacy field name,
+`route_attack_or_prediction_witnesses`, for a prediction-flip-only count. The
+enhanced audit explicitly separates prediction, route, and joint witnesses;
+future runner output uses the corrected three fields. The accepted audit is
+`results/baseline/advmoe_two_path_seed0_compat_full_r3_audit_r2.json`.

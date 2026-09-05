@@ -2438,3 +2438,17 @@ the identical batch shape and selecting afterward is bit exact against the
 dynamic network. R3 fixes only this equivalence-test execution schedule. See
 `results/baseline/advmoe_two_path_seed0_compat_full_r2_attempt001_failure.json`
 and `configs/advmoe_two_path_seed0_compat_full_r3.json`.
+
+**Accepted AdvMoE two-path full r3 (2026-09-05).** The 20-input, five-radius
+run completes 100/100 rows in 1,437.56 seconds. The enhanced independent audit
+rebuilds all summary tables and replays all 100 endpoints through the literal
+dynamic model; it reports `PASS` with zero issues. All 500 CROWN calls
+complete, with zero backend errors, zero positive-filter/witness conflicts,
+and zero formal SAFE results. Numerical two-path and route-invariance filters
+both cover 2/20 inputs at `0.5/255` and none at larger radii; the eta ablation
+covers none. Replay-validated prediction-flip witnesses rise across the five
+radii as `1,1,3,4,8/20`; route-flip witnesses are `0,0,0,0,1/20`, with one
+joint flip at `8/255`. Plain CROWN therefore executes the decomposition but is
+too loose for a formal official-scale certificate claim. See
+`docs/advmoe_two_path.md` and
+`results/baseline/advmoe_two_path_seed0_compat_full_r3_audit_r2.json`.
