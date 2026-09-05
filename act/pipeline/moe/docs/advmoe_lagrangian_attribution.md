@@ -129,3 +129,33 @@ The first r2 audit output is retained because its generic hard-coded scope
 ended in `R1` even though all identities and replay checks referred to r2.
 The auditor now derives its scope from the hashed configuration; no audit
 calculation, tolerance, result row, or classification changes.
+
+## Final r2 result and attribution
+
+The sparse-alpha repair completes all five optimized calls without an error,
+and the CUDA replay audit passes with zero issues.  It does not close or
+improve an obligation.  Plain CROWN blocker bounds range from `-3.8068` to
+`-46.7559`; sparse alpha-CROWN returns much looser values from approximately
+`-1.95e10` to `-4.29e10`, with 105--127 seconds per call.  This adapter is
+therefore not a useful closure layer for the shared compiled graph under the
+registered settings.
+
+The targeted-search evidence is unchanged and exactly reproduced: all 55
+points retain positive safety values on the selected path, with minima from
+0.5284 to 6.5269, and none yields a full-model prediction violation.  The
+finite-point dual upper bounds are likewise positive and select `mu=0`, so
+they do not establish an intrinsic fixed-multiplier-family obstruction.
+
+The attribution that is supported is narrower but decisive for method
+selection.  Every complete-endpoint blocker among these five closest
+residuals is the ordinary `mu=0` single-path expert property.  The null result
+is not explained by multiplier-grid truncation or by failure to select a
+nonzero guard term; it is inherited from the base expert-verification
+obligation.  What remains unresolved is whether that single-path property is
+actually unsafe or whether the expert backend is too loose.  Targeted search
+supports, but cannot prove, the latter.
+
+No additional multiplier or alpha-CROWN search is justified on the holdout.
+The compiler remains a sound sufficient adapter with toy and retained-HZ
+conformance, while its official-scale development effect is reported as null.
+The disjoint holdout remains unspent.

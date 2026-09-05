@@ -2558,3 +2558,15 @@ static or full-model violation, while all finite-point dual upper bounds remain
 positive and therefore inconclusive. R1 is retained as five unresolved rows.
 A separate resource-only retry is permitted with the previously validated
 scalable sparse-alpha controls; no scientific obligation or rule may change.
+
+The sparse-alpha r2 repair completes all five calls and independently audits
+`PASS` with zero issues, but closes and improves none. Its bounds are
+catastrophically looser (`-1.95e10` to `-4.29e10`) than plain CROWN and cost
+105--127 seconds each. All 55 targeted points retain positive selected-path
+safety, no full-model witness is found, and finite-point dual upper bounds
+remain positive at `mu=0`. The final bounded attribution is that these five
+closest complete-endpoint failures are inherited from the ordinary `mu=0`
+single-path expert obligation, not multiplier-grid truncation or the absence
+of a nonzero relation term. True single-path unsafety versus expert-backend
+relaxation remains unresolved. The Lagrangian holdout stays locked and no
+further grid/alpha search is launched.
