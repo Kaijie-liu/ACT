@@ -1,0 +1,446 @@
+"""Five-radius staged verification for the accepted AdvMoE compatibility model."""
+
+from __future__ import annotations
+
+import argparse
+from collections import Counter
+import copy
+import gc
+import json
+import math
+import os
+from pathlib import Path
+import subprocess
+import time
+from typing import Any
+
+import numpy as np
+import torch
+import torch.nn.functional as F
+
+from act.back_end.moe.tie_safe_implication import TieSafeTop1Implication
+from act.pipeline.moe.advmoe_adapter import (
+    CrownCompatibleAdvMoePath,
+    CrownCompatibleAdvMoeRouter,
+    adapter_equivalence,
+    construct_official_init,
+    path_adapter_equivalence,
+    specialize_advmoe_path,
+)
+from act.pipeline.moe.advmoe_router_bracket import load_cifar10_test_archive
+from act.pipeline.moe.crown_adapter_cohort import _crown_bounds
+from act.pipeline.moe.published_moe_router_gradient_audit import _sha256
+
+
+def _inside(path: Path, root: Path) -> Path:
+    resolved = path.resolve()
+    resolved.relative_to(root.resolve())
+    return resolved
+
+
+def _git(repo: Path, *arguments: str) -> str:
+    return subprocess.check_output(
+        ["git", "-C", str(repo), *arguments], text=True
+    ).strip()
+
+
+def _write_json(path: Path, value: Any) -> None:
+    if path.exists():
+        raise FileExistsError(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_text(
+        json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+    os.replace(temporary, path)
+
+
+def _append_json(handle, value: dict[str, Any]) -> None:
+    handle.write(json.dumps(value, sort_keys=True) + "\n")
+    handle.flush()
+    os.fsync(handle.fileno())
+
+
+def top1_property_rows(prediction: int, classes: int = 10):
+    rows = []
+    for competitor in range(classes):
+        if competitor == int(prediction):
+            continue
+        row = np.zeros(classes, dtype=np.float64)
+        row[int(prediction)] = 1.0
+        row[competitor] = -1.0
+        rows.append((row, 0.0))
+    return tuple(rows)
+
+
+def aggregate_filters(
+    *,
+    clean_route: int,
+    router_status: str,
+    path_statuses: list[str],
+    eta_statuses: list[str],
+    attack_prediction_flip: bool,
+) -> dict[str, str]:
+    filtered = "CERTIFIED_MARGIN_FILTER"
+    route_invariance = (
+        "CERTIFIED_MARGIN_FILTER_NOT_FORMAL_SAFE"
+        if router_status == filtered and path_statuses[int(clean_route)] == filtered
+        else "UNKNOWN"
+    )
+    route_a = (
+        "CERTIFIED_MARGIN_FILTER_NOT_FORMAL_SAFE"
+        if len(path_statuses) == 2 and all(value == filtered for value in path_statuses)
+        else "UNKNOWN"
+    )
+    eta = (
+        "CERTIFIED_MARGIN_FILTER_NOT_FORMAL_SAFE"
+        if len(eta_statuses) == 2 and all(value == filtered for value in eta_statuses)
+        else "UNKNOWN"
+    )
+    if attack_prediction_flip:
+        endpoint = "UNSAFE_FULL_FORWARD_REPLAY"
+    elif route_a == "CERTIFIED_MARGIN_FILTER_NOT_FORMAL_SAFE":
+        endpoint = route_a
+    else:
+        endpoint = "UNKNOWN"
+    return {
+        "route_invariance": route_invariance,
+        "route_a_two_path": route_a,
+        "eta_guard_ablation": eta,
+        "endpoint": endpoint,
+    }
+
+
+def _cleanup_cuda() -> None:
+    gc.collect()
+    gc.collect()
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+
+
+def _load_model(config: dict[str, Any], workspace: Path):
+    checkpoint = _inside(Path(config["checkpoint"]["path"]), workspace)
+    if _sha256(checkpoint) != config["checkpoint"]["sha256"]:
+        raise RuntimeError("checkpoint hash mismatch")
+    model, router, moe_type = construct_official_init(
+        int(config["checkpoint"]["seed"])
+    )
+    payload = torch.load(checkpoint, map_location="cpu", weights_only=False)
+    if int(payload["epoch"]) != int(config["checkpoint"]["epoch"]):
+        raise RuntimeError("checkpoint epoch mismatch")
+    model.load_state_dict(payload["state_dict"])
+    router.load_state_dict(payload["router"])
+    model.router = router
+    return model.eval(), router.eval(), moe_type, checkpoint
+
+
+def _predict(model, inputs: np.ndarray, batch_size: int) -> np.ndarray:
+    rows = []
+    model.eval()
+    with torch.no_grad():
+        for start in range(0, len(inputs), batch_size):
+            batch = torch.from_numpy(inputs[start : start + batch_size])
+            rows.append(model(batch).argmax(dim=1).cpu().numpy())
+    return np.concatenate(rows).astype(np.int64)
+
+
+def _prediction_attack(
+    model,
+    center: torch.Tensor,
+    lower: torch.Tensor,
+    upper: torch.Tensor,
+    prediction: int,
+    *,
+    steps: int,
+    restarts: int,
+    step_size: float,
+    seed: int,
+    device: str,
+) -> dict[str, Any]:
+    model = model.to(device).eval()
+    center = center.to(device)
+    lower = lower.to(device)
+    upper = upper.to(device)
+    generator = torch.Generator(device=device)
+    generator.manual_seed(int(seed))
+    target = torch.tensor([int(prediction)], device=device)
+    best_loss = -math.inf
+    best = center.detach().clone()
+    for _restart in range(int(restarts)):
+        random = torch.rand(
+            center.shape, generator=generator, device=device, dtype=center.dtype
+        )
+        candidate = (lower + random * (upper - lower)).detach()
+        for _step in range(int(steps)):
+            candidate.requires_grad_(True)
+            loss = F.cross_entropy(model(candidate), target)
+            gradient = torch.autograd.grad(loss, candidate)[0]
+            candidate = torch.maximum(
+                lower,
+                torch.minimum(upper, candidate.detach() + step_size * gradient.sign()),
+            )
+            with torch.no_grad():
+                value = float(F.cross_entropy(model(candidate), target).item())
+                if value > best_loss:
+                    best_loss = value
+                    best = candidate.detach().clone()
+    with torch.no_grad():
+        logits = model(best)
+        attacked_prediction = int(logits.argmax(dim=1).item())
+        attacked_route = int(model.router(best).argmax(dim=1).item())
+    endpoint = best.detach().cpu()
+    return {
+        "prediction_flip": attacked_prediction != int(prediction),
+        "attacked_prediction": attacked_prediction,
+        "attacked_route": attacked_route,
+        "cross_entropy": best_loss,
+        "maximum_linf": float((endpoint - center.detach().cpu()).abs().max().item()),
+        "endpoint": endpoint.numpy(),
+    }
+
+
+def run(config_path: Path) -> dict[str, Any]:
+    config = json.loads(config_path.read_text(encoding="utf-8"))
+    workspace = Path(config["workspace_boundary"])
+    act_repository = _inside(Path(config["act_repository"]), workspace)
+    source = _inside(Path(config["official_source"]["repository"]), workspace)
+    output_dir = _inside(Path(config["output_dir"]), workspace)
+    archive = _inside(Path(config["dataset_archive"]), workspace)
+    config_path = _inside(config_path, workspace)
+    if config.get("status") != "PREREGISTERED_NOT_RUN":
+        raise RuntimeError("config is not frozen")
+    if output_dir.exists():
+        raise FileExistsError(output_dir)
+    if _git(act_repository, "branch", "--show-current") != config["required_branch"]:
+        raise RuntimeError("ACT branch gate failed")
+    if _git(act_repository, "status", "--porcelain=v1"):
+        raise RuntimeError("ACT worktree is dirty")
+    if _git(source, "rev-parse", "HEAD") != config["official_source"]["commit"]:
+        raise RuntimeError("official source commit mismatch")
+    if _git(source, "rev-parse", "HEAD^{tree}") != config["official_source"]["tree"]:
+        raise RuntimeError("official source tree mismatch")
+    if _git(source, "status", "--porcelain=v1"):
+        raise RuntimeError("official source clone is dirty")
+    if _sha256(archive) != config["dataset_archive_sha256"]:
+        raise RuntimeError("dataset archive hash mismatch")
+    for gate in config["accepted_audits"]:
+        path = _inside(Path(gate["path"]), workspace)
+        if _sha256(path) != gate["sha256"]:
+            raise RuntimeError(f"accepted audit hash mismatch: {gate['label']}")
+        value = json.loads(path.read_text(encoding="utf-8"))
+        if value.get("status") != "PASS" or value.get("issues") != []:
+            raise RuntimeError(f"accepted audit gate failed: {gate['label']}")
+    free, total = torch.cuda.mem_get_info(config["crown"]["device"])
+    if free / 1024**3 < float(config["crown"]["minimum_free_gpu_memory_gib"]):
+        raise RuntimeError("GPU memory gate failed")
+
+    torch.set_num_threads(int(config["torch_threads"]))
+    torch.set_num_interop_threads(1)
+    inputs, labels = load_cifar10_test_archive(archive)
+    model, router, moe_type, checkpoint = _load_model(config, workspace)
+    predictions = _predict(model, inputs, int(config["batch_size"]))
+    eligible = np.flatnonzero(predictions == labels)
+    samples = int(config["selection"]["samples"])
+    if len(eligible) < samples:
+        raise RuntimeError("insufficient clean-correct samples")
+    indices = eligible[:samples]
+    centers = torch.from_numpy(inputs[indices])
+    with torch.no_grad():
+        clean_routes = router(centers).argmax(dim=1).numpy().astype(np.int64)
+
+    specialized = [
+        specialize_advmoe_path(model, route, moe_type)[0].eval()
+        for route in (0, 1)
+    ]
+    path_adapters = [CrownCompatibleAdvMoePath(path).eval() for path in specialized]
+    router_adapter = CrownCompatibleAdvMoeRouter(router).eval()
+    router_equivalence = adapter_equivalence(router, centers)
+    path_equivalence = [
+        path_adapter_equivalence(path, centers) for path in specialized
+    ]
+    if not router_equivalence["outputs_equal"] or not all(
+        row["outputs_close"] for row in path_equivalence
+    ):
+        raise RuntimeError("CROWN lowering equivalence gate failed")
+    with torch.no_grad():
+        dynamic_logits = model(centers)
+        selected_logits = torch.cat(
+            [
+                specialized[int(clean_routes[slot])](centers[slot : slot + 1])
+                for slot in range(samples)
+            ]
+        )
+    dynamic_selected_error = float((dynamic_logits - selected_logits).abs().max().item())
+    if dynamic_selected_error > float(config["numerical"]["equivalence_atol"]):
+        raise RuntimeError("dynamic and selected static paths differ")
+
+    output_dir.mkdir(parents=True)
+    rows_path = output_dir / "rows.jsonl"
+    attack_endpoints: list[np.ndarray] = []
+    row_records: list[dict[str, Any]] = []
+    started = time.monotonic()
+    tolerance = float(config["numerical"]["safe_positive_margin"])
+    with rows_path.open("x", encoding="utf-8") as rows_handle:
+        for slot, dataset_index in enumerate(indices):
+            center = centers[slot : slot + 1]
+            prediction = int(predictions[dataset_index])
+            clean_route = int(clean_routes[slot])
+            properties = top1_property_rows(prediction)
+            for numerator in config["radii_over_255"]:
+                epsilon = float(numerator) / 255.0
+                lower = torch.clamp(center - epsilon, 0.0, 1.0)
+                upper = torch.clamp(center + epsilon, 0.0, 1.0)
+                route_row = np.asarray(
+                    [1.0, -1.0] if clean_route == 0 else [-1.0, 1.0],
+                    dtype=np.float64,
+                )
+                route_bound = _crown_bounds(
+                    copy.deepcopy(router_adapter), center, lower, upper,
+                    property_rows=((route_row, 0.0),),
+                    device=config["crown"]["device"], tolerance=tolerance,
+                    method=config["crown"]["method"], track_gradients=False,
+                )
+                _cleanup_cuda()
+                path_bounds = []
+                eta_bounds = []
+                for route in (0, 1):
+                    bound = _crown_bounds(
+                        copy.deepcopy(path_adapters[route]), center, lower, upper,
+                        property_rows=properties,
+                        device=config["crown"]["device"], tolerance=tolerance,
+                        method=config["crown"]["method"], track_gradients=False,
+                    )
+                    path_bounds.append(bound)
+                    _cleanup_cuda()
+                    if config["guard_ablation"]["enabled"]:
+                        matrix = np.stack([row for row, _offset in properties])
+                        offset = np.asarray([offset for _row, offset in properties])
+                        implication = TieSafeTop1Implication(
+                            copy.deepcopy(router_adapter),
+                            copy.deepcopy(path_adapters[route]),
+                            route,
+                            matrix,
+                            offset,
+                            eta=tolerance,
+                        )
+                        eta_bound = _crown_bounds(
+                            implication, center, lower, upper,
+                            property_rows=None,
+                            device=config["crown"]["device"], tolerance=tolerance,
+                            method=config["crown"]["method"], track_gradients=False,
+                        )
+                        eta_bounds.append(eta_bound)
+                        _cleanup_cuda()
+                attack = _prediction_attack(
+                    model, center, lower, upper, prediction,
+                    steps=int(config["attack"]["steps"]),
+                    restarts=int(config["attack"]["restarts"]),
+                    step_size=epsilon / float(config["attack"]["step_divisor"]),
+                    seed=int(config["attack"]["seed"]) + len(row_records),
+                    device=config["attack"]["device"],
+                )
+                attack_endpoints.append(attack.pop("endpoint"))
+                statuses = aggregate_filters(
+                    clean_route=clean_route,
+                    router_status=route_bound["status"],
+                    path_statuses=[row["status"] for row in path_bounds],
+                    eta_statuses=[row["status"] for row in eta_bounds],
+                    attack_prediction_flip=bool(attack["prediction_flip"]),
+                )
+                positive_conflict = bool(attack["prediction_flip"]) and (
+                    statuses["route_a_two_path"]
+                    == "CERTIFIED_MARGIN_FILTER_NOT_FORMAL_SAFE"
+                    or statuses["eta_guard_ablation"]
+                    == "CERTIFIED_MARGIN_FILTER_NOT_FORMAL_SAFE"
+                )
+                record = {
+                    "row_id": f"sample{slot}:eps{numerator}",
+                    "sample_slot": slot,
+                    "dataset_index": int(dataset_index),
+                    "epsilon_over_255": float(numerator),
+                    "epsilon": epsilon,
+                    "label": int(labels[dataset_index]),
+                    "clean_prediction": prediction,
+                    "clean_route": clean_route,
+                    "router_crown": route_bound,
+                    "path_crown": path_bounds,
+                    "eta_crown": eta_bounds,
+                    "attack": attack,
+                    "statuses": statuses,
+                    "positive_filter_witness_conflict": positive_conflict,
+                }
+                row_records.append(record)
+                _append_json(rows_handle, record)
+
+    attack_path = output_dir / "attack_endpoints.npz"
+    with attack_path.open("xb") as handle:
+        np.savez_compressed(
+            handle,
+            dataset_indices=indices.astype(np.int64),
+            centers=centers.numpy(),
+            endpoints=np.concatenate(attack_endpoints, axis=0),
+            labels=labels[indices].astype(np.int64),
+        )
+        handle.flush()
+        os.fsync(handle.fileno())
+    errors = sum(
+        row["router_crown"]["status"] == "ERROR"
+        or any(value["status"] == "ERROR" for value in row["path_crown"])
+        or any(value["status"] == "ERROR" for value in row["eta_crown"])
+        for row in row_records
+    )
+    conflicts = sum(row["positive_filter_witness_conflict"] for row in row_records)
+    tables = {}
+    for numerator in config["radii_over_255"]:
+        selected = [
+            row for row in row_records
+            if row["epsilon_over_255"] == float(numerator)
+        ]
+        tables[str(numerator)] = {
+            "samples": len(selected),
+            "route_invariance": dict(Counter(row["statuses"]["route_invariance"] for row in selected)),
+            "route_a_two_path": dict(Counter(row["statuses"]["route_a_two_path"] for row in selected)),
+            "eta_guard_ablation": dict(Counter(row["statuses"]["eta_guard_ablation"] for row in selected)),
+            "endpoint": dict(Counter(row["statuses"]["endpoint"] for row in selected)),
+            "route_attack_or_prediction_witnesses": sum(row["attack"]["prediction_flip"] for row in selected),
+        }
+    result = {
+        "schema_version": 1,
+        "status": "COMPLETED_NOT_INDEPENDENTLY_AUDITED" if errors == 0 and conflicts == 0 else "FAILED",
+        "scope": config["scope"],
+        "config": {"path": str(config_path), "sha256": _sha256(config_path)},
+        "checkpoint": {"path": str(checkpoint), "sha256": _sha256(checkpoint)},
+        "dataset": {"archive": str(archive), "sha256": _sha256(archive)},
+        "selection": {"dataset_indices": indices.tolist(), "clean_correct": True},
+        "equivalence": {
+            "router": router_equivalence,
+            "paths": path_equivalence,
+            "dynamic_selected_max_abs_error": dynamic_selected_error,
+        },
+        "rows": {"path": str(rows_path), "sha256": _sha256(rows_path), "count": len(row_records)},
+        "attack_endpoints": {"path": str(attack_path), "sha256": _sha256(attack_path)},
+        "tables": tables,
+        "backend_error_rows": errors,
+        "positive_filter_witness_conflicts": conflicts,
+        "formal_safe_count": 0,
+        "numerical_scope": "positive CROWN margins are filters, never formal SAFE, because the backend is not outward rounded",
+        "runtime_seconds": time.monotonic() - started,
+        "gpu": {"free_gib_before": free / 1024**3, "total_gib": total / 1024**3},
+        "official_source_clean_after": not bool(_git(source, "status", "--porcelain=v1")),
+    }
+    _write_json(output_dir / "summary.json", result)
+    return result
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--config", type=Path, required=True)
+    arguments = parser.parse_args()
+    result = run(arguments.config)
+    print(json.dumps({"status": result["status"], "tables": result["tables"]}, indent=2, sort_keys=True))
+    if result["status"] == "FAILED":
+        raise SystemExit(1)
+
+
+if __name__ == "__main__":
+    main()

@@ -2393,3 +2393,13 @@ path independently obtains ordered-archive clean accuracies of 85.37% and
 `results/baseline/advmoe_training_endpoint_telemetry_seed0_compat_r2_audit.json`.
 This closes the trained-router collapse question and supplies the accepted
 checkpoint identities for the frozen two-path evaluation.
+
+**AdvMoE two-path correctness smoke (frozen, not yet run).** The new runner
+specializes all 16 hidden MoE convolutions into each of the two global paths,
+lowers their fixed output pooling for CROWN, and compares route invariance,
+router-independent two-path filtering, and the tie-safe eta implication. The
+smoke uses the final compatibility checkpoint, first ordered clean-correct
+input, and `0.5/255`. Plain CROWN positive bounds remain numerical filters, not
+formal SAFE results; only full dynamic-model replay may emit UNSAFE. See
+`configs/advmoe_two_path_seed0_compat_smoke_r1.json` and
+`docs/advmoe_two_path.md`.

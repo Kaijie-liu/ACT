@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "status": "PREREGISTERED_NOT_RUN",
+  "scope": "ADV_MOE_SEED0_COMPAT_TWO_PATH_CORRECTNESS_SMOKE_R1",
+  "label": "official-code numerical-compatibility checkpoint; two-path numerical CROWN conformance smoke",
+  "workspace_boundary": "/data1/Kane/MOE",
+  "act_repository": "/data1/Kane/MOE/ACT",
+  "required_branch": "feat/moe-route-verification",
+  "official_source": {
+    "repository": "/data1/Kane/MOE/baselines/robust-moe-cnn",
+    "commit": "c50796fb8284512b6f6ad8e843f95182cec527cf",
+    "tree": "153d4ff9f30f34eb7fdd4caf670495122c5836e0",
+    "license": "NO_LICENSE_FILE_READ_EXECUTE_ONLY"
+  },
+  "accepted_audits": [
+    {
+      "label": "training",
+      "path": "/data1/Kane/MOE/ACT/act/pipeline/moe/results/baseline/advmoe_training_seed0_compat_r1_audit.json",
+      "sha256": "f78dee8c5a54f481773277abab3567a6e57ffaf5b5426eaac1e2de3cfbd23b5e"
+    },
+    {
+      "label": "endpoint_telemetry",
+      "path": "/data1/Kane/MOE/ACT/act/pipeline/moe/results/baseline/advmoe_training_endpoint_telemetry_seed0_compat_r2_audit.json",
+      "sha256": "0c6b8fb62a833426353999df5ed24cc3e77bc0e59fc7fde68ba5589065d0ca6e"
+    }
+  ],
+  "checkpoint": {
+    "selection": "final epoch; no test-set best-checkpoint selection",
+    "seed": 0,
+    "epoch": 100,
+    "path": "/data1/Kane/MOE/baseline_runs/advmoe/seed0_compat_r1/results/training/train_moe/compat_softmax_bridge_seed0_r1_CIFAR10-resnet18_cifar_moe-ratio0.5-epochs100-lr0.1-eps8-steps2-beta6.0-expert2--seed0/checkpoint/checkpoint.pth.tar",
+    "sha256": "e2d93896e5be1fdbb1c9538f9f09014bdc6d3067ac5501352f61475b5294b49e"
+  },
+  "dataset_archive": "/data1/Kane/MOE/ACT/data/torchvision/CIFAR10/raw/cifar-10-python.tar.gz",
+  "dataset_archive_sha256": "6d958be074577803d12ecdefd02955f39262c83c16fe9348329d7fe0b5c001ce",
+  "output_dir": "/data1/Kane/MOE/ACT/data/moe/results/advmoe_two_path_seed0_compat_smoke_r1",
+  "selection": {
+    "samples": 1,
+    "policy": "first deterministic clean-correct ordered CIFAR-10 test input",
+    "denominator": "one sample independently at each registered radius"
+  },
+  "radii_over_255": [0.5],
+  "batch_size": 128,
+  "torch_threads": 2,
+  "crown": {
+    "environment": "/data1/Kane/MOE/envs/alpha-beta-crown",
+    "method": "CROWN",
+    "device": "cuda:0",
+    "minimum_free_gpu_memory_gib": 48.0,
+    "gradient_tracking": false,
+    "positive_bound_semantics": "CERTIFIED_MARGIN_FILTER_NOT_FORMAL_SAFE",
+    "reason": "installed backend is not outward rounded"
+  },
+  "attack": {
+    "device": "cuda:0",
+    "steps": 20,
+    "restarts": 2,
+    "step_divisor": 4.0,
+    "seed": 20260905,
+    "status_semantics": "only a full dynamic-model replayed prediction flip is UNSAFE"
+  },
+  "guard_ablation": {
+    "enabled": true,
+    "method": "tie-safe eta implication over original box",
+    "expected_advantage": "none preregistered"
+  },
+  "numerical": {
+    "safe_positive_margin": 1e-7,
+    "equivalence_atol": 1e-6,
+    "full_forward_replay_required_for_unsafe": true,
+    "negative_bound_semantics": "UNKNOWN_NEVER_UNSAFE",
+    "formal_safe_enabled": false
+  }
+}

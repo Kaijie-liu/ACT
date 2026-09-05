@@ -3,9 +3,11 @@ import unittest
 import torch
 
 from act.pipeline.moe.advmoe_adapter import (
+    CrownCompatibleAdvMoePath,
     CrownCompatibleAdvMoeRouter,
     adapter_equivalence,
     construct_official_init,
+    path_adapter_equivalence,
     specialize_advmoe_path,
     state_dict_sha256,
 )
@@ -62,6 +64,21 @@ class AdvMoeAdapterTests(unittest.TestCase):
         lowered = CrownCompatibleAdvMoeRouter(self.router)
         with self.assertRaises(ValueError):
             lowered.validate_input_shape(torch.zeros(1, 3, 31, 31))
+
+    def test_static_path_lowering_is_within_frozen_tolerance(self):
+        specialized, _count = specialize_advmoe_path(
+            self.model, 0, self.moe_type
+        )
+        torch.manual_seed(92)
+        inputs = torch.rand(3, 3, 32, 32)
+        result = path_adapter_equivalence(specialized, inputs)
+        self.assertTrue(result["outputs_close"])
+        self.assertTrue(result["predictions_equal"])
+        self.assertLessEqual(result["max_abs_error"], 1e-7)
+
+    def test_static_path_lowering_requires_specialization(self):
+        with self.assertRaises(ValueError):
+            CrownCompatibleAdvMoePath(self.model)
 
 
 if __name__ == "__main__":

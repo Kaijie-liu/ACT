@@ -168,6 +168,61 @@ def specialize_advmoe_path(
     return specialized, replaced
 
 
+class CrownCompatibleAdvMoePath(nn.Module):
+    """Fixed-shape lowering of one already specialized CIFAR-10 path."""
+
+    def __init__(self, specialized: nn.Module):
+        super().__init__()
+        if specialized.router is not None:
+            raise ValueError("AdvMoE path must be specialized before lowering")
+        self.conv1 = copy.deepcopy(specialized.conv1)
+        self.bn1 = copy.deepcopy(specialized.bn1)
+        self.layer1 = copy.deepcopy(specialized.layer1)
+        self.layer2 = copy.deepcopy(specialized.layer2)
+        self.layer3 = copy.deepcopy(specialized.layer3)
+        self.layer4 = copy.deepcopy(specialized.layer4)
+        self.pool = nn.AvgPool2d(4)
+        self.linear = copy.deepcopy(specialized.linear)
+
+    def forward(self, inputs: torch.Tensor) -> torch.Tensor:
+        if inputs.ndim != 4 or tuple(inputs.shape[1:]) != (3, 32, 32):
+            raise ValueError("AdvMoE path adapter requires [B,3,32,32]")
+        out = torch.relu(self.bn1(self.conv1(inputs)))
+        out = self.layer1(out)
+        out = self.layer2(out)
+        out = self.layer3(out)
+        out = self.layer4(out)
+        out = self.pool(out)
+        return self.linear(out.reshape(out.shape[0], -1))
+
+
+def path_adapter_equivalence(
+    specialized: nn.Module,
+    inputs: torch.Tensor,
+    *,
+    atol: float = 1e-7,
+    rtol: float = 1e-7,
+) -> dict[str, Any]:
+    """Compare the literal static path with its fixed-pooling CROWN lowering."""
+
+    specialized = specialized.eval()
+    adapted = CrownCompatibleAdvMoePath(specialized).eval()
+    with torch.no_grad():
+        original = specialized(inputs)
+        lowered = adapted(inputs)
+    difference = (original - lowered).abs()
+    return {
+        "outputs_equal": bool(torch.equal(original, lowered)),
+        "outputs_close": bool(torch.allclose(original, lowered, atol=atol, rtol=rtol)),
+        "predictions_equal": bool(
+            torch.equal(original.argmax(dim=1), lowered.argmax(dim=1))
+        ),
+        "max_abs_error": float(difference.max().item()),
+        "atol": float(atol),
+        "rtol": float(rtol),
+    }
+
+
 def adapter_equivalence(
     router: nn.Module, inputs: torch.Tensor
 ) -> dict[str, Any]:
