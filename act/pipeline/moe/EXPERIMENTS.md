@@ -2550,3 +2550,11 @@ taxonomy separates a replayed true counterexample, an executed-float
 fixed-multiplier-family obstruction, optimized-backend closure or improvement,
 and a remaining unresolved case. This diagnostic remains development-only and
 cannot establish guarded safety or formal CROWN certification.
+
+Stage-B r1 independently audits `PASS`, including bit-exact CUDA replay of all
+55 diagnostic points, but all five optimized CROWN calls OOM after reaching
+about 70.7 GiB beside an unrelated 23.6-GiB process. Targeted search finds no
+static or full-model violation, while all finite-point dual upper bounds remain
+positive and therefore inconclusive. R1 is retained as five unresolved rows.
+A separate resource-only retry is permitted with the previously validated
+scalable sparse-alpha controls; no scientific obligation or rule may change.

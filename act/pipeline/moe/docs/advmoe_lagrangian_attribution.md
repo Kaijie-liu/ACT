@@ -98,3 +98,24 @@ the registered CUDA device reproduced every stored value bit exactly.  The
 auditor repair therefore changes only the replay device to the one frozen in
 the targeted-search configuration; it does not change the runner output,
 points, classification rules, or tolerances.
+
+### Stage B r1 result
+
+The repaired independent replay passes with zero issues.  All five
+20-iteration alpha-CROWN calls nevertheless end in CUDA out-of-memory errors:
+the process reaches approximately 70.7 GiB while an unrelated process holds
+approximately 23.6 GiB.  This configuration omitted the scalable sparse-alpha
+controls that had already been validated for the same router family.
+
+The other diagnostic layers are informative but not decisive.  Across 55
+replayed points, targeted searches find no route-consistent static-path
+violation and no full-model prediction witness.  Each finite-point dual upper
+bound is positive and selects `mu=0`, ranging from 0.5284 to 6.5269.  These
+points therefore do not rule out a positive exact fixed-multiplier
+certificate.  All five obligations remain
+`UNRESOLVED_AFTER_REGISTERED_DIAGNOSTIC`.
+
+R1 is retained unchanged.  A resource-only r2 repair may replace the dense
+alpha configuration with the repository's previously validated scalable
+sparse-alpha settings.  Obligations, multiplier points, targeted search,
+classification precedence, and evidence semantics must remain unchanged.
