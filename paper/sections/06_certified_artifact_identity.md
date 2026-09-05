@@ -174,6 +174,17 @@ parameters, gradients, and optimizer state through all 64 staged checks. This
 result authorizes only a labeled compatibility reproduction, not relabeling
 the excluded official execution.
 
+That reproduction completes all 100 epochs and passes the stronger identity
+gate. An independent audit reloads and rehashes every snapshot and finds every
+floating value in the model, embedded and standalone router, and both
+optimizers finite. The bridge is exercised on only 18 exact-zero probability
+elements over 391,000 softmax calls. The accepted checkpoint is therefore a
+numerically valid compatibility artifact, while its explicit variant label
+preserves the distinction from the excluded released expression. This pair of
+runs demonstrates why successful process exit and high task accuracy are
+insufficient identity checks, and how a narrowly specified compatibility
+intervention can be admitted without rewriting the provenance of the result.
+
 ## Certificate identity and fail-closed use
 
 Every final result binds seven groups of fields: source and checkpoint hashes;

@@ -155,3 +155,31 @@ This unlocks configuration of a from-scratch compatibility-variant run, not
 acceptance of the excluded official run. The variant must retain its explicit
 label, preserve the official clone, fail on any non-finite state outside the
 narrow bridge condition, and undergo checkpoint-by-checkpoint numerical audit.
+
+## Accepted numerical-compatibility endpoint
+
+The separately labeled `seed0_compat_r1` run completed all 100 epochs in
+7,128.33 seconds. It is an **official-code numerical-compatibility variant;
+softmax-underflow gradient bridge**, not an unchanged official-code result.
+The bridge leaves finite native gradients unchanged and was exercised during
+the run: 18 non-finite incoming gradient elements at exact-zero softmax
+probabilities were replaced across 78,200 gradient-hook calls and 391,000
+softmax calls. The official source remained clean at commit `c50796fb8`.
+
+The independent endpoint audit reloads and rehashes all 100 consecutive
+snapshots. It reports `PASS` with zero issues and no recovered metadata. Every
+floating tensor in the non-router model, model-embedded router, standalone
+router, main optimizer, and router optimizer is finite in every snapshot. The
+final checkpoint is snapshot 100, SHA-256
+`e2d93896e5be1fdbb1c9538f9f09014bdc6d3067ac5501352f61475b5294b49e`.
+It reports clean accuracy 85.67% and released 10-step adversarial accuracy
+61.14%. The released best-adversarial checkpoint is snapshot 95, SHA-256
+`143f5d0db191dc74be5d77d5ff10d0e320709a0718a11ac0e3c6668e382a63db`;
+its clean and released adversarial accuracies are 85.36% and 61.80%.
+
+These are empirical released-path metrics, not formal certificates. The
+released test set participates in checkpoint selection, and the repository's
+missing license keeps checkpoint redistribution disabled. The accepted audit
+is `act/pipeline/moe/results/baseline/advmoe_training_seed0_compat_r1_audit.json`.
+This result unlocks trained-router endpoint telemetry and the frozen two-path
+evaluation; it does not predetermine either result.

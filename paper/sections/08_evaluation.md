@@ -206,7 +206,7 @@ shape, not yet its formal-certificate endpoint. The released hard/raw Theorem
 is not applicable on 19 and vacuous at registered radii on one. The author-
 unspecified provider is likewise not a runnable baseline.
 
-## AdvMoE two-path evaluation [blocked by non-finite released training]
+## AdvMoE two-path evaluation [compatibility checkpoint accepted; table pending]
 
 The first complete official-code seed-0 execution cannot supply this table.
 Although its finite main network reports 93.79% clean accuracy at the released
@@ -232,7 +232,18 @@ exercises 23 replacements at exact-zero probabilities, and leaves every final
 router parameter, gradient, and optimizer-state element finite. The maximum
 router pair gap still reaches 62,961.53, so the pass is not explained by a
 benign input sequence. This unlocks a new compatibility-variant execution;
-the original table remains blocked until that run completes numerical audit.
+the original official-code checkpoint remains excluded.
+
+The explicitly labeled compatibility execution has now completed 100 epochs
+and passed an independent checkpoint-by-checkpoint numerical audit with zero
+issues. All five floating-state groups are finite in all 100 snapshots. Its
+best released PGD-10 checkpoint reports 85.36% clean accuracy and 61.80%
+adversarial accuracy; the final checkpoint reports 85.67% and 61.14%. Only 18
+exact-zero target-gradient elements require the bridge during the full run.
+These values are empirical released-path metrics, not certificates, and test-
+set checkpoint selection remains an artifact limitation. This checkpoint now
+unlocks, but does not substitute for, the trained-router telemetry and
+two-path verification table below.
 
 The final AdvMoE checkpoint evaluation records clean accuracy, route share,
 signed router-score offset, selected-margin distribution, and load entropy.

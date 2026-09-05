@@ -2359,3 +2359,21 @@ optimizer state are all finite even though the maximum score gap reaches
 `results/baseline/advmoe_router_finite_smoke_seed0_r2_audit.json`. A separately
 labeled from-scratch compatibility run may now be configured; the excluded r3
 official-code result remains excluded and is never overwritten.
+
+**Accepted numerical-compatibility endpoint (2026-09-05).** The explicitly
+labeled `seed0_compat_r1` run completes 100 epochs in 7,128.33 seconds. The
+bridge is exercised but remains narrow: it replaces 18 non-finite incoming
+gradient elements only at exact-zero softmax probabilities across 78,200 hook
+calls and 391,000 softmax calls. The official clone remains clean and pinned.
+The independent audit reloads and rehashes all 100 consecutive snapshots and
+reports `PASS` with zero issues: the non-router model, embedded and standalone
+router, and both optimizer states are finite at every epoch. The best released
+PGD-10 row is training epoch 94 / snapshot 95 (`SA=85.36%`, `RA=61.80%`,
+SHA-256 `143f5d0db191dc74be5d77d5ff10d0e320709a0718a11ac0e3c6668e382a63db`).
+The final row is training epoch 99 / snapshot 100 (`SA=85.67%`, `RA=61.14%`,
+SHA-256 `e2d93896e5be1fdbb1c9538f9f09014bdc6d3067ac5501352f61475b5294b49e`).
+These are released-path empirical metrics, not certificates; test-set
+checkpoint selection and the no-license redistribution restriction remain in
+force. The authoritative record is
+`results/baseline/advmoe_training_seed0_compat_r1_audit.json`. Trained-router
+telemetry and the frozen two-path evaluation are now unlocked.
