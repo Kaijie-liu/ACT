@@ -51,6 +51,41 @@ def _atomic_json(path: Path, payload: dict[str, Any]) -> None:
     os.replace(temporary, path)
 
 
+def floating_tensor_summary(value: Any) -> dict[str, int | bool]:
+    tensors: list[torch.Tensor] = []
+
+    def visit(current: Any) -> None:
+        if torch.is_tensor(current):
+            if current.is_floating_point() or current.is_complex():
+                tensors.append(current)
+        elif isinstance(current, dict):
+            for child in current.values():
+                visit(child)
+        elif isinstance(current, (list, tuple)):
+            for child in current:
+                visit(child)
+
+    visit(value)
+    elements = sum(tensor.numel() for tensor in tensors)
+    finite_elements = sum(
+        int(torch.isfinite(tensor).sum().item()) for tensor in tensors
+    )
+    nan_elements = sum(int(torch.isnan(tensor).sum().item()) for tensor in tensors)
+    inf_elements = sum(int(torch.isinf(tensor).sum().item()) for tensor in tensors)
+    nonfinite_tensors = sum(
+        not bool(torch.isfinite(tensor).all().item()) for tensor in tensors
+    )
+    return {
+        "tensors": len(tensors),
+        "elements": elements,
+        "finite_elements": finite_elements,
+        "nan_elements": nan_elements,
+        "inf_elements": inf_elements,
+        "nonfinite_tensors": nonfinite_tensors,
+        "all_finite": finite_elements == elements,
+    }
+
+
 def audit(config_path: Path, progress_path: Path) -> dict[str, Any]:
     config = _load_json(config_path)
     progress = _load_json(progress_path)
@@ -85,6 +120,13 @@ def audit(config_path: Path, progress_path: Path) -> dict[str, Any]:
 
     verified_records: list[dict[str, Any]] = []
     recovered_metadata: list[dict[str, Any]] = []
+    nonfinite_epochs: dict[str, list[int]] = {
+        "main_without_router": [],
+        "embedded_router": [],
+        "router": [],
+        "optimizer": [],
+        "router_optimizer": [],
+    }
     snapshot_root = run_root / "checkpoint_snapshots"
     for record in records:
         epoch = int(record["epoch"])
@@ -121,13 +163,44 @@ def audit(config_path: Path, progress_path: Path) -> dict[str, Any]:
             issues.append(f"epoch {epoch}: missing checkpoint keys {missing}")
         if int(payload.get("epoch", -1)) != epoch:
             issues.append(f"epoch {epoch}: embedded epoch mismatch")
+        state_dict = payload.get("state_dict", {})
+        main_without_router = {
+            name: tensor
+            for name, tensor in state_dict.items()
+            if not name.startswith("router.") and ".router." not in name
+        }
+        embedded_router = {
+            name: tensor
+            for name, tensor in state_dict.items()
+            if name.startswith("router.") or ".router." in name
+        }
+        finiteness = {
+            "main_without_router": floating_tensor_summary(main_without_router),
+            "embedded_router": floating_tensor_summary(embedded_router),
+            "router": floating_tensor_summary(payload.get("router", {})),
+            "optimizer": floating_tensor_summary(payload.get("optimizer", {})),
+            "router_optimizer": floating_tensor_summary(
+                payload.get("router_optimizer", {})
+            ),
+        }
+        for group, summary in finiteness.items():
+            if summary["all_finite"] is not True:
+                nonfinite_epochs[group].append(epoch)
         verified_records.append(
             {
                 "epoch": epoch,
                 "sha256": actual_hash,
                 "size_bytes": actual_size,
+                "finiteness": finiteness,
             }
         )
+
+    for group, epochs in nonfinite_epochs.items():
+        if epochs:
+            issues.append(
+                f"{group} contains non-finite tensors in {len(epochs)} "
+                f"checkpoints (first epoch {epochs[0]}, last epoch {epochs[-1]})"
+            )
 
     result_roots = list(run_root.glob("results/training/train_moe/*"))
     if len(result_roots) != 1:
@@ -201,6 +274,11 @@ def audit(config_path: Path, progress_path: Path) -> dict[str, Any]:
         },
         "checkpoint_count": len(records),
         "verified_checkpoint_count": len(verified_records),
+        "checkpoint_finiteness": {
+            "all_finite": not any(nonfinite_epochs.values()),
+            "nonfinite_epochs_by_group": nonfinite_epochs,
+            "records": verified_records,
+        },
         "recovered_metadata": recovered_metadata,
         "final_checkpoint_sha256": final_hash,
         "best_checkpoint_sha256": best_hash,

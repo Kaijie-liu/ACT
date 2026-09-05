@@ -12,6 +12,9 @@ from act.pipeline.moe.advmoe_training_endpoint_telemetry import (
     _clean_accuracy,
     _distribution,
 )
+from act.pipeline.moe.audit_advmoe_training_endpoint_telemetry import (
+    json_nonfinite_paths,
+)
 
 
 class _ThresholdClassifier(nn.Module):
@@ -29,6 +32,14 @@ class AdvMoeTrainingEndpointTelemetryTests(unittest.TestCase):
         self.assertAlmostEqual(
             result["standard_deviation"], np.sqrt(2.0 / 3.0)
         )
+
+    def test_distribution_rejects_nonfinite_values(self) -> None:
+        with self.assertRaises(ValueError):
+            _distribution(np.asarray([1.0, np.nan]))
+
+    def test_json_nonfinite_paths_are_explicit(self) -> None:
+        paths = json_nonfinite_paths({"row": [1.0, float("nan")]})
+        self.assertEqual(paths, ["$.row[1]"])
 
     def test_clean_accuracy_batches_without_changing_denominator(self) -> None:
         inputs = np.asarray(

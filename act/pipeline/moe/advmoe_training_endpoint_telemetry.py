@@ -44,6 +44,8 @@ def _write_json(path: Path, payload: dict[str, Any]) -> None:
 
 def _distribution(values: np.ndarray) -> dict[str, float]:
     values = np.asarray(values, dtype=np.float64)
+    if values.size == 0 or not np.isfinite(values).all():
+        raise ValueError("distribution requires a nonempty finite array")
     return {
         "minimum": float(values.min()),
         "q25": float(np.quantile(values, 0.25)),
@@ -84,6 +86,17 @@ def _load_state(
     model = model.to(device)
     router = router.to(device)
     model.router = router
+    nonfinite_router = [
+        name
+        for name, value in router.state_dict().items()
+        if (value.is_floating_point() or value.is_complex())
+        and not bool(torch.isfinite(value).all().item())
+    ]
+    if nonfinite_router:
+        raise RuntimeError(
+            f"{spec['label']}: router contains non-finite tensors: "
+            f"{len(nonfinite_router)} state entries"
+        )
     identity["model_state_sha256"] = state_dict_sha256(model)
     identity["router_state_sha256"] = state_dict_sha256(router)
     return model, router, identity
