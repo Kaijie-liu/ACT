@@ -119,3 +119,8 @@ R1 is retained unchanged.  A resource-only r2 repair may replace the dense
 alpha configuration with the repository's previously validated scalable
 sparse-alpha settings.  Obligations, multiplier points, targeted search,
 classification precedence, and evidence semantics must remain unchanged.
+
+The r2 resource repair is preregistered with the same five obligations and
+the previously used sparse-alpha settings: sparse feature/specification and
+intermediate bounds, no full convolution alpha tensor, CROWN batches of 128,
+and 20 shared-alpha iterations.  No endpoint or scientific threshold changes.
