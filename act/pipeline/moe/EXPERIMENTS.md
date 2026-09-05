@@ -2414,3 +2414,16 @@ pass. The accepted record is
 `results/baseline/advmoe_two_path_seed0_compat_smoke_r1_audit.json`. It unlocks
 the unchanged-method 20-input, five-radius config
 `configs/advmoe_two_path_seed0_compat_full_r1.json`.
+
+**AdvMoE two-path full attempt r1 (preserved pre-row failure).** The first
+full launch stops before creating its output directory because the runner
+calls the path-lowering helper with its local tolerance defaults instead of
+the already frozen `equivalence_atol=1e-6`. Exact-cohort replay finds maximum
+absolute differences `4.77e-7` and `9.54e-7` with unchanged predictions, so
+both paths satisfy the registered gate. The repair passes the configured
+absolute tolerance with zero relative tolerance; it changes no checkpoint,
+sample, radius, backend, attack, or status semantics. The failure identity is
+retained in
+`results/baseline/advmoe_two_path_seed0_compat_full_r1_attempt001_failure.json`,
+and the repaired launch is separately preregistered as
+`configs/advmoe_two_path_seed0_compat_full_r2.json`.

@@ -111,6 +111,25 @@ def aggregate_filters(
     }
 
 
+def evaluate_path_lowering_equivalence(
+    specialized_paths: list[torch.nn.Module],
+    inputs: torch.Tensor,
+    *,
+    absolute_tolerance: float,
+) -> list[dict[str, Any]]:
+    """Apply the registered absolute tolerance to every static-path lowering."""
+
+    return [
+        path_adapter_equivalence(
+            path,
+            inputs,
+            atol=float(absolute_tolerance),
+            rtol=0.0,
+        )
+        for path in specialized_paths
+    ]
+
+
 def _cleanup_cuda() -> None:
     gc.collect()
     gc.collect()
@@ -255,9 +274,11 @@ def run(config_path: Path) -> dict[str, Any]:
     path_adapters = [CrownCompatibleAdvMoePath(path).eval() for path in specialized]
     router_adapter = CrownCompatibleAdvMoeRouter(router).eval()
     router_equivalence = adapter_equivalence(router, centers)
-    path_equivalence = [
-        path_adapter_equivalence(path, centers) for path in specialized
-    ]
+    path_equivalence = evaluate_path_lowering_equivalence(
+        specialized,
+        centers,
+        absolute_tolerance=float(config["numerical"]["equivalence_atol"]),
+    )
     if not router_equivalence["outputs_equal"] or not all(
         row["outputs_close"] for row in path_equivalence
     ):

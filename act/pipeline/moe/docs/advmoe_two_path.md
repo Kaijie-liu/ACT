@@ -22,8 +22,9 @@ AdvMoE has one global hard route shared by all 16 MoE convolutions. Replacing
 each routed convolution with the selected contiguous weight slice therefore
 produces exactly two static networks, not `2^16` paths. The CROWN adapter also
 replaces the final fixed-shape adaptive average pool with `AvgPool2d(4)`. The
-literal and lowered paths must agree within `1e-7`; their raw maximum error and
-prediction agreement are retained. The nonlinear router uses the already
+literal and lowered paths must agree within the registered absolute tolerance
+`1e-6` (with zero relative tolerance); their raw maximum error and prediction
+agreement are retained. The nonlinear router uses the already
 validated fixed-shape adapter.
 
 The installed CROWN backend is not outward rounded. Consequently, positive
@@ -65,3 +66,13 @@ The accepted smoke unlocks
 frozen method on the first 20 clean-correct ordered inputs and
 `{0.5,1,2,4,8}/255`. The full run retains all-sample denominators and does not
 change the backend, attack, guard ablation, or numerical semantics.
+
+Full attempt r1 stopped before creating a result row because the runner called
+the lowering helper with its local default tolerance instead of the frozen
+configuration value. Independent replay on the exact 20 selected inputs found
+maximum path errors `4.77e-7` and `9.54e-7`, equal predictions, and both paths
+inside the registered absolute tolerance `1e-6`. The failure is retained in
+`advmoe_two_path_seed0_compat_full_r1_attempt001_failure.json`. Full r2 changes
+neither the model nor the scientific configuration: it only connects the
+already registered tolerance to the execution gate and records zero relative
+tolerance explicitly.

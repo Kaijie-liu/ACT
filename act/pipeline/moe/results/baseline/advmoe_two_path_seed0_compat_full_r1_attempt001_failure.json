@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "status": "FAILED_PRESERVED",
+  "scope": "ADV_MOE_SEED0_COMPAT_TWO_PATH_FULL_R1_ATTEMPT001",
+  "timestamp": "2026-09-05T18:02:51+10:00",
+  "runner_head": "73b6d5fe580e2c9cddf1ad2239c6c2caa74ec8d6",
+  "systemd_invocation_id": "d74be82982504a4fa2f23c14b8f5423d",
+  "exit_status": 1,
+  "failure": "CROWN lowering equivalence gate failed before output directory or result rows were created",
+  "cause": "runner used the helper default atol/rtol instead of the preregistered absolute equivalence tolerance",
+  "registered_equivalence_atol": 1e-6,
+  "diagnostic_replay": {
+    "dataset_indices": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+    "path_0_max_abs_error": 4.76837158203125e-7,
+    "path_1_max_abs_error": 9.5367431640625e-7,
+    "path_predictions_equal": true,
+    "router_outputs_bit_exact": true,
+    "both_paths_pass_registered_absolute_tolerance": true
+  },
+  "log": {
+    "path": "/data1/Kane/MOE/ACT/data/moe/logs/advmoe_two_path_seed0_compat_full_r1.log",
+    "bytes": 740,
+    "sha256": "6f55959c2514e0fd80e8c43b10034d641cd8665d49dcca7b52e80128f1293672"
+  },
+  "scientific_rows_created": 0,
+  "resolution": "full r2 retains the mathematical configuration and wires equivalence_atol through with rtol=0"
+}

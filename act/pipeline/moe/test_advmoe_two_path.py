@@ -1,9 +1,13 @@
 from __future__ import annotations
 
 import unittest
+from unittest.mock import patch
+
+import torch
 
 from act.pipeline.moe.advmoe_two_path import (
     aggregate_filters,
+    evaluate_path_lowering_equivalence,
     top1_property_rows,
 )
 from act.pipeline.moe.audit_advmoe_two_path import expected_crown_status
@@ -55,6 +59,22 @@ class AdvMoeTwoPathTests(unittest.TestCase):
         self.assertEqual(
             expected_crown_status(record, 1e-7), "UNKNOWN_RELAXATION"
         )
+
+    def test_path_equivalence_uses_registered_absolute_tolerance(self) -> None:
+        paths = [object(), object()]
+        inputs = torch.zeros(1, 3, 32, 32)
+        with patch(
+            "act.pipeline.moe.advmoe_two_path.path_adapter_equivalence",
+            side_effect=[{"outputs_close": True}, {"outputs_close": True}],
+        ) as equivalence:
+            rows = evaluate_path_lowering_equivalence(
+                paths, inputs, absolute_tolerance=1e-6
+            )
+        self.assertEqual(len(rows), 2)
+        self.assertEqual(equivalence.call_count, 2)
+        for call in equivalence.call_args_list:
+            self.assertEqual(call.kwargs["atol"], 1e-6)
+            self.assertEqual(call.kwargs["rtol"], 0.0)
 
 
 if __name__ == "__main__":
