@@ -12,7 +12,10 @@ from act.pipeline.moe.advmoe_two_path import (
     select_batched_static_path_logits,
     top1_property_rows,
 )
-from act.pipeline.moe.audit_advmoe_two_path import expected_crown_status
+from act.pipeline.moe.audit_advmoe_two_path import (
+    expected_crown_status,
+    independent_tables,
+)
 
 
 class AdvMoeTwoPathTests(unittest.TestCase):
@@ -99,6 +102,42 @@ class AdvMoeTwoPathTests(unittest.TestCase):
         )
         self.assertEqual(paths[0].batch_sizes, [3])
         self.assertEqual(paths[1].batch_sizes, [3])
+
+    def test_independent_tables_separate_prediction_and_route_flips(self) -> None:
+        rows = [
+            {
+                "epsilon_over_255": 0.5,
+                "clean_route": 0,
+                "statuses": {
+                    "route_invariance": "UNKNOWN",
+                    "route_a_two_path": "UNKNOWN",
+                    "eta_guard_ablation": "UNKNOWN",
+                    "endpoint": "UNSAFE_FULL_FORWARD_REPLAY",
+                },
+                "attack": {
+                    "prediction_flip": True,
+                    "attacked_route": 0,
+                },
+            },
+            {
+                "epsilon_over_255": 0.5,
+                "clean_route": 0,
+                "statuses": {
+                    "route_invariance": "UNKNOWN",
+                    "route_a_two_path": "UNKNOWN",
+                    "eta_guard_ablation": "UNKNOWN",
+                    "endpoint": "UNKNOWN",
+                },
+                "attack": {
+                    "prediction_flip": False,
+                    "attacked_route": 1,
+                },
+            },
+        ]
+        table = independent_tables(rows, [0.5])["0.5"]
+        self.assertEqual(table["prediction_flip_witnesses"], 1)
+        self.assertEqual(table["route_flip_witnesses"], 1)
+        self.assertEqual(table["both_flip_witnesses"], 0)
 
 
 if __name__ == "__main__":

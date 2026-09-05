@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+from collections import Counter
 import hashlib
 import json
 import math
@@ -99,6 +100,44 @@ def _aggregate(row: dict[str, Any]) -> dict[str, str]:
     }
 
 
+def independent_tables(
+    rows: list[dict[str, Any]], radii_over_255: list[float]
+) -> dict[str, dict[str, Any]]:
+    """Rebuild per-radius status and concrete-witness tables from raw rows."""
+
+    tables: dict[str, dict[str, Any]] = {}
+    for numerator in radii_over_255:
+        selected = [
+            row for row in rows
+            if float(row["epsilon_over_255"]) == float(numerator)
+        ]
+        prediction_flips = [bool(row["attack"]["prediction_flip"]) for row in selected]
+        route_flips = [
+            int(row["attack"]["attacked_route"]) != int(row["clean_route"])
+            for row in selected
+        ]
+        tables[str(float(numerator))] = {
+            "samples": len(selected),
+            "route_invariance": dict(
+                Counter(row["statuses"]["route_invariance"] for row in selected)
+            ),
+            "route_a_two_path": dict(
+                Counter(row["statuses"]["route_a_two_path"] for row in selected)
+            ),
+            "eta_guard_ablation": dict(
+                Counter(row["statuses"]["eta_guard_ablation"] for row in selected)
+            ),
+            "endpoint": dict(Counter(row["statuses"]["endpoint"] for row in selected)),
+            "prediction_flip_witnesses": sum(prediction_flips),
+            "route_flip_witnesses": sum(route_flips),
+            "both_flip_witnesses": sum(
+                prediction and route
+                for prediction, route in zip(prediction_flips, route_flips)
+            ),
+        }
+    return tables
+
+
 def audit(config_path: Path, result_path: Path) -> dict[str, Any]:
     config = json.loads(config_path.read_text(encoding="utf-8"))
     result = json.loads(result_path.read_text(encoding="utf-8"))
@@ -153,6 +192,21 @@ def audit(config_path: Path, result_path: Path) -> dict[str, Any]:
             issues.append(f"{row['row_id']}: aggregate statuses do not recompute")
         if row.get("positive_filter_witness_conflict"):
             issues.append(f"{row['row_id']}: positive filter conflicts with witness")
+
+    rebuilt_tables = independent_tables(rows, config["radii_over_255"])
+    for radius, expected_table in rebuilt_tables.items():
+        recorded = result.get("tables", {}).get(radius, {})
+        for key in (
+            "samples",
+            "route_invariance",
+            "route_a_two_path",
+            "eta_guard_ablation",
+            "endpoint",
+        ):
+            if recorded.get(key) != expected_table[key]:
+                issues.append(f"radius {radius}: summary table {key} mismatch")
+        if recorded.get("route_attack_or_prediction_witnesses") != expected_table["prediction_flip_witnesses"]:
+            issues.append(f"radius {radius}: legacy witness count mismatch")
 
     inputs, labels = load_cifar10_test_archive(archive)
     model, router, _moe_type = construct_official_init(int(config["checkpoint"]["seed"]))
@@ -229,6 +283,11 @@ def audit(config_path: Path, result_path: Path) -> dict[str, Any]:
         "config": {"path": str(config_path), "sha256": _sha256(config_path)},
         "result": {"path": str(result_path), "sha256": _sha256(result_path)},
         "rows": {"count": len(rows), "sha256": _sha256(rows_path)},
+        "independent_tables": rebuilt_tables,
+        "legacy_field_note": (
+            "runner field route_attack_or_prediction_witnesses counts prediction "
+            "flips only; independent tables separate route, prediction, and both"
+        ),
         "attack_endpoints": {"sha256": _sha256(attack_path), "replays": replay_rows},
         "issues": issues,
     }
