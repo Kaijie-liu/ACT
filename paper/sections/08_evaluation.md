@@ -226,6 +226,14 @@ zero. The independent audit reports zero issues. A successor run is permitted
 only as a clearly labeled compatibility variant after finite-regime value and
 gradient equivalence tests and a smoke run that crosses this batch.
 
+That smoke gate now passes for a separately labeled softmax-underflow gradient
+bridge. It completes 16 main and router updates with 64/64 finite stage checks,
+exercises 23 replacements at exact-zero probabilities, and leaves every final
+router parameter, gradient, and optimizer-state element finite. The maximum
+router pair gap still reaches 62,961.53, so the pass is not explained by a
+benign input sequence. This unlocks a new compatibility-variant execution;
+the original table remains blocked until that run completes numerical audit.
+
 The final AdvMoE checkpoint evaluation records clean accuracy, route share,
 signed router-score offset, selected-margin distribution, and load entropy.
 Intermediate checkpoints use the same fields under both eval/current-running-

@@ -128,3 +128,30 @@ beyond the third real batch. It must not be described as unchanged official
 training. No current AdvMoE checkpoint establishes route
 stability, Route A coverage, learned-router external validity, or any formal
 SAFE result.
+
+## Compatibility-bridge finite-state smoke
+
+The compatibility bridge leaves every finite native softmax gradient unchanged
+and replaces a non-finite incoming gradient only where the corresponding
+softmax probability is exactly zero. A non-finite gradient at any positive
+probability fails closed. Unit tests establish exact finite-regime value and
+gradient agreement, agreement with the stable logit-space KL expression in an
+extreme underflow case, an unbridged NaN mutation control, and the positive-
+probability failure control.
+
+Smoke r1 is preserved as a harness interaction failure: anomaly mode aborts at
+`XlogyBackward0` before the downstream tensor hook may run, so it applies zero
+replacements. R2 disables only that diagnostic mode and retains all four
+per-batch optimizer-stage finiteness checks. It completes 16 main and 16 router
+updates, including the original failure batch, with 64/64 finite phase checks.
+The bridge is genuinely exercised: 23 underflowed-gradient elements are
+replaced in 32 gradient-hook calls. Despite a maximum router pair gap of
+62,961.53, all 269,202 final router parameters, gradients, and optimizer-state
+elements remain finite. The independent audit reports `PASS` with zero issues
+at
+`act/pipeline/moe/results/baseline/advmoe_router_finite_smoke_seed0_r2_audit.json`.
+
+This unlocks configuration of a from-scratch compatibility-variant run, not
+acceptance of the excluded official run. The variant must retain its explicit
+label, preserve the official clone, fail on any non-finite state outside the
+narrow bridge condition, and undergo checkpoint-by-checkpoint numerical audit.

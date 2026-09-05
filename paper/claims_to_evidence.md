@@ -793,6 +793,15 @@ The independent r4 audit reports zero issues. This supports the narrow claim
 of a released numerical-expression failure; it does not authorize presenting
 a future stable-expression compatibility variant as unchanged official code.
 
+The corresponding compatibility bridge has finite-regime value/gradient
+identity tests, an extreme-regime stable-logit-KL comparison, an unbridged NaN
+mutation control, and a fail-closed positive-probability control. In a 16-batch
+real-data smoke it applies 23 narrow replacements and keeps all router state
+finite across 64 optimizer-stage checks despite a maximum score gap of
+62,961.53. The independent audit has zero issues. This unlocks a labeled
+compatibility reproduction only; it does not repair the identity of the
+already excluded official run.
+
 ## Threats to validity
 
 ### Construct validity

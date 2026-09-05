@@ -1,0 +1,45 @@
+{
+  "act": {
+    "branch": "feat/moe-route-verification",
+    "head": "4b4b8d71548cd766d18f74b068431701994c9f2f"
+  },
+  "artifacts": {
+    "config_r1": {
+      "path": "act/pipeline/moe/configs/advmoe_router_finite_smoke_seed0_r1.json",
+      "sha256": "2018ad3bf70e865fdba5eb19762930c17eb76e299a0e2b5c5cbed06e8d5a9bfa"
+    },
+    "config_r2": {
+      "path": "act/pipeline/moe/configs/advmoe_router_finite_smoke_seed0_r2.json",
+      "sha256": "9d1e09902d120e14d451e4789eff4cf7a08b7cbdd048c6afa99e056d7c401420"
+    },
+    "result_r1": {
+      "path": "data/moe/results/advmoe_router_finite_smoke_seed0_r1.json",
+      "sha256": "6f4d8350f62e3001f2244847e50c4591f7c76a906d0d9ce82bb69d89d86924f1"
+    },
+    "result_r2": {
+      "path": "data/moe/results/advmoe_router_finite_smoke_seed0_r2.json",
+      "sha256": "c3dbc9b0750101db372896677fc526885dd8e9ad9724e02dc42b4f3e798aab35"
+    }
+  },
+  "issues": [],
+  "label": "official-code numerical-compatibility variant; softmax-underflow gradient bridge",
+  "official_source": {
+    "clean": true,
+    "commit": "c50796fb8284512b6f6ad8e843f95182cec527cf",
+    "tree": "153d4ff9f30f34eb7fdd4caf670495122c5836e0"
+  },
+  "schema_version": 1,
+  "scope": "ADV_MOE_SOFTMAX_UNDERFLOW_BRIDGE_FINITE_SMOKE_AUDIT",
+  "smoke": {
+    "bridge_gradient_hook_calls": 32,
+    "bridge_replaced_elements": 23,
+    "final_router_gradient_elements": 269202,
+    "final_router_optimizer_elements": 269202,
+    "final_router_parameter_elements": 269202,
+    "finite_phase_checks": 64,
+    "main_steps": 16,
+    "maximum_router_pair_gap": 62961.53125,
+    "router_steps": 16
+  },
+  "status": "PASS"
+}

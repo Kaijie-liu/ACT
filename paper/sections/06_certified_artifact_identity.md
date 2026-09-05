@@ -164,6 +164,16 @@ still define a non-finite training derivative through an underflowed
 probability target. The accepted audit has zero issues and the official source
 remains byte-for-byte unchanged.
 
+We test a narrow compatibility bridge rather than silently editing the
+released source. In the finite regime it preserves native values and gradients
+exactly. At an exact-zero softmax probability it replaces only the non-finite
+incoming target gradient with the finite composite-limit value; any non-finite
+gradient at a positive probability fails closed. A 16-batch smoke crosses the
+original failure point, exercises 23 replacements, and retains finite router
+parameters, gradients, and optimizer state through all 64 staged checks. This
+result authorizes only a labeled compatibility reproduction, not relabeling
+the excluded official execution.
+
 ## Certificate identity and fail-closed use
 
 Every final result binds seven groups of fields: source and checkpoint hashes;

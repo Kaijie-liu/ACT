@@ -2346,3 +2346,16 @@ compatibility variant, demonstrate finite-regime value/gradient equivalence,
 and pass a multi-batch finiteness smoke before training. See
 `docs/advmoe_training_seed0.md` and
 `results/baseline/advmoe_router_nonfinite_diagnosis_seed0_r4_audit.json`.
+
+**Compatibility-bridge smoke (2026-09-05).** Four unit-test controls establish
+finite-regime native equivalence, extreme-regime agreement with stable
+logit-space KL, the native NaN mutation, and fail-closed handling away from an
+exact-zero softmax probability. Smoke r1 is preserved because anomaly tracing
+preempts the tensor hook. R2 disables only anomaly tracing, completes 16 main
+and router steps, and passes all 64 stage finiteness checks. The bridge replaces
+23 underflowed-gradient elements; final router parameters, gradients, and
+optimizer state are all finite even though the maximum score gap reaches
+`62961.53125`. Its independent audit reports `PASS` with zero issues at
+`results/baseline/advmoe_router_finite_smoke_seed0_r2_audit.json`. A separately
+labeled from-scratch compatibility run may now be configured; the excluded r3
+official-code result remains excluded and is never overwritten.
