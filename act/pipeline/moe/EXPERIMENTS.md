@@ -2427,3 +2427,14 @@ retained in
 `results/baseline/advmoe_two_path_seed0_compat_full_r1_attempt001_failure.json`,
 and the repaired launch is separately preregistered as
 `configs/advmoe_two_path_seed0_compat_full_r2.json`.
+
+**AdvMoE two-path full attempt r2 (preserved pre-row failure).** After the
+registered tolerance repair passes, the dynamic/static selected-path gate
+still stops before any result row. The dynamic model had used the complete
+20-input batch while the static path comparison used singleton forwards;
+different convolution schedules differ by `2.86e-6` despite identical
+predictions. On the same selected cohort, evaluating both static paths with
+the identical batch shape and selecting afterward is bit exact against the
+dynamic network. R3 fixes only this equivalence-test execution schedule. See
+`results/baseline/advmoe_two_path_seed0_compat_full_r2_attempt001_failure.json`
+and `configs/advmoe_two_path_seed0_compat_full_r3.json`.

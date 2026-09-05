@@ -76,3 +76,12 @@ inside the registered absolute tolerance `1e-6`. The failure is retained in
 neither the model nor the scientific configuration: it only connects the
 already registered tolerance to the execution gate and records zero relative
 tolerance explicitly.
+
+Full attempt r2 then exposed a second execution-only mismatch before writing
+any result row: the literal dynamic model used the registered 20-input batch,
+whereas the selected static paths were evaluated one input at a time. The two
+valid floating-point schedules differ by at most `2.86e-6`, with identical
+predictions. Evaluating both static paths at the same registered batch shape
+and then selecting the routed rows is bit exact against the dynamic forward.
+R3 freezes that like-for-like execution schedule without changing any
+scientific method or denominator; the r2 failure remains separately recorded.

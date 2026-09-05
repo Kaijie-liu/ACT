@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "status": "FAILED_PRESERVED",
+  "scope": "ADV_MOE_SEED0_COMPAT_TWO_PATH_FULL_R2_ATTEMPT001",
+  "timestamp": "2026-09-05T18:15:03+10:00",
+  "runner_head": "36afd3e2d",
+  "systemd_invocation_id": "9be35122cd294d03ba9e012d922f625c",
+  "exit_status": 1,
+  "failure": "dynamic and selected static paths differ before output directory or result rows were created",
+  "cause": "dynamic logits used one 20-input forward while selected static logits used 20 singleton forwards, invoking different floating-point convolution schedules",
+  "registered_equivalence_atol": 1e-6,
+  "diagnostic_replay": {
+    "singleton_static_max_abs_error": 2.86102294921875e-6,
+    "singleton_static_predictions_equal": true,
+    "same_batch_static_max_abs_error": 0.0,
+    "same_batch_static_outputs_bit_exact": true,
+    "same_batch_static_predictions_equal": true
+  },
+  "log": {
+    "path": "/data1/Kane/MOE/ACT/data/moe/logs/advmoe_two_path_seed0_compat_full_r2.log",
+    "bytes": 744,
+    "sha256": "337d41e8c0e3b8d11f4abf5b941375dbfefb235c59aeca70d74d2eedf4f96c9b"
+  },
+  "scientific_rows_created": 0,
+  "resolution": "full r3 evaluates both static paths with the dynamic-forward batch shape before route selection"
+}

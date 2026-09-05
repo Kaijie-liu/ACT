@@ -4,10 +4,12 @@ import unittest
 from unittest.mock import patch
 
 import torch
+from torch import nn
 
 from act.pipeline.moe.advmoe_two_path import (
     aggregate_filters,
     evaluate_path_lowering_equivalence,
+    select_batched_static_path_logits,
     top1_property_rows,
 )
 from act.pipeline.moe.audit_advmoe_two_path import expected_crown_status
@@ -75,6 +77,28 @@ class AdvMoeTwoPathTests(unittest.TestCase):
         for call in equivalence.call_args_list:
             self.assertEqual(call.kwargs["atol"], 1e-6)
             self.assertEqual(call.kwargs["rtol"], 0.0)
+
+    def test_static_path_selection_preserves_batch_shape(self) -> None:
+        class CountingPath(nn.Module):
+            def __init__(self, offset: float):
+                super().__init__()
+                self.offset = offset
+                self.batch_sizes: list[int] = []
+
+            def forward(self, inputs: torch.Tensor) -> torch.Tensor:
+                self.batch_sizes.append(inputs.shape[0])
+                return inputs[:, :2] + self.offset
+
+        paths = [CountingPath(0.0), CountingPath(10.0)]
+        inputs = torch.tensor([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]])
+        routes = torch.tensor([0, 1, 0])
+        selected = select_batched_static_path_logits(paths, inputs, routes)
+        torch.testing.assert_close(
+            selected,
+            torch.tensor([[1.0, 2.0], [13.0, 14.0], [5.0, 6.0]]),
+        )
+        self.assertEqual(paths[0].batch_sizes, [3])
+        self.assertEqual(paths[1].batch_sizes, [3])
 
 
 if __name__ == "__main__":

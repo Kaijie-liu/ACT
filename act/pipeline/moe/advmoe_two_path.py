@@ -130,6 +130,22 @@ def evaluate_path_lowering_equivalence(
     ]
 
 
+def select_batched_static_path_logits(
+    specialized_paths: list[torch.nn.Module],
+    inputs: torch.Tensor,
+    routes: torch.Tensor,
+) -> torch.Tensor:
+    """Evaluate both paths with the dynamic-forward batch shape, then select."""
+
+    if len(specialized_paths) != 2:
+        raise ValueError("AdvMoE requires exactly two static paths")
+    if routes.ndim != 1 or routes.shape[0] != inputs.shape[0]:
+        raise ValueError("one route is required for every input")
+    all_logits = torch.stack([path(inputs) for path in specialized_paths], dim=1)
+    slots = torch.arange(inputs.shape[0], device=all_logits.device)
+    return all_logits[slots, routes.to(device=all_logits.device, dtype=torch.long)]
+
+
 def _cleanup_cuda() -> None:
     gc.collect()
     gc.collect()
@@ -285,11 +301,10 @@ def run(config_path: Path) -> dict[str, Any]:
         raise RuntimeError("CROWN lowering equivalence gate failed")
     with torch.no_grad():
         dynamic_logits = model(centers)
-        selected_logits = torch.cat(
-            [
-                specialized[int(clean_routes[slot])](centers[slot : slot + 1])
-                for slot in range(samples)
-            ]
+        selected_logits = select_batched_static_path_logits(
+            specialized,
+            centers,
+            torch.from_numpy(clean_routes),
         )
     dynamic_selected_error = float((dynamic_logits - selected_logits).abs().max().item())
     if dynamic_selected_error > float(config["numerical"]["equivalence_atol"]):
