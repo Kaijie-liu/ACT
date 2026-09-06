@@ -48,3 +48,8 @@ feasibility check, not a prevalence estimate and not evidence of improvement
 over route invariance.  At least one strict two-path SAFE result is required
 before any new route-changing cohort is frozen.
 
+The frozen pilot configuration is
+`configs/advmoe_strict_pyrat_seed0_compat_pilot_r1.json`.  It uses only the
+DeepPoly-style `poly` domain, a 300-second per-path timeout, four CPU threads,
+and the exact final-checkpoint and CIFAR-10 archive hashes already accepted by
+the AdvMoE training audit.
