@@ -2709,3 +2709,15 @@ accounting records zero outer kills plus one solver timeout. Historical and
 new wall times are descriptive only. The predefined signal is met, permitting
 but not yet executing a separately preregistered HZ cohort. The compact result
 is `results/staged_verifier_seed2_unresolved_20260906_r1.{json,csv}`.
+
+The resulting fixed-radius cohort is now frozen before execution. It uses the
+same seed-2 checkpoint but no prior verification endpoint: the first 100
+ordered clean-correct test inputs at or after dataset index 2000, excluding all
+listed prior HZ cohorts, each receive one direct `2/255` request. Selection does
+not inspect route stability, candidates, boundary distance, solver behavior,
+or certificate status. The production path contains neither boundary search
+nor no-support/unguarded controls. The primary endpoint is route-changing SAFE
+over all 100 inputs, with an existence-replication signal of at least one,
+zero audit issues, and replay of every UNSAFE witness. Details are in
+`docs/staged_verifier_confirmatory.md`; no endpoint has been queried at freeze
+time.

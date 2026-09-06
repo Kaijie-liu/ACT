@@ -1,0 +1,34 @@
+{
+  "experiment": "staged_verifier_seed2_fixed2_confirmatory_r1",
+  "classification": "PREREGISTERED_NEW_FIXED_RADIUS_HZ_COHORT",
+  "checkpoint": "/data1/Kane/MOE/ACT/data/moe/checkpoints/cifar10_top2_e8_seed2_bal010.pt",
+  "checkpoint_sha256": "a60517c7964177858d10303bc7b306293c8da3cde6caa93a5d8f442968e97758",
+  "selection_manifest": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/staged_verifier_seed2_fixed2_confirmatory_selection_r1.json",
+  "selection_manifest_sha256": "2ea06e847ad1da91c85ef51030369d8a12cfa1e26ba79d6e221b0a7f57d1761a",
+  "staged_config": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/staged_verifier_v1.json",
+  "staged_config_sha256": "6e13c92af6b73f8ef644038d9d6a02a65d454193f34f5e203f05efdf76017844",
+  "output_dir": "/data1/Kane/MOE/ACT/data/moe/results/staged_verifier_seed2_fixed2_confirmatory_r1",
+  "python": "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+  "instance_hard_timeout_seconds": 300.0,
+  "primary_endpoint": "route-changing SAFE requests divided by all 100 selected clean-correct inputs",
+  "primary_signal": {
+    "minimum_route_changing_safe_requests": 1,
+    "integrity_requires_zero_audit_issues": true,
+    "integrity_requires_all_unsafe_replayed": true
+  },
+  "secondary_endpoints": [
+    "overall status and reason counts",
+    "Tier-1 and F0 SAFE counts",
+    "F0 invocation and complete-resolution counts",
+    "route-stable and route-changing request counts",
+    "stage timings with incomplete rows treated as right-censored"
+  ],
+  "prohibitions": [
+    "do not adapt epsilon to a route boundary",
+    "do not select on route stability, candidate count, solver outcome, or certificate outcome",
+    "do not execute matched no-support or unguarded-accounting controls",
+    "do not call the clean-correct cohort result certified accuracy",
+    "do not compare timing to non-interleaved historical runs as a speedup",
+    "do not access or relabel the locked AdvMoE Lagrangian holdout"
+  ]
+}

@@ -401,6 +401,19 @@ are non-proof diagnostics. These results motivate checkpoint route-share
 telemetry and the router-independent two-path table; they do not substitute for
 the trained result.
 
+### New production-entry HZ cohort [preregistered, not yet executed]
+
+After the outcome-selected engineering closure produced two additional
+replay-validated complete outcomes, we froze a disjoint fixed-radius cohort to
+test the production entry point. The cohort contains 100 ordered clean-correct
+seed-2 inputs beginning at raw test index 2000, excludes all listed earlier HZ
+cohorts, and issues one `2/255` request per input. It is not selected on route
+instability or any verification result and does not use a boundary-adaptive
+radius. The primary endpoint is route-changing SAFE over the full 100-input
+denominator; this is not certified accuracy. Exact status counts, route
+applicability, staged attribution, right-censored timing, and all failed rows
+remain visible.
+
 ## Completion criteria
 
 The evaluation is paper-complete only when the official RT-ER table, AdvMoE
