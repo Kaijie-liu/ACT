@@ -70,8 +70,13 @@ class StagedVerifierTests(unittest.TestCase):
 
     def test_f0_is_required_and_proves_weighted_safe(self):
         model = _constant_model(((0.0, 1.0), (3.0, 0.0)))
+        progress = []
         report = verify_staged_linf(
-            model, torch.zeros(1, 2, dtype=torch.float64), 0.1, _config()
+            model,
+            torch.zeros(1, 2, dtype=torch.float64),
+            0.1,
+            _config(),
+            progress_callback=progress.append,
         )
         self.assertEqual(report.status, "SAFE")
         self.assertEqual(report.reason, "SAFE_WEIGHTED_RANGE")
@@ -85,6 +90,17 @@ class StagedVerifierTests(unittest.TestCase):
         )
         self.assertTrue(report.evidence["route_coverage"]["coverage_complete"])
         self.assertTrue(report.evidence["route_coverage"]["route_sets_exact"])
+        self.assertEqual(
+            [row["active_stage"] for row in progress],
+            [
+                "REQUEST_ACCEPTED",
+                "TIER1_RUNNING",
+                "TIER1_COMPLETE",
+                "TIER2_F0_RUNNING",
+                "TIER2_F0_COMPLETE",
+                "VERDICT_COMPLETE",
+            ],
+        )
 
     def test_evidence_identity_and_refuse_overwrite(self):
         model = _constant_model(((2.0, 0.0), (3.0, 0.0)))

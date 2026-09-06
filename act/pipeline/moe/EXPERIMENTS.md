@@ -2687,3 +2687,13 @@ available. Toy regression tests cover Tier-1 success, F0-only success,
 configuration drift, execution semantics, package tampering, and refusal to
 overwrite. This is an engineering delivery, not a new experimental endpoint;
 the frozen confirmatory, closure, and multi-seed results remain unchanged.
+
+The first development closure is frozen before execution. It selects all 13
+seed-2 R1 rows that ended in a weighted solver limit, expert timeout, or hard
+deadline. The selection is explicitly outcome-selected; source rows,
+partial-progress radii, checkpoint, and staged config are hash-bound. Each
+direct request retains a 300-second outer deadline and stage progress so a
+killed F0 remains right-censored. At least one new complete outcome is required
+before a separate new cohort may be preregistered. Historical timings are not
+interleaved and cannot support a speedup claim. Full details are in
+`docs/staged_verifier_development.md`.

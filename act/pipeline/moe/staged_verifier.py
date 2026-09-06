@@ -13,7 +13,7 @@ import hashlib
 import json
 from pathlib import Path
 import time
-from typing import Any, Mapping, Sequence
+from typing import Any, Callable, Mapping, Sequence
 
 import torch
 
@@ -371,6 +371,7 @@ def verify_staged_linf(
     *,
     expected_clean_prediction: int | None = None,
     checkpoint_identity: Mapping[str, Any] | None = None,
+    progress_callback: Callable[[dict[str, Any]], None] | None = None,
 ) -> StagedVerificationReport:
     """Verify top-1 prediction robustness without experiment-only controls."""
     _validate_config(config)
@@ -410,6 +411,21 @@ def verify_staged_linf(
         "epsilon": float(epsilon),
         "config_sha256": _canonical_sha256(config),
     }
+    request_id = _canonical_sha256(request_identity)
+
+    def record_progress(stage: str, **values: Any) -> None:
+        if progress_callback is not None:
+            progress_callback(
+                {
+                    "schema_version": 1,
+                    "request_id": request_id,
+                    "active_stage": stage,
+                    "elapsed_seconds": time.monotonic() - started,
+                    **values,
+                }
+            )
+
+    record_progress("REQUEST_ACCEPTED")
     transitions = [
         {
             "stage": "REQUEST_ACCEPTED",
@@ -426,6 +442,7 @@ def verify_staged_linf(
         "return_internal_context": True,
     }
     tier1_started = time.monotonic()
+    record_progress("TIER1_RUNNING")
     tier1 = diagnose_radius(
         model=model,
         x=center,
@@ -448,6 +465,9 @@ def verify_staged_linf(
             "elapsed_seconds": tier1_elapsed,
         }
     )
+    record_progress(
+        "TIER1_COMPLETE", status=tier1["status"], reason=tier1["reason"]
+    )
     tier2: dict[str, Any] = {
         "invoked": False,
         "status": None,
@@ -463,6 +483,7 @@ def verify_staged_linf(
     elif reason in SEMANTIC_REASONS:
         if internal is None:
             raise RuntimeError("Tier 1 semantic incompleteness lacks reusable context")
+        record_progress("TIER2_F0_RUNNING", tier1_reason=reason)
         tier2, witness = _run_f0(
             model=model,
             center=center,
@@ -480,11 +501,14 @@ def verify_staged_linf(
                 "elapsed_seconds": tier2["elapsed_seconds"],
             }
         )
+        record_progress(
+            "TIER2_F0_COMPLETE", status=status, reason=reason
+        )
     elapsed = time.monotonic() - started
     evidence = {
         "schema_version": 1,
         "verifier": "ACT_HYBRIDZ_STAGED_WEIGHTED_TOP2",
-        "request_id": _canonical_sha256(request_identity),
+        "request_id": request_id,
         "identity": request_identity,
         "request": {
             "epsilon": float(epsilon),
@@ -536,6 +560,7 @@ def verify_staged_linf(
             "all_invoked_stage_times_observed": True,
         },
     }
+    record_progress("VERDICT_COMPLETE", status=status, reason=reason)
     return StagedVerificationReport(
         status=status,
         reason=reason,
@@ -615,10 +640,18 @@ def main() -> None:
     parser.add_argument("--epsilon", type=float, required=True)
     parser.add_argument("--config", type=Path, default=DEFAULT_CONFIG)
     parser.add_argument("--output-dir", type=Path, required=True)
+    parser.add_argument("--progress-path", type=Path)
     args = parser.parse_args()
     config_path = _inside(args.config, PROJECT_ROOT)
     config = json.loads(config_path.read_text(encoding="utf-8"))
     checkpoint = _inside(args.checkpoint, WRITE_ROOT)
+    progress_path = (
+        _inside(args.progress_path, WRITE_ROOT)
+        if args.progress_path is not None
+        else None
+    )
+    if progress_path is not None:
+        progress_path.parent.mkdir(parents=True, exist_ok=True)
     model, payload = load_output_moe_checkpoint(checkpoint, map_location="cpu")
     model.cpu().double().eval()
     dataset = _load_dataset(payload["dataset"], False, download=False)
@@ -632,6 +665,11 @@ def main() -> None:
             "path": str(checkpoint),
             "sha256": _sha256(checkpoint),
         },
+        progress_callback=(
+            lambda value: _write_json(progress_path, value)
+            if progress_path is not None
+            else None
+        ),
     )
     report.evidence["execution"] = {
         "git_head": _git_value("rev-parse", "HEAD"),

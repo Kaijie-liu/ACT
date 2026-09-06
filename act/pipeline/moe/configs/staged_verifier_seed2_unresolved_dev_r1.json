@@ -1,0 +1,43 @@
+{
+  "experiment": "staged_verifier_seed2_unresolved_dev_r1",
+  "classification": "OUTCOME_SELECTED_DEVELOPMENT_ENGINEERING",
+  "checkpoint": "/data1/Kane/MOE/ACT/data/moe/checkpoints/cifar10_top2_e8_seed2_bal010.pt",
+  "checkpoint_sha256": "a60517c7964177858d10303bc7b306293c8da3cde6caa93a5d8f442968e97758",
+  "staged_config": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/staged_verifier_v1.json",
+  "staged_config_sha256": "6e13c92af6b73f8ef644038d9d6a02a65d454193f34f5e203f05efdf76017844",
+  "source_results": "/data1/Kane/MOE/ACT/data/moe/results/experiment1_multiseed_replication_seed2_r1/boundary/results.jsonl",
+  "source_results_sha256": "9347b2976c69cd46884d2afccd24723d9c1f406563884d5de39febc602a3b4b9",
+  "source_sample_indices": "/data1/Kane/MOE/ACT/data/moe/results/experiment1_multiseed_replication_seed2_r1/sample_indices.json",
+  "source_sample_indices_sha256": "9a0c8c6102b401be2b87963aaba8ba4f5067a7d91727965f86c3c42819de9c37",
+  "output_dir": "/data1/Kane/MOE/ACT/data/moe/results/staged_verifier_seed2_unresolved_dev_r1",
+  "python": "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+  "instance_hard_timeout_seconds": 300.0,
+  "selection_rule": "all seed-2 R1 rows labelled UNKNOWN_WEIGHTED_SOLVER_LIMIT, TIMEOUT_EXPERT_SOLVE, or INSTANCE_HARD_DEADLINE; no SAFE, UNSAFE, or no-boundary row",
+  "selection": [
+    {"sample_rank": 1, "dataset_index": 1002, "epsilon": 0.008766084558823531, "source_status": "UNKNOWN", "source_reason": "UNKNOWN_WEIGHTED_SOLVER_LIMIT", "epsilon_source": "completed_row"},
+    {"sample_rank": 3, "dataset_index": 1004, "epsilon": 0.014202665441176472, "source_status": "UNKNOWN", "source_reason": "UNKNOWN_WEIGHTED_SOLVER_LIMIT", "epsilon_source": "completed_row"},
+    {"sample_rank": 4, "dataset_index": 1005, "epsilon": 0.01647058823529412, "source_status": "TIMEOUT", "source_reason": "INSTANCE_HARD_DEADLINE", "epsilon_source": "partial_progress", "progress_sha256": "ed155e2307cbb5dd7cdd0672edf7cee6370224e35033152c44ccce701641f877"},
+    {"sample_rank": 8, "dataset_index": 1011, "epsilon": 0.01281939338235294, "source_status": "UNKNOWN", "source_reason": "UNKNOWN_WEIGHTED_SOLVER_LIMIT", "epsilon_source": "completed_row"},
+    {"sample_rank": 15, "dataset_index": 1029, "epsilon": 0.009522058823529411, "source_status": "UNKNOWN", "source_reason": "UNKNOWN_WEIGHTED_SOLVER_LIMIT", "epsilon_source": "completed_row"},
+    {"sample_rank": 17, "dataset_index": 1035, "epsilon": 0.004214154411764706, "source_status": "UNKNOWN", "source_reason": "UNKNOWN_WEIGHTED_SOLVER_LIMIT", "epsilon_source": "completed_row"},
+    {"sample_rank": 19, "dataset_index": 1038, "epsilon": 0.007809053308823529, "source_status": "UNKNOWN", "source_reason": "UNKNOWN_WEIGHTED_SOLVER_LIMIT", "epsilon_source": "completed_row"},
+    {"sample_rank": 22, "dataset_index": 1048, "epsilon": 0.014331341911764706, "source_status": "TIMEOUT", "source_reason": "TIMEOUT_EXPERT_SOLVE", "epsilon_source": "completed_row"},
+    {"sample_rank": 25, "dataset_index": 1060, "epsilon": 0.005291819852941176, "source_status": "UNKNOWN", "source_reason": "UNKNOWN_WEIGHTED_SOLVER_LIMIT", "epsilon_source": "completed_row"},
+    {"sample_rank": 28, "dataset_index": 1070, "epsilon": 0.009473805147058824, "source_status": "UNKNOWN", "source_reason": "UNKNOWN_WEIGHTED_SOLVER_LIMIT", "epsilon_source": "completed_row"},
+    {"sample_rank": 29, "dataset_index": 1073, "epsilon": 0.014910386029411764, "source_status": "UNKNOWN", "source_reason": "UNKNOWN_WEIGHTED_SOLVER_LIMIT", "epsilon_source": "completed_row"},
+    {"sample_rank": 36, "dataset_index": 1085, "epsilon": 0.012031250000000002, "source_status": "UNKNOWN", "source_reason": "UNKNOWN_WEIGHTED_SOLVER_LIMIT", "epsilon_source": "completed_row"},
+    {"sample_rank": 37, "dataset_index": 1089, "epsilon": 0.011822150735294116, "source_status": "TIMEOUT", "source_reason": "INSTANCE_HARD_DEADLINE", "epsilon_source": "partial_progress", "progress_sha256": "15fb0d18416947c0338d9aff86c6e303a861f80d2c300a8ce3a099f7911bdb1d"}
+  ],
+  "primary_signal": "at least one of the 13 historically unresolved rows becomes a complete SAFE or full-model-replayed UNSAFE under unchanged mathematical and numerical semantics",
+  "decision_rule": {
+    "new_complete_outcomes_required_to_freeze_a_new_cohort": 1,
+    "zero_new_complete_outcomes": "retain as engineering separation only; do not launch a new HZ cohort"
+  },
+  "prohibitions": [
+    "do not rewrite seed-2 R1",
+    "do not call the outcome-selected rate prevalence or confirmatory coverage",
+    "do not claim speedup from non-interleaved historical timing",
+    "do not change solver mathematics, tolerances, or F0",
+    "do not access the locked AdvMoE Lagrangian holdout"
+  ]
+}
