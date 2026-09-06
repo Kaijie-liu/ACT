@@ -269,6 +269,13 @@ registered model/cohort, while the unchanged F0 semantics closes six complete
 route-changing obligations. This is replication under one architecture and
 training recipe, not cross-architecture generality.
 
+The subsequent production-path development closure is kept separate. It
+selects all 13 seed-2 historical solver-limit/timeout rows and obtains two new
+complete results, both replayed UNSAFE through F0; it adds no SAFE. This is
+evidence that experiment-control scheduling can consume consequential budget,
+not a new certificate-yield or speedup result. The original seed-2 13/40
+endpoint remains immutable.
+
 ### F0 incremental contribution
 
 Tier 1 left 60 semantic-incompleteness rows. F0 resolved 43/60 (71.7%): 31

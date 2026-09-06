@@ -209,6 +209,17 @@ immutable per-request evidence package, but contributes no new result to the
 tables in this section until a separately labelled development comparison is
 executed.
 
+That outcome-selected development comparison runs the direct path on all 13
+seed-2 rows previously ending in a weighted solver limit or timeout. It closes
+two rows, both as full-model-replayed UNSAFE through F0; ten remain weighted
+solver limits and one remains an expert timeout. There are no new SAFE results
+and no outer deadline kills. All 13 evidence packages pass independent audit.
+Wall time is descriptively lower on all rows, but the historical runs were not
+interleaved and intentionally include extra scientific work, so we make no
+speedup claim. This result shows that separating controls can affect complete
+budgeted outcomes; it is not a confirmatory yield estimate and does not revise
+the 13/40 seed-2 endpoint.
+
 ## Table 1: official RT-ER numerical conformance result
 
 The official-code compatibility target is now concrete. Seed 0 completes all

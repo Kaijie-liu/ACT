@@ -2697,3 +2697,15 @@ killed F0 remains right-censored. At least one new complete outcome is required
 before a separate new cohort may be preregistered. Historical timings are not
 interleaved and cannot support a speedup claim. Full details are in
 `docs/staged_verifier_development.md`.
+
+The development run completes all 13 rows at `504ff99aa`; its independent
+audit at `87c80697e` reports zero issues and replays both new UNSAFE witnesses.
+Ranks 4 and 17 change from historical non-completion to
+`UNSAFE_FULL_FORWARD_FALLBACK`; ten rows remain weighted solver limits and one
+returns `TIMEOUT_EXPERT_SOLVE`. No outer hard deadline fires and no new SAFE is
+found. The runner's initial `hard_timeouts=1` label conflated that solver
+timeout with an outer kill; the raw summary is preserved and the derived
+accounting records zero outer kills plus one solver timeout. Historical and
+new wall times are descriptive only. The predefined signal is met, permitting
+but not yet executing a separately preregistered HZ cohort. The compact result
+is `results/staged_verifier_seed2_unresolved_20260906_r1.{json,csv}`.

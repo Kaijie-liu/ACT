@@ -1,0 +1,85 @@
+{
+  "artifacts": {
+    "config": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/staged_verifier_seed2_unresolved_dev_r1.json",
+    "config_sha256": "625b3eb7e4c555b64957853310687d9219edbb038b65876d0eaf2c287ffe32a4",
+    "independent_audit": "/data1/Kane/MOE/ACT/data/moe/results/staged_verifier_seed2_unresolved_dev_r1/independent_audit.json",
+    "independent_audit_sha256": "abfa4212d95372e434d6cfd957280fe2a14dc1fa6bd3eaede8a520f6b41b1aea",
+    "initial_runner_summary": "/data1/Kane/MOE/ACT/data/moe/results/staged_verifier_seed2_unresolved_dev_r1/summary.json",
+    "initial_runner_summary_sha256": "a389057d77446be449dea3ee854e2168a1b95459ed15cf25d210578db7e7f96b",
+    "raw_results": "/data1/Kane/MOE/ACT/data/moe/results/staged_verifier_seed2_unresolved_dev_r1/results.jsonl",
+    "raw_results_sha256": "b3ed1e9f9b5e6475619b8f96bed8c78aeff00c4f8a1e39063bebed3ed23bea7a"
+  },
+  "audit": {
+    "issues": 0,
+    "packages": 13,
+    "status": "PASS",
+    "unsafe_replays": 2
+  },
+  "auditor_git_head": "87c80697e598ac4a54999e75e73c47daf60c023b",
+  "claim_boundary": "Outcome-selected development engineering only. Do not revise R1, report prevalence, claim speedup, or access the locked Lagrangian holdout.",
+  "classification": "OUTCOME_SELECTED_DEVELOPMENT_ENGINEERING",
+  "decision": "The preregistered development signal is met. A separate new HZ cohort may now be frozen; this run is not confirmatory evidence.",
+  "execution_git_head": "504ff99aaf2a1ba3bad5a802198a204811ae6e30",
+  "outcome": {
+    "all_new_unsafe_full_model_replayed": true,
+    "new_complete_outcomes": 2,
+    "new_complete_ranks": [
+      4,
+      17
+    ],
+    "new_safe": 0,
+    "new_unsafe": 2,
+    "primary_signal_met": true,
+    "status_counts": {
+      "TIMEOUT": 1,
+      "UNKNOWN": 10,
+      "UNSAFE": 2
+    }
+  },
+  "schema_version": 1,
+  "selection": {
+    "outcome_selected": true,
+    "rows": 13,
+    "source_reason_counts": {
+      "INSTANCE_HARD_DEADLINE": 2,
+      "TIMEOUT_EXPERT_SOLVE": 1,
+      "UNKNOWN_WEIGHTED_SOLVER_LIMIT": 10
+    }
+  },
+  "timeout_accounting": {
+    "initial_summary_correction": [
+      {
+        "correction": "The initial runner counted every TIMEOUT verdict. Raw rows show zero outer hard timeouts and one solver-reported TIMEOUT_EXPERT_SOLVE. The original summary is retained.",
+        "recorded_value": 1,
+        "source": "summary.json:hard_timeouts"
+      }
+    ],
+    "outer_hard_timeouts": 0,
+    "solver_reported_timeouts": 1
+  },
+  "timing_descriptive_only": {
+    "historical_source": {
+      "median": 253.77759485226125,
+      "p90": 297.58848636019974,
+      "q1": 190.81530012283474,
+      "q3": 285.53504698351026,
+      "sum": 3081.7568607367575
+    },
+    "paired_delta_production_minus_source": {
+      "median": -57.93780182860792,
+      "p90": -37.388555365800855,
+      "q1": -77.18253943696618,
+      "q3": -50.54932777490467,
+      "sum": -794.3311403309926
+    },
+    "production": {
+      "median": 188.41151268128306,
+      "p90": 237.2603372063488,
+      "q1": 140.26597234793007,
+      "q3": 214.9978071982041,
+      "sum": 2287.425720405765
+    },
+    "production_lower_on_rows": 13,
+    "warning": "Runs were not interleaved and historical time includes experiment-only work; these values do not establish speedup."
+  }
+}

@@ -48,3 +48,32 @@ execution dates. They may be reported descriptively but never as a speedup.
 No solver mathematics, tolerance, F0 relaxation, checkpoint, radius, or
 historical artifact may change during this run. The AdvMoE Lagrangian holdout
 remains locked.
+
+## Result
+
+The complete 13-row run executes at `504ff99aa`; the strengthened independent
+audit executes at `87c80697e` and reports zero issues. All 13 requests produce
+auditable evidence packages. Two previously unresolved rows become
+`UNSAFE_FULL_FORWARD_FALLBACK` (sample ranks 4 and 17), and both recovered
+inputs independently replay as prediction violations of the complete weighted
+model. No new SAFE result appears. Ten rows remain
+`UNKNOWN_WEIGHTED_SOLVER_LIMIT`, and one request completes normally with
+`TIMEOUT_EXPERT_SOLVE`. No outer 300-second hard deadline fires.
+
+The initial runner summary used the label `hard_timeouts` for every TIMEOUT
+verdict and therefore recorded one. Raw rows show that this was the ordinary
+solver-returned expert timeout, not an outer kill. The original summary is
+preserved; the independent audit and compact result explicitly correct the
+accounting to zero outer hard timeouts and one solver-reported timeout.
+
+Production-path wall time is lower on all 13 rows, with medians 188.41 seconds
+versus 253.78 seconds in the historical source. This is descriptive only: the
+runs were not interleaved, and the historical worker intentionally included
+boundary and matched-control work. It is not reported as a speedup.
+
+The registered development signal is met by 2/13 rows. This demonstrates that
+separating experiment controls can change complete endpoint coverage under a
+fixed outer budget; it does not establish a certificate-yield improvement,
+because both additions are UNSAFE and the cohort was selected for historical
+non-completion. A separate new HZ cohort may now be preregistered. R1 remains
+unchanged.
