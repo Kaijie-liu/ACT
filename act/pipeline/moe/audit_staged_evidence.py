@@ -11,6 +11,7 @@ from typing import Any, Mapping
 import torch
 
 from act.back_end.moe import load_output_moe_checkpoint
+from act.util.device_manager import initialize_device
 
 
 ALLOWED_ROOT = Path("/data1/Kane/MOE")
@@ -356,6 +357,7 @@ def audit_evidence_package(
                     _file_sha256(model_path) == checkpoint.get("sha256"),
                     "checkpoint hash mismatch",
                 )
+                initialize_device("cpu", "float64")
                 model, _ = load_output_moe_checkpoint(model_path, map_location="cpu")
                 model.cpu().double().eval()
                 witness = torch.load(witness_path, map_location="cpu", weights_only=True)["input"]

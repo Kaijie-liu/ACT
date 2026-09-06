@@ -29,6 +29,9 @@ class StagedVerifierDevelopmentTests(unittest.TestCase):
                 "source_status": "UNKNOWN",
                 "production_status": "SAFE",
                 "production_reason": "SAFE_WEIGHTED_RANGE",
+                "production_return_code": 0,
+                "production_hard_timeout": False,
+                "package": "/data1/Kane/MOE/fake-safe",
                 "evidence_audit_status": "PASS",
                 "evidence_audit_issue_count": 0,
             },
@@ -37,6 +40,9 @@ class StagedVerifierDevelopmentTests(unittest.TestCase):
                 "source_status": "TIMEOUT",
                 "production_status": "TIMEOUT",
                 "production_reason": "INSTANCE_HARD_DEADLINE",
+                "production_return_code": None,
+                "production_hard_timeout": True,
+                "package": None,
                 "evidence_audit_status": None,
                 "evidence_audit_issue_count": None,
             },
@@ -45,7 +51,8 @@ class StagedVerifierDevelopmentTests(unittest.TestCase):
         self.assertEqual(summary["selected_rows"], 2)
         self.assertEqual(summary["new_complete_outcomes"], 1)
         self.assertTrue(summary["primary_signal_met"])
-        self.assertEqual(summary["hard_timeouts"], 1)
+        self.assertEqual(summary["outer_hard_timeouts"], 1)
+        self.assertEqual(summary["solver_reported_timeouts"], 0)
 
 
 if __name__ == "__main__":

@@ -9,7 +9,14 @@ from pathlib import Path
 from typing import Any
 
 from act.pipeline.moe.audit_staged_evidence import audit_evidence_package
-from act.pipeline.moe.experiment1 import PROJECT_ROOT, WRITE_ROOT, _inside, _sha256, _write_json
+from act.pipeline.moe.experiment1 import (
+    PROJECT_ROOT,
+    WRITE_ROOT,
+    _git_value,
+    _inside,
+    _sha256,
+    _write_json,
+)
 
 
 DEFAULT_CONFIG = (
@@ -88,11 +95,11 @@ def audit(config_path: Path) -> dict[str, Any]:
             f"rank {rank} has invalid production status",
         )
         package_value = row.get("package")
-        if status == "TIMEOUT":
+        if row.get("production_hard_timeout") is True:
             _issue(
                 issues,
-                row.get("production_hard_timeout") is True,
-                f"rank {rank} timeout lacks hard-timeout marker",
+                status == "TIMEOUT",
+                f"rank {rank} hard timeout lacks TIMEOUT status",
             )
             _issue(
                 issues,
@@ -160,6 +167,14 @@ def audit(config_path: Path) -> dict[str, Any]:
         and row.get("source_status") not in {"SAFE", "UNSAFE"}
         for row in rows
     )
+    outer_hard_timeouts = sum(
+        row.get("production_hard_timeout") is True for row in rows
+    )
+    solver_reported_timeouts = sum(
+        row.get("production_status") == "TIMEOUT"
+        and row.get("production_hard_timeout") is not True
+        for row in rows
+    )
     _issue(
         issues,
         summary.get("selected_rows") == len(rows),
@@ -180,14 +195,28 @@ def audit(config_path: Path) -> dict[str, Any]:
         "classification": config["classification"],
         "config_sha256": _sha256(config_path),
         "runtime_git_head": runtime.get("git_head"),
+        "auditor_git_head": _git_value("rev-parse", "HEAD"),
         "rows": len(rows),
         "production_status_counts": dict(sorted(counts.items())),
         "new_complete_outcomes": newly_solved,
+        "outer_hard_timeouts": outer_hard_timeouts,
+        "solver_reported_timeouts": solver_reported_timeouts,
         "packages_independently_audited": independently_audited,
         "unsafe_witnesses_independently_replayed": independently_replayed,
         "status": "PASS" if not issues else "FAIL",
         "issue_count": len(issues),
         "issues": issues,
+        "accounting_corrections": [
+            {
+                "source": "summary.json:hard_timeouts",
+                "recorded_value": summary.get("hard_timeouts"),
+                "correction": (
+                    "The initial runner counted every TIMEOUT verdict. Raw rows "
+                    "show zero outer hard timeouts and one solver-reported "
+                    "TIMEOUT_EXPERT_SOLVE. The original summary is retained."
+                ),
+            }
+        ],
         "claim_boundary": (
             "Outcome-selected development engineering only; no prevalence, "
             "speedup, frozen-endpoint revision, or holdout claim."

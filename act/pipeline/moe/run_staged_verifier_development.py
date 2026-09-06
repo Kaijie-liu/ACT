@@ -106,7 +106,11 @@ def _summary(rows: list[dict[str, Any]], config: dict[str, Any]) -> dict[str, An
         if row["production_status"] in {"SAFE", "UNSAFE"}
         and row["source_status"] not in {"SAFE", "UNSAFE"}
     ]
-    completed = [row for row in rows if row["production_status"] != "TIMEOUT"]
+    completed = [
+        row
+        for row in rows
+        if row.get("production_return_code") == 0 and row.get("package") is not None
+    ]
     audits = [row for row in rows if row.get("evidence_audit_status") is not None]
     required = int(
         config["decision_rule"]["new_complete_outcomes_required_to_freeze_a_new_cohort"]
@@ -124,7 +128,14 @@ def _summary(rows: list[dict[str, Any]], config: dict[str, Any]) -> dict[str, An
         ),
         "new_complete_sample_ranks": [row["sample_rank"] for row in newly_solved],
         "completed_requests": len(completed),
-        "hard_timeouts": sum(row["production_status"] == "TIMEOUT" for row in rows),
+        "outer_hard_timeouts": sum(
+            row.get("production_hard_timeout") is True for row in rows
+        ),
+        "solver_reported_timeouts": sum(
+            row["production_status"] == "TIMEOUT"
+            and row.get("production_hard_timeout") is not True
+            for row in rows
+        ),
         "evidence_packages_audited": len(audits),
         "evidence_audit_issues": sum(
             int(row.get("evidence_audit_issue_count", 0)) for row in audits

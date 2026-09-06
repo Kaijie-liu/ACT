@@ -47,6 +47,7 @@ from act.pipeline.moe.experiment1 import (
 from act.pipeline.moe.experiment1c import diagnose_radius
 from act.pipeline.moe.experiment1f0 import _support_record, _support_status
 from act.pipeline.moe.train import _load_dataset
+from act.util.device_manager import initialize_device
 
 
 DEFAULT_CONFIG = PROJECT_ROOT / "act/pipeline/moe/configs/staged_verifier_v1.json"
@@ -652,6 +653,7 @@ def main() -> None:
     )
     if progress_path is not None:
         progress_path.parent.mkdir(parents=True, exist_ok=True)
+    initialize_device("cpu", "float64")
     model, payload = load_output_moe_checkpoint(checkpoint, map_location="cpu")
     model.cpu().double().eval()
     dataset = _load_dataset(payload["dataset"], False, download=False)
