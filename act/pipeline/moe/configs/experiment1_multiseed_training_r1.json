@@ -1,0 +1,52 @@
+{
+  "experiment": "experiment1_multiseed_training_r1",
+  "purpose": "test whether the verification-scale Route A evidence is specific to the seed-0 training artifact",
+  "python": "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+  "repository": "/data1/Kane/MOE/ACT",
+  "dataset_root": "/data1/Kane/MOE/ACT/data/torchvision",
+  "output_dir": "/data1/Kane/MOE/ACT/data/moe/results/experiment1_multiseed_training_r1",
+  "audit_output": "/data1/Kane/MOE/ACT/data/moe/results/experiment1_multiseed_training_r1/independent_audit.json",
+  "seeds": [
+    {
+      "seed": 1,
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/checkpoints/cifar10_top2_e8_seed1_bal010.pt",
+      "log": "/data1/Kane/MOE/ACT/data/moe/logs/cifar10_top2_e8_seed1_bal010.log"
+    },
+    {
+      "seed": 2,
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/checkpoints/cifar10_top2_e8_seed2_bal010.pt",
+      "log": "/data1/Kane/MOE/ACT/data/moe/logs/cifar10_top2_e8_seed2_bal010.log"
+    }
+  ],
+  "training": {
+    "dataset": "CIFAR10",
+    "num_experts": 8,
+    "top_k": 2,
+    "gate": "selected_softmax",
+    "router_hidden": [128],
+    "expert_hidden": [256, 128],
+    "epochs": 50,
+    "batch_size": 256,
+    "learning_rate": 0.001,
+    "weight_decay": 0.0001,
+    "balance_loss": "switch",
+    "balance_coefficient": 0.1,
+    "validation_fraction": 0.1,
+    "workers": 4,
+    "device": "cuda",
+    "download": false
+  },
+  "frozen_interpretation": {
+    "selection": "all registered seeds are retained regardless of accuracy, load balance, or later verification yield",
+    "success": "replicated formal effects on both models support a seed-robust mechanism claim",
+    "mixed": "one positive and one null model supports model-dependent, not seed-robust, wording",
+    "failure": "no replicated effect restricts the existing formal claim to the original seed-0 artifact",
+    "forbidden": [
+      "replace a registered seed after observing training metrics",
+      "select the better checkpoint for verification",
+      "change training hyperparameters between seeds",
+      "query a new formal endpoint before its cohort and budget are frozen",
+      "overwrite or delete a failed training artifact"
+    ]
+  }
+}

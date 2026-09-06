@@ -2603,3 +2603,18 @@ to 59.67 GiB. Plain CROWN remains negative on the pure expert, but this single
 case does not establish true unsafety or a general expert-backend limitation.
 No additional CROWN tuning or holdout execution follows; work returns to the
 ACT/HybridZ relation-preserving main line.
+
+## Experiment 1 multi-seed replication
+
+The next ACT/HybridZ main-line stage addresses whether the formal seed-0
+verification-scale findings are an initialization artifact. Before training,
+seeds 1 and 2 and the unchanged selected-softmax top-2 `bal010` recipe are
+frozen in `configs/experiment1_multiseed_training_r1.json`. Both training
+artifacts are retained regardless of accuracy, load balance, or subsequent
+verification yield; failed runs cannot be replaced by a more favorable seed.
+
+This stage displaces further Lagrangian grid/alpha effect search and does not
+access its locked holdout. After training completes, a separate pre-execution
+commit will freeze the formal cohort, common per-model budget, outward-safe
+HZ/HiGHS policy, and model-level aggregation. The protocol is documented in
+`docs/experiment1_multiseed_replication.md`.
