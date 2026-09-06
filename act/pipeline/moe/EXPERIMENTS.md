@@ -2656,3 +2656,14 @@ certificates and width separation replicate 2/2. Guard binaries fall by
 result is
 `results/experiment1_multiseed_replication_20260906_r1.json`; no pooled count,
 closure rerun, or model replacement overrides the per-model endpoint.
+
+A no-new-query association pass over the frozen rows shows that 9/13 seed-1
+SAFE rows and 1/6 seed-2 SAFE rows have no observed exact-versus-zonotope
+candidate reduction at any registered fixed census radius. The end-to-end rows
+use model-specific boundary radii, so this is descriptive rather than causal.
+It also identifies three F0-invoked hard-deadline rows whose missing F0 times
+were treated as zero by the historical summary code. The endpoint summaries are
+not rewritten; a derived correction marks all three costs right-censored.
+Future rows persist stage-aware F0 observations and summaries exclude censored
+times from runtime quantiles. The compact row table is
+`results/experiment1_multiseed_associations_20260906_r1.{json,csv}`.

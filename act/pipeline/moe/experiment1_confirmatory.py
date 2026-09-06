@@ -109,6 +109,8 @@ BOUNDARY_FIELDS = (
     "f0_invoked",
     "f0_status",
     "f0_reason",
+    "f0_time_observation",
+    "active_stage_at_deadline",
     "full_model_witness_valid",
     "witness_path",
     "witness_sha256",
@@ -578,7 +580,8 @@ def _run_boundary_row(
             "epsilon": epsilon,
             "gate_status": gate_status,
             "gate_reason": gate_reason,
-            "f0_invoked": gate_reason in SEMANTIC_REASONS,
+            "active_stage": "TIER1_COMPLETE",
+            "f0_invoked": False,
         },
     )
     f0 = None
@@ -607,6 +610,19 @@ def _run_boundary_row(
         final_status, final_reason = "UNSAFE", "UNSAFE_FULL_FORWARD"
     elif gate_reason in SEMANTIC_REASONS:
         f0_started = time.monotonic()
+        _write_json(
+            boundary_dir / "progress.json",
+            {
+                "sample_rank": rank,
+                "dataset_index": index,
+                "epsilon": epsilon,
+                "gate_status": gate_status,
+                "gate_reason": gate_reason,
+                "active_stage": "TIER2_F0",
+                "f0_invoked": True,
+                "f0_started_monotonic": f0_started,
+            },
+        )
         parent_id = hashlib.sha256(
             f"confirmatory:{runtime['source_config_sha256']}:{rank}:{epsilon:.17g}".encode()
         ).hexdigest()
@@ -670,6 +686,19 @@ def _run_boundary_row(
         "f0_status": f0["status"] if f0 else None,
         "f0_reason": f0["reason"] if f0 else None,
         "f0": f0,
+        "f0_time_observation": (
+            {
+                "kind": "OBSERVED",
+                "seconds": f0_seconds,
+                "lower_bound_seconds": None,
+            }
+            if f0 is not None
+            else {
+                "kind": "NOT_INVOKED",
+                "seconds": None,
+                "lower_bound_seconds": None,
+            }
+        ),
         "full_model_witness_valid": full_witness,
         "counterexample_prediction": (
             f0["counterexample_prediction"]
@@ -793,6 +822,13 @@ def _run_boundary_with_deadline(
                         progress = json.load(handle)
                 except (OSError, ValueError):
                     progress = {}
+            f0_invoked = bool(progress.get("f0_invoked", False))
+            f0_started_monotonic = progress.get("f0_started_monotonic")
+            f0_lower_bound = (
+                max(0.0, time.monotonic() - float(f0_started_monotonic))
+                if f0_invoked and f0_started_monotonic is not None
+                else None
+            )
             return {
                 "sample_rank": rank,
                 "dataset_index": int(selection["dataset_index"]),
@@ -801,7 +837,22 @@ def _run_boundary_with_deadline(
                 "unique_safe": False,
                 "gate_status": progress.get("gate_status"),
                 "gate_reason": progress.get("gate_reason"),
-                "f0_invoked": bool(progress.get("f0_invoked", False)),
+                "f0_invoked": f0_invoked,
+                "f0_seconds": None,
+                "f0_time_observation": (
+                    {
+                        "kind": "RIGHT_CENSORED_AT_INSTANCE_DEADLINE",
+                        "seconds": None,
+                        "lower_bound_seconds": f0_lower_bound,
+                    }
+                    if f0_invoked
+                    else {
+                        "kind": "NOT_INVOKED",
+                        "seconds": None,
+                        "lower_bound_seconds": None,
+                    }
+                ),
+                "active_stage_at_deadline": progress.get("active_stage"),
                 "full_model_witness_valid": False,
                 "deadline_seconds": timeout,
                 "deadline_enforced": True,
@@ -924,6 +975,24 @@ def _boundary_summary(rows: Sequence[dict[str, Any]]) -> dict[str, Any]:
         for row in rows
         for branch in (row.get("gate") or {}).get("branches", [])
     ]
+    observed_f0_seconds = [
+        float(row["f0_seconds"])
+        for row in invoked
+        if row.get("f0_seconds") is not None
+    ]
+    right_censored_f0 = [
+        row
+        for row in invoked
+        if row.get("f0_seconds") is None
+        or (row.get("f0_time_observation") or {}).get("kind")
+        == "RIGHT_CENSORED_AT_INSTANCE_DEADLINE"
+    ]
+    known_censored_lower_bounds = [
+        float(row["f0_time_observation"]["lower_bound_seconds"])
+        for row in right_censored_f0
+        if (row.get("f0_time_observation") or {}).get("lower_bound_seconds")
+        is not None
+    ]
     return {
         "rows": len(rows),
         "samples": len({row["sample_rank"] for row in rows}),
@@ -950,10 +1019,14 @@ def _boundary_summary(rows: Sequence[dict[str, Any]]) -> dict[str, Any]:
             branch.get("branch_status") in {"certified", "falsified"}
             for branch in gate_branches
         ),
-        "f0_seconds": sum(float(row.get("f0_seconds", 0.0)) for row in rows),
-        "f0_paired_runtime_overhead": _quantiles(
-            [float(row.get("f0_seconds", 0.0)) for row in invoked]
+        "f0_seconds": sum(observed_f0_seconds),
+        "f0_seconds_semantics": "observed_completed_F0_rows_only",
+        "f0_observed_time_rows": len(observed_f0_seconds),
+        "f0_right_censored_time_rows": len(right_censored_f0),
+        "f0_right_censored_known_lower_bound_seconds": sum(
+            known_censored_lower_bounds
         ),
+        "f0_paired_runtime_overhead": _quantiles(observed_f0_seconds),
         "total_seconds": sum(float(row["total_seconds"]) for row in rows),
         "instance_timeout_exceeded": sum(
             bool(row.get("instance_timeout_exceeded")) for row in rows

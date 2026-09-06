@@ -186,6 +186,15 @@ different condition. We therefore use seed-robust wording only for the
 route-changing-certificate and structural-width mechanisms, and describe
 candidate reduction and solver coverage as model-dependent.
 
+A derived, no-new-query association table adds an important qualification. At
+the four fixed census radii, 9/13 seed-1 SAFE rows show no strict candidate
+reduction relative to ordinary zonotope at any radius; the corresponding count
+is 1/6 for seed 2. These are not same-radius causal ablations because the final
+obligations use model-specific boundary radii. They do show that fixed-radius
+candidate reduction and end-to-end certification need not co-occur. Three
+F0-invoked rows are killed by the hard deadline before stage time is persisted;
+their F0 costs are reported as right-censored rather than imputed as zero.
+
 ## Table 1: official RT-ER numerical conformance result
 
 The official-code compatibility target is now concrete. Seed 0 completes all

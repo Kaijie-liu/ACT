@@ -154,3 +154,29 @@ The compact, reproducible aggregate is
 selection manifest and both raw config, census, boundary, and independent-audit
 hashes. No closure rerun, model replacement, or threshold change follows this
 mixed endpoint.
+
+## Frozen-row association and cost clarification
+
+A post-result analysis reads only the already frozen census and boundary rows;
+it issues no router, support, or property query. For seed 1, 9/13 SAFE rows have
+no observed exact-versus-zonotope candidate reduction at any of the four fixed
+census radii; the other four have at least one such fixed-radius observation.
+For seed 2 the split is 1/6 and 5/6. Because each end-to-end obligation uses its
+own boundary-adaptive radius, this is a descriptive within-model association,
+not a same-radius ablation or causal estimate. It nevertheless shows that an
+observed fixed-radius candidate reduction is not a necessary marker for the
+seed-1 certificates.
+
+The same pass finds three rows that entered F0 and were then killed by the
+instance deadline before `f0_seconds` was persisted (one seed-1 row and two
+seed-2 rows). Their F0 costs are right-censored and unrecoverable from the
+frozen artifacts; they must not be imputed as zero. Historical summaries remain
+immutable. Future boundary rows record the active stage, an observed or
+right-censored F0 timing object, and a lower bound when the deadline process can
+recover it. Summary quantiles use completed F0 observations only and report the
+censored count separately.
+
+The derived per-row table is
+`results/experiment1_multiseed_associations_20260906_r1.{json,csv}`. It also
+records route radius, feasible-set count, guard elimination, decision tier,
+verdict, witness flag, and stage times for every model--sample pair.

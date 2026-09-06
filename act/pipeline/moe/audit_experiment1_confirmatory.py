@@ -449,6 +449,24 @@ def audit(config_path: Path) -> dict[str, Any]:
     invoked = [row for row in boundary if row.get("f0_invoked")]
     semantic = [row for row in boundary if row.get("gate_reason") in SEMANTIC_REASONS]
     f0_resolved = sum(row.get("status") in {"SAFE", "UNSAFE"} for row in invoked)
+    observed_f0_seconds = [
+        float(row["f0_seconds"])
+        for row in invoked
+        if row.get("f0_seconds") is not None
+    ]
+    right_censored_f0 = [
+        row
+        for row in invoked
+        if row.get("f0_seconds") is None
+        or (row.get("f0_time_observation") or {}).get("kind")
+        == "RIGHT_CENSORED_AT_INSTANCE_DEADLINE"
+    ]
+    known_censored_lower_bounds = [
+        float(row["f0_time_observation"]["lower_bound_seconds"])
+        for row in right_censored_f0
+        if (row.get("f0_time_observation") or {}).get("lower_bound_seconds")
+        is not None
+    ]
     endpoints = {
         "status_counts": dict(statuses),
         "reason_counts": dict(Counter(row.get("reason") for row in boundary)),
@@ -468,10 +486,14 @@ def audit(config_path: Path) -> dict[str, Any]:
         "f0_remaining_unknown_timeout": sum(
             row.get("status") not in {"SAFE", "UNSAFE"} for row in invoked
         ),
-        "f0_seconds": sum(float(row.get("f0_seconds", 0.0)) for row in boundary),
-        "f0_paired_runtime_overhead": _quantiles(
-            float(row.get("f0_seconds", 0.0)) for row in invoked
+        "f0_seconds": sum(observed_f0_seconds),
+        "f0_seconds_semantics": "observed_completed_F0_rows_only",
+        "f0_observed_time_rows": len(observed_f0_seconds),
+        "f0_right_censored_time_rows": len(right_censored_f0),
+        "f0_right_censored_known_lower_bound_seconds": sum(
+            known_censored_lower_bounds
         ),
+        "f0_paired_runtime_overhead": _quantiles(observed_f0_seconds),
     }
     guard = {
         "branches": len(branches),

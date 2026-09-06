@@ -128,6 +128,34 @@ class ConfirmatoryProtocolTests(unittest.TestCase):
         self.assertEqual(
             summary["f0_paired_runtime_overhead"]["median"], 2.0
         )
+        self.assertEqual(summary["f0_observed_time_rows"], 1)
+        self.assertEqual(summary["f0_right_censored_time_rows"], 0)
+
+    def test_boundary_summary_does_not_impute_censored_f0_time_as_zero(self):
+        row = {
+            "sample_rank": 100,
+            "status": "TIMEOUT",
+            "reason": "INSTANCE_HARD_DEADLINE",
+            "unique_safe": False,
+            "gate_reason": "UNKNOWN_GATE_SUFFICIENCY",
+            "f0_invoked": True,
+            "f0_seconds": None,
+            "f0_time_observation": {
+                "kind": "RIGHT_CENSORED_AT_INSTANCE_DEADLINE",
+                "seconds": None,
+                "lower_bound_seconds": 17.0,
+            },
+            "total_seconds": 300.0,
+            "gate": {"branches": []},
+        }
+        summary = _boundary_summary([row])
+        self.assertEqual(summary["f0_seconds"], 0)
+        self.assertEqual(summary["f0_observed_time_rows"], 0)
+        self.assertEqual(summary["f0_right_censored_time_rows"], 1)
+        self.assertEqual(
+            summary["f0_right_censored_known_lower_bound_seconds"], 17.0
+        )
+        self.assertIsNone(summary["f0_paired_runtime_overhead"]["median"])
 
     def test_cluster_bootstrap_uses_sample_clusters(self):
         rows = [
