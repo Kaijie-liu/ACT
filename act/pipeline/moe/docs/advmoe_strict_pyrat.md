@@ -53,3 +53,8 @@ The frozen pilot configuration is
 DeepPoly-style `poly` domain, a 300-second per-path timeout, four CPU threads,
 and the exact final-checkpoint and CIFAR-10 archive hashes already accepted by
 the AdvMoE training audit.
+
+Attempt r1 stopped before any PyRAT call because the fixed-batch ONNX semantic
+check supplied the two probes as one batch.  The partial ONNX and failure
+record are preserved.  R2 changes only this check to two batch-1 replays; all
+scientific inputs and strict-backend settings remain unchanged.

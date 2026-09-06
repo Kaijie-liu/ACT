@@ -173,9 +173,16 @@ def _export_path(
     session = ort.InferenceSession(
         str(output), providers=["CPUExecutionProvider"]
     )
-    observed = session.run(
-        None, {session.get_inputs()[0].name: probes.cpu().numpy()}
-    )[0]
+    observed = np.concatenate(
+        [
+            session.run(
+                None,
+                {session.get_inputs()[0].name: probe.cpu().numpy()},
+            )[0]
+            for probe in probes.split(1, dim=0)
+        ],
+        axis=0,
+    )
     maximum_error = float(np.max(np.abs(observed - expected)))
     equivalent = bool(
         np.allclose(observed, expected, atol=float(semantic_atol), rtol=0.0)
