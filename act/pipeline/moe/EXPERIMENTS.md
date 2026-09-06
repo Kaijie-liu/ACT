@@ -2556,17 +2556,32 @@ Stage-B r1 independently audits `PASS`, including bit-exact CUDA replay of all
 about 70.7 GiB beside an unrelated 23.6-GiB process. Targeted search finds no
 static or full-model violation, while all finite-point dual upper bounds remain
 positive and therefore inconclusive. R1 is retained as five unresolved rows.
-A separate resource-only retry is permitted with the previously validated
-scalable sparse-alpha controls; no scientific obligation or rule may change.
+A separate memory-reduced sparse-alpha retry is permitted with the previously
+validated scalable controls; no scientific obligation or rule may change.
+This is an alternative alpha parameterization, not a numerically equivalent
+resource-only implementation: shared alpha variables and sparse intermediate
+or specification options can weaken the relaxation.
 
 The sparse-alpha r2 repair completes all five calls and independently audits
 `PASS` with zero issues, but closes and improves none. Its bounds are
 catastrophically looser (`-1.95e10` to `-4.29e10`) than plain CROWN and cost
 105--127 seconds each. All 55 targeted points retain positive selected-path
 safety, no full-model witness is found, and finite-point dual upper bounds
-remain positive at `mu=0`. The final bounded attribution is that these five
-closest complete-endpoint failures are inherited from the ordinary `mu=0`
-single-path expert obligation, not multiplier-grid truncation or the absence
-of a nonzero relation term. True single-path unsafety versus expert-backend
-relaxation remains unresolved. The Lagrangian holdout stays locked and no
-further grid/alpha search is launched.
+remain positive at `mu=0`. The five selected obligations remain unresolved.
+The registered upper-end grid extension and frozen sparse-alpha configuration
+did not close them, but continuous multiplier search, sufficient-reduction
+gap, graph-expression effects, backend relaxation, and true single-path
+unsafety were not fully separated. Because Stage B explicitly selected
+negative properties whose recorded best multiplier was `mu=0`, the five
+zero-multiplier blockers are not independent evidence that all residuals
+intrinsically prefer zero. The Lagrangian holdout stays locked and no further
+grid/alpha effect search is launched.
+
+One final bounded backend-consistency check is preregistered on the first
+fixed obligation (`sample6:eps0.5`, route 1, property 2). It crosses a
+router-free pure expert and graph-matched `mu=0` compiler with plain CROWN and
+the unchanged sparse-alpha configuration. Lowered graph nodes, router
+presence, and initial/best/last/returned bounds are recorded. This check can
+identify a graph/configuration inconsistency on one case; it cannot establish
+a general cause, access the holdout, or restart effect search. The full
+protocol is in `docs/advmoe_backend_consistency.md`.

@@ -1,0 +1,133 @@
+{
+  "schema_version": 1,
+  "status": "PREREGISTERED_NOT_RUN",
+  "scope": "ADV_MOE_BACKEND_CONSISTENCY_SAMPLE6_EPS0P5_R1",
+  "label": "bounded four-cell consistency check on one frozen development obligation; no effect search",
+  "workspace_boundary": "/data1/Kane/MOE",
+  "act_repository": "/data1/Kane/MOE/ACT",
+  "required_branch": "feat/moe-route-verification",
+  "output_dir": "/data1/Kane/MOE/ACT/data/moe/results/advmoe_backend_consistency_sample6_r1",
+  "inputs": {
+    "parent_config": {
+      "path": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/advmoe_lagrangian_development_r1.json",
+      "sha256": "7a9257afc071a29d289cf09dc0da1996005d76689ea543ab435a1dc1595865b2"
+    },
+    "parent_rows": {
+      "path": "/data1/Kane/MOE/ACT/data/moe/results/advmoe_lagrangian_development_r1/rows.jsonl",
+      "sha256": "26c65f2eaf88eea81691a8d482bb501facac2b71ffb80b12ac74ebd31002412b"
+    },
+    "stage_a_config": {
+      "path": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/advmoe_lagrangian_attribution_grid_r1.json",
+      "sha256": "c89a4e68bcdd300c7ad774ab92be3df803a31204b8b7a50f5de7e00863ecab7d"
+    },
+    "stage_a_rows": {
+      "path": "/data1/Kane/MOE/ACT/data/moe/results/advmoe_lagrangian_attribution_grid_r1/rows.jsonl",
+      "sha256": "d77f7bd95950f3bc38e113c8801608be185d1671bf975b24df056318ad42e0f5"
+    },
+    "stage_a_audit": {
+      "path": "/data1/Kane/MOE/ACT/act/pipeline/moe/results/baseline/advmoe_lagrangian_attribution_grid_r1_audit.json",
+      "sha256": "c52925faffb237b793ecb08c4fdc5477d2ecec29d864ad6b4dc4960359859ce0"
+    },
+    "family_r2_config": {
+      "path": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/advmoe_lagrangian_family_diagnosis_r2.json",
+      "sha256": "5326471c1bf4d3a7e4e388473c1813bbb7fcda7f17d1a8b694ade80fe11208e5"
+    },
+    "family_r2_summary": {
+      "path": "/data1/Kane/MOE/ACT/data/moe/results/advmoe_lagrangian_family_diagnosis_r2/summary.json",
+      "sha256": "00a9f104cc114f84e3a00251db0ed6365927894a215607de5c1785a7b1e39647"
+    },
+    "family_r2_rows": {
+      "path": "/data1/Kane/MOE/ACT/data/moe/results/advmoe_lagrangian_family_diagnosis_r2/rows.jsonl",
+      "sha256": "f31bff67c58dd865ec3d72c571bc2b6c8ab22d31e786e12355ff316fa3682412"
+    },
+    "family_r2_audit": {
+      "path": "/data1/Kane/MOE/ACT/act/pipeline/moe/results/baseline/advmoe_lagrangian_family_diagnosis_r2_audit.json",
+      "sha256": "7033c1ea341b12d1afa7dbec88f84ac0eeb73d15f851da0452d31dd3fa64e9e7"
+    }
+  },
+  "obligation": {
+    "row_id": "sample6:eps0.5",
+    "route": 1,
+    "property_index": 2,
+    "plain_crown_lower_bound": -3.806828737258911
+  },
+  "device": "cuda:0",
+  "minimum_free_gpu_memory_gib": 48.0,
+  "execution_order": [
+    "pure_expert__plain_crown",
+    "compiled_mu0__plain_crown",
+    "pure_expert__sparse_alpha",
+    "compiled_mu0__sparse_alpha"
+  ],
+  "backends": {
+    "plain_crown": {
+      "method": "CROWN",
+      "gradient_tracking": false,
+      "bound_options": null,
+      "intermediate_bound_strategy": {
+        "label": "PINNED_BACKEND_DEFAULTS",
+        "sparse_features_alpha": null,
+        "sparse_spec_alpha": null,
+        "sparse_intermediate_bounds": null,
+        "use_shared_alpha": null,
+        "keep_best": null
+      }
+    },
+    "sparse_alpha": {
+      "method": "alpha-CROWN",
+      "gradient_tracking": true,
+      "bound_options": {
+        "conv_mode": "patches",
+        "sparse_features_alpha": true,
+        "sparse_spec_alpha": true,
+        "sparse_intermediate_bounds": true,
+        "use_full_conv_alpha": false,
+        "crown_batch_size": 128,
+        "max_crown_size": 512,
+        "batched_crown_max_vram_ratio": 0.5,
+        "optimize_bound_args": {
+          "iteration": 20,
+          "lr_alpha": 0.1,
+          "use_shared_alpha": true,
+          "keep_best": true
+        }
+      },
+      "intermediate_bound_strategy": {
+        "label": "FROZEN_MEMORY_REDUCED_SPARSE_ALPHA_PARAMETERIZATION",
+        "sparse_features_alpha": true,
+        "sparse_spec_alpha": true,
+        "sparse_intermediate_bounds": true,
+        "use_shared_alpha": true,
+        "keep_best": true,
+        "equivalence_to_dense_alpha": "NOT_ESTABLISHED"
+      }
+    }
+  },
+  "semantic_equivalence": {
+    "points": "center, all-lower corner, all-upper corner, and eight deterministic in-box points",
+    "random_points": 8,
+    "seed": 20260906,
+    "absolute_tolerance": 1e-6
+  },
+  "trace": {
+    "record": "lowered graph nodes plus optimized lower bounds observed at every best-result comparison",
+    "plain_semantics": "single call result is initial, best, and final",
+    "alpha_semantics": "initial and last are observed iterates; best is their pointwise maximum; returned is the backend keep_best result",
+    "instrumentation": "process-local serial wrapper that delegates unchanged and is restored in finally"
+  },
+  "numerical": {
+    "safe_positive_margin": 1e-7,
+    "comparison_tolerance": 1e-6,
+    "negative_bound_semantics": "UNKNOWN_NEVER_UNSAFE",
+    "formal_safe_enabled": false
+  },
+  "preregistered_interpretation": {
+    "incomplete": "retain the incomplete state and stop this bounded check",
+    "pure_better_than_compiled": "investigate graph simplification or zero-coefficient branch elimination; do not modify routing theory",
+    "alpha_initial_then_last_degrades": "report optimization trajectory and whether keep_best preserved the observed best; do not call it model difficulty",
+    "both_graphs_fail": "accept a limitation of this frozen backend configuration on this fixed case and stop; do not expand into parameter search",
+    "scope": "one explicitly selected development blocker at 0.5/255; no general causal, prevalence, holdout, or formal-SAFE claim"
+  },
+  "holdout": "LOCKED_NOT_ACCESSED",
+  "stopping_rule": "exactly four registered calls; no retry, multiplier extension, alpha tuning, sample substitution, or radius change"
+}

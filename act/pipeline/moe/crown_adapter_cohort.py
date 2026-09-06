@@ -20,9 +20,10 @@ from __future__ import annotations
 
 import argparse
 from collections import Counter
-from contextlib import nullcontext
+from contextlib import contextmanager, nullcontext
 import copy
 import hashlib
+import importlib
 import importlib.metadata
 import json
 import math
@@ -32,6 +33,7 @@ import platform
 import statistics
 import sys
 import time
+import threading
 from typing import Any, Sequence
 
 from act.util.typing_compat import install_typing_override
@@ -89,6 +91,8 @@ OPTIMIZED_CROWN_METHODS = frozenset(
     {"alpha-crown", "crown-optimized", "forward-optimized"}
 )
 
+_OPTIMIZATION_TRACE_LOCK = threading.Lock()
+
 
 def validate_crown_configuration(
     *,
@@ -129,6 +133,130 @@ def validate_crown_configuration(
         "gradient_tracking_enabled": bool(track_gradients),
         "bound_options_supplied": bound_options is not None,
         "optimize_bound_args_supplied": isinstance(optimize_arguments, dict),
+    }
+
+
+def _bounded_graph_metadata(bounded: Any, source_module: nn.Module) -> dict[str, Any]:
+    """Return serializable evidence about the graph consumed by auto_LiRPA.
+
+    ``node_name_map`` is the only public-ish bridge from source parameter names
+    to converted graph nodes in the pinned backend.  Recording both sides lets
+    a diagnostic distinguish a truly router-free expert graph from a
+    mathematically zero-multiplier graph whose router is still lowered.
+    """
+
+    name_map = dict(getattr(bounded, "node_name_map", {}) or {})
+    source_parameters = [name for name, _value in source_module.named_parameters()]
+    router_parameters = [
+        name for name in source_parameters if name.startswith("router_logits.")
+    ]
+    lowered_router_parameters = {
+        name: name_map.get(name) for name in router_parameters
+    }
+    nodes = []
+    histogram: Counter[str] = Counter()
+    for node in bounded.nodes():
+        operation = type(node).__name__
+        histogram[operation] += 1
+        nodes.append(
+            {
+                "name": str(getattr(node, "name", "")),
+                "operation": operation,
+                "used": bool(getattr(node, "used", False)),
+                "perturbed": bool(getattr(node, "perturbed", False)),
+                "inputs": [
+                    str(getattr(value, "name", ""))
+                    for value in getattr(node, "inputs", [])
+                ],
+            }
+        )
+    return {
+        "source_module_type": type(source_module).__name__,
+        "source_parameter_count": len(source_parameters),
+        "source_router_parameter_names": router_parameters,
+        "lowered_router_parameter_nodes": lowered_router_parameters,
+        "router_parameters_present_in_lowered_graph": bool(
+            router_parameters
+            and all(value is not None for value in lowered_router_parameters.values())
+        ),
+        "node_count": len(nodes),
+        "used_node_count": sum(bool(value["used"]) for value in nodes),
+        "operation_histogram": dict(sorted(histogram.items())),
+        "final_node_name": str(getattr(bounded.final_node(), "name", "")),
+        "nodes": nodes,
+    }
+
+
+@contextmanager
+def _capture_optimized_lower_trace(bounded: Any, enabled: bool):
+    """Observe optimized lower-bound iterates without changing their values.
+
+    The pinned auto_LiRPA public API returns only its selected result.  For this
+    bounded backend-consistency diagnostic, wrap its internal best-result
+    comparison in-process and record the lower tensor passed to that comparison
+    on each iteration.  The wrapper calls the original function unchanged and
+    is restored even after an exception.  Serialization is intentionally done
+    before the original call so the observation cannot depend on its mutation.
+    """
+
+    trace: list[list[float]] = []
+    if not enabled:
+        yield trace
+        return
+    module = importlib.import_module(bounded._get_optimized_bounds.__module__)
+    original = module._update_best_ret
+
+    def traced(full_ret, best_ret, loss_reduction_func, idx, *args, **kwargs):
+        if int(idx) == 0 and full_ret[0] is not None:
+            trace.append(
+                full_ret[0].detach().cpu().double().reshape(-1).tolist()
+            )
+        return original(
+            full_ret, best_ret, loss_reduction_func, idx, *args, **kwargs
+        )
+
+    with _OPTIMIZATION_TRACE_LOCK:
+        module._update_best_ret = traced
+        try:
+            yield trace
+        finally:
+            module._update_best_ret = original
+
+
+def _bound_trajectory_record(
+    trace: list[list[float]],
+    returned_lower: np.ndarray,
+    offsets: torch.Tensor | None,
+) -> dict[str, Any]:
+    """Summarize the initial, best observed, last, and returned lower bounds."""
+
+    returned = np.asarray(returned_lower, dtype=np.float64).reshape(-1)
+    if not trace:
+        values = returned.tolist()
+        return {
+            "trace_available": False,
+            "trace_points": 0,
+            "initial_lower_bounds": values,
+            "best_observed_lower_bounds": values,
+            "last_iteration_lower_bounds": values,
+            "returned_lower_bounds": values,
+            "returned_result_semantics": "single non-optimized bound call",
+            "lower_bound_trace": [],
+        }
+    values = np.asarray(trace, dtype=np.float64)
+    if offsets is not None:
+        values = values + offsets.detach().cpu().double().numpy().reshape(1, -1)
+    return {
+        "trace_available": True,
+        "trace_points": int(values.shape[0]),
+        "initial_lower_bounds": values[0].tolist(),
+        "best_observed_lower_bounds": values.max(axis=0).tolist(),
+        "last_iteration_lower_bounds": values[-1].tolist(),
+        "returned_lower_bounds": returned.tolist(),
+        "returned_result_semantics": (
+            "backend-selected result with optimize_bound_args.keep_best"
+        ),
+        "lower_bound_trace": values.tolist(),
     }
 
 
@@ -497,6 +625,8 @@ def _crown_bounds(
     method: str,
     track_gradients: bool = True,
     bound_options: dict[str, Any] | None = None,
+    capture_graph_metadata: bool = False,
+    capture_optimization_trace: bool = False,
 ) -> dict[str, Any]:
     backend_configuration = validate_crown_configuration(
         method=method,
@@ -504,6 +634,8 @@ def _crown_bounds(
         bound_options=bound_options,
     )
     started = time.monotonic()
+    graph_metadata = None
+    trajectory = None
     try:
         from auto_LiRPA import BoundedModule, BoundedTensor
         from auto_LiRPA.perturbations import PerturbationLpNorm
@@ -523,6 +655,8 @@ def _crown_bounds(
         if bound_options is not None:
             bounded_arguments["bound_opts"] = bound_options
         bounded = BoundedModule(module, center, **bounded_arguments)
+        if capture_graph_metadata:
+            graph_metadata = _bounded_graph_metadata(bounded, module)
         build_seconds = time.monotonic() - build_started
         bounded_input = BoundedTensor(
             center,
@@ -543,7 +677,9 @@ def _crown_bounds(
             )
         solve_started = time.monotonic()
         gradient_context = nullcontext() if track_gradients else torch.no_grad()
-        with gradient_context:
+        with gradient_context, _capture_optimized_lower_trace(
+            bounded, capture_optimization_trace
+        ) as lower_trace:
             bound_lower, bound_upper = bounded.compute_bounds(
                 x=(bounded_input,), C=C, method=method
             )
@@ -555,6 +691,10 @@ def _crown_bounds(
             upper_values = upper_values + offsets
         lower_np = lower_values.detach().cpu().double().numpy()
         upper_np = upper_values.detach().cpu().double().numpy()
+        if capture_graph_metadata:
+            graph_metadata = _bounded_graph_metadata(bounded, module)
+        if capture_optimization_trace:
+            trajectory = _bound_trajectory_record(lower_trace, lower_np, offsets)
         complete = bool(
             lower_np.size > 0
             and np.all(np.isfinite(lower_np))
@@ -573,6 +713,8 @@ def _crown_bounds(
             "property_rows": int(lower_np.size),
             "gradient_tracking_enabled": track_gradients,
             "backend_configuration": backend_configuration,
+            "graph_metadata": graph_metadata,
+            "optimization_trajectory": trajectory,
             "graph_build_seconds": build_seconds,
             "solve_seconds": solve_seconds,
             "seconds": time.monotonic() - started,
@@ -605,6 +747,8 @@ def _crown_bounds(
             "device": device,
             "gradient_tracking_enabled": track_gradients,
             "backend_configuration": backend_configuration,
+            "graph_metadata": graph_metadata,
+            "optimization_trajectory": trajectory,
             "peak_cuda_memory_gib": (
                 float(torch.cuda.max_memory_allocated(device=device) / (1024**3))
                 if str(device).startswith("cuda") and torch.cuda.is_available()

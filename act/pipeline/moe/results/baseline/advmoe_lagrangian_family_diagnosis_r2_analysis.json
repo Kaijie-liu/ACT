@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "status": "PASS_WITH_RESIDUAL_SEMANTIC_UNCERTAINTY",
   "scope": "ADV_MOE_LAGRANGIAN_FIXED_MULTIPLIER_FAMILY_DIAGNOSIS_ANALYSIS_R2",
   "identity": {
@@ -18,7 +18,7 @@
     "complete_endpoint_gains_from_extended_grid": 0,
     "nonblocking_property_improvements": 18,
     "endpoint_blockers_selecting_mu_zero": 5,
-    "conclusion": "finite-grid truncation is not the endpoint-level cause on this selected cohort"
+    "conclusion": "adding the registered upper-end multiplier values improved 18 nonblocking property bounds but did not close these selected endpoints; continuous multiplier search, values between grid points, and smaller-scale alternatives were not excluded"
   },
   "optimized_backend": {
     "sparse_alpha_completed_calls": 5,
@@ -29,7 +29,7 @@
     "sparse_alpha_call_seconds_median": 116.68519243504852,
     "closed_obligations": 0,
     "improved_obligations": 0,
-    "interpretation": "the scalable sparse-alpha adapter completed but was dramatically looser than plain CROWN on the shared compiled graph"
+    "interpretation": "the memory-reduced sparse-alpha parameterization completed but was dramatically looser than plain CROWN on the shared compiled graph; numerical equivalence to the dense alpha configuration was not established"
   },
   "concrete_search": {
     "replayed_points": 55,
@@ -41,23 +41,31 @@
     "negative_upper_bounds": 0,
     "positive_upper_bound_range": [0.528428316116333, 6.526944160461426],
     "selected_multiplier_for_all_obligations": 0.0,
-    "conclusion": "the recorded points do not establish an intrinsic fixed-multiplier-family obstruction"
+    "conclusion": "the recorded points do not establish an intrinsic fixed-multiplier-family obstruction; because every recorded safety value is positive and mu=0 is allowed, a positive finite-point upper bound is not independent positive evidence for certificate existence"
   },
   "classification": {
     "UNRESOLVED_AFTER_REGISTERED_DIAGNOSTIC": 5
   },
   "primary_attribution": {
-    "established": "For these five closest residuals, the complete-endpoint bottleneck is inherited from the ordinary mu=0 single-path expert property, not from multiplier-grid truncation or a need for a nonzero route-relation term.",
-    "remaining_ambiguity": "The diagnostic cannot distinguish an actually unsafe single-path property missed by targeted search from relaxation error in the expert backend.",
+    "established": "For the five development residuals selected by the explicit mu=0-blocker rule, the registered upper-end multiplier extension and frozen sparse-alpha configuration did not close the selected properties.",
+    "remaining_ambiguity": "The diagnostic does not separate continuous multiplier search, fixed-multiplier sufficient-reduction gap, graph-expression effects, backend relaxation, or an actually unsafe property missed by targeted search.",
     "not_established": [
+      "finite-grid truncation is not generally ruled out",
+      "the Stage-B mu=0 selection is not independent evidence that all residual bottlenecks prefer mu=0",
+      "a best recorded mu=0 backend bound does not establish that route conditioning has no value for the exact guarded problem",
       "no intrinsic fixed-multiplier gap is established on the official-scale obligations",
       "no formal guarded SAFE result is established",
       "no prevalence claim is permitted"
     ]
   },
   "decision": {
-    "official_scale_lagrangian_effect": "NO_COMPLETE_GAIN_AND_ATTRIBUTION_STOPS_AT_UNGUARDED_EXPERT_BACKEND",
+    "official_scale_lagrangian_effect": "NO_COMPLETE_GAIN_UNIQUE_CAUSE_NOT_IDENTIFIED",
     "holdout": "REMAINS_LOCKED",
-    "next_action": "Do not expand the multiplier grid or repeat alpha-CROWN on the holdout; retain the compiler as a sound sufficient adapter with toy/HZ conformance and report the official-scale null development result."
+    "next_action": "Freeze effect search and holdout. Run only the preregistered sample6 four-cell graph/backend consistency check, then return resources to the ACT/HybridZ relation-preserving line."
+  },
+  "interpretation_revision": {
+    "reason": "causal language in schema-v1 exceeded the registered finite-grid and selection-conditioned evidence",
+    "raw_config_summary_rows_points_and_audit_unchanged": true,
+    "historical_schema_v1_preserved_in_git_history": true
   }
 }

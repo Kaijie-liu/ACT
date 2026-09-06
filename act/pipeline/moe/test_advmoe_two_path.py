@@ -48,9 +48,94 @@ from act.pipeline.moe.advmoe_lagrangian_family_diagnosis import (
     finite_point_dual_upper,
     select_mu0_blocking_obligation,
 )
+from act.pipeline.moe.advmoe_backend_consistency import compare_cells
+from act.pipeline.moe.crown_adapter_cohort import (
+    _bound_trajectory_record,
+    _bounded_graph_metadata,
+)
 
 
 class AdvMoeTwoPathTests(unittest.TestCase):
+    @staticmethod
+    def _consistency_cell(cell_id: str, value: float) -> dict:
+        graph_form, backend = cell_id.split("__", maxsplit=1)
+        return {
+            "cell_id": cell_id,
+            "graph_form": graph_form,
+            "backend": backend,
+            "bound": {"complete": True, "lower_bounds": [value]},
+        }
+
+    def test_backend_consistency_attributes_sparse_alpha_on_both_graphs(self):
+        cells = [
+            self._consistency_cell("pure_expert__plain_crown", -2.0),
+            self._consistency_cell("compiled_mu0__plain_crown", -2.0),
+            self._consistency_cell("pure_expert__sparse_alpha", -20.0),
+            self._consistency_cell("compiled_mu0__sparse_alpha", -30.0),
+        ]
+        result = compare_cells(cells, 1e-6)
+        self.assertEqual(
+            result["classification"],
+            "SPARSE_ALPHA_CONFIGURATION_DEGRADES_BOTH_GRAPH_FORMS",
+        )
+        self.assertEqual(result["plain_graph_delta_pure_minus_compiled"], 0.0)
+
+    def test_backend_consistency_prioritizes_graph_expression_effect(self):
+        cells = [
+            self._consistency_cell("pure_expert__plain_crown", -1.0),
+            self._consistency_cell("compiled_mu0__plain_crown", -2.0),
+            self._consistency_cell("pure_expert__sparse_alpha", -3.0),
+            self._consistency_cell("compiled_mu0__sparse_alpha", -4.0),
+        ]
+        self.assertEqual(
+            compare_cells(cells, 1e-6)["classification"],
+            "COMPILED_MU0_GRAPH_IS_WEAKER_THAN_ROUTER_FREE_EXPERT",
+        )
+
+    def test_bound_trajectory_records_initial_best_last_and_returned(self):
+        result = _bound_trajectory_record(
+            [[-3.0], [-1.0], [-2.0]],
+            np.asarray([-1.0]),
+            offsets=None,
+        )
+        self.assertTrue(result["trace_available"])
+        self.assertEqual(result["initial_lower_bounds"], [-3.0])
+        self.assertEqual(result["best_observed_lower_bounds"], [-1.0])
+        self.assertEqual(result["last_iteration_lower_bounds"], [-2.0])
+        self.assertEqual(result["returned_lower_bounds"], [-1.0])
+
+    def test_graph_metadata_exposes_lowered_router_parameters(self):
+        class Source(nn.Module):
+            def __init__(self):
+                super().__init__()
+                self.router_logits = nn.Linear(2, 2)
+                self.expert = nn.Linear(2, 1)
+
+        class Node:
+            name = "/router"
+            used = True
+            perturbed = True
+            inputs = []
+
+        class Bounded:
+            node_name_map = {
+                "router_logits.weight": "/router.weight",
+                "router_logits.bias": "/router.bias",
+            }
+
+            @staticmethod
+            def nodes():
+                return [Node()]
+
+            @staticmethod
+            def final_node():
+                return Node()
+
+        result = _bounded_graph_metadata(Bounded(), Source())
+        self.assertTrue(result["router_parameters_present_in_lowered_graph"])
+        self.assertEqual(result["node_count"], 1)
+        self.assertEqual(result["operation_histogram"], {"Node": 1})
+
     def test_finite_points_can_rule_out_fixed_multiplier_family(self) -> None:
         result = finite_point_dual_upper(
             np.asarray([-1.9, 0.1]),

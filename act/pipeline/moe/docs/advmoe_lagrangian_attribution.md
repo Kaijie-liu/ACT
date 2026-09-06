@@ -65,9 +65,11 @@ selects `mu=0` for its worst property.
 
 The registered classification is therefore
 `FINITE_GRID_CONTRIBUTES_WITHOUT_ENDPOINT_GAIN`.  The old grid did truncate
-some nonblocking bounds, but finite-grid truncation is not an endpoint-level
-explanation on the closest residuals.  Stage B is required to distinguish
-backend relaxation from a fixed-multiplier certificate-family limitation.
+some nonblocking bounds, but the registered upper-end extension did not close
+the selected endpoints.  This does not exclude a useful continuous
+multiplier, a point between registered values, or a smaller coefficient.
+Stage B is only a finite diagnostic; it cannot uniquely separate backend
+relaxation, search incompleteness, and fixed-multiplier-family limitation.
 
 ## Stage B preregistration
 
@@ -115,9 +117,11 @@ points therefore do not rule out a positive exact fixed-multiplier
 certificate.  All five obligations remain
 `UNRESOLVED_AFTER_REGISTERED_DIAGNOSTIC`.
 
-R1 is retained unchanged.  A resource-only r2 repair may replace the dense
+R1 is retained unchanged.  A memory-reduced r2 retry may replace the dense
 alpha configuration with the repository's previously validated scalable
-sparse-alpha settings.  Obligations, multiplier points, targeted search,
+sparse-alpha settings.  This changes the alpha parameterization and
+intermediate-bound strategy and is not known to be numerically equivalent to
+the dense configuration.  Obligations, multiplier points, targeted search,
 classification precedence, and evidence semantics must remain unchanged.
 
 The r2 resource repair is preregistered with the same five obligations and
@@ -146,16 +150,22 @@ points retain positive safety values on the selected path, with minima from
 finite-point dual upper bounds are likewise positive and select `mu=0`, so
 they do not establish an intrinsic fixed-multiplier-family obstruction.
 
-The attribution that is supported is narrower but decisive for method
-selection.  Every complete-endpoint blocker among these five closest
-residuals is the ordinary `mu=0` single-path expert property.  The null result
-is not explained by multiplier-grid truncation or by failure to select a
-nonzero guard term; it is inherited from the base expert-verification
-obligation.  What remains unresolved is whether that single-path property is
-actually unsafe or whether the expert backend is too loose.  Targeted search
-supports, but cannot prove, the latter.
+The supported attribution is deliberately narrower.  Stage B explicitly
+selects one still-negative property whose recorded best multiplier is
+`mu=0`; five such blockers are therefore not independent evidence that all
+residuals intrinsically prefer zero.  The upper-end grid extension and frozen
+sparse-alpha configuration did not close these selected obligations, while
+continuous multiplier search, sufficient-reduction gap, graph-expression
+effects, backend relaxation, and an actually unsafe property missed by the
+targeted search remain incompletely separated.  Positive finite-point dual
+upper bounds are not independent evidence of certificate existence because
+all recorded safety values are positive and `mu=0` is admissible.
 
 No additional multiplier or alpha-CROWN search is justified on the holdout.
 The compiler remains a sound sufficient adapter with toy and retained-HZ
 conformance, while its official-scale development effect is reported as null.
 The disjoint holdout remains unspent.
+
+The only allowed follow-up is the single-obligation four-cell consistency
+check in `advmoe_backend_consistency.md`.  It does not restart multiplier or
+alpha effect search.
