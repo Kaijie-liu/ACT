@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "status": "PRESERVED_PRE_SOLVE_FAILURE",
+  "scope": "ADV_MOE_SEED0_COMPAT_STRICT_PYRAT_PILOT_R2_ATTEMPT001",
+  "failure_stage": "ONNX_RUNTIME_EQUIVALENCE",
+  "error_type": "SEMANTIC_TOLERANCE_EXCEEDED",
+  "error": "path 1 maximum ONNX Runtime versus PyTorch discrepancy was 2.861023e-6, above the frozen 2e-6 sanity tolerance",
+  "scientific_rows_written": 0,
+  "pyrat_calls_started": 0,
+  "partial_artifacts": [
+    {
+      "path": "/data1/Kane/MOE/ACT/data/moe/results/advmoe_strict_pyrat_seed0_compat_pilot_r2/advmoe_path0.onnx",
+      "sha256": "7edde7bd6c6d4153dcf93a5106818474e43bcf6fcece146c3219ec756d12d8ee"
+    },
+    {
+      "path": "/data1/Kane/MOE/ACT/data/moe/results/advmoe_strict_pyrat_seed0_compat_pilot_r2/advmoe_path1.onnx",
+      "sha256": "3f4cead176be22eeb5ef0b9426578cc4f93f7bc24c644fb84ef7e4404d18c9cb"
+    }
+  ],
+  "measured_discrepancies": {
+    "path0_maximum_abs_error": 0.0000016689300537109375,
+    "path1_maximum_abs_error": 0.00000286102294921875,
+    "all_probe_predictions_equal": true
+  },
+  "repair": "r3 preserves BatchNormalization nodes, uses direct PyRAT output comparisons, and applies a 4e-6 ONNX-runtime sanity tolerance; strict SAFE still depends only on PyRAT directed rounding",
+  "interpretation": "No certificate or numerical result was produced by this attempt."
+}

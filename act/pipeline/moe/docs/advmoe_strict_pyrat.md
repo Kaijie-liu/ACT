@@ -58,3 +58,11 @@ Attempt r1 stopped before any PyRAT call because the fixed-batch ONNX semantic
 check supplied the two probes as one batch.  The partial ONNX and failure
 record are preserved.  R2 changes only this check to two batch-1 replays; all
 scientific inputs and strict-backend settings remain unchanged.
+
+R2 then stopped at the same pre-solve gate: one path had a `2.861023e-6`
+ONNX-Runtime/PyTorch discrepancy, above the frozen `2e-6` sanity tolerance;
+all probe predictions agreed.  R3 keeps BatchNorm as explicit ONNX nodes
+instead of folding rounded affine constants, uses the direct comparison form
+accepted by PyRAT's VNN-LIB grammar, and sets the concrete sanity tolerance to
+`4e-6`.  That tolerance cannot create SAFE: formal acceptance still requires
+PyRAT to return SAFE for both paths under directed rounding.

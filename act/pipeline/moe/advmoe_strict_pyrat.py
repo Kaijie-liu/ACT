@@ -109,9 +109,9 @@ def classification_vnnlib(
     for competitor in range(classes):
         if competitor == int(prediction):
             continue
-        lines.append(
-            f"(assert (>= (- Y_{int(prediction)} Y_{competitor}) 0))"
-        )
+        # PyRAT's deliberately small VNN-LIB grammar accepts direct binary
+        # comparisons but not an SMT-LIB subtraction term in this position.
+        lines.append(f"(assert (>= Y_{int(prediction)} Y_{competitor}))")
     return "\n".join(lines) + "\n"
 
 
@@ -167,6 +167,8 @@ def _export_path(
         dynamic_axes=None,
         opset_version=int(opset),
         dynamo=False,
+        do_constant_folding=False,
+        training=torch.onnx.TrainingMode.EVAL,
     )
     graph = onnx.load(str(output))
     onnx.checker.check_model(graph)
@@ -195,6 +197,9 @@ def _export_path(
         "dynamic_dispatch_present": any(
             node.op_type in {"ArgMax", "TopK", "Gather", "GatherElements"}
             for node in graph.graph.node
+        ),
+        "batchnormalization_nodes": sum(
+            node.op_type == "BatchNormalization" for node in graph.graph.node
         ),
         "onnxruntime_semantic_equivalent": equivalent,
         "onnxruntime_maximum_abs_error": maximum_error,
@@ -337,6 +342,11 @@ def run(config_path: Path) -> dict[str, Any]:
             raise RuntimeError("ONNX export semantic mismatch")
         if record["dynamic_dispatch_present"]:
             raise RuntimeError("specialized path retains dynamic dispatch")
+        if (
+            config["export"].get("constant_folding") is False
+            and int(record["batchnormalization_nodes"]) == 0
+        ):
+            raise RuntimeError("non-folded export lost BatchNormalization nodes")
         exports.append(record)
 
     environment = dict(os.environ)

@@ -23,9 +23,9 @@ class AdvMoeStrictPyratTests(unittest.TestCase):
         )
         self.assertIn("(assert (>= X_0 0))", text)
         self.assertIn("(assert (<= X_1 1))", text)
-        self.assertIn("(assert (>= (- Y_1 Y_0) 0))", text)
-        self.assertIn("(assert (>= (- Y_1 Y_2) 0))", text)
-        self.assertNotIn("(- Y_1 Y_1)", text)
+        self.assertIn("(assert (>= Y_1 Y_0))", text)
+        self.assertIn("(assert (>= Y_1 Y_2))", text)
+        self.assertNotIn("(>= Y_1 Y_1)", text)
 
     def test_only_two_complete_safe_paths_form_safe_endpoint(self) -> None:
         self.assertEqual(

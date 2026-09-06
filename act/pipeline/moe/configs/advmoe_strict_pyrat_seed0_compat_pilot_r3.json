@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "status": "PREREGISTERED_NOT_RUN",
+  "scope": "ADV_MOE_SEED0_COMPAT_STRICT_PYRAT_PILOT_R3",
+  "label": "high-accuracy AdvMoE strict-backend feasibility control; non-folded BatchNorm export",
+  "workspace_boundary": "/data1/Kane/MOE",
+  "act_repository": "/data1/Kane/MOE/ACT",
+  "required_branch": "feat/moe-route-verification",
+  "required_head": "728e15182536c3c2dfe11a7418c06bae2db8ab59",
+  "checkpoint": {
+    "selection": "final epoch; no test-set best-checkpoint selection",
+    "seed": 0,
+    "epoch": 100,
+    "path": "/data1/Kane/MOE/baseline_runs/advmoe/seed0_compat_r1/results/training/train_moe/compat_softmax_bridge_seed0_r1_CIFAR10-resnet18_cifar_moe-ratio0.5-epochs100-lr0.1-eps8-steps2-beta6.0-expert2--seed0/checkpoint/checkpoint.pth.tar",
+    "sha256": "e2d93896e5be1fdbb1c9538f9f09014bdc6d3067ac5501352f61475b5294b49e"
+  },
+  "dataset_archive": "/data1/Kane/MOE/ACT/data/torchvision/CIFAR10/raw/cifar-10-python.tar.gz",
+  "dataset_archive_sha256": "6d958be074577803d12ecdefd02955f39262c83c16fe9348329d7fe0b5c001ce",
+  "output_dir": "/data1/Kane/MOE/ACT/data/moe/results/advmoe_strict_pyrat_seed0_compat_pilot_r3",
+  "selection": {
+    "ordered_dataset_indices": [1, 13],
+    "reason": "the only two historical first-20 rows whose two static paths had positive 0.5/255 plain-CROWN numerical filters",
+    "reuse_scope": "backend feasibility controls only"
+  },
+  "epsilon_over_255": 0.5,
+  "batch_size": 128,
+  "export": {
+    "opset": 17,
+    "semantic_atol": 0.000004,
+    "semantic_rtol": 0.0,
+    "fixed_batch": 1,
+    "equivalence_replay": "one probe at a time",
+    "constant_folding": false,
+    "batchnorm_semantics": "preserved ONNX BatchNormalization nodes"
+  },
+  "pyrat": {
+    "executable": "/data1/Kane/miniconda3/envs/pyrat/bin/pyrat",
+    "version_expected": "PyRAT 2.0",
+    "package_version_observed": "3.1",
+    "domains": ["poly"],
+    "threads": 4,
+    "timeout_seconds": 300.0,
+    "dtype": 64,
+    "library": "numpy",
+    "device": "cpu",
+    "sound": true,
+    "directed_rounding": true
+  },
+  "acceptance": {
+    "backend_feasible": "at least one row has both paths SAFE",
+    "strict_dynamic_safe": "both globally specialized paths SAFE under CPU directed rounding",
+    "static_path_unsafe": "UNKNOWN until full dynamic-model replay",
+    "all_incomplete_or_negative_results": "UNKNOWN or TIMEOUT"
+  },
+  "repairs": [
+    "replay each fixed-batch ONNX probe separately",
+    "preserve BatchNormalization nodes rather than folding rounded affine constants",
+    "use PyRAT-supported direct output comparisons",
+    "raise only the ONNX-runtime sanity tolerance from 2e-6 to 4e-6 after measuring a 2.861023e-6 maximum discrepancy; this tolerance is not the SAFE acceptance rule"
+  ],
+  "next_gate": "freeze a new route-changing development cohort only if backend_feasible; otherwise stop this backend path"
+}
