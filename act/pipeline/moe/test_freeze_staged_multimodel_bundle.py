@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
+import json
 import unittest
 
+from act.pipeline.moe.experiment1 import PROJECT_ROOT
 from act.pipeline.moe.freeze_staged_multimodel_bundle import (
     select_common_clean_correct,
 )
+from act.pipeline.moe.run_staged_verifier_confirmatory import _validate_registration
 
 
 class CommonSelectionTests(unittest.TestCase):
@@ -39,6 +42,19 @@ class CommonSelectionTests(unittest.TestCase):
                 start_index=0,
                 sample_count=1,
                 excluded_indices=set(),
+            )
+
+    def test_each_verdict_config_is_bound_to_its_registered_model(self) -> None:
+        for model_id in ("seed0", "seed1", "seed2"):
+            path = (
+                PROJECT_ROOT
+                / f"act/pipeline/moe/configs/staged_verifier_multimodel_{model_id}_fixed2_r1.json"
+            )
+            config = json.loads(path.read_text(encoding="utf-8"))
+            selection = _validate_registration(config)
+            self.assertEqual(
+                selection["models"][model_id]["checkpoint_sha256"],
+                config["checkpoint_sha256"],
             )
 
 

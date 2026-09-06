@@ -1,0 +1,20 @@
+{
+  "experiment": "staged_verifier_multimodel_seed1_census_r1",
+  "classification": "PREREGISTERED_COMMON_FIXED_TASK_STRUCTURAL_CENSUS",
+  "model_id": "seed1",
+  "checkpoint": "/data1/Kane/MOE/ACT/data/moe/checkpoints/cifar10_top2_e8_seed1_bal010.pt",
+  "selection_manifest": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/staged_verifier_multimodel_fixed2_selection_r1.json",
+  "output_dir": "/data1/Kane/MOE/ACT/data/moe/results/staged_verifier_multimodel_seed1_census_r1",
+  "sample_count": 100,
+  "selection_device": "cpu",
+  "instance_timeout_seconds": 300.0,
+  "fixed_epsilons": [{"label": "2/255", "value": 0.00784313725490196}],
+  "candidate_query_timeout": 10.0,
+  "route_radius": {"search_grid": [], "bisection_steps": 0, "query_timeout": 5.0, "retry_timeout": 20.0, "primary_multiplier": 1.05},
+  "support": {"lp_neurons": 32, "milp_neurons": 4, "lp_time_limit": 2.0, "milp_time_limit": 5.0},
+  "solver": {"low_budget_per_branch": 5.0, "escalation_budget_per_branch": 25.0},
+  "f0": {"candidate_query_timeout": 10.0, "support": {"lp_neurons": 32, "milp_neurons": 4, "lp_time_limit": 2.0, "milp_time_limit": 5.0}, "solver": {"margin_support_seconds": 5.0, "difference_support_seconds": 5.0, "property_seconds": 10.0, "safety_tolerance": 1e-7}},
+  "numerical_safety": {"solver": "scipy.optimize.milp/HiGHS", "require_solver_success": true, "require_optimal_status": 0, "require_finite_dual_bound": true, "mip_relative_gap": 0.0, "feasibility_tolerance": 1e-7, "integrality_tolerance": 1e-7, "outward_rounding": "nextafter after absolute-plus-relative correction", "outward_absolute": 1e-9, "outward_relative": 1e-9, "safe_positive_margin": 1e-7, "certifying_objective": "finite mip_dual_bound for MILP; status-0 optimum for pure LP; never a non-optimal primal incumbent"},
+  "bootstrap": {"replicates": 10000, "seed": 20260911},
+  "go_thresholds": {"independent_audit_issues": 0, "unique_safe_samples": 1, "unique_safe_rate": 0.01, "end_to_end_solved_rate": 0.5, "candidate_reduction_rate": 0.2, "conditional_width_median": 0.7, "conditional_width_p90_strict_upper": 1.0, "f0_semantic_resolution_rate": 0.25}
+}

@@ -1,0 +1,53 @@
+{
+  "claim_boundary": "The audit uses only frozen model predictions, labels, ordering, and prior-cohort exclusion; it executes no verification endpoint.",
+  "classification": "PRE_ENDPOINT_COMMON_SELECTION_AUDIT",
+  "dataset_index_maximum": 3347,
+  "dataset_index_minimum": 3000,
+  "excluded_union_size": 340,
+  "exclusion_artifacts": [
+    {
+      "count": 100,
+      "path": "/data1/Kane/MOE/ACT/data/moe/results/experiment1_bal010/sample_indices.json",
+      "sha256": "73c891e95e33d508ed0e50ccbcf4d48572fc29a2e71492e96f90bcfc23c143cf"
+    },
+    {
+      "count": 100,
+      "path": "/data1/Kane/MOE/ACT/data/moe/results/experiment1_confirmatory_bal010_r1/sample_indices.json",
+      "sha256": "7dad79df206f3b11018d5d8429e95327d2f5bc2e6c534d01f6d0ac74cba0edab"
+    },
+    {
+      "count": 40,
+      "path": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/experiment1_multiseed_selection_r1.json",
+      "sha256": "86eef2005651401ebb3e2ddd827d9a8e5f713720375d5a387221601cf5611ae4"
+    },
+    {
+      "count": 100,
+      "path": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/staged_verifier_seed2_fixed2_confirmatory_selection_r1.json",
+      "sha256": "2ea06e847ad1da91c85ef51030369d8a12cfa1e26ba79d6e221b0a7f57d1761a"
+    }
+  ],
+  "issue_count": 0,
+  "issues": [],
+  "models": {
+    "seed0": {
+      "checkpoint_sha256": "fbaa7c871d28763ac5acb29a9502dc5d146e1d5af0b4a03e9911899251bd43f7",
+      "clean_accuracy": 0.4926
+    },
+    "seed1": {
+      "checkpoint_sha256": "cfd5fb07b1c426c5b98309d56a5d0439f8a99dc52ff936bcbea43d4fe641139a",
+      "clean_accuracy": 0.4847
+    },
+    "seed2": {
+      "checkpoint_sha256": "a60517c7964177858d10303bc7b306293c8da3cde6caa93a5d8f442968e97758",
+      "clean_accuracy": 0.4763
+    }
+  },
+  "sample_count": 100,
+  "schema_version": 1,
+  "selection": {
+    "path": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/staged_verifier_multimodel_fixed2_selection_r1.json",
+    "sha256": "2b3462887e7236369456da094c80770f9aa1963c3e04003ac753767fb0865202"
+  },
+  "selection_reconstructed": true,
+  "status": "PASS"
+}

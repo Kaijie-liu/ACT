@@ -58,6 +58,13 @@ def _validate_registration(config: Mapping[str, Any]) -> dict[str, Any]:
         raise RuntimeError("confirmatory selection unexpectedly uses boundary search")
     if selection["request"]["route_instability_prefilter"] is not False:
         raise RuntimeError("confirmatory selection prefilters route instability")
+    model_id = config.get("model_id")
+    if model_id is not None:
+        registered_model = selection.get("models", {}).get(str(model_id))
+        if registered_model is None:
+            raise RuntimeError(f"selection lacks registered model {model_id}")
+        if registered_model.get("checkpoint_sha256") != config["checkpoint_sha256"]:
+            raise RuntimeError("selection model checkpoint differs from run config")
     samples = selection["samples"]
     if len(samples) != 100:
         raise RuntimeError("confirmatory selection must contain 100 inputs")

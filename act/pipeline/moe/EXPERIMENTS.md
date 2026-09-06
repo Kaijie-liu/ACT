@@ -2734,3 +2734,34 @@ registered existence-replication signal passes. The fixed-radius result is
 separate from and does not rewrite seed-2 R1; timing is descriptive and no
 speedup is claimed. The tracked compact artifact is
 `results/staged_verifier_seed2_fixed2_confirmatory_20260906_r1.{json,csv}`.
+
+## Strict high-accuracy and common-task completion stages
+
+Two remaining paper-level gaps are now handled by separate protocols rather
+than by relabelling the verification-scale results. The high-accuracy stage
+uses the accepted 85.67%-accuracy AdvMoE compatibility checkpoint. It exports
+both global static paths without folding BatchNorm, checks their ONNX outputs
+against the frozen PyTorch paths, and invokes the external PyRAT checker in CPU
+NumPy float64 directed-rounding mode. Dynamic SAFE requires both paths to
+return SAFE; static-path counterexamples are not promoted without full-model
+replay. The first two attempts stopped before solver evidence because of a
+fixed-batch replay mismatch and then a measured ONNX sanity-tolerance miss;
+both are retained. R3 changes only the documented interface repairs and is a
+two-input backend-feasibility control, not a prevalence estimate. A new
+independent auditor reconstructs every property, replays both exports, parses
+the logs, and recomputes fail-closed aggregation. Details are in
+`docs/advmoe_strict_pyrat.md`.
+
+The performance-stability stage freezes a new common fixed task before any
+endpoint. The cohort is the first 100 ordered CIFAR-10 indices at or after
+3000 that are clean-correct for all three `bal010` training runs and absent
+from the 340-index union of listed prior HZ cohorts. Independent replay
+reconstructs indices 3000--3347 exactly with zero issues. Every model receives
+the same image and `2/255` box. The verdict run uses the production staged
+entry point and contains no boundary search or paper-only no-support control;
+a separately costed census measures candidate reduction, width, and guard
+accounting. All integrity gates and the full per-model conjunction must pass
+for all three models before a stable cross-run performance-bundle claim is
+accepted. The frozen thresholds and claim boundary are in
+`docs/staged_multimodel_performance_bundle.md`; no result may weaken them or
+pool models to hide a failed checkpoint.

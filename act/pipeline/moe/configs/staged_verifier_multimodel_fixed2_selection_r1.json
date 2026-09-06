@@ -1,0 +1,1305 @@
+{
+  "claim_boundary": "The common 100-input clean-correct cohort is not certified accuracy. All three models share an architecture and training recipe, so a pass supports stability across registered training runs, not across model families.",
+  "classification": "PREREGISTERED_COMMON_FIXED_TASK_CROSS_MODEL_BUNDLE",
+  "cross_model_success_rule": "every integrity gate and every per-model bundle threshold must pass for seed0, seed1, and seed2; no partial conjunction is relabeled",
+  "dataset": {
+    "length": 10000,
+    "name": "CIFAR10",
+    "ordered": true,
+    "split": "official torchvision test"
+  },
+  "excluded_cohorts": [
+    {
+      "count": 100,
+      "maximum": 193,
+      "minimum": 0,
+      "path": "/data1/Kane/MOE/ACT/data/moe/results/experiment1_bal010/sample_indices.json",
+      "sha256": "73c891e95e33d508ed0e50ccbcf4d48572fc29a2e71492e96f90bcfc23c143cf"
+    },
+    {
+      "count": 100,
+      "maximum": 408,
+      "minimum": 196,
+      "path": "/data1/Kane/MOE/ACT/data/moe/results/experiment1_confirmatory_bal010_r1/sample_indices.json",
+      "sha256": "7dad79df206f3b11018d5d8429e95327d2f5bc2e6c534d01f6d0ac74cba0edab"
+    },
+    {
+      "count": 40,
+      "maximum": 1092,
+      "minimum": 1000,
+      "path": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/experiment1_multiseed_selection_r1.json",
+      "sha256": "86eef2005651401ebb3e2ddd827d9a8e5f713720375d5a387221601cf5611ae4"
+    },
+    {
+      "count": 100,
+      "maximum": 2181,
+      "minimum": 2002,
+      "path": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/staged_verifier_seed2_fixed2_confirmatory_selection_r1.json",
+      "sha256": "2ea06e847ad1da91c85ef51030369d8a12cfa1e26ba79d6e221b0a7f57d1761a"
+    }
+  ],
+  "excluded_dataset_index_count": 340,
+  "execution_separation": {
+    "census": "separate fixed-radius candidate/width/guard measurement; its runtime is not charged to or subtracted from the verdict run",
+    "verdict": "production staged verifier only; no boundary search, matched no-support solve, or unguarded accounting inside its budget"
+  },
+  "experiment": "staged_verifier_multimodel_fixed2_r1",
+  "forbidden_selection_predicates": [
+    "candidate count or candidate reduction",
+    "route stability or route-boundary radius",
+    "guard elimination or structural width",
+    "solver status, certificate status, or runtime"
+  ],
+  "integrity_gates": {
+    "all_unsafe_full_model_replayed": true,
+    "exact_candidate_subset_consistency": true,
+    "guard_accounting_identity_closed": true,
+    "independent_audit_issues": 0
+  },
+  "models": {
+    "seed0": {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/checkpoints/cifar10_top2_e8_seed0_bal010.pt",
+      "checkpoint_sha256": "fbaa7c871d28763ac5acb29a9502dc5d146e1d5af0b4a03e9911899251bd43f7",
+      "clean_accuracy": 0.4926,
+      "dataset": "CIFAR10"
+    },
+    "seed1": {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/checkpoints/cifar10_top2_e8_seed1_bal010.pt",
+      "checkpoint_sha256": "cfd5fb07b1c426c5b98309d56a5d0439f8a99dc52ff936bcbea43d4fe641139a",
+      "clean_accuracy": 0.4847,
+      "dataset": "CIFAR10"
+    },
+    "seed2": {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/checkpoints/cifar10_top2_e8_seed2_bal010.pt",
+      "checkpoint_sha256": "a60517c7964177858d10303bc7b306293c8da3cde6caa93a5d8f442968e97758",
+      "clean_accuracy": 0.4763,
+      "dataset": "CIFAR10"
+    }
+  },
+  "per_model_performance_bundle": {
+    "maximum_route_unstable_width_ratio_median": 0.7,
+    "maximum_route_unstable_width_ratio_p90_strict": 1.0,
+    "minimum_complete_outcome_rate": 0.5,
+    "minimum_exact_vs_zonotope_strict_reduction_rate_on_route_unstable_rows": 0.2,
+    "minimum_f0_complete_resolution_rate_when_invoked": 0.25,
+    "minimum_guard_binary_eliminations": 1,
+    "minimum_route_changing_safe_requests": 1
+  },
+  "request": {
+    "boundary_search": false,
+    "epsilon": 0.00784313725490196,
+    "epsilon_label": "2/255",
+    "property": "TOP1_ROBUST relative to each model's clean prediction",
+    "route_instability_prefilter": false
+  },
+  "samples": [
+    {
+      "clean_prediction": 5,
+      "clean_predictions": {
+        "seed0": 5,
+        "seed1": 5,
+        "seed2": 5
+      },
+      "common_clean_correct_rank_after_start": 0,
+      "dataset_index": 3000,
+      "label": 5,
+      "sample_rank": 0
+    },
+    {
+      "clean_prediction": 1,
+      "clean_predictions": {
+        "seed0": 1,
+        "seed1": 1,
+        "seed2": 1
+      },
+      "common_clean_correct_rank_after_start": 1,
+      "dataset_index": 3001,
+      "label": 1,
+      "sample_rank": 1
+    },
+    {
+      "clean_prediction": 4,
+      "clean_predictions": {
+        "seed0": 4,
+        "seed1": 4,
+        "seed2": 4
+      },
+      "common_clean_correct_rank_after_start": 2,
+      "dataset_index": 3004,
+      "label": 4,
+      "sample_rank": 2
+    },
+    {
+      "clean_prediction": 6,
+      "clean_predictions": {
+        "seed0": 6,
+        "seed1": 6,
+        "seed2": 6
+      },
+      "common_clean_correct_rank_after_start": 3,
+      "dataset_index": 3010,
+      "label": 6,
+      "sample_rank": 3
+    },
+    {
+      "clean_prediction": 3,
+      "clean_predictions": {
+        "seed0": 3,
+        "seed1": 3,
+        "seed2": 3
+      },
+      "common_clean_correct_rank_after_start": 4,
+      "dataset_index": 3011,
+      "label": 3,
+      "sample_rank": 4
+    },
+    {
+      "clean_prediction": 5,
+      "clean_predictions": {
+        "seed0": 5,
+        "seed1": 5,
+        "seed2": 5
+      },
+      "common_clean_correct_rank_after_start": 5,
+      "dataset_index": 3017,
+      "label": 5,
+      "sample_rank": 5
+    },
+    {
+      "clean_prediction": 8,
+      "clean_predictions": {
+        "seed0": 8,
+        "seed1": 8,
+        "seed2": 8
+      },
+      "common_clean_correct_rank_after_start": 6,
+      "dataset_index": 3021,
+      "label": 8,
+      "sample_rank": 6
+    },
+    {
+      "clean_prediction": 0,
+      "clean_predictions": {
+        "seed0": 0,
+        "seed1": 0,
+        "seed2": 0
+      },
+      "common_clean_correct_rank_after_start": 7,
+      "dataset_index": 3024,
+      "label": 0,
+      "sample_rank": 7
+    },
+    {
+      "clean_prediction": 1,
+      "clean_predictions": {
+        "seed0": 1,
+        "seed1": 1,
+        "seed2": 1
+      },
+      "common_clean_correct_rank_after_start": 8,
+      "dataset_index": 3027,
+      "label": 1,
+      "sample_rank": 8
+    },
+    {
+      "clean_prediction": 9,
+      "clean_predictions": {
+        "seed0": 9,
+        "seed1": 9,
+        "seed2": 9
+      },
+      "common_clean_correct_rank_after_start": 9,
+      "dataset_index": 3036,
+      "label": 9,
+      "sample_rank": 9
+    },
+    {
+      "clean_prediction": 8,
+      "clean_predictions": {
+        "seed0": 8,
+        "seed1": 8,
+        "seed2": 8
+      },
+      "common_clean_correct_rank_after_start": 10,
+      "dataset_index": 3037,
+      "label": 8,
+      "sample_rank": 10
+    },
+    {
+      "clean_prediction": 7,
+      "clean_predictions": {
+        "seed0": 7,
+        "seed1": 7,
+        "seed2": 7
+      },
+      "common_clean_correct_rank_after_start": 11,
+      "dataset_index": 3040,
+      "label": 7,
+      "sample_rank": 11
+    },
+    {
+      "clean_prediction": 4,
+      "clean_predictions": {
+        "seed0": 4,
+        "seed1": 4,
+        "seed2": 4
+      },
+      "common_clean_correct_rank_after_start": 12,
+      "dataset_index": 3041,
+      "label": 4,
+      "sample_rank": 12
+    },
+    {
+      "clean_prediction": 6,
+      "clean_predictions": {
+        "seed0": 6,
+        "seed1": 6,
+        "seed2": 6
+      },
+      "common_clean_correct_rank_after_start": 13,
+      "dataset_index": 3047,
+      "label": 6,
+      "sample_rank": 13
+    },
+    {
+      "clean_prediction": 0,
+      "clean_predictions": {
+        "seed0": 0,
+        "seed1": 0,
+        "seed2": 0
+      },
+      "common_clean_correct_rank_after_start": 14,
+      "dataset_index": 3048,
+      "label": 0,
+      "sample_rank": 14
+    },
+    {
+      "clean_prediction": 6,
+      "clean_predictions": {
+        "seed0": 6,
+        "seed1": 6,
+        "seed2": 6
+      },
+      "common_clean_correct_rank_after_start": 15,
+      "dataset_index": 3057,
+      "label": 6,
+      "sample_rank": 15
+    },
+    {
+      "clean_prediction": 1,
+      "clean_predictions": {
+        "seed0": 1,
+        "seed1": 1,
+        "seed2": 1
+      },
+      "common_clean_correct_rank_after_start": 16,
+      "dataset_index": 3058,
+      "label": 1,
+      "sample_rank": 16
+    },
+    {
+      "clean_prediction": 9,
+      "clean_predictions": {
+        "seed0": 9,
+        "seed1": 9,
+        "seed2": 9
+      },
+      "common_clean_correct_rank_after_start": 17,
+      "dataset_index": 3062,
+      "label": 9,
+      "sample_rank": 17
+    },
+    {
+      "clean_prediction": 1,
+      "clean_predictions": {
+        "seed0": 1,
+        "seed1": 1,
+        "seed2": 1
+      },
+      "common_clean_correct_rank_after_start": 18,
+      "dataset_index": 3074,
+      "label": 1,
+      "sample_rank": 18
+    },
+    {
+      "clean_prediction": 8,
+      "clean_predictions": {
+        "seed0": 8,
+        "seed1": 8,
+        "seed2": 8
+      },
+      "common_clean_correct_rank_after_start": 19,
+      "dataset_index": 3078,
+      "label": 8,
+      "sample_rank": 19
+    },
+    {
+      "clean_prediction": 8,
+      "clean_predictions": {
+        "seed0": 8,
+        "seed1": 8,
+        "seed2": 8
+      },
+      "common_clean_correct_rank_after_start": 20,
+      "dataset_index": 3079,
+      "label": 8,
+      "sample_rank": 20
+    },
+    {
+      "clean_prediction": 9,
+      "clean_predictions": {
+        "seed0": 9,
+        "seed1": 9,
+        "seed2": 9
+      },
+      "common_clean_correct_rank_after_start": 21,
+      "dataset_index": 3081,
+      "label": 9,
+      "sample_rank": 21
+    },
+    {
+      "clean_prediction": 9,
+      "clean_predictions": {
+        "seed0": 9,
+        "seed1": 9,
+        "seed2": 9
+      },
+      "common_clean_correct_rank_after_start": 22,
+      "dataset_index": 3086,
+      "label": 9,
+      "sample_rank": 22
+    },
+    {
+      "clean_prediction": 8,
+      "clean_predictions": {
+        "seed0": 8,
+        "seed1": 8,
+        "seed2": 8
+      },
+      "common_clean_correct_rank_after_start": 23,
+      "dataset_index": 3089,
+      "label": 8,
+      "sample_rank": 23
+    },
+    {
+      "clean_prediction": 4,
+      "clean_predictions": {
+        "seed0": 4,
+        "seed1": 4,
+        "seed2": 4
+      },
+      "common_clean_correct_rank_after_start": 24,
+      "dataset_index": 3090,
+      "label": 4,
+      "sample_rank": 24
+    },
+    {
+      "clean_prediction": 4,
+      "clean_predictions": {
+        "seed0": 4,
+        "seed1": 4,
+        "seed2": 4
+      },
+      "common_clean_correct_rank_after_start": 25,
+      "dataset_index": 3095,
+      "label": 4,
+      "sample_rank": 25
+    },
+    {
+      "clean_prediction": 7,
+      "clean_predictions": {
+        "seed0": 7,
+        "seed1": 7,
+        "seed2": 7
+      },
+      "common_clean_correct_rank_after_start": 26,
+      "dataset_index": 3096,
+      "label": 7,
+      "sample_rank": 26
+    },
+    {
+      "clean_prediction": 9,
+      "clean_predictions": {
+        "seed0": 9,
+        "seed1": 9,
+        "seed2": 9
+      },
+      "common_clean_correct_rank_after_start": 27,
+      "dataset_index": 3099,
+      "label": 9,
+      "sample_rank": 27
+    },
+    {
+      "clean_prediction": 0,
+      "clean_predictions": {
+        "seed0": 0,
+        "seed1": 0,
+        "seed2": 0
+      },
+      "common_clean_correct_rank_after_start": 28,
+      "dataset_index": 3100,
+      "label": 0,
+      "sample_rank": 28
+    },
+    {
+      "clean_prediction": 7,
+      "clean_predictions": {
+        "seed0": 7,
+        "seed1": 7,
+        "seed2": 7
+      },
+      "common_clean_correct_rank_after_start": 29,
+      "dataset_index": 3101,
+      "label": 7,
+      "sample_rank": 29
+    },
+    {
+      "clean_prediction": 7,
+      "clean_predictions": {
+        "seed0": 7,
+        "seed1": 7,
+        "seed2": 7
+      },
+      "common_clean_correct_rank_after_start": 30,
+      "dataset_index": 3104,
+      "label": 7,
+      "sample_rank": 30
+    },
+    {
+      "clean_prediction": 8,
+      "clean_predictions": {
+        "seed0": 8,
+        "seed1": 8,
+        "seed2": 8
+      },
+      "common_clean_correct_rank_after_start": 31,
+      "dataset_index": 3106,
+      "label": 8,
+      "sample_rank": 31
+    },
+    {
+      "clean_prediction": 0,
+      "clean_predictions": {
+        "seed0": 0,
+        "seed1": 0,
+        "seed2": 0
+      },
+      "common_clean_correct_rank_after_start": 32,
+      "dataset_index": 3111,
+      "label": 0,
+      "sample_rank": 32
+    },
+    {
+      "clean_prediction": 1,
+      "clean_predictions": {
+        "seed0": 1,
+        "seed1": 1,
+        "seed2": 1
+      },
+      "common_clean_correct_rank_after_start": 33,
+      "dataset_index": 3122,
+      "label": 1,
+      "sample_rank": 33
+    },
+    {
+      "clean_prediction": 8,
+      "clean_predictions": {
+        "seed0": 8,
+        "seed1": 8,
+        "seed2": 8
+      },
+      "common_clean_correct_rank_after_start": 34,
+      "dataset_index": 3123,
+      "label": 8,
+      "sample_rank": 34
+    },
+    {
+      "clean_prediction": 9,
+      "clean_predictions": {
+        "seed0": 9,
+        "seed1": 9,
+        "seed2": 9
+      },
+      "common_clean_correct_rank_after_start": 35,
+      "dataset_index": 3126,
+      "label": 9,
+      "sample_rank": 35
+    },
+    {
+      "clean_prediction": 7,
+      "clean_predictions": {
+        "seed0": 7,
+        "seed1": 7,
+        "seed2": 7
+      },
+      "common_clean_correct_rank_after_start": 36,
+      "dataset_index": 3134,
+      "label": 7,
+      "sample_rank": 36
+    },
+    {
+      "clean_prediction": 4,
+      "clean_predictions": {
+        "seed0": 4,
+        "seed1": 4,
+        "seed2": 4
+      },
+      "common_clean_correct_rank_after_start": 37,
+      "dataset_index": 3136,
+      "label": 4,
+      "sample_rank": 37
+    },
+    {
+      "clean_prediction": 8,
+      "clean_predictions": {
+        "seed0": 8,
+        "seed1": 8,
+        "seed2": 8
+      },
+      "common_clean_correct_rank_after_start": 38,
+      "dataset_index": 3138,
+      "label": 8,
+      "sample_rank": 38
+    },
+    {
+      "clean_prediction": 1,
+      "clean_predictions": {
+        "seed0": 1,
+        "seed1": 1,
+        "seed2": 1
+      },
+      "common_clean_correct_rank_after_start": 39,
+      "dataset_index": 3150,
+      "label": 1,
+      "sample_rank": 39
+    },
+    {
+      "clean_prediction": 8,
+      "clean_predictions": {
+        "seed0": 8,
+        "seed1": 8,
+        "seed2": 8
+      },
+      "common_clean_correct_rank_after_start": 40,
+      "dataset_index": 3151,
+      "label": 8,
+      "sample_rank": 40
+    },
+    {
+      "clean_prediction": 1,
+      "clean_predictions": {
+        "seed0": 1,
+        "seed1": 1,
+        "seed2": 1
+      },
+      "common_clean_correct_rank_after_start": 41,
+      "dataset_index": 3153,
+      "label": 1,
+      "sample_rank": 41
+    },
+    {
+      "clean_prediction": 8,
+      "clean_predictions": {
+        "seed0": 8,
+        "seed1": 8,
+        "seed2": 8
+      },
+      "common_clean_correct_rank_after_start": 42,
+      "dataset_index": 3155,
+      "label": 8,
+      "sample_rank": 42
+    },
+    {
+      "clean_prediction": 9,
+      "clean_predictions": {
+        "seed0": 9,
+        "seed1": 9,
+        "seed2": 9
+      },
+      "common_clean_correct_rank_after_start": 43,
+      "dataset_index": 3156,
+      "label": 9,
+      "sample_rank": 43
+    },
+    {
+      "clean_prediction": 9,
+      "clean_predictions": {
+        "seed0": 9,
+        "seed1": 9,
+        "seed2": 9
+      },
+      "common_clean_correct_rank_after_start": 44,
+      "dataset_index": 3157,
+      "label": 9,
+      "sample_rank": 44
+    },
+    {
+      "clean_prediction": 9,
+      "clean_predictions": {
+        "seed0": 9,
+        "seed1": 9,
+        "seed2": 9
+      },
+      "common_clean_correct_rank_after_start": 45,
+      "dataset_index": 3161,
+      "label": 9,
+      "sample_rank": 45
+    },
+    {
+      "clean_prediction": 9,
+      "clean_predictions": {
+        "seed0": 9,
+        "seed1": 9,
+        "seed2": 9
+      },
+      "common_clean_correct_rank_after_start": 46,
+      "dataset_index": 3169,
+      "label": 9,
+      "sample_rank": 46
+    },
+    {
+      "clean_prediction": 7,
+      "clean_predictions": {
+        "seed0": 7,
+        "seed1": 7,
+        "seed2": 7
+      },
+      "common_clean_correct_rank_after_start": 47,
+      "dataset_index": 3176,
+      "label": 7,
+      "sample_rank": 47
+    },
+    {
+      "clean_prediction": 9,
+      "clean_predictions": {
+        "seed0": 9,
+        "seed1": 9,
+        "seed2": 9
+      },
+      "common_clean_correct_rank_after_start": 48,
+      "dataset_index": 3181,
+      "label": 9,
+      "sample_rank": 48
+    },
+    {
+      "clean_prediction": 8,
+      "clean_predictions": {
+        "seed0": 8,
+        "seed1": 8,
+        "seed2": 8
+      },
+      "common_clean_correct_rank_after_start": 49,
+      "dataset_index": 3182,
+      "label": 8,
+      "sample_rank": 49
+    },
+    {
+      "clean_prediction": 0,
+      "clean_predictions": {
+        "seed0": 0,
+        "seed1": 0,
+        "seed2": 0
+      },
+      "common_clean_correct_rank_after_start": 50,
+      "dataset_index": 3184,
+      "label": 0,
+      "sample_rank": 50
+    },
+    {
+      "clean_prediction": 7,
+      "clean_predictions": {
+        "seed0": 7,
+        "seed1": 7,
+        "seed2": 7
+      },
+      "common_clean_correct_rank_after_start": 51,
+      "dataset_index": 3187,
+      "label": 7,
+      "sample_rank": 51
+    },
+    {
+      "clean_prediction": 8,
+      "clean_predictions": {
+        "seed0": 8,
+        "seed1": 8,
+        "seed2": 8
+      },
+      "common_clean_correct_rank_after_start": 52,
+      "dataset_index": 3189,
+      "label": 8,
+      "sample_rank": 52
+    },
+    {
+      "clean_prediction": 4,
+      "clean_predictions": {
+        "seed0": 4,
+        "seed1": 4,
+        "seed2": 4
+      },
+      "common_clean_correct_rank_after_start": 53,
+      "dataset_index": 3203,
+      "label": 4,
+      "sample_rank": 53
+    },
+    {
+      "clean_prediction": 8,
+      "clean_predictions": {
+        "seed0": 8,
+        "seed1": 8,
+        "seed2": 8
+      },
+      "common_clean_correct_rank_after_start": 54,
+      "dataset_index": 3205,
+      "label": 8,
+      "sample_rank": 54
+    },
+    {
+      "clean_prediction": 9,
+      "clean_predictions": {
+        "seed0": 9,
+        "seed1": 9,
+        "seed2": 9
+      },
+      "common_clean_correct_rank_after_start": 55,
+      "dataset_index": 3213,
+      "label": 9,
+      "sample_rank": 55
+    },
+    {
+      "clean_prediction": 1,
+      "clean_predictions": {
+        "seed0": 1,
+        "seed1": 1,
+        "seed2": 1
+      },
+      "common_clean_correct_rank_after_start": 56,
+      "dataset_index": 3215,
+      "label": 1,
+      "sample_rank": 56
+    },
+    {
+      "clean_prediction": 7,
+      "clean_predictions": {
+        "seed0": 7,
+        "seed1": 7,
+        "seed2": 7
+      },
+      "common_clean_correct_rank_after_start": 57,
+      "dataset_index": 3217,
+      "label": 7,
+      "sample_rank": 57
+    },
+    {
+      "clean_prediction": 7,
+      "clean_predictions": {
+        "seed0": 7,
+        "seed1": 7,
+        "seed2": 7
+      },
+      "common_clean_correct_rank_after_start": 58,
+      "dataset_index": 3223,
+      "label": 7,
+      "sample_rank": 58
+    },
+    {
+      "clean_prediction": 6,
+      "clean_predictions": {
+        "seed0": 6,
+        "seed1": 6,
+        "seed2": 6
+      },
+      "common_clean_correct_rank_after_start": 59,
+      "dataset_index": 3224,
+      "label": 6,
+      "sample_rank": 59
+    },
+    {
+      "clean_prediction": 9,
+      "clean_predictions": {
+        "seed0": 9,
+        "seed1": 9,
+        "seed2": 9
+      },
+      "common_clean_correct_rank_after_start": 60,
+      "dataset_index": 3225,
+      "label": 9,
+      "sample_rank": 60
+    },
+    {
+      "clean_prediction": 2,
+      "clean_predictions": {
+        "seed0": 2,
+        "seed1": 2,
+        "seed2": 2
+      },
+      "common_clean_correct_rank_after_start": 61,
+      "dataset_index": 3227,
+      "label": 2,
+      "sample_rank": 61
+    },
+    {
+      "clean_prediction": 8,
+      "clean_predictions": {
+        "seed0": 8,
+        "seed1": 8,
+        "seed2": 8
+      },
+      "common_clean_correct_rank_after_start": 62,
+      "dataset_index": 3233,
+      "label": 8,
+      "sample_rank": 62
+    },
+    {
+      "clean_prediction": 6,
+      "clean_predictions": {
+        "seed0": 6,
+        "seed1": 6,
+        "seed2": 6
+      },
+      "common_clean_correct_rank_after_start": 63,
+      "dataset_index": 3238,
+      "label": 6,
+      "sample_rank": 63
+    },
+    {
+      "clean_prediction": 1,
+      "clean_predictions": {
+        "seed0": 1,
+        "seed1": 1,
+        "seed2": 1
+      },
+      "common_clean_correct_rank_after_start": 64,
+      "dataset_index": 3239,
+      "label": 1,
+      "sample_rank": 64
+    },
+    {
+      "clean_prediction": 7,
+      "clean_predictions": {
+        "seed0": 7,
+        "seed1": 7,
+        "seed2": 7
+      },
+      "common_clean_correct_rank_after_start": 65,
+      "dataset_index": 3241,
+      "label": 7,
+      "sample_rank": 65
+    },
+    {
+      "clean_prediction": 8,
+      "clean_predictions": {
+        "seed0": 8,
+        "seed1": 8,
+        "seed2": 8
+      },
+      "common_clean_correct_rank_after_start": 66,
+      "dataset_index": 3243,
+      "label": 8,
+      "sample_rank": 66
+    },
+    {
+      "clean_prediction": 7,
+      "clean_predictions": {
+        "seed0": 7,
+        "seed1": 7,
+        "seed2": 7
+      },
+      "common_clean_correct_rank_after_start": 67,
+      "dataset_index": 3244,
+      "label": 7,
+      "sample_rank": 67
+    },
+    {
+      "clean_prediction": 0,
+      "clean_predictions": {
+        "seed0": 0,
+        "seed1": 0,
+        "seed2": 0
+      },
+      "common_clean_correct_rank_after_start": 68,
+      "dataset_index": 3248,
+      "label": 0,
+      "sample_rank": 68
+    },
+    {
+      "clean_prediction": 3,
+      "clean_predictions": {
+        "seed0": 3,
+        "seed1": 3,
+        "seed2": 3
+      },
+      "common_clean_correct_rank_after_start": 69,
+      "dataset_index": 3254,
+      "label": 3,
+      "sample_rank": 69
+    },
+    {
+      "clean_prediction": 7,
+      "clean_predictions": {
+        "seed0": 7,
+        "seed1": 7,
+        "seed2": 7
+      },
+      "common_clean_correct_rank_after_start": 70,
+      "dataset_index": 3257,
+      "label": 7,
+      "sample_rank": 70
+    },
+    {
+      "clean_prediction": 7,
+      "clean_predictions": {
+        "seed0": 7,
+        "seed1": 7,
+        "seed2": 7
+      },
+      "common_clean_correct_rank_after_start": 71,
+      "dataset_index": 3260,
+      "label": 7,
+      "sample_rank": 71
+    },
+    {
+      "clean_prediction": 0,
+      "clean_predictions": {
+        "seed0": 0,
+        "seed1": 0,
+        "seed2": 0
+      },
+      "common_clean_correct_rank_after_start": 72,
+      "dataset_index": 3261,
+      "label": 0,
+      "sample_rank": 72
+    },
+    {
+      "clean_prediction": 1,
+      "clean_predictions": {
+        "seed0": 1,
+        "seed1": 1,
+        "seed2": 1
+      },
+      "common_clean_correct_rank_after_start": 73,
+      "dataset_index": 3263,
+      "label": 1,
+      "sample_rank": 73
+    },
+    {
+      "clean_prediction": 8,
+      "clean_predictions": {
+        "seed0": 8,
+        "seed1": 8,
+        "seed2": 8
+      },
+      "common_clean_correct_rank_after_start": 74,
+      "dataset_index": 3265,
+      "label": 8,
+      "sample_rank": 74
+    },
+    {
+      "clean_prediction": 7,
+      "clean_predictions": {
+        "seed0": 7,
+        "seed1": 7,
+        "seed2": 7
+      },
+      "common_clean_correct_rank_after_start": 75,
+      "dataset_index": 3266,
+      "label": 7,
+      "sample_rank": 75
+    },
+    {
+      "clean_prediction": 8,
+      "clean_predictions": {
+        "seed0": 8,
+        "seed1": 8,
+        "seed2": 8
+      },
+      "common_clean_correct_rank_after_start": 76,
+      "dataset_index": 3270,
+      "label": 8,
+      "sample_rank": 76
+    },
+    {
+      "clean_prediction": 7,
+      "clean_predictions": {
+        "seed0": 7,
+        "seed1": 7,
+        "seed2": 7
+      },
+      "common_clean_correct_rank_after_start": 77,
+      "dataset_index": 3272,
+      "label": 7,
+      "sample_rank": 77
+    },
+    {
+      "clean_prediction": 7,
+      "clean_predictions": {
+        "seed0": 7,
+        "seed1": 7,
+        "seed2": 7
+      },
+      "common_clean_correct_rank_after_start": 78,
+      "dataset_index": 3277,
+      "label": 7,
+      "sample_rank": 78
+    },
+    {
+      "clean_prediction": 0,
+      "clean_predictions": {
+        "seed0": 0,
+        "seed1": 0,
+        "seed2": 0
+      },
+      "common_clean_correct_rank_after_start": 79,
+      "dataset_index": 3278,
+      "label": 0,
+      "sample_rank": 79
+    },
+    {
+      "clean_prediction": 2,
+      "clean_predictions": {
+        "seed0": 2,
+        "seed1": 2,
+        "seed2": 2
+      },
+      "common_clean_correct_rank_after_start": 80,
+      "dataset_index": 3281,
+      "label": 2,
+      "sample_rank": 80
+    },
+    {
+      "clean_prediction": 9,
+      "clean_predictions": {
+        "seed0": 9,
+        "seed1": 9,
+        "seed2": 9
+      },
+      "common_clean_correct_rank_after_start": 81,
+      "dataset_index": 3282,
+      "label": 9,
+      "sample_rank": 81
+    },
+    {
+      "clean_prediction": 6,
+      "clean_predictions": {
+        "seed0": 6,
+        "seed1": 6,
+        "seed2": 6
+      },
+      "common_clean_correct_rank_after_start": 82,
+      "dataset_index": 3286,
+      "label": 6,
+      "sample_rank": 82
+    },
+    {
+      "clean_prediction": 5,
+      "clean_predictions": {
+        "seed0": 5,
+        "seed1": 5,
+        "seed2": 5
+      },
+      "common_clean_correct_rank_after_start": 83,
+      "dataset_index": 3290,
+      "label": 5,
+      "sample_rank": 83
+    },
+    {
+      "clean_prediction": 1,
+      "clean_predictions": {
+        "seed0": 1,
+        "seed1": 1,
+        "seed2": 1
+      },
+      "common_clean_correct_rank_after_start": 84,
+      "dataset_index": 3293,
+      "label": 1,
+      "sample_rank": 84
+    },
+    {
+      "clean_prediction": 0,
+      "clean_predictions": {
+        "seed0": 0,
+        "seed1": 0,
+        "seed2": 0
+      },
+      "common_clean_correct_rank_after_start": 85,
+      "dataset_index": 3294,
+      "label": 0,
+      "sample_rank": 85
+    },
+    {
+      "clean_prediction": 9,
+      "clean_predictions": {
+        "seed0": 9,
+        "seed1": 9,
+        "seed2": 9
+      },
+      "common_clean_correct_rank_after_start": 86,
+      "dataset_index": 3295,
+      "label": 9,
+      "sample_rank": 86
+    },
+    {
+      "clean_prediction": 4,
+      "clean_predictions": {
+        "seed0": 4,
+        "seed1": 4,
+        "seed2": 4
+      },
+      "common_clean_correct_rank_after_start": 87,
+      "dataset_index": 3300,
+      "label": 4,
+      "sample_rank": 87
+    },
+    {
+      "clean_prediction": 9,
+      "clean_predictions": {
+        "seed0": 9,
+        "seed1": 9,
+        "seed2": 9
+      },
+      "common_clean_correct_rank_after_start": 88,
+      "dataset_index": 3305,
+      "label": 9,
+      "sample_rank": 88
+    },
+    {
+      "clean_prediction": 2,
+      "clean_predictions": {
+        "seed0": 2,
+        "seed1": 2,
+        "seed2": 2
+      },
+      "common_clean_correct_rank_after_start": 89,
+      "dataset_index": 3313,
+      "label": 2,
+      "sample_rank": 89
+    },
+    {
+      "clean_prediction": 7,
+      "clean_predictions": {
+        "seed0": 7,
+        "seed1": 7,
+        "seed2": 7
+      },
+      "common_clean_correct_rank_after_start": 90,
+      "dataset_index": 3316,
+      "label": 7,
+      "sample_rank": 90
+    },
+    {
+      "clean_prediction": 7,
+      "clean_predictions": {
+        "seed0": 7,
+        "seed1": 7,
+        "seed2": 7
+      },
+      "common_clean_correct_rank_after_start": 91,
+      "dataset_index": 3317,
+      "label": 7,
+      "sample_rank": 91
+    },
+    {
+      "clean_prediction": 8,
+      "clean_predictions": {
+        "seed0": 8,
+        "seed1": 8,
+        "seed2": 8
+      },
+      "common_clean_correct_rank_after_start": 92,
+      "dataset_index": 3318,
+      "label": 8,
+      "sample_rank": 92
+    },
+    {
+      "clean_prediction": 2,
+      "clean_predictions": {
+        "seed0": 2,
+        "seed1": 2,
+        "seed2": 2
+      },
+      "common_clean_correct_rank_after_start": 93,
+      "dataset_index": 3319,
+      "label": 2,
+      "sample_rank": 93
+    },
+    {
+      "clean_prediction": 2,
+      "clean_predictions": {
+        "seed0": 2,
+        "seed1": 2,
+        "seed2": 2
+      },
+      "common_clean_correct_rank_after_start": 94,
+      "dataset_index": 3328,
+      "label": 2,
+      "sample_rank": 94
+    },
+    {
+      "clean_prediction": 8,
+      "clean_predictions": {
+        "seed0": 8,
+        "seed1": 8,
+        "seed2": 8
+      },
+      "common_clean_correct_rank_after_start": 95,
+      "dataset_index": 3331,
+      "label": 8,
+      "sample_rank": 95
+    },
+    {
+      "clean_prediction": 2,
+      "clean_predictions": {
+        "seed0": 2,
+        "seed1": 2,
+        "seed2": 2
+      },
+      "common_clean_correct_rank_after_start": 96,
+      "dataset_index": 3333,
+      "label": 2,
+      "sample_rank": 96
+    },
+    {
+      "clean_prediction": 7,
+      "clean_predictions": {
+        "seed0": 7,
+        "seed1": 7,
+        "seed2": 7
+      },
+      "common_clean_correct_rank_after_start": 97,
+      "dataset_index": 3337,
+      "label": 7,
+      "sample_rank": 97
+    },
+    {
+      "clean_prediction": 7,
+      "clean_predictions": {
+        "seed0": 7,
+        "seed1": 7,
+        "seed2": 7
+      },
+      "common_clean_correct_rank_after_start": 98,
+      "dataset_index": 3345,
+      "label": 7,
+      "sample_rank": 98
+    },
+    {
+      "clean_prediction": 9,
+      "clean_predictions": {
+        "seed0": 9,
+        "seed1": 9,
+        "seed2": 9
+      },
+      "common_clean_correct_rank_after_start": 99,
+      "dataset_index": 3347,
+      "label": 9,
+      "sample_rank": 99
+    }
+  ],
+  "schema_version": 1,
+  "selection_predicates_only": [
+    "dataset_index >= 3000",
+    "clean prediction equals the official label for seed0, seed1, and seed2",
+    "dataset_index absent from the frozen exclusion union"
+  ],
+  "selection_rule": "first 100 ordered CIFAR-10 test indices at or after 3000 that are clean-correct for all three frozen bal010 training seeds and absent from every listed prior HZ cohort",
+  "status": "FROZEN_BEFORE_VERIFICATION_ENDPOINTS"
+}
