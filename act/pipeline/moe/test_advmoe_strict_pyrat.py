@@ -11,6 +11,7 @@ from act.pipeline.moe.advmoe_strict_pyrat import (
     classification_vnnlib,
     parse_pyrat_status,
 )
+from act.pipeline.moe.audit_advmoe_strict_pyrat import _semantic_pyrat_version
 
 
 class AdvMoeStrictPyratTests(unittest.TestCase):
@@ -63,6 +64,10 @@ class AdvMoeStrictPyratTests(unittest.TestCase):
             parse_pyrat_status("", returncode=-1, timed_out=True),
             "TIMEOUT",
         )
+
+    def test_version_parser_ignores_runtime_warning_timestamp(self) -> None:
+        output = "2026-09-06 warning from runtime\nPyRAT 2.0"
+        self.assertEqual(_semantic_pyrat_version(output), "PyRAT 2.0")
 
 
 if __name__ == "__main__":

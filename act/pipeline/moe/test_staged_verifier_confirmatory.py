@@ -97,6 +97,8 @@ class StagedVerifierConfirmatoryTests(unittest.TestCase):
         self.assertEqual(summary["route_changing_safe"], 1)
         self.assertEqual(summary["timing"]["median_verifier_seconds"], 4.0)
         self.assertTrue(summary["preregistered_replication_signal_met"])
+        custom = summarize_rows(rows, 2, classification="COMMON_TASK")
+        self.assertEqual(custom["classification"], "COMMON_TASK")
 
 
 if __name__ == "__main__":

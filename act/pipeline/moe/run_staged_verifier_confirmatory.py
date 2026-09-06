@@ -84,7 +84,10 @@ def _route_changing(evidence: Mapping[str, Any]) -> bool | None:
 
 
 def summarize_rows(
-    rows: list[dict[str, Any]], expected_rows: int
+    rows: list[dict[str, Any]],
+    expected_rows: int,
+    *,
+    classification: str = "PREREGISTERED_NEW_FIXED_RADIUS_HZ_COHORT",
 ) -> dict[str, Any]:
     statuses = Counter(row["status"] for row in rows)
     reasons = Counter(row["reason"] for row in rows)
@@ -120,7 +123,7 @@ def summarize_rows(
     ]
     return {
         "schema_version": 1,
-        "classification": "PREREGISTERED_NEW_FIXED_RADIUS_HZ_COHORT",
+        "classification": classification,
         "expected_rows": expected_rows,
         "observed_rows": len(rows),
         "run_complete": complete_run,
@@ -341,8 +344,32 @@ def run(config_path: Path, *, resume: bool = False) -> Path:
             results.write(json.dumps(row, sort_keys=True) + "\n")
             results.flush()
             os.fsync(results.fileno())
-            _write_json(output / "summary.partial.json", summarize_rows(rows, len(samples)))
-    _write_json(output / "summary.json", summarize_rows(rows, len(samples)))
+            _write_json(
+                output / "summary.partial.json",
+                summarize_rows(
+                    rows,
+                    len(samples),
+                    classification=str(
+                        config.get(
+                            "classification",
+                            "PREREGISTERED_NEW_FIXED_RADIUS_HZ_COHORT",
+                        )
+                    ),
+                ),
+            )
+    _write_json(
+        output / "summary.json",
+        summarize_rows(
+            rows,
+            len(samples),
+            classification=str(
+                config.get(
+                    "classification",
+                    "PREREGISTERED_NEW_FIXED_RADIUS_HZ_COHORT",
+                )
+            ),
+        ),
+    )
     return output
 
 

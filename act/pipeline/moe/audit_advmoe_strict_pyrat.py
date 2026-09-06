@@ -6,6 +6,7 @@ import argparse
 from collections import Counter
 import json
 from pathlib import Path
+import re
 import subprocess
 from typing import Any, Mapping
 
@@ -53,6 +54,11 @@ def _command_value(command: list[str], option: str) -> str | None:
     if position + 1 >= len(command):
         return None
     return command[position + 1]
+
+
+def _semantic_pyrat_version(output: str) -> str | None:
+    match = re.search(r"\bPyRAT\s+\d+(?:\.\d+)*\b", output)
+    return match.group(0) if match is not None else None
 
 
 def _replay_export(
@@ -160,14 +166,18 @@ def audit(config_path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
         stderr=subprocess.STDOUT,
         check=False,
     ).stdout.strip()
+    version_semantic = _semantic_pyrat_version(version)
+    runtime_version_semantic = _semantic_pyrat_version(
+        str(summary.get("pyrat", {}).get("version_stdout", ""))
+    )
     _issue(
         issues,
-        str(pyrat["version_expected"]) in version,
+        version_semantic == str(pyrat["version_expected"]),
         f"PyRAT version differs: {version!r}",
     )
     _issue(
         issues,
-        summary.get("pyrat", {}).get("version_stdout") == version,
+        runtime_version_semantic == version_semantic,
         "runtime and audit PyRAT versions differ",
     )
 
@@ -353,7 +363,8 @@ def audit(config_path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
         "schema_version": 1,
         "classification": "INDEPENDENT_STRICT_BACKEND_PILOT_AUDIT",
         "config": {"path": str(config_path), "sha256": _sha256(config_path)},
-        "pyrat_version": version,
+        "pyrat_version": version_semantic,
+        "pyrat_version_raw": version,
         "selection_clean_correct": bool(np.all(predictions[selected] == labels[selected])),
         "exports_replayed": export_replays,
         "rows_audited": len(rows),
@@ -375,11 +386,12 @@ def audit(config_path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", type=Path, default=DEFAULT_CONFIG)
+    parser.add_argument("--output-name", default="independent_audit.json")
     args = parser.parse_args()
     result = audit(args.config)
     config = json.loads(args.config.read_text(encoding="utf-8"))
     output = _inside(Path(config["output_dir"]), WRITE_ROOT)
-    path = output / "independent_audit.json"
+    path = output / args.output_name
     if path.exists():
         raise RuntimeError(f"refusing to overwrite {path}")
     _write_json(path, result)
