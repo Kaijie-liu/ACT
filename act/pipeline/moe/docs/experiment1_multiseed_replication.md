@@ -88,6 +88,11 @@ The model-level replication conditions are frozen as:
 Both models must be reported separately. Only 2/2 model-level successes support
 seed-robust wording; pooled row counts cannot substitute for that criterion.
 
+The independent selection audit reconstructed all 40 indices exactly, verified
+both checkpoint hashes and the 200-index excluded union, and reported zero
+issues. Its raw SHA-256 is `839d586f...461abb`. R1 was still unqueried when
+this audit completed.
+
 ## R0 result
 
 Both registered runs completed at implementation HEAD `db4f34b4f` in 135.41

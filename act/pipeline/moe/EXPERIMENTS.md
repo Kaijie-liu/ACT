@@ -2634,3 +2634,7 @@ indices. Both models receive the same images, radii, support and solve budgets,
 decided at the model level: 2/2 is required for seed-robust wording, and pooled
 rows cannot mask a null model. The full rule and thresholds are in
 `docs/experiment1_multiseed_replication.md`.
+
+Before R1 execution, the independent selection audit reconstructed all 40
+indices exactly, verified the two checkpoint and two excluded-cohort hashes,
+and reported zero issues. No formal endpoint had been queried at that point.

@@ -1,0 +1,21 @@
+{
+  "experiment": "experiment1_multiseed_replication_r1",
+  "stage": "selection",
+  "status": "PASS",
+  "issue_count": 0,
+  "sample_count": 40,
+  "dataset_index_min": 1000,
+  "dataset_index_max": 1092,
+  "excluded_union_size": 200,
+  "manifest_sha256": "86eef2005651401ebb3e2ddd827d9a8e5f713720375d5a387221601cf5611ae4",
+  "raw_audit": "/data1/Kane/MOE/ACT/data/moe/results/experiment1_multiseed_selection_r1_audit.json",
+  "raw_audit_sha256": "839d586ffa388463934b566b38ceb0d3b09f7624980acad06583eee0a0461abb",
+  "checks": [
+    "both checkpoint identities",
+    "both frozen excluded-cohort identities",
+    "ordered first-40 reconstruction",
+    "dual-model clean correctness",
+    "no duplicate or excluded index"
+  ],
+  "claim_boundary": "The audit reconstructs the cohort from predictions and labels only. No verification endpoint was queried."
+}
