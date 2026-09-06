@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "experiment": "advmoe_strict_pyrat_seed0_compat_pilot_r3",
+  "classification": "STRICT_BACKEND_FEASIBILITY_CONTROL",
+  "model": {
+    "label": "official-code numerical compatibility variant",
+    "clean_accuracy_percent": 85.67,
+    "checkpoint_sha256": "e2d93896e5be1fdbb1c9538f9f09014bdc6d3067ac5501352f61475b5294b49e"
+  },
+  "request": {
+    "ordered_dataset_indices": [1, 13],
+    "epsilon_label": "0.5/255",
+    "paths_per_request": 2,
+    "pyrat_timeout_seconds_per_path": 300,
+    "subprocess_outer_timeout_seconds_per_path": 330,
+    "domains": ["poly"],
+    "soundness_contract": "PyRAT 2.0, CPU NumPy float64, --sound true directed rounding"
+  },
+  "outcome": {
+    "requests": 2,
+    "path_queries": 4,
+    "path_timeouts": 4,
+    "endpoint_counts": {"TIMEOUT": 2},
+    "strict_dynamic_safe": 0,
+    "backend_feasibility_gate_met": false,
+    "decision": "STOP_STRICT_PYRAT_PATH_NO_ROUTE_CHANGING_COHORT"
+  },
+  "exports": [
+    {
+      "route": 0,
+      "sha256": "447080cbf7e82dd0236045152828e3b1085769e856d1e6eb88c697bdc1a182c6",
+      "nodes": 81,
+      "batchnormalization_nodes": 21,
+      "dynamic_dispatch_present": false,
+      "maximum_onnxruntime_abs_error": 0.0000016689300537109375
+    },
+    {
+      "route": 1,
+      "sha256": "e9964db8cc8c1262e5fe112e057905c7d8115f55ff3530dafcff9946927b9f80",
+      "nodes": 81,
+      "batchnormalization_nodes": 21,
+      "dynamic_dispatch_present": false,
+      "maximum_onnxruntime_abs_error": 0.00000286102294921875
+    }
+  ],
+  "artifacts": {
+    "config_sha256": "f56d3e47de38ba33335fbdfaff0c086a61533e38ebc6ca11ad8bd92783a5f691",
+    "raw_rows_sha256": "9a402d982032e785463d46015e083c1a58bc6ae32a315fe14b29fb02aa111bd8",
+    "raw_summary_sha256": "212107c1fc4642962349c35a049b7b0c8ea9cc105c8c08fd0b831140919973d6",
+    "first_audit_failure_sha256": "97c8269c30dea31c77585ee64efb01383d28a01da6531888a75230fa861010ab",
+    "accepted_independent_audit_sha256": "31132e65f573646b9ac89005f3686b859ce40cc32a07ca690cca041bff031f9b"
+  },
+  "audit": {
+    "status": "PASS",
+    "issue_count": 0,
+    "properties_reconstructed": 2,
+    "exports_replayed": 2,
+    "endpoint_aggregation_recomputed": true,
+    "first_audit_failure_preserved": "raw version output contained a runtime warning timestamp; r2 compares the semantic PyRAT version token"
+  },
+  "claim_boundary": "The strict external backend did not produce a certificate or counterexample in the frozen pilot. All four path queries timed out. This is a backend-feasibility negative result, not evidence of model unsafety and not a prevalence estimate. The preregistered PyRAT path stops here."
+}

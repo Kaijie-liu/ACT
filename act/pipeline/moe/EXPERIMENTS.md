@@ -2752,6 +2752,17 @@ independent auditor reconstructs every property, replays both exports, parses
 the logs, and recomputes fail-closed aggregation. Details are in
 `docs/advmoe_strict_pyrat.md`.
 
+R3 subsequently reaches all four external path queries, but every query hits
+the 300-second PyRAT budget and 330-second subprocess deadline. Both endpoints
+are `TIMEOUT`, strict SAFE is `0/2`, and the preregistered backend-feasibility
+gate fails. The accepted independent audit reconstructs both properties,
+replays both non-dispatch ONNX paths, verifies the directed-rounding command,
+and reports zero issues. A first audit failure caused only by comparing a
+timestamped runtime warning is retained. No PyRAT parameter, radius, or domain
+is tuned and no route-changing cohort is selected. The result is a strict
+backend-feasibility negative result, not model unsafety. Compact evidence:
+`results/advmoe_strict_pyrat_seed0_compat_pilot_20260906_r3.json`.
+
 The performance-stability stage freezes a new common fixed task before any
 endpoint. The cohort is the first 100 ordered CIFAR-10 indices at or after
 3000 that are clean-correct for all three `bal010` training runs and absent

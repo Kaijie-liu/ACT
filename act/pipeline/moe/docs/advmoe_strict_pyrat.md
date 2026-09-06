@@ -66,3 +66,20 @@ instead of folding rounded affine constants, uses the direct comparison form
 accepted by PyRAT's VNN-LIB grammar, and sets the concrete sanity tolerance to
 `4e-6`.  That tolerance cannot create SAFE: formal acceptance still requires
 PyRAT to return SAFE for both paths under directed rounding.
+
+R3 completes all four registered path calls. Every call reaches the external
+checker and is stopped by the 330-second outer deadline after the 300-second
+PyRAT budget; consequently both dynamic endpoints are `TIMEOUT`, strict SAFE
+is `0/2`, and the backend-feasibility gate is not met. The independent audit
+reconstructs both properties, replays both 81-node ONNX graphs (21 BatchNorm
+nodes each), verifies the complete directed-rounding command contract, and
+recomputes the result with zero issues. Its first attempt is preserved: it
+incorrectly compared raw version output containing a timestamped ONNX Runtime
+warning. The accepted audit compares the semantic `PyRAT 2.0` token.
+
+Per the frozen gate, no route-changing cohort is selected and no PyRAT domain,
+timeout, or radius is tuned after this result. This negative result does not
+show that either input is unsafe; it only shows that the external strict
+backend did not finish the already-positive numerical controls in the frozen
+budget. The compact result is
+`results/advmoe_strict_pyrat_seed0_compat_pilot_20260906_r3.json`.
