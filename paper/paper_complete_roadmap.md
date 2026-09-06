@@ -43,7 +43,7 @@ above. No submission date can redefine `PAPER_COMPLETE`.
 | Dimension-law simulation grid | Defense against two-point-fit criticism | Executed and audited: both point slopes near -1/2, but one of two frozen bootstrap-interval rules misses by 8.6e-5; composite endpoint retained as failed |
 | Source-native survey retrieval | Recall-qualified survey if retrieval succeeds | Pending institutional retrieval |
 | Monolithic solver baseline | Direct decomposition comparison | Completed on the frozen 20-row cohort; Route A 12/20 versus monolithic 8/20, descriptive paired p=0.21875 |
-| Verification-scale seed replication | Defense against a seed-0-specific formal effect | R1 completed and both model audits have zero issues. Route-changing SAFE and conditional-width effects replicate 2/2; zonotope candidate reduction and solved coverage pass only 1/2. The full registered conjunction passes 0/2, so only mechanism-specific, not full-bundle seed-robust, wording is allowed |
+| Verification-scale seed replication | Defense against a seed-0-specific formal effect | R1 completed and both model audits have zero issues. Route-changing SAFE and conditional-width effects replicate on both additional preregistered runs; zonotope candidate reduction and solved coverage pass only 1/2. The full registered conjunction passes 0/2, so no full-bundle seed-robust claim is allowed |
 
 The dimension simulation grid is frozen before execution as
 `d in {1000, 3000, 12000, 50000, 150000, 500000}`. Router initialization must

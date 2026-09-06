@@ -191,3 +191,11 @@ verification scale. A routed model that a general-purpose frontend rejects can
 also be specialized into static per-route programs and delegated to a CROWN
 backend. The contribution is therefore an analysis layer for dynamic dispatch,
 not a claim that one expert backend dominates existing neural verifiers.
+
+The artifact exposes this logic through a direct staged entry point rather
+than requiring the evaluation harness. A request begins with an already chosen
+input region and property; boundary search and matched ablations are not part
+of the algorithm. Exact route coverage feeds guarded Tier 1, and only the two
+registered semantic-incompleteness outcomes activate F0. Thus the executable
+state machine matches the quantifiers above while keeping scientific controls
+outside the verification budget.

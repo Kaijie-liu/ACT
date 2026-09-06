@@ -175,3 +175,15 @@ ULP, and BatchNorm initializations that define different functions in eval and
 train mode. The companion artifact-identity section reports those findings;
 the engineering consequence is simple: if any identity field is absent or
 changed, the certificate fails closed.
+
+The production evidence package materializes this identity rather than storing
+only a summary row. It binds the model state and optional checkpoint, literal
+center and represented lower/upper tensors, property, configuration, numerical
+policy, exact route family, every invoked branch/property result, and the
+state-transition trace. Packages are immutable directories and a separate
+auditor recomputes their hashes, route/pair coverage, accepted F0 minima, and
+unsafe witness obligations. The accepted outward-corrected minimum is recorded
+separately from a solver's raw bound contribution, since the latter excludes
+the represented output center in the HZ lowering. A structural audit checks
+the evidence chain; it is not presented as an independent re-execution of a
+SAFE solve.

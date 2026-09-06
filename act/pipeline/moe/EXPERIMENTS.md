@@ -2667,3 +2667,23 @@ not rewritten; a derived correction marks all three costs right-censored.
 Future rows persist stage-aware F0 observations and summaries exclude censored
 times from runtime quantiles. The compact row table is
 `results/experiment1_multiseed_associations_20260906_r1.{json,csv}`.
+
+## Production staged-verifier separation
+
+The first production-style selected-softmax top-2 entry point is now separate
+from the boundary experiment harness. It accepts a direct represented
+L-infinity request, runs exact candidate/route-set analysis, guarded Tier-1
+gate elimination, and invokes F0 only for registered semantic
+incompleteness. It never performs route-boundary search, matched no-support
+solving, or unguarded accounting propagation. Its tracked configuration binds
+the existing HZ/HiGHS numerical policy and explicit stage budgets.
+
+Every call can emit an immutable evidence directory containing the literal
+represented tensors, model/property/config identities, complete route and
+property obligations, accepted solver bounds, transitions, and an optional
+full-model witness. A separate structural auditor recomputes identities and
+proof completeness and can replay unsafe witnesses when the checkpoint is
+available. Toy regression tests cover Tier-1 success, F0-only success,
+configuration drift, execution semantics, package tampering, and refusal to
+overwrite. This is an engineering delivery, not a new experimental endpoint;
+the frozen confirmatory, closure, and multi-seed results remain unchanged.

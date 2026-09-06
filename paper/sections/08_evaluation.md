@@ -182,9 +182,13 @@ and 0.447). Candidate reduction versus ordinary zonotope is 6/32 (18.75%) and
 effect crosses the preregistered 20% threshold on only one model. Overall
 solved rate is 22/40 and 13/40; only the first crosses the 50% threshold. The
 complete executable endpoint passes on neither model because each misses a
-different condition. We therefore use seed-robust wording only for the
-route-changing-certificate and structural-width mechanisms, and describe
-candidate reduction and solver coverage as model-dependent.
+different condition. We therefore state that the route-changing-certificate
+and structural-width mechanisms replicate on two additional preregistered
+training runs under the same recipe; we do not claim a seed-robust full
+performance bundle. Candidate reduction and solver coverage remain
+model-dependent. F0 supplies 11/13 SAFE results in the first added run and all
+6/6 in the second, so the weighted second tier is necessary for the observed
+mechanism replication rather than a decorative fallback.
 
 A derived, no-new-query association table adds an important qualification. At
 the four fixed census radii, 9/13 seed-1 SAFE rows show no strict candidate
@@ -194,6 +198,16 @@ obligations use model-specific boundary radii. They do show that fixed-radius
 candidate reduction and end-to-end certification need not co-occur. Three
 F0-invoked rows are killed by the hard deadline before stage time is persisted;
 their F0 costs are reported as right-censored rather than imputed as zero.
+
+The frozen 300-second endpoint also ran a matched no-support control inside
+the same worker. Its solved rate therefore measures the registered scientific
+pipeline, not the best production scheduling of the verifier. A later
+engineering entry point removes route-boundary search, no-support ablation,
+and unguarded accounting propagation from the request path while retaining
+the same candidate, Tier-1, F0, and numerical semantics. It creates an
+immutable per-request evidence package, but contributes no new result to the
+tables in this section until a separately labelled development comparison is
+executed.
 
 ## Table 1: official RT-ER numerical conformance result
 

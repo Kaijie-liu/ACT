@@ -262,6 +262,13 @@ that route-changing certificates exist beyond seed 0 and that conditioning
 separates binary width are supported on 2/2 retained replications. Pooled rows
 are descriptive only and cannot mask the per-model null conditions.
 
+F0 supplies 11 of the 13 SAFE results in the first added run and all 6 SAFE
+results in the second. The latter is a direct control against treating the
+weighted tier as decorative: Tier 1 alone produces no SAFE result on that
+registered model/cohort, while the unchanged F0 semantics closes six complete
+route-changing obligations. This is replication under one architecture and
+training recipe, not cross-architecture generality.
+
 ### F0 incremental contribution
 
 Tier 1 left 60 semantic-incompleteness rows. F0 resolved 43/60 (71.7%): 31

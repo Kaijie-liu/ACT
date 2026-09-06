@@ -530,9 +530,14 @@ def diagnose_radius(
     branch_rows: list[dict[str, Any]] = []
     full_witness = None
     tightening_seconds = solve_seconds = 0.0
+    collect_diagnostics = bool(config.get("collect_diagnostics", True))
     for expert in candidates.candidates:
         branch = by_expert[expert]
-        unguarded = _propagate_component(program.experts[expert])
+        unguarded = (
+            _propagate_component(program.experts[expert])
+            if collect_diagnostics
+            else None
+        )
         tighten_started = time.monotonic()
         guarded = _propagate_component(
             program.experts[expert],
@@ -541,10 +546,14 @@ def diagnose_radius(
         )
         tightening_seconds += time.monotonic() - tighten_started
         support = _support_summary(guarded.guarded_support)
-        accounting = guard_binary_accounting(
-            unguarded.unstable_total,
-            max(0, guarded.binary_width - branch.guarded_input.n_bin),
-            support,
+        accounting = (
+            guard_binary_accounting(
+                unguarded.unstable_total,
+                max(0, guarded.binary_width - branch.guarded_input.n_bin),
+                support,
+            )
+            if unguarded is not None
+            else None
         )
         matched_result = None
         matched_stages: list[dict[str, Any]] = []
@@ -613,9 +622,13 @@ def diagnose_radius(
                     router.binary_width
                     + branch.selection_binaries
                     + unguarded.binary_width
+                    if unguarded is not None
+                    else None
                 ),
                 "binary_width_after_guard": guarded.binary_width,
-                "expert_relu_binaries_before_guard": unguarded.unstable_total,
+                "expert_relu_binaries_before_guard": (
+                    unguarded.unstable_total if unguarded is not None else None
+                ),
                 "expert_relu_binaries_after_guard": max(
                     0, guarded.binary_width - branch.guarded_input.n_bin
                 ),
@@ -626,7 +639,7 @@ def diagnose_radius(
                 "clean_expert_prediction": clean_expert_prediction,
                 "unknown_reason": reason,
                 "support": support,
-                "guard_accounting": accounting.as_dict(),
+                "guard_accounting": accounting.as_dict() if accounting else None,
                 "matched_no_support_status": (
                     matched_result.status.value if matched_result is not None else None
                 ),
@@ -658,7 +671,7 @@ def diagnose_radius(
         status = "TIMEOUT" if reason.startswith("TIMEOUT_") else "UNKNOWN"
     if reason not in REASONS:
         raise RuntimeError(f"unregistered diagnostic reason {reason}")
-    return {
+    report = {
         "label": label,
         "clean_prediction": clean_prediction,
         "clean_topk_set": sorted(int(value) for value in clean_set),
@@ -684,6 +697,17 @@ def diagnose_radius(
         "total_seconds": time.monotonic() - started,
         "monotonic_inference": None,
     }
+    if bool(config.get("return_internal_context", False)):
+        report["_internal_context"] = {
+            "program": program,
+            "router": router,
+            "candidates": candidates,
+            "route_sets": route_sets,
+            "lower": lower,
+            "upper": upper,
+            "output_spec": output_spec,
+        }
+    return report
 
 
 def _inferred_row(

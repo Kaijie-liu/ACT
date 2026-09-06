@@ -1,0 +1,47 @@
+{
+  "candidate_query_timeout": 10.0,
+  "tier1": {
+    "support": {
+      "lp_neurons": 32,
+      "milp_neurons": 4,
+      "lp_time_limit": 2.0,
+      "milp_time_limit": 5.0,
+      "solver_backend": "scipy"
+    },
+    "solver": {
+      "low_budget_per_branch": 5.0,
+      "escalation_budget_per_branch": 25.0,
+      "backend": "scipy"
+    }
+  },
+  "f0": {
+    "support": {
+      "lp_neurons": 32,
+      "milp_neurons": 4,
+      "lp_time_limit": 2.0,
+      "milp_time_limit": 5.0,
+      "solver_backend": "scipy"
+    },
+    "solver": {
+      "margin_support_seconds": 5.0,
+      "difference_support_seconds": 5.0,
+      "property_seconds": 10.0,
+      "safety_tolerance": 1e-7,
+      "backend": "scipy"
+    }
+  },
+  "numerical_safety": {
+    "solver": "scipy.optimize.milp/HiGHS",
+    "require_solver_success": true,
+    "require_optimal_status": 0,
+    "require_finite_dual_bound": true,
+    "mip_relative_gap": 0.0,
+    "feasibility_tolerance": 1e-7,
+    "integrality_tolerance": 1e-7,
+    "outward_rounding": "nextafter after absolute-plus-relative correction",
+    "outward_absolute": 1e-9,
+    "outward_relative": 1e-9,
+    "safe_positive_margin": 1e-7,
+    "certifying_objective": "finite mip_dual_bound for MILP; status-0 optimum for pure LP; never a non-optimal primal incumbent"
+  }
+}
