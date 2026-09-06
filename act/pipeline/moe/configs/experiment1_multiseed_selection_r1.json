@@ -1,0 +1,74 @@
+{
+  "experiment": "experiment1_multiseed_replication_r1",
+  "status": "FROZEN_BEFORE_FORMAL_ENDPOINT",
+  "selection_rule": "first 40 ordered CIFAR-10 test indices at or after 1000 that are clean-correct for both registered models and absent from the seed-0 development and confirmatory cohorts",
+  "selection_predicates": [
+    "dataset_index >= 1000",
+    "seed1_prediction == label",
+    "seed2_prediction == label",
+    "dataset_index not in the union of the frozen seed-0 development and confirmatory indices"
+  ],
+  "models": {
+    "seed1": {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/checkpoints/cifar10_top2_e8_seed1_bal010.pt",
+      "checkpoint_sha256": "cfd5fb07b1c426c5b98309d56a5d0439f8a99dc52ff936bcbea43d4fe641139a"
+    },
+    "seed2": {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/checkpoints/cifar10_top2_e8_seed2_bal010.pt",
+      "checkpoint_sha256": "a60517c7964177858d10303bc7b306293c8da3cde6caa93a5d8f442968e97758"
+    }
+  },
+  "excluded_cohorts": [
+    {
+      "path": "/data1/Kane/MOE/ACT/data/moe/results/experiment1_bal010/sample_indices.json",
+      "sha256": "73c891e95e33d508ed0e50ccbcf4d48572fc29a2e71492e96f90bcfc23c143cf"
+    },
+    {
+      "path": "/data1/Kane/MOE/ACT/data/moe/results/experiment1_confirmatory_bal010_r1/sample_indices.json",
+      "sha256": "7dad79df206f3b11018d5d8429e95327d2f5bc2e6c534d01f6d0ac74cba0edab"
+    }
+  ],
+  "samples": [
+    {"sample_rank": 0, "dataset_index": 1000},
+    {"sample_rank": 1, "dataset_index": 1002},
+    {"sample_rank": 2, "dataset_index": 1003},
+    {"sample_rank": 3, "dataset_index": 1004},
+    {"sample_rank": 4, "dataset_index": 1005},
+    {"sample_rank": 5, "dataset_index": 1006},
+    {"sample_rank": 6, "dataset_index": 1007},
+    {"sample_rank": 7, "dataset_index": 1010},
+    {"sample_rank": 8, "dataset_index": 1011},
+    {"sample_rank": 9, "dataset_index": 1012},
+    {"sample_rank": 10, "dataset_index": 1013},
+    {"sample_rank": 11, "dataset_index": 1016},
+    {"sample_rank": 12, "dataset_index": 1022},
+    {"sample_rank": 13, "dataset_index": 1023},
+    {"sample_rank": 14, "dataset_index": 1025},
+    {"sample_rank": 15, "dataset_index": 1029},
+    {"sample_rank": 16, "dataset_index": 1033},
+    {"sample_rank": 17, "dataset_index": 1035},
+    {"sample_rank": 18, "dataset_index": 1037},
+    {"sample_rank": 19, "dataset_index": 1038},
+    {"sample_rank": 20, "dataset_index": 1044},
+    {"sample_rank": 21, "dataset_index": 1046},
+    {"sample_rank": 22, "dataset_index": 1048},
+    {"sample_rank": 23, "dataset_index": 1054},
+    {"sample_rank": 24, "dataset_index": 1057},
+    {"sample_rank": 25, "dataset_index": 1060},
+    {"sample_rank": 26, "dataset_index": 1061},
+    {"sample_rank": 27, "dataset_index": 1067},
+    {"sample_rank": 28, "dataset_index": 1070},
+    {"sample_rank": 29, "dataset_index": 1073},
+    {"sample_rank": 30, "dataset_index": 1075},
+    {"sample_rank": 31, "dataset_index": 1076},
+    {"sample_rank": 32, "dataset_index": 1077},
+    {"sample_rank": 33, "dataset_index": 1078},
+    {"sample_rank": 34, "dataset_index": 1079},
+    {"sample_rank": 35, "dataset_index": 1081},
+    {"sample_rank": 36, "dataset_index": 1085},
+    {"sample_rank": 37, "dataset_index": 1089},
+    {"sample_rank": 38, "dataset_index": 1091},
+    {"sample_rank": 39, "dataset_index": 1092}
+  ],
+  "claim_boundary": "Selection uses only ordered index, clean correctness, and prior-cohort exclusion. No candidate, route-boundary, solver, or certificate outcome was queried."
+}

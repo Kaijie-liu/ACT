@@ -157,8 +157,15 @@ def _support_config(config: dict[str, Any]) -> HybridZConfig:
 
 def _prepare(config_path: Path, config: dict[str, Any]):
     checkpoint = _inside(Path(config["checkpoint"]), WRITE_ROOT)
-    development_indices = _inside(
-        Path(config["development_sample_indices"]), WRITE_ROOT
+    selection_manifest = (
+        _inside(Path(config["selection_manifest"]), PROJECT_ROOT)
+        if config.get("selection_manifest")
+        else None
+    )
+    development_indices = (
+        _inside(Path(config["development_sample_indices"]), WRITE_ROOT)
+        if selection_manifest is None
+        else None
     )
     output_dir = _inside(Path(config["output_dir"]), WRITE_ROOT)
     if _git_value("branch", "--show-current") != "feat/moe-route-verification":
@@ -197,32 +204,75 @@ def _prepare(config_path: Path, config: dict[str, Any]):
             checkpoint, map_location=device
         )
         selection_model.to(device).eval()
-        stop = int(config["rank_start"]) + int(config["sample_count"])
-        prefix = _select_clean_correct(selection_model, dataset, device, stop)
-        frozen_development = json.load(
-            development_indices.open(encoding="utf-8")
-        )["indices"]
-        if prefix[: len(frozen_development)] != frozen_development:
-            raise RuntimeError("clean-correct rank prefix differs from development")
-        start = int(config["rank_start"])
-        selected = [
-            {"sample_rank": rank, "dataset_index": prefix[rank]}
-            for rank in range(start, stop)
-        ]
-        _write_json(
-            indices_path,
-            {
+        if selection_manifest is not None:
+            manifest = json.load(selection_manifest.open(encoding="utf-8"))
+            model_id = str(config["model_id"])
+            registered = manifest["models"].get(model_id)
+            if registered is None:
+                raise RuntimeError(f"selection manifest lacks model {model_id}")
+            if registered["checkpoint_sha256"] != _sha256(checkpoint):
+                raise RuntimeError("selection manifest checkpoint hash mismatch")
+            selected = list(manifest["samples"])
+            expected_ranks = list(range(int(config["sample_count"])))
+            if [int(row["sample_rank"]) for row in selected] != expected_ranks:
+                raise RuntimeError("selection manifest ranks are not consecutive")
+            indices = [int(row["dataset_index"]) for row in selected]
+            if len(indices) != len(set(indices)) or any(
+                index < 0 or index >= len(dataset) for index in indices
+            ):
+                raise RuntimeError("selection manifest indices are invalid")
+            with torch.no_grad():
+                for row in selected:
+                    image, label = dataset[int(row["dataset_index"])]
+                    prediction = int(
+                        selection_model(image.unsqueeze(0).to(device)).argmax(1).item()
+                    )
+                    if prediction != int(label):
+                        raise RuntimeError(
+                            f"manifest rank {row['sample_rank']} is not clean-correct"
+                        )
+            selection_record = {
+                "selection_rule": manifest["selection_rule"],
+                "selection_manifest": str(selection_manifest),
+                "selection_manifest_sha256": _sha256(selection_manifest),
+                "samples": selected,
+            }
+        else:
+            assert development_indices is not None
+            stop = int(config["rank_start"]) + int(config["sample_count"])
+            prefix = _select_clean_correct(selection_model, dataset, device, stop)
+            frozen_development = json.load(
+                development_indices.open(encoding="utf-8")
+            )["indices"]
+            if prefix[: len(frozen_development)] != frozen_development:
+                raise RuntimeError("clean-correct rank prefix differs from development")
+            start = int(config["rank_start"])
+            selected = [
+                {"sample_rank": rank, "dataset_index": prefix[rank]}
+                for rank in range(start, stop)
+            ]
+            selection_record = {
                 "selection_rule": "deterministic clean-correct ranks",
                 "verified_development_prefix": len(frozen_development),
                 "samples": selected,
-            },
+            }
+        _write_json(
+            indices_path,
+            selection_record,
         )
         runtime = {
             "source_config": str(config_path),
             "source_config_sha256": _sha256(config_path),
             "git_head": _git_value("rev-parse", "HEAD"),
             "checkpoint_sha256": _sha256(checkpoint),
-            "development_sample_indices_sha256": _sha256(development_indices),
+            "development_sample_indices_sha256": (
+                _sha256(development_indices)
+                if development_indices is not None
+                else None
+            ),
+            "selection_manifest_sha256": (
+                _sha256(selection_manifest) if selection_manifest is not None else None
+            ),
             "torchvision_root": str(dataset_root),
             "numerical_safety": actual_policy,
             "config": config,
@@ -239,6 +289,10 @@ def _prepare(config_path: Path, config: dict[str, Any]):
             raise RuntimeError("confirmatory implementation HEAD changed between stages")
         if runtime["checkpoint_sha256"] != _sha256(checkpoint):
             raise RuntimeError("confirmatory checkpoint changed between stages")
+        if selection_manifest is not None and runtime.get(
+            "selection_manifest_sha256"
+        ) != _sha256(selection_manifest):
+            raise RuntimeError("selection manifest changed between stages")
     selected = json.load(indices_path.open(encoding="utf-8"))["samples"]
     if len(selected) != int(config["sample_count"]):
         raise RuntimeError("confirmatory sample count changed")

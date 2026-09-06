@@ -153,23 +153,40 @@ def audit(config_path: Path) -> dict[str, Any]:
     boundary_csv = _load_csv(output_dir / "boundary/results.csv")
     issues: list[str] = []
 
-    expected_ranks = list(
-        range(
-            int(config["rank_start"]),
-            int(config["rank_start"]) + int(config["sample_count"]),
+    if config.get("selection_manifest"):
+        expected_ranks = [int(row["sample_rank"]) for row in selection]
+        manifest_path = _inside(Path(config["selection_manifest"]), PROJECT_ROOT)
+        manifest = json.load(manifest_path.open(encoding="utf-8"))
+        if selection != manifest.get("samples"):
+            issues.append("runtime selection differs from tracked manifest")
+        if runtime.get("selection_manifest_sha256") != _sha256(manifest_path):
+            issues.append("runtime selection manifest hash mismatch")
+    else:
+        expected_ranks = list(
+            range(
+                int(config["rank_start"]),
+                int(config["rank_start"]) + int(config["sample_count"]),
+            )
         )
-    )
     selected_ranks = [int(row["sample_rank"]) for row in selection]
     if selected_ranks != expected_ranks:
-        issues.append("confirmatory selection is not ranks 100--199")
+        issues.append("confirmatory selection ranks differ from registration")
     if runtime["source_config_sha256"] != _sha256(config_path):
         issues.append("runtime source config hash mismatch")
     if runtime["checkpoint_sha256"] != _sha256(Path(config["checkpoint"])):
         issues.append("runtime checkpoint hash mismatch")
-    if len(census) != 400 or len(census_csv) != len(census):
-        issues.append("census does not contain 400 matching JSONL/CSV rows")
-    if len(boundary) != 100 or len(boundary_csv) != len(boundary):
-        issues.append("boundary does not contain 100 matching JSONL/CSV rows")
+    expected_census_rows = int(config["sample_count"]) * len(
+        config["fixed_epsilons"]
+    )
+    expected_boundary_rows = int(config["sample_count"])
+    if len(census) != expected_census_rows or len(census_csv) != len(census):
+        issues.append(
+            f"census does not contain {expected_census_rows} matching JSONL/CSV rows"
+        )
+    if len(boundary) != expected_boundary_rows or len(boundary_csv) != len(boundary):
+        issues.append(
+            f"boundary does not contain {expected_boundary_rows} matching JSONL/CSV rows"
+        )
     actual_policy = hz_numerical_policy_manifest()
     if config.get("numerical_safety") != actual_policy:
         issues.append("tracked numerical SAFE policy differs from implementation")

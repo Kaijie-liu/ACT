@@ -2625,3 +2625,12 @@ accuracy with 7.763 effective experts; seed 2 reached 47.63% with 7.775. Their
 maximum expert loads were 17.27% and 17.11%. Neither model was selected or
 discarded. This closes the training stage only; no R1 formal endpoint has yet
 been queried.
+
+R1 is now frozen, still before any formal query. The common cohort contains 40
+images selected by a model-paired clean-correct predicate from ordered raw test
+indices starting at 1000, excluding all seed-0 development/confirmatory
+indices. Both models receive the same images, radii, support and solve budgets,
+300-second hard deadline, and outward-safe HZ/HiGHS policy. Replication is
+decided at the model level: 2/2 is required for seed-robust wording, and pooled
+rows cannot mask a null model. The full rule and thresholds are in
+`docs/experiment1_multiseed_replication.md`.

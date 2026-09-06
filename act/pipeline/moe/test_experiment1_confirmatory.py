@@ -41,6 +41,22 @@ class ConfirmatoryProtocolTests(unittest.TestCase):
             config["numerical_safety"], hz_numerical_policy_manifest()
         )
 
+    def test_multiseed_configs_share_frozen_selection_and_policy(self):
+        config_root = DEFAULT_CONFIG.parent
+        configs = []
+        for seed in (1, 2):
+            path = config_root / f"experiment1_multiseed_seed{seed}_r1.json"
+            configs.append(json.loads(path.read_text(encoding="utf-8")))
+        self.assertEqual(configs[0]["sample_count"], 40)
+        self.assertEqual(configs[1]["sample_count"], 40)
+        self.assertEqual(
+            configs[0]["selection_manifest"], configs[1]["selection_manifest"]
+        )
+        self.assertEqual(configs[0]["numerical_safety"], hz_numerical_policy_manifest())
+        self.assertEqual(configs[1]["numerical_safety"], hz_numerical_policy_manifest())
+        self.assertEqual(configs[0]["instance_timeout_seconds"], 300.0)
+        self.assertEqual(configs[1]["instance_timeout_seconds"], 300.0)
+
     def test_census_summary_closes_guard_accounting(self):
         row = {
             "sample_rank": 100,

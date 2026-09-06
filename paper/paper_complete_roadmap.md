@@ -43,7 +43,7 @@ above. No submission date can redefine `PAPER_COMPLETE`.
 | Dimension-law simulation grid | Defense against two-point-fit criticism | Executed and audited: both point slopes near -1/2, but one of two frozen bootstrap-interval rules misses by 8.6e-5; composite endpoint retained as failed |
 | Source-native survey retrieval | Recall-qualified survey if retrieval succeeds | Pending institutional retrieval |
 | Monolithic solver baseline | Direct decomposition comparison | Completed on the frozen 20-row cohort; Route A 12/20 versus monolithic 8/20, descriptive paired p=0.21875 |
-| Verification-scale seed replication | Defense against a seed-0-specific formal effect | Seeds 1 and 2 completed and passed independent training replay with zero issues; both balanced models are retained. The R1 formal cohort/budget remains unqueried and must be frozen before execution |
+| Verification-scale seed replication | Defense against a seed-0-specific formal effect | Seeds 1 and 2 completed and passed independent training replay with zero issues; both balanced models are retained. The common 40-image R1 cohort, formal obligations, and per-model budget are frozen but remain unqueried |
 
 The dimension simulation grid is frozen before execution as
 `d in {1000, 3000, 12000, 50000, 150000, 500000}`. Router initialization must
@@ -146,7 +146,7 @@ or manuscript closure.
 | “Incremental solving gives a universal speedup.” | Separate build-dominated and search-dominated measurements, retaining the negative end-to-end result. | Closed |
 | “UNSAFE comes from a relaxation witness.” | Full-model replay for every weighted unsafe result. | Closed for completed cohorts; remains a standing gate |
 | “Preprocessing, frontend set representation, or BN mode is outside the artifact identity.” | Runtime/preprocessing identity, requested/represented-set schema, ULP point-collapse regression, dual-BN initialization census, and fail-closed replay. | Closed in implementation and exercised by the accepted B3 r5 identity/audit chain |
-| “The formal Route A effect is a seed-0 accident.” | Pre-registered seed-1/2 `bal010` training with no model selection, followed by an independently frozen formal replication. | R0 completed with zero audit issues; R1 endpoint configuration and execution remain pending |
+| “The formal Route A effect is a seed-0 accident.” | Pre-registered seed-1/2 `bal010` training with no model selection, followed by an independently frozen formal replication. | R0 completed with zero audit issues; the shared R1 selection and endpoint are frozen before execution |
 
 ## Change control
 

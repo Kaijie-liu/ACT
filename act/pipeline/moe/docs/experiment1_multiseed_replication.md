@@ -61,6 +61,33 @@ supports model-dependent wording; no replication restricts the formal effect to
 the original seed-0 artifact. No model may be excluded for low accuracy or
 unfavorable routing geometry.
 
+R1 uses the same 40 CIFAR-10 images for both models. The cohort is the first 40
+ordered test indices at or after index 1000 that are clean-correct for both
+models and absent from the union of the seed-0 development and confirmatory
+cohorts. This rule uses no router candidate, route-boundary, property-bound, or
+certificate outcome. `experiment1_multiseed_selection_r1.json` records the
+indices, both checkpoint hashes, and both excluded-cohort hashes; a separate
+auditor must reconstruct it before execution.
+
+For each model R1 runs the unchanged four fixed radii
+`{0.25,0.5,1,2}/255`, followed by exactly one route-boundary endpoint at
+`1.05 * route_upper` per input. Candidate, guarded-support, gate-elimination,
+F0, tie, witness-replay, and numerical SAFE semantics are identical to the
+accepted seed-0 confirmatory protocol. The hard deadline is 300 seconds per
+boundary input; there is no closure rerun.
+
+The model-level replication conditions are frozen as:
+
+- exact-HZ candidate reduction versus zonotope at least 20% among route-
+  unstable fixed-radius rows;
+- route-unstable width-ratio median below 0.7 and p90 below 1;
+- at least one full-denominator route-changing unique SAFE certificate;
+- every UNSAFE witness replays in the full weighted model; and
+- independent audit reports zero issues and no silent numerical fallback.
+
+Both models must be reported separately. Only 2/2 model-level successes support
+seed-robust wording; pooled row counts cannot substitute for that criterion.
+
 ## R0 result
 
 Both registered runs completed at implementation HEAD `db4f34b4f` in 135.41
