@@ -1,0 +1,49 @@
+{
+  "experiment": "experiment1_multiseed_training_r1",
+  "status": "COMPLETED_AUDITED",
+  "implementation_head": "db4f34b4f5ee7a27d8bcb64fd107b5730e7d8f29",
+  "elapsed_seconds": 135.411283493042,
+  "selection_policy": "both preregistered seeds retained without accuracy, balance, or verification-yield selection",
+  "seeds": [
+    {
+      "seed": 1,
+      "best_epoch": 40,
+      "best_validation_accuracy": 0.4836,
+      "test_accuracy": 0.4847,
+      "test_route_frequencies": [0.0693, 0.1395, 0.13605, 0.1527, 0.1727, 0.11045, 0.10695, 0.11235],
+      "test_load_entropy": 2.0494305195400933,
+      "test_effective_experts": 7.763478697769385,
+      "test_max_expert_load": 0.1727,
+      "test_min_expert_load": 0.0693,
+      "checkpoint_sha256": "cfd5fb07b1c426c5b98309d56a5d0439f8a99dc52ff936bcbea43d4fe641139a",
+      "log_sha256": "dac2a1cd79cd3a0e1a529957b1d173594ba1e9dfa25f88f77514e058eb8e8630",
+      "elapsed_seconds": 67.56365704536438
+    },
+    {
+      "seed": 2,
+      "best_epoch": 35,
+      "best_validation_accuracy": 0.4792,
+      "test_accuracy": 0.4763,
+      "test_route_frequencies": [0.13775, 0.14325, 0.1062, 0.11075, 0.1413, 0.06785, 0.12185, 0.17105],
+      "test_load_entropy": 2.0508545036896533,
+      "test_effective_experts": 7.774541643240565,
+      "test_max_expert_load": 0.17105,
+      "test_min_expert_load": 0.06785,
+      "checkpoint_sha256": "a60517c7964177858d10303bc7b306293c8da3cde6caa93a5d8f442968e97758",
+      "log_sha256": "60fb253456fd5b61cd469dbb07e3321209a00f93f4ce0d3d2e71390d9622ada3",
+      "elapsed_seconds": 67.74547362327576
+    }
+  ],
+  "raw_artifacts": {
+    "summary": "/data1/Kane/MOE/ACT/data/moe/results/experiment1_multiseed_training_r1/summary.json",
+    "summary_sha256": "4618dee549dc33c62dfe1348138a7a2b77a186559789e584c6f08047bdc95df6",
+    "independent_audit": "/data1/Kane/MOE/ACT/data/moe/results/experiment1_multiseed_training_r1/independent_audit.json",
+    "independent_audit_sha256": "c1c883678243d817822ed8cf5cfbffa8f1cab1cc5f37002ba29d4c1bdaac3690"
+  },
+  "independent_audit": {
+    "status": "PASS",
+    "issues": 0,
+    "checks": "dataset/config/artifact hashes, seed-specific validation split replay, ordered-test replay, state finiteness, and exactly 50 epoch rows"
+  },
+  "claim_boundary": "R0 establishes two independently audited, balanced training artifacts. It does not query or establish any formal verification endpoint."
+}

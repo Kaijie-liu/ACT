@@ -2618,3 +2618,10 @@ access its locked holdout. After training completes, a separate pre-execution
 commit will freeze the formal cohort, common per-model budget, outward-safe
 HZ/HiGHS policy, and model-level aggregation. The protocol is documented in
 `docs/experiment1_multiseed_replication.md`.
+
+R0 completed both registered seeds at implementation HEAD `db4f34b4f` and the
+independent training replay passed with zero issues. Seed 1 reached 48.47% test
+accuracy with 7.763 effective experts; seed 2 reached 47.63% with 7.775. Their
+maximum expert loads were 17.27% and 17.11%. Neither model was selected or
+discarded. This closes the training stage only; no R1 formal endpoint has yet
+been queried.

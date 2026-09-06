@@ -60,3 +60,21 @@ registered models supports seed-robust wording; one positive and one null model
 supports model-dependent wording; no replication restricts the formal effect to
 the original seed-0 artifact. No model may be excluded for low accuracy or
 unfavorable routing geometry.
+
+## R0 result
+
+Both registered runs completed at implementation HEAD `db4f34b4f` in 135.41
+seconds total and passed the independent replay audit with zero issues.
+
+| Seed | Best epoch | Best validation | Test | Effective experts | Max load | Min load |
+|---:|---:|---:|---:|---:|---:|---:|
+| 1 | 40 | 48.36% | 48.47% | 7.7635 | 17.27% | 6.93% |
+| 2 | 35 | 47.92% | 47.63% | 7.7745 | 17.11% | 6.79% |
+
+The checkpoint SHA-256 values are `cfd5fb07...641139a` and
+`a60517c7...e97758`. Both models are retained. These are training and model-
+balance results only; R1 has not yet queried a formal endpoint.
+
+The tracked compact result is
+`results/experiment1_multiseed_training_20260906_r1.json`; raw summaries,
+checkpoints, logs, and the full audit stay below `data/moe`.
