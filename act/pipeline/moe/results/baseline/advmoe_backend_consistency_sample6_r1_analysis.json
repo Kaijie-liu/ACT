@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "status": "PASS_WITH_BOUNDED_BACKEND_ATTRIBUTION",
+  "scope": "ADV_MOE_BACKEND_CONSISTENCY_SAMPLE6_EPS0P5_R1_ANALYSIS",
+  "identity": {
+    "execution_code_commit": "751a29ecd5563a912496045f0339b051057e1b86",
+    "config_sha256": "e7f51bee24d0335feb1c8ac0a6dad063a8280821ce9e51520bb70206118f6a9e",
+    "summary_sha256": "f02ba0700221ab62421ceca1a3803b4cfeaf2f5305827db673fae3f366a5fd92",
+    "initial_structural_audit_sha256": "f8796393a85e9b4761ec6d291ff7c56773b1fa729e0d11effd8b6f897a692400",
+    "accepted_replay_audit_sha256": "c2a8cb64e4ee4935e2a6a0f8fcf359b04b6661b386b72eafbb90f23a9516e6a5"
+  },
+  "backend_runtime": {
+    "environment": "/data1/Kane/MOE/envs/alpha-beta-crown",
+    "auto_LiRPA": "0.7.2",
+    "torch": "2.11.0+cu130",
+    "torch_cuda": "13.0",
+    "device": "cuda:0",
+    "dtype": "torch.float32"
+  },
+  "obligation": {
+    "row_id": "sample6:eps0.5",
+    "route": 1,
+    "property_index": 2,
+    "epsilon_over_255": 0.5,
+    "development_not_holdout": true
+  },
+  "concrete_equivalence": {
+    "points": 11,
+    "bit_exact": true,
+    "max_abs_error": 0.0,
+    "independently_replayed": true
+  },
+  "plain_crown": {
+    "pure_expert_lower_bound": -3.8055427074432373,
+    "compiled_mu0_lower_bound": -3.8058557510375977,
+    "pure_minus_compiled": 0.00031304359436035156,
+    "relative_to_pure_bound_magnitude": 0.00008225990835632236,
+    "pure_expert_seconds": 3.7431919733062387,
+    "compiled_mu0_seconds": 4.5069061340764165,
+    "interpretation": "the preregistered 1e-6 comparison threshold detects a small graph-expression difference, but its 3.13e-4 magnitude does not explain the approximately 4.18e10 sparse-alpha bounds"
+  },
+  "sparse_alpha": {
+    "pure_expert": {
+      "initial_lower_bound": -88636727296.0,
+      "best_observed_lower_bound": -41815592960.0,
+      "last_iteration_lower_bound": -41815592960.0,
+      "returned_lower_bound": -41815592960.0,
+      "solve_seconds": 51.04164452012628,
+      "peak_cuda_memory_gib": 38.02700328826904
+    },
+    "compiled_mu0": {
+      "initial_lower_bound": -88636743680.0,
+      "best_observed_lower_bound": -41815588864.0,
+      "last_iteration_lower_bound": -41815588864.0,
+      "returned_lower_bound": -41815588864.0,
+      "solve_seconds": 107.41719099227339,
+      "peak_cuda_memory_gib": 59.66520404815674
+    },
+    "iterations_observed_per_graph": 20,
+    "returned_best_preserved": true,
+    "last_is_best_observed": true,
+    "pure_vs_compiled_absolute_difference": 4096.0,
+    "pure_vs_compiled_relative_difference": 9.79538901652825e-8,
+    "bound_magnitude_ratio_to_plain_crown": {
+      "pure_expert": 10988076123.337978,
+      "compiled_mu0": 10987171243.313606
+    },
+    "interpretation": "the optimized trajectory starts extremely loose on both graph forms and improves throughout; no useful plain-CROWN-like initial bound is later lost, and keep_best returns the best observed iterate"
+  },
+  "lowered_graph": {
+    "pure_expert_nodes": 187,
+    "compiled_mu0_nodes": 403,
+    "pure_expert_router_parameter_tensors": 0,
+    "compiled_mu0_router_parameter_tensors": 61,
+    "all_compiled_router_parameters_present": true,
+    "interpretation": "the zero-multiplier compiled graph retains its router and roughly doubles solve cost, but the approximately 4.18e10 sparse-alpha bound also occurs on the router-free graph"
+  },
+  "preregistered_classification": {
+    "value": "COMPILED_MU0_GRAPH_IS_WEAKER_THAN_ROUTER_FREE_EXPERT",
+    "reason": "the plain-CROWN pure-minus-compiled difference exceeds the frozen 1e-6 threshold",
+    "effect_size_caveat": "the difference is 3.13e-4, whereas the sparse-alpha degradation is about eleven orders of magnitude relative to the plain bound"
+  },
+  "bounded_conclusions": {
+    "established": [
+      "the frozen sparse-alpha parameterization produces approximately the same enormous negative bound on both the router-free expert and graph-matched mu0 graph",
+      "the sparse-alpha trajectory begins enormously negative and improves monotonically to the returned best result, so the result is not caused by overwriting a useful observed initial bound",
+      "retaining the zero-multiplier router increases this case's graph size, solve time, and memory, while adding only a small plain-CROWN bound difference",
+      "plain CROWN remains negative on the router-free fixed expert obligation"
+    ],
+    "not_established": [
+      "ordinary expert verification is generally as loose as the sparse-alpha result",
+      "continuous multiplier search cannot help",
+      "the exact guarded problem gains nothing from route conditioning",
+      "the fixed expert property is truly unsafe",
+      "a formal SAFE or UNSAFE result",
+      "any conclusion beyond this one selected development obligation"
+    ],
+    "primary_attribution": "the approximately 4.18e10 degradation is tied to the frozen sparse/shared-alpha and intermediate-bound configuration on this case, not uniquely to the retained router subgraph; the remaining negative plain-CROWN expert bound is a separate unresolved backend/property limitation"
+  },
+  "decision": {
+    "lagrangian_effect_search": "FROZEN",
+    "holdout": "REMAINS_LOCKED",
+    "additional_crown_tuning": "NOT_AUTHORIZED",
+    "next_research_focus": "RETURN_TO_ACT_HYBRIDZ_RELATION_PRESERVING_MAIN_LINE"
+  }
+}

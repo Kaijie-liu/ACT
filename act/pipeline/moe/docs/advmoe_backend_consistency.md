@@ -87,3 +87,42 @@ outward-rounded formal `SAFE`, and no causal or prevalence statement extends
 beyond this one development obligation.  No retries, new multipliers, sample
 substitutions, radii changes, or holdout queries are permitted.
 
+## Result (2026-09-06)
+
+All four calls completed and the replay-strengthened independent audit passed
+with zero issues.  The concrete pure-expert scalar and `mu=0` compiled output
+were bit exact at all 11 frozen points.
+
+| Graph | Plain CROWN | Frozen sparse alpha | Nodes | Peak GiB (alpha) |
+| --- | ---: | ---: | ---: | ---: |
+| router-free expert | -3.805543 | -4.181559296e10 | 187 | 38.03 |
+| compiled `mu=0` | -3.805856 | -4.181558886e10 | 403 | 59.67 |
+
+The frozen `1e-6` classifier reports
+`COMPILED_MU0_GRAPH_IS_WEAKER_THAN_ROUTER_FREE_EXPERT` because the plain-CROWN
+difference is `3.13e-4` (about `8.23e-5` of the pure bound magnitude).  This is
+a real graph-expression difference under the registered rule, but it is far
+too small to explain the sparse-alpha result.
+
+The sparse-alpha result is effectively the same on the two graph forms: their
+absolute difference is 4096, only `9.80e-8` relative to the approximately
+`4.18e10` magnitude.  More importantly, the 20-step trace starts near
+`-8.864e10` on **both** graphs and steadily improves to the returned value.
+The final iterate is the best observed iterate and `keep_best` returns it.
+There is therefore no observed useful initial bound that alpha optimization
+later overwrites.  The enormous degradation is associated with the frozen
+sparse/shared-alpha and intermediate-bound configuration on this obligation,
+not uniquely with the router subgraph.
+
+The graph evidence still matters for cost: all 61 router parameter tensors
+remain in the lowered compiled graph; node count rises from 187 to 403,
+sparse-alpha solve time from 51.04 to 107.42 seconds, and peak allocation from
+38.03 to 59.67 GiB.  Removing the zero branch is therefore a valid future
+engineering simplification, but it cannot repair the same huge bound already
+present on the router-free expert.
+
+Plain CROWN remains negative on the router-free expert.  That says only that
+this fixed call does not close this fixed property; it does not prove true
+unsafety or general CNN-backend difficulty.  No further CROWN tuning follows.
+The official-scale Lagrangian adapter remains a negative development result,
+the holdout remains locked, and resources return to the ACT/HybridZ main line.

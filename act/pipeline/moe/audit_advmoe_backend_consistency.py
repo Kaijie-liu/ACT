@@ -10,8 +10,20 @@ from pathlib import Path
 from typing import Any
 
 import numpy as np
+import torch
 
-from act.pipeline.moe.advmoe_backend_consistency import compare_cells
+from act.pipeline.moe.advmoe_adapter import (
+    CrownCompatibleAdvMoePath,
+    CrownCompatibleAdvMoeRouter,
+    specialize_advmoe_path,
+)
+from act.pipeline.moe.advmoe_backend_consistency import (
+    _cell_module,
+    compare_cells,
+    semantic_equivalence_points,
+)
+from act.pipeline.moe.advmoe_router_bracket import load_cifar10_test_archive
+from act.pipeline.moe.advmoe_two_path import _load_model, top1_property_rows
 from act.pipeline.moe.published_moe_router_gradient_audit import _sha256
 
 
@@ -132,6 +144,55 @@ def audit(config_path: Path, summary_path: Path) -> dict[str, Any]:
     for name, expected in config["obligation"].items():
         if obligation.get(name) != expected:
             issues.append(f"obligation mismatch: {name}")
+
+    parent_config = _json(_inside(Path(config["inputs"]["parent_config"]["path"])))
+    parent_rows_path = _inside(Path(config["inputs"]["parent_rows"]["path"]))
+    parent_rows = [
+        json.loads(line)
+        for line in parent_rows_path.read_text(encoding="utf-8").splitlines()
+        if line
+    ]
+    parent = next(
+        (row for row in parent_rows if row["row_id"] == obligation.get("row_id")),
+        None,
+    )
+    if parent is None:
+        issues.append("parent obligation row missing")
+    else:
+        model, router, moe_type, checkpoint = _load_model(parent_config, WORKSPACE)
+        if summary.get("checkpoint", {}).get("sha256") != _sha256(checkpoint):
+            issues.append("checkpoint identity mismatch")
+        archive = _inside(Path(parent_config["dataset_archive"]))
+        if summary.get("dataset_archive", {}).get("sha256") != _sha256(archive):
+            issues.append("dataset identity mismatch")
+        inputs, _labels = load_cifar10_test_archive(archive)
+        index = int(parent["dataset_index"])
+        center = torch.from_numpy(inputs[index : index + 1])
+        epsilon = float(parent["epsilon"])
+        lower = torch.clamp(center - epsilon, 0.0, 1.0)
+        upper = torch.clamp(center + epsilon, 0.0, 1.0)
+        route = int(obligation["route"])
+        specialized = specialize_advmoe_path(model, route, moe_type)[0].eval()
+        expert = CrownCompatibleAdvMoePath(specialized).eval()
+        router_adapter = CrownCompatibleAdvMoeRouter(router).eval()
+        property_row = top1_property_rows(int(parent["clean_prediction"]))[
+            int(obligation["property_index"])
+        ][0]
+        compiled, _property_rows = _cell_module(
+            "compiled_mu0", router_adapter, expert, route, property_row
+        )
+        replayed_equivalence = semantic_equivalence_points(
+            expert,
+            compiled,
+            center,
+            lower,
+            upper,
+            property_row,
+            random_points=int(config["semantic_equivalence"]["random_points"]),
+            seed=int(config["semantic_equivalence"]["seed"]),
+        )
+        if replayed_equivalence != summary.get("semantic_equivalence"):
+            issues.append("independent concrete equivalence replay mismatch")
     cells = summary.get("cells", [])
     if [cell.get("cell_id") for cell in cells] != config["execution_order"]:
         issues.append("four-cell execution order mismatch")
@@ -182,6 +243,7 @@ def audit(config_path: Path, summary_path: Path) -> dict[str, Any]:
         "result": {"path": str(summary_path), "sha256": _sha256(summary_path)},
         "classification": summary.get("comparisons", {}).get("classification"),
         "cell_lower_bounds": summary.get("comparisons", {}).get("lower_bounds"),
+        "concrete_equivalence_replayed": parent is not None,
         "issues": issues,
     }
 

@@ -2585,3 +2585,21 @@ presence, and initial/best/last/returned bounds are recorded. This check can
 identify a graph/configuration inconsistency on one case; it cannot establish
 a general cause, access the holdout, or restart effect search. The full
 protocol is in `docs/advmoe_backend_consistency.md`.
+
+The four-cell check completes and its replay-strengthened independent audit
+passes with zero issues. Pure-expert and compiled-`mu=0` concrete scalars are
+bit exact on 11 frozen points. Plain CROWN returns `-3.805543` without the
+router and `-3.805856` with it: the registered `1e-6` classifier detects the
+`3.13e-4` graph-expression gap, but that small effect does not explain the
+sparse-alpha bounds. The frozen sparse configuration starts near `-8.864e10`
+and improves over all 20 observed iterations to approximately `-4.18156e10`
+on both graphs; the final iterate is the best observed and is returned by
+`keep_best`. Thus the huge degradation is present on the router-free expert
+and is associated with this sparse/shared-alpha and intermediate-bound
+configuration, not uniquely with the compiled router branch. Retaining all 61
+router parameter tensors still raises the lowered graph from 187 to 403 nodes,
+alpha solve time from 51.04 to 107.42 seconds, and peak allocation from 38.03
+to 59.67 GiB. Plain CROWN remains negative on the pure expert, but this single
+case does not establish true unsafety or a general expert-backend limitation.
+No additional CROWN tuning or holdout execution follows; work returns to the
+ACT/HybridZ relation-preserving main line.
