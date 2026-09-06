@@ -2638,3 +2638,21 @@ rows cannot mask a null model. The full rule and thresholds are in
 Before R1 execution, the independent selection audit reconstructed all 40
 indices exactly, verified the two checkpoint and two excluded-cohort hashes,
 and reported zero issues. No formal endpoint had been queried at that point.
+
+R1 subsequently completes at implementation HEAD `6d8864501`; both independent
+model audits report zero issues and replay all 16 UNSAFE witnesses. The result
+is mixed rather than a 2/2 full-bundle replication. Seed 1 produces 13/40
+route-changing unique SAFE certificates and seed 2 produces 6/40; conditional
+width median/p90 are `0.352/0.477` and `0.352/0.447`, so both mechanisms
+replicate. Exact-HZ candidate reduction against ordinary zonotope is `6/32 =
+18.75%` for seed 1 and `14/18 = 77.78%` for seed 2, so only seed 2 crosses the
+frozen 20% threshold. Overall solved rate is `22/40 = 55%` for seed 1 and
+`13/40 = 32.5%` for seed 2; the latter misses the frozen 50% threshold. Hence
+neither model passes every executable `go_condition`, and seed-robust wording
+for the full registered bundle is rejected. Candidate reduction versus
+zonotope and solver coverage are model-dependent, while route-changing
+certificates and width separation replicate 2/2. Guard binaries fall by
+850/4,726 and 724/4,491 with both accounting identities closed. The compact
+result is
+`results/experiment1_multiseed_replication_20260906_r1.json`; no pooled count,
+closure rerun, or model replacement overrides the per-model endpoint.

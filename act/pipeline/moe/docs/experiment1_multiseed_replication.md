@@ -110,3 +110,47 @@ balance results only; R1 has not yet queried a formal endpoint.
 The tracked compact result is
 `results/experiment1_multiseed_training_20260906_r1.json`; raw summaries,
 checkpoints, logs, and the full audit stay below `data/moe`.
+
+## R1 result
+
+Both model runs completed at implementation HEAD `6d8864501` on the same 40
+registered images. The two independent audits reported zero issues, closed both
+guard-accounting identities, found no silent numerical fallback, and replayed
+all 16 `UNSAFE` witnesses through the full selected-softmax model.
+
+| Endpoint | Seed 1 | Seed 2 |
+|---|---:|---:|
+| Route-unstable fixed-radius rows | 32 | 18 |
+| Exact smaller than IBP | 20/32 (62.50%) | 17/18 (94.44%) |
+| Exact smaller than ordinary zonotope | 6/32 (18.75%) | 14/18 (77.78%) |
+| Conditional width median / p90 | 0.352 / 0.477 | 0.352 / 0.447 |
+| Guard binaries before -> after | 4,726 -> 3,876 | 4,491 -> 3,767 |
+| Boundary SAFE / UNSAFE / UNKNOWN / TIMEOUT | 13 / 9 / 16 / 2 | 6 / 7 / 24 / 3 |
+| Unique route-changing SAFE | 13/40 (32.5%) | 6/40 (15.0%) |
+| Boundary applicability within 4/255 | 28/40 | 26/40 |
+| Solved among applicable | 22/28 (78.6%) | 13/26 (50.0%) |
+| F0 resolved base semantic incompleteness | 17/22 (77.3%) | 10/22 (45.5%) |
+
+The executable frozen configs retained inherited GO thresholds in addition to
+the condensed model-level prose above. To avoid relaxing a condition after
+observing results, the final aggregation requires every independently audited
+`go_condition`. Neither model passes that full conjunction: seed 1 misses the
+ordinary-zonotope candidate threshold by one row (`18.75% < 20%`), while seed 2
+misses the registered overall solved-rate threshold (`32.5% < 50%`). Thus the
+complete registered bundle has `0/2` passes and does not support seed-robust
+full-bundle wording.
+
+The mechanism-level result is mixed and must not be replaced by pooled rows.
+Route-changing unique SAFE certificates and route-unstable width separation
+replicate on both retained models. Candidate reduction relative to IBP passes
+on both, but reduction relative to ordinary zonotope passes on only one of two
+models and is therefore model-dependent. Solver coverage also passes on only
+one model. Descriptively, there are 19 unique-SAFE and 16 replayed-UNSAFE
+model--sample pairs across 80 paired model inputs, and 35/54 applicable
+model--sample pairs are solved; these pooled counts are not primary endpoints.
+
+The compact, reproducible aggregate is
+`results/experiment1_multiseed_replication_20260906_r1.json`. It binds the
+selection manifest and both raw config, census, boundary, and independent-audit
+hashes. No closure rerun, model replacement, or threshold change follows this
+mixed endpoint.

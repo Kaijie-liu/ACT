@@ -1,0 +1,275 @@
+{
+  "experiment": "experiment1_multiseed_replication_r1",
+  "status": "COMPLETED_AUDITED_MIXED_ENDPOINT",
+  "execution_head": "6d8864501d93767bcd617482292e5652327d63d3",
+  "selection_manifest": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/experiment1_multiseed_selection_r1.json",
+  "selection_manifest_sha256": "86eef2005651401ebb3e2ddd827d9a8e5f713720375d5a387221601cf5611ae4",
+  "selection": {
+    "samples_per_model": 40,
+    "same_images_for_both_models": true,
+    "prior_seed0_cohorts_excluded": true,
+    "selection_used_verification_outcomes": false
+  },
+  "models": [
+    {
+      "model_id": "seed1",
+      "execution_head": "6d8864501d93767bcd617482292e5652327d63d3",
+      "checkpoint_sha256": "cfd5fb07b1c426c5b98309d56a5d0439f8a99dc52ff936bcbea43d4fe641139a",
+      "candidate_reduction": {
+        "exact_reduces_ibp_cluster_bootstrap_95": [
+          0.4117269984917044,
+          0.8571428571428571
+        ],
+        "exact_reduces_ibp_rate": 0.625,
+        "exact_reduces_ibp_rows": 20,
+        "exact_reduces_zonotope_cluster_bootstrap_95": [
+          0.058823529411764705,
+          0.36
+        ],
+        "exact_reduces_zonotope_rate": 0.1875,
+        "exact_reduces_zonotope_rows": 6,
+        "route_unstable_rows": 32
+      },
+      "route_unstable_width": {
+        "median": 0.3521462639109698,
+        "p90": 0.4770030816640986,
+        "q1": 0.30367409270571327,
+        "q3": 0.3939393939393939
+      },
+      "guard_support": {
+        "accounting": {
+          "binaries_after": 3876,
+          "binaries_before": 4726,
+          "binary_eliminated": 850,
+          "lp_support_eliminated": 565,
+          "milp_support_eliminated": 235,
+          "structural_or_propagation_eliminated": 50
+        },
+        "branches": 364,
+        "branches_with_elimination": 153,
+        "matched_no_support_solved_branches": 70,
+        "matched_no_support_solved_rate": 0.8641975308641975,
+        "seconds_per_eliminated_binary": 0.3689127003390561,
+        "support_seconds": 313.5757952881977,
+        "support_solved_branches": 71,
+        "support_solved_rate": 0.8765432098765432,
+        "binary_reduction_rate": 0.17985611510791366
+      },
+      "boundary_endpoint": {
+        "base_semantic_incompleteness": 22,
+        "f0_added_safe": 11,
+        "f0_added_unsafe": 6,
+        "f0_invoked": 22,
+        "f0_paired_runtime_overhead": {
+          "median": 38.434835156425834,
+          "p90": 85.33797192145138,
+          "q1": 10.105435400968418,
+          "q3": 49.828239168040454
+        },
+        "f0_remaining_unknown_timeout": 5,
+        "f0_resolution_rate": 0.7727272727272727,
+        "f0_resolved": 17,
+        "f0_seconds": 860.6789214927703,
+        "reason_counts": {
+          "INSTANCE_HARD_DEADLINE": 1,
+          "NO_ROUTE_BOUNDARY_WITHIN_SEARCH": 12,
+          "SAFE_GATE_ELIMINATION": 2,
+          "SAFE_WEIGHTED_RANGE": 11,
+          "TIMEOUT_EXPERT_SOLVE": 1,
+          "UNKNOWN_WEIGHTED_SOLVER_LIMIT": 4,
+          "UNSAFE_FULL_FORWARD": 3,
+          "UNSAFE_FULL_FORWARD_FALLBACK": 6
+        },
+        "solved_rate": 0.55,
+        "solved_rows": 22,
+        "status_counts": {
+          "SAFE": 13,
+          "TIMEOUT": 2,
+          "UNKNOWN": 16,
+          "UNSAFE": 9
+        },
+        "unique_safe_rate": 0.325,
+        "unique_safe_samples": 13,
+        "unique_safe_wilson_95": [
+          0.200845022317827,
+          0.47982253810122333
+        ],
+        "unsafe_rows": 9,
+        "unsafe_witnesses_replayed": 9,
+        "no_boundary_within_4_over_255": 12,
+        "applicable_route_boundary_samples": 28,
+        "conditional_solved_rate": 0.7857142857142857
+      },
+      "registered_go_conditions": {
+        "all_unsafe_replayed": true,
+        "candidate_reduction_ibp": true,
+        "candidate_reduction_zonotope": false,
+        "end_to_end_solved_rate": true,
+        "f0_semantic_resolution": true,
+        "guard_identity_closed": true,
+        "independent_audit_zero_issues": true,
+        "no_silent_numerical_fallback": true,
+        "route_unstable_width_median": true,
+        "route_unstable_width_p90": true,
+        "unique_safe_count": true,
+        "unique_safe_rate": true
+      },
+      "registered_endpoint_pass": false,
+      "raw_artifacts": {
+        "runtime_config": "/data1/Kane/MOE/ACT/data/moe/results/experiment1_multiseed_replication_seed1_r1/config.json",
+        "runtime_config_sha256": "38bea41493fc10d794937cbe74a88e8029441852d9a827334f31aa7a5e93a751",
+        "census_summary": "/data1/Kane/MOE/ACT/data/moe/results/experiment1_multiseed_replication_seed1_r1/census/summary.json",
+        "census_summary_sha256": "0c11af03cc2bd8c5494dcc07a9863d45beddf2944c457ffe16b11ad95e69ec2e",
+        "boundary_summary": "/data1/Kane/MOE/ACT/data/moe/results/experiment1_multiseed_replication_seed1_r1/boundary/summary.json",
+        "boundary_summary_sha256": "e578d435a5739404c01fa2b0d8b099f914ceedf12bc43636bbc0a7d06f932c58",
+        "independent_audit": "/data1/Kane/MOE/ACT/data/moe/results/experiment1_multiseed_replication_seed1_r1/independent_audit.json",
+        "independent_audit_sha256": "0bb0eeb4c61e93decefdc3b9ef39111e90545c917d1e02eba6436691614a23e0"
+      }
+    },
+    {
+      "model_id": "seed2",
+      "execution_head": "6d8864501d93767bcd617482292e5652327d63d3",
+      "checkpoint_sha256": "a60517c7964177858d10303bc7b306293c8da3cde6caa93a5d8f442968e97758",
+      "candidate_reduction": {
+        "exact_reduces_ibp_cluster_bootstrap_95": [
+          0.8421052631578947,
+          1.0
+        ],
+        "exact_reduces_ibp_rate": 0.9444444444444444,
+        "exact_reduces_ibp_rows": 17,
+        "exact_reduces_zonotope_cluster_bootstrap_95": [
+          0.5,
+          1.0
+        ],
+        "exact_reduces_zonotope_rate": 0.7777777777777778,
+        "exact_reduces_zonotope_rows": 14,
+        "route_unstable_rows": 18
+      },
+      "route_unstable_width": {
+        "median": 0.3517821285140562,
+        "p90": 0.4467306015693112,
+        "q1": 0.3333333333333333,
+        "q3": 0.4117647058823529
+      },
+      "guard_support": {
+        "accounting": {
+          "binaries_after": 3767,
+          "binaries_before": 4491,
+          "binary_eliminated": 724,
+          "lp_support_eliminated": 540,
+          "milp_support_eliminated": 167,
+          "structural_or_propagation_eliminated": 17
+        },
+        "branches": 341,
+        "branches_with_elimination": 147,
+        "matched_no_support_solved_branches": 50,
+        "matched_no_support_solved_rate": 0.6756756756756757,
+        "seconds_per_eliminated_binary": 0.3505360839633755,
+        "support_seconds": 253.78812478948385,
+        "support_solved_branches": 58,
+        "support_solved_rate": 0.7837837837837838,
+        "binary_reduction_rate": 0.1612113115119127
+      },
+      "boundary_endpoint": {
+        "base_semantic_incompleteness": 22,
+        "f0_added_safe": 6,
+        "f0_added_unsafe": 4,
+        "f0_invoked": 22,
+        "f0_paired_runtime_overhead": {
+          "median": 60.76221955055371,
+          "p90": 148.21601344123482,
+          "q1": 15.079274411080405,
+          "q3": 128.1898020596709
+        },
+        "f0_remaining_unknown_timeout": 12,
+        "f0_resolution_rate": 0.45454545454545453,
+        "f0_resolved": 10,
+        "f0_seconds": 1579.4898840934038,
+        "reason_counts": {
+          "INSTANCE_HARD_DEADLINE": 2,
+          "NO_ROUTE_BOUNDARY_WITHIN_SEARCH": 14,
+          "SAFE_WEIGHTED_RANGE": 6,
+          "TIMEOUT_EXPERT_SOLVE": 1,
+          "UNKNOWN_WEIGHTED_SOLVER_LIMIT": 10,
+          "UNSAFE_FULL_FORWARD": 3,
+          "UNSAFE_FULL_FORWARD_FALLBACK": 4
+        },
+        "solved_rate": 0.325,
+        "solved_rows": 13,
+        "status_counts": {
+          "SAFE": 6,
+          "TIMEOUT": 3,
+          "UNKNOWN": 24,
+          "UNSAFE": 7
+        },
+        "unique_safe_rate": 0.15,
+        "unique_safe_samples": 6,
+        "unique_safe_wilson_95": [
+          0.07061187717320358,
+          0.2907232436648971
+        ],
+        "unsafe_rows": 7,
+        "unsafe_witnesses_replayed": 7,
+        "no_boundary_within_4_over_255": 14,
+        "applicable_route_boundary_samples": 26,
+        "conditional_solved_rate": 0.5
+      },
+      "registered_go_conditions": {
+        "all_unsafe_replayed": true,
+        "candidate_reduction_ibp": true,
+        "candidate_reduction_zonotope": true,
+        "end_to_end_solved_rate": false,
+        "f0_semantic_resolution": true,
+        "guard_identity_closed": true,
+        "independent_audit_zero_issues": true,
+        "no_silent_numerical_fallback": true,
+        "route_unstable_width_median": true,
+        "route_unstable_width_p90": true,
+        "unique_safe_count": true,
+        "unique_safe_rate": true
+      },
+      "registered_endpoint_pass": false,
+      "raw_artifacts": {
+        "runtime_config": "/data1/Kane/MOE/ACT/data/moe/results/experiment1_multiseed_replication_seed2_r1/config.json",
+        "runtime_config_sha256": "a2cd26e394a2416fc4d81f90a58cb8c9d3aef4a6bc08a26b52e2d59bd6cdb63e",
+        "census_summary": "/data1/Kane/MOE/ACT/data/moe/results/experiment1_multiseed_replication_seed2_r1/census/summary.json",
+        "census_summary_sha256": "7ebef78b66fc0a115c01c4f8d1dba4d9937a49ecc03fb44f00f1a3cf5bf5c823",
+        "boundary_summary": "/data1/Kane/MOE/ACT/data/moe/results/experiment1_multiseed_replication_seed2_r1/boundary/summary.json",
+        "boundary_summary_sha256": "91333e58bb6512eff5b56e374b9de18bf8c439b89c5ee2936ee3ae35587d8b32",
+        "independent_audit": "/data1/Kane/MOE/ACT/data/moe/results/experiment1_multiseed_replication_seed2_r1/independent_audit.json",
+        "independent_audit_sha256": "7bfc903cacbbc3c2da0b6c72f1bdd1190ea73a9d64d7a0d7152ff09cacc4e071"
+      }
+    }
+  ],
+  "cross_model_decision": {
+    "registered_complete_endpoint_passes": 0,
+    "registered_models": 2,
+    "seed_robust_full_bundle_supported": false,
+    "mechanism_pass_counts": {
+      "candidate_reduction_vs_ibp": 2,
+      "candidate_reduction_vs_zonotope": 1,
+      "route_unstable_width_median": 2,
+      "route_unstable_width_p90": 2,
+      "route_changing_unique_safe": 2,
+      "all_unsafe_full_model_replay": 2,
+      "end_to_end_solved_rate": 1,
+      "f0_semantic_resolution": 2,
+      "independent_audit_zero_issues": 2
+    },
+    "descriptive_totals_not_primary_endpoints": {
+      "unique_safe_model_sample_pairs": 19,
+      "unsafe_model_sample_pairs": 16,
+      "applicable_route_boundary_model_sample_pairs": 54,
+      "solved_applicable_model_sample_pairs": 35,
+      "conditional_solved_rate": 0.6481481481481481
+    }
+  },
+  "scientific_decision": {
+    "full_registered_bundle": "NOT_REPLICATED_2_OF_2; neither model passed every registered condition (seed1 missed zonotope candidate reduction; seed2 missed overall solved-rate)",
+    "route_changing_certificates": "REPLICATED_2_OF_2; both retained models produced full-denominator route-changing unique SAFE certificates",
+    "binary_width_separation": "REPLICATED_2_OF_2 at the registered median and p90 thresholds",
+    "candidate_reduction": "MODEL_DEPENDENT; IBP threshold passed 2/2, ordinary-zonotope threshold passed 1/2",
+    "solver_coverage": "MODEL_DEPENDENT; overall registered solved-rate passed 1/2; no-boundary rows are reported separately from applicable rows"
+  },
+  "claim_boundary": "Models are primary units and are reported separately. Descriptive pooled model-sample counts cannot replace the preregistered 2/2 criterion. The result supports multi-seed route-changing certificates and conditional width separation, but not seed-robust wording for the complete endpoint bundle or for zonotope candidate reduction."
+}

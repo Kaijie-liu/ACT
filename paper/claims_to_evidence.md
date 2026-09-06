@@ -244,6 +244,24 @@ so confirmatory conditional verification coverage is **56/76 = 73.7%**. The 24
 samples with no boundary through `4/255` are boundary-inapplicable, not solver
 failures, but they remain in the original denominator.
 
+### Multi-seed verification-scale replication
+
+Two additional balanced checkpoints were trained under the unchanged recipe,
+retained without outcome selection, and evaluated on the same independently
+frozen 40-image cohort. Both model audits report zero issues and replay every
+UNSAFE witness. Route-changing certificates replicate on both models (13/40
+and 6/40), as does conditional binary-width separation (median 0.352 for both;
+p90 0.477 and 0.447). Candidate reduction relative to ordinary zonotope is
+model-dependent: 6/32 (18.75%) for seed 1 and 14/18 (77.78%) for seed 2, so
+only one crosses the registered 20% threshold. Overall solved coverage is
+22/40 and 13/40, with only the first crossing the registered 50% threshold.
+
+The full registered conjunction therefore passes on neither model and does not
+support seed-robust wording for the entire result bundle. The narrower claims
+that route-changing certificates exist beyond seed 0 and that conditioning
+separates binary width are supported on 2/2 retained replications. Pooled rows
+are descriptive only and cannot mask the per-model null conditions.
+
 ### F0 incremental contribution
 
 Tier 1 left 60 semantic-incompleteness rows. F0 resolved 43/60 (71.7%): 31

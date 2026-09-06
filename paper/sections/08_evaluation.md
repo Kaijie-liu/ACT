@@ -167,6 +167,25 @@ produce the same certified set, while eta reduction certifies none. The result
 supports the narrower statement that guard value depends on a representation
 that retains the path constraint.
 
+### Replication across verification-scale training seeds
+
+We trained two additional `bal010` models using preregistered seeds and retained
+both regardless of their later verification behavior. A shared 40-image cohort
+was selected using only ordered index, dual-model clean correctness, and
+exclusion of the earlier seed-0 cohorts. Independent audits report zero issues
+and replay all 16 unsafe witnesses.
+
+Both models produce route-changing unique SAFE certificates (13/40 and 6/40)
+and satisfy the conditional-width thresholds (median 0.352 for each; p90 0.477
+and 0.447). Candidate reduction versus ordinary zonotope is 6/32 (18.75%) and
+14/18 (77.78%) on their respective route-unstable rows. Consequently this
+effect crosses the preregistered 20% threshold on only one model. Overall
+solved rate is 22/40 and 13/40; only the first crosses the 50% threshold. The
+complete executable endpoint passes on neither model because each misses a
+different condition. We therefore use seed-robust wording only for the
+route-changing-certificate and structural-width mechanisms, and describe
+candidate reduction and solver coverage as model-dependent.
+
 ## Table 1: official RT-ER numerical conformance result
 
 The official-code compatibility target is now concrete. Seed 0 completes all
