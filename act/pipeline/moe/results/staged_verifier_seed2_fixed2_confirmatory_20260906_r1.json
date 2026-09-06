@@ -1,0 +1,127 @@
+{
+  "artifacts": {
+    "config": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/staged_verifier_seed2_fixed2_confirmatory_r1.json",
+    "config_sha256": "80af15be48b0792900e416c986afc9a791cdba762140390f90fb9ed37fb18123",
+    "independent_audit": "/data1/Kane/MOE/ACT/data/moe/results/staged_verifier_seed2_fixed2_confirmatory_r1/independent_audit.json",
+    "independent_audit_sha256": "c156d036c0b93c5a1cc1f5e03469c88af0cc955d6a6780d9a9ae6fd9092fc527",
+    "raw_results": "/data1/Kane/MOE/ACT/data/moe/results/staged_verifier_seed2_fixed2_confirmatory_r1/results.jsonl",
+    "raw_results_sha256": "1c5dda20aa60dfbddceb473d1a8b840d65b8d0491af07ea955d9c416006adc4e",
+    "runner_summary": "/data1/Kane/MOE/ACT/data/moe/results/staged_verifier_seed2_fixed2_confirmatory_r1/summary.json",
+    "runner_summary_sha256": "e0177ebcf09f2473119154c822e5bd5de92acc1525fee7b9f5e9928cfcec7e90",
+    "selection": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/staged_verifier_seed2_fixed2_confirmatory_selection_r1.json",
+    "selection_sha256": "2ea06e847ad1da91c85ef51030369d8a12cfa1e26ba79d6e221b0a7f57d1761a"
+  },
+  "audit": {
+    "issues": 0,
+    "packages": 100,
+    "selection_reconstructed": true,
+    "status": "PASS",
+    "unsafe_replays": 42
+  },
+  "auditor_git_head": "3a3a334af48120131b29df412487cbd9d1aee591",
+  "claim_boundary": "No boundary adaptation, no route-instability selection, no experiment-only no-support control, no certified-accuracy claim, and no comparison to the locked AdvMoE Lagrangian holdout.",
+  "classification": "PREREGISTERED_NEW_FIXED_RADIUS_HZ_COHORT",
+  "decision": "PASS: the preregistered production-entry existence-replication signal is met with zero audit issues and all UNSAFE replayed.",
+  "execution_git_head": "3a3a334af48120131b29df412487cbd9d1aee591",
+  "outcomes": {
+    "all_unsafe_full_model_replayed": true,
+    "by_route_applicability": {
+      "route_changing": {
+        "SAFE": 6,
+        "UNKNOWN": 13,
+        "UNSAFE": 19
+      },
+      "route_stable": {
+        "SAFE": 15,
+        "TIMEOUT": 10,
+        "UNKNOWN": 14,
+        "UNSAFE": 23
+      }
+    },
+    "complete": 63,
+    "complete_rate": 0.63,
+    "reason_counts": {
+      "SAFE_GATE_ELIMINATION": 14,
+      "SAFE_WEIGHTED_RANGE": 7,
+      "TIMEOUT_EXPERT_SOLVE": 9,
+      "TIMEOUT_SUPPORT": 1,
+      "UNKNOWN_SOLVER_LIMIT": 3,
+      "UNKNOWN_WEIGHTED_RELAXATION": 2,
+      "UNKNOWN_WEIGHTED_SOLVER_LIMIT": 22,
+      "UNSAFE_FULL_FORWARD": 17,
+      "UNSAFE_FULL_FORWARD_FALLBACK": 25
+    },
+    "safe": 21,
+    "safe_rate": 0.21,
+    "status_counts": {
+      "SAFE": 21,
+      "TIMEOUT": 10,
+      "UNKNOWN": 27,
+      "UNSAFE": 42
+    },
+    "unsafe": 42
+  },
+  "primary_endpoint": {
+    "conditional_rate_descriptive": 0.15789473684210525,
+    "conditional_wilson_95_descriptive": [
+      0.07443863415158927,
+      0.3041681177922313
+    ],
+    "dataset_indices": [
+      2012,
+      2089,
+      2097,
+      2105,
+      2150,
+      2163
+    ],
+    "f0": 4,
+    "preregistered_existence_replication_met": true,
+    "rate_full_100_denominator": 0.06,
+    "route_changing_requests": 38,
+    "route_changing_safe": 6,
+    "sample_ranks": [
+      5,
+      46,
+      50,
+      56,
+      83,
+      90
+    ],
+    "tier1": 2,
+    "wilson_95_full_100_denominator": [
+      0.027786123963188192,
+      0.1247681544589592
+    ]
+  },
+  "request_population": {
+    "boundary_search": false,
+    "dataset_index_maximum": 2181,
+    "dataset_index_minimum": 2002,
+    "epsilon": 0.00784313725490196,
+    "epsilon_label": "2/255",
+    "route_instability_prefilter": false,
+    "samples": 100,
+    "selection_rule": "first 100 ordered CIFAR-10 test indices at or after 2000 that are clean-correct for the frozen seed-2 checkpoint and absent from all listed prior HZ cohorts"
+  },
+  "schema_version": 1,
+  "staged_attribution": {
+    "f0_complete": 32,
+    "f0_invoked": 56,
+    "f0_safe": 7,
+    "f0_unresolved_or_timeout": 24,
+    "f0_unsafe": 25,
+    "tier1_safe": 14
+  },
+  "timing_descriptive_only": {
+    "all_rows": {
+      "median": 43.243322379887104,
+      "p90": 124.14704267345375,
+      "q1": 16.897206348599866,
+      "q3": 79.49487499636598,
+      "sum": 6082.450559994206
+    },
+    "right_censoring_note": "All process wall times are observed; solver TIMEOUT outcomes remain censored with respect to time-to-semantic-resolution.",
+    "speedup_claim_permitted": false
+  }
+}

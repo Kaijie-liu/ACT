@@ -401,7 +401,7 @@ are non-proof diagnostics. These results motivate checkpoint route-share
 telemetry and the router-independent two-path table; they do not substitute for
 the trained result.
 
-### New production-entry HZ cohort [preregistered, not yet executed]
+### New production-entry HZ cohort [completed and audited]
 
 After the outcome-selected engineering closure produced two additional
 replay-validated complete outcomes, we froze a disjoint fixed-radius cohort to
@@ -413,6 +413,19 @@ radius. The primary endpoint is route-changing SAFE over the full 100-input
 denominator; this is not certified accuracy. Exact status counts, route
 applicability, staged attribution, right-censored timing, and all failed rows
 remain visible.
+
+All 100 requests complete the runner and evidence-package path, and the
+independent audit reports zero issues while replaying all 42 UNSAFE witnesses.
+The verifier returns 21 SAFE, 42 UNSAFE, 27 UNKNOWN, and 10 solver TIMEOUT
+outcomes. Exact route analysis identifies 38 route-changing requests; six are
+SAFE, so the preregistered primary endpoint is 6/100 (Wilson 95% CI
+2.78%--12.48%). The conditional 6/38 = 15.79% is shown only as an applicability
+breakdown. Two route-changing certificates are discharged by Tier 1 and four
+require F0. Across all requests, F0 is invoked 56 times and reaches 32 complete
+outcomes (7 SAFE and 25 replay-validated UNSAFE). Thus the production entry
+retains the central route-changing certificate mechanism without executing the
+experiment-only controls. It does not revise the boundary-adaptive seed-2 R1
+result and does not establish a speedup.
 
 ## Completion criteria
 

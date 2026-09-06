@@ -18,6 +18,9 @@ independent 100-sample route-boundary cohort of a verification-scale CIFAR-10
 weighted top-2 MoE, the method certifies 36 route-changing samples, while exact
 route analysis reduces ordinary-zonotope candidates on 75/86 route-unstable
 rows and route conditioning yields a median structural-width ratio of 0.430.
+On a separate sequential clean-correct cohort at the fixed radius (2/255),
+the production entry point certifies 6/100 route-changing inputs; four of those
+six require the weighted F0 tier.
 The immutable preregistered overall solved endpoint is 56/100 and fails its 60%
 gate; boundary applicability is 76/100 and conditional coverage is 56/76. We
 separately report follow-up closure and engineering results without rewriting
@@ -843,6 +846,9 @@ already excluded official run.
 
 - The central 36/100 number is route-boundary certification yield on a
   deliberately constructed boundary cohort, not natural-input prevalence.
+- The separate 6/100 fixed-radius result uses a sequential clean-correct
+  cohort. It is neither full-test certified accuracy nor an unconditioned
+  natural-input prevalence estimate.
 - Candidate exactness refers to an unrelaxed reachable-router HZ, not every HZ
   computation in ACT.
 - The width result is structural binary width, not a measured monolithic runtime
@@ -921,6 +927,8 @@ The current evidence supports the following bounded conclusion:
 > conditioning separates structural binary width when multiple experts are
 > feasible, and a staged gate-elimination plus gate-range McCormick verifier
 > certifies route-changing regions that a route-invariance precondition rejects.
+> A separate fixed-(2/255) production-entry cohort independently retains this
+> existence result without boundary search or experiment-only controls.
 > Guard-aware support improves paired branch coverage. Official-scale RT-ER and
 > AdvMoE runs demonstrate executable specialization and preserve the expected
 > numerical-filter coverage shape, but establish zero formal SAFE results under

@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import unittest
 
+from act.pipeline.moe.analyze_staged_verifier_confirmatory import wilson_interval
 from act.pipeline.moe.freeze_staged_verifier_confirmatory import (
     OUTPUT,
     select_clean_correct,
@@ -18,6 +19,13 @@ from act.pipeline.moe.run_staged_verifier_confirmatory import (
 
 
 class StagedVerifierConfirmatoryTests(unittest.TestCase):
+    def test_wilson_interval_contains_observed_rate(self):
+        lower, upper = wilson_interval(6, 100)
+        self.assertLess(lower, 0.06)
+        self.assertGreater(upper, 0.06)
+        self.assertAlmostEqual(lower, 0.027786, places=5)
+        self.assertAlmostEqual(upper, 0.124768, places=5)
+
     def test_selection_is_ordered_clean_correct_and_excludes(self):
         rows = select_clean_correct(
             predictions=[0, 1, 9, 3, 4, 5],

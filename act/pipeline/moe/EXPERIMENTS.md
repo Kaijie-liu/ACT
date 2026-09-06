@@ -2721,3 +2721,16 @@ over all 100 inputs, with an existence-replication signal of at least one,
 zero audit issues, and replay of every UNSAFE witness. Details are in
 `docs/staged_verifier_confirmatory.md`; no endpoint has been queried at freeze
 time.
+
+The production-entry cohort subsequently completes all 100 direct requests at
+implementation HEAD `3a3a334af`. Its independent audit reports zero issues,
+audits 100/100 evidence packages, and replays all 42 UNSAFE witnesses. Outcomes
+are 21 SAFE, 42 UNSAFE, 27 UNKNOWN, and 10 solver TIMEOUT, with no outer hard
+timeout. Exact route coverage classifies 38 requests as route-changing; six
+are SAFE, giving the preregistered full-denominator endpoint 6/100 (Wilson 95%
+CI 2.78%--12.48%). Two use Tier 1 and four require F0. F0 is invoked on 56
+requests and supplies 7 SAFE plus 25 replayed UNSAFE complete outcomes. The
+registered existence-replication signal passes. The fixed-radius result is
+separate from and does not rewrite seed-2 R1; timing is descriptive and no
+speedup is claimed. The tracked compact artifact is
+`results/staged_verifier_seed2_fixed2_confirmatory_20260906_r1.{json,csv}`.

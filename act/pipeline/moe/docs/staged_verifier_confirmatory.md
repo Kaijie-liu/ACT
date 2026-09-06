@@ -79,3 +79,29 @@ ACT_TORCHVISION_DATA_ROOT=/data1/Kane/MOE/ACT/data/torchvision \
   /data1/Kane/miniconda3/envs/act-py312/bin/python \
   -m act.pipeline.moe.audit_staged_verifier_confirmatory
 ```
+
+## Result
+
+The run completed all 100 requests at implementation commit `3a3a334af`. The
+independent audit reconstructed the selection, audited all 100 packages,
+replayed all 42 UNSAFE witnesses, and reported zero issues.
+
+The status table is 21 SAFE, 42 replay-validated UNSAFE, 27 UNKNOWN, and 10
+solver TIMEOUT, for 63/100 complete semantic outcomes. Exact route coverage is
+available on every row: 62 requests are route-stable and 38 are route-changing.
+Six of the 38 route-changing requests are SAFE. The preregistered full-cohort
+endpoint is therefore 6/100 (Wilson 95% interval 2.78%--12.48%); the conditional
+6/38 = 15.79% is descriptive only. The six certificates comprise two Tier-1
+gate-elimination results and four F0 weighted-range results.
+
+Across all inputs, Tier 1 proves 14 SAFE requests. F0 is invoked on 56 requests
+and reaches 32 complete outcomes: 7 SAFE and 25 replay-validated UNSAFE. No
+outer hard deadline fires. Ten solver-returned timeouts remain endpoints rather
+than process failures. Median verifier time is 43.24 seconds (IQR
+16.90--79.49; p90 124.15), with no historical-speedup interpretation.
+
+The compact audited result is
+`results/staged_verifier_seed2_fixed2_confirmatory_20260906_r1.{json,csv}`.
+This result passes the preregistered existence-replication signal. It does not
+alter the seed-2 boundary-adaptive R1 endpoint, and it is not CIFAR-10 certified
+accuracy because selection is conditioned on clean correctness.
