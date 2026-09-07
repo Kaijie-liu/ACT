@@ -130,6 +130,10 @@ def _require_cpu_float64_model(model: torch.nn.Module) -> None:
 
 
 def _validate_config(config: Mapping[str, Any]) -> None:
+    if config.get("comparison_method", "staged") not in {
+        "staged", "route_invariance", "tier1_only", "monolithic_f0"
+    }:
+        raise ValueError("unknown comparison method")
     required = {"candidate_query_timeout", "tier1", "f0", "numerical_safety"}
     missing = required.difference(config)
     if missing:
@@ -376,6 +380,7 @@ def verify_staged_linf(
 ) -> StagedVerificationReport:
     """Verify top-1 prediction robustness without experiment-only controls."""
     _validate_config(config)
+    method = config.get("comparison_method", "staged")
     _require_cpu_float64_model(model)
     if model.spec.gate != GateKind.SELECTED_SOFTMAX or model.spec.top_k != 2:
         raise NotImplementedError(
@@ -441,6 +446,8 @@ def verify_staged_linf(
         "collect_diagnostics": False,
         "return_witness_tensor": True,
         "return_internal_context": True,
+        "require_route_invariance": method == "route_invariance",
+        "route_analysis_only": method == "monolithic_f0",
     }
     tier1_started = time.monotonic()
     record_progress("TIER1_RUNNING")
@@ -481,7 +488,7 @@ def verify_staged_linf(
         reason = "SAFE_GATE_ELIMINATION"
     elif status == "UNSAFE":
         reason = "UNSAFE_FULL_FORWARD"
-    elif reason in SEMANTIC_REASONS:
+    elif reason in SEMANTIC_REASONS and method != "tier1_only":
         if internal is None:
             raise RuntimeError("Tier 1 semantic incompleteness lacks reusable context")
         record_progress("TIER2_F0_RUNNING", tier1_reason=reason)
@@ -505,6 +512,18 @@ def verify_staged_linf(
         record_progress(
             "TIER2_F0_COMPLETE", status=status, reason=reason
         )
+    elif method == "monolithic_f0" and internal is not None:
+        from act.pipeline.moe.paired_monolithic import run_monolithic
+
+        record_progress("MONOLITHIC_F0_RUNNING")
+        tier2, witness = run_monolithic(
+            model=model, center=center, clean_prediction=clean_prediction,
+            internal=internal, config=config["f0"],
+        )
+        status, reason = tier2["status"], tier2["reason"]
+        decision_tier = "MONOLITHIC_F0"
+        transitions.append({"stage": "MONOLITHIC_F0_COMPLETE", "status": status,
+                            "reason": reason, "elapsed_seconds": tier2["elapsed_seconds"]})
     elapsed = time.monotonic() - started
     evidence = {
         "schema_version": 1,
@@ -517,6 +536,7 @@ def verify_staged_linf(
             "clean_topk_set": clean_set,
         },
         "algorithm": {
+            "comparison_method": method,
             "boundary_search_executed": False,
             "matched_no_support_ablation_executed": False,
             "unguarded_accounting_propagation_executed": False,

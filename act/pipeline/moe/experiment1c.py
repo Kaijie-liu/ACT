@@ -512,6 +512,29 @@ def diagnose_radius(
             "monotonic_inference": None,
         }
 
+    # Comparison-only modes reuse the exact, charged route analysis above.
+    # They never obtain route sets from a separately timed census.
+    route_only = bool(config.get("route_analysis_only", False))
+    invariance_failed = bool(config.get("require_route_invariance", False)) and (
+        len(route_sets.feasible) != 1
+    )
+    if route_only or invariance_failed:
+        return {
+            "status": "UNKNOWN",
+            "reason": ("ROUTE_ANALYSIS_ONLY" if route_only
+                       else "UNKNOWN_ROUTE_INVARIANCE"),
+            "candidate_experts": list(candidates.candidates),
+            "feasible_route_sets": [list(values) for values in route_sets.feasible],
+            "branches": [],
+            "full_model_witness_valid": False,
+            "candidate_seconds": candidate_seconds,
+            "_internal_context": {
+                "program": program, "router": router, "candidates": candidates,
+                "route_sets": route_sets, "lower": lower, "upper": upper,
+                "output_spec": output_spec,
+            },
+        }
+
     support_config = HybridZConfig(
         max_input_dim=1024,
         guarded_support_enabled=True,

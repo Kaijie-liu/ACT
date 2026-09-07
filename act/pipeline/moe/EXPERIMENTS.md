@@ -2808,3 +2808,21 @@ Tier-1-only ablation. Scoped proof reuse and independently checked sign bounds
 are subsequent research directions; current numerical acceptance is unchanged.
 The paper's stale AdvMoE-pending and scaling-pending subject labels are updated
 to completed numerical experiments and the strict pilot's TIMEOUT outcome.
+
+## Equal-budget four-method follow-up implementation (2026-09-07)
+
+`paired_followup.py` and `configs/paired_followup_r1.json` freeze the next
+observed-cohort comparison, described in `docs/paired_followup.md`. Each of the
+three accepted checkpoints receives the same 100 inputs at 2/255, with four
+methods and a 300-second external request deadline: staged, route-invariance
+with weighted F0, monolithic F0, and full-budget Tier-1-only. Model and method
+order rotate by input; no historical timing is reused. The existing production
+default and numerical acceptance policy are unchanged. The new monolithic
+evidence audit checks complete pair/property coverage, accepted lower-bound
+metadata and concrete UNSAFE replay; it is not independent SAFE re-proving.
+
+The mandatory 12-job smoke precedes the 1,200-job full follow-up. Their maximum
+worker budgets are one and 100 hours respectively, plus post-run auditing.
+Smoke tests plumbing, not effectiveness. Code/config/source identity gates
+prevent silently promoting a smoke from different executable sources. Full
+results remain pending; all original R1 outcomes and locked holdouts stand.

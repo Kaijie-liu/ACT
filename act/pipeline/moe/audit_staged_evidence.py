@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 from pathlib import Path
 from typing import Any, Mapping
 
@@ -194,8 +195,37 @@ def _audit_safe_structure(evidence: Mapping[str, Any], issues: list[str]) -> Non
                     row.get("full_model_witness_valid") is False,
                     "F0 SAFE property also records a violating witness",
                 )
+    elif verdict.get("decision_tier") == "MONOLITHIC_F0":
+        _record_issue(issues, tier2.get("invoked") is True and tier2.get("status") == "SAFE",
+                      "monolithic SAFE lacks successful invocation")
+        supplied = [tuple(pair) for pair in tier2.get("feasible_route_sets", [])]
+        _record_issue(issues, supplied == canonical_sets and bool(supplied),
+                      "monolithic branches differ from exact route coverage")
+        rows = tier2.get("property_rows", [])
+        classes = int(evidence["identity"]["property"]["classes"])
+        _record_issue(issues, len(rows) == classes - 1 and
+                      {r.get("property_index") for r in rows} == set(range(classes - 1)),
+                      "monolithic property coverage incomplete")
+        tolerance = float(evidence["numerical_safety"]["safe_positive_margin"])
+        for row in rows:
+            minimum = row.get("minimum")
+            _record_issue(issues, row.get("status") == "SAFE" and minimum is not None
+                          and math.isfinite(float(minimum)) and float(minimum) > tolerance
+                          and row.get("solver_status") == 0
+                          and row.get("solver_bound_kind") in {"lp_status0_optimum", "mip_dual_bound"}
+                          and row.get("pair_count") == len(supplied)
+                          and row.get("full_model_witness_valid") is False,
+                          "monolithic SAFE lacks accepted complete bound")
     else:
         issues.append("SAFE has an unknown decision tier")
+
+    method = evidence.get("algorithm", {}).get("comparison_method", "staged")
+    if method == "route_invariance":
+        _record_issue(issues, len(canonical_sets) == 1,
+                      "route-invariance SAFE has multiple legal sets")
+    if method == "tier1_only":
+        _record_issue(issues, tier2.get("invoked") is False,
+                      "Tier-1-only SAFE invokes fallback")
 
 
 def audit_evidence_package(

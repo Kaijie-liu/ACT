@@ -94,10 +94,17 @@ checking raw artifacts and the recorded auditor scope, not by trusting prose.
    training and checkpoint selection must precede verification outcomes.
    This remains a proposed next model, not an already selected experiment.
 
-The fair baseline runner/config and its tests are the next implementation
-deliverable. No new long-running comparison or training has been launched by
-this handoff. First report the concrete budget, model/selection identities,
-method semantics and expected execution cost before launching the large run.
+The fair baseline runner/config are now implemented in
+`act/pipeline/moe/paired_followup.py` and `configs/paired_followup_r1.json`.
+See `act/pipeline/moe/docs/paired_followup.md` for exact semantics. Next execute
+and independently audit the mandatory 12-job smoke (one-hour worker-budget
+ceiling), then the 1,200-job full observed-cohort follow-up (100-hour ceiling,
+plus auditing). All four methods have the same external 300-second cap,
+including startup, data/model loading and route analysis. They run sequentially
+with rotated ordering and one-thread solver settings. This is not a holdout or
+a retrospective timing correction. No new training is authorized by this step.
+Executable-source/config identity must match the smoke; documentation-only
+commits are allowed. Preserve failed attempts; never overwrite a result root.
 
 ## Frozen decisions and boundaries
 
