@@ -2826,3 +2826,15 @@ worker budgets are one and 100 hours respectively, plus post-run auditing.
 Smoke tests plumbing, not effectiveness. Code/config/source identity gates
 prevent silently promoting a smoke from different executable sources. Full
 results remain pending; all original R1 outcomes and locked holdouts stand.
+
+Implementation commit `154fce45b` passed 20 focused unit tests (comparison,
+staged evidence, common selection, and monolithic controls). After push, the
+pipeline started in tmux session `moe-paired-followup-r1` at 2026-09-07 21:13
+Australia/Sydney. Its log is
+`data/moe/results/paired_followup_pipeline_r1.log`. The first smoke request
+reached F0; smoke completion and performance results are **not yet claimed**.
+The shell chain proceeds to the full follow-up only after independent smoke
+audit succeeds; it also runs an independent audit after the full run. Any
+nonzero exit prevents subsequent steps. Raw results are written to new
+`paired_followup_smoke_r1` / `paired_followup_full_r1` directories. Compact
+results and paper updates must be committed after actual completion/audit.

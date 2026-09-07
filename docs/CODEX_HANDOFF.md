@@ -106,6 +106,16 @@ a retrospective timing correction. No new training is authorized by this step.
 Executable-source/config identity must match the smoke; documentation-only
 commits are allowed. Preserve failed attempts; never overwrite a result root.
 
+Execution started 2026-09-07 21:13 Sydney after implementation `154fce45b`
+was tested (20 tests) and pushed. tmux: `moe-paired-followup-r1`; log:
+`data/moe/results/paired_followup_pipeline_r1.log`. This is an active
+smoke → independent audit → full follow-up → independent audit chain, with
+fail-stop shell gates. Check the live log/JSON rather than inferring completion
+from this handoff. Do not launch a second copy or change executable sources
+while it runs. After completion, check the terminal audit, preserve all rows,
+write compact tracked results and update paper/EXPERIMENTS, then commit/push.
+This chain does not automatically publish or push experimental outcomes.
+
 ## Frozen decisions and boundaries
 
 Do not chase seed 1's 50% threshold, add seeds until a pass, overwrite any R1,
