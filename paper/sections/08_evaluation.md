@@ -190,6 +190,36 @@ model-dependent. F0 supplies 11/13 SAFE results in the first added run and all
 6/6 in the second, so the weighted second tier is necessary for the observed
 mechanism replication rather than a decorative fallback.
 
+### Common fixed-task performance conjunction
+
+We then froze a stricter common task before querying any endpoint: the same
+100 ordered images, clean-correct for all three balanced checkpoints, receive
+the same \(2/255\) input box. The production verifier excludes boundary search
+and paper-only no-support controls; a separately costed census measures
+candidate, width, and guard endpoints. Each model must pass every registered
+integrity and performance gate, and all three models must pass before we use
+stable complete-bundle wording.
+
+The independent aggregate audit reports zero issues, audits 297 evidence
+packages, and replays all 67 UNSAFE witnesses. Complete-outcome rates are
+54%, 47%, and 66%; route-changing SAFE counts are 8, 8, and 7. Exact-HZ
+strictly reduces ordinary-zonotope candidates on 37/43, 16/40, and 30/38
+route-unstable census rows. Conditional-width median/p90 values are
+0.432/0.538, 0.379/0.467, and 0.348/0.453. F0 resolves 27/62, 19/50, and
+31/53 invoked requests, and guarded support eliminates 1,068, 1,374, and
+1,299 expert binaries with all accounting identities closed.
+
+Seed 0 and seed 2 pass the complete bundle. Seed 1 passes every component
+except the frozen complete-outcome threshold (`47% < 50%`). The strict
+cross-model conjunction therefore fails: `stable_complete_bundle_supported`
+is false. This is a useful separation between mechanism replication and
+performance stability. Every registered model exhibits route-changing SAFE,
+candidate reduction, conditional-width separation, guard elimination, and F0
+resolution, but the complete budgeted outcome does not remain above the
+registered coverage threshold on all three runs. We neither pool the 300
+model--request pairs nor tune seed 1 to erase the null condition. The task is
+not certified accuracy and does not establish cross-architecture stability.
+
 A derived, no-new-query association table adds an important qualification. At
 the four fixed census radii, 9/13 seed-1 SAFE rows show no strict candidate
 reduction relative to ordinary zonotope at any radius; the corresponding count

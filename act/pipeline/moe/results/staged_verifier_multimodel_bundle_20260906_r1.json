@@ -1,0 +1,334 @@
+{
+  "claim_boundary": "The common 100-input clean-correct cohort is not certified accuracy. All three models share an architecture and training recipe, so a pass supports stability across registered training runs, not across model families.",
+  "classification": "PREREGISTERED_COMMON_FIXED_TASK_CROSS_MODEL_BUNDLE",
+  "cross_model_decision": {
+    "models_passing_complete_bundle": 2,
+    "registered_models": 3,
+    "rule": "every integrity gate and every per-model bundle threshold must pass for seed0, seed1, and seed2; no partial conjunction is relabeled",
+    "stable_complete_bundle_supported": false
+  },
+  "experiment": "staged_verifier_multimodel_fixed2_r1",
+  "issue_count": 0,
+  "issues": [],
+  "models": {
+    "seed0": {
+      "census": {
+        "artifacts": {
+          "rows": {
+            "path": "/data1/Kane/MOE/ACT/data/moe/results/staged_verifier_multimodel_seed0_census_r1/census/results.jsonl",
+            "sha256": "bf6dad193b6149493eb8bc561faf517b2e10ee22f499dc1f1149f9f40e49f925"
+          },
+          "runtime": {
+            "path": "/data1/Kane/MOE/ACT/data/moe/results/staged_verifier_multimodel_seed0_census_r1/config.json",
+            "sha256": "d2568cae7040108a5319a4c7086812689687164d628b56a93df3281dbdd1167a"
+          },
+          "summary": {
+            "path": "/data1/Kane/MOE/ACT/data/moe/results/staged_verifier_multimodel_seed0_census_r1/census/summary.json",
+            "sha256": "4c52c53828f050199f75666e8cba13611371d8d7406d7df575d96df9d8619eae"
+          }
+        },
+        "exact_candidate_subset_consistent": true,
+        "exact_reduces_ibp_rate": 1.0,
+        "exact_reduces_ibp_rows": 43,
+        "exact_reduces_zonotope_rate": 0.8604651162790697,
+        "exact_reduces_zonotope_rows": 37,
+        "guard": {
+          "accounting": {
+            "binaries_after": 4600,
+            "binaries_before": 5668,
+            "binary_eliminated": 1068,
+            "lp_support_eliminated": 722,
+            "milp_support_eliminated": 308,
+            "structural_or_propagation_eliminated": 38
+          },
+          "branches": 257,
+          "branches_with_elimination": 189
+        },
+        "route_unstable_rows": 43,
+        "route_unstable_width_ratio": {
+          "median": 0.43243243243243246,
+          "p90": 0.5381818181818181,
+          "q1": 0.38511415525114157,
+          "q3": 0.47710184552289814
+        },
+        "rows": 100
+      },
+      "checkpoint_sha256": "fbaa7c871d28763ac5acb29a9502dc5d146e1d5af0b4a03e9911899251bd43f7",
+      "clean_accuracy": 0.4926,
+      "full_bundle_pass": true,
+      "gates": {
+        "candidate_reduction_zonotope": true,
+        "complete_outcome_rate": true,
+        "f0_resolution": true,
+        "guard_binary_elimination": true,
+        "integrity": true,
+        "route_changing_safe": true,
+        "route_unstable_width_median": true,
+        "route_unstable_width_p90": true
+      },
+      "verdict": {
+        "all_unsafe_replayed": true,
+        "artifacts": {
+          "rows": {
+            "path": "/data1/Kane/MOE/ACT/data/moe/results/staged_verifier_multimodel_seed0_fixed2_r1/results.jsonl",
+            "sha256": "259a8c54ac685ec491da1efc68ff9fe3f7f1943cb4546070fc51f613eeeec42c"
+          },
+          "runtime": {
+            "path": "/data1/Kane/MOE/ACT/data/moe/results/staged_verifier_multimodel_seed0_fixed2_r1/config.json",
+            "sha256": "38abbf946cb15a176a613165f7ee76a2151fbbb67a6737eea3f1a7da8e659245"
+          },
+          "summary": {
+            "path": "/data1/Kane/MOE/ACT/data/moe/results/staged_verifier_multimodel_seed0_fixed2_r1/summary.json",
+            "sha256": "f7dbd8b59239c69994dfd77e97f0416efb6fd0510a3ce418f398c9af02a50aec"
+          }
+        },
+        "complete_outcome_rate": 0.54,
+        "complete_outcomes": 54,
+        "f0_invoked": 62,
+        "f0_resolution_rate": 0.43548387096774194,
+        "f0_resolved": 27,
+        "f0_safe": 12,
+        "packages_audited": 100,
+        "reason_counts": {
+          "SAFE_GATE_ELIMINATION": 18,
+          "SAFE_WEIGHTED_RANGE": 12,
+          "TIMEOUT_EXPERT_SOLVE": 6,
+          "TIMEOUT_SUPPORT": 1,
+          "UNKNOWN_SOLVER_LIMIT": 4,
+          "UNKNOWN_WEIGHTED_SOLVER_LIMIT": 35,
+          "UNSAFE_FULL_FORWARD": 9,
+          "UNSAFE_FULL_FORWARD_FALLBACK": 15
+        },
+        "route_changing_safe": 8,
+        "rows": 100,
+        "status_counts": {
+          "SAFE": 30,
+          "TIMEOUT": 7,
+          "UNKNOWN": 39,
+          "UNSAFE": 24
+        },
+        "tier1_safe": 18,
+        "unsafe_replayed": 24
+      }
+    },
+    "seed1": {
+      "census": {
+        "artifacts": {
+          "rows": {
+            "path": "/data1/Kane/MOE/ACT/data/moe/results/staged_verifier_multimodel_seed1_census_r1/census/results.jsonl",
+            "sha256": "264bfa16ce2eb1dec5c0d0a33015b493e35c54c25160e1497cbb5ac0d94afc8a"
+          },
+          "runtime": {
+            "path": "/data1/Kane/MOE/ACT/data/moe/results/staged_verifier_multimodel_seed1_census_r1/config.json",
+            "sha256": "92b43e2cbf35624f2eb4223f1d3f613cc7e252458d5edd2391bebd042ad7d4ff"
+          },
+          "summary": {
+            "path": "/data1/Kane/MOE/ACT/data/moe/results/staged_verifier_multimodel_seed1_census_r1/census/summary.json",
+            "sha256": "bc18d8c40cf0631b0e8a0c0a1cf98153b7b283f711b5dc0613060f791783c4f1"
+          }
+        },
+        "exact_candidate_subset_consistent": true,
+        "exact_reduces_ibp_rate": 0.85,
+        "exact_reduces_ibp_rows": 34,
+        "exact_reduces_zonotope_rate": 0.4,
+        "exact_reduces_zonotope_rows": 16,
+        "guard": {
+          "accounting": {
+            "binaries_after": 5437,
+            "binaries_before": 6811,
+            "binary_eliminated": 1374,
+            "lp_support_eliminated": 951,
+            "milp_support_eliminated": 359,
+            "structural_or_propagation_eliminated": 64
+          },
+          "branches": 255,
+          "branches_with_elimination": 208
+        },
+        "route_unstable_rows": 40,
+        "route_unstable_width_ratio": {
+          "median": 0.37932038834951454,
+          "p90": 0.4673692583018493,
+          "q1": 0.32567230861757884,
+          "q3": 0.41747066492829205
+        },
+        "rows": 100
+      },
+      "checkpoint_sha256": "cfd5fb07b1c426c5b98309d56a5d0439f8a99dc52ff936bcbea43d4fe641139a",
+      "clean_accuracy": 0.4847,
+      "full_bundle_pass": false,
+      "gates": {
+        "candidate_reduction_zonotope": true,
+        "complete_outcome_rate": false,
+        "f0_resolution": true,
+        "guard_binary_elimination": true,
+        "integrity": true,
+        "route_changing_safe": true,
+        "route_unstable_width_median": true,
+        "route_unstable_width_p90": true
+      },
+      "verdict": {
+        "all_unsafe_replayed": true,
+        "artifacts": {
+          "rows": {
+            "path": "/data1/Kane/MOE/ACT/data/moe/results/staged_verifier_multimodel_seed1_fixed2_r1/results.jsonl",
+            "sha256": "6de2086480782eb4377d6ee1c82c405af5cae137a78c6fd571ca84ed52ca4c2a"
+          },
+          "runtime": {
+            "path": "/data1/Kane/MOE/ACT/data/moe/results/staged_verifier_multimodel_seed1_fixed2_r1/config.json",
+            "sha256": "dc1ded8aae0debbf3acf67351675a6117caf42488d7e8ab61f63d89400a660b1"
+          },
+          "summary": {
+            "path": "/data1/Kane/MOE/ACT/data/moe/results/staged_verifier_multimodel_seed1_fixed2_r1/summary.json",
+            "sha256": "ecc46898661827155429cbfcb83900c31ebf048937f48e2b2d0ef0e05cbca19e"
+          }
+        },
+        "complete_outcome_rate": 0.47,
+        "complete_outcomes": 47,
+        "f0_invoked": 50,
+        "f0_resolution_rate": 0.38,
+        "f0_resolved": 19,
+        "f0_safe": 7,
+        "packages_audited": 98,
+        "reason_counts": {
+          "INSTANCE_HARD_DEADLINE": 2,
+          "SAFE_GATE_ELIMINATION": 19,
+          "SAFE_WEIGHTED_RANGE": 7,
+          "TIMEOUT_EXPERT_SOLVE": 12,
+          "TIMEOUT_SUPPORT": 1,
+          "UNKNOWN_SOLVER_LIMIT": 9,
+          "UNKNOWN_WEIGHTED_RELAXATION": 1,
+          "UNKNOWN_WEIGHTED_SOLVER_LIMIT": 28,
+          "UNSAFE_FULL_FORWARD": 9,
+          "UNSAFE_FULL_FORWARD_FALLBACK": 12
+        },
+        "route_changing_safe": 8,
+        "rows": 100,
+        "status_counts": {
+          "SAFE": 26,
+          "TIMEOUT": 15,
+          "UNKNOWN": 38,
+          "UNSAFE": 21
+        },
+        "tier1_safe": 19,
+        "unsafe_replayed": 21
+      }
+    },
+    "seed2": {
+      "census": {
+        "artifacts": {
+          "rows": {
+            "path": "/data1/Kane/MOE/ACT/data/moe/results/staged_verifier_multimodel_seed2_census_r1/census/results.jsonl",
+            "sha256": "a2ae5fde112a9b07bc71088bf2cc854aec3dee549c7230a68432be17f7b00731"
+          },
+          "runtime": {
+            "path": "/data1/Kane/MOE/ACT/data/moe/results/staged_verifier_multimodel_seed2_census_r1/config.json",
+            "sha256": "7becf3b0e14cd45c392412b29dc2a866cfe25c7507ca18987543be00598b0b6a"
+          },
+          "summary": {
+            "path": "/data1/Kane/MOE/ACT/data/moe/results/staged_verifier_multimodel_seed2_census_r1/census/summary.json",
+            "sha256": "5a5a3787a39489e7e6c5772fdee999050153da0f9fb4ac7015edadde241fc8bc"
+          }
+        },
+        "exact_candidate_subset_consistent": true,
+        "exact_reduces_ibp_rate": 0.9210526315789473,
+        "exact_reduces_ibp_rows": 35,
+        "exact_reduces_zonotope_rate": 0.7894736842105263,
+        "exact_reduces_zonotope_rows": 30,
+        "guard": {
+          "accounting": {
+            "binaries_after": 4809,
+            "binaries_before": 6108,
+            "binary_eliminated": 1299,
+            "lp_support_eliminated": 911,
+            "milp_support_eliminated": 313,
+            "structural_or_propagation_eliminated": 75
+          },
+          "branches": 258,
+          "branches_with_elimination": 188
+        },
+        "route_unstable_rows": 38,
+        "route_unstable_width_ratio": {
+          "median": 0.34844149207971387,
+          "p90": 0.4525728099458961,
+          "q1": 0.3040415816574371,
+          "q3": 0.41728091728091726
+        },
+        "rows": 100
+      },
+      "checkpoint_sha256": "a60517c7964177858d10303bc7b306293c8da3cde6caa93a5d8f442968e97758",
+      "clean_accuracy": 0.4763,
+      "full_bundle_pass": true,
+      "gates": {
+        "candidate_reduction_zonotope": true,
+        "complete_outcome_rate": true,
+        "f0_resolution": true,
+        "guard_binary_elimination": true,
+        "integrity": true,
+        "route_changing_safe": true,
+        "route_unstable_width_median": true,
+        "route_unstable_width_p90": true
+      },
+      "verdict": {
+        "all_unsafe_replayed": true,
+        "artifacts": {
+          "rows": {
+            "path": "/data1/Kane/MOE/ACT/data/moe/results/staged_verifier_multimodel_seed2_fixed2_r1/results.jsonl",
+            "sha256": "34f25cf49ffa3bc2e9d6a5ed970dc971024cc031e6707644471b541347e02d6b"
+          },
+          "runtime": {
+            "path": "/data1/Kane/MOE/ACT/data/moe/results/staged_verifier_multimodel_seed2_fixed2_r1/config.json",
+            "sha256": "b3b7ffd01cfdc44b07f993570f5e1d7664d00867255a98ea4f4dccaa551c722f"
+          },
+          "summary": {
+            "path": "/data1/Kane/MOE/ACT/data/moe/results/staged_verifier_multimodel_seed2_fixed2_r1/summary.json",
+            "sha256": "0a38f60f0f2324f37da87a2336893b9b937d684f139fc69aa468d523aa48ccb7"
+          }
+        },
+        "complete_outcome_rate": 0.66,
+        "complete_outcomes": 66,
+        "f0_invoked": 53,
+        "f0_resolution_rate": 0.5849056603773585,
+        "f0_resolved": 31,
+        "f0_safe": 15,
+        "packages_audited": 99,
+        "reason_counts": {
+          "INSTANCE_HARD_DEADLINE": 1,
+          "SAFE_GATE_ELIMINATION": 29,
+          "SAFE_WEIGHTED_RANGE": 15,
+          "TIMEOUT_EXPERT_SOLVE": 7,
+          "TIMEOUT_SUPPORT": 1,
+          "UNKNOWN_SOLVER_LIMIT": 3,
+          "UNKNOWN_WEIGHTED_RELAXATION": 1,
+          "UNKNOWN_WEIGHTED_SOLVER_LIMIT": 21,
+          "UNSAFE_FULL_FORWARD": 6,
+          "UNSAFE_FULL_FORWARD_FALLBACK": 16
+        },
+        "route_changing_safe": 7,
+        "rows": 100,
+        "status_counts": {
+          "SAFE": 44,
+          "TIMEOUT": 9,
+          "UNKNOWN": 25,
+          "UNSAFE": 22
+        },
+        "tier1_safe": 29,
+        "unsafe_replayed": 22
+      }
+    }
+  },
+  "schema_version": 1,
+  "selection": {
+    "path": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/staged_verifier_multimodel_fixed2_selection_r1.json",
+    "sha256": "2b3462887e7236369456da094c80770f9aa1963c3e04003ac753767fb0865202"
+  },
+  "status": "PASS",
+  "thresholds": {
+    "maximum_route_unstable_width_ratio_median": 0.7,
+    "maximum_route_unstable_width_ratio_p90_strict": 1.0,
+    "minimum_complete_outcome_rate": 0.5,
+    "minimum_exact_vs_zonotope_strict_reduction_rate_on_route_unstable_rows": 0.2,
+    "minimum_f0_complete_resolution_rate_when_invoked": 0.25,
+    "minimum_guard_binary_eliminations": 1,
+    "minimum_route_changing_safe_requests": 1
+  }
+}

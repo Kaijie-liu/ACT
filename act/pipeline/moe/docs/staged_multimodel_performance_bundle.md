@@ -53,3 +53,36 @@ The scope is stability across three registered training runs of one model
 family.  It is not certified accuracy and not evidence of stability across
 architectures.  The separate strict AdvMoE experiment addresses the
 high-accuracy, real-scale certificate question.
+
+## Frozen result
+
+All three census and verdict executions completed.  The independent bundle
+auditor reconstructed the shared selection, checked checkpoint and artifact
+identities, recomputed every exact-candidate subset and guard-accounting
+identity, audited 297 emitted evidence packages, and replayed all 67 UNSAFE
+witnesses.  It reports zero issues.  The audit status `PASS` means that the
+result is internally consistent; it does **not** mean that the preregistered
+cross-model scientific conjunction passed.
+
+| Model | SAFE / UNSAFE / UNKNOWN / TIMEOUT | Complete | Route-changing SAFE | F0 resolution | Exact < zonotope | Width median / p90 | Bundle |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| seed 0 | 30 / 24 / 39 / 7 | 54/100 | 8 | 27/62 | 37/43 | 0.432 / 0.538 | PASS |
+| seed 1 | 26 / 21 / 38 / 15 | 47/100 | 8 | 19/50 | 16/40 | 0.379 / 0.467 | FAIL |
+| seed 2 | 44 / 22 / 25 / 9 | 66/100 | 7 | 31/53 | 30/38 | 0.348 / 0.453 | PASS |
+
+Seed 1 fails only the frozen minimum-complete-outcome rate (`47% < 50%`).
+No threshold, denominator, solver budget, or model is changed after observing
+that result.  Consequently two of three models pass, and the registered rule
+returns `stable_complete_bundle_supported=false`.  The correct interpretation
+is that every individual mechanism in the bundle is observed on all three
+registered runs, including 8, 8, and 7 route-changing SAFE model--request
+pairs, but their complete performance conjunction is not stable across all
+three runs under the frozen budget.
+
+The immutable audited result is
+`results/staged_verifier_multimodel_bundle_20260906_r1.json`.  These 100 inputs
+were selected to be clean-correct for all three low-accuracy verification-scale
+models; the table is neither certified accuracy nor evidence about a
+high-accuracy or cross-architecture model.  Runtime is descriptive because the
+census is separately costed and this experiment was not designed as a paired
+speed comparison.

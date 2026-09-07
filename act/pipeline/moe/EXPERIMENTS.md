@@ -2776,3 +2776,22 @@ for all three models before a stable cross-run performance-bundle claim is
 accepted. The frozen thresholds and claim boundary are in
 `docs/staged_multimodel_performance_bundle.md`; no result may weaken them or
 pool models to hide a failed checkpoint.
+
+The common-task experiment subsequently completes all three 100-row census
+and verdict runs. Its independent auditor reconstructs the selection and all
+artifact identities, audits 297 emitted evidence packages, replays all 67
+UNSAFE witnesses, and reports zero issues. Seed 0 returns 30 SAFE, 24 UNSAFE,
+39 UNKNOWN, and 7 TIMEOUT, with 54% complete outcomes and eight route-changing
+SAFE requests. Seed 1 returns 26/21/38/15, with 47% complete outcomes and
+eight route-changing SAFE requests. Seed 2 returns 44/22/25/9, with 66%
+complete outcomes and seven route-changing SAFE requests.
+
+Every model passes the candidate-reduction, conditional-width, F0-resolution,
+guard-elimination, route-changing-SAFE, and integrity gates. Seed 1 alone
+misses the frozen complete-outcome gate (`47% < 50%`), so the full bundles pass
+on 2/3 models and the registered all-model conjunction fails. Audit `PASS`
+therefore establishes evidence integrity, not scientific-gate success. No
+closure or threshold change is used to relabel the outcome. The result
+supports replication of the component mechanisms on three runs under one
+recipe, but it does not support stable complete-bundle wording. Compact
+evidence: `results/staged_verifier_multimodel_bundle_20260906_r1.json`.

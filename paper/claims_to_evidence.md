@@ -21,6 +21,11 @@ rows and route conditioning yields a median structural-width ratio of 0.430.
 On a separate sequential clean-correct cohort at the fixed radius (2/255),
 the production entry point certifies 6/100 route-changing inputs; four of those
 six require the weighted F0 tier.
+On a preregistered common fixed task across three balanced training runs,
+route-changing SAFE appears 8, 8, and 7 times and all structural/mechanism
+gates pass, but one run reaches only 47% complete outcomes against a frozen
+50% threshold. Thus 2/3 complete bundles pass and the strict all-model
+performance conjunction fails.
 The immutable preregistered overall solved endpoint is 56/100 and fails its 60%
 gate; boundary applicability is 76/100 and conditional coverage is 56/76. We
 separately report follow-up closure and engineering results without rewriting
