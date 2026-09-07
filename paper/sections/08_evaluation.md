@@ -60,8 +60,10 @@ repository lacks a license and a complete dependency specification; no source
 is copied into ACT and checkpoint redistribution is not assumed. The official
 ordered CIFAR-10 test set is used for the K=20 initialization route-share audit
 under both eval/default-running-statistics and registered train/current-batch-
-statistics semantics. Training and final-checkpoint verification remain
-pending.
+statistics semantics. The accepted numerical-compatibility training run and
+final-checkpoint numerical verification are complete; the checkpoint reaches
+85.67% clean accuracy. The separate directed-rounding PyRAT feasibility pilot
+returns TIMEOUT on both requests and establishes no strict SAFE certificate.
 
 Every dataset archive, split, checkpoint, preprocessing product, runtime, and
 result file is identified by hash in the artifact manifest. Raw binary
@@ -376,7 +378,7 @@ official-scale formal coverage. This negative backend result bounds the claim:
 route conditioning removes dynamic dispatch; it does not make a loose expert
 abstraction complete.
 
-## Scaling and solver engineering [pending]
+## Scaling and solver engineering [completed and audited]
 
 Lazy route-set enumeration is evaluated at (E\in\{4,8,16,32,64\}) under
 frozen top-(k), router geometry, and budgets. Each row records feasible sets,

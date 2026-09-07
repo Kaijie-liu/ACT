@@ -2795,3 +2795,16 @@ closure or threshold change is used to relabel the outcome. The result
 supports replication of the component mechanisms on three runs under one
 recipe, but it does not support stable complete-bundle wording. Compact
 evidence: `results/staged_verifier_multimodel_bundle_20260906_r1.json`.
+
+## Server-editor handoff and next comparison
+
+The 2026-09-07 review is recorded in `docs/CODEX_HANDOFF.md` at repository
+root, with persistent working rules in `AGENTS.md`. The next implementation
+target is a paired equal-total-budget follow-up on the observed common task:
+full staged, route-invariance with weighted F0, monolithic F0, and full-budget
+Tier-1-only. That comparison has not been executed. The existing 50% gate is
+not a competitor score, and within-run F0 attribution is not a full-budget
+Tier-1-only ablation. Scoped proof reuse and independently checked sign bounds
+are subsequent research directions; current numerical acceptance is unchanged.
+The paper's stale AdvMoE-pending and scaling-pending subject labels are updated
+to completed numerical experiments and the strict pilot's TIMEOUT outcome.
