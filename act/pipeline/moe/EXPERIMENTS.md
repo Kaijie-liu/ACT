@@ -2838,3 +2838,20 @@ audit succeeds; it also runs an independent audit after the full run. Any
 nonzero exit prevents subsequent steps. Raw results are written to new
 `paired_followup_smoke_r1` / `paired_followup_full_r1` directories. Compact
 results and paper updates must be committed after actual completion/audit.
+
+### Smoke completion and live review (2026-09-08)
+
+Re-ran the independent smoke auditor: 12/12 scheduled requests, 11 complete
+packages, one outer TIMEOUT, zero issues, zero UNSAFE to replay. Tracked
+review: `results/paired_followup_smoke_review_20260908.json`. The smoke's
+outcomes are plumbing controls, not a comparative effectiveness estimate.
+The full run was still active at 636/1200 rows when inspected; no final audit
+or performance conclusion is asserted. The active process and parent shell
+show normal startup after smoke audit, without `--resume`.
+
+The review correctly identifies a recovery-entry defect: `--resume` against a
+nonexistent root can skip the initial smoke gate. This was not the observed
+launch path. Repair and negative regression tests are deferred until the
+frozen execution finishes; sources/configs remain unchanged in this run.
+These four arms compare internal ACT paths and do not by themselves establish
+superiority over independent public verification tools.

@@ -116,6 +116,21 @@ while it runs. After completion, check the terminal audit, preserve all rows,
 write compact tracked results and update paper/EXPERIMENTS, then commit/push.
 This chain does not automatically publish or push experimental outcomes.
 
+2026-09-08 live review: smoke completed 12/12, structural audit PASS with
+11 complete packages, zero issues, and zero UNSAFE to replay. Independent
+re-audit is tracked at
+`act/pipeline/moe/results/paired_followup_smoke_review_20260908.json`.
+Full run was live at 636/1200 rows (through rank 52), not complete or finally
+audited. The active full command has no `--resume`; its parent shell records
+the successful smoke/audit gate. Known defect: a first invocation with
+`--resume` and a nonexistent output directory can bypass the smoke gate.
+Do not use that path. Fix with regression tests after this frozen run, not by
+changing executable sources midway. Smoke PASS is not evidence of superiority.
+The four arms are internal ACT algorithm comparisons, not four independent
+external tools. External baseline claims supplied in conversation still need
+primary-source verification and pinned artifact/semantic registration before
+adoption; no external tool installation or execution has been started.
+
 ## Frozen decisions and boundaries
 
 Do not chase seed 1's 50% threshold, add seeds until a pass, overwrite any R1,
