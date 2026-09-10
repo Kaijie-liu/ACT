@@ -459,6 +459,43 @@ retains the central route-changing certificate mechanism without executing the
 experiment-only controls. It does not revise the boundary-adaptive seed-2 R1
 result and does not establish a speedup.
 
+## Equal-total-budget internal comparison [completed]
+
+The observed three-model common task was rerun with four internal ACT paths,
+each with a 300-second external request cap and rotating method/model order.
+Model/data loading, route analysis, support, construction and solving are
+charged; post-run audits are excluded equally. The 1,200 jobs are four methods
+on the same 100 inputs and three models, not 1,200 independent observations.
+The independent audit verifies 1,075 complete packages and replays all 171
+UNSAFE outputs with zero issues; 125 outer-deadline records remain included.
+This is structural evidence auditing, not independent numerical SAFE proofs.
+
+| Model | Staged SAFE / solved | Invariance SAFE / solved | Monolithic F0 SAFE / solved | Tier-1-only SAFE / solved |
+|---|---:|---:|---:|---:|
+| seed0 | 30 / 54 | 22 / 32 | 46 / 65 | 21 / 31 |
+| seed1 | 26 / 47 | 18 / 26 | 36 / 54 | 22 / 30 |
+| seed2 | 44 / 66 | 37 / 43 | 52 / 70 | 32 / 39 |
+
+Every denominator is 100 jointly clean-correct inputs at 2/255. Staged adds
+8/8/7 SAFE over the invariance premise, with no losses, and has positive net
+SAFE and solved differences against the full-budget Tier-1-only schedule.
+However, monolithic F0 has higher SAFE and solved counts on every model:
+staged-only / monolithic-only SAFE discordances are 4/20, 10/20 and 5/13.
+Thus decomposition does not establish overall coverage dominance. It also does
+not lose every distinctive capability: route-changing SAFE counts are 8/8/7
+for staged and 5/1/3 for monolithic. The latter shares the F0 relaxation, not
+an exact encoding of the nonlinear softmax function.
+
+Mean observed request costs are 67.46/76.86/62.46 s for staged and
+158.21/180.65/146.63 s for monolithic, including censored requests. Median
+paired differences (staged minus monolithic) are -71.30/-107.24/-55.15 s.
+This is a coverage-cost tradeoff under registered schedules on a shared
+server, not an unconditional speedup. Internal property budgets differ, so
+these results do not isolate formulation from scheduling effects. The full
+four-state and discordance tables are in `docs/paired_followup.md` and the
+hash-bound result `results/paired_followup_full_review_20260911.json` under
+`act/pipeline/moe`. No threshold or original outcome is retroactively changed.
+
 ## Completion criteria
 
 The evaluation is paper-complete only when the official RT-ER table, AdvMoE

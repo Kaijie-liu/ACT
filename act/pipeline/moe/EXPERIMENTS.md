@@ -2855,3 +2855,24 @@ launch path. Repair and negative regression tests are deferred until the
 frozen execution finishes; sources/configs remain unchanged in this run.
 These four arms compare internal ACT paths and do not by themselves establish
 superiority over independent public verification tools.
+
+## Four-arm follow-up R1 completed (2026-09-11 review)
+
+All 1,200 rows completed; independent re-audit PASS, zero issues, 1,075 complete
+packages, 171 UNSAFE full-model replays. All 125 outer timeouts remain in the
+denominators. `results/paired_followup_full_review_20260911.json` binds the raw
+identities and contains complete counts, gained/lost sets, reasons and bounded
+cost statistics. `docs/paired_followup.md` contains the full table; the analysis
+script rejects incomplete pairs, conflicting verdicts, stale audit hashes and
+invalid timings. Its three regression tests and seven comparison tests pass.
+
+Staged SAFE/solved counts are 30/54, 26/47, 44/66. Invariance gives 22/32,
+18/26, 37/43; full-budget Tier-1-only gives 21/31, 22/30, 32/39. Monolithic
+F0 gives **46/65, 36/54, 52/70**, exceeding staged coverage in all three models,
+at mean observed request costs 158.21/180.65/146.63 s versus staged
+67.46/76.86/62.46 s. Staged retains distinct solutions and more route-changing
+SAFE, but is not the net-coverage winner against monolithic. Shared-server,
+budget-limited costs are not uncensored solve times or unconditional speedups.
+The original common-task seed2 25 UNKNOWN/9 TIMEOUT becomes 26/8 in this new
+execution; its 44 SAFE/22 UNSAFE is unchanged. Historical records are untouched.
+No all-baseline superiority or high-accuracy strict certificate claim is made.

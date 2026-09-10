@@ -133,6 +133,18 @@ adoption; no external tool installation or execution has been started.
 
 ## Frozen decisions and boundaries
 
+Latest completion (2026-09-11): the four-arm full run has finished. Re-audit
+PASS, 0 issues, 1,075 complete packages, 171 UNSAFE replays, all 1,200 rows.
+Tracked analysis: `act/pipeline/moe/results/paired_followup_full_review_20260911.json`;
+full tables: `act/pipeline/moe/docs/paired_followup.md`. Staged SAFE/solved
+30/54, 26/47, 44/66 beats invariance and Tier-1-only counts on each model, but
+monolithic gives 46/65, 36/54, 52/70. Staged is less expensive under the
+registered schedules and has distinct route-changing certificates; it is NOT
+the overall coverage winner. Both positive and negative findings are now in
+the evaluation text. No MoE comparison process remains running. Fix the known
+resume-entry defect next, with regression tests, without rewriting R1 data.
+Then pursue scoped proof reuse / independently checked bound evidence.
+
 Do not chase seed 1's 50% threshold, add seeds until a pass, overwrite any R1,
 reopen Lagrangian/CROWN tuning or its locked holdout, silently expand PyRAT
 budgets, or reopen init/census work. F1 remains untriggered. No third census
