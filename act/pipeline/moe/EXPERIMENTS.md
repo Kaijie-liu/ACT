@@ -2907,3 +2907,12 @@ scope/source/dual-sign/overclaim mutations. The existing 26 regressions plus
 seven initial new tests pass (33 total); the additional all-properties-reuse
 branch control also passes. No official-scale effectiveness claim follows.
 Retained executable controls run only after implementation commit/push.
+
+The retained control run at implementation `cceadd326` is now complete:
+`results/scoped_proof_reuse_controls_20260911_r1.json` binds both package
+manifests and the raw summary. Reference/reuse are both SAFE, with 2/1 F0
+solved property rows and 0/1 reused rows. Both packages pass structural audit
+and a separate re-audit; an independent process checks the supplied guarded
+LP lower bound as exactly 3/4 without invoking the proposing solver. The full
+34-test focused suite passes. This is analytic-control evidence, not a new
+real-model certificate, runtime win, or independent network-to-LP proof.

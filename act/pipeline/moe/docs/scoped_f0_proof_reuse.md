@@ -84,3 +84,8 @@ scale certificate. A separately frozen observed-cohort engineering comparison
 is needed before claiming saved calls or net coverage on bal010. The exact LP
 checker needs a hash-bound actual HZ/LP export before it can check that larger
 class of bounds. Neither gap is filled by more PASS labels on JSON records.
+
+Retained controls have run at `cceadd326` and were independently rechecked:
+`results/scoped_proof_reuse_controls_20260911_r1.json` records SAFE/SAFE,
+2/1 F0 solves, 0/1 reused properties, two zero-issue package audits and the
+exact 3/4 guarded-LP bound. The full focused regression suite passes 34 tests.

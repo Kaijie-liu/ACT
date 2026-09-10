@@ -179,6 +179,12 @@ propagation/LP lowering or MILP trees. Read
 controls, then freeze a separate observed-cohort engineering comparison before
 making any real-model efficiency claim. No old R1 rerun/closure is authorized.
 
+Retained controls completed at `cceadd326`, result
+`act/pipeline/moe/results/scoped_proof_reuse_controls_20260911_r1.json`:
+reference/reuse SAFE, F0 rows 2/1, both audits 0 issues, exact supplied LP bound
+3/4 independently rechecked. Full focused suite: 34 passing tests. Opt-in only;
+no real-model comparison or HZ-to-LP proof-export check has been executed yet.
+
 Use `conda run --no-capture-output -n act-py312 python -m unittest` with the
 relevant test modules. Last targeted run passed 11 tests in
 `act.pipeline.moe.test_freeze_staged_multimodel_bundle` and

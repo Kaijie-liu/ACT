@@ -187,3 +187,26 @@ separately from a solver's raw bound contribution, since the latter excludes
 the represented output center in the HZ lowering. A structural audit checks
 the evidence chain; it is not presented as an independent re-execution of a
 SAFE solve.
+
+## Scoped reuse and a first independently checked bound
+
+An opt-in post-comparison implementation exports positive per-property facts
+from already computed guarded Tier-1 output intervals. A pair guard implies
+membership of each selected expert, so two facts for the same property extend
+to that pair domain and imply a mixture lower bound equal to their minimum.
+Facts bind the concrete request/model/domain/property, router frame, policy
+and expert identity. The auditor reconstructs them from source intervals.
+Partial MILP results are not reused. This version trusts the underlying HZ
+propagation and verifies the reuse implication; it does not independently
+establish the propagated interval endpoints.
+
+Separately, a finite-box LP checker evaluates signed dual multipliers and their
+stationarity residual with exact rational arithmetic. Residuals are minimized
+on the finite input box instead of being discarded as numerical zero. Float
+coefficients denote exact binary rationals. The checker does not call a solver
+and does not trust a primal objective. On the explicit guarded control
+x0>=1/2, x1=1/4, 0<=x<=1, it checks the x0+x1 lower bound as exactly 3/4.
+It is not a MILP proof-tree checker or a validation of network-to-LP lowering.
+The two-expert, three-class reuse control remains SAFE while reducing F0
+property solves from two to one; both packages pass structural re-audit.
+These are analytic implementation controls, not real-model speedup evidence.
