@@ -108,7 +108,14 @@ def run(path, *, smoke=False, resume=False):
         raise RuntimeError("clean feature branch required")
     if Path(sys.executable).resolve() != Path(config["python"]).resolve():
         raise RuntimeError("act-py312 required")
-    if not smoke and not resume:
+    output = _inside(Path(config["smoke_output"] if smoke else config["output"]), WRITE_ROOT)
+    if resume:
+        if not output.is_dir() or not (output / "runtime.json").is_file():
+            raise RuntimeError("resume requires an existing run and runtime identity")
+    elif output.exists():
+        raise RuntimeError("refusing to overwrite run")
+    # Resumption is not authority to bypass the independent smoke gate.
+    if not smoke:
         from act.pipeline.moe.audit_paired_followup import audit
         smoke_root = _inside(Path(config["smoke_output"]), WRITE_ROOT)
         smoke_audit = audit(smoke_root)
@@ -132,7 +139,6 @@ def run(path, *, smoke=False, resume=False):
     base = json.loads(base_path.read_text())
     ranks = config["smoke_ranks"] if smoke else list(range(100))
     jobs = schedule(selection, ranks)
-    output = _inside(Path(config["smoke_output"] if smoke else config["output"]), WRITE_ROOT)
     budget = float(config["budget_seconds"])
     identity = {"config_sha256": _sha256(path), "git_head": _git_value("rev-parse", "HEAD"),
                 "source_sha256": source_identity(),

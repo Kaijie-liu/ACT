@@ -1,8 +1,8 @@
 # MoE project handoff
 
-Updated 2026-09-07. Scientific-result reference HEAD:
-`70869e84bb6f7023c03354a322e3e70abf393a38`. This document is a later handoff
-update, not a new experiment result. Check live Git/process state on arrival;
+Updated 2026-09-11. Latest paired-result reference HEAD: `631f211bc`.
+The earlier common-task result remains at `70869e84bb6f7023c03354a322e3e70abf393a38`.
+Check live Git/process state on arrival;
 do not infer running jobs from historical conversation progress reports.
 
 ## Objective and implementation
@@ -51,6 +51,10 @@ Read `act/pipeline/moe/docs/staged_verifier.md` and
   negative bounds. No unique global cause was established.
 
 ## Authoritative reading order
+
+Latest addition first: `act/pipeline/moe/docs/paired_followup.md` and
+`act/pipeline/moe/results/paired_followup_full_review_20260911.json` report
+the completed four-arm comparison, including monolithic's coverage advantage.
 
 1. `act/pipeline/moe/docs/staged_multimodel_performance_bundle.md`
 2. `act/pipeline/moe/results/staged_verifier_multimodel_bundle_20260906_r1.json`
@@ -143,7 +147,13 @@ registered schedules and has distinct route-changing certificates; it is NOT
 the overall coverage winner. Both positive and negative findings are now in
 the evaluation text. No MoE comparison process remains running. Fix the known
 resume-entry defect next, with regression tests, without rewriting R1 data.
-Then pursue scoped proof reuse / independently checked bound evidence.
+The recovery repair is now implemented: resume requires an existing directory
+and runtime identity; full resume must pass smoke audit and code/config checks.
+Three new negative-path tests and the complete 26-test focused suite pass.
+R1's runtime/source hash and all outputs remain untouched. Next pursue scoped
+proof reuse / independently checked bound evidence, keeping optimal-status
+acceptance unchanged. No new experiment is currently running or queued by
+this completion stage; do not assume automatic follow-on work.
 
 Do not chase seed 1's 50% threshold, add seeds until a pass, overwrite any R1,
 reopen Lagrangian/CROWN tuning or its locked holdout, silently expand PyRAT

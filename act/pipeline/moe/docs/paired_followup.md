@@ -62,7 +62,12 @@ Use `python -m act.pipeline.moe.audit_paired_followup RESULT_DIRECTORY` to
 independently audit identities, coverage, status conflicts, and witnesses.
 Without `--smoke`, the runner executes the full frozen task after its smoke
 gate. `--resume` requires the same code/config identity and an ordered result
-prefix; failed attempts are retained. Do not run another writer concurrently.
+prefix; failed attempts are retained. As of the post-R1 recovery fix,
+`--resume` cannot create a new run or accept a missing runtime identity, and
+full-run resumption also checks the smoke audit and executable/config hashes.
+R1 itself used normal startup, not the formerly vulnerable entry path. Old
+raw results are immutable; this repair does not authorize resuming them with
+different executable sources. Do not run another writer concurrently.
 
 Tests cover stable variable-weight F0, tie-inclusive invariance rejection
 before expert solves, monolithic weighted safety and missing-property mutation,

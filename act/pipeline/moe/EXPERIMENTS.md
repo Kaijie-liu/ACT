@@ -2876,3 +2876,14 @@ budget-limited costs are not uncensored solve times or unconditional speedups.
 The original common-task seed2 25 UNKNOWN/9 TIMEOUT becomes 26/8 in this new
 execution; its 44 SAFE/22 UNSAFE is unchanged. Historical records are untouched.
 No all-baseline superiority or high-accuracy strict certificate claim is made.
+
+### Post-completion recovery-entry repair
+
+Only after R1 finished and its independent re-audit passed, the known resume
+entry defect was repaired. Resume now requires an existing run/runtime identity
+and full-run recovery cannot skip the smoke audit or source/config match.
+Regression cases cover a missing full/smoke root, an existing root without
+runtime identity, and a failed smoke despite an existing full root. The full
+focused suite passed 26 tests. No solver, mathematical encoding, acceptance
+tolerance, cohort or raw result was changed. This code version cannot silently
+continue an old run with mismatching source identity.

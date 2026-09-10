@@ -1,5 +1,6 @@
 import copy
 import tempfile
+import sys
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -10,10 +11,52 @@ from act.back_end.moe import GateKind, OutputMoEFactoryConfig, build_output_moe
 from act.pipeline.moe.test_staged_verifier import _config, _constant_model
 from act.pipeline.moe.staged_verifier import verify_staged_linf, write_evidence_package
 from act.pipeline.moe.audit_staged_evidence import audit_evidence_package, _audit_safe_structure
-from act.pipeline.moe.paired_followup import schedule, method_config, summarize, METHODS
+from act.pipeline.moe.paired_followup import schedule, method_config, summarize, METHODS, run, save
 
 
 class ComparisonTests(unittest.TestCase):
+    def test_resume_cannot_create_a_new_full_or_smoke_run(self):
+        with tempfile.TemporaryDirectory(dir="/data1/Kane/MOE") as tmp:
+            root = Path(tmp)
+            config = {"python": sys.executable, "output": str(root / "full"),
+                      "smoke_output": str(root / "smoke")}
+            path = root / "config.json"
+            save(path, config)
+            with patch("act.pipeline.moe.paired_followup._git_value",
+                       side_effect=["feat/moe-route-verification", ""] * 2):
+                for smoke in (False, True):
+                    with self.assertRaisesRegex(RuntimeError, "existing run"):
+                        run(path, smoke=smoke, resume=True)
+            self.assertFalse((root / "full").exists())
+            self.assertFalse((root / "smoke").exists())
+
+    def test_resume_rejects_missing_runtime_identity(self):
+        with tempfile.TemporaryDirectory(dir="/data1/Kane/MOE") as tmp:
+            root = Path(tmp)
+            (root / "full").mkdir()
+            path = root / "config.json"
+            save(path, {"python": sys.executable, "output": str(root / "full"),
+                        "smoke_output": str(root / "smoke")})
+            with patch("act.pipeline.moe.paired_followup._git_value",
+                       side_effect=["feat/moe-route-verification", ""]):
+                with self.assertRaisesRegex(RuntimeError, "runtime identity"):
+                    run(path, resume=True)
+
+    def test_existing_full_resume_still_requires_passing_smoke(self):
+        with tempfile.TemporaryDirectory(dir="/data1/Kane/MOE") as tmp:
+            root = Path(tmp)
+            (root / "full").mkdir()
+            save(root / "full/runtime.json", {})
+            path = root / "config.json"
+            save(path, {"python": sys.executable, "output": str(root / "full"),
+                        "smoke_output": str(root / "smoke")})
+            with patch("act.pipeline.moe.paired_followup._git_value",
+                       side_effect=["feat/moe-route-verification", ""]), patch(
+                       "act.pipeline.moe.audit_paired_followup.audit", return_value={"status": "FAIL"}) as audit:
+                with self.assertRaisesRegex(RuntimeError, "audited smoke required"):
+                    run(path, resume=True)
+                audit.assert_called_once_with(root / "smoke")
+
     def test_schedule_balances_positions_and_covers_all_jobs(self):
         selection = {"models": {"seed0": {}, "seed1": {}, "seed2": {}},
                      "samples": [{"dataset_index": 100 + i} for i in range(100)]}
