@@ -634,6 +634,10 @@ def diagnose_radius(
                 "candidate": expert,
                 "feasible_route_sets": route_sets_for_expert,
                 "branch_status": result.status.value,
+                **({"proof_output_bounds": {
+                    "lower": guarded.output_bounds.lb.detach().cpu().reshape(-1).tolist(),
+                    "upper": guarded.output_bounds.ub.detach().cpu().reshape(-1).tolist(),
+                }} if config.get("collect_property_facts", False) else {}),
                 "property_lower_bound": _property_margin_lower(
                     guarded.output_bounds, clean_prediction
                 ),

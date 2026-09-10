@@ -179,6 +179,13 @@ def _audit_safe_structure(evidence: Mapping[str, Any], issues: list[str]) -> Non
                 "F0 property indices are incomplete",
             )
             for row in rows:
+                if row.get("solver_bound_kind") == "scoped_tier1_interval":
+                    try:
+                        from act.pipeline.moe.scoped_f0_proofs import audit_reused_property
+                        audit_reused_property(row, pair["pair"], evidence)
+                    except Exception as exc:
+                        issues.append(f"invalid scoped property reuse: {exc}")
+                    continue
                 accepted = row.get("accepted_minimum")
                 _record_issue(
                     issues,

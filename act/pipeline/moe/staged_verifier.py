@@ -130,6 +130,8 @@ def _require_cpu_float64_model(model: torch.nn.Module) -> None:
 
 
 def _validate_config(config: Mapping[str, Any]) -> None:
+    if type(config.get("scoped_proof_reuse", False)) is not bool:
+        raise ValueError("scoped_proof_reuse must be boolean")
     if config.get("comparison_method", "staged") not in {
         "staged", "route_invariance", "tier1_only", "monolithic_f0"
     }:
@@ -197,6 +199,7 @@ def _run_f0(
     clean_prediction: int,
     internal: Mapping[str, Any],
     config: Mapping[str, Any],
+    reuse=None,
 ) -> tuple[dict[str, Any], torch.Tensor | None]:
     started = time.monotonic()
     program = internal["program"]
@@ -220,11 +223,27 @@ def _run_f0(
     pair_rows: list[dict[str, Any]] = []
     witness: torch.Tensor | None = None
     total_tightening = total_solve = 0.0
+    reused_count = 0
     for pair_values in route_sets.feasible:
         pair = tuple(sorted(int(value) for value in pair_values))
         pair_started = time.monotonic()
         property_rows: list[dict[str, Any]] = []
         try:
+            reused = {}
+            if reuse is not None:
+                from act.pipeline.moe.scoped_f0_proofs import reuse_property
+                for index in range(len(properties)):
+                    row = reuse_property(reuse["facts"], reuse["scope"], pair, index)
+                    if row is not None:
+                        reused[index] = row
+            if len(reused) == len(properties) and reused:
+                reused_count += len(reused)
+                pair_rows.append({"pair": list(pair), "status": "SAFE",
+                                  "reason": SAFE_WEIGHTED_RANGE,
+                                  "property_rows": [reused[i] for i in range(len(properties))],
+                                  "elapsed_seconds": time.monotonic() - pair_started,
+                                  "all_properties_reused": True})
+                continue
             conditioned_router = condition_topk_set(router.output_hz, pair).hz
             guarded_entry = guarded_input_topk_set(
                 router.input_hz, router.output_hz, pair
@@ -248,6 +267,10 @@ def _run_f0(
             margin_seconds = time.monotonic() - margin_started
             total_solve += margin_seconds
             for property_index, (q, constant) in enumerate(properties):
+                if property_index in reused:
+                    property_rows.append(reused[property_index])
+                    reused_count += 1
+                    continue
                 property_started = time.monotonic()
                 encoding = build_weighted_top2_f0(
                     propagated.joint,
@@ -363,6 +386,7 @@ def _run_f0(
             "solve_seconds": total_solve,
             "elapsed_seconds": time.monotonic() - started,
             "full_model_witness_valid": witness is not None,
+            "reused_property_count": reused_count,
         },
         witness,
     )
@@ -439,6 +463,7 @@ def verify_staged_linf(
         }
     ]
     tier1_config = {
+        "collect_property_facts": config.get("scoped_proof_reuse", False),
         "candidate_query_timeout": config["candidate_query_timeout"],
         "support": config["tier1"]["support"],
         "solver": config["tier1"]["solver"],
@@ -484,6 +509,16 @@ def verify_staged_linf(
     }
     status, reason = tier1["status"], tier1["reason"]
     decision_tier = "TIER1_GATE_ELIMINATION"
+    reuse = None
+    reuse_frame = None
+    reuse_started = time.monotonic()
+    if config.get("scoped_proof_reuse", False) and internal is not None:
+        from act.pipeline.moe.scoped_f0_proofs import make_scope, facts_from_branches
+        reuse_frame = str(internal["router"].output_hz.frame_id)
+        scope = make_scope(request_id, request_identity,
+                           internal["router"].output_hz.frame_id, config["numerical_safety"])
+        reuse = {"scope": scope, "facts": facts_from_branches(tier1["branches"], scope)}
+    reuse_preparation_seconds = time.monotonic() - reuse_started
     if status == "SAFE":
         reason = "SAFE_GATE_ELIMINATION"
     elif status == "UNSAFE":
@@ -498,6 +533,7 @@ def verify_staged_linf(
             clean_prediction=clean_prediction,
             internal=internal,
             config=config["f0"],
+            reuse=reuse,
         )
         status, reason = tier2["status"], tier2["reason"]
         decision_tier = "TIER2_F0"
@@ -549,6 +585,11 @@ def verify_staged_linf(
             "f0": config["f0"],
         },
         "numerical_safety": config["numerical_safety"],
+        "proof_reuse": {"enabled": config.get("scoped_proof_reuse", False),
+                        "frame_id": reuse_frame,
+                        "preparation_seconds": reuse_preparation_seconds,
+                        "available_fact_count": len(reuse["facts"]) if reuse else 0,
+                        "source_kind": "TIER1_GUARDED_OUTPUT_INTERVAL"},
         "transitions": transitions,
         "route_coverage": {
             "candidate_experts": tier1.get("candidate_experts"),

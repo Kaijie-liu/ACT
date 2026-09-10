@@ -168,6 +168,17 @@ The 50% gate is a registered acceptance criterion, not a baseline score.
 
 ## Local validation and handoff routine
 
+2026-09-11 next-stage implementation: optional config
+`act/pipeline/moe/configs/staged_verifier_proof_reuse_v1.json` enables scoped
+Tier-1 **guarded interval property** reuse in F0. It does not reuse partial
+MILP proofs (not yet exported) or relax the old acceptance policy. Independent
+checking currently covers supplied finite-box LP bounds using rational
+arithmetic, including interval margin arithmetic; it does not validate HZ
+propagation/LP lowering or MILP trees. Read
+`act/pipeline/moe/docs/scoped_f0_proof_reuse.md`. Next run the retained analytic
+controls, then freeze a separate observed-cohort engineering comparison before
+making any real-model efficiency claim. No old R1 rerun/closure is authorized.
+
 Use `conda run --no-capture-output -n act-py312 python -m unittest` with the
 relevant test modules. Last targeted run passed 11 tests in
 `act.pipeline.moe.test_freeze_staged_multimodel_bundle` and

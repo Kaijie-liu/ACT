@@ -2887,3 +2887,23 @@ runtime identity, and a failed smoke despite an existing full root. The full
 focused suite passed 26 tests. No solver, mathematical encoding, acceptance
 tolerance, cohort or raw result was changed. This code version cannot silently
 continue an old run with mismatching source identity.
+
+## Scoped F0 reuse and exact LP checker implementation (2026-09-11)
+
+The opt-in `staged_verifier_proof_reuse_v1.json` enables request-local facts
+from already computed Tier-1 guarded output intervals. Two matching positive
+expert-property facts on membership supersets discharge a pair property by
+convexity. Full pair reuse skips its joint propagation. Model, represented
+box, property, router frame, policy, expert and guard identities are checked;
+the package auditor reconstructs sources. No partial MILP result or unproven
+property is promoted. The default v1 config and numerical acceptance gates are
+unchanged. Scope/proof text: `docs/scoped_f0_proof_reuse.md`.
+
+The standalone finite-box LP checker uses exact rational dual/residual
+arithmetic, with no solver call in the checker. It checks the supplied LP,
+not HZ lowering or MILP proof trees. A guarded affine control proves 3/4.
+Unit controls retain SAFE while reducing F0 calls from two to one and reject
+scope/source/dual-sign/overclaim mutations. The existing 26 regressions plus
+seven initial new tests pass (33 total); the additional all-properties-reuse
+branch control also passes. No official-scale effectiveness claim follows.
+Retained executable controls run only after implementation commit/push.
