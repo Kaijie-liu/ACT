@@ -1,0 +1,28 @@
+{
+  "classification": "FROZEN_OBSERVED_COHORT_PROOF_REUSE_ENGINEERING",
+  "selection": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/staged_verifier_multimodel_fixed2_selection_r1.json",
+  "selection_sha256": "2b3462887e7236369456da094c80770f9aa1963c3e04003ac753767fb0865202",
+  "base_config": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/staged_verifier_v1.json",
+  "base_config_sha256": "6e13c92af6b73f8ef644038d9d6a02a65d454193f34f5e203f05efdf76017844",
+  "python": "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+  "budget_seconds": 300,
+  "ranks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "output": "/data1/Kane/MOE/ACT/data/moe/results/proof_reuse_paired_20260911_r1",
+  "hz_export_model": "seed0",
+  "hz_export_rank": 0,
+  "hz_lp_seconds": 60,
+  "hz_export_output": "/data1/Kane/MOE/ACT/data/moe/results/hz_lp_real_export_20260911_r1",
+  "hz_query_rule": "clean unordered top2 pair; minimum-index member margin against minimum-index outsider",
+  "acceptance": "all scheduled rows retained; no SAFE/UNSAFE conflicts; audit zero issues; report gained/lost SAFE and solved, bounded paired cost and counters with missingness; no superiority gate"
+}

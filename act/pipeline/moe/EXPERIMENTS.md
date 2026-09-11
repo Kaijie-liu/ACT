@@ -2916,3 +2916,22 @@ and a separate re-audit; an independent process checks the supplied guarded
 LP lower bound as exactly 3/4 without invoking the proposing solver. The full
 34-test focused suite passes. This is analytic-control evidence, not a new
 real-model certificate, runtime win, or independent network-to-LP proof.
+
+## Frozen real-checkpoint reuse pairing and actual HZ export (2026-09-11)
+
+`configs/proof_reuse_paired_r1.json` freezes ranks 0--9 of the already observed
+common task, all three trained bal010 checkpoints, 2/255 and reuse off/on.
+60 requests each receive the same 300-second outer cap, with alternating arms
+and rotating model order. This is a new engineering comparison, not a holdout;
+the only config difference is the reuse flag. All failures remain and missing
+F0 counters are marked censored. Maximum worker budget: five hours. Protocol,
+counter scope and commands are in `docs/proof_reuse_engineering.md`.
+
+The same registration selects seed0/rank0 for a single actual guarded-router
+HZ margin export. Binaries are explicitly relaxed to [-1,1]; exact-rational
+objective construction avoids treating rounded dot products as identities.
+An independent scalar checker reconstructs every CSR coefficient/row, objective
+constant, factor box and RHS before checking the LP certificate. Tests reject
+omission/sign/offset/box/source mutations. The bound need not be positive; no
+new MoE SAFE claim follows. The focused 37-test suite passes. Execution and
+result audit follow commit/push; this registration alone asserts no results.

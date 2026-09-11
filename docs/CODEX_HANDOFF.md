@@ -185,6 +185,18 @@ reference/reuse SAFE, F0 rows 2/1, both audits 0 issues, exact supplied LP bound
 3/4 independently rechecked. Full focused suite: 34 passing tests. Opt-in only;
 no real-model comparison or HZ-to-LP proof-export check has been executed yet.
 
+Next stage now registered in `configs/proof_reuse_paired_r1.json` (under
+`act/pipeline/moe`): observed common ranks 0--9, three trained models, reuse
+off/on, equal 300-second caps, 60 jobs / five-hour maximum worker budget.
+Run `hz_lp_real_control` first for seed0/rank0, audit via `audit_hz_lp_real`,
+then start `proof_reuse_paired`. Both write new roots. See
+`docs/proof_reuse_engineering.md` under the MoE pipeline. Real HZ export checking
+is limited to the given stored HZ -> continuous binary relaxation -> rational
+LP bound chain; upstream network propagation remains trusted. Do not call this
+a high-accuracy strict full-model certificate. Runner has no resume/replacement
+path and stops on code drift or execution errors. Check live state before
+launching; no implicit permission to overwrite a failed root.
+
 Use `conda run --no-capture-output -n act-py312 python -m unittest` with the
 relevant test modules. Last targeted run passed 11 tests in
 `act.pipeline.moe.test_freeze_staged_multimodel_bundle` and

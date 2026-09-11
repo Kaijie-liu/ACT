@@ -61,12 +61,18 @@ def check(lp, certificate):
             "scope": "Exact rational supplied finite-box LP only; no feasibility or network/MILP proof."}
 
 
-def propose(lp):
+def propose(lp, *, time_limit=None):
     """Untrusted SciPy proposal, accepted only after the independent checker."""
     from scipy.optimize import linprog
-    result = linprog(lp["c"], A_ub=lp.get("A") or None, b_ub=lp.get("b") or None,
-                     A_eq=lp.get("E") or None, b_eq=lp.get("h") or None,
-                     bounds=list(zip(lp["lower"], lp["upper"])), method="highs")
+    # A floating proposal may approximate exact rational objective sums.
+    # check() still evaluates the original coefficients, including residuals.
+    vector = lambda values: [float(rational(v)) for v in values]
+    matrix = lambda values: [vector(row) for row in values] or None
+    result = linprog(vector(lp["c"]), A_ub=matrix(lp.get("A", [])),
+                     b_ub=vector(lp.get("b", [])) or None,
+                     A_eq=matrix(lp.get("E", [])), b_eq=vector(lp.get("h", [])) or None,
+                     bounds=list(zip(vector(lp["lower"]), vector(lp["upper"]))), method="highs",
+                     options={} if time_limit is None else {"time_limit": float(time_limit)})
     if not result.success:
         raise ValueError("proposal solver did not complete")
     candidate = {"lp_sha256": identity(lp),
