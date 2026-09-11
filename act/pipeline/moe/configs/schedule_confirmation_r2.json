@@ -1,0 +1,33 @@
+{
+  "classification": "FROZEN_30_NEW_INPUT_ROUTE_COMPLEXITY_CONFIRMATION",
+  "python": "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+  "selection": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/schedule_confirmation_selection_r2.json",
+  "selection_sha256": "e001940bf28f64c997dc1f947dd2fcda515f4051985836756c25843b89dcd987",
+  "selection_audit": "/data1/Kane/MOE/ACT/act/pipeline/moe/results/schedule_confirmation_selection_review_20260912_r2.json",
+  "selection_audit_sha256": "7be176b61a1c0b4ae3337f1d31fff5bd1dc320e4701e8abd61b9f56bb5458356",
+  "sample_count": 30,
+  "budget_seconds": 300,
+  "primary_comparator": "matched",
+  "secondary_comparator": "legacy",
+  "bootstrap": {
+    "seed": 20260912,
+    "replicates": 10000,
+    "confidence": 0.95
+  },
+  "methods": {
+    "adaptive": {
+      "path": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/route_complexity_reuse_v1.json",
+      "sha256": "208e9ea19ada608ec72498a1768b5c56a2c5f3c3f745c89ecc99289ea37c39c0"
+    },
+    "matched": {
+      "path": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/monolithic_matched_reuse_v1.json",
+      "sha256": "7c726d497e2eec4fe32b14d4a2e4acc725fd7a9b407e0c3b05eb2e4f5418dd1f"
+    },
+    "legacy": {
+      "path": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/monolithic_legacy_reference_v1.json",
+      "sha256": "bb05702ebcd61ae47db28f2d35fe03d2e84803b23fa3e2cc4328a954e00ff756"
+    }
+  },
+  "smoke_output": "/data1/Kane/MOE/ACT/data/moe/results/schedule_confirmation_smoke_20260912_r2",
+  "output": "/data1/Kane/MOE/ACT/data/moe/results/schedule_confirmation_full_20260912_r2"
+}

@@ -54,6 +54,22 @@ Read `act/pipeline/moe/docs/staged_verifier.md` and
 
 ## Authoritative reading order
 
+R2 REPAIR BEFORE CONFIRMATION: R1 smoke stopped at its first OLD input 3000
+with a represented-input identity mismatch. The selector scaled ToTensor in
+float32 then cast; CLI initializes float64 before ToTensor. No new confirmation
+endpoint ran. Preserve R1 failure and original selection/audit. The selector
+now follows CLI initialization. R2 clean-only re-audit passes, with ALL thirty
+indices unchanged, same exclusion union, and smoke request identity matching
+the retained actual worker package. Read the R2 section of
+`act/pipeline/moe/docs/schedule_confirmation_r1.md` and
+`results/schedule_confirmation_smoke_dtype_repair_20260912_r1.json` under the
+pipeline. Default config/selection now use `_r2.json`; all solver method configs,
+budgets, numerical gates and analysis stay fixed. Repeat all nine old-input
+smoke requests before new endpoints, at new `_20260912_r2` roots. Planned tmux
+`moe-schedule-confirm-r2`, log `schedule_confirmation_pipeline_20260912_r2.log`.
+Inspect live state; no code edits during execution. R1 launch notes below are
+historical. Do not count the failed row or its positive package as smoke PASS.
+
 LATEST REGISTERED CONFIRMATION (2026-09-12): PI chose 30 new inputs. Read
 `act/pipeline/moe/docs/schedule_confirmation_r1.md`. Selection is frozen and
 separately reconstructed: indices 4006--4086, excludes 442 earlier indices from

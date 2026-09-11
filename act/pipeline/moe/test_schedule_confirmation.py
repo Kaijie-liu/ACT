@@ -45,6 +45,28 @@ class ConfirmationTests(unittest.TestCase):
             with self.assertRaises(ValueError): runner.artifacts(bad)
         bad = copy.deepcopy(cfg);bad['methods']['legacy']['sha256']='bad'
         with self.assertRaises(ValueError): runner.artifacts(bad)
+        retired=json.loads((Path(__file__).parent/'configs/schedule_confirmation_r1.json').read_text())
+        with self.assertRaisesRegex(ValueError,'retired preprocessing'):runner.artifacts(retired)
+
+    def test_totensor_initialization_order_and_retained_smoke_identity(self):
+        import numpy as np
+        from torchvision.transforms.functional import to_tensor
+        original=torch.get_default_dtype()
+        try:
+            image=np.full((2,2,3),129,dtype=np.uint8)
+            torch.set_default_dtype(torch.float32);cast=to_tensor(image).double()
+            torch.set_default_dtype(torch.float64);direct=to_tensor(image)
+            self.assertFalse(torch.equal(cast,direct))
+        finally: torch.set_default_dtype(original)
+        _,selection,configs=self.setup_config()
+        root=runner.PROJECT_ROOT/'data/moe/results/schedule_confirmation_smoke_20260912_r1'
+        row=json.loads((root/'rows.jsonl').read_text().splitlines()[0])
+        evidence=json.loads((Path(row['package'])/'evidence.json').read_text())
+        expected=runner.expected_identity(selection,row,configs['adaptive'],True)
+        self.assertEqual(expected,evidence['identity'])
+        old=json.loads((Path(__file__).parent/'configs/schedule_confirmation_selection_r1.json').read_text())
+        self.assertEqual([s['dataset_index'] for s in old['samples']],[s['dataset_index'] for s in selection['samples']])
+        self.assertNotEqual(old['smoke_samples'][0]['center'],selection['smoke_samples'][0]['center'])
 
     def test_missing_smoke_and_changed_source_rejected(self):
         cfg, _, _ = self.setup_config()

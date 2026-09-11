@@ -1,0 +1,16 @@
+{
+  "schema": "schedule_confirmation_smoke_dtype_repair_v1",
+  "failed_execution_head": "8db4132c0c149160cc87e815aaff685ec00f6c20",
+  "failed_root": "/data1/Kane/MOE/ACT/data/moe/results/schedule_confirmation_smoke_20260912_r1",
+  "terminal_sha256": "e65c5bafeb15d328399a747ee5ab536ce18f854a4521e06355269d6598f52fb2",
+  "runtime_sha256": "e6894b44e4ada417dba917e691e8a1c9267d2b55354f2bd3d7c1d9c834d61c07",
+  "evidence_sha256": "d1b26d73cc7a8564a505469a43a2f6e6569730cc448496e7340184fb55bbe948",
+  "failure": "Selection scaled ToTensor in default float32 then cast; CLI sets float64 before ToTensor. Strict input identity failed on OLD smoke input 3000.",
+  "sampled_verification_endpoints": 0,
+  "old_smoke_completed_workers": 1,
+  "old_smoke_terminal_status": "ERROR",
+  "new_selection_sha256": "e001940bf28f64c997dc1f947dd2fcda515f4051985836756c25843b89dcd987",
+  "all_30_dataset_indices_unchanged": true,
+  "all_request_identity_fields_match_retained_old_smoke_package_after_repair": true,
+  "action": "Preserve failed R1 and original selections; use new R2 roots, repeat all nine old-input smoke requests before any new endpoint. Solver configs, budgets and mathematical/numerical gates unchanged."
+}

@@ -3044,3 +3044,22 @@ configuration still proves the variable-weight analytic control alongside the
 scheduled arms. Stream incompleteness/order errors and timeout snapshot identity
 mutations fail closed. Runtime stdout will record the smoke/full progress;
 the final audit is automatic but final-result Git archival is not.
+
+## Confirmation smoke dtype mismatch retained; R2 preparation repair
+
+R1 at execution `8db4132c0` stopped on old input 3000, first worker: package
+returned SAFE but strict frozen input identity mismatched, so terminal ERROR
+and full run never started. Cause: selector ToTensor used float32 then double;
+CLI initialized float64 before ToTensor (max old-input pixel delta ~2.97e-8).
+No new confirmation endpoint observed. Failed R1, original selection and its
+limited clean-only audit retained. Selector now matches CLI initialization;
+new R2 selection independently reconstructs, all thirty input indices unchanged.
+Complete expected old-smoke identity equals the retained worker's identity.
+All method configs, thresholds, radius and budgets unchanged; new roots and
+repeat of all nine smoke requests required. Hash-bound repair record:
+`results/schedule_confirmation_smoke_dtype_repair_20260912_r1.json`.
+
+R2 prelaunch validation: 63 focused tests pass, including dtype-order regression
+and retired preprocessing-config rejection. Selection and all smoke task identity
+fields reconstruct before new execution. This is a semantic preparation repair,
+not a positive-effect retry or a new method configuration.

@@ -14,13 +14,16 @@ from act.pipeline.moe.experiment1 import PROJECT_ROOT, _sha256, _inside, WRITE_R
 from act.pipeline.moe.freeze_staged_multimodel_bundle import MODELS
 from act.pipeline.moe.staged_verifier import _tensor_identity, _model_state_identity
 from act.pipeline.moe.train import _load_dataset
+from act.util.device_manager import initialize_device
 
 COUNT = 30
 START = 4000
 EPSILON = 2 / 255
 PREVIOUS = PROJECT_ROOT/'act/pipeline/moe/configs/staged_verifier_multimodel_fixed2_selection_r1.json'
-OUTPUT = PROJECT_ROOT/'act/pipeline/moe/configs/schedule_confirmation_selection_r1.json'
-INVENTORY = PROJECT_ROOT/'data/moe/results/schedule_confirmation_selection_20260912_r1/excluded_artifacts.json'
+ORIGINAL_OUTPUT = PROJECT_ROOT/'act/pipeline/moe/configs/schedule_confirmation_selection_r1.json'
+OUTPUT = PROJECT_ROOT/'act/pipeline/moe/configs/schedule_confirmation_selection_r2.json'
+INVENTORY = PROJECT_ROOT/'data/moe/results/schedule_confirmation_selection_20260912_r2/excluded_artifacts.json'
+TENSOR_SEMANTICS = 'TORCH_DEFAULT_FLOAT64_BEFORE_TOTENSOR'
 
 
 def index_fields(value):
@@ -55,7 +58,7 @@ def inventory():
     raw = PROJECT_ROOT/'data/moe/results'
     configs = PROJECT_ROOT/'act/pipeline/moe/configs'
     paths = set(raw.rglob('sample_indices.json')) | set(raw.rglob('selection.json'))
-    paths |= {p for p in configs.glob('*selection*.json') if p != OUTPUT}
+    paths |= {p for p in configs.glob('*selection*.json') if p not in {OUTPUT, ORIGINAL_OUTPUT}}
     # Terminal ledgers catch previous watchdog deaths without full packages.
     paths |= set(raw.rglob('rows.jsonl'))
     paths |= set(raw.rglob('evidence.json'))
@@ -103,6 +106,9 @@ def verify_exclusions(selection):
 @torch.no_grad()
 def generate(exclusions=None):
     torch.set_num_threads(1)
+    # ToTensor uses torch's default dtype for uint8 scaling. Match the actual
+    # CLI initialization order, not float32 scaling followed by a double cast.
+    initialize_device('cpu', 'float64')
     if exclusions is None:
         records, excluded = inventory()
     else:
@@ -144,13 +150,15 @@ def generate(exclusions=None):
             'classification': 'NEW_ENDPOINT_COHORT_SAME_THREE_MODELS_NOT_NEVER_SEEN_IMAGES',
             'rule': {'start_index': START, 'sample_count': COUNT, 'ordering': 'ascending dataset index',
                      'selection_predicates_only': ['absent from exclusion union', 'all frozen models clean-correct'],
-                     'clean_semantics': 'CPU/float64 eval batch-one; torchvision ToTensor then double'},
+                     'clean_semantics': TENSOR_SEMANTICS},
             'models': models, 'dataset': {'name': 'CIFAR10', 'length': len(dataset), 'split': 'test',
                 'raw_test_batch': str(raw), 'raw_test_batch_sha256': _sha256(raw)},
             'exclusion_inventory': {'path': str(INVENTORY), 'sha256': _sha256(INVENTORY), 'sources': len(records)},
             'excluded_indices': sorted(excluded),
             'scanned_clean_only': scanned, 'samples': samples, 'smoke_samples': smoke,
-            'request': {'epsilon': EPSILON, 'boundary_search': False, 'route_instability_prefilter': False}}
+            'request': {'epsilon': EPSILON, 'boundary_search': False, 'route_instability_prefilter': False},
+            'supersedes_selection': {'path': str(ORIGINAL_OUTPUT), 'sha256': _sha256(ORIGINAL_OUTPUT),
+                                    'reason': 'R1 old-input smoke exposed preprocessing dtype identity mismatch; no new endpoint ran'}}
 
 
 def audit_selection(path):
@@ -172,10 +180,15 @@ if __name__ == '__main__':
     if args.freeze:
         from act.pipeline.moe.paired_followup import save
         if OUTPUT.exists() or INVENTORY.parent.exists(): raise ValueError('no overwrite of frozen selection')
-        records, _ = inventory()
+        # Repair uses the SAME frozen exclusion union and requires exactly the
+        # SAME thirty selected indices. No result-based replacement is possible.
+        original = json.loads(ORIGINAL_OUTPUT.read_text())
+        records = verify_exclusions(original)
         INVENTORY.parent.mkdir()
         save(INVENTORY, records)
         value = generate(records)
+        if [r['dataset_index'] for r in value['samples']] != [r['dataset_index'] for r in original['samples']]:
+            raise ValueError('dtype repair changed chosen indices; stop for review, do not replace samples')
         save(OUTPUT, value)
         print(json.dumps({'selection': str(OUTPUT), 'count': len(value['samples']),
                           'excluded': len(value['excluded_indices']),

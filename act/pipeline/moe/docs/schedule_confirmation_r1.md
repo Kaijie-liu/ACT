@@ -1,5 +1,34 @@
 # Frozen 30-input scheduling confirmation R1
 
+## R2 execution repair (supersedes R1 launch, not solver policy)
+
+R1 stopped after its first **old** smoke input (index 3000): strict identity
+checking found different represented input hashes. Selection used default-float32
+ToTensor then cast to double; the existing CLI sets the global default to float64
+before ToTensor. The maximum pixel difference on that old input is ~2.97e-8.
+No new confirmation endpoint ran. R1 raw directory, failed terminal, original
+selection and first clean-only audit remain immutable; that audit did not check
+deployment preprocessing parity and is superseded, not evidence of correct parity.
+
+The selector now calls the same device/dtype initializer before data loading.
+New `schedule_confirmation_selection_r2.json` and its separate audit preserve
+all thirty chosen indices and the SAME exclusion union. Model state, all smoke
+input tensor hashes and the complete request identity now match the retained
+actual CLI package. No solver config, halfspace, numeric gate or budget changed.
+See `results/schedule_confirmation_smoke_dtype_repair_20260912_r1.json`.
+
+Current executable config is `configs/schedule_confirmation_r2.json`; the
+runner rejects the retired preprocessing selection. Repeat ALL nine smoke
+requests at `data/moe/results/schedule_confirmation_smoke_20260912_r2`, then
+use the new `schedule_confirmation_full_20260912_r2` root. Planned tmux
+`moe-schedule-confirm-r2`, log `schedule_confirmation_pipeline_20260912_r2.log`.
+No old positive package is borrowed to pass the gate. Following R1 registration
+details preserve the original plan; R2 changes only preparation identity and
+execution roots. The primary/secondary arms and analysis are unchanged.
+R2 validation: 63 focused tests pass, including explicit ToTensor dtype-order
+regression, retired-config rejection, unchanged thirty indices and complete
+identity equality with the retained old-input worker package.
+
 Authorized 2026-09-12: 30 new inputs, three unchanged bal010 checkpoints,
 three arms, 270 requests. Smoke uses one **old** development input on three
 models/arms (9 requests), not any new confirmation input. No adaptive stopping,

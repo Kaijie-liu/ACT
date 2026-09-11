@@ -24,9 +24,9 @@ from act.pipeline.moe.paired_followup import save, source_identity
 from act.pipeline.moe.audit_staged_evidence import audit_evidence_package
 from act.pipeline.moe.common_fact_snapshot import check_snapshot, fact_view, digest
 from act.pipeline.moe.route_complexity_paired import counters
-from act.pipeline.moe.schedule_confirmation_selection import verify_exclusions
+from act.pipeline.moe.schedule_confirmation_selection import verify_exclusions, TENSOR_SEMANTICS
 
-DEFAULT = PROJECT_ROOT/'act/pipeline/moe/configs/schedule_confirmation_r1.json'
+DEFAULT = PROJECT_ROOT/'act/pipeline/moe/configs/schedule_confirmation_r2.json'
 ARMS = ('adaptive', 'matched', 'legacy')
 METHOD_HASHES = {
     'adaptive': '208e9ea19ada608ec72498a1768b5c56a2c5f3c3f745c89ecc99289ea37c39c0',
@@ -60,6 +60,8 @@ def artifacts(config, deep=False):
     if _sha256(selection_path) != config['selection_sha256']:
         raise ValueError('selection drift')
     selection = json.loads(selection_path.read_text())
+    if selection['rule']['clean_semantics'] != TENSOR_SEMANTICS:
+        raise ValueError('retired preprocessing identity: float64 must precede ToTensor')
     review_path = _inside(Path(config['selection_audit']), PROJECT_ROOT)
     if _sha256(review_path) != config['selection_audit_sha256']:
         raise ValueError('selection audit drift')
