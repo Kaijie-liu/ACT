@@ -520,7 +520,38 @@ high-accuracy external-validity result. SAFE retains the frozen HZ/HiGHS
 acceptance scope. See `results/proof_reuse_paired_review_20260911_r1.json`
 and `docs/proof_reuse_engineering.md` under `act/pipeline/moe`.
 
-### Overall completion
+### Route-complexity scheduling with matched fact reuse
+
+A separate observed-cohort development comparison evaluates the new adaptive
+schedule and matched monolithic arm on ten shared inputs and three trained
+models at 2/255, with identical 300-second outer caps. Both independently
+compute the same cheap guarded interval fact prelude; only the schedule arm
+differs. Smoke completes six requests before the sixty-request full run.
+Independent structural re-auditing reproduces both summaries: 49 complete
+full-run packages, thirteen UNSAFE replays, zero issues, and eleven outer
+deadlines retained. In all 22 pairs with comparable complete evidence, common
+facts are equal; eight other pairs are unavailable, not evidence of equality.
+
+| Model | Adaptive SAFE / solved | Matched monolithic SAFE / solved | Mean seconds adaptive / mono |
+|---|---:|---:|---:|
+| seed0 | 7 / 8 | 6 / 7 | 95.61 / 130.61 |
+| seed1 | 3 / 7 | 2 / 5 | 135.99 / 173.78 |
+| seed2 | 4 / 7 | 3 / 4 | 107.44 / 152.24 |
+
+Each denominator is ten. Adaptive gains one SAFE on each model and six solved
+model-input pairs overall, with no losses in this cohort. The three added
+SAFE requests have multiple exact feasible legal pairs. Paired median time
+differences are -0.251/-0.252/-0.100 seconds; mean savings concentrate in the
+tail rather than establish uniform acceleration. This small follow-up is not
+an untouched holdout, stable population dominance, or high-accuracy evidence.
+It leaves the historical monolithic coverage advantage intact: both prelude
+and scheduling differ from historical runs. SAFE retains the frozen HZ/HiGHS
+policy, not independently checked full-network proof. The complete four-state
+table, discordances and hash-bound raw references are in
+`docs/route_complexity_schedule.md` and
+`results/route_complexity_paired_review_20260911_r1.json` under the MoE pipeline.
+
+### Remaining completion requirements
 
 The evaluation is paper-complete only when the official RT-ER table, AdvMoE
 trained two-path table, monolithic comparison, and (E)-scaling study have

@@ -1,6 +1,7 @@
 # MoE project handoff
 
-Updated 2026-09-11. Latest reuse experiment execution HEAD: `751e386d8`.
+Updated 2026-09-11. Latest schedule experiment execution HEAD: `d7ac0b0a9`.
+Earlier reuse experiment execution HEAD: `751e386d8`.
 Latest four-arm paired-result reference HEAD: `631f211bc`.
 The earlier common-task result remains at `70869e84bb6f7023c03354a322e3e70abf393a38`.
 Check live Git/process state on arrival;
@@ -52,6 +53,21 @@ Read `act/pipeline/moe/docs/staged_verifier.md` and
   negative bounds. No unique global cause was established.
 
 ## Authoritative reading order
+
+LATEST COMPLETION: route-complexity smoke (6) and full pairing (60) finished.
+Separate re-audit reproduces both saved summaries: full PASS / 0 issues,
+49 packages, 13 UNSAFE replays, 11 outer deadlines retained. Adaptive versus
+matched monolithic SAFE/solved counts (denominator ten per arm/model): 7/8 vs
+6/7, 3/7 vs 2/5, 4/7 vs 3/4. Adaptive gains one multi-legal-route SAFE per
+model, with no SAFE/solved losses. All 22 comparable common-fact pairs match;
+8 are unavailable, not equal. Mean savings are tail-sensitive; median paired
+differences are under 0.26 s. This is observed-cohort engineering, not a new
+holdout or general superiority result. Read
+`act/pipeline/moe/results/route_complexity_paired_review_20260911_r1.json` and
+the completed-result section of `act/pipeline/moe/docs/route_complexity_schedule.md`.
+No experiment remains running or queued by this completion. The following
+launch/pending notes are historical. Defaults, numerical gates, old R1s and
+sealed searches remain unchanged; further experiments require separate scope.
 
 Next execution frozen (2026-09-11): `configs/route_complexity_paired_r1.json`
 and `route_complexity_paired.py` under `act/pipeline/moe` run a six-request

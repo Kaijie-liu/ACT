@@ -1,0 +1,493 @@
+{
+  "schema": "route_complexity_paired_review_v1",
+  "experiment_head": "d7ac0b0a98f488b54cd960db105e1175d87809c1",
+  "independent_review": {
+    "status": "PASS",
+    "issues": [],
+    "both_audits_recomputed_in_separate_process": true,
+    "recomputed_summaries_equal_saved": true
+  },
+  "smoke": {
+    "raw_root": "/data1/Kane/MOE/ACT/data/moe/results/route_complexity_smoke_20260911_r1",
+    "audit": {
+      "common_fact_pairs_equal": 3,
+      "issues": [],
+      "models": {
+        "seed0": {
+          "common_fact_pairs_equal": 1,
+          "common_fact_pairs_unavailable": 0,
+          "contrasts": {
+            "SAFE": {
+              "gained": [],
+              "lost": [],
+              "net": 0
+            },
+            "solved": {
+              "gained": [],
+              "lost": [],
+              "net": 0
+            }
+          },
+          "mean_paired_observed_seconds": -0.7012287471443415,
+          "median_paired_observed_seconds": -0.7012287471443415,
+          "methods": {
+            "adaptive": {
+              "censored_counter_requests": 0,
+              "known_reused_pair_properties": 15,
+              "known_weighted_query_rows": 3,
+              "mean_observed_seconds": 17.44454176723957,
+              "paths": {
+                "MULTI_PAIR_STAGED": 1
+              },
+              "route_changing_safe_ranks": [
+                0
+              ],
+              "statuses": {
+                "SAFE": 1
+              }
+            },
+            "monolithic": {
+              "censored_counter_requests": 0,
+              "known_reused_pair_properties": 15,
+              "known_weighted_query_rows": 3,
+              "mean_observed_seconds": 18.145770514383912,
+              "paths": {
+                "MONOLITHIC_MATCHED": 1
+              },
+              "route_changing_safe_ranks": [
+                0
+              ],
+              "statuses": {
+                "SAFE": 1
+              }
+            }
+          }
+        },
+        "seed1": {
+          "common_fact_pairs_equal": 1,
+          "common_fact_pairs_unavailable": 0,
+          "contrasts": {
+            "SAFE": {
+              "gained": [],
+              "lost": [],
+              "net": 0
+            },
+            "solved": {
+              "gained": [],
+              "lost": [],
+              "net": 0
+            }
+          },
+          "mean_paired_observed_seconds": 1.9972770838066936,
+          "median_paired_observed_seconds": 1.9972770838066936,
+          "methods": {
+            "adaptive": {
+              "censored_counter_requests": 0,
+              "known_reused_pair_properties": 0,
+              "known_weighted_query_rows": 9,
+              "mean_observed_seconds": 195.4084288617596,
+              "paths": {
+                "SINGLE_PAIR_DIRECT": 1
+              },
+              "route_changing_safe_ranks": [],
+              "statuses": {
+                "SAFE": 1
+              }
+            },
+            "monolithic": {
+              "censored_counter_requests": 0,
+              "known_reused_pair_properties": 0,
+              "known_weighted_query_rows": 9,
+              "mean_observed_seconds": 193.4111517779529,
+              "paths": {
+                "MONOLITHIC_MATCHED": 1
+              },
+              "route_changing_safe_ranks": [],
+              "statuses": {
+                "SAFE": 1
+              }
+            }
+          }
+        },
+        "seed2": {
+          "common_fact_pairs_equal": 1,
+          "common_fact_pairs_unavailable": 0,
+          "contrasts": {
+            "SAFE": {
+              "gained": [],
+              "lost": [],
+              "net": 0
+            },
+            "solved": {
+              "gained": [],
+              "lost": [],
+              "net": 0
+            }
+          },
+          "mean_paired_observed_seconds": 0.050362142734229565,
+          "median_paired_observed_seconds": 0.050362142734229565,
+          "methods": {
+            "adaptive": {
+              "censored_counter_requests": 0,
+              "known_reused_pair_properties": 3,
+              "known_weighted_query_rows": 6,
+              "mean_observed_seconds": 26.359847316518426,
+              "paths": {
+                "SINGLE_PAIR_DIRECT": 1
+              },
+              "route_changing_safe_ranks": [],
+              "statuses": {
+                "SAFE": 1
+              }
+            },
+            "monolithic": {
+              "censored_counter_requests": 0,
+              "known_reused_pair_properties": 3,
+              "known_weighted_query_rows": 6,
+              "mean_observed_seconds": 26.309485173784196,
+              "paths": {
+                "MONOLITHIC_MATCHED": 1
+              },
+              "route_changing_safe_ranks": [],
+              "statuses": {
+                "SAFE": 1
+              }
+            }
+          }
+        }
+      },
+      "package_counts": {
+        "adaptive": 3,
+        "monolithic": 3
+      },
+      "packages": 6,
+      "rows": 6,
+      "rows_sha256": "c07a76dc227df7cc2f047f8b6b16cbad8061d226a3206e078ff90b00e969ab1d",
+      "runtime_sha256": "c616b72ac54209fbab92c86244381ec9386a6cb765f21c933dd91bc88234d6f7",
+      "scope": "Observed-cohort engineering; 10 shared inputs in full run, not 60 independent samples. Structural audit, not independent SAFE proof.",
+      "status": "PASS",
+      "unsafe_replayed": 0
+    },
+    "runtime": {
+      "config": {
+        "acceptance": "All jobs retained, no SAFE/UNSAFE conflicts, independent package audit and full-model witness replay. Smoke requires complete schedule, at least one package per arm and one matching common-fact pair; no effect-size gate. Report paired SAFE/solved gains and losses, all four states, observed cost, route complexity, common-fact equality and censored counters.",
+        "budget_seconds": 300,
+        "classification": "FROZEN_OBSERVED_COHORT_ROUTE_COMPLEXITY_ENGINEERING",
+        "methods": {
+          "adaptive": {
+            "path": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/route_complexity_reuse_v1.json",
+            "sha256": "208e9ea19ada608ec72498a1768b5c56a2c5f3c3f745c89ecc99289ea37c39c0"
+          },
+          "monolithic": {
+            "path": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/monolithic_matched_reuse_v1.json",
+            "sha256": "7c726d497e2eec4fe32b14d4a2e4acc725fd7a9b407e0c3b05eb2e4f5418dd1f"
+          }
+        },
+        "output": "/data1/Kane/MOE/ACT/data/moe/results/route_complexity_paired_20260911_r1",
+        "python": "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+        "ranks": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "selection": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/staged_verifier_multimodel_fixed2_selection_r1.json",
+        "selection_sha256": "2b3462887e7236369456da094c80770f9aa1963c3e04003ac753767fb0865202",
+        "smoke_output": "/data1/Kane/MOE/ACT/data/moe/results/route_complexity_smoke_20260911_r1",
+        "smoke_ranks": [
+          0
+        ]
+      },
+      "config_path": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/route_complexity_paired_r1.json",
+      "config_sha256": "b4a209c13e81fbc38d55ea81136f33135bb4308cb44febf47f596240e88f2c59",
+      "git_head": "d7ac0b0a98f488b54cd960db105e1175d87809c1",
+      "smoke": true,
+      "smoke_gate": null,
+      "source_sha256": "f39e58dbb71ca56c5e7306f1421b648922c3d074e4c51bbcd08b243e27bc6472"
+    },
+    "audit_sha256": "709c326b359ad4c28ab10b8330ca9ebb40ba72e08318f847a3f9430d414446bd"
+  },
+  "full": {
+    "raw_root": "/data1/Kane/MOE/ACT/data/moe/results/route_complexity_paired_20260911_r1",
+    "audit": {
+      "common_fact_pairs_equal": 22,
+      "issues": [],
+      "models": {
+        "seed0": {
+          "common_fact_pairs_equal": 7,
+          "common_fact_pairs_unavailable": 3,
+          "contrasts": {
+            "SAFE": {
+              "gained": [
+                6
+              ],
+              "lost": [],
+              "net": 1
+            },
+            "solved": {
+              "gained": [
+                6
+              ],
+              "lost": [],
+              "net": 1
+            }
+          },
+          "mean_paired_observed_seconds": -34.99442150229588,
+          "median_paired_observed_seconds": -0.2505621714517474,
+          "methods": {
+            "adaptive": {
+              "censored_counter_requests": 2,
+              "known_reused_pair_properties": 53,
+              "known_weighted_query_rows": 46,
+              "mean_observed_seconds": 95.61071966933086,
+              "paths": {
+                "MISSING_PACKAGE": 2,
+                "MULTI_PAIR_STAGED": 5,
+                "SINGLE_PAIR_DIRECT": 3
+              },
+              "route_changing_safe_ranks": [
+                0,
+                1,
+                2,
+                6
+              ],
+              "statuses": {
+                "SAFE": 7,
+                "TIMEOUT": 2,
+                "UNSAFE": 1
+              }
+            },
+            "monolithic": {
+              "censored_counter_requests": 3,
+              "known_reused_pair_properties": 48,
+              "known_weighted_query_rows": 25,
+              "mean_observed_seconds": 130.60514117162674,
+              "paths": {
+                "MISSING_PACKAGE": 3,
+                "MONOLITHIC_MATCHED": 7
+              },
+              "route_changing_safe_ranks": [
+                0,
+                1,
+                2
+              ],
+              "statuses": {
+                "SAFE": 6,
+                "TIMEOUT": 3,
+                "UNSAFE": 1
+              }
+            }
+          }
+        },
+        "seed1": {
+          "common_fact_pairs_equal": 7,
+          "common_fact_pairs_unavailable": 3,
+          "contrasts": {
+            "SAFE": {
+              "gained": [
+                1
+              ],
+              "lost": [],
+              "net": 1
+            },
+            "solved": {
+              "gained": [
+                1,
+                7
+              ],
+              "lost": [],
+              "net": 2
+            }
+          },
+          "mean_paired_observed_seconds": -37.78101966651157,
+          "median_paired_observed_seconds": -0.25181070901453495,
+          "methods": {
+            "adaptive": {
+              "censored_counter_requests": 1,
+              "known_reused_pair_properties": 23,
+              "known_weighted_query_rows": 58,
+              "mean_observed_seconds": 135.99446266209708,
+              "paths": {
+                "MISSING_PACKAGE": 1,
+                "MULTI_PAIR_STAGED": 3,
+                "SINGLE_PAIR_DIRECT": 6
+              },
+              "route_changing_safe_ranks": [
+                1
+              ],
+              "statuses": {
+                "SAFE": 3,
+                "TIMEOUT": 1,
+                "UNKNOWN": 2,
+                "UNSAFE": 4
+              }
+            },
+            "monolithic": {
+              "censored_counter_requests": 3,
+              "known_reused_pair_properties": 13,
+              "known_weighted_query_rows": 38,
+              "mean_observed_seconds": 173.77548232860863,
+              "paths": {
+                "MISSING_PACKAGE": 3,
+                "MONOLITHIC_MATCHED": 7
+              },
+              "route_changing_safe_ranks": [],
+              "statuses": {
+                "SAFE": 2,
+                "TIMEOUT": 3,
+                "UNKNOWN": 2,
+                "UNSAFE": 3
+              }
+            }
+          }
+        },
+        "seed2": {
+          "common_fact_pairs_equal": 8,
+          "common_fact_pairs_unavailable": 2,
+          "contrasts": {
+            "SAFE": {
+              "gained": [
+                3
+              ],
+              "lost": [],
+              "net": 1
+            },
+            "solved": {
+              "gained": [
+                3,
+                4,
+                8
+              ],
+              "lost": [],
+              "net": 3
+            }
+          },
+          "mean_paired_observed_seconds": -44.800223926641046,
+          "median_paired_observed_seconds": -0.10008023213595152,
+          "methods": {
+            "adaptive": {
+              "censored_counter_requests": 0,
+              "known_reused_pair_properties": 46,
+              "known_weighted_query_rows": 69,
+              "mean_observed_seconds": 107.4436078151688,
+              "paths": {
+                "MULTI_PAIR_STAGED": 3,
+                "SINGLE_PAIR_DIRECT": 7
+              },
+              "route_changing_safe_ranks": [
+                3
+              ],
+              "statuses": {
+                "SAFE": 4,
+                "UNKNOWN": 3,
+                "UNSAFE": 3
+              }
+            },
+            "monolithic": {
+              "censored_counter_requests": 2,
+              "known_reused_pair_properties": 32,
+              "known_weighted_query_rows": 42,
+              "mean_observed_seconds": 152.24383174180986,
+              "paths": {
+                "MISSING_PACKAGE": 2,
+                "MONOLITHIC_MATCHED": 8
+              },
+              "route_changing_safe_ranks": [],
+              "statuses": {
+                "SAFE": 3,
+                "TIMEOUT": 2,
+                "UNKNOWN": 4,
+                "UNSAFE": 1
+              }
+            }
+          }
+        }
+      },
+      "package_counts": {
+        "adaptive": 27,
+        "monolithic": 22
+      },
+      "packages": 49,
+      "rows": 60,
+      "rows_sha256": "83d8aa9879cc52133c1d8d0cbabf195430c72a259b4311b6e9bd7d4f0f0c5068",
+      "runtime_sha256": "29fe86ab8a90521de2275855432c2af83f507cac976245151d552f7d008b884c",
+      "scope": "Observed-cohort engineering; 10 shared inputs in full run, not 60 independent samples. Structural audit, not independent SAFE proof.",
+      "status": "PASS",
+      "unsafe_replayed": 13
+    },
+    "runtime": {
+      "config": {
+        "acceptance": "All jobs retained, no SAFE/UNSAFE conflicts, independent package audit and full-model witness replay. Smoke requires complete schedule, at least one package per arm and one matching common-fact pair; no effect-size gate. Report paired SAFE/solved gains and losses, all four states, observed cost, route complexity, common-fact equality and censored counters.",
+        "budget_seconds": 300,
+        "classification": "FROZEN_OBSERVED_COHORT_ROUTE_COMPLEXITY_ENGINEERING",
+        "methods": {
+          "adaptive": {
+            "path": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/route_complexity_reuse_v1.json",
+            "sha256": "208e9ea19ada608ec72498a1768b5c56a2c5f3c3f745c89ecc99289ea37c39c0"
+          },
+          "monolithic": {
+            "path": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/monolithic_matched_reuse_v1.json",
+            "sha256": "7c726d497e2eec4fe32b14d4a2e4acc725fd7a9b407e0c3b05eb2e4f5418dd1f"
+          }
+        },
+        "output": "/data1/Kane/MOE/ACT/data/moe/results/route_complexity_paired_20260911_r1",
+        "python": "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+        "ranks": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "selection": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/staged_verifier_multimodel_fixed2_selection_r1.json",
+        "selection_sha256": "2b3462887e7236369456da094c80770f9aa1963c3e04003ac753767fb0865202",
+        "smoke_output": "/data1/Kane/MOE/ACT/data/moe/results/route_complexity_smoke_20260911_r1",
+        "smoke_ranks": [
+          0
+        ]
+      },
+      "config_path": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/route_complexity_paired_r1.json",
+      "config_sha256": "b4a209c13e81fbc38d55ea81136f33135bb4308cb44febf47f596240e88f2c59",
+      "git_head": "d7ac0b0a98f488b54cd960db105e1175d87809c1",
+      "smoke": false,
+      "smoke_gate": {
+        "audit_sha256": "709c326b359ad4c28ab10b8330ca9ebb40ba72e08318f847a3f9430d414446bd",
+        "root": "/data1/Kane/MOE/ACT/data/moe/results/route_complexity_smoke_20260911_r1"
+      },
+      "source_sha256": "f39e58dbb71ca56c5e7306f1421b648922c3d074e4c51bbcd08b243e27bc6472"
+    },
+    "audit_sha256": "7150623c30f5ba4c943f503d62b8624fa7383c78ce8b970e2dbf249e3ea21dfb"
+  },
+  "interpretation": {
+    "full_requests": 60,
+    "model_input_pairs": 30,
+    "distinct_inputs": 10,
+    "gained_SAFE_model_input_pairs": 3,
+    "lost_SAFE_model_input_pairs": 0,
+    "gained_solved_model_input_pairs": 6,
+    "lost_solved_model_input_pairs": 0,
+    "gained_SAFE_all_have_multiple_exact_legal_pairs": true,
+    "missing_full_packages": 11,
+    "common_facts_equal_when_comparable": 22,
+    "common_fact_pairs_unavailable": 8,
+    "scope": [
+      "Observed engineering cohort and shared model family, not untouched holdout or high-accuracy evidence.",
+      "All 11 outer deadlines retained; unavailable fact pairs are not counted as equal.",
+      "New matched schedules do not backfill historical four-arm or proof-reuse results.",
+      "Mean cost differences are tail-sensitive; per-model median paired differences have magnitude below 0.26 seconds.",
+      "Structural audit and full-model UNSAFE replay do not independently re-prove network SAFE.",
+      "Non-outward-rounded external filters and sealed backend searches remain out of scope."
+    ]
+  }
+}

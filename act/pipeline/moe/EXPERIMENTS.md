@@ -2988,3 +2988,18 @@ available, retains censored cases, and reports paired gains/losses and cost.
 47 focused tests pass. No superiority result is claimed by this registration.
 Commit/push precede launch; raw roots are new and never replace any R1.
 See `docs/route_complexity_schedule.md` for execution and evidence boundaries.
+
+## Route-complexity paired R1 completed and re-audited (2026-09-11)
+
+Execution `d7ac0b0a9`: smoke 6/6 and full 60/60 terminals completed. Separate
+re-audit matches both final summaries, full PASS / zero issues, 49 packages,
+13 UNSAFE replays; 11 outer timeouts remain. Full compact evidence:
+`results/route_complexity_paired_review_20260911_r1.json`, including smoke
+and full runtime/audit hashes. Adaptive/matched-monolithic SAFE counts are
+7/6, 3/2, 4/3 and solved 8/7, 7/5, 7/4, each denominator ten. Gains are
+three multi-legal-route SAFE and six solved model-input pairs, no losses.
+All 22 comparable fact pairs agree; eight remain unavailable. Mean observed
+cost falls on each model but median paired differences are under 0.26 s.
+This is observed engineering evidence, not a change to the old four-arm table,
+population superiority or high-accuracy strict verification. No next run is
+launched; all numerical acceptance rules and defaults remain unchanged.

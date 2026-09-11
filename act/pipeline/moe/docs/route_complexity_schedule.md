@@ -157,3 +157,49 @@ counter and common-fact tests plus the existing 41-test implementation suite).
 Planned tmux session: `moe-route-complexity-r1`; log:
 `data/moe/results/route_complexity_pipeline_20260911_r1.log`. Inspect live
 state before claiming started/completed or launching another copy.
+
+## R1 completed result and independent re-audit
+
+Execution HEAD `d7ac0b0a9`. Both stages completed without replacement. A
+separate process re-audited smoke and full and exactly reproduced their saved
+summaries: smoke 6/6 packages, zero issues, three equal common-fact pairs;
+full 60/60 terminals, 49 complete packages, 13 full-model UNSAFE replays,
+zero issues. All 11 outer deadlines remain in the full denominator. No job
+is running or queued by this completed stage. Hash-bound smoke/full summaries,
+runtime identities and independent-review record are in
+`results/route_complexity_paired_review_20260911_r1.json`.
+
+Each row below represents ten observed inputs per arm. S/U/?/T means
+SAFE/UNSAFE/UNKNOWN/TIMEOUT; solved = SAFE + replayed UNSAFE.
+
+| Model | Adaptive S/U/?/T | Monolithic S/U/?/T | Solved adaptive/mono | Mean seconds adaptive/mono | Median paired difference (s) |
+|---|---:|---:|---:|---:|---:|
+| seed0 | 7/1/0/2 | 6/1/0/3 | 8/7 | 95.61/130.61 | -0.251 |
+| seed1 | 3/4/2/1 | 2/3/2/3 | 7/5 | 135.99/173.78 | -0.252 |
+| seed2 | 4/3/3/0 | 3/1/4/2 | 7/4 | 107.44/152.24 | -0.100 |
+
+Adaptive-only SAFE ranks are seed0:6, seed1:1 and seed2:3, one per model;
+all have multiple exact feasible legal pairs under ANY_LEGAL_TOPK. Adaptive-
+only solved ranks are respectively [6], [1,7], [3,4,8]. No SAFE or solved
+instance is lost relative to matched monolithic in this cohort. Total
+route-changing SAFE counts are adaptive 4/1/1 versus monolithic 3/0/0.
+These counts refer to model-input pairs, not full-dataset certified accuracy.
+
+Common guarded interval facts match in all 22 comparable model-input pairs
+(7/7/8 per model). Another 8 pairs (3/3/2) lack at least one complete package;
+their facts cannot be compared and are not counted as equal. Counter totals
+remain partially observed: adaptive censored requests 2/1/0, monolithic 3/3/2.
+Known reused pair-property counts are 53/23/46 versus 48/13/32; recorded
+weighted query rows are 46/58/69 versus 25/38/42. Query-row units differ
+between per-pair and joint disjunctions and are not optimal-MILP counts or a
+standalone speedup metric.
+
+This is a small observed-cohort positive engineering result. Mean cost drops
+by 34.99/37.78/44.80 seconds, while paired median differences remain below
+0.26 seconds in magnitude: no uniform per-request speedup is established.
+No untouched-holdout, population-level dominance, high-accuracy strict SAFE
+or independent network proof follows. It does not replace the historical
+four-arm table where monolithic covered more inputs. Both the source prelude
+and schedules differ from historical runs, so historical timings cannot
+isolate this change. No default, budget fraction, old result or sealed task
+is changed after observing these outcomes.
