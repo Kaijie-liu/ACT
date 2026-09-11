@@ -1,0 +1,203 @@
+{
+  "schema": "proof_reuse_paired_review_v1",
+  "experiment_head": "751e386d8b5c4bdc5f4f195e745131e6ebae61c5",
+  "raw_root": "/data1/Kane/MOE/ACT/data/moe/results/proof_reuse_paired_20260911_r1",
+  "runtime": {
+    "config": {
+      "acceptance": "all scheduled rows retained; no SAFE/UNSAFE conflicts; audit zero issues; report gained/lost SAFE and solved, bounded paired cost and counters with missingness; no superiority gate",
+      "base_config": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/staged_verifier_v1.json",
+      "base_config_sha256": "6e13c92af6b73f8ef644038d9d6a02a65d454193f34f5e203f05efdf76017844",
+      "budget_seconds": 300,
+      "classification": "FROZEN_OBSERVED_COHORT_PROOF_REUSE_ENGINEERING",
+      "hz_export_model": "seed0",
+      "hz_export_output": "/data1/Kane/MOE/ACT/data/moe/results/hz_lp_real_export_20260911_r1",
+      "hz_export_rank": 0,
+      "hz_lp_seconds": 60,
+      "hz_query_rule": "clean unordered top2 pair; minimum-index member margin against minimum-index outsider",
+      "output": "/data1/Kane/MOE/ACT/data/moe/results/proof_reuse_paired_20260911_r1",
+      "python": "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+      "ranks": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "selection": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/staged_verifier_multimodel_fixed2_selection_r1.json",
+      "selection_sha256": "2b3462887e7236369456da094c80770f9aa1963c3e04003ac753767fb0865202"
+    },
+    "config_sha256": "d71b9c7288aef0a51e0f8235cb8ceccdec4df043f0eb46369050ac99b954d7cc",
+    "git_head": "751e386d8b5c4bdc5f4f195e745131e6ebae61c5",
+    "source_sha256": "332deb3eefb73fa54425fc91de331d2ec853febad15659854290d9b1796e0f8b"
+  },
+  "final_audit_sha256": "8c64819bb25af799b3c8fae4984889ebe48b9d32c847432cc324c6539b133b4d",
+  "independent_reaudit": {
+    "command": "python -m act.pipeline.moe.proof_reuse_paired --audit /data1/Kane/MOE/ACT/data/moe/results/proof_reuse_paired_20260911_r1",
+    "status": "PASS",
+    "issues": [],
+    "matches_saved_audit": true
+  },
+  "audit": {
+    "issues": [],
+    "models": {
+      "seed0": {
+        "contrasts": {
+          "SAFE": {
+            "gained": [
+              0
+            ],
+            "lost": [],
+            "net": 1
+          },
+          "solved": {
+            "gained": [
+              0
+            ],
+            "lost": [],
+            "net": 1
+          }
+        },
+        "mean_observed_time_difference_seconds": -18.566765637602657,
+        "median_observed_time_difference_seconds": -0.9850500687025487,
+        "methods": {
+          "reference": {
+            "known_f0_solved_rows": 81,
+            "known_reused_rows": 0,
+            "mean_observed_seconds": 60.333180151227864,
+            "statuses": {
+              "SAFE": 4,
+              "TIMEOUT": 2,
+              "UNKNOWN": 3,
+              "UNSAFE": 1
+            },
+            "unknown_counter_requests": 0
+          },
+          "reuse": {
+            "known_f0_solved_rows": 39,
+            "known_reused_rows": 42,
+            "mean_observed_seconds": 41.76641451362521,
+            "statuses": {
+              "SAFE": 5,
+              "TIMEOUT": 2,
+              "UNKNOWN": 2,
+              "UNSAFE": 1
+            },
+            "unknown_counter_requests": 0
+          }
+        }
+      },
+      "seed1": {
+        "contrasts": {
+          "SAFE": {
+            "gained": [],
+            "lost": [],
+            "net": 0
+          },
+          "solved": {
+            "gained": [],
+            "lost": [],
+            "net": 0
+          }
+        },
+        "mean_observed_time_difference_seconds": -14.185605909209698,
+        "median_observed_time_difference_seconds": -0.3242131797596812,
+        "methods": {
+          "reference": {
+            "known_f0_solved_rows": 88,
+            "known_reused_rows": 0,
+            "mean_observed_seconds": 106.23375446507707,
+            "statuses": {
+              "SAFE": 1,
+              "TIMEOUT": 2,
+              "UNKNOWN": 5,
+              "UNSAFE": 2
+            },
+            "unknown_counter_requests": 0
+          },
+          "reuse": {
+            "known_f0_solved_rows": 63,
+            "known_reused_rows": 25,
+            "mean_observed_seconds": 92.04814855586737,
+            "statuses": {
+              "SAFE": 1,
+              "TIMEOUT": 2,
+              "UNKNOWN": 5,
+              "UNSAFE": 2
+            },
+            "unknown_counter_requests": 0
+          }
+        }
+      },
+      "seed2": {
+        "contrasts": {
+          "SAFE": {
+            "gained": [],
+            "lost": [],
+            "net": 0
+          },
+          "solved": {
+            "gained": [],
+            "lost": [],
+            "net": 0
+          }
+        },
+        "mean_observed_time_difference_seconds": -19.884364359546453,
+        "median_observed_time_difference_seconds": -0.8852542778477073,
+        "methods": {
+          "reference": {
+            "known_f0_solved_rows": 75,
+            "known_reused_rows": 0,
+            "mean_observed_seconds": 89.18029384780675,
+            "statuses": {
+              "SAFE": 3,
+              "TIMEOUT": 1,
+              "UNKNOWN": 3,
+              "UNSAFE": 3
+            },
+            "unknown_counter_requests": 0
+          },
+          "reuse": {
+            "known_f0_solved_rows": 42,
+            "known_reused_rows": 37,
+            "mean_observed_seconds": 69.2959294882603,
+            "statuses": {
+              "SAFE": 3,
+              "TIMEOUT": 1,
+              "UNKNOWN": 3,
+              "UNSAFE": 3
+            },
+            "unknown_counter_requests": 0
+          }
+        }
+      }
+    },
+    "packages": 60,
+    "rows": 60,
+    "rows_sha256": "5cd5b21314411a55f097086904c64ede461c066437a78ada188fd1729cfc6bf9",
+    "runtime_sha256": "fd0beb7ce81fa4410ee77fd67c3da88458927e3efadec1741fb4b5915c2ce048",
+    "scope": "Observed-cohort engineering comparison; bounded cost and censored counters, no independent network proof or holdout claim.",
+    "status": "PASS",
+    "unsafe_replayed": 12
+  },
+  "interpretation": {
+    "classification": "FROZEN_OBSERVED_COHORT_PROOF_REUSE_ENGINEERING",
+    "model_sample_pairs": 30,
+    "distinct_input_count": 10,
+    "gained_safe": 1,
+    "lost_safe": 0,
+    "gained_solved": 1,
+    "lost_solved": 0,
+    "limitations": [
+      "Observed cohort, shared architecture, approximately 48% accurate trained models; not high-accuracy or cross-architecture evidence.",
+      "SAFE follows frozen HZ/HiGHS policy; structural re-audit is not independent network proof.",
+      "Median paired time differences are less than one second in magnitude; mean savings do not imply uniform per-request acceleration.",
+      "F0 counters count recorded non-reused property rows, not necessarily optimal MILP solves or identical obligation trajectories.",
+      "No default configuration or frozen historical outcomes changed."
+    ]
+  }
+}

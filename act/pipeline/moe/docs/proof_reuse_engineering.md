@@ -89,3 +89,34 @@ hashes and independent audit hash are in
 support lower bound relative to the stored HZ, not a full output certificate
 or an independent proof of network propagation. Paired reuse results are
 separate and not implied by this positive margin.
+
+## Paired result: completed and independently re-audited
+
+Execution HEAD `751e386d8`, 60/60 requests, 60 complete packages, zero audit
+issues and 12 full-model UNSAFE replays. A separate post-completion audit
+process reproduced the final summary. Compact evidence and raw identity hashes:
+`results/proof_reuse_paired_review_20260911_r1.json`. The denominator is ten
+observed inputs per model/arm (30 model-input pairs), not 60 independent inputs.
+
+| Model | Reference S/U/?/T | Reuse S/U/?/T | Mean seconds ref/reuse | Median paired difference (s) | Recorded F0 rows ref/reuse | Reused rows |
+|---|---:|---:|---:|---:|---:|---:|
+| seed0 | 4/1/3/2 | 5/1/2/2 | 60.33/41.77 | -0.985 | 81/39 | 42 |
+| seed1 | 1/2/5/2 | 1/2/5/2 | 106.23/92.05 | -0.324 | 88/63 | 25 |
+| seed2 | 3/3/3/1 | 3/3/3/1 | 89.18/69.30 | -0.885 | 75/42 | 37 |
+
+S/U/?/T denote SAFE/UNSAFE/UNKNOWN/TIMEOUT. Seed0 rank0 changes UNKNOWN to
+SAFE; no SAFE or solved instance is lost on any model. No other endpoint
+changes. This is one extra SAFE model-input pair, not a new certified-accuracy
+estimate or an established route-changing certificate. All timeouts remain.
+Counters are available for every request, but count recorded F0 property rows,
+not necessarily optimally completed MILPs. Different terminal paths explain
+why reductions need not equal reuse counts (notably seed2).
+
+Mean observed request cost falls in all three models, but paired median
+differences have magnitude below one second. The result supports savings
+concentrated in the runtime tail, not uniform per-request acceleration or a
+population-level superiority claim. Shared-server timing, ten observed inputs,
+and the shared low-accuracy architecture limit generalization. Neither the
+default config nor old R1 outcomes change. The final audit checks structural
+consistency and witness replay under the frozen HZ/HiGHS policy, not independent
+SAFE re-proving. No follow-on experiment is automatically launched.

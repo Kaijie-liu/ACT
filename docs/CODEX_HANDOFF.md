@@ -1,6 +1,7 @@
 # MoE project handoff
 
-Updated 2026-09-11. Latest paired-result reference HEAD: `631f211bc`.
+Updated 2026-09-11. Latest reuse experiment execution HEAD: `751e386d8`.
+Latest four-arm paired-result reference HEAD: `631f211bc`.
 The earlier common-task result remains at `70869e84bb6f7023c03354a322e3e70abf393a38`.
 Check live Git/process state on arrival;
 do not infer running jobs from historical conversation progress reports.
@@ -51,6 +52,21 @@ Read `act/pipeline/moe/docs/staged_verifier.md` and
   negative bounds. No unique global cause was established.
 
 ## Authoritative reading order
+
+Newest completion: `act/pipeline/moe/docs/proof_reuse_engineering.md` and
+`act/pipeline/moe/results/proof_reuse_paired_review_20260911_r1.json` supersede
+the launch/pending notes below. All 60 reuse off/on requests finished; separate
+re-audit PASS, 0 issues, 60 packages and 12 UNSAFE replays. SAFE off/on counts
+are 4/5, 1/1, 3/3 (ten inputs each); sole gain seed0/rank0, no losses. Mean
+seconds 60.33/41.77, 106.23/92.05, 89.18/69.30; median paired savings under
+one second. This is observed-cohort engineering, not holdout, general speedup,
+high-accuracy evidence or independent full-network proof. Actual stored-HZ
+export checking has separately passed (see linked result). No experiment is
+currently running or automatically queued by this completed stage. Reuse stays
+opt-in; mathematical/numerical gates and all historical results are unchanged.
+Next work needs its own scope: no implicit enlargement of this sample or
+sealed searches, and no inference that independently checked LP bounds certify
+upstream network-to-HZ propagation or MILP search trees.
 
 Latest addition first: `act/pipeline/moe/docs/paired_followup.md` and
 `act/pipeline/moe/results/paired_followup_full_review_20260911.json` report

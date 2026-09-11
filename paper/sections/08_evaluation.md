@@ -498,6 +498,30 @@ hash-bound result `results/paired_followup_full_review_20260911.json` under
 
 ## Completion criteria
 
+### Scoped proof reuse: observed-cohort engineering follow-up
+
+A separately frozen follow-up uses the first ten observed common-task inputs,
+all three trained models, 2/255, and equal 300-second request caps. Both arms
+are rerun in balanced order; only scoped proof reuse changes. The 60 requests
+yield 60 complete packages, zero issues in a separate structural re-audit and
+12 full-model UNSAFE replays. Reference/reuse SAFE counts are 4/5, 1/1, 3/3;
+only seed0/rank0 gains SAFE, with no SAFE or solved losses. This small result
+does not establish stable cross-model coverage superiority.
+
+Mean observed costs fall from 60.33 to 41.77, 106.23 to 92.05, and 89.18 to
+69.30 seconds. Median paired differences are -0.985, -0.324 and -0.885 seconds:
+savings are concentrated in the tail rather than uniform. Recorded non-reused
+F0 property rows are 81/39, 88/63 and 75/42; reuse supplies 42, 25 and 37
+rows. These counters are not counts of independently proved MILP optima, nor
+are different terminal trajectories identical workloads. All TIMEOUTs remain
+in the denominator. The ten images are shared across models and were already
+observed, so this is engineering evidence, not an untouched holdout or a
+high-accuracy external-validity result. SAFE retains the frozen HZ/HiGHS
+acceptance scope. See `results/proof_reuse_paired_review_20260911_r1.json`
+and `docs/proof_reuse_engineering.md` under `act/pipeline/moe`.
+
+### Overall completion
+
 The evaluation is paper-complete only when the official RT-ER table, AdvMoE
 trained two-path table, monolithic comparison, and (E)-scaling study have
 zero-issue independent audits; all unsafe rows replay; no pending cell is

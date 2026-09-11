@@ -2944,3 +2944,17 @@ relaxed binary. Audit PASS, zero issues; compact hash-bound result is
 chain is checked; upstream HZ propagation and full-model safety are not thereby
 proven. The 60-request paired experiment is the next execution, with its
 registered config unchanged. Final paired outcomes remain pending.
+
+## Scoped reuse paired R1 completed (2026-09-11)
+
+The above pending state is superseded. Execution at `751e386d8` completed
+all 60 requests. Independent re-audit reproduces PASS / zero issues, 60
+packages and 12 UNSAFE replays. Compact result:
+`results/proof_reuse_paired_review_20260911_r1.json`; full four-state table:
+`docs/proof_reuse_engineering.md`. SAFE off/on: 4/5, 1/1, 3/3; sole gain
+seed0/rank0, no losses. Mean observed seconds off/on: 60.33/41.77,
+106.23/92.05, 89.18/69.30. Paired median savings are all below one second;
+do not claim uniform acceleration. All timeouts retained, no missing counters.
+The 30 model-input pairs use ten already-observed images and one model family.
+No new holdout, high-accuracy certificate, independent network proof, default
+change or historical-result correction is claimed. No next run is launched.
