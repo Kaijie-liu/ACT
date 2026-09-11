@@ -85,7 +85,8 @@ def audit(root):
                         solved += 1
             if reused != e["tier2"].get("reused_property_count", 0) or (not row["reuse"] and reused):
                 raise ValueError("reuse accounting mismatch")
-            row.update(reused_rows=reused, f0_solved_rows=solved)
+            if not e["tier2"].get("partial_rows_censored", False):
+                row.update(reused_rows=reused, f0_solved_rows=solved)
             packages += 1
             unsafe += row["status"] == "UNSAFE"
         elif not row["outer_timeout"] or row["status"] != "TIMEOUT":

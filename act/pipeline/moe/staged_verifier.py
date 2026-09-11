@@ -48,6 +48,7 @@ from act.pipeline.moe.experiment1c import diagnose_radius
 from act.pipeline.moe.experiment1f0 import _support_record, _support_status
 from act.pipeline.moe.train import _load_dataset
 from act.util.device_manager import initialize_device
+from act.pipeline.moe.request_budget import BudgetExhausted, RequestBudget
 
 
 DEFAULT_CONFIG = PROJECT_ROOT / "act/pipeline/moe/configs/staged_verifier_v1.json"
@@ -130,6 +131,8 @@ def _require_cpu_float64_model(model: torch.nn.Module) -> None:
 
 
 def _validate_config(config: Mapping[str, Any]) -> None:
+    from act.pipeline.moe.route_complexity_schedule import validate_schedule
+    validate_schedule(config)
     if type(config.get("scoped_proof_reuse", False)) is not bool:
         raise ValueError("scoped_proof_reuse must be boolean")
     if config.get("comparison_method", "staged") not in {
@@ -192,7 +195,20 @@ def _pair_reason(properties: Sequence[dict[str, Any]]) -> tuple[str, str]:
     return "UNKNOWN", UNKNOWN_WEIGHTED_NUMERICAL
 
 
-def _run_f0(
+def _run_f0(*, model, center, clean_prediction, internal, config, reuse=None, budget=None):
+    started = time.monotonic()
+    try:
+        return _run_f0_impl(model=model, center=center, clean_prediction=clean_prediction,
+                            internal=internal, config=config, reuse=reuse, budget=budget)
+    except BudgetExhausted as exc:
+        return {"invoked": True, "status": "TIMEOUT", "reason": "REQUEST_BUDGET_EXHAUSTED",
+                "stopped_at": str(exc), "pairs": [], "partial_rows_censored": True,
+                "feasible_route_sets": [list(p) for p in internal["route_sets"].feasible],
+                "full_model_witness_valid": False,
+                "elapsed_seconds": time.monotonic()-started}, None
+
+
+def _run_f0_impl(
     *,
     model,
     center: torch.Tensor,
@@ -200,6 +216,7 @@ def _run_f0(
     internal: Mapping[str, Any],
     config: Mapping[str, Any],
     reuse=None,
+    budget=None,
 ) -> tuple[dict[str, Any], torch.Tensor | None]:
     started = time.monotonic()
     program = internal["program"]
@@ -224,11 +241,23 @@ def _run_f0(
     witness: torch.Tensor | None = None
     total_tightening = total_solve = 0.0
     reused_count = 0
-    for pair_values in route_sets.feasible:
+    unproved_by_pair = None
+    if budget:
+        from act.pipeline.moe.scoped_f0_proofs import reuse_property
+        unproved_by_pair = []
+        for values in route_sets.feasible:
+            budget.check("f0_obligation_inventory")
+            pair = tuple(sorted(int(v) for v in values))
+            unproved_by_pair.append(sum(
+                reuse is None or reuse_property(reuse["facts"], reuse["scope"], pair, i) is None
+                for i in range(len(properties))))
+    for pair_position, pair_values in enumerate(route_sets.feasible):
         pair = tuple(sorted(int(value) for value in pair_values))
         pair_started = time.monotonic()
         property_rows: list[dict[str, Any]] = []
         try:
+            if budget:
+                budget.check("f0_pair_start")
             reused = {}
             if reuse is not None:
                 from act.pipeline.moe.scoped_f0_proofs import reuse_property
@@ -248,6 +277,9 @@ def _run_f0(
             guarded_entry = guarded_input_topk_set(
                 router.input_hz, router.output_hz, pair
             ).hz
+            if budget:
+                support_config.guarded_support_lp_time_limit = budget.limit("f0_lp_support", float(support["lp_time_limit"]))
+                support_config.guarded_support_milp_time_limit = budget.limit("f0_mip_support", float(support["milp_time_limit"]))
             propagated = shared_input_pair_propagation(
                 program.experts[pair[0]],
                 program.experts[pair[1]],
@@ -262,11 +294,14 @@ def _run_f0(
             gate_range = compute_weighted_top2_gate_range(
                 conditioned_router,
                 pair,
-                time_limit=float(solver["margin_support_seconds"]),
+                time_limit=(budget.limit("f0_margin", float(solver["margin_support_seconds"]))
+                            if budget else float(solver["margin_support_seconds"])),
             )
             margin_seconds = time.monotonic() - margin_started
             total_solve += margin_seconds
             for property_index, (q, constant) in enumerate(properties):
+                if budget:
+                    budget.check("f0_property_start")
                 if property_index in reused:
                     property_rows.append(reused[property_index])
                     reused_count += 1
@@ -278,15 +313,17 @@ def _run_f0(
                     pair,
                     q,
                     constant,
-                    difference_time_limit=float(
-                        solver["difference_support_seconds"]
-                    ),
+                    difference_time_limit=(budget.limit("f0_difference", float(solver["difference_support_seconds"]))
+                                           if budget else float(solver["difference_support_seconds"])),
                     gate_range=gate_range,
                 )
                 decision = solve_weighted_top2_f0(
                     encoding,
                     input_shape=tuple(center.shape),
-                    time_limit=float(solver["property_seconds"]),
+                    time_limit=(budget.limit("f0_property_solve", obligations=
+                        sum(unproved_by_pair[pair_position+1:])
+                        + sum(i not in reused for i in range(property_index, len(properties))))
+                        if budget else float(solver["property_seconds"])),
                     tolerance=float(solver["safety_tolerance"]),
                 )
                 property_seconds = time.monotonic() - property_started
@@ -301,6 +338,8 @@ def _run_f0(
                 valid = bool(replay["valid"])
                 if valid:
                     witness = decision.candidate_input.detach().cpu()
+                elif budget:
+                    budget.check("f0_property_complete")
                 property_rows.append(
                     {
                         "property_index": property_index,
@@ -361,6 +400,8 @@ def _run_f0(
                     "elapsed_seconds": time.monotonic() - pair_started,
                 }
             )
+        except BudgetExhausted:
+            raise
         except Exception as exc:
             pair_rows.append(
                 {
@@ -401,6 +442,7 @@ def verify_staged_linf(
     expected_clean_prediction: int | None = None,
     checkpoint_identity: Mapping[str, Any] | None = None,
     progress_callback: Callable[[dict[str, Any]], None] | None = None,
+    budget_started_at: float | None = None,
 ) -> StagedVerificationReport:
     """Verify top-1 prediction robustness without experiment-only controls."""
     _validate_config(config)
@@ -413,6 +455,9 @@ def verify_staged_linf(
     if float(epsilon) < 0:
         raise ValueError("epsilon must be non-negative")
     started = time.monotonic()
+    schedule = config.get("route_complexity_schedule")
+    budget = (RequestBudget(schedule["total_seconds"], started=(started if budget_started_at is None else budget_started_at))
+              if schedule is not None else None)
     center = center.detach().cpu().double()
     if center.dim() < 2 or center.shape[0] != 1:
         raise ValueError("center must be a one-lane batched tensor")
@@ -476,20 +521,21 @@ def verify_staged_linf(
     }
     tier1_started = time.monotonic()
     record_progress("TIER1_RUNNING")
-    tier1 = diagnose_radius(
-        model=model,
-        x=center,
-        label=clean_prediction,
-        clean_prediction=clean_prediction,
-        clean_set=clean_set,
-        epsilon=float(epsilon),
-        epsilon_multiplier=1.0,
-        bracket={"kind": "DIRECT_REQUEST_NO_BOUNDARY_SEARCH"},
-        config=tier1_config,
-    )
+    scheduled_reuse = None
+    if schedule is not None:
+        from act.pipeline.moe.route_complexity_schedule import prepare
+        tier1, internal, scheduled_reuse, witness = prepare(
+            model=model, center=center, lower=lower, upper=upper,
+            clean_prediction=clean_prediction, config=config, budget=budget,
+            request_id=request_id, request_identity=request_identity)
+    else:
+        tier1 = diagnose_radius(
+            model=model, x=center, label=clean_prediction, clean_prediction=clean_prediction,
+            clean_set=clean_set, epsilon=float(epsilon), epsilon_multiplier=1.0,
+            bracket={"kind": "DIRECT_REQUEST_NO_BOUNDARY_SEARCH"}, config=tier1_config)
+        internal = tier1.pop("_internal_context", None)
+        witness = tier1.pop("_counterexample_input", None)
     tier1_elapsed = time.monotonic() - tier1_started
-    internal = tier1.pop("_internal_context", None)
-    witness = tier1.pop("_counterexample_input", None)
     transitions.append(
         {
             "stage": "TIER1_COMPLETE",
@@ -512,7 +558,10 @@ def verify_staged_linf(
     reuse = None
     reuse_frame = None
     reuse_started = time.monotonic()
-    if config.get("scoped_proof_reuse", False) and internal is not None:
+    if schedule is not None:
+        reuse = scheduled_reuse
+        reuse_frame = reuse["scope"]["frame_id"] if reuse else None
+    elif config.get("scoped_proof_reuse", False) and internal is not None:
         from act.pipeline.moe.scoped_f0_proofs import make_scope, facts_from_branches
         reuse_frame = str(internal["router"].output_hz.frame_id)
         scope = make_scope(request_id, request_identity,
@@ -523,7 +572,10 @@ def verify_staged_linf(
         reason = "SAFE_GATE_ELIMINATION"
     elif status == "UNSAFE":
         reason = "UNSAFE_FULL_FORWARD"
-    elif reason in SEMANTIC_REASONS and method != "tier1_only":
+    elif (reason in SEMANTIC_REASONS and method != "tier1_only") or (
+        schedule is not None and reason == "SCHEDULE_WEIGHTED_READY"
+        and tier1["schedule"]["selected_path"] == "MULTI_PAIR_STAGED"
+    ):
         if internal is None:
             raise RuntimeError("Tier 1 semantic incompleteness lacks reusable context")
         record_progress("TIER2_F0_RUNNING", tier1_reason=reason)
@@ -534,6 +586,7 @@ def verify_staged_linf(
             internal=internal,
             config=config["f0"],
             reuse=reuse,
+            budget=budget,
         )
         status, reason = tier2["status"], tier2["reason"]
         decision_tier = "TIER2_F0"
@@ -548,18 +601,23 @@ def verify_staged_linf(
         record_progress(
             "TIER2_F0_COMPLETE", status=status, reason=reason
         )
-    elif method == "monolithic_f0" and internal is not None:
+    elif (schedule is None and method == "monolithic_f0" and internal is not None) or (
+        schedule is not None and reason == "SCHEDULE_WEIGHTED_READY"
+    ):
         from act.pipeline.moe.paired_monolithic import run_monolithic
 
         record_progress("MONOLITHIC_F0_RUNNING")
         tier2, witness = run_monolithic(
             model=model, center=center, clean_prediction=clean_prediction,
-            internal=internal, config=config["f0"],
+            internal=internal, config=config["f0"], reuse=reuse, budget=budget,
         )
         status, reason = tier2["status"], tier2["reason"]
         decision_tier = "MONOLITHIC_F0"
         transitions.append({"stage": "MONOLITHIC_F0_COMPLETE", "status": status,
                             "reason": reason, "elapsed_seconds": tier2["elapsed_seconds"]})
+    budget_record = budget.record() if budget is not None else None
+    if budget_record is not None and budget_record["remaining_seconds"] <= 0 and status != "UNSAFE":
+        status, reason = "TIMEOUT", "REQUEST_BUDGET_EXHAUSTED"
     elapsed = time.monotonic() - started
     evidence = {
         "schema_version": 1,
@@ -579,6 +637,9 @@ def verify_staged_linf(
             "tier1": "guarded expert-wise gate elimination",
             "tier2": "property-directed weighted top-2 F0",
         },
+        **({"route_complexity_schedule": {
+            "config": dict(schedule), **tier1["schedule"], "budget": budget_record
+        }} if schedule is not None else {}),
         "registered_budgets": {
             "candidate_query_timeout": config["candidate_query_timeout"],
             "tier1": config["tier1"],
@@ -696,6 +757,7 @@ def write_evidence_package(
 
 
 def main() -> None:
+    budget_started_at = time.monotonic()
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--checkpoint", type=Path, required=True)
     parser.add_argument("--dataset-index", type=int, required=True)
@@ -724,6 +786,7 @@ def main() -> None:
         image.unsqueeze(0),
         float(args.epsilon),
         config,
+        budget_started_at=budget_started_at,
         checkpoint_identity={
             "path": str(checkpoint),
             "sha256": _sha256(checkpoint),

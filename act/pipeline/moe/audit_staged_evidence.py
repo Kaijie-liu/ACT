@@ -215,6 +215,13 @@ def _audit_safe_structure(evidence: Mapping[str, Any], issues: list[str]) -> Non
                       "monolithic property coverage incomplete")
         tolerance = float(evidence["numerical_safety"]["safe_positive_margin"])
         for row in rows:
+            partition = row.get("coverage_partition")
+            if partition is not None:
+                try:
+                    _audit_monolithic_partition(row, canonical_sets, evidence)
+                except Exception as exc:
+                    issues.append(f"invalid monolithic proof partition: {exc}")
+                continue
             minimum = row.get("minimum")
             _record_issue(issues, row.get("status") == "SAFE" and minimum is not None
                           and math.isfinite(float(minimum)) and float(minimum) > tolerance
@@ -233,6 +240,78 @@ def _audit_safe_structure(evidence: Mapping[str, Any], issues: list[str]) -> Non
     if method == "tier1_only":
         _record_issue(issues, tier2.get("invoked") is False,
                       "Tier-1-only SAFE invokes fallback")
+
+
+def _audit_monolithic_partition(row, canonical_sets, evidence):
+    from act.pipeline.moe.scoped_f0_proofs import audit_reused_property
+    part = row["coverage_partition"]
+    reused = part["reused"]
+    proved_pairs = [tuple(v["pair"]) for v in reused]
+    solved_pairs = [tuple(v) for v in part["solved_pairs"]]
+    combined = proved_pairs + solved_pairs
+    if len(set(combined)) != len(combined) or set(combined) != set(canonical_sets):
+        raise ValueError("overlap, duplicate or missing route obligation")
+    tolerance = float(evidence["numerical_safety"]["safe_positive_margin"])
+    minimum = row.get("minimum")
+    if (row.get("status") != "SAFE" or minimum is None or not math.isfinite(float(minimum))
+            or minimum <= tolerance or row.get("full_model_witness_valid") is not False):
+        raise ValueError("invalid global property acceptance")
+    for value in reused:
+        proof = value["proof"]
+        if proof["property_index"] != row["property_index"]:
+            raise ValueError("wrong reused property")
+        audit_reused_property(proof, value["pair"], evidence)
+        if minimum > proof["accepted_minimum"]:
+            raise ValueError("combined bound exceeds reused branch bound")
+    if row.get("pair_count") != len(solved_pairs):
+        raise ValueError("solver obligation count mismatch")
+    if solved_pairs:
+        if row.get("solver_status") != 0 or row.get("solver_bound_kind") not in {"lp_status0_optimum", "mip_dual_bound"}:
+            raise ValueError("residual branches lack accepted solver bound")
+    elif not reused or row.get("solver_bound_kind") != "scoped_pair_partition" or row.get("solver_status") is not None:
+        raise ValueError("all-reused branch lacks a complete proof partition")
+
+
+def _audit_schedule(evidence, issues):
+    schedule = evidence.get("route_complexity_schedule")
+    if schedule is None:
+        return
+    try:
+        from act.pipeline.moe.route_complexity_schedule import validate_schedule
+        validate_schedule({"route_complexity_schedule": schedule["config"],
+                           "scoped_proof_reuse": evidence["proof_reuse"]["enabled"],
+                           "comparison_method": evidence["algorithm"]["comparison_method"]})
+        coverage = evidence["route_coverage"]
+        if coverage["coverage_complete"]:
+            count = len(coverage["feasible_route_sets"])
+            expected = ("MONOLITHIC_MATCHED" if evidence["algorithm"]["comparison_method"] == "monolithic_f0"
+                        else "SINGLE_PAIR_DIRECT" if count == 1 else "MULTI_PAIR_STAGED")
+            if schedule["selected_path"] != expected or schedule["exact_pair_count"] != count:
+                raise ValueError("unregistered route-complexity decision")
+        if evidence["verdict"]["status"] == "SAFE":
+            if not schedule["common_fact_prelude_complete"]:
+                raise ValueError("SAFE before common fact prelude completion")
+            if schedule["selected_path"] != "MULTI_PAIR_STAGED" and evidence["verdict"]["decision_tier"] != "MONOLITHIC_F0":
+                raise ValueError("single/matched path did not use weighted obligations")
+        budget = schedule["budget"]
+        if budget["total_seconds"] != schedule["config"]["total_seconds"]:
+            raise ValueError("total budget mismatch")
+        if not 0 <= budget["remaining_seconds"] <= budget["total_seconds"]:
+            raise ValueError("invalid remaining budget")
+        previous = -1.0
+        for event in budget["events"]:
+            elapsed, remaining, grant = (event[k] for k in ("elapsed_seconds", "remaining_seconds", "granted_seconds"))
+            if not all(math.isfinite(float(v)) for v in (elapsed, remaining, grant)):
+                raise ValueError("nonfinite budget event")
+            if elapsed < previous or not 0 < grant <= remaining <= budget["total_seconds"]:
+                raise ValueError("invalid budget event")
+            if elapsed + remaining > budget["total_seconds"] + 1e-5:
+                raise ValueError("budget was reset")
+            previous = elapsed
+        if evidence["verdict"]["status"] == "SAFE" and budget["remaining_seconds"] <= 0:
+            raise ValueError("late SAFE after deadline")
+    except Exception as exc:
+        issues.append(f"invalid route-complexity schedule: {exc}")
 
 
 def audit_evidence_package(
@@ -335,6 +414,7 @@ def audit_evidence_package(
             )
 
     status = verdict.get("status")
+    _audit_schedule(evidence, issues)
     _record_issue(
         issues,
         status in {"SAFE", "UNSAFE", "UNKNOWN", "TIMEOUT"},

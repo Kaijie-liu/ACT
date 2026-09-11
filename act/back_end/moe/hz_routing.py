@@ -11,7 +11,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from itertools import combinations
 import time
-from typing import Mapping, Sequence
+from typing import Callable, Mapping, Sequence
 
 import numpy as np
 import torch
@@ -422,7 +422,7 @@ def analyze_candidates(
     top_k: int,
     *,
     input_hz: HZ | None = None,
-    time_limit_per_expert: float = 30.0,
+    time_limit_per_expert: float | Callable[[], float] = 30.0,
     router_exact: bool = True,
 ) -> CandidateReport:
     """Compute the smallest candidate set when every HZ MILP is decided."""
@@ -432,9 +432,12 @@ def analyze_candidates(
     unresolved: list[int] = []
     candidates: list[int] = []
     for expert in range(experts):
+        if callable(time_limit_per_expert):
+            time_limit_per_expert()  # Deadline check before constructing a guard.
         membership = condition_topk_membership(router_hz, expert, top_k)
         feasibility = hz_check_feasibility(
-            membership.hz, time_limit=time_limit_per_expert
+            membership.hz, time_limit=(time_limit_per_expert() if callable(time_limit_per_expert)
+                                       else time_limit_per_expert)
         )
         guarded = None
         if feasibility.status != "infeasible" and input_hz is not None:
@@ -469,7 +472,7 @@ def analyze_topk_sets(
     router_hz: HZ,
     top_k: int,
     *,
-    time_limit_per_set: float = 30.0,
+    time_limit_per_set: float | Callable[[], float] = 30.0,
     router_exact: bool = True,
 ) -> TopKSetReport:
     """Enumerate all feasible unordered top-k sets for a small router.
@@ -486,11 +489,13 @@ def analyze_topk_sets(
     unresolved: list[tuple[int, ...]] = []
     branches: list[TopKSetBranch] = []
     for selected_values in combinations(range(experts), int(top_k)):
+        if callable(time_limit_per_set):
+            time_limit_per_set()
         selected = tuple(int(value) for value in selected_values)
         conditioned = condition_topk_set(router_hz, selected).hz
         result = hz_check_feasibility(
             conditioned,
-            time_limit=float(time_limit_per_set),
+            time_limit=float(time_limit_per_set() if callable(time_limit_per_set) else time_limit_per_set),
         )
         branches.append(
             TopKSetBranch(

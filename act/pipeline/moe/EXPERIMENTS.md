@@ -2958,3 +2958,21 @@ do not claim uniform acceleration. All timeouts retained, no missing counters.
 The 30 model-input pairs use ten already-observed images and one model family.
 No new holdout, high-accuracy certificate, independent network proof, default
 change or historical-result correction is claimed. No next run is launched.
+
+## Route-complexity scheduler implementation (2026-09-11)
+
+New optional configs share scoped interval fact preparation across adaptive
+and monolithic arms. Single-pair adaptive requests go directly to weighted F0;
+multi-pair requests reserve a 25% remaining-budget Tier-1 slice, then use the
+live remainder for F0. The monolithic arm removes only pair/property obligations
+covered by the same scoped facts, with an audited disjoint coverage partition.
+No candidate upper-set fallback and no numerical-policy weakening. Native-call
+preemption remains the outer watchdog's job; all phase costs share the internal
+deadline and censored rows are not counted as zero-cost solves.
+
+41 focused tests pass, including ten new analytic budget/scheduler controls.
+Structural compatibility checks also accept all 403 historical SAFE packages
+from the four-arm and reuse R1 runs; no solver is rerun and no raw result edited.
+This is implementation validation only, not a rerun of trained models or a
+speed/coverage result. Full semantics and limits are in
+`docs/route_complexity_schedule.md`; no new comparison is running or queued.

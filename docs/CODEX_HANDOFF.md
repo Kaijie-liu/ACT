@@ -53,6 +53,21 @@ Read `act/pipeline/moe/docs/staged_verifier.md` and
 
 ## Authoritative reading order
 
+Newest implementation (2026-09-11): opt-in route-complexity scheduling and
+matched monolithic scoped reuse are implemented. Read
+`act/pipeline/moe/docs/route_complexity_schedule.md`. Configs
+`route_complexity_reuse_v1.json` and `monolithic_matched_reuse_v1.json` share
+the common guarded interval prelude and total budget; single pair goes direct
+weighted, multi-pair adaptive allocates 25% of remaining time to Tier 1 and
+then residual F0. Monolithic can discharge the same per-pair/property facts.
+41 focused tests pass. Only analytic controls ran; no trained-model scheduling
+comparison is started or queued. Native calls need an external watchdog;
+the internal budget is cooperative. Defaults and old R1s remain untouched.
+Do not conflate the new no-support common fact prelude with the historical
+support-tightened Tier-1 source when comparing costs. Candidate-superset
+fallback, external-tool integration and request-level LP proof packs remain
+separate future stages, not part of this implementation or its validation.
+
 Newest completion: `act/pipeline/moe/docs/proof_reuse_engineering.md` and
 `act/pipeline/moe/results/proof_reuse_paired_review_20260911_r1.json` supersede
 the launch/pending notes below. All 60 reuse off/on requests finished; separate
