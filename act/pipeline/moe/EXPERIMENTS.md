@@ -3025,3 +3025,22 @@ phase review. Original versus copied monolithic JSON agrees exactly, with only
 an added terminal newline (both hashes disclosed). The first byte-equality
 check rejected that formatting difference; no settings or historical artifact
 were changed to pass validation.
+
+## New-input scheduling confirmation registered (2026-09-12)
+
+PI approved thirty inputs. Clean-only selection/reconstruction PASS (zero
+issues), indices 4006--4086, 442 excluded earlier indices from 1,643 sources.
+Read `docs/schedule_confirmation_r1.md`, config `schedule_confirmation_r1.json`
+and `results/schedule_confirmation_selection_review_20260912_r1.json`.
+Three fixed arms, 270 requests, equal 300-second caps; old-input nine-request
+smoke gates full. Independent exact-route/scoped-fact/UNSAFE package auditing,
+hash-bound snapshots even after timeout, balanced order and input-clustered
+descriptive intervals are implemented. Primary comparison is matched monolithic;
+old strong monolithic remains the fixed secondary reference. No endpoint result
+or superiority is claimed by registration; tests and push precede launch.
+
+Prelaunch focused suite: 62 tests pass. The actual old strong monolithic
+configuration still proves the variable-weight analytic control alongside the
+scheduled arms. Stream incompleteness/order errors and timeout snapshot identity
+mutations fail closed. Runtime stdout will record the smoke/full progress;
+the final audit is automatic but final-result Git archival is not.

@@ -54,6 +54,23 @@ Read `act/pipeline/moe/docs/staged_verifier.md` and
 
 ## Authoritative reading order
 
+LATEST REGISTERED CONFIRMATION (2026-09-12): PI chose 30 new inputs. Read
+`act/pipeline/moe/docs/schedule_confirmation_r1.md`. Selection is frozen and
+separately reconstructed: indices 4006--4086, excludes 442 earlier indices from
+1,643 hash-bound artifacts; same three models, CPU/float64 batch-one clean
+semantics, epsilon 2/255. No new verification endpoint used for selection.
+`schedule_confirmation.py --pipeline` (act-py312) runs nine **old-input** smoke
+requests, re-audits/gates them, then 270 new requests across adaptive, matched
+monolithic (primary), and old strong monolithic (secondary). Each has a hard
+300-second cap. Snapshot audit works after outer kills, bound to frozen request
+identity; legacy has no common-prelude overhead. No resume or replacements.
+No strategy, 25% fraction, numerical gates, default or prior result changed.
+Planned tmux `moe-schedule-confirm-r1`, log
+`data/moe/results/schedule_confirmation_pipeline_20260912_r1.log`; inspect live
+state, registration alone is not launch/completion. Do not edit this checkout
+during execution. After final audit, independently review, archive compact
+results and update/commit/push. No automatic Git writes in the runner.
+
 LATEST PREPARATION (2026-09-12): read
 `act/pipeline/moe/docs/route_complexity_confirmation_preparation.md` first.
 Common-fact snapshots persist before arm-specific solves, with atomic no-clobber
