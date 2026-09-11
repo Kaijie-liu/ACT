@@ -197,6 +197,17 @@ a high-accuracy strict full-model certificate. Runner has no resume/replacement
 path and stops on code drift or execution errors. Check live state before
 launching; no implicit permission to overwrite a failed root.
 
+Real HZ export completed at `f5ea8457d` and passed independent audit, zero
+issues: `act/pipeline/moe/results/hz_lp_real_export_20260911_r1.json`.
+Given-HZ support bound ~9.485071885777709, 3,075 factors / one relaxed binary,
+seed0/index3000/pair{4,5}/score4-score0. No full output or network propagation
+proof is claimed. Next launch target is tmux `moe-proof-reuse-paired-r1`, log
+`data/moe/results/proof_reuse_paired_20260911_r1.log`, running the frozen
+60-request comparison with an automatic final audit. Check live state: do not
+infer completion from the launch target. It stops on a dirty checkout or source
+drift between requests, so do not edit during execution. Commit/push compact
+paired results only after audit; there is no automatic result push.
+
 Use `conda run --no-capture-output -n act-py312 python -m unittest` with the
 relevant test modules. Last targeted run passed 11 tests in
 `act.pipeline.moe.test_freeze_staged_multimodel_bundle` and

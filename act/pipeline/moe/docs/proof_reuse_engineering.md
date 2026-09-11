@@ -72,3 +72,20 @@ committed sources. Commands: `python -m act.pipeline.moe.hz_lp_real_control
 `python -m act.pipeline.moe.proof_reuse_paired`. Final audit is automatic;
 an independent rerun uses `--audit RESULT_ROOT`. Publish compact results only
 after actual completion. No result is asserted by this registration.
+
+## Actual HZ export result
+
+The registered query completed at `f5ea8457d`: seed0, dataset index 3000,
+clean pair {4,5}, objective router score 4 minus score 0. There are 3,075
+factors and one explicitly relaxed binary. The independent process reports
+PASS / zero issues and checks the rational lower bound
+
+    12910410846830751887830790100398256853793 /
+    1361129467683753853853498429727072845824
+
+(approximately 9.485071885777709). The exact value, export/checkpoint/request
+hashes and independent audit hash are in
+`results/hz_lp_real_export_20260911_r1.json`. This is a checked guarded-router
+support lower bound relative to the stored HZ, not a full output certificate
+or an independent proof of network propagation. Paired reuse results are
+separate and not implied by this positive margin.

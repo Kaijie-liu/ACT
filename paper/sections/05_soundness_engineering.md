@@ -210,3 +210,13 @@ It is not a MILP proof-tree checker or a validation of network-to-LP lowering.
 The two-expert, three-class reuse control remains SAFE while reducing F0
 property solves from two to one; both packages pass structural re-audit.
 These are analytic implementation controls, not real-model speedup evidence.
+
+The next export check uses an actual trained bal010 router at index 3000 and
+2/255, retaining its clean top-2 guard {4,5}. The exported LP relaxes one
+binary among 3,075 factors. An independent scalar checker verifies every
+source-HZ constraint, factor box and exact objective combination and checks a
+score4-score0 lower bound of approximately 9.4850718858 as an exact rational.
+This extends the checker beyond hand-written LP controls. Its guarantee still
+starts at the stored HZ: it does not independently validate network propagation
+or certify the complete MoE output. No positive result is required by the
+registered export query; the margin was fixed before its evaluation.

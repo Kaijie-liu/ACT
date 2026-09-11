@@ -2935,3 +2935,12 @@ constant, factor box and RHS before checking the LP certificate. Tests reject
 omission/sign/offset/box/source mutations. The bound need not be positive; no
 new MoE SAFE claim follows. The focused 37-test suite passes. Execution and
 result audit follow commit/push; this registration alone asserts no results.
+
+The real export has now completed and been independently audited. Seed0/index
+3000, guarded pair {4,5}, score4-score0 gives an exact rational checked lower
+bound approximately 9.485071885777709. The source has 3,075 factors and one
+relaxed binary. Audit PASS, zero issues; compact hash-bound result is
+`results/hz_lp_real_export_20260911_r1.json`. Only the stored-HZ-to-LP-to-bound
+chain is checked; upstream HZ propagation and full-model safety are not thereby
+proven. The 60-request paired experiment is the next execution, with its
+registered config unchanged. Final paired outcomes remain pending.
