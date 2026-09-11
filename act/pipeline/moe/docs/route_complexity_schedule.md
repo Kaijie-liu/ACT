@@ -111,3 +111,49 @@ new source identity, identical outer watchdog and failure rules separately.
 Keep the historical R1 directories immutable. No run is launched by adding
 these configs, no claim of overcoming monolithic's historical coverage lead
 is made, and no high-accuracy or independently checked full-model SAFE follows.
+
+## Frozen paired execution R1
+
+`configs/route_complexity_paired_r1.json` registers this next engineering step
+before outcomes: the same observed ranks 0--9, three accepted bal010 models,
+2/255, two arms, 300-second hard subprocess caps. It binds both method-config
+hashes and the ordered selection manifest. The source identity is recorded at
+launch. The six-request smoke uses rank0 on all models and both arms. The full
+60-request run repeats rank0 rather than borrowing its smoke result or time.
+Maximum worker budgets: 30 minutes smoke, five hours full, plus auditing.
+
+`python -m act.pipeline.moe.route_complexity_paired --pipeline` runs smoke,
+re-audits the smoke gate, then runs the full schedule and final audit. No resume,
+overwrite, replacement or outcome-based early stopping. Full entry requires
+the completed smoke with the same code and config, at least one full package
+per arm and one paired common-fact comparison. TIMEOUTs remain in all
+denominators; all-timeout smoke cannot establish conformance. A worker/audit
+error stops and preserves the failed directory. A process lock prevents two
+copies of this runner; source/clean-worktree checks prohibit editing mid-run.
+
+Model order rotates and arm order alternates, giving five first/five second
+positions per model/arm. Both arms independently compute their prelude. All
+worker costs include process startup, loading, router queries, fact extraction,
+propagation and solving. Post-run audit costs are excluded equally. BLAS and
+OpenMP are limited to one thread; host load is recorded. No GPU work is used.
+
+The final auditor replays UNSAFE, checks literal paired model/input/property
+identity, scoped reuse (including monolithic partitions), and equality of the
+actual guarded interval facts whenever both preludes completed. Incomplete
+preludes/packages are explicitly unavailable, not silently equal. Report all
+four states, adaptive-only/monolithic-only SAFE and solved, route-changing SAFE,
+observed paired cost and partially observed counters. Counts describe ten
+shared inputs / thirty model-input pairs, not sixty independent samples.
+
+This is a comparison of two new schedules sharing a new common prelude, not a
+pure ablation against the historical support-tightened reuse run. No effect
+size or statistical-significance threshold is added after results. Negative
+results are acceptable endpoints. Do not alter the 25% slice in this run.
+The final JSON and all raw packages stay local until a completed-stage review
+is committed/pushed; the background runner does not push automatically.
+
+Prelaunch validation: 47 focused tests pass (six new runner registration/gate,
+counter and common-fact tests plus the existing 41-test implementation suite).
+Planned tmux session: `moe-route-complexity-r1`; log:
+`data/moe/results/route_complexity_pipeline_20260911_r1.log`. Inspect live
+state before claiming started/completed or launching another copy.

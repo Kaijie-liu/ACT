@@ -2976,3 +2976,15 @@ from the four-arm and reuse R1 runs; no solver is rerun and no raw result edited
 This is implementation validation only, not a rerun of trained models or a
 speed/coverage result. Full semantics and limits are in
 `docs/route_complexity_schedule.md`; no new comparison is running or queued.
+
+## Route-complexity paired R1 registered (2026-09-11)
+
+This supersedes the preceding no-queue implementation note: the new runner
+and hash-bound config now register smoke (6 requests) then full (60 requests),
+same ten observed input ranks/three trained models/2/255, 300 seconds per
+request with an outer watchdog. Arms independently compute common guarded
+interval facts and rotate order; the final audit compares their values when
+available, retains censored cases, and reports paired gains/losses and cost.
+47 focused tests pass. No superiority result is claimed by this registration.
+Commit/push precede launch; raw roots are new and never replace any R1.
+See `docs/route_complexity_schedule.md` for execution and evidence boundaries.

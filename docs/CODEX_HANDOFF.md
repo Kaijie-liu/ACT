@@ -53,6 +53,21 @@ Read `act/pipeline/moe/docs/staged_verifier.md` and
 
 ## Authoritative reading order
 
+Next execution frozen (2026-09-11): `configs/route_complexity_paired_r1.json`
+and `route_complexity_paired.py` under `act/pipeline/moe` run a six-request
+smoke then a 60-request observed-cohort adaptive/matched-monolithic pairing.
+Same ranks 0--9, three models, 2/255, 300-second external caps; no new holdout.
+Both arms independently compute the common facts; the audit compares actual
+intervals, not just fact counts. A complete matching smoke gates the full run;
+errors fail-stop and retain artifacts, no resume/overwrite path. 47 focused
+tests pass. See `docs/route_complexity_schedule.md` under the pipeline for
+registered acceptance and caveats. Planned session `moe-route-complexity-r1`,
+log `data/moe/results/route_complexity_pipeline_20260911_r1.log`. Verify live
+state: registration does not itself mean execution. Do not edit the checkout
+while the pipeline runs. Final audit is automatic, final commit/push is not.
+No candidate-superset fallback, external tool or request-level LP stage is
+included, and the historical runs remain untouched.
+
 Newest implementation (2026-09-11): opt-in route-complexity scheduling and
 matched monolithic scoped reuse are implemented. Read
 `act/pipeline/moe/docs/route_complexity_schedule.md`. Configs

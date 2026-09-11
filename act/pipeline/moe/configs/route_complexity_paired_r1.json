@@ -1,0 +1,22 @@
+{
+  "classification": "FROZEN_OBSERVED_COHORT_ROUTE_COMPLEXITY_ENGINEERING",
+  "python": "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+  "selection": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/staged_verifier_multimodel_fixed2_selection_r1.json",
+  "selection_sha256": "2b3462887e7236369456da094c80770f9aa1963c3e04003ac753767fb0865202",
+  "methods": {
+    "adaptive": {
+      "path": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/route_complexity_reuse_v1.json",
+      "sha256": "208e9ea19ada608ec72498a1768b5c56a2c5f3c3f745c89ecc99289ea37c39c0"
+    },
+    "monolithic": {
+      "path": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/monolithic_matched_reuse_v1.json",
+      "sha256": "7c726d497e2eec4fe32b14d4a2e4acc725fd7a9b407e0c3b05eb2e4f5418dd1f"
+    }
+  },
+  "budget_seconds": 300,
+  "smoke_ranks": [0],
+  "ranks": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+  "smoke_output": "/data1/Kane/MOE/ACT/data/moe/results/route_complexity_smoke_20260911_r1",
+  "output": "/data1/Kane/MOE/ACT/data/moe/results/route_complexity_paired_20260911_r1",
+  "acceptance": "All jobs retained, no SAFE/UNSAFE conflicts, independent package audit and full-model witness replay. Smoke requires complete schedule, at least one package per arm and one matching common-fact pair; no effect-size gate. Report paired SAFE/solved gains and losses, all four states, observed cost, route complexity, common-fact equality and censored counters."
+}
