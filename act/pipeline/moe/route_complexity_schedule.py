@@ -33,7 +33,7 @@ def validate_schedule(config):
 
 
 def prepare(*, model, center, lower, upper, clean_prediction, config, budget,
-            request_id, request_identity):
+            request_id, request_identity, common_fact_callback=None):
     """Return Tier-1-compatible record, exact context and immutable fact scope."""
     record = {"status": "UNKNOWN", "reason": "SCHEDULE_PENDING", "branches": [],
               "full_model_witness_valid": False, "candidate_experts": [],
@@ -89,6 +89,11 @@ def prepare(*, model, center, lower, upper, clean_prediction, config, budget,
         record["schedule"].update(common_fact_prelude_complete=True,
                                   common_fact_seconds=time.monotonic()-prelude,
                                   common_fact_count=len(reuse["facts"]))
+        if common_fact_callback is not None:
+            from act.pipeline.moe.common_fact_snapshot import build_snapshot
+            common_fact_callback(build_snapshot(record, reuse, request_identity, config,
+                                                budget.clock() - budget.started))
+            budget.check("common_fact_snapshot_published")
         if path != "MULTI_PAIR_STAGED":
             record.update(reason="SCHEDULE_WEIGHTED_READY")
             return record, internal, reuse, None

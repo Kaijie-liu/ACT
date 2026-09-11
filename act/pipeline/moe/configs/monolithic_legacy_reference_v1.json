@@ -1,0 +1,48 @@
+{
+  "candidate_query_timeout": 10.0,
+  "comparison_method": "monolithic_f0",
+  "f0": {
+    "solver": {
+      "backend": "scipy",
+      "difference_support_seconds": 5.0,
+      "margin_support_seconds": 5.0,
+      "property_seconds": 300.0,
+      "safety_tolerance": 1e-07
+    },
+    "support": {
+      "lp_neurons": 32,
+      "lp_time_limit": 2.0,
+      "milp_neurons": 4,
+      "milp_time_limit": 5.0,
+      "solver_backend": "scipy"
+    }
+  },
+  "numerical_safety": {
+    "certifying_objective": "finite mip_dual_bound for MILP; status-0 optimum for pure LP; never a non-optimal primal incumbent",
+    "feasibility_tolerance": 1e-07,
+    "integrality_tolerance": 1e-07,
+    "mip_relative_gap": 0.0,
+    "outward_absolute": 1e-09,
+    "outward_relative": 1e-09,
+    "outward_rounding": "nextafter after absolute-plus-relative correction",
+    "require_finite_dual_bound": true,
+    "require_optimal_status": 0,
+    "require_solver_success": true,
+    "safe_positive_margin": 1e-07,
+    "solver": "scipy.optimize.milp/HiGHS"
+  },
+  "tier1": {
+    "solver": {
+      "backend": "scipy",
+      "escalation_budget_per_branch": 25.0,
+      "low_budget_per_branch": 5.0
+    },
+    "support": {
+      "lp_neurons": 32,
+      "lp_time_limit": 2.0,
+      "milp_neurons": 4,
+      "milp_time_limit": 5.0,
+      "solver_backend": "scipy"
+    }
+  }
+}

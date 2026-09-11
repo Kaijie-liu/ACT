@@ -3003,3 +3003,25 @@ cost falls on each model but median paired differences are under 0.26 s.
 This is observed engineering evidence, not a change to the old four-arm table,
 population superiority or high-accuracy strict verification. No next run is
 launched; all numerical acceptance rules and defaults remain unchanged.
+
+## Confirmation preparation and phase correction (2026-09-12)
+
+No new verification endpoints. Read-only hash-bound package analysis in
+`results/schedule_complementarity_phase_review_20260912_r1.json` confirms
+50/53 monolithic-only SAFE have one pair; 17/19 staged-only have multiple.
+The twelve formerly described as candidate failures completed exact route
+analysis and stopped at Tier-1 `violation_region_undecided`. Raw data unchanged.
+
+Optional prelude snapshots are now persisted before arm-specific solves, with
+no-clobber atomic publication and a real SIGKILL retention test. Hash/interval
+checks do not independently prove route enumeration or upstream HZ propagation.
+The strongest historical monolithic config is copied with identical JSON into
+`configs/monolithic_legacy_reference_v1.json` for the third reference arm.
+Selection size, exclusion audit and three-arm runner remain pending; no claim
+of a frozen/launched confirmation. See `docs/route_complexity_confirmation_preparation.md`.
+
+Validation: 54 focused tests pass; a separate process reproduces the derived
+phase review. Original versus copied monolithic JSON agrees exactly, with only
+an added terminal newline (both hashes disclosed). The first byte-equality
+check rejected that formatting difference; no settings or historical artifact
+were changed to pass validation.

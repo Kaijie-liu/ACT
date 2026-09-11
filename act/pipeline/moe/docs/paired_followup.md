@@ -134,8 +134,15 @@ coverage winner. The three models and common inputs must not be pooled as
 1,200 independent observations; no post-hoc significance gate is introduced.
 
 Of the 53 monolithic-only SAFE model-input pairs, staged reasons are weighted
-solver limit (29), expert timeout (11), candidate solver limit (12) and support
-timeout (1). These are associated stop locations, not a causal separation of
+solver limit (29), expert timeout (11), Tier-1 expert violation-region undecided
+(12), and support timeout (1). The previous wording "candidate solver limit"
+for these twelve was incorrect: exact candidate/route analysis completed and
+branch metadata records `violation_region_undecided`. The versioned read-only
+correction `results/schedule_complementarity_phase_review_20260912_r1.json`
+binds original row, audit, manifest and evidence hashes; original terminal
+labels/verdicts have not changed. It also records that 50/53 monolithic-only
+SAFE have one exact legal pair and 17/19 staged-only SAFE have multiple pairs.
+These are associated stop locations and structures, not a causal separation of
 schedule, formulation, propagation or solver effects. In particular,
 monolithic gives one property up to the remaining 300-second outer cap while
 staged retains v1 stage budgets. This experiment does not isolate decomposition

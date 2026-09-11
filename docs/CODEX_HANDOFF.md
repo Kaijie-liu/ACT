@@ -1,6 +1,6 @@
 # MoE project handoff
 
-Updated 2026-09-11. Latest schedule experiment execution HEAD: `d7ac0b0a9`.
+Updated 2026-09-12. Latest schedule experiment execution HEAD: `d7ac0b0a9`.
 Earlier reuse experiment execution HEAD: `751e386d8`.
 Latest four-arm paired-result reference HEAD: `631f211bc`.
 The earlier common-task result remains at `70869e84bb6f7023c03354a322e3e70abf393a38`.
@@ -53,6 +53,23 @@ Read `act/pipeline/moe/docs/staged_verifier.md` and
   negative bounds. No unique global cause was established.
 
 ## Authoritative reading order
+
+LATEST PREPARATION (2026-09-12): read
+`act/pipeline/moe/docs/route_complexity_confirmation_preparation.md` first.
+Common-fact snapshots persist before arm-specific solves, with atomic no-clobber
+publication and hash/scope/interval checks. A real SIGKILL test retains the
+snapshot without a final package. Opt-in only; no historical run changed.
+The old strong configuration is preserved as `configs/monolithic_legacy_reference_v1.json`
+under the pipeline. Read-only `analyze_schedule_complementarity.py` produces
+`results/schedule_complementarity_phase_review_20260912_r1.json`: 50/53
+monolithic-only SAFE are single-pair, 17/19 staged-only are multi-pair. Twelve
+`UNKNOWN_SOLVER_LIMIT` labels mean Tier-1 `violation_region_undecided`, not
+candidate failure; original data remain intact.
+No new endpoint is running. Next: settle 30 versus 100 new-input scope, audit
+the exclusion inventory, freeze selection/statistics, implement a separate
+three-arm runner/auditor including timeout snapshots and old strong reference,
+test/commit/push, then observed-input smoke before confirmation. Do not call
+this preparation a frozen or launched confirmation experiment.
 
 LATEST COMPLETION: route-complexity smoke (6) and full pairing (60) finished.
 Separate re-audit reproduces both saved summaries: full PASS / 0 issues,

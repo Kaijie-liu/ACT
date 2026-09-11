@@ -443,6 +443,7 @@ def verify_staged_linf(
     checkpoint_identity: Mapping[str, Any] | None = None,
     progress_callback: Callable[[dict[str, Any]], None] | None = None,
     budget_started_at: float | None = None,
+    common_fact_callback: Callable[[dict[str, Any]], None] | None = None,
 ) -> StagedVerificationReport:
     """Verify top-1 prediction robustness without experiment-only controls."""
     _validate_config(config)
@@ -456,6 +457,8 @@ def verify_staged_linf(
         raise ValueError("epsilon must be non-negative")
     started = time.monotonic()
     schedule = config.get("route_complexity_schedule")
+    if common_fact_callback is not None and schedule is None:
+        raise ValueError("common fact snapshot requires the registered schedule prelude")
     budget = (RequestBudget(schedule["total_seconds"], started=(started if budget_started_at is None else budget_started_at))
               if schedule is not None else None)
     center = center.detach().cpu().double()
@@ -527,7 +530,8 @@ def verify_staged_linf(
         tier1, internal, scheduled_reuse, witness = prepare(
             model=model, center=center, lower=lower, upper=upper,
             clean_prediction=clean_prediction, config=config, budget=budget,
-            request_id=request_id, request_identity=request_identity)
+            request_id=request_id, request_identity=request_identity,
+            common_fact_callback=common_fact_callback)
     else:
         tier1 = diagnose_radius(
             model=model, x=center, label=clean_prediction, clean_prediction=clean_prediction,
@@ -765,9 +769,18 @@ def main() -> None:
     parser.add_argument("--config", type=Path, default=DEFAULT_CONFIG)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--progress-path", type=Path)
+    parser.add_argument("--common-fact-snapshot", type=Path)
     args = parser.parse_args()
     config_path = _inside(args.config, PROJECT_ROOT)
     config = json.loads(config_path.read_text(encoding="utf-8"))
+    snapshot_path = (_inside(args.common_fact_snapshot, WRITE_ROOT)
+                     if args.common_fact_snapshot is not None else None)
+    if snapshot_path is not None:
+        if snapshot_path.exists():
+            raise RuntimeError("refusing to overwrite common fact snapshot")
+        if config.get("route_complexity_schedule") is None:
+            raise ValueError("legacy arm has no common prelude to snapshot")
+    from act.pipeline.moe.common_fact_snapshot import publish_snapshot
     checkpoint = _inside(args.checkpoint, WRITE_ROOT)
     progress_path = (
         _inside(args.progress_path, WRITE_ROOT)
@@ -787,6 +800,8 @@ def main() -> None:
         float(args.epsilon),
         config,
         budget_started_at=budget_started_at,
+        common_fact_callback=(lambda value: publish_snapshot(snapshot_path, value))
+                            if snapshot_path is not None else None,
         checkpoint_identity={
             "path": str(checkpoint),
             "sha256": _sha256(checkpoint),
