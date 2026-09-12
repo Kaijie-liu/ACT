@@ -1,0 +1,33 @@
+{
+  "bootstrap": {
+    "confidence": 0.95,
+    "replicates": 10000,
+    "seed": 20260912
+  },
+  "budget_seconds": 300,
+  "classification": "FROZEN_100_NEW_INPUT_ROUTE_COMPLEXITY_CONFIRMATION",
+  "methods": {
+    "adaptive": {
+      "path": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/route_complexity_reuse_v1.json",
+      "sha256": "208e9ea19ada608ec72498a1768b5c56a2c5f3c3f745c89ecc99289ea37c39c0"
+    },
+    "legacy": {
+      "path": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/monolithic_legacy_reference_v1.json",
+      "sha256": "bb05702ebcd61ae47db28f2d35fe03d2e84803b23fa3e2cc4328a954e00ff756"
+    },
+    "matched": {
+      "path": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/monolithic_matched_reuse_v1.json",
+      "sha256": "7c726d497e2eec4fe32b14d4a2e4acc725fd7a9b407e0c3b05eb2e4f5418dd1f"
+    }
+  },
+  "output": "/data1/Kane/MOE/ACT/data/moe/results/schedule_confirmation_100_full_20260912_r1",
+  "primary_comparator": "matched",
+  "python": "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+  "sample_count": 100,
+  "secondary_comparator": "legacy",
+  "selection": "/data1/Kane/MOE/ACT/act/pipeline/moe/configs/schedule_confirmation_100_selection_r1.json",
+  "selection_audit": "/data1/Kane/MOE/ACT/act/pipeline/moe/results/schedule_confirmation_100_selection_review_20260912_r1.json",
+  "selection_audit_sha256": "cc664eaf9efa6eca5586fbdf0373046c4882d844644db1117e1b669f2b05e752",
+  "selection_sha256": "b4167d8ab501df06570bfb49ad646263962c79736c2252f1398dc0499d3a7ee6",
+  "smoke_output": "/data1/Kane/MOE/ACT/data/moe/results/schedule_confirmation_100_smoke_20260912_r1"
+}

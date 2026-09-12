@@ -551,8 +551,6 @@ table, discordances and hash-bound raw references are in
 `docs/route_complexity_schedule.md` and
 `results/route_complexity_paired_review_20260911_r1.json` under the MoE pipeline.
 
-### Remaining completion requirements
-
 ### Thirty-input scheduling confirmation
 
 A separately frozen cohort excludes prior verification endpoints and selects

@@ -46,7 +46,8 @@ def source_indices(path):
     indices = set()
     for value in values:
         if path.name == 'rows.jsonl' and value.get('method') not in {
-                'staged', 'monolithic_f0', 'route_invariance', 'tier1_only', 'adaptive', 'monolithic'}:
+                'staged', 'monolithic_f0', 'route_invariance', 'tier1_only', 'adaptive', 'monolithic',
+                'matched', 'legacy'}:
             continue
         indices.update(index_fields(value))
         if path.name == 'sample_indices.json' and 'indices' in value:
@@ -54,11 +55,12 @@ def source_indices(path):
     return indices
 
 
-def inventory():
+def inventory(ignore_selection_paths=None):
     raw = PROJECT_ROOT/'data/moe/results'
     configs = PROJECT_ROOT/'act/pipeline/moe/configs'
     paths = set(raw.rglob('sample_indices.json')) | set(raw.rglob('selection.json'))
-    paths |= {p for p in configs.glob('*selection*.json') if p not in {OUTPUT, ORIGINAL_OUTPUT}}
+    ignored = {OUTPUT, ORIGINAL_OUTPUT} if ignore_selection_paths is None else set(ignore_selection_paths)
+    paths |= {p for p in configs.glob('*selection*.json') if p not in ignored}
     # Terminal ledgers catch previous watchdog deaths without full packages.
     paths |= set(raw.rglob('rows.jsonl'))
     paths |= set(raw.rglob('evidence.json'))
@@ -75,7 +77,7 @@ def inventory():
     return records, union
 
 
-def verify_exclusions(selection):
+def verify_exclusions(selection, count=COUNT, start=START):
     record = selection['exclusion_inventory']
     inventory_path = _inside(Path(record['path']), WRITE_ROOT)
     if _sha256(inventory_path) != record['sha256']:
@@ -92,9 +94,9 @@ def verify_exclusions(selection):
     if sorted(union) != selection['excluded_indices']:
         raise ValueError('exclusion union mismatch')
     chosen = [r['dataset_index'] for r in selection['samples']]
-    if len(chosen) != COUNT or len(set(chosen)) != COUNT or chosen != sorted(chosen):
+    if len(chosen) != count or len(set(chosen)) != count or chosen != sorted(chosen):
         raise ValueError('non-canonical confirmation selection')
-    if union.intersection(chosen) or min(chosen) < START:
+    if union.intersection(chosen) or min(chosen) < start:
         raise ValueError('selection overlaps prior endpoints or starts early')
     if not all(r['dataset_index'] in union for r in selection['smoke_samples']):
         raise ValueError('smoke must use previously observed inputs')
@@ -104,7 +106,7 @@ def verify_exclusions(selection):
 
 
 @torch.no_grad()
-def generate(exclusions=None):
+def generate(exclusions=None, *, count=COUNT, start=START, inventory_path=INVENTORY, repair=True):
     torch.set_num_threads(1)
     # ToTensor uses torch's default dtype for uint8 scaling. Match the actual
     # CLI initialization order, not float32 scaling followed by a double cast.
@@ -133,32 +135,34 @@ def generate(exclusions=None):
                 'lower': _tensor_identity((center-EPSILON).clamp(0, 1)),
                 'upper': _tensor_identity((center+EPSILON).clamp(0, 1))}
     samples = []; scanned = []
-    for index in range(START, len(dataset)):
+    for index in range(start, len(dataset)):
         if index in excluded: continue
         row = sample(index, len(samples))
         scanned.append({'dataset_index': index, 'label': row['label'], 'clean_predictions': row['clean_predictions']})
         if all(p == row['label'] for p in row['clean_predictions'].values()):
             samples.append(row)
-            if len(samples) == COUNT: break
-    if len(samples) != COUNT: raise ValueError('insufficient common clean-correct inputs')
+            if len(samples) == count: break
+    if len(samples) != count: raise ValueError('insufficient common clean-correct inputs')
     old = json.loads(PREVIOUS.read_text())
     smoke = [sample(old['samples'][0]['dataset_index'], 0)]
     if not all(p == smoke[0]['label'] for p in smoke[0]['clean_predictions'].values()):
         raise ValueError('registered smoke no longer clean-correct')
     raw = PROJECT_ROOT/'data/torchvision/CIFAR10/raw/cifar-10-batches-py/test_batch'
-    return {'schema': 'schedule_confirmation_selection_v1', 'status': 'FROZEN_BEFORE_NEW_ENDPOINTS',
+    result = {'schema': 'schedule_confirmation_selection_v1', 'status': 'FROZEN_BEFORE_NEW_ENDPOINTS',
             'classification': 'NEW_ENDPOINT_COHORT_SAME_THREE_MODELS_NOT_NEVER_SEEN_IMAGES',
-            'rule': {'start_index': START, 'sample_count': COUNT, 'ordering': 'ascending dataset index',
+            'rule': {'start_index': start, 'sample_count': count, 'ordering': 'ascending dataset index',
                      'selection_predicates_only': ['absent from exclusion union', 'all frozen models clean-correct'],
                      'clean_semantics': TENSOR_SEMANTICS},
             'models': models, 'dataset': {'name': 'CIFAR10', 'length': len(dataset), 'split': 'test',
                 'raw_test_batch': str(raw), 'raw_test_batch_sha256': _sha256(raw)},
-            'exclusion_inventory': {'path': str(INVENTORY), 'sha256': _sha256(INVENTORY), 'sources': len(records)},
+            'exclusion_inventory': {'path': str(inventory_path), 'sha256': _sha256(inventory_path), 'sources': len(records)},
             'excluded_indices': sorted(excluded),
             'scanned_clean_only': scanned, 'samples': samples, 'smoke_samples': smoke,
-            'request': {'epsilon': EPSILON, 'boundary_search': False, 'route_instability_prefilter': False},
-            'supersedes_selection': {'path': str(ORIGINAL_OUTPUT), 'sha256': _sha256(ORIGINAL_OUTPUT),
-                                    'reason': 'R1 old-input smoke exposed preprocessing dtype identity mismatch; no new endpoint ran'}}
+            'request': {'epsilon': EPSILON, 'boundary_search': False, 'route_instability_prefilter': False}}
+    if repair:
+        result['supersedes_selection'] = {'path': str(ORIGINAL_OUTPUT), 'sha256': _sha256(ORIGINAL_OUTPUT),
+            'reason': 'R1 old-input smoke exposed preprocessing dtype identity mismatch; no new endpoint ran'}
+    return result
 
 
 def audit_selection(path):

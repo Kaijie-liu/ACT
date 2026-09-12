@@ -33,6 +33,10 @@ METHOD_HASHES = {
     'matched': '7c726d497e2eec4fe32b14d4a2e4acc725fd7a9b407e0c3b05eb2e4f5418dd1f',
     'legacy': 'bb05702ebcd61ae47db28f2d35fe03d2e84803b23fa3e2cc4328a954e00ff756',
 }
+REGISTERED_COUNTS = {
+    'FROZEN_30_NEW_INPUT_ROUTE_COMPLEXITY_CONFIRMATION': 30,
+    'FROZEN_100_NEW_INPUT_ROUTE_COMPLEXITY_CONFIRMATION': 100,
+}
 
 
 def jobs(selection, smoke):
@@ -50,7 +54,8 @@ def jobs(selection, smoke):
 
 
 def artifacts(config, deep=False):
-    if config['budget_seconds'] != 300 or config['sample_count'] != 30 or set(config['methods']) != set(ARMS):
+    count = REGISTERED_COUNTS.get(config['classification'])
+    if count is None or config['budget_seconds'] != 300 or config['sample_count'] != count or set(config['methods']) != set(ARMS):
         raise ValueError('registered size/arms/budget changed')
     if config['primary_comparator'] != 'matched' or config['secondary_comparator'] != 'legacy':
         raise ValueError('comparator changed')
@@ -68,11 +73,15 @@ def artifacts(config, deep=False):
     review = json.loads(review_path.read_text())
     if review['status'] != 'PASS' or review['issues'] or review['selection_sha256'] != config['selection_sha256']:
         raise ValueError('selection not audited')
-    if (len(selection['samples']) != 30 or len(selection['smoke_samples']) != 1
+    if (len(selection['samples']) != count or selection['rule']['sample_count'] != count
+            or selection['rule']['start_index'] != 4000 or len(selection['smoke_samples']) != 1
             or selection['request'] != {'epsilon': 2/255, 'boundary_search': False, 'route_instability_prefilter': False}):
         raise ValueError('task size or semantics drift')
+    if count == 100:
+        from act.pipeline.moe.schedule_confirmation_100_selection import validate_prior
+        validate_prior(selection)
     if deep:
-        verify_exclusions(selection)
+        verify_exclusions(selection, count=count)
         data = selection['dataset']
         if _sha256(_inside(Path(data['raw_test_batch']), WRITE_ROOT)) != data['raw_test_batch_sha256']:
             raise ValueError('raw dataset drift')
@@ -151,7 +160,7 @@ def inspect_row(root, row, runtime, selection, configs):
 
 
 def summarize(rows, details, selection, smoke):
-    models = sorted(selection['models']); n = 1 if smoke else 30
+    models = sorted(selection['models']); n = 1 if smoke else len(selection['samples'])
     by = {(r['model'], r['rank'], r['method']): r for r in rows}
     results = {}; snapshots_equal = snapshots_unavailable = 0
     for model in models:
@@ -196,7 +205,7 @@ def summarize(rows, details, selection, smoke):
         results[model] = {'methods': methods, 'contrasts': contrasts}
     clustered = {}
     if not smoke:
-        # The same resampled input carries all models, never 90 independent pairs.
+        # The same resampled input carries all models, never 3*n independent pairs.
         rng = np.random.default_rng(20260912)
         indices = rng.integers(0, n, size=(10000, n))
         for arm in ('matched', 'legacy'):
@@ -209,7 +218,7 @@ def summarize(rows, details, selection, smoke):
                                         'percentile_interval_95': ci, 'degenerate_observed_differences': bool(np.ptp(d)==0)}
     return {'models': results, 'input_clustered_contrasts': clustered,
             'common_fact_pairs_equal': snapshots_equal, 'common_fact_pairs_unavailable': snapshots_unavailable,
-            'scope': '30 shared clean-correct inputs, 3 fixed same-family models; observed bounded costs, not uncensored speedup. Structural audits are not independent SAFE proofs. Degenerate bootstrap intervals are not equivalence evidence.'}
+            'scope': f"{len(selection['samples'])} shared clean-correct inputs, 3 fixed same-family models; observed bounded costs, not uncensored speedup. Structural audits are not independent SAFE proofs. Degenerate bootstrap intervals are not equivalence evidence."}
 
 
 def audit(root):

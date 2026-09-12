@@ -3076,3 +3076,23 @@ includes zero. Full per-model results and cost caveats in
 `docs/schedule_confirmation_r1.md`. No raw endpoint, policy or old result changed.
 PI next authorizes separate 100 NEW inputs, 900 requests, same three arms;
 exclude the thirty, no pooling/retuning, freeze and test before fresh smoke.
+
+## Separate hundred-input confirmation registered (2026-09-12)
+
+New immutable100-input selection: indices4088--4389; 529 prior indices from
+1,847 hash-bound artifacts excluded, including all previous thirty. Separate
+clean-only audit PASS, zero issues/overlap; deployment dtype order preserved.
+Config `schedule_confirmation_100_r1.json`; read
+`docs/schedule_confirmation_100_r1.md` for fixed analysis and boundaries.
+No solver/strategy changes: only explicit registered100-size runner/summary,
+new endpoints and new roots. Nine old-input smoke gates900 full requests.
+Same3arms/models,2/255,300s,25% schedule, independently charged facts and old
+strong reference. 33/33/34 rotated arm-position counts; bootstrap by100 inputs,
+no pooling with thirty, no optional sample-size extension or parameter tuning.
+This registration makes no outcome claim. Tests/commit/push precede launch.
+
+Prelaunch: 49 focused tests pass (including900-job completeness/rotation,
+rank99 statistics, no prior-thirty overlap, no resizing old profile and
+matched/legacy terminal-only exclusions). A separate process regenerates the
+new clean selection and reproduces both old R2 audits after source extension.
+All three method hashes and production verifier remain unchanged.

@@ -55,6 +55,27 @@ Read `act/pipeline/moe/docs/staged_verifier.md` and
 
 ## Authoritative reading order
 
+LATEST NEXT EXECUTION (2026-09-12): PI explicitly approved SEPARATE 100 new
+inputs. Read `act/pipeline/moe/docs/schedule_confirmation_100_r1.md` first.
+Selection 4088--4389, 529 excluded indices / 1,847 hash-bound artifacts,
+clean-only independent reconstruction PASS, zero overlap with prior thirty.
+`schedule_confirmation --config act/pipeline/moe/configs/schedule_confirmation_100_r1.json --pipeline`
+runs nine fresh OLD index3000 smoke requests, re-audits/gates, then900 full.
+Same frozen three methods/25%/models/2/255/300sec, no math or solver changes.
+Primary matched, secondary legacy, per-model SAFE/solved gains/losses; 100-input
+clustered descriptive intervals (not300 independent pairs). No pooling or
+retuning. Shared lock, fail-stop, snapshots survive kills, no resume/replacement.
+Target tmux `moe-schedule-confirm-100-r1`, log
+`data/moe/results/schedule_confirmation_100_pipeline_20260912_r1.log`.
+Inspect live state; code registration is not launch or completion. Source
+checkout must stay clean/frozen while running. Final audit automatic; outcome
+commit/push remains a separate reviewed step. External tools, LP request proofs
+and candidate-superset fallback are NOT included.
+Validation: 49 focused tests pass; separate process reconstructs100 selection
+and reproduces both old R2 smoke/full summaries exactly after the extension.
+Thirty-input results already committed/pushed at `cd32685ad`. The100 protocol
+and new selection are a separate preparation commit before any new endpoints.
+
 LATEST COMPLETION: 30-input R2 finished 270/270; separate-process re-audit
 exactly reproduces both smoke/full summaries. Full PASS, 0 issues, 190 packages,
 87 UNSAFE replays, 80 retained TIMEOUTs; all 90 common-fact pairs equal.
