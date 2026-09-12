@@ -3063,3 +3063,16 @@ R2 prelaunch validation: 63 focused tests pass, including dtype-order regression
 and retired preprocessing-config rejection. Selection and all smoke task identity
 fields reconstruct before new execution. This is a semantic preparation repair,
 not a positive-effect retry or a new method configuration.
+
+## Thirty-input R2 confirmation completed (2026-09-12)
+
+Separate re-audit matches smoke/full summaries at execution `6ad58bc9d`:
+270/270 full, PASS, zero issues, 190 packages, 87 UNSAFE replays; all 80
+TIMEOUTs remain. All 90 paired common facts agree. Adaptive SAFE/solved
+33/72 vs matched 30/53 and legacy 24/49; primary +3 multi-legal-route SAFE,
++19 solved, no losses; legacy +10/-1 SAFE. Primary clustered SAFE interval
+includes zero. Full per-model results and cost caveats in
+`results/schedule_confirmation_review_20260912_r2.json` and
+`docs/schedule_confirmation_r1.md`. No raw endpoint, policy or old result changed.
+PI next authorizes separate 100 NEW inputs, 900 requests, same three arms;
+exclude the thirty, no pooling/retuning, freeze and test before fresh smoke.

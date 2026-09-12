@@ -553,6 +553,29 @@ table, discordances and hash-bound raw references are in
 
 ### Remaining completion requirements
 
+### Thirty-input scheduling confirmation
+
+A separately frozen cohort excludes prior verification endpoints and selects
+thirty ordered jointly clean-correct images, same three models, 2/255 and
+300-second caps. All 270 requests complete. Separate structural re-audit:
+190 packages, 87 full-model UNSAFE replays, 80 retained TIMEOUTs, zero issues.
+Durable snapshots establish equality for all 90 common-fact pairs.
+Adaptive SAFE/solved: 11/22, 11/25, 11/25; matched: 11/18, 9/18, 10/17;
+legacy: 9/16, 8/19, 7/14. Each denominator is thirty. Primary gains three
+multi-legal-route SAFE and nineteen solved with no losses. Legacy comparison
+gains ten SAFE, loses one: positive net coverage is not set dominance.
+Mean capped seconds A/M/L are 108.80/153.27/197.79, 106.30/155.63/178.84,
+104.53/168.16/191.28. Primary input-clustered SAFE difference is 0.0333,
+95% descriptive interval [0,0.0889], including zero; secondary legacy
+difference 0.1000 [0.0333,0.1889]. This is a scoped positive signal, not
+universal, independent-image or high-accuracy evidence. SAFE retains the
+registered HZ/HiGHS acceptance policy. Full discordances and raw identities:
+`results/schedule_confirmation_review_20260912_r2.json` under the MoE pipeline.
+The newly authorized hundred-input run remains separate, with no pooling or
+revision of this endpoint.
+
+### Remaining completion requirements (unchanged)
+
 The evaluation is paper-complete only when the official RT-ER table, AdvMoE
 trained two-path table, monolithic comparison, and (E)-scaling study have
 zero-issue independent audits; all unsafe rows replay; no pending cell is

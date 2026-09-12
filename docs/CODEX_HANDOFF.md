@@ -1,6 +1,7 @@
 # MoE project handoff
 
-Updated 2026-09-12. Latest schedule experiment execution HEAD: `d7ac0b0a9`.
+Updated 2026-09-12. Latest 30-input confirmation execution HEAD: `6ad58bc9d`.
+Earlier development schedule execution HEAD: `d7ac0b0a9`.
 Earlier reuse experiment execution HEAD: `751e386d8`.
 Latest four-arm paired-result reference HEAD: `631f211bc`.
 The earlier common-task result remains at `70869e84bb6f7023c03354a322e3e70abf393a38`.
@@ -53,6 +54,22 @@ Read `act/pipeline/moe/docs/staged_verifier.md` and
   negative bounds. No unique global cause was established.
 
 ## Authoritative reading order
+
+LATEST COMPLETION: 30-input R2 finished 270/270; separate-process re-audit
+exactly reproduces both smoke/full summaries. Full PASS, 0 issues, 190 packages,
+87 UNSAFE replays, 80 retained TIMEOUTs; all 90 common-fact pairs equal.
+Read `act/pipeline/moe/results/schedule_confirmation_review_20260912_r2.json`
+and completed section of `act/pipeline/moe/docs/schedule_confirmation_r1.md`.
+Adaptive SAFE/solved 11/22, 11/25, 11/25 (30/model); matched 11/18, 9/18,
+10/17; legacy 9/16, 8/19, 7/14. Primary SAFE gains 0/2/1, no losses,
+all three gains multi-legal-route. Clustered SAFE interval [0,0.0889] includes
+zero. Legacy net +9 SAFE includes one loss. No general superiority claim.
+PI authorizes a SEPARATE 100-new-input, 900-request experiment with unchanged
+models/strategy/radius/budgets, excluding this 30 and all prior recorded HZ
+endpoints. Freeze/audit selection, tests, commit/push, fresh old-input smoke,
+then full. No pooling, retuning or performance-based stopping. External tools,
+LP request proofs and candidate-superset fallback stay separate. No previous
+job remains active at this completion; older launch notes below are historical.
 
 R2 REPAIR BEFORE CONFIRMATION: R1 smoke stopped at its first OLD input 3000
 with a represented-input identity mismatch. The selector scaled ToTensor in

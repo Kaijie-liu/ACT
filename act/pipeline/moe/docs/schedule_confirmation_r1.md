@@ -1,5 +1,34 @@
 # Frozen 30-input scheduling confirmation R1
 
+## Completed R2 (2026-09-12)
+
+Execution HEAD `6ad58bc9dcc7473e86b20fd76d3c24e0b21645f4`. All nine smoke and
+270 full requests finished. Separate-process re-audit exactly matches both
+saved summaries: full PASS, zero issues, 190 packages, 87 full-model UNSAFE
+replays, 80 retained TIMEOUTs. All 90 common-fact pairs agree, none unavailable.
+See `results/schedule_confirmation_review_20260912_r2.json`.
+
+| Model | Adaptive SAFE / solved | Matched SAFE / solved | Legacy SAFE / solved | Mean seconds A / M / L |
+|---|---:|---:|---:|---:|
+| seed0 | 11 / 22 | 11 / 18 | 9 / 16 | 108.80 / 153.27 / 197.79 |
+| seed1 | 11 / 25 | 9 / 18 | 8 / 19 | 106.30 / 155.63 / 178.84 |
+| seed2 | 11 / 25 | 10 / 17 | 7 / 14 | 104.53 / 168.16 / 191.28 |
+
+Each denominator is 30. Totals A/M/L: SAFE 33/30/24, solved 72/53/49,
+TIMEOUT 8/31/41, UNKNOWN 10/6/0. Primary gains three SAFE (seed1/ranks18,20;
+seed2/rank20), all multi-legal-route, nineteen solved, no losses. Legacy
+gains ten SAFE and loses seed1/rank8, net nine; solved net +23. Not dominance.
+Adaptive route-changing SAFE 4/4/4; matched 4/2/3; legacy 2/0/0.
+
+Input-clustered SAFE mean differences / descriptive 95% intervals: matched
++0.0333 [0,0.0889]; legacy +0.1000 [0.0333,0.1889]. Solved: matched +0.2111
+[0.1000,0.3333]; legacy +0.2556 [0.1444,0.3778]. Primary SAFE includes zero;
+unadjusted descriptive intervals do not establish general superiority.
+Costs include censored failures, not same-solution uncensored speedups. SAFE
+retains HZ/HiGHS numerical policy, not independently checked network proof.
+No high-accuracy or external-tool result is implied. PI authorized a SEPARATE
+100-new-input run: do not append seventy, pool, retune or backfill this table.
+
 ## R2 execution repair (supersedes R1 launch, not solver policy)
 
 R1 stopped after its first **old** smoke input (index 3000): strict identity
