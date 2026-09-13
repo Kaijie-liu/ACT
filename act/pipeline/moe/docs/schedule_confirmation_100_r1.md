@@ -1,5 +1,11 @@
 # Separate hundred-input scheduling confirmation
 
+Completion update 2026-09-14: all900 requests and final audit finished; separate
+re-audit and descriptive extraction are archived. Read
+`schedule_confirmation_100_results.md` and
+`results/schedule_confirmation_100_review_20260914_r1.json` before the original
+registration below. No rule, result root or configuration below was rewritten.
+
 Authorized by PI on 2026-09-12 after the completed thirty-input R2 result.
 This is a new experiment, NOT a seventy-input append, pooled 130-image study,
 or retry of the smaller result. The thirty-input result was separately

@@ -3096,3 +3096,23 @@ rank99 statistics, no prior-thirty overlap, no resizing old profile and
 matched/legacy terminal-only exclusions). A separate process regenerates the
 new clean selection and reproduces both old R2 audits after source extension.
 All three method hashes and production verifier remain unchanged.
+
+## Hundred-input confirmation independently archived (2026-09-14)
+
+Execution `bc0791976`; completed01:50 Sydney, about28.89h full including final
+audit. All900 requests,739 packages,198 UNSAFE replays,161 outer TIMEOUTs.
+Separate frozen-source re-audit exactly reproduces saved smoke/full; zero
+issues. All300 common-fact pairs equal,67 killed requests retain snapshots.
+Review `results/schedule_confirmation_100_review_20260914_r1.json`, narrative
+`docs/schedule_confirmation_100_results.md`, reproducible read-only extraction
+`review_schedule_confirmation_100 --check`. All terminal files agree with ledger.
+
+Adaptive SAFE179/solved256 vs matched156/219, legacy141/199. Primary +23SAFE
+(all multi-legal-route;2Tier1,21F0 with recorded reuse), no losses; legacy
++40/-2SAFE. Both legacy losses are single-pair UNKNOWN solver-limit outcomes,
+not hidden timeouts. Mean observed seconds81.71/111.57/153.27; tail benefit,
+not uniform speedup. Primary clustered descriptive SAFE interval[4.67,11.00]pp.
+Historical2/3 and30-input outcomes untouched. No pooling, tuning or extra solves.
+54 focused tests pass; separate process rebuilds archived supplement exactly.
+Next relation ablation/external tool/request LP work are separate planned
+contracts, not launched by this stage: `docs/post_confirmation_workstreams.md`.

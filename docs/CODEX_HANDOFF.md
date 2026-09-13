@@ -1,6 +1,7 @@
 # MoE project handoff
 
-Updated 2026-09-12. Latest 30-input confirmation execution HEAD: `6ad58bc9d`.
+Updated 2026-09-14. Latest 100-input confirmation execution HEAD: `bc0791976`.
+Latest 30-input confirmation execution HEAD: `6ad58bc9d`.
 Earlier development schedule execution HEAD: `d7ac0b0a9`.
 Earlier reuse experiment execution HEAD: `751e386d8`.
 Latest four-arm paired-result reference HEAD: `631f211bc`.
@@ -54,6 +55,35 @@ Read `act/pipeline/moe/docs/staged_verifier.md` and
   negative bounds. No unique global cause was established.
 
 ## Authoritative reading order
+
+LATEST COMPLETION (2026-09-14): hundred-input confirmation is complete and
+independently re-audited, NOT pending. Read
+`act/pipeline/moe/docs/schedule_confirmation_100_results.md` and
+`act/pipeline/moe/results/schedule_confirmation_100_review_20260914_r1.json`.
+All900 full requests, PASS/0 issues, 739 packages, 198 concrete UNSAFE replays,
+161 outer TIMEOUT terminals retained. All300 common-fact pairs agree; all600
+scheduled snapshots survive, including67 after kills. Separate review exactly
+reconstructs both saved smoke/full summaries and the frozen execution source.
+Adaptive SAFE/solved 59/89,57/81,63/86; matched50/76,47/65,59/78;
+legacy46/68,45/63,50/68 (100/model/arm). Primary +23 SAFE/+37 solved, no
+losses. ALL23 SAFE gains have multiple exact legal pairs: 2 Tier1,21 F0;
+all21 F0 gains record scoped reuse. This is source accounting, not reuse-off
+causal ablation. Legacy +40/-2 SAFE, net38, not set dominance. Both losses
+are single-pair UNKNOWN_MONOLITHIC_SOLVER_LIMIT, indices4150/seed0 and4142/seed1.
+Primary clustered SAFE difference +7.67pp [4.67,11.00], descriptive/unadjusted.
+These results confirm scoped new-endpoint internal net benefit, not merely
+development potential; no high-accuracy, cross-architecture, independent
+external-tool or complete floating-point proof claim. Old2/3 failure and
+thirty-input result remain separate. 54 focused tests pass; review --check
+reconstructs the archived supplement. No training or optimization was rerun.
+
+NEXT: stop same-family sample expansion and keep25% frozen. Read separate
+workstream contracts in `act/pipeline/moe/docs/post_confirmation_workstreams.md`:
+relation-only sound outer-envelope ablation, one external semantic-compatibility
+path, and request-level LP obligation checking. None is implemented/launched by
+this archival stage, and none may be folded into the completed900 or replace
+ACT/HybridZ. No jobs remain running or automatically queued. The following
+registration/launch entries are HISTORICAL; they do not override this completion.
 
 LATEST NEXT EXECUTION (2026-09-12): PI explicitly approved SEPARATE 100 new
 inputs. Read `act/pipeline/moe/docs/schedule_confirmation_100_r1.md` first.

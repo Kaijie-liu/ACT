@@ -26,6 +26,14 @@ route-changing SAFE appears 8, 8, and 7 times and all structural/mechanism
 gates pass, but one run reaches only 47% complete outcomes against a frozen
 50% threshold. Thus 2/3 complete bundles pass and the strict all-model
 performance conjunction fails.
+In a subsequent separately frozen hundred-input confirmation, unchanged
+route-complexity scheduling with scoped facts adds 23 SAFE over matched
+monolithic (no losses), and 38 net SAFE over the old strong monolithic
+(40 gains, 2 losses), across the three fixed models. All 23 primary gains are
+multi-legal-route. The input-block descriptive 95% primary difference interval
+is [4.67,11.00] percentage points. This confirms scoped new-endpoint internal
+net benefit, not external-tool dominance or high-accuracy real-scale proof;
+it does not revise the earlier composite failure or thirty-input result.
 The immutable preregistered overall solved endpoint is 56/100 and fails its 60%
 gate; boundary applicability is 76/100 and conditional coverage is 56/76. We
 separately report follow-up closure and engineering results without rewriting

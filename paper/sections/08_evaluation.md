@@ -572,7 +572,48 @@ registered HZ/HiGHS acceptance policy. Full discordances and raw identities:
 The newly authorized hundred-input run remains separate, with no pooling or
 revision of this endpoint.
 
-### Remaining completion requirements (unchanged)
+### Hundred-input new-endpoint confirmation
+
+After the thirty-input result, we froze a separate hundred-input cohort,
+excluding prior verification endpoints, with the same three models,2/255,
+three arms and 300-second outer caps. No strategy or numerical policy changed.
+All 900 requests complete; a separate process reproduces the saved final
+structural audit, including 198 concrete UNSAFE replays, 739 complete packages
+and 161 retained outer TIMEOUTs. All 300 common-fact pairs agree through durable
+snapshots, including 67 killed requests. These are not independent SAFE proofs.
+
+| Model | Adaptive SAFE / solved | Matched SAFE / solved | Legacy SAFE / solved | Mean seconds A/M/L |
+|---|---:|---:|---:|---:|
+| seed0 | 59 / 89 | 50 / 76 | 46 / 68 | 70.38 / 101.79 / 153.61 |
+| seed1 | 57 / 81 | 47 / 65 | 45 / 63 | 97.53 / 131.74 / 162.77 |
+| seed2 | 63 / 86 | 59 / 78 | 50 / 68 | 77.21 / 101.17 / 143.44 |
+
+Each denominator is 100. Adaptive adds 23 SAFE and 37 solved against matched,
+with no losses. All 23 SAFE gains lie in multi-legal-route regions (14 with
+two pairs, 8 with three, 1 with four); 2 finish at Tier 1, 21 at F0. Each of those
+21 records scoped reuse, but this source accounting is not a causal reuse-off
+ablation. Against legacy it gains 40 SAFE and loses 2, net 38; both losses are
+single-pair UNKNOWN_MONOLITHIC_SOLVER_LIMIT. Thus legacy is not set-dominated.
+
+The frozen input-block descriptive 95% intervals are primary SAFE +7.67 pp
+[4.67,11.00], solved +12.33 pp [8.67,16.33]; secondary SAFE +12.67 pp [8.67,17.00],
+solved +19.00 pp [14.33,24.00]. Resampling retains three fixed models per image;
+300 model-input pairs are not 300 independent images. These unadjusted
+intervals support scoped new-endpoint benefit, not arbitrary-model dominance.
+All capped requests contribute to cost. Primary paired medians are only
+-0.322/-0.151/-0.076 seconds, while mean differences are -31.41/-34.21/-23.96:
+savings concentrate in long requests, not uniform same-result acceleration.
+
+Both arms retain shared HZ/guard/F0 relations, so this comparison identifies
+the value of execution organization, not the entire isolated contribution of
+shared-input correlation. The old 2/3 composite failure and thirty-input study
+remain separate. Moderate-accuracy same-family models do not establish high-
+accuracy real-scale or independent external-tool superiority. Full discordant
+indices, stage/reuse sources, per-state costs and missing-package records:
+`results/schedule_confirmation_100_review_20260914_r1.json` and
+`docs/schedule_confirmation_100_results.md` under the MoE pipeline.
+
+### Remaining completion requirements
 
 The evaluation is paper-complete only when the official RT-ER table, AdvMoE
 trained two-path table, monolithic comparison, and (E)-scaling study have

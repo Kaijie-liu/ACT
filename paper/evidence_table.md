@@ -55,6 +55,24 @@ A result from one status must not be silently promoted to another.
 | C39 | The separated production staged entry point retains route-changing certification on a new fixed-radius cohort. | PREREGISTERED FIXED-RADIUS COHORT | One direct `2/255` request is issued for each of 100 sequential clean-correct seed-2 inputs selected without route or verification predicates. Outcomes are 21 SAFE, 42 replay-validated UNSAFE, 27 UNKNOWN, and 10 solver TIMEOUT. Exact coverage finds 38 route-changing requests, of which 6 are SAFE (full-denominator Wilson 95% CI 2.78%--12.48%); two use Tier 1 and four require F0. All 100 packages audit with 0 issues and no outer hard timeout. | `act/pipeline/moe/results/staged_verifier_seed2_fixed2_confirmatory_20260906_r1.json`; raw hash-bound directory `data/moe/results/staged_verifier_seed2_fixed2_confirmatory_r1`; `act/pipeline/moe/docs/staged_verifier_confirmatory.md` | execution/audit `3a3a334af48120131b29df412487cbd9d1aee591`; result pending current evidence commit | This is an existence replication and full-cohort fixed-radius yield, not certified accuracy. Do not condition the primary denominator on the 38 route-changing rows, revise seed-2 R1, or claim speedup from unmatched timing. |
 | C40 | The full staged performance bundle is not stable across all three registered training runs, although every component mechanism is observed on each run. | PREREGISTERED COMMON FIXED TASK + INDEPENDENT AGGREGATE AUDIT | The same 100 jointly clean-correct inputs receive `2/255` boxes. Seed 0/1/2 complete-outcome rates are 54%/47%/66%, with route-changing SAFE counts 8/8/7. Candidate reduction is 37/43, 16/40, and 30/38; width median/p90 is 0.432/0.538, 0.379/0.467, and 0.348/0.453; F0 resolution is 27/62, 19/50, and 31/53. All guard identities close. The auditor checks 297 packages, replays 67/67 UNSAFE witnesses, and reports 0 issues. Seed 1 alone misses the 50% coverage gate, so 2/3 per-model bundles pass and the all-model conjunction fails. | `act/pipeline/moe/results/staged_verifier_multimodel_bundle_20260906_r1.json`; `act/pipeline/moe/docs/staged_multimodel_performance_bundle.md`; raw hash-bound census/verdict directories under `data/moe/results/staged_verifier_multimodel_*_r1` | result pending current evidence commit | Audit PASS denotes integrity, not scientific-gate success. Do not pool models, weaken the coverage threshold, call the task certified accuracy, claim cross-architecture stability, or relabel the failed conjunction as a stable full bundle. |
 
+## Latest confirmation evidence
+
+### SCH100: frozen new-endpoint scheduling confirmation
+
+Status: CONFIRMATORY within three fixed same-family moderate-accuracy models.
+Execution `bc0791976`; independent review
+`act/pipeline/moe/results/schedule_confirmation_100_review_20260914_r1.json`.
+900/900,739 packages,198 UNSAFE replays,161 retained TIMEOUTs,300 equal fact
+pairs. Adaptive SAFE/solved59/89,57/81,63/86 vs matched50/76,47/65,59/78
+and legacy46/68,45/63,50/68 (100/model/arm). Primary+23SAFE,0lost; all
+multi-legal-route (2Tier1,21F0 with recorded reuse). Legacy+40/-2SAFE.
+Primary input-clustered descriptive95% interval[4.67,11.00]pp. This is a
+confirmed scoped net benefit, NOT universal dominance, external-tool evidence,
+an isolated correlation ablation, high-accuracy strict certification or
+independent reproof of all SAFE. Complete costs and discordances are in the
+review and `act/pipeline/moe/docs/schedule_confirmation_100_results.md`.
+No pooling with30 or rewriting old2/3. Next workstreams are separate.
+
 ## Artifact hierarchy
 
 1. The confirmatory manifest is the primary endpoint source:
