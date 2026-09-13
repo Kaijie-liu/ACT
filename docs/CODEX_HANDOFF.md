@@ -56,6 +56,18 @@ Read `act/pipeline/moe/docs/staged_verifier.md` and
 
 ## Authoritative reading order
 
+NEW WORK (2026-09-14, after the archival stage): relationship-only R1 is
+implemented and preregistered in `act/pipeline/moe/docs/relation_ablation_r1.md`.
+The independent arm duplicates all guarded expert factors/constraints into a
+Cartesian product; it retains scoped reuse, gates, Tier1 and25% scheduling.
+Read `relation_ablation.py` and its fixed config before execution. Six old-input
+smoke calls gate60 calls on the FIRST10 already-observed thirty-input R2 images,
+not the new100. Single CPU timing worker; no resume/overwrite or effect-size
+smoke gate. The pipeline writes final structural audits but does NOT commit or
+push results automatically. Check process/runtime/log files for actual launch
+state; implementation alone is not an experiment result. External compatibility
+and complete-request LP checking remain separate, not delivered by this stage.
+
 LATEST COMPLETION (2026-09-14): hundred-input confirmation is complete and
 independently re-audited, NOT pending. Read
 `act/pipeline/moe/docs/schedule_confirmation_100_results.md` and
@@ -80,9 +92,10 @@ reconstructs the archived supplement. No training or optimization was rerun.
 NEXT: stop same-family sample expansion and keep25% frozen. Read separate
 workstream contracts in `act/pipeline/moe/docs/post_confirmation_workstreams.md`:
 relation-only sound outer-envelope ablation, one external semantic-compatibility
-path, and request-level LP obligation checking. None is implemented/launched by
-this archival stage, and none may be folded into the completed900 or replace
-ACT/HybridZ. No jobs remain running or automatically queued. The following
+path, and request-level LP obligation checking. None was implemented/launched by
+the archival stage; the later R1 entry above supersedes its implementation state.
+None may be folded into the completed900 or replace ACT/HybridZ. No jobs remained
+running at archival completion. The following
 registration/launch entries are HISTORICAL; they do not override this completion.
 
 LATEST NEXT EXECUTION (2026-09-12): PI explicitly approved SEPARATE 100 new

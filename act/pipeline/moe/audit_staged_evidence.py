@@ -414,6 +414,20 @@ def audit_evidence_package(
             )
 
     status = verdict.get("status")
+    relation = evidence.get("registered_budgets", {}).get("f0", {}).get("expert_relation")
+    if relation is not None:
+        _record_issue(issues, relation in {"shared_input", "independent_inputs"},
+                      "unknown F0 expert relation")
+        _record_issue(issues, evidence.get("algorithm", {}).get("f0_expert_relation") == relation,
+                      "expert relation differs from registered configuration")
+        rows = list(evidence.get("tier2", {}).get("property_rows", []))
+        for pair in evidence.get("tier2", {}).get("pairs", []):
+            rows.extend(pair.get("property_rows", []))
+        for row in rows:
+            if row.get("solver_bound_kind") in {"scoped_tier1_interval", "scoped_pair_partition"}:
+                continue
+            _record_issue(issues, row.get("expert_relation") == relation,
+                          "weighted query lacks registered expert relation")
     _audit_schedule(evidence, issues)
     _record_issue(
         issues,

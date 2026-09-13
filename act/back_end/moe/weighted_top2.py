@@ -53,6 +53,8 @@ class SharedInputPairHZ:
     b_private_continuous: int
     a_private_binary: int
     b_private_binary: int
+    relation_mode: str = "shared_input"
+    source_frame_id: int | None = None
 
 
 @dataclass(frozen=True)
@@ -297,6 +299,55 @@ def shared_input_pair_hz(
     )
 
 
+def independent_input_pair_hz(
+    entry: SparseHZono, expert_a: SparseHZono, expert_b: SparseHZono,
+) -> SharedInputPairHZ:
+    """Cartesian product of guarded expert marginals, NOT a shared-input graph.
+
+    Every constraint (including each copy of the route guard) is retained.
+    All continuous and binary factors are disjoint. The diagonal embedding of
+    any common-input assignment establishes inclusion. The fresh frame must
+    never be aligned with the source router; F0 uses only its scalar gate range.
+    Candidate reconstruction uses the A-copy input and requires full replay.
+    """
+    _assert_prefix(entry, expert_a)
+    _assert_prefix(entry, expert_b)
+    if expert_a.n_out != expert_b.n_out:
+        raise ValueError("paired experts must have the same output width")
+    output = SparseHZono(
+        c=np.concatenate([expert_a.c, expert_b.c]),
+        Gc=sp.block_diag((expert_a.Gc, expert_b.Gc), format="csr"),
+        Gb=sp.block_diag((expert_a.Gb, expert_b.Gb), format="csr"),
+        Ac=sp.block_diag((expert_a.Ac, expert_b.Ac), format="csr"),
+        Ab=sp.block_diag((expert_a.Ab, expert_b.Ab), format="csr"),
+        b=np.concatenate([expert_a.b, expert_b.b]),
+        Auc=sp.block_diag((expert_a.Auc, expert_b.Auc), format="csr"),
+        Aub=sp.block_diag((expert_a.Aub, expert_b.Aub), format="csr"),
+        ub=np.concatenate([expert_a.ub, expert_b.ub]),
+        exact=False,
+    )
+    # The live output owns its frame: no source-frame alias or process-global
+    # counter is needed. IDs are execution-local, not persistent proof identity.
+    output.frame_id = id(output)
+    input_hz = SparseHZono(
+        c=entry.c.copy(),
+        Gc=sp.hstack([entry.Gc, sparse_empty(entry.n_out, output.n_cont-entry.n_cont)], format="csr"),
+        Gb=sp.hstack([entry.Gb, sparse_empty(entry.n_out, output.n_bin-entry.n_bin)], format="csr"),
+        Ac=output.Ac.copy(), Ab=output.Ab.copy(), b=output.b.copy(),
+        Auc=output.Auc.copy(), Aub=output.Aub.copy(), ub=output.ub.copy(),
+        frame_id=output.frame_id, exact=False,
+    )
+    width = expert_a.n_out
+    return SharedInputPairHZ(
+        output_hz=output, input_hz=input_hz,
+        a_rows=tuple(range(width)), b_rows=tuple(range(width, 2*width)),
+        shared_continuous=0, shared_binary=0,
+        a_private_continuous=expert_a.n_cont, b_private_continuous=expert_b.n_cont,
+        a_private_binary=expert_a.n_bin, b_private_binary=expert_b.n_bin,
+        relation_mode="independent_inputs", source_frame_id=entry.frame_id,
+    )
+
+
 def mccormick_inequalities(
     lambda_lower: float,
     lambda_upper: float,
@@ -479,7 +530,11 @@ def build_weighted_top2_f0(
 ) -> WeightedTop2F0Encoding:
     """Build the range-only sigmoid + McCormick relaxation for one safe row."""
     selected = _canonical_top2_pair(pair)
-    if conditioned_router.frame_id != pair_hz.output_hz.frame_id:
+    if pair_hz.relation_mode not in {"shared_input", "independent_inputs"}:
+        raise ValueError("unknown expert relation mode")
+    source_frame = (pair_hz.source_frame_id if pair_hz.relation_mode == "independent_inputs"
+                    else pair_hz.output_hz.frame_id)
+    if conditioned_router.frame_id != source_frame:
         raise ValueError("router and expert pair must share one generator frame")
     classes = len(pair_hz.a_rows)
     q = np.asarray(property_row, dtype=np.float64).reshape(-1)

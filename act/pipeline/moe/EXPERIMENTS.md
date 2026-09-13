@@ -6,6 +6,24 @@ results remain under `/data1/Kane/MOE/ACT/data/moe` and are not committed.
 
 ## Safety and Git boundary
 
+### 2026-09-14: separate relation-ablation R1 registration
+
+After independently archiving SCH100, implement the explicit guarded-marginal
+Cartesian-product arm described in `docs/relation_ablation_r1.md`. Protocol and
+runner: `configs/relation_ablation_r1.json`, `relation_ablation.py`. Six smoke
+calls gate60 complete-request calls on ten already-observed thirty-input R2
+images. Configuration differs only in `f0.expert_relation`. Nothing changes in
+the old900 results or acceptance policy. This entry registers the experiment,
+not a real-model effect result; inspect the new raw runtime/audit files for
+execution state. Analytic shared cancellation .2 vs independent -.8 and both
+complete F0 paths are covered by tests, including false-witness rejection.
+
+The first combined regression run had79 passes and one source-identity failure:
+the old archival test compared today's intentionally changed sources to the
+SCH100 execution hash. The regression now reconstructs that hash from immutable
+Git objects; a new negative test ensures the archival CLI STILL rejects changed
+current execution sources. No historical audit/threshold/result was altered.
+
 - Run only from `/data1/Kane/MOE/ACT` on `feat/moe-route-verification`.
 - Use `/data1/Kane/miniconda3/envs/act-py312/bin/python`.
 - Keep all datasets, caches, checkpoints, logs, and results under

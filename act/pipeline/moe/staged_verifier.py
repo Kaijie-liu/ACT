@@ -145,6 +145,8 @@ def _validate_config(config: Mapping[str, Any]) -> None:
         raise ValueError(f"staged verifier config lacks {sorted(missing)}")
     if config["numerical_safety"] != hz_numerical_policy_manifest():
         raise ValueError("staged verifier numerical policy differs from implementation")
+    if config["f0"].get("expert_relation", "shared_input") not in {"shared_input", "independent_inputs"}:
+        raise ValueError("unknown F0 expert relation")
     if float(config["f0"]["solver"]["safety_tolerance"]) != float(
         config["numerical_safety"]["safe_positive_margin"]
     ):
@@ -285,6 +287,7 @@ def _run_f0_impl(
                 program.experts[pair[1]],
                 entry_hz=guarded_entry,
                 hybridz_config=support_config,
+                expert_relation=config.get("expert_relation", "shared_input"),
             )
             tightening_seconds = (
                 propagated.expert_a.elapsed + propagated.expert_b.elapsed
@@ -343,6 +346,10 @@ def _run_f0_impl(
                 property_rows.append(
                     {
                         "property_index": property_index,
+                        **({"expert_relation": propagated.joint.relation_mode,
+                            "expert_pair_factors": [propagated.joint.output_hz.n_cont,
+                                                    propagated.joint.output_hz.n_bin]}
+                           if "expert_relation" in config else {}),
                         "status": "UNSAFE" if valid else decision.status,
                         "reason": (
                             UNSAFE_FULL_FORWARD_FALLBACK
@@ -640,6 +647,8 @@ def verify_staged_linf(
             "unguarded_accounting_propagation_executed": False,
             "tier1": "guarded expert-wise gate elimination",
             "tier2": "property-directed weighted top-2 F0",
+            **({"f0_expert_relation": config["f0"]["expert_relation"]}
+               if "expert_relation" in config["f0"] else {}),
         },
         **({"route_complexity_schedule": {
             "config": dict(schedule), **tier1["schedule"], "budget": budget_record

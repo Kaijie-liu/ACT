@@ -358,6 +358,7 @@ def shared_input_pair_propagation(
     *,
     entry_hz,
     hybridz_config=None,
+    expert_relation="shared_input",
 ) -> SharedPairPropagation:
     """Propagate two experts from one guard, then separate private HZ factors."""
     if not isinstance(entry_hz, SparseHZono):
@@ -376,7 +377,12 @@ def shared_input_pair_propagation(
         expert_b.output_hz, SparseHZono
     ):
         raise RuntimeError("paired expert propagation lost its exact sparse HZ")
-    joint = shared_input_pair_hz(
+    if expert_relation not in {"shared_input", "independent_inputs"}:
+        raise ValueError("unknown expert relation mode")
+    from act.back_end.moe.weighted_top2 import independent_input_pair_hz
+    constructor = (shared_input_pair_hz if expert_relation == "shared_input"
+                   else independent_input_pair_hz)
+    joint = constructor(
         entry_hz,
         expert_a.output_hz,
         expert_b.output_hz,

@@ -65,6 +65,7 @@ def _run_monolithic(*, model, center, clean_prediction, internal, config, reuse=
         propagated = shared_input_pair_propagation(
             program.experts[pair[0]], program.experts[pair[1]],
             entry_hz=entry, hybridz_config=hz_config,
+            expert_relation=config.get("expert_relation", "shared_input"),
         )
         gates = compute_weighted_top2_gate_range(
             conditioned, pair, time_limit=(budget.limit("monolithic_margin", float(solver["margin_support_seconds"]))
@@ -108,6 +109,14 @@ def _run_monolithic(*, model, center, clean_prediction, internal, config, reuse=
         row = asdict(decision)
         row.pop("candidate_input", None)
         row.update(property_index=index, full_model_witness_valid=bool(replay["valid"]))
+        if "expert_relation" in config:
+            row["expert_relation"] = config["expert_relation"]
+            row["expert_pair_factors"] = [
+                {"pair": list(pair), "factors": [propagated.joint.output_hz.n_cont,
+                                                  propagated.joint.output_hz.n_bin],
+                 "margin_bounds": list(gates.margin_bounds),
+                 "lambda_bounds": list(gates.lambda_bounds)}
+                for pair, _, propagated, gates in pairs if pair in residual]
         if replay["valid"]:
             witness = decision.candidate_input.detach().cpu()
             row.update(status="UNSAFE", reason="UNSAFE_FULL_FORWARD_FALLBACK")

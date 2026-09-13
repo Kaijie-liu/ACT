@@ -1,6 +1,10 @@
 import json
+import hashlib
+import io
 from pathlib import Path
 import tempfile
+import subprocess
+import tarfile
 import unittest
 from unittest.mock import patch
 
@@ -48,7 +52,21 @@ class ReviewTests(unittest.TestCase):
         self.assertEqual(len(secondary['lost_safe']), 2)
         self.assertTrue(all(g['adaptive']['status']=='UNKNOWN' and g['adaptive']['exact_pair_count']==1
                             for g in secondary['lost_safe']))
-        self.assertEqual(review.frozen_source_identity(), archived['source_sha256'])
+        # The regression suite now runs on later implementation revisions.
+        # Check the archived execution's Git bytes, not today's working files.
+        # The actual archival CLI still requires the frozen current sources.
+        data = subprocess.check_output(['git', 'archive', review.EXECUTION_HEAD, 'act'], cwd=review.PROJECT_ROOT)
+        digest = hashlib.sha256()
+        with tarfile.open(fileobj=io.BytesIO(data)) as source:
+            for member in sorted((m for m in source.getmembers() if m.isfile() and m.name.endswith('.py')), key=lambda m: m.name):
+                sha = hashlib.sha256(source.extractfile(member).read()).hexdigest()
+                digest.update(f'{member.name}:{sha}\n'.encode())
+        self.assertEqual(digest.hexdigest(), archived['source_sha256'])
+
+    def test_archival_cli_still_rejects_changed_execution_sources(self):
+        with patch.object(review, 'frozen_source_identity', return_value='changed'), patch.object(review, 'audit') as audit:
+            with self.assertRaises(ValueError): review.build()
+            audit.assert_not_called()
 
     def test_archival_write_never_overwrites_or_launches_new_queries(self):
         with patch('sys.argv', ['review', '--write']), patch.object(review, 'build') as build:
