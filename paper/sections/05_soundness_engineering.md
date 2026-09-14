@@ -238,3 +238,20 @@ guard lowering,route exclusions and the F0 outer-HZ construction/floating
 coefficients remain trusted. Exact rational LP checking cannot retroactively
 prove those upstream transformations. See `request_lp_results.md` and its
 hash-bound36-proof recheck for the explicit remaining trusted base.
+
+A separately frozen order-only follow-up closes those three residuals without
+an unchecked numerical sigmoid endpoint. For ordered pair(a,b),let m=r_a-r_b.
+A checked lower bound on m implies lambda_a>=1/2 when nonnegative; a checked
+lower bound on -m implies lambda_a<=1/2 when nonnegative. Both statements
+follow from sigmoid monotonicity and sigmoid(0)=1/2,including ties. Unknown
+signs retain the corresponding universal endpoint. Only dyadic endpoints are
+used; no floating transcendental evaluation justifies the range.
+
+In the same old request,the checked upper bound for r2-r4 is about-3.11463,
+so lambda2 lies in[0,1/2]. Five new LP queries(two order bounds,three residual
+outputs) give residual lower bounds2.60544,1.55273,4.10960. Rechecking all41
+stored exports/duals establishes positive downstream evidence for all18
+obligations,with minimum aggregated bound about.183047. This is explicitly
+conditional on the same trusted upstream and F0 lowering,not a proof of the
+native network implementation or an additional performance benchmark. The
+R1 universal-weight UNKNOWN remains intact. See `request_lp_order_results.md`.

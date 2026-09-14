@@ -1,0 +1,1317 @@
+{
+  "aggregate_recomputed": {
+    "completed_rows": 18,
+    "positive_rows": 18,
+    "required_rows": 18,
+    "status": "ALL_LISTED_STATIC_OBLIGATIONS_NUMERICALLY_POSITIVE"
+  },
+  "audit": "PASS",
+  "classification": "EXTERNAL_REAL_MODEL_STATIC_WHOLE_BOX_CONTROL_NOT_FULL_SYSTEM_BENCHMARK",
+  "formal_SAFE": false,
+  "issues": [],
+  "launch": {
+    "adapter_sha256": "653f08080a71fbdd12fa823d6974bc451bedb8984714b2b3c0ab31e19fd7c54e",
+    "commits": {
+      "/data1/Kane/MOE/baselines/alpha-beta-CROWN": "e5c7e17bf0488843acb77b7519f59876717a49f4",
+      "/data1/Kane/MOE/baselines/alpha-beta-CROWN/auto_LiRPA": "5a098e8f9fb5786a428a024981d833d303921f2d"
+    },
+    "config": {
+      "bound_opts": {
+        "conv_mode": "matrix"
+      },
+      "device": "cpu",
+      "dtype": "float64",
+      "method": "CROWN"
+    },
+    "environment": "/data1/Kane/MOE/envs/alpha-beta-crown/bin/python",
+    "execution_head": "7e911dfab0d3aca53d6eab93b5d300f140f71b05",
+    "pairs": [
+      [
+        2,
+        4
+      ],
+      [
+        4,
+        5
+      ]
+    ],
+    "parent_manifest_sha256": "90aad930c9f8b1f7018c3a7ef30cee80ab4487e5fae16b231bc6432c7b3cf082",
+    "request": {
+      "center": {
+        "dtype": "torch.float64",
+        "sha256": "da80b8121153fe9e3d91e7c5f41f448488377179aae5a531ef7288f3516383e8",
+        "shape": [
+          1,
+          3,
+          32,
+          32
+        ]
+      },
+      "checkpoint_sha256": "fbaa7c871d28763ac5acb29a9502dc5d146e1d5af0b4a03e9911899251bd43f7",
+      "classes": 10,
+      "clean_prediction": 5,
+      "dataset_index": 3000,
+      "epsilon": 0.00784313725490196,
+      "experts": 8,
+      "lower": {
+        "dtype": "torch.float64",
+        "sha256": "7674b721525bd64b85a54229112348c37d8af54f465ec8293d703dbfa40e6b02",
+        "shape": [
+          1,
+          3,
+          32,
+          32
+        ]
+      },
+      "selection_sha256": "e001940bf28f64c997dc1f947dd2fcda515f4051985836756c25843b89dcd987",
+      "tie_policy": "ANY_LEGAL_TOPK",
+      "top_k": 2,
+      "upper": {
+        "dtype": "torch.float64",
+        "sha256": "1392246ed30d116ab76e489ae437661e3e094c6f66f6fac8a08ca1db23940829",
+        "shape": [
+          1,
+          3,
+          32,
+          32
+        ]
+      }
+    },
+    "request_id": "e40603e7be06c1630144862e24d077a3dfc69e73f05dbb4d120c6d90dc4a4560",
+    "request_tensor_sha256": "2523f7b04070af1eb4ab5d8bef282828902abfa921d3128f5ff3b9206916867e",
+    "scope": "Two whole-box static variable-weight obligations; not a complete dynamic-model benchmark or strict proof.",
+    "timeout_each_seconds": 120,
+    "worker_sha256": "15159c5bebd6008fc5ab50335918a631237bb2ee695240df18248fca60fde689"
+  },
+  "positive_rows": 18,
+  "raw_hashes": {
+    "launch.json": "d7fc23613beca0013ca4f02f16730a801a4f06f6f94d19537d043b3092ff0d56",
+    "pair_2_4.json": "2889c6d949c5774c0a148b32b5a53204948745d76fe7cd686f650b851768aa9c",
+    "pair_2_4.log": "99b04ac0ebce2e6c602f25f366ffab6aa996cb94145ca8977abdd0cb0d202333",
+    "pair_4_5.json": "e3ef40c427219e4e6de9451537be0ed0cb7399b0495c8b81bee66fbaf8486d53",
+    "pair_4_5.log": "99b04ac0ebce2e6c602f25f366ffab6aa996cb94145ca8977abdd0cb0d202333"
+  },
+  "raw_root": "/data1/Kane/MOE/ACT/data/moe/results/external_static_pair_20260914_r2",
+  "required_rows": 18,
+  "results": [
+    {
+      "C": [
+        [
+          [
+            -1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            -1.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            -1.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            -1.0,
+            0.0,
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            -1.0,
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            -1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            -1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            0.0,
+            -1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            -1.0
+          ]
+        ]
+      ],
+      "auto_lirpa_file": "/data1/Kane/MOE/baselines/alpha-beta-CROWN/auto_LiRPA/auto_LiRPA/__init__.py",
+      "bound_seconds": 0.05183705221861601,
+      "bounds": {
+        "lower": [
+          10.499907635437742,
+          11.798377198925223,
+          5.395571724595874,
+          3.0508610866420716,
+          7.929474820030396,
+          4.227592685106619,
+          4.792844830191327,
+          11.873175795724643,
+          8.412908834561755
+        ],
+        "upper": [
+          14.930945937297514,
+          17.41361429139429,
+          8.6778230892207,
+          5.959953318564494,
+          12.668894776485882,
+          9.787862285070524,
+          8.752325279113613,
+          17.174967233294684,
+          13.422845944287603
+        ]
+      },
+      "concrete_margins": [
+        [
+          13.210210938357873,
+          15.21803664732862,
+          7.438152496295283,
+          4.579262019970737,
+          10.704117969785877,
+          7.016146774252385,
+          7.010661971507012,
+          14.935563313692803,
+          11.442939727163965
+        ],
+        [
+          13.191886419665568,
+          15.199356700947572,
+          7.3812230047598435,
+          4.545658984553707,
+          10.661023576807981,
+          6.9435474606685945,
+          6.912276942242229,
+          14.962184579199686,
+          11.41433172985956
+        ],
+        [
+          13.228481743597158,
+          15.236653077816413,
+          7.4950926554225985,
+          4.612870092323705,
+          10.74719241679578,
+          7.088774941316775,
+          7.109099155848683,
+          14.908838255353146,
+          11.471514093693592
+        ],
+        [
+          13.207324494717465,
+          15.234264719415687,
+          7.42940067306664,
+          4.550142858827156,
+          10.69802243887711,
+          7.008324965293538,
+          6.981111641083166,
+          14.919977445327063,
+          11.443932479741632
+        ],
+        [
+          13.213097396617805,
+          15.201808044032504,
+          7.446904526089937,
+          4.608381973907864,
+          10.710213615818784,
+          7.023968767315423,
+          7.040213095403936,
+          14.951149544528702,
+          11.441946890424529
+        ]
+      ],
+      "device": "cpu",
+      "dtype": "float64",
+      "forced_branch_max_error": 0.0,
+      "formal_SAFE": false,
+      "graph_seconds": 0.048842528834939,
+      "lowered_max_error": 0.0,
+      "model_state": {
+        "parameter_count": 6961368,
+        "sha256": "40e184c22e4f6c63fe4187a21df13b1ca9c74b296a59f2d6e32dd3f963e61c22",
+        "tensor_count": 52
+      },
+      "nodes": [
+        {
+          "name": "/0",
+          "type": "BoundInput"
+        },
+        {
+          "name": "/1",
+          "type": "BoundParams"
+        },
+        {
+          "name": "/2",
+          "type": "BoundParams"
+        },
+        {
+          "name": "/3",
+          "type": "BoundParams"
+        },
+        {
+          "name": "/4",
+          "type": "BoundParams"
+        },
+        {
+          "name": "/5",
+          "type": "BoundParams"
+        },
+        {
+          "name": "/6",
+          "type": "BoundParams"
+        },
+        {
+          "name": "/7",
+          "type": "BoundParams"
+        },
+        {
+          "name": "/8",
+          "type": "BoundParams"
+        },
+        {
+          "name": "/9",
+          "type": "BoundParams"
+        },
+        {
+          "name": "/10",
+          "type": "BoundParams"
+        },
+        {
+          "name": "/11",
+          "type": "BoundParams"
+        },
+        {
+          "name": "/12",
+          "type": "BoundParams"
+        },
+        {
+          "name": "/13",
+          "type": "BoundParams"
+        },
+        {
+          "name": "/14",
+          "type": "BoundParams"
+        },
+        {
+          "name": "/15",
+          "type": "BoundParams"
+        },
+        {
+          "name": "/16",
+          "type": "BoundParams"
+        },
+        {
+          "name": "/17",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/18",
+          "type": "BoundFlatten"
+        },
+        {
+          "name": "/input",
+          "type": "BoundLinear"
+        },
+        {
+          "name": "/20",
+          "type": "BoundRelu"
+        },
+        {
+          "name": "/21",
+          "type": "BoundLinear"
+        },
+        {
+          "name": "/22",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/23",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/24",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/25",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/26",
+          "type": "BoundUnsqueeze"
+        },
+        {
+          "name": "/27",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/28",
+          "type": "BoundUnsqueeze"
+        },
+        {
+          "name": "/29",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/30",
+          "type": "BoundUnsqueeze"
+        },
+        {
+          "name": "/31",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/32",
+          "type": "BoundUnsqueeze"
+        },
+        {
+          "name": "/33",
+          "type": "BoundSlice"
+        },
+        {
+          "name": "/34",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/35",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/36",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/37",
+          "type": "BoundUnsqueeze"
+        },
+        {
+          "name": "/38",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/39",
+          "type": "BoundUnsqueeze"
+        },
+        {
+          "name": "/40",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/41",
+          "type": "BoundUnsqueeze"
+        },
+        {
+          "name": "/42",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/43",
+          "type": "BoundUnsqueeze"
+        },
+        {
+          "name": "/44",
+          "type": "BoundSlice"
+        },
+        {
+          "name": "/45",
+          "type": "BoundConcat"
+        },
+        {
+          "name": "/46",
+          "type": "BoundSoftmax"
+        },
+        {
+          "name": "/47",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/48",
+          "type": "BoundUnsqueeze"
+        },
+        {
+          "name": "/49",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/50",
+          "type": "BoundUnsqueeze"
+        },
+        {
+          "name": "/51",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/52",
+          "type": "BoundUnsqueeze"
+        },
+        {
+          "name": "/53",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/54",
+          "type": "BoundUnsqueeze"
+        },
+        {
+          "name": "/55",
+          "type": "BoundSlice"
+        },
+        {
+          "name": "/input-3",
+          "type": "BoundLinear"
+        },
+        {
+          "name": "/57",
+          "type": "BoundRelu"
+        },
+        {
+          "name": "/input-7",
+          "type": "BoundLinear"
+        },
+        {
+          "name": "/59",
+          "type": "BoundRelu"
+        },
+        {
+          "name": "/60",
+          "type": "BoundLinear"
+        },
+        {
+          "name": "/61",
+          "type": "BoundMul"
+        },
+        {
+          "name": "/62",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/63",
+          "type": "BoundUnsqueeze"
+        },
+        {
+          "name": "/64",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/65",
+          "type": "BoundUnsqueeze"
+        },
+        {
+          "name": "/66",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/67",
+          "type": "BoundUnsqueeze"
+        },
+        {
+          "name": "/68",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/69",
+          "type": "BoundUnsqueeze"
+        },
+        {
+          "name": "/70",
+          "type": "BoundSlice"
+        },
+        {
+          "name": "/input-11",
+          "type": "BoundLinear"
+        },
+        {
+          "name": "/72",
+          "type": "BoundRelu"
+        },
+        {
+          "name": "/input-15",
+          "type": "BoundLinear"
+        },
+        {
+          "name": "/74",
+          "type": "BoundRelu"
+        },
+        {
+          "name": "/75",
+          "type": "BoundLinear"
+        },
+        {
+          "name": "/76",
+          "type": "BoundMul"
+        },
+        {
+          "name": "/77",
+          "type": "BoundAdd"
+        }
+      ],
+      "pair": [
+        2,
+        4
+      ],
+      "phase": "complete",
+      "positive_rows": 9,
+      "probe_weights": [
+        [
+          [
+            0.03772824704045549,
+            0.9622717529595445
+          ]
+        ],
+        [
+          [
+            0.03817049998862187,
+            0.9618295000113782
+          ]
+        ],
+        [
+          [
+            0.03729091948167715,
+            0.9627090805183228
+          ]
+        ],
+        [
+          [
+            0.03774174828089808,
+            0.9622582517191018
+          ]
+        ],
+        [
+          [
+            0.037714750440472636,
+            0.9622852495595273
+          ]
+        ]
+      ],
+      "python": "3.11.16 | packaged by conda-forge | (main, Aug 21 2026, 22:44:51) [GCC 14.4.0]",
+      "request": {
+        "center": {
+          "dtype": "torch.float64",
+          "sha256": "da80b8121153fe9e3d91e7c5f41f448488377179aae5a531ef7288f3516383e8",
+          "shape": [
+            1,
+            3,
+            32,
+            32
+          ]
+        },
+        "checkpoint_sha256": "fbaa7c871d28763ac5acb29a9502dc5d146e1d5af0b4a03e9911899251bd43f7",
+        "classes": 10,
+        "clean_prediction": 5,
+        "dataset_index": 3000,
+        "epsilon": 0.00784313725490196,
+        "experts": 8,
+        "lower": {
+          "dtype": "torch.float64",
+          "sha256": "7674b721525bd64b85a54229112348c37d8af54f465ec8293d703dbfa40e6b02",
+          "shape": [
+            1,
+            3,
+            32,
+            32
+          ]
+        },
+        "selection_sha256": "e001940bf28f64c997dc1f947dd2fcda515f4051985836756c25843b89dcd987",
+        "tie_policy": "ANY_LEGAL_TOPK",
+        "top_k": 2,
+        "upper": {
+          "dtype": "torch.float64",
+          "sha256": "1392246ed30d116ab76e489ae437661e3e094c6f66f6fac8a08ca1db23940829",
+          "shape": [
+            1,
+            3,
+            32,
+            32
+          ]
+        }
+      },
+      "request_id": "e40603e7be06c1630144862e24d077a3dfc69e73f05dbb4d120c6d90dc4a4560",
+      "required_rows": 9,
+      "seconds": 0.3738664956763387,
+      "status": "NUMERICAL_BOUND_RETURNED_NOT_FORMAL_SAFE",
+      "task": "STATIC_VARIABLE_WEIGHT_WHOLE_BOX_SUFFICIENT_OBLIGATION",
+      "torch": "2.11.0+cu130"
+    },
+    {
+      "C": [
+        [
+          [
+            -1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            -1.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            -1.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            -1.0,
+            0.0,
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            -1.0,
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            -1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            -1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            0.0,
+            -1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            -1.0
+          ]
+        ]
+      ],
+      "auto_lirpa_file": "/data1/Kane/MOE/baselines/alpha-beta-CROWN/auto_LiRPA/auto_LiRPA/__init__.py",
+      "bound_seconds": 0.04815088398754597,
+      "bounds": {
+        "lower": [
+          10.493227313147573,
+          11.818999339990075,
+          5.430079575680606,
+          3.099494364914342,
+          7.977632581532508,
+          4.351367996840464,
+          4.794971144405135,
+          11.911232142274663,
+          8.483747923131217
+        ],
+        "upper": [
+          14.927979500264179,
+          17.43985255156295,
+          8.718915335884665,
+          6.0148625607263515,
+          12.722857408336443,
+          9.92992994899572,
+          8.757680367239503,
+          17.22131045655252,
+          13.50439662728757
+        ]
+      },
+      "concrete_margins": [
+        [
+          13.204763839355824,
+          15.24055681276861,
+          7.474640167482027,
+          4.62951963175227,
+          10.753856634210578,
+          7.145833855029894,
+          7.013879479981094,
+          14.976439600337368,
+          11.517232839460846
+        ],
+        [
+          13.185689826776283,
+          15.221573269877663,
+          7.418439753532835,
+          4.597027538572232,
+          10.711484581016814,
+          7.076120605633919,
+          6.9152968560171395,
+          15.002987291759394,
+          11.48964886821404
+        ],
+        [
+          13.223768334150765,
+          15.259467711867009,
+          7.530868639273131,
+          4.662039375334672,
+          10.796222751141862,
+          7.215633367242174,
+          7.112517321655724,
+          14.949777912257144,
+          11.544799479808194
+        ],
+        [
+          13.201871265148874,
+          15.256786545005172,
+          7.465914911629955,
+          4.600436076137729,
+          10.747789270623924,
+          7.138087311537906,
+          6.984334167078023,
+          14.960864151244131,
+          11.518257276621915
+        ],
+        [
+          13.207656424569127,
+          15.224326547294195,
+          7.483365644184436,
+          4.658603999364697,
+          10.759924126551335,
+          7.153580619341145,
+          7.043425589940441,
+          14.992015414144586,
+          11.516208330916362
+        ]
+      ],
+      "device": "cpu",
+      "dtype": "float64",
+      "forced_branch_max_error": 0.0,
+      "formal_SAFE": false,
+      "graph_seconds": 0.0423967270180583,
+      "lowered_max_error": 0.0,
+      "model_state": {
+        "parameter_count": 6961368,
+        "sha256": "40e184c22e4f6c63fe4187a21df13b1ca9c74b296a59f2d6e32dd3f963e61c22",
+        "tensor_count": 52
+      },
+      "nodes": [
+        {
+          "name": "/0",
+          "type": "BoundInput"
+        },
+        {
+          "name": "/1",
+          "type": "BoundParams"
+        },
+        {
+          "name": "/2",
+          "type": "BoundParams"
+        },
+        {
+          "name": "/3",
+          "type": "BoundParams"
+        },
+        {
+          "name": "/4",
+          "type": "BoundParams"
+        },
+        {
+          "name": "/5",
+          "type": "BoundParams"
+        },
+        {
+          "name": "/6",
+          "type": "BoundParams"
+        },
+        {
+          "name": "/7",
+          "type": "BoundParams"
+        },
+        {
+          "name": "/8",
+          "type": "BoundParams"
+        },
+        {
+          "name": "/9",
+          "type": "BoundParams"
+        },
+        {
+          "name": "/10",
+          "type": "BoundParams"
+        },
+        {
+          "name": "/11",
+          "type": "BoundParams"
+        },
+        {
+          "name": "/12",
+          "type": "BoundParams"
+        },
+        {
+          "name": "/13",
+          "type": "BoundParams"
+        },
+        {
+          "name": "/14",
+          "type": "BoundParams"
+        },
+        {
+          "name": "/15",
+          "type": "BoundParams"
+        },
+        {
+          "name": "/16",
+          "type": "BoundParams"
+        },
+        {
+          "name": "/17",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/18",
+          "type": "BoundFlatten"
+        },
+        {
+          "name": "/input",
+          "type": "BoundLinear"
+        },
+        {
+          "name": "/20",
+          "type": "BoundRelu"
+        },
+        {
+          "name": "/21",
+          "type": "BoundLinear"
+        },
+        {
+          "name": "/22",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/23",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/24",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/25",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/26",
+          "type": "BoundUnsqueeze"
+        },
+        {
+          "name": "/27",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/28",
+          "type": "BoundUnsqueeze"
+        },
+        {
+          "name": "/29",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/30",
+          "type": "BoundUnsqueeze"
+        },
+        {
+          "name": "/31",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/32",
+          "type": "BoundUnsqueeze"
+        },
+        {
+          "name": "/33",
+          "type": "BoundSlice"
+        },
+        {
+          "name": "/34",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/35",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/36",
+          "type": "BoundUnsqueeze"
+        },
+        {
+          "name": "/37",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/38",
+          "type": "BoundUnsqueeze"
+        },
+        {
+          "name": "/39",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/40",
+          "type": "BoundUnsqueeze"
+        },
+        {
+          "name": "/41",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/42",
+          "type": "BoundUnsqueeze"
+        },
+        {
+          "name": "/43",
+          "type": "BoundSlice"
+        },
+        {
+          "name": "/44",
+          "type": "BoundConcat"
+        },
+        {
+          "name": "/45",
+          "type": "BoundSoftmax"
+        },
+        {
+          "name": "/46",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/47",
+          "type": "BoundUnsqueeze"
+        },
+        {
+          "name": "/48",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/49",
+          "type": "BoundUnsqueeze"
+        },
+        {
+          "name": "/50",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/51",
+          "type": "BoundUnsqueeze"
+        },
+        {
+          "name": "/52",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/53",
+          "type": "BoundUnsqueeze"
+        },
+        {
+          "name": "/54",
+          "type": "BoundSlice"
+        },
+        {
+          "name": "/input-3",
+          "type": "BoundLinear"
+        },
+        {
+          "name": "/56",
+          "type": "BoundRelu"
+        },
+        {
+          "name": "/input-7",
+          "type": "BoundLinear"
+        },
+        {
+          "name": "/58",
+          "type": "BoundRelu"
+        },
+        {
+          "name": "/59",
+          "type": "BoundLinear"
+        },
+        {
+          "name": "/60",
+          "type": "BoundMul"
+        },
+        {
+          "name": "/61",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/62",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/63",
+          "type": "BoundUnsqueeze"
+        },
+        {
+          "name": "/64",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/65",
+          "type": "BoundUnsqueeze"
+        },
+        {
+          "name": "/66",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/67",
+          "type": "BoundUnsqueeze"
+        },
+        {
+          "name": "/68",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/69",
+          "type": "BoundUnsqueeze"
+        },
+        {
+          "name": "/70",
+          "type": "BoundSlice"
+        },
+        {
+          "name": "/input-11",
+          "type": "BoundLinear"
+        },
+        {
+          "name": "/72",
+          "type": "BoundRelu"
+        },
+        {
+          "name": "/input-15",
+          "type": "BoundLinear"
+        },
+        {
+          "name": "/74",
+          "type": "BoundRelu"
+        },
+        {
+          "name": "/75",
+          "type": "BoundLinear"
+        },
+        {
+          "name": "/76",
+          "type": "BoundMul"
+        },
+        {
+          "name": "/77",
+          "type": "BoundAdd"
+        }
+      ],
+      "pair": [
+        4,
+        5
+      ],
+      "phase": "complete",
+      "positive_rows": 9,
+      "probe_weights": [
+        [
+          [
+            0.962148027567731,
+            0.03785197243226894
+          ]
+        ],
+        [
+          [
+            0.9616628976796237,
+            0.03833710232037645
+          ]
+        ],
+        [
+          [
+            0.9626272570450863,
+            0.037372742954913565
+          ]
+        ],
+        [
+          [
+            0.9621344752518897,
+            0.037865524748110335
+          ]
+        ],
+        [
+          [
+            0.9621615752238684,
+            0.03783842477613168
+          ]
+        ]
+      ],
+      "python": "3.11.16 | packaged by conda-forge | (main, Aug 21 2026, 22:44:51) [GCC 14.4.0]",
+      "request": {
+        "center": {
+          "dtype": "torch.float64",
+          "sha256": "da80b8121153fe9e3d91e7c5f41f448488377179aae5a531ef7288f3516383e8",
+          "shape": [
+            1,
+            3,
+            32,
+            32
+          ]
+        },
+        "checkpoint_sha256": "fbaa7c871d28763ac5acb29a9502dc5d146e1d5af0b4a03e9911899251bd43f7",
+        "classes": 10,
+        "clean_prediction": 5,
+        "dataset_index": 3000,
+        "epsilon": 0.00784313725490196,
+        "experts": 8,
+        "lower": {
+          "dtype": "torch.float64",
+          "sha256": "7674b721525bd64b85a54229112348c37d8af54f465ec8293d703dbfa40e6b02",
+          "shape": [
+            1,
+            3,
+            32,
+            32
+          ]
+        },
+        "selection_sha256": "e001940bf28f64c997dc1f947dd2fcda515f4051985836756c25843b89dcd987",
+        "tie_policy": "ANY_LEGAL_TOPK",
+        "top_k": 2,
+        "upper": {
+          "dtype": "torch.float64",
+          "sha256": "1392246ed30d116ab76e489ae437661e3e094c6f66f6fac8a08ca1db23940829",
+          "shape": [
+            1,
+            3,
+            32,
+            32
+          ]
+        }
+      },
+      "request_id": "e40603e7be06c1630144862e24d077a3dfc69e73f05dbb4d120c6d90dc4a4560",
+      "required_rows": 9,
+      "seconds": 0.29877141769975424,
+      "status": "NUMERICAL_BOUND_RETURNED_NOT_FORMAL_SAFE",
+      "task": "STATIC_VARIABLE_WEIGHT_WHOLE_BOX_SUFFICIENT_OBLIGATION",
+      "torch": "2.11.0+cu130"
+    }
+  ],
+  "scope": "Source,request,property,finite-conformance and recorded-bound consistency audit; NOT independent outward-rounded CROWN proof.",
+  "status": "ALL_LISTED_STATIC_OBLIGATIONS_NUMERICALLY_POSITIVE",
+  "summary_sha256": "a0fdc624a2c285c2277716ee11682bd72c36aa75ef2a8b61f2d3d54a88c42726"
+}

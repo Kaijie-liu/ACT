@@ -66,13 +66,16 @@ Execution `db0b4b281`,33.13s,exactly5 new LPs. All41 stored exports/duals
 rechecked;18/18 positive obligations (15 reused+3 residual),minimum~.18304675.
 Status CHECKED_REQUEST_CONDITIONAL_ON_TRUSTED_LOWERING,not full-network proof.
 R1 UNKNOWN remains separate. No further refinement/search is queued.
-The other, separate next stage is now registered in
-`act/pipeline/moe/docs/external_static_pair_r2.md`: old index3000/seed0,
+The other, separate stage is COMPLETED; read
+`act/pipeline/moe/docs/external_static_pair_results.md`: old index3000/seed0,
 two whole-box static pairs{2,4},{4,5},nine properties each,CPU/float64 plain
 CROWN,120s/pair,no retry/tuning. `StaticSelectedSoftmaxPair` preserves actual
 variable weights; finite conformance and model/input hashes are checked.
-NOT a complete dynamic-MoE benchmark. Runtime pending. No dependency install
-or sealed search.
+NOT a complete dynamic-MoE benchmark. Execution `7e911dfab`:both pairs9/9
+positive numerical margins,minimum LBs3.05086109/3.09949436,all finite probes
+match. Re-audit PASS0. No formal CROWN SAFE or performance claim. No dependency
+install or sealed search. Both bounded follow-on stages have completed; no
+experiment is running or automatically queued. Keep R1 failures immutable.
 
 EXTERNAL FRONTEND R1 completed separately (2026-09-14):
 `act/pipeline/moe/docs/external_compatibility_r1.md`,

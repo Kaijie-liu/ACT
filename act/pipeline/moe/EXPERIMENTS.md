@@ -1,5 +1,21 @@
 # MoE Verification Experiment Record
 
+### 2026-09-14: external real-model static-pair R2 completed
+
+Execution `7e911dfab`,two fixed pair calls complete,18/18 numerical positive
+rows; minimum CROWN lower bounds3.05086109/3.09949436. Same float64 old request
+and checkpoint,forced/lowered finite conformance errors0. Review PASS0 checks
+all identities/counts; not independent bound proof. Whole-box static sufficient
+obligations,not equivalent dynamic-model or high-accuracy benchmark. See
+`docs/external_static_pair_results.md`. Inner timing excludes interpreter
+startup; no end-to-end speedup claim. No retries or extra queries.
+
+Final combined regression:91 tests PASS in6.91s in unchanged act-py312,
+OMP/BLAS1. Includes R1/R2 LP checking,order/tie/unknown cases,static expression
+and gradient semantics,external-record mutations/timeouts,staged/reuse,
+relation and frozen confirmation accounting. External source trees remain
+clean. The old missing-Gurobi-license warning persists; no install was needed.
+
 ### 2026-09-14: separate external real-model static-pair R2 registration
 
 `docs/external_static_pair_r2.md`, `external_static_pair.py` and

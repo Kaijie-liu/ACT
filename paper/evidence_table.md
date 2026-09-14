@@ -15,6 +15,15 @@ Authoritative records: `act/pipeline/moe/results/request_lp_review_20260914_r1.j
 and `act/pipeline/moe/results/external_compatibility_review_20260914_r1.json`.
 Execution commits: `5c98e5399` and `84352b890`, respectively.
 
+Separate bounded R2 follow-ups preserve those R1 results. Order-only checked
+router bounds allow a dyadic gate envelope and close18/18 supplied output
+obligations,conditional on upstream/guard/F0 lowering (five new LPs,execution
+`db0b4b281`). The real-model external adapter returns18/18 numerical positive
+whole-box static-pair margins (execution`7e911dfab`),NOT complete dynamic-model
+or formal external SAFE. Records:
+`act/pipeline/moe/results/request_lp_order_review_20260914_r2.json` and
+`act/pipeline/moe/results/external_static_pair_review_20260914_r2.json`.
+
 | ID | Proposed claim | Status | Evidence and exact scope | Artifact | Evidence commit | Paper-safe wording / prohibited promotion |
 |---|---|---|---|---|---|---|
 | C1 | Retained exact route correlations reduce candidate upper sets. | CONFIRMATORY | On 86 route-unstable fixed-radius rows: exact-router HZ < IBP on 83/86 = 96.5% (cluster-bootstrap 95% CI 91.3%--100%); exact-router HZ < ordinary zonotope on 75/86 = 87.2% (77.8%--95.6%). | `act/pipeline/moe/configs/experiment1_confirmatory_protocol_manifest_r1.json` | `45375d287162f17e6c1bb1168bfc16e6dd10d9b3` | Say “exact” only for the unrelaxed reachable-router HZ. Do not generalize to relaxed HZ propagation. |

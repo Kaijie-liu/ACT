@@ -650,6 +650,17 @@ task levels,not three competing SAFE rates. No independent full-MoE performance
 table or strict certificate follows. Sources are `docs/request_lp_results.md`
 and `docs/external_compatibility_results.md` under the MoE pipeline.
 
+Subsequent bounded controls refine these two engineering endpoints separately.
+Order-only gate evidence on the same request yields18/18 positively checked
+output obligations under trusted upstream/F0 lowering,using only five new LP
+queries. The external static-pair adapter then consumes the two real-model
+whole-box pair obligations in CPU/float64 plain CROWN and returns18/18 positive
+numerical margins. Model/input identities and finite branch/lowered conformance
+match; no samples,settings or retries are added. Neither is a full dynamic-model
+external competition or high-accuracy result. Their different domains and
+numerical contracts prohibit interpreting them as a paired speed/coverage table.
+See `request_lp_order_results.md` and `external_static_pair_results.md`.
+
 The evaluation is paper-complete only when the official RT-ER table, AdvMoE
 trained two-path table, monolithic comparison, and (E)-scaling study have
 zero-issue independent audits; all unsafe rows replay; no pending cell is
