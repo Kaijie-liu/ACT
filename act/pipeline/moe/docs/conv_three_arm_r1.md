@@ -1,8 +1,49 @@
 # Frozen convolutional-family three-arm experiment R1
 
-Status: **protocol, model, inputs, method configurations and worker adapter
-frozen; no smoke or full verification query executed**. This registration is
-not a result or authorization to silently start a long run.
+Status: **outer smoke supervisor and terminal auditor integrated and tested;
+smoke authorized, not yet executed at this implementation commit**. No full
+verification request is authorized by this stage.
+
+## Smoke execution wrapper (2026-09-15)
+
+The new `scripts/run_conv_three_arm.py` is deliberately smoke-only: no full,
+pipeline or resume option. It runs exactly the six frozen jobs, acquires the
+existing shared timing lock, checks a clean pushed feature checkout, resource
+availability and every frozen algorithm identity, and binds four wrapper source
+hashes in `runtime.json` before launching any query. ACT Python files, selected
+checkpoint, tensors, three arms and thresholds are unchanged.
+
+The parent owns each process group, enforces the 300-second request cap through
+terminal publication, preserves late packages without accepting them, retains
+common-fact/route snapshots, and writes a separate unattempted roster after an
+error. Resource waits are recorded separately. SIGTERM/interrupt cleanup kills
+only the owned request group. A machine-wide SIGKILL/power failure cannot execute
+Python cleanup; missing run terminals must never be interpreted as completion.
+
+`scripts/audit_conv_three_arm.py` runs in a separate interpreter. It checks the
+frozen requests and E4 route universe, HZ package structure and full-model
+witness replay, cross-environment input/property/backend identities, all nine
+external margins per reachable pair, timeout non-promotion, missingness and
+actual common-fact agreement. An intact failed run can have audit PASS while
+its smoke gate is FAIL. These are distinct statuses; neither is independent
+re-proving of solver bounds. All six terminals and at least one complete
+non-error record per arm are required; no positive count is required.
+
+Validation before launch: 30 focused tests pass, including real child-process
+deadline cleanup and mutations of route coverage, properties, dtype and proof
+level. Separate clean-only freeze reconstruction still passes unchanged. Its
+historical `NOT_YET_INTEGRATED` field describes the original selection event,
+not the newly integrated wrappers, and is not rewritten.
+
+Authorized command, from the clean committed checkout using act-py312:
+
+```sh
+/data1/Kane/miniconda3/envs/act-py312/bin/python -m scripts.run_conv_three_arm
+```
+
+New raw root: `data/moe/results/conv_three_arm_smoke_20260915_r1`.
+After automatic audit, perform a separate read-only re-audit, archive compact
+results and update this document. Do not automatically run the 90 full calls.
 
 Authoritative machine-readable records:
 

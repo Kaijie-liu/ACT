@@ -1,5 +1,20 @@
 # MoE project handoff
 
+Latest implementation (2026-09-15): conv three-arm outer orchestration and
+terminal audit are now integrated under `scripts/`, preserving the frozen ACT
+source inventory. Read the execution-wrapper section of
+`act/pipeline/moe/docs/conv_three_arm_r1.md`. Thirty focused tests pass, and the
+separate clean-only freeze audit remains PASS. User explicitly authorizes the
+six smoke requests ONLY; run `python -m scripts.run_conv_three_arm` with
+act-py312 after commit/push. Output `data/moe/results/conv_three_arm_smoke_20260915_r1`.
+Single owned process group, shared lock, resource gate, 300s complete request,
+fail-stop ERROR and retained timeout/partial snapshots; independent terminal
+audit and conformance gate. No positive-count requirement. No full/pipeline
+option exists: 90 full requests require a separate instruction after smoke.
+At this implementation commit no smoke has yet run. Inspect live artifacts
+before launching; never overwrite or resume an existing root. The older freeze
+status below records historical preparation, not current missing wrappers.
+
 Latest preparation (2026-09-15): convolutional three-arm R1 protocol and selection
 are FROZEN, NOT EXECUTED. Read `act/pipeline/moe/docs/conv_three_arm_r1.md`,
 `configs/conv_three_arm_protocol_r1.json`, `configs/conv_three_arm_selection_r1.json`
