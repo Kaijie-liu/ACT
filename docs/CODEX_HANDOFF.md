@@ -6,8 +6,11 @@ All 18 required output obligations independently check (15 reused, 3 residual).
 The trusted base no longer includes floating F0 construction; network-to-HZ,
 guard lowering and route exclusion remain trusted. Same R2 ranges, no policy
 change. 28 focused tests and read-only review PASS, zero issues.
-The separate 60-request ACT/external static-pair comparison remains next;
-it must charge a complete request including the cross-environment boundary.
+The separate 60-request ACT/external static-pair comparison is now implemented:
+read `act/pipeline/moe/docs/external_pair_comparison_r1.md`. Same ten observed
+inputs; six old-input smoke requests gate full execution. It materializes one
+shared raw input file, charges loads and the complete cross-env request, and
+kills the owned process group on timeout. No numerical-policy changes.
 
 Updated 2026-09-14. Latest 100-input confirmation execution HEAD: `bc0791976`.
 Latest 30-input confirmation execution HEAD: `6ad58bc9d`.
