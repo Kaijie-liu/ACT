@@ -3273,3 +3273,36 @@ ACT parent-package eager Torch imports; fixed with an isolated standard-library
 checker launcher, not a dependency install or modification of ACT import APIs.
 The environment has no pytest; tests use its existing unittest installation.
 This is not yet a publicly downloadable full model artifact or second family.
+
+## 2026-09-15 ACT-only transfer completion and manuscript/artifact integration
+
+Execution fbc48d6a9: all three registered generations complete, with no timeout
+or replacement. Checked positive obligations5/9,26/27,15/18, complete request
+positives0/3. All115 source/LP exports independently reconstructed, including
+unused membership facts; saved request checks reproduced. See
+`docs/request_lp_act_only_results.md` and its compact hash-bound archive. Full
+worker generation111.87/90.23/141.88s and separate checking29.62/29.59/41.37s;
+raw proof directories464.94/379.61/579.63MiB. No borrowed proof answers; previous
+raw-input preparation cost disclosed separately. This negative transfer does
+not amend old HZ-policy SAFE or the one-request rational R3 success.
+
+Manuscript abstract/introduction/discussion added, main evaluation reorganized
+around confirmation, relation ablation, executable external path and proof
+checking. Previous evaluation text preserved exactly except its heading in
+`paper/appendices/historical_evaluation.md`; no failed gate or result deleted.
+The no-download source-defined reviewer demo ran from outside the checkout:
+staged SAFE plus3/3 conditional LP obligations (1reused,2residual); independent
+Python -S subprocess check passed. Demo generation including staged1.52s,
+fresh-process check0.027s, not an empirical trained-model performance claim.
+
+Second-family convolutional topology/seed/training selection rule registered,
+versioned factory and checkpoint load implemented. Four small controls cover
+RNG/roundtrip/semantics and conv-pool propagation; concrete full32x32 forward
+is(1,10),155052 parameters. A non-dyadic singleton consistency failure was
+diagnosed and retained as a limitation, not fixed by loosening numerical gates.
+Dyadic point and nondegenerate sparse-box controls pass. Full-sized compatibility,
+training supervision and external three-arm comparison remain outstanding.
+
+Final focused validation:57 method/factory/request tests plus8 LP/export tests
+PASS. No dependency installation, production acceptance change, training/GPU
+launch, extra same-family verification cohort or sealed-search reopening.

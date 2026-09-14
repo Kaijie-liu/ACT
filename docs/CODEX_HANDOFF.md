@@ -1,6 +1,35 @@
 # MoE project handoff
 
-Advice/bb.md follow-up in progress (2026-09-14): method section03 now describes
+Latest completion (2026-09-15): Advice/bb.md fixed ACT-only rational transfer,
+execution `fbc48d6a9`. Read `act/pipeline/moe/docs/request_lp_act_only_results.md`.
+All three fresh generations complete; 115 exports independently rechecked.
+Positive obligations5/9,26/27,15/18, but complete positive requests0/3 (UNKNOWN),
+not115 independent network proofs. No old proof facts reused; complete worker
+generation/check costs and substantial evidence sizes archived. Do not tighten
+gate ranges or add retries to force these selected cases positive.
+
+Manuscript now has abstract, introduction and discussion; method03 follows the
+actual schedule and evaluation08 centers on four primary experiments. Historical
+tables remain in `paper/appendices/historical_evaluation.md`, not erased.
+`scripts/run_moe_proof_demo.py` is a source-defined no-download example that
+runs the standard verifier and fresh rational proof plus a Python -S checker.
+It passed from outside the checkout; see `paper/artifact_quickstart.md`. This is
+not yet a tested clean-container distribution of the empirical model artifacts.
+
+Second-family scope is now fixed in `docs/conv_family_r1.md` and its training
+config under the MoE pipeline. Versioned conv factory/checkpoint loader is
+implemented, with small conv/pool controls. Training supervisor, full-shape
+external conformance and new three-arm evaluation remain next; no training or
+GPU job was launched in this stage. A non-dyadic singleton sparse control
+exposed inconsistent independently rounded bounds and failed closed; no
+numerical gate was relaxed. Dyadic point and nondegenerate sparse-box controls
+pass. Do not interpret small compatibility controls as certified model quality.
+
+No experiment remains running at the completed-stage handoff. Existing
+high-accuracy strict-certification and cross-architecture outcome goals remain
+unachieved; there is no acceptance guarantee.
+
+Historical prelaunch (2026-09-14): method section03 now describes
 the actual scoped-fact/route-complexity/residual-obligation algorithm, with the
 legacy-only F0 trigger removed from the current version's description. The new
 generic rational-request generator and fixed three ACT-only protocol are in

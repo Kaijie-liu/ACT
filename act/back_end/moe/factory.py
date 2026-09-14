@@ -78,6 +78,11 @@ def load_output_moe_checkpoint(
 ) -> tuple[OutputLevelMoE, dict]:
     """Load a checkpoint emitted by ``python -m act.pipeline.moe``."""
     payload = torch.load(path, map_location=map_location, weights_only=False)
+    if payload.get("format") == "act-output-conv-moe-v1":
+        from act.back_end.moe.conv_factory import ConvOutputMoEConfig, build_conv_output_moe
+        model = build_conv_output_moe(ConvOutputMoEConfig(**payload["factory_config"]))
+        model.load_state_dict(payload["state_dict"])
+        return model, payload
     if payload.get("format") != "act-output-moe-v1":
         raise ValueError("unsupported ACT MoE checkpoint format")
     raw = dict(payload["factory_config"])

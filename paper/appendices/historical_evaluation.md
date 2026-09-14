@@ -1,0 +1,720 @@
+# Historical evaluation, registered gates and component studies
+
+The evaluation asks whether route conditioning expands the verifiable domain,
+which component provides that expansion, and whether the same analysis layer
+survives changes in router geometry, gate semantics, and expert scale. We keep
+confirmatory endpoints immutable, separate development from holdout cohorts,
+and label every later closure or engineering rerun as such.
+
+## Research questions
+
+**RQ1: Candidate precision.** Does correlation-preserving router analysis
+strictly reduce the candidate upper set relative to IBP and an ordinary
+zonotope when more than one route can be feasible?
+
+**RQ2: Structural decomposition.** On route-unstable regions, how much does
+per-route conditioning reduce the maximum simultaneous binary width relative
+to a monolithic formulation?
+
+**RQ3: Certificate yield.** How often can the staged verifier prove an output
+property when route invariance is false or cannot be established? What fraction
+comes from gate elimination and what incremental fraction requires F0?
+
+**RQ4: Retained path information.** Does constraint-aware guarded support
+eliminate binaries and change paired solver coverage? Does coordinate boxing or
+property compilation preserve the same benefit?
+
+**RQ5: Backend and scale transfer.** Can route specialization turn routed
+models rejected by a general verifier frontend into static programs accepted
+by the same verifier, and does that produce certificates on official-scale
+RT-ER and AdvMoE checkpoints?
+
+**RQ6: Scalability and cost.** How do lazy route-set enumeration, exact-support
+big-M tightening, and MIP-start submission affect solved sets, binaries, model
+builds, solve time, and completeness as (E) increases?
+
+**RQ7: Artifact applicability.** Are published theorem assumptions,
+preprocessing semantics, represented perturbation sets, and stateful-layer
+evaluation modes established by the released artifacts? How sensitive is the
+route-invariance applicability set to radius and initialization?
+
+## Subjects and data
+
+The verification-scale subject is an eight-expert selected-softmax top-2 MLP
+trained on official torchvision CIFAR-10. The balanced coefficient-0.10
+checkpoint is the frozen structural pilot; the coefficient-0.05 model is an
+accuracy-balance control and the collapsed coefficient-0.01 model is used only
+as a negative load example. Checkpoint selection uses the deterministic
+validation split, not the test set.
+
+RT-ER is an official-code, paper-configuration reproduction on CIFAR-10. The
+exact dependency pin is retained as a failed contemporary-hardware probe; the
+executed model is separately labelled Blackwell-compatible dependency
+reproduction. Its four-way affine router remains byte-identical across
+checkpoints under the released training script. TinyImageNet is used only for
+the frozen official-construction router census and preprocessing-semantics
+audit, never for end-to-end expert certification.
+
+AdvMoE is a third-party learned-router target with two shared deep paths. Its
+repository lacks a license and a complete dependency specification; no source
+is copied into ACT and checkpoint redistribution is not assumed. The official
+ordered CIFAR-10 test set is used for the K=20 initialization route-share audit
+under both eval/default-running-statistics and registered train/current-batch-
+statistics semantics. The accepted numerical-compatibility training run and
+final-checkpoint numerical verification are complete; the checkpoint reaches
+85.67% clean accuracy. The separate directed-rounding PyRAT feasibility pilot
+returns TIMEOUT on both requests and establishes no strict SAFE certificate.
+
+Every dataset archive, split, checkpoint, preprocessing product, runtime, and
+result file is identified by hash in the artifact manifest. Raw binary
+artifacts are stored outside Git under `/data1/Kane/MOE`; tracked manifests
+bind them to the corresponding code and configuration.
+
+## Baselines
+
+The route-invariance baseline first proves that one route is the only legal
+route over the perturbation set and then invokes the same downstream expert
+backend and budget as Route A. It is a MetaMoE-style reimplementation, not a
+claim to execute unavailable author code.
+
+Candidate baselines are IBP and an ordinary zonotope upper set. The exact-
+router HZ label is used only for an unrelaxed reachable router. Structural
+comparison uses a monolithic HZ/MILP encoding with the same support-derived
+bounds. Guard representation is compared across retained HZ constraints,
+guarded coordinate hull followed by CROWN, the original box followed by CROWN,
+and the sound positive-margin eta property reduction. Published RT-ER theorem
+formulas are instantiated through explicit constant providers; empirical
+gradient constants are diagnostic and never labelled certified.
+
+Alpha-beta-CROWN is a commodity expert backend rather than a method competitor.
+We record whether the dynamic model frontend is rejected and whether each
+route-specialized static model is accepted. All open-source baselines are pinned
+to commits. Unavailable or non-executable systems appear only in the artifact
+case series and are not assigned synthetic performance numbers.
+
+## Cohorts and radii
+
+The development cohort consists of the first 100 deterministic clean-correct
+CIFAR-10 inputs. Confirmatory ranks 100--199 were not used to design F0,
+guarded support, or the solver taxonomy. Fixed-radius census rows use
+
+\[
+  \epsilon\in\{0.25,0.5,1,2\}/255.
+\]
+
+The end-to-end confirmatory endpoint uses one preregistered route-boundary
+radius per sample. The exact router feasibility oracle returns a strict
+bracket and the primary radius is 1.05 times its upper endpoint. The original
+overall denominator is all 100 inputs, including the 24 for which no boundary
+was found through the frozen 4/255 cap. Experiment 1D and all later solver
+reruns remain separately labelled closures; they never overwrite the 56/100
+confirmatory solved rate.
+
+Official-scale RT-ER rows use the frozen grid
+
+\[
+  \epsilon\in\{0.5,1,2,4,8\}/255.
+\]
+
+AdvMoE uses the same five radii for the final two-path table. Initialization
+attacks and numerical probes are diagnostics, not prevalence cohorts.
+
+## Verdicts, numerical requirements, and statistics
+
+`SAFE` requires every legal route branch and every property row to have a
+validated positive lower bound under the registered tolerance and outward-
+rounding policy. `UNSAFE` requires a concrete input within the represented box
+that replays through the complete routed model and violates the property.
+Solver limits are `TIMEOUT`; semantic or relaxation incompleteness is
+`UNKNOWN`. Weighted per-expert violations cannot become `UNSAFE` without a
+full-model witness.
+
+Candidate reduction and unique certificate proportions use clean samples as
+clusters. We report Wilson intervals for binomial proportions and sample-
+cluster bootstrap intervals where several radii share one input. Binary-width
+ratios use median, IQR, and 90th percentile. Guard support uses a paired 2-by-2
+transition table and exact McNemar/binomial test; runtime effects are reported
+separately from solved coverage. Every reported unsafe result is independently
+replayed.
+
+The certificate identity contains both the requested real radius and the
+represented tensor set. A positive bound over a float32 singleton produced by
+an ULP-scale request is not a real-ball certificate. Runtime, preprocessing,
+dtype, solver feasibility and integrality tolerances, positive-margin
+tolerance, and outward-rounding policy are frozen manifest fields.
+
+## Completed verification-scale results
+
+The confirmatory candidate and width results answer RQ1 and RQ2. Among 86
+route-unstable fixed-radius rows, exact-router HZ is smaller than IBP on 83
+(96.5%) and smaller than the ordinary zonotope on 75 (87.2%). Conditional on
+multiple feasible candidates, the route-conditioned-to-monolithic structural
+width ratio has median 0.430 and 90th percentile 0.530.
+
+For RQ3, the immutable confirmatory endpoint solves 56/100 inputs and fails its
+preregistered 60% overall solved-rate gate. Boundary applicability is 76/100;
+conditional coverage is 56/76. Thirty-six inputs are route-changing SAFE:
+five by gate elimination and 31 by F0. F0 resolves 43/60 base semantic-
+incompleteness cases, including 12 full-model-replayed unsafe inputs. The
+explicit route-invariance baseline solves 12/100 under the same downstream
+backend and budget, while Route A plus the labelled closure solves 68/100; all
+36 route-changing certificates are unique to Route A. This is a coverage-cost
+comparison, not a speedup claim.
+
+For RQ4, retained guarded support reduces binaries from 10,076 to 8,466 in the
+confirmatory accounting and closes the LP, MILP, and structural elimination
+identity. Its paired coverage improvement is reported with the frozen McNemar
+test. On the adapter cohort, guarded coordinate boxing and the original box
+produce the same certified set, while eta reduction certifies none. The result
+supports the narrower statement that guard value depends on a representation
+that retains the path constraint.
+
+### Replication across verification-scale training seeds
+
+We trained two additional `bal010` models using preregistered seeds and retained
+both regardless of their later verification behavior. A shared 40-image cohort
+was selected using only ordered index, dual-model clean correctness, and
+exclusion of the earlier seed-0 cohorts. Independent audits report zero issues
+and replay all 16 unsafe witnesses.
+
+Both models produce route-changing unique SAFE certificates (13/40 and 6/40)
+and satisfy the conditional-width thresholds (median 0.352 for each; p90 0.477
+and 0.447). Candidate reduction versus ordinary zonotope is 6/32 (18.75%) and
+14/18 (77.78%) on their respective route-unstable rows. Consequently this
+effect crosses the preregistered 20% threshold on only one model. Overall
+solved rate is 22/40 and 13/40; only the first crosses the 50% threshold. The
+complete executable endpoint passes on neither model because each misses a
+different condition. We therefore state that the route-changing-certificate
+and structural-width mechanisms replicate on two additional preregistered
+training runs under the same recipe; we do not claim a seed-robust full
+performance bundle. Candidate reduction and solver coverage remain
+model-dependent. F0 supplies 11/13 SAFE results in the first added run and all
+6/6 in the second, so the weighted second tier is necessary for the observed
+mechanism replication rather than a decorative fallback.
+
+### Common fixed-task performance conjunction
+
+We then froze a stricter common task before querying any endpoint: the same
+100 ordered images, clean-correct for all three balanced checkpoints, receive
+the same \(2/255\) input box. The production verifier excludes boundary search
+and paper-only no-support controls; a separately costed census measures
+candidate, width, and guard endpoints. Each model must pass every registered
+integrity and performance gate, and all three models must pass before we use
+stable complete-bundle wording.
+
+The independent aggregate audit reports zero issues, audits 297 evidence
+packages, and replays all 67 UNSAFE witnesses. Complete-outcome rates are
+54%, 47%, and 66%; route-changing SAFE counts are 8, 8, and 7. Exact-HZ
+strictly reduces ordinary-zonotope candidates on 37/43, 16/40, and 30/38
+route-unstable census rows. Conditional-width median/p90 values are
+0.432/0.538, 0.379/0.467, and 0.348/0.453. F0 resolves 27/62, 19/50, and
+31/53 invoked requests, and guarded support eliminates 1,068, 1,374, and
+1,299 expert binaries with all accounting identities closed.
+
+Seed 0 and seed 2 pass the complete bundle. Seed 1 passes every component
+except the frozen complete-outcome threshold (`47% < 50%`). The strict
+cross-model conjunction therefore fails: `stable_complete_bundle_supported`
+is false. This is a useful separation between mechanism replication and
+performance stability. Every registered model exhibits route-changing SAFE,
+candidate reduction, conditional-width separation, guard elimination, and F0
+resolution, but the complete budgeted outcome does not remain above the
+registered coverage threshold on all three runs. We neither pool the 300
+model--request pairs nor tune seed 1 to erase the null condition. The task is
+not certified accuracy and does not establish cross-architecture stability.
+
+A derived, no-new-query association table adds an important qualification. At
+the four fixed census radii, 9/13 seed-1 SAFE rows show no strict candidate
+reduction relative to ordinary zonotope at any radius; the corresponding count
+is 1/6 for seed 2. These are not same-radius causal ablations because the final
+obligations use model-specific boundary radii. They do show that fixed-radius
+candidate reduction and end-to-end certification need not co-occur. Three
+F0-invoked rows are killed by the hard deadline before stage time is persisted;
+their F0 costs are reported as right-censored rather than imputed as zero.
+
+The frozen 300-second endpoint also ran a matched no-support control inside
+the same worker. Its solved rate therefore measures the registered scientific
+pipeline, not the best production scheduling of the verifier. A later
+engineering entry point removes route-boundary search, no-support ablation,
+and unguarded accounting propagation from the request path while retaining
+the same candidate, Tier-1, F0, and numerical semantics. It creates an
+immutable per-request evidence package, but contributes no new result to the
+tables in this section until a separately labelled development comparison is
+executed.
+
+That outcome-selected development comparison runs the direct path on all 13
+seed-2 rows previously ending in a weighted solver limit or timeout. It closes
+two rows, both as full-model-replayed UNSAFE through F0; ten remain weighted
+solver limits and one remains an expert timeout. There are no new SAFE results
+and no outer deadline kills. All 13 evidence packages pass independent audit.
+Wall time is descriptively lower on all rows, but the historical runs were not
+interleaved and intentionally include extra scientific work, so we make no
+speedup claim. This result shows that separating controls can affect complete
+budgeted outcomes; it is not a confirmatory yield estimate and does not revise
+the 13/40 seed-2 endpoint.
+
+## Table 1: official RT-ER numerical conformance result
+
+The official-code compatibility target is now concrete. Seed 0 completes all
+130 epochs but lands at 34.22% ordered-test SA and 32.70% independently replayed
+PGD-50 RA, missing the frozen paper-reference intervals by 43.59 and 36.39
+percentage points. The endpoint audit has zero issues. The registered seed-1
+follow-up also lands outside the frozen intervals at 32.01% SA and 30.51%
+PGD-50 RA, with all 10,000 endpoints independently replayed and zero audit
+issues. The full trajectories and paper/source configuration audit are reported
+separately because neither low accuracy nor a configuration ambiguity is an
+output certificate. Under the frozen asymmetric rule, the two misses permit
+pipeline-level wording scoped to these two compatibility reproductions; B3
+retains seed 0 as its frozen target.
+
+The fail-closed r5 run completes all 318 exact-feasible branches with zero
+backend errors, zero incomplete bounds, and an independent zero-issue audit.
+The installed backward-CROWN path is not outward rounded. Consequently the
+table reports positive-margin *filters*, never formal SAFE certificates; all
+formal SAFE counts remain zero and every negative relaxation bound remains
+UNKNOWN. Times are summed expert-branch CROWN time on the same frozen 20 clean-
+correct inputs, excluding the one-time resource wait.
+
+| Radius | Full-test exact route-stable | Route invariance filter / branch s | Route A filter / branch s | Route A candidate-count distribution |
+|---:|---:|---:|---:|---:|
+| 0.5/255 | 5,915/10,000 | 12/20 / 23.59 | 17/20 / 55.87 | 1:13, 2:6, 3:1 |
+| 1/255 | 3,361/10,000 | 8/20 / 15.68 | 14/20 / 86.43 | 1:8, 2:7, 3:4, 4:1 |
+| 2/255 | 883/10,000 | 3/20 / 2.25 | 7/20 / 156.92 | 1:3, 2:4, 3:5, 4:8 |
+| 4/255 | 32/10,000 | 0/20 / 0 | 2/20 / 240.29 | 2:1, 3:4, 4:15 |
+| 8/255 | 0/10,000 | 0/20 / 0 | 0/20 / 328.51 | 4:20 |
+
+The boundary-adaptive complement contains 20/20 exactly route-unstable inputs,
+each with two feasible experts. Route invariance is therefore inapplicable on
+all 20, while Route A obtains nine numerical positive-margin filters and leaves
+eleven UNKNOWN. This is the official-scale comparison's numerical-conformance
+shape, not yet its formal-certificate endpoint. The released hard/raw Theorem
+5.4 reading is not applicable on all 20 adaptive rows; the continuous surrogate
+is not applicable on 19 and vacuous at registered radii on one. The author-
+unspecified provider is likewise not a runnable baseline.
+
+## AdvMoE two-path evaluation
+
+The first complete official-code seed-0 execution cannot supply this table.
+Although its finite main network reports 93.79% clean accuracy at the released
+best checkpoint, every saved standalone router tensor and router-optimizer
+state is NaN from checkpoint 1 through 100. A later endpoint run correctly
+fails independent audit; its apparent all-expert-0 routing is NaN `argmax`
+behavior, not a route statistic. The earlier structural checkpoint audit is
+retained but superseded for scientific acceptance by the numerical audit. The
+excluded run remains evidence about the released numerical expression, not an
+evaluated checkpoint.
+
+The follow-up bounded diagnosis locates the first invalid derivative on the
+third real training batch. Router parameters, buffers, optimizer state, and
+all router forward values are finite immediately before the failure; all
+269,202 router gradients become NaN in `XlogyBackward0` for the released
+router KL term after its float32 target softmax first underflows 16 entries to
+zero. The independent audit reports zero issues. A successor run is permitted
+only as a clearly labeled compatibility variant after finite-regime value and
+gradient equivalence tests and a smoke run that crosses this batch.
+
+That smoke gate now passes for a separately labeled softmax-underflow gradient
+bridge. It completes 16 main and router updates with 64/64 finite stage checks,
+exercises 23 replacements at exact-zero probabilities, and leaves every final
+router parameter, gradient, and optimizer-state element finite. The maximum
+router pair gap still reaches 62,961.53, so the pass is not explained by a
+benign input sequence. This unlocks a new compatibility-variant execution;
+the original official-code checkpoint remains excluded.
+
+The explicitly labeled compatibility execution has now completed 100 epochs
+and passed an independent checkpoint-by-checkpoint numerical audit with zero
+issues. All five floating-state groups are finite in all 100 snapshots. Its
+best released PGD-10 checkpoint reports 85.36% clean accuracy and 61.80%
+adversarial accuracy; the final checkpoint reports 85.67% and 61.14%. Only 18
+exact-zero target-gradient elements require the bridge during the full run.
+These values are empirical released-path metrics, not certificates, and test-
+set checkpoint selection remains an artifact limitation. The final checkpoint
+supplies the separately labeled subject for trained-router telemetry and the
+two-path numerical-conformance table below.
+
+Endpoint telemetry independently confirms that the accepted router is both
+finite and nontrivial. Eval-mode route counts move from 10,000/0 at
+initialization to 4,718/5,282 at the best checkpoint and 5,012/4,988 at the
+final checkpoint. The corresponding effective route counts are 1.997 and
+2.000; train-mode ordered co-batch diagnostics are also balanced. Ten-restart,
+100-step route attacks at 8/255 find route changes on 7/20 and 8/20 frozen
+inputs. These attack discoveries refute invariance for those inputs but do not
+certify stability for the remainder. The telemetry audit recomputes all counts
+from finite raw arrays and reports zero issues.
+
+The final AdvMoE checkpoint evaluation records clean accuracy, route share,
+signed router-score offset, selected-margin distribution, and load entropy.
+Intermediate checkpoints use the same fields under both eval/current-running-
+statistics and train/ordered-test-current-batch-statistics semantics to test
+whether supervised router training breaks the initialization collapse. The
+train-mode row is a co-batch diagnostic, not a replay of the literal augmented
+training stream. First-order diagnostics
+cover the full test set; strong PGD uses a frozen deterministic subset; CROWN,
+alpha-CROWN, or beta-CROWN closure is restricted to the final checkpoint and a
+registered subset.
+
+The final-checkpoint run uses the first 20 ordered clean-correct inputs and all
+five registered radii. Both fixed paths are evaluated for every row,
+independent of whether the nonlinear router bound closes. The installed plain-
+CROWN backend is not outward rounded, so positive margins are numerical
+filters rather than formal SAFE results.
+
+| epsilon | router filter | route-invariance filter | two-path filter | eta filter | prediction flip | route flip |
+|---:|---:|---:|---:|---:|---:|---:|
+| 0.5/255 | 18/20 | 2/20 | 2/20 | 0/20 | 1/20 | 0/20 |
+| 1/255 | 1/20 | 0/20 | 0/20 | 0/20 | 1/20 | 0/20 |
+| 2/255 | 0/20 | 0/20 | 0/20 | 0/20 | 3/20 | 0/20 |
+| 4/255 | 0/20 | 0/20 | 0/20 | 0/20 | 4/20 | 0/20 |
+| 8/255 | 0/20 | 0/20 | 0/20 | 0/20 | 8/20 | 1/20 |
+
+The run completes in 1,437.56 seconds with zero backend errors and zero
+positive-filter/witness conflicts. The enhanced independent audit replays all
+100 endpoints, checks their boxes and perturbation norms, rebuilds the table,
+and reports zero issues. Only concrete prediction flips receive UNSAFE status;
+the 2/20 two-path positives at `0.5/255` remain explicitly non-formal filters.
+No static-path filter closes above `0.5/255`, and the tie-safe eta reduction
+does not close both obligations on any row. Thus specialization makes the
+third-party dynamic program consumable, but plain CROWN does not deliver useful
+official-scale formal coverage. This negative backend result bounds the claim:
+route conditioning removes dynamic dispatch; it does not make a loose expert
+abstraction complete.
+
+## Scaling and solver engineering [completed and audited]
+
+Lazy route-set enumeration is evaluated at (E\in\{4,8,16,32,64\}) under
+frozen top-(k), router geometry, and budgets. Each row records feasible sets,
+completeness, model builds, solves, no-good cuts, MIP-start submissions,
+selector binaries after exact-support tightening, wall time, and peak memory.
+Paired start/no-start runs measure observed effect without claiming that HiGHS
+internally used an accepted start. All 30 registered conditions completed and
+passed independent audit. The all-tied no-start family scales from 6 sets in
+0.0053 seconds at E=4 to 2,016 sets in 50.23 seconds at E=64, while the E=64
+one-set control takes 0.0616 seconds. Partial MIP-start submission has median
+paired ratio 1.128 and therefore provides no observed speedup.
+
+The exact-support big-M study and monolithic baseline use the frozen 20-row
+cohort. Big-M is evaluated only where it is consumed: router membership
+feasibility. The true monolithic baseline uses one bounded-homogenized
+disjunctive MILP per property over all feasible guarded F0 pair branches; it
+shares Route A's gate-range/McCormick semantics and changes only decomposition.
+Exact support reduces membership selector width from 657 to 631 on the frozen
+20-row cohort, but its median total-time ratio is 7.142 and it produces no node
+reduction; the fast sound bound therefore remains the default.
+The earlier incremental property-MILP rerun remains a negative engineering result:
+model reuse accelerated LP hull construction by 15.03 times but did not speed
+search-dominated property MILPs.
+
+The true monolithic run solves 8/20 rows (6 SAFE, 2 replay-validated UNSAFE),
+whereas the frozen staged Route A reference solves 12/20 (10 SAFE, 2 replay-
+validated UNSAFE). Five rows are solved only by Route A and one only by the
+monolithic formulation (exact paired binomial p=0.21875). We therefore report
+the four-row coverage difference descriptively, not as statistically
+significant or set-inclusion dominance. The 11,007.57-second monolithic and
+5,151.10-second Route A totals are also descriptive because the runs were not
+interleaved.
+
+## Artifact applicability [partly complete]
+
+The RT-ER artifact case study audits theorem instantiation, model semantics,
+training semantics, and verifier consumption. The exact affine oracle gives an
+official-construction applicability curve over 20 seeds; at 8/255 the route-
+invariance set is empty for 18 seeds and contains at most two of 10,000 inputs
+for the other two. TinyImageNet supplies an independently labelled census and
+preprocessing-semantics audit, not an expert result.
+
+AdvMoE initialization provides a distinct artifact finding. At the default
+seed, every official test image selects expert 0. Across K=20 initializations,
+13 eval/default-stat routers and 8 train-batch-stat routers are exactly
+collapsed; median maximum load remains 100% and 99.305%. Thus local boundary-
+scale ratios are confounded, and the identity of an init function must include
+BatchNorm mode and statistics.
+Sparse CROWN reduces IBP's dimensionless relaxation inflation by 5.17--5.36
+times but leaves a residual near (10^{11}). No-flip attacks through epsilon 1
+are non-proof diagnostics. These results motivate checkpoint route-share
+telemetry and the router-independent two-path table; they do not substitute for
+the trained result.
+
+### New production-entry HZ cohort [completed and audited]
+
+After the outcome-selected engineering closure produced two additional
+replay-validated complete outcomes, we froze a disjoint fixed-radius cohort to
+test the production entry point. The cohort contains 100 ordered clean-correct
+seed-2 inputs beginning at raw test index 2000, excludes all listed earlier HZ
+cohorts, and issues one `2/255` request per input. It is not selected on route
+instability or any verification result and does not use a boundary-adaptive
+radius. The primary endpoint is route-changing SAFE over the full 100-input
+denominator; this is not certified accuracy. Exact status counts, route
+applicability, staged attribution, right-censored timing, and all failed rows
+remain visible.
+
+All 100 requests complete the runner and evidence-package path, and the
+independent audit reports zero issues while replaying all 42 UNSAFE witnesses.
+The verifier returns 21 SAFE, 42 UNSAFE, 27 UNKNOWN, and 10 solver TIMEOUT
+outcomes. Exact route analysis identifies 38 route-changing requests; six are
+SAFE, so the preregistered primary endpoint is 6/100 (Wilson 95% CI
+2.78%--12.48%). The conditional 6/38 = 15.79% is shown only as an applicability
+breakdown. Two route-changing certificates are discharged by Tier 1 and four
+require F0. Across all requests, F0 is invoked 56 times and reaches 32 complete
+outcomes (7 SAFE and 25 replay-validated UNSAFE). Thus the production entry
+retains the central route-changing certificate mechanism without executing the
+experiment-only controls. It does not revise the boundary-adaptive seed-2 R1
+result and does not establish a speedup.
+
+## Equal-total-budget internal comparison [completed]
+
+The observed three-model common task was rerun with four internal ACT paths,
+each with a 300-second external request cap and rotating method/model order.
+Model/data loading, route analysis, support, construction and solving are
+charged; post-run audits are excluded equally. The 1,200 jobs are four methods
+on the same 100 inputs and three models, not 1,200 independent observations.
+The independent audit verifies 1,075 complete packages and replays all 171
+UNSAFE outputs with zero issues; 125 outer-deadline records remain included.
+This is structural evidence auditing, not independent numerical SAFE proofs.
+
+| Model | Staged SAFE / solved | Invariance SAFE / solved | Monolithic F0 SAFE / solved | Tier-1-only SAFE / solved |
+|---|---:|---:|---:|---:|
+| seed0 | 30 / 54 | 22 / 32 | 46 / 65 | 21 / 31 |
+| seed1 | 26 / 47 | 18 / 26 | 36 / 54 | 22 / 30 |
+| seed2 | 44 / 66 | 37 / 43 | 52 / 70 | 32 / 39 |
+
+Every denominator is 100 jointly clean-correct inputs at 2/255. Staged adds
+8/8/7 SAFE over the invariance premise, with no losses, and has positive net
+SAFE and solved differences against the full-budget Tier-1-only schedule.
+However, monolithic F0 has higher SAFE and solved counts on every model:
+staged-only / monolithic-only SAFE discordances are 4/20, 10/20 and 5/13.
+Thus decomposition does not establish overall coverage dominance. It also does
+not lose every distinctive capability: route-changing SAFE counts are 8/8/7
+for staged and 5/1/3 for monolithic. The latter shares the F0 relaxation, not
+an exact encoding of the nonlinear softmax function.
+
+Mean observed request costs are 67.46/76.86/62.46 s for staged and
+158.21/180.65/146.63 s for monolithic, including censored requests. Median
+paired differences (staged minus monolithic) are -71.30/-107.24/-55.15 s.
+This is a coverage-cost tradeoff under registered schedules on a shared
+server, not an unconditional speedup. Internal property budgets differ, so
+these results do not isolate formulation from scheduling effects. The full
+four-state and discordance tables are in `docs/paired_followup.md` and the
+hash-bound result `results/paired_followup_full_review_20260911.json` under
+`act/pipeline/moe`. No threshold or original outcome is retroactively changed.
+
+## Completion criteria
+
+### Scoped proof reuse: observed-cohort engineering follow-up
+
+A separately frozen follow-up uses the first ten observed common-task inputs,
+all three trained models, 2/255, and equal 300-second request caps. Both arms
+are rerun in balanced order; only scoped proof reuse changes. The 60 requests
+yield 60 complete packages, zero issues in a separate structural re-audit and
+12 full-model UNSAFE replays. Reference/reuse SAFE counts are 4/5, 1/1, 3/3;
+only seed0/rank0 gains SAFE, with no SAFE or solved losses. This small result
+does not establish stable cross-model coverage superiority.
+
+Mean observed costs fall from 60.33 to 41.77, 106.23 to 92.05, and 89.18 to
+69.30 seconds. Median paired differences are -0.985, -0.324 and -0.885 seconds:
+savings are concentrated in the tail rather than uniform. Recorded non-reused
+F0 property rows are 81/39, 88/63 and 75/42; reuse supplies 42, 25 and 37
+rows. These counters are not counts of independently proved MILP optima, nor
+are different terminal trajectories identical workloads. All TIMEOUTs remain
+in the denominator. The ten images are shared across models and were already
+observed, so this is engineering evidence, not an untouched holdout or a
+high-accuracy external-validity result. SAFE retains the frozen HZ/HiGHS
+acceptance scope. See `results/proof_reuse_paired_review_20260911_r1.json`
+and `docs/proof_reuse_engineering.md` under `act/pipeline/moe`.
+
+### Route-complexity scheduling with matched fact reuse
+
+A separate observed-cohort development comparison evaluates the new adaptive
+schedule and matched monolithic arm on ten shared inputs and three trained
+models at 2/255, with identical 300-second outer caps. Both independently
+compute the same cheap guarded interval fact prelude; only the schedule arm
+differs. Smoke completes six requests before the sixty-request full run.
+Independent structural re-auditing reproduces both summaries: 49 complete
+full-run packages, thirteen UNSAFE replays, zero issues, and eleven outer
+deadlines retained. In all 22 pairs with comparable complete evidence, common
+facts are equal; eight other pairs are unavailable, not evidence of equality.
+
+| Model | Adaptive SAFE / solved | Matched monolithic SAFE / solved | Mean seconds adaptive / mono |
+|---|---:|---:|---:|
+| seed0 | 7 / 8 | 6 / 7 | 95.61 / 130.61 |
+| seed1 | 3 / 7 | 2 / 5 | 135.99 / 173.78 |
+| seed2 | 4 / 7 | 3 / 4 | 107.44 / 152.24 |
+
+Each denominator is ten. Adaptive gains one SAFE on each model and six solved
+model-input pairs overall, with no losses in this cohort. The three added
+SAFE requests have multiple exact feasible legal pairs. Paired median time
+differences are -0.251/-0.252/-0.100 seconds; mean savings concentrate in the
+tail rather than establish uniform acceleration. This small follow-up is not
+an untouched holdout, stable population dominance, or high-accuracy evidence.
+It leaves the historical monolithic coverage advantage intact: both prelude
+and scheduling differ from historical runs. SAFE retains the frozen HZ/HiGHS
+policy, not independently checked full-network proof. The complete four-state
+table, discordances and hash-bound raw references are in
+`docs/route_complexity_schedule.md` and
+`results/route_complexity_paired_review_20260911_r1.json` under the MoE pipeline.
+
+### Thirty-input scheduling confirmation
+
+A separately frozen cohort excludes prior verification endpoints and selects
+thirty ordered jointly clean-correct images, same three models, 2/255 and
+300-second caps. All 270 requests complete. Separate structural re-audit:
+190 packages, 87 full-model UNSAFE replays, 80 retained TIMEOUTs, zero issues.
+Durable snapshots establish equality for all 90 common-fact pairs.
+Adaptive SAFE/solved: 11/22, 11/25, 11/25; matched: 11/18, 9/18, 10/17;
+legacy: 9/16, 8/19, 7/14. Each denominator is thirty. Primary gains three
+multi-legal-route SAFE and nineteen solved with no losses. Legacy comparison
+gains ten SAFE, loses one: positive net coverage is not set dominance.
+Mean capped seconds A/M/L are 108.80/153.27/197.79, 106.30/155.63/178.84,
+104.53/168.16/191.28. Primary input-clustered SAFE difference is 0.0333,
+95% descriptive interval [0,0.0889], including zero; secondary legacy
+difference 0.1000 [0.0333,0.1889]. This is a scoped positive signal, not
+universal, independent-image or high-accuracy evidence. SAFE retains the
+registered HZ/HiGHS acceptance policy. Full discordances and raw identities:
+`results/schedule_confirmation_review_20260912_r2.json` under the MoE pipeline.
+The newly authorized hundred-input run remains separate, with no pooling or
+revision of this endpoint.
+
+### Hundred-input new-endpoint confirmation
+
+After the thirty-input result, we froze a separate hundred-input cohort,
+excluding prior verification endpoints, with the same three models,2/255,
+three arms and 300-second outer caps. No strategy or numerical policy changed.
+All 900 requests complete; a separate process reproduces the saved final
+structural audit, including 198 concrete UNSAFE replays, 739 complete packages
+and 161 retained outer TIMEOUTs. All 300 common-fact pairs agree through durable
+snapshots, including 67 killed requests. These are not independent SAFE proofs.
+
+| Model | Adaptive SAFE / solved | Matched SAFE / solved | Legacy SAFE / solved | Mean seconds A/M/L |
+|---|---:|---:|---:|---:|
+| seed0 | 59 / 89 | 50 / 76 | 46 / 68 | 70.38 / 101.79 / 153.61 |
+| seed1 | 57 / 81 | 47 / 65 | 45 / 63 | 97.53 / 131.74 / 162.77 |
+| seed2 | 63 / 86 | 59 / 78 | 50 / 68 | 77.21 / 101.17 / 143.44 |
+
+Each denominator is 100. Adaptive adds 23 SAFE and 37 solved against matched,
+with no losses. All 23 SAFE gains lie in multi-legal-route regions (14 with
+two pairs, 8 with three, 1 with four); 2 finish at Tier 1, 21 at F0. Each of those
+21 records scoped reuse, but this source accounting is not a causal reuse-off
+ablation. Against legacy it gains 40 SAFE and loses 2, net 38; both losses are
+single-pair UNKNOWN_MONOLITHIC_SOLVER_LIMIT. Thus legacy is not set-dominated.
+
+The frozen input-block descriptive 95% intervals are primary SAFE +7.67 pp
+[4.67,11.00], solved +12.33 pp [8.67,16.33]; secondary SAFE +12.67 pp [8.67,17.00],
+solved +19.00 pp [14.33,24.00]. Resampling retains three fixed models per image;
+300 model-input pairs are not 300 independent images. These unadjusted
+intervals support scoped new-endpoint benefit, not arbitrary-model dominance.
+All capped requests contribute to cost. Primary paired medians are only
+-0.322/-0.151/-0.076 seconds, while mean differences are -31.41/-34.21/-23.96:
+savings concentrate in long requests, not uniform same-result acceleration.
+
+Both arms retain shared HZ/guard/F0 relations, so this comparison identifies
+the value of execution organization, not the entire isolated contribution of
+shared-input correlation. The old 2/3 composite failure and thirty-input study
+remain separate. Moderate-accuracy same-family models do not establish high-
+accuracy real-scale or independent external-tool superiority. Full discordant
+indices, stage/reuse sources, per-state costs and missing-package records:
+`results/schedule_confirmation_100_review_20260914_r1.json` and
+`docs/schedule_confirmation_100_results.md` under the MoE pipeline.
+
+### Direct shared-input relationship ablation (observed follow-up)
+
+We separately froze ten previously observed inputs and compared identical
+adaptive/scoped-reuse configurations except for shared expert entry factors
+versus their block-diagonal independent product. Guards, marginal propagation,
+gate routine, backend and300-second caps remain fixed. All60 calls finish with
+48 packages,16 concrete UNSAFE replays and12 outer timeouts retained. Independent
+structural re-audit reproduces the saved results; all30 common-fact pairs agree.
+Shared/independent SAFE counts are4/4,3/2,4/2; solved counts6/5,6/5,8/5.
+No SAFE or solved result is lost. Two SAFE gains concern multiple legal pairs
+and a completed-relaxation UNKNOWN in the product arm; a third single-pair
+gain faces a solver-limit UNKNOWN. Thus there is direct complete-endpoint
+evidence for relation retention, but not every gain isolates tightness from
+finite-budget solving. All27 jointly recorded gate ranges agree;3 one-sided
+records remain unavailable for comparison. Mean seconds shared/independent:
+139.81/166.97,153.07/159.48,123.38/132.84; paired medians-3.08,-.62,-4.08.
+This is10 observed images, not60 independent samples or confirmation. Numerical
+policy remains unchanged. Source: `results/relation_ablation_review_20260914_r1.json`
+and `docs/relation_ablation_results.md` under the MoE pipeline.
+
+### Evidence-infrastructure controls and remaining boundaries
+
+Two separate evidence-infrastructure controls are now complete. The request-LP
+control on old seed0/index3000 checks all36 supplied LP exports and inventories
+all18 output obligations:15 are positively discharged by scoped membership
+facts,three residual bounds remain negative,and the request stays UNKNOWN.
+This is complete downstream checking,not complete positive network certification;
+upstream HZ/guard/F0 lowering remains trusted.
+
+The pinned external frontend control rejects the dynamic weighted-top2 toy at
+TopK/OneHot conversion. A static pair retaining variable softmax weights is
+consumable and returns numerical CROWN bounds; the full tool API accepts a box
+but rejects the additional relational input halfspace. These are three different
+task levels,not three competing SAFE rates. No independent full-MoE performance
+table or strict certificate follows. Sources are `docs/request_lp_results.md`
+and `docs/external_compatibility_results.md` under the MoE pipeline.
+
+Subsequent bounded controls refine these two engineering endpoints separately.
+Order-only gate evidence on the same request yields18/18 positively checked
+output obligations under trusted upstream/F0 lowering,using only five new LP
+queries. The external static-pair adapter then consumes the two real-model
+whole-box pair obligations in CPU/float64 plain CROWN and returns18/18 positive
+numerical margins. Model/input identities and finite branch/lowered conformance
+match; no samples,settings or retries are added. Neither is a full dynamic-model
+external competition or high-accuracy result. Their different domains and
+numerical contracts prohibit interpreting them as a paired speed/coverage table.
+See `request_lp_order_results.md` and `external_static_pair_results.md`.
+
+The subsequent direct rational R3 control checks the McCormick construction
+from the original shared expert HZ before floating F0 lowering. With the same
+request and checked ranges, all18 output obligations remain positive. Only
+the floating F0 construction assumption is removed; HZ propagation, guard
+lowering and route exclusions remain trusted. This is a reduction in the
+trusted base, not an extra high-accuracy-model certificate or a performance
+result. See `request_lp_rational_results.md`.
+
+### Complete-cost external static-pair follow-up
+
+We separately compare the frozen ACT adaptive path with an ACT route frontend
+followed by plain CROWN on every feasible whole-box static weighted pair.
+Both compute their own route coverage; each request receives a300-second
+process-group cap, including cross-environment imports and all pair queries.
+Both load the same hash-bound materialized float64 input; its common raw-data
+preparation is separately disclosed and excluded equally. Variable softmax
+weights remain in each static graph. This is a hybrid external-backend path,
+not standalone full alpha-beta-CROWN on the original dynamic MoE.
+
+All60 requests on ten previously observed images and three fixed models
+complete, with55 complete records and5 retained outer timeouts. Separate
+structural re-audit reproduces the original summaries and replays9 UNSAFE
+records. Evidence levels remain explicitly different:
+
+| Model | ACT HZ-policy SAFE / UNSAFE / UNKNOWN / TIMEOUT | CROWN numerical POSITIVE / UNKNOWN | Mean complete seconds ACT / CROWN |
+|---|---|---|---|
+| Seed0 | 4 / 2 / 2 / 2 | 5 / 5 | 139.00 / 4.27 |
+| Seed1 | 3 / 3 / 2 / 2 | 4 / 6 | 152.64 / 4.23 |
+| Seed2 | 4 / 4 / 1 / 1 | 4 / 6 | 122.68 / 4.18 |
+
+Each arm/model has denominator ten. There are8 shared positives,3 ACT-only
+policy SAFE and5 CROWN-only numerical positives. ACT-only cases are
+seed0/index4029(one pair),seed1/index4018(three pairs),seed2/index4014(two
+pairs); all external queries completed with at least one nonpositive bound.
+All five CROWN-only positives face an ACT solver-limit UNKNOWN, not a missing
+result. Among16 single-pair requests, positive counts are8/11; among14
+multi-pair requests,3/2, with two ACT-only and one CROWN-only multi-pair case.
+
+Thus the external path has more positive filters overall and much lower
+observed cost, while ACT retains distinct positive results including two
+multi-route requests. This limits any blanket efficiency claim. The20 ACT
+resolved requests include9 counterexamples, whereas the external path runs
+only five fixed conformance probes;20 versus13 is not a certificate-count or
+matched attack comparison. The mean costs138.11 versus4.23 seconds include
+all terminated requests, but different outcomes and numerical guarantees
+preclude a same-result acceleration claim. Negative CROWN bounds do not
+establish unsafety or identify a unique cause. Neither these observed inputs
+nor the post-hoc union establishes a new portfolio's performance. Source:
+`results/external_pair_comparison_review_20260914_r1.json` and
+`docs/external_pair_comparison_results.md` under the MoE pipeline.
+
+The evaluation is paper-complete only when the official RT-ER table, AdvMoE
+trained two-path table, monolithic comparison, and (E)-scaling study have
+zero-issue independent audits; all unsafe rows replay; no pending cell is
+silently removed; and the immutable confirmatory failure remains visible. A
+negative or null result satisfies completion if the registered experiment ran
+to its endpoint and its scope is reported accurately.

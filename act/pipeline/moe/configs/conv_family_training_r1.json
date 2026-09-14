@@ -1,0 +1,24 @@
+{
+  "protocol": "SECOND_FAMILY_CONV_TOP2_TRAIN_R1",
+  "dataset": "CIFAR10",
+  "factory": {
+    "input_shape": [3,32,32], "num_classes": 10, "num_experts": 4,
+    "channels": [16,32], "hidden": 64, "router_pool": 4, "seed": 17
+  },
+  "epochs": 100,
+  "batch_size": 128,
+  "validation_fraction": 0.1,
+  "split_seed": 17,
+  "optimizer": "AdamW",
+  "learning_rate": 0.001,
+  "weight_decay": 0.0005,
+  "schedule": "cosine_to_zero",
+  "balance_loss": "switch",
+  "balance_coefficient": 0.01,
+  "augmentation": {"random_crop_padding": 4, "horizontal_flip_probability": 0.5},
+  "checkpoint_rule": "highest_validation_accuracy_earliest_tie",
+  "selection_uses_verification": false,
+  "dtype": "float32",
+  "workers": 2,
+  "cpu_threads": 2
+}
