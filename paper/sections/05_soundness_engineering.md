@@ -220,3 +220,21 @@ This extends the checker beyond hand-written LP controls. Its guarantee still
 starts at the stored HZ: it does not independently validate network propagation
 or certify the complete MoE output. No positive result is required by the
 registered export query; the margin was fixed before its evaluation.
+
+The next separately frozen control covers every required output obligation
+of that same seed0/index3000 request. All28 route queries finish, yielding
+pairs{2,4} and{4,5}; the checker inventories18 pair/classification obligations.
+It rechecks36 sparse LP exports/duals, including27 expert properties,six
+disagreement endpoints and three weighted output properties. Fifteen obligations
+have positive checked membership facts on both experts and are discharged by
+scoped reuse. Three residual F0 LP lower bounds remain negative, so the complete
+request is UNKNOWN. No missing obligation is treated as a positive result.
+
+This infrastructure control uses the universal normalized-weight range[0,1]
+and rationally checked disagreement endpoints, not the production sigmoid-range
+configuration. It establishes downstream checking for an entire supplied
+request inventory but NOT a positive complete-network certificate. Network-to-HZ,
+guard lowering,route exclusions and the F0 outer-HZ construction/floating
+coefficients remain trusted. Exact rational LP checking cannot retroactively
+prove those upstream transformations. See `request_lp_results.md` and its
+hash-bound36-proof recheck for the explicit remaining trusted base.

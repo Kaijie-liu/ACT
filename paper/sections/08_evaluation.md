@@ -635,6 +635,21 @@ and `docs/relation_ablation_results.md` under the MoE pipeline.
 
 ### Remaining completion requirements (unchanged)
 
+Two separate evidence-infrastructure controls are now complete. The request-LP
+control on old seed0/index3000 checks all36 supplied LP exports and inventories
+all18 output obligations:15 are positively discharged by scoped membership
+facts,three residual bounds remain negative,and the request stays UNKNOWN.
+This is complete downstream checking,not complete positive network certification;
+upstream HZ/guard/F0 lowering remains trusted.
+
+The pinned external frontend control rejects the dynamic weighted-top2 toy at
+TopK/OneHot conversion. A static pair retaining variable softmax weights is
+consumable and returns numerical CROWN bounds; the full tool API accepts a box
+but rejects the additional relational input halfspace. These are three different
+task levels,not three competing SAFE rates. No independent full-MoE performance
+table or strict certificate follows. Sources are `docs/request_lp_results.md`
+and `docs/external_compatibility_results.md` under the MoE pipeline.
+
 The evaluation is paper-complete only when the official RT-ER table, AdvMoE
 trained two-path table, monolithic comparison, and (E)-scaling study have
 zero-issue independent audits; all unsafe rows replay; no pending cell is

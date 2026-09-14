@@ -1,5 +1,21 @@
 # MoE Verification Experiment Record
 
+### 2026-09-14: external frontend R1 completed and archived
+
+Execution `84352b890`; three cases, no installs. Dynamic top2 fails conversion
+at TopK/OneHot; static variable-weight pair returns CROWN numerical bounds
+[.89551866,1.10547280],25 probes match; API box succeeds and relational input
+halfspace is rejected. `docs/external_compatibility_results.md` and
+`results/external_compatibility_review_20260914_r1.json` document the separate
+levels and source identities. Re-audit PASS0,not bound proof. No full MoE/BaB
+competition and no high-accuracy formal SAFE claim.
+
+Final combined regression:82 tests PASS in7.66s (ACT act-py312,OMP/BLAS1),
+covering LP dense/sparse checks,request aggregation/mutations,compatibility toy
+semantics,weighted F0,scoped reuse,staged,relation ablation,common snapshots,
+confirmation selection and frozen archival accounting. Existing Gurobi-license
+warning is unchanged; no Gurobi dependency or installation used by these controls.
+
 ### 2026-09-14: pinned external frontend compatibility R1 registration
 
 Separate `docs/external_compatibility_r1.md` and `external_compatibility.py`:

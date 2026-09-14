@@ -5,6 +5,16 @@ Statuses are `CONFIRMATORY`, `FOLLOW_UP`, `ENGINEERING`, `MECHANISM`, `PARTIAL`,
 `AUDITED CASE SERIES`, `OFFICIAL-CONSTRUCTION CENSUS`, `RUNNING`, or `PENDING`.
 A result from one status must not be silently promoted to another.
 
+September14 separate evidence controls: request-level LP checking now covers
+all18 output obligations of old seed0/index3000 (36 supplied LPs rechecked),
+but15 positive reuse discharges plus3 nonpositive residuals leave UNKNOWN.
+This is not a fully independently proved network SAFE. External frontend R1
+records dynamic TopK/OneHot rejection, static variable-weight pair numerical
+acceptance, and relational-input API rejection; no external performance claim.
+Authoritative records: `act/pipeline/moe/results/request_lp_review_20260914_r1.json`
+and `act/pipeline/moe/results/external_compatibility_review_20260914_r1.json`.
+Execution commits: `5c98e5399` and `84352b890`, respectively.
+
 | ID | Proposed claim | Status | Evidence and exact scope | Artifact | Evidence commit | Paper-safe wording / prohibited promotion |
 |---|---|---|---|---|---|---|
 | C1 | Retained exact route correlations reduce candidate upper sets. | CONFIRMATORY | On 86 route-unstable fixed-radius rows: exact-router HZ < IBP on 83/86 = 96.5% (cluster-bootstrap 95% CI 91.3%--100%); exact-router HZ < ordinary zonotope on 75/86 = 87.2% (77.8%--95.6%). | `act/pipeline/moe/configs/experiment1_confirmatory_protocol_manifest_r1.json` | `45375d287162f17e6c1bb1168bfc16e6dd10d9b3` | Say “exact” only for the unrelaxed reachable-router HZ. Do not generalize to relaxed HZ propagation. |

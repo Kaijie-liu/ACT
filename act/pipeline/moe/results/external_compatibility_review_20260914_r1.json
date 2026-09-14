@@ -1,0 +1,334 @@
+{
+  "audit": "PASS",
+  "classification": "PINNED_FRONTEND_COMPATIBILITY_NOT_EXTERNAL_BENCHMARK",
+  "issues": [],
+  "launch": {
+    "anchors": {
+      "auto_LiRPA/auto_LiRPA/bound_op_map.py": "99a35226887d9fab640eb778c7e261c799c053769c67926e811fbcc0eae25a8e",
+      "auto_LiRPA/auto_LiRPA/operators/indexing.py": "c9cac422a3931569f235462030033a1ce1774ad29271f7a311620985c0c14d43",
+      "auto_LiRPA/auto_LiRPA/operators/softmax.py": "1d63f282c7340b2dc561740666de8353d139073ab816060cd4ff998d9ed87247",
+      "complete_verifier/api.py": "40ce7bcdb77dfacf82409891b71b3ad3b2c511e823bb8f522d8b6e4a27ae673f"
+    },
+    "cases": [
+      "dynamic_top2",
+      "static_pair",
+      "input_polytope"
+    ],
+    "commits": {
+      "/data1/Kane/MOE/baselines/alpha-beta-CROWN": "e5c7e17bf0488843acb77b7519f59876717a49f4",
+      "/data1/Kane/MOE/baselines/alpha-beta-CROWN/auto_LiRPA": "5a098e8f9fb5786a428a024981d833d303921f2d"
+    },
+    "environment": "/data1/Kane/MOE/envs/alpha-beta-crown/bin/python",
+    "execution_head": "84352b89017bf672af0fc05e20e54bff79443573",
+    "scope": "Frontend compatibility only; NOT complete-tool performance.",
+    "timeout_each_seconds": 120,
+    "worker_sha256": "047e3a53dc4ad4961522b9d431fd24c663d541ca4aae3c3e6e82bf19ec51e058"
+  },
+  "raw_hashes": {
+    "dynamic_top2.json": "ecab5e91c6ba58653e3b3b867083a4f84222e4d3e26308aea0c7efc16dd241ed",
+    "dynamic_top2.log": "a9b7f43b478c08ea501d7a87489eb8ed50ff975a682b97116a45355667d0389e",
+    "input_polytope.json": "00d56c6786d4053cd4d8f6376e0f587d0257dbb5b98da5485dd9cb8e046e6e19",
+    "input_polytope.log": "4fd9ea8e13948fde6466dd1a0a38720b3d4e428e6bc4d9cfb03139fb4b113123",
+    "launch.json": "b325a21afb40111139838bb15a377c6c93144f225782d4e5a0bad2818beeef4e",
+    "static_pair.json": "e5c68bebd454c61660468ef13b8f2d5dc41adf21a5def8b802f21f0175f7f9ab",
+    "static_pair.log": "681367cf00bacd4038eda6628056feaededd02892953bf9080f88a7a1c53812d"
+  },
+  "raw_root": "/data1/Kane/MOE/ACT/data/moe/results/external_compatibility_20260914_r1",
+  "results": {
+    "dynamic_top2": {
+      "auto_lirpa_file": "/data1/Kane/MOE/baselines/alpha-beta-CROWN/auto_LiRPA/auto_LiRPA/__init__.py",
+      "case": "dynamic_top2",
+      "device": "cpu",
+      "dtype": "float32",
+      "exception": "NotImplementedError",
+      "formal_SAFE": false,
+      "grid_range": [
+        0.8999999165534973,
+        1.100000023841858
+      ],
+      "message": "There are unsupported operations",
+      "phase": "graph_conversion",
+      "python": "3.11.16 | packaged by conda-forge | (main, Aug 21 2026, 22:44:51) [GCC 14.4.0]",
+      "seconds": 0.7979065161198378,
+      "status": "REJECTED_OR_ERROR",
+      "torch": "2.11.0+cu130",
+      "traceback": "Traceback (most recent call last):\n  File \"/data1/Kane/MOE/ACT/act/pipeline/moe/external_compatibility.py\", line 77, in worker\n    bounded=BoundedModule(model,center,device='cpu',bound_opts={'conv_mode':'matrix'})\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/data1/Kane/MOE/baselines/alpha-beta-CROWN/auto_LiRPA/auto_LiRPA/bound_general.py\", line 149, in __init__\n    self._convert(model, self.global_input)\n  File \"/data1/Kane/MOE/baselines/alpha-beta-CROWN/auto_LiRPA/auto_LiRPA/bound_general.py\", line 892, in _convert\n    nodesOP, nodesIn, nodesOut, template = self._convert_nodes(\n                                           ^^^^^^^^^^^^^^^^^^^^\n  File \"/data1/Kane/MOE/baselines/alpha-beta-CROWN/auto_LiRPA/auto_LiRPA/bound_general.py\", line 783, in _convert_nodes\n    raise NotImplementedError('There are unsupported operations')\nNotImplementedError: There are unsupported operations\n"
+    },
+    "input_polytope": {
+      "api_file": "/data1/Kane/MOE/baselines/alpha-beta-CROWN/complete_verifier/api.py",
+      "auto_lirpa_file": "/data1/Kane/MOE/baselines/alpha-beta-CROWN/auto_LiRPA/auto_LiRPA/__init__.py",
+      "box": {
+        "lower": [
+          [
+            -0.10000000149011612,
+            -0.10000000149011612
+          ]
+        ],
+        "upper": [
+          [
+            0.10000000149011612,
+            0.10000000149011612
+          ]
+        ]
+      },
+      "case": "input_polytope",
+      "device": "cpu",
+      "dtype": "float32",
+      "exception": "ValueError",
+      "formal_SAFE": false,
+      "message": "Input constraints must refer to a single variable.",
+      "phase": "relational_input_parse",
+      "python": "3.11.16 | packaged by conda-forge | (main, Aug 21 2026, 22:44:51) [GCC 14.4.0]",
+      "seconds": 2.2965574441477656,
+      "status": "REJECTED_OR_ERROR",
+      "torch": "2.11.0+cu130",
+      "traceback": "Traceback (most recent call last):\n  File \"/data1/Kane/MOE/ACT/act/pipeline/moe/external_compatibility.py\", line 68, in worker\n    lo,hi=api._parse_input_bounds(box & (x[0]+x[1]<=.1),x)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/data1/Kane/MOE/baselines/alpha-beta-CROWN/complete_verifier/api.py\", line 1012, in _parse_input_bounds\n    raise ValueError(\"Input constraints must refer to a single variable.\")\nValueError: Input constraints must refer to a single variable.\n"
+    },
+    "static_pair": {
+      "auto_lirpa_file": "/data1/Kane/MOE/baselines/alpha-beta-CROWN/auto_LiRPA/auto_LiRPA/__init__.py",
+      "bounds": {
+        "lower": [
+          [
+            0.8955186605453491
+          ]
+        ],
+        "upper": [
+          [
+            1.1054728031158447
+          ]
+        ]
+      },
+      "case": "static_pair",
+      "device": "cpu",
+      "dtype": "float32",
+      "formal_SAFE": false,
+      "grid_range": [
+        0.8999999165534973,
+        1.100000023841858
+      ],
+      "max_finite_probe_error": 0.0,
+      "nodes": [
+        {
+          "name": "/0",
+          "type": "BoundInput"
+        },
+        {
+          "name": "/1",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/2",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/3",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/4",
+          "type": "BoundUnsqueeze"
+        },
+        {
+          "name": "/5",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/6",
+          "type": "BoundUnsqueeze"
+        },
+        {
+          "name": "/7",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/8",
+          "type": "BoundUnsqueeze"
+        },
+        {
+          "name": "/9",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/10",
+          "type": "BoundUnsqueeze"
+        },
+        {
+          "name": "/11",
+          "type": "BoundSlice"
+        },
+        {
+          "name": "/12",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/13",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/14",
+          "type": "BoundUnsqueeze"
+        },
+        {
+          "name": "/15",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/16",
+          "type": "BoundUnsqueeze"
+        },
+        {
+          "name": "/17",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/18",
+          "type": "BoundUnsqueeze"
+        },
+        {
+          "name": "/19",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/20",
+          "type": "BoundUnsqueeze"
+        },
+        {
+          "name": "/21",
+          "type": "BoundSlice"
+        },
+        {
+          "name": "/22",
+          "type": "BoundNeg"
+        },
+        {
+          "name": "/23",
+          "type": "BoundConcat"
+        },
+        {
+          "name": "/24",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/25",
+          "type": "BoundAdd"
+        },
+        {
+          "name": "/26",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/27",
+          "type": "BoundSub"
+        },
+        {
+          "name": "/28",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/29",
+          "type": "BoundAdd"
+        },
+        {
+          "name": "/30",
+          "type": "BoundConcat"
+        },
+        {
+          "name": "/31",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/32",
+          "type": "BoundUnsqueeze"
+        },
+        {
+          "name": "/33",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/34",
+          "type": "BoundUnsqueeze"
+        },
+        {
+          "name": "/35",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/36",
+          "type": "BoundUnsqueeze"
+        },
+        {
+          "name": "/37",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/38",
+          "type": "BoundUnsqueeze"
+        },
+        {
+          "name": "/39",
+          "type": "BoundSlice"
+        },
+        {
+          "name": "/40",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/41",
+          "type": "BoundUnsqueeze"
+        },
+        {
+          "name": "/42",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/43",
+          "type": "BoundUnsqueeze"
+        },
+        {
+          "name": "/44",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/45",
+          "type": "BoundUnsqueeze"
+        },
+        {
+          "name": "/46",
+          "type": "BoundConstant"
+        },
+        {
+          "name": "/47",
+          "type": "BoundUnsqueeze"
+        },
+        {
+          "name": "/48",
+          "type": "BoundSlice"
+        },
+        {
+          "name": "/49",
+          "type": "BoundSoftmax"
+        },
+        {
+          "name": "/50",
+          "type": "BoundMul"
+        },
+        {
+          "name": "/51",
+          "type": "BoundReduceSum"
+        }
+      ],
+      "phase": "complete",
+      "python": "3.11.16 | packaged by conda-forge | (main, Aug 21 2026, 22:44:51) [GCC 14.4.0]",
+      "seconds": 0.750115760602057,
+      "status": "NUMERICAL_BOUND_RETURNED_NOT_FORMAL_SAFE",
+      "torch": "2.11.0+cu130"
+    }
+  },
+  "scope": "Provenance, recorded phase and finite-probe consistency; not independent verification of numerical bounds.",
+  "summary_sha256": "e68b48671f57844b3aca8b98b6e15bf7f9cf0ad6fa39fd2d3527676f584a50fd",
+  "unsupported_operation_log": [
+    "ERROR    15:50:06     [bound_general.py:782] Name: onnx::TopK, Attr: {'axis': 1, 'largest': 1, 'sorted': 1}",
+    "ERROR    15:50:06     [bound_general.py:782] Name: onnx::TopK, Attr: {'axis': 1, 'largest': 1, 'sorted': 1}",
+    "ERROR    15:50:06     [bound_general.py:782] Name: onnx::OneHot, Attr: {'axis': 1}"
+  ]
+}
