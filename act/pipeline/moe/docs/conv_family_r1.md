@@ -72,3 +72,49 @@ against float64 weights: the runner had omitted setting the default dtype.
 The failed attempt is retained. R2 only sets the declared float64 default after
 loading the same float32-initialized model; no model, box, backend or tolerance
 is changed. The registered non-dyadic singleton limitation remains unchanged.
+
+## Training supervision, fixed before launch
+
+`conv_training_supervisor` requires a clean pushed source, the successful full-
+shape gate and a hash-bound CUDA smoke from the current worker. It archives that
+Git revision into the run's own source directory. Training/audit run from this
+snapshot, never from later checkout edits. Dependencies are unchanged; the
+launch records the existing act-py312 package inventory, GPU/driver, source tar,
+recipe, split and seven CIFAR raw-file hashes. Dataset downloads are disabled.
+
+Numeric execution is float32, no AMP or TF32, deterministic algorithms enabled,
+cuDNN benchmark disabled. Unsupported deterministic operations fail rather than
+silently falling back. Seed17 defines the model and the randperm45k/5k split;
+each training epoch uses shuffle/worker generator17+epoch; validation uses
+10000+epoch and final test20000. Workers seed Python/NumPy from their Torch seed.
+Two workers and two CPU threads, GPU0, nice10. This execution detail supplements
+the frozen recipe; it changes none of its hyperparameters or selection rules.
+
+Before training and independent final evaluation, require8GiB free GPU and10GiB
+free disk. Otherwise wait30s, at most24h. Every25 batches write an atomic
+heartbeat. A dead child produces FAILED; a live child with heartbeat older than
+30min produces STALLED_SUSPECTED, not a false failure. Read races receive three
+retries. Owned training/audit limits are72h/1h. No other job is stopped.
+
+Each completed epoch retains an immutable checkpoint with model, AdamW and cosine
+states, RNG and loader-generator states; atomic epoch metadata binds its hash.
+An earliest maximum **validation correct count** selects the checkpoint. All
+100 epochs run even if validation stagnates. Test is evaluated only after that
+choice. An independent process reconstructs the split, checks all100 epoch
+denominators, LR values and checkpoint hashes/metadata, and reloads the selected
+model to repeat full5k validation and10k test. Only then write
+`CONV_LANDED_summary.json` with `LANDED_AUDITED`.
+
+There is no automatic retry/resume, no test/verification-based model selection,
+no dependency installation and no training-result push from the background
+worker. Failed attempts and partial checkpoints remain. RNG/optimizer retention
+enables a later explicitly audited recovery; it is not a claim that arbitrary
+mid-epoch restarts are already supported. The outer supervisor uses a family-
+wide lock. Its final artifact is available locally even if this chat is closed.
+
+CUDA smoke is a separate discarded two-augmented-batch control using the exact
+full architecture and training hyperparameters. It checks finite gradients,
+nonzero router update, exact checkpoint inference replay and one identical
+optimizer continuation update after restore. It never supplies production
+weights. Unit controls additionally cover immutable checkpoints, complete split,
+earliest ties, cosine endpoint, read races, resource waits and dead/stale workers.

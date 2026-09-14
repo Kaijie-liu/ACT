@@ -131,6 +131,8 @@ def run(root):
     torch.save(dict(center=x, lower=x-2/255, upper=x+2/255),root/'input.pt')
     dump(root/'launch.json',dict(protocol='CONV_FULLSHAPE_CONFORMANCE_R1', execution_head=git(ROOT,'rev-parse','HEAD'),
          config_sha256=sha(CONFIG), checkpoint_sha256=sha(root/'init.pt'), input_sha256=sha(root/'input.pt'),
+         source_hashes={p:sha(ROOT/p) for p in ['act/back_end/moe/conv_factory.py','act/back_end/moe/factory.py',
+            'act/back_end/moe/static_pair.py','act/back_end/hybridz_tf/tf_cnn.py','act/back_end/hybridz_tf/tf_mlp.py']},
          commits=COMMITS, timeout_per_backend_seconds=300, probe_tolerance=1e-10,
          scope='synthetic full-shape compatibility, not verified accuracy; no positive-bound gate'))
     for kind, python in [('act',ACT_ENV), ('crown',ENV)]:
