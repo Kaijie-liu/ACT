@@ -50,3 +50,17 @@ closed. No tolerance or production rule was relaxed. This remains a numerical
 limitation, not evidence that every full-sized CNN request will be consumable.
 The dyadic control checks arithmetic/layout separately; it does not quantize the
 registered training model. Full-shape compatibility is still a prelaunch gate.
+
+## Full-shape gate frozen before execution
+
+`conv_compatibility` constructs the registered seed17 model in float32, serializes
+it, and supplies the identical checkpoint and float64 represented box to both
+environments. The synthetic center is all .5, with radius2/255 and four fixed
+concrete probes. ACT must retain exact SparseHZ for the router and all four full
+experts (dense fallback disabled), and all six static pairs must match their
+explicit variable-weight expressions. External plain CROWN uses the existing
+pinned environment, CPU/float64, matrix convolution and pair{0,1}, nine fixed
+class0 margins. It must return finite ordered bounds and pass lowered concrete
+conformance, not positive bounds. Each backend has300 seconds; failures remain.
+Probe tolerance1e-10 is a conversion check, not a SAFE acceptance policy.
+This gate does not establish trained-model scalability or any output certificate.
