@@ -1,5 +1,15 @@
 # MoE Verification Experiment Record
 
+### 2026-09-14: request LP order R2 conditional positive closure
+
+Execution `db0b4b281`,33.13s,5 new LP queries. Checked order r2<r4 yields
+lambda2 in[0,1/2]. Three old negative residual bounds become2.60544,1.55273,
+4.10960; all18 necessary output obligations now positive,minimum~.183047.
+Separate recheck PASS0 across41 supplied exports/duals,parent identity and
+complete scope aggregation. `docs/request_lp_order_results.md` preserves the
+trusted upstream/guard/F0 boundary. Not native-network formal SAFE and not
+a new performance result. Original request-LP R1 remains UNKNOWN.
+
 ### 2026-09-14: separate request LP order-only R2 registration
 
 `docs/request_lp_order_r2.md`, `request_lp_order.py`: same index3000/seed0,

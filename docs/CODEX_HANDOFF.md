@@ -57,11 +57,15 @@ Read `act/pipeline/moe/docs/staged_verifier.md` and
 ## Authoritative reading order
 
 CURRENT FOLLOW-ON (2026-09-14, PI approved bounded continuation): request LP
-order-only R2 is registered in `act/pipeline/moe/docs/request_lp_order_r2.md`.
+order-only R2 COMPLETED; read `act/pipeline/moe/docs/request_lp_order_results.md`
+and `results/request_lp_order_review_20260914_r2.json` under the MoE pipeline.
 Same old request/18 obligations, at most2 router LPs+3 residual LPs,600s outer
 cap. Exact score-order facts imply dyadic gate envelopes without evaluating
 sigmoid. Reuse hash-checked R1 proofs; do not resample or replace the R1 UNKNOWN.
-Implementation and tests precede execution; result is not yet available.
+Execution `db0b4b281`,33.13s,exactly5 new LPs. All41 stored exports/duals
+rechecked;18/18 positive obligations (15 reused+3 residual),minimum~.18304675.
+Status CHECKED_REQUEST_CONDITIONAL_ON_TRUSTED_LOWERING,not full-network proof.
+R1 UNKNOWN remains separate. No further refinement/search is queued.
 The other, separate next stage is an external static-pair obligation adapter,
 NOT a complete dynamic-MoE benchmark. No dependency install or sealed search.
 
@@ -75,8 +79,9 @@ full BaB/holdout/performance comparison. Read
 rejected; static variable-weight pair returns numerical bounds; full API box
 accepted but relational input halfspace rejected. Provenance audit PASS0;
 execution `84352b890`. No install. No request-LP or compatibility job remains
-running. Full-model external competition and positive complete-request proof
-remain open; these negative controls do not authorize expanded searches.
+running at R1 completion. Full-model external competition remains open; the
+later order-only R2 above supersedes R1's absence of conditional positive
+request evidence. These controls do not authorize expanded searches.
 
 REQUEST LP R1 completed (2026-09-14): separate frozen index3000/seed0
 control in `act/pipeline/moe/docs/request_lp_r1.md`, `request_lp_control.py`

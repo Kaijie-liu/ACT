@@ -1,4 +1,6 @@
 import copy
+import json
+from pathlib import Path
 import unittest
 from fractions import Fraction
 from unittest.mock import patch
@@ -11,6 +13,13 @@ from act.pipeline.moe.check_request_lp import TRUSTED, aggregate, order_envelope
 
 
 class OrderLPTests(unittest.TestCase):
+    def test_frozen_conditional_closure_not_native_safe(self):
+        r=json.loads((Path(__file__).parent/'results/request_lp_order_review_20260914_r2.json').read_text())
+        self.assertEqual(r['new_lp_queries'],5)
+        self.assertEqual(r['proof_count'],41)
+        self.assertEqual(r['check']['counts'],{'reused':15,'residual':3,'unknown':0})
+        self.assertEqual(r['check']['status'],'CHECKED_REQUEST_CONDITIONAL_ON_TRUSTED_LOWERING')
+        self.assertTrue(all(Fraction(v['new_lower_bound'])>0 and Fraction(v['old_lower_bound'])<0 for v in r['comparisons']))
     def test_order_and_tie_enclosures(self):
         self.assertEqual(order_envelope(Fraction(1),Fraction(-2)),[.5,1])
         self.assertEqual(order_envelope(Fraction(-2),Fraction(1)),[0,.5])
