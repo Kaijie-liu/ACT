@@ -1,4 +1,6 @@
 import copy
+import json
+from pathlib import Path
 import unittest
 from fractions import Fraction
 from unittest.mock import patch
@@ -12,6 +14,13 @@ from act.pipeline.moe.request_lp_control import outward, frozen_request
 
 
 class RequestLPTests(unittest.TestCase):
+    def test_frozen_real_control_accounting(self):
+        r=json.loads((Path(__file__).parent/'results/request_lp_review_20260914_r1.json').read_text())
+        self.assertEqual(r['check']['status'],'UNKNOWN')
+        self.assertEqual(r['checked_lp_count'],36)
+        self.assertEqual(r['check']['counts'],{'reused':15,'residual':0,'unknown':3})
+        self.assertEqual(len(r['obligations']),18)
+        self.assertEqual(sum(p['kind']=='weighted' for p in r['proofs'].values()),3)
     def fixture(self, positive=True):
         request={'top_k':2,'tie_policy':'ANY_LEGAL_TOPK','experts':2,'classes':2,'clean_prediction':0}
         rid=identity(request)

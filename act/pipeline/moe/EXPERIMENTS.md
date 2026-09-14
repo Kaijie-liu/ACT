@@ -1,5 +1,14 @@
 # MoE Verification Experiment Record
 
+### 2026-09-14: request LP R1 complete, overall UNKNOWN
+
+Execution `5c98e5399`,58.63s. `docs/request_lp_results.md` and compact
+`results/request_lp_review_20260914_r1.json`: all36 LP exports/duals independently
+rechecked; all18 pair/property obligations present,15 positive reused,3
+nonpositive residual F0 LP bounds. No missing obligation and no full positive
+request. Trusted upstream/guard/F0 lowering remains explicit. No new query
+or numerical-policy change follows the negative result.
+
 ### 2026-09-14: separate request LP R1 registration
 
 `docs/request_lp_r1.md` freezes old seed0/index3000,2/255; no request

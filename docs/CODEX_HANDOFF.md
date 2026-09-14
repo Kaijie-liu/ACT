@@ -56,11 +56,15 @@ Read `act/pipeline/moe/docs/staged_verifier.md` and
 
 ## Authoritative reading order
 
-REQUEST LP R1 implementation (2026-09-14): separate frozen index3000/seed0
+REQUEST LP R1 completed (2026-09-14): separate frozen index3000/seed0
 control in `act/pipeline/moe/docs/request_lp_r1.md`, `request_lp_control.py`
 and `check_request_lp.py`. Sparse supplied-HZ LP dual checks and exhaustive
-output aggregation are implemented. Results are pending execution; do not
-infer complete-request success from unit controls. No production SAFE gate,
+output aggregation are implemented. Read `docs/request_lp_results.md` under
+the MoE pipeline and `results/request_lp_review_20260914_r1.json`: all36
+supplied LPs rechecked,18 output obligations,15 positive through scoped reuse,
+three negative residual F0 lower bounds. Overall UNKNOWN, no missing obligation,
+not a complete positive certificate. Execution58.63s at `5c98e5399`.
+No production SAFE gate,
 budget or sigmoid range is changed. External compatibility remains separate.
 
 LATEST COMPLETION (relation R1,2026-09-14): all6 smoke +60 full calls finished;
