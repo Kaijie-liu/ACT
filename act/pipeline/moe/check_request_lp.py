@@ -13,6 +13,7 @@ from act.back_end.solver.check_hz_lp_export import check_export
 
 TRUSTED = ['network_and_input_to_HZ', 'membership_and_pair_guard_lowering',
            'router_infeasibility_exclusions', 'F0_outer_HZ_construction_and_floating_coefficients']
+RATIONAL_TRUSTED = TRUSTED[:-1]
 
 
 def property_row(classes, clean, index):
@@ -30,7 +31,9 @@ def order_envelope(lower, negative_upper):
 
 
 def aggregate(manifest, read):
-    if manifest['schema'] not in ('request_lp_v1','request_lp_order_v2') or manifest['trusted_base'] != TRUSTED:
+    direct = manifest['schema'] == 'request_lp_rational_v3'
+    trusted = RATIONAL_TRUSTED if direct else TRUSTED
+    if manifest['schema'] not in ('request_lp_v1','request_lp_order_v2','request_lp_rational_v3') or manifest['trusted_base'] != trusted:
         raise ValueError('unknown proof contract')
     request = manifest['request']; rid = identity(request)
     if manifest['request_id'] != rid or request['tie_policy'] != 'ANY_LEGAL_TOPK' or request['top_k'] != 2:
@@ -40,7 +43,7 @@ def aggregate(manifest, read):
     all_pairs = list(itertools.combinations(range(request['experts']),2))
     if sorted(listed) != all_pairs: raise ValueError('route partition missing/duplicate/noncanonical')
     if not routes['exact'] or routes['unresolved']:
-        return {'status':'UNKNOWN', 'reason':'INCOMPLETE_ROUTE_COVERAGE', 'trusted_base':TRUSTED}
+        return {'status':'UNKNOWN', 'reason':'INCOMPLETE_ROUTE_COVERAGE', 'trusted_base':trusted}
     required = {(tuple(p),i) for p in routes['feasible'] for i in range(request['classes']-1)}
     records = manifest['obligations']
     if len(records) != len(required) or {(tuple(r['pair']),r['property_index']) for r in records} != required:
@@ -81,13 +84,31 @@ def aggregate(manifest, read):
             if rational(row['difference_bounds'][0]) > rational(row['difference_bounds'][1]):
                 raise ValueError('reversed disagreement range')
             gate=[0,1]
-            if manifest['schema']=='request_lp_order_v2':
+            if manifest['schema'] in ('request_lp_order_v2','request_lp_rational_v3'):
                 qm=[0]*request['experts'];qm[pair[0]]=1;qm[pair[1]]=-1
                 low=bound(row['gate_lower'],'router_order',{'pair':pair},None,qm)
                 neg=bound(row['gate_upper'],'router_order',{'pair':pair},None,[-v for v in qm])
                 gate=order_envelope(low,neg)
             if row['lambda_bounds'] != gate: raise ValueError('unproved nonlinear gate range')
-            value = bound(row['source'],'weighted',{'pair':pair},prop,[1])
+            if direct:
+                from act.back_end.solver.check_rational_mccormick import check_construction
+                item = manifest['proofs'][row['source']]
+                if (item['request_id']!=rid or item['kind']!='rational_weighted' or
+                    item['scope']!={'pair':pair} or item['property_index']!=prop):
+                    raise ValueError('rational proof outside scope')
+                lower_item=manifest['proofs'][row['difference_lower']]
+                upper_item=manifest['proofs'][row['difference_upper']]
+                # Scope alone is insufficient: both support proofs must refer
+                # to the very same pre-F0 joint HZ and factor frame.
+                if lower_item['hz_sha256']!=upper_item['hz_sha256'] or item['hz_sha256']!=lower_item['hz_sha256']:
+                    raise ValueError('different shared factor sources')
+                record=read(item['export'])
+                certificate=read(item['certificate']) if item['status']=='CHECKED' else None
+                checked=check_construction(record,certificate,source_hash=item['hz_sha256'],q=q,offset=0,
+                                           gate=gate,difference=row['difference_bounds'])
+                value=Fraction(checked['bound']['checked_lower_bound']) if certificate is not None else None
+            else:
+                value = bound(row['source'],'weighted',{'pair':pair},prop,[1])
         elif row['kind'] != 'unknown': raise ValueError('unknown obligation kind')
         if value is not None and value > threshold:
             accepted.append(value); counts[row['kind']] += 1
@@ -96,7 +117,7 @@ def aggregate(manifest, read):
                       if required and len(accepted)==len(required) else 'UNKNOWN'),
             'required':len(required), 'counts':counts,
             'minimum_checked_bound':str(min(accepted)) if len(accepted)==len(required) and accepted else None,
-            'trusted_base':TRUSTED, 'scope':'All required supplied LP obligations checked; NOT full-network independent reproof or deployed floating-point proof.'}
+            'trusted_base':trusted, 'scope':'All required supplied LP obligations checked; NOT full-network independent reproof or deployed floating-point proof.'}
 
 
 def check_directory(root, *, expected_request_id=None):

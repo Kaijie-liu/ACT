@@ -1,5 +1,12 @@
 # MoE project handoff
 
+Next registered stage: `act/pipeline/moe/docs/request_lp_rational_r3.md`.
+Direct rational construction starts from the shared pre-F0 HZ, preserving
+factor identity and checked R2 ranges. Only three residual LP proposals;
+no production policy change. Implementation and controls precede execution.
+The separate 60-request ACT/external static-pair comparison remains next;
+it must charge a complete request including the cross-environment boundary.
+
 Updated 2026-09-14. Latest 100-input confirmation execution HEAD: `bc0791976`.
 Latest 30-input confirmation execution HEAD: `6ad58bc9d`.
 Earlier development schedule execution HEAD: `d7ac0b0a9`.
