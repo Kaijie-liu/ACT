@@ -131,3 +131,12 @@ def check_directory(root, *, expected_request_id=None):
         if hashlib.sha256(raw).hexdigest() != ref['sha256']: raise ValueError('artifact hash mismatch')
         return json.loads(raw)
     return aggregate(manifest,read)
+
+
+if __name__ == '__main__':
+    import argparse
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('directory', type=Path)
+    parser.add_argument('--expected-request-id')
+    args = parser.parse_args()
+    print(json.dumps(check_directory(args.directory, expected_request_id=args.expected_request_id), indent=2))

@@ -1,5 +1,16 @@
 # MoE project handoff
 
+Advice/bb.md follow-up in progress (2026-09-14): method section03 now describes
+the actual scoped-fact/route-complexity/residual-obligation algorithm, with the
+legacy-only F0 trigger removed from the current version's description. The new
+generic rational-request generator and fixed three ACT-only protocol are in
+`act/pipeline/moe/docs/request_lp_act_only_r1.md`. Tests and freeze precede new
+queries. Do not substitute cases or interpret LP UNKNOWN as an unsafe model.
+The next separate workstreams are a materially different moderate-scale model
+family and a reviewer-runnable model/request artifact. Neither is complete just
+because the rational checker can run without Torch. No submission/acceptance
+guarantee is made; existing high-accuracy/external-comparison limits remain.
+
 Latest completion: external complete-cost comparison, execution `0de4fe1c7`.
 Read `act/pipeline/moe/docs/external_pair_comparison_results.md` and linked
 compact re-audit. Smoke6/full60 completed; separate re-audit exactly matches

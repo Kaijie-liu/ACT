@@ -3254,3 +3254,22 @@ Execution f30f8ccf4; see `docs/request_lp_rational_results.md`. Three new LPs,
 18/18 required outputs checked, no F0 floating-construction trust assumption.
 Upstream HZ/guard/route lowering remains trusted. Same frozen R2 ranges and
 input, no performance claim or production numerical-policy change.
+
+## 2026-09-15 fixed ACT-only rational request transfer: prelaunch
+
+Advice/bb.md: method03 synchronized to current opt-in scheduler. Added a generic
+request-to-rational-LP producer and froze seed0/4029, seed1/4018, seed2/4014 in
+`configs/request_lp_act_only_r1.json`; full protocol in the matching docs file.
+No old proof bounds are reused, 1,800s total generation/10s proposal limits,
+dyadic router-order enclosure only. Both generation and independent checking
+costs plus raw-input provenance cost will be reported. New results have their
+own directory; no production policy, model, cohort or old result changes.
+
+27 focused unittest checks pass, including all-tie three-pair full-request
+construction, retained shared factors, proposal failure/UNKNOWN, absence of
+floating F0 construction, scoped scheduler behavior, and fresh-process proof
+checking with Python site packages disabled. Initial portability test exposed
+ACT parent-package eager Torch imports; fixed with an isolated standard-library
+checker launcher, not a dependency install or modification of ACT import APIs.
+The environment has no pytest; tests use its existing unittest installation.
+This is not yet a publicly downloadable full model artifact or second family.

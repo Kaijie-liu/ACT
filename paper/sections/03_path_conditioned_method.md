@@ -41,8 +41,11 @@ would silently discard executions at a boundary; breaking ties according to a
 single concrete library call would verify an implementation accident rather
 than the registered semantics. Exact route labels are used only while the
 reachable router hybrid zonotope has not undergone relaxation and every
-feasibility query has been decided. Otherwise, the route family is a sound
-upper set and unresolved branches remain `UNKNOWN`.
+feasibility query has been decided. Mathematically a sound covering upper set
+would suffice if every remaining branch were proved. The current executable
+entry, however, requires completed exact candidate and route queries and returns
+`UNKNOWN` when they are incomplete; candidate-upper-set fallback is not part of
+this version.
 
 The implementation supports two complementary ways to construct this family.
 Small routers can enumerate every candidate set and check its guard directly.
@@ -62,8 +65,10 @@ using one model build, 28 cuts, and 29 solves including the final
 infeasibility proof.
 
 The implication constants can be derived from an unconditioned generator
-bound, a constraint-aware LP support, or an integral HZ support. Every mode is
-sound; the latter two retain path constraints and can tighten the encoding.
+bound, a constraint-aware LP support, or an integral HZ support. Each is a valid
+mathematical construction when supplied valid support bounds; the implementation
+uses the frozen HZ/HiGHS numerical acceptance policy, not a proof of arbitrary
+floating-point solver error. The latter two retain path constraints and can tighten the encoding.
 In the guarded correctness control, exact support reduces selector binaries
 from two to zero. A failed support side falls back to the generator bound, and
 the result is not labelled exact.
@@ -75,7 +80,8 @@ Expert-local ReLU binaries remain distinct, because two experts do not share
 their activation choices merely because they receive the same input. This
 identity discipline matters when subtracting expert outputs or transferring a
 guard: duplicating shared input factors destroys correlation, whereas merging
-independent expert binaries introduces executions that do not exist.
+independent expert binaries falsely identifies their activation choices and can
+discard legitimate executions, invalidating the required overapproximation.
 
 Adding a route guard intersects the current abstract domain with a subset.
 Consequently, every exact support lower bound can only increase and every upper
@@ -133,7 +139,9 @@ guarded domain, then every convex combination of those expert outputs satisfies
 the same property. This gate-elimination rule is cheap and exact as a
 sufficient condition. Its failure is not evidence of an unsafe weighted model:
 one expert can violate a row while its reachable weighted mixture remains
-safe. Tier 1 therefore returns only `SAFE` or `UNKNOWN`.
+safe. The gate-elimination rule alone can establish safety but cannot establish
+unsafety. The executable Tier 1 can additionally return `UNSAFE` after a concrete
+full-model replay, or terminate with `UNKNOWN`/`TIMEOUT`.
 
 When Tier 1 is inconclusive, Tier 2 models only the part of the gate needed by
 one property row. Choose an anchor expert (b\in S). Every normalized top-(k)
@@ -149,8 +157,11 @@ For a linear safety row (q^TF+c\ge0), define
 (|S|-1) scalar products (\lambda_i d_i), rather than a nonlinear encoding
 of every output coordinate. Sound gate intervals, guarded difference supports,
 McCormick envelopes, and the intersection of the gate box with the simplex
-form an outer relaxation. A strictly positive, outward-corrected lower bound
-proves the row. A non-positive relaxation result remains `UNKNOWN` unless a
+form an outer relaxation. A strictly positive valid lower bound proves the row
+in the mathematical model. Production acceptance follows the registered
+optimal-status, bound-correction and positive-margin numerical policy; it is not
+an independently checked proof of the entire floating-point computation.
+A non-positive relaxation result remains `UNKNOWN` unless a
 concrete input is recovered and violates the full routed model on replay.
 
 For selected-softmax top-2, the construction reduces to
@@ -176,6 +187,72 @@ solutions on a 20-row residual cohort dominated by solver limits. We retain
 this null-adjacent result: segmentation addresses relaxation width, not MILP
 search throughput.
 
+## Scoped facts and route-complexity scheduling
+
+The confirmed scheduling version organizes a request as **legal-route coverage,
+common scoped facts, route-complexity selection, residual weighted obligations,
+and evidence aggregation**. It is an explicit opt-in configuration of the
+staged entry, not a retrospective change to the legacy staged experiments.
+The public implementation considered here is eval-mode, CPU/float64,
+output-layer selected-softmax top-2. The normalized top-k identity above has a
+broader mathematical scope than this executable interface.
+
+For expert \(i\), let \(X_i\) be its top-k membership domain. A common
+prelude propagates the expert under its membership guard **without support
+tightening solves** and extracts interval-derived lower bounds for individual
+classification properties. Each fact binds the model and request, property,
+expert, factor frame, proof domain and numerical policy. The adaptive and
+matched-monolithic paths compute and pay for these facts independently. A
+snapshot is published before method-specific solving so that a later timeout
+does not erase evidence of the common prelude.
+
+For pair \(S=\{i,j\}\), \(X_S\subseteq X_i\cap X_j\). If the two
+scoped facts prove the *same* property with bounds \(L_i,L_j>0\), then
+
+\[
+ q^\top F_S(x)+c\ge\lambda_i(x)L_i+\lambda_j(x)L_j
+ \ge\min(L_i,L_j)>0\qquad (x\in X_S).
+\]
+
+This discharges one pair/property obligation, not the entire expert or request.
+Missing, mismatched or nonpositive facts discharge nothing. A pair with every
+property discharged needs no residual weighted construction. Reuse transfers
+logical facts across the checked scope-inclusion rule; it does not identify
+independently allocated expert factors or reuse an incomplete solver search.
+
+After this prelude the frozen scheduler uses the following rule:
+
+1. With one exact legal pair, go directly to weighted F0 solving. The common
+   propagation remains charged, and the selected-softmax weights remain variable.
+2. With multiple pairs, allocate at most 25% of the then-remaining request
+   budget to Tier 1 expert solving. Return early on a replayed full-model
+   violation or complete expert-wise proof. Otherwise continue to residual F0
+   when total budget remains, including when the Tier 1 slice or a solver query
+   was exhausted. F0 is **not** restricted to the two historical
+   semantic-incompleteness labels.
+3. Cover every residual pair/property, combine it with the discharged facts,
+   and accept only if the whole obligation inventory is positive under the
+   applicable numerical policy. Stage transitions retain the evidence source
+   and elapsed/remaining budget; an outer watchdog enforces the hard request cap.
+
+The 25% allocation is a frozen empirical design, not an optimal allocation
+theorem. Additional Tier 1 solver outcomes are not silently added to the common
+interval-fact inventory in this comparison. The matched monolithic alternative
+uses the same independently generated facts: for each property it partitions
+the legal pairs into discharged and residual sets, jointly solves the residual
+disjunction, and takes the minimum of all discharged and residual bounds.
+Neither path may omit a branch because a feasibility or optimization query
+failed. The legacy monolithic configuration is retained as a separate strong
+reference rather than being retroactively changed to the matched configuration.
+
+The executable correspondence is `route_complexity_schedule.prepare()` for
+coverage, the prelude and Tier 1 allocation; `scoped_f0_proofs.py` for scoped
+discharge; and the staged/monolithic F0 paths for residual construction and
+aggregation. Boundary search, matched no-support controls and independent
+post-run audits are outside the direct verification request. The confirmation
+and component ablations evaluate different questions and retain separate
+cohorts, accounting and frozen results.
+
 ## Verdict discipline and backend composition
 
 The staged analysis exposes four terminal states. `SAFE` requires every legal
@@ -193,9 +270,13 @@ backend. The contribution is therefore an analysis layer for dynamic dispatch,
 not a claim that one expert backend dominates existing neural verifiers.
 
 The artifact exposes this logic through a direct staged entry point rather
-than requiring the evaluation harness. A request begins with an already chosen
-input region and property; boundary search and matched ablations are not part
-of the algorithm. Exact route coverage feeds guarded Tier 1, and only the two
-registered semantic-incompleteness outcomes activate F0. Thus the executable
-state machine matches the quantifiers above while keeping scientific controls
-outside the verification budget.
+than requiring the evaluation harness. Legacy fixed-stage and current scheduled
+configurations remain distinguishable in request identities and result tables.
+The separate rational evidence path starts from stored shared expert HZs and
+reconstructs property projections, McCormick constraints and LP bounds in
+rational arithmetic. Its independent checker removes trust in the floating F0
+construction, but still trusts network/input-to-HZ propagation, guard lowering
+and route-infeasibility exclusions. It does not replace the production numerical
+acceptance gate or prove deployed floating-point execution. A structurally valid
+evidence package, a checked rational lower bound and a production `SAFE` verdict
+are therefore reported as different evidence layers.
