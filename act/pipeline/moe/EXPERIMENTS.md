@@ -1,5 +1,19 @@
 # MoE Verification Experiment Record
 
+### 2026-09-14: complete-cost external pair comparison archived
+
+Execution `0de4fe1c7`: smoke6/full60 complete, independent re-audit equals both
+saved summaries, PASS/zero issues. Full25 ACT packages+30 external records,
+5 outer timeouts and9 full-model UNSAFE replays. ACT11 policy SAFE versus13
+CROWN numerical positives,8 shared,3 ACT-only(2 multi-pair),5 CROWN-only.
+Mean observed complete cost138.11/4.23s. External path has more positives and
+is much cheaper overall; ACT has distinct results, not dominance. All5
+CROWN-only rows are ACT solver-limit UNKNOWN. See
+`docs/external_pair_comparison_results.md` and the hash-bound compact archive.
+No new queries, configuration changes, sample replacements or portfolio.
+Rational R3 completion is now also integrated into the soundness/evaluation
+text, removing only the floating F0 construction assumption. No active jobs.
+
 ### 2026-09-14: external real-model static-pair R2 completed
 
 Execution `7e911dfab`,two fixed pair calls complete,18/18 numerical positive

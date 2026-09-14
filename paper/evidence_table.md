@@ -5,6 +5,17 @@ Statuses are `CONFIRMATORY`, `FOLLOW_UP`, `ENGINEERING`, `MECHANISM`, `PARTIAL`,
 `AUDITED CASE SERIES`, `OFFICIAL-CONSTRUCTION CENSUS`, `RUNNING`, or `PENDING`.
 A result from one status must not be silently promoted to another.
 
+Latest separate completions (September14): direct rational R3 checks18/18
+request obligations without trusting floating F0 construction; upstream
+HZ/guard/route lowering remains trusted. The complete-cost external comparison
+finishes60/60 with55 complete records,5 retained outer timeouts and9 replayed
+UNSAFE. ACT has11 HZ-policy SAFE versus13 CROWN numerical positives;8 shared,
+3 ACT-only(two multi-pair),5 CROWN-only. Means138.11/4.23 seconds. This is
+complementarity and an external cost challenge, not ACT dominance or equal
+proof levels. Sources: `act/pipeline/moe/results/request_lp_rational_review_20260914_r3.json`
+and `act/pipeline/moe/results/external_pair_comparison_review_20260914_r1.json`.
+Executions `f30f8ccf4` and `0de4fe1c7`. Historical controls below remain intact.
+
 September14 separate evidence controls: request-level LP checking now covers
 all18 output obligations of old seed0/index3000 (36 supplied LPs rechecked),
 but15 positive reuse discharges plus3 nonpositive residuals leave UNKNOWN.

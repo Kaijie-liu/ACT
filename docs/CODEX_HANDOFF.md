@@ -1,12 +1,30 @@
 # MoE project handoff
 
+Latest completion: external complete-cost comparison, execution `0de4fe1c7`.
+Read `act/pipeline/moe/docs/external_pair_comparison_results.md` and linked
+compact re-audit. Smoke6/full60 completed; separate re-audit exactly matches
+saved audits, zero issues. Full:25 ACT packages +30 external records,5 retained
+outer timeouts,9 full-model UNSAFE replays. ACT11 HZ-policy SAFE versus13 CROWN
+numerical positives,8 shared,3 ACT-only(two multi-pair),5 CROWN-only. All five
+CROWN-only rows are ACT solver-limit UNKNOWN. Mean complete costs138.11/4.23s;
+the external path is much cheaper and has more positives overall. Report
+complementarity, NOT ACT dominance or interchangeable proof levels.
+Final regression:42 focused tests PASS; compact archive independently
+reconstructs exactly. No dependency, solver or production-policy change.
+No experiment remains running or queued at this archival completion.
+The two requested deliverables are complete: external complete-request table
+and rational pre-F0 construction checking. Do not retune25%, expand this cohort,
+make an outcome-selected portfolio or reopen sealed searches. Next experimental
+scope/model must be frozen separately; high-accuracy strict certificates and
+independent full-dynamic-model external comparison remain unachieved.
+
 Latest completion: direct rational construction R3, execution `f30f8ccf4`.
 Read `act/pipeline/moe/docs/request_lp_rational_results.md` and linked review.
 All 18 required output obligations independently check (15 reused, 3 residual).
 The trusted base no longer includes floating F0 construction; network-to-HZ,
 guard lowering and route exclusion remain trusted. Same R2 ranges, no policy
 change. 28 focused tests and read-only review PASS, zero issues.
-The separate 60-request ACT/external static-pair comparison is now implemented:
+Historical registration of the now-completed external comparison:
 read `act/pipeline/moe/docs/external_pair_comparison_r1.md`. Same ten observed
 inputs; six old-input smoke requests gate full execution. It materializes one
 shared raw input file, charges loads and the complete cross-env request, and

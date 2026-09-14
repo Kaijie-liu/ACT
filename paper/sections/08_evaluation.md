@@ -633,7 +633,7 @@ This is10 observed images, not60 independent samples or confirmation. Numerical
 policy remains unchanged. Source: `results/relation_ablation_review_20260914_r1.json`
 and `docs/relation_ablation_results.md` under the MoE pipeline.
 
-### Remaining completion requirements (unchanged)
+### Evidence-infrastructure controls and remaining boundaries
 
 Two separate evidence-infrastructure controls are now complete. The request-LP
 control on old seed0/index3000 checks all36 supplied LP exports and inventories
@@ -660,6 +660,57 @@ match; no samples,settings or retries are added. Neither is a full dynamic-model
 external competition or high-accuracy result. Their different domains and
 numerical contracts prohibit interpreting them as a paired speed/coverage table.
 See `request_lp_order_results.md` and `external_static_pair_results.md`.
+
+The subsequent direct rational R3 control checks the McCormick construction
+from the original shared expert HZ before floating F0 lowering. With the same
+request and checked ranges, all18 output obligations remain positive. Only
+the floating F0 construction assumption is removed; HZ propagation, guard
+lowering and route exclusions remain trusted. This is a reduction in the
+trusted base, not an extra high-accuracy-model certificate or a performance
+result. See `request_lp_rational_results.md`.
+
+### Complete-cost external static-pair follow-up
+
+We separately compare the frozen ACT adaptive path with an ACT route frontend
+followed by plain CROWN on every feasible whole-box static weighted pair.
+Both compute their own route coverage; each request receives a300-second
+process-group cap, including cross-environment imports and all pair queries.
+Both load the same hash-bound materialized float64 input; its common raw-data
+preparation is separately disclosed and excluded equally. Variable softmax
+weights remain in each static graph. This is a hybrid external-backend path,
+not standalone full alpha-beta-CROWN on the original dynamic MoE.
+
+All60 requests on ten previously observed images and three fixed models
+complete, with55 complete records and5 retained outer timeouts. Separate
+structural re-audit reproduces the original summaries and replays9 UNSAFE
+records. Evidence levels remain explicitly different:
+
+| Model | ACT HZ-policy SAFE / UNSAFE / UNKNOWN / TIMEOUT | CROWN numerical POSITIVE / UNKNOWN | Mean complete seconds ACT / CROWN |
+|---|---|---|---|
+| Seed0 | 4 / 2 / 2 / 2 | 5 / 5 | 139.00 / 4.27 |
+| Seed1 | 3 / 3 / 2 / 2 | 4 / 6 | 152.64 / 4.23 |
+| Seed2 | 4 / 4 / 1 / 1 | 4 / 6 | 122.68 / 4.18 |
+
+Each arm/model has denominator ten. There are8 shared positives,3 ACT-only
+policy SAFE and5 CROWN-only numerical positives. ACT-only cases are
+seed0/index4029(one pair),seed1/index4018(three pairs),seed2/index4014(two
+pairs); all external queries completed with at least one nonpositive bound.
+All five CROWN-only positives face an ACT solver-limit UNKNOWN, not a missing
+result. Among16 single-pair requests, positive counts are8/11; among14
+multi-pair requests,3/2, with two ACT-only and one CROWN-only multi-pair case.
+
+Thus the external path has more positive filters overall and much lower
+observed cost, while ACT retains distinct positive results including two
+multi-route requests. This limits any blanket efficiency claim. The20 ACT
+resolved requests include9 counterexamples, whereas the external path runs
+only five fixed conformance probes;20 versus13 is not a certificate-count or
+matched attack comparison. The mean costs138.11 versus4.23 seconds include
+all terminated requests, but different outcomes and numerical guarantees
+preclude a same-result acceleration claim. Negative CROWN bounds do not
+establish unsafety or identify a unique cause. Neither these observed inputs
+nor the post-hoc union establishes a new portfolio's performance. Source:
+`results/external_pair_comparison_review_20260914_r1.json` and
+`docs/external_pair_comparison_results.md` under the MoE pipeline.
 
 The evaluation is paper-complete only when the official RT-ER table, AdvMoE
 trained two-path table, monolithic comparison, and (E)-scaling study have

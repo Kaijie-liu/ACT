@@ -34,6 +34,13 @@ multi-legal-route. The input-block descriptive 95% primary difference interval
 is [4.67,11.00] percentage points. This confirms scoped new-endpoint internal
 net benefit, not external-tool dominance or high-accuracy real-scale proof;
 it does not revise the earlier composite failure or thirty-input result.
+On a separate ten-observed-input external-path comparison, an ACT route
+frontend plus plain CROWN produces13 numerical positives at lower observed
+cost versus11 ACT HZ-policy SAFE. Eight are shared; ACT retains three distinct
+SAFE(two multi-route), and CROWN has five distinct positives. This supports
+limited complementarity, not external dominance. A separate rational request
+proof checks all18 output obligations while removing trust in floating F0
+construction; upstream network/HZ, guard and route lowering remain trusted.
 The immutable preregistered overall solved endpoint is 56/100 and fails its 60%
 gate; boundary applicability is 76/100 and conditional coverage is 56/76. We
 separately report follow-up closure and engineering results without rewriting

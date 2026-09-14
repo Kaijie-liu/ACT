@@ -255,3 +255,29 @@ obligations,with minimum aggregated bound about.183047. This is explicitly
 conditional on the same trusted upstream and F0 lowering,not a proof of the
 native network implementation or an additional performance benchmark. The
 R1 universal-weight UNKNOWN remains intact. See `request_lp_order_results.md`.
+
+### Checking construction before the floating F0 boundary
+
+The next, separately frozen R3 control removes one assumption rather than
+refining the same margin again. It starts with the stored shared expert HZ
+before floating F0 projection. Interpreting its coefficients as exact binary
+rationals, it forms `u=q E_b+c` and `d=q(E_a-E_b)` by rational arithmetic on
+the same factor vector. It appends lambda and w directly, uses the unchanged
+checked R2 ranges, and constructs four rational McCormick inequalities for
+`w=lambda*d`. Finite w bounds come from the four rational corner products;
+binary factors are explicitly relaxed to their continuous boxes. There is no
+floating center/radius recoding between these objects and the LP.
+
+A separate checker, importing neither the builder nor a solver, reconstructs
+the factor constraints, projections, objective, variable bounds and product
+planes, and then checks the proposed LP dual. The request aggregator checks
+the range sources, identical shared-HZ identities, scopes and full obligation
+inventory. On the frozen request all18 obligations remain positive:15 reused
+facts and3 residual LPs, with residual bounds about2.60544,1.55273,4.10960.
+The aggregate minimum remains about.183047. The trusted base now excludes
+`F0_outer_HZ_construction_and_floating_coefficients`; network/input-to-HZ,
+guard lowering and route infeasibility exclusions remain assumptions.
+This is an exactly checked outer-relaxation construction and conditional
+request proof, not exact linearization of MoE or a native floating-point proof.
+The R1 UNKNOWN and R2 result are retained. Source:
+`act/pipeline/moe/results/request_lp_rational_review_20260914_r3.json`.
