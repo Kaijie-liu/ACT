@@ -1,5 +1,22 @@
 # MoE project handoff
 
+Latest preparation (2026-09-15): convolutional three-arm R1 protocol and selection
+are FROZEN, NOT EXECUTED. Read `act/pipeline/moe/docs/conv_three_arm_r1.md`,
+`configs/conv_three_arm_protocol_r1.json`, `configs/conv_three_arm_selection_r1.json`
+and `results/conv_three_arm_freeze_review_20260915_r1.json` under the MoE pipeline.
+Same selected conv epoch89, E4/C10;30 new clean-only selected inputs, epsilon2/255,
+adaptive versus matched-reuse monolithic versus ACT-fronted plain CROWN.
+832 recorded previous indices from5,416 artifacts excluded; smoke indices0,1
+are disjoint. Exact materialized tensors and source/method/model hashes bind all
+arms. Separate-process clean reconstruction PASS,0 issues;24 focused tests pass.
+90 full calls +6 smoke calls,300s each, input-blocked rotated order, one worker;
+positive evidence levels are not interchangeable. No route or bound query ran.
+The E4 worker adapter is implemented, but outer three-arm orchestration and final
+auditor are NOT_YET_INTEGRATED; do not launch the old three-model batch scripts.
+Next implement/test those wrappers without changing the frozen decisions, freeze
+their execution identities, then obtain an execution instruction and run audited
+smoke before full. No outcome-driven budget/recipe/cohort change or old holdout.
+
 Latest completion (2026-09-15): convolutional family full-shape compatibility,
 supervised training and independent landing audit are COMPLETE. Execution
 `6d2e6d299`; read `act/pipeline/moe/docs/conv_training_results.md` and
@@ -13,8 +30,8 @@ local path `data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_
 Supervisor/landing status LANDED_AUDITED; no training worker remains. Training
 used an immutable Git source export, not later edits. No retry, reselection,
 dependency change or production numerical-policy relaxation.66 related tests pass.
-Next: separately freeze three-arm trained-family verification (E4, not E8), with
-selected checkpoint, data/selection manifest and complete request budgets.
+The following preparation now freezes three-arm trained-family verification
+(E4, not E8); see the newer top entry for scope and remaining execution work.
 Training is not a new certificate or a cross-architecture verifier win. Do not
 retrain for a better accuracy or reopen sealed AdvMoE/backend studies.
 

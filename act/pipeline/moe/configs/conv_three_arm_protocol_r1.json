@@ -1,0 +1,55 @@
+{
+  "protocol": "CONV_FAMILY_THREE_ARM_R1",
+  "purpose": "First separately frozen cross-architecture comparison; not a replacement for prior studies",
+  "subject": "conv_seed17_validation_selected_epoch89",
+  "checkpoint": "data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_089.pt",
+  "checkpoint_sha256": "f5781a792f844a68de941f1a6b314d0e627ad5dd30e262088e6c1864d6bc5289",
+  "training_review": "act/pipeline/moe/results/conv_training_review_20260915_r1.json",
+  "selection": {
+    "dataset": "CIFAR10", "split": "test", "start_index": 0,
+    "sample_count": 30, "smoke_count": 2,
+    "order": "ascending dataset index",
+    "full_predicates": ["absent from frozen prior verification index union", "CPU float64 batch-one clean-correct"],
+    "smoke_predicates": ["present in frozen prior verification index union", "CPU float64 batch-one clean-correct"],
+    "no_route_or_bound_selection": true,
+    "prior_full_test_telemetry_disclosed": true
+  },
+  "request": {
+    "epsilon": 0.00784313725490196, "epsilon_fraction": "2/255",
+    "input_semantics": "torch default float64 before ToTensor; [0,1] clipped box; identical materialized tensor file per input across arms",
+    "model_mode": "eval", "device": "cpu", "dtype": "float64",
+    "num_experts": 4, "top_k": 2, "classes": 10,
+    "gate": "SELECTED_SOFTMAX", "tie_policy": "ANY_LEGAL_TOPK",
+    "property": "all nine true-class margins positive on every tie-legal reachable pair",
+    "incomplete_enumeration": "UNKNOWN"
+  },
+  "arms": {
+    "adaptive": {"config": "act/pipeline/moe/configs/route_complexity_reuse_v1.json", "evidence_level": "HZ_POLICY_ACCEPTED"},
+    "monolithic": {"config": "act/pipeline/moe/configs/monolithic_matched_reuse_v1.json", "evidence_level": "HZ_POLICY_ACCEPTED"},
+    "crown": {"name": "ACT route frontend + plain CROWN whole-box variable-weight static pairs", "method": "CROWN", "bound_opts": {"conv_mode": "matrix"}, "evidence_level": "CROWN_NUMERICAL_FILTER", "positive_tolerance": 1e-7}
+  },
+  "execution": {
+    "outer_seconds_per_request": 300, "threads": 1, "concurrent_requests": 1,
+    "full_requests": 90, "smoke_requests": 6,
+    "full_worker_budget_ceiling_seconds": 27000,
+    "order": "input-blocked; cyclic rotations of [adaptive, monolithic, crown] by rank modulo 3",
+    "charged": ["process startup", "checkpoint/tensor loading", "route coverage", "common facts", "support", "graph construction", "cross-environment handoff", "all pair/property calls", "terminal submission"],
+    "input_materialization": "separately timed and equally excluded; no cached route or proof facts",
+    "resource_gate": {"minimum_available_ram_gib": 16, "minimum_free_disk_gib": 5, "maximum_cpu_load_per_logical_core": 0.5, "wait_limit_seconds": 86400},
+    "timeouts": "kill owned request process group; retain terminal and prelude snapshots; no late result promotion",
+    "errors": "fail-stop, retain failed attempt and unattempted inventory; no sample replacement",
+    "resume": false,
+    "smoke_gate": "all six terminals structurally audited; each arm has at least one complete non-error package/record; no positive-count or effect-size requirement",
+    "full_launch": "requires a separate execution instruction after orchestrator/auditor integration and passing smoke"
+  },
+  "analysis": {
+    "primary": "adaptive versus matched monolithic paired SAFE indicator difference on 30 inputs",
+    "external": "complete-request HZ-policy positives versus CROWN numerical positives, with evidence levels kept separate",
+    "report": ["SAFE or numerical POSITIVE", "UNSAFE full-model replay", "UNKNOWN", "TIMEOUT", "ERROR", "gained and lost positives", "gained and lost solved for HZ arms", "all-terminal costs", "single/multiple/unresolved route strata", "shared/unique results"],
+    "denominator": "30 distinct inputs per arm; errors/timeouts remain; incomplete run reports unattempted separately and has no completed-cohort conclusion",
+    "statistics": {"resampling_unit": "input with all three arms retained", "bootstrap_replicates": 10000, "bootstrap_seed": 20260915, "interval": "2.5/97.5 percentiles, descriptive unadjusted", "degenerate_zero_interval": "not evidence of population equivalence"},
+    "no_pooling": true,
+    "no_effect_dependent_expansion_or_tuning": true,
+    "limitations": ["one new architecture and one training seed", "clean-correct subset is not full-test certified accuracy", "matched monolithic is not the legacy strong configuration or all possible monolithic solvers", "CROWN is not a full dynamic-model independent verifier or formal SAFE", "no cross-architecture superiority claim before paired outcomes"]
+  }
+}

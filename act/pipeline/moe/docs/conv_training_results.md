@@ -72,6 +72,9 @@ running at this completion.
 
 ## Next scope, not an inferred success
 
+The separate three-arm protocol and clean-only selection are now frozen in
+[conv_three_arm_r1.md](conv_three_arm_r1.md); no smoke/full query has been run.
+
 This is a distinct trained architecture with higher observed clean accuracy than
 the earlier approximately48% MLP family. It is not yet evidence of cross-
 architecture verification gains, high-accuracy deep-model strict certificates,
