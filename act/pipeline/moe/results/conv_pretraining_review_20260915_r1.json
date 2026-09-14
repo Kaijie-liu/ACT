@@ -1,0 +1,492 @@
+{
+  "cuda_smoke": {
+    "augmentation": "Compose(\n    RandomCrop(size=(32, 32), padding=4)\n    RandomHorizontalFlip(p=0.5)\n    ToTensor()\n)",
+    "checkpoint_replay_max_error": 0.0,
+    "config_sha256": "020417a2f965048119d9f4b67599fba8b9ad0bdc6d6f04db9a1e023e273e46a4",
+    "device": "cuda",
+    "metrics": {
+      "accuracy": 0.07421875,
+      "balance_loss": 1.21958589553833,
+      "classification_loss": 2.3021575212478638,
+      "correct": 19,
+      "loss": 2.314353346824646,
+      "route_counts": [
+        1,
+        216,
+        48,
+        247
+      ],
+      "router_max_gradient_l1": 0.6331895650364459,
+      "router_max_update": 0.0020014047622680664,
+      "samples": 256
+    },
+    "next_learning_rate": 0.0009997532801828658,
+    "optimizer_continuation_equal": true,
+    "peak_cuda_mib": 84.419921875,
+    "scope": "discarded two-batch training control, not model selection",
+    "seconds": 2.6304610492661595,
+    "status": "PASS",
+    "torch": "2.9.1+cu128",
+    "worker_sha256": "037cc9195dfd6582a6ce0687916553f26f14c239c8b9323ccbd396a2f429f724"
+  },
+  "failed_attempt": {
+    "hashes": {
+      "act.json": "0179c7531cda40404696b67d9769248d4a40fc63617c0966013b3a19c808b3e9",
+      "act.log": "952186861ed41198c2e91f75a8cceaadfd25d14e2ecc0e09a09723634502fa5d",
+      "crown.json": "d09a708d15decfbdd97bbee8e740ea1a958aa4bf5e3b8824274b0a71f6ae77a1",
+      "crown.log": "99b04ac0ebce2e6c602f25f366ffab6aa996cb94145ca8977abdd0cb0d202333",
+      "init.pt": "16f3b27c4591507274238824a42ce4701dcd4d86e07eb06214e589721800ced9",
+      "input.pt": "fd3cfcff7f1dff2e3ab0f81772b2aedf3d2e946cb7b5bc8ba1cf07ce5da920fd",
+      "launch.json": "0b9c20154d9ba3b0d9b28796a206a93c0e5ce961fc1ec3ac33da6d6344450aeb"
+    },
+    "launch": {
+      "checkpoint_sha256": "16f3b27c4591507274238824a42ce4701dcd4d86e07eb06214e589721800ced9",
+      "commits": {
+        "/data1/Kane/MOE/baselines/alpha-beta-CROWN": "e5c7e17bf0488843acb77b7519f59876717a49f4",
+        "/data1/Kane/MOE/baselines/alpha-beta-CROWN/auto_LiRPA": "5a098e8f9fb5786a428a024981d833d303921f2d"
+      },
+      "config_sha256": "020417a2f965048119d9f4b67599fba8b9ad0bdc6d6f04db9a1e023e273e46a4",
+      "execution_head": "a0a40e87536b7efb10d818a66fada372c4d70983",
+      "input_sha256": "fd3cfcff7f1dff2e3ab0f81772b2aedf3d2e946cb7b5bc8ba1cf07ce5da920fd",
+      "probe_tolerance": 1e-10,
+      "protocol": "CONV_FULLSHAPE_CONFORMANCE_R1",
+      "scope": "synthetic full-shape compatibility, not verified accuracy; no positive-bound gate",
+      "timeout_per_backend_seconds": 300
+    },
+    "results": {
+      "act": {
+        "components": [
+          {
+            "exact": true,
+            "name": "router",
+            "output_dimensions": 4,
+            "seconds": 0.07203337829560041,
+            "sparse": true
+          },
+          {
+            "exact": true,
+            "name": "expert0",
+            "output_dimensions": 10,
+            "seconds": 0.18871206417679787,
+            "sparse": true
+          },
+          {
+            "exact": true,
+            "name": "expert1",
+            "output_dimensions": 10,
+            "seconds": 0.17753082234412432,
+            "sparse": true
+          },
+          {
+            "exact": true,
+            "name": "expert2",
+            "output_dimensions": 10,
+            "seconds": 0.173791472800076,
+            "sparse": true
+          },
+          {
+            "exact": true,
+            "name": "expert3",
+            "output_dimensions": 10,
+            "seconds": 0.17282678093761206,
+            "sparse": true
+          }
+        ],
+        "device": "cpu",
+        "dtype": "float64",
+        "formal_SAFE": false,
+        "inputs": {
+          "center": {
+            "dtype": "torch.float64",
+            "sha256": "eccc12fb15830a25a95dd96de348bb976be84a0ca2176401ae2a0af3370766c6",
+            "shape": [
+              1,
+              3,
+              32,
+              32
+            ]
+          },
+          "lower": {
+            "dtype": "torch.float64",
+            "sha256": "3816453663d989dba9758163a3676c851548ecd2ab1314d252b42885e0c1eac0",
+            "shape": [
+              1,
+              3,
+              32,
+              32
+            ]
+          },
+          "upper": {
+            "dtype": "torch.float64",
+            "sha256": "5ee438257c0d9a6b7ae97d6281e03a62380bc9c61745fc6573517ce8fbdfbd18",
+            "shape": [
+              1,
+              3,
+              32,
+              32
+            ]
+          }
+        },
+        "kind": "act",
+        "model_state": {
+          "parameter_count": 155052,
+          "sha256": "fd056cd82f2bedc8a1ff9b8f081e2383de1fc9d36a565ab5a865a9278d257eef",
+          "tensor_count": 34
+        },
+        "pair_errors": [
+          {
+            "maximum": 0.0,
+            "pair": [
+              0,
+              1
+            ]
+          },
+          {
+            "maximum": 0.0,
+            "pair": [
+              0,
+              2
+            ]
+          },
+          {
+            "maximum": 0.0,
+            "pair": [
+              0,
+              3
+            ]
+          },
+          {
+            "maximum": 0.0,
+            "pair": [
+              1,
+              2
+            ]
+          },
+          {
+            "maximum": 0.0,
+            "pair": [
+              1,
+              3
+            ]
+          },
+          {
+            "maximum": 0.0,
+            "pair": [
+              2,
+              3
+            ]
+          }
+        ],
+        "peak_rss_mib": 772.0625,
+        "phase": "complete",
+        "python": "3.12.12 | packaged by conda-forge | (main, Oct 22 2025, 23:25:55) [GCC 14.3.0]",
+        "seconds": 0.8476224672049284,
+        "status": "CONFORMANCE_PASS",
+        "torch": "2.9.1+cu128"
+      },
+      "crown": {
+        "device": "cpu",
+        "dtype": "float64",
+        "formal_SAFE": false,
+        "inputs": {
+          "center": {
+            "dtype": "torch.float64",
+            "sha256": "eccc12fb15830a25a95dd96de348bb976be84a0ca2176401ae2a0af3370766c6",
+            "shape": [
+              1,
+              3,
+              32,
+              32
+            ]
+          },
+          "lower": {
+            "dtype": "torch.float64",
+            "sha256": "3816453663d989dba9758163a3676c851548ecd2ab1314d252b42885e0c1eac0",
+            "shape": [
+              1,
+              3,
+              32,
+              32
+            ]
+          },
+          "upper": {
+            "dtype": "torch.float64",
+            "sha256": "5ee438257c0d9a6b7ae97d6281e03a62380bc9c61745fc6573517ce8fbdfbd18",
+            "shape": [
+              1,
+              3,
+              32,
+              32
+            ]
+          }
+        },
+        "kind": "crown",
+        "maximum_probe_error": 0.0,
+        "message": "Input type (torch.FloatTensor) and weight type (torch.DoubleTensor) should be the same or input should be a MKLDNN tensor and weight is a dense tensor",
+        "model_state": {
+          "parameter_count": 155052,
+          "sha256": "fd056cd82f2bedc8a1ff9b8f081e2383de1fc9d36a565ab5a865a9278d257eef",
+          "tensor_count": 34
+        },
+        "peak_rss_mib": 708.03515625,
+        "phase": "plain_CROWN",
+        "python": "3.11.16 | packaged by conda-forge | (main, Aug 21 2026, 22:44:51) [GCC 14.4.0]",
+        "seconds": 0.16170749999582767,
+        "status": "FAILED",
+        "torch": "2.11.0+cu130",
+        "traceback": "Traceback (most recent call last):\n  File \"/data1/Kane/MOE/ACT/act/pipeline/moe/conv_compatibility.py\", line 99, in worker\n    lower, upper = bounded.compute_bounds(x=(BoundedTensor(x,\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/data1/Kane/MOE/baselines/alpha-beta-CROWN/auto_LiRPA/auto_LiRPA/bound_general.py\", line 1412, in compute_bounds\n    return self._compute_bounds_main(C=C,\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/data1/Kane/MOE/baselines/alpha-beta-CROWN/auto_LiRPA/auto_LiRPA/bound_general.py\", line 1510, in _compute_bounds_main\n    self.check_prior_bounds(final, C=C)\n  File \"/data1/Kane/MOE/baselines/alpha-beta-CROWN/auto_LiRPA/auto_LiRPA/bound_general.py\", line 941, in check_prior_bounds\n    self.check_prior_bounds(n)\n  File \"/data1/Kane/MOE/baselines/alpha-beta-CROWN/auto_LiRPA/auto_LiRPA/bound_general.py\", line 941, in check_prior_bounds\n    self.check_prior_bounds(n)\n  File \"/data1/Kane/MOE/baselines/alpha-beta-CROWN/auto_LiRPA/auto_LiRPA/bound_general.py\", line 941, in check_prior_bounds\n    self.check_prior_bounds(n)\n  [Previous line repeated 4 more times]\n  File \"/data1/Kane/MOE/baselines/alpha-beta-CROWN/auto_LiRPA/auto_LiRPA/bound_general.py\", line 963, in check_prior_bounds\n    self.compute_intermediate_bounds(\n  File \"/data1/Kane/MOE/baselines/alpha-beta-CROWN/auto_LiRPA/auto_LiRPA/bound_general.py\", line 1048, in compute_intermediate_bounds\n    node.lower, node.upper = self.backward_general(\n                             ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/data1/Kane/MOE/baselines/alpha-beta-CROWN/auto_LiRPA/auto_LiRPA/backward_bound.py\", line 280, in backward_general\n    A, lower_b, upper_b = l.bound_backward(\n                          ^^^^^^^^^^^^^^^^^\n  File \"/data1/Kane/MOE/baselines/alpha-beta-CROWN/auto_LiRPA/auto_LiRPA/operators/convolution.py\", line 208, in bound_backward\n    lA_x, lbias = _bound_oneside(last_lA)\n                  ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/data1/Kane/MOE/baselines/alpha-beta-CROWN/auto_LiRPA/auto_LiRPA/operators/convolution.py\", line 95, in _bound_oneside\n    next_A = F.conv_transpose2d(\n             ^^^^^^^^^^^^^^^^^^^\nRuntimeError: Input type (torch.FloatTensor) and weight type (torch.DoubleTensor) should be the same or input should be a MKLDNN tensor and weight is a dense tensor\n"
+      }
+    },
+    "status": "FAILED"
+  },
+  "fullshape": {
+    "hashes": {
+      "act.json": "951b104b70a173d74d7e7035c330c999948942ba1c377c8eac06e20d9ad09712",
+      "act.log": "952186861ed41198c2e91f75a8cceaadfd25d14e2ecc0e09a09723634502fa5d",
+      "crown.json": "3d5a7c5b98b533e323e14cc778286caf2f9842f81b9cfb91d7c5aa32ef587a81",
+      "crown.log": "99b04ac0ebce2e6c602f25f366ffab6aa996cb94145ca8977abdd0cb0d202333",
+      "init.pt": "16f3b27c4591507274238824a42ce4701dcd4d86e07eb06214e589721800ced9",
+      "input.pt": "fd3cfcff7f1dff2e3ab0f81772b2aedf3d2e946cb7b5bc8ba1cf07ce5da920fd",
+      "launch.json": "01b5cddf53a9d58188bde9f9a13d92095f2d5cef11a68223e9fd4220d7712e8e"
+    },
+    "launch": {
+      "checkpoint_sha256": "16f3b27c4591507274238824a42ce4701dcd4d86e07eb06214e589721800ced9",
+      "commits": {
+        "/data1/Kane/MOE/baselines/alpha-beta-CROWN": "e5c7e17bf0488843acb77b7519f59876717a49f4",
+        "/data1/Kane/MOE/baselines/alpha-beta-CROWN/auto_LiRPA": "5a098e8f9fb5786a428a024981d833d303921f2d"
+      },
+      "config_sha256": "020417a2f965048119d9f4b67599fba8b9ad0bdc6d6f04db9a1e023e273e46a4",
+      "execution_head": "228e27e6749f829bb23c2fd3a71fbfbe0f29bb5f",
+      "input_sha256": "fd3cfcff7f1dff2e3ab0f81772b2aedf3d2e946cb7b5bc8ba1cf07ce5da920fd",
+      "probe_tolerance": 1e-10,
+      "protocol": "CONV_FULLSHAPE_CONFORMANCE_R1",
+      "scope": "synthetic full-shape compatibility, not verified accuracy; no positive-bound gate",
+      "source_hashes": {
+        "act/back_end/hybridz_tf/tf_cnn.py": "04548cb2cac9b76b5ab3ae3b322683eae7efe88277e54f94ef5414c93da070ba",
+        "act/back_end/hybridz_tf/tf_mlp.py": "31663c48deb7848b773c2e78d3f56bae7e2bca9d29545ffb0203230f0640bf03",
+        "act/back_end/moe/conv_factory.py": "29e74d39614fce82416e840635cb8717086ee3518e08416af2bd591cd19d3aae",
+        "act/back_end/moe/factory.py": "da472b2bbb3d8f684cb9c9916a735fd7105ceaab925911e1cbc983785a4c7d2d",
+        "act/back_end/moe/static_pair.py": "653f08080a71fbdd12fa823d6974bc451bedb8984714b2b3c0ab31e19fd7c54e"
+      },
+      "timeout_per_backend_seconds": 300
+    },
+    "results": {
+      "act": {
+        "components": [
+          {
+            "exact": true,
+            "name": "router",
+            "output_dimensions": 4,
+            "seconds": 0.07769518252462149,
+            "sparse": true
+          },
+          {
+            "exact": true,
+            "name": "expert0",
+            "output_dimensions": 10,
+            "seconds": 0.19054050277918577,
+            "sparse": true
+          },
+          {
+            "exact": true,
+            "name": "expert1",
+            "output_dimensions": 10,
+            "seconds": 0.18552842643111944,
+            "sparse": true
+          },
+          {
+            "exact": true,
+            "name": "expert2",
+            "output_dimensions": 10,
+            "seconds": 0.18347433675080538,
+            "sparse": true
+          },
+          {
+            "exact": true,
+            "name": "expert3",
+            "output_dimensions": 10,
+            "seconds": 0.18544101435691118,
+            "sparse": true
+          }
+        ],
+        "device": "cpu",
+        "dtype": "float64",
+        "formal_SAFE": false,
+        "inputs": {
+          "center": {
+            "dtype": "torch.float64",
+            "sha256": "eccc12fb15830a25a95dd96de348bb976be84a0ca2176401ae2a0af3370766c6",
+            "shape": [
+              1,
+              3,
+              32,
+              32
+            ]
+          },
+          "lower": {
+            "dtype": "torch.float64",
+            "sha256": "3816453663d989dba9758163a3676c851548ecd2ab1314d252b42885e0c1eac0",
+            "shape": [
+              1,
+              3,
+              32,
+              32
+            ]
+          },
+          "upper": {
+            "dtype": "torch.float64",
+            "sha256": "5ee438257c0d9a6b7ae97d6281e03a62380bc9c61745fc6573517ce8fbdfbd18",
+            "shape": [
+              1,
+              3,
+              32,
+              32
+            ]
+          }
+        },
+        "kind": "act",
+        "model_state": {
+          "parameter_count": 155052,
+          "sha256": "fd056cd82f2bedc8a1ff9b8f081e2383de1fc9d36a565ab5a865a9278d257eef",
+          "tensor_count": 34
+        },
+        "pair_errors": [
+          {
+            "maximum": 0.0,
+            "pair": [
+              0,
+              1
+            ]
+          },
+          {
+            "maximum": 0.0,
+            "pair": [
+              0,
+              2
+            ]
+          },
+          {
+            "maximum": 0.0,
+            "pair": [
+              0,
+              3
+            ]
+          },
+          {
+            "maximum": 0.0,
+            "pair": [
+              1,
+              2
+            ]
+          },
+          {
+            "maximum": 0.0,
+            "pair": [
+              1,
+              3
+            ]
+          },
+          {
+            "maximum": 0.0,
+            "pair": [
+              2,
+              3
+            ]
+          }
+        ],
+        "peak_rss_mib": 771.53515625,
+        "phase": "complete",
+        "python": "3.12.12 | packaged by conda-forge | (main, Oct 22 2025, 23:25:55) [GCC 14.3.0]",
+        "seconds": 0.8861670857295394,
+        "status": "CONFORMANCE_PASS",
+        "torch": "2.9.1+cu128"
+      },
+      "crown": {
+        "device": "cpu",
+        "dtype": "float64",
+        "formal_SAFE": false,
+        "inputs": {
+          "center": {
+            "dtype": "torch.float64",
+            "sha256": "eccc12fb15830a25a95dd96de348bb976be84a0ca2176401ae2a0af3370766c6",
+            "shape": [
+              1,
+              3,
+              32,
+              32
+            ]
+          },
+          "lower": {
+            "dtype": "torch.float64",
+            "sha256": "3816453663d989dba9758163a3676c851548ecd2ab1314d252b42885e0c1eac0",
+            "shape": [
+              1,
+              3,
+              32,
+              32
+            ]
+          },
+          "upper": {
+            "dtype": "torch.float64",
+            "sha256": "5ee438257c0d9a6b7ae97d6281e03a62380bc9c61745fc6573517ce8fbdfbd18",
+            "shape": [
+              1,
+              3,
+              32,
+              32
+            ]
+          }
+        },
+        "kind": "crown",
+        "lower": [
+          [
+            -0.004189006178921886,
+            -0.05696260587104469,
+            -0.014262733009111503,
+            0.0697395477173301,
+            -0.03641448151266725,
+            -0.012132053110024354,
+            0.05600388399410035,
+            -0.022633163244148255,
+            -0.05161027537062706
+          ]
+        ],
+        "maximum_probe_error": 0.0,
+        "model_state": {
+          "parameter_count": 155052,
+          "sha256": "fd056cd82f2bedc8a1ff9b8f081e2383de1fc9d36a565ab5a865a9278d257eef",
+          "tensor_count": 34
+        },
+        "nodes": 84,
+        "peak_rss_mib": 1052.421875,
+        "phase": "complete",
+        "python": "3.11.16 | packaged by conda-forge | (main, Aug 21 2026, 22:44:51) [GCC 14.4.0]",
+        "seconds": 0.5896938256919384,
+        "status": "CONFORMANCE_PASS",
+        "torch": "2.11.0+cu130",
+        "upper": [
+          [
+            0.01761705202152021,
+            -0.03533384042320797,
+            0.005289197566253194,
+            0.0885619418411962,
+            -0.016875152466701147,
+            0.009406299861756312,
+            0.07204614107991661,
+            -0.004782011366838593,
+            -0.03233495336404725
+          ]
+        ]
+      }
+    },
+    "status": "PASS"
+  },
+  "issues": [],
+  "scope": "artifact identity and conformance acceptance review, not independent proof of HZ propagation or CROWN bounds",
+  "sources": {
+    "/data1/Kane/MOE/ACT/data/moe/results/conv_fullshape_20260915_r1/summary.json": "5f2d06ae66a12747664fb4780887c5cf42de07e94334698f622977de4e1bd0e5",
+    "/data1/Kane/MOE/ACT/data/moe/results/conv_fullshape_20260915_r2/summary.json": "212bd5040cad9b1ceff27489f9dc87ee351f0ce05ecd5e15311d71ba894d15c8",
+    "/data1/Kane/MOE/ACT/data/moe/results/conv_training_smoke_20260915_r1/summary.json": "6095842cb3a2f40a3f0bc236d1f0fcb7e072a919cac0209dab658d686ae85635"
+  },
+  "status": "PASS"
+}

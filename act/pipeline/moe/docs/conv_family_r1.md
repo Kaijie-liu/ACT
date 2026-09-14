@@ -39,8 +39,8 @@ does not authorize calling any resulting model a successful cross-architecture
 verification experiment before those runs and audits exist. Do not silently use
 the old eight-expert runner assumptions for this four-expert family.
 
-Current stage: model construction and registration. Training supervisor,
-external conformance and the three-arm evaluation are not yet completed.
+Initial stage: model construction and registration. See the later prelaunch
+results and supervision protocol below; the three-arm evaluation remains pending.
 
 Compatibility controls: four tests pass for RNG preservation, versioned exact
 checkpoint replay, weighted concrete semantics, dyadic point lowering and a
@@ -118,3 +118,18 @@ nonzero router update, exact checkpoint inference replay and one identical
 optimizer continuation update after restore. It never supplies production
 weights. Unit controls additionally cover immutable checkpoints, complete split,
 earliest ties, cosine endpoint, read races, resource waits and dead/stale workers.
+
+## Prelaunch results (2026-09-15)
+
+Compact review: `../results/conv_pretraining_review_20260915_r1.json`, generated
+by `archive_conv_controls`. Both attempts retain the identical checkpoint and
+represented-input hashes. R2 fullshape ACT passes in0.886s worker time with
+771.54MiB peak RSS; CROWN passes in0.590s with1052.42MiB peak RSS and84 graph
+nodes. Timings are diagnostic worker timings, not end-to-end competitiveness.
+No exact/sound numerical certification claim follows from conformance probes.
+
+CUDA smoke passes in2.63s, peak allocated84.42MiB. Two batches produce nonzero
+router gradient and maximum parameter update0.0020014; versioned checkpoint
+inference replay is bitwise equal and the restored optimizer's next identical
+update matches. Those weights are discarded. The100-epoch production run must
+start from the original seed17 factory, not this smoke checkpoint.

@@ -1,5 +1,23 @@
 # MoE project handoff
 
+Latest prelaunch completion (2026-09-15): full-size convolutional family gate
+and supervised training implementation. Read
+`act/pipeline/moe/docs/conv_family_r1.md` and
+`act/pipeline/moe/results/conv_pretraining_review_20260915_r1.json`.
+Full-shape R1 passed ACT sparse retention but external CROWN failed on a default
+dtype omission; preserve it. R2 sets the declared float64 default, same model,
+box and backend, and passes ACT + plain CROWN conformance. All five ACT components
+retain SparseHZ; all six static pair expressions pass; external pair{0,1}
+returns nine finite ordered bounds. No positive-bound acceptance requirement.
+CUDA two-batch smoke passes finite gradients, actual router updates, exact
+checkpoint replay and one optimizer continuation. This is not production state.
+`conv_training_supervisor` and `conv_training` implement source-snapshot training,
+immutable epochs, full validation selection and independent final metric replay.
+Nine new supervision/training unit controls and four factory tests pass.
+Production100-epoch training is authorized and is the immediate next launch;
+check live supervisor before launching another job. No dependencies changed.
+Three-arm trained-model verification remains separately scoped and unlaunched.
+
 Latest completion (2026-09-15): Advice/bb.md fixed ACT-only rational transfer,
 execution `fbc48d6a9`. Read `act/pipeline/moe/docs/request_lp_act_only_results.md`.
 All three fresh generations complete; 115 exports independently rechecked.
@@ -18,14 +36,14 @@ not yet a tested clean-container distribution of the empirical model artifacts.
 
 Second-family scope is now fixed in `docs/conv_family_r1.md` and its training
 config under the MoE pipeline. Versioned conv factory/checkpoint loader is
-implemented, with small conv/pool controls. Training supervisor, full-shape
-external conformance and new three-arm evaluation remain next; no training or
-GPU job was launched in this stage. A non-dyadic singleton sparse control
+implemented, with small conv/pool controls. At that earlier stage training
+supervision, full-shape external conformance and three-arm evaluation remained
+next; see the newer status above. A non-dyadic singleton sparse control
 exposed inconsistent independently rounded bounds and failed closed; no
 numerical gate was relaxed. Dyadic point and nondegenerate sparse-box controls
 pass. Do not interpret small compatibility controls as certified model quality.
 
-No experiment remains running at the completed-stage handoff. Existing
+No experiment remained running at that earlier completed-stage handoff. Existing
 high-accuracy strict-certification and cross-architecture outcome goals remain
 unachieved; there is no acceptance guarantee.
 
