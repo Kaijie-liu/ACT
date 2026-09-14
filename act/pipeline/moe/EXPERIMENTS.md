@@ -1,5 +1,15 @@
 # MoE Verification Experiment Record
 
+### 2026-09-14: separate external real-model static-pair R2 registration
+
+`docs/external_static_pair_r2.md`, `external_static_pair.py` and
+`act/back_end/moe/static_pair.py`. Same old seed0/index3000 materialized
+float64 request; two complete listed pairs,each whole-box,nine margins via C,
+120s/process,plain CROWN and fixed pinned source,existing environment. No
+dynamic-model equivalence claim,no BaB,no dependency changes. Unit controls
+compare forced branches,selected literal routes and variable-weight gradients;
+wrong pair/gate/training semantics are rejected. Commit before actual queries.
+
 ### 2026-09-14: request LP order R2 conditional positive closure
 
 Execution `db0b4b281`,33.13s,5 new LP queries. Checked order r2<r4 yields
