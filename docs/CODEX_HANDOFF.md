@@ -56,6 +56,15 @@ Read `act/pipeline/moe/docs/staged_verifier.md` and
 
 ## Authoritative reading order
 
+CURRENT FOLLOW-ON (2026-09-14, PI approved bounded continuation): request LP
+order-only R2 is registered in `act/pipeline/moe/docs/request_lp_order_r2.md`.
+Same old request/18 obligations, at most2 router LPs+3 residual LPs,600s outer
+cap. Exact score-order facts imply dyadic gate envelopes without evaluating
+sigmoid. Reuse hash-checked R1 proofs; do not resample or replace the R1 UNKNOWN.
+Implementation and tests precede execution; result is not yet available.
+The other, separate next stage is an external static-pair obligation adapter,
+NOT a complete dynamic-MoE benchmark. No dependency install or sealed search.
+
 EXTERNAL FRONTEND R1 completed separately (2026-09-14):
 `act/pipeline/moe/docs/external_compatibility_r1.md`,
 `act/pipeline/moe/external_compatibility.py`. Three bounded CPU probes on
@@ -89,11 +98,11 @@ equal. Shared vs independent SAFE4/4,3/2,4/2 (ten/model): +3 SAFE,+5 solved,
 no losses. Two gains are multi-pair versus relaxation UNKNOWN; one is single-
 pair versus solver limit.27 recorded gate pairs agree,3 one-sided,not universal
 observability. This is observed-input mechanism evidence, not new confirmation.
-No experiment remains active. Next separately implement request-level LP
-evidence and pinned external-tool semantic compatibility; no new dependency
-installation, sample expansion or sealed-search reopening is authorized.
+This relation stage is complete. The separate LP and external R1 completions
+above supersede its former next-step notes. No dependency installation, sample
+expansion or sealed-search reopening is authorized.
 
-NEW WORK (2026-09-14, after the archival stage): relationship-only R1 is
+HISTORICAL REGISTRATION (2026-09-14, now completed): relationship-only R1 is
 implemented and preregistered in `act/pipeline/moe/docs/relation_ablation_r1.md`.
 The independent arm duplicates all guarded expert factors/constraints into a
 Cartesian product; it retains scoped reuse, gates, Tier1 and25% scheduling.
@@ -126,7 +135,8 @@ external-tool or complete floating-point proof claim. Old2/3 failure and
 thirty-input result remain separate. 54 focused tests pass; review --check
 reconstructs the archived supplement. No training or optimization was rerun.
 
-NEXT: stop same-family sample expansion and keep25% frozen. Read separate
+ARCHIVAL WORKSTREAM CONTRACT (R1 stages above now completed): stop same-family
+sample expansion and keep25% frozen. Read separate
 workstream contracts in `act/pipeline/moe/docs/post_confirmation_workstreams.md`:
 relation-only sound outer-envelope ablation, one external semantic-compatibility
 path, and request-level LP obligation checking. None was implemented/launched by
@@ -300,7 +310,7 @@ clone alone is insufficient to rerun experiments. Read the exact manifest
 before choosing a checkpoint, cohort, or config. Resolve disagreements by
 checking raw artifacts and the recorded auditor scope, not by trusting prose.
 
-## Latest review: next work in priority order
+## Historical review and execution notes (superseded, not the current queue)
 
 1. Build the common-task, equal-total-budget paired follow-up comparing full
    staged, route-invariance plus the same weighted F0/backend, monolithic F0,

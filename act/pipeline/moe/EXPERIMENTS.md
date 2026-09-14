@@ -1,5 +1,14 @@
 # MoE Verification Experiment Record
 
+### 2026-09-14: separate request LP order-only R2 registration
+
+`docs/request_lp_order_r2.md`, `request_lp_order.py`: same index3000/seed0,
+parent R1 proofs retained and rechecked. At most two signed router-margin LPs
+justify dyadic weight intervals; at most three rebuilt residual LPs,600s outer
+cap. Tests cover signs,ties,unknown proposals,wrong objectives/scopes and
+unjustified tighter gate ranges. Trusted upstream/F0 lowering unchanged.
+This is not a revised R1 result or performance protocol; no result yet.
+
 ### 2026-09-14: external frontend R1 completed and archived
 
 Execution `84352b890`; three cases, no installs. Dynamic top2 fails conversion

@@ -21,8 +21,16 @@ def property_row(classes, clean, index):
     return q
 
 
+def order_envelope(lower, negative_upper):
+    """Exact dyadic sigmoid enclosure from checked score ORDER only."""
+    if lower is not None and negative_upper is not None and lower > -negative_upper:
+        raise ValueError('inconsistent checked router range')
+    return [0.5 if lower is not None and lower >= 0 else 0,
+            0.5 if negative_upper is not None and negative_upper >= 0 else 1]
+
+
 def aggregate(manifest, read):
-    if manifest['schema'] != 'request_lp_v1' or manifest['trusted_base'] != TRUSTED:
+    if manifest['schema'] not in ('request_lp_v1','request_lp_order_v2') or manifest['trusted_base'] != TRUSTED:
         raise ValueError('unknown proof contract')
     request = manifest['request']; rid = identity(request)
     if manifest['request_id'] != rid or request['tie_policy'] != 'ANY_LEGAL_TOPK' or request['top_k'] != 2:
@@ -72,7 +80,13 @@ def aggregate(manifest, read):
                 raise ValueError('disagreement range rounded inward')
             if rational(row['difference_bounds'][0]) > rational(row['difference_bounds'][1]):
                 raise ValueError('reversed disagreement range')
-            if row['lambda_bounds'] != [0,1]: raise ValueError('unproved nonlinear gate range')
+            gate=[0,1]
+            if manifest['schema']=='request_lp_order_v2':
+                qm=[0]*request['experts'];qm[pair[0]]=1;qm[pair[1]]=-1
+                low=bound(row['gate_lower'],'router_order',{'pair':pair},None,qm)
+                neg=bound(row['gate_upper'],'router_order',{'pair':pair},None,[-v for v in qm])
+                gate=order_envelope(low,neg)
+            if row['lambda_bounds'] != gate: raise ValueError('unproved nonlinear gate range')
             value = bound(row['source'],'weighted',{'pair':pair},prop,[1])
         elif row['kind'] != 'unknown': raise ValueError('unknown obligation kind')
         if value is not None and value > threshold:
