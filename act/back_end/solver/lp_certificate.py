@@ -28,6 +28,9 @@ def identity(lp):
 
 def check(lp, certificate):
     """Check signed dual multipliers, exact residual correction and claim."""
+    if 'matrix_format' in lp:
+        from act.back_end.solver.sparse_lp_certificate import check as sparse_check
+        return sparse_check(lp, certificate)
     if certificate["lp_sha256"] != identity(lp):
         raise ValueError("LP identity mismatch")
     c, lower, upper = ([rational(v) for v in lp[k]] for k in ("c", "lower", "upper"))
@@ -63,6 +66,9 @@ def check(lp, certificate):
 
 def propose(lp, *, time_limit=None):
     """Untrusted SciPy proposal, accepted only after the independent checker."""
+    if 'matrix_format' in lp:
+        from act.back_end.solver.sparse_lp_certificate import propose as sparse_propose
+        return sparse_propose(lp, time_limit=time_limit)
     from scipy.optimize import linprog
     # A floating proposal may approximate exact rational objective sums.
     # check() still evaluates the original coefficients, including residuals.

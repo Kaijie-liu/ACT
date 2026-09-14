@@ -1,5 +1,18 @@
 # MoE Verification Experiment Record
 
+### 2026-09-14: separate request LP R1 registration
+
+`docs/request_lp_r1.md` freezes old seed0/index3000,2/255; no request
+replacement. `request_lp_control.py` enumerates all routes, exports sparse
+expert properties and, if needed, F0 output LPs with universal weight[0,1]
+and independently checked disagreement endpoints. `check_request_lp.py`
+checks complete supplied obligations with scoped references. Strongest status
+remains conditional on trusted upstream/guard/F0 lowering, not formal native
+network SAFE. No production numerical policy change. Implementation tests
+cover exact sparse/dense agreement, tampering, wrong scope/property, partial
+coverage, residual/reuse aggregation and outward rational endpoints. Results
+are pending; registration must be committed before real output LP queries.
+
 This document is the tracked protocol and provenance record for the controlled
 weighted top-2 Route A experiments. Large datasets, checkpoints, logs, and raw
 results remain under `/data1/Kane/MOE/ACT/data/moe` and are not committed.

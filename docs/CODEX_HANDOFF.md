@@ -56,6 +56,13 @@ Read `act/pipeline/moe/docs/staged_verifier.md` and
 
 ## Authoritative reading order
 
+REQUEST LP R1 implementation (2026-09-14): separate frozen index3000/seed0
+control in `act/pipeline/moe/docs/request_lp_r1.md`, `request_lp_control.py`
+and `check_request_lp.py`. Sparse supplied-HZ LP dual checks and exhaustive
+output aggregation are implemented. Results are pending execution; do not
+infer complete-request success from unit controls. No production SAFE gate,
+budget or sigmoid range is changed. External compatibility remains separate.
+
 LATEST COMPLETION (relation R1,2026-09-14): all6 smoke +60 full calls finished;
 separate re-audit exactly matches saved audits. Read
 `act/pipeline/moe/docs/relation_ablation_results.md` and

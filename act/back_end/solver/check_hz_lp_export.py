@@ -54,10 +54,19 @@ def check_export(record, certificate=None, *, expected_source_sha256):
                                                  ("Auc", "Aub", "ub", "A", "b")):
         (nr, width), c_entries = matrices[left]
         b_shape, b_entries = matrices[right]
-        if width != nc or b_shape != (nr, nb) or len(source[rhs]) != nr or len(lp[target]) != nr:
+        sparse = lp.get('matrix_format') == 'csr_v1'
+        target_count = lp[target]['shape'][0] if sparse else len(lp[target])
+        if width != nc or b_shape != (nr, nb) or len(source[rhs]) != nr or target_count != nr:
             raise ValueError("constraint shape or row omission")
         if [rational(v) for v in source[rhs]] != [rational(v) for v in lp[target_rhs]]:
             raise ValueError("constraint RHS changed")
+        if sparse:
+            shape, actual = _entries(lp[target])
+            expected = dict(c_entries)
+            expected.update({(i,j+nc):v for (i,j),v in b_entries.items()})
+            if shape != (nr,n) or {k:v for k,v in actual.items() if v} != {k:v for k,v in expected.items() if v}:
+                raise ValueError('sparse constraint coefficient/sign changed')
+            continue
         for i, row in enumerate(lp[target]):
             if len(row) != n:
                 raise ValueError("constraint width changed")
