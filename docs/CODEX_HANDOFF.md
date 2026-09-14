@@ -1,9 +1,11 @@
 # MoE project handoff
 
-Next registered stage: `act/pipeline/moe/docs/request_lp_rational_r3.md`.
-Direct rational construction starts from the shared pre-F0 HZ, preserving
-factor identity and checked R2 ranges. Only three residual LP proposals;
-no production policy change. Implementation and controls precede execution.
+Latest completion: direct rational construction R3, execution `f30f8ccf4`.
+Read `act/pipeline/moe/docs/request_lp_rational_results.md` and linked review.
+All 18 required output obligations independently check (15 reused, 3 residual).
+The trusted base no longer includes floating F0 construction; network-to-HZ,
+guard lowering and route exclusion remain trusted. Same R2 ranges, no policy
+change. 28 focused tests and read-only review PASS, zero issues.
 The separate 60-request ACT/external static-pair comparison remains next;
 it must charge a complete request including the cross-environment boundary.
 

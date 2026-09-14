@@ -3234,3 +3234,9 @@ Historical2/3 and30-input outcomes untouched. No pooling, tuning or extra solves
 54 focused tests pass; separate process rebuilds archived supplement exactly.
 Next relation ablation/external tool/request LP work are separate planned
 contracts, not launched by this stage: `docs/post_confirmation_workstreams.md`.
+# 2026-09-14 direct rational request proof R3
+
+Execution f30f8ccf4; see `docs/request_lp_rational_results.md`. Three new LPs,
+18/18 required outputs checked, no F0 floating-construction trust assumption.
+Upstream HZ/guard/route lowering remains trusted. Same frozen R2 ranges and
+input, no performance claim or production numerical-policy change.
