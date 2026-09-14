@@ -1,8 +1,47 @@
 # Frozen convolutional-family three-arm experiment R1
 
-Status: **outer smoke supervisor and terminal auditor integrated and tested;
-smoke authorized, not yet executed at this implementation commit**. No full
-verification request is authorized by this stage.
+Status: **six smoke calls completed and independently re-audited; structural
+audit PASS, zero issues; smoke gate FAIL**. The 90 full requests have NOT run.
+
+## Completed smoke R1
+
+Execution commit `c192bca4d3c3161abe3ae816471894be24e3d908`, unchanged epoch89,
+inputs 0/1, radius2/255 and method configurations. Compact archive:
+`../results/conv_three_arm_smoke_review_20260915_r1.json`; raw directory below.
+
+| Input | Adaptive | Matched monolithic | ACT-fronted plain CROWN |
+|---|---|---|---|
+| 0 | UNSAFE, 113.04s | TIMEOUT, 300.07s | UNKNOWN, 4.43s |
+| 1 | TIMEOUT, 300.06s | TIMEOUT, 300.05s | UNKNOWN, 4.32s |
+
+Six of six terminal slots are present; no ERROR or unattempted slot. All three
+outer timeouts retain their partial evidence. Both inputs have two exact legal
+pairs. All two adaptive/monolithic common-fact comparisons agree, including
+the requests killed before final packages. One complete HZ package and two
+complete external records pass structural checks; the one UNSAFE replays on
+the full dynamic model in the represented box. Both external calls finish
+all18 margins (two pairs each), but do not establish a positive numerical
+filter. No SAFE certificate or numerical positive was obtained.
+
+The independent second audit exactly reproduces the automatic audit. Total
+observed request time is1021.96s (17.03min), including timeout cleanup and
+terminal submission; audit and resource wait are separate. This is a
+conformance smoke, not a powered performance comparison.
+An additional independently timed re-audit takes1.80s and returns the same
+summary. Automatic-audit wall time was not separately captured; the archive
+records it as null, not zero. This does not change any request's charged cost.
+
+**The registered smoke gate fails** because monolithic produced zero complete
+non-error records across the two inputs. A complete terminal ledger and audit
+PASS do not override this requirement. The supervisor returns nonzero and
+`STOPPED_REVIEW_REQUIRED`; no full90 is started or queued. Do not extend time,
+replace inputs, retune the model or relabel snapshots as complete packages.
+
+Last preserved timeout stages: monolithic F0 for both monolithic calls; Tier2
+F0 for adaptive input1. These are observed stop positions, not proof of a
+unique solver/encoding cause or evidence that longer runs would prove SAFE.
+Further performance/implementation work requires its own bounded follow-up;
+the failed R1 remains sealed and the original full cohort remains unqueried.
 
 ## Smoke execution wrapper (2026-09-15)
 
@@ -159,7 +198,7 @@ re-proving of all bounds. One model cannot establish broad cross-architecture
 or high-accuracy strict-certification superiority. Do not pool this cohort with
 bal010, the historical 100-input confirmation or old AdvMoE controls.
 
-## Delivered interface and remaining launch work
+## Historical registration: delivered interface and remaining launch work
 
 `conv_three_arm_worker.py` accepts a materialized ordinary request, checks the
 E4/C10 contract and dispatches adaptive/monolithic through the common production

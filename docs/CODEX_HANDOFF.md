@@ -1,5 +1,23 @@
 # MoE project handoff
 
+Latest completion (2026-09-15): conv three-arm smoke R1 completed6/6 under
+execution `c192bca4d3c3161abe3ae816471894be24e3d908`. Read
+`act/pipeline/moe/docs/conv_three_arm_r1.md` and
+`act/pipeline/moe/results/conv_three_arm_smoke_review_20260915_r1.json`.
+Separate re-audit exactly matches automatic audit: PASS,0 issues,1 complete
+HZ package,2 complete CROWN records,1/1 full-model UNSAFE replay,2/2 common-fact
+pairs equal. Adaptive:1 UNSAFE+1 outer TIMEOUT; monolithic:2 outer TIMEOUT;
+CROWN:2 UNKNOWN. No SAFE or numerical positive. Three outer timeouts and all
+snapshots preserved; total observed requests1021.96s. Thirty focused tests pass.
+SMOKE GATE FAIL: monolithic has no complete non-error record. Supervisor is
+STOPPED_REVIEW_REQUIRED, no worker remains, no full90 started/queued. Do not
+run the full cohort or extend budgets/replace inputs to bypass this gate.
+The outer scheduler and terminal auditor are implemented; this is a frozen
+budget conformance failure, not missing orchestration. Stop positions are
+monolithic F0 (two) and adaptive Tier2 F0 (one), not established root causes.
+Any next investigation must be separately scoped and preserve this failed R1.
+The following prelaunch entries are historical and do not authorize rerunning.
+
 Latest implementation (2026-09-15): conv three-arm outer orchestration and
 terminal audit are now integrated under `scripts/`, preserving the frozen ACT
 source inventory. Read the execution-wrapper section of

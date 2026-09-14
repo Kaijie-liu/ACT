@@ -175,10 +175,16 @@ training: four independent convolutional experts, 155,052 parameters, seed 17 an
 obtains 68.08% on 5,000 validation inputs and 67.06% on the full 10,000-image test
 set. An independent process checks the training/selection identities and
 replays both concrete evaluations. Full-shape ACT and external static-pair
-conformance controls pass, but no trained-family robustness comparison has yet
-been run. This broadens the available model artifacts, not the demonstrated
-cross-architecture verification gains. Evidence:
-`act/pipeline/moe/results/conv_training_review_20260915_r1.json`.
+conformance controls pass. A separately frozen six-call trained-model smoke
+(two observed inputs, three arms, 300 seconds per complete request) now ends
+with adaptive one replayed UNSAFE and one outer TIMEOUT, matched monolithic
+two outer TIMEOUTs, and plain-CROWN two completed UNKNOWN records. The terminal
+audit passes, including both common-fact comparisons, but the smoke gate fails:
+monolithic has no complete non-error record. The 90-call full experiment has
+not started. This is a budget-conformance limitation, not a measured
+cross-architecture advantage or evidence that the timed-out properties are
+safe. Evidence: `act/pipeline/moe/results/conv_training_review_20260915_r1.json`
+and `act/pipeline/moe/results/conv_three_arm_smoke_review_20260915_r1.json`.
 
 The confirmation supports new-input benefits against the registered internal
 comparators; the ablation supports a relation mechanism; the external study
