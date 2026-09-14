@@ -1,0 +1,14 @@
+{
+  "protocol": "CONV_F0_TIMING_R1",
+  "job_id": "rank0_monolithic",
+  "parent_root": "data/moe/results/conv_three_arm_smoke_20260915_r1",
+  "budget_seconds": 300,
+  "purpose": "Locate time in propagation/support/F0 construction/native solver, not seek a certificate",
+  "scope": "One old smoke input, frozen trained convolutional model and matched monolithic config",
+  "allowed_change": "Durable diagnostic function-call spans under scripts only",
+  "logging": "Append-only fsynced hash-chained JSONL; logging cost charged, open spans right-censored",
+  "unchanged": ["all ACT Python", "checkpoint", "materialized input", "epsilon", "method configuration", "numerical gates", "whole-request 300 seconds"],
+  "no_retry_or_extension": true,
+  "full_cohort_authorized": false,
+  "interpretation": "Call wall time is not CPU time; tracing can perturb deadlines; one profiled request does not establish comparative speed or a unique cause for all old failures"
+}

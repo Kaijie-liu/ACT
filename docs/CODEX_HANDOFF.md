@@ -1,5 +1,17 @@
 # MoE project handoff
 
+Current next-stage implementation (2026-09-15): user authorized durable F0
+substage timing, then ONE old smoke request at the unchanged300s cap. Read
+`docs/conv_f0_timing_r1.md` and `scripts/conv_f0_timing_protocol_r1.json`.
+Diagnostic-only wrappers under scripts preserve all frozen ACT/old wrapper
+hashes. Fixed input0/matched monolithic; no full90, retry, support ablation,
+budget or policy changes. Test/commit/push first, then execute
+`python -m scripts.run_conv_f0_timing` in act-py312 and independently audit.
+Raw output `data/moe/results/conv_f0_timing_20260915_r1`; check whether it exists
+before launch. An existing directory is not permission to retry. Old smoke
+remains FAIL. This entry precedes execution; later review must report measured
+substage times and censored spans rather than assuming all F0 time is solving.
+
 Latest completion (2026-09-15): conv three-arm smoke R1 completed6/6 under
 execution `c192bca4d3c3161abe3ae816471894be24e3d908`. Read
 `act/pipeline/moe/docs/conv_three_arm_r1.md` and
