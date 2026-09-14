@@ -92,5 +92,19 @@ class ConvTrainingTests(unittest.TestCase):
         for _ in range(100):opt.step();sch.step()
         self.assertEqual(opt.param_groups[0]['lr'],0.)
 
+    def test_archiver_rejects_pending_run_and_existing_archive(self):
+        from act.pipeline.moe.archive_conv_training import archive
+        with tempfile.TemporaryDirectory(dir='/data1/Kane/MOE') as d:
+            root=Path(d);output=root/'archive.json'
+            for name,value in {'launch.json':{},'config.json':{},
+                'CONV_LANDED_summary.json':{'status':'TRAINING_COMPLETE_PENDING_AUDIT'},
+                'audit.json':{'status':'PASS','issues':[]},'supervisor.json':{'status':'RUNNING'}}.items():
+                training.atomic_json(root/name,value)
+            with self.assertRaisesRegex(ValueError,'not audited'):archive(root,output)
+            self.assertFalse(output.exists())
+            training.atomic_json(output,{'preserve':True})
+            with self.assertRaises(FileExistsError):archive(root,output)
+            self.assertEqual(json.loads(output.read_text()),{'preserve':True})
+
 
 if __name__=='__main__':unittest.main()

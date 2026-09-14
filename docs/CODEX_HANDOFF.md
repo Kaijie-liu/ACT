@@ -1,6 +1,24 @@
 # MoE project handoff
 
-Latest prelaunch completion (2026-09-15): full-size convolutional family gate
+Latest completion (2026-09-15): convolutional family full-shape compatibility,
+supervised training and independent landing audit are COMPLETE. Execution
+`6d2e6d299`; read `act/pipeline/moe/docs/conv_training_results.md` and
+`act/pipeline/moe/results/conv_training_review_20260915_r1.json` first.
+Frozen seed17 ran100/100 epochs; selected epoch89 by earliest validation maximum:
+validation68.08%, test67.06% on the full5000/10000 respectively. All100 immutable
+checkpoint hashes/metadata and exact validation/test metric replay pass the
+separate audit. Selected checkpoint SHA256
+`f5781a792f844a68de941f1a6b314d0e627ad5dd30e262088e6c1864d6bc5289`;
+local path `data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_089.pt`.
+Supervisor/landing status LANDED_AUDITED; no training worker remains. Training
+used an immutable Git source export, not later edits. No retry, reselection,
+dependency change or production numerical-policy relaxation.66 related tests pass.
+Next: separately freeze three-arm trained-family verification (E4, not E8), with
+selected checkpoint, data/selection manifest and complete request budgets.
+Training is not a new certificate or a cross-architecture verifier win. Do not
+retrain for a better accuracy or reopen sealed AdvMoE/backend studies.
+
+Earlier prelaunch completion (2026-09-15): full-size convolutional family gate
 and supervised training implementation. Read
 `act/pipeline/moe/docs/conv_family_r1.md` and
 `act/pipeline/moe/results/conv_pretraining_review_20260915_r1.json`.
@@ -14,8 +32,8 @@ checkpoint replay and one optimizer continuation. This is not production state.
 `conv_training_supervisor` and `conv_training` implement source-snapshot training,
 immutable epochs, full validation selection and independent final metric replay.
 Nine new supervision/training unit controls and four factory tests pass.
-Production100-epoch training is authorized and is the immediate next launch;
-check live supervisor before launching another job. No dependencies changed.
+Production100-epoch training was authorized for the next launch and is now
+completed above. Check live supervisor before launching another job.
 Three-arm trained-model verification remains separately scoped and unlaunched.
 
 Latest completion (2026-09-15): Advice/bb.md fixed ACT-only rational transfer,

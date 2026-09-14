@@ -1,0 +1,5171 @@
+{
+  "config": {
+    "augmentation": {
+      "horizontal_flip_probability": 0.5,
+      "random_crop_padding": 4
+    },
+    "balance_coefficient": 0.01,
+    "balance_loss": "switch",
+    "batch_size": 128,
+    "checkpoint_rule": "highest_validation_accuracy_earliest_tie",
+    "cpu_threads": 2,
+    "dataset": "CIFAR10",
+    "dtype": "float32",
+    "epochs": 100,
+    "factory": {
+      "channels": [
+        16,
+        32
+      ],
+      "hidden": 64,
+      "input_shape": [
+        3,
+        32,
+        32
+      ],
+      "num_classes": 10,
+      "num_experts": 4,
+      "router_pool": 4,
+      "seed": 17
+    },
+    "learning_rate": 0.001,
+    "optimizer": "AdamW",
+    "protocol": "SECOND_FAMILY_CONV_TOP2_TRAIN_R1",
+    "schedule": "cosine_to_zero",
+    "selection_uses_verification": false,
+    "split_seed": 17,
+    "validation_fraction": 0.1,
+    "weight_decay": 0.0005,
+    "workers": 2
+  },
+  "epochs": [
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_001.pt",
+      "checkpoint_sha256": "b9742d41b1134bdac80b2a4366c5aa382f8c51abf97bf6be1b7a9ff24d816ad4",
+      "elapsed_seconds": 2.601114141754806,
+      "epoch": 1,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.001,
+      "next_learning_rate": 0.0009997532801828658,
+      "seconds": 2.601112158037722,
+      "train": {
+        "accuracy": 0.2602888888888889,
+        "balance_loss": 1.1754360984802246,
+        "classification_loss": 2.018027030012343,
+        "correct": 11713,
+        "loss": 2.029781392012702,
+        "route_counts": [
+          9537,
+          32029,
+          11181,
+          37253
+        ],
+        "router_max_gradient_l1": 22.291082948446274,
+        "router_max_update": 0.07359740138053894,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.3556,
+        "effective_experts": 3.091024461712729,
+        "load_entropy": 1.1285025769694346,
+        "max_expert_load": 0.4945,
+        "min_expert_load": 0.0736,
+        "route_counts": [
+          736,
+          3384,
+          935,
+          4945
+        ],
+        "route_frequencies": [
+          0.0736,
+          0.3384,
+          0.0935,
+          0.4945
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 1778
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_002.pt",
+      "checkpoint_sha256": "e8dbc23ef560218108ca93026782a73548815d5903be8bf5ffc28e428af5ef9e",
+      "elapsed_seconds": 4.933865627273917,
+      "epoch": 2,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0009997532801828658,
+      "next_learning_rate": 0.0009990133642141358,
+      "seconds": 2.3228897219523787,
+      "train": {
+        "accuracy": 0.36135555555555554,
+        "balance_loss": 1.1581707015991212,
+        "classification_loss": 1.7629997303856744,
+        "correct": 16261,
+        "loss": 1.7745814366234673,
+        "route_counts": [
+          12617,
+          27764,
+          9180,
+          40439
+        ],
+        "router_max_gradient_l1": 25.03958621621132,
+        "router_max_update": 0.04603790119290352,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.4168,
+        "effective_experts": 3.2680810555549424,
+        "load_entropy": 1.184202979491562,
+        "max_expert_load": 0.4488,
+        "min_expert_load": 0.093,
+        "route_counts": [
+          1046,
+          3536,
+          930,
+          4488
+        ],
+        "route_frequencies": [
+          0.1046,
+          0.3536,
+          0.093,
+          0.4488
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 2084
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_003.pt",
+      "checkpoint_sha256": "436a186c7e422ad2496a54725ec225ba81920fb89cb64dcb99255ab287969356",
+      "elapsed_seconds": 7.416410834528506,
+      "epoch": 3,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0009990133642141358,
+      "next_learning_rate": 0.00099778098230154,
+      "seconds": 2.471150590106845,
+      "train": {
+        "accuracy": 0.4005111111111111,
+        "balance_loss": 1.1557369397905137,
+        "classification_loss": 1.655288224029541,
+        "correct": 18023,
+        "loss": 1.6668455940882365,
+        "route_counts": [
+          11135,
+          31341,
+          8930,
+          38594
+        ],
+        "router_max_gradient_l1": 15.99830436706543,
+        "router_max_update": 0.038626573979854584,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.4436,
+        "effective_experts": 2.762168486618891,
+        "load_entropy": 1.0160160547988735,
+        "max_expert_load": 0.4834,
+        "min_expert_load": 0.0473,
+        "route_counts": [
+          473,
+          4164,
+          529,
+          4834
+        ],
+        "route_frequencies": [
+          0.0473,
+          0.4164,
+          0.0529,
+          0.4834
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 2218
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_004.pt",
+      "checkpoint_sha256": "08df5811f451c4e9b1c69a42995451f874decc612919393408edfa2aa1302635",
+      "elapsed_seconds": 9.750405812636018,
+      "epoch": 4,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.00099778098230154,
+      "next_learning_rate": 0.000996057350657239,
+      "seconds": 2.324410317465663,
+      "train": {
+        "accuracy": 0.42293333333333333,
+        "balance_loss": 1.1333721220228408,
+        "classification_loss": 1.5884696569654677,
+        "correct": 19032,
+        "loss": 1.599803380393982,
+        "route_counts": [
+          11884,
+          32226,
+          10149,
+          35741
+        ],
+        "router_max_gradient_l1": 15.62623231112957,
+        "router_max_update": 0.03616867959499359,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.4364,
+        "effective_experts": 3.101216393616912,
+        "load_entropy": 1.1317944195659373,
+        "max_expert_load": 0.4329,
+        "min_expert_load": 0.021,
+        "route_counts": [
+          210,
+          4329,
+          1984,
+          3477
+        ],
+        "route_frequencies": [
+          0.021,
+          0.4329,
+          0.1984,
+          0.3477
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 2182
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_005.pt",
+      "checkpoint_sha256": "769ee35baa4034586be192f1a93d3e5a711308e5858aa68d6f914ecc9d35b2ae",
+      "elapsed_seconds": 12.043095036409795,
+      "epoch": 5,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.000996057350657239,
+      "next_learning_rate": 0.0009938441702975688,
+      "seconds": 2.2814277755096555,
+      "train": {
+        "accuracy": 0.443,
+        "balance_loss": 1.1828843190087213,
+        "classification_loss": 1.5414509265899659,
+        "correct": 19935,
+        "loss": 1.5532797650019328,
+        "route_counts": [
+          13240,
+          35018,
+          6938,
+          34804
+        ],
+        "router_max_gradient_l1": 16.231418520212173,
+        "router_max_update": 0.025190595537424088,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.4562,
+        "effective_experts": 2.5292569232905704,
+        "load_entropy": 0.9279255533900523,
+        "max_expert_load": 0.4911,
+        "min_expert_load": 0.0208,
+        "route_counts": [
+          208,
+          4440,
+          441,
+          4911
+        ],
+        "route_frequencies": [
+          0.0208,
+          0.444,
+          0.0441,
+          0.4911
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 2281
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_006.pt",
+      "checkpoint_sha256": "0d2600c3f0237dbd84516ac734ea115eae5bb7b68ef21639813794c163850ab4",
+      "elapsed_seconds": 14.388304562307894,
+      "epoch": 6,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0009938441702975688,
+      "next_learning_rate": 0.0009911436253643444,
+      "seconds": 2.3358996510505676,
+      "train": {
+        "accuracy": 0.45513333333333333,
+        "balance_loss": 1.170681932428148,
+        "classification_loss": 1.5047010048336453,
+        "correct": 20481,
+        "loss": 1.5164078273561266,
+        "route_counts": [
+          14834,
+          35357,
+          6923,
+          32886
+        ],
+        "router_max_gradient_l1": 18.180084362626076,
+        "router_max_update": 0.0247221440076828,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.4946,
+        "effective_experts": 2.7450305758618487,
+        "load_entropy": 1.0097922136469444,
+        "max_expert_load": 0.4766,
+        "min_expert_load": 0.0441,
+        "route_counts": [
+          529,
+          4264,
+          441,
+          4766
+        ],
+        "route_frequencies": [
+          0.0529,
+          0.4264,
+          0.0441,
+          0.4766
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 2473
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_007.pt",
+      "checkpoint_sha256": "d42e91ce7bda1935fd4c769112e2c282b758a6c8593dd2633d2479c114bb1006",
+      "elapsed_seconds": 16.629200987517834,
+      "epoch": 7,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0009911436253643444,
+      "next_learning_rate": 0.0009879583809693736,
+      "seconds": 2.2314100582152605,
+      "train": {
+        "accuracy": 0.4671111111111111,
+        "balance_loss": 1.1456321004019843,
+        "classification_loss": 1.4792114943610297,
+        "correct": 21020,
+        "loss": 1.4906678157806397,
+        "route_counts": [
+          16633,
+          34997,
+          7605,
+          30765
+        ],
+        "router_max_gradient_l1": 15.108030840754509,
+        "router_max_update": 0.020333483815193176,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.493,
+        "effective_experts": 3.4978650658664048,
+        "load_entropy": 1.2521528012001322,
+        "max_expert_load": 0.4438,
+        "min_expert_load": 0.0859,
+        "route_counts": [
+          2361,
+          4438,
+          859,
+          2342
+        ],
+        "route_frequencies": [
+          0.2361,
+          0.4438,
+          0.0859,
+          0.2342
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 2465
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_008.pt",
+      "checkpoint_sha256": "f57506628214a01384549948570e5cde10ddb4239c240fc632185b1accee9e7f",
+      "elapsed_seconds": 18.817585467360914,
+      "epoch": 8,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0009879583809693736,
+      "next_learning_rate": 0.0009842915805643154,
+      "seconds": 2.1793386191129684,
+      "train": {
+        "accuracy": 0.47617777777777776,
+        "balance_loss": 1.1649725712034438,
+        "classification_loss": 1.448021416070726,
+        "correct": 21428,
+        "loss": 1.4596711397594875,
+        "route_counts": [
+          19359,
+          36312,
+          6490,
+          27839
+        ],
+        "router_max_gradient_l1": 15.497774586081505,
+        "router_max_update": 0.02262203022837639,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.4936,
+        "effective_experts": 3.583643068717871,
+        "load_entropy": 1.2763798999517637,
+        "max_expert_load": 0.4096,
+        "min_expert_load": 0.1015,
+        "route_counts": [
+          1015,
+          4096,
+          1948,
+          2941
+        ],
+        "route_frequencies": [
+          0.1015,
+          0.4096,
+          0.1948,
+          0.2941
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 2468
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_009.pt",
+      "checkpoint_sha256": "bc2d636701dc809706f4a9cedd30c7fb15ad2f947aeae18a573726933873421d",
+      "elapsed_seconds": 21.136310097761452,
+      "epoch": 9,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0009842915805643154,
+      "next_learning_rate": 0.0009801468428384714,
+      "seconds": 2.3077824348583817,
+      "train": {
+        "accuracy": 0.4881111111111111,
+        "balance_loss": 1.1544868739446004,
+        "classification_loss": 1.4261748820410833,
+        "correct": 21965,
+        "loss": 1.4377197543885973,
+        "route_counts": [
+          19706,
+          35785,
+          6581,
+          27928
+        ],
+        "router_max_gradient_l1": 20.113955333828926,
+        "router_max_update": 0.021234571933746338,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.5138,
+        "effective_experts": 2.919127269834563,
+        "load_entropy": 1.071284691412961,
+        "max_expert_load": 0.4376,
+        "min_expert_load": 0.0308,
+        "route_counts": [
+          1067,
+          4376,
+          308,
+          4249
+        ],
+        "route_frequencies": [
+          0.1067,
+          0.4376,
+          0.0308,
+          0.4249
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 2569
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_010.pt",
+      "checkpoint_sha256": "39dd2d2d7138a7a87611e0211493052700dc27f245712c5c5b972a18e874c7ff",
+      "elapsed_seconds": 23.41109010670334,
+      "epoch": 10,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0009801468428384714,
+      "next_learning_rate": 0.0009755282581475767,
+      "seconds": 2.265190145932138,
+      "train": {
+        "accuracy": 0.4978666666666667,
+        "balance_loss": 1.1663086957931519,
+        "classification_loss": 1.39917403049469,
+        "correct": 22404,
+        "loss": 1.4108371185938517,
+        "route_counts": [
+          20627,
+          37164,
+          6596,
+          25613
+        ],
+        "router_max_gradient_l1": 17.509802013635635,
+        "router_max_update": 0.026998400688171387,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.5066,
+        "effective_experts": 3.058787205806454,
+        "load_entropy": 1.1180184994298894,
+        "max_expert_load": 0.4622,
+        "min_expert_load": 0.0701,
+        "route_counts": [
+          701,
+          4622,
+          836,
+          3841
+        ],
+        "route_frequencies": [
+          0.0701,
+          0.4622,
+          0.0836,
+          0.3841
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 2533
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_011.pt",
+      "checkpoint_sha256": "52d909ef9a067c86df36999276127c65c1efdaca08c3edb663158f5adf2ee8d6",
+      "elapsed_seconds": 25.66303987801075,
+      "epoch": 11,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0009755282581475767,
+      "next_learning_rate": 0.0009704403844771127,
+      "seconds": 2.2401900086551905,
+      "train": {
+        "accuracy": 0.5023555555555556,
+        "balance_loss": 1.1830235341601902,
+        "classification_loss": 1.3819926663716635,
+        "correct": 22606,
+        "loss": 1.3938229012595282,
+        "route_counts": [
+          19726,
+          37827,
+          6775,
+          25672
+        ],
+        "router_max_gradient_l1": 15.357038334012032,
+        "router_max_update": 0.022394269704818726,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.519,
+        "effective_experts": 2.806491154767565,
+        "load_entropy": 1.0319350037000015,
+        "max_expert_load": 0.4606,
+        "min_expert_load": 0.0338,
+        "route_counts": [
+          338,
+          4606,
+          769,
+          4287
+        ],
+        "route_frequencies": [
+          0.0338,
+          0.4606,
+          0.0769,
+          0.4287
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 2595
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_012.pt",
+      "checkpoint_sha256": "9c24ae340390996699845bf86d1aac61d77581997059ee1098d2da64f96c1b48",
+      "elapsed_seconds": 27.899052357301116,
+      "epoch": 12,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0009704403844771127,
+      "next_learning_rate": 0.0009648882429441257,
+      "seconds": 2.2265728041529655,
+      "train": {
+        "accuracy": 0.5139555555555556,
+        "balance_loss": 1.1693181848314074,
+        "classification_loss": 1.3582638600031536,
+        "correct": 23128,
+        "loss": 1.3699570439656577,
+        "route_counts": [
+          22331,
+          37386,
+          6060,
+          24223
+        ],
+        "router_max_gradient_l1": 19.284671425819397,
+        "router_max_update": 0.019797228276729584,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.544,
+        "effective_experts": 3.466785645755171,
+        "load_entropy": 1.2432278377811836,
+        "max_expert_load": 0.4369,
+        "min_expert_load": 0.0947,
+        "route_counts": [
+          1635,
+          4369,
+          947,
+          3049
+        ],
+        "route_frequencies": [
+          0.1635,
+          0.4369,
+          0.0947,
+          0.3049
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 2720
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_013.pt",
+      "checkpoint_sha256": "3bd045b819d279a024075ca05c5e0ae7703f6a9d7ad800e268a93bc26eaf104c",
+      "elapsed_seconds": 30.06050896923989,
+      "epoch": 13,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0009648882429441257,
+      "next_learning_rate": 0.0009588773128419905,
+      "seconds": 2.1521308617666364,
+      "train": {
+        "accuracy": 0.5198666666666667,
+        "balance_loss": 1.1729587231742011,
+        "classification_loss": 1.3374458309173585,
+        "correct": 23394,
+        "loss": 1.349175419108073,
+        "route_counts": [
+          22188,
+          37993,
+          6593,
+          23226
+        ],
+        "router_max_gradient_l1": 17.45118948817253,
+        "router_max_update": 0.02082260698080063,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.5464,
+        "effective_experts": 3.4107769487076136,
+        "load_entropy": 1.2269401095386598,
+        "max_expert_load": 0.4485,
+        "min_expert_load": 0.0707,
+        "route_counts": [
+          2762,
+          4485,
+          707,
+          2046
+        ],
+        "route_frequencies": [
+          0.2762,
+          0.4485,
+          0.0707,
+          0.2046
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 2732
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_014.pt",
+      "checkpoint_sha256": "da4b31b514b14f8719065148e24f7db41a1f6794adfc247c0ef04875ddbd4d2f",
+      "elapsed_seconds": 32.36130411643535,
+      "epoch": 14,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0009588773128419905,
+      "next_learning_rate": 0.0009524135262330098,
+      "seconds": 2.2913523260504007,
+      "train": {
+        "accuracy": 0.5262222222222223,
+        "balance_loss": 1.176695173602634,
+        "classification_loss": 1.3159702045652601,
+        "correct": 23680,
+        "loss": 1.3277371555964153,
+        "route_counts": [
+          22692,
+          38563,
+          7670,
+          21075
+        ],
+        "router_max_gradient_l1": 13.737757071852684,
+        "router_max_update": 0.020594468340277672,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.5506,
+        "effective_experts": 3.3665707999677013,
+        "load_entropy": 1.2138946595165578,
+        "max_expert_load": 0.4512,
+        "min_expert_load": 0.0888,
+        "route_counts": [
+          3201,
+          4512,
+          1399,
+          888
+        ],
+        "route_frequencies": [
+          0.3201,
+          0.4512,
+          0.1399,
+          0.0888
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 2753
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_015.pt",
+      "checkpoint_sha256": "859758db74f4647f2dd8b875c2e6bf96cafdcaf1e5d393cadc8d08e5cb1a8558",
+      "elapsed_seconds": 34.560616250149906,
+      "epoch": 15,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0009524135262330098,
+      "next_learning_rate": 0.0009455032620941839,
+      "seconds": 2.1908023236319423,
+      "train": {
+        "accuracy": 0.5315555555555556,
+        "balance_loss": 1.1927994048436483,
+        "classification_loss": 1.3037923132578533,
+        "correct": 23920,
+        "loss": 1.315720304552714,
+        "route_counts": [
+          24472,
+          39034,
+          7122,
+          19372
+        ],
+        "router_max_gradient_l1": 19.220615565776825,
+        "router_max_update": 0.021371204406023026,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.5462,
+        "effective_experts": 3.2249383022110067,
+        "load_entropy": 1.1709138189673718,
+        "max_expert_load": 0.4068,
+        "min_expert_load": 0.0447,
+        "route_counts": [
+          1665,
+          4068,
+          447,
+          3820
+        ],
+        "route_frequencies": [
+          0.1665,
+          0.4068,
+          0.0447,
+          0.382
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 2731
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_016.pt",
+      "checkpoint_sha256": "eb9df07e831ff1d798f547bd807bbec23cc016162f1de63114c5bbd9d0674237",
+      "elapsed_seconds": 36.91813960671425,
+      "epoch": 16,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0009455032620941839,
+      "next_learning_rate": 0.0009381533400219318,
+      "seconds": 2.3463952895253897,
+      "train": {
+        "accuracy": 0.5378666666666667,
+        "balance_loss": 1.1814817115571763,
+        "classification_loss": 1.2910361507839627,
+        "correct": 24204,
+        "loss": 1.302850969950358,
+        "route_counts": [
+          23543,
+          39145,
+          7778,
+          19534
+        ],
+        "router_max_gradient_l1": 17.901323229074478,
+        "router_max_update": 0.020311012864112854,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.5568,
+        "effective_experts": 3.462912530597661,
+        "load_entropy": 1.2421100068274404,
+        "max_expert_load": 0.4461,
+        "min_expert_load": 0.0831,
+        "route_counts": [
+          2720,
+          4461,
+          831,
+          1988
+        ],
+        "route_frequencies": [
+          0.272,
+          0.4461,
+          0.0831,
+          0.1988
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 2784
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_017.pt",
+      "checkpoint_sha256": "8a0ca1cb40517597b887329c9e18d54ab7f411ec5181b30e03cdb7f0b60de907",
+      "elapsed_seconds": 39.16927481722087,
+      "epoch": 17,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0009381533400219318,
+      "next_learning_rate": 0.0009303710135019719,
+      "seconds": 2.2414363408461213,
+      "train": {
+        "accuracy": 0.5448222222222222,
+        "balance_loss": 1.1869361537085639,
+        "classification_loss": 1.2712028502570258,
+        "correct": 24517,
+        "loss": 1.2830722096972995,
+        "route_counts": [
+          25457,
+          39620,
+          8067,
+          16856
+        ],
+        "router_max_gradient_l1": 17.412741780281067,
+        "router_max_update": 0.020905233919620514,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.5654,
+        "effective_experts": 3.5933854990060503,
+        "load_entropy": 1.2790947940559882,
+        "max_expert_load": 0.4429,
+        "min_expert_load": 0.1277,
+        "route_counts": [
+          1818,
+          4429,
+          1277,
+          2476
+        ],
+        "route_frequencies": [
+          0.1818,
+          0.4429,
+          0.1277,
+          0.2476
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 2827
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_018.pt",
+      "checkpoint_sha256": "563d28daf5961a308edc4f7327903beaf9299c40efa72aeae45fcb5a298be5ea",
+      "elapsed_seconds": 41.47127025667578,
+      "epoch": 18,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0009303710135019719,
+      "next_learning_rate": 0.0009221639627510076,
+      "seconds": 2.292302316054702,
+      "train": {
+        "accuracy": 0.5505555555555556,
+        "balance_loss": 1.1926799776289199,
+        "classification_loss": 1.2591757558398777,
+        "correct": 24775,
+        "loss": 1.2711025530285305,
+        "route_counts": [
+          25669,
+          39803,
+          7663,
+          16865
+        ],
+        "router_max_gradient_l1": 17.874388724565506,
+        "router_max_update": 0.02664516121149063,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.5672,
+        "effective_experts": 3.5683856159475558,
+        "load_entropy": 1.2721132850964345,
+        "max_expert_load": 0.4472,
+        "min_expert_load": 0.1153,
+        "route_counts": [
+          2384,
+          4472,
+          1153,
+          1991
+        ],
+        "route_frequencies": [
+          0.2384,
+          0.4472,
+          0.1153,
+          0.1991
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 2836
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_019.pt",
+      "checkpoint_sha256": "2e9dfcd76c9dad00048ba9ad1df4436a7f43885115f24e7c7ec02d0ae1936de2",
+      "elapsed_seconds": 43.69725407846272,
+      "epoch": 19,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0009221639627510076,
+      "next_learning_rate": 0.000913540287137281,
+      "seconds": 2.216752715408802,
+      "train": {
+        "accuracy": 0.5534,
+        "balance_loss": 1.1859944310506185,
+        "classification_loss": 1.2452684559292264,
+        "correct": 24903,
+        "loss": 1.2571283974117702,
+        "route_counts": [
+          26407,
+          39034,
+          7369,
+          17190
+        ],
+        "router_max_gradient_l1": 16.708245500922203,
+        "router_max_update": 0.017849884927272797,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.5696,
+        "effective_experts": 3.41490100466555,
+        "load_entropy": 1.2281485042176772,
+        "max_expert_load": 0.4565,
+        "min_expert_load": 0.1184,
+        "route_counts": [
+          3041,
+          4565,
+          1184,
+          1210
+        ],
+        "route_frequencies": [
+          0.3041,
+          0.4565,
+          0.1184,
+          0.121
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 2848
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_020.pt",
+      "checkpoint_sha256": "84d453e155edd1e75bc57daa1a3aee6b1e792d1b9447bd78109ccde2d1a0425c",
+      "elapsed_seconds": 45.902548362500966,
+      "epoch": 20,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.000913540287137281,
+      "next_learning_rate": 0.0009045084971874739,
+      "seconds": 2.1956245778128505,
+      "train": {
+        "accuracy": 0.5620666666666667,
+        "balance_loss": 1.189557396973504,
+        "classification_loss": 1.228989684422811,
+        "correct": 25293,
+        "loss": 1.2408852575302125,
+        "route_counts": [
+          26506,
+          39351,
+          7569,
+          16574
+        ],
+        "router_max_gradient_l1": 19.562691688537598,
+        "router_max_update": 0.016902267932891846,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.5772,
+        "effective_experts": 3.1267107200724378,
+        "load_entropy": 1.139981563826173,
+        "max_expert_load": 0.4699,
+        "min_expert_load": 0.0522,
+        "route_counts": [
+          3495,
+          4699,
+          1284,
+          522
+        ],
+        "route_frequencies": [
+          0.3495,
+          0.4699,
+          0.1284,
+          0.0522
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 2886
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_021.pt",
+      "checkpoint_sha256": "b0f8c39ed545429fe60430837bebca514575ed55073d15daa81bc11f7d4bf3d8",
+      "elapsed_seconds": 48.16292676515877,
+      "epoch": 21,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0009045084971874739,
+      "next_learning_rate": 0.0008950775061878452,
+      "seconds": 2.250748942606151,
+      "train": {
+        "accuracy": 0.5631333333333334,
+        "balance_loss": 1.1997801636801826,
+        "classification_loss": 1.2216289340972901,
+        "correct": 25341,
+        "loss": 1.233626735687256,
+        "route_counts": [
+          28406,
+          39837,
+          7110,
+          14647
+        ],
+        "router_max_gradient_l1": 18.717249989509583,
+        "router_max_update": 0.01869465410709381,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.5856,
+        "effective_experts": 3.2544673946355283,
+        "load_entropy": 1.1800286354321172,
+        "max_expert_load": 0.4811,
+        "min_expert_load": 0.059,
+        "route_counts": [
+          2883,
+          4811,
+          1716,
+          590
+        ],
+        "route_frequencies": [
+          0.2883,
+          0.4811,
+          0.1716,
+          0.059
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 2928
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_022.pt",
+      "checkpoint_sha256": "54728274396ed7f34778753a1b2e18e7562224942ee749a1a327de103a20b37f",
+      "elapsed_seconds": 50.59657046943903,
+      "epoch": 22,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0008950775061878452,
+      "next_learning_rate": 0.0008852566213878947,
+      "seconds": 2.422652621753514,
+      "train": {
+        "accuracy": 0.5696666666666667,
+        "balance_loss": 1.1876472641415066,
+        "classification_loss": 1.2064856411616007,
+        "correct": 25635,
+        "loss": 1.2183621166441176,
+        "route_counts": [
+          27757,
+          39987,
+          7966,
+          14290
+        ],
+        "router_max_gradient_l1": 15.001314118504524,
+        "router_max_update": 0.018808409571647644,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.591,
+        "effective_experts": 3.5430127569060903,
+        "load_entropy": 1.2649774264712899,
+        "max_expert_load": 0.4571,
+        "min_expert_load": 0.1204,
+        "route_counts": [
+          2424,
+          4571,
+          1801,
+          1204
+        ],
+        "route_frequencies": [
+          0.2424,
+          0.4571,
+          0.1801,
+          0.1204
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 2955
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_023.pt",
+      "checkpoint_sha256": "8161baba7fcd785a70f60ccc8f450e1d327c3aea83c1e714e9bf41389ebc4f82",
+      "elapsed_seconds": 52.947550904005766,
+      "epoch": 23,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0008852566213878947,
+      "next_learning_rate": 0.0008750555348152298,
+      "seconds": 2.3414642084389925,
+      "train": {
+        "accuracy": 0.5764222222222222,
+        "balance_loss": 1.2093117087046306,
+        "classification_loss": 1.1950665586471558,
+        "correct": 25939,
+        "loss": 1.207159671889411,
+        "route_counts": [
+          27557,
+          40703,
+          8556,
+          13184
+        ],
+        "router_max_gradient_l1": 17.95391134917736,
+        "router_max_update": 0.022300586104393005,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.5832,
+        "effective_experts": 3.466863250190576,
+        "load_entropy": 1.2432502226571913,
+        "max_expert_load": 0.4644,
+        "min_expert_load": 0.1159,
+        "route_counts": [
+          1159,
+          4644,
+          1488,
+          2709
+        ],
+        "route_frequencies": [
+          0.1159,
+          0.4644,
+          0.1488,
+          0.2709
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 2916
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_024.pt",
+      "checkpoint_sha256": "891fc8ba7933535e854acd8581e43cd135d439125dad5916608589c24e45000d",
+      "elapsed_seconds": 55.16118470020592,
+      "epoch": 24,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0008750555348152298,
+      "next_learning_rate": 0.0008644843137107057,
+      "seconds": 2.202151349745691,
+      "train": {
+        "accuracy": 0.5777333333333333,
+        "balance_loss": 1.2159082901424831,
+        "classification_loss": 1.181320072746277,
+        "correct": 25998,
+        "loss": 1.1934791586981879,
+        "route_counts": [
+          27606,
+          40865,
+          7947,
+          13582
+        ],
+        "router_max_gradient_l1": 17.751046642661095,
+        "router_max_update": 0.023028749972581863,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.5926,
+        "effective_experts": 3.45264353613484,
+        "load_entropy": 1.239140179987392,
+        "max_expert_load": 0.4757,
+        "min_expert_load": 0.1259,
+        "route_counts": [
+          2586,
+          4757,
+          1259,
+          1398
+        ],
+        "route_frequencies": [
+          0.2586,
+          0.4757,
+          0.1259,
+          0.1398
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 2963
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_025.pt",
+      "checkpoint_sha256": "1d366c35724b3316a96378a0fca6ce94b943415ac7c5d82ddfe4528fb0578ba6",
+      "elapsed_seconds": 57.34073512163013,
+      "epoch": 25,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0008644843137107057,
+      "next_learning_rate": 0.0008535533905932737,
+      "seconds": 2.170053972862661,
+      "train": {
+        "accuracy": 0.5802222222222222,
+        "balance_loss": 1.2025759659025403,
+        "classification_loss": 1.1749702039082845,
+        "correct": 26110,
+        "loss": 1.1869959634357028,
+        "route_counts": [
+          28258,
+          40501,
+          8170,
+          13071
+        ],
+        "router_max_gradient_l1": 20.36501969397068,
+        "router_max_update": 0.018046803772449493,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.5974,
+        "effective_experts": 3.583886655974106,
+        "load_entropy": 1.276447869605378,
+        "max_expert_load": 0.4369,
+        "min_expert_load": 0.1144,
+        "route_counts": [
+          2541,
+          4369,
+          1946,
+          1144
+        ],
+        "route_frequencies": [
+          0.2541,
+          0.4369,
+          0.1946,
+          0.1144
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 2987
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_026.pt",
+      "checkpoint_sha256": "a62e5b0788debd22ee69d2e448ed887afa4ab3e65d9405e94b3025ab75fc8489",
+      "elapsed_seconds": 59.56758085358888,
+      "epoch": 26,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0008535533905932737,
+      "next_learning_rate": 0.0008422735529643444,
+      "seconds": 2.217057312838733,
+      "train": {
+        "accuracy": 0.5848,
+        "balance_loss": 1.1904285589853922,
+        "classification_loss": 1.162104823811849,
+        "correct": 26316,
+        "loss": 1.174009108628167,
+        "route_counts": [
+          27779,
+          40461,
+          9176,
+          12584
+        ],
+        "router_max_gradient_l1": 19.362243726849556,
+        "router_max_update": 0.020375650376081467,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.599,
+        "effective_experts": 3.485266108382757,
+        "load_entropy": 1.2485443995133463,
+        "max_expert_load": 0.4691,
+        "min_expert_load": 0.1353,
+        "route_counts": [
+          1353,
+          4691,
+          1382,
+          2574
+        ],
+        "route_frequencies": [
+          0.1353,
+          0.4691,
+          0.1382,
+          0.2574
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 2995
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_027.pt",
+      "checkpoint_sha256": "41001d55fd1a0db98d419cbf667781c75ae5db096951a8daa41bbc8bafdbc4af",
+      "elapsed_seconds": 61.86275485903025,
+      "epoch": 27,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0008422735529643444,
+      "next_learning_rate": 0.0008306559326618259,
+      "seconds": 2.285860157571733,
+      "train": {
+        "accuracy": 0.5907111111111111,
+        "balance_loss": 1.2062945961846245,
+        "classification_loss": 1.149010561328464,
+        "correct": 26582,
+        "loss": 1.1610735077963934,
+        "route_counts": [
+          28266,
+          40523,
+          7803,
+          13408
+        ],
+        "router_max_gradient_l1": 22.837465941905975,
+        "router_max_update": 0.015756510198116302,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6088,
+        "effective_experts": 3.1767551612388565,
+        "load_entropy": 1.155860286292729,
+        "max_expert_load": 0.4535,
+        "min_expert_load": 0.0804,
+        "route_counts": [
+          3688,
+          4535,
+          973,
+          804
+        ],
+        "route_frequencies": [
+          0.3688,
+          0.4535,
+          0.0973,
+          0.0804
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3044
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_028.pt",
+      "checkpoint_sha256": "473fc3ac5ac84231bf3ab8235d2108d37fb6bc67c15c80969f736864a4a21d21",
+      "elapsed_seconds": 64.0859918249771,
+      "epoch": 28,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0008306559326618259,
+      "next_learning_rate": 0.0008187119948743449,
+      "seconds": 2.2135429764166474,
+      "train": {
+        "accuracy": 0.5944,
+        "balance_loss": 1.202469941690233,
+        "classification_loss": 1.14347672674391,
+        "correct": 26748,
+        "loss": 1.1555014261457655,
+        "route_counts": [
+          29553,
+          40817,
+          8250,
+          11380
+        ],
+        "router_max_gradient_l1": 21.153676137328148,
+        "router_max_update": 0.01655428111553192,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6086,
+        "effective_experts": 3.418499387577889,
+        "load_entropy": 1.2292016792223286,
+        "max_expert_load": 0.4745,
+        "min_expert_load": 0.0887,
+        "route_counts": [
+          2478,
+          4745,
+          1890,
+          887
+        ],
+        "route_frequencies": [
+          0.2478,
+          0.4745,
+          0.189,
+          0.0887
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3043
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_029.pt",
+      "checkpoint_sha256": "a55d3287784f7a0d87e835656ee4dd45866b500eb8e299c300153d02b4e01c68",
+      "elapsed_seconds": 66.33495114836842,
+      "epoch": 29,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0008187119948743449,
+      "next_learning_rate": 0.0008064535268264883,
+      "seconds": 2.2391027826815844,
+      "train": {
+        "accuracy": 0.5986666666666667,
+        "balance_loss": 1.2151410540686713,
+        "classification_loss": 1.1384025671217177,
+        "correct": 26940,
+        "loss": 1.15055398050944,
+        "route_counts": [
+          30383,
+          40944,
+          7955,
+          10718
+        ],
+        "router_max_gradient_l1": 17.21450862288475,
+        "router_max_update": 0.01925620436668396,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6124,
+        "effective_experts": 3.1388139129068455,
+        "load_entropy": 1.1438449938173805,
+        "max_expert_load": 0.4614,
+        "min_expert_load": 0.0537,
+        "route_counts": [
+          3578,
+          4614,
+          1271,
+          537
+        ],
+        "route_frequencies": [
+          0.3578,
+          0.4614,
+          0.1271,
+          0.0537
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3062
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_030.pt",
+      "checkpoint_sha256": "4cca029fcce435572725584169850f54408de73b23251b62b816dbdbaf597511",
+      "elapsed_seconds": 68.61342742107809,
+      "epoch": 30,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0008064535268264883,
+      "next_learning_rate": 0.0007938926261462367,
+      "seconds": 2.2690211990848184,
+      "train": {
+        "accuracy": 0.6011111111111112,
+        "balance_loss": 1.2176953070110745,
+        "classification_loss": 1.121429078992208,
+        "correct": 27050,
+        "loss": 1.1336060315450032,
+        "route_counts": [
+          30102,
+          41184,
+          6283,
+          12431
+        ],
+        "router_max_gradient_l1": 17.005123361945152,
+        "router_max_update": 0.016534321010112762,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.624,
+        "effective_experts": 2.7442436449628542,
+        "load_entropy": 1.0095054978179556,
+        "max_expert_load": 0.4748,
+        "min_expert_load": 0.0282,
+        "route_counts": [
+          4238,
+          4748,
+          732,
+          282
+        ],
+        "route_frequencies": [
+          0.4238,
+          0.4748,
+          0.0732,
+          0.0282
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3120
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_031.pt",
+      "checkpoint_sha256": "894f85b2957b0459955526d3a889ec21eedb8b0853e188b45dafdadd3c99cc06",
+      "elapsed_seconds": 70.88000878039747,
+      "epoch": 31,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0007938926261462367,
+      "next_learning_rate": 0.0007810416889260654,
+      "seconds": 2.2567349281162024,
+      "train": {
+        "accuracy": 0.6037777777777777,
+        "balance_loss": 1.192084074889289,
+        "classification_loss": 1.1177550461875068,
+        "correct": 27170,
+        "loss": 1.1296758866839938,
+        "route_counts": [
+          29908,
+          40574,
+          7067,
+          12451
+        ],
+        "router_max_gradient_l1": 19.245254203677177,
+        "router_max_update": 0.020118586719036102,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6216,
+        "effective_experts": 2.780684044425616,
+        "load_entropy": 1.0226969565808641,
+        "max_expert_load": 0.4514,
+        "min_expert_load": 0.0114,
+        "route_counts": [
+          4223,
+          4514,
+          114,
+          1149
+        ],
+        "route_frequencies": [
+          0.4223,
+          0.4514,
+          0.0114,
+          0.1149
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3108
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_032.pt",
+      "checkpoint_sha256": "6178bb42c6862c5b273db67b81aa4ff503461c869ffca2d0e151aef4c3f0c332",
+      "elapsed_seconds": 73.06690882518888,
+      "epoch": 32,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0007810416889260654,
+      "next_learning_rate": 0.0007679133974894983,
+      "seconds": 2.1763943005353212,
+      "train": {
+        "accuracy": 0.6045333333333334,
+        "balance_loss": 1.208606182331509,
+        "classification_loss": 1.1110231509950426,
+        "correct": 27204,
+        "loss": 1.1231092135111491,
+        "route_counts": [
+          31139,
+          40582,
+          6336,
+          11943
+        ],
+        "router_max_gradient_l1": 19.892619788646698,
+        "router_max_update": 0.021007055416703224,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6278,
+        "effective_experts": 3.084181550312081,
+        "load_entropy": 1.1262863224223858,
+        "max_expert_load": 0.4747,
+        "min_expert_load": 0.0447,
+        "route_counts": [
+          3496,
+          4747,
+          1310,
+          447
+        ],
+        "route_frequencies": [
+          0.3496,
+          0.4747,
+          0.131,
+          0.0447
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3139
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_033.pt",
+      "checkpoint_sha256": "4334a66840b9a8cef3b4c9d78a0250aa6c8aa8e488a4cff14892c772dcc16e19",
+      "elapsed_seconds": 75.22952468786389,
+      "epoch": 33,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0007679133974894983,
+      "next_learning_rate": 0.0007545207078751857,
+      "seconds": 2.1532275630161166,
+      "train": {
+        "accuracy": 0.6053555555555555,
+        "balance_loss": 1.1928623593648275,
+        "classification_loss": 1.1077152577082316,
+        "correct": 27241,
+        "loss": 1.1196438792334662,
+        "route_counts": [
+          29873,
+          40893,
+          7715,
+          11519
+        ],
+        "router_max_gradient_l1": 17.695149034261703,
+        "router_max_update": 0.013620465993881226,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6162,
+        "effective_experts": 3.312866860208769,
+        "load_entropy": 1.1978139354316881,
+        "max_expert_load": 0.4552,
+        "min_expert_load": 0.0538,
+        "route_counts": [
+          2876,
+          4552,
+          538,
+          2034
+        ],
+        "route_frequencies": [
+          0.2876,
+          0.4552,
+          0.0538,
+          0.2034
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3081
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_034.pt",
+      "checkpoint_sha256": "aaa4228b11a76507d420ba58a5cc433a625246126a8ea8e825c211b0c49872fb",
+      "elapsed_seconds": 77.61277770251036,
+      "epoch": 34,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0007545207078751857,
+      "next_learning_rate": 0.0007408768370508577,
+      "seconds": 2.373873960226774,
+      "train": {
+        "accuracy": 0.6117777777777778,
+        "balance_loss": 1.19451356271108,
+        "classification_loss": 1.0943684259838529,
+        "correct": 27530,
+        "loss": 1.1063135604222616,
+        "route_counts": [
+          30746,
+          40870,
+          7717,
+          10667
+        ],
+        "router_max_gradient_l1": 18.6794695854187,
+        "router_max_update": 0.01589486002922058,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.627,
+        "effective_experts": 3.382438637607758,
+        "load_entropy": 1.218596939762336,
+        "max_expert_load": 0.4235,
+        "min_expert_load": 0.0971,
+        "route_counts": [
+          3537,
+          4235,
+          1257,
+          971
+        ],
+        "route_frequencies": [
+          0.3537,
+          0.4235,
+          0.1257,
+          0.0971
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3135
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_035.pt",
+      "checkpoint_sha256": "8aa25804b5436f4bf19a5fac21a05e354b9ad9f4ec6ba062c24782e260a308e5",
+      "elapsed_seconds": 79.94870055094361,
+      "epoch": 35,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0007408768370508577,
+      "next_learning_rate": 0.0007269952498697734,
+      "seconds": 2.3262683460488915,
+      "train": {
+        "accuracy": 0.6111111111111112,
+        "balance_loss": 1.1814301891326904,
+        "classification_loss": 1.0931622053570218,
+        "correct": 27500,
+        "loss": 1.1049765082995098,
+        "route_counts": [
+          29314,
+          40438,
+          8763,
+          11485
+        ],
+        "router_max_gradient_l1": 18.333313673734665,
+        "router_max_update": 0.02108520269393921,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6276,
+        "effective_experts": 3.049203489144744,
+        "load_entropy": 1.1148804054133499,
+        "max_expert_load": 0.4825,
+        "min_expert_load": 0.0506,
+        "route_counts": [
+          3554,
+          4825,
+          1115,
+          506
+        ],
+        "route_frequencies": [
+          0.3554,
+          0.4825,
+          0.1115,
+          0.0506
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3138
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_036.pt",
+      "checkpoint_sha256": "bcf0b0078518744bf894ba11016f7c0e6c8a25a5a7b49c66f49d2cbd3e19c51d",
+      "elapsed_seconds": 82.42535938695073,
+      "epoch": 36,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0007269952498697734,
+      "next_learning_rate": 0.0007128896457825364,
+      "seconds": 2.4661103039979935,
+      "train": {
+        "accuracy": 0.6141555555555556,
+        "balance_loss": 1.1769952427546184,
+        "classification_loss": 1.0885719807306926,
+        "correct": 27637,
+        "loss": 1.1003419359842936,
+        "route_counts": [
+          29999,
+          40013,
+          8782,
+          11206
+        ],
+        "router_max_gradient_l1": 20.106161922216415,
+        "router_max_update": 0.014489401131868362,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6282,
+        "effective_experts": 3.0640579338411835,
+        "load_entropy": 1.119740159611206,
+        "max_expert_load": 0.4781,
+        "min_expert_load": 0.0355,
+        "route_counts": [
+          3396,
+          4781,
+          1468,
+          355
+        ],
+        "route_frequencies": [
+          0.3396,
+          0.4781,
+          0.1468,
+          0.0355
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3141
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_037.pt",
+      "checkpoint_sha256": "92eb8954fb07cc96e4668a79c948ba2261603f66e0fdf869e47fb93fd2364057",
+      "elapsed_seconds": 84.82789260428399,
+      "epoch": 37,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0007128896457825364,
+      "next_learning_rate": 0.0006985739453173903,
+      "seconds": 2.3915148731321096,
+      "train": {
+        "accuracy": 0.6168222222222223,
+        "balance_loss": 1.168144430563185,
+        "classification_loss": 1.081453486802843,
+        "correct": 27757,
+        "loss": 1.093134931839837,
+        "route_counts": [
+          28856,
+          40176,
+          9105,
+          11863
+        ],
+        "router_max_gradient_l1": 16.992529422044754,
+        "router_max_update": 0.014074347913265228,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.635,
+        "effective_experts": 3.0974098601252917,
+        "load_entropy": 1.1305662332503592,
+        "max_expert_load": 0.4665,
+        "min_expert_load": 0.0508,
+        "route_counts": [
+          3616,
+          4665,
+          1211,
+          508
+        ],
+        "route_frequencies": [
+          0.3616,
+          0.4665,
+          0.1211,
+          0.0508
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3175
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_038.pt",
+      "checkpoint_sha256": "4cb5014c9b5cdf97ba4426ce9b5e993e727b85b51d008363571e64356f9e4b36",
+      "elapsed_seconds": 87.22694472968578,
+      "epoch": 38,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0006985739453173903,
+      "next_learning_rate": 0.0006840622763423391,
+      "seconds": 2.387959170155227,
+      "train": {
+        "accuracy": 0.6195111111111111,
+        "balance_loss": 1.1591491106669107,
+        "classification_loss": 1.0749792125913833,
+        "correct": 27878,
+        "loss": 1.0865707059224448,
+        "route_counts": [
+          28497,
+          40118,
+          9578,
+          11807
+        ],
+        "router_max_gradient_l1": 18.812769562005997,
+        "router_max_update": 0.014511846005916595,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.618,
+        "effective_experts": 3.2588256397714397,
+        "load_entropy": 1.1813668972801061,
+        "max_expert_load": 0.4593,
+        "min_expert_load": 0.042,
+        "route_counts": [
+          2704,
+          4593,
+          2283,
+          420
+        ],
+        "route_frequencies": [
+          0.2704,
+          0.4593,
+          0.2283,
+          0.042
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3090
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_039.pt",
+      "checkpoint_sha256": "aa7f130f7a4adf10dc23197e98590f722d091a9c5214b976c55423729aeb2f34",
+      "elapsed_seconds": 89.41606476064771,
+      "epoch": 39,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0006840622763423391,
+      "next_learning_rate": 0.0006693689601226458,
+      "seconds": 2.1795953484252095,
+      "train": {
+        "accuracy": 0.6176,
+        "balance_loss": 1.1799087734222413,
+        "classification_loss": 1.0764742935392593,
+        "correct": 27792,
+        "loss": 1.0882733824412028,
+        "route_counts": [
+          30403,
+          40536,
+          8861,
+          10200
+        ],
+        "router_max_gradient_l1": 18.026237845420837,
+        "router_max_update": 0.013982720673084259,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6296,
+        "effective_experts": 2.9922684312885437,
+        "load_entropy": 1.0960317724277147,
+        "max_expert_load": 0.4815,
+        "min_expert_load": 0.0237,
+        "route_counts": [
+          3402,
+          4815,
+          1546,
+          237
+        ],
+        "route_frequencies": [
+          0.3402,
+          0.4815,
+          0.1546,
+          0.0237
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3148
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_040.pt",
+      "checkpoint_sha256": "b730c355dae8c018bcaf12e0c7b3a1f0d1f108d1335adf16f10f2c4a2febb539",
+      "elapsed_seconds": 91.66583898104727,
+      "epoch": 40,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0006693689601226458,
+      "next_learning_rate": 0.0006545084971874737,
+      "seconds": 2.2404833724722266,
+      "train": {
+        "accuracy": 0.6205555555555555,
+        "balance_loss": 1.15764809589386,
+        "classification_loss": 1.0696548703935411,
+        "correct": 27925,
+        "loss": 1.081231352657742,
+        "route_counts": [
+          28425,
+          39758,
+          10870,
+          10947
+        ],
+        "router_max_gradient_l1": 18.57580304145813,
+        "router_max_update": 0.017968110740184784,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6378,
+        "effective_experts": 2.94510664748219,
+        "load_entropy": 1.0801450295148303,
+        "max_expert_load": 0.4494,
+        "min_expert_load": 0.0542,
+        "route_counts": [
+          4189,
+          4494,
+          775,
+          542
+        ],
+        "route_frequencies": [
+          0.4189,
+          0.4494,
+          0.0775,
+          0.0542
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3189
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_041.pt",
+      "checkpoint_sha256": "22d9aed360d99efb18b0d1240e06a9c6bca588046d5eb9e42feed73822a29836",
+      "elapsed_seconds": 94.0007541673258,
+      "epoch": 41,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0006545084971874737,
+      "next_learning_rate": 0.0006394955530196147,
+      "seconds": 2.3240211540833116,
+      "train": {
+        "accuracy": 0.6207555555555555,
+        "balance_loss": 1.1597535314348009,
+        "classification_loss": 1.061534879260593,
+        "correct": 27934,
+        "loss": 1.0731324154112074,
+        "route_counts": [
+          29305,
+          39687,
+          9483,
+          11525
+        ],
+        "router_max_gradient_l1": 17.4218118339777,
+        "router_max_update": 0.014195322059094906,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6368,
+        "effective_experts": 3.1477817587360444,
+        "load_entropy": 1.1466980011938777,
+        "max_expert_load": 0.4678,
+        "min_expert_load": 0.0324,
+        "route_counts": [
+          3064,
+          4678,
+          1934,
+          324
+        ],
+        "route_frequencies": [
+          0.3064,
+          0.4678,
+          0.1934,
+          0.0324
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3184
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_042.pt",
+      "checkpoint_sha256": "9154d5b510b70f935fa88a3280ce7e58ca3576f5b179200d013ad42f88df4daf",
+      "elapsed_seconds": 96.26884705200791,
+      "epoch": 42,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0006394955530196147,
+      "next_learning_rate": 0.0006243449435824273,
+      "seconds": 2.2584573915228248,
+      "train": {
+        "accuracy": 0.6219555555555556,
+        "balance_loss": 1.1548471690283881,
+        "classification_loss": 1.0553026824951173,
+        "correct": 27988,
+        "loss": 1.066851155482398,
+        "route_counts": [
+          29122,
+          39766,
+          9417,
+          11695
+        ],
+        "router_max_gradient_l1": 18.286693081259727,
+        "router_max_update": 0.02517266944050789,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6374,
+        "effective_experts": 3.1858136787761047,
+        "load_entropy": 1.1587077285398795,
+        "max_expert_load": 0.4689,
+        "min_expert_load": 0.0486,
+        "route_counts": [
+          3247,
+          4689,
+          1578,
+          486
+        ],
+        "route_frequencies": [
+          0.3247,
+          0.4689,
+          0.1578,
+          0.0486
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3187
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_043.pt",
+      "checkpoint_sha256": "c58489643a79513235282888b9520267cb378307294e4c09a98f54b64c3f5f06",
+      "elapsed_seconds": 98.56418139860034,
+      "epoch": 43,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0006243449435824273,
+      "next_learning_rate": 0.0006090716206982714,
+      "seconds": 2.286059621721506,
+      "train": {
+        "accuracy": 0.6271777777777777,
+        "balance_loss": 1.169309178098043,
+        "classification_loss": 1.0511607069333395,
+        "correct": 28223,
+        "loss": 1.062853799449073,
+        "route_counts": [
+          30781,
+          40094,
+          8530,
+          10595
+        ],
+        "router_max_gradient_l1": 17.37624141573906,
+        "router_max_update": 0.016520218923687935,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6522,
+        "effective_experts": 3.0596909083381565,
+        "load_entropy": 1.118313900515393,
+        "max_expert_load": 0.4723,
+        "min_expert_load": 0.0459,
+        "route_counts": [
+          3615,
+          4723,
+          1203,
+          459
+        ],
+        "route_frequencies": [
+          0.3615,
+          0.4723,
+          0.1203,
+          0.0459
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3261
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_044.pt",
+      "checkpoint_sha256": "1353a4ce4a345fba56a6a49c37683d32cf54ac8c0b966122b156d1294609c61c",
+      "elapsed_seconds": 100.93134730029851,
+      "epoch": 44,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0006090716206982714,
+      "next_learning_rate": 0.0005936906572928625,
+      "seconds": 2.3557677287608385,
+      "train": {
+        "accuracy": 0.6280888888888889,
+        "balance_loss": 1.1550927138434517,
+        "classification_loss": 1.0448761853324042,
+        "correct": 28264,
+        "loss": 1.0564271148469713,
+        "route_counts": [
+          30235,
+          38979,
+          8185,
+          12601
+        ],
+        "router_max_gradient_l1": 17.276958391070366,
+        "router_max_update": 0.013129502534866333,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.651,
+        "effective_experts": 3.426926960082154,
+        "load_entropy": 1.2316639295874792,
+        "max_expert_load": 0.4376,
+        "min_expert_load": 0.0869,
+        "route_counts": [
+          3147,
+          4376,
+          1608,
+          869
+        ],
+        "route_frequencies": [
+          0.3147,
+          0.4376,
+          0.1608,
+          0.0869
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3255
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_045.pt",
+      "checkpoint_sha256": "a7b430a41a9c0b4112de8c9eb59d82a466cec73ceb612a704543ec7dd32c6609",
+      "elapsed_seconds": 103.37443422712386,
+      "epoch": 45,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0005936906572928625,
+      "next_learning_rate": 0.0005782172325201156,
+      "seconds": 2.4296175418421626,
+      "train": {
+        "accuracy": 0.6290444444444444,
+        "balance_loss": 1.151160491985745,
+        "classification_loss": 1.0434174780633714,
+        "correct": 28307,
+        "loss": 1.054929083527459,
+        "route_counts": [
+          28522,
+          39925,
+          8525,
+          13028
+        ],
+        "router_max_gradient_l1": 17.3321163803339,
+        "router_max_update": 0.013384953141212463,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.647,
+        "effective_experts": 3.5227080109305073,
+        "load_entropy": 1.2592300151211484,
+        "max_expert_load": 0.4453,
+        "min_expert_load": 0.1143,
+        "route_counts": [
+          2780,
+          4453,
+          1143,
+          1624
+        ],
+        "route_frequencies": [
+          0.278,
+          0.4453,
+          0.1143,
+          0.1624
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3235
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_046.pt",
+      "checkpoint_sha256": "b4ea8eed191663c210e2425683c13268d7e08b627552c41d98340ec56e2e29dc",
+      "elapsed_seconds": 105.67343498207629,
+      "epoch": 46,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0005782172325201156,
+      "next_learning_rate": 0.0005626666167821523,
+      "seconds": 2.287322682328522,
+      "train": {
+        "accuracy": 0.6331333333333333,
+        "balance_loss": 1.170783592499627,
+        "classification_loss": 1.0329105756335788,
+        "correct": 28491,
+        "loss": 1.0446184134801229,
+        "route_counts": [
+          31226,
+          40004,
+          7931,
+          10839
+        ],
+        "router_max_gradient_l1": 17.768803372979164,
+        "router_max_update": 0.01234457641839981,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.646,
+        "effective_experts": 3.569651459820667,
+        "load_entropy": 1.2724679607230653,
+        "max_expert_load": 0.4547,
+        "min_expert_load": 0.1323,
+        "route_counts": [
+          2385,
+          4547,
+          1745,
+          1323
+        ],
+        "route_frequencies": [
+          0.2385,
+          0.4547,
+          0.1745,
+          0.1323
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3230
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_047.pt",
+      "checkpoint_sha256": "50d0f5a1a0ee0380613974042c62cb61f35d3ce7e11c307ebc0a876a89ffe6ab",
+      "elapsed_seconds": 107.92528971005231,
+      "epoch": 47,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0005626666167821523,
+      "next_learning_rate": 0.0005470541566592572,
+      "seconds": 2.240633106790483,
+      "train": {
+        "accuracy": 0.6325333333333333,
+        "balance_loss": 1.1562917373233372,
+        "classification_loss": 1.0338530256695218,
+        "correct": 28464,
+        "loss": 1.045415943007999,
+        "route_counts": [
+          29515,
+          39851,
+          8849,
+          11785
+        ],
+        "router_max_gradient_l1": 24.77412450313568,
+        "router_max_update": 0.013977665454149246,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6436,
+        "effective_experts": 3.1400075449147846,
+        "load_entropy": 1.1442252027563786,
+        "max_expert_load": 0.4702,
+        "min_expert_load": 0.0346,
+        "route_counts": [
+          3144,
+          4702,
+          1808,
+          346
+        ],
+        "route_frequencies": [
+          0.3144,
+          0.4702,
+          0.1808,
+          0.0346
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3218
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_048.pt",
+      "checkpoint_sha256": "e4a35807fb1b24ad75d482dc1863cb0377fcacc31a57df98b093f2f48dde2232",
+      "elapsed_seconds": 110.38732251245528,
+      "epoch": 48,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0005470541566592572,
+      "next_learning_rate": 0.0005313952597646569,
+      "seconds": 2.4506154684349895,
+      "train": {
+        "accuracy": 0.6350888888888889,
+        "balance_loss": 1.1333475492689344,
+        "classification_loss": 1.0335327594969008,
+        "correct": 28579,
+        "loss": 1.0448662354893155,
+        "route_counts": [
+          29684,
+          38378,
+          9016,
+          12922
+        ],
+        "router_max_gradient_l1": 17.254779011011124,
+        "router_max_update": 0.011896900832653046,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6534,
+        "effective_experts": 2.989091110472958,
+        "load_entropy": 1.0949693647619463,
+        "max_expert_load": 0.4702,
+        "min_expert_load": 0.0495,
+        "route_counts": [
+          3851,
+          4702,
+          952,
+          495
+        ],
+        "route_frequencies": [
+          0.3851,
+          0.4702,
+          0.0952,
+          0.0495
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3267
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_049.pt",
+      "checkpoint_sha256": "34ea357b31a2734c6691199c38d753141657b5463ac8bb54f2d39193b95d3e91",
+      "elapsed_seconds": 112.65240382030606,
+      "epoch": 49,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0005313952597646569,
+      "next_learning_rate": 0.0005157053795390643,
+      "seconds": 2.2539031552150846,
+      "train": {
+        "accuracy": 0.6360666666666667,
+        "balance_loss": 1.1554386906517877,
+        "classification_loss": 1.0273886510637071,
+        "correct": 28623,
+        "loss": 1.038943039004008,
+        "route_counts": [
+          30926,
+          38983,
+          8482,
+          11609
+        ],
+        "router_max_gradient_l1": 16.783837765455246,
+        "router_max_update": 0.010755173861980438,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6476,
+        "effective_experts": 3.0791328692094733,
+        "load_entropy": 1.1246480213758414,
+        "max_expert_load": 0.4396,
+        "min_expert_load": 0.0662,
+        "route_counts": [
+          4037,
+          4396,
+          905,
+          662
+        ],
+        "route_frequencies": [
+          0.4037,
+          0.4396,
+          0.0905,
+          0.0662
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3238
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_050.pt",
+      "checkpoint_sha256": "825f1d1c997d620b15552f916fb2ff83c8b4dc2031ae6b72e52f08f376305124",
+      "elapsed_seconds": 114.83805594686419,
+      "epoch": 50,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0005157053795390643,
+      "next_learning_rate": 0.0005000000000000002,
+      "seconds": 2.1758413007482886,
+      "train": {
+        "accuracy": 0.6407555555555555,
+        "balance_loss": 1.1506173994912041,
+        "classification_loss": 1.016568482208252,
+        "correct": 28834,
+        "loss": 1.0280746589448717,
+        "route_counts": [
+          30576,
+          39373,
+          8250,
+          11801
+        ],
+        "router_max_gradient_l1": 18.870778650045395,
+        "router_max_update": 0.014060663059353828,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.648,
+        "effective_experts": 3.285842847836127,
+        "load_entropy": 1.1896231937106712,
+        "max_expert_load": 0.4296,
+        "min_expert_load": 0.0649,
+        "route_counts": [
+          3590,
+          4296,
+          1465,
+          649
+        ],
+        "route_frequencies": [
+          0.359,
+          0.4296,
+          0.1465,
+          0.0649
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3240
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_051.pt",
+      "checkpoint_sha256": "c519e549f982c0352a3023ea0199fa8a4cbf9bf7c13b6729182a07eada8d162c",
+      "elapsed_seconds": 117.20721138548106,
+      "epoch": 51,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0005000000000000002,
+      "next_learning_rate": 0.00048429462046093607,
+      "seconds": 2.3594231316819787,
+      "train": {
+        "accuracy": 0.6371777777777777,
+        "balance_loss": 1.1609387176089816,
+        "classification_loss": 1.01954469066196,
+        "correct": 28673,
+        "loss": 1.0311540765762328,
+        "route_counts": [
+          31484,
+          39558,
+          7930,
+          11028
+        ],
+        "router_max_gradient_l1": 18.776091873645782,
+        "router_max_update": 0.011446274816989899,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6612,
+        "effective_experts": 3.167075883474935,
+        "load_entropy": 1.1528087279498844,
+        "max_expert_load": 0.4448,
+        "min_expert_load": 0.0828,
+        "route_counts": [
+          3811,
+          4448,
+          913,
+          828
+        ],
+        "route_frequencies": [
+          0.3811,
+          0.4448,
+          0.0913,
+          0.0828
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3306
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_052.pt",
+      "checkpoint_sha256": "1ef66c277e90172582fa305dcf27f18122b3e1212ca9fcc15824132cd4a3561d",
+      "elapsed_seconds": 119.5502198766917,
+      "epoch": 52,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.00048429462046093607,
+      "next_learning_rate": 0.0004686047402353435,
+      "seconds": 2.3334876522421837,
+      "train": {
+        "accuracy": 0.6412,
+        "balance_loss": 1.1390871111975776,
+        "classification_loss": 1.016481836107042,
+        "correct": 28854,
+        "loss": 1.0278727090623643,
+        "route_counts": [
+          30154,
+          38734,
+          8843,
+          12269
+        ],
+        "router_max_gradient_l1": 18.529160037636757,
+        "router_max_update": 0.0127963125705719,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.66,
+        "effective_experts": 2.7724962258588985,
+        "load_entropy": 1.0197480789642352,
+        "max_expert_load": 0.4777,
+        "min_expert_load": 0.0217,
+        "route_counts": [
+          4096,
+          4777,
+          910,
+          217
+        ],
+        "route_frequencies": [
+          0.4096,
+          0.4777,
+          0.091,
+          0.0217
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3300
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_053.pt",
+      "checkpoint_sha256": "b1c62651cff415b3549e367c35dad2bfee735fc94ec5fcb133b88514296ac7d9",
+      "elapsed_seconds": 121.89743047207594,
+      "epoch": 53,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0004686047402353435,
+      "next_learning_rate": 0.000452945843340743,
+      "seconds": 2.337255595251918,
+      "train": {
+        "accuracy": 0.6406666666666667,
+        "balance_loss": 1.1476416256798638,
+        "classification_loss": 1.0138617756313748,
+        "correct": 28830,
+        "loss": 1.025338192092048,
+        "route_counts": [
+          31361,
+          38746,
+          8677,
+          11216
+        ],
+        "router_max_gradient_l1": 17.860751152038574,
+        "router_max_update": 0.011351615190505981,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6526,
+        "effective_experts": 3.069635940310749,
+        "load_entropy": 1.1215589683492073,
+        "max_expert_load": 0.4482,
+        "min_expert_load": 0.0694,
+        "route_counts": [
+          3971,
+          4482,
+          853,
+          694
+        ],
+        "route_frequencies": [
+          0.3971,
+          0.4482,
+          0.0853,
+          0.0694
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3263
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_054.pt",
+      "checkpoint_sha256": "7fdffba7436e2938642ebc4f8e8f5276adf2ddfb2d6d3e41fab3970eff336b2d",
+      "elapsed_seconds": 124.14212947618216,
+      "epoch": 54,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.000452945843340743,
+      "next_learning_rate": 0.00043733338321784806,
+      "seconds": 2.2344519356265664,
+      "train": {
+        "accuracy": 0.644,
+        "balance_loss": 1.1464798433091905,
+        "classification_loss": 1.0117693520228068,
+        "correct": 28980,
+        "loss": 1.023234153366089,
+        "route_counts": [
+          31384,
+          38761,
+          8851,
+          11004
+        ],
+        "router_max_gradient_l1": 18.008495584130287,
+        "router_max_update": 0.010805603116750717,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6648,
+        "effective_experts": 2.959254984691815,
+        "load_entropy": 1.084937542294754,
+        "max_expert_load": 0.4428,
+        "min_expert_load": 0.0645,
+        "route_counts": [
+          4242,
+          4428,
+          685,
+          645
+        ],
+        "route_frequencies": [
+          0.4242,
+          0.4428,
+          0.0685,
+          0.0645
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3324
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_055.pt",
+      "checkpoint_sha256": "5f843b6a0027273ee0c334fa9272a0f63f59d32dc38075ec2375d0fb6997924a",
+      "elapsed_seconds": 126.39547265227884,
+      "epoch": 55,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.00043733338321784806,
+      "next_learning_rate": 0.0004217827674798847,
+      "seconds": 2.2436868641525507,
+      "train": {
+        "accuracy": 0.6453333333333333,
+        "balance_loss": 1.144334489525689,
+        "classification_loss": 1.003192341793908,
+        "correct": 29040,
+        "loss": 1.0146356887393528,
+        "route_counts": [
+          32123,
+          39057,
+          8253,
+          10567
+        ],
+        "router_max_gradient_l1": 22.91267777979374,
+        "router_max_update": 0.012850351631641388,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6628,
+        "effective_experts": 3.0343954102846546,
+        "load_entropy": 1.1100121988303269,
+        "max_expert_load": 0.431,
+        "min_expert_load": 0.0489,
+        "route_counts": [
+          4165,
+          4310,
+          1036,
+          489
+        ],
+        "route_frequencies": [
+          0.4165,
+          0.431,
+          0.1036,
+          0.0489
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3314
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_056.pt",
+      "checkpoint_sha256": "b1fd4d4721b10f6521b1f6f7ade51d4d05d4e8c6eb751a72744e34e7a504857b",
+      "elapsed_seconds": 128.7725326595828,
+      "epoch": 56,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0004217827674798847,
+      "next_learning_rate": 0.00040630934270713783,
+      "seconds": 2.367457365617156,
+      "train": {
+        "accuracy": 0.6431555555555556,
+        "balance_loss": 1.1461778052647908,
+        "classification_loss": 1.0050836053212484,
+        "correct": 28942,
+        "loss": 1.0165453825420803,
+        "route_counts": [
+          32107,
+          38657,
+          7708,
+          11528
+        ],
+        "router_max_gradient_l1": 17.977724254131317,
+        "router_max_update": 0.010011030361056328,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6616,
+        "effective_experts": 2.810301035078717,
+        "load_entropy": 1.0332916075289058,
+        "max_expert_load": 0.4513,
+        "min_expert_load": 0.0533,
+        "route_counts": [
+          4417,
+          4513,
+          537,
+          533
+        ],
+        "route_frequencies": [
+          0.4417,
+          0.4513,
+          0.0537,
+          0.0533
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3308
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_057.pt",
+      "checkpoint_sha256": "8ac24ecdf13fb0480df4aa7c1c271d4eef0bc8a01d87af6e831159d9372e4868",
+      "elapsed_seconds": 131.19679407030344,
+      "epoch": 57,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.00040630934270713783,
+      "next_learning_rate": 0.000390928379301729,
+      "seconds": 2.414814735762775,
+      "train": {
+        "accuracy": 0.6465777777777778,
+        "balance_loss": 1.1457104207992554,
+        "classification_loss": 0.9975159688313802,
+        "correct": 29096,
+        "loss": 1.0089730767144096,
+        "route_counts": [
+          31349,
+          39243,
+          8631,
+          10777
+        ],
+        "router_max_gradient_l1": 19.418683663010597,
+        "router_max_update": 0.008503982797265053,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6548,
+        "effective_experts": 2.801350690620878,
+        "load_entropy": 1.0301016903762,
+        "max_expert_load": 0.4698,
+        "min_expert_load": 0.03,
+        "route_counts": [
+          4180,
+          4698,
+          822,
+          300
+        ],
+        "route_frequencies": [
+          0.418,
+          0.4698,
+          0.0822,
+          0.03
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3274
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_058.pt",
+      "checkpoint_sha256": "a7d1fafedfad5635d8f763ff9e254ee2fe5d8bb5acce8ed2edd313838068dfa0",
+      "elapsed_seconds": 133.6181071465835,
+      "epoch": 58,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.000390928379301729,
+      "next_learning_rate": 0.0003756550564175727,
+      "seconds": 2.411237676627934,
+      "train": {
+        "accuracy": 0.6476,
+        "balance_loss": 1.1359433967378405,
+        "classification_loss": 0.9941594043519761,
+        "correct": 29142,
+        "loss": 1.0055188393274943,
+        "route_counts": [
+          31169,
+          38203,
+          8901,
+          11727
+        ],
+        "router_max_gradient_l1": 17.301797196269035,
+        "router_max_update": 0.008746608160436153,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6516,
+        "effective_experts": 3.093120218103178,
+        "load_entropy": 1.1291803607468809,
+        "max_expert_load": 0.4574,
+        "min_expert_load": 0.0511,
+        "route_counts": [
+          3740,
+          4574,
+          1175,
+          511
+        ],
+        "route_frequencies": [
+          0.374,
+          0.4574,
+          0.1175,
+          0.0511
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3258
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_059.pt",
+      "checkpoint_sha256": "8bd73fc4bb7b29cd0b76fabe957e2b852342d7d0f0edeef059593a2c2622991c",
+      "elapsed_seconds": 135.845185065642,
+      "epoch": 59,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0003756550564175727,
+      "next_learning_rate": 0.00036050444698038553,
+      "seconds": 2.215702425688505,
+      "train": {
+        "accuracy": 0.6462666666666667,
+        "balance_loss": 1.1316538954204982,
+        "classification_loss": 0.991843683359358,
+        "correct": 29082,
+        "loss": 1.0031602216084798,
+        "route_counts": [
+          31071,
+          38213,
+          7918,
+          12798
+        ],
+        "router_max_gradient_l1": 19.245232477784157,
+        "router_max_update": 0.01061895489692688,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6662,
+        "effective_experts": 2.888250532756088,
+        "load_entropy": 1.060650966837336,
+        "max_expert_load": 0.4427,
+        "min_expert_load": 0.0601,
+        "route_counts": [
+          4370,
+          4427,
+          601,
+          602
+        ],
+        "route_frequencies": [
+          0.437,
+          0.4427,
+          0.0601,
+          0.0602
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3331
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_060.pt",
+      "checkpoint_sha256": "2db0fcaa6ae18a1947787165896f15420e72f0afeefb7182f0b2661360d4aa81",
+      "elapsed_seconds": 138.09177353139967,
+      "epoch": 60,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.00036050444698038553,
+      "next_learning_rate": 0.00034549150281252655,
+      "seconds": 2.2371059358119965,
+      "train": {
+        "accuracy": 0.6487777777777778,
+        "balance_loss": 1.1304016126208836,
+        "classification_loss": 0.98974625193278,
+        "correct": 29195,
+        "loss": 1.0010502685334948,
+        "route_counts": [
+          30830,
+          38330,
+          8805,
+          12035
+        ],
+        "router_max_gradient_l1": 15.849028080701828,
+        "router_max_update": 0.012758195400238037,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6616,
+        "effective_experts": 3.09521659744347,
+        "load_entropy": 1.129857886706754,
+        "max_expert_load": 0.4456,
+        "min_expert_load": 0.0449,
+        "route_counts": [
+          3819,
+          4456,
+          1276,
+          449
+        ],
+        "route_frequencies": [
+          0.3819,
+          0.4456,
+          0.1276,
+          0.0449
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3308
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_061.pt",
+      "checkpoint_sha256": "c8921512dbbc860e830e05574e5eff4aa2e36b7bca803d101bf67aca51574b5c",
+      "elapsed_seconds": 140.3895390527323,
+      "epoch": 61,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.00034549150281252655,
+      "next_learning_rate": 0.0003306310398773544,
+      "seconds": 2.288371989503503,
+      "train": {
+        "accuracy": 0.6486222222222222,
+        "balance_loss": 1.126224609735277,
+        "classification_loss": 0.9886722081290351,
+        "correct": 29188,
+        "loss": 0.9999344527986315,
+        "route_counts": [
+          30607,
+          38129,
+          8921,
+          12343
+        ],
+        "router_max_gradient_l1": 18.142406836152077,
+        "router_max_update": 0.009502159431576729,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.667,
+        "effective_experts": 3.2547602213225493,
+        "load_entropy": 1.1801186082228983,
+        "max_expert_load": 0.4469,
+        "min_expert_load": 0.0793,
+        "route_counts": [
+          3564,
+          4469,
+          1174,
+          793
+        ],
+        "route_frequencies": [
+          0.3564,
+          0.4469,
+          0.1174,
+          0.0793
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3335
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_062.pt",
+      "checkpoint_sha256": "f6c29decd3b5dd9b06f87fed41542274dc4937c7aa260e8a90e1065951ced29e",
+      "elapsed_seconds": 142.60448571667075,
+      "epoch": 62,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0003306310398773544,
+      "next_learning_rate": 0.00031593772365766127,
+      "seconds": 2.203505643643439,
+      "train": {
+        "accuracy": 0.6489555555555555,
+        "balance_loss": 1.1249523404015436,
+        "classification_loss": 0.9870983865525987,
+        "correct": 29203,
+        "loss": 0.9983479082743327,
+        "route_counts": [
+          31460,
+          37687,
+          7877,
+          12976
+        ],
+        "router_max_gradient_l1": 18.839181497693062,
+        "router_max_update": 0.00754021480679512,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6682,
+        "effective_experts": 2.9522103317218753,
+        "load_entropy": 1.0825541547833148,
+        "max_expert_load": 0.4558,
+        "min_expert_load": 0.0456,
+        "route_counts": [
+          4078,
+          4558,
+          908,
+          456
+        ],
+        "route_frequencies": [
+          0.4078,
+          0.4558,
+          0.0908,
+          0.0456
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3341
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_063.pt",
+      "checkpoint_sha256": "435c448553beb0d69710233848033cc84cbe1295f6cf1bc89da258e5ef4d9027",
+      "elapsed_seconds": 144.942808249034,
+      "epoch": 63,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.00031593772365766127,
+      "next_learning_rate": 0.0003014260546826097,
+      "seconds": 2.3269057888537645,
+      "train": {
+        "accuracy": 0.6519111111111111,
+        "balance_loss": 1.1279967155032689,
+        "classification_loss": 0.98128114145067,
+        "correct": 29336,
+        "loss": 0.9925611077096728,
+        "route_counts": [
+          31536,
+          38135,
+          8408,
+          11921
+        ],
+        "router_max_gradient_l1": 16.65337961912155,
+        "router_max_update": 0.008184988051652908,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6658,
+        "effective_experts": 3.455468016342299,
+        "load_entropy": 1.2399579086367898,
+        "max_expert_load": 0.4473,
+        "min_expert_load": 0.1147,
+        "route_counts": [
+          3035,
+          4473,
+          1345,
+          1147
+        ],
+        "route_frequencies": [
+          0.3035,
+          0.4473,
+          0.1345,
+          0.1147
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3329
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_064.pt",
+      "checkpoint_sha256": "1d524a69065b193ed110cd4db84dbf7d6585bb69cca827287eb09134cd9bdf3a",
+      "elapsed_seconds": 147.31117102410644,
+      "epoch": 64,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0003014260546826097,
+      "next_learning_rate": 0.0002871103542174637,
+      "seconds": 2.3573797838762403,
+      "train": {
+        "accuracy": 0.6528222222222222,
+        "balance_loss": 1.123511972173055,
+        "classification_loss": 0.976841691716512,
+        "correct": 29377,
+        "loss": 0.9880768127123515,
+        "route_counts": [
+          30888,
+          37878,
+          8439,
+          12795
+        ],
+        "router_max_gradient_l1": 24.359884276986122,
+        "router_max_update": 0.007287520915269852,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6614,
+        "effective_experts": 3.0997771751338887,
+        "load_entropy": 1.131330229918614,
+        "max_expert_load": 0.447,
+        "min_expert_load": 0.0505,
+        "route_counts": [
+          3837,
+          4470,
+          1188,
+          505
+        ],
+        "route_frequencies": [
+          0.3837,
+          0.447,
+          0.1188,
+          0.0505
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3307
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_065.pt",
+      "checkpoint_sha256": "730b455435764857cbe5a3238a4ca7f51b03b8801dcf2249865b95622a59a052",
+      "elapsed_seconds": 149.53777051530778,
+      "epoch": 65,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0002871103542174637,
+      "next_learning_rate": 0.0002730047501302267,
+      "seconds": 2.2150347819551826,
+      "train": {
+        "accuracy": 0.6542888888888889,
+        "balance_loss": 1.125547349633111,
+        "classification_loss": 0.9747816615952386,
+        "correct": 29443,
+        "loss": 0.9860371361520556,
+        "route_counts": [
+          31434,
+          37947,
+          8333,
+          12286
+        ],
+        "router_max_gradient_l1": 18.17453856766224,
+        "router_max_update": 0.008442968130111694,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6674,
+        "effective_experts": 3.1334827856909846,
+        "load_entropy": 1.1421450970313085,
+        "max_expert_load": 0.4536,
+        "min_expert_load": 0.0485,
+        "route_counts": [
+          3643,
+          4536,
+          1336,
+          485
+        ],
+        "route_frequencies": [
+          0.3643,
+          0.4536,
+          0.1336,
+          0.0485
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3337
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_066.pt",
+      "checkpoint_sha256": "5d6a99389f33f9581aa29aa850412ac19690a8d01894463ac9b6a6bd4f6fb786",
+      "elapsed_seconds": 151.71351577620953,
+      "epoch": 66,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0002730047501302267,
+      "next_learning_rate": 0.00025912316294914234,
+      "seconds": 2.1644567400217056,
+      "train": {
+        "accuracy": 0.6530444444444444,
+        "balance_loss": 1.1243732484817506,
+        "classification_loss": 0.9740751772986518,
+        "correct": 29387,
+        "loss": 0.9853189078860812,
+        "route_counts": [
+          30853,
+          38260,
+          8638,
+          12249
+        ],
+        "router_max_gradient_l1": 17.76435473561287,
+        "router_max_update": 0.006919387727975845,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6658,
+        "effective_experts": 3.514527757673826,
+        "load_entropy": 1.256905165646118,
+        "max_expert_load": 0.4237,
+        "min_expert_load": 0.1208,
+        "route_counts": [
+          3173,
+          4237,
+          1208,
+          1382
+        ],
+        "route_frequencies": [
+          0.3173,
+          0.4237,
+          0.1208,
+          0.1382
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3329
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_067.pt",
+      "checkpoint_sha256": "c8d0979a836754c934aa343652a20b8f2181f3c40feb20939c55dee116cdeae4",
+      "elapsed_seconds": 153.87447546422482,
+      "epoch": 67,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.00025912316294914234,
+      "next_learning_rate": 0.0002454792921248144,
+      "seconds": 2.151471793651581,
+      "train": {
+        "accuracy": 0.6555111111111112,
+        "balance_loss": 1.115210451274448,
+        "classification_loss": 0.9708170363956028,
+        "correct": 29498,
+        "loss": 0.9819691398620606,
+        "route_counts": [
+          30025,
+          37791,
+          8584,
+          13600
+        ],
+        "router_max_gradient_l1": 17.334341257810593,
+        "router_max_update": 0.005921998992562294,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6676,
+        "effective_experts": 3.381310172799483,
+        "load_entropy": 1.2182632594763356,
+        "max_expert_load": 0.4563,
+        "min_expert_load": 0.1074,
+        "route_counts": [
+          3141,
+          4563,
+          1222,
+          1074
+        ],
+        "route_frequencies": [
+          0.3141,
+          0.4563,
+          0.1222,
+          0.1074
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3338
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_068.pt",
+      "checkpoint_sha256": "e6048e328e793c014dae723a056eb0397de30b187228c479ef99ca9f8564d630",
+      "elapsed_seconds": 156.20543650910258,
+      "epoch": 68,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0002454792921248144,
+      "next_learning_rate": 0.00023208660251050164,
+      "seconds": 2.321276397444308,
+      "train": {
+        "accuracy": 0.6579111111111111,
+        "balance_loss": 1.1256071543375652,
+        "classification_loss": 0.9690332212554084,
+        "correct": 29606,
+        "loss": 0.9802892935117086,
+        "route_counts": [
+          30431,
+          38414,
+          7962,
+          13193
+        ],
+        "router_max_gradient_l1": 16.957488179206848,
+        "router_max_update": 0.004620850086212158,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6706,
+        "effective_experts": 2.970422342760395,
+        "load_entropy": 1.0887041456543551,
+        "max_expert_load": 0.4507,
+        "min_expert_load": 0.0672,
+        "route_counts": [
+          4140,
+          4507,
+          681,
+          672
+        ],
+        "route_frequencies": [
+          0.414,
+          0.4507,
+          0.0681,
+          0.0672
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3353
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_069.pt",
+      "checkpoint_sha256": "480f70835a7609bd924affa1f784b5ec63bf11cbec5f7acf0c2779d7a8d0a402",
+      "elapsed_seconds": 158.58084441069514,
+      "epoch": 69,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.00023208660251050164,
+      "next_learning_rate": 0.00021895831107393473,
+      "seconds": 2.3642932577058673,
+      "train": {
+        "accuracy": 0.6594888888888889,
+        "balance_loss": 1.1346014346228706,
+        "classification_loss": 0.9672032404157851,
+        "correct": 29677,
+        "loss": 0.9785492529445224,
+        "route_counts": [
+          31655,
+          38794,
+          7903,
+          11648
+        ],
+        "router_max_gradient_l1": 16.750375255942345,
+        "router_max_update": 0.007296264171600342,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6654,
+        "effective_experts": 3.3646655912500747,
+        "load_entropy": 1.2133285796293654,
+        "max_expert_load": 0.4283,
+        "min_expert_load": 0.0751,
+        "route_counts": [
+          3418,
+          4283,
+          1548,
+          751
+        ],
+        "route_frequencies": [
+          0.3418,
+          0.4283,
+          0.1548,
+          0.0751
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3327
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_070.pt",
+      "checkpoint_sha256": "8374d3f5780d01d460f111cd729ea30018d0ae4ec573649fab90de68fee879aa",
+      "elapsed_seconds": 160.79276042617857,
+      "epoch": 70,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.00021895831107393473,
+      "next_learning_rate": 0.00020610737385376356,
+      "seconds": 2.20073408074677,
+      "train": {
+        "accuracy": 0.6550222222222222,
+        "balance_loss": 1.11757296617296,
+        "classification_loss": 0.9677997266557482,
+        "correct": 29476,
+        "loss": 0.9789754543516371,
+        "route_counts": [
+          30596,
+          37972,
+          9511,
+          11921
+        ],
+        "router_max_gradient_l1": 20.629848644137383,
+        "router_max_update": 0.004891929216682911,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.671,
+        "effective_experts": 3.236752318709676,
+        "load_entropy": 1.1745704563260784,
+        "max_expert_load": 0.4109,
+        "min_expert_load": 0.0836,
+        "route_counts": [
+          4016,
+          4109,
+          1039,
+          836
+        ],
+        "route_frequencies": [
+          0.4016,
+          0.4109,
+          0.1039,
+          0.0836
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3355
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_071.pt",
+      "checkpoint_sha256": "c0cceacbc48cd3d40e75bd158ee7cd4fdcd8849b5a9c4389d534527e8238cd6d",
+      "elapsed_seconds": 163.0830285474658,
+      "epoch": 71,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.00020610737385376356,
+      "next_learning_rate": 0.00019354647317351177,
+      "seconds": 2.2792995991185308,
+      "train": {
+        "accuracy": 0.6577777777777778,
+        "balance_loss": 1.123031995010376,
+        "classification_loss": 0.966794243897332,
+        "correct": 29600,
+        "loss": 0.9780245635032654,
+        "route_counts": [
+          32084,
+          37634,
+          8425,
+          11857
+        ],
+        "router_max_gradient_l1": 17.835578620433807,
+        "router_max_update": 0.008833243511617184,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6668,
+        "effective_experts": 3.6009998807565156,
+        "load_entropy": 1.2812115515527458,
+        "max_expert_load": 0.4118,
+        "min_expert_load": 0.1319,
+        "route_counts": [
+          3039,
+          4118,
+          1524,
+          1319
+        ],
+        "route_frequencies": [
+          0.3039,
+          0.4118,
+          0.1524,
+          0.1319
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3334
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_072.pt",
+      "checkpoint_sha256": "aa3be2f722aa6a0d0ba8fb7dae2bd4da53dbdc18ee238014157db0d9b79d831d",
+      "elapsed_seconds": 165.45181492343545,
+      "epoch": 72,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.00019354647317351177,
+      "next_learning_rate": 0.0001812880051256552,
+      "seconds": 2.3593757953494787,
+      "train": {
+        "accuracy": 0.6580222222222222,
+        "balance_loss": 1.1079093801074558,
+        "classification_loss": 0.9625238040924072,
+        "correct": 29611,
+        "loss": 0.9736028982374403,
+        "route_counts": [
+          30278,
+          37380,
+          9389,
+          12953
+        ],
+        "router_max_gradient_l1": 17.79404765367508,
+        "router_max_update": 0.0061110034584999084,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6702,
+        "effective_experts": 3.497535553869951,
+        "load_entropy": 1.2520585930154664,
+        "max_expert_load": 0.4276,
+        "min_expert_load": 0.1252,
+        "route_counts": [
+          3181,
+          4276,
+          1252,
+          1291
+        ],
+        "route_frequencies": [
+          0.3181,
+          0.4276,
+          0.1252,
+          0.1291
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3351
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_073.pt",
+      "checkpoint_sha256": "70ab2deec99c0e841bf7d00c8abe1cb8684a1387a8727dd14098b591513fe007",
+      "elapsed_seconds": 167.76314350869507,
+      "epoch": 73,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0001812880051256552,
+      "next_learning_rate": 0.00016934406733817422,
+      "seconds": 2.301731899380684,
+      "train": {
+        "accuracy": 0.6584444444444445,
+        "balance_loss": 1.1247972955067953,
+        "classification_loss": 0.9614570899539524,
+        "correct": 29630,
+        "loss": 0.9727050637033251,
+        "route_counts": [
+          32150,
+          37679,
+          8086,
+          12085
+        ],
+        "router_max_gradient_l1": 22.097538888454437,
+        "router_max_update": 0.003978293389081955,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6742,
+        "effective_experts": 3.383595636960403,
+        "load_entropy": 1.2189389419801702,
+        "max_expert_load": 0.4241,
+        "min_expert_load": 0.1107,
+        "route_counts": [
+          3543,
+          4241,
+          1107,
+          1109
+        ],
+        "route_frequencies": [
+          0.3543,
+          0.4241,
+          0.1107,
+          0.1109
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3371
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_074.pt",
+      "checkpoint_sha256": "064c03fe4f442d6fd98d3b2f67940c48f9b07fe2ca365b65a06b4e2d302e03e4",
+      "elapsed_seconds": 170.11419105250388,
+      "epoch": 74,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.00016934406733817422,
+      "next_learning_rate": 0.0001577264470356557,
+      "seconds": 2.340364497154951,
+      "train": {
+        "accuracy": 0.6600666666666667,
+        "balance_loss": 1.111377698050605,
+        "classification_loss": 0.9583358188311258,
+        "correct": 29703,
+        "loss": 0.9694495946248373,
+        "route_counts": [
+          30920,
+          37267,
+          9177,
+          12636
+        ],
+        "router_max_gradient_l1": 19.89495676755905,
+        "router_max_update": 0.004610303323715925,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6666,
+        "effective_experts": 3.5276877210440443,
+        "load_entropy": 1.2606426197836123,
+        "max_expert_load": 0.4356,
+        "min_expert_load": 0.1104,
+        "route_counts": [
+          2902,
+          4356,
+          1638,
+          1104
+        ],
+        "route_frequencies": [
+          0.2902,
+          0.4356,
+          0.1638,
+          0.1104
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3333
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_075.pt",
+      "checkpoint_sha256": "83fdbe253b2d3d8e2b8c3911ac24839df111929ff006cb6d8937d6775162fd57",
+      "elapsed_seconds": 172.34209481161088,
+      "epoch": 75,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0001577264470356557,
+      "next_learning_rate": 0.00014644660940672634,
+      "seconds": 2.216510378755629,
+      "train": {
+        "accuracy": 0.6626222222222222,
+        "balance_loss": 1.1089114404678344,
+        "classification_loss": 0.953761599222819,
+        "correct": 29818,
+        "loss": 0.9648507144504124,
+        "route_counts": [
+          30368,
+          37298,
+          8866,
+          13468
+        ],
+        "router_max_gradient_l1": 19.796366423368454,
+        "router_max_update": 0.004068925976753235,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6748,
+        "effective_experts": 3.2451445056184496,
+        "load_entropy": 1.1771598809421855,
+        "max_expert_load": 0.4499,
+        "min_expert_load": 0.0717,
+        "route_counts": [
+          3521,
+          4499,
+          1263,
+          717
+        ],
+        "route_frequencies": [
+          0.3521,
+          0.4499,
+          0.1263,
+          0.0717
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3374
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_076.pt",
+      "checkpoint_sha256": "20c4e67b0afa422816bddba9a92cb106726e20433de471d623486927579491ab",
+      "elapsed_seconds": 174.5782069703564,
+      "epoch": 76,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.00014644660940672634,
+      "next_learning_rate": 0.0001355156862892944,
+      "seconds": 2.2266234699636698,
+      "train": {
+        "accuracy": 0.6618222222222222,
+        "balance_loss": 1.1163590060551962,
+        "classification_loss": 0.9528926935513814,
+        "correct": 29782,
+        "loss": 0.9640562842263116,
+        "route_counts": [
+          30849,
+          37604,
+          8476,
+          13071
+        ],
+        "router_max_gradient_l1": 19.19033709168434,
+        "router_max_update": 0.003769822418689728,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6716,
+        "effective_experts": 3.4235627640911144,
+        "load_entropy": 1.230681752722192,
+        "max_expert_load": 0.4108,
+        "min_expert_load": 0.104,
+        "route_counts": [
+          3582,
+          4108,
+          1270,
+          1040
+        ],
+        "route_frequencies": [
+          0.3582,
+          0.4108,
+          0.127,
+          0.104
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3358
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_077.pt",
+      "checkpoint_sha256": "4acf61b1fb4054acd6fdc9e2d85e753f34f8ccb2ee203d952d940f4f862ee54e",
+      "elapsed_seconds": 176.87028195988387,
+      "epoch": 77,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.0001355156862892944,
+      "next_learning_rate": 0.00012494446518477025,
+      "seconds": 2.282725972123444,
+      "train": {
+        "accuracy": 0.6608222222222222,
+        "balance_loss": 1.1107502524905735,
+        "classification_loss": 0.9572041431215075,
+        "correct": 29737,
+        "loss": 0.9683116462919447,
+        "route_counts": [
+          29853,
+          37671,
+          9369,
+          13107
+        ],
+        "router_max_gradient_l1": 20.91648378968239,
+        "router_max_update": 0.005171859636902809,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6772,
+        "effective_experts": 3.253700126427481,
+        "load_entropy": 1.1797928491807281,
+        "max_expert_load": 0.4361,
+        "min_expert_load": 0.0624,
+        "route_counts": [
+          3597,
+          4361,
+          1418,
+          624
+        ],
+        "route_frequencies": [
+          0.3597,
+          0.4361,
+          0.1418,
+          0.0624
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3386
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_078.pt",
+      "checkpoint_sha256": "9bb1f65718a50388a5cc916aa5c81e04c5eb228a7e866ac5b8355ceb80f1c1f4",
+      "elapsed_seconds": 179.38286461308599,
+      "epoch": 78,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.00012494446518477025,
+      "next_learning_rate": 0.00011474337861210548,
+      "seconds": 2.5031930953264236,
+      "train": {
+        "accuracy": 0.6643555555555556,
+        "balance_loss": 1.109904642952813,
+        "classification_loss": 0.9533227945539686,
+        "correct": 29896,
+        "loss": 0.964421840900845,
+        "route_counts": [
+          29952,
+          37587,
+          9458,
+          13003
+        ],
+        "router_max_gradient_l1": 18.521599039435387,
+        "router_max_update": 0.003773074597120285,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6756,
+        "effective_experts": 3.1304364274396,
+        "load_entropy": 1.141172428518862,
+        "max_expert_load": 0.4284,
+        "min_expert_load": 0.0809,
+        "route_counts": [
+          4063,
+          4284,
+          844,
+          809
+        ],
+        "route_frequencies": [
+          0.4063,
+          0.4284,
+          0.0844,
+          0.0809
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3378
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_079.pt",
+      "checkpoint_sha256": "26571adea35cda98136d25ac82cc4baa3db30dd99a1138e8c8eb23921db7fa75",
+      "elapsed_seconds": 181.68157322518528,
+      "epoch": 79,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.00011474337861210548,
+      "next_learning_rate": 0.00010492249381215483,
+      "seconds": 2.2890249034389853,
+      "train": {
+        "accuracy": 0.6595777777777778,
+        "balance_loss": 1.1116717376073202,
+        "classification_loss": 0.9549565326266819,
+        "correct": 29681,
+        "loss": 0.9660732485029433,
+        "route_counts": [
+          30885,
+          37420,
+          8433,
+          13262
+        ],
+        "router_max_gradient_l1": 22.900805234909058,
+        "router_max_update": 0.0036962945014238358,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6764,
+        "effective_experts": 3.3132326112047212,
+        "load_entropy": 1.1979243325055327,
+        "max_expert_load": 0.4271,
+        "min_expert_load": 0.0852,
+        "route_counts": [
+          3655,
+          4271,
+          1222,
+          852
+        ],
+        "route_frequencies": [
+          0.3655,
+          0.4271,
+          0.1222,
+          0.0852
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3382
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_080.pt",
+      "checkpoint_sha256": "3c1d120ebeb18059f97899604c56c235aea7d6dd0e208e8b9d0d49184228e5b9",
+      "elapsed_seconds": 184.104421434924,
+      "epoch": 80,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 0.00010492249381215483,
+      "next_learning_rate": 9.549150281252637e-05,
+      "seconds": 2.41147689986974,
+      "train": {
+        "accuracy": 0.6606444444444445,
+        "balance_loss": 1.1060656337738037,
+        "classification_loss": 0.9545992089165581,
+        "correct": 29729,
+        "loss": 0.9656598619037204,
+        "route_counts": [
+          30405,
+          37111,
+          8994,
+          13490
+        ],
+        "router_max_gradient_l1": 17.333738014101982,
+        "router_max_update": 0.0028663724660873413,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6752,
+        "effective_experts": 3.3845508052482325,
+        "load_entropy": 1.2192211960071262,
+        "max_expert_load": 0.435,
+        "min_expert_load": 0.108,
+        "route_counts": [
+          3410,
+          4350,
+          1080,
+          1160
+        ],
+        "route_frequencies": [
+          0.341,
+          0.435,
+          0.108,
+          0.116
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3376
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_081.pt",
+      "checkpoint_sha256": "14f27f30623a5f7573ff9b63c8c62a9a824ed205bc9e5630ee7c5f38992e4f59",
+      "elapsed_seconds": 186.40691117662936,
+      "epoch": 81,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 9.549150281252637e-05,
+      "next_learning_rate": 8.645971286271918e-05,
+      "seconds": 2.2930753100663424,
+      "train": {
+        "accuracy": 0.6626,
+        "balance_loss": 1.1084103142420452,
+        "classification_loss": 0.9528312506145901,
+        "correct": 29817,
+        "loss": 0.9639153532028198,
+        "route_counts": [
+          30023,
+          37359,
+          8606,
+          14012
+        ],
+        "router_max_gradient_l1": 17.317800372838974,
+        "router_max_update": 0.0036169905215501785,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6724,
+        "effective_experts": 3.391006966015986,
+        "load_entropy": 1.2211269174073855,
+        "max_expert_load": 0.4192,
+        "min_expert_load": 0.1014,
+        "route_counts": [
+          3572,
+          4192,
+          1222,
+          1014
+        ],
+        "route_frequencies": [
+          0.3572,
+          0.4192,
+          0.1222,
+          0.1014
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3362
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_082.pt",
+      "checkpoint_sha256": "ab80611ecffa86c24d21e568faa6ff76766c45cf55ff4e69942434a7a80da942",
+      "elapsed_seconds": 188.7741980459541,
+      "epoch": 82,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 8.645971286271918e-05,
+      "next_learning_rate": 7.78360372489926e-05,
+      "seconds": 2.3558893632143736,
+      "train": {
+        "accuracy": 0.6652888888888889,
+        "balance_loss": 1.110481332842509,
+        "classification_loss": 0.9491546026017931,
+        "correct": 29938,
+        "loss": 0.9602594160079956,
+        "route_counts": [
+          30854,
+          37353,
+          9037,
+          12756
+        ],
+        "router_max_gradient_l1": 18.471933037042618,
+        "router_max_update": 0.0022929534316062927,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6746,
+        "effective_experts": 3.2782176066009563,
+        "load_entropy": 1.1872998620722428,
+        "max_expert_load": 0.4186,
+        "min_expert_load": 0.0895,
+        "route_counts": [
+          3848,
+          4186,
+          1071,
+          895
+        ],
+        "route_frequencies": [
+          0.3848,
+          0.4186,
+          0.1071,
+          0.0895
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3373
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_083.pt",
+      "checkpoint_sha256": "de4c95990e8d4ac2512cb4f7fa567a814a76333e786bb68538740cce24bdc745",
+      "elapsed_seconds": 190.98915866669267,
+      "epoch": 83,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 7.78360372489926e-05,
+      "next_learning_rate": 6.962898649802815e-05,
+      "seconds": 2.2036643233150244,
+      "train": {
+        "accuracy": 0.6639333333333334,
+        "balance_loss": 1.116487196667989,
+        "classification_loss": 0.9501128115442065,
+        "correct": 29877,
+        "loss": 0.9612776839786106,
+        "route_counts": [
+          31221,
+          37669,
+          8243,
+          12867
+        ],
+        "router_max_gradient_l1": 21.285946294665337,
+        "router_max_update": 0.002646196633577347,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6748,
+        "effective_experts": 3.295479823528203,
+        "load_entropy": 1.192551779060763,
+        "max_expert_load": 0.4365,
+        "min_expert_load": 0.0692,
+        "route_counts": [
+          3510,
+          4365,
+          1433,
+          692
+        ],
+        "route_frequencies": [
+          0.351,
+          0.4365,
+          0.1433,
+          0.0692
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3374
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_084.pt",
+      "checkpoint_sha256": "574dc75633b76df55de46bb25c0ae2fe274d798b4aff144f5ce899f530d0c54b",
+      "elapsed_seconds": 193.1826744740829,
+      "epoch": 84,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 6.962898649802815e-05,
+      "next_learning_rate": 6.184665997806824e-05,
+      "seconds": 2.1839714786037803,
+      "train": {
+        "accuracy": 0.6642888888888889,
+        "balance_loss": 1.106393210940891,
+        "classification_loss": 0.9488301536136203,
+        "correct": 29893,
+        "loss": 0.9598940828111436,
+        "route_counts": [
+          30440,
+          37232,
+          9800,
+          12528
+        ],
+        "router_max_gradient_l1": 22.617262601852417,
+        "router_max_update": 0.0018144287168979645,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6752,
+        "effective_experts": 3.260316404037206,
+        "load_entropy": 1.1818242471220741,
+        "max_expert_load": 0.4357,
+        "min_expert_load": 0.0765,
+        "route_counts": [
+          3670,
+          4357,
+          1208,
+          765
+        ],
+        "route_frequencies": [
+          0.367,
+          0.4357,
+          0.1208,
+          0.0765
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3376
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_085.pt",
+      "checkpoint_sha256": "c12a9985d951cedcc84dfb5a294df445ab2279d73ae5695794e136c9ec4dfe60",
+      "elapsed_seconds": 195.3534222682938,
+      "epoch": 85,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 6.184665997806824e-05,
+      "next_learning_rate": 5.449673790581613e-05,
+      "seconds": 2.161470432765782,
+      "train": {
+        "accuracy": 0.6670666666666667,
+        "balance_loss": 1.1090603914048938,
+        "classification_loss": 0.9439633239746094,
+        "correct": 30018,
+        "loss": 0.9550539294454786,
+        "route_counts": [
+          30447,
+          37409,
+          9550,
+          12594
+        ],
+        "router_max_gradient_l1": 17.655678138136864,
+        "router_max_update": 0.00180160254240036,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.68,
+        "effective_experts": 3.2734339409256563,
+        "load_entropy": 1.1858395687429415,
+        "max_expert_load": 0.4389,
+        "min_expert_load": 0.0792,
+        "route_counts": [
+          3607,
+          4389,
+          1212,
+          792
+        ],
+        "route_frequencies": [
+          0.3607,
+          0.4389,
+          0.1212,
+          0.0792
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3400
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_086.pt",
+      "checkpoint_sha256": "4ad6de66c711430d825736e8ca007edd2f0688d0981b70b1d7c77565b407bd10",
+      "elapsed_seconds": 197.53298552054912,
+      "epoch": 86,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 5.449673790581613e-05,
+      "next_learning_rate": 4.758647376699034e-05,
+      "seconds": 2.1693102158606052,
+      "train": {
+        "accuracy": 0.6669555555555555,
+        "balance_loss": 1.1038847765816582,
+        "classification_loss": 0.9430161104838053,
+        "correct": 30013,
+        "loss": 0.9540549577289158,
+        "route_counts": [
+          29831,
+          37323,
+          9273,
+          13573
+        ],
+        "router_max_gradient_l1": 15.407539963722229,
+        "router_max_update": 0.0012402012944221497,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.675,
+        "effective_experts": 3.289767505049427,
+        "load_entropy": 1.1908168951220104,
+        "max_expert_load": 0.4393,
+        "min_expert_load": 0.0815,
+        "route_counts": [
+          3565,
+          4393,
+          1227,
+          815
+        ],
+        "route_frequencies": [
+          0.3565,
+          0.4393,
+          0.1227,
+          0.0815
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3375
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_087.pt",
+      "checkpoint_sha256": "63164f1d1f18f86ba97b2751c98dca9404dde0bf87fac84187a1da3c202ee699",
+      "elapsed_seconds": 199.7331788437441,
+      "epoch": 87,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 4.758647376699034e-05,
+      "next_learning_rate": 4.112268715800956e-05,
+      "seconds": 2.190641733817756,
+      "train": {
+        "accuracy": 0.6630444444444444,
+        "balance_loss": 1.1089100584030152,
+        "classification_loss": 0.9465159650802613,
+        "correct": 29837,
+        "loss": 0.9576050671047635,
+        "route_counts": [
+          29986,
+          37586,
+          8777,
+          13651
+        ],
+        "router_max_gradient_l1": 16.436496436595917,
+        "router_max_update": 0.0015362799167633057,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6784,
+        "effective_experts": 3.3172086110404932,
+        "load_entropy": 1.199123649467731,
+        "max_expert_load": 0.4399,
+        "min_expert_load": 0.0795,
+        "route_counts": [
+          3466,
+          4399,
+          1340,
+          795
+        ],
+        "route_frequencies": [
+          0.3466,
+          0.4399,
+          0.134,
+          0.0795
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3392
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_088.pt",
+      "checkpoint_sha256": "6c887eddef9e49f8d37df7428e46a233c28cdad7fb1fb40d4bd1a50ad9182e1f",
+      "elapsed_seconds": 201.96024414151907,
+      "epoch": 88,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 4.112268715800956e-05,
+      "next_learning_rate": 3.511175705587434e-05,
+      "seconds": 2.215920316055417,
+      "train": {
+        "accuracy": 0.6662444444444444,
+        "balance_loss": 1.1116991552564832,
+        "classification_loss": 0.9424901764339871,
+        "correct": 29981,
+        "loss": 0.9536071682400173,
+        "route_counts": [
+          30347,
+          37826,
+          9190,
+          12637
+        ],
+        "router_max_gradient_l1": 17.96691405773163,
+        "router_max_update": 0.0010935347527265549,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.676,
+        "effective_experts": 3.3528320236890816,
+        "load_entropy": 1.209805368910086,
+        "max_expert_load": 0.4344,
+        "min_expert_load": 0.086,
+        "route_counts": [
+          3455,
+          4344,
+          1341,
+          860
+        ],
+        "route_frequencies": [
+          0.3455,
+          0.4344,
+          0.1341,
+          0.086
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3380
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_089.pt",
+      "checkpoint_sha256": "f5781a792f844a68de941f1a6b314d0e627ad5dd30e262088e6c1864d6bc5289",
+      "elapsed_seconds": 204.3604776179418,
+      "epoch": 89,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 3.511175705587434e-05,
+      "next_learning_rate": 2.9559615522887284e-05,
+      "seconds": 2.3904469925910234,
+      "train": {
+        "accuracy": 0.6662666666666667,
+        "balance_loss": 1.1048110170576309,
+        "classification_loss": 0.9442651948928833,
+        "correct": 29982,
+        "loss": 0.9553133044348823,
+        "route_counts": [
+          30179,
+          37323,
+          9215,
+          13283
+        ],
+        "router_max_gradient_l1": 18.261940494179726,
+        "router_max_update": 0.0008866842836141586,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6808,
+        "effective_experts": 3.405393160478867,
+        "load_entropy": 1.2253603985683927,
+        "max_expert_load": 0.4275,
+        "min_expert_load": 0.0901,
+        "route_counts": [
+          3390,
+          4275,
+          1434,
+          901
+        ],
+        "route_frequencies": [
+          0.339,
+          0.4275,
+          0.1434,
+          0.0901
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3404
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_090.pt",
+      "checkpoint_sha256": "9f1756292e9e71cc8db0c3ce864b93d7c5afafcc1cdf6c2c31dd13ba05ebeba5",
+      "elapsed_seconds": 206.7052603540942,
+      "epoch": 90,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 2.9559615522887284e-05,
+      "next_learning_rate": 2.447174185242324e-05,
+      "seconds": 2.3334627402946353,
+      "train": {
+        "accuracy": 0.6664222222222222,
+        "balance_loss": 1.1022873848597208,
+        "classification_loss": 0.939888250986735,
+        "correct": 29989,
+        "loss": 0.95091112575531,
+        "route_counts": [
+          29557,
+          37499,
+          9613,
+          13331
+        ],
+        "router_max_gradient_l1": 17.9178167283535,
+        "router_max_update": 0.0010249540209770203,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6764,
+        "effective_experts": 3.306980559367195,
+        "load_entropy": 1.19603555535135,
+        "max_expert_load": 0.4364,
+        "min_expert_load": 0.0835,
+        "route_counts": [
+          3558,
+          4364,
+          1243,
+          835
+        ],
+        "route_frequencies": [
+          0.3558,
+          0.4364,
+          0.1243,
+          0.0835
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3382
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_091.pt",
+      "checkpoint_sha256": "acb45aef2c4d9e7b8028f93e393ad10bdbcd2f6746a906333305a6f5ffd15034",
+      "elapsed_seconds": 209.06059776432812,
+      "epoch": 91,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 2.447174185242324e-05,
+      "next_learning_rate": 1.9853157161528526e-05,
+      "seconds": 2.3456467064097524,
+      "train": {
+        "accuracy": 0.6691777777777778,
+        "balance_loss": 1.113066441239251,
+        "classification_loss": 0.938748012998369,
+        "correct": 30113,
+        "loss": 0.9498786759906345,
+        "route_counts": [
+          30927,
+          37593,
+          8403,
+          13077
+        ],
+        "router_max_gradient_l1": 17.10323840379715,
+        "router_max_update": 0.0006613731384277344,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6786,
+        "effective_experts": 3.336966260609431,
+        "load_entropy": 1.2050620890227177,
+        "max_expert_load": 0.428,
+        "min_expert_load": 0.0862,
+        "route_counts": [
+          3581,
+          4280,
+          1277,
+          862
+        ],
+        "route_frequencies": [
+          0.3581,
+          0.428,
+          0.1277,
+          0.0862
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3393
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_092.pt",
+      "checkpoint_sha256": "048d37efbb2d7582c3ec721143c7d87b990e320e9681b90ecdf04187d7bb31da",
+      "elapsed_seconds": 211.25377471372485,
+      "epoch": 92,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 1.9853157161528526e-05,
+      "next_learning_rate": 1.570841943568452e-05,
+      "seconds": 2.1831924449652433,
+      "train": {
+        "accuracy": 0.6675777777777778,
+        "balance_loss": 1.108521149275038,
+        "classification_loss": 0.9449768475638496,
+        "correct": 30041,
+        "loss": 0.9560620585759481,
+        "route_counts": [
+          30851,
+          37340,
+          8994,
+          12815
+        ],
+        "router_max_gradient_l1": 18.206931054592133,
+        "router_max_update": 0.0005762875080108643,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6784,
+        "effective_experts": 3.3078985025440493,
+        "load_entropy": 1.1963130942675282,
+        "max_expert_load": 0.4356,
+        "min_expert_load": 0.0786,
+        "route_counts": [
+          3543,
+          4356,
+          1315,
+          786
+        ],
+        "route_frequencies": [
+          0.3543,
+          0.4356,
+          0.1315,
+          0.0786
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3392
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_093.pt",
+      "checkpoint_sha256": "50fa68d6a5e35b9e1f4da7b2e745fe6c976c28572a5c035c88ccae539a7f6e7f",
+      "elapsed_seconds": 213.5260473638773,
+      "epoch": 93,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 1.570841943568452e-05,
+      "next_learning_rate": 1.204161903062634e-05,
+      "seconds": 2.2606357475742698,
+      "train": {
+        "accuracy": 0.6702888888888889,
+        "balance_loss": 1.1083738017188178,
+        "classification_loss": 0.9335614263322618,
+        "correct": 30163,
+        "loss": 0.9446451651785108,
+        "route_counts": [
+          29885,
+          37797,
+          9371,
+          12947
+        ],
+        "router_max_gradient_l1": 16.915842577815056,
+        "router_max_update": 0.00043217092752456665,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6788,
+        "effective_experts": 3.324926857245722,
+        "load_entropy": 1.2014476760450263,
+        "max_expert_load": 0.4376,
+        "min_expert_load": 0.0763,
+        "route_counts": [
+          3450,
+          4376,
+          1411,
+          763
+        ],
+        "route_frequencies": [
+          0.345,
+          0.4376,
+          0.1411,
+          0.0763
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3394
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_094.pt",
+      "checkpoint_sha256": "11bda94297538ddfca2fbd4cf55b82b91e6cfc60d9e6464659c72335ab52b1ef",
+      "elapsed_seconds": 215.82871428504586,
+      "epoch": 94,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 1.204161903062634e-05,
+      "next_learning_rate": 8.85637463565564e-06,
+      "seconds": 2.2931561190634966,
+      "train": {
+        "accuracy": 0.6677777777777778,
+        "balance_loss": 1.104261399883694,
+        "classification_loss": 0.9397000089115567,
+        "correct": 30050,
+        "loss": 0.9507426213900249,
+        "route_counts": [
+          30017,
+          37428,
+          10051,
+          12504
+        ],
+        "router_max_gradient_l1": 18.617899298667908,
+        "router_max_update": 0.00040569528937339783,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6762,
+        "effective_experts": 3.358205360717106,
+        "load_entropy": 1.2114067124486416,
+        "max_expert_load": 0.4331,
+        "min_expert_load": 0.0835,
+        "route_counts": [
+          3441,
+          4331,
+          1393,
+          835
+        ],
+        "route_frequencies": [
+          0.3441,
+          0.4331,
+          0.1393,
+          0.0835
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3381
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_095.pt",
+      "checkpoint_sha256": "6a26b1a8e1a1ac008975f7c3358a9df58b9d22f3a5e2d4e28fb829d89bc124ab",
+      "elapsed_seconds": 218.10114780906588,
+      "epoch": 95,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 8.85637463565564e-06,
+      "next_learning_rate": 6.155829702431171e-06,
+      "seconds": 2.261293899267912,
+      "train": {
+        "accuracy": 0.6672888888888889,
+        "balance_loss": 1.1042138509114583,
+        "classification_loss": 0.941064685620202,
+        "correct": 30028,
+        "loss": 0.9521068240801493,
+        "route_counts": [
+          29852,
+          37443,
+          9490,
+          13215
+        ],
+        "router_max_gradient_l1": 19.34644003212452,
+        "router_max_update": 0.0003218352794647217,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6796,
+        "effective_experts": 3.3169407238406947,
+        "load_entropy": 1.1990428893924232,
+        "max_expert_load": 0.4324,
+        "min_expert_load": 0.0808,
+        "route_counts": [
+          3565,
+          4324,
+          1303,
+          808
+        ],
+        "route_frequencies": [
+          0.3565,
+          0.4324,
+          0.1303,
+          0.0808
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3398
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_096.pt",
+      "checkpoint_sha256": "038ddad4d6ecd67897bba6cf9cfbe53f718309d5c4ef8a833ac777c0d1bb8e40",
+      "elapsed_seconds": 220.4415030805394,
+      "epoch": 96,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 6.155829702431171e-06,
+      "next_learning_rate": 3.942649342761118e-06,
+      "seconds": 2.3293130854144692,
+      "train": {
+        "accuracy": 0.6694888888888889,
+        "balance_loss": 1.1051420563167995,
+        "classification_loss": 0.938970434443156,
+        "correct": 30127,
+        "loss": 0.9500218520058525,
+        "route_counts": [
+          30481,
+          37142,
+          9264,
+          13113
+        ],
+        "router_max_gradient_l1": 21.474648982286453,
+        "router_max_update": 0.00015777722001075745,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6792,
+        "effective_experts": 3.3083742403773004,
+        "load_entropy": 1.196456902678262,
+        "max_expert_load": 0.4325,
+        "min_expert_load": 0.0801,
+        "route_counts": [
+          3586,
+          4325,
+          1288,
+          801
+        ],
+        "route_frequencies": [
+          0.3586,
+          0.4325,
+          0.1288,
+          0.0801
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3396
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_097.pt",
+      "checkpoint_sha256": "c7b73687b1f6e5dcfe23f5ec382433624f69014bddc7aed841f8fd4a4bf526cb",
+      "elapsed_seconds": 222.77261813730001,
+      "epoch": 97,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 3.942649342761118e-06,
+      "next_learning_rate": 2.2190176984600023e-06,
+      "seconds": 2.3194866068661213,
+      "train": {
+        "accuracy": 0.6651777777777778,
+        "balance_loss": 1.1057201889250015,
+        "classification_loss": 0.9420697493871053,
+        "correct": 29933,
+        "loss": 0.9531269496281942,
+        "route_counts": [
+          30574,
+          37208,
+          9273,
+          12945
+        ],
+        "router_max_gradient_l1": 20.421530425548553,
+        "router_max_update": 0.00018176063895225525,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.6796,
+        "effective_experts": 3.3078304975144035,
+        "load_entropy": 1.1962925356776442,
+        "max_expert_load": 0.4324,
+        "min_expert_load": 0.0793,
+        "route_counts": [
+          3585,
+          4324,
+          1298,
+          793
+        ],
+        "route_frequencies": [
+          0.3585,
+          0.4324,
+          0.1298,
+          0.0793
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3398
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_098.pt",
+      "checkpoint_sha256": "562ee2cdc6d2eb5b8b9da4c6c0aa8112fef93b941dc31fa9fe4b7914452f12b1",
+      "elapsed_seconds": 225.01532633323222,
+      "epoch": 98,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 2.2190176984600023e-06,
+      "next_learning_rate": 9.866357858642206e-07,
+      "seconds": 2.233215682208538,
+      "train": {
+        "accuracy": 0.6664666666666667,
+        "balance_loss": 1.1065421578089396,
+        "classification_loss": 0.9419599512206184,
+        "correct": 29991,
+        "loss": 0.9530253702481588,
+        "route_counts": [
+          30676,
+          37268,
+          9269,
+          12787
+        ],
+        "router_max_gradient_l1": 17.206114798784256,
+        "router_max_update": 6.906874477863312e-05,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.679,
+        "effective_experts": 3.311775614036903,
+        "load_entropy": 1.197484484842927,
+        "max_expert_load": 0.4325,
+        "min_expert_load": 0.0795,
+        "route_counts": [
+          3573,
+          4325,
+          1307,
+          795
+        ],
+        "route_frequencies": [
+          0.3573,
+          0.4325,
+          0.1307,
+          0.0795
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3395
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_099.pt",
+      "checkpoint_sha256": "aec700b2d5a9cb8b5b24f84eac91d8f9602c2a3ae1c24d6ce4eb87b9f2e9dd63",
+      "elapsed_seconds": 227.2901667645201,
+      "epoch": 99,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 9.866357858642206e-07,
+      "next_learning_rate": 2.467198171342e-07,
+      "seconds": 2.2647510170936584,
+      "train": {
+        "accuracy": 0.6682666666666667,
+        "balance_loss": 1.1058709428575304,
+        "classification_loss": 0.9387336973508199,
+        "correct": 30072,
+        "loss": 0.949792407046424,
+        "route_counts": [
+          30656,
+          37167,
+          9347,
+          12830
+        ],
+        "router_max_gradient_l1": 17.036188423633575,
+        "router_max_update": 3.7789344787597656e-05,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.679,
+        "effective_experts": 3.311108877349153,
+        "load_entropy": 1.197283141548817,
+        "max_expert_load": 0.4325,
+        "min_expert_load": 0.0795,
+        "route_counts": [
+          3575,
+          4325,
+          1305,
+          795
+        ],
+        "route_frequencies": [
+          0.3575,
+          0.4325,
+          0.1305,
+          0.0795
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3395
+    },
+    {
+      "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_100.pt",
+      "checkpoint_sha256": "2d686f48cce4e672c029cf3513e6f28661597b4b7099e311eb718a0cf8f9584f",
+      "elapsed_seconds": 229.5142715787515,
+      "epoch": 100,
+      "gpu_peak_allocated_mib": 84.419921875,
+      "learning_rate": 2.467198171342e-07,
+      "next_learning_rate": 0.0,
+      "seconds": 2.214721530675888,
+      "train": {
+        "accuracy": 0.6666222222222222,
+        "balance_loss": 1.105572347852919,
+        "classification_loss": 0.9396327906502617,
+        "correct": 29998,
+        "loss": 0.9506885164048937,
+        "route_counts": [
+          30488,
+          37214,
+          9451,
+          12847
+        ],
+        "router_max_gradient_l1": 16.810156926512718,
+        "router_max_update": 1.2745149433612823e-05,
+        "samples": 45000
+      },
+      "validation": {
+        "accuracy": 0.679,
+        "effective_experts": 3.310106426777804,
+        "load_entropy": 1.1969803419771483,
+        "max_expert_load": 0.4325,
+        "min_expert_load": 0.0795,
+        "route_counts": [
+          3578,
+          4325,
+          1302,
+          795
+        ],
+        "route_frequencies": [
+          0.3578,
+          0.4325,
+          0.1302,
+          0.0795
+        ],
+        "samples": 5000
+      },
+      "validation_correct": 3395
+    }
+  ],
+  "hashes": {
+    "CONV_LANDED_summary.json": "cd7acb3bedad076fee79a853f1af1aec33c997528d69646779d5507bcc2785a9",
+    "audit.json": "c515d047732925f68f528c2ecce252ad77111f65f02c2fea72e174bccd51a221",
+    "audit.log": "35c405726ba85a98e46d8e2f27951072daf38e2a4daad143c5b93a0374422812",
+    "config.json": "020417a2f965048119d9f4b67599fba8b9ad0bdc6d6f04db9a1e023e273e46a4",
+    "epochs/001.json": "1197dd8c44e4f009ffe560929983dc621acbbb44782dc1d11a140c56bbfdeafa",
+    "epochs/002.json": "0805eea9e6209eb1f1d7ffd31e1e5e47bc770a5bcff0e4d98b059dc6e8fe89ca",
+    "epochs/003.json": "39c6c2ce780155cad2d3cc08ce905de345e19ad877bb04840e3cda19cbe7e461",
+    "epochs/004.json": "b575f7cc0445ea69ca02e7c8190b6d144d4f1528403a9b046f33700c69c80a37",
+    "epochs/005.json": "bbc839319ccb94f0f557eb28efdb2571bbad9e71e597a38d5dec366990d93b19",
+    "epochs/006.json": "a4ae476c8bb3d452b4ea0dd2b2ed9cd13a56dd412d1aae2b991667368fe66d96",
+    "epochs/007.json": "b3a9820e5bfca22120a95496123d37e563b99ff3aa6c388c00d081d996e792ea",
+    "epochs/008.json": "edbd1a64e27b21195b8b624c8fb12e1c51f30afc83a270b98678fa382b729243",
+    "epochs/009.json": "c621561633fe7bf473eeb831b96a841ea88eaaf844b23d847d7b76be6e2bc5eb",
+    "epochs/010.json": "4149a13f62692f963126914bbe5f8b9982b8b193dc264cab75d97045fb427bdb",
+    "epochs/011.json": "c834cd07438d5515728da762f65fa63f295e81c36d5d7019d229680903291db3",
+    "epochs/012.json": "f99f6b12a9b348bd39f6fa7a6d212746bb73903c695d89dd732a7509e9d78e2b",
+    "epochs/013.json": "df5f809732b4464a60d39b027e1b5d94fc47fbec9daedb3e4ddb944524f69d2a",
+    "epochs/014.json": "2231898b6bfd391ecc3588cd4ded8b6e101384b37185a63b650359782c78da2f",
+    "epochs/015.json": "ce53b2fa625a35f9f0c966d6ba9238e10ebb8748f0c27eec0420bfe8fa736cee",
+    "epochs/016.json": "5d2e59bffbf8eedb125039296959e5c4d3a4c37df66d7ae51764e862acd95b26",
+    "epochs/017.json": "7e6530c60df88bbc5be958d10981754ff7547883ea5f90f188c70b3172f57759",
+    "epochs/018.json": "d66fb2955e789adf91c2f54e65c1626e9d58082f7ee8a4712d52e088f2520889",
+    "epochs/019.json": "35957e7a94cbe06d6e2267196b8f260a3975b91f761369e215a0e02b05affc81",
+    "epochs/020.json": "4b00dbeb601a86cd7aa6b1fb260af574f8c72e4a21b8bcb1c8260a06712c815f",
+    "epochs/021.json": "e824436750e88a0fec9200a497e2581000985578d5d81c156edabaea76f96ef1",
+    "epochs/022.json": "fc24ff4e183a226215627df6ad8d98546a74b2286e3342ae83f5f2de9a6855cf",
+    "epochs/023.json": "1e4e3343f0f4e7a91d8331b8d916d2198ad7a01f1179d6e87a956289da1fe5a2",
+    "epochs/024.json": "ae3c4fb68162b168b8968a98c7ab1371261d4b7f9ddd8dd8b5ba7d01983159dc",
+    "epochs/025.json": "7f7313aa23a0791f21deae77142246fa8839619da6ab6ee5fef9f31f57e2f6a6",
+    "epochs/026.json": "4bbb8ba992b4fcad1e31fc2b9e4c368f9d009613e56ed848fec0d02de36de67f",
+    "epochs/027.json": "671f14521ef0379759e28d880b00e1178ff8e6585582e9636c38bc437b40b0a4",
+    "epochs/028.json": "c90fe48428c8018df41f2efb1788ea708796196c512a9e8d4434892b36b214a9",
+    "epochs/029.json": "c980438990024cb4b18a563a377437e62b250751d9e59afeba4b429b42f1dd76",
+    "epochs/030.json": "b47bffe33740d7e742e9ef18da0df9e464fd334dcf1606bd9a3348fb47c34699",
+    "epochs/031.json": "360b8f0c7cae66e05f6e4d2ce0fa4a6ac4bc03259fb0e919e43feb9c3ee2e231",
+    "epochs/032.json": "561be909a1e0d6374ae4c56a907cf3e0dc005f88bda321497d5bb606306ff3b9",
+    "epochs/033.json": "7ec16c3c623b0f55b5e290893cab943ec67ab2744d44a84aa538cf067ee765e5",
+    "epochs/034.json": "4a10bde880e7359d4b993862f47671abb3d6ffad0238778ae5a3f0517e7c713a",
+    "epochs/035.json": "026a1f873e538d375b358c39870d328196a90e0a345421caf6f7c2a07d13ea9a",
+    "epochs/036.json": "0bde04f10e0d82acb3f9e92f8645afbe94499311ad845da17a64d5edb3be1406",
+    "epochs/037.json": "0afe433b205f365d3e1607c476d27ea06df9171cab88a53440f62b0ef220b7a5",
+    "epochs/038.json": "dfe0e8f4dc2996e486aedf94048dc98787192f1075d8d896f12b1a141ea9b51c",
+    "epochs/039.json": "ca7507c6fa5c671b5814d548b49d421391258800061a6bc485df6db13dc57ac1",
+    "epochs/040.json": "16e125876559f736f09460b050a27cc59ef4696cfa9cf9b434dcfb5dc73f3e9f",
+    "epochs/041.json": "e3503ba4a6102e872a58e1051278249db6bd71338046a1370577d0a9e951b8aa",
+    "epochs/042.json": "98680ebb04b917e8d3fd8587725f673109b9996b26433a3b12866c4f94baa317",
+    "epochs/043.json": "f5a2b60320d38f6cd2afa3c6e09a3954ac6baa75f07152b59fa6c35e347aca94",
+    "epochs/044.json": "6fb0a8a2e518b83234091ff5f2c9d64223c1c9a06288d4701ad40e0e424a4c40",
+    "epochs/045.json": "8dcca60698e94502b764bfbbc11dc6f873dd89317c0ba1a966e5ad78b778ef84",
+    "epochs/046.json": "0925bd8834d726091a839886ef29ea28933d5cfd30150e4c82211a59ee7aca13",
+    "epochs/047.json": "2948a7e045d03988f0b6e115dbbaa086c6031ce9eea4b77bc449570892d848d9",
+    "epochs/048.json": "380d2db5b11c69614afcdd865a0f02c294d41c312db5d260147a69c7f5a77f89",
+    "epochs/049.json": "fae27768dac25c0500c42974c7d25d97e1183d5ab4748545c4e81d8f53ca29ef",
+    "epochs/050.json": "877861961b6e0cbe4770aab00543dc1cd7a8cc80c6c991122f3af6f409b99e7f",
+    "epochs/051.json": "d1b74e07038cde4e637df0532029b1473a249742d14b4848aa398e67f482a926",
+    "epochs/052.json": "54e492d51170a00ed2418479772825d5187028109bb702cdbb115f7b669f126a",
+    "epochs/053.json": "caa263d3c90206e290baab39582fa639b102c149e9e6e5adeeaf9bc5da483bd9",
+    "epochs/054.json": "9a1b67e7e7395793d83bb009c9211ed61713958b11de29a093a8102b5159e3b1",
+    "epochs/055.json": "93eb11eaa67c146e8f9057790d93ac2f757a2a93c73146f025729d365f11e0ae",
+    "epochs/056.json": "97ac250d8467660ef74562a2ca4878ddcc75ff3d1e58b85baec73ce32e25b487",
+    "epochs/057.json": "f9940a7d3da9d68bf938ac655820dff16375e53447d31e285dff35b6c5e5ceac",
+    "epochs/058.json": "b541a08ac9ed57de583fbc6d2cfd964cf16be4b82b24c7fe857a945c9ada46eb",
+    "epochs/059.json": "6e32d0f581e9d94e8d6bc9751bb215ead44a7005a6ce7f587f22bb2bfe24babe",
+    "epochs/060.json": "18b2f2940fb28e090157c43f0e09ea2e35c41273a89aa119c7dee558fc66df79",
+    "epochs/061.json": "08b519e7302c1c92769b3046f2301cb3285831f8d94830a8bed0201752abcab6",
+    "epochs/062.json": "69dfcc47cc032cbe10ea0a1366513a841c93d3cc0de12bf1756845585bc9da26",
+    "epochs/063.json": "495ac3f91b3c02ce0c7e948729cdad4b2b39be24b5a8bb836ac9865d1b768ac3",
+    "epochs/064.json": "b74198b09d95a33a8598e7ccf69155e42fc5036c81e6879e52b0955320891286",
+    "epochs/065.json": "78f4a128be26e949fa8308ac57d990099b6cef0e6448533f05e8b6f4c6c79607",
+    "epochs/066.json": "e34b965d9a02693b11a76fae472c5e0ec49d635cf914a4444cfd144530931e8a",
+    "epochs/067.json": "026a05b0241b142100a75074f0ddd682ac9f2163bdcb911d02a05121821bfdcf",
+    "epochs/068.json": "d5760856862d3c8fb550ceadd799606480508cb686dc1d04516a585a5ba6498b",
+    "epochs/069.json": "e0ea74f6dc1de157c0611eb2cf05353c8228b102ea6222c0bb027daee5b9d74e",
+    "epochs/070.json": "87169ea2c9e2f424617692656135c0db3e779824cc6c93eeb9a73ed14f82992d",
+    "epochs/071.json": "8fd3087b818490032bbfbabb483c8683070b98e30718b02ab5d9b565f6affda6",
+    "epochs/072.json": "da39b3e49bcbcc9a23f83462457c1a0fb3b73cc83ecd87c48db21b68975a21a7",
+    "epochs/073.json": "bc8c8da25ead7c4fa7f4a3341a72ff8db0d75a7e870b5713e77663a342934405",
+    "epochs/074.json": "053896b722f70430dc4305edbaa39eff89c29bd593a818ec0180183ebaf4ff73",
+    "epochs/075.json": "9264ba2dbbf9bf40ef6d6ca446fed76af06152994afc53884e7f36289c49c00c",
+    "epochs/076.json": "4f6224b0e7f17c86ac5f8936199faabc8fde358ab30393489043363925b3a750",
+    "epochs/077.json": "3cf0677bbb5c2aceb8c9659580939a661c543cfec163b0b663911c6d43c38600",
+    "epochs/078.json": "f5cb20dbe13727448259221affe61ba87aa7bb47efa521c2ae234217f75b787e",
+    "epochs/079.json": "6544aa9487f9f9431871cb353495c03f2238539638639e6f62a39cf404029f9d",
+    "epochs/080.json": "11dca4717aa9b908a04dcb052057f286e47f476afcaad2ef1b5c672ed854bf3b",
+    "epochs/081.json": "9751d58f132e0511c2377cbac11c3956e0d3b87ba57e68e73eac495102952d49",
+    "epochs/082.json": "d9c8cc738ea1732057d167f83e7c37b1f419d0116c0a0b3486ddcf4fd30a3bda",
+    "epochs/083.json": "baa65de3e938628776917e2016823d1d2ed9070a60dc7081723ce66da564c6ae",
+    "epochs/084.json": "ff719492731987544db4de5ec54f11b6c8c006a756267c6443be3190de15d73c",
+    "epochs/085.json": "7eac467a3404aeadaf70b3c27488df8a34c14f297c1bfb1f9ba8ffbc3114938f",
+    "epochs/086.json": "8b972e68944c65a161705a7f64a29913eb7c0d291700857ae2957ed6785a52c4",
+    "epochs/087.json": "f4ade3dc6147a3c626dd48eeeb52b1a5a84cf7bf486bb74c99caf537f1f9ff40",
+    "epochs/088.json": "115a077013d8a2efd1d038ecda9bb4199d8b17da4cf9a3d7d37a72c7c8d322d8",
+    "epochs/089.json": "6ba202cb8aa9999b258d30162213058d2ca17d845abe4c1fb777a979c4c9838d",
+    "epochs/090.json": "fa97bb9c6512dab434eca460538fd06e0ca1ddf56cee2b2e09ee18175ec55b44",
+    "epochs/091.json": "e3aecfaa7b9f5fef24ecb4d2af57c0ad1eb813901e76654b36c25a9119239c44",
+    "epochs/092.json": "83c608f02769df627f993a0a809a6a3cf776c59cb2dd42016e3a533b8a9ec738",
+    "epochs/093.json": "8bc1f26fe35f5aeb0da9433c41acb1926c8bfa104774d147fe9dad97a9e25881",
+    "epochs/094.json": "b798d6019217863482cb82b48280b89a2221024fdad3125723918a4a2c191941",
+    "epochs/095.json": "13cb6516e32ca94b7d5bb31d23b0d065721b5e4cdb8348a7c5f9f2b641b3535b",
+    "epochs/096.json": "f78091426917724d9068e22257f0b9f754bdfa9608dab454ec3e4a474ba2a02f",
+    "epochs/097.json": "bb30b80ecfa982cc9d020fcc7e96eaef2712f461c033b2548aece1fff68b67da",
+    "epochs/098.json": "b7a853246c5d2ff4e09d163dbd91768d0c88e9121867c814a0dcfc7244003428",
+    "epochs/099.json": "5c2c2d20780257e57ffb76e8d3eae7bc48db87d9b0dda26f5e3283b26cf9f32b",
+    "epochs/100.json": "87de97b78862b3b24530f42178aeae25c42061b81327b1e36b1788f6dabcee96",
+    "launch.json": "a59bd02a9e7be187aba5f36bae047b78e43ab84df9c2006340f6c00205ed827f",
+    "split.json": "60b00be92eedd56734cf098e061cc46b8e797280febeda94c84c460ca47924c7",
+    "supervisor.json": "2c154c7b1f1b02ff8787d7e51e08fa162023889ae08c3068ad225a27e0f4e428",
+    "training.log": "88d57dd5882eb4b6cf7697bf31cfcc72c60ffb7a9f820423fd88707737a8fa98",
+    "training_summary.json": "b1aea57c59ca89861c8fc2eedee6ae304bec30a4ae2d4c88ef331b460379be91"
+  },
+  "issues": [],
+  "landed": {
+    "audit": {
+      "checkpoint_sha256": "f5781a792f844a68de941f1a6b314d0e627ad5dd30e262088e6c1864d6bc5289",
+      "epochs": 100,
+      "issues": [],
+      "scope": "training identity, full epoch denominators, recipe, selection and independent concrete metric replay; no verification claim",
+      "selected_epoch": 89,
+      "status": "PASS",
+      "test": {
+        "accuracy": 0.6706,
+        "effective_experts": 3.3961530999840943,
+        "load_entropy": 1.2226433498781755,
+        "max_expert_load": 0.43195,
+        "min_expert_load": 0.0868,
+        "route_counts": [
+          6691,
+          8639,
+          2934,
+          1736
+        ],
+        "route_frequencies": [
+          0.33455,
+          0.43195,
+          0.1467,
+          0.0868
+        ],
+        "samples": 10000
+      },
+      "validation": {
+        "accuracy": 0.6808,
+        "effective_experts": 3.405393160478867,
+        "load_entropy": 1.2253603985683927,
+        "max_expert_load": 0.4275,
+        "min_expert_load": 0.0901,
+        "route_counts": [
+          3390,
+          4275,
+          1434,
+          901
+        ],
+        "route_frequencies": [
+          0.339,
+          0.4275,
+          0.1434,
+          0.0901
+        ],
+        "samples": 5000
+      }
+    },
+    "audit_sha256": "c515d047732925f68f528c2ecce252ad77111f65f02c2fea72e174bccd51a221",
+    "best_epoch": 89,
+    "checkpoint": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1/checkpoints/epoch_089.pt",
+    "checkpoint_sha256": "f5781a792f844a68de941f1a6b314d0e627ad5dd30e262088e6c1864d6bc5289",
+    "config_sha256": "020417a2f965048119d9f4b67599fba8b9ad0bdc6d6f04db9a1e023e273e46a4",
+    "epochs": 100,
+    "launch_sha256": "a59bd02a9e7be187aba5f36bae047b78e43ab84df9c2006340f6c00205ed827f",
+    "seconds": 229.8386953920126,
+    "split_sha256": "60b00be92eedd56734cf098e061cc46b8e797280febeda94c84c460ca47924c7",
+    "status": "LANDED_AUDITED",
+    "test": {
+      "accuracy": 0.6706,
+      "effective_experts": 3.3961530999840943,
+      "load_entropy": 1.2226433498781755,
+      "max_expert_load": 0.43195,
+      "min_expert_load": 0.0868,
+      "route_counts": [
+        6691,
+        8639,
+        2934,
+        1736
+      ],
+      "route_frequencies": [
+        0.33455,
+        0.43195,
+        0.1467,
+        0.0868
+      ],
+      "samples": 10000
+    },
+    "validation": {
+      "accuracy": 0.6808,
+      "effective_experts": 3.405393160478867,
+      "load_entropy": 1.2253603985683927,
+      "max_expert_load": 0.4275,
+      "min_expert_load": 0.0901,
+      "route_counts": [
+        3390,
+        4275,
+        1434,
+        901
+      ],
+      "route_frequencies": [
+        0.339,
+        0.4275,
+        0.1434,
+        0.0901
+      ],
+      "samples": 5000
+    }
+  },
+  "launch": {
+    "automatic_resume": false,
+    "automatic_retry": false,
+    "compatibility": {
+      "checkpoint_sha256": "16f3b27c4591507274238824a42ce4701dcd4d86e07eb06214e589721800ced9",
+      "commits": {
+        "/data1/Kane/MOE/baselines/alpha-beta-CROWN": "e5c7e17bf0488843acb77b7519f59876717a49f4",
+        "/data1/Kane/MOE/baselines/alpha-beta-CROWN/auto_LiRPA": "5a098e8f9fb5786a428a024981d833d303921f2d"
+      },
+      "config_sha256": "020417a2f965048119d9f4b67599fba8b9ad0bdc6d6f04db9a1e023e273e46a4",
+      "execution_head": "228e27e6749f829bb23c2fd3a71fbfbe0f29bb5f",
+      "input_sha256": "fd3cfcff7f1dff2e3ab0f81772b2aedf3d2e946cb7b5bc8ba1cf07ce5da920fd",
+      "probe_tolerance": 1e-10,
+      "protocol": "CONV_FULLSHAPE_CONFORMANCE_R1",
+      "scope": "synthetic full-shape compatibility, not verified accuracy; no positive-bound gate",
+      "source_hashes": {
+        "act/back_end/hybridz_tf/tf_cnn.py": "04548cb2cac9b76b5ab3ae3b322683eae7efe88277e54f94ef5414c93da070ba",
+        "act/back_end/hybridz_tf/tf_mlp.py": "31663c48deb7848b773c2e78d3f56bae7e2bca9d29545ffb0203230f0640bf03",
+        "act/back_end/moe/conv_factory.py": "29e74d39614fce82416e840635cb8717086ee3518e08416af2bd591cd19d3aae",
+        "act/back_end/moe/factory.py": "da472b2bbb3d8f684cb9c9916a735fd7105ceaab925911e1cbc983785a4c7d2d",
+        "act/back_end/moe/static_pair.py": "653f08080a71fbdd12fa823d6974bc451bedb8984714b2b3c0ab31e19fd7c54e"
+      },
+      "timeout_per_backend_seconds": 300
+    },
+    "compatibility_sha256": "212bd5040cad9b1ceff27489f9dc87ee351f0ce05ecd5e15311d71ba894d15c8",
+    "config_sha256": "020417a2f965048119d9f4b67599fba8b9ad0bdc6d6f04db9a1e023e273e46a4",
+    "dataset_hashes": {
+      "/data1/Kane/MOE/ACT/data/torchvision/CIFAR10/raw/cifar-10-batches-py/batches.meta": "f962466ef690d46b226450fb9aadc74ba4bc64a76aa526b5827fe4bc5c7125cb",
+      "/data1/Kane/MOE/ACT/data/torchvision/CIFAR10/raw/cifar-10-batches-py/data_batch_1": "54636561a3ce25bd3e19253c6b0d8538147b0ae398331ac4a2d86c6d987368cd",
+      "/data1/Kane/MOE/ACT/data/torchvision/CIFAR10/raw/cifar-10-batches-py/data_batch_2": "766b2cef9fbc745cf056b3152224f7cf77163b330ea9a15f9392beb8b89bc5a8",
+      "/data1/Kane/MOE/ACT/data/torchvision/CIFAR10/raw/cifar-10-batches-py/data_batch_3": "0f00d98ebfb30b3ec0ad19f9756dc2630b89003e10525f5e148445e82aa6a1f9",
+      "/data1/Kane/MOE/ACT/data/torchvision/CIFAR10/raw/cifar-10-batches-py/data_batch_4": "3f7bb240661948b8f4d53e36ec720d8306f5668bd0071dcb4e6c947f78e9682b",
+      "/data1/Kane/MOE/ACT/data/torchvision/CIFAR10/raw/cifar-10-batches-py/data_batch_5": "d91802434d8376bbaeeadf58a737e3a1b12ac839077e931237e0dcd43adcb154",
+      "/data1/Kane/MOE/ACT/data/torchvision/CIFAR10/raw/cifar-10-batches-py/test_batch": "f53d8d457504f7cff4ea9e021afcf0e0ad8e24a91f3fc42091b8adef61157831"
+    },
+    "dataset_root": "/data1/Kane/MOE/ACT/data/torchvision/CIFAR10/raw",
+    "environment": [
+      "accelerate==1.12.0",
+      "asttokens @ file:///home/conda/feedstock_root/build_artifacts/asttokens_1763409923949/work",
+      "backports.zstd @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_backports.zstd_1765057663/work",
+      "Brotli @ file:///home/conda/feedstock_root/build_artifacts/brotli-split_1764016952863/work",
+      "certifi @ file:///home/conda/feedstock_root/build_artifacts/certifi_1776866578774/work/certifi",
+      "cffi==2.0.0",
+      "charset-normalizer @ file:///home/conda/feedstock_root/build_artifacts/charset-normalizer_1760437218288/work",
+      "clarabel==0.11.1",
+      "colorama @ file:///home/conda/feedstock_root/build_artifacts/colorama_1733218098505/work",
+      "coloredlogs @ file:///home/conda/feedstock_root/build_artifacts/coloredlogs_1733927977068/work",
+      "comm @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_comm_1753453984/work",
+      "contourpy @ file:///home/conda/feedstock_root/build_artifacts/contourpy_1762525251295/work",
+      "coverage==7.14.3",
+      "cuda-bindings==12.9.4",
+      "cuda-pathfinder==1.2.2",
+      "cvxpy==1.9.1",
+      "cycler @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_cycler_1764466758/work",
+      "debugpy @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_debugpy_1764921242/work",
+      "decorator @ file:///home/conda/feedstock_root/build_artifacts/decorator_1740384970518/work",
+      "executing @ file:///home/conda/feedstock_root/build_artifacts/executing_1756729339227/work",
+      "filelock @ file:///home/conda/feedstock_root/build_artifacts/filelock_1759948064277/work",
+      "flatbuffers @ file:///home/conda/feedstock_root/build_artifacts/python-flatbuffers_1758880282135/work",
+      "fonttools @ file:///home/conda/feedstock_root/build_artifacts/fonttools_1764352760362/work",
+      "fsspec==2025.12.0",
+      "gmpy2 @ file:///home/conda/feedstock_root/build_artifacts/gmpy2_1762946764387/work",
+      "gurobipy==13.0.0",
+      "h2 @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_h2_1756364871/work",
+      "hf-xet==1.2.0",
+      "highspy==1.14.0",
+      "hpack @ file:///home/conda/feedstock_root/build_artifacts/hpack_1737618293087/work",
+      "huggingface-hub==0.36.0",
+      "humanfriendly @ file:///home/conda/feedstock_root/build_artifacts/humanfriendly_1733927922002/work",
+      "hyperframe @ file:///home/conda/feedstock_root/build_artifacts/hyperframe_1737618333194/work",
+      "idna @ file:///home/conda/feedstock_root/build_artifacts/idna_1760286409563/work",
+      "ipykernel @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_ipykernel_1761567932/work",
+      "ipython @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_ipython_1764766793/work",
+      "ipython_pygments_lexers @ file:///home/conda/feedstock_root/build_artifacts/ipython_pygments_lexers_1737123620466/work",
+      "ipywidgets @ file:///home/conda/feedstock_root/build_artifacts/ipywidgets_1762040433881/work",
+      "jedi @ file:///home/conda/feedstock_root/build_artifacts/jedi_1733300866624/work",
+      "Jinja2 @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_jinja2_1764517220/work",
+      "joblib==1.5.2",
+      "jupyter_client @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_jupyter_client_1765375773/work",
+      "jupyter_core @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_jupyter_core_1760643864/work",
+      "jupyterlab_widgets @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_jupyterlab_widgets_1762267481/work/python/jupyterlab_widgets",
+      "kiwisolver @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_kiwisolver_1762488738/work",
+      "markdown-it-py==4.0.0",
+      "MarkupSafe @ file:///home/conda/feedstock_root/build_artifacts/markupsafe_1759055168201/work",
+      "matplotlib==3.10.8",
+      "matplotlib-inline @ file:///home/conda/feedstock_root/build_artifacts/matplotlib-inline_1761214490209/work",
+      "mdurl==0.1.2",
+      "ml_dtypes @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_ml_dtypes_1764068356/work",
+      "mpmath @ file:///home/conda/feedstock_root/build_artifacts/mpmath_1733302684489/work",
+      "munkres==1.1.4",
+      "nest_asyncio @ file:///home/conda/feedstock_root/build_artifacts/nest-asyncio_1733325553580/work",
+      "networkx @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_networkx_1765215107/work",
+      "numpy @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_numpy_1763351074/work/dist/numpy-2.3.5-cp312-cp312-linux_x86_64.whl#sha256=585a706a3c889590365479b2cdbe308c23addd9fae26c7937f4b74887269b6e3",
+      "nvidia-cublas-cu12==12.8.4.1",
+      "nvidia-cuda-cupti-cu12==12.8.90",
+      "nvidia-cuda-nvrtc-cu12==12.8.93",
+      "nvidia-cuda-runtime-cu12==12.8.90",
+      "nvidia-cudnn-cu12==9.10.2.21",
+      "nvidia-cufft-cu12==11.3.3.83",
+      "nvidia-cufile-cu12==1.13.1.3",
+      "nvidia-curand-cu12==10.3.9.90",
+      "nvidia-cusolver-cu12==11.7.3.90",
+      "nvidia-cusparse-cu12==12.5.8.93",
+      "nvidia-cusparselt-cu12==0.7.1",
+      "nvidia-nccl-cu12==2.27.5",
+      "nvidia-nvjitlink-cu12==12.8.93",
+      "nvidia-nvshmem-cu12==3.3.20",
+      "nvidia-nvtx-cu12==12.8.90",
+      "onnx @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_onnx_1760165500/work",
+      "onnx-ir==0.2.0",
+      "onnx-simplifier==0.5.0",
+      "onnx2torch==1.5.15",
+      "onnxruntime-gpu @ file:///home/conda/feedstock_root/build_artifacts/onnxruntime_1765376607012/work/build-ci/Release/dist/onnxruntime_gpu-1.22.2-cp312-cp312-linux_x86_64.whl#sha256=91f890e40f3a1a5db704503c5fd34cc626663f85b016a62c69e30d7cb01e5bd4",
+      "onnxscript==0.6.2",
+      "onnxsim==0.6.3",
+      "osqp==1.1.3",
+      "packaging @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_packaging_1745345660/work",
+      "pandas @ file:///home/conda/feedstock_root/build_artifacts/pandas_1759265541279/work",
+      "parso @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_parso_1755974222/work",
+      "pexpect @ file:///home/conda/feedstock_root/build_artifacts/pexpect_1733301927746/work",
+      "pillow @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_pillow_1764330106/work",
+      "platformdirs @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_platformdirs_1764950726/work",
+      "ply @ file:///home/conda/feedstock_root/build_artifacts/ply_1733239724146/work",
+      "prompt_toolkit @ file:///home/conda/feedstock_root/build_artifacts/prompt-toolkit_1756321756983/work",
+      "protobuf @ file:///home/conda/feedstock_root/build_artifacts/protobuf_1760392535057/work/bazel-bin/python/dist/protobuf-6.31.1-cp312-abi3-linux_x86_64.whl#sha256=5beb26a8f0e4500239c1c215ad814622cad863a91fa5b0ace3e4acac6ed12179",
+      "psutil @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_psutil_1762092914/work",
+      "ptyprocess @ file:///home/conda/feedstock_root/build_artifacts/ptyprocess_1733302279685/work/dist/ptyprocess-0.7.0-py2.py3-none-any.whl#sha256=92c32ff62b5fd8cf325bec5ab90d7be3d2a8ca8c8a3813ff487a8d2002630d1f",
+      "pure_eval @ file:///home/conda/feedstock_root/build_artifacts/pure_eval_1733569405015/work",
+      "pycparser==3.0",
+      "Pygments @ file:///home/conda/feedstock_root/build_artifacts/pygments_1750615794071/work",
+      "pyparsing @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_pyparsing_1758436411/work",
+      "PyQt5==5.15.11",
+      "PyQt5_sip==12.17.0",
+      "PySCIPOpt==6.2.1",
+      "PySide6==6.9.3",
+      "PySocks @ file:///home/conda/feedstock_root/build_artifacts/pysocks_1733217236728/work",
+      "python-dateutil @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_python-dateutil_1751104122/work",
+      "pytz @ file:///home/conda/feedstock_root/build_artifacts/pytz_1742920838005/work",
+      "PyYAML @ file:///home/conda/feedstock_root/build_artifacts/pyyaml_1758891829620/work",
+      "pyzmq @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_pyzmq_1757387023/work",
+      "qdldl==0.1.9.post1",
+      "QScintilla==2.14.1",
+      "regex==2025.11.3",
+      "requests @ file:///home/conda/feedstock_root/build_artifacts/requests_1755614211359/work",
+      "rich==15.0.0",
+      "safetensors==0.7.0",
+      "scikit-learn==1.8.0",
+      "scipy==1.16.3",
+      "scs==3.2.11",
+      "sentencepiece==0.2.1",
+      "setuptools==80.9.0",
+      "shiboken6==6.9.3",
+      "sip @ file:///home/conda/feedstock_root/build_artifacts/sip_1759437825022/work",
+      "six @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_six_1753199211/work",
+      "sparsediffpy==0.3.0",
+      "stack_data @ file:///home/conda/feedstock_root/build_artifacts/stack_data_1733569443808/work",
+      "sympy==1.14.0",
+      "threadpoolctl==3.6.0",
+      "tokenizers==0.22.1",
+      "toml @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_toml_1764486833/work",
+      "tomli @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_tomli_1774492402/work",
+      "torch==2.9.1+cu128",
+      "torchaudio==2.9.1+cu128",
+      "torchvision==0.24.1+cu128",
+      "tornado @ file:///home/conda/feedstock_root/build_artifacts/tornado_1765458725391/work",
+      "tqdm @ file:///home/conda/feedstock_root/build_artifacts/tqdm_1735661334605/work",
+      "traitlets @ file:///home/conda/feedstock_root/build_artifacts/traitlets_1733367359838/work",
+      "transformers==4.57.3",
+      "triton==3.5.1",
+      "typing_extensions @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_typing_extensions_1756220668/work",
+      "tzdata @ file:///home/conda/feedstock_root/build_artifacts/python-tzdata_1742745135198/work",
+      "unicodedata2 @ file:///home/conda/feedstock_root/build_artifacts/unicodedata2_1763054767730/work",
+      "urllib3 @ file:///home/conda/feedstock_root/build_artifacts/urllib3_1765212671150/work",
+      "wcwidth @ file:///home/conda/feedstock_root/build_artifacts/wcwidth_1758622279606/work",
+      "wheel==0.45.1",
+      "widgetsnbextension @ file:///home/conda/feedstock_root/build_artifacts/widgetsnbextension_1762040310212/work"
+    ],
+    "execution_head": "6d2e6d299f4e3ecace43b276523cc762f34fb711",
+    "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition, 580.126.09, GPU-f491c2c6-a093-590a-6b8a-13b5f76aadcc",
+    "precision": "float32; no AMP, TF32 off; deterministic algorithms; cuDNN benchmark off",
+    "protocol": "SECOND_FAMILY_CONV_TOP2_TRAIN_R1",
+    "python": "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+    "seed_policy": "factory/split17; train shuffle and workers17+epoch; validation10000+epoch; test20000",
+    "smoke_sha256": "6095842cb3a2f40a3f0bc236d1f0fcb7e072a919cac0209dab658d686ae85635",
+    "source_tar_sha256": "3c83150486831343f327a10b706932d6c51beef323cd9d1eb4bf092e9ff9f7d5",
+    "started": 1789397108.7408621
+  },
+  "run_root": "/data1/Kane/MOE/ACT/data/moe/results/conv_training_seed17_20260915_r1",
+  "scope": "second architecture training/selection and independent concrete metric replay; no robustness or SAFE claim",
+  "status": "PASS",
+  "supervisor": {
+    "best_epoch": 89,
+    "ended": 1789397358.8388555,
+    "landed_sha256": "cd7acb3bedad076fee79a853f1af1aec33c997528d69646779d5507bcc2785a9",
+    "status": "LANDED_AUDITED",
+    "test": {
+      "accuracy": 0.6706,
+      "effective_experts": 3.3961530999840943,
+      "load_entropy": 1.2226433498781755,
+      "max_expert_load": 0.43195,
+      "min_expert_load": 0.0868,
+      "route_counts": [
+        6691,
+        8639,
+        2934,
+        1736
+      ],
+      "route_frequencies": [
+        0.33455,
+        0.43195,
+        0.1467,
+        0.0868
+      ],
+      "samples": 10000
+    }
+  }
+}

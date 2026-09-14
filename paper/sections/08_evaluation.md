@@ -169,6 +169,17 @@ and the separate ACT-only transfer archive
 
 ## Scope of the empirical conclusion
 
+A second, preregistered convolutional output-top-2 family has now completed
+training: four independent convolutional experts, 155,052 parameters, seed 17 and
+100 fixed epochs. The earliest validation-maximizing checkpoint (epoch 89)
+obtains 68.08% on 5,000 validation inputs and 67.06% on the full 10,000-image test
+set. An independent process checks the training/selection identities and
+replays both concrete evaluations. Full-shape ACT and external static-pair
+conformance controls pass, but no trained-family robustness comparison has yet
+been run. This broadens the available model artifacts, not the demonstrated
+cross-architecture verification gains. Evidence:
+`act/pipeline/moe/results/conv_training_review_20260915_r1.json`.
+
 The confirmation supports new-input benefits against the registered internal
 comparators; the ablation supports a relation mechanism; the external study
 exposes both complementarity and a substantial cost challenge; the proof

@@ -1,5 +1,10 @@
 # Second model family: convolutional output top-2, R1
 
+Completed2026-09-15: full-shape gates, supervised100-epoch training and independent
+landing audit. See [results](conv_training_results.md). Validation-selected
+epoch89 obtains68.08% validation and67.06% test accuracy; robustness evaluation
+is still a separate, unlaunched three-arm protocol.
+
 This is a new model-family scope authorized by Advice/bb.md, not a reopening of
 AdvMoE, a modification of bal010, or a new seed selected for easy verification.
 The architecture and training rule are fixed **before training or verification**
