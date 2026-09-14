@@ -32,6 +32,9 @@ def worker(kind, root):
         torch.set_num_threads(1)
         model, _ = load_output_moe_checkpoint(root / 'init.pt', map_location='cpu')
         model.double().eval()
+        # auto_LiRPA creates intermediate convolution identities using the default
+        # dtype. Set it after loading the float32-initialized frozen checkpoint.
+        torch.set_default_dtype(torch.float64)
         tensors = torch.load(root / 'input.pt', weights_only=True)
         x, lo, hi = (tensors[k] for k in ('center', 'lower', 'upper'))
         result.update(model_state=_model_state_identity(model),

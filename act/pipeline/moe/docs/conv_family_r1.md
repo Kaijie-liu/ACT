@@ -64,3 +64,11 @@ class0 margins. It must return finite ordered bounds and pass lowered concrete
 conformance, not positive bounds. Each backend has300 seconds; failures remain.
 Probe tolerance1e-10 is a conversion check, not a SAFE acceptance policy.
 This gate does not establish trained-model scalability or any output certificate.
+
+First full-size attempt `conv_fullshape_20260915_r1` retained all five ACT sparse
+components and passed all six concrete pair probes. External graph conversion
+and concrete parity passed, but CROWN convolution created a float32 intermediate
+against float64 weights: the runner had omitted setting the default dtype.
+The failed attempt is retained. R2 only sets the declared float64 default after
+loading the same float32-initialized model; no model, box, backend or tolerance
+is changed. The registered non-dyadic singleton limitation remains unchanged.
