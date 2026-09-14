@@ -31,6 +31,15 @@ An additional independently timed re-audit takes1.80s and returns the same
 summary. Automatic-audit wall time was not separately captured; the archive
 records it as null, not zero. This does not change any request's charged cost.
 
+A post-archive repeat of the original30 tests exposed a test-only /proc race:
+the killed child's entry vanished between exists() and read(). Preserve the
+frozen wrappers/tests and the recorded failed repeat in
+`../results/conv_smoke_posttest_review_20260915_r1.json`. The subsequent
+`scripts.test_conv_three_arm_lifecycle` suite inherits the same controls but
+handles ESRCH/ENOENT and brief kernel termination latency, and tests that
+unrelated IO errors still fail. Use that module for subsequent test runs;
+it changes neither the executor nor the six archived requests.
+
 **The registered smoke gate fails** because monolithic produced zero complete
 non-error records across the two inputs. A complete terminal ledger and audit
 PASS do not override this requirement. The supervisor returns nonzero and

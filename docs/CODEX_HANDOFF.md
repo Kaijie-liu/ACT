@@ -16,6 +16,11 @@ The outer scheduler and terminal auditor are implemented; this is a frozen
 budget conformance failure, not missing orchestration. Stop positions are
 monolithic F0 (two) and adaptive Tier2 F0 (one), not established root causes.
 Any next investigation must be separately scoped and preserve this failed R1.
+Post-archive test repeat exposed an exists/read /proc reaping race in the
+original test (not the executor). Frozen wrapper hashes remain unchanged.
+Use `scripts.test_conv_three_arm_lifecycle` for subsequent controls:31 focused
+tests pass, plus two11-test repeats. Failure and test-only repair are retained
+in `results/conv_smoke_posttest_review_20260915_r1.json` under the pipeline.
 The following prelaunch entries are historical and do not authorize rerunning.
 
 Latest implementation (2026-09-15): conv three-arm outer orchestration and

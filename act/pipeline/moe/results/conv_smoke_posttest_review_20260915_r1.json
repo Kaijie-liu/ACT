@@ -1,0 +1,20 @@
+{
+  "schema": "post_execution_test_harness_review_v1",
+  "historical_execution_head": "c192bca4d3c3161abe3ae816471894be24e3d908",
+  "prelaunch_tests": {"run": 30, "status": "PASS"},
+  "repaired_suite": {"run": 31, "status": "PASS", "lifecycle_suite_additional_repeats": 2, "tests_per_repeat": 11},
+  "post_archive_repeat": {
+    "run": 30,
+    "errors": 1,
+    "test": "scripts.test_conv_three_arm.ContractTests.test_process_group_deadline",
+    "exception": "ProcessLookupError: [Errno 3] No such process",
+    "site": "stat.read_text() after stat.exists() on /proc/PID/stat"
+  },
+  "repair": {
+    "file": "scripts/test_conv_three_arm_lifecycle.py",
+    "scope": "Test-only override accepts disappearing/reaped process and short kernel termination latency; unrelated IO errors still fail",
+    "frozen_wrappers_changed": false,
+    "experiment_rerun": false,
+    "smoke_gate": "FAIL_UNCHANGED"
+  }
+}
