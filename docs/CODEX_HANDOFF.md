@@ -56,6 +56,13 @@ Read `act/pipeline/moe/docs/staged_verifier.md` and
 
 ## Authoritative reading order
 
+EXTERNAL FRONTEND R1 registered separately (2026-09-14):
+`act/pipeline/moe/docs/external_compatibility_r1.md`,
+`act/pipeline/moe/external_compatibility.py`. Three bounded CPU probes on
+pinned alpha-beta-CROWN/auto_LiRPA source, existing Python3.11 environment.
+Dynamic top2, static variable-weight pair, and relational input parser; no
+full BaB/holdout/performance comparison. Runtime results pending. No install.
+
 REQUEST LP R1 completed (2026-09-14): separate frozen index3000/seed0
 control in `act/pipeline/moe/docs/request_lp_r1.md`, `request_lp_control.py`
 and `check_request_lp.py`. Sparse supplied-HZ LP dual checks and exhaustive

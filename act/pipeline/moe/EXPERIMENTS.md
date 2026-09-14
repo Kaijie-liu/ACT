@@ -1,5 +1,14 @@
 # MoE Verification Experiment Record
 
+### 2026-09-14: pinned external frontend compatibility R1 registration
+
+Separate `docs/external_compatibility_r1.md` and `external_compatibility.py`:
+three120s CPU frontend cases, pinned local alpha-beta-CROWN plus auto_LiRPA
+sources explicitly override the installed wheel. Concrete toy tests preserve
+dynamic top2 or variable static-pair weights; the relational input constraint
+is never silently removed. No external performance/SAFE result yet, no install,
+no AdvMoE query, no sealed backend search reopened.
+
 ### 2026-09-14: request LP R1 complete, overall UNKNOWN
 
 Execution `5c98e5399`,58.63s. `docs/request_lp_results.md` and compact
