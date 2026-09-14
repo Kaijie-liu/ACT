@@ -1,5 +1,25 @@
 # MoE project handoff
 
+Latest completion (2026-09-15): the separately frozen F0 timing diagnostic has
+finished ONE old input0/matched-monolithic request under execution `fd69daa1a`.
+Read `docs/conv_f0_timing_r1.md` and
+`act/pipeline/moe/results/conv_f0_timing_review_20260915_r1.json` first.
+Terminal outer TIMEOUT300.069s; automatic/separate/fresh audits PASS0 issues,
+2055 durable events, all40 original smoke artifacts unchanged. Pair propagation
+45.017s (42.158s support within it), encoding8.341s, union construction14.014s;
+eight property-native calls208.612s all status1, last native call right-censored
+(19.138s exposure, no result). Native entry at280.931s had19.069s request budget
+left but received stale20.629s: measured1.560s mismatch after construction.
+This supports a separately versioned budget-accounting/partial-terminal repair,
+not a claim that fixing it makes the properties positive. Missing solver bounds
+are unavailable, not zero. Preserve observer/old source hashes and read the
+documented incidental-caller-context and draft-aggregation caveats. The final
+observer/review/lifecycle/F0 suite passes43 tests; no solver rerun for review.
+Old smoke remains FAIL; no full90, no workers and no automatic rerun. Next
+decision: account construction in local/global native budgets and durable
+per-property terminal progress, equally for both arms, with new version/tests
+before any new execution. Do not alter support,25%, numerical gates or samples.
+
 Current next-stage implementation (2026-09-15): user authorized durable F0
 substage timing, then ONE old smoke request at the unchanged300s cap. Read
 `docs/conv_f0_timing_r1.md` and `scripts/conv_f0_timing_protocol_r1.json`.

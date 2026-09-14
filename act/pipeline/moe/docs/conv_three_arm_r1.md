@@ -179,6 +179,10 @@ terminal and any already-written common-fact snapshot, and never promote a
 late package to success. Execution errors stop the run; timeouts and ordinary
 UNKNOWN are scientific terminal outcomes and do not trigger sample replacement.
 No resume, overwrite, time extension or effect-dependent expansion is allowed.
+The separately authorized single-request timing follow-up is completed and
+documented in `docs/conv_f0_timing_r1.md` at the repository root; its retained
+TIMEOUT and measured stale native-budget allocation do not change this smoke
+gate or authorize the full cohort.
 
 Six smoke calls must be independently structurally audited. Each arm must
 produce at least one complete non-error package/record across the two inputs;

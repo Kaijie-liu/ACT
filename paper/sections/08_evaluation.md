@@ -185,6 +185,16 @@ not started. This is a budget-conformance limitation, not a measured
 cross-architecture advantage or evidence that the timed-out properties are
 safe. Evidence: `act/pipeline/moe/results/conv_training_review_20260915_r1.json`
 and `act/pipeline/moe/results/conv_three_arm_smoke_review_20260915_r1.json`.
+A separately frozen timing follow-up on one old monolithic smoke request,
+without changing the algorithm or300-second cap, records45.02s of pair
+propagation,14.01s of union construction and208.61s across eight returned
+property-native calls, all solver-limit UNKNOWN. The ninth call is externally
+censored. Its native allocation exceeds the remaining request time by1.56s
+because construction occurs after allocation. This is a measured accounting
+defect, not evidence that repairing it yields positive bounds; the profiled
+request and original smoke remain failures. Instrumentation costs are charged,
+and this single diagnostic is not a comparative speed result. Evidence:
+`act/pipeline/moe/results/conv_f0_timing_review_20260915_r1.json`.
 
 The confirmation supports new-input benefits against the registered internal
 comparators; the ablation supports a relation mechanism; the external study
