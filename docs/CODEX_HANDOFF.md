@@ -56,6 +56,19 @@ Read `act/pipeline/moe/docs/staged_verifier.md` and
 
 ## Authoritative reading order
 
+LATEST COMPLETION (relation R1,2026-09-14): all6 smoke +60 full calls finished;
+separate re-audit exactly matches saved audits. Read
+`act/pipeline/moe/docs/relation_ablation_results.md` and
+`act/pipeline/moe/results/relation_ablation_review_20260914_r1.json`.
+48 packages,16 UNSAFE replays,12 retained outer TIMEOUTs,30/30 common facts
+equal. Shared vs independent SAFE4/4,3/2,4/2 (ten/model): +3 SAFE,+5 solved,
+no losses. Two gains are multi-pair versus relaxation UNKNOWN; one is single-
+pair versus solver limit.27 recorded gate pairs agree,3 one-sided,not universal
+observability. This is observed-input mechanism evidence, not new confirmation.
+No experiment remains active. Next separately implement request-level LP
+evidence and pinned external-tool semantic compatibility; no new dependency
+installation, sample expansion or sealed-search reopening is authorized.
+
 NEW WORK (2026-09-14, after the archival stage): relationship-only R1 is
 implemented and preregistered in `act/pipeline/moe/docs/relation_ablation_r1.md`.
 The independent arm duplicates all guarded expert factors/constraints into a

@@ -613,7 +613,27 @@ indices, stage/reuse sources, per-state costs and missing-package records:
 `results/schedule_confirmation_100_review_20260914_r1.json` and
 `docs/schedule_confirmation_100_results.md` under the MoE pipeline.
 
-### Remaining completion requirements
+### Direct shared-input relationship ablation (observed follow-up)
+
+We separately froze ten previously observed inputs and compared identical
+adaptive/scoped-reuse configurations except for shared expert entry factors
+versus their block-diagonal independent product. Guards, marginal propagation,
+gate routine, backend and300-second caps remain fixed. All60 calls finish with
+48 packages,16 concrete UNSAFE replays and12 outer timeouts retained. Independent
+structural re-audit reproduces the saved results; all30 common-fact pairs agree.
+Shared/independent SAFE counts are4/4,3/2,4/2; solved counts6/5,6/5,8/5.
+No SAFE or solved result is lost. Two SAFE gains concern multiple legal pairs
+and a completed-relaxation UNKNOWN in the product arm; a third single-pair
+gain faces a solver-limit UNKNOWN. Thus there is direct complete-endpoint
+evidence for relation retention, but not every gain isolates tightness from
+finite-budget solving. All27 jointly recorded gate ranges agree;3 one-sided
+records remain unavailable for comparison. Mean seconds shared/independent:
+139.81/166.97,153.07/159.48,123.38/132.84; paired medians-3.08,-.62,-4.08.
+This is10 observed images, not60 independent samples or confirmation. Numerical
+policy remains unchanged. Source: `results/relation_ablation_review_20260914_r1.json`
+and `docs/relation_ablation_results.md` under the MoE pipeline.
+
+### Remaining completion requirements (unchanged)
 
 The evaluation is paper-complete only when the official RT-ER table, AdvMoE
 trained two-path table, monolithic comparison, and (E)-scaling study have

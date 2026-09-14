@@ -6,6 +6,14 @@ results remain under `/data1/Kane/MOE/ACT/data/moe` and are not committed.
 
 ## Safety and Git boundary
 
+2026-09-14 relation R1 completed and separately re-audited: see
+`docs/relation_ablation_results.md` and
+`results/relation_ablation_review_20260914_r1.json`. All6+60 planned calls,
+full48packages/16UNSAFE replays/12outertimeouts,30equalfactpairs. Shared gains
+3SAFE/5solved, no losses; two multi-route relaxation gains and one single-route
+solver-limit gain distinguished. This is an observed-cohort mechanism study;
+no result was pooled with or substituted into the old900 confirmation.
+
 ### 2026-09-14: separate relation-ablation R1 registration
 
 After independently archiving SCH100, implement the explicit guarded-marginal

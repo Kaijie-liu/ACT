@@ -75,6 +75,15 @@ No pooling with30 or rewriting old2/3. Next workstreams are separate.
 
 ## Artifact hierarchy
 
+REL1 (observed mechanism follow-up): shared versus independent guarded expert
+factors yields +3SAFE/+5solved, no losses on30 model-input pairs/10images.
+Two SAFE gains are multi-pair versus relaxation UNKNOWN; one single-pair gain
+is solver-budget-limited. Full60/60,48packages,16replays,12outertimeouts,
+30 common-fact pairs equal;27 jointly recorded gate ranges equal,3one-sided.
+See `act/pipeline/moe/results/relation_ablation_review_20260914_r1.json` and
+`act/pipeline/moe/docs/relation_ablation_results.md`. Not independent SAFE
+reproof, high-accuracy evidence, a new holdout or a claim of uniform speedup.
+
 1. The confirmatory manifest is the primary endpoint source:
    `act/pipeline/moe/configs/experiment1_confirmatory_protocol_manifest_r1.json`.
 2. Experiment 1D is follow-up closure only:
