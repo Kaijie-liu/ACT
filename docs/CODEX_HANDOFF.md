@@ -1,5 +1,17 @@
 # MoE project handoff
 
+Current authorized research (2026-09-15): independently checkable sign-sufficient
+lower bounds. Read `docs/conv_sign_lp_r1.md`. New two-control protocol freezes
+first matched F0 properties at index16/{0,3}/5-minus0 and98/{1,2}/0-minus1.
+Capture original recipe's supplied F0 HZ BEFORE the property MILP, export root
+continuous LP, propose duals then independently check in two Python -S processes.
+This still trusts floating F0 construction and upstream lowering; not a full
+request or deployed-float proof, not the stronger pre-F0 rational-McCormick path.
+Tests/freeze/commit/push precede execution. Output
+`data/moe/results/conv_sign_lp_20260915_r1`; no retries or following queries.
+Production status0 gate and all full V2 outcomes remain unchanged. This entry
+records preparation, not a new checked positive result.
+
 Latest diagnostic completion (2026-09-15): full V2 results archived/pushed in
 `7b1ab7269`; separate read-only obligation analysis is in
 `docs/conv_full_v2_obligations.md` and
