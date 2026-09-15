@@ -317,3 +317,28 @@ rejected even after transport hashes were recomputed; damaged content was also
 rejected. This makes a real conditional proof portable, not its upstream
 network construction independently verified. Evidence:
 `docs/portable_conv_proof_v1_review.json`.
+
+### A request-parametric conditional evidence contract
+
+The subsequent optional evidence interface derives E, C, all legal pairs and
+explicit linear properties from the request, rather than naming a particular
+input or clean route. For every feasible pair/property it requires either two
+scope-bound positive membership facts or a checked pre-F0 rational LP bound.
+An exhaustive pair partition is checked, but the truth of excluded-route
+infeasibility remains an upstream assumption; unresolved routes never imply
+complete safety. The checker also reconstructs property projections, HZ-to-LP
+export, checked range bindings, McCormick constraints and exact rational dual
+bounds. Missing evidence and checked nonpositive bounds are distinct UNKNOWN
+states, neither a counterexample.
+
+Under sound network/input-to-HZ and ordered-source binding, correct guards and
+route exclusions, complete positive obligations imply the requested properties
+for all tie-legal selected-softmax top-2 outputs on the represented box. This
+is the uniform meaning of CHECKED_CONDITIONAL. It does not independently prove
+the upstream network transformation or deployed floating-point execution.
+The independently pinned portable checker and statement identities are also
+part of the checking contract. Production HZ-policy acceptance and CROWN
+numerical filters remain separate evidence grades. Controls cover changing
+dimensions, all-tied multi-pair models, partial reuse, semantic mutations and
+deadline failures, but are not evidence of new real-model coverage. Sources:
+`docs/general_evidence_v1.md`, `docs/general_evidence_v1_controls.json`.

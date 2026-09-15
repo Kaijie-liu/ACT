@@ -1,5 +1,23 @@
 # MoE project handoff
 
+Current completion (2026-09-16): general weighted-top2 conditional evidence
+interface and per-request budgeted runner/terminal checker implemented OUTSIDE
+frozen act sources (`moe_evidence/`). See docs/general_evidence_v1.md and
+docs/general_evidence_v1_controls.json:36 controls/regressions PASS, no skips.
+E/C and explicit linear properties derive from request; all tie-legal pairs,
+partial scoped reuse, missing obligations, invalid bindings, check timeouts,
+portable -I -S and real analytic multi-pair capture/pipeline covered. Same300s;
+no floating F0 trust, no production gate change, no new real-model certificate.
+Old input98 frozen source identities remain unchanged (458 files checked).
+
+Next in this stage: freeze20 NEW conv clean-correct inputs under
+docs/general_evidence_v1_protocol.json, separately reconstruct selection;
+matched V2/evidence/original CROWN, fixed2/255 and300s. Freeze only, do NOT
+execute selected verification endpoints in this stage. Full cohort supervisor,
+lock/resource/roster and final three-arm aggregation require their own frozen
+execution gate before later launch; do not use the old input98-only runner.
+All earlier narrower results below remain historical, not current API limits.
+
 Latest completion: optional same-budget input98 development COMPLETE under
 `d944a9ed3`. Read docs/optional_evidence_dev_v1_results.md and review.json.
 Original matched V2 TIMEOUT295.697s; opt-in evidence CHECKED_CONDITIONAL9/9
