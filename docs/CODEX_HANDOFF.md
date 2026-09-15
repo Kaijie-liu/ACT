@@ -1,5 +1,30 @@
 # MoE project handoff
 
+Current authorized execution (2026-09-16): user explicitly requested completion
+and freezing of the cohort supervisor/final auditor, THEN launch the unchanged
+20-input/60-request study. `evidence_cohort/` now implements this execution-only
+layer; no frozen act/scripts/moe_evidence/portable_proof source was edited.
+Read docs/general_evidence_execution_v1.md, its controls and freeze JSON.
+25 tests PASS (owned cross-session descendant cleanup, fail-stop roster,
+resource cap, distinct-grade statistics/conflicts and actual analytic outer
+driver/terminal review, plus method regressions); fresh clean reconstruction
+PASS0, same selection db3043fb... No selected endpoint queried by preparation.
+
+After this commit/push, launch ONCE with act-py312:
+`python -m evidence_cohort.run --launch`. User authorization is present.
+Root:data/moe/results/general_evidence_cohort_20260916_v1;
+launch log:data/moe/results/general_evidence_launch_20260916_v1/supervisor.log.
+Check these paths before any launch: if present, inspect, never resume/replace.
+Global lock; one CPU thread/request, nice10, no GPU; original configs2/255/300s.
+Whole-driver clock includes startup/serialization; owned descendants killed
+at298s work limit, terminal inside300s; late files never promote a TIMEOUT.
+ERROR stops; unknown/timeouts continue. Final separate-process per-request
+reviews and cohort aggregation run automatically, with separate audit costs.
+No automatic raw-data commit or scientific-success announcement. Archive final
+results only after review. Preserve all grade/conditional trust distinctions.
+This entry supersedes the earlier "no launch authorized yet" statements below;
+it records preparation and launch instructions, NOT a completed60-run result.
+
 Latest completion (2026-09-16): general-evidence preparation AND new20-input
 conv freeze COMPLETE; docs/general_evidence_v1_preparation_results.md is the
 current summary. Selection sha db3043fb124703e8123e5326eda853dc0d67d45e9104ca316487a631603daea7;
