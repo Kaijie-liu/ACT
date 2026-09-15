@@ -1,5 +1,22 @@
 # MoE project handoff
 
+Latest completion (2026-09-15): input98 PRE-F0 rational request proof COMPLETE
+under `2a8e11d76`. Read docs/conv_pre_f0_r2_results.md and
+act/pipeline/moe/results/conv_pre_f0_review_20260915_r2.json.9/9 positive:
+8 independently reconstructed rational McCormick LPs+1 scoped interval fact,
+minimum0.1772745273844 (reuse); minimum residual1.61557502934. Checked router
+order r1-r2 in[0.70535119,0.85031138] gives lambda1 in[1/2,1].26 proposals,
+two isolated checks and fresh review; all-stage179.01s, not benchmark timing.
+Floating F0 construction no longer trusted. Network/input→HZ and expert/source
+binding, guards and route exclusions still trusted; NOT deployed-float SAFE,
+NOT route-changing (single pair), NOT high-accuracy AdvMoE closure. Original
+TIMEOUT and prior weaker-boundary positive evidence unchanged. No input16 query.
+R1 ERROR25.67s/zero proposals preserved. Correction to early failure wording:
+the rejected entries were numpy.float64 (Torch→NumPy), not Torch scalars;
+the exact Python +/-1/0 conversion repair is unchanged.24 tests cover both
+types, actual property API, construction mutations and aggregation. No further
+query, bound refinement or production-gate integration is queued.
+
 Pre-F0 R1 execution `e9999be19` stopped with ERROR at the first difference
 export: real Torch property scalars rejected by rational(), no LP proposal or
 new output bound. Failure preserved and independently inventoried in

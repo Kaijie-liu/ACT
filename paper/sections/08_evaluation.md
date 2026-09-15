@@ -261,6 +261,21 @@ route-changing coverage, or high-accuracy-scale certification. Original
 TIMEOUTs and the production acceptance policy remain unchanged. Evidence:
 `act/pipeline/moe/results/conv_request_sign_lp_review_20260915_r1.json`.
 
+For input98 only, a new pre-F0 rational-construction experiment removes the
+floating weighted-lowering assumption while retaining all nine positive
+obligations. It uses26 LP proposals (two router order,16 disagreement and eight
+weighted), plus the interval reuse fact. The more conservative dyadic gate
+range [1/2,1] suffices; residual bounds range from1.615575 to6.748146, while
+the request minimum remains0.1772745. Two isolated checks and fresh review
+agree. Its179.01s all-stage proof-study time is not a comparative300s verifier
+measurement. An initial type-conversion failure before any LP proposal is
+preserved; the repaired version only canonicalizes NumPy +/-1/0 property
+scalars, without changing mathematics or ranges. This is one single-pair
+conditional convolutional request proof with fewer trusted components, not
+high-accuracy strict certification, route-changing coverage or production SAFE.
+Input16's two unclosed obligations are not revisited. Evidence:
+`act/pipeline/moe/results/conv_pre_f0_review_20260915_r2.json`.
+
 The confirmation supports new-input benefits against the registered internal
 comparators; the ablation supports a relation mechanism; the external study
 exposes both complementarity and a substantial cost challenge; the proof

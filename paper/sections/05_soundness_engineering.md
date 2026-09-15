@@ -293,3 +293,16 @@ guarantee described above. A complete conditional request is therefore
 distinguished from a positive single-property control, a production SAFE,
 and an independently proved network execution. Source:
 `act/pipeline/moe/results/conv_request_sign_lp_review_20260915_r1.json`.
+
+A subsequent, separately frozen study makes the pre-F0 boundary explicit for
+the convolutional input98 as well. Fresh ordered shared expert outputs are
+projected in exact rational arithmetic; checked router order gives lambda1 in
+[1/2,1], and two checked support bounds per residual establish its disagreement
+rectangle. An independent construction checker verifies the same-factor
+projections, all four McCormick planes, finite variable bounds and LP dual
+evidence. All nine properties remain positive (eight residuals and one scoped
+interval fact; minimum0.1772745). Floating F0 construction is removed from the
+trusted base for this request; network/source binding, guard lowering and route
+exclusions remain assumptions. This does not upgrade the old production
+TIMEOUT or certify deployed floating-point execution. Source:
+`act/pipeline/moe/results/conv_pre_f0_review_20260915_r2.json`.
