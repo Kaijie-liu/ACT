@@ -97,6 +97,15 @@ postselected, single-pair development control, not a transferable coverage or
 speed guarantee. Checked nonpositive bounds on the other four studied cases
 remain visible in the saved-record cost/failure table.
 
+The later general-evidence experiment on20 new convolutional inputs did not
+replicate that control's positive outcome: all20 evidence requests timed out,
+and neither comparator produced a positive result. Saved local prechecks expose
+both nonpositive bounds and missing obligations, while deadline locations
+include packaging and checking. A budget/implementation repair is therefore
+not established as sufficient for positive coverage. The new cohort is closed
+under its frozen rules; changing evidence scheduling would require a separately
+identified engineering study, not replacement of these results.
+
 The central conclusion is that route invariance is not necessary for proving
 the output property, and retaining route/input/expert relationships can support
 complete results beyond that premise. Whether the more expensive relational

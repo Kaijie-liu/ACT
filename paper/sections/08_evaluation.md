@@ -298,14 +298,29 @@ independent full-dynamic-model external competition remain unachieved. Historica
 negative results are retained in the appendix rather than replaced by this
 selection of primary questions.
 
-The next evidence-mode study is prepared but not executed. A generalized
-request interface, with all tie-legal pairs and requested linear properties,
-passes36 analytic and regression controls. Twenty new convolutional
-clean-correct inputs were frozen by ascending index after excluding878 used
-indices from5,696 source records; independent clean-only reconstruction passes.
-The planned three-arm comparison retains the original matched V2 and plain
-CROWN, with2/255 and300s. No verification endpoint of this new cohort has been
-queried by this preparation. The API controls and clean selection are not
-additional certificates or empirical coverage. Conditional exact-LP positives,
-production HZ-policy positives and numerical CROWN filters will be reported
-as distinct evidence grades. See `docs/general_evidence_v1_preparation_results.md`.
+The subsequent generalized evidence-mode study completed60 requests on20 new
+convolutional clean-correct inputs, selected by ascending index after excluding
+878 used indices from5,696 source records. The same checkpoint,2/255 and300s
+were retained. Matched V2 returned10 replayed UNSAFE and10 TIMEOUT; general
+evidence returned20 TIMEOUT; ACT-fronted plain CROWN returned7 replayed UNSAFE
+and13 UNKNOWN. No arm produced a complete positive result of its respective
+evidence grade. Mean observed request costs were220.68,283.09 and4.08s,
+respectively, including incomplete/capped requests. The evidence path seeks
+positive proofs rather than performing equivalent counterexample search.
+Common facts agreed on all20 pairs;15 inputs had one legal pair and5 had
+multiple pairs. The17 UNSAFE run records concern12 distinct inputs.
+
+The frozen complete-request negative result is not overridden by partial
+checker output. Seven saved local prechecks cover all necessary obligations
+but include nonpositive lower bounds; six report missing evidence; seven
+requests have no completed local precheck. Among the13 saved prechecks,
+135 obligations divide into3 positive,70 nonpositive and62 missing. These
+stored observations were not promoted to independently completed request
+certificates. Sixteen outer terminations occur during precheck(3), packaging(9)
+or isolated checking(4), while four internal exits exhaust the proposal
+reserve. Stop locations alone do not establish unique causes. In particular,
+neither cheaper packaging nor additional solver time is shown to produce
+positive requests. The earlier input98 success remains a postselected control,
+not evidence of transferable coverage. The automatic final audit and separate
+archival review preserve all60 terminals and evidence-grade distinctions.
+See `docs/general_evidence_execution_v1_results.md` and its bound JSON index.

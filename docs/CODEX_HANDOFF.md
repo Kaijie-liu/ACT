@@ -1,5 +1,38 @@
 # MoE project handoff
 
+Latest completion (2026-09-16): the frozen general-evidence new20-input cohort
+is FINISHED AND ARCHIVED; do not launch it again. Read
+`docs/general_evidence_execution_v1_results.md` and its hash-bound JSON first.
+60/60 terminals, original final audit PASS0; separate read-only archival review
+also PASS0,60 fresh terminal/source reviews and17 full-model UNSAFE replays,
+105.661s separate review cost, ZERO new solver queries. Original records unchanged.
+Executed HEAD a0248e697; same selection db3043fb..., conv epoch89,2/255/300s.
+Matched:0 SAFE/10 UNSAFE/10 TIMEOUT,mean220.680s. Evidence:0 conditional
+positives/20 TIMEOUT,mean283.089s. CROWN:0 numeric positives/7 UNSAFE/13 UNKNOWN,
+mean4.081s. Common facts20/20 equal;15 single/5 multiple-pair inputs.
+All17 UNSAFE runs cover12 distinct inputs; no cross-arm result promotion.
+
+Saved evidence logs:13 local prechecks (7 full but nonpositive,6 missing),
+135 obligations=3 positive+70 nonpositive+62 missing. Seven requests have no
+saved complete precheck. These are hash/count-checked historical observations,
+NOT freshly re-proved bounds or completed isolated request checks. Outer stops:
+3 precheck,9 package,4 isolated check;4 other exits are internal proposal-budget
+exhaustion near220s.519 recorded proposal wrappers all PROPOSED, not proof that
+weighted MILPs were optimal. Exclusive solver/serialization costs unmeasured.
+The80s reserve can expire after preflight during construction and raise at
+grant, aborting before partial precheck; analytic clock control reproduces the
+reachable path. No production repair or new run was made. Seven accounting
+controls pass. Input98 success did NOT generalize under this frozen setup.
+
+Disposition: close this configuration with the negative result; do not expand
+samples, retune reserve/gates or resume requests. Any future engineering study
+must be separately identified: first test graceful reserve-boundary handoff and
+profile repeated source/check costs on controls or saved evidence, preserving
+all proof obligations and acceptance gates. No new real-model run is queued.
+Upstream network→HZ/source/guard/route-exclusion trust remains; high-accuracy
+strict and cross-architecture route-changing positive claims remain unachieved.
+This completion supersedes every launch/pending statement immediately below.
+
 Current authorized execution (2026-09-16): user explicitly requested completion
 and freezing of the cohort supervisor/final auditor, THEN launch the unchanged
 20-input/60-request study. `evidence_cohort/` now implements this execution-only
