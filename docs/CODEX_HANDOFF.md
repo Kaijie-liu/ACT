@@ -1,5 +1,15 @@
 # MoE project handoff
 
+Current authorized development: docs/optional_evidence_dev_v1.md and frozen
+JSON, ONLY observed input98. Two arms: unchanged production matched V2 and
+opt-in pre-F0 evidence; one300s clock each includes startup, capture, proposals,
+local aggregation, portable packing and independent -I -S check. No old proof
+or census reused; no input16/ACT-only queries. Postselected engineering smoke,
+not confirmation.80s explicit proposal reserve for checking, terminal reserve2s;
+production acceptance unchanged. Freeze/tests/commit/push/live publication gate
+before run_optional_evidence_dev; new root optional_evidence_dev_20260915_v1.
+Run once, preserve ERROR/TIMEOUT, then separately audit and archive. No follow-on.
+
 Latest read-only analysis: docs/proof_closure_costs_20260915.md/.json separates
 three ACT-only checked-nonpositive cases, conv16 checked-nonpositive7/9 and
 conv98 complete-conditional9/9. Saved raw inventories rehashed; no new solves.
