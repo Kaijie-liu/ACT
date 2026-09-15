@@ -1,5 +1,18 @@
 # MoE project handoff
 
+Current authorized freeze (2026-09-15): `docs/conv_budget_smoke_v2.md` freezes
+four OLD-input requests (0/1 x adaptive/matched monolithic), same300s total,
+V2 reserve5s inside300 and unchanged numerical gates. New outer runner
+`scripts.conv_budget_smoke_v2` and terminal/journal auditor are implemented.
+Test/commit/push BEFORE launch; then execute once with act-py312 at
+`data/moe/results/conv_budget_smoke_20260915_v2`. No retry/resume/full90 path.
+Audit must retain late/partial packages and compare full snapshot facts, bind
+journal identity to each complete package, and recheck journals via Python -S.
+Success requires a complete package in EACH arm, not a positive certificate.
+Independent archival review follows execution. R1 FAIL is not overwritten.
+Do not edit frozen V2 sources or its protocol document during/after execution;
+write the result in a separate completion document and compact archive.
+
 Latest completion (2026-09-15): budget/partial-terminal V2 implementation and
 source-defined controls are COMPLETE, execution `e9cde6945`. Read
 `docs/budget_contract_v2.md` and
