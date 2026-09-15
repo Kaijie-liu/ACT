@@ -1,5 +1,15 @@
 # MoE project handoff
 
+Pre-F0 R1 execution `e9999be19` stopped with ERROR at the first difference
+export: real Torch property scalars rejected by rational(), no LP proposal or
+new output bound. Failure preserved and independently inventoried in
+act/pipeline/moe/results/conv_pre_f0_failure_20260915_r1.json. Current R2 repair
+only canonicalizes verified +/-1/0 property scalars to Python numbers and tests
+the real Torch-scalar boundary. See docs/conv_pre_f0_r2.md; new source freeze,
+commit/push and root conv_pre_f0_rational_20260915_r2. All inputs/ranges/budgets
+and mathematical rules unchanged; no production gate change. Do not reuse R1
+root or delete its failure. R2 result is not yet known in this preparation entry.
+
 Current authorized stage (2026-09-15): input98 ONLY, same nine properties and
 materialized2/255 box, pre-F0 rational-construction proof. Read
 docs/conv_pre_f0_r1.md and scripts/conv_pre_f0_protocol.json. Fresh shared expert
