@@ -89,6 +89,14 @@ provided and tested. A source-defined three-expert control now supplies a
 no-download new-request workflow with a separate standard-library check; it is
 not a substitute for distributing and rebuilding the empirical model tables.
 
+A later real-input98 bundle closes portability for one stored conditional
+proof: its isolated checker needs neither the checkpoint nor historical paths.
+This does not yet distribute the entire empirical study or eliminate trusted
+upstream lowering. The same-budget evidence-mode success is likewise one
+postselected, single-pair development control, not a transferable coverage or
+speed guarantee. Checked nonpositive bounds on the other four studied cases
+remain visible in the saved-record cost/failure table.
+
 The central conclusion is that route invariance is not necessary for proving
 the output property, and retaining route/input/expert relationships can support
 complete results beyond that premise. Whether the more expensive relational

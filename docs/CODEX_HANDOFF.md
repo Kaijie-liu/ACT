@@ -1,5 +1,17 @@
 # MoE project handoff
 
+Latest completion: optional same-budget input98 development COMPLETE under
+`d944a9ed3`. Read docs/optional_evidence_dev_v1_results.md and review.json.
+Original matched V2 TIMEOUT295.697s; opt-in evidence CHECKED_CONDITIONAL9/9
+in185.317s INCLUDING capture29.274, propose83.736, precheck32.432, pack9.381,
+independent check30.225s.26 fresh proposals, no old bounds/census; fact views
+equal. Separate terminal/package/portable re-audit PASS0 (31.564s outside run).
+New portable bundle7,181,522bytes; same min0.1772745273844. Single observed
+positive control/single pair; NOT general speedup, production integration,
+route-changing or deployed-float proof. No input16/ACT-only reruns, no follow-on.
+All three requested stages now delivered: portable proof; read-only five-case
+cost/failure analysis; separately frozen optional-budget development comparison.
+
 Current authorized development: docs/optional_evidence_dev_v1.md and frozen
 JSON, ONLY observed input98. Two arms: unchanged production matched V2 and
 opt-in pre-F0 evidence; one300s clock each includes startup, capture, proposals,

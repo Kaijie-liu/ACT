@@ -276,6 +276,18 @@ high-accuracy strict certification, route-changing coverage or production SAFE.
 Input16's two unclosed obligations are not revisited. Evidence:
 `act/pipeline/moe/results/conv_pre_f0_review_20260915_r2.json`.
 
+A separately frozen engineering comparison then assigned the original matched
+V2 path and an optional evidence path300s each on this same observed input98.
+Matched returned TIMEOUT in295.697s; the optional path completed all nine
+conditional proof obligations in185.317s, including fresh capture,26 proposals,
+local aggregation, portable packaging and an independent isolated check. A
+separate archival audit reproduced the proof. This one postselected positive
+control with fixed arm order establishes budgeted feasibility, not population
+speedup, a new route-changing result or production acceptance-policy change.
+The earlier179.01s study remains a different execution, not a benchmark value.
+The optional adapter is deliberately restricted; broader request support and
+net benefit remain open. Evidence: `docs/optional_evidence_dev_v1_review.json`.
+
 The confirmation supports new-input benefits against the registered internal
 comparators; the ablation supports a relation mechanism; the external study
 exposes both complementarity and a substantial cost challenge; the proof

@@ -306,3 +306,14 @@ trusted base for this request; network/source binding, guard lowering and route
 exclusions remain assumptions. This does not upgrade the old production
 TIMEOUT or certify deployed floating-point execution. Source:
 `act/pipeline/moe/results/conv_pre_f0_review_20260915_r2.json`.
+
+The same completed proof was subsequently packaged independently of server
+paths. Content-addressed array storage preserves the original logical-file
+hashes while reducing428.19MB of proof dependencies to a7.18MB bundle including
+the checker. After copying outside the checkout, Python `-I -S` reproduced all
+nine checked obligations without model, dataset, historical directory or solver
+reads. Removed obligations, substituted sources and changed properties were
+rejected even after transport hashes were recomputed; damaged content was also
+rejected. This makes a real conditional proof portable, not its upstream
+network construction independently verified. Evidence:
+`docs/portable_conv_proof_v1_review.json`.

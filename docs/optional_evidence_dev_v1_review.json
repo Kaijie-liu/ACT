@@ -1,0 +1,220 @@
+{
+  "audit_seconds": 31.56406849436462,
+  "classification": "POSTSELECTED_POSITIVE_CONTROL_NOT_CONFIRMATORY",
+  "completed": 2,
+  "details": [
+    {
+      "arm": "production_matched_v2",
+      "evidence_level": "HZ_POLICY_ACCEPTED",
+      "package_audit": {
+        "issue_count": 0,
+        "issues": [],
+        "package": "/data1/Kane/MOE/ACT/data/moe/results/optional_evidence_dev_20260915_v1/production_matched_v2/package",
+        "replay_unsafe": true,
+        "request_id": "ef6cebd33ce763e976d8e81091d86c54666f0b750436de2bfd3968ed4ce09bfd",
+        "schema_version": 1,
+        "status": "PASS",
+        "verdict": "TIMEOUT"
+      },
+      "stages": {
+        "production": {
+          "allowed_seconds": 297.99804581701756,
+          "elapsed_seconds": 295.69159676972777,
+          "return_code": 0,
+          "start_seconds": 0.0019562970846891403,
+          "state": "COMPLETED"
+        }
+      },
+      "status": "TIMEOUT",
+      "wall_seconds": 295.696546824649
+    },
+    {
+      "archival_recheck_seconds": 30.058777837082744,
+      "arm": "optional_checked_evidence",
+      "evidence_level": "CHECKED_RATIONAL_CONDITIONAL",
+      "portable_bytes": 7181522,
+      "proposal_calls": 26,
+      "result": {
+        "deployed_float_SAFE": false,
+        "floating_F0_construction_trusted": false,
+        "gate_bounds": [
+          "1/2",
+          "1"
+        ],
+        "minimum_lower_bound": "199593373867685/1125899906842624",
+        "obligations": [
+          {
+            "competitor": 1,
+            "lower_bound": "495368143406774940992736801629139628628272704084384909037/98079714615416886934934209737619787751599303819750539264",
+            "pair": [
+              1,
+              2
+            ],
+            "property_index": 0,
+            "status": "CHECKED_RATIONAL_POSITIVE"
+          },
+          {
+            "competitor": 2,
+            "lower_bound": "562945735601573995982495552204237114540677/348449143727040986586495598010130648530944",
+            "pair": [
+              1,
+              2
+            ],
+            "property_index": 1,
+            "status": "CHECKED_RATIONAL_POSITIVE"
+          },
+          {
+            "competitor": 3,
+            "lower_bound": "3625354731550118566077414365167529497607/1361129467683753853853498429727072845824",
+            "pair": [
+              1,
+              2
+            ],
+            "property_index": 2,
+            "status": "CHECKED_RATIONAL_POSITIVE"
+          },
+          {
+            "competitor": 4,
+            "lower_bound": "141519401638799478724504667974700024325865/43556142965880123323311949751266331066368",
+            "pair": [
+              1,
+              2
+            ],
+            "property_index": 3,
+            "status": "CHECKED_RATIONAL_POSITIVE"
+          },
+          {
+            "competitor": 5,
+            "lower_bound": "1609183341318005042414638372355569826085541/348449143727040986586495598010130648530944",
+            "pair": [
+              1,
+              2
+            ],
+            "property_index": 4,
+            "status": "CHECKED_RATIONAL_POSITIVE"
+          },
+          {
+            "competitor": 6,
+            "lower_bound": "219807107729561131666223151405207129341141/87112285931760246646623899502532662132736",
+            "pair": [
+              1,
+              2
+            ],
+            "property_index": 5,
+            "status": "CHECKED_RATIONAL_POSITIVE"
+          },
+          {
+            "competitor": 7,
+            "lower_bound": "1582176270980119578369345090584751926487653/348449143727040986586495598010130648530944",
+            "pair": [
+              1,
+              2
+            ],
+            "property_index": 6,
+            "status": "CHECKED_RATIONAL_POSITIVE"
+          },
+          {
+            "competitor": 8,
+            "lower_bound": "199593373867685/1125899906842624",
+            "pair": [
+              1,
+              2
+            ],
+            "property_index": 7,
+            "status": "CHECKED_REUSED_POSITIVE"
+          },
+          {
+            "competitor": 9,
+            "lower_bound": "4702771701342150494495329692911170891738113/696898287454081973172991196020261297061888",
+            "pair": [
+              1,
+              2
+            ],
+            "property_index": 8,
+            "status": "CHECKED_RATIONAL_POSITIVE"
+          }
+        ],
+        "positive_obligations": 9,
+        "production_verdict_changed": false,
+        "rational_positive": 8,
+        "required_obligations": 9,
+        "reused_positive": 1,
+        "router_exclusions_independently_proved": false,
+        "status": "CHECKED_REQUEST_CONDITIONAL_ON_TRUSTED_PRE_F0_LOWERING",
+        "support_bounds": {
+          "gate_lower": "6821738140771629664702313/9671406556917033397649408",
+          "gate_upper": "-8223707018052826948038807/9671406556917033397649408",
+          "p0_lower": "-178184383704801499100752561018060384312563/87112285931760246646623899502532662132736",
+          "p0_upper": "-147167419854086322108515481262422317523815/21778071482940061661655974875633165533184",
+          "p1_lower": "88016206482149129022837776768818139793685/21778071482940061661655974875633165533184",
+          "p1_upper": "-2112225296245416191028205315804551546862095/174224571863520493293247799005065324265472",
+          "p2_lower": "192624551352647153745329150486033778546855/21778071482940061661655974875633165533184",
+          "p2_upper": "-1453463217065145284733742214863049650843435/87112285931760246646623899502532662132736",
+          "p3_lower": "28743430538221039183072233020415929432531/5444517870735015415413993718908291383296",
+          "p3_upper": "-311412463567798814914606247451563414692345/21778071482940061661655974875633165533184",
+          "p4_lower": "1667464231433151889712113334741469285619439/174224571863520493293247799005065324265472",
+          "p4_upper": "-1570314815391497653099737782100904826231845/87112285931760246646623899502532662132736",
+          "p5_lower": "99673959454992906886643481423489628056345/87112285931760246646623899502532662132736",
+          "p5_upper": "-211879339012644827546696493719061432017719/21778071482940061661655974875633165533184",
+          "p6_lower": "1577239307526715195764087980425859230866565/174224571863520493293247799005065324265472",
+          "p6_upper": "-1721805367989206987319289210787427124165739/87112285931760246646623899502532662132736",
+          "p8_lower": "2116993901619149009650027949276049151700305/696898287454081973172991196020261297061888",
+          "p8_upper": "-241868684408107145525884942439898729790775/21778071482940061661655974875633165533184"
+        },
+        "trusted_base": [
+          "network_input_to_HZ_interval_sources_and_expert_binding",
+          "membership_pair_guard_lowering",
+          "router_infeasibility_exclusions"
+        ]
+      },
+      "stages": {
+        "capture": {
+          "allowed_seconds": 297.9990414073691,
+          "elapsed_seconds": 29.273996906355023,
+          "return_code": 0,
+          "start_seconds": 0.0009593358263373375,
+          "state": "COMPLETED"
+        },
+        "check": {
+          "allowed_seconds": 143.1688714697957,
+          "elapsed_seconds": 30.225267104804516,
+          "return_code": 0,
+          "start_seconds": 154.831129623577,
+          "state": "COMPLETED"
+        },
+        "package": {
+          "allowed_seconds": 152.55171869602054,
+          "elapsed_seconds": 9.381021030247211,
+          "return_code": 0,
+          "start_seconds": 145.44828337896615,
+          "state": "COMPLETED"
+        },
+        "precheck": {
+          "allowed_seconds": 184.98613833077252,
+          "elapsed_seconds": 32.43236277997494,
+          "return_code": 0,
+          "start_seconds": 113.01386382896453,
+          "state": "COMPLETED"
+        },
+        "propose": {
+          "allowed_seconds": 268.724351988174,
+          "elapsed_seconds": 83.73638449795544,
+          "return_code": 0,
+          "start_seconds": 29.275649396702647,
+          "state": "COMPLETED"
+        }
+      },
+      "status": "CHECKED_CONDITIONAL",
+      "wall_seconds": 185.31655447278172
+    }
+  ],
+  "execution_head": "d944a9ed36241f11a28957526d60dde047a8ab23",
+  "execution_state": "COMPLETED",
+  "issues": [],
+  "new_generalization_claim": false,
+  "planned": 2,
+  "production_gate_changed": false,
+  "schema": "OPTIONAL_EVIDENCE_DEV_V1_REVIEW",
+  "speedup_claim": false,
+  "status": "PASS"
+}
