@@ -1,5 +1,16 @@
 # MoE project handoff
 
+Latest completion (2026-09-15): portable input98 proof accepted under
+`f9dc8f2dd`. Read docs/portable_conv_proof_v1_results.md and its compact review.
+Copied OUTSIDE checkout; python -I -S checks9/9 with exact archived result,
+without model/data/history/solver reads. Four mutations reject, including
+semantic mutations with rehashed transport.56 logical files428.19MB reduce
+to7.18MB bundle (32.10MB deduplicated uncompressed); pack9.26s/check30.22s.
+Trusted upstream HZ/guards/exclusions unchanged; no new solve or gate change.
+Current user sequence: next read-only five-case unresolved/cost analysis,
+THEN separately freeze optional same-request-budget evidence development.
+Do not treat old179s as a comparative speedup or automatically remove status0.
+
 Latest completion (2026-09-15): input98 PRE-F0 rational request proof COMPLETE
 under `2a8e11d76`. Read docs/conv_pre_f0_r2_results.md and
 act/pipeline/moe/results/conv_pre_f0_review_20260915_r2.json.9/9 positive:
