@@ -342,3 +342,13 @@ numerical filters remain separate evidence grades. Controls cover changing
 dimensions, all-tied multi-pair models, partial reuse, semantic mutations and
 deadline failures, but are not evidence of new real-model coverage. Sources:
 `docs/general_evidence_v1.md`, `docs/general_evidence_v1_controls.json`.
+
+A subsequent optional engineering revision distinguishes exhaustion of a
+proposal's checking reserve from exhaustion of the whole request deadline.
+Only the former returns committed partial evidence to the unchanged checker;
+it cannot promote an uncommitted or missing obligation. True deadline expiry,
+invalid evidence and incomplete isolated checking remain failures. Analytic
+multi-pair and portable partial-proof controls cover this handoff, but it has
+not been used to replace any frozen real-request result or establish a speedup.
+The stored-proof cost profile and controls are recorded separately in
+`docs/evidence_handoff_v1.md`.

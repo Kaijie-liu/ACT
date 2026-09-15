@@ -1,5 +1,37 @@
 # MoE project handoff
 
+Latest engineering completion (2026-09-16): optional reserve handoff revision
+is implemented separately in `evidence_handoff/`; read
+`docs/evidence_handoff_v1.md`, controls.json and profile.json.36/36 analytic
+and regression tests PASS, zero skips/errors. Old source/method/execution
+freezes verified before and after tests; original cohort records unchanged.
+Only proposal-grant expiry against the fixed80s reserve is caught and handed
+to unchanged precheck; true300s exhaustion, invalid evidence and I/O failure
+remain failures. Committed obligations survive; missing ones remain UNKNOWN.
+Portable partial-proof check and actual analytic worker→driver→isolated-check
+→audit chain pass. Same60s proposal cap,300s total, thresholds and trust base.
+New driver emits candidate terminals, requiring the caller's298s owned-process
+watchdog. No real-cohort launcher/outer protocol is registered for this version;
+the old supervisor still uses the old driver. No new real-model run was made.
+
+One fixed saved-evidence profile: first archived precheck,rank0/input114,
+parent archive SHA67cf5602..., NOT input98/new bound search. Unchanged checker
+reproduces UNKNOWN_NONPOSITIVE (3 positive/6 nonpositive) in102.852s with
+cProfile, outside original budget; original terminal remains TIMEOUT.61 loads
+of61 files cost2.600s;23,257,441 rational conversions,232 sparse-entry parses,
+166 identity calls expose repeated exact computation, not repeated reads of
+one pathname. Cumulative times overlap and profiling is NOT a speed comparison.
+No solver/checkpoint/data load in this saved-proof profile. Raw run preserved
+under evidence_handoff_profile_20260916_v1; compact result committed separately.
+
+Next bounded engineering opportunity: immutable parsed-source/matrix reuse
+keyed by checked content identity, maintaining all per-reference property,
+frame/guard/factor-order and dual checks. First use stale/cache-mutation and
+uncached differential controls; no implemented cache or claimed speedup yet.
+Keep handoff version fixed, retain all20 original TIMEOUTs and nonpositive
+bounds. Do not rerun/retune the old cohort or claim the handoff adds SAFE.
+Any new real-request study needs a separate execution freeze and terminal audit.
+
 Latest completion (2026-09-16): the frozen general-evidence new20-input cohort
 is FINISHED AND ARCHIVED; do not launch it again. Read
 `docs/general_evidence_execution_v1_results.md` and its hash-bound JSON first.
