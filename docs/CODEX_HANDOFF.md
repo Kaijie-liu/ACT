@@ -1,5 +1,19 @@
 # MoE project handoff
 
+Latest completion (2026-09-15): full convolutional V2 COMPLETE and freshly
+reviewed under execution `2d2477e4b`. Read `docs/conv_full_v2_results.md` and
+`act/pipeline/moe/results/conv_full_v2_review_20260915.json`. All90 requests
+complete; automatic/separate/fresh audits agree PASS0;30/30 fact pairs equal,
+35 UNSAFE method-run replays (18 distinct inputs). Adaptive0 SAFE/17 UNSAFE/
+13 internal TIMEOUT; matched0/11/19; CROWN1 numerical positive/7 UNSAFE/
+22 UNKNOWN. No outer timeout. Adaptive's six additional decisions are ALL
+counterexamples, not certificates. CROWN-only positive index98 is not formal
+SAFE; its witness index113 is missed by both ACT arms. No work remains queued.
+User requests archival then saved-log analysis of unresolved obligations;
+do that read-only, in separate derived artifacts, without new solving,
+retuning or replacing frozen results. Earlier "not started" entries below
+are historical. Full V2 sources/protocol and all raw bytes stay immutable.
+
 Current explicit authorization (2026-09-15): PI requests the90-call full V2
 three-arm experiment on the ORIGINAL30 unexecuted conv inputs. Read frozen
 `docs/conv_full_v2.md` and `scripts/conv_full_v2_protocol.json`. New scripts

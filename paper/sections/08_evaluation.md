@@ -181,7 +181,7 @@ with adaptive one replayed UNSAFE and one outer TIMEOUT, matched monolithic
 two outer TIMEOUTs, and plain-CROWN two completed UNKNOWN records. The terminal
 audit passes, including both common-fact comparisons, but the smoke gate fails:
 monolithic has no complete non-error record. The 90-call full experiment has
-not started. This is a budget-conformance limitation, not a measured
+not started at that historical gate. This was a budget-conformance limitation, not a measured
 cross-architecture advantage or evidence that the timed-out properties are
 safe. Evidence: `act/pipeline/moe/results/conv_training_review_20260915_r1.json`
 and `act/pipeline/moe/results/conv_three_arm_smoke_review_20260915_r1.json`.
@@ -195,6 +195,27 @@ defect, not evidence that repairing it yields positive bounds; the profiled
 request and original smoke remain failures. Instrumentation costs are charged,
 and this single diagnostic is not a comparative speed result. Evidence:
 `act/pipeline/moe/results/conv_f0_timing_review_20260915_r1.json`.
+
+A separately frozen V2 budget adapter subsequently passes old-input smoke;
+the new full protocol then completes all 90 requests on the original 30
+previously unexecuted inputs, with no outer timeout. Both ACT arms use V2;
+plain CROWN retains its original configuration. Fresh review matches the two
+automatic audits: 90 complete records, 30 equal common-fact pairs and 35
+full-model witness replays (18 distinct inputs).
+
+| Method (30 inputs) | HZ SAFE / replayed UNSAFE / internal TIMEOUT | CROWN positive / replayed UNSAFE / UNKNOWN | Mean request seconds |
+|---|---|---|---:|
+| Adaptive | 0 / 17 / 13 | — | 188.31 |
+| Matched monolithic | 0 / 11 / 19 | — | 217.50 |
+| ACT routing + static weighted CROWN | — | 1 / 7 / 22 | 4.40 |
+
+All six adaptive-only decisions relative to matched are UNSAFE, not extra
+certificates. Its paired mean time saving is 29.19s but the paired median
+difference is +0.014s, so no uniform speedup is claimed. CROWN's index98
+numerical positive is not formal SAFE; its index113 witness is missed by
+both ACT arms. This convolutional transfer therefore provides no HZ SAFE or
+cross-architecture certificate advantage under this frozen protocol.
+Evidence: `act/pipeline/moe/results/conv_full_v2_review_20260915.json`.
 
 The confirmation supports new-input benefits against the registered internal
 comparators; the ablation supports a relation mechanism; the external study
