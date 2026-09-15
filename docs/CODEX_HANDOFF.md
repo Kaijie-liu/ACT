@@ -1,5 +1,13 @@
 # MoE project handoff
 
+Latest read-only analysis: docs/proof_closure_costs_20260915.md/.json separates
+three ACT-only checked-nonpositive cases, conv16 checked-nonpositive7/9 and
+conv98 complete-conditional9/9. Saved raw inventories rehashed; no new solves.
+Historical native solver-limit TIMEOUTs are a distinct evidence layer.
+Exclusive propagation/serialization were not measured: null, not invented0.
+Next authorized step is a NEW optional one-request-budget evidence development
+mode, not relaxing production optimal-status or refining these old bounds.
+
 Latest completion (2026-09-15): portable input98 proof accepted under
 `f9dc8f2dd`. Read docs/portable_conv_proof_v1_results.md and its compact review.
 Copied OUTSIDE checkout; python -I -S checks9/9 with exact archived result,
