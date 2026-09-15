@@ -241,3 +241,12 @@ Recheck the frozen selection in a separate process (clean forwards only):
 
 This turn freezes the experiment; it does not launch the smoke/full pipeline,
 open an old holdout or start request-level rational proof queries.
+# Latest separate V2 completion
+
+The separately authorized OLD-input ACT two-arm budget smoke is complete:
+`docs/conv_budget_smoke_v2_results.md` and the compact
+`results/conv_budget_smoke_review_20260915_v2.json` under this pipeline.
+V2 gate PASS,4 full packages,zero outer kills, but still0 SAFE and3 unsolved
+TIMEOUT requests. This does NOT change R1's FAIL, run its90-request cohort,
+or modify the frozen CROWN arm. Any full follow-up must explicitly bind the
+V2 execution contract in a separate protocol.

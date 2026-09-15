@@ -1,5 +1,22 @@
 # MoE project handoff
 
+Latest completion (2026-09-15): frozen V2 outer-supervised OLD-input two-arm
+smoke COMPLETE under `bd8610238`. Read `docs/conv_budget_smoke_v2_results.md`
+and `act/pipeline/moe/results/conv_budget_smoke_review_20260915_v2.json`.
+Automatic/separate/fresh audit PASS0, V2 gate PASS;4/4 complete packages,
+2/2 common-fact pairs equal,1 full-model UNSAFE replay. Outcomes remain1 UNSAFE
++3 TIMEOUT,0 SAFE. Old3 outer kills become0, with complete internal TIMEOUT
+packages at295.580/295.581/296.275s.5,993 journal events,2,593 returned native
+calls,37 UNKNOWN property records; no passed-allocation violation. Native
+return still overruns a local deadline by up to54.956s (input1 adaptive Tier1),
+so native hard timing is NOT solved; owning300s watchdog remains necessary.
+74 tests pass. All54 current parent artifacts unchanged. No worker/full90
+running or queued. This requested stage is finished; do not rerun it. A full
+comparison requires a separately frozen V2-bound protocol and authorization,
+not promotion/mixing into old R1 (which remains FAIL). Do not change frozen
+V2 sources/protocol; new findings belong in separate follow-ups. Accounting
+conformance is not new SAFE coverage or an independent network-bound proof.
+
 Current authorized freeze (2026-09-15): `docs/conv_budget_smoke_v2.md` freezes
 four OLD-input requests (0/1 x adaptive/matched monolithic), same300s total,
 V2 reserve5s inside300 and unchanged numerical gates. New outer runner
