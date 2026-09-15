@@ -1,5 +1,18 @@
 # MoE project handoff
 
+Current authorized stage (2026-09-15): input98 ONLY, same nine properties and
+materialized2/255 box, pre-F0 rational-construction proof. Read
+docs/conv_pre_f0_r1.md and scripts/conv_pre_f0_protocol.json. Fresh shared expert
+HZ, fresh router-order and difference LP evidence, dyadic0/half/1 gate ranges;
+existing independent rational McCormick checker. No floating F0/gate routine
+or weighted-property MILP, no input16 rerun. New raw root
+data/moe/results/conv_pre_f0_rational_20260915_r1. Tests/freeze/commit/push and
+live remote equality precede launch. Outcome may be UNKNOWN under this more
+conservative gate policy; no refinement/retry or production acceptance change.
+If all nine close, remove only the floating F0 construction trust assumption;
+upstream network→HZ, source binding, guards and route exclusions remain trusted.
+This records preparation, not completion; no later query queued.
+
 Latest completion (2026-09-15): ALL obligations of conv inputs16/98 checked
 under frozen execution `0ed860053`, remote publication confirmed BEFORE root
 creation. Read docs/conv_request_sign_lp_r1_results.md and
