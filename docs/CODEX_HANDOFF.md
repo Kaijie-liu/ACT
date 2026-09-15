@@ -1,5 +1,21 @@
 # MoE project handoff
 
+Latest implementation (2026-09-15): explicit opt-in budget/partial-terminal V2
+is implemented for both adaptive and matched monolithic under `scripts/`.
+Read `docs/budget_contract_v2.md` and `scripts/conv_budget_contract_v2.json`.
+Local grants retain absolute deadlines through construction; native limits
+are rechecked after durable READY publication; both arms reserve5s INSIDE300s
+for terminal work.25%, support configs and numerical gates unchanged. Property
+and replay records are durable and separately labelled, never request verdicts.
+Stdlib-only checker validates budget accounting; it is not a bound proof.
+All frozen ACT/old wrapper files remain unchanged; this is an explicitly bound
+runtime execution adapter, not an observational-only patch or default change.
+New conv worker requires policy/source identity in its request. Real-model V2
+smoke has NOT run; a separately frozen outer supervisor+terminal audit remains
+required. Full90 is not authorized. First commit/push and run source-defined
+toy controls via `scripts.run_budget_v2_controls`, then archive/review them;
+do not confuse toy conformance with repaired conv smoke or new SAFE results.
+
 Latest completion (2026-09-15): the separately frozen F0 timing diagnostic has
 finished ONE old input0/matched-monolithic request under execution `fd69daa1a`.
 Read `docs/conv_f0_timing_r1.md` and
