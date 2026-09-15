@@ -1,5 +1,23 @@
 # MoE project handoff
 
+Latest diagnostic completion (2026-09-15): full V2 results archived/pushed in
+`7b1ab7269`; separate read-only obligation analysis is in
+`docs/conv_full_v2_obligations.md` and
+`act/pipeline/moe/results/conv_full_v2_obligations_20260915.json`. All frozen
+raw hashes unchanged; no new solve/forward query.419 returned F0 property
+queries ALL status1 solver-limit UNKNOWN, not completed crossing-zero bounds.
+All32 ACT timeouts entered F0 after exact routes. Adaptive queried192/207
+pair-properties,1 interval-reusable,14 not reached (inputs26/48/95/106);
+matched170 union queries cover314/315,1 reusable.54 stored full-objective
+duals are positive but UNACCEPTED. Inputs16 (9/9) and98 (8/8 plus1 interval
+fact) have diagnostic sign coverage in both arms, remain TIMEOUT, single-pair,
+NOT newly certified. A scalar MILP dual is not an independent proof. Native
+limits are compliant but local return overrun reaches43s; do not remove outer
+watchdog. Next possible separate protocol: independently checked sign-sufficient
+bounds on these observed controls; separately analyze scheduling long tails.
+No gate relaxation, extra solve, holdout or follow-up is queued/authorized by
+this diagnostic. See retained parser-draft note; R1/full V2 remain unchanged.
+
 Latest completion (2026-09-15): full convolutional V2 COMPLETE and freshly
 reviewed under execution `2d2477e4b`. Read `docs/conv_full_v2_results.md` and
 `act/pipeline/moe/results/conv_full_v2_review_20260915.json`. All90 requests

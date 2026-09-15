@@ -217,6 +217,19 @@ both ACT arms. This convolutional transfer therefore provides no HZ SAFE or
 cross-architecture certificate advantage under this frozen protocol.
 Evidence: `act/pipeline/moe/results/conv_full_v2_review_20260915.json`.
 
+A separate saved-log analysis finds419 returned F0 property queries, all
+solver-status1 limits; none is a completed nonpositive relaxation result.
+All32 ACT timeouts reach F0 after exact route enumeration. Adaptive leaves14
+pair-property scopes unqueried across four multi-pair requests; monolithic
+queries every non-reusable scope in its timeout subset. There are54 positive
+diagnostic full-objective dual records, including sign coverage of all
+obligations on two single-pair inputs (16 and98, the latter with one interval
+fact). They remain unaccepted under the frozen optimal-status policy and are
+not independently checked certificates. The observations motivate proof-bound
+checking and budget studies, not retrospective SAFE promotion or a claim that
+more time will solve every timeout. Evidence:
+`act/pipeline/moe/results/conv_full_v2_obligations_20260915.json`.
+
 The confirmation supports new-input benefits against the registered internal
 comparators; the ablation supports a relation mechanism; the external study
 exposes both complementarity and a substantial cost challenge; the proof
