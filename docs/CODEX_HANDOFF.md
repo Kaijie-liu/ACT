@@ -1,5 +1,15 @@
 # MoE project handoff
 
+Current authorized stage (2026-09-15): freeze ALL required output obligations
+of the SAME two observed conv requests16/98. Read docs/conv_request_sign_lp_r1.md.
+New one-shot script run_conv_request_sign_lp generates fresh scoped interval
+proofs and all residual supplied-F0-HZ LPs, then checks exact rational evidence
+and complete route/property accounting. Upstream lowering, route exclusions and
+floating F0 construction remain trusted. Production gates/old TIMEOUT unchanged.
+Tests, freeze commit AND confirmed remote publication required before run-root
+creation. One CPU thread, no GPU/retraining; no further query queued. This entry
+is preparation, not a claim of successful complete-request evidence.
+
 Latest completion (2026-09-15): two sign-sufficient evidence controls COMPLETE
 under `e269821cf`. Read `docs/conv_sign_lp_r1_results.md` and
 `act/pipeline/moe/results/conv_sign_lp_review_20260915_r1.json`. Independent

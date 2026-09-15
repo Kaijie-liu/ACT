@@ -1,0 +1,23 @@
+{
+  "protocol": "CONV_REQUEST_SIGN_LP_R1",
+  "parent_sign_review_sha256": "d0886cd9481b783a75fd00faba3e6fb11072ef6220a893d00e7cfaceff15f39e",
+  "cases": [
+    {"job_id": "rank2_monolithic", "dataset_index": 16, "expected_pairs": [[0, 3]]},
+    {"job_id": "rank24_monolithic", "dataset_index": 98, "expected_pairs": [[1, 2]]}
+  ],
+  "properties_per_pair": 9,
+  "capture_seconds": 300,
+  "proposal_outer_seconds": 900,
+  "proposal_solver_seconds_per_lp": 60,
+  "checker_seconds": 300,
+  "positive_threshold": 1e-7,
+  "threads": 1,
+  "workers": 1,
+  "device": "cpu",
+  "dtype": "float64",
+  "reuse_historical_bounds": false,
+  "retry": false,
+  "resume": false,
+  "production_gate_changed": false,
+  "remote_publication_required_before_launch": true
+}
