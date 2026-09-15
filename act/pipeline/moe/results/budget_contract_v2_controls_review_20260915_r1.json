@@ -1,0 +1,209 @@
+{
+  "artifact_inventory": [
+    {
+      "bytes": 45174,
+      "path": "monolithic_f0/baseline/evidence.json",
+      "sha256": "8fdaa71a730acdfd238d95c5deba1b98f0a560524da3d1dc3a263e0333061b4e"
+    },
+    {
+      "bytes": 647,
+      "path": "monolithic_f0/baseline/manifest.json",
+      "sha256": "314fdba3fb3c6d1dbd60297bb2545df9bfb69663e1504d703ca8db33f9f03b3f"
+    },
+    {
+      "bytes": 2209,
+      "path": "monolithic_f0/baseline/request.pt",
+      "sha256": "189b96c363d7093ca94b9b2bfdec8de46cd8e83af0dbecc5c226ee280ba0b4d9"
+    },
+    {
+      "bytes": 1032,
+      "path": "monolithic_f0/journal.audit.json",
+      "sha256": "7f7e61113bc99f27d8c6bada8d10ed9f2cd6460af4afbc4d33fb4a18b961a111"
+    },
+    {
+      "bytes": 26877,
+      "path": "monolithic_f0/journal.jsonl",
+      "sha256": "05f8f5e37857296c68acfdc2b382b8f42c2440983831a09070d38089a398baaf"
+    },
+    {
+      "bytes": 45708,
+      "path": "monolithic_f0/v2/evidence.json",
+      "sha256": "e29fa68ec7d8c98827524d0145c48dd30f4b9f435fb9d58eb4ec77209721d748"
+    },
+    {
+      "bytes": 635,
+      "path": "monolithic_f0/v2/manifest.json",
+      "sha256": "405a5bcf01679528ddd33d75fd73219725fb4aff6d995c5f9d83f509651e0913"
+    },
+    {
+      "bytes": 2209,
+      "path": "monolithic_f0/v2/request.pt",
+      "sha256": "189b96c363d7093ca94b9b2bfdec8de46cd8e83af0dbecc5c226ee280ba0b4d9"
+    },
+    {
+      "bytes": 19328,
+      "path": "review.json",
+      "sha256": "ceb1d136dc0511310b89486972aa19e13bdf67f5068709f2c4339ca0fec39a1f"
+    },
+    {
+      "bytes": 1885,
+      "path": "runtime.json",
+      "sha256": "ab62da8c4a91477b9f35097c4f972bfdc526b99ecac77a2c6cab96dbae22b643"
+    },
+    {
+      "bytes": 48043,
+      "path": "staged/baseline/evidence.json",
+      "sha256": "acd4e2ed27b0458fa84ba53c6999ea39bdec4e2eb8b2bc88d2cb195267f18a16"
+    },
+    {
+      "bytes": 622,
+      "path": "staged/baseline/manifest.json",
+      "sha256": "578061bf55e4b2ec49a3aab6778cb428aafa1d936343a6680dcf7d1e6e8bdeb7"
+    },
+    {
+      "bytes": 2209,
+      "path": "staged/baseline/request.pt",
+      "sha256": "4714a1f191997acc23b68be9708ac4d4b8f13139436522180a64fbdce222634d"
+    },
+    {
+      "bytes": 1580,
+      "path": "staged/journal.audit.json",
+      "sha256": "6559ccb9aa1570726d47695ca485c6b7f09eb83e8e7f01a955c0dce2fe447e9d"
+    },
+    {
+      "bytes": 34267,
+      "path": "staged/journal.jsonl",
+      "sha256": "101d9842a27c1b1ffcd5c5ba05634c7b111f28dac8188a8ee964a9e9f450f0bc"
+    },
+    {
+      "bytes": 48572,
+      "path": "staged/v2/evidence.json",
+      "sha256": "5627d5e53fd5fef730f2daf4e7bab919dc84381cf6d31a7532eca8da3157ee83"
+    },
+    {
+      "bytes": 610,
+      "path": "staged/v2/manifest.json",
+      "sha256": "6838d6f73b6cfa3c26bd4849b9eeecf9c1cb80a19bd1f9c0d7d081ac5cc19480"
+    },
+    {
+      "bytes": 2209,
+      "path": "staged/v2/request.pt",
+      "sha256": "4714a1f191997acc23b68be9708ac4d4b8f13139436522180a64fbdce222634d"
+    }
+  ],
+  "execution_head": "e9cde69450df03d3ed74097011d7ce45d88a98ad",
+  "execution_identity": {
+    "policy": {
+      "arms": [
+        "adaptive",
+        "monolithic"
+      ],
+      "changes": [
+        "charge lowering/disjunction construction to local allocation",
+        "recheck native limit after durable ready record",
+        "reserve terminal time equally",
+        "durable property-result and replay records"
+      ],
+      "full_90_authorized": false,
+      "minimum_native_seconds": 0.001,
+      "multi_pair_tier1_fraction": 0.25,
+      "name": "CONV_BUDGET_TERMINAL_V2",
+      "native_calls_preemptible": false,
+      "new_real_model_experiment_status": "NOT_EXECUTED_REQUIRES_SEPARATE_FROZEN_SUPERVISOR_PROTOCOL",
+      "partial_journal_can_establish_SAFE": false,
+      "requires_external_process_group_watchdog": true,
+      "terminal_reserve_seconds": 5,
+      "unchanged": [
+        "model",
+        "input",
+        "radius",
+        "support configuration",
+        "scoped reuse",
+        "numerical safety gates",
+        "tie-legal route coverage"
+      ],
+      "version": 2,
+      "whole_request_seconds": 300
+    },
+    "sources": {
+      "scripts/budget_contract_v2.py": "adbcae11646767aee7c372dd01e18d4b204a4da9107a49234290b1d23c710bc2",
+      "scripts/check_budget_contract_v2.py": "dd3f911527d53cadc433b1383fac8341c1dcdf7e873ac734b3f50ccf8fb25349",
+      "scripts/conv_budget_contract_v2.json": "1c70c83486e2f14130555af093aeee5c342842c86587dde11bc53ee1811b3f42",
+      "scripts/conv_budget_worker_v2.py": "223cdd657e8b29bd0b73bd69068becd63ba4a822982c826091afa65605eac276",
+      "scripts/f0_timing_trace.py": "cdac9e0f2f0bef4d6f7142171d0e7e65a1f1b59f9f39bbb9c832645b6167b691"
+    }
+  },
+  "full_started": false,
+  "historical_artifacts_unchanged": {
+    "conv_f0_timing_review_20260915_r1.json": 13,
+    "conv_three_arm_smoke_review_20260915_r1.json": 40
+  },
+  "independent_reaudit_matches": true,
+  "issues": [],
+  "raw_root": "/data1/Kane/MOE/ACT/data/moe/results/budget_contract_v2_controls_20260915_r1",
+  "real_model_smoke_started": false,
+  "rows": [
+    {
+      "arm": "staged",
+      "baseline": "SAFE",
+      "journal_check": "PASS",
+      "journal_events": 80,
+      "native_calls": 10,
+      "numerical_policy_unchanged": true,
+      "package_checks": {
+        "baseline": "PASS",
+        "v2": "PASS"
+      },
+      "pairs": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "property_records": 2,
+      "unreturned_native_calls": 0,
+      "v2": "SAFE"
+    },
+    {
+      "arm": "monolithic_f0",
+      "baseline": "SAFE",
+      "journal_check": "PASS",
+      "journal_events": 62,
+      "native_calls": 7,
+      "numerical_policy_unchanged": true,
+      "package_checks": {
+        "baseline": "PASS",
+        "v2": "PASS"
+      },
+      "pairs": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "property_records": 1,
+      "unreturned_native_calls": 0,
+      "v2": "SAFE"
+    }
+  ],
+  "schema": "BUDGET_CONTRACT_V2_CONTROL_REVIEW_R1",
+  "scope": "Source-defined toy conformance; journal accounting is not an independent network-bound proof. No convolutional performance or certificate gain established.",
+  "status": "PASS",
+  "tests_passed": 66
+}

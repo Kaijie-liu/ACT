@@ -1,5 +1,19 @@
 # MoE project handoff
 
+Latest completion (2026-09-15): budget/partial-terminal V2 implementation and
+source-defined controls are COMPLETE, execution `e9cde6945`. Read
+`docs/budget_contract_v2.md` and
+`act/pipeline/moe/results/budget_contract_v2_controls_review_20260915_r1.json`.
+Both ACT arms preserve toy baseline SAFE;4 packages pass structural audit and
+separate python -S journal checks match (adaptive80 events/2 property results,
+monolithic62/1).66 focused tests pass. All40 old smoke and13 timing artifacts
+unchanged; no trained-conv query/full90 started and no control worker remains.
+This is an opt-in runtime budget adapter, not new numerical evidence or a
+default algorithm change. Next deliver the separate frozen outer supervisor
+and terminal+journal audit for both ACT arms on old smoke inputs, then test and
+record any new execution under that protocol. R1 remains FAIL. Do not just run
+the new worker without a300s owning watchdog, or mix V2 outcomes into R1.
+
 Latest implementation (2026-09-15): explicit opt-in budget/partial-terminal V2
 is implemented for both adaptive and matched monolithic under `scripts/`.
 Read `docs/budget_contract_v2.md` and `scripts/conv_budget_contract_v2.json`.

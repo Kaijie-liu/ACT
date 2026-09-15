@@ -183,6 +183,10 @@ The separately authorized single-request timing follow-up is completed and
 documented in `docs/conv_f0_timing_r1.md` at the repository root; its retained
 TIMEOUT and measured stale native-budget allocation do not change this smoke
 gate or authorize the full cohort.
+The subsequent opt-in V2 budget/partial-terminal implementation and toy
+controls are documented in repository-root `docs/budget_contract_v2.md`.
+Real-model V2 smoke is still unexecuted; it needs a new frozen outer protocol.
+Neither those controls nor the worker adapter replace the R1 conformance gate.
 
 Six smoke calls must be independently structurally audited. Each arm must
 produce at least one complete non-error package/record across the two inputs;

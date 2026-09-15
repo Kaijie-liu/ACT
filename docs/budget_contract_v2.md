@@ -1,5 +1,26 @@
 # V2 budget and partial-terminal execution contract
 
+## Completed implementation and controls
+
+Implementation execution `e9cde69450df03d3ed74097011d7ce45d88a98ad`;
+compact independent review:
+`act/pipeline/moe/results/budget_contract_v2_controls_review_20260915_r1.json`.
+Both source-defined three-expert/all-three-tie-pair controls retain their
+baseline SAFE result. Four baseline/V2 packages pass the original structural
+auditor. Separate `python -S` journal checks match the saved controls exactly:
+adaptive80 events/2 property results/10 native calls, monolithic62 events/
+1 property result/7 native calls; no unreturned calls in these complete toys.
+The focused suite passes66 tests, including real SIGKILL retention, synthetic
+stale-allocation reproduction and recomputed-hash budget tampering rejection.
+All40 original smoke and13 timing-diagnostic artifacts remain unchanged.
+
+These are correctness/conformance controls, not trained-convolutional smoke,
+coverage or performance evidence. No new conv query or full90 has started.
+Next implement/freeze the new outer supervisor and journal-plus-terminal audit
+for the two ACT arms on the old smoke inputs, retaining all terminals and the
+same300s outer cap. Test that integration before a separately recorded run.
+Do not interpret this successful implementation stage as a passed R1 gate.
+
 This is the bounded engineering follow-up to the measured1.560s stale native
 allocation in `docs/conv_f0_timing_r1.md`. It does not change a solver gate or
 claim that accounting repair resolves the convolutional verification problem.
