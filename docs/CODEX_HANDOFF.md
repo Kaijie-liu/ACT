@@ -1,5 +1,21 @@
 # MoE project handoff
 
+Latest completion (2026-09-16): general-evidence preparation AND new20-input
+conv freeze COMPLETE; docs/general_evidence_v1_preparation_results.md is the
+current summary. Selection sha db3043fb124703e8123e5326eda853dc0d67d45e9104ca316487a631603daea7;
+separate-process clean reconstruction PASS0;5,696 exclusions sources/878 used
+indices. New indices114..205 (explicit roster in selection),60 planned queries,
+ZERO new verification queries executed.36 analytic/regression tests PASS.
+Unchanged matched V2 and original CROWN versus general conditional evidence,
+same checkpoint2/255/300s. No old result upgrade, input98 re-query or new SAFE.
+
+Next authorized preparation: bind/test cohort-level lock, resource gate,
+roster/fail-stop handling and final three-arm aggregation to THIS frozen20
+selection and protocol; then freeze/publish execution identity before launch.
+The per-request runner/audit exists; a full60-cohort supervisor/auditor is not
+yet registered. Preserve indices/settings, do not run endpoints piecemeal or
+use old input98-only launcher. No full launch was performed in this turn.
+
 Current completion (2026-09-16): general weighted-top2 conditional evidence
 interface and per-request budgeted runner/terminal checker implemented OUTSIDE
 frozen act sources (`moe_evidence/`). See docs/general_evidence_v1.md and

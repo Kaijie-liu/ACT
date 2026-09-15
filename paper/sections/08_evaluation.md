@@ -297,3 +297,15 @@ Cross-architecture benefits, high-accuracy deep-model strict certificates and
 independent full-dynamic-model external competition remain unachieved. Historical
 negative results are retained in the appendix rather than replaced by this
 selection of primary questions.
+
+The next evidence-mode study is prepared but not executed. A generalized
+request interface, with all tie-legal pairs and requested linear properties,
+passes36 analytic and regression controls. Twenty new convolutional
+clean-correct inputs were frozen by ascending index after excluding878 used
+indices from5,696 source records; independent clean-only reconstruction passes.
+The planned three-arm comparison retains the original matched V2 and plain
+CROWN, with2/255 and300s. No verification endpoint of this new cohort has been
+queried by this preparation. The API controls and clean selection are not
+additional certificates or empirical coverage. Conditional exact-LP positives,
+production HZ-policy positives and numerical CROWN filters will be reported
+as distinct evidence grades. See `docs/general_evidence_v1_preparation_results.md`.
