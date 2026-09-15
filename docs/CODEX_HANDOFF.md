@@ -1,5 +1,22 @@
 # MoE project handoff
 
+Current explicit authorization (2026-09-15): PI requests the90-call full V2
+three-arm experiment on the ORIGINAL30 unexecuted conv inputs. Read frozen
+`docs/conv_full_v2.md` and `scripts/conv_full_v2_protocol.json`. New scripts
+bind both ACT arms to unchanged budget V2; CROWN frontend/backend unchanged.
+Preflight independently rechecks the existing V2 ACT smoke, original CROWN
+records and original clean-only selection. Old R1 remains FAIL. Tests, freeze
+review, commit and push BEFORE launch. Run once via
+`python -m scripts.run_conv_full_v2` in act-py312, durable session
+`moe-conv-full-v2`, log `data/moe/results/conv_full_v2_pipeline.log`, result root
+`data/moe/results/conv_three_arm_full_20260915_v2`. Inspect live state before
+launch; this entry records preparation, not that90 requests are complete.
+No resume/retry/config change or extra query; ERROR stops and inventories
+unattempted requests. Two separate-process final audits plus FULL_SUMMARY.json
+are automatic; reviewed Git archival is separate. Do not edit the checkout
+while running. No more work is queued after this experiment. Statistical unit
+is30 inputs; CROWN numerical positives are separate from HZ-policy SAFE.
+
 Latest completion (2026-09-15): frozen V2 outer-supervised OLD-input two-arm
 smoke COMPLETE under `bd8610238`. Read `docs/conv_budget_smoke_v2_results.md`
 and `act/pipeline/moe/results/conv_budget_smoke_review_20260915_v2.json`.
