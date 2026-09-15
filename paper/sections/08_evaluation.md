@@ -230,6 +230,20 @@ checking and budget studies, not retrospective SAFE promotion or a claim that
 more time will solve every timeout. Evidence:
 `act/pipeline/moe/results/conv_full_v2_obligations_20260915.json`.
 
+Two subsequent post-selected evidence controls capture the first residual
+F0 property at inputs16 and98, under the same construction recipe, before any
+weighted-property MILP solve. Continuous relaxations of these newly stored HZ
+objects yield exact-rational checked positive bounds of3.6908 and5.7124;
+independent checker processes do not load numerical solvers. This demonstrates
+sign-sufficient LP evidence for two supplied obligations, not whole-network or
+request SAFE, and not equality with the unsaved historical MILP coefficients.
+The trust boundary still includes floating F0 construction and upstream HZ/
+guard lowering. A declared procedural deviation is retained: the local freeze
+commit preceded execution, but a GitHub server error delayed successful remote
+publication until after launch. These are feasibility controls, not an
+unqualified protocol-compliant confirmation. Evidence:
+`act/pipeline/moe/results/conv_sign_lp_review_20260915_r1.json`.
+
 The confirmation supports new-input benefits against the registered internal
 comparators; the ablation supports a relation mechanism; the external study
 exposes both complementarity and a substantial cost challenge; the proof

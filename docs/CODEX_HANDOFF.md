@@ -1,5 +1,21 @@
 # MoE project handoff
 
+Latest completion (2026-09-15): two sign-sufficient evidence controls COMPLETE
+under `e269821cf`. Read `docs/conv_sign_lp_r1_results.md` and
+`act/pipeline/moe/results/conv_sign_lp_review_20260915_r1.json`. Independent
+Python -S checks and fresh review agree: index16 first property LB3.690808268875,
+index98 first property LB5.712379468352;8,078/6,803 factors with1,668/1,243 binary
+factors relaxed. No weighted-property MILP executed; routing/support capture
+still paid. This is CHECKED_POSITIVE_SUPPLIED_F0_LP, two properties, ZERO full
+requests. Original TIMEOUTs and production status0 gate unchanged. Floating
+F0 construction, network→HZ and guards remain trusted; not the prior stronger
+pre-F0 rational-McCormick contract. Documented deviation: initial GitHub push
+failed500; run launched after local freeze commit but before successful remote
+push retry. Evidence audit PASS, execution protocol explicitly records that
+publication-order deviation. Do not rerun/relabel to erase it. Next separate
+scope could check ALL obligations of these same two observed requests, with
+explicit conditional trust and complete aggregation. No follow-up queued.
+
 Current authorized research (2026-09-15): independently checkable sign-sufficient
 lower bounds. Read `docs/conv_sign_lp_r1.md`. New two-control protocol freezes
 first matched F0 properties at index16/{0,3}/5-minus0 and98/{1,2}/0-minus1.
