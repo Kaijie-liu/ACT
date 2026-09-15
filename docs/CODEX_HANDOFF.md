@@ -1,5 +1,22 @@
 # MoE project handoff
 
+Latest completion (2026-09-15): ALL obligations of conv inputs16/98 checked
+under frozen execution `0ed860053`, remote publication confirmed BEFORE root
+creation. Read docs/conv_request_sign_lp_r1_results.md and
+act/pipeline/moe/results/conv_request_sign_lp_review_20260915_r1.json.
+18/18 generated/checked,16 positive. Index16:7/9 positive; class5-minus7
+LB-0.2737518580 and5-minus9 LB-0.1255899474 leave UNKNOWN. Index98:8 positive
+residual LPs+1 independently checked scoped interval fact,9/9 positive,
+minimum0.1772745273844: CHECKED_REQUEST_CONDITIONAL_ON_TRUSTED_F0_LOWERING.
+Two isolated checker processes and fresh review agree; all6 candidate pairs
+per request accounted, but route exclusions/upstream HZ/floating F0 remain
+trusted. This is NOT the stronger prior pre-F0 rational-McCormick proof path,
+NOT deployed-float SAFE, NOT route-changing (both single pair). Historical
+TIMEOUTs and production acceptance unchanged. No retries, no weighted-property
+MILP. All-stage proof-study costs98.35/60.13s, not a benchmark speedup.19 tests
+pass. No follow-up automatically queued; requested study is complete with one
+conditional request proof and one nonclosed request, not2/2 success.
+
 Current authorized stage (2026-09-15): freeze ALL required output obligations
 of the SAME two observed conv requests16/98. Read docs/conv_request_sign_lp_r1.md.
 New one-shot script run_conv_request_sign_lp generates fresh scoped interval

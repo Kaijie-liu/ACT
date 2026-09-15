@@ -281,3 +281,15 @@ This is an exactly checked outer-relaxation construction and conditional
 request proof, not exact linearization of MoE or a native floating-point proof.
 The R1 UNKNOWN and R2 result are retained. Source:
 `act/pipeline/moe/results/request_lp_rational_review_20260914_r3.json`.
+
+The convolutional all-obligation control uses a deliberately weaker, separately
+identified boundary: supplied floating F0 HZ→continuous LP→exact dual/residual
+check. It independently reconstructs scoped interval projections, checks each
+of nine output obligations and accounts for all six candidate pairs, while
+trusting the upstream exclusions. Input98 closes through eight LP proofs and
+one interval fact (minimum0.1772745); input16 leaves two nonpositive LP bounds
+and remains UNKNOWN. It does not inherit the pre-F0 rational construction
+guarantee described above. A complete conditional request is therefore
+distinguished from a positive single-property control, a production SAFE,
+and an independently proved network execution. Source:
+`act/pipeline/moe/results/conv_request_sign_lp_review_20260915_r1.json`.

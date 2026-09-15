@@ -244,6 +244,23 @@ publication until after launch. These are feasibility controls, not an
 unqualified protocol-compliant confirmation. Evidence:
 `act/pipeline/moe/results/conv_sign_lp_review_20260915_r1.json`.
 
+A separately frozen all-obligation follow-up on the same two observed
+convolutional controls now checks18/18 required properties. Input16 has seven
+positive supplied-HZ LP bounds and two nonpositive lower bounds (-0.27375 and
+-0.12559 for competitors7 and9), so remains unclosed. Input98 has eight
+positive residual LP bounds plus one independently checked scoped interval
+fact, yielding a complete conditional request bound of0.1772745. Its two
+isolated checks and fresh review agree. The new remote-publication-before-run
+gate passes. All-stage proof-study costs are98.35s and60.13s, not a matched
+speed comparison with the original300-second verifier. The trust boundary
+still includes network/guard lowering, route exclusions and floating F0
+construction; the previous pre-F0 rational construction result does not
+transfer automatically. These post-selected single-pair controls establish
+one conditional complete request proof, not deployed-float SAFE, additional
+route-changing coverage, or high-accuracy-scale certification. Original
+TIMEOUTs and the production acceptance policy remain unchanged. Evidence:
+`act/pipeline/moe/results/conv_request_sign_lp_review_20260915_r1.json`.
+
 The confirmation supports new-input benefits against the registered internal
 comparators; the ablation supports a relation mechanism; the external study
 exposes both complementarity and a substantial cost challenge; the proof
