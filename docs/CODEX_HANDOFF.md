@@ -1,5 +1,29 @@
 # MoE project handoff
 
+Latest completion (2026-09-16): V3 unverified-pack→sole isolated full check
+is FINISHED. Read `docs/single_check_v3_results.md` and saved114 JSON first.
+72/72 controls PASS; all legacy/math/cache/source/execution freezes unchanged.
+Same complete checker, numerical gate and trusted lowering; no result oracle
+in packaging, no duplicated mathematical precheck. Invalid proofs may pack
+but cannot pass the sole checker. Extra result audit verifies structure, not LP
+mathematics. Whole-driver/phase/watchdog/publication controls remain fail-closed.
+
+Executed published6a7c32695 ONCE on unchanged archived input114, with simulated
+220s prior work and original300s total/298s work deadline. Observed tail54.880s
+(pack15.642,isolated check38.437,other0.801); request clock274.880s,25.120s
+slack. Thus this saved case fits the unchanged80s tail reserve; no actual
+upstream computation was performed. Result exactly unchanged UNKNOWN_NONPOSITIVE,
+3 positive/6 nonpositive, no precheck files, no proposals/new model requests,
+no old TIMEOUT promotion. Package10.323MiB; source/artifact/terminal audits pass.
+DO NOT rerun single_check_saved114_20260916_v3 or edit its results.
+
+Next: prepare/control-test a separate full upstream→V3 development execution
+under the same300s/80s policy BEFORE choosing/freezing a small real comparison.
+Actual upstream runtime and across-request budget feasibility remain untested.
+Report complete checks vs nonpositive/missing/timeout, not promised SAFE gains.
+No cohort/model/holdout run was launched. This completion supersedes pending
+V3 instructions immediately below and V2's duplicate-check bottleneck entry.
+
 Current bounded V3 stage (2026-09-16): user authorized removing the duplicate
 full precheck in a separate opt-in version, NOT changing the sole complete
 checker or80s reserve. Read `docs/single_check_portable_v3.md` and
