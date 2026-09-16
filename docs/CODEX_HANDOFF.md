@@ -1,5 +1,29 @@
 # MoE project handoff
 
+Latest completion (2026-09-16): UPSTREAM REUSE FULL-FLOW integration controlled;
+timing study FROZEN, NOT EXECUTED. Read `docs/reuse_supervised_v1_results.md`,
+protocol, controls_attempt002.json, freeze and selection_review JSON files.
+96/96 controls PASS; two actual analytic capture→proposal→portable-check→outer
+requests agree exactly, relocation passes python -I -S, original-start clocks,
+real watchdog/late-publication/censored-log accounting covered. Failed harness
+invocation and attempt001 are retained. Existing sources/freezes unchanged.
+
+New namespace `reuse_supervised/`: reuse_off vs reuse_on upstream source/CSR
+caches; identical single full tail check with tail cache ON, all proof checks,
+same support-first ordering and300s/298s/60s/80s policy. No clock refund at tail.
+New ordered clean-only inputs220,222,230,232 (902 excluded historical indices),
+same E4/C10 conv epoch89 and2/255,4×2=8 requests. Separate-process selection
+reconstruction PASS,0 issues;0 real verification calls. Result directory
+`data/moe/results/reuse_supervised_comparison_20260916_v1` not created yet.
+
+Next if executing: clean pushed freeze, then `nice -n 10
+/data1/Kane/miniconda3/envs/act-py312/bin/python -m reuse_supervised.study launch`.
+No retry/resume, resource-gated single CPU worker/thread, interleaved arms,
+ERROR stops with all remaining slots retained. Evaluate completion and full
+cost jointly; no claimed speedup yet, and no erased missing/nonpositive states.
+Order optimization remains a separate ablation, not mixed into this study.
+This supersedes the previous full-flow integration TODO, not old results.
+
 Latest completion (2026-09-16): UPSTREAM SOURCE/EXACT-MATRIX REUSE candidate
 implemented, opt-in/default OFF;86/86 controls PASS. Read
 `docs/upstream_reuse_v1.md` and `docs/upstream_reuse_controls_attempt001.json`.
