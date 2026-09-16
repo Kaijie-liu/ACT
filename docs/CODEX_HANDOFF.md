@@ -1,5 +1,27 @@
 # MoE project handoff
 
+Current bounded V3 stage (2026-09-16): user authorized removing the duplicate
+full precheck in a separate opt-in version, NOT changing the sole complete
+checker or80s reserve. Read `docs/single_check_portable_v3.md` and
+single_check_v3_controls_attempt001.json.72/72 controls PASS, zero errors/
+failures/skips; V2 and all earlier frozen source/execution identities unchanged.
+`single_check_portable/` packages unverified evidence, then invokes the same
+full isolated rational checker once. V3 forbids expected_result in metadata;
+pack success is never proof success. All source/property/range/dual/coverage
+checks remain in the sole authoritative check. Extra result-structure audit
+does not re-prove LP bounds. Original300s total/298s owned cutoff unchanged.
+
+After clean commit/push, one FIXED offline check pending:
+act-py312,CPU one thread,nice10, `python -m single_check_portable.replay`.
+Same archived input114, no new proposals/models/inputs. New root
+data/moe/results/single_check_saved114_20260916_v3. Pass original_start=
+tail_start-220: simulated220s upstream gives only80s total/78s work for the
+tail. Do not retry, extend time or substitute on failure. Expected saved
+UNKNOWN_NONPOSITIVE,3 positive/6 nonpositive, original TIMEOUT unchanged.
+Compare/aggregate saved original only AFTER runtime acceptance; no result
+oracle inside packaging/checking. This is offline budget feasibility, not
+real upstream runtime or new verifier SAFE. Archive before any new study.
+
 Latest completion (2026-09-16): portable optional cache V2 and bounded saved
 evidence integration are FINISHED. Read `docs/cached_portable_v2_results.md`
 and saved114 JSON first.61/61 controls PASS; old method/execution hashes
