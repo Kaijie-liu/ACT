@@ -1,5 +1,29 @@
 # MoE project handoff
 
+Latest completion (2026-09-16): portable optional cache V2 and bounded saved
+evidence integration are FINISHED. Read `docs/cached_portable_v2_results.md`
+and saved114 JSON first.61/61 controls PASS; old method/execution hashes
+unchanged. New V2 opt-in bundle binds code/cache mode; analytic relocation
+after removing original sources, python-I-S isolation, mutation, inherited
+clock, owned watchdog and terminal/publication controls pass. Same300s total,
+298s work; `supervise()` plus `audit_outer()` required, never inner files alone.
+
+Executed published bdae1da5d ONCE: saved rank0/input114 evidence tail90.497s
+including outer publication. Precheck35.032s,pack15.695s,isolated check38.882s,
+other0.888s. Package10.326MiB. Exact UNKNOWN_NONPOSITIVE preserved:3 positive/
+6 nonpositive,267/290 cache hits,23 parses,cache cleared. Final review and
+archival/hash accounting PASS. No proposals, new model requests or old TIMEOUT
+promotion; no new real-request study launched. DO NOT rerun the replay root.
+
+Important next-step boundary:90.5s is OFFLINE TAIL ONLY, excluding upstream
+propagation/proposals, and exceeds the old80s tail reserve on this observed
+case. Do not claim production300s feasibility or speedup. Next separately
+scoped engineering question is duplicate full precheck+isolated-check cost,
+while retaining authoritative independent full-obligation checking and terminal
+gates. No change to precheck semantics/reserve is implemented or pre-approved.
+Real-request experiments still require a separate execution/selection freeze.
+This completed entry supersedes pending replay instructions immediately below.
+
 Current implementation stage (2026-09-16): optional exact cache now has a NEW
 portable V2 bundle and owned whole-tail supervisor in `cached_portable/`.
 Read `docs/cached_portable_v2.md` and controls_attempt001.json.61/61 controls
