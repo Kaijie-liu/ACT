@@ -1,5 +1,34 @@
 # MoE project handoff
 
+Latest completion (2026-09-16): frozen UPSTREAM REUSE timing experiment FINISHED
+and independently archived. Read `docs/reuse_supervised_v1_execution_results.md`
+and JSON first. Execution HEAD805e19372730e41e2cc93f17cf2419f41ac2d858,8/8 once,
+no retry/tuning/order change; final audit + fresh-process archival review PASS.
+No ERROR/TIMEOUT. Raw data stay local; methods/freezes unchanged. This completed
+entry supersedes all pending-launch instructions below. DO NOT launch again.
+
+reuse_off:4/4 checker completions,4 UNKNOWN_MISSING_EVIDENCE,21/36 output rows
+missing. reuse_on:4/4 checker completions,4 UNKNOWN_NONPOSITIVE,0/36 missing;
+6 positive rows but30 nonpositive. Complete positive requests remain0/4 each.
+All4 inputs have one legal pair: this is not a route-changing SAFE result.
+Mean full cost276.391→212.251s; all4 on-minus-off differences negative,
+paired median−66.947s; total reduction23.21% in this small engineering cohort.
+More complete evidence, NOT more completed checkers or new full certificates.
+
+Measured exclusive CSR access/parse cost472.78→76.23s is the dominant reduction.
+Native linprog21.05→28.15s; queries95→116, weighted15→36, exact dual evaluations
+285→348 (3 per query retained). Source decode/freeze/copy7.79→19.65s: don't
+claim both caches individually help. On has more packaging/checking work and
+all costs remain charged. Four paired requests/common facts/routes agree;
+all4 router and joint-expert HZ source pairs are byte-identical. Archive exact
+reconstruction and aggregate mutation control pass;0 new solves during review.
+
+Seal study, keep reuse opt-in. No expansion, extra time or same-row rescue.
+Potential next decision: separately isolate source-cache overhead vs matrix
+reuse, and separately study nonpositive LP evidence. Order optimization stays
+a different ablation. No automatic next experiment is frozen by these results.
+Network→HZ/guard/route exclusions still trusted; no deployed-float SAFE claim.
+
 Latest completion (2026-09-16): UPSTREAM REUSE FULL-FLOW integration controlled;
 timing study FROZEN, NOT EXECUTED. Read `docs/reuse_supervised_v1_results.md`,
 protocol, controls_attempt002.json, freeze and selection_review JSON files.
