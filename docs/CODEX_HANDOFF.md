@@ -1,5 +1,26 @@
 # MoE project handoff
 
+Current bounded engineering stage (2026-09-16): optional exact CSR parsing
+reuse is implemented in `exact_matrix_cache/`; read
+`docs/exact_matrix_cache_v1.md` and its controls JSON.41/41 controls PASS,
+zero skips/errors, including cache pollution, content collision, request and
+property identity, unchanged dual checks, deadline failure and uncached exact
+differential. All old method/execution freezes checked before/after controls.
+Cache is request-local and immutable, keyed by canonical content and request;
+only matrix parsing is reused, NEVER a source validation or proof verdict.
+Original production/portable code is unchanged; this is an opt-in adapter.
+
+Timing is PENDING: after publishing this implementation/control/protocol
+commit, run `python -m exact_matrix_cache.benchmark` ONCE in act-py312,
+one CPU thread/nice10/no GPU. Six fresh-process saved-proof checks in fixed
+reference/uncached/cached/cached/uncached/reference order, input114 only.
+No checkpoint, dataset or solver query; original TIMEOUT is not promoted.
+Output: data/moe/results/exact_matrix_cache_benchmark_20260916_v1.
+Do not retry/retune based on timings. Each offline check must reproduce the
+saved UNKNOWN_NONPOSITIVE,3 positive/6 nonpositive result exactly. This stage
+supersedes the older "no implemented cache" opportunity below, not the sealed
+cohort results. Production rollout/new verification needs a separate protocol.
+
 Latest engineering completion (2026-09-16): optional reserve handoff revision
 is implemented separately in `evidence_handoff/`; read
 `docs/evidence_handoff_v1.md`, controls.json and profile.json.36/36 analytic
