@@ -1,5 +1,23 @@
 # MoE project handoff
 
+Latest completion (2026-09-16): UPSTREAM SOURCE/EXACT-MATRIX REUSE candidate
+implemented, opt-in/default OFF;86/86 controls PASS. Read
+`docs/upstream_reuse_v1.md` and `docs/upstream_reuse_controls_attempt001.json`.
+New namespace `upstream_reuse/`, no old frozen source changes. Current source
+bytes/hash and every source/property/range/construction/dual check retained;
+no verdict caching. Four option combinations match original analytic manifests
+and request conclusions exactly;3 exact dual evaluations/successful proposal
+retained. Old all-supports-before-weighted order remains unchanged. The initial
+two fixture-path test errors are documented, not a failed research experiment.
+
+This is an upstream proposal adapter, NOT yet a full-flow or real-model timing
+result. Existing production/portable workers are not rewired. No sealed8-request
+rerun, expanded samples, extra time or query-order ablation. Nested exclusive/
+inclusive timers are ready but synthetic clocks are not speed measurements.
+Next gate: opt-in full-flow integration with original-start total deadline,
+portable tail/terminal controls, then separately freeze timing if authorized.
+Keep schedule optimization separate; mathematical and numerical gates unchanged.
+
 Latest completion (2026-09-16): saved-log evidence-generation COST ANALYSIS
 FINISHED. Read `docs/upstream_generation_cost_v1.md` and JSON first. No new
 models, solver calls, proof replays, samples or budget changes. Old sources/
