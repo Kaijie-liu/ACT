@@ -1,5 +1,29 @@
 # MoE project handoff
 
+Current implementation stage (2026-09-16): optional exact cache now has a NEW
+portable V2 bundle and owned whole-tail supervisor in `cached_portable/`.
+Read `docs/cached_portable_v2.md` and controls_attempt001.json.61/61 controls
+PASS, zero skips/errors/failures; all old freezes/source identities unchanged.
+Cache defaults OFF; V2 metadata pins mode, policy and code. Legacy V1 packages
+and production/cohort paths are untouched. Relocation after deleting analytic
+source, python-I-S isolation, cache/no-cache exact differential, semantic/code
+mutations, partial proofs and deadline controls pass. Both analytic modes
+inherit a simulated270s prior cost, using only the remaining28s work budget.
+Whole-driver watchdog includes precheck→packing→isolated check→candidate I/O;
+same300s total/298s work. Late/failed output and late terminal writes cannot
+promote positives. `run()` candidate records alone are NOT final admission;
+use `supervise()` plus `audit_outer()`. No real-request study launched.
+
+One fixed OFFLINE saved-proof integration check is pending after clean commit/
+push: act-py312,CPU one thread,nice10,no GPU, `python -m cached_portable.replay`.
+Same archived rank0/input114 and unchanged evidence; expected
+UNKNOWN_NONPOSITIVE,3 positive/6 nonpositive. New root:
+data/moe/results/cached_portable_saved114_20260916_v2.300s includes precheck,
+packing, isolated verification and inner terminal I/O; no upstream computation
+or solver queries. Do not retry/retune/substitute or promote historical TIMEOUT.
+This offline integration cost is NOT production end-to-end acceleration.
+Review and archive outcome, then separately decide real-request integration.
+
 Latest completed engineering stage (2026-09-16): exact matrix parsing reuse
 controls AND offline timing are finished and archived. Read
 `docs/exact_matrix_cache_v1_results.md` and its timing JSON FIRST.41/41 controls
