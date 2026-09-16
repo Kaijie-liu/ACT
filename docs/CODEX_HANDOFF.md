@@ -1,6 +1,24 @@
 # MoE project handoff
 
-Current bounded engineering stage (2026-09-16): optional exact CSR parsing
+Latest completed engineering stage (2026-09-16): exact matrix parsing reuse
+controls AND offline timing are finished and archived. Read
+`docs/exact_matrix_cache_v1_results.md` and its timing JSON FIRST.41/41 controls
+PASS;6/6 saved checks reproduce UNKNOWN_NONPOSITIVE,3 positive/6 nonpositive.
+Executed frozen published HEAD b3de034cb. Original/uncached/cached median
+checker seconds54.942/77.859/33.902; cached vs original38.30% lower,1.621 ratio.
+Whole-process medians55.982/78.904/34.961s; cached37.55% lower. Peak RSS rises
+850.324→1127.680MiB (+277.355MiB,+32.62%). Single saved input114,two runs/mode,
+descriptive checker-only result, NOT end-to-end acceleration/new SAFE.
+267/290 cache hits,23 parses,cache cleared at return; all exact results equal.
+Separate accounting/hash review passes; old request/terminal/source unchanged.
+No solver query, no old TIMEOUT promotion, no new real-request experiment.
+DO NOT rerun the completed immutable benchmark/controls-receipt writer below.
+Next separately scoped opportunity: identity-bound portable optional checker
+integration plus relocation/deadline/full-budget controls, before any new
+real-request study. No production rollout or new cohort was launched here.
+This completion supersedes the pending launch instructions immediately below.
+
+Previous prelaunch engineering record (2026-09-16): optional exact CSR parsing
 reuse is implemented in `exact_matrix_cache/`; read
 `docs/exact_matrix_cache_v1.md` and its controls JSON.41/41 controls PASS,
 zero skips/errors, including cache pollution, content collision, request and
