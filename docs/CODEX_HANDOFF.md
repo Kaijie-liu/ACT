@@ -1,5 +1,33 @@
 # MoE project handoff
 
+Latest completion (2026-09-16): sealed30 NONPOSITIVE obligations analyzed without
+new solving. Read `docs/nonpositive_v1_analysis.md` / JSON and review JSON FIRST.
+36/36 exact saved candidate bounds reconstructed:6 positive,30 nonpositive;
+all30 remain UNRESOLVED_CANDIDATE_VS_LP_RELAXATION. No saved primal feasible point
+or independently checked LP upper/optimality bound. PROPOSED is not optimality
+evidence; nonpositive lower bound is not proof of LP impossibility/model unsafety.
+Gate/difference ranges, per-property blockers and exact dual decomposition are
+archived. All30 difference enclosures cross zero; input232 gate remains[0,1],
+others half intervals. These are NOT isolated causes or permission to tighten.
+Residual box terms−13.73..−4.35 mainly come from continuous factors: mandatory
+dual accounting, NOT removable numeric padding.22 positive pre-box subtotals
+are not valid bounds. No representation/budget/order/training change justified.
+
+Separate SOURCE-CACHE ATTRIBUTION follow-up fully integrated and FROZEN ONLY:
+read `docs/source_cache_ablation_v1_results.md`, protocol, freeze and review.
+110/110 controls PASS including two analytic full chains, moved isolated checks,
+cache flag tampering, deadline/cost/error/denominator controls; parent unchanged.
+Same observed inputs220,222,230,232, same checkpoint/tensors/2/255; no expansion.
+New namespace `source_cache_ablation/`: matrix_only(sourceOFF,matrixON) versus
+both(sourceON,matrixON); same tail cacheON, all checks, support-first order,
+300s total/298 watchdog/60 proposal cap/80 tail reserve.8 alternating requests,
+fresh directory `data/moe/results/source_cache_ablation_comparison_20260916_v1`.
+Separate-process parent-selection/hash reconstruction PASS. Real calls0, output
+directory NOT created. No automatic launch/default change. Next scoped action
+is this frozen comparison if execution is requested, not precision work.
+Keep old reuse study sealed; query ordering remains separate. Network→HZ/guard/
+route-exclusion trust unchanged. This entry supersedes potential-next prose below.
+
 Latest completion (2026-09-16): frozen UPSTREAM REUSE timing experiment FINISHED
 and independently archived. Read `docs/reuse_supervised_v1_execution_results.md`
 and JSON first. Execution HEAD805e19372730e41e2cc93f17cf2419f41ac2d858,8/8 once,
