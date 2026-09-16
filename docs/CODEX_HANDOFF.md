@@ -1,5 +1,37 @@
 # MoE project handoff
 
+Latest completion (2026-09-16): full upstream→portable-tail integration is
+CONTROL-TESTED and a small NEW-input comparison is FROZEN, NOT RUN. Read
+`docs/upstream_portable_v1_results.md`, protocol, controls_attempt002.json,
+freeze.json and selection_review.json.78/78 controls PASS, including actual
+analytic capture/proposals→both tails; original72 regressions unchanged.
+All earlier method, source and experiment freezes still verify.
+
+New `upstream_portable/` compares same independently charged capture + reserve
+handoff + cache ON, with double_check(V2 duplicate precheck) vs single_check(V3
+sole isolated full check). Same300s total/298s watchdog,60s proposal cap,80s
+tail reserve. Whole supervisor owns upstream and tail; no reset/refund at tail
+entry. Loading/propagation/support/export/proposals/I/O/check/admission all
+charged. Missing/nonpositive/timeout remain distinct; trusted lowering unchanged.
+This is an engineering tail ablation, NOT matched monolithic or CROWN results.
+
+Frozen NEW convolutional inputs207,209,211,214, same epoch89 checkpoint and
+2/255;4 inputs×2 arms=8 requests, ordered clean-only, no route/bound selection.
+Separate-process input reconstruction/exclusion audit PASS. Actual verification
+calls=0. Old20-input results and offline114 remain sealed, never resumed.
+Output `data/moe/results/upstream_portable_comparison_20260916_v1` does NOT
+exist yet. Next execution after clean pushed freeze:
+`nice -n 10 /data1/Kane/miniconda3/envs/act-py312/bin/python -m upstream_portable.study launch`.
+One CPU thread/worker, resource gate, interleaved arms, no retry/resume; ERROR
+stops and retains remaining roster as NOT_RUN_AFTER_ERROR. Final8-slot summary
+recomputes terminal/clock/request bindings; run audit after completion and
+archive results separately. Do not retune, replace inputs, expand budget, or
+interpret completed nonpositive checks as SAFE. Eight300s caps total40min
+before resource waits/archival audit; this is a bound, not a runtime prediction.
+The current turn completed integration/testing/freeze only, not this launch.
+
+This supersedes the previous "prepare/control-test full upstream" next task.
+
 Latest completion (2026-09-16): V3 unverified-pack→sole isolated full check
 is FINISHED. Read `docs/single_check_v3_results.md` and saved114 JSON first.
 72/72 controls PASS; all legacy/math/cache/source/execution freezes unchanged.
