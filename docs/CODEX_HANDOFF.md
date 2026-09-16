@@ -1,5 +1,36 @@
 # MoE project handoff
 
+Latest completion (2026-09-16): saved-log evidence-generation COST ANALYSIS
+FINISHED. Read `docs/upstream_generation_cost_v1.md` and JSON first. No new
+models, solver calls, proof replays, samples or budget changes. Old sources/
+results remain frozen. `upstream_cost_analysis/` reconstructs phase clocks and
+source-path work, with2 controls and exact saved-analysis reconstruction.
+
+Eight proposal phases total1118.334s: recorded query windows444.122s, outside
+windows674.212s(60.29%). These windows INCLUDE preparation, two exact dual
+evaluations and some serialization; they are NOT native solver time. Gaps mix
+postchecks, next-source reads/prechecks, rational construction and I/O. Current
+logs cannot give separate checking/construction/serialization seconds; fields
+remain null. All212 entered queries PROPOSED, none recorded solver failure.
+Frozen successful paths imply636 exact dual evaluations during generation;
+tail parser cache does not cover these upstream calls. Count is static, not
+profile timing, and is NOT authorization to remove acceptance checks.
+
+Support-order barrier: all supports finish before ANY weighted query. At
+handoff207 has15/18 properties with all four range certificates but0 weighted;
+214 has7/27 but0 weighted.209 has9 range-ready,6 weighted;211 all9 weighted but
+nonpositive. Readiness is metadata, not a new SAFE proof or evidence that a
+different order would close all obligations. Known support reads~410–810MB/arm;
+weighted209/211 repeatedly decode one joint source and write~242–248MB/arm.
+Logical bytes are not measured disk time; don't call this an I/O bottleneck.
+
+Next separately scoped candidate: upstream immutable decoded-source/exact-CSR
+reuse with unchanged per-query checks, cache identity/pollution/differential
+controls, and nested timer categories BEFORE a new benchmark. Do not silently
+enable it now. Support-order interleaving is a separate ablation, not bundled
+with reuse. No expand/time/profile rerun of the sealed8-request study. This
+entry supersedes the previous saved-log analysis task, not its experiment data.
+
 Latest completion (2026-09-16): frozen full-upstream comparison FINISHED and
 independently reviewed. Read `docs/upstream_portable_v1_execution_results.md`,
 execution_results.json and source_comparison.json FIRST. Published execution
