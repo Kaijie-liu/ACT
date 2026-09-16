@@ -1,5 +1,40 @@
 # MoE project handoff
 
+Latest completion (2026-09-16): frozen full-upstream comparison FINISHED and
+independently reviewed. Read `docs/upstream_portable_v1_execution_results.md`,
+execution_results.json and source_comparison.json FIRST. Published execution
+HEAD17c2ec9f31753a8f40620a756e39ed436a8cff65 ran8/8 once, no retry/reselection/
+code change, original300s total/298s watchdog/80s reserve. Both final roster
+audit and separate-process archival review PASS;0 errors,4 retained timeouts.
+
+double_check:1/4 completed independent checks (211 nonpositive),3 TIMEOUT.
+single_check:3/4 completed checks (207 missing18/18,209 missing3/9 with6
+nonpositive,211 all9 nonpositive),1 TIMEOUT(214). Both0 conditional positives.
+New completion gains207 and209, no loss. Mean full request cost286.543 vs
+276.629s; paired median single-minus-double−3.874s.211 completes252.058 vs
+220.137s;207 single finishes297.940s close to cutoff. These are completion/
+cost gains, NOT new SAFE or a broad speedup. Total charged requests2252.686s.
+
+Identity nuance: request/routing (excluding only branch elapsed)/common facts
+agree for4/4.3 of7 joint-HZ source pairs differ in stored matrices; all router
+sources agree.211 exact output bounds differ slightly though both nonpositive.
+Do not say every full upstream proof was byte-identical or assign every time
+difference uniquely to removal of precheck. Cause of source variation not
+isolated; no effect-driven reruns. Raw hash inventory and derived clarification
+retain these findings without modifying frozen records.
+
+Next bounded work should target evidence-generation cost/coverage, using
+saved logs FIRST. Proposed-query recorded time is only~41–70s versus~99–175s
+proposal-phase time; the difference includes checking/construction/serialization,
+not automatically native-solver difficulty.207/209 lack necessary certificates;
+211 complete nonpositive is a separate relaxation/evidence-strength limitation;
+214 times out even single-check (capture121.6s,pack41.3s). No new budget/cache/
+range change or larger cohort is authorized by these results. Keep the current
+study sealed. Any optimized upstream path needs its own controls and freeze.
+Network→HZ/guard/route exclusion trust remains; no deployed-float SAFE claim.
+
+This completed entry supersedes the pending launch instructions below.
+
 Latest completion (2026-09-16): full upstream→portable-tail integration is
 CONTROL-TESTED and a small NEW-input comparison is FROZEN, NOT RUN. Read
 `docs/upstream_portable_v1_results.md`, protocol, controls_attempt002.json,
