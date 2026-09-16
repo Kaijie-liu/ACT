@@ -1,5 +1,31 @@
 # MoE project handoff
 
+Latest completion (2026-09-16): SOURCE-CACHE ATTRIBUTION execution FINISHED,
+sealed, independently archived. Read `docs/source_cache_ablation_v1_execution_results.md`
+and JSON FIRST. Execution HEADf855c0b713fe9874aeb7d43913a54ff64063865e,8/8 once;
+automatic final audit + fresh-process archive PASS,0 issues. No ERROR/TIMEOUT,
+retry, sample/order/precision changes. This supersedes freeze-only instructions
+below. DO NOT launch this study again.
+
+matrix_only and both:4/4 complete checks,4 UNKNOWN_NONPOSITIVE,36/36 obligations
+checked (6 positive,30 nonpositive,0 missing),0 complete positive requests.
+All36 exact bounds and all4 complete checker results equal; requests, common
+facts, route sets and router/joint-expert source bytes agree.116 proposals/arm,
+348 exact dual evaluations/arm, all checks retained. All4 inputs single pair.
+
+Full cost matrix_only836.820s vs both848.045s; means209.205 vs212.011s.
+Both-minus-matrix differences+0.849,+2.613,+5.015,+2.748s,median+2.681s;
+both1.341% more costly in this small observed cohort. Source decode/freeze/copy
+9.597→19.753s; decode116→84 but84 freezes/32 hit copies;78 source evictions.
+CSR work essentially unchanged, matrix cache0 evictions; native solver~28.3s
+both. No automatic default switch; matrix-only is the better observed option,
+not proof source caching is universally useless. Do not tune capacity/order.
+
+Raw data remain local, old freezes/outcomes unchanged. New archive aggregate
+mutation control passes. Numerical/trusted-lowering boundaries unchanged.
+All30 nonpositive obligations remain unseparated candidate-vs-relaxation; no
+new representation change or solver search is authorized by this result.
+
 Latest completion (2026-09-16): sealed30 NONPOSITIVE obligations analyzed without
 new solving. Read `docs/nonpositive_v1_analysis.md` / JSON and review JSON FIRST.
 36/36 exact saved candidate bounds reconstructed:6 positive,30 nonpositive;
