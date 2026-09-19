@@ -1,5 +1,30 @@
 # MoE project handoff
 
+Latest completion (2026-09-20): user authorized the four frozen sparse diagnostics.
+Batch launched ONCE at clean pushed HEAD23dc688f9; stopped per frozen ERROR rule.
+Read `docs/sparse_supervised_real_v1_execution_results.md/json` FIRST.
+**1 ERROR +3 NOT_RUN_AFTER_ERROR, denominator4;0 completed checks/checked U.**
+Not four successful diagnostics. No retries, new inputs, time or policy changes.
+
+Input220/p0 loads, then `ok(h.passModel(model))` raises native API status
+HighsStatus.kWarning. This precedes h.run(), model readback, raw native return,
+basis map and exact construction. prepared.json/native input survive. Detailed
+warning cause unknown (output_flag=False); don't assume harmlessness or pin it
+on tiny coefficients without further evidence. Native count/time remain null
+in frozen accounting; traceback+source explain why optimization was not reached.
+Other3 jobs unstarted, not omitted or charged as completed zero-time requests.
+
+Input220 publication2.393508s=load0.414452+capture1.516251+residual0.462805.
+Separate preflight2.622400s,resource0.000091s,post-audit0.312447s,final-audit0.791455s.
+Machine archive/fresh saved-record reconstruction PASS; execution remains
+AUDITED_WITH_ERRORS.4 archive controls pass. No real basis efficacy or LP/model
+safety conclusion. Historical inexact-primal results and all freezes unchanged.
+
+NEXT: do NOT launch/resume this freeze again. Separately investigate native model
+import warning and coefficient/constraint readback semantics before designing
+any new version. No warning bypass, cap change or manual continuation of skipped
+jobs. The launch instruction below is historical and superseded by this result.
+
 Latest completion (2026-09-19): LARGE SPARSE SINGLE-BUDGET SUPERVISION integrated
 separately in `sparse_supervised/`. Read `docs/sparse_supervised_v1.md`, controls
 attempt002 and review FIRST.122/122 PASS(27 new+95 regressions);fresh-process
