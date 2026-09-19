@@ -1,5 +1,27 @@
 # MoE project handoff
 
+Latest completion (2026-09-19): EXACT FEASIBLE WITNESS construction research
+added in `exact_primal/`, analytic-only, no production integration. Read
+`docs/exact_primal_v1.md` and numbered receipts FIRST. Latest attempt00335/35
+PASS (13 new +22 regressions); attempt002 one wrong RHS fixture failure kept,
+corrected47/35→67/35 only. All sealed sources unchanged. Real LP reconstructions0,
+real solver calls0; four archived diagnostic outcomes remain unresolved.
+
+Untrusted active-face hinting + sparse rational elimination yields only
+CANDIDATE_ONLY. Full unchanged lp_sandwich checker establishes feasibility/U.
+Control3x=1 reconstructs exact1/3; moved python-I-S checks U=−2/3. No dual or
+optimality claim. Wrong active guesses, violated unselected constraints,
+identity/objective mutations, deadlines/limits correctly rejected or unresolved.
+1e−8 hint radius is generation-only, NEVER a feasibility tolerance. Exact
+binary coefficient semantics preserved. Max64variables/512rows/8192nnz,
+4096bits/200000operations/one attempt; not suitable for the real large LPs.
+
+Research next: explicit sparse basis/anchor identities and original-LP mapping,
+degeneracy/fill-in/bit caps + independent full check; then separately supervised
+costed controls before any new real diagnostic. Do not silently raise caps,
+repair sealed native points, install external solvers or claim network UNSAFE
+from an LP feasible point. See doc for established SoPlex literature and scope.
+
 Latest completion (2026-09-19): FOUR FROZEN LP DIAGNOSTICS EXECUTED AND SEALED.
 Read `docs/lp_diagnostic_v1_execution_results.md` / JSON FIRST. Execution HEAD
 9fdb77beac9c82530a2a1114a0c9ff75e7fc5ac1;4/4 once,4 native calls, all exact
