@@ -1,0 +1,100 @@
+{
+  "analytic_observations": [
+    {
+      "case": "exact_endpoint",
+      "native_calls": 1,
+      "native_status": 0,
+      "result": {
+        "acceptance_threshold": "944473296573929/9444732965739290427392",
+        "candidate_objective_NOT_UPPER_UNLESS_FEASIBLE": "-1",
+        "checked_rows": {
+          "A": 0,
+          "E": 0
+        },
+        "checked_variables": 1,
+        "classification": "LP_NONPOSITIVE_FEASIBLE_POINT",
+        "exact_gap": "0",
+        "exact_optimality": true,
+        "first_violations": [],
+        "lower_bound": "-1",
+        "lp_sha256": "96291a6f3a621de7ef262d6d0a4be752bc0b988a76bb99844cc417eda43e6d5c",
+        "maximum_exact_violations": {
+          "box": "0",
+          "equality": "0",
+          "inequality": "0"
+        },
+        "network_SAFE": false,
+        "network_UNSAFE": false,
+        "primal_status": "EXACT_FEASIBLE",
+        "residual_box_term": "-1",
+        "scope": "Supplied exact rational continuous LP only; network-to-HZ, guards, route exclusions and property lowering NOT checked.",
+        "statement_sha256": "0d7eda2027cfa8f0f3810bd3ce42b61fca1b21f9e6d0363a12ffaeed1998f6f9",
+        "status": "CHECKED_LP_DIAGNOSTIC",
+        "upper_bound": "-1",
+        "violation_counts": {
+          "box": 0,
+          "equality": 0,
+          "inequality": 0
+        }
+      }
+    },
+    {
+      "case": "float_third",
+      "native_calls": 1,
+      "native_status": 0,
+      "result": {
+        "acceptance_threshold": "944473296573929/9444732965739290427392",
+        "candidate_objective_NOT_UPPER_UNLESS_FEASIBLE": "0",
+        "checked_rows": {
+          "A": 0,
+          "E": 1
+        },
+        "checked_variables": 1,
+        "classification": "UNRESOLVED_CANDIDATE_VS_LP_RELAXATION",
+        "exact_gap": null,
+        "exact_optimality": false,
+        "first_violations": [
+          {
+            "exact_violation": "1/54043195528445952",
+            "index": 0,
+            "kind": "equality"
+          }
+        ],
+        "lower_bound": "0",
+        "lp_sha256": "5f73090cb7f18b6ceffccbf90342f331170f52420fd4b4b5643c543f24236886",
+        "maximum_exact_violations": {
+          "box": "0",
+          "equality": "1/54043195528445952",
+          "inequality": "0"
+        },
+        "network_SAFE": false,
+        "network_UNSAFE": false,
+        "primal_status": "NOT_EXACTLY_FEASIBLE",
+        "residual_box_term": "0",
+        "scope": "Supplied exact rational continuous LP only; network-to-HZ, guards, route exclusions and property lowering NOT checked.",
+        "statement_sha256": "0ea5af343ee32614699ae081d69bb05210904dea7a7902120b1bc3d044f0dbd3",
+        "status": "CHECKED_LP_DIAGNOSTIC",
+        "upper_bound": null,
+        "violation_counts": {
+          "box": 0,
+          "equality": 1,
+          "inequality": 0
+        }
+      }
+    }
+  ],
+  "log": "test_capture_preserved_on_checker_failure (lp_sandwich.tests.Capture.test_capture_preserved_on_checker_failure) ... ok\ntest_expired_deadline_no_solver (lp_sandwich.tests.Capture.test_expired_deadline_no_solver) ... ok\ntest_native_infeasible_status_not_promoted_to_a_proof (lp_sandwich.tests.Capture.test_native_infeasible_status_not_promoted_to_a_proof) ... ok\ntest_one_shot_native_capture_and_approximate_point (lp_sandwich.tests.Capture.test_one_shot_native_capture_and_approximate_point) ... ok\ntest_changed_lp_point_binding_and_incomplete_fields (lp_sandwich.tests.Checks.test_changed_lp_point_binding_and_incomplete_fields) ... ok\ntest_deadline_inside_check (lp_sandwich.tests.Checks.test_deadline_inside_check) ... ok\ntest_dual_sign_residual_and_reference_differential (lp_sandwich.tests.Checks.test_dual_sign_residual_and_reference_differential) ... ok\ntest_exact_primal_dual_optimum (lp_sandwich.tests.Checks.test_exact_primal_dual_optimum) ... ok\ntest_inequality_and_box_violations_never_upper_bounds (lp_sandwich.tests.Checks.test_inequality_and_box_violations_never_upper_bounds) ... ok\ntest_invalid_sparse_and_numerical_values (lp_sandwich.tests.Checks.test_invalid_sparse_and_numerical_values) ... ok\ntest_missing_primal_or_dual (lp_sandwich.tests.Checks.test_missing_primal_or_dual) ... ok\ntest_multidimensional_sparse_rational_optimum (lp_sandwich.tests.Checks.test_multidimensional_sparse_rational_optimum) ... ok\ntest_objective_and_dual_overclaims_rejected (lp_sandwich.tests.Checks.test_objective_and_dual_overclaims_rejected) ... ok\ntest_positive_lower_bound (lp_sandwich.tests.Checks.test_positive_lower_bound) ... ok\ntest_positive_primal_does_not_prove_positive_minimum (lp_sandwich.tests.Checks.test_positive_primal_does_not_prove_positive_minimum) ... ok\ntest_relocated_stdlib_check_hash_mutation_and_timeout (lp_sandwich.tests.Checks.test_relocated_stdlib_check_hash_mutation_and_timeout) ... ok\ntest_request_source_property_pair_binding (lp_sandwich.tests.Checks.test_request_source_property_pair_binding) ... ok\ntest_same_weak_lower_bound_opposite_lp_optimum (lp_sandwich.tests.Checks.test_same_weak_lower_bound_opposite_lp_optimum) ... ok\ntest_tiny_equality_error_is_not_feasible (lp_sandwich.tests.Checks.test_tiny_equality_error_is_not_feasible) ... ok\ntest_zero_and_threshold_are_not_strict_positivity (lp_sandwich.tests.Checks.test_zero_and_threshold_are_not_strict_positivity) ... ok\ntest_zero_width_and_unrestricted_equality_dual (lp_sandwich.tests.Checks.test_zero_width_and_unrestricted_equality_dual) ... ok\ntest_exact_residual_accounting (nonpositive_analysis.tests.Controls.test_exact_residual_accounting) ... ok\ntest_identity_sign_and_overclaim_rejected (nonpositive_analysis.tests.Controls.test_identity_sign_and_overclaim_rejected) ... ok\ntest_weak_lower_does_not_determine_lp_minimum (nonpositive_analysis.tests.Controls.test_weak_lower_does_not_determine_lp_minimum) ... ok\ntest_zero_width_product_and_group_sum (nonpositive_analysis.tests.Controls.test_zero_width_product_and_group_sum) ... ok\ntest_costs_denominators_and_no_partial_positive (source_cache_archive.tests.ArchiveTests.test_costs_denominators_and_no_partial_positive) ... ok\n\n----------------------------------------------------------------------\nRan 26 tests in 0.089s\n\nOK\n",
+  "old_freezes_unchanged": true,
+  "real_request_solver_calls": 0,
+  "scope": "analytic component controls only; no real request, performance or complete-network proof claim",
+  "seconds": 0.9083385933190584,
+  "sources": {
+    "lp_sandwich/__init__.py": "6249971a3f56d52efcdd2859023993da74326b3d80e8c4cf531b97007afdced2",
+    "lp_sandwich/check.py": "4466f16292bc2a5b231f26699b78b2dac8e0e30dde5f823b6520ae3d47bb3456",
+    "lp_sandwich/controls.py": "e9182cded1bcf12b3be471dda94cfc036e7267060f4773842cf377e3535a116a",
+    "lp_sandwich/propose.py": "8835f78d59910b368046a8cbff1e22de4444d7c649bdccf39e0758d0c15649b2",
+    "lp_sandwich/tests.py": "58003d831d54e70b142c790ddf6fdd50d27b40f106e5504ac7752d209985a099"
+  },
+  "status": "PASS",
+  "tests_run": 26
+}

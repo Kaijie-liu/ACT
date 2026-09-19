@@ -1,5 +1,27 @@
 # MoE project handoff
 
+Latest completion (2026-09-19): EXACT LP PRIMAL/DUAL diagnostic component added,
+opt-in and NOT production-integrated. Read `docs/lp_sandwich_v1.md` and numbered
+control receipts first. Attempt00125/25 PASS; attempt00226/26 PASS includes
+multidimensional rational LP. New namespace `lp_sandwich/`; all old freezes
+unchanged. Real-request solver calls0; the30 nonpositive rows remain unresolved.
+
+Standalone stdlib checker validates exact box/inequality/equality feasibility,
+objective and signed dual+residual lower bound; combines L≤optimum≤U only if
+both witnesses pass. U≤0 establishes this LP's obstruction, NOT model UNSAFE.
+L>threshold is LP-only evidence, NOT complete MoE SAFE. Native success ignored
+as proof; float1/3 equality control correctly rejects an approximate point.
+Point/status/objective and all native marginals/residuals retained before check.
+Relocation python-I-S, hash/property/sign mutation, timeout/no-retry controls pass.
+
+This is an interface/control release, NOT an actual-request proof or timing run.
+No default/cache/representation/precision/budget/query-order change. CLI has
+POSIX timeout; candidate capture needs an OUTER watchdog before any real use.
+Next bounded step: separately freeze a small unchanged-LP diagnostic, including
+native capture, full cost/terminal accounting and isolated checking. Do not rerun
+all30, repair primal points, enlarge budgets or interpret missing primal evidence
+as LP impossibility. Network→HZ/guard/route exclusions/lowering still trusted.
+
 Latest completion (2026-09-16): SOURCE-CACHE ATTRIBUTION execution FINISHED,
 sealed, independently archived. Read `docs/source_cache_ablation_v1_execution_results.md`
 and JSON FIRST. Execution HEADf855c0b713fe9874aeb7d43913a54ff64063865e,8/8 once;
