@@ -1,5 +1,32 @@
 # MoE project handoff
 
+Latest completion (2026-09-20): first TWO native-warning follow-ups completed.
+Read `docs/native_import_analysis_v1.md`, attempt002 and review FIRST.
+Read-only input220 submission inventory +8 minimal analytic import controls,
+5 unit controls PASS; fresh16-artifact/8-case/2-exact-witness review PASS,0 issues.
+Attempt0017-case pass retained.15 analytic imports total;0 real imports or
+optimizations. Frozen sources/options/results remain unchanged.
+
+Saved real matrix246558 entries contains16 entries at−3.6294188569593725e−10,
+all A row2(zero-based),columns0–3,32–35,64–67,96–99. Runtime default
+small_matrix_value=1e−9. No invalid CSR/duplicates/inverted boxes/large values.
+Saved rational→binary64 conversion reproduces;12084 matrix rounding changes
+are distinct from the16 small entries and do not justify native deletion.
+
+Analytic passModel/readback confirms magnitude<=1e−9 is dropped with kWarning,
+even presolveOFF;nextafter above threshold retained,kOk. Other fields unchanged
+in controls. Positive/negative tiny-coefficient witnesses show deletion can add
+OR remove feasible points; not generally equivalent or a safe outer relaxation.
+Original real import was NOT repeated: full real readback/all warning causes
+still unavailable. No native basis/LP efficacy conclusion.
+
+NEXT decision: separately authorize fidelity-preserving native-import V2 with
+explicit supported small-entry policy and full readback controls; if needed,
+equivalent scaling is a separate design. No silent warning acceptance, V1 option
+edit or real rerun. A filtered-model-as-untrusted-hint alternative needs a new
+identity/mapping contract. Scientific direction is clear; interface change and
+fresh experiment authorization are needed, not samples/time/training changes.
+
 Latest completion (2026-09-20): user authorized the four frozen sparse diagnostics.
 Batch launched ONCE at clean pushed HEAD23dc688f9; stopped per frozen ERROR rule.
 Read `docs/sparse_supervised_real_v1_execution_results.md/json` FIRST.
