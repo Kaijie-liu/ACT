@@ -1,5 +1,30 @@
 # MoE project handoff
 
+Latest stage (2026-09-20): separately authorized native fidelity V2 implemented.
+Read `docs/fidelity_supervised_v2.md`, controls attempt003 and fresh V2 review.
+158/158 controls PASS; 973-artifact/16-terminal review, five relocated isolated
+checks PASS, zero issues. Eight separate archive controls pass. Failed attempts
+001 (stale mapping schema) and 002 (fault harness import + legacy 20-ms startup
+race) remain retained. No frozen V1 source or result was changed.
+
+V2 fixes supported small_matrix_value=1e-12, rejects entries at/below that floor,
+requires kOk and full intended binary64 model readback, saves native logs and
+import records. No warning bypass, coefficient pruning or scaling. Original
+rational LP reconstruction/checking remains mandatory; float import fidelity
+is NOT rational model equivalence. One basis/native attempt, native<=10s,
+proposal218/check298/publication300 seconds and sparse caps remain unchanged.
+
+Same four original LP diagnostics are separately frozen under
+`docs/fidelity_supervised_real_v2_freeze.json` and selection review. Fresh output:
+`data/moe/results/fidelity_supervised_real_20260920_v2`. No real optimization at
+this stage. Current user authorizes continuation within a 20-hour work window,
+not expanded per-request caps. NEXT after clean pushed freeze: launch once,
+fresh audit, archive all four outcomes/costs and commit/push results. No retry,
+new input, alternate basis or acceptance change after seeing results.
+
+Earlier guidance asking for authorization is superseded for this bounded V2
+continuation only. Historical freezes and failures below remain sealed.
+
 Latest completion (2026-09-20): first TWO native-warning follow-ups completed.
 Read `docs/native_import_analysis_v1.md`, attempt002 and review FIRST.
 Read-only input220 submission inventory +8 minimal analytic import controls,

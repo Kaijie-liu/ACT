@@ -1,0 +1,346 @@
+{
+  "compatibility": [
+    {
+      "A_rows": 2890,
+      "E_rows": 1441,
+      "fill_bits_rank_runtime": "UNMEASURED",
+      "import_preflight": {
+        "matrix_entries": 246558,
+        "max_abs": 15.774675658747613,
+        "min_abs_nonzero": 3.6294188569593725e-10,
+        "no_pruning": true,
+        "no_scaling": true,
+        "small_matrix_value": 1e-12
+      },
+      "job_id": "input220_p0",
+      "native_basis_mapping": "UNMEASURED",
+      "real_native_readback": "UNMEASURED",
+      "static_size_policy": "WITHIN_NEW_COMPONENT_CAPS",
+      "stored_nnz": 246558,
+      "variables": 7397
+    },
+    {
+      "A_rows": 3080,
+      "E_rows": 1536,
+      "fill_bits_rank_runtime": "UNMEASURED",
+      "import_preflight": {
+        "matrix_entries": 236502,
+        "max_abs": 10.76127097838461,
+        "min_abs_nonzero": 3.629418856950902e-10,
+        "no_pruning": true,
+        "no_scaling": true,
+        "small_matrix_value": 1e-12
+      },
+      "job_id": "input222_p1",
+      "native_basis_mapping": "UNMEASURED",
+      "real_native_readback": "UNMEASURED",
+      "static_size_policy": "WITHIN_NEW_COMPONENT_CAPS",
+      "stored_nnz": 236502,
+      "variables": 7682
+    },
+    {
+      "A_rows": 4280,
+      "E_rows": 2136,
+      "fill_bits_rank_runtime": "UNMEASURED",
+      "import_preflight": {
+        "matrix_entries": 348915,
+        "max_abs": 14.542750734452246,
+        "min_abs_nonzero": 3.629418856950902e-10,
+        "no_pruning": true,
+        "no_scaling": true,
+        "small_matrix_value": 1e-12
+      },
+      "job_id": "input230_p2",
+      "native_basis_mapping": "UNMEASURED",
+      "real_native_readback": "UNMEASURED",
+      "static_size_policy": "WITHIN_NEW_COMPONENT_CAPS",
+      "stored_nnz": 348915,
+      "variables": 9482
+    },
+    {
+      "A_rows": 4022,
+      "E_rows": 2007,
+      "fill_bits_rank_runtime": "UNMEASURED",
+      "import_preflight": {
+        "matrix_entries": 329664,
+        "max_abs": 15.540012411027114,
+        "min_abs_nonzero": 1.3358420812114961e-10,
+        "no_pruning": true,
+        "no_scaling": true,
+        "small_matrix_value": 1e-12
+      },
+      "job_id": "input232_p0",
+      "native_basis_mapping": "UNMEASURED",
+      "real_native_readback": "UNMEASURED",
+      "static_size_policy": "WITHIN_NEW_COMPONENT_CAPS",
+      "stored_nnz": 329664,
+      "variables": 9095
+    }
+  ],
+  "component_policy": {
+    "attempts": 1,
+    "equations": 16384,
+    "fill_insertions": 1000000,
+    "heap_entries": 200000,
+    "input_nnz": 1000000,
+    "live_nnz": 2000000,
+    "max_bits": 4096,
+    "operations": 20000000,
+    "pivot": "minimum_active_column_degree_then_shortest_incident_row_then_index",
+    "variables": 16384
+  },
+  "control_review": {
+    "path": "/data1/Kane/MOE/ACT/docs/fidelity_supervised_v2_review.json",
+    "sha256": "6decbf7a89ad11e2d2760a5b575fccf0a9cb9151f220253403f2834e8b47ccc0"
+  },
+  "controls": {
+    "path": "docs/fidelity_supervised_controls_attempt003.json",
+    "sha256": "aeff96184a081ea116ec378bd04bae670e4f3d356c83ba1029d2dafd4e0d4dfb"
+  },
+  "jobs": [
+    {
+      "dataset_index": 220,
+      "export": {
+        "path": "/data1/Kane/MOE/ACT/data/moe/results/reuse_supervised_comparison_20260916_v1/rank0_reuse_on/source/s1_2_p0_weighted.export.json",
+        "sha256": "f8b14793296f7bfaa78f3b0c48d797bcc9bff923660350809711a4489c64faf6"
+      },
+      "job_id": "input220_p0",
+      "prior_checked_lower": "-48346806991889147659471474018435247469202482375418377749423/25108406941546723055343157692830665664409421777856138051584",
+      "prior_classification": "UNRESOLVED_CANDIDATE_VS_LP_RELAXATION",
+      "statement": {
+        "acceptance_threshold": 1e-07,
+        "export_sha256": "f8b14793296f7bfaa78f3b0c48d797bcc9bff923660350809711a4489c64faf6",
+        "lp_sha256": "5dde992d33be74e6474c88170fa45c36a73ad15670b5ccb738f286989b378413",
+        "pair": [
+          1,
+          2
+        ],
+        "property": {
+          "constant": 0,
+          "q": [
+            -1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0
+          ]
+        },
+        "property_index": 0,
+        "request_id": "fc9728795459ec463824e579a4424ab885520ce3dc550d47a74ae43e909842f9",
+        "schema": "LP_OBLIGATION_IDENTITY_V1",
+        "source_sha256": "ec1ebaed98a4bdaadc5cf0708c0ed793a9629467aec078c6d1f326ad07c99ac1"
+      },
+      "statement_sha256": "9a0415c70689f02c50611e036d9062695135257c54e9e4f3bf4efd863ab3432f"
+    },
+    {
+      "dataset_index": 222,
+      "export": {
+        "path": "/data1/Kane/MOE/ACT/data/moe/results/reuse_supervised_comparison_20260916_v1/rank1_reuse_on/source/s0_1_p1_weighted.export.json",
+        "sha256": "dc720c6d5386ed7fa36a6f8c347a62a6a02dd36fe74080adecce2b809f2ee6e9"
+      },
+      "job_id": "input222_p1",
+      "prior_checked_lower": "-346369244633845122835282536301898540689926565915287857073/98079714615416886934934209737619787751599303819750539264",
+      "prior_classification": "UNRESOLVED_CANDIDATE_VS_LP_RELAXATION",
+      "statement": {
+        "acceptance_threshold": 1e-07,
+        "export_sha256": "dc720c6d5386ed7fa36a6f8c347a62a6a02dd36fe74080adecce2b809f2ee6e9",
+        "lp_sha256": "194d24ab66eaa99ef425c05bb9799090b20b1d07e17bd3d063d1d6d4d259d031",
+        "pair": [
+          0,
+          1
+        ],
+        "property": {
+          "constant": 0,
+          "q": [
+            0,
+            -1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        "property_index": 1,
+        "request_id": "f58db525ac6acef74c1654fe6c81858f07ebc20613dac16a0a1daf9618d236ea",
+        "schema": "LP_OBLIGATION_IDENTITY_V1",
+        "source_sha256": "f406068d92c5304c7599a414fb6a744a5d1ce8824e74499c4abd5dd526f27dba"
+      },
+      "statement_sha256": "2c1da932b415e497bd71f3a42f9e891ebddb11c91f77a719b38e388454e5368e"
+    },
+    {
+      "dataset_index": 230,
+      "export": {
+        "path": "/data1/Kane/MOE/ACT/data/moe/results/reuse_supervised_comparison_20260916_v1/rank2_reuse_on/source/s0_3_p2_weighted.export.json",
+        "sha256": "8902f178be87cb0da1ecf3afda0b80684e0467e5ba37e322f86c99f42410ee29"
+      },
+      "job_id": "input230_p2",
+      "prior_checked_lower": "-8571336424799822661186001512556201327989975210165678372269/6277101735386680763835789423207666416102355444464034512896",
+      "prior_classification": "UNRESOLVED_CANDIDATE_VS_LP_RELAXATION",
+      "statement": {
+        "acceptance_threshold": 1e-07,
+        "export_sha256": "8902f178be87cb0da1ecf3afda0b80684e0467e5ba37e322f86c99f42410ee29",
+        "lp_sha256": "236491c417b352d859a4048532208df0f4aa3f43b7860885dcf140aca630832c",
+        "pair": [
+          0,
+          3
+        ],
+        "property": {
+          "constant": 0,
+          "q": [
+            0,
+            0,
+            -1,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "property_index": 2,
+        "request_id": "4d4fecc55cf57b932516707d7228ca7a1ad9876cea89b4f6e44ff5395418d296",
+        "schema": "LP_OBLIGATION_IDENTITY_V1",
+        "source_sha256": "c7d606f00965ec5d41767f7fc3affd52b9dc4fd795c8033aee31cbb46adf0421"
+      },
+      "statement_sha256": "8b33df0b3256a8a81b8772c7c634d3286dd6cae4d2cfcb9c534139b0d9da4cd2"
+    },
+    {
+      "dataset_index": 232,
+      "export": {
+        "path": "/data1/Kane/MOE/ACT/data/moe/results/reuse_supervised_comparison_20260916_v1/rank3_reuse_on/source/s0_1_p0_weighted.export.json",
+        "sha256": "884687afa2f52c4e188fba55784ccb9aac84eb7879e8ab14f7f09bd05f927fa0"
+      },
+      "job_id": "input232_p0",
+      "prior_checked_lower": "-62397753018438702660784087067338246304014180043108457379073155/6427752177035961102167848369364650410088811975131171341205504",
+      "prior_classification": "UNRESOLVED_CANDIDATE_VS_LP_RELAXATION",
+      "statement": {
+        "acceptance_threshold": 1e-07,
+        "export_sha256": "884687afa2f52c4e188fba55784ccb9aac84eb7879e8ab14f7f09bd05f927fa0",
+        "lp_sha256": "6d8d30d08a0642e1d417e6b6cfe8ba4f93905c5c952e01f7aca698ac4445638e",
+        "pair": [
+          0,
+          1
+        ],
+        "property": {
+          "constant": 0,
+          "q": [
+            -1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "property_index": 0,
+        "request_id": "b7c4943ea74de81ea43b6ae35b1f632a61b5832d7d4111e2fdb17172ca924264",
+        "schema": "LP_OBLIGATION_IDENTITY_V1",
+        "source_sha256": "427a13e00110cefe6245ee4757d85ba88590658c7afadbc41205e6585bd40f51"
+      },
+      "statement_sha256": "990a5b2afa13817e37f98ebcb175006b32b6f71800e3cb0e4ba21b6a9de9ab7f"
+    }
+  ],
+  "output": "/data1/Kane/MOE/ACT/data/moe/results/fidelity_supervised_real_20260920_v2",
+  "policy": {
+    "basis_attempts": 1,
+    "construction": "unchanged sparse original-coordinate basis; fidelity import V2, no retries",
+    "decision": "original-LP exact feasibility only; U<=0 constrains this LP relaxation, not network UNSAFE",
+    "historical_network_propagation": "not rerun; excluded from clock; no full-network timing claim",
+    "import_contract": "intended binary64 model readback must match exactly; no warning bypass/scaling/pruning",
+    "indices": [
+      220,
+      222,
+      230,
+      232
+    ],
+    "native_cap_seconds": 10,
+    "native_options": {
+      "infinite_bound": 1e+20,
+      "infinite_cost": 1e+20,
+      "large_matrix_value": 1000000000000000.0,
+      "log_to_console": true,
+      "output_flag": true,
+      "parallel": "off",
+      "presolve": "off",
+      "random_seed": 0,
+      "simplex_scale_strategy": 0,
+      "small_matrix_value": 1e-12,
+      "solver": "simplex",
+      "threads": 1
+    },
+    "prior_lower": "reported frozen context only; no dual proposal, optimality or gap claim",
+    "proposal_deadline_seconds": 218,
+    "representation_changed": false,
+    "requests": 4,
+    "resume": false,
+    "retry": false,
+    "scope": "four supplied-LP development diagnostics, not complete MoE requests or performance comparison",
+    "selection": "same four source LPs and original obligations as sealed lp_diagnostic_v1; no new property selection",
+    "threads": 1,
+    "total_seconds": 300,
+    "upper_feasibility_tolerance": 0,
+    "work_seconds": 298,
+    "workers": 1
+  },
+  "real_solver_calls": 0,
+  "resource": {
+    "disk_gib": 785.4940910339355,
+    "load_per_core": 0.231005859375,
+    "ram_gib": 91.03570556640625
+  },
+  "runtime": {
+    "interpreter": "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+    "native_binary_sha256": "c9c48f69b6d6117ad8b2c4edbdf73122d1f89a4bbf1c7ffff92990be27715c3f",
+    "native_version": "1.14.0",
+    "python": "3.12.12 | packaged by conda-forge | (main, Oct 22 2025, 23:25:55) [GCC 14.3.0]"
+  },
+  "schema": "FROZEN_FIDELITY_BASIS_DIAGNOSTIC_V2",
+  "sources": {
+    "docs/lp_diagnostic_v1_freeze.json": "637b9cb8935faeda809b1d3ba104ca9f7253c2e7a464bb0457e9d32389748dcd",
+    "docs/native_import_analysis_attempt002.json": "80609490f381f77de111596fdb0ec3ced98f3ba9ab388f86a55f073a31f912f2",
+    "docs/sparse_basis_controls_attempt004.json": "75ba62deb774470f5383767cf14c881cb8ec0ef825f91a5b7943cc3cd2ba4d0c",
+    "evidence_cohort/run.py": "58d8a5d4c050a6566f72c59e69459db7daa4831a0672797270d91ea64ae76faa",
+    "exact_primal/__init__.py": "5181149779cc173d5698d152e0e201cab790dbcd511754f23eceb4ccf8d21faf",
+    "exact_primal/controls.py": "e78c36eea694f7c5eb3ad3d8cba8827a3fbc7c763c17577de108f35872f7952e",
+    "exact_primal/propose.py": "bd31ccda5b5eef47bd299c24907a55121ca9a93a166f7de24d94e2a832a5e297",
+    "exact_primal/tests.py": "7fb261b6b57c71ee98ac961af8f8efbcfccbbe3267a167345466e4a4627aecb6",
+    "fidelity_supervised/__init__.py": "11a63acb12b4807648dbf01803bbc1ce3f55b353bf5192e0361d01e494b1b6ed",
+    "fidelity_supervised/batch.py": "b4709b1e64a74dd0391b6968eff074fc1a5c040273945aadb5100d677753493d",
+    "fidelity_supervised/controls.py": "d497855379a47a48bfb6b4ec1cffe4eef05a6092ad76cf9cc5f9b7b07af6a153",
+    "fidelity_supervised/fault_worker.py": "5cfd9c92681d2f160038fd69b109fb91f5ae3a84283c9c0e18602befe46bc17d",
+    "fidelity_supervised/flow.py": "84776cce4e3ee5664b0ccba2fb96b644b949b6a9d63970f2569a85676d4636ad",
+    "fidelity_supervised/inputs.py": "6ea56637d8c72bdb7bd5f94514904c659790c119eabbc5b24edde776a8680abd",
+    "fidelity_supervised/native.py": "31357e092c663d66a11ab0e2b12df44fda2836f85d07e40c8c5ba94fc9159ad9",
+    "fidelity_supervised/native_tests.py": "d4a8885bc3fb87f25ac526ee61b2a79a989be24a42abd3c6b76c892c16fc7259",
+    "fidelity_supervised/review.py": "bce2a8a8fa5c6da42a00e1913657bf7689b6c6adbd4d2f54ed7b8ad4badb0521",
+    "fidelity_supervised/study.py": "384a62328fc126140b336ab8dccc95522cb8cf2357818e58009317bcf6fc284e",
+    "fidelity_supervised/tests.py": "44a8306721c3354a912ee766b4397ac5f29201d7a8cda16938604f9a962befbb",
+    "fidelity_supervised/worker.py": "d80241f0884c6361a6233dbc0f9636ddd773fc6009b7efe20258d61bfa317780",
+    "lp_diagnostic/flow.py": "6402cd295fb39439f212aea52ca8fdb0dc1d43880010aeaed6c6aeb3de48678f",
+    "lp_diagnostic/study.py": "72203aabbd05acb2dab35b9b375adb689bcaf1a2cd236a00b3bff4982074c65c",
+    "lp_sandwich/check.py": "4466f16292bc2a5b231f26699b78b2dac8e0e30dde5f823b6520ae3d47bb3456",
+    "portable_proof/runtime.py": "6a88171733f55d36003f2d2d6d376c7db056302e98de0606a65bf16128a94890",
+    "single_check_portable/execution.py": "16fbbf0078d5a0951205205f04959fdecf124b5d2d217d833ec80330d6ef51ad",
+    "sparse_basis/__init__.py": "95e62fffbe01a8a8724f28ca8da89780d5db9e82dbade2b05b146990abf1134a",
+    "sparse_basis/controls.py": "91d4b1511bf11f5b269e3e9aa4c4ba2210cb6c04e7806b77c89f80819fc642c9",
+    "sparse_basis/engine.py": "511a79e610f369803f3e0cc1f47fdcd6f39956f4e0025277b5da9a89bcbfc9c8",
+    "sparse_basis/native.py": "400f1b38ff3e576c1f9eca92c9cd40f4c34d190e115e438dc319fd3b3e9b35cd",
+    "sparse_basis/tests.py": "e53046bfbabe9f83650dbc6d9d99f08eae59487a74557f01bd4e7d03016c195f"
+  },
+  "status": "FROZEN_NOT_EXECUTED"
+}
