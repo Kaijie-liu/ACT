@@ -1,5 +1,33 @@
 # MoE project handoff
 
+Latest completion (2026-09-20): separate bit-growth-control component researched
+under user's explicit instruction. Read `docs/primitive_basis_v1.md`, controls
+attempt002 and fresh review FIRST. `primitive_basis/` uses denominator clearing,
+whole-row (including RHS) gcd normalization, cross-gcd integer elimination and
+late exact back-substitution. Same structural pivot rule/caps and original LP;
+4096-bit gate unchanged, raw integer products checked before cancellation.
+No frozen implementation modified, no real LP reconstruction/native rerun.
+
+62/62 controls PASS (16 new +46 regressions); 24 rational differential systems.
+Fresh review114 artifacts,26 successful systems checked against original exact
+equations,5 unresolved controls retained,5 relocated python -I -S LP checks
+(4 feasible,1 correctly rejected),PASS0issues. Initial61-test pass retained;
+first review's execution-metadata comparison error retained and repaired with
+an explicit flags-plus-mathematical-fields regression, no tolerance changes.
+
+Positive control: old method LIMIT at4096; primitive rows solve(1,1), max integer
+3002bits, original LP checker confirms U=-1. Negative control: old method solves
+zero, new LCM hits5036bits and stops. Intrinsic4201-bit-answer control still LIMIT.
+Thus this is an optional candidate, NOT a universally better/default solver.
+Synthetic4096-row control completes; not a real LP efficiency result. Constructor
+remains CANDIDATE_ONLY; independent full original LP checking remains mandatory.
+
+NEXT: separately integrate optional arithmetic into original-clock supervision,
+test cutoff/partial/error/cost behavior, then consider a fresh bounded real
+protocol. No V2 retry, cap increase, automatic algorithm portfolio or changed
+native/SAFE acceptance is authorized by this completed component study. Real
+efficacy and intermediate-swell versus exact-solution-size remain open.
+
 Latest completion (2026-09-20): V2 four real diagnostics executed once at clean
 pushed HEAD `6556b14ace261c2488bb404a30f5730bcfd266ea` and archived. Read
 `docs/fidelity_supervised_real_v2_execution_results.md/json` FIRST, plus fresh

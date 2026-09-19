@@ -1,0 +1,257 @@
+{
+  "artifact_files": 114,
+  "exact_system_checks": 26,
+  "issues": [],
+  "moved_artifact_sha256": {
+    "checked_row_scale/bundle.json": "35ecae760772cd0bc2cff18ba8e149bb65fe92c10a7445fbb9d7b27dfcf8aff7",
+    "checked_row_scale/check.json": "42d3f45296ff8651cd3216c80a046f6af1769a89380e7b84008be4ad161c0254",
+    "checked_row_scale/verify.py": "4466f16292bc2a5b231f26699b78b2dac8e0e30dde5f823b6520ae3d47bb3456",
+    "fixed_box/bundle.json": "10f6af6a8cbd5a066cb435107228fed9b70fd0a0a8c74269ae03e5343ad44d4d",
+    "fixed_box/check.json": "b06460fab2388b34efca566e6174df0275f77443456fb21648c14f9531ed0dee",
+    "fixed_box/verify.py": "4466f16292bc2a5b231f26699b78b2dac8e0e30dde5f823b6520ae3d47bb3456",
+    "inexact_residual/bundle.json": "a0c653aff86988b4c6ce6e1f6e1f2e50fec5f9406ab765e8cdecf7618275209b",
+    "inexact_residual/check.json": "4e98f3513e9cbdf8dcfcb0522d324ca3f7f663b4593944602c003c7101d8185c",
+    "inexact_residual/verify.py": "4466f16292bc2a5b231f26699b78b2dac8e0e30dde5f823b6520ae3d47bb3456",
+    "redundant_rows/bundle.json": "a0bcad13d366fe32a450a32943a98eb8071b36fb01a9f876fb4451a028a46e6e",
+    "redundant_rows/check.json": "ff0351f1817dcf2ec6c9dd4fe78bcbe2b3b523bee28afef81ce81326196f6d49",
+    "redundant_rows/verify.py": "4466f16292bc2a5b231f26699b78b2dac8e0e30dde5f823b6520ae3d47bb3456",
+    "relocated/bundle.json": "659d20ebeb16fad315e3ff142baccf393557f782393416b97d259347f2e3557b",
+    "relocated/check.json": "dd9e403d931eea5f80ea0b21cc09efa93ad752de570fc8dfd5c49d0db907b0ae",
+    "relocated/verify.py": "4466f16292bc2a5b231f26699b78b2dac8e0e30dde5f823b6520ae3d47bb3456"
+  },
+  "moved_isolated_checks": [
+    {
+      "case": "checked_row_scale",
+      "checked": {
+        "acceptance_threshold": "944473296573929/9444732965739290427392",
+        "candidate_objective_NOT_UPPER_UNLESS_FEASIBLE": "-1",
+        "checked_rows": {
+          "A": 0,
+          "E": 2
+        },
+        "checked_variables": 2,
+        "classification": "LP_NONPOSITIVE_FEASIBLE_POINT",
+        "exact_gap": null,
+        "exact_optimality": false,
+        "first_violations": [],
+        "isolated": true,
+        "lower_bound": null,
+        "lp_sha256": "1565513341ea02e35ccbca4857d2dc345b4e290e0edd3c1dd77e53e4742ae2a1",
+        "maximum_exact_violations": {
+          "box": "0",
+          "equality": "0",
+          "inequality": "0"
+        },
+        "network_SAFE": false,
+        "network_UNSAFE": false,
+        "primal_status": "EXACT_FEASIBLE",
+        "residual_box_term": null,
+        "scope": "Supplied exact rational continuous LP only; network-to-HZ, guards, route exclusions and property lowering NOT checked.",
+        "seconds": 0.00250081904232502,
+        "site_disabled": true,
+        "solver_or_model_imported": false,
+        "statement_sha256": "3ece1e407d032038eb052672cdb8650a9a0924f28d8b550b0050eccc016a7f59",
+        "status": "CHECKED_LP_DIAGNOSTIC",
+        "upper_bound": "-1",
+        "violation_counts": {
+          "box": 0,
+          "equality": 0,
+          "inequality": 0
+        }
+      }
+    },
+    {
+      "case": "fixed_box",
+      "checked": {
+        "acceptance_threshold": "944473296573929/9444732965739290427392",
+        "candidate_objective_NOT_UPPER_UNLESS_FEASIBLE": "12980742146337070512478121581609/649037107316853453566312041152512",
+        "checked_rows": {
+          "A": 0,
+          "E": 0
+        },
+        "checked_variables": 1,
+        "classification": "UNRESOLVED_CANDIDATE_VS_LP_RELAXATION",
+        "exact_gap": null,
+        "exact_optimality": false,
+        "first_violations": [],
+        "isolated": true,
+        "lower_bound": null,
+        "lp_sha256": "dd7ed9a4636bb7b504ea602839b09e58d257f0ddb3006f4954b478197e952959",
+        "maximum_exact_violations": {
+          "box": "0",
+          "equality": "0",
+          "inequality": "0"
+        },
+        "network_SAFE": false,
+        "network_UNSAFE": false,
+        "primal_status": "EXACT_FEASIBLE",
+        "residual_box_term": null,
+        "scope": "Supplied exact rational continuous LP only; network-to-HZ, guards, route exclusions and property lowering NOT checked.",
+        "seconds": 0.0024138186126947403,
+        "site_disabled": true,
+        "solver_or_model_imported": false,
+        "statement_sha256": "dbe287fc62f0f0f219df5fd2adb080eb7355e9fd2ab38b312089e9a0a2a036a0",
+        "status": "CHECKED_LP_DIAGNOSTIC",
+        "upper_bound": "12980742146337070512478121581609/649037107316853453566312041152512",
+        "violation_counts": {
+          "box": 0,
+          "equality": 0,
+          "inequality": 0
+        }
+      }
+    },
+    {
+      "case": "inexact_residual",
+      "checked": {
+        "acceptance_threshold": "944473296573929/9444732965739290427392",
+        "candidate_objective_NOT_UPPER_UNLESS_FEASIBLE": "0",
+        "checked_rows": {
+          "A": 0,
+          "E": 1
+        },
+        "checked_variables": 1,
+        "classification": "UNRESOLVED_CANDIDATE_VS_LP_RELAXATION",
+        "exact_gap": null,
+        "exact_optimality": false,
+        "first_violations": [
+          {
+            "exact_violation": "1",
+            "index": 0,
+            "kind": "equality"
+          }
+        ],
+        "isolated": true,
+        "lower_bound": null,
+        "lp_sha256": "f71583a3553ca79d728a49d638162bd2eda4d107226c220298e14ffd5fc7a6d6",
+        "maximum_exact_violations": {
+          "box": "0",
+          "equality": "1",
+          "inequality": "0"
+        },
+        "network_SAFE": false,
+        "network_UNSAFE": false,
+        "primal_status": "NOT_EXACTLY_FEASIBLE",
+        "residual_box_term": null,
+        "scope": "Supplied exact rational continuous LP only; network-to-HZ, guards, route exclusions and property lowering NOT checked.",
+        "seconds": 0.002384185791015625,
+        "site_disabled": true,
+        "solver_or_model_imported": false,
+        "statement_sha256": "0215d9680b855077ec261d03a081b3b675cf297f0f9d0f6ae37a7ef5a9c09274",
+        "status": "CHECKED_LP_DIAGNOSTIC",
+        "upper_bound": null,
+        "violation_counts": {
+          "box": 0,
+          "equality": 1,
+          "inequality": 0
+        }
+      }
+    },
+    {
+      "case": "redundant_rows",
+      "checked": {
+        "acceptance_threshold": "944473296573929/9444732965739290427392",
+        "candidate_objective_NOT_UPPER_UNLESS_FEASIBLE": "-1/3",
+        "checked_rows": {
+          "A": 1,
+          "E": 2
+        },
+        "checked_variables": 1,
+        "classification": "LP_NONPOSITIVE_FEASIBLE_POINT",
+        "exact_gap": null,
+        "exact_optimality": false,
+        "first_violations": [],
+        "isolated": true,
+        "lower_bound": null,
+        "lp_sha256": "9c4d0240e276e5cc7b99f65e87e741d236173b07927423acdb8ffa2edb481297",
+        "maximum_exact_violations": {
+          "box": "0",
+          "equality": "0",
+          "inequality": "0"
+        },
+        "network_SAFE": false,
+        "network_UNSAFE": false,
+        "primal_status": "EXACT_FEASIBLE",
+        "residual_box_term": null,
+        "scope": "Supplied exact rational continuous LP only; network-to-HZ, guards, route exclusions and property lowering NOT checked.",
+        "seconds": 0.0024364404380321503,
+        "site_disabled": true,
+        "solver_or_model_imported": false,
+        "statement_sha256": "5271fc1c843d30d79de4d247e739a0ab3d9572df5cda17e14c1e6f348bfcec76",
+        "status": "CHECKED_LP_DIAGNOSTIC",
+        "upper_bound": "-1/3",
+        "violation_counts": {
+          "box": 0,
+          "equality": 0,
+          "inequality": 0
+        }
+      }
+    },
+    {
+      "case": "relocated",
+      "checked": {
+        "acceptance_threshold": "944473296573929/9444732965739290427392",
+        "candidate_objective_NOT_UPPER_UNLESS_FEASIBLE": "-1/3",
+        "checked_rows": {
+          "A": 0,
+          "E": 1
+        },
+        "checked_variables": 1,
+        "classification": "LP_NONPOSITIVE_FEASIBLE_POINT",
+        "exact_gap": null,
+        "exact_optimality": false,
+        "first_violations": [],
+        "isolated": true,
+        "lower_bound": null,
+        "lp_sha256": "f71583a3553ca79d728a49d638162bd2eda4d107226c220298e14ffd5fc7a6d6",
+        "maximum_exact_violations": {
+          "box": "0",
+          "equality": "0",
+          "inequality": "0"
+        },
+        "network_SAFE": false,
+        "network_UNSAFE": false,
+        "primal_status": "EXACT_FEASIBLE",
+        "residual_box_term": null,
+        "scope": "Supplied exact rational continuous LP only; network-to-HZ, guards, route exclusions and property lowering NOT checked.",
+        "seconds": 0.002386977896094322,
+        "site_disabled": true,
+        "solver_or_model_imported": false,
+        "statement_sha256": "0215d9680b855077ec261d03a081b3b675cf297f0f9d0f6ae37a7ef5a9c09274",
+        "status": "CHECKED_LP_DIAGNOSTIC",
+        "upper_bound": "-1/3",
+        "violation_counts": {
+          "box": 0,
+          "equality": 0,
+          "inequality": 0
+        }
+      }
+    }
+  ],
+  "moved_root": "/data1/Kane/MOE/ACT/data/moe/results/primitive_basis_review_h5iqpm2d",
+  "native_calls": 0,
+  "new_eliminations": 0,
+  "real_LP_reconstructions": 0,
+  "receipt_sha256": "cb3a5b5f3b5d2a7f7ce365d06f1691b7c19266f5bdd985a71cfbbf5689560ceb",
+  "scope": "analytic exact residuals and full original-LP feasibility only, no real-network proof",
+  "seconds": 1.8956358805298805,
+  "sources": {
+    "docs/fidelity_supervised_real_v2_execution_results.json": "2301197db90f177facd238ffd69824447e563435a6e00071a01e579f50c48568",
+    "exact_basis/propose.py": "4e668b70db3ea65327e3610f479457a08848755be3e66b9400f17e24e439150b",
+    "exact_basis/tests.py": "2889063b9f9ecad8aab433a1796c836127ba1f134e513021633b2b5dec908c8a",
+    "exact_primal/propose.py": "bd31ccda5b5eef47bd299c24907a55121ca9a93a166f7de24d94e2a832a5e297",
+    "lp_sandwich/check.py": "4466f16292bc2a5b231f26699b78b2dac8e0e30dde5f823b6520ae3d47bb3456",
+    "lp_sandwich/tests.py": "58003d831d54e70b142c790ddf6fdd50d27b40f106e5504ac7752d209985a099",
+    "portable_proof/runtime.py": "6a88171733f55d36003f2d2d6d376c7db056302e98de0606a65bf16128a94890",
+    "primitive_basis/__init__.py": "347924fc7547a0236935cca1a03dad5befb8f7d15405612fc8d222ee4bc6acf7",
+    "primitive_basis/controls.py": "086d176d3bd332cc906d82b756cde8febccb6684f3a1e9d5b5265c55772a7235",
+    "primitive_basis/engine.py": "2c211b4b3eff645de74e484a86d4a7e4d3d1d41f353dd137d7417ee2a546d66d",
+    "primitive_basis/propose.py": "0281ef5cafae02ddaa5a5df922efe9dc8708822a874ceb55da4f5caf896a62e5",
+    "primitive_basis/review.py": "d1cc138e48ad298d29bd9bd9fc1a350cb4771d1f1bbb9dda60bb8efaf2857f9c",
+    "primitive_basis/tests.py": "f975b70b7bdead84cc474200f7646169a8f335bd0f33cd2ea934d5594185189d",
+    "single_check_portable/execution.py": "16fbbf0078d5a0951205205f04959fdecf124b5d2d217d833ec80330d6ef51ad",
+    "sparse_basis/engine.py": "511a79e610f369803f3e0cc1f47fdcd6f39956f4e0025277b5da9a89bcbfc9c8",
+    "sparse_basis/tests.py": "e53046bfbabe9f83650dbc6d9d99f08eae59487a74557f01bd4e7d03016c195f"
+  },
+  "status": "PASS",
+  "unresolved_systems_preserved": 5
+}
