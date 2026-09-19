@@ -1,5 +1,30 @@
 # MoE project handoff
 
+Latest completion (2026-09-20): separate primitive-integer supervision integrated
+under user's deadline/partial-evidence/full-cost instruction. Read
+`docs/primitive_supervised_v1.md`, controls attempt001 and fresh V1 review FIRST.
+101/101 controls PASS (32 integration +7 native fidelity +62 regressions).
+Fresh review1677 artifacts/23 terminals/all costs, five moved python -I -S
+checks (4 feasible,1 correctly rejected),PASS0issues. No real LP reconstructions.
+
+New optional namespace `primitive_supervised/`, frozen primitive arithmetic and
+native fidelity V2 reused unchanged. Original clock218/298/300, one native<=10s,
+one basis/attempt, all structural and4096-bit caps unchanged. Bounded identity
+journals retain phase/operation/bit-limit progress; partials are NOT proofs.
+Constructor subphase and serialization costs nested in whole supplied-LP clock;
+missing/censored durations null, no double counting. No full-MoE timing claim.
+
+Cutoff, row-clear/elimination/backsub stalls, serialization failures, native
+partial returns, checker deadlines, mutations and exact instrumentation
+differential pass. A completed check may reject feasibility; negative LP
+objectives are not network witnesses. Historical sources/results untouched.
+
+NEXT: integration gate passed; consider separately freezing same four original
+LPs with this new identity, fresh directory, unchanged caps and once-only roster.
+This stage DOES NOT freeze or launch that real diagnostic, retry V2, add a
+portfolio, change native/SAFE acceptance, expand samples or reopen holdouts.
+Real efficacy and intermediate-swell versus necessary solution size stay open.
+
 Latest completion (2026-09-20): separate bit-growth-control component researched
 under user's explicit instruction. Read `docs/primitive_basis_v1.md`, controls
 attempt002 and fresh review FIRST. `primitive_basis/` uses denominator clearing,
