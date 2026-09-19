@@ -8,6 +8,7 @@ from lp_sandwich.check import identity
 from fidelity_supervised.native import OPTIONS
 from fidelity_diagnostic_archive.review import imported_evidence, aggregate
 from sparse_diagnostic_archive.tests import Controls as OldArchiveControls, failed
+from fidelity_diagnostic_archive.structure import input_bit_inventory, basis_inventory
 
 
 class ImportControls(unittest.TestCase):
@@ -57,6 +58,17 @@ class ImportControls(unittest.TestCase):
         rows=failed();self.assertEqual(aggregate(rows)['checked_upper_bounds'],0)
         self.values['raw_native.json']['native_objective']=-1e20
         self.assertNotIn('upper_bound',self.use(self.values))
+
+    def test_input_bits_and_basis_counts_are_not_solution_claims(self):
+        lp={'c':['1/8'],'lower':[-1],'upper':[1],'h':[],'b':[],
+            'offset':0,'E':{'data':[]},'A':{'data':['257/512']}}
+        r=input_bit_inventory(lp)
+        self.assertEqual((r['max_numerator_bits'],r['max_denominator_bits']),(9,10))
+        self.assertEqual(r['denominator_location'],'A.data[0]')
+        self.assertIsNone(basis_inventory(None))
+        m={'status':'MAPPED_HINT_ONLY','hint':{'basic_columns':[{'kind':'x'},{'kind':'E_residual'}],
+            'anchors':[{'column':{'kind':'A_slack'},'at':'zero'}],'rows':[1,2]}}
+        self.assertEqual(basis_inventory(m)['basic_counts'],{'x':1,'E_residual':1})
 
 
 if __name__=='__main__':unittest.main()

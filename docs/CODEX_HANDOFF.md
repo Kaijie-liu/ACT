@@ -1,5 +1,34 @@
 # MoE project handoff
 
+Latest completion (2026-09-20): V2 four real diagnostics executed once at clean
+pushed HEAD `6556b14ace261c2488bb404a30f5730bcfd266ea` and archived. Read
+`docs/fidelity_supervised_real_v2_execution_results.md/json` FIRST, plus fresh
+archive review. **4/4 LIMIT (rational bit budget), 0 checked feasible U.** All
+four kOk imports and complete before/after intended binary64 readbacks match;
+all four basis hints map. No retries, extra time, input or policy changes.
+
+Original LP constants max bits <=154, but elimination exceeds frozen4096-bit
+cap after3760/3051/4939/4081 pivots. Fill insertions0 each; live entries<=59773;
+no wall-clock/native cap exhaustion. Thus the previous import blocker is closed
+for these submissions; current arithmetic growth stops exact reconstruction.
+Intermediate swell versus necessary exact solution size remains unseparated.
+Native Optimal/negative objectives are UNTRUSTED, not checked U or network UNSAFE.
+
+Whole supplied-LP clocks12.910765/12.269820/18.183476/17.706483s;total61.070543s.
+All phases/serialization/in-request review charged. Package/check not reached,
+missing duration null. Native calls4;total timing and separate resource/preflight/
+post-terminal/final audits retained. Not full-network timing. Archive121 hashes,
+original source-bit/basis inventory and nine controls; archival PASS is not proof.
+The earlier frozen V1 ERROR+3 unstarted and all failed control attempts survive.
+
+NEXT: no rerun of V2. A separate exact-arithmetic development contract is needed
+to study denominator-cleared/fraction-free or checked modular reconstruction,
+starting with controls and visible bit-growth failure metadata. Do not simply
+raise cap or accept approximate feasibility. Keep original LP and checker,
+no new samples/training/CROWN search. New arithmetic may still fail or reveal
+an inexact basis. This evidence updates the next question; no further real
+diagnostic is registered by the completed V2 freeze.
+
 Latest stage (2026-09-20): separately authorized native fidelity V2 implemented.
 Read `docs/fidelity_supervised_v2.md`, controls attempt003 and fresh V2 review.
 158/158 controls PASS; 973-artifact/16-terminal review, five relocated isolated

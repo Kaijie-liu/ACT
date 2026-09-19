@@ -9,6 +9,7 @@ from fidelity_supervised.study import verify, select, audit_saved, OUTPUT, FREEZ
 from fidelity_supervised.flow import STAGES
 from fidelity_supervised.native import OPTIONS
 from sparse_diagnostic_archive.review import aggregate
+from fidelity_diagnostic_archive.structure import input_bit_inventory, basis_inventory
 
 DEST=ROOT/'docs/fidelity_supervised_real_v2_execution_results.json'
 
@@ -53,6 +54,7 @@ def review():
         root=OUTPUT/job['job_id']
         construction=read(root/'construction.json') if (root/'construction.json').exists() else None
         mapping=read(root/'mapping.json') if (root/'mapping.json').exists() else None
+        prepared=read(root/'prepared.json') if (root/'prepared.json').exists() else None
         row={k:original[k] for k in ('job_id','status','complete_independent_check')}
         row.update(dataset_index=job['dataset_index'],pair=job['statement']['pair'],
             property_index=job['statement']['property_index'],statement_sha256=job['statement_sha256'],
@@ -60,6 +62,8 @@ def review():
             diagnostic=original.get('diagnostic'),costs=original.get('costs'),
             import_evidence=imported_evidence(root),
             mapping=None if mapping is None else {k:mapping.get(k) for k in ('status','reason')},
+            input_bit_inventory=None if prepared is None else input_bit_inventory(prepared['lp']),
+            basis_inventory=basis_inventory(mapping),
             construction=None if construction is None else {k:construction[k] for k in
                 ('status','error','seconds','operations','stats','attempts','solver_calls')},
             logs={name:(root/(name+'.log')).read_text() for name in ('capture','map','construct')
