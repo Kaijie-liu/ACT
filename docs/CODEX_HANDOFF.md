@@ -1,5 +1,28 @@
 # MoE project handoff
 
+Latest completion (2026-09-19): ACTUAL NATIVE BASIS ADAPTER controls in
+`native_basis/`. Read `docs/native_basis_v1.md` + attempt001 FIRST.54/54 PASS
+(7 new+47 regressions);6 native analytic captures,0 real-network LP calls or
+reconstructions. Existing highspy1.14.0, no install. All sealed sources and four
+real diagnostic outcomes unchanged. Native adapter now exists for its declared
+restricted mapping; outer-supervised integration is still NOT implemented.
+
+Fixed simplex/presolveOFF/scaling0/threads1/parallelOFF, actual option readback;
+records submitted float model + before/after readback, version/binary hash,
+raw basis/point/status BEFORE mapping/checking. Original rational LP unchanged.
+Structural basic→x; finite bound status→exact anchor; <= row basic→positive
+slack; <= row upper→zero slack. Real control reconstructs(1/3,2/3), isolated
+check U=−4/3 for objective−x−1. Inactive row yields slack1; fixed/permuted cases
+pass. Native optimal status is not exact proof.
+
+Actual redundant-equality case yields basic E-row variables: current schema
+cannot map them, so capture preserved and UNSUPPORTED_MAPPING returned. No row
+dropping, LP-infeasibility claim, free-status guess or presolve-map assumption.
+Next: new single-budget owned outer capture→map→construct→pack→check pipeline,
+analytic deadline/partial/error/cost controls for supported cases. Unsupported
+E-row mapping and large sparse support remain separate design work, not cap
+increases or hidden runtime changes. No new real experiment frozen/launched.
+
 Latest completion (2026-09-19): ORIGINAL-COORDINATE SPARSE BASIS/ANCHOR interface
 added in `exact_basis/`. Read `docs/exact_basis_v1.md` and attempt001 FIRST.
 47/47 controls PASS (12 new +35 regressions). Old modules/frozen identities
