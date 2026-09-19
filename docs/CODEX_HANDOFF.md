@@ -1,5 +1,38 @@
 # MoE project handoff
 
+Latest completion (2026-09-19): LARGE SPARSE SINGLE-BUDGET SUPERVISION integrated
+separately in `sparse_supervised/`. Read `docs/sparse_supervised_v1.md`, controls
+attempt002 and review FIRST.122/122 PASS(27 new+95 regressions);fresh-process
+854-artifact/15-terminal-cost review plus4 moved isolated checks PASS,0 issues.
+Old interfaces, caps, sealed results and production MoE acceptance unchanged.
+
+One original300s supplied-LP clock: load/capture/map/sparse construct by218s,
+package/check by298s,publication300s; native still one<=10s call. New plan/capture/
+construction schema+policy bound. Owned cutoffs, LIMIT, errors, late publication,
+mutation and denominator controls pass. Valid `raw_native.json` still records
+one call+duration if post-native readback fails/is cut off; missing/malformed
+returns remain null. All phases/serialization/cleanup charged; component times
+nested, not added again. Historical network/HZ/F0 generation excluded explicitly.
+
+Full supervised synthetic4096-x/8192-E system checksU=−4096/3 in2.6143s in this
+control; not a real LP timing forecast. Float-collapsed distinct rational E
+control completes checker but remains NOT_EXACTLY_FEASIBLE,upper=null.
+CHECKED_LP_DIAGNOSTIC is not network SAFE or necessarily a feasible-point success.
+
+SEPARATE REAL FREEZE: `docs/sparse_supervised_real_v1_freeze.json`, selection
+review. FROZEN_NOT_EXECUTED; same4 unchanged source obligations input220/p0,
+222/p1,230/p2,232/p0, unchanged LP bytes. All static shapes fit new caps; real
+basis mapping/rank/fill/bit growth/runtime unmeasured. No real native call or
+reconstruction, no output directory, no rerun of old diagnostics in place.
+New output reserved: `data/moe/results/sparse_supervised_real_20260919_v1`.
+
+NEXT: only after an execution decision, clean pushed feature branch and resource
+gate, run `act-py312 python -m sparse_supervised.study launch`;then fresh audit
+and archive all4 denominators. No retries/alternate basis/cap increases or new
+property selection. Prior L is context only; new bundle has no dual/gap/optimality
+claim. A checked feasible U<=0 constrains this LP, not the original network.
+Old four inexact outcomes remain sealed. Do not interpret the freeze as execution.
+
 Latest completion (2026-09-19): LARGE SPARSE ORIGINAL BASIS component developed
 separately under explicit user authorization. Read `docs/sparse_basis_v1.md`,
 attempt004 and review FIRST.95/95 PASS(16 new+79 regressions),4 new native
