@@ -1,5 +1,35 @@
 # MoE project handoff
 
+Latest preparation (2026-09-20): user requested comprehensive readiness, not
+execution. Read `docs/primitive_diagnostic_v1.md` FIRST. New separate batch
+namespace `primitive_diagnostic/`; frozen `primitive_supervised/` untouched.
+Same four original LPs now independently frozen and selection-reviewed for
+primitive arithmetic: status FROZEN_NOT_EXECUTED, real output directory absent.
+NO real solve/reconstruction occurred. Do not confuse readiness with efficacy.
+
+15/15 preparation controls PASS (11 new +4 archive regressions), on top of the
+sealed101-test integration. Fresh review2086 artifacts,3 batch ledgers/12 rows,
+4 relocated python -I -S checks,PASS0issues. Attempt001's wrong analytic offset
+expectation is retained; only assertion corrected to exact U=i-1/3, no changed
+inputs or acceptance. Read controls attempt002 and fresh controls review.
+
+Freeze `docs/primitive_diagnostic_v1_freeze.json` binds original jobs220p0,
+222p1,230p2,232p0, all sources, runtime, controls/reviews and old V2 archive.
+Read-only size/import compatibility passes; new fill/bit growth unmeasured.
+Output `data/moe/results/primitive_diagnostic_real_20260920_v1` must be absent.
+One basis/native attempt<=10s, original218/298/300 clocks and4096-bit cap;
+no retry/resume/fallback. ERROR stops and retains later unstarted rows.
+Costs keep request/attempt/batch nesting and partial durations null. Archive
+compares basis geometry/system hash before any arithmetic attribution; no
+matched timing claim. Native objective remains untrusted, no network verdict.
+
+NEXT: readiness is complete; actual launch is separate `primitive_diagnostic.run
+launch --execute-frozen` after clean pushed commit, then fresh archive process
+and documentation/commit/push. This turn deliberately did NOT launch. No new
+research guidance required within this four-LP freeze; ask before extending
+scope/caps or changing algorithm in response to results. Historical V2 remains
+4LIMIT/zero checked feasible U; primitive real efficacy remains unknown.
+
 Latest completion (2026-09-20): separate primitive-integer supervision integrated
 under user's deadline/partial-evidence/full-cost instruction. Read
 `docs/primitive_supervised_v1.md`, controls attempt001 and fresh V1 review FIRST.
