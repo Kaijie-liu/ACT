@@ -1,5 +1,28 @@
 # MoE project handoff
 
+Latest completion (2026-09-19): REAL LP COMPATIBILITY READ-ONLY REVIEW completed.
+Read `docs/basis_compatibility_v1.md` / JSON / audit FIRST. All30 archived
+nonpositive weighted obligations fail current limits; fresh-process original
+file/dimension reconstruction PASS,0 issues;6 analytic compatibility controls
+PASS. No native calls, reconstruction, rank/bound checks, cap changes or new
+selection. Decision **NOT_FROZEN_INCOMPATIBLE_CURRENT_LIMITS**; no real diagnostic
+frozen/launched. This supersedes the pending compatibility check below.
+
+Variables7397–9482 vs64; augmented E+A rows4331–6416 vs64; stored CSR entries
+236502–348915 vs8192. Even initial scalar visits264165–383778 exceed200000;
+full-rank pivot storage minimum4331–6416 exceeds4096. These are necessary static
+limits, not actual fill-in/time measurements. Bit growth/rank not inferred.
+
+Four old native records have no bound row/column basis statuses, version/options
+or submitted/readback snapshots; mapping UNDETERMINED_NO_BOUND_BASIS_CAPTURE.
+Do not infer unsupported E-row status or a valid basis from solver success.
+Old scipy-highs metadata is not the new fixed native adapter protocol. All four
+sealed inexact-primal outcomes remain unchanged; no network safety conclusion.
+
+Next needs a separately scoped large-sparse original-basis/anchor design and
+mapping/degeneracy/operation/fill-in controls, not simply raising caps or adding
+time. Meaningful real freeze remains blocked pending that new research decision.
+
 Latest completion (2026-09-19): SINGLE-BUDGET BASIS EVIDENCE SUPERVISION added
 in `basis_supervised/`. Read `docs/basis_supervised_v1.md`, attempt002 and
 `docs/basis_supervised_v1_review.json` FIRST.73/73 PASS (19 new+54 prior);
