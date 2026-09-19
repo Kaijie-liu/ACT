@@ -1,0 +1,46 @@
+{
+  "status": "PASS",
+  "issues": [],
+  "receipt_sha256": "75ba62deb774470f5383767cf14c881cb8ec0ef825f91a5b7943cc3cd2ba4d0c",
+  "artifact_count": 36,
+  "mapping_rechecks": 4,
+  "isolated_LP_checks": 5,
+  "outcomes": [
+    {
+      "case": "small",
+      "primal_status": "EXACT_FEASIBLE",
+      "upper_bound": "-1",
+      "checked_rows": {"A": 1, "E": 1}
+    },
+    {
+      "case": "redundant",
+      "primal_status": "EXACT_FEASIBLE",
+      "upper_bound": "-1",
+      "checked_rows": {"A": 0, "E": 2}
+    },
+    {
+      "case": "float_collapsed",
+      "primal_status": "NOT_EXACTLY_FEASIBLE",
+      "upper_bound": null,
+      "checked_rows": {"A": 0, "E": 2}
+    },
+    {
+      "case": "large_native",
+      "primal_status": "EXACT_FEASIBLE",
+      "upper_bound": "-4096/3",
+      "checked_rows": {"A": 0, "E": 8192}
+    },
+    {
+      "case": "moved_target_size",
+      "primal_status": "EXACT_FEASIBLE",
+      "upper_bound": "-6500/3",
+      "checked_rows": {"A": 4500, "E": 2000}
+    }
+  ],
+  "new_native_calls": 0,
+  "new_candidate_reconstructions": 0,
+  "real_network_LP_calls": 0,
+  "old_freezes_unchanged": true,
+  "seconds": 0.8037015795707703,
+  "scope": "fresh-process stored synthetic evidence and mapping review; standalone original LP feasibility checks, not a network proof or full-budget run"
+}

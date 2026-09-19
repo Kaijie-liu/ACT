@@ -1,5 +1,34 @@
 # MoE project handoff
 
+Latest completion (2026-09-19): LARGE SPARSE ORIGINAL BASIS component developed
+separately under explicit user authorization. Read `docs/sparse_basis_v1.md`,
+attempt004 and review FIRST.95/95 PASS(16 new+79 regressions),4 new native
+analytic captures,0 real-network LP calls/reconstructions. Fresh-process review
+36 artifacts/4 mappings/5 isolated original-LP checks PASS,0 issues. Attempt001
+conversion-wrapper failure preserved;002/003/004 passes preserved. Old sources,
+caps, frozen results and production runner unchanged.
+
+New `sparse_basis/`: column incidence + minimum-degree heap sparse elimination,
+singleton-column fast path, bounded fill/heap/bit/operation growth. Explicit
+E_residual coordinates allow native basic E rows WITHOUT dropping equalities:
+Ex+e=h requires e=0; Ax+s=b requires s>=0. Generator remains CANDIDATE_ONLY;
+unchanged full original-LP checker enforces every constraint. Float-collapsed
+distinct rational RHS control correctly stays NOT_EXACTLY_FEASIBLE,upper=null.
+
+Native4096-variable/8192-E-row control maps4096 basic E residuals and checks
+U=−4096/3. Synthetic9500-variable/6500-row/356015-entry triangular control
+checks U=−6500/3 after relocation;6500 singleton pivots,zero fill,1179547 events.
+These are structured synthetic controls, NOT real LP efficacy/timing evidence.
+New component caps16k variables/rows,1M input entries,2M active+pivot entries,
+1M fill,200k heap,4096 bits,20M work events; native still one<=10s call, fixed
+highspy1.14.0 options. All old64-size contracts remain frozen.
+
+NEXT: separately bind this new schema/policy/raw-capture layout into a NEW
+single-budget outer supervisor and terminal/cost audit; control partial capture,
+native/exact/check cutoffs before any real freeze. Existing basis_supervised
+still uses the old small interface. Do not treat component controls as production
+integration, real-LP basis compatibility, or permission to relabel old runs.
+
 Latest completion (2026-09-19): REAL LP COMPATIBILITY READ-ONLY REVIEW completed.
 Read `docs/basis_compatibility_v1.md` / JSON / audit FIRST. All30 archived
 nonpositive weighted obligations fail current limits; fresh-process original
