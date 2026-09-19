@@ -1,0 +1,766 @@
+{
+  "aggregates": {
+    "checked_upper_bounds": 0,
+    "classification_counts": {
+      "UNRESOLVED_CANDIDATE_VS_LP_RELAXATION": 4
+    },
+    "complete_checks": 4,
+    "cost_records": 4,
+    "denominator": 4,
+    "exact_optimality_count": 0,
+    "native_count_missing": 0,
+    "nested_native_seconds": 1.269789844751358,
+    "phase_totals_seconds": {
+      "check": 4.712545201182365,
+      "load": 1.7078154850751162,
+      "package": 0.5555397234857082,
+      "propose": 17.934386398643255
+    },
+    "recorded_native_calls": 4,
+    "residual_seconds": 0.6519649606198072,
+    "status_counts": {
+      "CHECKED_LP_DIAGNOSTIC": 4
+    },
+    "total_diagnostic_seconds": 25.562251769006252
+  },
+  "archival_sources": {
+    "lp_diagnostic_archive/review.py": "10be3a0e9332bccc97a62603230ab44a1d56772764ba05c8f3077c0e77b2c1c2",
+    "lp_diagnostic_archive/tests.py": "8c4e76002a51fbd902e6d80016cad45dfceb32ceff560e0d93753d02e5570a13"
+  },
+  "artifact_sha256": {
+    "data/moe/results/lp_diagnostic_20260919_v1/input220_p0/candidate.json": "318d839092c334e9cf6d7f814e090902fbe355e5df754f7d2ac924dad7a8f4c3",
+    "data/moe/results/lp_diagnostic_20260919_v1/input220_p0/check.log": "3f47f9f6d7487764b2d96ef3d7524a257f2638da48ab0411011d2009b1da705a",
+    "data/moe/results/lp_diagnostic_20260919_v1/input220_p0/check_entered.json": "1ed5424bff54d1ef4a7ce623171b1c6eea5cb3bbaebc2538093735c04a630111",
+    "data/moe/results/lp_diagnostic_20260919_v1/input220_p0/check_stage.json": "bf80ecabeaef8a718429a00f622b52567f05d27c6cb0156e1ce23e905bc7cac7",
+    "data/moe/results/lp_diagnostic_20260919_v1/input220_p0/driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "data/moe/results/lp_diagnostic_20260919_v1/input220_p0/load.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "data/moe/results/lp_diagnostic_20260919_v1/input220_p0/load_entered.json": "6e101d15e2f7cd206bcbe84350da6e7f5875bb8ee4cbaecd2064753ca3c148cf",
+    "data/moe/results/lp_diagnostic_20260919_v1/input220_p0/load_stage.json": "acf89ceadd72d68b281fc953ae86e668188ee9495db8d4fe0168804a1d3bac37",
+    "data/moe/results/lp_diagnostic_20260919_v1/input220_p0/outer.json": "b47fd12f8402a245685473b7f42439fcfdcbe79d6413191aab59e5f8a4016362",
+    "data/moe/results/lp_diagnostic_20260919_v1/input220_p0/package.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "data/moe/results/lp_diagnostic_20260919_v1/input220_p0/package_entered.json": "a848150421265f8e125e4544c0b6e684c64b3c9e4c77cb8b953c819ef8b8a697",
+    "data/moe/results/lp_diagnostic_20260919_v1/input220_p0/package_stage.json": "66fd3a8154c6c8c5130de95ae20104a8ace2f4db31d28effbfdd5c62696a3853",
+    "data/moe/results/lp_diagnostic_20260919_v1/input220_p0/packing.json": "b7227250fc2a04e32aed8d18250fadeef4e8c4c1627c30639c2bd82323575305",
+    "data/moe/results/lp_diagnostic_20260919_v1/input220_p0/plan.json": "a41e293471572257edc9a4e0371d9d112bbea01bab0a204b448e2af537efd239",
+    "data/moe/results/lp_diagnostic_20260919_v1/input220_p0/portable/bundle.json": "42252a5f466bf30db6034c49abe919537d4713f1b400745b2d5ac1c4664c4dc5",
+    "data/moe/results/lp_diagnostic_20260919_v1/input220_p0/portable/verify.py": "4466f16292bc2a5b231f26699b78b2dac8e0e30dde5f823b6520ae3d47bb3456",
+    "data/moe/results/lp_diagnostic_20260919_v1/input220_p0/prepared.json": "2b160d4dcb8953595301752d9a877504b9f240f4fe623b00673bece931c9f460",
+    "data/moe/results/lp_diagnostic_20260919_v1/input220_p0/proposal/bundle.json": "42252a5f466bf30db6034c49abe919537d4713f1b400745b2d5ac1c4664c4dc5",
+    "data/moe/results/lp_diagnostic_20260919_v1/input220_p0/proposal/diagnostic.json": "5b3739ba2c7818e4892cd33ac460ffad4f15bd9f8e97664d01bb669963c8d975",
+    "data/moe/results/lp_diagnostic_20260919_v1/input220_p0/proposal/input.json": "2b160d4dcb8953595301752d9a877504b9f240f4fe623b00673bece931c9f460",
+    "data/moe/results/lp_diagnostic_20260919_v1/input220_p0/proposal/native.json": "5793df79c756e2977bc79c4ecb1b4ad428efe2fb26dbf74c702cbb535350a2f2",
+    "data/moe/results/lp_diagnostic_20260919_v1/input220_p0/proposal/terminal.json": "13d885874130535b2c4de3c41a429b27db50da2ce259eb5b08cab9326cf150b8",
+    "data/moe/results/lp_diagnostic_20260919_v1/input220_p0/propose.log": "4bd7def3317dab4fb9bc75b6a57976cb1628b3a768d1bb720a35179a5c277dda",
+    "data/moe/results/lp_diagnostic_20260919_v1/input220_p0/propose_entered.json": "0ddd1f4f0e20c989c076e334904c5ab19836df8a7b1ecd9b73eb546e9e647f33",
+    "data/moe/results/lp_diagnostic_20260919_v1/input220_p0/propose_stage.json": "f35616bb7154f01819a34da4137e2939789a1a1d24c109dffa388813a430247c",
+    "data/moe/results/lp_diagnostic_20260919_v1/input220_p0/publication.json": "8db2bea5c2bbe2df067469400e292d952d4a9c69f018fcd2ef60d69768aed7f0",
+    "data/moe/results/lp_diagnostic_20260919_v1/input220_p0_resource.json": "10ea56bdc99095079b6fe45fc1f96c62dee88a73ba26f922254054b5dbfbf690",
+    "data/moe/results/lp_diagnostic_20260919_v1/input220_p0_row.json": "f799dc289fb870dd774d0e61dc47299a07916dff8b402c71da4eafd6ff8aacae",
+    "data/moe/results/lp_diagnostic_20260919_v1/input222_p1/candidate.json": "1475fb4bfa5bb6d7f68d8970ee1c78409fb487b74cf9a0320383ba390c55e298",
+    "data/moe/results/lp_diagnostic_20260919_v1/input222_p1/check.log": "36f258a7f770b670ea93084ef62f95b6b2effebd35fdc47b68b7b20851497cce",
+    "data/moe/results/lp_diagnostic_20260919_v1/input222_p1/check_entered.json": "3243c9ab5469a45950cd09d15171f6d58addaec7c738d8c955168ce2d11a6229",
+    "data/moe/results/lp_diagnostic_20260919_v1/input222_p1/check_stage.json": "5aa651c48b4da8d1cc433f1827244048510196fd056cec70d6759670610e74ed",
+    "data/moe/results/lp_diagnostic_20260919_v1/input222_p1/driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "data/moe/results/lp_diagnostic_20260919_v1/input222_p1/load.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "data/moe/results/lp_diagnostic_20260919_v1/input222_p1/load_entered.json": "e34a0fad960d2966867a7fbfd39c7eb6a88cd1059d3214d33f8c53cdb603b663",
+    "data/moe/results/lp_diagnostic_20260919_v1/input222_p1/load_stage.json": "5885a4bf26a44a67574b188fdb5021976c24c303e332e9d5a2c0b44171d1cba5",
+    "data/moe/results/lp_diagnostic_20260919_v1/input222_p1/outer.json": "204c449e868f80e0c4ed63422dd172a42f29c14415c24993551383d2a72ff2bf",
+    "data/moe/results/lp_diagnostic_20260919_v1/input222_p1/package.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "data/moe/results/lp_diagnostic_20260919_v1/input222_p1/package_entered.json": "d138bf591c72eabeb1f18e66673f2962bf3cb197184c1dda0a9b169a88c32112",
+    "data/moe/results/lp_diagnostic_20260919_v1/input222_p1/package_stage.json": "a9dcabab8b0827eabe59ac66d88fb22ee75ec9143a486515a5e438e260ec1064",
+    "data/moe/results/lp_diagnostic_20260919_v1/input222_p1/packing.json": "9810f1c629544bff26ecae1ce01dfca8da504a6a5b6723d477a3129a4465743f",
+    "data/moe/results/lp_diagnostic_20260919_v1/input222_p1/plan.json": "822893801fbd0d0d16c7dd87bf886ea067cb889f3df233d892c60c2d9aa967e4",
+    "data/moe/results/lp_diagnostic_20260919_v1/input222_p1/portable/bundle.json": "1963532cb92d48638164f993891a8388499a8181bc1111a95a241b602595ad70",
+    "data/moe/results/lp_diagnostic_20260919_v1/input222_p1/portable/verify.py": "4466f16292bc2a5b231f26699b78b2dac8e0e30dde5f823b6520ae3d47bb3456",
+    "data/moe/results/lp_diagnostic_20260919_v1/input222_p1/prepared.json": "657c3ac48207e2fb9cde7d9fd09a166d67ffbac5eb2072236675bfd453d28657",
+    "data/moe/results/lp_diagnostic_20260919_v1/input222_p1/proposal/bundle.json": "1963532cb92d48638164f993891a8388499a8181bc1111a95a241b602595ad70",
+    "data/moe/results/lp_diagnostic_20260919_v1/input222_p1/proposal/diagnostic.json": "352fff3dc7463ab4c70014902b535c121c9baad2e0e68ab0e60294d8f28ed721",
+    "data/moe/results/lp_diagnostic_20260919_v1/input222_p1/proposal/input.json": "657c3ac48207e2fb9cde7d9fd09a166d67ffbac5eb2072236675bfd453d28657",
+    "data/moe/results/lp_diagnostic_20260919_v1/input222_p1/proposal/native.json": "d9a6b8f717bda08e76e5bfd588fc8cdc3b13b7ba0e4e3b500dbd307da88524f0",
+    "data/moe/results/lp_diagnostic_20260919_v1/input222_p1/proposal/terminal.json": "a1bffb7cca3773ee88e7801afdae8fb18c92f04a1ea5c74818f30af7181b4e19",
+    "data/moe/results/lp_diagnostic_20260919_v1/input222_p1/propose.log": "4bd7def3317dab4fb9bc75b6a57976cb1628b3a768d1bb720a35179a5c277dda",
+    "data/moe/results/lp_diagnostic_20260919_v1/input222_p1/propose_entered.json": "7dd4fd86bc3ee6bd9436ec58b47bcc02333d94d0ac33804c033dc2f2036acdf4",
+    "data/moe/results/lp_diagnostic_20260919_v1/input222_p1/propose_stage.json": "db3fa7ddd71d2398e1372c39d2a75abef402be1915c86a34f4d6e483d48ca6c6",
+    "data/moe/results/lp_diagnostic_20260919_v1/input222_p1/publication.json": "dcadf912075313564aff06e2c241adedc0d9af5374a606692062b80f08a0eb2f",
+    "data/moe/results/lp_diagnostic_20260919_v1/input222_p1_resource.json": "9ebd1fb02a8dcf5c2bbc2c3be45d69ca6f4b7e09ddad7a20183c3c4310e8193d",
+    "data/moe/results/lp_diagnostic_20260919_v1/input222_p1_row.json": "2902a73cf5a09cfff6123174dc8c3b70f63d5999db3104e7c922847ced387e80",
+    "data/moe/results/lp_diagnostic_20260919_v1/input230_p2/candidate.json": "0724144693c4ab2ecdde523a6a9f540afa3e8dc376a54ad58d886269f99ef667",
+    "data/moe/results/lp_diagnostic_20260919_v1/input230_p2/check.log": "6de261124ecf6681067eb093d336904da2f8a5ad0be29cd1cd20b1cfd9b38188",
+    "data/moe/results/lp_diagnostic_20260919_v1/input230_p2/check_entered.json": "3e08eb26bbc3b1d885d3d8f1f19cc48ea7fba836b15d7fe6e903e77bbe6a2e0c",
+    "data/moe/results/lp_diagnostic_20260919_v1/input230_p2/check_stage.json": "9a3f91071c9f3e171c88013a65aacfd89aff3f974fc080ef655ac65b872f2a1b",
+    "data/moe/results/lp_diagnostic_20260919_v1/input230_p2/driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "data/moe/results/lp_diagnostic_20260919_v1/input230_p2/load.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "data/moe/results/lp_diagnostic_20260919_v1/input230_p2/load_entered.json": "88ab4d6cc0b0e3b385fc79dc4dab18acacd9dec510fbf45ee2218bc78373ff25",
+    "data/moe/results/lp_diagnostic_20260919_v1/input230_p2/load_stage.json": "df39eb7d3f63cebb9575a2ccf3946bdad7c8aeb44208c34b741f4a5f5c9cf6e7",
+    "data/moe/results/lp_diagnostic_20260919_v1/input230_p2/outer.json": "018fbd28cd3ca323b5cf84861cbb5eca9430ac7e0c8d9360572882622eb166f4",
+    "data/moe/results/lp_diagnostic_20260919_v1/input230_p2/package.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "data/moe/results/lp_diagnostic_20260919_v1/input230_p2/package_entered.json": "e835fce7bb1c3ede63be660f1d938b3aacc717c58ff9844eaa4d702f2fc72c8a",
+    "data/moe/results/lp_diagnostic_20260919_v1/input230_p2/package_stage.json": "a4558812df361f66ee1287efc9ddf68bcdd9a4ebe7c56aeddfc885c607310e33",
+    "data/moe/results/lp_diagnostic_20260919_v1/input230_p2/packing.json": "a13f7a402353fe8f5257c8080ed04ad7348e6fa6ac241f8cf658b99caaaa4c72",
+    "data/moe/results/lp_diagnostic_20260919_v1/input230_p2/plan.json": "89ffa36d812bce4804519e1314f5661b064c0b6cf5fc4358a892db8eaa3ce5ce",
+    "data/moe/results/lp_diagnostic_20260919_v1/input230_p2/portable/bundle.json": "012f5e1dca7ea703868fa437e163b7576d1a5085414fac702ba7d15a636caaf2",
+    "data/moe/results/lp_diagnostic_20260919_v1/input230_p2/portable/verify.py": "4466f16292bc2a5b231f26699b78b2dac8e0e30dde5f823b6520ae3d47bb3456",
+    "data/moe/results/lp_diagnostic_20260919_v1/input230_p2/prepared.json": "54ae141d338cbe1e362dd8c5d8e190ffbe86af7d9adbde2128e91a9ef575e622",
+    "data/moe/results/lp_diagnostic_20260919_v1/input230_p2/proposal/bundle.json": "012f5e1dca7ea703868fa437e163b7576d1a5085414fac702ba7d15a636caaf2",
+    "data/moe/results/lp_diagnostic_20260919_v1/input230_p2/proposal/diagnostic.json": "07376566c8105cc8943c21a90f187d2c28c38bfbc1ea2671ab9ea55c34101570",
+    "data/moe/results/lp_diagnostic_20260919_v1/input230_p2/proposal/input.json": "54ae141d338cbe1e362dd8c5d8e190ffbe86af7d9adbde2128e91a9ef575e622",
+    "data/moe/results/lp_diagnostic_20260919_v1/input230_p2/proposal/native.json": "4195225103e0e250b6535b610277472ffd5c42af9b35158ece3e3a0c0da92297",
+    "data/moe/results/lp_diagnostic_20260919_v1/input230_p2/proposal/terminal.json": "1457e26f9629c9fc0b8842576dd6da92f76dc8d10d719a297b5382ea36aa4cd8",
+    "data/moe/results/lp_diagnostic_20260919_v1/input230_p2/propose.log": "4bd7def3317dab4fb9bc75b6a57976cb1628b3a768d1bb720a35179a5c277dda",
+    "data/moe/results/lp_diagnostic_20260919_v1/input230_p2/propose_entered.json": "9023658472a0cf94c2eb4f4e1610c4b2b11b6594a62e16f5f7d8c0a07a72a537",
+    "data/moe/results/lp_diagnostic_20260919_v1/input230_p2/propose_stage.json": "2c7687c818dd24ad13cdc3f116cf55cad62b11ad3448f604f7c0f15ddc1d51ad",
+    "data/moe/results/lp_diagnostic_20260919_v1/input230_p2/publication.json": "b952aa90902576cffdddc4a77288f2ac1422df144136f298bd742098153ed05a",
+    "data/moe/results/lp_diagnostic_20260919_v1/input230_p2_resource.json": "36f0375d5e947467e16a3013cad0813b85ec0bbbfd184ecb7727cf895af48c70",
+    "data/moe/results/lp_diagnostic_20260919_v1/input230_p2_row.json": "6a51b1ff4b4b56591f47bf88d58986a0d5052edc99429a5d7f7568c5a491e280",
+    "data/moe/results/lp_diagnostic_20260919_v1/input232_p0/candidate.json": "21cb41b07aeb699b732bcf27cf1fb2b0b4c0039b6057310e4578a71637953786",
+    "data/moe/results/lp_diagnostic_20260919_v1/input232_p0/check.log": "e2c143d98f2160d3e4f21d224abc38dc1d579bc053a2e3dafcaa8a4211469024",
+    "data/moe/results/lp_diagnostic_20260919_v1/input232_p0/check_entered.json": "3d6cdda6678dc84e7565dfc67b1aa6954206f254ba1ce408a29935fc89d29867",
+    "data/moe/results/lp_diagnostic_20260919_v1/input232_p0/check_stage.json": "1f8aa3b056e09165641b8c0492afe53e3d5c74ff2225938212ae0ad873fb44ed",
+    "data/moe/results/lp_diagnostic_20260919_v1/input232_p0/driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "data/moe/results/lp_diagnostic_20260919_v1/input232_p0/load.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "data/moe/results/lp_diagnostic_20260919_v1/input232_p0/load_entered.json": "b2627fcf5d6e0f42231d9470785a34acf9bae0713bfe953a8f72913afe3ae1db",
+    "data/moe/results/lp_diagnostic_20260919_v1/input232_p0/load_stage.json": "bcfe6db68051884d4e3887e05f252fba2524198382252ce80b8afd03519f76d8",
+    "data/moe/results/lp_diagnostic_20260919_v1/input232_p0/outer.json": "6117b3fef27eed05a7b1faebdf89a1d0640e7b86b4ebb119f8cb1ee0ca54892d",
+    "data/moe/results/lp_diagnostic_20260919_v1/input232_p0/package.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "data/moe/results/lp_diagnostic_20260919_v1/input232_p0/package_entered.json": "28e75951157167f0620c02820bd27b60a2c339d587d40c74c6a02f3732d3423c",
+    "data/moe/results/lp_diagnostic_20260919_v1/input232_p0/package_stage.json": "c051c25f56efb9f0761240c29fa7f8ecf7b98327c7eb41f399349af7fb0320d7",
+    "data/moe/results/lp_diagnostic_20260919_v1/input232_p0/packing.json": "f4f17b00457f3fdc94bc0bc8936dc61ee660b9b8ddbf982b6d4c29bd5d90a47e",
+    "data/moe/results/lp_diagnostic_20260919_v1/input232_p0/plan.json": "44d8ddd039a7c73a16c55ceb3012c46a0db048e21b2b75e487d0ff1b75cd5130",
+    "data/moe/results/lp_diagnostic_20260919_v1/input232_p0/portable/bundle.json": "40438a3b4719404d8cee2db84aa3b8104c879af6ad53bf0a40d35dab45bb284b",
+    "data/moe/results/lp_diagnostic_20260919_v1/input232_p0/portable/verify.py": "4466f16292bc2a5b231f26699b78b2dac8e0e30dde5f823b6520ae3d47bb3456",
+    "data/moe/results/lp_diagnostic_20260919_v1/input232_p0/prepared.json": "ea2c41d13df427b882ca10128773ae386e70be7e09b582c6e04e112a66e46fe4",
+    "data/moe/results/lp_diagnostic_20260919_v1/input232_p0/proposal/bundle.json": "40438a3b4719404d8cee2db84aa3b8104c879af6ad53bf0a40d35dab45bb284b",
+    "data/moe/results/lp_diagnostic_20260919_v1/input232_p0/proposal/diagnostic.json": "fc75f0170f6a07140109f9fd550a4fc0521c8164a1aba2ae777fb862cf0f1cd2",
+    "data/moe/results/lp_diagnostic_20260919_v1/input232_p0/proposal/input.json": "ea2c41d13df427b882ca10128773ae386e70be7e09b582c6e04e112a66e46fe4",
+    "data/moe/results/lp_diagnostic_20260919_v1/input232_p0/proposal/native.json": "0919f78eb80c57647178285cf87c48a5aea10316d65a4f6e91cc6db151f376b1",
+    "data/moe/results/lp_diagnostic_20260919_v1/input232_p0/proposal/terminal.json": "694cd3fe3fb87503a966147e74f3a51b12f72e78edd8945653f7df6124641bc1",
+    "data/moe/results/lp_diagnostic_20260919_v1/input232_p0/propose.log": "4bd7def3317dab4fb9bc75b6a57976cb1628b3a768d1bb720a35179a5c277dda",
+    "data/moe/results/lp_diagnostic_20260919_v1/input232_p0/propose_entered.json": "98ae9b5b1e335f1368209d9b90255f5891796ee557728e741b30a292af960955",
+    "data/moe/results/lp_diagnostic_20260919_v1/input232_p0/propose_stage.json": "a70aa0677fe1bf14455640cefa1240d1e9336da3edc604fdef3b0e836c7fbd21",
+    "data/moe/results/lp_diagnostic_20260919_v1/input232_p0/publication.json": "34530d253d6580b7bd91a0df1cb91f755fc6d46dc22029b50850778679844b6d",
+    "data/moe/results/lp_diagnostic_20260919_v1/input232_p0_resource.json": "ea43b7a9d04a5433070420bc6a9f38c87c9bb87a90cb9f086f4410cf31af30f7",
+    "data/moe/results/lp_diagnostic_20260919_v1/input232_p0_row.json": "7cac85e5aa34ddc258314cc772dfd38c341183e4acb66fc0429586608e250792",
+    "data/moe/results/lp_diagnostic_20260919_v1/launch.json": "11d83dc1893e292e8c907498c3ec9fc8704a79d587ca193e5231ac82b628457f",
+    "data/moe/results/lp_diagnostic_20260919_v1/summary.json": "3dc8bcdf1100e3628e00346e86167cc623a06a102799a04bd2b2d3bf3a7fd383",
+    "data/moe/results/lp_diagnostic_20260919_v1/writer.lock": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/lp_diagnostic_v1_freeze.json": "637b9cb8935faeda809b1d3ba104ca9f7253c2e7a464bb0457e9d32389748dcd",
+    "docs/lp_diagnostic_v1_selection_review.json": "a5ff45121e1f206fae6a9f211790242d9184c8e3d6f355446612f14c8e0acfca"
+  },
+  "automatic_final_audit_seconds": 0.5466523133218288,
+  "cost_totals": {
+    "diagnostic_publication_seconds": 25.562251769006252,
+    "diagnostics_with_cost_record": 4,
+    "post_terminal_audit_seconds": 0.2005821168422699,
+    "post_terminal_audits_with_record": 4,
+    "preflight_seconds": 2.5557379852980375,
+    "resource_seconds": 0.00034054554998874664,
+    "scope": "disjoint diagnostic publication clocks and separately labeled overhead; missing clocks not zero"
+  },
+  "execution_head": "9fdb77beac9c82530a2a1114a0c9ff75e7fc5ac1",
+  "execution_status": "PASS",
+  "independent_archival_seconds": 1.9902961403131485,
+  "issues": [],
+  "new_solver_or_model_or_bound_check_calls": 0,
+  "original_records_unchanged": true,
+  "rows": [
+    {
+      "complete_independent_check": true,
+      "costs": {
+        "component_seconds": 3.579914404079318,
+        "endpoint": "publication observation; late publication invalidates acceptance",
+        "identity": "whole = disjoint completed phase windows + residual; native/component nested in propose, never added again",
+        "native_calls": 1,
+        "native_seconds": 0.22861036472022533,
+        "observed_phase_sum_seconds": 5.413480706512928,
+        "phases": {
+          "check": {
+            "censored": false,
+            "seconds": 1.0152560845017433,
+            "state": "COMPLETED"
+          },
+          "load": {
+            "censored": false,
+            "seconds": 0.36434237472712994,
+            "state": "COMPLETED"
+          },
+          "package": {
+            "censored": false,
+            "seconds": 0.1138326358050108,
+            "state": "COMPLETED"
+          },
+          "propose": {
+            "censored": false,
+            "seconds": 3.920049611479044,
+            "state": "COMPLETED"
+          }
+        },
+        "residual_clock_seconds": 0.15456202812492847,
+        "scope": "supplied-LP diagnostic only; historic network propagation excluded, no end-to-end MoE cost claim",
+        "unreadable_interrupted_records": [],
+        "whole_diagnostic_seconds": 5.5680427346378565
+      },
+      "dataset_index": 220,
+      "diagnostic": {
+        "acceptance_threshold": "944473296573929/9444732965739290427392",
+        "candidate_objective_NOT_UPPER_UNLESS_FEASIBLE": "-163805353666699157166682247095183701427/85070591730234615865843651857942052864",
+        "checked_rows": {
+          "A": 2890,
+          "E": 1441
+        },
+        "checked_variables": 7397,
+        "classification": "UNRESOLVED_CANDIDATE_VS_LP_RELAXATION",
+        "exact_gap": null,
+        "exact_optimality": false,
+        "first_violations": [
+          {
+            "exact_violation": "1/1125899906842624",
+            "index": 3593,
+            "kind": "box"
+          },
+          {
+            "exact_violation": "1/1125899906842624",
+            "index": 6214,
+            "kind": "box"
+          },
+          {
+            "exact_violation": "1/1125899906842624",
+            "index": 264,
+            "kind": "inequality"
+          },
+          {
+            "exact_violation": "1/18014398509481984",
+            "index": 478,
+            "kind": "inequality"
+          },
+          {
+            "exact_violation": "1/72057594037927936",
+            "index": 503,
+            "kind": "inequality"
+          },
+          {
+            "exact_violation": "1/36028797018963968",
+            "index": 507,
+            "kind": "inequality"
+          },
+          {
+            "exact_violation": "1/72057594037927936",
+            "index": 737,
+            "kind": "inequality"
+          },
+          {
+            "exact_violation": "1/18014398509481984",
+            "index": 738,
+            "kind": "inequality"
+          }
+        ],
+        "isolated": true,
+        "lower_bound": "-48346806991889147659471474018435247469202482375418377749423/25108406941546723055343157692830665664409421777856138051584",
+        "lp_sha256": "5dde992d33be74e6474c88170fa45c36a73ad15670b5ccb738f286989b378413",
+        "maximum_exact_violations": {
+          "box": "1/1125899906842624",
+          "equality": "120020511833734424656753/42535295865117307932921825928971026432",
+          "inequality": "10490701654087418762386455513755005357120689/392318858461667547739736838950479151006397215279002157056"
+        },
+        "network_SAFE": false,
+        "network_UNSAFE": false,
+        "primal_status": "NOT_EXACTLY_FEASIBLE",
+        "residual_box_term": "-105893463450321006858960929975191309401301612289728390021247/12554203470773361527671578846415332832204710888928069025792",
+        "scope": "Supplied exact rational continuous LP only; network-to-HZ, guards, route exclusions and property lowering NOT checked.",
+        "seconds": 0.9428848959505558,
+        "site_disabled": true,
+        "solver_or_model_imported": false,
+        "statement_sha256": "9a0415c70689f02c50611e036d9062695135257c54e9e4f3bf4efd863ab3432f",
+        "status": "CHECKED_LP_DIAGNOSTIC",
+        "upper_bound": null,
+        "violation_counts": {
+          "box": 2,
+          "equality": 1441,
+          "inequality": 83
+        }
+      },
+      "dimensions": {
+        "A_rows": 2890,
+        "E_rows": 1441,
+        "variables": 7397
+      },
+      "display": {
+        "candidate_objective_NOT_UPPER_UNLESS_FEASIBLE": -1.9255226786965174,
+        "checked_lower": -1.9255226786965123,
+        "maximum_violations": {
+          "box": 8.881784197001252e-16,
+          "equality": 2.8216686728670864e-15,
+          "inequality": 2.6740243115568806e-14
+        },
+        "prior_lower": -1.9255226786965123
+      },
+      "job_id": "input220_p0",
+      "native": {
+        "granted_seconds": 60,
+        "iterations": 3756,
+        "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+        "native_seconds": 0.22861036472022533,
+        "objective_without_offset": -5.956474902080222,
+        "status": 0,
+        "success": true
+      },
+      "pair": [
+        1,
+        2
+      ],
+      "prior_checked_lower": "-48346806991889147659471474018435247469202482375418377749423/25108406941546723055343157692830665664409421777856138051584",
+      "property_index": 0,
+      "statement_sha256": "9a0415c70689f02c50611e036d9062695135257c54e9e4f3bf4efd863ab3432f",
+      "status": "CHECKED_LP_DIAGNOSTIC"
+    },
+    {
+      "complete_independent_check": true,
+      "costs": {
+        "component_seconds": 3.431301809847355,
+        "endpoint": "publication observation; late publication invalidates acceptance",
+        "identity": "whole = disjoint completed phase windows + residual; native/component nested in propose, never added again",
+        "native_calls": 1,
+        "native_seconds": 0.18741155415773392,
+        "observed_phase_sum_seconds": 5.214112997055054,
+        "phases": {
+          "check": {
+            "censored": false,
+            "seconds": 0.9655772782862186,
+            "state": "COMPLETED"
+          },
+          "load": {
+            "censored": false,
+            "seconds": 0.3643244169652462,
+            "state": "COMPLETED"
+          },
+          "package": {
+            "censored": false,
+            "seconds": 0.11387665756046772,
+            "state": "COMPLETED"
+          },
+          "propose": {
+            "censored": false,
+            "seconds": 3.770334644243121,
+            "state": "COMPLETED"
+          }
+        },
+        "residual_clock_seconds": 0.15338151529431343,
+        "scope": "supplied-LP diagnostic only; historic network propagation excluded, no end-to-end MoE cost claim",
+        "unreadable_interrupted_records": [],
+        "whole_diagnostic_seconds": 5.367494512349367
+      },
+      "dataset_index": 222,
+      "diagnostic": {
+        "acceptance_threshold": "944473296573929/9444732965739290427392",
+        "candidate_objective_NOT_UPPER_UNLESS_FEASIBLE": "-600854860022684835209366964079438329797/170141183460469231731687303715884105728",
+        "checked_rows": {
+          "A": 3080,
+          "E": 1536
+        },
+        "checked_variables": 7682,
+        "classification": "UNRESOLVED_CANDIDATE_VS_LP_RELAXATION",
+        "exact_gap": null,
+        "exact_optimality": false,
+        "first_violations": [
+          {
+            "exact_violation": "1/18014398509481984",
+            "index": 280,
+            "kind": "inequality"
+          },
+          {
+            "exact_violation": "1/144115188075855872",
+            "index": 551,
+            "kind": "inequality"
+          },
+          {
+            "exact_violation": "1/18014398509481984",
+            "index": 1096,
+            "kind": "inequality"
+          },
+          {
+            "exact_violation": "3/18014398509481984",
+            "index": 1111,
+            "kind": "inequality"
+          },
+          {
+            "exact_violation": "1/72057594037927936",
+            "index": 1185,
+            "kind": "inequality"
+          },
+          {
+            "exact_violation": "1/9007199254740992",
+            "index": 1196,
+            "kind": "inequality"
+          },
+          {
+            "exact_violation": "1/18014398509481984",
+            "index": 1259,
+            "kind": "inequality"
+          },
+          {
+            "exact_violation": "1/4503599627370496",
+            "index": 1260,
+            "kind": "inequality"
+          }
+        ],
+        "isolated": true,
+        "lower_bound": "-346369244633845122835282536301898540689926565915287857073/98079714615416886934934209737619787751599303819750539264",
+        "lp_sha256": "194d24ab66eaa99ef425c05bb9799090b20b1d07e17bd3d063d1d6d4d259d031",
+        "maximum_exact_violations": {
+          "box": "0",
+          "equality": "523088903659289543720919/340282366920938463463374607431768211456",
+          "inequality": "1225649846337618108752147260715193203591401/196159429230833773869868419475239575503198607639501078528"
+        },
+        "network_SAFE": false,
+        "network_UNSAFE": false,
+        "primal_status": "NOT_EXACTLY_FEASIBLE",
+        "residual_box_term": "-1922950280394060989287753107824722112934695/348449143727040986586495598010130648530944",
+        "scope": "Supplied exact rational continuous LP only; network-to-HZ, guards, route exclusions and property lowering NOT checked.",
+        "seconds": 0.9149954803287983,
+        "site_disabled": true,
+        "solver_or_model_imported": false,
+        "statement_sha256": "2c1da932b415e497bd71f3a42f9e891ebddb11c91f77a719b38e388454e5368e",
+        "status": "CHECKED_LP_DIAGNOSTIC",
+        "upper_bound": null,
+        "violation_counts": {
+          "box": 0,
+          "equality": 1536,
+          "inequality": 48
+        }
+      },
+      "dimensions": {
+        "A_rows": 3080,
+        "E_rows": 1536,
+        "variables": 7682
+      },
+      "display": {
+        "candidate_objective_NOT_UPPER_UNLESS_FEASIBLE": -3.5315074681039116,
+        "checked_lower": -3.5315074681039116,
+        "maximum_violations": {
+          "box": 0.0,
+          "equality": 1.5372201280732967e-15,
+          "inequality": 6.248233139459816e-15
+        },
+        "prior_lower": -3.5315074681039116
+      },
+      "job_id": "input222_p1",
+      "native": {
+        "granted_seconds": 60,
+        "iterations": 3823,
+        "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+        "native_seconds": 0.18741155415773392,
+        "objective_without_offset": -6.519435948506451,
+        "status": 0,
+        "success": true
+      },
+      "pair": [
+        0,
+        1
+      ],
+      "prior_checked_lower": "-346369244633845122835282536301898540689926565915287857073/98079714615416886934934209737619787751599303819750539264",
+      "property_index": 1,
+      "statement_sha256": "2c1da932b415e497bd71f3a42f9e891ebddb11c91f77a719b38e388454e5368e",
+      "status": "CHECKED_LP_DIAGNOSTIC"
+    },
+    {
+      "complete_independent_check": true,
+      "costs": {
+        "component_seconds": 4.920567078515887,
+        "endpoint": "publication observation; late publication invalidates acceptance",
+        "identity": "whole = disjoint completed phase windows + residual; native/component nested in propose, never added again",
+        "native_calls": 1,
+        "native_seconds": 0.5073040500283241,
+        "observed_phase_sum_seconds": 7.41681064106524,
+        "phases": {
+          "check": {
+            "censored": false,
+            "seconds": 1.4159608539193869,
+            "state": "COMPLETED"
+          },
+          "load": {
+            "censored": false,
+            "seconds": 0.514612503349781,
+            "state": "COMPLETED"
+          },
+          "package": {
+            "censored": false,
+            "seconds": 0.16390877217054367,
+            "state": "COMPLETED"
+          },
+          "propose": {
+            "censored": false,
+            "seconds": 5.322328511625528,
+            "state": "COMPLETED"
+          }
+        },
+        "residual_clock_seconds": 0.17371560633182526,
+        "scope": "supplied-LP diagnostic only; historic network propagation excluded, no end-to-end MoE cost claim",
+        "unreadable_interrupted_records": [],
+        "whole_diagnostic_seconds": 7.590526247397065
+      },
+      "dataset_index": 230,
+      "diagnostic": {
+        "acceptance_threshold": "944473296573929/9444732965739290427392",
+        "candidate_objective_NOT_UPPER_UNLESS_FEASIBLE": "-929306157287203396160626023589401004683/680564733841876926926749214863536422912",
+        "checked_rows": {
+          "A": 4280,
+          "E": 2136
+        },
+        "checked_variables": 9482,
+        "classification": "UNRESOLVED_CANDIDATE_VS_LP_RELAXATION",
+        "exact_gap": null,
+        "exact_optimality": false,
+        "first_violations": [
+          {
+            "exact_violation": "1/1152921504606846976",
+            "index": 586,
+            "kind": "inequality"
+          },
+          {
+            "exact_violation": "1/9007199254740992",
+            "index": 680,
+            "kind": "inequality"
+          },
+          {
+            "exact_violation": "1/9007199254740992",
+            "index": 688,
+            "kind": "inequality"
+          },
+          {
+            "exact_violation": "1/36028797018963968",
+            "index": 706,
+            "kind": "inequality"
+          },
+          {
+            "exact_violation": "1/18014398509481984",
+            "index": 815,
+            "kind": "inequality"
+          },
+          {
+            "exact_violation": "1/36028797018963968",
+            "index": 816,
+            "kind": "inequality"
+          },
+          {
+            "exact_violation": "1/18014398509481984",
+            "index": 848,
+            "kind": "inequality"
+          },
+          {
+            "exact_violation": "1/72057594037927936",
+            "index": 856,
+            "kind": "inequality"
+          }
+        ],
+        "isolated": true,
+        "lower_bound": "-8571336424799822661186001512556201327989975210165678372269/6277101735386680763835789423207666416102355444464034512896",
+        "lp_sha256": "236491c417b352d859a4048532208df0f4aa3f43b7860885dcf140aca630832c",
+        "maximum_exact_violations": {
+          "box": "0",
+          "equality": "139718954793157936670383/85070591730234615865843651857942052864",
+          "inequality": "1/2251799813685248"
+        },
+        "network_SAFE": false,
+        "network_UNSAFE": false,
+        "primal_status": "NOT_EXACTLY_FEASIBLE",
+        "residual_box_term": "-11152224513091027049126667964580296789335943442568083296853/1569275433846670190958947355801916604025588861116008628224",
+        "scope": "Supplied exact rational continuous LP only; network-to-HZ, guards, route exclusions and property lowering NOT checked.",
+        "seconds": 1.347652057185769,
+        "site_disabled": true,
+        "solver_or_model_imported": false,
+        "statement_sha256": "8b33df0b3256a8a81b8772c7c634d3286dd6cae4d2cfcb9c534139b0d9da4cd2",
+        "status": "CHECKED_LP_DIAGNOSTIC",
+        "upper_bound": null,
+        "violation_counts": {
+          "box": 0,
+          "equality": 2136,
+          "inequality": 75
+        }
+      },
+      "dimensions": {
+        "A_rows": 4280,
+        "E_rows": 2136,
+        "variables": 9482
+      },
+      "display": {
+        "candidate_objective_NOT_UPPER_UNLESS_FEASIBLE": -1.3654926725943448,
+        "checked_lower": -1.365492672594355,
+        "maximum_violations": {
+          "box": 0.0,
+          "equality": 1.6423884206215172e-15,
+          "inequality": 4.440892098500626e-16
+        },
+        "prior_lower": -1.365492672594355
+      },
+      "job_id": "input230_p2",
+      "native": {
+        "granted_seconds": 60,
+        "iterations": 5859,
+        "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+        "native_seconds": 0.5073040500283241,
+        "objective_without_offset": -5.903596804995653,
+        "status": 0,
+        "success": true
+      },
+      "pair": [
+        0,
+        3
+      ],
+      "prior_checked_lower": "-8571336424799822661186001512556201327989975210165678372269/6277101735386680763835789423207666416102355444464034512896",
+      "property_index": 2,
+      "statement_sha256": "8b33df0b3256a8a81b8772c7c634d3286dd6cae4d2cfcb9c534139b0d9da4cd2",
+      "status": "CHECKED_LP_DIAGNOSTIC"
+    },
+    {
+      "complete_independent_check": true,
+      "costs": {
+        "component_seconds": 4.54453712515533,
+        "endpoint": "publication observation; late publication invalidates acceptance",
+        "identity": "whole = disjoint completed phase windows + residual; native/component nested in propose, never added again",
+        "native_calls": 1,
+        "native_seconds": 0.34646387584507465,
+        "observed_phase_sum_seconds": 6.865882463753223,
+        "phases": {
+          "check": {
+            "censored": false,
+            "seconds": 1.3157509844750166,
+            "state": "COMPLETED"
+          },
+          "load": {
+            "censored": false,
+            "seconds": 0.464536190032959,
+            "state": "COMPLETED"
+          },
+          "package": {
+            "censored": false,
+            "seconds": 0.16392165794968605,
+            "state": "COMPLETED"
+          },
+          "propose": {
+            "censored": false,
+            "seconds": 4.921673631295562,
+            "state": "COMPLETED"
+          }
+        },
+        "residual_clock_seconds": 0.17030581086874008,
+        "scope": "supplied-LP diagnostic only; historic network propagation excluded, no end-to-end MoE cost claim",
+        "unreadable_interrupted_records": [],
+        "whole_diagnostic_seconds": 7.0361882746219635
+      },
+      "dataset_index": 232,
+      "diagnostic": {
+        "acceptance_threshold": "944473296573929/9444732965739290427392",
+        "candidate_objective_NOT_UPPER_UNLESS_FEASIBLE": "-6606619080117228205904874032831640906729/680564733841876926926749214863536422912",
+        "checked_rows": {
+          "A": 4022,
+          "E": 2007
+        },
+        "checked_variables": 9095,
+        "classification": "UNRESOLVED_CANDIDATE_VS_LP_RELAXATION",
+        "exact_gap": null,
+        "exact_optimality": false,
+        "first_violations": [
+          {
+            "exact_violation": "1/36028797018963968",
+            "index": 640,
+            "kind": "inequality"
+          },
+          {
+            "exact_violation": "1/18014398509481984",
+            "index": 701,
+            "kind": "inequality"
+          },
+          {
+            "exact_violation": "1/9007199254740992",
+            "index": 705,
+            "kind": "inequality"
+          },
+          {
+            "exact_violation": "1/36028797018963968",
+            "index": 706,
+            "kind": "inequality"
+          },
+          {
+            "exact_violation": "1/9007199254740992",
+            "index": 713,
+            "kind": "inequality"
+          },
+          {
+            "exact_violation": "1/36028797018963968",
+            "index": 725,
+            "kind": "inequality"
+          },
+          {
+            "exact_violation": "1/36028797018963968",
+            "index": 751,
+            "kind": "inequality"
+          },
+          {
+            "exact_violation": "1/18014398509481984",
+            "index": 755,
+            "kind": "inequality"
+          }
+        ],
+        "isolated": true,
+        "lower_bound": "-62397753018438702660784087067338246304014180043108457379073155/6427752177035961102167848369364650410088811975131171341205504",
+        "lp_sha256": "6d8d30d08a0642e1d417e6b6cfe8ba4f93905c5c952e01f7aca698ac4445638e",
+        "maximum_exact_violations": {
+          "box": "0",
+          "equality": "61731159903073638953894327909/85070591730234615865843651857942052864",
+          "inequality": "3/4503599627370496"
+        },
+        "network_SAFE": false,
+        "network_UNSAFE": false,
+        "primal_status": "NOT_EXACTLY_FEASIBLE",
+        "residual_box_term": "-12323032384079529086577187108709509319028391937/1427247692705959881058285969449495136382746624",
+        "scope": "Supplied exact rational continuous LP only; network-to-HZ, guards, route exclusions and property lowering NOT checked.",
+        "seconds": 1.2855711430311203,
+        "site_disabled": true,
+        "solver_or_model_imported": false,
+        "statement_sha256": "990a5b2afa13817e37f98ebcb175006b32b6f71800e3cb0e4ba21b6a9de9ab7f",
+        "status": "CHECKED_LP_DIAGNOSTIC",
+        "upper_bound": null,
+        "violation_counts": {
+          "box": 0,
+          "equality": 2007,
+          "inequality": 85
+        }
+      },
+      "dimensions": {
+        "A_rows": 4022,
+        "E_rows": 2007,
+        "variables": 9095
+      },
+      "display": {
+        "candidate_objective_NOT_UPPER_UNLESS_FEASIBLE": -9.707554258390674,
+        "checked_lower": -9.707554258448756,
+        "maximum_violations": {
+          "box": 0.0,
+          "equality": 7.256462973577037e-10,
+          "inequality": 6.661338147750939e-16
+        },
+        "prior_lower": -9.707554258448756
+      },
+      "job_id": "input232_p0",
+      "native": {
+        "granted_seconds": 60,
+        "iterations": 5341,
+        "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+        "native_seconds": 0.34646387584507465,
+        "objective_without_offset": -13.505162533165015,
+        "status": 0,
+        "success": true
+      },
+      "pair": [
+        0,
+        1
+      ],
+      "prior_checked_lower": "-62397753018438702660784087067338246304014180043108457379073155/6427752177035961102167848369364650410088811975131171341205504",
+      "property_index": 0,
+      "statement_sha256": "990a5b2afa13817e37f98ebcb175006b32b6f71800e3cb0e4ba21b6a9de9ab7f",
+      "status": "CHECKED_LP_DIAGNOSTIC"
+    }
+  ],
+  "schema": "LP_DIAGNOSTIC_ARCHIVE_V1",
+  "scope": "saved-record reconstruction only; exact LP checks were run during frozen execution; upstream lowering remains trusted",
+  "status": "PASS"
+}

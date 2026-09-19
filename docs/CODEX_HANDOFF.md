@@ -1,5 +1,29 @@
 # MoE project handoff
 
+Latest completion (2026-09-19): FOUR FROZEN LP DIAGNOSTICS EXECUTED AND SEALED.
+Read `docs/lp_diagnostic_v1_execution_results.md` / JSON FIRST. Execution HEAD
+9fdb77beac9c82530a2a1114a0c9ff75e7fc5ac1;4/4 once,4 native calls, all exact
+checks complete. Automatic audit + fresh-process archive PASS,0 issues;
+aggregate mutation test PASS. No ERROR/TIMEOUT/retry/repair/config drift.
+This supersedes freeze-only instructions below. DO NOT launch again.
+
+All4 remain UNRESOLVED_CANDIDATE_VS_LP_RELAXATION. Native status0/optimal on
+all4, but primal NOT_EXACTLY_FEASIBLE:0 checked upper bounds,0 checked optima.
+New exact L equals old exact L on all4 (display −1.92552,−3.53151,−1.36549,
+−9.70755). Max equality violations2.82e−15,1.54e−15,1.64e−15,7.26e−10;
+inequality/box violations also retained. Small violations are NOT ignored.
+Negative candidate objectives close to L are not valid uppers or certified gaps.
+No complete-network SAFE/UNSAFE. The old30 remain unresolved;26 not queried.
+
+Total supplied-LP diagnostic cost25.562252s:load1.707815,propose17.934386,
+package0.555540,isolated check4.712545,residual0.651965. Native1.269790s is
+nested in proposal, never added twice. Historical propagation/range/F0 lowering
+excluded; no end-to-end MoE speed claim. Wait/preflight/audits separately saved.
+No reason from these four runs to add solver time or enlarge the query set.
+Next possible research is a separately scoped exact-feasibility witness
+interface with analytic controls, NOT silently repairing these frozen points.
+Network→HZ/guard/route exclusion/F0 lowering trust and numerical gates unchanged.
+
 Latest completion (2026-09-19): OUTER-SUPERVISED LP DIAGNOSTIC V1 implemented,
 control-tested and FROZEN ONLY. Read `docs/lp_diagnostic_v1_results.md`, protocol,
 freeze and selection review FIRST. New namespace `lp_diagnostic/`; old
