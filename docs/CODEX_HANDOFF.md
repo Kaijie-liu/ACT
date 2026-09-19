@@ -1,5 +1,28 @@
 # MoE project handoff
 
+Latest completion (2026-09-19): ORIGINAL-COORDINATE SPARSE BASIS/ANCHOR interface
+added in `exact_basis/`. Read `docs/exact_basis_v1.md` and attempt001 FIRST.
+47/47 controls PASS (12 new +35 regressions). Old modules/frozen identities
+unchanged; real LP reconstructions0, real solver calls0. Four sealed real
+diagnostics stay unresolved. This supersedes the missing mapping-interface
+work below, NOT the missing native adapter or production supervision.
+
+Manifest binds original E/A rows and hashes, named x/slack columns, complete
+disjoint basic/nonbasic partition and exact anchors. Uses Ex=h, Ax+s=b; no
+unmapped presolve/scaling or opposite slack signs. Sparse exact assembly and
+elimination record fill-in/peak elimination nnz/operation counts; singularity
+is unresolved, not LP infeasibility. Constructor only emits CANDIDATE_ONLY.
+Full frozen original-LP checker validates every constraint; relocated python
+-I-S checks (1/3,2/3), U=−2/3. A different anchor gives negative slack and is
+correctly rejected. Missing/duplicate coordinates, drift, limits, permutation,
+fixed bounds and rank deficiency controls pass. Caps remain analytic-small.
+
+Next: tiny native-basis adapter controls with submitted-model and solver-option
+identity, original structural/slack mapping, degeneracy and unknown-map rejection;
+THEN single-budget owned outer capture→construct→pack→check supervision before
+any new real diagnostic. Do not simply lift caps or silently repair sealed
+points. No complete-network proof, performance or real effectiveness claim.
+
 Latest completion (2026-09-19): EXACT FEASIBLE WITNESS construction research
 added in `exact_primal/`, analytic-only, no production integration. Read
 `docs/exact_primal_v1.md` and numbered receipts FIRST. Latest attempt00335/35
