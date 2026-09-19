@@ -1,5 +1,35 @@
 # MoE project handoff
 
+Latest execution (2026-09-20): user explicitly authorized the four frozen
+primitive diagnostics. Executed once at clean pushed HEAD
+`17a7976ad90daa96960ec372472cb32938f99a9d`. Read
+`docs/primitive_diagnostic_v1_execution_results.md/json` FIRST, then fresh
+execution review. **4/4 LIMIT, zero original-LP checks/feasible U.** No retry,
+cap/time increase, new sample, algorithm fallback or frozen-source modification.
+
+All four new basis structures and assembled-system hashes match old V2.
+Row clearing completes with entry integer maxima144/139/143/154bits. Every stop
+is elimination row_product, at4112/4097/4113/4116bits against4096, before
+subtraction/content normalization. Recorded pivots3760/3050/4939/4081, fill0,
+no time/operations/live-entry exhaustion. The raw-product gate failed; final
+solution size and later cancellation remain unmeasured. Native negatives are
+untrusted, not checked U, LP infeasibility or network UNSAFE.
+
+Supplied-LP clocks13.489612/12.660985/18.821466/18.017880s, total62.989942s.
+All four costs/journals complete for their LIMIT outcome, but no point/proof.
+Package/check durations null. Batch105.226850s includes requests plus
+post-terminal audits42.185560s; final summary42.377780s and archival work
+separately disclosed. Archive211 raw hashes; fresh record reconstruction and
+saved-journal derivation do not independently certify elimination arithmetic.
+
+NEXT decision: this study is closed. Primitive rows show no endpoint gain here;
+do NOT rerun unchanged or extend caps/time. A separately scoped candidate-
+construction approach avoiding the observed large intermediate products is the
+next arithmetic research question, with analytic controls and the unchanged
+full original-LP checker. No new algorithm or real diagnostic is authorized by
+this archival stage. Do not infer intrinsic LP-relaxation failure or model
+unsafety without checked evidence. Earlier readiness text below is historical.
+
 Latest preparation (2026-09-20): user requested comprehensive readiness, not
 execution. Read `docs/primitive_diagnostic_v1.md` FIRST. New separate batch
 namespace `primitive_diagnostic/`; frozen `primitive_supervised/` untouched.
