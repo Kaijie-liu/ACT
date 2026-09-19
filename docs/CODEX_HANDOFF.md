@@ -1,5 +1,28 @@
 # MoE project handoff
 
+Latest arithmetic research (2026-09-20): user requested a scheme avoiding large
+intermediate products, **controls first**. Read
+`docs/modular_basis_v1_results.md` FIRST, then its control receipt and fresh
+review. Separate `modular_basis/` implements bounded small-prime sparse solving,
+CRT and rational reconstruction gated by exact original-equation residuals.
+**64/64 controls PASS (18 new +46 regressions); fresh review PASS, 0 issues**:
+30 successful systems, eight unresolved retained, five relocated `python -I -S`
+original-LP checks (four feasible and one expected rejection), 127 artifacts.
+
+Analytic positive: primitive cross product4201bits fails unchanged4096 cap;
+new method recovers(1,1) using one prime and <=59-bit field products, then full
+original LP checker accepts feasible U=-1. This is NOT real-LP efficacy or a
+network proof. Intrinsic-large-answer control still LIMITs during a trial exact
+residual at4167bits (round69); bounded reconstruction is deliberately incomplete.
+Real reconstructions/native queries0; sealed source/results unchanged.
+
+NEXT: separately integrate this candidate-only interface into a unified-budget
+outer supervisor; test deadlines, partial evidence and full costs before any
+new real diagnostic freeze. Do not rerun the four real LPs, increase4096 caps,
+claim infeasibility/UNSAFE, or treat modular candidates as feasible. No production
+hook in this stage. Earlier primitive execution below remains the latest REAL
+result; its "next arithmetic question" is now addressed only by analytic controls.
+
 Latest execution (2026-09-20): user explicitly authorized the four frozen
 primitive diagnostics. Executed once at clean pushed HEAD
 `17a7976ad90daa96960ec372472cb32938f99a9d`. Read
