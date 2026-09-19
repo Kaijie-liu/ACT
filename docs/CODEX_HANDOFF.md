@@ -1,5 +1,33 @@
 # MoE project handoff
 
+Latest completion (2026-09-19): OUTER-SUPERVISED LP DIAGNOSTIC V1 implemented,
+control-tested and FROZEN ONLY. Read `docs/lp_diagnostic_v1_results.md`, protocol,
+freeze and selection review FIRST. New namespace `lp_diagnostic/`; old
+`lp_sandwich/` and every earlier frozen source unchanged. Latest attempt003
+41/41 PASS (15 supervision/batch +26 prior regression tests); attempts001/002
+preserved. Fresh-process source/ordered-selection review PASS,0 issues.
+
+Four jobs: input220 pair{1,2} p0;222 {0,1} p1;230 {0,3} p2;232 {0,1} p0.
+First nonpositive obligation in original order per previously observed input;
+unchanged archived weighted LPs, NOT a new holdout. Real solver calls0 and
+`data/moe/results/lp_diagnostic_20260919_v1` NOT CREATED. Do not claim execution.
+
+One original300s clock includes load/import/native capture/retained precheck/
+pack/isolated check/admission. Native cap60, proposal deadline218, work watchdog
+298, late publication300 invalidates acceptance. Owned-tree cleanup only.
+Immutable terminal roster retains four denominators; ERROR stops, TIMEOUT and
+checked-unresolved continue. Full diagnostic time/phase windows/residual
+reconcile; native/component nested, missing cost null, waits/audits separate.
+It is supplied-LP cost, NOT full MoE cost; historic propagation is excluded.
+
+Next bounded action is explicit launch of these four frozen diagnostics AFTER
+clean commit/push. No rerun-all30, point repair, tolerance/range/representation/
+cache/order change. U<=0 from an exactly feasible point limits this LP only,
+not model UNSAFE; L>threshold is LP-only, not full-network SAFE. Missing/inexact
+primal leaves attribution unresolved. Old30 remain unresolved until new data.
+Network→HZ/guard/route exclusion/F0 lowering trust is unchanged. This entry
+supersedes the missing-outer-watchdog prerequisite below, not prior results.
+
 Latest completion (2026-09-19): EXACT LP PRIMAL/DUAL diagnostic component added,
 opt-in and NOT production-integrated. Read `docs/lp_sandwich_v1.md` and numbered
 control receipts first. Attempt00125/25 PASS; attempt00226/26 PASS includes
