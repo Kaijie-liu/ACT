@@ -1,5 +1,31 @@
 # MoE project handoff
 
+Latest completion (2026-09-19): SINGLE-BUDGET BASIS EVIDENCE SUPERVISION added
+in `basis_supervised/`. Read `docs/basis_supervised_v1.md`, attempt002 and
+`docs/basis_supervised_v1_review.json` FIRST.73/73 PASS (19 new+54 prior);
+fresh-process10-terminal/cost review and moved isolated analytic recheck PASS,
+0 issues. Attempt00171/71 preserved. No old modules/freezes changed, no real LP
+calls/reconstructions, no new experiment freeze. This supersedes the missing
+outer-supervision prerequisite below, NOT the small-size/mapping restrictions.
+
+One original300s supplied-LP clock: load→native capture→basis map→exact construct
+by218s; pack and isolated full original-LP check by298s; publication300s.
+Native remains one call,max10s,highspy1.14.0 fixed options. Owned process cleanup,
+no retry/overwrite; raw capture before mapping; unsupported mapping stops intact.
+Missing timings/native counts null, interrupted windows censored, native and
+construction nested not double charged; late publication revokes acceptance.
+ERROR stops ordered roster without dropping later denominators.
+
+Complete analytic path checks(1/3,2/3),U=−4/3,not network UNSAFE. New controls
+include4 completed native analytic captures; native/exact stalls are explicitly
+synthetic faults, not measured optimization difficulty. Full outer TIMEOUT/error
+and partial evidence costs audited; no formal network or performance claim.
+
+Next requires a distinct real-compatibility/freeze decision, not automatic launch:
+64-variable/64-equation and sparse/bit caps stay; basic E-row maps remain
+unsupported. Do not raise caps, repair sealed points, or rerun the four frozen
+real diagnostics. Network→HZ/guard/route exclusion/F0 lowering trust unchanged.
+
 Latest completion (2026-09-19): ACTUAL NATIVE BASIS ADAPTER controls in
 `native_basis/`. Read `docs/native_basis_v1.md` + attempt001 FIRST.54/54 PASS
 (7 new+47 regressions);6 native analytic captures,0 real-network LP calls or

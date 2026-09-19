@@ -1,0 +1,50 @@
+{
+  "status": "PASS",
+  "issues": [],
+  "receipt_sha256": "f2d1966fbf0b2b74adf526c3e3c251ad967ac33afcf19531c65be98aae5b7b35",
+  "controls": 73,
+  "reviewed_terminals": 10,
+  "cost_reconstructions": [
+    {
+      "case": "complete_analytic",
+      "status": "CHECKED_LP_DIAGNOSTIC",
+      "native_calls": 1,
+      "costs_reconstructed": true,
+      "outer_sha256": "4b35a6b71e22f5c74dd8976e5e8ff67cb54eb1619db2d8dc4986ff621adecb05"
+    },
+    {
+      "case": "unsupported_mapping",
+      "status": "UNSUPPORTED_MAPPING",
+      "native_calls": 1,
+      "costs_reconstructed": true,
+      "outer_sha256": "1c3f9ee01fe5f817f65cb2858f26cc86132f43276a3e968d08b9838bdd9d6ecd"
+    },
+    {
+      "case": "full_outer_native_stall",
+      "status": "TIMEOUT",
+      "native_calls": null,
+      "costs_reconstructed": true,
+      "outer_sha256": "b80cf0af4eced13b9dcb16e8245b7d1ba1e4b80520820c818cd9171979541559"
+    },
+    {
+      "case": "full_outer_construct_stall",
+      "status": "TIMEOUT",
+      "native_calls": 1,
+      "costs_reconstructed": true,
+      "outer_sha256": "a78fdce1609b4a2fd4171b5c67a5669d641cfda0a1eac9e42731f29f57a0c10b"
+    },
+    {
+      "case": "full_outer_map_exception",
+      "status": "ERROR",
+      "native_calls": 1,
+      "costs_reconstructed": true,
+      "outer_sha256": "6a56772eeee7284380065bd793ef4a8956e9d92add74a4edb4decb3319dbd1a5"
+    }
+  ],
+  "moved_standalone_upper": "-4/3",
+  "seconds": 0.21322914771735668,
+  "new_native_calls": 0,
+  "new_real_network_LP_calls": 0,
+  "frozen_sources_unchanged": true,
+  "scope": "fresh-process terminal/cost reconstruction and isolated analytic LP recheck; not real-network proof"
+}
