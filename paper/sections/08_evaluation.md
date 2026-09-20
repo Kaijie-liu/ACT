@@ -294,6 +294,16 @@ or a concrete model violation. Historical source generation is excluded and
 all nine obligations remain in the denominator. Evidence:
 `docs/full_bounds_v1_review.json` and `docs/full_bounds_v1_analysis.json`.
 
+A finite source-range follow-up rebuilds the complete input/expert enclosure
+and all output LPs in each of two300s arms. Four preselected hidden-row ranges
+check tighter, eliminating one of1,619 binaries. Missing output evidence falls
+from2/9 to0/9, but every available lower bound is nonpositive in both arms;
+the seven common bounds improve only4.18e-5 to1.42e-4. Full stored-source time
+is141.56s without ranges and153.80s with ranges. Both relocated mathematical
+checks pass. This demonstrates proof-path integration, not a new SAFE or
+speedup; it remains one single-route input and a fixed-order comparison.
+Evidence: `docs/range_pipeline_v1_review.json` and its saved-only analysis.
+
 In a separately frozen development comparison, fresh evidence generation,
 packaging and checking on input 98 completed in 185.317 seconds; matched V2
 returned TIMEOUT in 295.697 seconds. This one fixed-order postselected control

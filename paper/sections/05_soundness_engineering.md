@@ -335,8 +335,11 @@ obligations. Its batched affine implementation shares source parsing, not
 acceptance decisions; exact differentials retain every row and constraint.
 Missing two-sided evidence falls back, and invalid evidence rejects. Synthetic
 complete-request controls establish lifecycle and transport behavior, not
-trained-model effectiveness. The finite real comparison is separately frozen
-in [the range-pipeline protocol](../../docs/range_pipeline_v1.md).
+trained-model effectiveness. The separately frozen real comparison then
+validates four admitted ranges and all newly generated output obligations,
+but obtains no positive complete request. Thus complete source-range proof
+composition and useful positive coverage remain distinct. See
+[the range-pipeline result](../../docs/range_pipeline_v1_results.md).
 
 Independent checker and statement identities must be pinned outside the bundle.
 A hash confirms identity, not the mathematical correctness of a trusted source.

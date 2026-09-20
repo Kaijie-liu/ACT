@@ -1,5 +1,32 @@
 # MoE project handoff
 
+LATEST COMPLETE (2026-09-20): full scoped-range comparison CLOSED,0positive.
+Read `docs/range_pipeline_v1_results.md`, review and saved-only analysis.
+Frozen8bec4ce7d ran once: off141.5569s, on153.7974s, both within300s.
+All four fixed hidden-row ranges independently check tighter; only one changes
+ReLU status, binaries1619→1618. All source transitions/route exclusions/new9
+output LP constructions freshly checked. Off7nonpositive+2missing;
+on9nonpositive+0missing. Seven common bounds improve only4.18e-5..1.42e-4.
+No complete positive request and no LP impossibility/model-unsafe conclusion.
+
+Separate moved complete rechecks/terminal audits PASS0,54.48s/68.38s.
+Raw `data/moe/results/range_pipeline_conv98_20260920_v1`; proof bytes
+153350854/155451140. Off source equals earlier full-source joint; on joint
+cdc671b5ba8bf1bb8b10b288169247bb86ed0c9cc99b9221a66577682c16496a.
+Both complete propagation and checking charged; old captures excluded.
+Range generation32.9783s includes23.7719s exact precheck vs1.3695s native.
+Proposal time falls but total rises12.2405s; one fixed-order control,not speedup.
+56code controls/regressions +3main-table +3saved-analysis tests PASS.
+Main paper tables unchanged; no production gate/native-float claim upgrade.
+
+Next, only if pursuing another bounded intervention: use these saved NEW-source
+records to identify still-unstable relations relevant to a blocking output.
+Do not automatically expand row prefix/time, retry this protocol, or turn range
+check cost into another arithmetic/cache line. The complete interface now works;
+its four-row effect is insufficient. High-accuracy/cross-family route-changing
+strict output positivity remains OPEN;conv98 is single-route67.06%. Historical
+positive old-HZ bounds cannot be attached to either new source. No jobs pending.
+
 LATEST PREPARATION (2026-09-20): complete scoped-range pipeline READY.
 Read `docs/range_pipeline_v1.md`, controls and freeze. Both arms regenerate
 input/compensated prefix/remaining experts/join/ALL9 output LPs from frozen
