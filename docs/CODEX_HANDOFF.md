@@ -1,5 +1,23 @@
 # MoE project handoff
 
+LATEST V2 READINESS (2026-09-20): user authorized continuation with new detached
+execution identity. `docs/soplex_detached_v2.md`, protocol/freeze/controls/readiness
+are READY:7/7 lifecycle/science-identity controls PASS,0native/real LP queries.
+Private tmux guardian survives launch-tree death in control, adopts/kills owned
+orphans on controller death, and preserves four-slot postmortem with censored
+costs. Frozen V1 run_jobs/supervise/worker/candidate/checker/auditor unchanged.
+New protocol differs from original ONLY by output path ending20260920_v2.
+No dependency changes. First test-fixture quoting failure retained outside Git.
+
+NEXT after preparation commit/push: act-py312 `python -m soplex_detached.run launch`.
+Private socket `/data1/Kane/MOE/run/soplex-v2.sock`; no other tmux sessions touched.
+Inspect new raw directory before any action; never duplicate/relaunch it. All
+four subjects,218/298/300s and resource gates unchanged. Automatic final review
+now stays in raw directory (`final_review.json`, `completion.json`), not docs.
+If both guardian/controller disappear, run `...run reconcile`: no resume, no
+proof promotion. Reboot/account-wide termination is not claimed survivable.
+Archive and push results after completion; do not reopen custom arithmetic.
+
 LATEST INTERRUPTION (2026-09-20 04:05 UTC): the queue below is NO LONGER LIVE.
 Read `docs/soplex_execution_interruption_20260920.json` first. Tool handles
 disappeared; OS inspection confirms former supervisor2610954/shell2610927 gone.
