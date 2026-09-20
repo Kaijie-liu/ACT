@@ -87,6 +87,13 @@ redundancy is proved locally, but nonlinear ranges, membership-interval facts
 and historical factor maps remain assumptions. No production result is upgraded
 or retroactively repaired by this audit.
 
+The new compensated-prefix control shows that these local gaps can be closed
+constructively with exact source checks, but only for the declared input,
+first Conv/ReLU layers and their joint map. Remaining layers and output
+obligations need new, correspondingly bound evidence. This distinction avoids
+substituting a checked prefix for a checked model or silently reusing positive
+LP bounds after enlarging their source domain.
+
 ## Reproducibility and conclusion
 
 Immutable request identities, failure retention, complete denominators and

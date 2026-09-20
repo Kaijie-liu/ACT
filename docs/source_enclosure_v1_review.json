@@ -1,0 +1,165 @@
+{
+  "complete_strict_network_certificate": false,
+  "execution_head": "0c2a50693e495dd4e23279db879b89d5162c335c",
+  "fresh_relocated_check_seconds": 4.777615698054433,
+  "generation": {
+    "bundle_bytes": 36690861,
+    "checkpoint_loads": 0,
+    "manifest_sha256": "01e7a3b62ae49c1ed89eb6ddc3aaaf23ce8f1ca202c062be5483b04b896a2579",
+    "native_solver_calls": 0,
+    "network_forward_calls": 0,
+    "new_compensated_prefixes": 2,
+    "new_complete_network_propagations": 0,
+    "old_LP_certificates_used": 0,
+    "scope": "Saved source bytes to NEW input/guard/Conv/ReLU/shared-frame enclosure. Not whole-request verification time.",
+    "timings": {
+      "expert1_affine_seconds": 0.6402074564248323,
+      "expert1_relu_seconds": 0.4886758718639612,
+      "expert2_affine_seconds": 0.6546603906899691,
+      "expert2_relu_seconds": 0.48408949188888073,
+      "guard_seconds": 0.0214544590562582,
+      "input_seconds": 0.015091799199581146,
+      "join_seconds": 0.5549532752484083,
+      "state_serialization_seconds": 0.060217538848519325
+    },
+    "whole_build_seconds_before_publication": 3.03454771079123
+  },
+  "issues": [],
+  "manifest_sha256": "01e7a3b62ae49c1ed89eb6ddc3aaaf23ce8f1ca202c062be5483b04b896a2579",
+  "postterminal_review_seconds": 13.182425385341048,
+  "production_verdict_changed": false,
+  "result": {
+    "checked_steps": 7,
+    "checks": [
+      {
+        "coordinates": 3072,
+        "state_sha256": "a7ef81c386494488c80e21d6cc9366012b395073028d6a05290fd5000c31a1dd",
+        "status": "CHECKED_INPUT_ENCLOSURE"
+      },
+      {
+        "rows": 4,
+        "slacks": [
+          "3828968509379197421031/4722366482869645213696",
+          "2615603919811845155325/2361183241434822606848",
+          "161277381723821088903/4722366482869645213696",
+          "184657046749302097449/590295810358705651712"
+        ],
+        "state_sha256": "88caf0507748b9d07077f015c1ea348823599dcf6e6b8dcedd8c989086f4e022",
+        "status": "CHECKED_REDUNDANT_GUARD_ATTACHMENT"
+      },
+      {
+        "error_factors": 4096,
+        "maximum_compensation": "1642475027/2417851639229258349412352",
+        "rows": 4096,
+        "state_sha256": "8c91c486f1c6fdb5f3b12a85d5babb406254733fcfe1d93a066562b830a82e6d",
+        "status": "CHECKED_AFFINE_OUTER_ENCLOSURE"
+      },
+      {
+        "active": 2943,
+        "inactive": 608,
+        "rows": 4096,
+        "state_sha256": "2595102b355bdfae88b4717ceeb584a0ab2b453b4a304b73679ad006dbbcaf90",
+        "status": "CHECKED_RELU_GRAPH_OVER_SOURCE_ENCLOSURE",
+        "unstable": 545
+      },
+      {
+        "error_factors": 4096,
+        "maximum_compensation": "303082151/302231454903657293676544",
+        "rows": 4096,
+        "state_sha256": "37be4fb0f4297d14d34d89db162a41234c800112e5fa716ea0c135c7bc28fdf1",
+        "status": "CHECKED_AFFINE_OUTER_ENCLOSURE"
+      },
+      {
+        "active": 1145,
+        "inactive": 2595,
+        "rows": 4096,
+        "state_sha256": "1857185c6a549fa90219bdd0145dfedf8e48aa766365ac3698e2bf8b5c768e1a",
+        "status": "CHECKED_RELU_GRAPH_OVER_SOURCE_ENCLOSURE",
+        "unstable": 356
+      },
+      {
+        "binary": 901,
+        "continuous": 13066,
+        "equalities": 901,
+        "inequalities": 1806,
+        "output_rows": 8192,
+        "shared_binary": 0,
+        "shared_continuous": 3072,
+        "state_sha256": "976a3727bf24e8375ca34aed2c0d2edb874560712d1c76380b70f29312adba4a",
+        "status": "CHECKED_SHARED_INPUT_PRIVATE_FACTOR_JOIN"
+      }
+    ],
+    "complete_strict_network_certificate": false,
+    "endpoint": "TWO_EXPERTS_AFTER_FIRST_CONV_RELU_NOT_CLASSIFICATION",
+    "new_input_inward_coordinates": 0,
+    "old_LP_certificates_used": 0,
+    "old_input_inward_coordinates": 29,
+    "old_input_maximum_gap": "1/72057594037927936",
+    "output_properties_checked": 0,
+    "pair": [
+      1,
+      2
+    ],
+    "production_verdict_changed": false,
+    "remaining_trust": [
+      "declared prefix/router graphs correspond to intended registered program",
+      "checker/interpreter execution"
+    ],
+    "required_steps": 7,
+    "route_exclusions_checked": 5,
+    "scope": "Exact real declared prefix enclosure on pinned represented input box, with compensated affine errors, checked ReLU ranges/graph and shared/private maps. Not original float deployment or full MoE SAFE.",
+    "status": "CHECKED_COMPENSATED_EXPERT_PREFIX",
+    "uncovered": [
+      "later expert Conv/pool/linear/ReLU layers",
+      "output properties and complete weighted aggregation",
+      "old membership/common-fact proof sources"
+    ]
+  },
+  "semantic_mutations": [
+    {
+      "name": "missing_step",
+      "seconds": 0.14095292054116726,
+      "state": "REJECTED"
+    },
+    {
+      "name": "error_bound",
+      "seconds": 1.0646839309483767,
+      "state": "REJECTED"
+    },
+    {
+      "name": "relu_range",
+      "seconds": 2.1285953987389803,
+      "state": "REJECTED"
+    },
+    {
+      "name": "join_map",
+      "seconds": 4.8794298581779,
+      "state": "REJECTED"
+    }
+  ],
+  "stages": [
+    {
+      "cap_seconds": 90,
+      "end_seconds": 3.093051627278328,
+      "phase": "build",
+      "return_code": 0,
+      "seconds": 3.0918393153697252,
+      "start_seconds": 0.0011517833918333054,
+      "started": true,
+      "state": "COMPLETED"
+    },
+    {
+      "cap_seconds": 180,
+      "end_seconds": 8.074000850319862,
+      "phase": "check",
+      "return_code": 0,
+      "seconds": 4.9806490782648325,
+      "start_seconds": 3.093235271051526,
+      "started": true,
+      "state": "COMPLETED"
+    }
+  ],
+  "status": "PASS",
+  "stored_source_total_seconds": 8.093375068157911,
+  "terminal_sha256": "114bc677e222273f960a5e554c46b851475294c338091b287504bc2ca7078454"
+}

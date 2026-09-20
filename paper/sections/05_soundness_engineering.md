@@ -281,6 +281,22 @@ factor history; the old terminal HZ does not supply that trace. An `exact`
 representation flag must not be read as an independently proved floating-to-real
 conversion guarantee. The default trusted base therefore remains explicit.
 
+A separate source-proof mode begins to close that boundary for a newly
+constructed expert prefix. Exact containment checks validate an outward input
+box. For an affine proposal, the checker recomputes the exact center/generator
+residual and validates one fresh continuous error generator per nonzero row.
+This preserves each old input assignment while admitting a matching exact
+affine output. ReLU ranges are independently justified by rational generator
+bounds, and its piecewise graph is reconstructed with fresh continuous and
+binary factors. A final map check preserves the shared input and prevents
+private error/activation factors from aliasing across experts. Together these
+checks give a pointwise-extension argument for the joint prefix relation.
+They do not repair the old terminal HZ or allow its LP certificates to be
+reused against changed matrices. The real control stops after the first
+Conv/ReLU of each expert; full expert/output and deployed-program proofs remain
+outside that result. Its source representation is opt-in, not a changed
+production numerical policy.
+
 Independent checker and statement identities must be pinned outside the bundle.
 A hash confirms identity, not the mathematical correctness of a trusted source.
 The real input 98 proof is portable: isolated checking needs no checkpoint,

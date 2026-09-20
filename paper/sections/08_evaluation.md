@@ -257,6 +257,18 @@ solve or full-model propagation. This is evidence for retaining the upstream
 assumption, not a new unsafe result or loss of an independently proved network
 certificate. Evidence: `docs/upstream_source_v1_review.json`.
 
+The subsequent separately constructed prefix closes these local source gaps:
+all3,072 represented input coordinates are enclosed, both4,096-row affine
+steps have explicit checked error compensation, and all8,192 first-ReLU
+outputs are checked. The shared-input join preserves3,072 input factors and
+separates901 activation binaries, checking901 equalities and1,806 inequalities.
+All seven source steps pass in8.09s including construction/checking/publication;
+a fresh moved check takes4.78s. The36.69MB package is a source-prefix proof,
+not an additional output certificate: zero classification properties were
+queried and no historical duals were reused. The increased factor count is
+not evidence of full-network scalability. Evidence:
+`docs/source_enclosure_v1_review.json`.
+
 In a separately frozen development comparison, fresh evidence generation,
 packaging and checking on input 98 completed in 185.317 seconds; matched V2
 returned TIMEOUT in 295.697 seconds. This one fixed-order postselected control

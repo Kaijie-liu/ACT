@@ -1,5 +1,25 @@
 # MoE project handoff
 
+LATEST COMPLETE (2026-09-20): compensated expert source prefix CHECKED7/7.
+Read `docs/source_enclosure_v1_results.md` and review first. Frozen0c2a50693
+ran once,8.0934s total; separate moved check4.7776s, review13.1824s PASS0.
+Input98 represented-box inward coordinates29→0. Four saved guards exactly
+redundant. Each expert1/2 first Conv has4096 checked error factors; first ReLUs
+have545/356 unstable units. Joined8192-coordinate prefix:13066continuous,
+901binary,901equalities,1806inequalities, shared input3072 with private maps
+and all constraints checked.32tests PASS,4real semantic mutations rejected.
+
+Raw `data/moe/results/source_enclosure_conv98_20260920_v1`;36,690,861-byte
+local bundle, manifest01e7a3b62ae49c1ed89eb6ddc3aaaf23ce8f1ca202c062be5483b04b896a2579.
+Moved checker `python -I -S verify_prefix.py --manifest-hash <identity>`.
+0checkpoint/forward/native calls,0classification properties checked,0old LP
+certificates reused. NEW prefix only: old results/gates/matrices unchanged.
+No full strict network or route-changing claim. Later expert layers/output
+aggregation and old reuse sources remain uncovered; graph correspondence and
+checker execution remain assumptions. Next extend a checked source chain to
+remaining layers with size/budget accounting, NOT reuse old duals on changed
+matrices or infer full safety from a prefix. No new cohort/search scheduled.
+
 LATEST PREPARATION (2026-09-20): compensated source prefix READY, not run real.
 Read `docs/source_enclosure_v1.md` and freeze. Separate rational source states
 check input enclosure, exact per-row affine error generators, exact ReLU
