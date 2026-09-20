@@ -77,6 +77,13 @@ comparison produces no HZ-policy SAFE and the 20-input general evidence mode
 produces no complete positive request. Postselected proof feasibility therefore
 does not establish transferable certificate coverage.
 
+A subsequent source-checked construction validates input containment and the
+complete expert enclosure for the declared convolutional graph, but does not
+obtain a positive complete request on its new matrices. It cannot inherit the
+old supplied-HZ proof's bounds. The latest bounded diagnosis closes that local
+follow-up without identifying a new isolated intervention. Independent checking
+coverage and empirical positive coverage are separate accomplishments.
+
 The contributions are a relation-preserving organization of complete weighted
 MoE obligations, property-directed weighted verification with scoped fact
 reuse, and an evaluated implementation with an explicit numerical and evidence

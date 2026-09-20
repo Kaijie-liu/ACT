@@ -318,3 +318,10 @@ and route-infeasibility exclusions. It does not replace the production numerical
 acceptance gate or prove deployed floating-point execution. A structurally valid
 evidence package, a checked rational lower bound and a production `SAFE` verdict
 are therefore reported as different evidence layers.
+
+A separately identified extension checks a declared real graph's enclosure
+before constructing new output LPs. It instantiates the upstream premises for
+that source, but has not supplied positive bounds for every output obligation.
+It cannot discharge those premises for a different, older positive proof.
+The [source contracts](05_soundness_engineering.md#source-checking-and-non-transferable-certificates)
+make this distinction explicit without changing the composition rule.

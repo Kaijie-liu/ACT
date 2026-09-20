@@ -221,128 +221,51 @@ establish that cheaper serialization or more solver time would yield positives.
 The cohort is closed; no later control relabels its terminals.
 Evidence: `docs/general_evidence_execution_v1_results.json`.
 
-## Complete proofs versus complete experimental requests
+## Complete proofs versus checked source construction
 
-Input 98 supplies a complete conditional convolutional proof, but is an observed
-single-pair control, not a new route-changing certificate. Its pre-F0 rational
-construction checks eight residual output obligations plus one reused fact.
-The minimum is `199593373867685/1125899906842624` (approximately 0.1772745).
-It removes trust in floating F0 construction while retaining network-to-HZ,
-guard and route-exclusion assumptions. The portable bundle checks without a
-checkpoint, dataset, solver or historical directory. Original packaging reduced
-428,185,262 proof-dependency bytes to a 7,181,520-byte bundle; the isolated check
-took 30.222 seconds. These costs exclude original bound generation.
-
-A subsequent source-proof extension independently derives all five route
-exclusions from the original router parameters and represented input box,
-without HZ propagation, forward evaluation or solver calls. Rechecking all9
-output obligations preserves the same positive minimum. A second relocated
-`python -I -S` check and three hash-rebound semantic mutations pass/reject as
-specified. The31.92s stored-source procedure excludes old output-bound
-generation. This reduces dependence on opaque route exclusions for the declared
-real graph, not on expert/guard lowering or graph-to-program correspondence.
-It remains a single-pair control, not an additional route-changing or complete
-strict network certificate. Evidence: `docs/router_source_v1_review.json`.
-
-The separately frozen upstream audit checks actual saved pair rows and newly
-reconstructed input/first-Conv states, not a historical full-layer trace.
-All four saved guard inequalities have positive exact factor-box slack and
-are preserved unchanged in the joint HZ. However, the reconstructed input
-conversion has29 inward coordinates, maximum1.38778e-17. Both experts' first
-Conv transfers have nonzero same-factor coefficient errors, with checked
-rowwise error bounds at most6.79312e-16 and1.00281e-15 respectively. These
-local discrepancies are neither silently tolerated nor propagated into a new
-complete proof. The3.73s local audit and fresh moved checker require no native
-solve or full-model propagation. This is evidence for retaining the upstream
-assumption, not a new unsafe result or loss of an independently proved network
-certificate. Evidence: `docs/upstream_source_v1_review.json`.
-
-The subsequent separately constructed prefix closes these local source gaps:
-all3,072 represented input coordinates are enclosed, both4,096-row affine
-steps have explicit checked error compensation, and all8,192 first-ReLU
-outputs are checked. The shared-input join preserves3,072 input factors and
-separates901 activation binaries, checking901 equalities and1,806 inequalities.
-All seven source steps pass in8.09s including construction/checking/publication;
-a fresh moved check takes4.78s. The36.69MB package is a source-prefix proof,
-not an additional output certificate: zero classification properties were
-queried and no historical duals were reused. The increased factor count is
-not evidence of full-network scalability. Evidence:
-`docs/source_enclosure_v1_review.json`.
-
-The subsequent full-source control checks both complete experts and all nine
-new output LP constructions in 66.74 s under the same 300 s cap. Its sparse lifted
-joint state has 24,464 continuous and 1,619 binary factors; each LP has 26,085
-variables. The 149.40 MB moved package rechecks in 40.03 s without the checkpoint,
-training data, historical directories or solver. Parameter capture and remaining
-propagation are charged; historical prefix generation is excluded. No solver
-was called and no positive output lower bound was claimed, so this result
-closes a source-construction gap but adds zero SAFE instances. Evidence:
-`docs/full_source_v1_review.json`.
-
-The separately frozen fresh-bound follow-up attempts all nine of these new
-LPs, once each with a16s native cap inside the shared300s budget. Seven calls
-supply independently checked nonpositive lower bounds(-59.35 to-76.34);
-competitors1 and8 yield no candidate. Total execution is112.84s, including
-52.28s for complete source and bound checking; a separately moved check takes
-52.02s and agrees. There are zero new positive requests. The exact bounds
-differ from native reported objectives by only about1e-14, so the observed
-negative outcomes are not positive objectives lost to rational residual
-correction. Unverified saved LP vectors also show large product-envelope
-discrepancies, but substituting the product alone leaves negative expressions;
-this is diagnostic arithmetic, not a proof of a unique relaxation bottleneck
-or a concrete model violation. Historical source generation is excluded and
-all nine obligations remain in the denominator. Evidence:
-`docs/full_bounds_v1_review.json` and `docs/full_bounds_v1_analysis.json`.
-
-A finite source-range follow-up rebuilds the complete input/expert enclosure
-and all output LPs in each of two300s arms. Four preselected hidden-row ranges
-check tighter, eliminating one of1,619 binaries. Missing output evidence falls
-from2/9 to0/9, but every available lower bound is nonpositive in both arms;
-the seven common bounds improve only4.18e-5 to1.42e-4. Full stored-source time
-is141.56s without ranges and153.80s with ranges. Both relocated mathematical
-checks pass. This demonstrates proof-path integration, not a new SAFE or
-speedup; it remains one single-route input and a fixed-order comparison.
-Evidence: `docs/range_pipeline_v1_review.json` and its saved-only analysis.
-
-A no-solve decomposition of all nine saved LP points localizes simultaneous
-weighted-product and last-ReLU discrepancies. Replacing either alone leaves
-negative point values; replacing both gives positive values, with exact
-accounting identities. These modified assignments are not feasible network
-executions or optimized bounds; all original points also show tiny local
-ReLU violations. The analysis motivates property-directed range selection,
-not a new safety or unique-root-cause claim. Full records and limitations:
-`docs/range_diagnosis_v1_results.md`.
-
-A separate frozen property-directed control now selects two hidden rows per
-expert using pre-query ranges and all classifier margins. Each arm makes eight
-range and nine output queries within300s. The eight common checked bounds
-improve7.4554–11.3268 versus fresh prefix selection, yet remain nonpositive;
-competitor7 has no usable candidate in the property arm. Both retain1618 binary
-factors; complete costs are158.4005s versus185.7265s. Moved independent checks
-and terminal audits pass, but neither arm proves the complete request. This
-single-input result supports a row-selection effect on recorded bounds, not
-an exact-optimum gap, complete coverage gain or speedup. All raw failures and
-main results are retained (`docs/property_ranges_v1_results.md`).
-
-A bounded saved-record diagnosis of the eight shared properties closes this
-input98 follow-up without another solve. Own-matrix exact accounting locates
-the observed improvement in both weighted-product and last-ReLU terms.
-Product-only or last-ReLU-only replacements remain negative at all eight new
-saved points; both local replacements give positive values. These points have
-tiny local ReLU violations and were not exactly validated, so the replacements
-are neither feasible repairs nor global bounds. The dual residual-box term
-also cannot be interpreted as pure roundoff loss. No new isolated intervention
-is established beyond the already known coupling; we stop this same-input
-search, retain the missing ninth obligation, and make no LP-impossibility or
-model-unsafety claim (`docs/property_diagnosis_v1_results.md`).
-
-In a separately frozen development comparison, fresh evidence generation,
-packaging and checking on input 98 completed in 185.317 seconds; matched V2
-returned TIMEOUT in 295.697 seconds. This one fixed-order postselected control
-establishes budgeted feasibility, not a population speedup. The subsequent
-20-input negative study above is the relevant test of that mode's transfer.
+The positive stored input98 proof and the newer source-checked construction
+are **different evidence objects**. The former checks all nine output
+obligations (eight residuals and one reused fact), with minimum
+`199593373867685/1125899906842624`, approximately0.1772745. Direct rational
+McCormick construction removes trust in floating F0 lowering. The portable
+7.18MB bundle checks without a checkpoint, dataset, solver or historical
+directory, but still assumes soundness of the supplied expert enclosure.
+A separate extension checks its five route exclusions without establishing
+the missing expert-source trace. This is a conditional positive proof of a
+postselected, single-pair request, not a route-changing certificate.
 Evidence: `docs/portable_conv_proof_v1_review.json` and
-`docs/optional_evidence_dev_v1_review.json`.
+`docs/router_source_v1_review.json`.
+
+The newer path instead checks containment of the represented input box,
+compensated affine operations, every remaining expert layer, factor maps,
+route coverage and all nine output-LP constructions for a declared real graph.
+It generates **new matrices and fresh bound candidates**. The final finite
+row-selection comparison retains zero positive obligations: prefix has nine
+checked nonpositive bounds; property-directed selection has eight and one
+missing candidate (property7). Eight common bounds improve7.4554–11.3268,
+but neither arm proves the request. Their full stored-source costs are158.40
+and185.73s, excluding historical capture and separate audits, not matched
+production speed measurements. Evidence: `docs/full_source_v1_review.json`
+and `docs/property_ranges_v1_review.json`.
+
+Neither result can fill the other one's missing proof link. The old positive
+duals cannot be attached to the new matrices, and the checked new source cannot
+retroactively justify the old enclosure. The protocols also differ in source
+representation and gate ranges; their outcomes are not a causal estimate of
+the cost or precision effect of removing one trust assumption. They establish
+portable conditional positivity and checked declared-source construction
+separately, **not a complete source-checked positive network proof**.
+
+The final bounded diagnosis reuses only the eight shared saved records. Exact
+accounting shows changes in both product and last-ReLU terms, but the assignments
+have not passed exact feasibility checks. Single-component local replacements
+remain negative; joint replacements are not feasible repairs or global bounds.
+No isolated new intervention follows. Input98 is therefore closed without
+retrying property7, expanding rows, changing budgets or weakening acceptance.
+See `docs/property_diagnosis_v1_results.md`. This research stop is not a
+proof of an unavoidable LP gap or model unsafety. The full chronological
+results, costs and unsuccessful controls are preserved verbatim in
+[the source-proof history](../appendices/source_proof_history.md).
 
 The first-family ACT-only transfer controls likewise remain 0/3 complete checked
 requests despite 46/54 positive obligations. Input 16 remains unclosed on two

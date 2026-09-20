@@ -15,8 +15,11 @@ multiple legal routes. A separate shared-input ablation supports the role of
 retained correlation. An executable ACT-fronted CROWN comparison is cheaper and
 produces more numerical positive filters overall, while leaving complementary
 ACT-only results. We also reconstruct weighted LP obligations in rational
-arithmetic and independently check their bounds, explicitly retaining trust in
-upstream network-to-HZ and route lowering. A separately fixed convolutional
+arithmetic and independently check their bounds; the positive stored proofs
+retain explicit upstream assumptions. A separate declared-source checker
+covers a complete convolutional enclosure but yields no positive request on
+its new matrices. These proof links cannot be combined across sources.
+A separately fixed convolutional
 family yields no additional HZ-policy safety results, and a new-input evidence
 mode fails to reproduce a postselected complete proof. The results establish scoped benefits
 of relational verification and expose limits in coverage, proof cost and model

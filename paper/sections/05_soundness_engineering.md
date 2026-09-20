@@ -253,93 +253,60 @@ none is promoted to a complete positive result.
 | Lower bounds and reuse | Exact dual/residual arithmetic and domain-scoped aggregation | Correct checker/interpreter execution |
 | Deployment | No such proof | Preprocessing, floating kernels and dispatch equivalence |
 
-A separate source-routing extension discharges the numerical exclusion
-assumption for one real convolutional control. It checks all router/input
-parameter bytes against the pinned request and state inventory. For the
-declared real nonoverlapping average-pool/flatten/affine graph, it computes
-exact box extrema by distributing each score-difference coefficient over
-original pixels. A strictly dominating outsider excludes a top2 set; zero
-does not exclude ties. The extension checks every excluded route and composes
-the cover with all original output obligations. Expert HZ and guard lowering
-remain trusted, as does correspondence of the declared graph with the original
-eval program. This is not a proof of native Python/PyTorch execution. The
-general table above therefore remains the default contract; this extension
-has its own narrower, explicitly conditional source contract.
+## Source checking and non-transferable certificates
 
-A subsequent local source audit makes the remaining assumption concrete.
-Exact checking of the reconstructed convolutional input HZ finds29 coordinates
-whose represented intervals fall slightly inside the pinned input box.
-Independent first-layer Conv2d projection also detects nonzero center/generator
-rounding residuals. The checker computes same-factor error enclosures, not an
-uncertified tolerance-based equality. These residuals have not been compensated
-through the full expert graph. Conversely, all four actual saved pair guards
-are exactly redundant on the entire factor box and preserved in the joint HZ.
-This discharges a local row obligation, not membership-guard or full expert
-lowering. A complete source proof needs input containment, local error
-compensation, checked ReLU range/encoding evidence and the shared/private
-factor history; the old terminal HZ does not supply that trace. An `exact`
-representation flag must not be read as an independently proved floating-to-real
-conversion guarantee. The default trusted base therefore remains explicit.
+A supplied-HZ proof and a declared-source proof have different starting points.
+The former may yield a positive conditional result while assuming expert
+propagation; the latter must independently justify containment at every source
+step. The current evidence must not be read as though both contracts were
+satisfied by the same positive proof.
 
-A separate source-proof mode begins to close that boundary for a newly
-constructed expert prefix. Exact containment checks validate an outward input
-box. For an affine proposal, the checker recomputes the exact center/generator
-residual and validates one fresh continuous error generator per nonzero row.
-This preserves each old input assignment while admitting a matching exact
-affine output. ReLU ranges are independently justified by rational generator
-bounds, and its piecewise graph is reconstructed with fresh continuous and
-binary factors. A final map check preserves the shared input and prevents
-private error/activation factors from aliasing across experts. Together these
-checks give a pointwise-extension argument for the joint prefix relation.
-They do not repair the old terminal HZ or allow its LP certificates to be
-reused against changed matrices. The real control stops after the first
-Conv/ReLU of each expert; full expert/output and deployed-program proofs remain
-outside that result. Its source representation is opt-in, not a changed
-production numerical policy.
+For the separately implemented declared-source path, the checker first
+validates an outward enclosure of the pinned **represented** input box.
+Affine construction supplies exact residual compensation: for each old factor
+assignment, a fresh bounded error factor admits the exact affine output.
+Subsequent sparse affine lifts retain defining equalities rather than reset
+outputs to independent intervals. ReLU graphs and their range justifications,
+pooling/flatten conventions, parameter identities and append-only factor
+allocations are reconstructed independently. The join preserves common input
+factors while keeping expert-private error and activation factors distinct.
+Composing these pointwise extensions justifies the new expert enclosure for
+the declared real graph.
 
-The next frozen control extends that new prefix through every remaining expert
-layer. Exact sparse affine lifts introduce bounded auxiliary factors and
-defining equalities, rather than repeatedly expanding all generators or resetting
-outputs to unrelated intervals. ReLU graphs, pooling, flatten order, parameter
-bindings and final shared/private maps are independently checked. All output
-LPs are then reconstructed from the new complete expert enclosure, with an
-explicit binary relaxation and universal softmax range. This closes the source
-containment and LP-construction chain for the declared real graph. It does not
-establish positive lower bounds: all new certificate slots remain empty, and
-old positive duals are not transferred to the enlarged source. Declared-graph
-correspondence and deployed floating execution remain separate boundaries.
+Optional tighter ranges require checked bounds for both an expression and its
+negation on the same source/request/domain/layer/row. Recentring keeps the
+changed equality RHS; zero-width ranges do not remove defining relations.
+Missing range evidence uses the registered outer-box fallback; invalid
+evidence rejects. The output checker then independently constructs every
+necessary weighted LP on the resulting factor frame and checks its candidate
+bound. A source change invalidates old downstream evidence, even if dimensions,
+the requested input or the checkpoint have not changed.
 
-A separate frozen follow-up proposes fresh signed duals for these new LPs and
-rechecks the entire source chain before aggregation. The numerical solver is
-untrusted: exact rational residual-box evaluation supplies the lower bound,
-including finite-variable-bound contributions even when stationarity is not
-exact. Only a positive bound for every required output property can establish
-the declared-real output claim. Missing candidates and checked nonpositive
-bounds remain different unclosed states. In the real control, seven such
-bounds are checked nonpositive and two candidates are missing; the complete
-checking path runs, but no new positive proof is obtained. The older positive
-certificate remains attached to its old source, not this replacement enclosure.
+For the registered nonoverlapping average-pool/flatten/affine router, exact
+coefficient extrema on original pixels also check route exclusions.
+An outsider must strictly dominate a selected expert to exclude a pair;
+zero margin does not remove tie-legal obligations. This discharges exclusions
+for that declared graph, not for arbitrary routers or native dispatch.
 
-An optional, analytically tested source-step extension accepts tighter ranges
-only through exact checks of lower bounds for both an expression and its
-negation on the same source. Facts bind the request, scope, layer, row, factor
-state and expression. An affine recentering retains its defining equality
-including the changed RHS; a zero-width range does not drop that relation.
-ReLU activation decisions then use checked bounds. Rows without evidence keep
-the generator-box range, while invalid facts reject. This supports scoped
-range consumption, not an empirical claim that tighter source propagation has
-solved the convolutional request. A separately controlled complete-trace
-pipeline now generates these optional facts under the same source-to-output
-budget, regenerates every downstream matrix and checks all fresh output
-obligations. Its batched affine implementation shares source parsing, not
-acceptance decisions; exact differentials retain every row and constraint.
-Missing two-sided evidence falls back, and invalid evidence rejects. Synthetic
-complete-request controls establish lifecycle and transport behavior, not
-trained-model effectiveness. The separately frozen real comparison then
-validates four admitted ranges and all newly generated output obligations,
-but obtains no positive complete request. Thus complete source-range proof
-composition and useful positive coverage remain distinct. See
-[the range-pipeline result](../../docs/range_pipeline_v1_results.md).
+| Evidence path | Independently checked starting point | Residual trust / observed limit |
+|---|---|---|
+| Stored pre-F0 HZ proof | Source identities, rational projections/ranges, McCormick construction, bounds and complete obligation aggregation | Expert propagation remains assumed; the historical input98 proof is positive under this contract |
+| New declared-source path | Represented-box containment, complete expert enclosure, registered guards/routes, fresh weighted LPs and available bounds | Declared-graph/program correspondence and checker execution remain assumed; no complete positive output proof was obtained |
+| Deployed floating program | No end-to-end equivalence proof | Preprocessing, requested versus represented perturbation set, kernels and dispatch are not discharged by either path |
+
+The supplied-source contract table above remains the default for earlier
+conditional proofs; it is not silently replaced by the extension. The final
+source-range comparison produces only nonpositive or missing output evidence.
+Complete source checking is therefore not complete positivity. Conversely,
+the old positive bound cannot repair a source-containment defect without a
+proof tied to that old source. A negative new bound does not refute the old
+conditional statement or demonstrate model unsafety.
+
+These distinctions are enforced by request, parameter, source, factor, LP and
+property bindings, not by matching tensor shapes or an `exact` flag. The
+[archived source-proof development](../appendices/source_proof_history.md)
+retains the original local discrepancies, intermediate controls and final
+no-solve stop decision; none changes production acceptance or the main tables.
 
 Independent checker and statement identities must be pinned outside the bundle.
 A hash confirms identity, not the mathematical correctness of a trusted source.

@@ -37,6 +37,14 @@ It does not regenerate the upstream HZ. The bundle is currently a local
 before this workflow is reproducible by an external reviewer. Publication of
 weights, inputs or bundles remains a PI-managed decision.
 
+This command checks the historical **conditional** positive bundle. The later
+declared-source construction has different matrices and no complete positive
+request; passing the former check does not validate the latter, nor can its
+positive duals be reused there. The [source-contract section](sections/05_soundness_engineering.md#source-checking-and-non-transferable-certificates)
+and [preserved history](appendices/source_proof_history.md) explain the boundary.
+Input98 experimental follow-up is closed; these instructions are a reviewer
+workflow, not an instruction to restart generation or solve missing properties.
+
 ## Generate a fresh source-defined request
 
 This workflow needs no private checkpoint, dataset, server address or download.

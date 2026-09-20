@@ -78,38 +78,29 @@ checked lower bound is not a counterexample. The fresh ACT-only transfer's
 three UNKNOWN requests show why one complete request-level proof cannot be
 generalized to all policy-accepted safety results.
 
-The local source audit confirms that this boundary is substantive: exact
-input containment fails by small amounts for29 coordinates of the current
-reconstructed control, and first-Conv coefficient arithmetic has nonzero
-residuals. The final proof's positive margin cannot by itself justify ignoring
-these errors without a checked propagation argument. Actual saved pair-guard
-redundancy is proved locally, but nonlinear ranges, membership-interval facts
-and historical factor maps remain assumptions. No production result is upgraded
-or retroactively repaired by this audit.
+The source-proof follow-up makes the trusted boundary concrete rather than
+eliminating it retrospectively. The old positive input98 proof still depends
+on its supplied expert enclosure. A new checked construction covers represented
+input containment, affine error compensation, every expert layer, factor maps,
+registered route exclusions and output-LP construction. Its fresh evidence is
+nonpositive or missing; the latest property-directed arm has eight nonpositive
+obligations and one missing candidate. Thus the expert-layer trace is no longer
+missing for the new representation, but complete positivity is.
 
-The new compensated-prefix control shows that these local gaps can be closed
-constructively with exact source checks, but only for the declared input,
-first Conv/ReLU layers and their joint map. Remaining layers and output
-obligations need new, correspondingly bound evidence. This distinction avoids
-substituting a checked prefix for a checked model or silently reusing positive
-LP bounds after enlarging their source domain.
+It is invalid to combine the new source proof with the old matrices' positive
+duals. These protocols also use different enclosures and gate ranges, so their
+contrast does not isolate the effect of removing a trust assumption.
+Declared-graph correspondence, checker execution and deployed floating semantics
+remain distinct boundaries. A checked represented box is not automatically a
+proof for every requested real epsilon-ball.
 
-A later full-source control supplies the missing remaining-layer and new
-output-LP construction checks for this single-route declared graph. The current
-gap is now positive evidence on the new LPs, not an absent expert-layer trace.
-Historical output certificates still refer to different matrices. Successful
-construction also does not establish native program equivalence or cross-model
-strict certification; those claims remain open.
-
-Fresh proposals on all nine new LPs subsequently close the execution interface,
-not the positive-proof gap: seven independently checked bounds are nonpositive
-and two calls exhaust their native sublimits. The checked bounds nearly equal
-the negative reported objectives; increasing arithmetic precision or treating
-the finite-box residual term as removable roundoff is not supported by this
-evidence. Saved product-envelope discrepancies identify an inspection target,
-but neither those approximate vectors nor their product-substituted values
-establish exact feasibility, model unsafety or an unavoidable relaxation gap.
-The full new source proof cannot inherit the older matrices' positive bounds.
+The bounded saved-record diagnosis leaves product and ReLU effects coupled at
+unverified assignments. Residual-box correction is not pure roundoff, and a tiny
+point-minus-bound difference does not establish exact feasibility or optimality.
+No new isolated intervention was identified, so input98 follow-up is stopped:
+no retry of property7, extra rows or changed budget. This is a decision about
+research scope, not an impossibility or unsafe result. The complete record is
+retained in [the source-proof history](../appendices/source_proof_history.md).
 
 ## Reproducibility and conclusion
 

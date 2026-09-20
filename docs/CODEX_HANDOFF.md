@@ -1,5 +1,28 @@
 # MoE project handoff
 
+LATEST MANUSCRIPT (2026-09-20): source-contract consolidation completed perdd.md.
+Read `docs/manuscript_source_consolidation_20260920.md/json`. No new experiment,
+solver, source propagation or acceptance change. Source-checking method prose,
+evaluation, abstract/introduction/discussion and reviewer instructions now
+separate the OLD positive supplied-HZ conditional proof from the NEW complete
+declared-source enclosure with nonpositive/missing output evidence. No cross-
+source certificate splicing; new source/gate choices are not a causal ablation
+of removing trust. Complete source-checked positive output remains unestablished.
+
+244 chronological lines (evaluation123/soundness88/discussion33) moved VERBATIM
+to `paper/appendices/source_proof_history.md`, with original7a409319c block
+hashes/bytes preserved. No negative evidence deleted. Main21-row table and15
+evidence/table files retain identical hashes.6new stdlib manuscript controls
++3existing main-table tests PASS; isolated-S table reconstruction unchanged.
+All81frozen execution files/13captured artifacts unchanged. No new proof run.
+
+Input98 STOP_INPUT98_FOLLOWUP remains in force; no next local control is queued.
+Existing manuscript refinement needs no new experimental authority. A new
+research experiment requires a separately scoped decision, since the closed
+diagnosis supplies no isolated next intervention. Venue-specific formatting
+needs PI venue choice; empirical release/clean-environment artifact work is
+still unfinished and PI-managed. No paper-complete/acceptance guarantee.
+
 LATEST DIAGNOSIS (2026-09-20): input98 follow-up STOPPED, no new queries.
 Read `docs/property_diagnosis_v1_results.md/json`, protocol and controls receipt.
 Only8common properties1,2,3,4,5,6,8,9 from the two property-range arms were
