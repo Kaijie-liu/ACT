@@ -1,0 +1,239 @@
+{
+  "artifacts": {
+    "input220_p0/comparison.json": "b708f1a844bcfe6e54d2e1dbbeb24d4b518f79a3076c55352da5ca77f2609de4",
+    "input220_p0/input.lp": "54ed97bcd20c19d966c0041ebc74e01003b538eb62ec7f040b5791a4123fbdc7",
+    "input220_p0/native.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "input220_p0/native.resources": "2c14e66252a3aaf9935e88394f778505fd94868f51ce42246bfc2989ba04de06",
+    "input220_p0/native_process.json": "fbcfe1f0dddf909e705c624a988cb92cb3ea00c104ef2702c50e6f3cd5a9bd7a",
+    "input220_p0/readback.txt": "ca04691170274009c327247e48780ea73a794cca03308b9da89d0c4a27979f0d",
+    "input222_p1/comparison.json": "818bb9cecc1b5b9817ef0b78a4258c482cb43cbbc4ba3e0901f0ec0689e92164",
+    "input222_p1/input.lp": "2b8ba9c1531cf6c34ec081cda171ef67e98c077be4b707109c3e3e29c95cafb9",
+    "input222_p1/native.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "input222_p1/native.resources": "e9de80b1c49eefa85fe80b9c826338b39487dbbdcf4ede1252c89ad119b053ef",
+    "input222_p1/native_process.json": "2e88fc62b64eb16060abe073da1cd035a01efbe53f4d1d4c0b16d11652c81952",
+    "input222_p1/readback.txt": "855b9406f62b1509150bd91b5969f687ad3300d5a26e8b455fc2373b1a505a8d",
+    "input230_p2/comparison.json": "30957a62882d69c84e8f68ac03100050023ea4fa9bbf738b2bb3d87b7941afe1",
+    "input230_p2/input.lp": "e0e9342aac72a2ed54e42acb726ac9de8532427788e242a9b726484000ae30fe",
+    "input230_p2/native.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "input230_p2/native.resources": "edc74d8f2938132dcbf9a2265cc52167d351527a3e40713ec84136850f5e7bb8",
+    "input230_p2/native_process.json": "66d159335101718e2333b57e550e5abec9ad05746a12950e5e5ef3e5f370b304",
+    "input230_p2/readback.txt": "0b10d29d08ae70d63df92c21ce94e9b5fb348bddd2975eae74b5ac0f15ba894c",
+    "input232_p0/comparison.json": "7ad4a0f8ad3149392b53c80c0d468e2f1a9c65f98eba9cea2f4232676c177786",
+    "input232_p0/input.lp": "e8582b7e8a7092b774de13a6bde2da99fb305a906936d2128d9be21641995ef5",
+    "input232_p0/native.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "input232_p0/native.resources": "123692d293224891436613df96c032609b435e677ef1b852b90c7648d08c8054",
+    "input232_p0/native_process.json": "8cfc2a844353e57c8ad59c79d81aa2857e88d2c9e72bc4d14db626203f11e494",
+    "input232_p0/readback.txt": "df92f259a9e0fd7d43a16eb6e9d3500daa82563db3b95ee8cc0c9c7e5e420ef2"
+  },
+  "candidates": 0,
+  "checker_sha256": "4466f16292bc2a5b231f26699b78b2dac8e0e30dde5f823b6520ae3d47bb3456",
+  "optimization_calls": 0,
+  "parent": {
+    "path": "/data1/Kane/MOE/ACT/docs/lp_diagnostic_v1_freeze.json",
+    "sha256": "637b9cb8935faeda809b1d3ba104ca9f7253c2e7a464bb0457e9d32389748dcd"
+  },
+  "preparation_seconds": 31.93551336415112,
+  "raw_root": "data/moe/results/soplex_large_import_20260920_v1",
+  "reader_sha256": "6bb93ae58564c2cfb53d2b1dfcd6b088eff5318bd1d0454f6adf1dbf174dc90c",
+  "real_native_imports": 4,
+  "rows": [
+    {
+      "comparison": {
+        "A_rows": 2890,
+        "E_rows": 1441,
+        "all_fields_equal": true,
+        "columns": 7397,
+        "max_rational_bits": 144,
+        "native_stored_entries": 246558,
+        "nonzero_entries": 246558,
+        "objective_translation": "9076897465589581/2251799813685248",
+        "small_nonzero_entries_le_1e_9": 16
+      },
+      "cost_seconds": {
+        "exact_comparison": 1.7676432132720947,
+        "export": 2.3624763693660498,
+        "load_validate": 1.509303143247962,
+        "native_import": 1.1699564047157764
+      },
+      "export_bytes": 11287533,
+      "job_id": "input220_p0",
+      "native": {
+        "address_space_limit_bytes": 8589934592,
+        "command": [
+          "/usr/bin/time",
+          "-f",
+          "%e %M",
+          "-o",
+          "data/moe/results/soplex_large_import_20260920_v1/input220_p0/native.resources",
+          "/data1/Kane/MOE/envs/soplex-8.0.3/bin/read_only_rational_v1",
+          "data/moe/results/soplex_large_import_20260920_v1/input220_p0/input.lp",
+          "data/moe/results/soplex_large_import_20260920_v1/input220_p0/readback.txt"
+        ],
+        "file_limit_bytes": 134217728,
+        "native_peak_rss_kib": 110864,
+        "native_reported_seconds": 1.12,
+        "optimization_calls": 0,
+        "returncode": 0,
+        "timeout": false,
+        "wall_seconds": 1.1699564047157764
+      },
+      "observed_seconds": 6.809975998476148,
+      "optimization_calls": 0,
+      "original_lp_sha256": "5dde992d33be74e6474c88170fa45c36a73ad15670b5ccb738f286989b378413",
+      "readback_bytes": 10877078,
+      "statement_sha256": "9a0415c70689f02c50611e036d9062695135257c54e9e4f3bf4efd863ab3432f",
+      "status": "PASS"
+    },
+    {
+      "comparison": {
+        "A_rows": 3080,
+        "E_rows": 1536,
+        "all_fields_equal": true,
+        "columns": 7682,
+        "max_rational_bits": 138,
+        "native_stored_entries": 236502,
+        "nonzero_entries": 236502,
+        "objective_translation": "13456433590950527/4503599627370496",
+        "small_nonzero_entries_le_1e_9": 16
+      },
+      "cost_seconds": {
+        "exact_comparison": 1.6015719417482615,
+        "export": 2.289061749354005,
+        "load_validate": 1.5074980556964874,
+        "native_import": 1.1218787338584661
+      },
+      "export_bytes": 10828065,
+      "job_id": "input222_p1",
+      "native": {
+        "address_space_limit_bytes": 8589934592,
+        "command": [
+          "/usr/bin/time",
+          "-f",
+          "%e %M",
+          "-o",
+          "data/moe/results/soplex_large_import_20260920_v1/input222_p1/native.resources",
+          "/data1/Kane/MOE/envs/soplex-8.0.3/bin/read_only_rational_v1",
+          "data/moe/results/soplex_large_import_20260920_v1/input222_p1/input.lp",
+          "data/moe/results/soplex_large_import_20260920_v1/input222_p1/readback.txt"
+        ],
+        "file_limit_bytes": 134217728,
+        "native_peak_rss_kib": 109736,
+        "native_reported_seconds": 1.11,
+        "optimization_calls": 0,
+        "returncode": 0,
+        "timeout": false,
+        "wall_seconds": 1.1218787338584661
+      },
+      "observed_seconds": 6.520468147471547,
+      "optimization_calls": 0,
+      "original_lp_sha256": "194d24ab66eaa99ef425c05bb9799090b20b1d07e17bd3d063d1d6d4d259d031",
+      "readback_bytes": 10432845,
+      "statement_sha256": "2c1da932b415e497bd71f3a42f9e891ebddb11c91f77a719b38e388454e5368e",
+      "status": "PASS"
+    },
+    {
+      "comparison": {
+        "A_rows": 4280,
+        "E_rows": 2136,
+        "all_fields_equal": true,
+        "columns": 9482,
+        "max_rational_bits": 142,
+        "native_stored_entries": 348915,
+        "nonzero_entries": 348915,
+        "objective_translation": "81751216318604137/18014398509481984",
+        "small_nonzero_entries_le_1e_9": 16
+      },
+      "cost_seconds": {
+        "exact_comparison": 2.427944142371416,
+        "export": 3.3208675626665354,
+        "load_validate": 2.1321079041808844,
+        "native_import": 1.5733092576265335
+      },
+      "export_bytes": 15892501,
+      "job_id": "input230_p2",
+      "native": {
+        "address_space_limit_bytes": 8589934592,
+        "command": [
+          "/usr/bin/time",
+          "-f",
+          "%e %M",
+          "-o",
+          "data/moe/results/soplex_large_import_20260920_v1/input230_p2/native.resources",
+          "/data1/Kane/MOE/envs/soplex-8.0.3/bin/read_only_rational_v1",
+          "data/moe/results/soplex_large_import_20260920_v1/input230_p2/input.lp",
+          "data/moe/results/soplex_large_import_20260920_v1/input230_p2/readback.txt"
+        ],
+        "file_limit_bytes": 134217728,
+        "native_peak_rss_kib": 148700,
+        "native_reported_seconds": 1.55,
+        "optimization_calls": 0,
+        "returncode": 0,
+        "timeout": false,
+        "wall_seconds": 1.5733092576265335
+      },
+      "observed_seconds": 9.454741286113858,
+      "optimization_calls": 0,
+      "original_lp_sha256": "236491c417b352d859a4048532208df0f4aa3f43b7860885dcf140aca630832c",
+      "readback_bytes": 15328366,
+      "statement_sha256": "8b33df0b3256a8a81b8772c7c634d3286dd6cae4d2cfcb9c534139b0d9da4cd2",
+      "status": "PASS"
+    },
+    {
+      "comparison": {
+        "A_rows": 4022,
+        "E_rows": 2007,
+        "all_fields_equal": true,
+        "columns": 9095,
+        "max_rational_bits": 154,
+        "native_stored_entries": 329664,
+        "nonzero_entries": 329664,
+        "objective_translation": "17102907211172873/4503599627370496",
+        "small_nonzero_entries_le_1e_9": 19
+      },
+      "cost_seconds": {
+        "exact_comparison": 2.272819420322776,
+        "export": 3.1874178051948547,
+        "load_validate": 2.1173906605690718,
+        "native_import": 1.4729866944253445
+      },
+      "export_bytes": 15008790,
+      "job_id": "input232_p0",
+      "native": {
+        "address_space_limit_bytes": 8589934592,
+        "command": [
+          "/usr/bin/time",
+          "-f",
+          "%e %M",
+          "-o",
+          "data/moe/results/soplex_large_import_20260920_v1/input232_p0/native.resources",
+          "/data1/Kane/MOE/envs/soplex-8.0.3/bin/read_only_rational_v1",
+          "data/moe/results/soplex_large_import_20260920_v1/input232_p0/input.lp",
+          "data/moe/results/soplex_large_import_20260920_v1/input232_p0/readback.txt"
+        ],
+        "file_limit_bytes": 134217728,
+        "native_peak_rss_kib": 145304,
+        "native_reported_seconds": 1.43,
+        "optimization_calls": 0,
+        "returncode": 0,
+        "timeout": false,
+        "wall_seconds": 1.4729866944253445
+      },
+      "observed_seconds": 9.051145860925317,
+      "optimization_calls": 0,
+      "original_lp_sha256": "6d8d30d08a0642e1d417e6b6cfe8ba4f93905c5c952e01f7aca698ac4445638e",
+      "readback_bytes": 14472841,
+      "statement_sha256": "990a5b2afa13817e37f98ebcb175006b32b6f71800e3cb0e4ba21b6a9de9ab7f",
+      "status": "PASS"
+    }
+  ],
+  "schema": "SOPLEX_LARGE_IMPORT_ONLY_V1",
+  "scope": "Exact input readback only; no LP solution or network conclusion.",
+  "source_sha256": {
+    "soplex_fidelity/__init__.py": "8f9cc91b0a914ddbe709007eed7bbf81cce009ee21e14d1a14f7f99d96bddbf6",
+    "soplex_fidelity/io.py": "16852196f1d731c07a12f6232752eb751064ed488feb157c0958aea5385f72f1",
+    "soplex_fidelity/reader.cpp": "76917d2a85a44fa83d7e7014b938a484476d4ff7c275f366dfd07eae310cbc29",
+    "soplex_fidelity/run.py": "db8dd7bc02e7f253e88fb50844eef4e9d9681b0947517fa29cd5af599629c7b3",
+    "soplex_fidelity/tests.py": "30e173dda2dcb23adad47fb336c6072deae6ba9d288f6b4cb22131c4c5c4247f"
+  },
+  "status": "PASS"
+}

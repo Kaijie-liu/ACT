@@ -1,5 +1,30 @@
 # MoE project handoff
 
+LATEST PREPARATION (2026-09-20): original-four SoPlex sparse input fidelity is
+COMPLETE; finite scientific protocol frozen, **NOT execution-ready/launched**.
+Read `docs/soplex_large_import_v1_results.md` FIRST, then import attempt001,
+fresh review and `docs/soplex_finite_comparison_v1.md`/freeze/review.
+All4 original LPs pass exact rational readback:1,161,639 nonzeros,including67
+abs<=1e-9 coefficients, every objective/box/row side unchanged. Offset explicitly
+omitted natively and retained in original checking objective. Reader has no
+optimize/basis/candidate calls.4 real imports,0 real solves,0 new feasible U.
+Preparation31.936s; independent24-artifact/all-coefficient review7.298s,PASS0.
+
+Controls attempt00227/27 PASS (6 new+21 original regressions). Includes11 analytic
+read-only imports and4 legacy analytic SciPy solves;0 SoPlex optimization.
+Attempt001 retained;002 fixes overly broad zero-call metadata, not outcomes.
+Old source/results, installed compatibility probe and act-py312 unchanged.
+
+Finite protocol: same jobs220p0/222p1/230p2/232p0,one full-original-LP exact
+SoPlex attempt/job, native basis choice allowed;218/298/300 clock,8GiB AS,
+explicit output/bit limits,all original checks,no retry/tuning/expansion.
+Status PROTOCOL_FROZEN_NOT_EXECUTED,execution_ready=false,output absent.
+NEXT: implement/validate the narrow external-path execution addendum (rational
+CLI-output admission, unified deadlines/resources, partial terminals and costs),
+bind its hashes,then separately authorize launch. Do not mislabel this protocol
+freeze as a tested supervisor. Do not resume custom arithmetic development.
+Historical4LIMIT/zero checked feasible U unchanged; writing must not wait for U.
+
 LATEST PRIORITY / COMPLETION (2026-09-20): follow PI's `Advice/dd.md`, not the
 historical arithmetic-to-supervisor NEXT chain below. Pause custom arithmetic
 expansion. User approved isolated SoPlex installation and exact-I/O controls.
