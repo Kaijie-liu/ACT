@@ -1,5 +1,18 @@
 # MoE project handoff
 
+LATEST PREPARATION (2026-09-20): upstream local audit READY, real capture NOT run.
+Read `docs/upstream_source_v1.md` and freeze. Independently check actual old
+conv98 pair guards, reconstructed input-box containment, and first-Conv affine
+coefficient errors for experts1/2 from original parameter bytes.8 new controls
+(including moved-I-S checker and3 semantic mutations)+2 lifecycle tests PASS.
+Inspection already found29 inward coordinates in the input-box formula and
+four redundant saved guards; explicitly disclosed, not new holdout evidence.
+No full expert trace exists in old evidence. No upstream assumption discharged.
+After commit/push: act-py312 `python -m upstream_source.run`, then
+`python -m upstream_source.review data/moe/results/upstream_source_conv98_20260920_v1`.
+One new300s root,2 local Conv transfers,0native solves/forward/full propagations.
+Preserve old proofs/production gates. Archive either outcome; no claim upgrade.
+
 LATEST COMPLETE (2026-09-20): source-router proof extension PASSED.
 Read `docs/router_source_v1_results.md` and review first. Executed766ce39f3
 once: original parameter/input bytes independently justify5/5 conv98 route
