@@ -1,5 +1,27 @@
 # MoE project handoff
 
+LATEST IMPLEMENTATION (2026-09-20): scoped NEW-source ranges/control interface.
+Read `docs/source_ranges_v1.md` and `docs/source_ranges_v1_controls.json`. Optional `source_ranges`
+checks signed dual evidence for both f and-f, bound to source/request/domain/
+layer/row/expression, then admits nonwidening affine/ReLU ranges. Missing facts
+explicitly use generator-box fallback; invalid facts or missing rows reject.
+Recentered equality RHS retained, zero-width equality preserved, shared factors
+and all constraints unchanged. No old-range transport or production gate change.
+
+9new tests +46regressions PASS. Analytic4-row ReLU binaries3→1 with2checked
+range rows/2fallbacks; zero-width correlated two-expert control generates both
+new weighted properties, checked1/5 and3/20. Moved-I-S affine/ReLU checks and
+6semantic mutations/deadline control pass. These are supplied-source controls,
+NOT trained-model/route-changing certificates. No new real/native optimizer
+query; the historical full_bounds UNKNOWN remains0positive/7negative/2missing.
+
+Next: integrate these optional facts into a complete source trace and unified
+candidate/check/propagation/serialization budget, with explicit row fallbacks;
+control that lifecycle before freezing a finite real comparison. Full conv
+integration and numerical range proposal are NOT yet done. Do not claim that
+the analytic success isolates the real bottleneck, or restart old LP retries,
+modular elimination, larger cohorts, training or sealed backend searches.
+
 LATEST COMPLETE (2026-09-20): fresh ALL9 output LP attempt CHECKED, no positive.
 Read `docs/full_bounds_v1_results.md`, review and saved-record analysis first.
 Frozenfe8ec8bf1 ran once:112.8448s total,9native calls capped16s,7 checked

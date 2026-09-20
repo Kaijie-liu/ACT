@@ -320,6 +320,17 @@ bounds are checked nonpositive and two candidates are missing; the complete
 checking path runs, but no new positive proof is obtained. The older positive
 certificate remains attached to its old source, not this replacement enclosure.
 
+An optional, analytically tested source-step extension accepts tighter ranges
+only through exact checks of lower bounds for both an expression and its
+negation on the same source. Facts bind the request, scope, layer, row, factor
+state and expression. An affine recentering retains its defining equality
+including the changed RHS; a zero-width range does not drop that relation.
+ReLU activation decisions then use checked bounds. Rows without evidence keep
+the generator-box range, while invalid facts reject. This supports scoped
+range consumption, not an empirical claim that tighter source propagation has
+solved the convolutional request: complete-trace integration and budgeted real
+range proposals remain separate work.
+
 Independent checker and statement identities must be pinned outside the bundle.
 A hash confirms identity, not the mathematical correctness of a trusted source.
 The real input 98 proof is portable: isolated checking needs no checkpoint,

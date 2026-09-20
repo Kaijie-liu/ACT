@@ -1,0 +1,119 @@
+{
+  "affine_recentering_check": {
+    "checked_range_rows": 1,
+    "complete_network_certificate": false,
+    "fallback_rows": 0,
+    "kind": "affine",
+    "new_binary_factors": 0,
+    "new_continuous_factors": 1,
+    "production_verdict_changed": false,
+    "ranges": [
+      {
+        "fact_sha256": "b1611fe187a2dbfaeb1fa018a5d037b8275809fb8d18aa097b9e04f42e2af9ab",
+        "kind": "CHECKED_SOURCE_DUAL_RANGE",
+        "lower_checked": "1/4",
+        "negative_upper_checked": "-3/4",
+        "range": [
+          "1/4",
+          "3/4"
+        ]
+      }
+    ],
+    "rows": 1,
+    "state_sha256": "efe8a1fb73b487809500bee28c5f3feea5e1cb507ee981bf76962aa64608bcfd",
+    "status": "CHECKED_RANGE_SOURCE_STEP"
+  },
+  "base_head": "2c91d5f9ea6c06bf3c09cefacb5a751cf216a374",
+  "expired_checker_started": false,
+  "mixed_relu_baseline_binaries": 3,
+  "mixed_relu_check": {
+    "active": 2,
+    "checked_range_rows": 2,
+    "complete_network_certificate": false,
+    "fallback_rows": 2,
+    "inactive": 1,
+    "kind": "relu",
+    "new_binary_factors": 1,
+    "new_continuous_factors": 2,
+    "production_verdict_changed": false,
+    "ranges": [
+      {
+        "fact_sha256": "e6fff1884c918a06f522906297c522af4677724450e6257bf6e36515f6cacd86",
+        "kind": "CHECKED_SOURCE_DUAL_RANGE",
+        "lower_checked": "1/4",
+        "negative_upper_checked": "-3/4",
+        "range": [
+          "1/4",
+          "3/4"
+        ]
+      },
+      {
+        "fact_sha256": "132ad776c2eed9e72ef2fd3e3a6df1fc2d11006b912ea31384d48df9c5e5b8e3",
+        "kind": "CHECKED_SOURCE_DUAL_RANGE",
+        "lower_checked": "-3/4",
+        "negative_upper_checked": "1/4",
+        "range": [
+          "-3/4",
+          "-1/4"
+        ]
+      },
+      {
+        "kind": "GENERATOR_BOX",
+        "range": [
+          "-1",
+          "1"
+        ]
+      },
+      {
+        "kind": "GENERATOR_BOX",
+        "range": [
+          "0",
+          "0"
+        ]
+      }
+    ],
+    "rows": 4,
+    "state_sha256": "2ac9ab74357231c1ef7676de0680e140327f048c4bb860bb6b0cd20879056fd5",
+    "status": "CHECKED_RANGE_SOURCE_STEP",
+    "unstable": 1
+  },
+  "new_native_solver_calls": 0,
+  "new_real_model_requests": 0,
+  "new_tests_passed": 9,
+  "old_real_result_changed": false,
+  "production_verdict_changed": false,
+  "regression_tests_passed": 46,
+  "relocated_semantic_mutations_rejected": 6,
+  "relocated_steps_checked": [
+    "affine",
+    "relu"
+  ],
+  "remaining": [
+    "complete source-trace integration",
+    "budgeted native range proposals",
+    "real-model effect test"
+  ],
+  "schema": "SCOPED_SOURCE_RANGE_CONTROLS_V1",
+  "scope": "Analytic implementation controls, not a real-model experiment or a full request proof",
+  "source_sha256": {
+    "act/back_end/solver/lp_certificate.py": "67d419126a5986235931cf7d139ef1821f12d530b5aef8aace0ecdb43a57ef1f",
+    "act/back_end/solver/sparse_lp_certificate.py": "2088c4cac420bcaffcadbcf4531fb4492bae49c99ca1f4379cc27057e5102f66",
+    "docs/source_ranges_v1.md": "ab35ea87a2802320899cfb84ec70b212b40c5a32c0b9136f4d337a40cf4166c2",
+    "source_enclosure/format.py": "ba79d394824abc84aac1509518bf9416be3510a4eecef5b107ba60e63418f7ef",
+    "source_ranges/check.py": "50b4daeba3368fe4936ae966c38ac7c68cd4046c13a776de12bebc810ff3f50f",
+    "source_ranges/portable_tests.py": "c7173459feb64b6030f6f482da6af46207ac06c7f2b2781a383c1080819f0247",
+    "source_ranges/produce.py": "48a7550f9bc7400dddc4bd02a69f18399d68789c1b53dbdceaca4ef00dfd3f73",
+    "source_ranges/tests.py": "62292156f6300d57ab812b4fb499c023b061d147e578be3890a713b1027adddd",
+    "source_ranges/verify.py": "7a9b39642c95a1af185be9faebe55fcf8fa271f747bdfe9077e9a2c2f3d0b53a",
+    "upstream_source/checker.py": "d14f75fd660d7ecab44994c24371d055407f5ca911e64867d94094b212a8c47c"
+  },
+  "weighted_analytic_control": {
+    "fresh_checked_lower_bounds": [
+      "1/5",
+      "3/20"
+    ],
+    "network_or_route_cover_proof": false,
+    "required_properties": 2,
+    "source_domain": "x+y=0, both factors in[-1,1]"
+  }
+}
