@@ -1,0 +1,9 @@
+{
+  "analytic_scipy_queries": 4,
+  "checker_sha256": "4466f16292bc2a5b231f26699b78b2dac8e0e30dde5f823b6520ae3d47bb3456",
+  "real_queries": 0,
+  "returncode": 1,
+  "seconds": 2.316309405490756,
+  "stderr": "...............F.....\n======================================================================\nFAIL: test_relocated_stdlib_check_hash_mutation_and_timeout (lp_sandwich.tests.Checks.test_relocated_stdlib_check_hash_mutation_and_timeout)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/data1/Kane/MOE/ACT/lp_sandwich/tests.py\", line 178, in test_relocated_stdlib_check_hash_mutation_and_timeout\n    self.assertEqual(late.returncode,3);self.assertEqual(json.loads(late.stdout)['status'],'TIMEOUT')\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 1 != 3\n\n----------------------------------------------------------------------\nRan 21 tests in 1.791s\n\nFAILED (failures=1)\n",
+  "stdout": "[ACT] Auto-detecting project root: .\n[WARN] Gurobi license not found: modules/gurobi/gurobi.lic\n[INFO] Please place gurobi.lic in: modules/gurobi\n"
+}

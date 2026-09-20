@@ -1,5 +1,23 @@
 # MoE project handoff
 
+LATEST EXECUTION READINESS (2026-09-20): finite SoPlex execution addendum READY.
+Read `docs/soplex_execution_v1.md`, execution freeze and readiness review FIRST.
+18/18 new controls +21/21 unchanged checker regressions PASS; release review
+rechecked10 analytic LPs with relocated python-I-S checker,0issues/0real queries.
+Exact candidate receiver, owned-tree 218/298/300 supervision, partial costs,
+resource gates and four-slot fail-stop implemented in separate soplex_execution/.
+Original scientific freeze/LPs/checker/act-py312 unchanged. Preparation001's
+extreme-timeout regression failure and002's namespace inventory error retained;
+003 passed. No feasibility overclaim and no changed checker threshold.
+
+User authorized "补齐外层监督、候选输出接收与终态成本审计，再执行".
+NEXT AFTER THIS PREPARATION COMMIT: launch `python -m soplex_execution.supervisor`
+under act-py312 (new reserved real result directory only),then independent
+`python -m soplex_execution.audit docs/soplex_finite_real_v1_review.json`.
+Before every job obey original resource gate (currently load/core above0.5),
+no retry/new LP/longer budget. Archive all four outcomes, close finite study.
+Do NOT restart custom elimination or infer network UNSAFE from LP feasible U.
+
 LATEST PREPARATION (2026-09-20): original-four SoPlex sparse input fidelity is
 COMPLETE; finite scientific protocol frozen, **NOT execution-ready/launched**.
 Read `docs/soplex_large_import_v1_results.md` FIRST, then import attempt001,
