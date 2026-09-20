@@ -1,5 +1,23 @@
 # MoE project handoff
 
+LATEST PREPARATION (2026-09-20): full expert source-to-output construction READY.
+Read `docs/full_source_v1.md` and freeze. Same conv98/pair1,2/checkpoint/box;
+new exact lifted affine graph avoids repeated generator expansion. Extend both
+prefixes through all remaining Conv/ReLU/pool/flatten/Linear operations, join
+shared/private factors, then generate ALL9 output McCormick LP obligations.
+Original source inventory/graph and5 router exclusions freshly checked.
+No old LP dual reuse,0native solves,0forward; one parameter capture included.
+7new controls +32regressions; moved-I-S full toy check and7 mutations, plus
+deadline/exception/partial terminal controls. No real full run before commit.
+
+After commit/push: act-py312 `python -m full_source.run`, then
+`python -m full_source.review data/moe/results/full_source_conv98_20260920_v1`.
+One300s shared budget, independent new root, no retries. Complete-layer source
+containment and all LP constructions are the endpoint, NOT positive bounds/SAFE.
+Old prefix generation excluded from cost; new parameters/propagation/checking
+included. Archive either outcome. Fresh lower bounds on NEW matrices remain
+necessary before any full output claim; never graft old9-property duals here.
+
 LATEST COMPLETE (2026-09-20): compensated expert source prefix CHECKED7/7.
 Read `docs/source_enclosure_v1_results.md` and review first. Frozen0c2a50693
 ran once,8.0934s total; separate moved check4.7776s, review13.1824s PASS0.
