@@ -253,6 +253,19 @@ none is promoted to a complete positive result.
 | Lower bounds and reuse | Exact dual/residual arithmetic and domain-scoped aggregation | Correct checker/interpreter execution |
 | Deployment | No such proof | Preprocessing, floating kernels and dispatch equivalence |
 
+A separate source-routing extension discharges the numerical exclusion
+assumption for one real convolutional control. It checks all router/input
+parameter bytes against the pinned request and state inventory. For the
+declared real nonoverlapping average-pool/flatten/affine graph, it computes
+exact box extrema by distributing each score-difference coefficient over
+original pixels. A strictly dominating outsider excludes a top2 set; zero
+does not exclude ties. The extension checks every excluded route and composes
+the cover with all original output obligations. Expert HZ and guard lowering
+remain trusted, as does correspondence of the declared graph with the original
+eval program. This is not a proof of native Python/PyTorch execution. The
+general table above therefore remains the default contract; this extension
+has its own narrower, explicitly conditional source contract.
+
 Independent checker and statement identities must be pinned outside the bundle.
 A hash confirms identity, not the mathematical correctness of a trusted source.
 The real input 98 proof is portable: isolated checking needs no checkpoint,

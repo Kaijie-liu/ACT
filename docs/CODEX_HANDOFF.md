@@ -1,5 +1,27 @@
 # MoE project handoff
 
+LATEST COMPLETE (2026-09-20): source-router proof extension PASSED.
+Read `docs/router_source_v1_results.md` and review first. Executed766ce39f3
+once: original parameter/input bytes independently justify5/5 conv98 route
+exclusions, all6 pairs covered; sole remaining[1,2]. All9 old output obligations
+freshly check positive with unchanged minimum0.1772745274. No new solver/HZ/
+forward calls.31.9165s stored-source total; separate relocated complete check
+30.0121s, full independent review30.2518s,PASS0. Three hash-rebound semantic
+mutations rejected (missing route,wrong parameter,wrong pooling divisor).
+6 source/capture controls +2 lifecycle regressions PASS.127,285 extension bytes;
+complete local bundle7,308,805bytes. Old bundle/source results immutable.
+
+Raw `data/moe/results/router_source_conv98_20260920_v1`; new extension identity
+0a90d74dcf798d3a008816f0384534d6848551887a63aa211955215e12699f1b.
+Moved bundle: python-I-S verify_with_router.py --extension-hash <identity>.
+No checkpoint/data/history/solver reads during checking; no public release.
+Numerical route-exclusion trust replaced by exact DECLARED-real-graph evidence;
+expert HZ,guards and graph-to-eval-program correspondence remain assumptions.
+This is single-pair67.06%,NOT high-accuracy/cross-family route-changing strict.
+0/30 and0/20 negative studies, AdvMoE pilot, old gate/SoPlex closures unchanged.
+Paper05/08 updated. Next scope is upstream expert/guard source semantics or
+separately justified complete multi-route capability, not more input98 bounds.
+
 LATEST PREPARATION (2026-09-20): source-router coverage extension READY.
 Read `docs/router_source_v1.md` and freeze. Distinct from closed gate search:
 exact real AvgPool/Flatten/Linear router bounds from pinned parameter/input

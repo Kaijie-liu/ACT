@@ -233,6 +233,17 @@ checkpoint, dataset, solver or historical directory. Original packaging reduced
 428,185,262 proof-dependency bytes to a 7,181,520-byte bundle; the isolated check
 took 30.222 seconds. These costs exclude original bound generation.
 
+A subsequent source-proof extension independently derives all five route
+exclusions from the original router parameters and represented input box,
+without HZ propagation, forward evaluation or solver calls. Rechecking all9
+output obligations preserves the same positive minimum. A second relocated
+`python -I -S` check and three hash-rebound semantic mutations pass/reject as
+specified. The31.92s stored-source procedure excludes old output-bound
+generation. This reduces dependence on opaque route exclusions for the declared
+real graph, not on expert/guard lowering or graph-to-program correspondence.
+It remains a single-pair control, not an additional route-changing or complete
+strict network certificate. Evidence: `docs/router_source_v1_review.json`.
+
 In a separately frozen development comparison, fresh evidence generation,
 packaging and checking on input 98 completed in 185.317 seconds; matched V2
 returned TIMEOUT in 295.697 seconds. This one fixed-order postselected control
