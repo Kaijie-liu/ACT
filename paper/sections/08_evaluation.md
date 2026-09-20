@@ -324,6 +324,18 @@ single-input result supports a row-selection effect on recorded bounds, not
 an exact-optimum gap, complete coverage gain or speedup. All raw failures and
 main results are retained (`docs/property_ranges_v1_results.md`).
 
+A bounded saved-record diagnosis of the eight shared properties closes this
+input98 follow-up without another solve. Own-matrix exact accounting locates
+the observed improvement in both weighted-product and last-ReLU terms.
+Product-only or last-ReLU-only replacements remain negative at all eight new
+saved points; both local replacements give positive values. These points have
+tiny local ReLU violations and were not exactly validated, so the replacements
+are neither feasible repairs nor global bounds. The dual residual-box term
+also cannot be interpreted as pure roundoff loss. No new isolated intervention
+is established beyond the already known coupling; we stop this same-input
+search, retain the missing ninth obligation, and make no LP-impossibility or
+model-unsafety claim (`docs/property_diagnosis_v1_results.md`).
+
 In a separately frozen development comparison, fresh evidence generation,
 packaging and checking on input 98 completed in 185.317 seconds; matched V2
 returned TIMEOUT in 295.697 seconds. This one fixed-order postselected control

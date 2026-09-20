@@ -1,5 +1,36 @@
 # MoE project handoff
 
+LATEST DIAGNOSIS (2026-09-20): input98 follow-up STOPPED, no new queries.
+Read `docs/property_diagnosis_v1_results.md/json`, protocol and controls receipt.
+Only8common properties1,2,3,4,5,6,8,9 from the two property-range arms were
+analyzed, each with its OWN source/factor frame. All128 last-ReLU rows retained;
+property7 stays missing in the property arm and was not point-analyzed/retried.
+
+Exact accounting: Delta L = Delta T - Delta P + Delta A + Delta R - Delta(J-L).
+Product gaps decrease4.2052..6.7722; signed last-ReLU terms improve1.6746..5.9132.
+The property-selected4-row contribution improves1.7811..6.0915 while the
+other120 rows worsen0.1065..0.2304. These are different saved assignments,
+not causal interventions. Both retain52last-layer unstable/1618total binaries.
+The new arm's product-only and ReLU-only local replacements remain negative8/8;
+both replacements are positive8/8. They are NOT feasible repairs or bounds.
+All16points have tiny negative local ReLU gaps; no exact primal/optimum proof.
+
+Residual-box correction remains about-18.15..-14.63 in the new arm; it is a
+legitimate box term, not all roundoff. Its improvement and the dual constant
+account for Delta L exactly. Unverified J-L is~1e-14, not an optimality gap.
+No isolated NEW representation intervention is identified beyond known
+product/ReLU coupling. Decision: STOP_INPUT98_FOLLOWUP; no next control proposed.
+Do not expand rows/ranges/gates/time/samples, retry7 or reopen this sealed line
+automatically. This is a research stop, NOT LP impossibility/model unsafety.
+
+Stdlib -S analysis1.461s,0solver/forward/propagation/new-bound; independent
+arithmetic/roster checks and fresh reread reproduce all nontiming content.
+31no-solver controls/regressions pass;81frozen files/13artifacts unchanged.
+Raw `data/moe/results/property_diagnosis_conv98_20260920_v1`; exact compact
+aggregates archived. Original results/main tables/acceptance gates unchanged.
+High-accuracy/cross-family route-changing strict positivity remains OPEN.
+No job pending; no further same-request experiment authorized by this analysis.
+
 LATEST COMPLETE (2026-09-20): property-directed finite comparison CLOSED.
 Read `docs/property_ranges_v1_results.md`, review, analysis and archive receipt.
 Frozen606cf2947 ran both arms once: prefix158.4005s, property185.7265s,
