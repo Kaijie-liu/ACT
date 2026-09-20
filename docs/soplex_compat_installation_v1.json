@@ -1,0 +1,168 @@
+{
+  "act_environment_modified": false,
+  "banner": {
+    "command": [
+      "/data1/Kane/MOE/envs/soplex-8.0.3/bin/soplex"
+    ],
+    "returncode": 0,
+    "stderr": "missing input file\n\nusage: /data1/Kane/MOE/envs/soplex-8.0.3/bin/soplex [options] <lpfile>\n  <lpfile>               linear program as .mps or .lp file\n\ngeneral options:\n  --readbas=<basfile>    read starting basis from file\n  --writebas=<basfile>   write terminal basis to file\n  --writefile=<lpfile>   write LP to file in LP or MPS format depending on extension\n  --writedual=<lpfile>   write the dual LP to a file in LP or MPS formal depending on extension\n  --<type>:<name>=<val>  change parameter value using syntax of settings file entries\n  --loadset=<setfile>    load parameters from settings file (overruled by command line parameters)\n  --saveset=<setfile>    save parameters to settings file\n  --diffset=<setfile>    save modified parameters to settings file\n  --extsol=<value>       external solution for soplex to use for validation\n\nlimits and tolerances:\n  -t<s>                  set time limit to <s> seconds\n  -i<n>                  set iteration limit to <n>\n  -f<eps>                set primal feasibility tolerance to <eps>\n  -o<eps>                set dual feasibility (optimality) tolerance to <eps>\n  -l<eps>                set validation tolerance to <eps>\n\nalgorithmic settings (* indicates default):\n  --readmode=<value>     choose reading mode for <lpfile> (0* - floating-point, 1 - rational)\n  --solvemode=<value>    choose solving mode (0 - floating-point solve, 1* - auto, 2 - exact rational solve)\n  --arithmetic=<value>   choose base arithmetic type (0 - double, 1 - quadprecision, 2 - higher multiprecision)\n  --precision=<value>    choose precision for multiprecision solve (only active when arithmetic=2 minimal value = 50)\n  -s<value>              choose simplifier/presolver (0 - off, 1* - internal, 2*- PaPILO)\n  -g<value>              choose scaling (0 - off, 1 - uni-equilibrium, 2* - bi-equilibrium, 3 - geometric, 4 - iterated geometric, 5 - least squares, 6 - geometric-equilibrium)\n  -p<value>              choose pricing (0* - auto, 1 - dantzig, 2 - parmult, 3 - devex, 4 - quicksteep, 5 - steep)\n  -r<value>              choose ratio tester (0 - textbook, 1 - harris, 2 - fast, 3* - boundflipping)\n\ndisplay options:\n  -v<level>              set verbosity to <level> (0 - error, 3 - normal, 5 - high)\n  -x=<solfile>           print primal solution to file (or just -x to print to terminal)\n  -y=<solfile>           print dual multipliers to file (or just -y to print to terminal)\n  -X=<solfile>           print primal solution in rational numbers to file (or just -X to print to terminal)\n  -Y=<solfile>           print dual multipliers in rational numbers to file (or just -Y to print to terminal)\n  -q                     display detailed statistics\n  -c                     perform final check of optimal solution in original problem\n\n",
+    "stdout": "SoPlex version 8.0.3 [mode: optimized] [precision: 8 byte] [rational: GMP 6.3.0] [PaPILO: not available] [githash: 13e2ab2]\nCopyright (c) 1996-2026 Zuse Institute Berlin (ZIB)\n\n"
+  },
+  "boost_headers": {
+    "bytes": 165080007,
+    "files": 15987,
+    "tree_sha256": "1529fbb27eb568b6d7ecee4bb8c82f94cfd490f0e79caae676cda872f2b40f0a"
+  },
+  "cmake": {
+    "command": [
+      "/usr/bin/cmake",
+      "--version"
+    ],
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "cmake version 3.28.3\n\nCMake suite maintained and supported by Kitware (kitware.com/cmake).\n"
+  },
+  "compiler": {
+    "command": [
+      "/usr/bin/g++",
+      "--version"
+    ],
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0\nCopyright (C) 2023 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n"
+  },
+  "dependencies": "Existing GMP 6.3.0 / MPFR 4.2.1 static libraries and Boost 1.90.0 headers copied into isolated prefix; no package-manager changes.",
+  "dynamic_links": {
+    "exact_io_probe": {
+      "command": [
+        "ldd",
+        "/data1/Kane/MOE/envs/soplex-8.0.3/bin/exact_io_probe"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "\tlinux-vdso.so.1 (0x00007a1de1097000)\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007a1de0800000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007a1de0b17000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007a1de104e000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007a1de0400000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007a1de1099000)\n"
+    },
+    "soplex": {
+      "command": [
+        "ldd",
+        "/data1/Kane/MOE/envs/soplex-8.0.3/bin/soplex"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "\tlinux-vdso.so.1 (0x00007a1788223000)\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007a1787800000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007a178811f000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007a17880f1000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007a1787400000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007a1788225000)\n"
+    }
+  },
+  "failed_build_retained": "build.log: static MPFR requires GMP repeated after MPFR; fixed in link flags only, upstream unchanged.",
+  "files": {
+    "bin/exact_io_probe": {
+      "bytes": 4697336,
+      "sha256": "26f26e0d9851e0898c4f53be3e625089c48a5831b4b6a993cc83f1d5e94b4e19"
+    },
+    "bin/soplex": {
+      "bytes": 5128008,
+      "sha256": "ef929092f13416d272e9a6b4b656b8880e543c9e622655431b7433fc5523584e"
+    },
+    "build.log": {
+      "bytes": 11130,
+      "sha256": "65dce488650bec2cbed30e9554a9f3d61fe41be98b2dd622d04773efc84854ad"
+    },
+    "build/CMakeCache.txt": {
+      "bytes": 25612,
+      "sha256": "56445364498b1c1a829b5af48f9758f915fa914ad107a07d9e19c11094d54007"
+    },
+    "build/lib/libsoplex.a": {
+      "bytes": 8156884,
+      "sha256": "28c7bcb52f5b19ba3360c59fd042a6a62d2c6604c9ac536d23df86f80abeebe1"
+    },
+    "build/soplex/config.h": {
+      "bytes": 389,
+      "sha256": "4b9014ffe5d7b1750e60fcafd544c60f3b0b456eed55d220edefd5f40f4eaa0f"
+    },
+    "build_attempt002.log": {
+      "bytes": 164,
+      "sha256": "816dfdea24a20df02cf3b11fba30ce143034d8662f257aad3c76401cf22c17fc"
+    },
+    "configure.log": {
+      "bytes": 956,
+      "sha256": "cabde52efc6ddad0bd9406b59b9ef4c238a8bf912dfd5d16aa9462cc590e3221"
+    },
+    "configure_attempt002.log": {
+      "bytes": 195,
+      "sha256": "9af082585ab0739b02612d5017b1742a0ca94fcc1de6eb2f39bea9c49c4da4ad"
+    },
+    "deps/include/gmp.h": {
+      "bytes": 84603,
+      "sha256": "98ee4ac404c4cb833d23bd2837afb67df91542aef5117e2adbb220f0f8d4a53f"
+    },
+    "deps/include/gmpxx.h": {
+      "bytes": 129502,
+      "sha256": "b287e1197a745582acb9c4aa0d2f2ffa16fabaeeabd0dee836553771556a00ea"
+    },
+    "deps/include/mpfr.h": {
+      "bytes": 57443,
+      "sha256": "0f1bf63d924c33f3f73d3fc68b049d9f01523a021f89fa4d8910e35122151e33"
+    },
+    "deps/lib/libgmp.a": {
+      "bytes": 1785136,
+      "sha256": "767da8300f0ca089b249f1ad6a20d11e601ae3efc0338cc7a0857c0b6401520a"
+    },
+    "deps/lib/libgmpxx.a": {
+      "bytes": 56866,
+      "sha256": "953121b9b994889afbaf577e6877365a67fec0bc4a3778e57905c8f5774db42d"
+    },
+    "deps/lib/libmpfr.a": {
+      "bytes": 1410270,
+      "sha256": "8ac90e074819331ce8f13cfc97c142f8ac4ff08539e978744bc2b384451775f7"
+    },
+    "probe_build.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "src/LICENSE": {
+      "bytes": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    "src/settings/exact.set": {
+      "bytes": 914,
+      "sha256": "175b9bb06e7325e7dc571fdcfa7ad71492fd1a87753f2821a9a5591ca3467426"
+    },
+    "src/src/soplex.hpp": {
+      "bytes": 308806,
+      "sha256": "7865d1951087ee54010a239b39796e478e972e35d265d75595e76db18b7b1c58"
+    },
+    "src/src/soplexmain.cpp": {
+      "bytes": 57028,
+      "sha256": "c95a49b540180e1c8c2c5f792f4c4142f2713aa8b31a1f897bfc2d77e407c140"
+    }
+  },
+  "guidance_sha256": "269ef94cb5c18510825c6baebf21b148c48a07102e230e185ea327770e1a0fcd",
+  "historical_checker_sha256": "4466f16292bc2a5b231f26699b78b2dac8e0e30dde5f823b6520ae3d47bb3456",
+  "prefix": "/data1/Kane/MOE/envs/soplex-8.0.3",
+  "production_integration": false,
+  "real_queries": 0,
+  "regression": {
+    "command": [
+      "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+      "-m",
+      "unittest",
+      "lp_sandwich.tests"
+    ],
+    "returncode": 0,
+    "seconds": 1.7506388425827026,
+    "stderr": ".....................\n----------------------------------------------------------------------\nRan 21 tests in 1.244s\n\nOK\n",
+    "stdout": "[ACT] Auto-detecting project root: .\n[WARN] Gurobi license not found: modules/gurobi/gurobi.lic\n[INFO] Please place gurobi.lic in: modules/gurobi\n"
+  },
+  "schema": "SOPLEX_ISOLATED_INSTALLATION_V1",
+  "source_sha256": {
+    "soplex_compat/__init__.py": "37340158bc1d5ea701cf3935e643aedb43d6ecc25dcd888df1348657d52fe1ed",
+    "soplex_compat/controls.py": "69c864f79506fc37830e9dacc153353e3474be9949de0e98238a31d414f45d71",
+    "soplex_compat/inventory.py": "66b59bbf95cba82110fddfbe386a64a5e633a6e3f0fd2de885880eb72f02a841",
+    "soplex_compat/io.py": "7cef9148da4cea8644f4677e69655ebf7167020c4a1dd66226bf9e94cd30bf17",
+    "soplex_compat/probe.cpp": "4d740d7089343f45d33af4ca3ccbdc52bc7c60bdba88c43487437e7d127e6c88",
+    "soplex_compat/review.py": "ae3a10d195f7874ad56ee6878b78c2be0b58445530f6ecc02b912a6b3d9b33c0"
+  },
+  "source_url": "https://github.com/scipopt/soplex",
+  "upstream_commit": "13e2ab2467e0016d02116802ac4dc7a89560dbc1",
+  "user_authorized_install": true,
+  "version": "8.0.3"
+}

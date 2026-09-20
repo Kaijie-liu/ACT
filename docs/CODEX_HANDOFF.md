@@ -1,5 +1,31 @@
 # MoE project handoff
 
+LATEST PRIORITY / COMPLETION (2026-09-20): follow PI's `Advice/dd.md`, not the
+historical arithmetic-to-supervisor NEXT chain below. Pause custom arithmetic
+expansion. User approved isolated SoPlex installation and exact-I/O controls.
+Read `docs/soplex_compat_v1.md` FIRST, controls attempt001, fresh review attempt001
+and installation inventory. SoPlex8.0.3 pinned13e2ab2467e0 installed outside ACT
+at `/data1/Kane/MOE/envs/soplex-8.0.3/bin`; act-py312 unchanged, no package install
+there. First static-link failure retained, flags repaired without upstream edits.
+
+10/10 compatibility tests PASS with10 analytic LP queries:9 exactly feasible
+points checked by relocated python-I-S original-LP checker,1 no-point unresolved.
+Rational model readbacks before/after agree, including tiny signed coefficients.
+Fresh saved-evidence review111 artifacts/10 isolated checks,PASS0issues;
+mutation and deadline rejection pass. Unchanged checker21/21 regressions PASS.
+Native status is not proof; no dual/optimality/full-network guarantee claimed.
+This is LP syntax capability, not general MPS compatibility or a real-study
+supervisor. Real queries0; original four remain4LIMIT/zero checked feasible U.
+
+NEXT: prepare a FINITE mature-generator compatibility/freeze for the SAME four
+original LPs, preserving exact coefficients and final independent LP checking.
+SoPlex full-LP basis choice is different from a fixed-basis arithmetic comparison.
+First bind large sparse export/readback and wall-time/memory/output/check cost;
+do not compare external tools by Python visit counts. No launch registered by
+this control stage, no extra samples/time, no automatic amortized supervisor.
+SPEX remains optional/uninstalled. Refocus paper on complete MoE proofs, method
+effects and explicit trusted base; unresolved arithmetic must not block writing.
+
 Latest research (2026-09-20): immutable source/plan validation amortization is
 COMPLETE **AT CONTROL SCOPE ONLY**. Read
 `docs/amortized_basis_v1_results.md` FIRST, then protocol, controls attempt002
