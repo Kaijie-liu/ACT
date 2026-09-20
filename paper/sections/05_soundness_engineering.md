@@ -224,6 +224,17 @@ reconstructs these coefficients from sources instead of calling the floating
 producer. Binary factors explicitly relaxed to continuous boxes yield an outer
 enclosure, not exact nonlinear or integer optimization.
 
+An optional bounded gate checker replaces coarse score-order ranges with
+rational sigmoid enclosures, conditional on checked router-margin supports.
+It verifies a positive exponential Taylor sum and remainder bound, outward
+dyadic rounding, and range-reduction squaring; no floating exponential is
+trusted. A replacement composition checker revalidates the original complete
+obligation inventory and the specifically bound residual before substituting
+new evidence. Neither a narrower gate nor a successful numerical proposal is
+itself a request proof. The real one-residual follow-up remains unclosed
+(Section8); unsupported ranges fail closed rather than triggering precision
+search. The upstream trusted components below are unchanged.
+
 The request inventory is derived from the declared expert/class counts,
 properties and all tie-legal pairs. Each obligation needs either two checked
 positive scoped facts or a checked positive residual bound. Coverage and

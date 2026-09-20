@@ -1,5 +1,27 @@
 # MoE project handoff
 
+LATEST COMPLETE (2026-09-20): checked-gate one-candidate follow-up CLOSED.
+Read `docs/checked_gate_candidate_v2_results.md`, review and terminal first.
+Frozen9db10b1c5 executed once, one SciPy/HiGHS proposal on unchanged narrower-
+gate LP. Fresh ALL27 obligation check still25reused+1residual positive+1unknown.
+Blocking bound-.5088350613 (fixed old dual-.5517098677; original-.6040892741).
+StatusUNKNOWN,0new complete certificates. No LP impossibility/unsafe inference.
+Total stored-source60.412s (validation27.313,proposal3.775,check29.322);
+separate independent29.413s review PASS0.12controls +one analytic proposal pass.
+Raw `data/moe/results/checked_gate_candidate_20260920_v2`; V1 startup ERROR
+preserved with0native calls and separate review. No old result overwritten.
+
+New replacement checker composes one correctly bound residual with rechecked
+complete obligations; pure-S checking validates gate/support/McCormick/duals.
+Old checker and production acceptance remain unchanged. Paper05/08 now reflect
+the negative finite follow-up. Not a fresh-generation performance experiment;
+old model propagation/support generation excluded. No self-contained new bundle.
+This is first-family conditional evidence, NOT high-accuracy/cross-family strict.
+No further local gate precision/candidate tuning is scheduled. Return to
+complete MoE capability/source-semantics or manuscript work perdd.md; any new
+experiment needs a distinct bounded full-obligation hypothesis. Sealed prior
+searches, cohorts and the four-LP SoPlex study remain sealed.
+
 LATEST REPAIR (2026-09-20): candidate V1 ended startup ERROR,0solver calls.
 Read `docs/checked_gate_candidate_v1_failure.json` and candidate_v2.md/freeze.
 Audit hook blocked Fraction's stdlib decimal import in a fresh process; preload

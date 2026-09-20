@@ -167,6 +167,17 @@ Evidence: `act/pipeline/moe/results/request_lp_rational_review_20260914_r3.json`
 and the separate ACT-only transfer archive
 `act/pipeline/moe/results/request_lp_act_only_review_20260915_r1.json`.
 
+A separately frozen, postselected follow-up targets the sole blocked property
+of seed1/index4018. Independently checked sigmoid bounds narrow its gate from
+[0.5,1] to approximately[0.51575,0.76666]. Reusing the original dual gives
+-0.55171 instead of -0.60409; one separately registered new dual proposal gives
+-0.50884. Rechecking all27 obligations still yields26 positive and one
+nonpositive, not a complete certificate. The60.41s saved-source procedure
+excludes earlier propagation/support generation and is not production timing.
+Neither these lower bounds nor native success establishes an unavoidable LP
+gap. The follow-up is closed without more cases or tuning, and does not alter
+the original0/3 result. Evidence: `docs/checked_gate_candidate_v2_results.md`.
+
 ## Convolutional transfer and evidence-mode limits
 
 The separately preregistered convolutional family has four independent experts,
