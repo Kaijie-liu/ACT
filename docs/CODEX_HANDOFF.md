@@ -1,5 +1,36 @@
 # MoE project handoff
 
+Latest research (2026-09-20): immutable source/plan validation amortization is
+COMPLETE **AT CONTROL SCOPE ONLY**. Read
+`docs/amortized_basis_v1_results.md` FIRST, then protocol, controls attempt002
+and fresh review attempt001. Separate `amortized_basis/`: **106/106 PASS
+(20 new+86 regressions)**; fresh review341 artifacts/92 exact saved systems/
+28 new-mode differentials,13 unresolved retained,0issues. Fourteen moved
+`python -I -S` original-LP checks:11 feasible,3 expected rejections (including
+regression fixtures). New four-mode analytic LP retains all acceptance checks.
+
+Four fixed modes share owned immutable tuple/integer source data, full admission,
+numerical work and per-use source/scope/owner/generation guards. Only repeated
+source binding and plan validation are amortized; external imports always get
+full checks. Caller/export mutations cannot alter owned tuples. Late admission
+deadline rolls back the receipt, not cost. Plan invalidation remains charged;
+modular/exact residuals and original-LP checks are never bypassed.
+
+Sparse1024 control operations: repeated258718,source-only248482,plan-only244386,
+both234150. **24568 operations saved(9.496%)**, exactly10236 source+14332 plan;
+numerical/residual operation counts unchanged. NOT a matched real speedup or
+evidence that plan reuse beats no reuse: old V1 no-reuse reference212648 remains
+lower, with a different admission contract. No real/native queries or expansion.
+
+Common new-arm repair: V1 dynamic peak recorded plan storage but its live-cap
+comparison omitted it; analytic cap3 returned with peak7. New inclusive check
+LIMITs at4. Frozen code/results unchanged; no mathematical false-certificate claim.
+
+NEXT: control stage closed; keep optional. Any outer-supervisor integration,
+durable partial-evidence accounting and same-version no-plan comparison are
+separate work, NOT DONE. Do not expand real diagnostics, reset/increase budgets
+or remove checks. Original real result remains4LIMIT/zero checked feasible U.
+
 Latest research (2026-09-20): separate cross-prime symbolic plan reuse and
 diagnostic instrumentation are COMPLETE **AT CONTROL SCOPE ONLY**. Read
 `docs/plan_basis_v1_results.md` FIRST, then protocol, controls attempt004 and
