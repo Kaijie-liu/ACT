@@ -269,6 +269,16 @@ queried and no historical duals were reused. The increased factor count is
 not evidence of full-network scalability. Evidence:
 `docs/source_enclosure_v1_review.json`.
 
+The subsequent full-source control checks both complete experts and all nine
+new output LP constructions in 66.74 s under the same 300 s cap. Its sparse lifted
+joint state has 24,464 continuous and 1,619 binary factors; each LP has 26,085
+variables. The 149.40 MB moved package rechecks in 40.03 s without the checkpoint,
+training data, historical directories or solver. Parameter capture and remaining
+propagation are charged; historical prefix generation is excluded. No solver
+was called and no positive output lower bound was claimed, so this result
+closes a source-construction gap but adds zero SAFE instances. Evidence:
+`docs/full_source_v1_review.json`.
+
 In a separately frozen development comparison, fresh evidence generation,
 packaging and checking on input 98 completed in 185.317 seconds; matched V2
 returned TIMEOUT in 295.697 seconds. This one fixed-order postselected control

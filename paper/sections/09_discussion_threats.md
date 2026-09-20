@@ -94,6 +94,13 @@ obligations need new, correspondingly bound evidence. This distinction avoids
 substituting a checked prefix for a checked model or silently reusing positive
 LP bounds after enlarging their source domain.
 
+A later full-source control supplies the missing remaining-layer and new
+output-LP construction checks for this single-route declared graph. The current
+gap is now positive evidence on the new LPs, not an absent expert-layer trace.
+Historical output certificates still refer to different matrices. Successful
+construction also does not establish native program equivalence or cross-model
+strict certification; those claims remain open.
+
 ## Reproducibility and conclusion
 
 Immutable request identities, failure retention, complete denominators and

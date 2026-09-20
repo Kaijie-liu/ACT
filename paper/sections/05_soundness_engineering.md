@@ -297,6 +297,18 @@ Conv/ReLU of each expert; full expert/output and deployed-program proofs remain
 outside that result. Its source representation is opt-in, not a changed
 production numerical policy.
 
+The next frozen control extends that new prefix through every remaining expert
+layer. Exact sparse affine lifts introduce bounded auxiliary factors and
+defining equalities, rather than repeatedly expanding all generators or resetting
+outputs to unrelated intervals. ReLU graphs, pooling, flatten order, parameter
+bindings and final shared/private maps are independently checked. All output
+LPs are then reconstructed from the new complete expert enclosure, with an
+explicit binary relaxation and universal softmax range. This closes the source
+containment and LP-construction chain for the declared real graph. It does not
+establish positive lower bounds: all new certificate slots remain empty, and
+old positive duals are not transferred to the enlarged source. Declared-graph
+correspondence and deployed floating execution remain separate boundaries.
+
 Independent checker and statement identities must be pinned outside the bundle.
 A hash confirms identity, not the mathematical correctness of a trusted source.
 The real input 98 proof is portable: isolated checking needs no checkpoint,

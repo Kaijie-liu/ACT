@@ -1,5 +1,26 @@
 # MoE project handoff
 
+LATEST COMPLETE (2026-09-20): full expert chain AND all NEW output LPs checked.
+Read `docs/full_source_v1_results.md` and review first. Frozen a0410abd3 ran once:
+66.7383 s through publication; relocated independent check40.0274 s, PASS0.
+All7 prefix +16 remaining steps, final shared/private join,5 exact route
+exclusions and9/9 new output LP constructions checked. Both experts reach10
+outputs. New joint:24464continuous,1619binary,11581equalities,3242inequalities,
+548634nnz; each new LP26085variables.39tests PASS; moved toy7mutations reject.
+
+Raw `data/moe/results/full_source_conv98_20260920_v1`;149395256-byte package,
+manifest ade6c1b34db6fa4923c9c8f13e6a547771aa0aa723fa32027b77c93a93bb295d.
+New joint93b15af1a0ff299aa60a6be0525513947ad0640f51749471e596a8709db0e3f3.
+Portable command `python -I -S verify_full.py --manifest-hash <identity>`.
+1checkpoint capture included;0forward/solver calls,0old duals,0positive bounds.
+NO new SAFE or retroactive upgrade. This closes declared-real expert source
+containment/LP construction, NOT LP positivity or native program equivalence.
+Single-route67.06% conv98, not high-accuracy/route-changing strict evidence.
+Next distinct scope: fresh bounded lower-bound candidates on ALL9 NEW LPs,
+independent checks +complete aggregation. Keep old matrices/certificates frozen.
+No more source-layer implementation is needed for this registered graph; do not
+loop back to prefix auditing or reopen sealed searches. Main tables unchanged.
+
 LATEST PREPARATION (2026-09-20): full expert source-to-output construction READY.
 Read `docs/full_source_v1.md` and freeze. Same conv98/pair1,2/checkpoint/box;
 new exact lifted affine graph avoids repeated generator expansion. Extend both
