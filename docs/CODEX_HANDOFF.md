@@ -1,5 +1,29 @@
 # MoE project handoff
 
+LATEST ANALYSIS (2026-09-20): saved NEW-source localization, no new solves.
+Read `docs/range_diagnosis_v1_results.md/json` and protocol. All9 range-on
+saved points and all128 last-ReLU rows analyzed;52remain unstable (36/16).
+Product-only replacement stays negative in9/9; last-ReLU-only also negative;
+both local replacements give1.664..7.117 at those fixed points. Exact
+decomposition residual0 for9/9, but these are UNVERIFIED assignments, not
+optimized bounds, feasible repairs, real model outputs or a root-cause proof.
+All9 have tiny negative local ReLU gaps (up to1.88e-15), so no primal upgrade.
+
+Observed harmful-row ranking starts expert1:10,30,16,17. A prospectively
+computable range-only score starts10,30,16,54; do not claim identical rankings
+or use historical output points as free production inputs. Full52-row ranking,
+all9 exact aggregate terms and raw identity are archived. Analysis0.747s,
+0solver/forward/source-propagation;8controls PASS, fresh recomputation agrees.
+No new complete SAFE or changed main table. Raw directory
+`data/moe/results/range_diagnosis_conv98_20260920_v1`.
+
+Next scoped option: freeze a finite property-directed row-selection control
+using current ranges and classifier coefficients, same query/total budget,
+fresh downstream source/ALL9 LPs; selection must be charged. NOT yet frozen
+or executed. Do not expand all rows, retry old protocols or mix gate changes
+into that control. These fixed-point observations motivate, but do not prove,
+usefulness; weighted-product and earlier-source obstacles remain unresolved.
+
 LATEST COMPLETE (2026-09-20): full scoped-range comparison CLOSED,0positive.
 Read `docs/range_pipeline_v1_results.md`, review and saved-only analysis.
 Frozen8bec4ce7d ran once: off141.5569s, on153.7974s, both within300s.

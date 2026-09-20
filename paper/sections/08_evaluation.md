@@ -304,6 +304,15 @@ checks pass. This demonstrates proof-path integration, not a new SAFE or
 speedup; it remains one single-route input and a fixed-order comparison.
 Evidence: `docs/range_pipeline_v1_review.json` and its saved-only analysis.
 
+A no-solve decomposition of all nine saved LP points localizes simultaneous
+weighted-product and last-ReLU discrepancies. Replacing either alone leaves
+negative point values; replacing both gives positive values, with exact
+accounting identities. These modified assignments are not feasible network
+executions or optimized bounds; all original points also show tiny local
+ReLU violations. The analysis motivates property-directed range selection,
+not a new safety or unique-root-cause claim. Full records and limitations:
+`docs/range_diagnosis_v1_results.md`.
+
 In a separately frozen development comparison, fresh evidence generation,
 packaging and checking on input 98 completed in 185.317 seconds; matched V2
 returned TIMEOUT in 295.697 seconds. This one fixed-order postselected control
