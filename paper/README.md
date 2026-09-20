@@ -34,6 +34,14 @@ preserves historical failures outside the main narrative.
 
 ## Current proof boundary
 
+The [main-table source-applicability audit](../docs/main_table_source_applicability_20260921.md)
+finds exact inward-containment gaps in saved input materialization and frozen
+input-HZ reconstruction, including all 23 primary gains. Main-table SAFE is
+therefore an empirical frozen-policy outcome, not a source-complete real-box
+certificate. The comparison and historical counts are preserved; downstream
+source validity cannot be inferred from a tiny local error or a positive old
+margin. This qualification also governs historical claim-index terminology.
+
 The positive portable input98 proof is conditional on its stored expert HZ.
 The later declared-source path checks a complete new enclosure but has no
 complete positive output proof. These are different matrices and contracts;

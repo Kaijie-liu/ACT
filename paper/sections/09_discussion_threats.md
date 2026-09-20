@@ -61,6 +61,18 @@ are mechanism checks, not an unbiased estimate of independent proof success.
 
 ## Numerical and semantic trust
 
+The main-table applicability audit makes an upstream limitation concrete for
+the first family too. Exact checking of saved boxes fails requested-real-box
+containment on all 100 inputs; the frozen midpoint/radius reconstruction also
+fails materialized-box containment on 98 inputs, including all 23 gains.
+This is not proof of model unsafety or recovered historical intermediate
+states. However, hash consistency, small error magnitude and a common defect
+across arms do not close the missing guarantee. The main performance table
+must be read as comparative policy-accepted outcomes rather than independently
+proved real-network certificates. No old counts are replaced and no old
+positive bounds are attached to newly repaired source matrices. Evidence:
+[main-table source applicability](../../docs/main_table_source_applicability_20260921.md).
+
 All tie-legal top-k sets are obligations in the registered real-valued model.
 This is stronger than one particular library's tie-breaking choice. It does
 not directly certify the deployed arithmetic, preprocessing, batching, kernels

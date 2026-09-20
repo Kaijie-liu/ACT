@@ -1,5 +1,39 @@
 # MoE project handoff
 
+LATEST SCOPE AUDIT (2026-09-21): ee.md priority1 completed, no new solving.
+Read `docs/main_table_source_applicability_20260921.md/json` and review receipt.
+Frozen bc0791976b source digest reproduced from376Git Python blobs.900terminals,
+739saved request tensor packages checked; all100inputs covered;161outertimeouts
+retained. No checkpoint/dataset/model/ACT propagation/solver was loaded or run.
+Torch was used only as a weights-only saved-tensor decoder.
+
+Exact input findings: requested rational2/255→materialized BOX fails100/100
+(257850coordinates); binary64epsilon interpreted as a real radius also fails
+100/100(197704coordinates). Materialized BOX→reconstructed frozen sparse input
+HZ fails98/100(5736coordinates,max2^-56). No positive radius dropped. ALL23
+primary gains fail allthree inclusions. This reconstructs only the input formula,
+NOT historical intermediate traces; no network counterexample or new bound.
+
+All23gain sources mapped:2Tier1(8branches) and21F0(181reuse+269residual rows).
+Historical179/156/141SAFE counts stay unchanged. They are frozen-policy accepted
+outcomes, NOT source-complete real-box/native-float certificates. Even limiting
+the claim to an input HZ leaves downstream conversion assumptions unclosed.
+Paper abstract/intro/evaluation/soundness/threats now disclose the exact scope.
+Separate arithmetic code reproduces all100boxes and rehashes3117files; this is
+SAME-AGENT independent implementation, NOT third-party mathematical review.
+Controls receipt: `docs/main_table_source_applicability_20260921_controls.json`.
+23no-solver controls/regressions PASS;fresh saved-only reread EXACT_JSON_MATCH.
+81frozen execution files,13old artifacts and15prior evidence/table hashes remain
+unchanged. Initial JSON tuple/list comparison defect is retained in the receipt;
+its fix changed no recorded value. Main21-row table rebuild remains identical.
+
+STOP_INPUT98_FOLLOWUP remains. No new intervention or experiment is proposed.
+Next ee.md priorities are actual uninvolved-reader review and empirical clean-
+environment/release work. PI must choose/coordinate reviewer and release/access
+authorization; do not contact, publish, install dependencies or claim completed
+third-party review automatically. No new scientific guidance is needed merely
+to review the manuscript; new full-proof research needs an explicit hypothesis.
+
 LATEST MANUSCRIPT (2026-09-20): source-contract consolidation completed perdd.md.
 Read `docs/manuscript_source_consolidation_20260920.md/json`. No new experiment,
 solver, source propagation or acceptance change. Source-checking method prose,

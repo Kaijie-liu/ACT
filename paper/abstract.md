@@ -9,9 +9,11 @@ legal route guards and expert outputs. It combines guarded expert-wise proofs
 with property-directed weighted obligations, reuses facts under explicit domain
 containment, and schedules residual solving according to route complexity.
 On 100 new verification inputs and three fixed same-family top-2 models, the
-scheduled implementation gains 23 safety results over a matched monolithic
+scheduled implementation gains 23 policy-accepted safety results over a matched monolithic
 configuration without losing any, under equal request budgets; all gains involve
-multiple legal routes. A separate shared-input ablation supports the role of
+multiple recorded legal routes. A retrospective input-containment audit finds
+small inward-rounding gaps, so these counts are empirical policy outcomes,
+not source-complete real-network certificates. A separate shared-input ablation supports the role of
 retained correlation. An executable ACT-fronted CROWN comparison is cheaper and
 produces more numerical positive filters overall, while leaving complementary
 ACT-only results. We also reconstruct weighted LP obligations in rational

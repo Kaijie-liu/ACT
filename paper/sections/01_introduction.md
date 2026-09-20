@@ -46,8 +46,13 @@ An independently frozen 100-input experiment on three existing checkpoints
 then obtained 179 safety results versus 156 for the matched path and 141 for
 the legacy path, across 300 model-input requests per method. The primary
 comparison has 23 gains and no losses; every gain is in a region with multiple
-legal routes. These are policy-accepted HZ/HiGHS results on a selected
-clean-correct cohort, not whole-test-set certified accuracy. The input-clustered
+recorded legal routes. These are policy-accepted HZ/HiGHS results on a selected
+clean-correct cohort, not whole-test-set certified accuracy. A later exact audit
+of saved input boxes and the frozen input-HZ formula finds inward-rounding
+gaps, including on all 23 gains. The results are not independently established
+real-box certificates; downstream source conversion remains unverified for
+these historical outputs. This finding does not exhibit a network
+counterexample or change the observed comparison. The input-clustered
 descriptive interval for the mean primary gain is [4.67, 11.00] percentage
 points. A separate relationship ablation yields three additional safety
 results when shared expert input factors are retained, including two cases

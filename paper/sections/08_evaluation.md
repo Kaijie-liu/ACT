@@ -26,6 +26,22 @@ have a separate conditional-on-lowering contract. Auditing identities and
 obligation coverage is distinguished from independently checking numerical
 lower bounds.
 
+A subsequent saved-only source-applicability audit sharpens this contract.
+All 100 materialized input boxes fail exact containment of the requested
+real `2/255` boxes around their saved centers, including when epsilon is instead
+interpreted as its exact binary64 value. Reconstructing the frozen sparse input
+HZ formula on those boxes reveals inward endpoints on 98/100 inputs
+(5,736/307,200 coordinates; maximum gap `2^-56`). All 23 primary gain requests
+are affected. These are exact input-containment findings, not recovered
+historical layer traces or network counterexamples. The table is consequently
+a **frozen-policy acceptance comparison**, not independently established
+certified coverage of the requested box, the materialized box, or the native
+floating program. Subsequent network/guard/output containment also remains
+unproved for these saved results. Tiny local gaps cannot be dismissed using an
+old final positive margin without a complete propagated-error argument.
+The [source-applicability ledger](../../docs/main_table_source_applicability_20260921.md)
+binds all gains and leaves all historical counts and failures unchanged.
+
 ## New-input confirmation of the frozen schedule
 
 The schedule was developed on observed inputs and separately examined on a
@@ -51,7 +67,7 @@ common-fact pairs agree, including snapshots retained before later termination.
 The independent structural re-audit reproduces the archived result.
 
 Relative to matched, adaptive gains 23 SAFE and 37 solved model-input pairs,
-with no losses. All 23 SAFE gains have multiple exact legal pairs: two finish
+with no losses. All 23 SAFE gains have multiple solver-policy legal pairs: two finish
 in Tier 1 and 21 in F0, where reuse is recorded. Participation of reuse is not
 itself a per-case causal ablation. Relative to legacy, SAFE gains/losses are
 40/2, for a net 38; the two genuine losses remain visible. Thus the result is

@@ -1,5 +1,14 @@
 # Path-Conditioned Verification for Routed Mixture-of-Experts
 
+Current qualification (2026-09-21): this is a historical claim/provenance index,
+not the current abstract. Use [the manuscript](README.md) and the
+[main-table source-applicability audit](../docs/main_table_source_applicability_20260921.md).
+Its saved-input and frozen input-HZ containment checks fail on all 23 primary
+gain requests; downstream source conversion remains unchecked for their old
+outputs. Historical `certifies`/`SAFE` terminology below denotes frozen-policy
+acceptance, not source-complete real-box or native-float proof. Counts are
+unchanged, and no new source certificate is attached to an old positive bound.
+
 ## Abstract
 
 Formal verification of routed mixture-of-experts models is often reduced to a

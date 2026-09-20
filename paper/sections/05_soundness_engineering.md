@@ -67,6 +67,20 @@ fail-closed policy for the pinned backend; they are not a universal proof about
 arbitrary native floating-point solver implementations. A result that does not
 satisfy the registered policy is `UNKNOWN_NUMERICAL`.
 
+There is a separate, upstream obligation even before solving. In the frozen
+main-table entry, materializing a clipped epsilon box and then computing an
+HZ midpoint/radius use ordinary binary64 arithmetic. A saved-only exact audit
+finds that neither step provides a universal outward enclosure on the
+100-input cohort: all requested-box comparisons fail and 98 reconstructed
+input HZs have inward endpoints relative to their materialized boxes. The
+`exact=True` representation flag is not a containment proof; corrections to
+later solver bounds do not certify source conversion. The audit checks the
+stored endpoints and frozen formula, not unrecorded historical layer states.
+Even a proof about that input HZ would still require downstream propagation,
+guard and weighted-output containment. Historical HZ-policy acceptance is
+therefore not a source-complete real-network certificate. See the
+[scope and gain ledger](../../docs/main_table_source_applicability_20260921.md).
+
 The installed CROWN/auto_LiRPA path is treated more conservatively. It has no
 outward-rounding contract in this artifact, so even a finite positive lower
 margin is only `CERTIFIED_MARGIN_FILTER_NOT_FORMAL_SAFE`. Changing a method

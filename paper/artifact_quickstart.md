@@ -25,6 +25,14 @@ state/grade distinctions, paired count deltas and terminal inventories are
 checked. No embedded server paths are followed. This reconstructs recorded
 results, not their original model computations or independent SAFE proofs.
 
+Read the [main-table source-applicability audit](../docs/main_table_source_applicability_20260921.md)
+alongside these tables. Saved input endpoints and the frozen input-HZ formula
+have exact inward-containment gaps, including on all 23 primary gains.
+The counts remain historical HZ-policy outcomes, not independently established
+real-box certificates. That saved-only audit needs the original request tensor
+packages and a torch decoder; it does not run models or a solver. Rebuilding
+the committed table alone neither reruns this audit nor repairs the source gap.
+
 ## Check a stored real complete request
 
 Copy the entire input98 portable directory and retain the statement/bundle
