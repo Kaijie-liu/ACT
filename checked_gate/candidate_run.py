@@ -12,8 +12,8 @@ from checked_gate.bootstrap import ROOT
 from checked_gate.candidate_worker import load, save, PARENT_HASH, REQUEST_ID
 
 ACT='/data1/Kane/miniconda3/envs/act-py312/bin/python'
-PROTOCOL=ROOT/'docs/checked_gate_candidate_v1_freeze.json'
-DEST=ROOT/'data/moe/results/checked_gate_candidate_20260920_v1'
+PROTOCOL=ROOT/'docs/checked_gate_candidate_v2_freeze.json'
+DEST=ROOT/'data/moe/results/checked_gate_candidate_20260920_v2'
 
 
 def execute(command, log_path, deadline, env):

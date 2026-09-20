@@ -1,5 +1,14 @@
 # MoE project handoff
 
+LATEST REPAIR (2026-09-20): candidate V1 ended startup ERROR,0solver calls.
+Read `docs/checked_gate_candidate_v1_failure.json` and candidate_v2.md/freeze.
+Audit hook blocked Fraction's stdlib decimal import in a fresh process; preload
+Fraction before hook, no Decimal bound arithmetic.12 tests now PASS including
+fresh python-S import regression. Same scientific protocol, separate V2 raw
+directory and execution identity. After commit/push launch candidate_run ONCE,
+then candidate_review -S; no new LPs/options/ranges or acceptance changes.
+V1 failure/partial timing preserved, not counted as a scientific negative.
+
 LATEST PREPARATION (2026-09-20): single new candidate diagnostic READY, not run.
 Read `docs/checked_gate_candidate_v1.md` and its freeze. User asked to continue
 toward complete proofs. Exactly the prior narrower-gate LP for seed1/index4018,

@@ -13,13 +13,13 @@ def review(root):
     setup(checker=True)
     # IO/identity helpers and the check_saved adapter do not call work/propose.
     from checked_gate.candidate_worker import load, check_saved
-    freeze=load(ROOT/'docs/checked_gate_candidate_v1_freeze.json')
+    freeze=load(ROOT/'docs/checked_gate_candidate_v2_freeze.json')
     execution=load(root/'execution.json'); terminal=load(root/'terminal.json')
     pub=load(root/'publication.json')
     for name,digest in freeze['source_sha256'].items():
         if hashlib.sha256((ROOT/name).read_bytes()).hexdigest()!=digest:
             raise ValueError('frozen source identity drift')
-    if execution['freeze_sha256']!=hashlib.sha256((ROOT/'docs/checked_gate_candidate_v1_freeze.json').read_bytes()).hexdigest():
+    if execution['freeze_sha256']!=hashlib.sha256((ROOT/'docs/checked_gate_candidate_v2_freeze.json').read_bytes()).hexdigest():
         raise ValueError('protocol identity changed')
     if pub['terminal_sha256']!=hashlib.sha256((root/'terminal.json').read_bytes()).hexdigest():
         raise ValueError('terminal changed')

@@ -1,5 +1,6 @@
 """Load only pure ACT proof modules, avoiding eager model initializers."""
 from pathlib import Path
+from fractions import Fraction  # stdlib fractions imports decimal; preload before the audit hook
 import sys
 import types
 

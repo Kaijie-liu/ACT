@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 import sys
 import tempfile
+import subprocess
 import time
 import unittest
 
@@ -9,6 +10,14 @@ from checked_gate.candidate_run import execute
 
 
 class Lifecycle(unittest.TestCase):
+    def test_fresh_checker_import_fraction_dependency(self):
+        code=('from checked_gate.bootstrap import setup; setup(checker=True); '
+              'from fractions import Fraction; '
+              'from checked_gate.replacement import check; print(Fraction(1,3))')
+        result=subprocess.run([sys.executable,'-S','-c',code],capture_output=True,text=True,timeout=5)
+        self.assertEqual(result.returncode,0,result.stderr)
+        self.assertEqual(result.stdout.strip(),'1/3')
+
     def test_complete_exception_deadline_and_partial(self):
         with tempfile.TemporaryDirectory(dir='/data1/Kane/MOE') as directory:
             root=Path(directory)
