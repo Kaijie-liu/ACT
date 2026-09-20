@@ -1,5 +1,30 @@
 # MoE project handoff
 
+LATEST COMPLETE (2026-09-20): fresh ALL9 output LP attempt CHECKED, no positive.
+Read `docs/full_bounds_v1_results.md`, review and saved-record analysis first.
+Frozenfe8ec8bf1 ran once:112.8448s total,9native calls capped16s,7 checked
+nonpositive bounds and2 missing (competitors1,8);0positive complete requests.
+Moved source+bound recheck52.0157s, PASS0.44pre-execution tests +2 post-result
+analysis controls PASS. No old duals, retries, production changes or new cohort.
+
+Raw `data/moe/results/full_bounds_conv98_20260920_v1`;153312482-byte package,
+manifest3db4683baf764a3b813bd01897ea8a6896074e3bdedc4ba67ceaf7e86ae0e4a0.
+Portable `python -I -S verify_bounds.py --manifest-hash <identity>` rechecks
+the complete source chain and all available new bounds, retaining9 obligations.
+The endpoint is UNKNOWN_MISSING_BOUND_EVIDENCE, not SAFE/UNSAFE. Seven exact
+negative bounds(-59.35 to-76.34) nearly match numeric objectives(~1e-14 gaps).
+Residual-box terms are not all roundoff. Saved UNVERIFIED LP vectors exhibit
+large product-envelope discrepancies; substituting lambda*d still gives
+negative expressions. This does not isolate a root cause or prove LP infeasibility,
+network unsafety, or exact optimality. Do not revive self-written elimination.
+
+Next distinct scope: finite controls for checkable NEW-source ranges and
+weighted/activation envelopes, not repeated calls/longer limits or old range
+certificates. Preserve all obligations and shared factors. Complete declared
+source-to-bound machinery exists; positive full proof remains unclosed. The
+high-accuracy/cross-family route-changing goal and native floating proof stay
+OPEN; input98 is single-route67.06%. Main experiment tables remain unchanged.
+
 LATEST PREPARATION (2026-09-20): fresh ALL9 new-LP lower-bound protocol READY.
 Read `docs/full_bounds_v1.md` and freeze. Same source-checked conv98 matrices,
 gate[0,1]/ranges and all competitors unchanged. One SciPy-highs call/property,

@@ -1,0 +1,382 @@
+{
+  "complete": true,
+  "deployed_floating_point_proof": false,
+  "execution_head": "fe8ec8bf1df3d1742ba0f2b24b168ef394a6a0b6",
+  "fresh_bound_check_seconds": 12.029625805094838,
+  "fresh_peak_rss_kib": 530620,
+  "fresh_relocated_check_seconds": 52.01568959467113,
+  "fresh_source_check_seconds": 39.810490883886814,
+  "issues": [],
+  "manifest_sha256": "3db4683baf764a3b813bd01897ea8a6896074e3bdedc4ba67ceaf7e86ae0e4a0",
+  "native_calls_entered": 9,
+  "outcome": "UNKNOWN_MISSING_BOUND_EVIDENCE",
+  "postterminal_review_seconds": 52.32174725458026,
+  "preparation": {
+    "pair": [
+      1,
+      2
+    ],
+    "parent_manifest_sha256": "ade6c1b34db6fa4923c9c8f13e6a547771aa0aa723fa32027b77c93a93bb295d",
+    "request": {
+      "center": {
+        "dtype": "torch.float64",
+        "sha256": "94af2ce7abcbbdab1de75723a7f559518e1d87d53614dcc9d4bac1842616536e",
+        "shape": [
+          1,
+          3,
+          32,
+          32
+        ]
+      },
+      "classes": 10,
+      "clean_prediction": 0,
+      "dataset_index": 98,
+      "epsilon": 0.00784313725490196,
+      "experts": 4,
+      "lower": {
+        "dtype": "torch.float64",
+        "sha256": "9e93ac4113604ff434c5e7975094ff1ab3cd148e8f7c99f4fe740d7cc74fcbe0",
+        "shape": [
+          1,
+          3,
+          32,
+          32
+        ]
+      },
+      "model_state": {
+        "parameter_count": 155052,
+        "sha256": "44572f06b657883fe169406d3cc260878d1cf41e762cbacdb15fe006da6487f5",
+        "tensor_count": 34
+      },
+      "parent_request_sha256": "6a9cdfae06c127e87979a244e58291511078f07ac48ed4eafe852a1ed2328856",
+      "tie_policy": "ANY_LEGAL_TOPK",
+      "top_k": 2,
+      "upper": {
+        "dtype": "torch.float64",
+        "sha256": "04c524d50b059e434f7d02a82b402448bf649c8e038b100d6bc0b5c0c8852eca",
+        "shape": [
+          1,
+          3,
+          32,
+          32
+        ]
+      }
+    },
+    "scope": "Stored source copied; no old dual or bound imported.",
+    "seconds": 0.1475849375128746
+  },
+  "production_verdict_changed": false,
+  "proposal": {
+    "calls": 9,
+    "native_seconds_per_call": 16,
+    "old_LP_certificates_used": 0,
+    "peak_rss_kib": 418984,
+    "seconds": 60.01952829025686
+  },
+  "proposals": [
+    {
+      "candidate_available": false,
+      "competitor": 1,
+      "elapsed_before_publication": 16.199081793427467,
+      "solver": {
+        "iterations": 31274,
+        "message": "Time limit reached. (HiGHS Status 13: model_status is Time limit reached; primal_status is None)",
+        "native_limit_seconds": 16,
+        "native_seconds": 16.054558791220188,
+        "reported_objective_including_offset": null,
+        "status": 1,
+        "success": false
+      }
+    },
+    {
+      "candidate_available": true,
+      "competitor": 2,
+      "elapsed_before_publication": 1.9451889842748642,
+      "solver": {
+        "iterations": 12686,
+        "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+        "native_limit_seconds": 16,
+        "native_seconds": 1.8344408236443996,
+        "reported_objective_including_offset": -66.2225237320041,
+        "status": 0,
+        "success": true
+      }
+    },
+    {
+      "candidate_available": true,
+      "competitor": 3,
+      "elapsed_before_publication": 1.653365457430482,
+      "solver": {
+        "iterations": 13204,
+        "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+        "native_limit_seconds": 16,
+        "native_seconds": 1.5521042309701443,
+        "reported_objective_including_offset": -59.349888586258956,
+        "status": 0,
+        "success": true
+      }
+    },
+    {
+      "candidate_available": true,
+      "competitor": 4,
+      "elapsed_before_publication": 4.882332222536206,
+      "solver": {
+        "iterations": 18254,
+        "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+        "native_limit_seconds": 16,
+        "native_seconds": 4.781386518850923,
+        "reported_objective_including_offset": -65.15978019463459,
+        "status": 0,
+        "success": true
+      }
+    },
+    {
+      "candidate_available": true,
+      "competitor": 5,
+      "elapsed_before_publication": 8.200223442167044,
+      "solver": {
+        "iterations": 26546,
+        "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+        "native_limit_seconds": 16,
+        "native_seconds": 8.073026204481721,
+        "reported_objective_including_offset": -64.66552172242231,
+        "status": 0,
+        "success": true
+      }
+    },
+    {
+      "candidate_available": true,
+      "competitor": 6,
+      "elapsed_before_publication": 3.448433268815279,
+      "solver": {
+        "iterations": 14931,
+        "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+        "native_limit_seconds": 16,
+        "native_seconds": 3.3341439329087734,
+        "reported_objective_including_offset": -76.33762138729304,
+        "status": 0,
+        "success": true
+      }
+    },
+    {
+      "candidate_available": true,
+      "competitor": 7,
+      "elapsed_before_publication": 1.9520740490406752,
+      "solver": {
+        "iterations": 13322,
+        "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+        "native_limit_seconds": 16,
+        "native_seconds": 1.8223746307194233,
+        "reported_objective_including_offset": -74.75278324471624,
+        "status": 0,
+        "success": true
+      }
+    },
+    {
+      "candidate_available": false,
+      "competitor": 8,
+      "elapsed_before_publication": 16.156512828543782,
+      "solver": {
+        "iterations": 35038,
+        "message": "Time limit reached. (HiGHS Status 13: model_status is Time limit reached; primal_status is None)",
+        "native_limit_seconds": 16,
+        "native_seconds": 16.04529937915504,
+        "reported_objective_including_offset": null,
+        "status": 1,
+        "success": false
+      }
+    },
+    {
+      "candidate_available": true,
+      "competitor": 9,
+      "elapsed_before_publication": 4.476354099810123,
+      "solver": {
+        "iterations": 18453,
+        "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+        "native_limit_seconds": 16,
+        "native_seconds": 4.365045052021742,
+        "reported_objective_including_offset": -70.78960850852637,
+        "status": 0,
+        "success": true
+      }
+    }
+  ],
+  "result": {
+    "complete_declared_real_output_proof": false,
+    "deployed_floating_point_proof": false,
+    "minimum_available_bound": "-2158030436484838512771124522438240632159550194586258844384538455106890444451/28269553036454149273332760011886696253239742350009903329945699220681916416",
+    "missing_bounds": 2,
+    "nonpositive_bounds": 7,
+    "old_LP_certificates_used": 0,
+    "positive_bounds": 0,
+    "production_verdict_changed": false,
+    "remaining_trust": [
+      "declared graphs/parameters correspond to intended registered program",
+      "checker/interpreter execution"
+    ],
+    "required_obligations": 9,
+    "rows": [
+      {
+        "competitor": 1,
+        "lp_sha256": "c090eaf6dd4874fbeba4effacbeb3f1c92b6145646fef15bdc5f919492b25414",
+        "status": "NO_MULTIPLIER_CANDIDATE"
+      },
+      {
+        "checked_lower_bound": "-936040573424867173812730495168515427395224659332874226662951002583847819607/14134776518227074636666380005943348126619871175004951664972849610340958208",
+        "competitor": 2,
+        "dual_constant": "-176707892594865478014386980741800405040409818243645295877911200720967694691/3533694129556768659166595001485837031654967793751237916243212402585239552",
+        "lp_sha256": "a2bc300c2f31312b3fabe5e956c4de4c15058ba3d373b4ff82f50743e5314a41",
+        "nonzero_residual_coordinates": 17324,
+        "residual_box_correction": "-229209003045405261755182572201313807233585386358293043151306199699977040843/14134776518227074636666380005943348126619871175004951664972849610340958208",
+        "residual_l1": "229209003045405261755182572201313807233585386358293043151306199699977040843/14134776518227074636666380005943348126619871175004951664972849610340958208",
+        "status": "CHECKED_NONPOSITIVE_BOUND"
+      },
+      {
+        "checked_lower_bound": "-3355589646193787251765889143139796705003479178194435643125135404906262424995/56539106072908298546665520023773392506479484700019806659891398441363832832",
+        "competitor": 3,
+        "dual_constant": "-4739068141531798502998295002555781793563465018107241125827473376032540750403/113078212145816597093331040047546785012958969400039613319782796882727665664",
+        "lp_sha256": "a5187e033736aa36604ec7cd93dcd26713e0662d1a2bff151615d84de877c134",
+        "nonzero_residual_coordinates": 17945,
+        "residual_box_correction": "-1972111150855776000533483283723811616443493338281630160422797433779984099587/113078212145816597093331040047546785012958969400039613319782796882727665664",
+        "residual_l1": "1972111150855775287963600915779094243076056871640776619619589103294065458691/113078212145816597093331040047546785012958969400039613319782796882727665664",
+        "status": "CHECKED_NONPOSITIVE_BOUND"
+      },
+      {
+        "checked_lower_bound": "-921018931027959276484444170537924460035086766418810919535570626350752813959/14134776518227074636666380005943348126619871175004951664972849610340958208",
+        "competitor": 4,
+        "dual_constant": "-2634769151137205888732380550377651988778599377671852560234734148853961825629/56539106072908298546665520023773392506479484700019806659891398441363832832",
+        "lp_sha256": "f3600e49171825165b897fa69b95960c432a12d2214bd7b21f27d8ea44ecb98b",
+        "nonzero_residual_coordinates": 17781,
+        "residual_box_correction": "-1049306572974631217205396131774045851361747688003391117907548356549049430207/56539106072908298546665520023773392506479484700019806659891398441363832832",
+        "residual_l1": "1049306572974630903713747666021549324557475215422558123724858113989752648345/56539106072908298546665520023773392506479484700019806659891398441363832832",
+        "status": "CHECKED_NONPOSITIVE_BOUND"
+      },
+      {
+        "checked_lower_bound": "-228508174495249463196281445425573996680082274923410442418773488244649675181/3533694129556768659166595001485837031654967793751237916243212402585239552",
+        "competitor": 5,
+        "dual_constant": "-331704364939280777454716108914905746659041428373728544659731095526890574217/7067388259113537318333190002971674063309935587502475832486424805170479104",
+        "lp_sha256": "b48f3ce93d678da83ff3bebf428fdbf0afcb041e0cd71c28071dddc3c6e82839",
+        "nonzero_residual_coordinates": 17957,
+        "residual_box_correction": "-125311984051218148937846781936242246701123121473092340177815880962408776145/7067388259113537318333190002971674063309935587502475832486424805170479104",
+        "residual_l1": "125311984051218148937846781936242246701123121473092340177815880962408776145/7067388259113537318333190002971674063309935587502475832486424805170479104",
+        "status": "CHECKED_NONPOSITIVE_BOUND"
+      },
+      {
+        "checked_lower_bound": "-2158030436484838512771124522438240632159550194586258844384538455106890444451/28269553036454149273332760011886696253239742350009903329945699220681916416",
+        "competitor": 6,
+        "dual_constant": "-810438129490292721370042119539364899326531925500268379987028611346887503717/14134776518227074636666380005943348126619871175004951664972849610340958208",
+        "lp_sha256": "796d00012779d47e410e8050adff84c4d734eabbc1ce6b0321fee4444743158a",
+        "nonzero_residual_coordinates": 17844,
+        "residual_box_correction": "-537154177504253070031040283359510833506486343585722084410481232413115437017/28269553036454149273332760011886696253239742350009903329945699220681916416",
+        "residual_l1": "537154177504253232380062364447405231082801166964819885681412512983212756333/28269553036454149273332760011886696253239742350009903329945699220681916416",
+        "status": "CHECKED_NONPOSITIVE_BOUND"
+      },
+      {
+        "checked_lower_bound": "-528306942639766865163626089188968561164677947361761520834098079298322901319/7067388259113537318333190002971674063309935587502475832486424805170479104",
+        "competitor": 7,
+        "dual_constant": "-782525621891043378876259752798648778275597714219309117799180797226353930887/14134776518227074636666380005943348126619871175004951664972849610340958208",
+        "lp_sha256": "df47a5a7c852ef64bf563e65569dd517062d8025c00febfea2f5b132e75f6529",
+        "nonzero_residual_coordinates": 17896,
+        "residual_box_correction": "-274088263388490351450992425579288344053758180504213923869015361370291871751/14134776518227074636666380005943348126619871175004951664972849610340958208",
+        "residual_l1": "274088263388490351450992425579288344053758180504213923869015361370291871751/14134776518227074636666380005943348126619871175004951664972849610340958208",
+        "status": "CHECKED_NONPOSITIVE_BOUND"
+      },
+      {
+        "competitor": 8,
+        "lp_sha256": "ed1308b366d096b5401bd1aa0da9820bcd0480cc351752c581b6d81211997754",
+        "status": "NO_MULTIPLIER_CANDIDATE"
+      },
+      {
+        "checked_lower_bound": "-500297648040403307506899229184578246388020285557364937641019177011238651833/7067388259113537318333190002971674063309935587502475832486424805170479104",
+        "competitor": 9,
+        "dual_constant": "-1458653909667618828284921332664534890930212723175075579849236736200390512019/28269553036454149273332760011886696253239742350009903329945699220681916416",
+        "lp_sha256": "844263215182fac3c0f6f8b55e1ed958aaaadf0c8add28029b46fcca29189d5e",
+        "nonzero_residual_coordinates": 17669,
+        "residual_box_correction": "-542536682493994401742675584073778094621868419054384170714839971844564095313/28269553036454149273332760011886696253239742350009903329945699220681916416",
+        "residual_l1": "542536682493994401742675584073778094621868419054384170714839971844564095313/28269553036454149273332760011886696253239742350009903329945699220681916416",
+        "status": "CHECKED_NONPOSITIVE_BOUND"
+      }
+    ],
+    "scope": "Complete declared real MoE positivity ONLY if every new output bound is checked positive. Not native floating semantics or high-accuracy/route-changing evidence.",
+    "source_checks": {
+      "joint": {
+        "binary": 1619,
+        "continuous": 24464,
+        "equalities": 11581,
+        "inequalities": 3242,
+        "output_rows": 20,
+        "shared_binary": 0,
+        "shared_continuous": 3072,
+        "state_sha256": "93b15af1a0ff299aa60a6be0525513947ad0640f51749471e596a8709db0e3f3",
+        "status": "CHECKED_SHARED_INPUT_PRIVATE_FACTOR_JOIN"
+      },
+      "prefix_steps_checked": 7,
+      "remaining_steps_checked": 16,
+      "route_exclusions_checked": 5
+    },
+    "status": "UNKNOWN_MISSING_BOUND_EVIDENCE"
+  },
+  "sealed": {
+    "bundle_bytes": 153312482,
+    "manifest_sha256": "3db4683baf764a3b813bd01897ea8a6896074e3bdedc4ba67ceaf7e86ae0e4a0",
+    "published_candidates": 9,
+    "required_obligations": 9,
+    "seconds": 0.10870230384171009
+  },
+  "solver_environment": {
+    "base_conversion_seconds": 0.9998094327747822,
+    "bundled_highs": "1.8.0",
+    "method": "highs",
+    "numpy": "2.3.5",
+    "options": {
+      "threads": 1,
+      "time_limit": 16
+    },
+    "scipy": "1.16.3"
+  },
+  "stages": [
+    {
+      "cap_seconds": 15,
+      "end_seconds": 0.20117279887199402,
+      "phase": "prepare",
+      "return_code": 0,
+      "seconds": 0.20110762305557728,
+      "start_seconds": 0.000002687796950340271,
+      "started": true,
+      "state": "COMPLETED"
+    },
+    {
+      "cap_seconds": 180,
+      "end_seconds": 60.31386888213456,
+      "phase": "propose",
+      "return_code": 0,
+      "seconds": 60.112433617934585,
+      "start_seconds": 0.20136752165853977,
+      "started": true,
+      "state": "COMPLETED"
+    },
+    {
+      "cap_seconds": 10,
+      "end_seconds": 60.4749959744513,
+      "phase": "seal",
+      "return_code": 0,
+      "seconds": 0.16089442372322083,
+      "start_seconds": 60.31404773518443,
+      "started": true,
+      "state": "COMPLETED"
+    },
+    {
+      "cap_seconds": 300,
+      "end_seconds": 112.75612055510283,
+      "phase": "check",
+      "return_code": 0,
+      "seconds": 52.28087087534368,
+      "start_seconds": 60.47514229826629,
+      "started": true,
+      "state": "COMPLETED"
+    }
+  ],
+  "status": "PASS",
+  "terminal_sha256": "0dbd52d8d063342793712187f524de1893c09df10f92688e224ca97586a27f26",
+  "total_seconds": 112.8448227159679
+}

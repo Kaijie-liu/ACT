@@ -101,6 +101,16 @@ Historical output certificates still refer to different matrices. Successful
 construction also does not establish native program equivalence or cross-model
 strict certification; those claims remain open.
 
+Fresh proposals on all nine new LPs subsequently close the execution interface,
+not the positive-proof gap: seven independently checked bounds are nonpositive
+and two calls exhaust their native sublimits. The checked bounds nearly equal
+the negative reported objectives; increasing arithmetic precision or treating
+the finite-box residual term as removable roundoff is not supported by this
+evidence. Saved product-envelope discrepancies identify an inspection target,
+but neither those approximate vectors nor their product-substituted values
+establish exact feasibility, model unsafety or an unavoidable relaxation gap.
+The full new source proof cannot inherit the older matrices' positive bounds.
+
 ## Reproducibility and conclusion
 
 Immutable request identities, failure retention, complete denominators and

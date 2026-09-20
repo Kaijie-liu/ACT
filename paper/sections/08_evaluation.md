@@ -279,6 +279,21 @@ was called and no positive output lower bound was claimed, so this result
 closes a source-construction gap but adds zero SAFE instances. Evidence:
 `docs/full_source_v1_review.json`.
 
+The separately frozen fresh-bound follow-up attempts all nine of these new
+LPs, once each with a16s native cap inside the shared300s budget. Seven calls
+supply independently checked nonpositive lower bounds(-59.35 to-76.34);
+competitors1 and8 yield no candidate. Total execution is112.84s, including
+52.28s for complete source and bound checking; a separately moved check takes
+52.02s and agrees. There are zero new positive requests. The exact bounds
+differ from native reported objectives by only about1e-14, so the observed
+negative outcomes are not positive objectives lost to rational residual
+correction. Unverified saved LP vectors also show large product-envelope
+discrepancies, but substituting the product alone leaves negative expressions;
+this is diagnostic arithmetic, not a proof of a unique relaxation bottleneck
+or a concrete model violation. Historical source generation is excluded and
+all nine obligations remain in the denominator. Evidence:
+`docs/full_bounds_v1_review.json` and `docs/full_bounds_v1_analysis.json`.
+
 In a separately frozen development comparison, fresh evidence generation,
 packaging and checking on input 98 completed in 185.317 seconds; matched V2
 returned TIMEOUT in 295.697 seconds. This one fixed-order postselected control

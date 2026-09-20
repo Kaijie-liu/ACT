@@ -309,6 +309,17 @@ establish positive lower bounds: all new certificate slots remain empty, and
 old positive duals are not transferred to the enlarged source. Declared-graph
 correspondence and deployed floating execution remain separate boundaries.
 
+A separate frozen follow-up proposes fresh signed duals for these new LPs and
+rechecks the entire source chain before aggregation. The numerical solver is
+untrusted: exact rational residual-box evaluation supplies the lower bound,
+including finite-variable-bound contributions even when stationarity is not
+exact. Only a positive bound for every required output property can establish
+the declared-real output claim. Missing candidates and checked nonpositive
+bounds remain different unclosed states. In the real control, seven such
+bounds are checked nonpositive and two candidates are missing; the complete
+checking path runs, but no new positive proof is obtained. The older positive
+certificate remains attached to its old source, not this replacement enclosure.
+
 Independent checker and statement identities must be pinned outside the bundle.
 A hash confirms identity, not the mathematical correctness of a trusted source.
 The real input 98 proof is portable: isolated checking needs no checkpoint,
