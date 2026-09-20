@@ -1,5 +1,22 @@
 # MoE project handoff
 
+LATEST PREPARATION (2026-09-20): fresh ALL9 new-LP lower-bound protocol READY.
+Read `docs/full_bounds_v1.md` and freeze. Same source-checked conv98 matrices,
+gate[0,1]/ranges and all competitors unchanged. One SciPy-highs call/property,
+16s each, one thread; bundled HiGHS1.8.0, not installed highspy1.14.0.
+300s stored-source total; propose cap180s, all remaining source+dual checking
+charged. No old duals, model forward/checkpoint or source-generation calls.
+5new controls PASS including moved full-source toy positive and7 negative/
+partial variants;44total tests including39source regressions PASS.
+
+After commit/push: act-py312 `python -m full_bounds.run`, then
+`python -m full_bounds.review data/moe/results/full_bounds_conv98_20260920_v1`.
+Fresh pure-I-S check composes complete source/routing and exact signed-dual
+residual bounds. Only ALL9 positive => declared-real output proof; production/
+native floating semantics remain separate. Missing/nonpositive => UNKNOWN,
+not unsafe or LP impossibility. Preserve partials and archive either outcome;
+no automatic retries/range tuning or claim upgrades beyond checked evidence.
+
 LATEST COMPLETE (2026-09-20): full expert chain AND all NEW output LPs checked.
 Read `docs/full_source_v1_results.md` and review first. Frozen a0410abd3 ran once:
 66.7383 s through publication; relocated independent check40.0274 s, PASS0.
