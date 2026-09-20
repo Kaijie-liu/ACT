@@ -1,5 +1,36 @@
 # MoE project handoff
 
+Latest readiness (2026-09-20): unified-budget modular supervision and a
+separate real-diagnostic freeze are COMPLETE, **NOT EXECUTED**. Read
+`docs/modular_diagnostic_v1_readiness.md` FIRST, then
+`docs/modular_supervised_v1_results.md` and linked control/review/freeze records.
+The user authorized integration/controls/freeze, not the real launch this turn.
+
+`modular_supervised/`:107/107 controls PASS (36 integration+7 native+64
+arithmetic regressions). Fresh review2624 artifacts/27 terminals/six moved
+python -I -S checks,PASS0issues; five feasible,one expected rejection.
+Cyclic prime/field/CRT/reconstruction/exact-residual journals preserve bounded
+partial evidence, not proof. Full three-prime instrumentation differential
+matches the frozen arithmetic. Original218/298/300 clocks,4096 bits,128 primes,
+one native<=10s/one basis unchanged. Only journal capacity is2048 bounded events
+to accommodate cycles; every write is charged. Missing/censored costs null.
+
+`modular_diagnostic/`:15/15 batch/readiness controls PASS; fresh review2166
+artifacts/three ledgers/12 rows/four moved checks,PASS0issues. Freeze and
+selection review bind unchanged original jobs220p0,222p1,230p2,232p0, runtime,
+LP/source/statement/property identities and all new execution/audit sources.
+Read-only static size/import compatibility passes; new modular growth and
+real efficacy remain UNMEASURED. Output
+`data/moe/results/modular_diagnostic_real_20260920_v1` is absent.
+
+NEXT: only after explicit execution authorization, launch the frozen four
+diagnostics once via `modular_diagnostic.run launch --execute-frozen`, then
+independently archive and report all outcomes/costs. No new design guidance is
+needed for this frozen scope. No retry/resume, alternate basis, cap/time
+increase, threshold change or implied network verdict. Prior primitive REAL
+results remain4LIMIT/zero checked feasible U. Older "next integrate/freeze"
+notes below are now historical; they are not new work to repeat.
+
 Latest arithmetic research (2026-09-20): user requested a scheme avoiding large
 intermediate products, **controls first**. Read
 `docs/modular_basis_v1_results.md` FIRST, then its control receipt and fresh
