@@ -1,5 +1,18 @@
 # MoE project handoff
 
+LIVE QUEUE (2026-09-20 04:02 UTC): preparation committed/pushed633b2ad3d.
+Exactly one queue launched from that clean commit; supervisor PID2610954,
+owned shell2610927. At this observation it is WAITING_RESOURCES for input220_p0,
+0/4 real solves, about540s wait; load/core0.800 exceeds frozen0.5 (RAM/disk pass).
+Raw directory exists: `data/moe/results/soplex_diagnostic_real_20260920_v1`.
+DO NOT relaunch/resume it. Inspect `resource_wait.jsonl`, per-job terminals and
+`batch.json` before acting. The running shell automatically invokes
+`soplex_execution.audit docs/soplex_finite_real_v1_review.json` after batch exit.
+No final scientific result or final archival commit yet. Once finished, verify
+that review, summarize all four outcomes/costs, commit/push the result stage.
+Do not interrupt other jobs or relax resource gate. Original execution identity
+remains633b2ad3d; this queue-note commit changes no bound runtime source.
+
 LATEST EXECUTION READINESS (2026-09-20): finite SoPlex execution addendum READY.
 Read `docs/soplex_execution_v1.md`, execution freeze and readiness review FIRST.
 18/18 new controls +21/21 unchanged checker regressions PASS; release review
