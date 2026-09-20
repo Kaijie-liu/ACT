@@ -1,5 +1,36 @@
 # MoE project handoff
 
+Latest research (2026-09-20): separate cross-prime symbolic plan reuse and
+diagnostic instrumentation are COMPLETE **AT CONTROL SCOPE ONLY**. Read
+`docs/plan_basis_v1_results.md` FIRST, then protocol, controls attempt004 and
+fresh review attempt002. `plan_basis/` has **86/86 tests PASS (22 new+64
+regressions)**; fresh review228 artifacts/60 exact-system residuals/49 new-arm
+saved differentials,11 unresolved retained,0issues. Nine moved `python -I -S`
+original-LP checks: seven feasible,two expected rejection. One new LP uses
+three primes/two plan replays before its independently checked feasible U.
+
+Reuse is symbolic only; all modular values are recomputed. Exact source/RHS/
+scope identity and immutable schema are checked; corruption rejects. Modular
+cancellation or zero planned pivots invalidates a plan and pays for dynamic
+factorization of the same prime, without resetting shared budgets. Old+new
+plan storage during fallback is charged. Both arms check modular residuals;
+full rational residuals and unchanged original-LP acceptance remain mandatory.
+New map/elimination/back-substitution counters and reconstruction first-failure/
+successful-prefix records do not alter historical missing diagnostics.
+
+**No net operation improvement in the registered sparse1024 control:** reuse
+249499 vs no-reuse212648 (+17.33%), same solution/three rounds. Repeated binding
+and validation cost outweigh avoided schedule work. Timings are descriptive
+analytic controls, not a real paired speedup. Do not promote this to default
+or rerun the four real LPs on the strength of correctness tests alone.
+
+NEXT: separately investigate amortizing immutable per-request source/plan
+validation while retaining checks, if commissioned. Later integration into a
+new unified-budget supervisor and any real diagnostic freeze remain separate,
+NOT DONE. No cap increase, production hook or new native/real-LP calls here.
+Prior real outcome remains4LIMIT/zero checked feasible U. Earlier source-bound
+control receipts remain historical; current review binds attempt004.
+
 Latest execution (2026-09-20): the user authorized the four frozen modular
 diagnostics; execution and archival review are COMPLETE. Read
 `docs/modular_diagnostic_v1_execution_results.md` FIRST, then its JSON archive,
