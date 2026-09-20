@@ -1,5 +1,22 @@
 # MoE project handoff
 
+REVIEW HANDOFF (2026-09-21): PI will bring a separate AI reviewer.
+Start with `docs/EXTERNAL_AI_REVIEW_PROMPT.md`; detailed reading order,
+challenge questions, access limits, read-only commands and required report
+format are in `docs/EXTERNAL_AI_REVIEW.md`. Material identities are pinned by
+`docs/external_ai_review_manifest_20260921.json` to scientific baseline
+806443470b3eeda3e601510ea8a6fc71570f96bf. This later handoff stage changes no
+scientific result, execution source, policy or manuscript claim.
+Review-only: no project edits, jobs, model/solver calls, installs, push or release;
+give the report to PI first. No reviewer has completed this review yet.
+A separate AI session is not a human third-party review or a machine proof.
+Do not treat the author's summaries or PASS labels as a required conclusion.
+The primary question is which main-table claims survive the input-source gaps,
+not how to resume input98 or guarantee an A-tier acceptance.
+52scientific files pinned;4new handoff controls+23existing no-solver regressions
+PASS;main-table rebuild unchanged. Link/hash checks validate the handoff only,
+not any scientific conclusion. No reviewer was contacted and no artifact released.
+
 LATEST SCOPE AUDIT (2026-09-21): ee.md priority1 completed, no new solving.
 Read `docs/main_table_source_applicability_20260921.md/json` and review receipt.
 Frozen bc0791976b source digest reproduced from376Git Python blobs.900terminals,
