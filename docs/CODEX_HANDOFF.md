@@ -1,5 +1,20 @@
 # MoE project handoff
 
+LATEST PREPARATION (2026-09-20): source-router coverage extension READY.
+Read `docs/router_source_v1.md` and freeze. Distinct from closed gate search:
+exact real AvgPool/Flatten/Linear router bounds from pinned parameter/input
+bytes; no HZ/solver/forward calls. Targets old conv98 portable9-property proof,
+checks all six route dispositions and all five old exclusions independently.
+6 analytic/capture controls +2 existing lifecycle regressions PASS. Captured
+tiny checkpoint control prohibits forwards; real input98 bounds NOT run yet.
+After commit/push: act-py312 `python -m router_source.run`, then
+`python -m router_source.review data/moe/results/router_source_conv98_20260920_v1`.
+New directory,300s stored-source total; relocated-I-S all-output checker,
+then separate fresh recheck and semantic transport mutations. No production
+or empirical table changes; single-pair67.06% control, not route-changing or
+high-accuracy. Even successful coverage retains expert HZ/guard and declared
+router-graph correspondence assumptions. No stronger complete-strict claim.
+
 LATEST COMPLETE (2026-09-20): checked-gate one-candidate follow-up CLOSED.
 Read `docs/checked_gate_candidate_v2_results.md`, review and terminal first.
 Frozen9db10b1c5 executed once, one SciPy/HiGHS proposal on unchanged narrower-
