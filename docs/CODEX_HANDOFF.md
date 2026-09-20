@@ -1,5 +1,27 @@
 # MoE project handoff
 
+LATEST COMPLETE (2026-09-20): user requested high-accuracy/cross-family
+route-changing strict completion. NOT achieved; claims NOT upgraded.
+Read `docs/checked_gate_v1.md` and `docs/checked_gate_saved_control_v1_results.md`.
+New bounded sigmoid-enclosure primitive has independent rational checks,
+5tests/12mutation subcases PASS. One named stored-source control was frozen
+at1ba13b8f8 and executed after push: seed1/index4018,pair[3,5],property1.
+All27 old obligations rechecked,26positive; gate[.5,1] narrows to
+[.51575321,.76666194]. SAME duals yield-.55170987 vs old-.60408927: still
+unclosed. No optimizer/model/new support calls.25.559s saved-source work;
+separate pure checker26.335s,PASS0,including fresh router-bound verification.
+Raw `data/moe/results/checked_gate_saved_20260920_v1`; old results untouched.
+
+This is first-family conditional evidence, NOT high-accuracy/cross-family
+strict progress in certificate count. AdvMoE85.67% is global hardtop1 and its
+strict pilot remains0/2; the portable mode is weightedtop2. Network->HZ/guard/
+exclusions remain trusted. Narrower gates do not by themselves establish new
+complete proofs, and the fixed-dual failure does not prove LP impossibility.
+No automatic retuning/new cases or reopened searches. Main paper integration
+below remains authoritative. Any next real research protocol must explicitly
+bind complete obligations, model semantics, budget and claim acceptance;
+do not combine one model's accuracy with another model's proof.
+
 LATEST COMPLETE (2026-09-20): returned to COMPLETE MoE proofs / paper perdd.md.
 Read `docs/mainline_paper_integration_20260920.md` and current paper sections03,
 05,08,09 FIRST. Complete-request composition proof and trusted-base table now
