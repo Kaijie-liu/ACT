@@ -1,5 +1,19 @@
 # MoE project handoff
 
+LATEST PREPARATION (2026-09-20): single new candidate diagnostic READY, not run.
+Read `docs/checked_gate_candidate_v1.md` and its freeze. User asked to continue
+toward complete proofs. Exactly the prior narrower-gate LP for seed1/index4018,
+pair[3,5],property1; one SciPy/HiGHS90s candidate,300s stored-source total.
+Independent replacement composition checks ALL27 old obligations plus precise
+gate/new rational LP/dual. Old checker and production acceptance unchanged.
+11 controls PASS including multi-pair/reuse,13 malformed proof variants,
+timeout/exception/partial logs; one analytic native candidate checks positive.
+No real optimization yet. After commit/push: `python -m checked_gate.candidate_run`
+in act-py312, then `python -S -m checked_gate.candidate_review` on new raw dir
+`data/moe/results/checked_gate_candidate_20260920_v1`. No retries/new cases.
+Even positive completion is first-family conditional, not high-accuracy,
+cross-family or independently checked network lowering. Archive either result.
+
 LATEST COMPLETE (2026-09-20): user requested high-accuracy/cross-family
 route-changing strict completion. NOT achieved; claims NOT upgraded.
 Read `docs/checked_gate_v1.md` and `docs/checked_gate_saved_control_v1_results.md`.
