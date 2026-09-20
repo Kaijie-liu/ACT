@@ -244,6 +244,19 @@ real graph, not on expert/guard lowering or graph-to-program correspondence.
 It remains a single-pair control, not an additional route-changing or complete
 strict network certificate. Evidence: `docs/router_source_v1_review.json`.
 
+The separately frozen upstream audit checks actual saved pair rows and newly
+reconstructed input/first-Conv states, not a historical full-layer trace.
+All four saved guard inequalities have positive exact factor-box slack and
+are preserved unchanged in the joint HZ. However, the reconstructed input
+conversion has29 inward coordinates, maximum1.38778e-17. Both experts' first
+Conv transfers have nonzero same-factor coefficient errors, with checked
+rowwise error bounds at most6.79312e-16 and1.00281e-15 respectively. These
+local discrepancies are neither silently tolerated nor propagated into a new
+complete proof. The3.73s local audit and fresh moved checker require no native
+solve or full-model propagation. This is evidence for retaining the upstream
+assumption, not a new unsafe result or loss of an independently proved network
+certificate. Evidence: `docs/upstream_source_v1_review.json`.
+
 In a separately frozen development comparison, fresh evidence generation,
 packaging and checking on input 98 completed in 185.317 seconds; matched V2
 returned TIMEOUT in 295.697 seconds. This one fixed-order postselected control

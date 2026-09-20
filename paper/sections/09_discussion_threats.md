@@ -78,6 +78,15 @@ checked lower bound is not a counterexample. The fresh ACT-only transfer's
 three UNKNOWN requests show why one complete request-level proof cannot be
 generalized to all policy-accepted safety results.
 
+The local source audit confirms that this boundary is substantive: exact
+input containment fails by small amounts for29 coordinates of the current
+reconstructed control, and first-Conv coefficient arithmetic has nonzero
+residuals. The final proof's positive margin cannot by itself justify ignoring
+these errors without a checked propagation argument. Actual saved pair-guard
+redundancy is proved locally, but nonlinear ranges, membership-interval facts
+and historical factor maps remain assumptions. No production result is upgraded
+or retroactively repaired by this audit.
+
 ## Reproducibility and conclusion
 
 Immutable request identities, failure retention, complete denominators and

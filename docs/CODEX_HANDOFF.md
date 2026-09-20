@@ -1,5 +1,26 @@
 # MoE project handoff
 
+LATEST COMPLETE (2026-09-20): expert/guard local upstream audit COMPLETED.
+Read `docs/upstream_source_v1_results.md` and review first. Frozen0f8af0fa0
+executed once, stored-source total3.7283s, separate moved check1.5478s,
+review3.3472s PASS0. Four actual saved pair guards independently redundant
+and exact-prefix-preserved; no global guard assumption removed. Reconstructed
+input HZ has29 exact inward gaps, max1.38778e-17. Both experts' first Conv
+steps differ from exact source arithmetic on4096/4096 rows, error enclosures
+max6.79312e-16/1.00281e-15. These are NOT compensated/accepted source steps.
+8new+2lifecycle+5portable tests PASS,3 semantic moved-package mutations rejected.
+
+Raw `data/moe/results/upstream_source_conv98_20260920_v1`;15,967,372-byte local
+package, manifest bdf39f969664a5e1b2b49eb16ad7da1872bc36aa6fc1351a601c14510079c6d9.
+0native solves/forward/full propagations,2local Conv transfers. Old proofs and
+production gates unchanged, no full-network certificate or claim upgrade.
+No historical per-layer/range/factor trace exists:1243joint equalities and2486
+other inequalities still unverified, as are membership/common-fact sources.
+Next source step: separately controlled outward input enclosure and affine
+error compensation, then checked ReLU range/encoding and factor maps. Do not
+compare local1e-15 errors directly with the final output margin or reuse old LP
+certificates against changed matrices. No new cohort/backend search scheduled.
+
 LATEST PREPARATION (2026-09-20): upstream local audit READY, real capture NOT run.
 Read `docs/upstream_source_v1.md` and freeze. Independently check actual old
 conv98 pair guards, reconstructed input-box containment, and first-Conv affine

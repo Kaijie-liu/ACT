@@ -1,0 +1,161 @@
+{
+  "complete_strict_network_certificate": false,
+  "execution_head": "0f8af0fa04ad5ad0ad992571fc46d1f029ba6aed",
+  "fresh_relocated_check_seconds": 1.5477932263165712,
+  "generation": {
+    "bundle_bytes": 15967372,
+    "capture_seconds": 1.462279237806797,
+    "manifest_sha256": "bdf39f969664a5e1b2b49eb16ad7da1872bc36aa6fc1351a601c14510079c6d9",
+    "native_solver_calls": 0,
+    "network_forward_calls": 0,
+    "new_full_network_propagations": 0,
+    "new_input_constructions": 1,
+    "new_local_conv_transfers": 2,
+    "scope": "Source-audit cost, not end-to-end verification. Old output propagation/proposals excluded.",
+    "serialization_seconds": 0.07359746284782887,
+    "whole_seconds_before_publication": 1.5428472477942705
+  },
+  "issues": [],
+  "manifest_sha256": "bdf39f969664a5e1b2b49eb16ad7da1872bc36aa6fc1351a601c14510079c6d9",
+  "mutations": [
+    {
+      "name": "missing_expert",
+      "seconds": 0.5223517883569002,
+      "state": "REJECTED"
+    },
+    {
+      "name": "wrong_expert_parameter",
+      "seconds": 0.5020077992230654,
+      "state": "REJECTED"
+    },
+    {
+      "name": "wrong_frame",
+      "seconds": 0.6829674988985062,
+      "state": "REJECTED"
+    }
+  ],
+  "outcome": "CHECKED_LOCAL_UPSTREAM_AUDIT_NOT_NETWORK_PROOF",
+  "postterminal_review_seconds": 3.347202777862549,
+  "production_verdict_changed": false,
+  "result": {
+    "all_upstream_steps_checked": false,
+    "complete_strict_network_certificate": false,
+    "first_conv_steps": [
+      {
+        "different_coefficients": 110128,
+        "expert": 1,
+        "layer_index": 0,
+        "maximum_same_factor_error": "1642475027/2417851639229258349412352",
+        "nonzero_error_rows": 4096,
+        "rows": 4096,
+        "scope": "Local exact-arithmetic same-factor comparison; nonzero error is NOT repaired or accepted as an exact step.",
+        "status": "CHECKED_AFFINE_ERROR_ENCLOSURE_ONLY",
+        "target_containment_established": false
+      },
+      {
+        "different_coefficients": 110128,
+        "expert": 2,
+        "layer_index": 0,
+        "maximum_same_factor_error": "303082151/302231454903657293676544",
+        "nonzero_error_rows": 4096,
+        "rows": 4096,
+        "scope": "Local exact-arithmetic same-factor comparison; nonzero error is NOT repaired or accepted as an exact step.",
+        "status": "CHECKED_AFFINE_ERROR_ENCLOSURE_ONLY",
+        "target_containment_established": false
+      }
+    ],
+    "input_cover": {
+      "coordinates": 3072,
+      "inward_coordinates": 29,
+      "maximum_inward_gap": "1/72057594037927936",
+      "scope": "Exact represented box versus supplied reconstructed input HZ; not a historical input-state trace.",
+      "status": "INPUT_BOX_COVER_NOT_ESTABLISHED"
+    },
+    "original_parameter_routes": [
+      [
+        1,
+        2
+      ]
+    ],
+    "production_verdict_changed": false,
+    "saved_pair_guards": {
+      "all_factor_assignments_retained": true,
+      "guard_rows": [
+        {
+          "coefficient_difference_l1": "26204023/9671406556917033397649408",
+          "exact_box_slack": "3828968509379197421031/4722366482869645213696",
+          "inside": 1,
+          "outside": 0,
+          "rhs_difference": "0",
+          "row": 0
+        },
+        {
+          "coefficient_difference_l1": "31201399/9671406556917033397649408",
+          "exact_box_slack": "2615603919811845155325/2361183241434822606848",
+          "inside": 1,
+          "outside": 3,
+          "rhs_difference": "1/9007199254740992",
+          "row": 1
+        },
+        {
+          "coefficient_difference_l1": "88161/37778931862957161709568",
+          "exact_box_slack": "161277381723821088903/4722366482869645213696",
+          "inside": 2,
+          "outside": 0,
+          "rhs_difference": "0",
+          "row": 2
+        },
+        {
+          "coefficient_difference_l1": "280963/75557863725914323419136",
+          "exact_box_slack": "184657046749302097449/590295810358705651712",
+          "inside": 2,
+          "outside": 3,
+          "rhs_difference": "0",
+          "row": 3
+        }
+      ],
+      "pair": [
+        1,
+        2
+      ],
+      "remaining_joint_equalities_unchecked": 1243,
+      "remaining_joint_inequalities_unchecked": 2486,
+      "scope": "Actual pair rows only. No membership-guard, ReLU, shared-private-frame or full-network proof.",
+      "status": "CHECKED_SAVED_PAIR_GUARDS_REDUNDANT"
+    },
+    "scope": "Original source bindings + actual saved pair guards + NEW local first-conv controls. No historical full expert trace, no discharged global upstream assumption.",
+    "status": "CHECKED_LOCAL_UPSTREAM_AUDIT_NOT_NETWORK_PROOF",
+    "unclosed": [
+      "input-to-HZ containment if reported gaps are nonzero",
+      "subsequent expert layers and per-ReLU independently checked range/encoding evidence",
+      "historical shared/private factor maps and intermediate-state identity chain",
+      "membership-guard/common-interval sources used by the reused output obligation",
+      "declared graph correspondence and deployed floating semantics"
+    ]
+  },
+  "stages": [
+    {
+      "cap_seconds": 60,
+      "end_seconds": 2.0493876729160547,
+      "phase": "build",
+      "return_code": 0,
+      "seconds": 2.048315905034542,
+      "start_seconds": 0.0010216888040304184,
+      "started": true,
+      "state": "COMPLETED"
+    },
+    {
+      "cap_seconds": 180,
+      "end_seconds": 3.716615492478013,
+      "phase": "check",
+      "return_code": 0,
+      "seconds": 1.6669168304651976,
+      "start_seconds": 2.049570696428418,
+      "started": true,
+      "state": "COMPLETED"
+    }
+  ],
+  "status": "PASS",
+  "stored_source_total_seconds": 3.7283201199024916,
+  "terminal_sha256": "2812f460e1967d9a76f722fce7eeef7c928552369d46d5e459921a3efbc7ccc3"
+}

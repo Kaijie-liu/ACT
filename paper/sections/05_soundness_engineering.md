@@ -266,6 +266,21 @@ eval program. This is not a proof of native Python/PyTorch execution. The
 general table above therefore remains the default contract; this extension
 has its own narrower, explicitly conditional source contract.
 
+A subsequent local source audit makes the remaining assumption concrete.
+Exact checking of the reconstructed convolutional input HZ finds29 coordinates
+whose represented intervals fall slightly inside the pinned input box.
+Independent first-layer Conv2d projection also detects nonzero center/generator
+rounding residuals. The checker computes same-factor error enclosures, not an
+uncertified tolerance-based equality. These residuals have not been compensated
+through the full expert graph. Conversely, all four actual saved pair guards
+are exactly redundant on the entire factor box and preserved in the joint HZ.
+This discharges a local row obligation, not membership-guard or full expert
+lowering. A complete source proof needs input containment, local error
+compensation, checked ReLU range/encoding evidence and the shared/private
+factor history; the old terminal HZ does not supply that trace. An `exact`
+representation flag must not be read as an independently proved floating-to-real
+conversion guarantee. The default trusted base therefore remains explicit.
+
 Independent checker and statement identities must be pinned outside the bundle.
 A hash confirms identity, not the mathematical correctness of a trusted source.
 The real input 98 proof is portable: isolated checking needs no checkpoint,
