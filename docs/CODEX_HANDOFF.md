@@ -1,5 +1,17 @@
 # MoE project handoff
 
+LATEST INTERRUPTION (2026-09-20 04:05 UTC): the queue below is NO LONGER LIVE.
+Read `docs/soplex_execution_interruption_20260920.json` first. Tool handles
+disappeared; OS inspection confirms former supervisor2610954/shell2610927 gone.
+Cause undetermined. Only execution_identity/resource_wait files exist; no job
+directory, native call, worker terminal or final audit. Last poll600.057s,
+load/core0.864>0.5; waiting cost is right-censored, not a 300s solver timeout.
+All four slots NOT_RUN_SUPERVISOR_INTERRUPTION.0newU,0realqueries. The prepared
+18+21 tests and10 fresh analytic checks remain valid; finite LP study NOT DONE.
+No resume/retry performed. Preserve reserved directory. Need a separately
+registered execution identity and session-independent launch/post-mortem record
+before another launch; do not pretend the existing queue will continue.
+
 LIVE QUEUE (2026-09-20 04:02 UTC): preparation committed/pushed633b2ad3d.
 Exactly one queue launched from that clean commit; supervisor PID2610954,
 owned shell2610927. At this observation it is WAITING_RESOURCES for input220_p0,
