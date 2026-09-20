@@ -1,0 +1,102 @@
+{
+  "schema": "PROPERTY_RANGE_SELECTION_CONTROL_RECEIPT_V1",
+  "base_head": "7c1e6c5eada6d795410ef53cf611d114196a409f",
+  "status": "PREPARATION_CONTROLS_PASS_REAL_COMPARISON_NOT_STARTED",
+  "new_controls_passed": 10,
+  "source_and_saved_diagnosis_regressions_passed": 64,
+  "prior_saved_analysis_tests_passed": 3,
+  "main_table_tests_passed": 3,
+  "total_tests_passed": 80,
+  "combined_unittest_seconds": 10.816,
+  "commands": [
+    "python -m unittest property_ranges.tests range_diagnosis.tests range_pipeline.tests source_ranges.tests source_ranges.portable_tests full_bounds.tests full_bounds.analysis_tests full_source.tests source_enclosure.tests source_enclosure.portable_tests upstream_source.tests router_source.tests router_source.capture_tests checked_gate.candidate_tests",
+    "python scripts/test_analyze_range_pipeline.py",
+    "python scripts/test_rebuild_moe_main_tables.py",
+    "python scripts/rebuild_moe_main_tables.py --check"
+  ],
+  "environment": "/data1/Kane/miniconda3/envs/act-py312/bin/python",
+  "main_table_rebuild": "PASS_UNCHANGED",
+  "old_freeze_integrity": {
+    "sources": 72,
+    "artifacts": 13,
+    "status": "PASS_UNCHANGED"
+  },
+  "read_only_real_metadata": {
+    "pair": [
+      1,
+      2
+    ],
+    "classes": 10,
+    "label": 0,
+    "hidden_weight_shapes": [
+      [
+        64,
+        512
+      ],
+      [
+        64,
+        512
+      ]
+    ],
+    "classifier_shapes": [
+      [
+        10,
+        64
+      ],
+      [
+        10,
+        64
+      ]
+    ],
+    "solver_calls": 0,
+    "source_propagations": 0
+  },
+  "controls": [
+    "exact formula across all properties",
+    "fixed per-expert quota and ascending query order",
+    "tie/zero width/stable ranges/width changes",
+    "shared continuous/binary factor cancellation",
+    "checker independence from producer",
+    "12 identity/score/roster mutation variants",
+    "deadline/error/malformed partial terminal",
+    "partial range call outside snapshot rejection",
+    "cross-arm identity and missing snapshot distinction",
+    "partial output call cap rejection",
+    "forged positive terminal rejection",
+    "complete synthetic two-arm source/output pipeline",
+    "relocated python -I -S check without test-owned originals",
+    "5 hash-rebound complete-package semantic mutations"
+  ],
+  "synthetic_complete_arms": {
+    "prefix": {
+      "range_calls": 8,
+      "accepted_range_facts": 4,
+      "required_output_properties": 1,
+      "output_calls": 1,
+      "outcome": "CHECKED_POSITIVE_DECLARED_REAL_MOE"
+    },
+    "property": {
+      "range_calls": 8,
+      "accepted_range_facts": 4,
+      "required_output_properties": 1,
+      "output_calls": 1,
+      "outcome": "CHECKED_POSITIVE_DECLARED_REAL_MOE"
+    }
+  },
+  "real_comparison_launched": false,
+  "new_real_solver_calls": 0,
+  "new_real_complete_safe": 0,
+  "production_verdict_changed": false,
+  "deployed_floating_point_proof": false,
+  "source_sha256": {
+    "docs/property_ranges_v1.md": "3a0923245a4f21f51db0b67ccdb545ef59989440caa25a0d8ae370b13721b4e6",
+    "property_ranges/build.py": "1801f1c9cb0b898f8f011963a28974169b8a7fba49a30a7320b103ee07d68207",
+    "property_ranges/check_selection.py": "98499f041c42a2bfdf2255131503894c303ef5f89bce85d9e3189934110ea29e",
+    "property_ranges/review.py": "aa9942f8fbbd96776ea4c72f412bf3afe38b5b27b9e9f8ec465145c4337c869b",
+    "property_ranges/run.py": "cdea741eebb8be03d7fdb52a2f42d06ec2f984567f94d6e5b0858ffc2af2d49d",
+    "property_ranges/select.py": "f858d1a3435332e5155a9835137a727d2a3fb2cbb10e7e74206bb8af3df68922",
+    "property_ranges/tests.py": "284b5815ca76ace0ec8d1d76f7826e79a67de4088965cf8893f0162ad1ef86a7",
+    "property_ranges/verify_source.py": "a48c4291e1889e6a1c4279c0c67d1d482dc07c927643a438d9fbd5172bf598c8"
+  },
+  "scope": "Synthetic controls and read-only real metadata only. No real bound comparison or scientific effect claim."
+}

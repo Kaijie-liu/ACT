@@ -313,6 +313,13 @@ ReLU violations. The analysis motivates property-directed range selection,
 not a new safety or unique-root-cause claim. Full records and limitations:
 `docs/range_diagnosis_v1_results.md`.
 
+A separate property-directed row-selection control is now frozen, not yet
+executed. Both arms retain two hidden rows per expert, eight maximum range
+queries and the same300s complete-request budget; all nine output obligations
+are regenerated. Only the selected row set changes, with exact scores based on
+pre-query ranges and all classifier margins. This preparation has no measured
+effect to add to the result tables (`docs/property_ranges_v1.md`).
+
 In a separately frozen development comparison, fresh evidence generation,
 packaging and checking on input 98 completed in 185.317 seconds; matched V2
 returned TIMEOUT in 295.697 seconds. This one fixed-order postselected control

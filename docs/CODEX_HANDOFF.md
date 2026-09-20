@@ -1,5 +1,31 @@
 # MoE project handoff
 
+LATEST PREPARATION (2026-09-20): property-directed row comparison FROZEN,
+NOT EXECUTED. Read `docs/property_ranges_v1.md`, freeze and controls. Same
+conv98/pair1,2/model/represented2/255; new prefix vs property arms each retain
+two layer6 rows PER EXPERT, at most8 range calls capped3s and all9 fresh
+output proposals capped16s. No global top4 reallocation or range-off baseline.
+Both regenerate source and pay for exact scoring/snapshots; only selected
+rows differ. Score=max negative classifier-margin coefficient times unstable
+ReLU triangle gap, from current pre-query source; all competitors considered.
+Exact tie order, zero-score quota fill, no row replacement or historical points.
+
+Independent portable selection replay and complete source/output checks are
+integrated. Same frozen outer supervisor:300s EACH,build100/propose120/seal5,
+check remaining/publication2. Terminal audit includes partial call caps and
+available pre-query snapshot consistency; missing is not agreement.10new
+controls +64regressions +3saved-analysis +3main-table tests PASS (80total).
+Old72source/13artifact hashes unchanged. Synthetic two-arm positives/moved
+checks are controls only; no new real queries/SAFE or changed paper tables.
+
+Next, on execution instruction, run ONCE `python -m property_ranges.run`,
+then `python -m property_ranges.review data/moe/results/property_ranges_conv98_20260920_v1`.
+New directory must not preexist; fixed prefix-then-property, no resume/retries.
+Archive both outcomes, selected/range rows, all9 outputs and complete costs.
+Do not raise caps, tune gate, replace failed rows or graft old duals. This is
+a single-route development control, not high-accuracy/route-changing evidence.
+No real job has been started by this preparation stage.
+
 LATEST ANALYSIS (2026-09-20): saved NEW-source localization, no new solves.
 Read `docs/range_diagnosis_v1_results.md/json` and protocol. All9 range-on
 saved points and all128 last-ReLU rows analyzed;52remain unstable (36/16).
